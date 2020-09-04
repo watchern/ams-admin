@@ -63,7 +63,10 @@ export default {
     clipboardDemo: 'Clipboard',
     i18n: '国际化',
     externalLink: '外链',
-    profile: '个人中心'
+    profile: '个人中心',
+    etlscheduler: 'ETL调度',
+    'datasource': '数据源管理',
+    'resources': '资源管理'
   },
   navbar: {
     dashboard: '首页',
