@@ -12,7 +12,7 @@ import chartsRouter from './modules/charts'
 import tableRouter from './modules/table'
 import nestedRouter from './modules/nested'
 import dataRouter from './bizmodules/data'
-import etlscheduler from './modules/etlscheduler/etlscheduler'
+import etlschedulerRouter from './modules/etlscheduler/etlscheduler'
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -184,7 +184,7 @@ export const asyncRoutes = [
       }
     ]
   },
-  etlscheduler,
+
   /** when your routing map is too long, you can split it into small modules **/
   componentsRouter,
   chartsRouter,
@@ -192,7 +192,7 @@ export const asyncRoutes = [
   tableRouter,
   dataRouter,
   // ====> 新的router组 import后添加在这里
-
+  etlschedulerRouter,
   {
     path: '/example',
     component: Layout,

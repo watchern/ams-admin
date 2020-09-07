@@ -138,6 +138,29 @@ export default {
     cancel: '取 消',
     confirm: '确 定'
   },
+  // etlscheduler_datasource_table的一些关键字
+  etlscheduler_table: {
+    key: '请输入关键字',
+    dsName: '数据源名称',
+    dsStatus: '数据库状态',
+    dsType: '数据库类型',
+    jdbcUrl: 'jdbc url',
+    driverClass: '驱动类',
+    loginType: '登录方式',
+    authFilePath: '认证文件路径',
+    loginName: '用户名',
+    loginPassword: '密码',
+    updateTime: '修改时间',
+    switchDsType: '请选择数据库类型',
+    'dsTypeOne': 'oracle',
+    'dsTypeTwo': 'hive',
+    switchLoginType: '请选择登录方式',
+    'loginTypeOne': '用户名密码登录',
+    'loginTypeTwo': 'kerbors认证',
+    switchDsStatus: '请选择数据源状态',
+    'dsStatusTypeOne': '启用',
+    'dsStatusTypeTwo': '停用'
+  },
   example: {
     warning: '创建和编辑页面是不能被 keep-alive 缓存的，因为keep-alive 的 include 目前不支持根据路由来缓存，所以目前都是基于 component name 来进行缓存的。如果你想类似的实现缓存效果，可以使用 localStorage 等浏览器缓存方案。或者不要使用 keep-alive 的 include，直接缓存所有页面。详情见'
   },
