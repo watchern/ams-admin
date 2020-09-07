@@ -39,6 +39,33 @@ import etlschedulerRouter from './modules/etlscheduler/etlscheduler'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
+
+const AceRoutes = [
+  {
+    path: "/",
+    redirect: "/ace/index"
+  }, {
+    path: "/ace/index",
+    component: () => import("@/views/Ace/index")
+  },
+  {
+    path: "/ace/home",
+    name: 'aceHome',
+    component: () => import("@/views/Ace/home/index"),
+    children: [
+      {
+        path: "/ace/main",
+        name: 'aceMain',
+        component: () => import("@/views/Ace/home/main/index")
+      }, {
+        path: "/ace/nav",
+        name: 'aceNav',
+        component: () => import("@/views/Ace/home/nav/index")
+      }
+    ]
+  }
+]
+
 export const constantRoutes = [
   {
     path: '/redirect',
@@ -74,7 +101,7 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    // redirect: '/dashboard',
     children: [
       {
         path: 'dashboard',
@@ -405,7 +432,8 @@ export const asyncRoutes = [
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  // routes: constantRoutes
+  routes: [...AceRoutes, ...constantRoutes]
 })
 
 const router = createRouter()

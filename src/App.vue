@@ -9,3 +9,6 @@ export default {
   name: 'App'
 }
 </script>
+<style>
+@import url('assets/Ace/css/index.css');
+</style>

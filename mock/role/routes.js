@@ -109,15 +109,6 @@ const asyncRoutes = [
           title: 'rolePermission',
           roles: ['admin']
         }
-      },
-      {
-        path: 'role',
-        component: 'views/permission/role',
-        name: 'RolePermission',
-        meta: {
-          title: 'rolePermission',
-          roles: ['admin']
-        }
       }
     ]
   },
@@ -366,6 +357,7 @@ const asyncRoutes = [
       }
     ]
   },
+
   {
     path: '/error',
     component: 'layout/Layout',

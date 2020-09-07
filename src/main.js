@@ -7,6 +7,27 @@ import 'normalize.css/normalize.css' // a modern alternative to CSS resets
 import Element from 'element-ui'
 import './styles/element-variables.scss'
 
+// Ace start
+import NewAgGrid from "@/components/Ace/new-ag-grid/index"
+Vue.component('new-ag-grid',NewAgGrid)
+import tool from '@/assets/Ace/js/tool'
+Vue.prototype.$tool = tool
+import NewInput from '@/components/Ace/form/new-input'
+Vue.component('new-input', NewInput)
+import NewTree from '@/components/Ace/new-tree/index'
+Vue.component('new-tree', NewTree)
+import newCheckboxGroup from '@/components/Ace/form/new-checkbox-group'
+Vue.component('new-checkbox-group', newCheckboxGroup)
+import newSelect from '@/components/Ace/form/new-select'
+Vue.component('new-select', newSelect)
+import newCard from '@/components/Ace/base/new-card'
+Vue.component('new-card', newCard)
+import newCalender from '@/components/Ace/base/new-calender'
+Vue.component('new-calender', newCalender)
+import newDropdown from '@/components/Ace/base/new-dropdown'
+Vue.component('new-dropdown', newDropdown)
+// Ace end
+
 import '@/styles/index.scss' // global css
 
 import App from './App'

@@ -37,7 +37,7 @@ module.exports = {
     https: false, // https:{type:Boolean}
     open: true, //配置自动启动浏览器
     //proxy: 'http://172.20.10.9:8080', // 配置跨域处理,只有一个代理 //192.168.43.43
-    // before: require('./mock/mock-server.js'),
+    //before: require('./mock/mock-server.js'),
     proxy: {
       '/r1': {
         target: process.env.R1_LOCATION
@@ -71,13 +71,15 @@ module.exports = {
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload
     // it can improve the speed of the first screen, it is recommended to turn on preload
-    config.plugin('preload').tap(() => [{
-      rel: 'preload',
-      // to ignore runtime.js
-      // https://github.com/vuejs/vue-cli/blob/dev/packages/@vue/cli-service/lib/config/app.js#L171
-      fileBlacklist: [/\.map$/, /hot-update\.js$/, /runtime\..*\.js$/],
-      include: 'initial'
-    }])
+    config.plugin('preload').tap(() => [
+      {
+        rel: 'preload',
+        // to ignore runtime.js
+        // https://github.com/vuejs/vue-cli/blob/dev/packages/@vue/cli-service/lib/config/app.js#L171
+        fileBlacklist: [/\.map$/, /hot-update\.js$/, /runtime\..*\.js$/],
+        include: 'initial'
+      }
+    ])
 
     // when there are many pages, it will cause too many meaningless requests
     config.plugins.delete('prefetch')
@@ -106,7 +108,7 @@ module.exports = {
             .plugin('ScriptExtHtmlWebpackPlugin')
             .after('html')
             .use('script-ext-html-webpack-plugin', [{
-              // `runtime` must same as runtimeChunk name. default is `runtime`
+            // `runtime` must same as runtimeChunk name. default is `runtime`
               inline: /runtime\..*\.js$/
             }])
             .end()
