@@ -5,19 +5,19 @@
         v-for="item in options"
         :key="item.value"
         :label="item.label"
-        :value="item.value">
-      </el-option>
+        :value="item.value"
+      />
     </el-select>
   </div>
 </template>
 
 <script>
 export default {
-  props:{
-    value:[String,Number],
-    options:{
-      type:Array,
-      default:()=>([
+  props: {
+    value: [String, Number],
+    options: {
+      type: Array,
+      default: () => ([
         {
           value: '选项1',
           label: '黄金糕'
@@ -37,18 +37,18 @@ export default {
       ])
     }
   },
-  watch:{
-    value:{
-      handler:function(newV,oldV){
-        this.selectVal=newV
-      },
-      deep:true,
-      immediate:true,
+  data() {
+    return {
+      selectVal: ''
     }
   },
-  data(){
-    return{
-      selectVal:''
+  watch: {
+    value: {
+      handler: function(newV, oldV) {
+        this.selectVal = newV
+      },
+      deep: true,
+      immediate: true
     }
   }
 }

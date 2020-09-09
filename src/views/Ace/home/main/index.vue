@@ -1,32 +1,32 @@
 <template>
   <div class="main-page w100 h100 flex a-center j-start flex-row">
     <div class="main-page-left h100 flex-shrink">
-      <new-tree></new-tree>
+      <new-tree />
     </div>
     <div class="main-page-right flex1 h100">
       <div class="new-table-search flex a-center j-between flex-row">
         <div class="search-left h100 flex a-center j-start flex-row">
-          <div class="tag-box flex a-center j-center" v-for="(item,index) in 4" :key="index">
-            <i class="el-icon-search text-white"></i>
+          <div v-for="(item,index) in 4" :key="index" class="tag-box flex a-center j-center">
+            <i class="el-icon-search text-white" />
           </div>
         </div>
         <div class="search-right h100 flex a-center j-end flex-row">
-          <new-input v-model="searchVal" @keydown="keydown"></new-input>
-          <div class="icon-box relative flex a-center j-center" @click.stop.prevent="isShowNewCard=!isShowNewCard" :class="[isShowNewCard && 'icon-box-active']">
-            <i class="el-icon-search icon flex-shrink" ></i>
-            <div class="new-card-warp absolute" v-if="isShowNewCard" @click.stop.prevent="()=>{}">
-              <new-card></new-card>
+          <new-input v-model="searchVal" @keydown="keydown" />
+          <div class="icon-box relative flex a-center j-center" :class="[isShowNewCard && 'icon-box-active']" @click.stop.prevent="isShowNewCard=!isShowNewCard">
+            <i class="el-icon-search icon flex-shrink" />
+            <div v-if="isShowNewCard" class="new-card-warp absolute" @click.stop.prevent="()=>{}">
+              <new-card />
             </div>
           </div>
         </div>
       </div>
       <div class="new-table-content">
         <div class="count-total-wrap">
-          <i class="el-icon-warning icon-waring"></i>
-          <span class="info">共{{total}}项 已选择 <span class="info-color">{{selectedRowVal}}</span> 项</span>
+          <i class="el-icon-warning icon-waring" />
+          <span class="info">共{{ total }}项 已选择 <span class="info-color">{{ selectedRowVal }}</span> 项</span>
         </div>
         <div class="new-table-content-wrap">
-          <new-ag-grid :tableOptions="tableOptions" :rowData="tableData" :pageNum='pageNum' :pageSize='pageSize' :total='total' ref='agGridDom'></new-ag-grid>
+          <new-ag-grid ref="agGridDom" :table-options="tableOptions" :row-data="tableData" :page-num="pageNum" :page-size="pageSize" :total="total" />
         </div>
       </div>
     </div>
@@ -36,107 +36,107 @@
 <script>
 import TableCommon from '@/mixin/table-common.js'
 export default {
-  mixins:[TableCommon],
+  mixins: [TableCommon],
   data() {
     return {
       tableData: [],
-      isShowNewCard:false,
-      searchVal: "",
+      isShowNewCard: false,
+      searchVal: '',
       // selectedRowVal:0,
       tableOptions: {
         columnDefs: [
           {
-            headerName: "",
+            headerName: '',
             checkboxSelection: true,
             headerCheckboxSelection: true,
             width: 50,
-            pinned: "left"
+            pinned: 'left'
           },
           {
-            headerName: "审计项目名称",
-            field: "name",
-            filter: "agTextColumnFilter",
-            pinned: "left"
+            headerName: '审计项目名称',
+            field: 'name',
+            filter: 'agTextColumnFilter',
+            pinned: 'left'
           },
-          { headerName: "被审计机构", field: "sex" },
+          { headerName: '被审计机构', field: 'sex' },
           {
-            headerName: "项目状态",
-            field: "age",
-            filter: "agNumberColumnFilter"
+            headerName: '项目状态',
+            field: 'age',
+            filter: 'agNumberColumnFilter'
           },
-          { headerName: "立项人", field: "sr", filter: "agNumberColumnFilter" },
+          { headerName: '立项人', field: 'sr', filter: 'agNumberColumnFilter' },
           {
-            headerName: "执行机构",
-            field: "b",
-            filter: "agNumberColumnFilter"
-          },
-          {
-            headerName: "立项日期",
-            field: "c",
-            filter: "agNumberColumnFilter"
+            headerName: '执行机构',
+            field: 'b',
+            filter: 'agNumberColumnFilter'
           },
           {
-            headerName: "项目进度",
-            field: "d",
-            filter: "agNumberColumnFilter",
+            headerName: '立项日期',
+            field: 'c',
+            filter: 'agNumberColumnFilter'
+          },
+          {
+            headerName: '项目进度',
+            field: 'd',
+            filter: 'agNumberColumnFilter',
             minWidth: 200,
             cellRenderer: this.progressBar
           }
         ]
       }
-    };
+    }
   },
-  created() {
-    this.init();
-  },
-  computed:{
-    selectedRowVal(){
+  computed: {
+    selectedRowVal() {
       return 4
     }
   },
+  created() {
+    this.init()
+  },
   methods: {
     progressBar(params) {
-      return this.$tool.setTableCellRender(params);
+      return this.$tool.setTableCellRender(params)
     },
     init() {
       setTimeout(() => {
         this.tableData = [
           {
             id: 1,
-            name: "公司整体信贷业务专项问题审计",
-            sex: "北京分行、天津",
+            name: '公司整体信贷业务专项问题审计',
+            sex: '北京分行、天津',
             age: '执行中',
             sr: '王经理',
-            b: "总行审计部",
+            b: '总行审计部',
             c: '2020-04-19',
-            d: { width: "0", color: "#ccc" }
+            d: { width: '0', color: '#ccc' }
           },
           {
             id: 1,
-            name: "公司整体信贷业务专项问题审计",
-            sex: "深圳分行",
+            name: '公司整体信贷业务专项问题审计',
+            sex: '深圳分行',
             age: '待执行',
             sr: '王经理',
-            b: "总行审计部",
+            b: '总行审计部',
             c: '2020-04-19',
-            d: { width: "40", color: "blue" }
+            d: { width: '40', color: 'blue' }
           },
           {
             id: 1,
-            name: "2020消费者权益保护审计",
-            sex: "深圳分行",
+            name: '2020消费者权益保护审计',
+            sex: '深圳分行',
             age: '待执行',
             sr: '王经理',
-            b: "总行审计部",
+            b: '总行审计部',
             c: '2020-04-19',
-            d: { width: "60", color: "red" }
-          },
-        ];
-      }, 1000);
+            d: { width: '60', color: 'red' }
+          }
+        ]
+      }, 1000)
     },
     keydown() {}
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -147,6 +147,7 @@ export default {
     width: 350px;
     background: #ffffff;
     box-shadow: 3px 0 17px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 3px 0 17px 0 rgba(0,0,0,0.10);
     border-radius: 30px 1px 1px 30px;
   }
   &-right {

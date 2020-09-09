@@ -7,67 +7,67 @@
           :class="[currentNavIndex===-1 ? 'nav-wrap-open' :'nav-wrap-radius']"
         >
           <div
-            class="open-temp absolute flex a-center flex-start flex-row"
             v-if="currentNavIndex===-1"
+            class="open-temp absolute flex a-center flex-start flex-row"
           >
-            <div class="open-temp-tar"></div>
-            <div class="open-temp-tag" v-for="(item,index) in navList">{{item.name}}</div>
+            <div class="open-temp-tar" />
+            <div v-for="(item,index) in navList" class="open-temp-tag">{{ item.name }}</div>
           </div>
           <div
-            class="nav flex-shrink"
             v-for="(item,index) in navList.slice(0,tagCount)"
             :key="index"
+            class="nav flex-shrink"
             :class="[currentNavIndex===index && 'nav-active radius-circle']"
             @click="select(index)"
-          >{{item.name}}</div>
+          >{{ item.name }}</div>
           <div
             class="nav-more flex1 text-center"
             :class="[currentNavIndex===-1 && 'nav-more-active']"
             @click="select(-1)"
           >
-            <i class="el-icon-more icon-more"></i>
+            <i class="el-icon-more icon-more" />
           </div>
         </div>
         <div
-          class="search-wrap h100 flex a-center j-center radius-circle"
           v-if="currentNavIndex!==-1"
+          class="search-wrap h100 flex a-center j-center radius-circle"
         >
-          <i class="el-icon-search icon"></i>
+          <i class="el-icon-search icon" />
         </div>
       </div>
       <div class="tree-content">
         <div class="content-title text-center">财务审计-财务收支审计</div>
-        <Tree :treeData="treeData" key="1" @node-click='nodeClick'></Tree>
+        <Tree key="1" :tree-data="treeData" @node-click="nodeClick" />
       </div>
       <div class="btn-tree-box absolute flex a-center j-center flex-column">
-        <div class="absolute btn-box-search flex a-center j-center" v-if="isBtnSearch" @click="isSearch=true">
-          <div class="btn-box flex a-center j-center"><i class="el-icon-search"></i></div>
+        <div v-if="isBtnSearch" class="absolute btn-box-search flex a-center j-center" @click="isSearch=true">
+          <div class="btn-box flex a-center j-center"><i class="el-icon-search" /></div>
         </div>
-        <div class="btn-box flex a-center j-center" v-for="(item,index) in 4" :key="index">
-          <i class="el-icon-edit"></i>
+        <div v-for="(item,index) in 4" :key="index" class="btn-box flex a-center j-center">
+          <i class="el-icon-edit" />
         </div>
       </div>
-      <div class="children-render" v-if="isChildrenRender">
-        <Tree :treeData="treeDataChildRender" key="2"></Tree>
+      <div v-if="isChildrenRender" class="children-render" :style="[renderStyle]">
+        <Tree key="2" :tree-data="treeDataChildRender" />
       </div>
     </template>
     <template v-else>
       <div class="search-wrap relative w100 h100">
-        <new-input v-model="searchVal" width="100%" size='big' iconAround='prefix' inputColor='#929498' ></new-input>
+        <new-input v-model="searchVal" width="100%" size="big" icon-around="prefix" input-color="#929498" />
         <div class="form-item">
           <div class="form-item-title">其他选择</div>
-          <new-select  v-model="selectVal"></new-select>
+          <new-select v-model="selectVal" />
         </div>
         <div class="form-item">
           <div class="form-item-title">模型库选择</div>
           <div class="form-item-tags flex a-center j-start flex-row">
-            <div class="tag" v-for="(item,index) in navList" :key="index" :class="[index>0 && index<5 &&'tag-active']">{{item.name}}</div>
+            <div v-for="(item,index) in navList" :key="index" class="tag" :class="[index>0 && index<5 &&'tag-active']">{{ item.name }}</div>
           </div>
         </div>
         <div class="form-item">
           <div class="form-item-title">最近更新时间</div>
           <div class="form-item-checkboxs">
-              <new-checkbox-group v-model="checkboxVal"></new-checkbox-group>
+            <new-checkbox-group v-model="checkboxVal" />
           </div>
         </div>
         <div class="btn-wrap-box tree-bg flex a-center j-between flex-row">
@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import Tree from "./tree";
+import Tree from './tree'
 export default {
   components: {
     Tree
@@ -92,168 +92,176 @@ export default {
   data() {
     return {
       currentNavIndex: 0,
-      checkList:[],
-      searchVal:"",
-      selectVal:"",
-      checkboxVal:"1",
-      isBtnSearch:true,
-      isSearch:false,
-      isChildrenRender:false,
+      checkList: [],
+      searchVal: '',
+      selectVal: '',
+      checkboxVal: '1',
+      isBtnSearch: true,
+      isSearch: false,
+      isChildrenRender: false,
       treeDataChildRender: [
         {
-          label: "财务审计 - 其他",
+          label: '财务审计 - 其他',
           children: [
             {
-              label: "财务审计 - 其他A"
+              label: '财务审计 - 其他A'
             },
             {
-              label: "财务审计 - 其他B"
+              label: '财务审计 - 其他B'
             },
             {
-              label: "财务审计 - 其他C"
+              label: '财务审计 - 其他C'
             },
             {
-              label: "财务审计 - 其他D"
+              label: '财务审计 - 其他D'
             },
             {
-              label: "财务审计 - 其他E"
+              label: '财务审计 - 其他E'
             }
           ]
         }
       ],
       navList: [
         {
-          name: "全行模型"
+          name: '全行模型'
         },
         {
-          name: "机构模型"
+          name: '机构模型'
         },
         {
-          name: "个人模型"
+          name: '个人模型'
         },
         {
-          name: "其他模型"
+          name: '其他模型'
         },
         {
-          name: "全行模型1"
+          name: '全行模型1'
         },
         {
-          name: "机构模型1"
+          name: '机构模型1'
         },
         {
-          name: "个人模型1"
+          name: '个人模型1'
         },
         {
-          name: "其他模型1"
+          name: '其他模型1'
         },
         {
-          name: "全行模型2"
+          name: '全行模型2'
         },
         {
-          name: "机构模型2"
+          name: '机构模型2'
         }
       ],
       treeData: [
         {
-          label: "财务审计 - 其他",
+          label: '财务审计 - 其他',
           children: [
             {
-              label: "财务审计 - 其他A"
+              label: '财务审计 - 其他A'
             },
             {
-              label: "财务审计 - 其他B"
+              label: '财务审计 - 其他B'
             },
             {
-              label: "财务审计 - 其他C"
+              label: '财务审计 - 其他C'
             },
             {
-              label: "财务审计 - 其他D"
+              label: '财务审计 - 其他D'
             },
             {
-              label: "财务审计 - 其他E"
+              label: '财务审计 - 其他E'
             }
           ]
         },
         {
-          label: "财务审计 - 财务管理审计",
+          label: '财务审计 - 财务管理审计',
           childrenRender: [
             {
-              label: "财务审计 - 财务管理审计A"
+              label: '财务审计 - 财务管理审计A'
             },
             {
-              label: "财务审计 - 财务管理审计B"
+              label: '财务审计 - 财务管理审计B'
             }
           ]
         },
         {
-          label: "财务审计 - 经济效益审计",
+          label: '财务审计 - 经济效益审计',
           isBtn: false
         },
         {
-          label: "财务审计 - 经济效益审计",
+          label: '财务审计 - 经济效益审计',
           isBtn: false
         },
         {
-          label: "财务审计 - 经济效益审计"
+          label: '财务审计 - 经济效益审计'
         },
         {
-          label: "财务审计 - 经济效益审计"
+          label: '财务审计 - 经济效益审计'
         },
         {
-          label: "财务审计 - 经济效益审计"
+          label: '财务审计 - 经济效益审计'
         },
         {
-          label: "财务审计 - 经济效益审计"
+          label: '财务审计 - 经济效益审计'
         },
         {
-          label: "财务审计 - 经济效益审计"
+          label: '财务审计 - 经济效益审计'
         },
         {
-          label: "财务审计 - 经济效益审计"
+          label: '财务审计 - 经济效益审计'
         },
         {
-          label: "财务审计 - 经济效益审计"
+          label: '财务审计 - 经济效益审计'
         },
         {
-          label: "财务审计 - 经济效益审计"
+          label: '财务审计 - 经济效益审计'
         },
         {
-          label: "财务审计 - 经济效益审计"
+          label: '财务审计 - 经济效益审计'
         },
         {
-          label: "财务审计 - 经济效益审计"
+          label: '财务审计 - 经济效益审计'
         },
         {
-          label: "财务审计 - 经济效益审计"
+          label: '财务审计 - 经济效益审计'
         },
         {
-          label: "财务审计 - 经济效益审计"
+          label: '财务审计 - 经济效益审计'
         },
         {
-          label: "财务审计 - 经济效益审计"
+          label: '财务审计 - 经济效益审计'
         }
       ],
       defaultProps: {
-        children: "children",
-        label: "label"
+        children: 'children',
+        label: 'label'
       }
-    };
+    }
   },
   computed: {
     tagCount() {
-      return this.currentNavIndex === -1 ? 4 : 3;
+      return this.currentNavIndex === -1 ? 4 : 3
+    },
+    renderStyle() {
+      const leftMenuShrink = this.$store.state.aceState.leftMenuShrink
+      if (!leftMenuShrink) {
+        return {
+          left: '480px'
+        }
+      }
     }
   },
   methods: {
     select(index) {
-      this.currentNavIndex = index;
+      this.currentNavIndex = index
     },
-    nodeClick(data){
-      if(data.childrenRender && data.childrenRender.length) this.isChildrenRender=true
-      else this.isChildrenRender=false
+    nodeClick(data) {
+      if (data.childrenRender && data.childrenRender.length) this.isChildrenRender = true
+      else this.isChildrenRender = false
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .tree-bg{
@@ -264,6 +272,8 @@ export default {
   height: calc(100%);
   padding: 14px 0px;
   border-radius: 30px 1px 1px 30px;
+  box-shadow: 3px 0 17px 0 rgba(0,0,0,0.10);
+  z-index: 100;
   .search-wrap{
     padding: 0 20px;
     .btn-wrap-box{

@@ -3,7 +3,7 @@ export default {
     return {
       pageNum: 1,
       pageSize: 20,
-      total:120
+      total: 120
     }
   }
 }

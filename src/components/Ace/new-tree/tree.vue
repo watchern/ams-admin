@@ -3,20 +3,20 @@
     <el-tree
       :data="treeData"
       :props="defaultProps"
-      @node-click="handleNodeClick"
       icon-class="el-icon-folder"
+      @node-click="handleNodeClick"
     >
       <span
-        class="custom-tree-node tree-slot-wrap flex a-center w100 j-between flex-row"
         slot-scope="{ node, data }"
+        class="custom-tree-node tree-slot-wrap flex a-center w100 j-between flex-row"
       >
         <span class="label-name">{{ node.label }}</span>
-        <span class="inline-block label-icons" v-if="data.isBtn ===undefined?true:data.isBtn">
+        <span v-if="data.isBtn ===undefined?true:data.isBtn" class="inline-block label-icons">
           <span class="icon-box">
-            <i class="el-icon-edit"></i>
+            <i class="el-icon-edit" />
           </span>
           <span class="icon-box">
-            <i class="el-icon-share"></i>
+            <i class="el-icon-share" />
           </span>
         </span>
       </span>
@@ -32,18 +32,18 @@ export default {
   data() {
     return {
       defaultProps: {
-        children: "children",
-        label: "label"
+        children: 'children',
+        label: 'label'
       }
-    };
+    }
   },
   methods: {
     handleNodeClick(data) {
-      this.$emit("node-click",data)
-      console.log(data);
+      this.$emit('node-click', data)
+      console.log(data)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

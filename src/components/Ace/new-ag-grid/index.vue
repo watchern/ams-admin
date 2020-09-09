@@ -1,39 +1,25 @@
 <template>
   <div class="new-ag-grid-wrap h100">
-    <div id="myGrid" class="ag-theme-balham w100 new-ag-grid"></div>
-    <div class="new-pagination flex a-center j-start w100" v-if="gridOptions.isPagination">
+    <div id="myGrid" class="ag-theme-balham w100 new-ag-grid" />
+    <div v-if="gridOptions.isPagination" class="new-pagination flex a-center j-start w100">
       <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
         :current-page="pageNum"
         :page-sizes="[10, 20, 30, 40]"
         :page-size="pageSize"
         layout="total, prev, pager, next, jumper"
-        :total="total">
-      </el-pagination>
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import { Grid } from "ag-grid/main";
-import "ag-grid/dist/styles/ag-grid.css";
-import "ag-grid/dist/styles/ag-theme-balham.css";
+import { Grid } from 'ag-grid/main'
+import 'ag-grid/dist/styles/ag-grid.css'
+import 'ag-grid/dist/styles/ag-theme-balham.css'
 export default {
-  data() {
-    return {
-      gridOptions: {
-        rowHeight: 52,
-        isPagination:true,
-        rowSelection: "multiple",
-        onGridReady: () => {
-          this.gridOptions.api.sizeColumnsToFit(); //调整表格大小自适应
-        },
-        columnDefs: [],
-        rowData: []
-      }
-    };
-  },
   props: {
     tableOptions: {
       type: Object,
@@ -43,33 +29,47 @@ export default {
       type: Array,
       default: () => []
     },
-    pageNum:{
-      type:Number,
-      default:1
+    pageNum: {
+      type: Number,
+      default: 1
     },
-    pageSize:{
-      type:Number,
-      default:20
+    pageSize: {
+      type: Number,
+      default: 20
     },
-    total:{
-      type:Number,
-      default:0
-    },
+    total: {
+      type: Number,
+      default: 0
+    }
+  },
+  data() {
+    return {
+      gridOptions: {
+        rowHeight: 52,
+        isPagination: true,
+        rowSelection: 'multiple',
+        onGridReady: () => {
+          this.gridOptions.api.sizeColumnsToFit() // 调整表格大小自适应
+        },
+        columnDefs: [],
+        rowData: []
+      }
+    }
   },
   watch: {
     rowData: {
       handler: function(newVal, oldVal) {
-        this.gridOptions.rowData = newVal;
+        this.gridOptions.rowData = newVal
         this.gridOptions.api &&
           this.gridOptions.api.setRowData &&
-          this.gridOptions.api.setRowData(newVal);
+          this.gridOptions.api.setRowData(newVal)
       },
       deep: true,
       immediate: true
     },
     tableOptions: {
       handler: function(newVal, oldVal) {
-        this.gridOptions = Object.assign({}, this.gridOptions, newVal);
+        this.gridOptions = Object.assign({}, this.gridOptions, newVal)
       },
       deep: true,
       immediate: true
@@ -77,27 +77,27 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      this.initTable();
-    });
+      this.initTable()
+    })
   },
   methods: {
     initTable() {
-      let eGridDiv = document.querySelector("#myGrid");
-      new Grid(eGridDiv, this.gridOptions);
+      const eGridDiv = document.querySelector('#myGrid')
+      new Grid(eGridDiv, this.gridOptions)
       this.getSelectRows()
     },
-    getSelectRows(){
-      var rows= this.gridOptions && this.gridOptions.api && this.gridOptions.api.getSelectedRows();
+    getSelectRows() {
+      var rows = this.gridOptions && this.gridOptions.api && this.gridOptions.api.getSelectedRows()
       return rows
     },
-    handleSizeChange(val){
-      this.$emit("handleSizeChange",val)
+    handleSizeChange(val) {
+      this.$emit('handleSizeChange', val)
     },
-    handleCurrentChange(val){
-      this.$emit("handleCurrentChange",val)
+    handleCurrentChange(val) {
+      this.$emit('handleCurrentChange', val)
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .new-ag-grid-wrap{

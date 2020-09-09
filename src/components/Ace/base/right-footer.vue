@@ -2,24 +2,24 @@
   <div class="right-footer h100">
     <div class="h100 flex a-center j-start flex-row">
       <div
-        class="tag flex a-center j-center flex-row animated slideInLeft"
-        :class="[item.isActive && 'tag-active']"
         v-for="(item,index) in tagList"
         :key="index"
+        ref="tagDom"
+        class="tag flex a-center j-center flex-row animated slideInLeft"
+        :class="[item.isActive && 'tag-active']"
         @click="select(item)"
         @contextmenu.prevent="contextmenu(item,$event,index)"
-        ref="tagDom"
       >
-        <span class="name">{{item.name}}</span>
+        <span class="name">{{ item.name }}</span>
         <span class="close" @click.stop.prevent="close(item)">x</span>
       </div>
-      <div class="popover" v-if="isShowPopover" :style="computedStyle">
+      <div v-if="isShowPopover" class="popover" :style="computedStyle">
         <div
-          class="li"
           v-for="(item,index) in popoverList"
           :key="index"
+          class="li"
           @click="sure(item)"
-        >{{item.name}}</div>
+        >{{ item.name }}</div>
       </div>
     </div>
   </div>
@@ -35,78 +35,78 @@ export default {
       selectItem: null,
       popoverList: [
         {
-          name: "刷新",
-          prop: "reset"
+          name: '刷新',
+          prop: 'reset'
         },
         {
-          name: "关闭",
-          prop: "close"
+          name: '关闭',
+          prop: 'close'
         },
         {
-          name: "关闭其他",
-          prop: "closeOther"
+          name: '关闭其他',
+          prop: 'closeOther'
         },
         {
-          name: "关闭所有",
-          prop: "closeAll"
+          name: '关闭所有',
+          prop: 'closeAll'
         }
       ]
-    };
+    }
   },
   computed: {
     computedStyle() {
       return {
         left: `${this.popoverLeft}px`,
         top: `${this.popoverTop - 118}px`
-      };
+      }
     },
     tagList() {
-      return this.$store.state.aceState.rightFooterTags;
+      return this.$store.state.aceState.rightFooterTags
     }
   },
-  created() {
-    this.activeTags({
-      type: "active",
-      val: {
-        name: "首页",
-        path:'/ace/main'
-      }
-    });
+  mounted() {
+    // this.activeTags({
+    //   type: "active",
+    //   val: {
+    //     name: "首页",
+    //     path:'/ace/first'
+    //   }
+    // });
   },
   methods: {
-    close(item){
-      this.selectItem=item
+    close(item) {
+      this.selectItem = item
       this.sure({
-        prop: "close"
+        prop: 'close'
       })
     },
-    select(item){
+    select(item) {
       this.activeTags({
-      type: "active",
-      val:item
-    });
+        type: 'active',
+        val: item
+      })
     },
     activeTags(item) {
-      this.$store.commit("aceState/setRightFooterTags", {
+      this.$store.commit('aceState/setRightFooterTags', {
         type: item.type,
         val: item.val
-      });
+      })
     },
     contextmenu(item, e, index) {
-      this.selectItem = item;
-      this.isShowPopover = true;
-      this.popoverLeft = e.clientX;
-      this.popoverTop = e.clientY;
+      this.selectItem = item
+      this.isShowPopover = true
+      this.popoverLeft = e.clientX
+      this.popoverTop = e.clientY
     },
     sure(item) {
-      this.isShowPopover = false;
+      this.isShowPopover = false
       this.activeTags({
         type: item.prop,
         val: this.selectItem
-      });
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

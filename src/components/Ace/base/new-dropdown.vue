@@ -1,7 +1,5 @@
 <template>
-  <div class="new-dropdown">
-
-  </div>
+  <div class="new-dropdown" />
 </template>
 
 <script>

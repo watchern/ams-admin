@@ -8,8 +8,8 @@ import Element from 'element-ui'
 import './styles/element-variables.scss'
 
 // Ace start
-import NewAgGrid from "@/components/Ace/new-ag-grid/index"
-Vue.component('new-ag-grid',NewAgGrid)
+import NewAgGrid from '@/components/Ace/new-ag-grid/index'
+Vue.component('new-ag-grid', NewAgGrid)
 import tool from '@/assets/Ace/js/tool'
 Vue.prototype.$tool = tool
 import NewInput from '@/components/Ace/form/new-input'
@@ -26,6 +26,25 @@ import newCalender from '@/components/Ace/base/new-calender'
 Vue.component('new-calender', newCalender)
 import newDropdown from '@/components/Ace/base/new-dropdown'
 Vue.component('new-dropdown', newDropdown)
+import AceTree from '@/components/Ace/ace-tree/index'
+Vue.component('ace-tree', AceTree)
+import ToolsTemplate from '@/components/Ace/base/tools-template'
+Vue.component('tools-template', ToolsTemplate)
+import NewTime from '@/components/Ace/base/new-time'
+Vue.component('new-time', NewTime)
+import '@/directive/Ace/scroll.js'
+import VueAnimateNumber from 'vue-animate-number'
+Vue.use(VueAnimateNumber)
+import create from '@/assets/Ace/js/create'
+Vue.prototype.$create = create
+import AceAlert from '@/components/Ace/ace-alert/index'
+Vue.component('ace-alert', AceAlert)
+import AceDialog from '@/components/Ace/ace-dialog/index'
+Vue.component('ace-dialog', AceDialog)
+import AceSelect from '@/components/Ace/ace-select/index'
+Vue.component('ace-select', AceSelect)
+import AceSelectCalender from '@/components/Ace/ace-select-calender/index'
+Vue.component('ace-select-calender', AceSelectCalender)
 // Ace end
 
 import '@/styles/index.scss' // global css

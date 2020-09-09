@@ -42,25 +42,36 @@ import etlschedulerRouter from './modules/etlscheduler/etlscheduler'
 
 const AceRoutes = [
   {
-    path: "/",
-    redirect: "/ace/index"
+    path: '/',
+    redirect: '/ace/index'
   }, {
-    path: "/ace/index",
-    component: () => import("@/views/Ace/index")
+    path: '/ace/index',
+    component: () => import('@/views/Ace/index')
+  }, {
+    path: '/ace/assembly',
+    component: () => import('@/views/Ace/assembly/index')
   },
   {
-    path: "/ace/home",
-    name: 'aceHome',
-    component: () => import("@/views/Ace/home/index"),
+    path: '/ace',
+    name: 'ace',
+    component: () => import('@/views/Ace/home/index'),
     children: [
       {
-        path: "/ace/main",
+        path: '',
+        redirect: '/ace/first'
+      },
+      {
+        path: 'first',
+        name: 'aceFirst',
+        component: () => import('@/views/Ace/home/first/index')
+      },
+      {
+        path: 'main',
         name: 'aceMain',
-        component: () => import("@/views/Ace/home/main/index")
-      }, {
-        path: "/ace/nav",
-        name: 'aceNav',
-        component: () => import("@/views/Ace/home/nav/index")
+        meta: {
+          isShowRightFooter: true
+        },
+        component: () => import('@/views/Ace/home/main/index')
       }
     ]
   }
@@ -219,7 +230,7 @@ export const asyncRoutes = [
   tableRouter,
   dataRouter,
   // ====> 新的router组 import后添加在这里
-  etlschedulerRouter,
+
   {
     path: '/example',
     component: Layout,
@@ -264,6 +275,7 @@ export const asyncRoutes = [
       }
     ]
   },
+
   {
     path: '/error',
     component: Layout,

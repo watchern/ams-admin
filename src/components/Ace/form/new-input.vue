@@ -1,71 +1,71 @@
 <template>
   <div class="new-input flex a-center j-between flex-row" :style="styleClass">
     <template v-if="iconAround==='suffix'">
-      <input type="text" class="input h100" placeholder="查找..."  @keydown.enter="keydown" @input="input" :value='value' v-bind='$attrs'/>
-      <i class="el-icon-search icon flex-shrink suffix-icon" ></i>
+      <input type="text" class="input h100" placeholder="查找..." :value="value" v-bind="$attrs" @keydown.enter="keydown" @input="input">
+      <i class="el-icon-search icon flex-shrink suffix-icon" />
     </template>
     <template v-if="iconAround==='prefix'">
-      <i class="el-icon-search icon flex-shrink prefix-icon" ></i>
-      <input type="text" class="input h100" placeholder="查找..."  @keydown.enter="keydown" @input="input" :value='value' v-bind='$attrs'/>
+      <i class="el-icon-search icon flex-shrink prefix-icon" />
+      <input type="text" class="input h100" placeholder="查找..." :value="value" v-bind="$attrs" @keydown.enter="keydown" @input="input">
     </template>
   </div>
 </template>
 
 <script>
 export default {
-  inheritAttrs:false,
-  props:{
-    value:[String],
-    width:{
-      type:String,
-      default:"180px"
+  inheritAttrs: false,
+  props: {
+    value: [String],
+    width: {
+      type: String,
+      default: '180px'
     },
-    size:{
-      type:String,
-      default:"default"
+    size: {
+      type: String,
+      default: 'default'
     },
-    iconAround:{
-      type:String,
-      default:'suffix'
+    iconAround: {
+      type: String,
+      default: 'suffix'
     },
-    iconColor:{
-      type:String,
-      default:'#343942'
+    iconColor: {
+      type: String,
+      default: '#343942'
     },
-    inputColor:{
-      type:String,
-      default:'#343942'
-    },
+    inputColor: {
+      type: String,
+      default: '#343942'
+    }
   },
-  computed:{
-    styleClass(){
-      let height='32px'
-      let fontSize='12px'
-      if(this.size==='default'){
-        height='32px'
-        fontSize='12px'
-      }else if(this.size==='big'){
-        height='38px'
-        fontSize='14px'
+  computed: {
+    styleClass() {
+      let height = '32px'
+      let fontSize = '12px'
+      if (this.size === 'default') {
+        height = '32px'
+        fontSize = '12px'
+      } else if (this.size === 'big') {
+        height = '38px'
+        fontSize = '14px'
       }
       return {
-        width:`${this.width}`,
-        height:`${height}`,
-        fontSize:`${fontSize}`,
-        color:`${this.inputColor}`,
-        borderColor:`${this.inputColor}`
+        width: `${this.width}`,
+        height: `${height}`,
+        fontSize: `${fontSize}`,
+        color: `${this.inputColor}`,
+        borderColor: `${this.inputColor}`
       }
     }
   },
-  methods:{
-    input(e){
-      this.$emit('input',e.target.vlaue);
+  methods: {
+    input(e) {
+      this.$emit('input', e.target.vlaue)
     },
-    keydown(){
-      this.$emit('keydown');
+    keydown() {
+      this.$emit('keydown')
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .new-input {

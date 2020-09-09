@@ -10,9 +10,9 @@
             :class="[isSelectCalender && 'select-font']"
           >
             <span class="label">立项时间</span>
-            <i class="el-icon-arrow-down"></i>
+            <i class="el-icon-arrow-down" />
           </div>
-          <div class="info-text1">{{currentDate}}</div>
+          <div class="info-text1">{{ currentDate }}</div>
         </div>
         <div class="line-right relative">
           <div
@@ -20,18 +20,18 @@
             @click="isShowDropdown=!isShowDropdown"
           >
             <span class="label">立项人</span>
-            <i class="el-icon-arrow-down"></i>
+            <i class="el-icon-arrow-down" />
           </div>
-          <div class="info-text2">{{selectedName.trim().substr(0, 1)}}</div>
-          <div class="dropdown-list-name dropdown-list" v-if="isShowDropdown">
+          <div class="info-text2">{{ selectedName.trim().substr(0, 1) }}</div>
+          <div v-if="isShowDropdown" class="dropdown-list-name dropdown-list">
             <div
-              class="dropdown-list-line flex a-center j-start flex-row"
               v-for="(item,index) in nameList"
               :key="index"
+              class="dropdown-list-line flex a-center j-start flex-row"
               @click="selectName(item)"
             >
-              <span class="line-icon">{{item.name.trim().substr(0, 1)}}</span>
-              <span class="line-name">{{item.name}}</span>
+              <span class="line-icon">{{ item.name.trim().substr(0, 1) }}</span>
+              <span class="line-name">{{ item.name }}</span>
             </div>
           </div>
         </div>
@@ -43,34 +43,34 @@
             @click="isShowOrganDropdown=!isShowOrganDropdown"
           >
             <span class="label">立项机构</span>
-            <i class="el-icon-arrow-down"></i>
+            <i class="el-icon-arrow-down" />
           </div>
-          <div class="info-text3">#{{selectedOrgan}}</div>
-          <div class="dropdown-list-organ dropdown-list" v-if="isShowOrganDropdown">
+          <div class="info-text3">#{{ selectedOrgan }}</div>
+          <div v-if="isShowOrganDropdown" class="dropdown-list-organ dropdown-list">
             <div
-              class="dropdown-list-line"
               v-for="(item,index) in organList"
               :key="index"
+              class="dropdown-list-line"
               @click="selectOrgan(item)"
             >
-              <span class="line-name">{{item.name}}</span>
+              <span class="line-name">{{ item.name }}</span>
             </div>
           </div>
         </div>
         <div class="line-right relative">
           <div class="dropdown-link flex a-center j-start flex-row" @click="isShowStatusDropdown=!isShowStatusDropdown">
             <span class="label">项目相同</span>
-            <i class="el-icon-arrow-down"></i>
+            <i class="el-icon-arrow-down" />
           </div>
-          <div class="info-text3">{{selectedStatus}}</div>
-          <div class="dropdown-list-status dropdown-list" v-if="isShowStatusDropdown">
+          <div class="info-text3">{{ selectedStatus }}</div>
+          <div v-if="isShowStatusDropdown" class="dropdown-list-status dropdown-list">
             <div
-              class="dropdown-list-line"
               v-for="(item,index) in statusList"
               :key="index"
+              class="dropdown-list-line"
               @click="selectStatus(item)"
             >
-              <span class="line-name">{{item.name}}</span>
+              <span class="line-name">{{ item.name }}</span>
             </div>
           </div>
         </div>
@@ -78,10 +78,10 @@
     </div>
     <div class="btn-detail flex a-center j-center flex-row" @click.stop.prevent="searchDetail">
       <span>查询结果</span>
-      <i class="el-icon-search"></i>
+      <i class="el-icon-search" />
     </div>
-    <div class="new-calender-wrap" v-if="isSelectCalender">
-      <new-calender @selectDate="selectDate" :currentDate="currentDate"></new-calender>
+    <div v-if="isSelectCalender" class="new-calender-wrap">
+      <new-calender :current-date="currentDate" @selectDate="selectDate" />
     </div>
   </div>
 </template>
@@ -90,68 +90,68 @@
 export default {
   data() {
     return {
-      currentDate: "2020/08/31",
+      currentDate: '2020/08/31',
       isSelectCalender: false,
       isShowDropdown: false,
-      selectedName: "王",
-      selectedOrgan: "北京分行",
+      selectedName: '王',
+      selectedOrgan: '北京分行',
       isShowOrganDropdown: false,
-      isShowStatusDropdown:false,
-      selectedStatus: "执行中",
-      statusList:[
-         {
-          name: "执行中"
+      isShowStatusDropdown: false,
+      selectedStatus: '执行中',
+      statusList: [
+        {
+          name: '执行中'
         },
         {
-          name: "已结束"
+          name: '已结束'
         }
       ],
       organList: [
         {
-          name: "北京分行"
+          name: '北京分行'
         },
         {
-          name: "深圳分行"
+          name: '深圳分行'
         }
       ],
       nameList: [
         {
-          name: "王经理"
+          name: '王经理'
         },
         {
-          name: "付经理"
+          name: '付经理'
         },
         {
-          name: "夏经理"
+          name: '夏经理'
         },
         {
-          name: "夏经理"
+          name: '夏经理'
         }
       ]
-    };
+    }
   },
   methods: {
     searchDetail() {
-      console.log(120);
+      console.log(120)
     },
     selectDate(val) {
-      this.currentDate = val;
-      this.isSelectCalender = false;
+      this.currentDate = val
+      this.isSelectCalender = false
     },
     selectName(item) {
-      this.isShowDropdown = false;
-      this.selectedName = item.name;
+      this.isShowDropdown = false
+      this.selectedName = item.name
     },
     selectOrgan(item) {
-      this.isShowOrganDropdown = false;
-      this.selectedOrgan = item.name;
+      this.isShowOrganDropdown = false
+      this.selectedOrgan = item.name
     },
-    selectStatus(item){
-      this.isShowStatusDropdown = false;
-      this.selectedStatus = item.name;
+    selectStatus(item) {
+      this.isShowStatusDropdown = false
+      this.selectedStatus = item.name
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .new-card {

@@ -1,26 +1,33 @@
 <template>
   <div class="home flex a-start flex-row j-start h100">
     <div class="home-left flex-shrink h100">
-      <LeftMenu></LeftMenu>
+      <LeftMenu />
     </div>
     <div class="home-right flex1 h100 flex a-start j-start flex-column">
       <div class="home-right-content flex1 w100">
-        <router-view></router-view>
+        <router-view />
       </div>
-      <div class="home-right-footer flex-shrink w100">
-        <RightFooter></RightFooter>
+      <div v-if="isShowRightFooter" class="home-right-footer flex-shrink w100">
+        <RightFooter />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import LeftMenu from "@/components/Ace/base/left-menu.vue"
-import RightFooter from "@/components/Ace/base/right-footer.vue"
+import LeftMenu from '@/components/Ace/base/left-menu.vue'
+import RightFooter from '@/components/Ace/base/right-footer.vue'
 export default {
-  components:{
+  components: {
     LeftMenu,
     RightFooter
+  },
+  computed: {
+    isShowRightFooter() {
+      const result = this.$route.meta && this.$route.meta.isShowRightFooter
+      console.log(result)
+      return result || false
+    }
   }
 }
 </script>

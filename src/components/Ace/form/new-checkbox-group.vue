@@ -1,10 +1,10 @@
 <template>
   <div class="new-checkbox-group">
-    <div class="line-radio flex a-center j-start flex-row" v-for="(item,index) in radioList" :key="index" >
+    <div v-for="(item,index) in radioList" :key="index" class="line-radio flex a-center j-start flex-row">
       <span class="radio inline-block" :class="[value===item.value && 'radio-active']" @click="select(item)">
-        <i class="el-icon-check icon" v-if="value===item.value"></i>
+        <i v-if="value===item.value" class="el-icon-check icon" />
       </span>
-      <span class="label inline-block" @click="select(item)">{{item.label}}</span>
+      <span class="label inline-block" @click="select(item)">{{ item.label }}</span>
     </div>
   </div>
 </template>
@@ -17,26 +17,26 @@ export default {
       type: Array,
       default: () => [
         {
-          label: "一周内",
-          value: "1"
+          label: '一周内',
+          value: '1'
         },
         {
-          label: "一月内",
-          value: "2"
+          label: '一月内',
+          value: '2'
         },
         {
-          label: "一年内",
-          value: "3"
+          label: '一年内',
+          value: '3'
         }
       ]
     }
   },
-  methods:{
-    select(item){
-      this.$emit('input',item.value)
+  methods: {
+    select(item) {
+      this.$emit('input', item.value)
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .new-checkbox-group {
