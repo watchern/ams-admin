@@ -46,7 +46,7 @@
 
       <!--编辑、添加页面-->
       <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-        <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px"
+        <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="120px"
                  style="width: 400px; margin-left:50px;">
           <el-form-item label="业务属性名称" prop="attrName">
             <el-input v-model="temp.attrName" />
@@ -148,7 +148,7 @@ export default {
   },
   computed: {
     selectedRowVal() {
-      return 4
+      return this.$refs['agGridDom'] ? this.$refs['agGridDom'].getSelectRows().length : 0;
     }
   },
   created() {
