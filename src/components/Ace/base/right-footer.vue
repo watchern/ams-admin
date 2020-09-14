@@ -65,13 +65,13 @@ export default {
     }
   },
   mounted() {
-    // this.activeTags({
-    //   type: "active",
-    //   val: {
-    //     name: "首页",
-    //     path:'/ace/first'
-    //   }
-    // });
+    this.activeTags({
+      type: 'active',
+      val: {
+        name: '首页',
+        path: '/ace/main'
+      }
+    })
   },
   methods: {
     close(item) {

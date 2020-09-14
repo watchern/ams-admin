@@ -42,7 +42,7 @@ module.exports = {
       '/r1': {
         target: process.env.R1_LOCATION
       },
-      '/pmrr': {
+      '/amsdata': {
         target: 'http://localhost:8081'
       },
       // etl调度模块调用的地址

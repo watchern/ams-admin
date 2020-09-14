@@ -11,8 +11,7 @@ import componentsRouter from './modules/components'
 import chartsRouter from './modules/charts'
 import tableRouter from './modules/table'
 import nestedRouter from './modules/nested'
-import dataRouter from './bizmodules/data'
-import etlschedulerRouter from './modules/etlscheduler/etlscheduler'
+import dataRouter from './modules/data'
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -73,8 +72,10 @@ const AceRoutes = [
         },
         component: () => import('@/views/Ace/home/main/index')
       }
-    ]
-  }
+      // ====> 新的router组 import后添加在这里
+    ],
+  },
+  dataRouter
 ]
 
 export const constantRoutes = [
@@ -228,8 +229,6 @@ export const asyncRoutes = [
   chartsRouter,
   nestedRouter,
   tableRouter,
-  dataRouter,
-  // ====> 新的router组 import后添加在这里
 
   {
     path: '/example',
@@ -445,7 +444,7 @@ const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   // routes: constantRoutes
-  routes: [...AceRoutes, ...constantRoutes]
+  routes: [...AceRoutes, ...constantRoutes, ...asyncRoutes]
 })
 
 const router = createRouter()

@@ -21,7 +21,6 @@ function hasPermission(paths, route) {
  */
 export function filterAsyncRoutes(routes, paths) {
   const res = []
-
   routes.forEach(route => {
     const tmp = { ...route }
     console.log(tmp.path);
@@ -53,23 +52,12 @@ const actions = {
     return new Promise(resolve => {
       var accessedRoutes = [];
       //此处通过r1菜单，过滤router
-      getUserRes().then(response => {
-        console.log(response)
-        var res = {};
-        response.data.menugroup.forEach(grp =>{
-          grp.menuList.forEach(ml =>{
-            res[ml.routepath] = ml.routepath;
-          })
-        })
-        asyncRoutes.forEach(thisRoute => {
-          if(res[thisRoute.path])    //注掉此行代码可以显示包括示例在内的所有菜单
-          accessedRoutes.push(thisRoute);
-        });
-        commit('SET_ROUTES', accessedRoutes)
-        resolve(accessedRoutes)
-      }).catch(error => {
-        console.error(error);
+      asyncRoutes.forEach(thisRoute => {
+        console.log(thisRoute)
+        accessedRoutes.push(thisRoute);
       })
+      commit('SET_ROUTES', accessedRoutes)
+      resolve(accessedRoutes)
     })
   }
 }

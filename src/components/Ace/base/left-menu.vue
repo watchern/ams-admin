@@ -2,6 +2,7 @@
   <div
     class="left-menu relative flex a-center j-between flex-column"
     :style="{width:leftWidth+'px'}"
+    @mouseleave="mouseleave()"
   >
     <template v-if="isShrink">
       <div class="top flex a-center j-between flex-column">
@@ -12,13 +13,18 @@
             :class="[currentIndex===0 && 'icon-disable']"
             @click="action('prev')"
           />
-          <div class="list flex a-center j-between flex-column">
+          <div
+            ref="domTopList"
+            v-scroll-top="scrollTop"
+            class="list flex a-center j-between flex-column"
+          >
             <div
               v-for="(item,index) in applications"
               ref="navDom"
               :key="index"
               class="box"
               :class="[currentIndex===index && 'box-active']"
+              @mouseenter.stop.prevent="mouseenter()"
               @click="select(item,index)"
             >
               <div class="img" :style="[getStyle(item.img)]" />
@@ -44,8 +50,8 @@
     </template>
     <template v-else>
       <div class="top-open">
-        <div class="logo-wrap flex a-center j-center flex-row">
-          <img src="../../../assets/Ace/image/logo.png" class="logo">
+        <div class="logo-wrap flex a-center j-center flex-row" style="cursor: pointer">
+          <img src="../../../assets/Ace/image/logo.png" class="logo" @click="jumpHome()">
           <img src="../../../assets/Ace/image/编组@2x.png" class="logo-text">
         </div>
         <div class="menu flex a-center j-between flex-column">
@@ -54,7 +60,7 @@
             :class="[currentIndex===0 && 'icon-disable']"
             @click="action('prev')"
           />
-          <div class="list flex a-center j-between flex-column">
+          <div v-scroll-top="scrollTop" class="list flex a-center j-between flex-column">
             <div
               v-for="(item,index) in applications"
               ref="navDom"
@@ -79,13 +85,16 @@
           <i class="el-icon-search" />
           <span>Search</span>
         </div>
-        <div class="label-open flex a-center j-start flex-row" @click="isShowToolsList=!isShowToolsList">
+        <div
+          class="label-open flex a-center j-start flex-row"
+          @click="isShowToolsList=!isShowToolsList"
+        >
           <i class="el-icon-s-grid" />
           <span>More tools</span>
         </div>
         <div class="footer-btns flex a-center j-between flex-row">
           <span class="label-wang" @click="isShowSettingList=!isShowSettingList">王</span>
-          <i class="el-icon-s-unfold unfold-icon text-white" @click="isShrink=true" />
+          <i class="el-icon-s-unfold unfold-icon text-white" />
         </div>
       </div>
     </template>
@@ -95,7 +104,7 @@
         审计作业
       </div>
       <div class="tree-list-content">
-        <ace-tree :list="currentMenuGroup" />
+        <ace-tree :list="currentMenuGroup" @closetree="isShowTreeList=false;isShrink=true" />
       </div>
     </div>
     <div v-if="isShowSettingList" class="setting-list absolute">
@@ -127,8 +136,8 @@ export default {
   data() {
     return {
       currentIndex: 0,
-      scrollTop: false,
       isShowTreeList: false,
+      scrollTop: false,
       isShowSettingList: false,
       isShowToolsList: false,
       isShrink: false,
@@ -163,6 +172,9 @@ export default {
       const appid = this.applications[this.currentIndex].id
       return this.menugroup[appid]
     }
+    // isShowTreeList(){
+    //   return this.$store.state.aceState.isShowTreeList
+    // }
   },
   watch: {
     isShrink: {
@@ -171,90 +183,74 @@ export default {
         this.$store.commit('aceState/setLeftMenuShrink', newVal)
       },
       immediate: true
+    },
+    currentIndex() {
+      this.currentIndexChange()
     }
   },
   mounted() {
-    getUserRes().then(response => {
-      console.log(response)
-      response.data.application.forEach(app => {
-        // 设置左侧应用栏数据
-        this.applications.push({
-          img: require('../../../assets/Ace/image/icon1@2x.png'),
-          name: app.name,
-          id: app.id
-        })
-        /* 打开注释可以展示出菜单过长 将页面顶高的问题*/
-        /* this.applications.push({
-          img: require('../../../assets/Ace/image/icon1@2x.png'),
-          name: app.name,
-          id: app.id
-        });
-        this.applications.push({
-          img: require('../../../assets/Ace/image/icon1@2x.png'),
-          name: app.name,
-          id: app.id
-        });
-        this.applications.push({
-          img: require('../../../assets/Ace/image/icon1@2x.png'),
-          name: app.name,
-          id: app.id
-        });
-        this.applications.push({
-          img: require('../../../assets/Ace/image/icon1@2x.png'),
-          name: app.name,
-          id: app.id
-        });
-        this.applications.push({
-          img: require('../../../assets/Ace/image/icon1@2x.png'),
-          name: app.name,
-          id: app.id
-        });
-        this.applications.push({
-          img: require('../../../assets/Ace/image/icon1@2x.png'),
-          name: app.name,
-          id: app.id
-        });
-        this.applications.push({
-          img: require('../../../assets/Ace/image/icon1@2x.png'),
-          name: app.name,
-          id: app.id
-        });
-        this.applications.push({
-          img: require('../../../assets/Ace/image/icon1@2x.png'),
-          name: app.name,
-          id: app.id
-        });
-        this.applications.push({
-          img: require('../../../assets/Ace/image/icon1@2x.png'),
-          name: app.name,
-          id: app.id
-        });*/
-      })
-      // 设置引用栏弹出二级菜单数据
-      response.data.menugroup.forEach(grp => {
-        const menuList = []
-        grp.menuList.forEach(menu => {
-          menuList.push({
-            id: menu.id,
-            name: menu.name,
-            path: menu.routepath
+    getUserRes()
+      .then(response => {
+        console.log(response)
+        response.data.application.forEach(app => {
+          // 设置左侧应用栏数据
+          this.applications.push({
+            img: require('../../../assets/Ace/image/icon1@2x.png'),
+            name: app.name,
+            id: app.id
           })
         })
-        if (!this.menugroup[grp.appuuid]) {
-          this.menugroup[grp.appuuid] = []
-        }
-        this.menugroup[grp.appuuid].push({
-          id: grp.id,
-          name: grp.name,
-          path: grp.navurl,
-          children: menuList
+        // 设置引用栏弹出二级菜单数据
+        response.data.menugroup.forEach(grp => {
+          const menuList = []
+          grp.menuList.forEach(menu => {
+            menuList.push({
+              id: menu.id,
+              name: menu.name,
+              path: menu.routepath
+            })
+          })
+          if (!this.menugroup[grp.appuuid]) {
+            this.menugroup[grp.appuuid] = []
+          }
+          this.menugroup[grp.appuuid].push({
+            id: grp.id,
+            name: grp.name,
+            path: grp.navurl,
+            children: menuList
+          })
         })
       })
-    }).catch(error => {
-      console.error(error)
-    })
+      .catch(error => {
+        console.error(error)
+      })
   },
+
   methods: {
+    currentIndexChange() {
+      const dis = this.isShrink ? 110 : 120
+      this.$nextTick(() => {
+        const offset = this.$refs.navDom[this.currentIndex].offsetTop - dis
+        console.log(offset)
+        this.scrollTop = {
+          allowScroll: true,
+          offset: offset,
+          complete: () => {
+            this.scrollTop = false
+          }
+        }
+      })
+    },
+    mouseenter() {
+      if (true) return
+      this.isShrink = false
+      this.isShowTreeList = true
+    },
+    mouseleave() {
+      if (true) return
+      this.isShrink = true
+      this.isShowTreeList = false
+    },
     getStyle(img) {
       return {
         background: `url(${img}) no-repeat center center`,
@@ -262,15 +258,9 @@ export default {
       }
     },
     select(app, index) {
-      if (this.currentIndex === index) return
       this.currentIndex = index
       this.isShowTreeList = true
       this.isShowSettingList = false
-      if (app.prop && app.prop === 'isShowTreeList') {
-        this.isShowTreeList = true
-      } else if (app.prop && app.prop === 'isShowSettingList') {
-        this.isShowSettingList = true
-      }
     },
     action(type) {
       if (type === 'prev') {
@@ -281,6 +271,11 @@ export default {
             ? this.applications.length - 1
             : this.currentIndex + 1
       }
+    },
+    jumpHome(){
+      this.$router.push({
+        path: '/ace/first'
+      });
     }
   }
 }
@@ -307,6 +302,7 @@ export default {
       margin-top: 10px;
       .icon {
         font-size: 26px;
+        cursor: pointer;
         &:active {
           opacity: 0.6;
         }
@@ -317,14 +313,21 @@ export default {
       }
       .list {
         margin: 10px 0;
+        max-height: 320px;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+          width: 0;
+        }
         .box {
           width: 90px;
           height: 67px;
+          padding: 5px 0;
           color: white;
           border-radius: 5px;
+          cursor: pointer;
           .img {
-            width: 30px;
-            height: 30px;
+            width: 26px;
+            height: 26px;
             margin-bottom: 8px;
           }
           .name {
@@ -490,6 +493,11 @@ export default {
       }
       .list {
         margin: 15px 0 15px 0;
+        max-height: 300px;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+          width: 0;
+        }
         .box {
           padding: 4px;
           &:not(:last-child) {

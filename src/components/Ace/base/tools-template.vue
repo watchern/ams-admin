@@ -61,7 +61,7 @@
       </div>
     </div>
     <div class="new-time-wrap absolute">
-      <new-time />
+      <ace-progress />
     </div>
     <div v-if="isShowInfoBox" class="info-box absolute flex a-center j-start flex-row">
       <img src="../../../assets/Ace/image/提示icon2@2x.png" class="info-icon">

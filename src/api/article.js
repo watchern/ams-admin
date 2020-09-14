@@ -32,7 +32,6 @@ for (let i = 0; i < count; i++) {
 }
 
 export function fetchList(query) {
-  debugger
   const { importance, type, title, page = 1, limit = 20, sort } = query
   let mockList = List.filter(item => {
     if (importance && item.importance !== +importance) return false

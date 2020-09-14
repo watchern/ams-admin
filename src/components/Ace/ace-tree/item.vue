@@ -1,20 +1,23 @@
 <template>
   <li class="item">
-    <div
-      class="item-title relative"
-      :class="[item.children && item.children.length && 'borderbottom']"
-      @click="close"
-    >
-      <span class="name" :class="[isOpen && 'text-white']">{{ item.name }}</span>
-      <i
-        v-if="item.children && item.children.length"
-        class="el-icon-s-unfold icon absolute"
-        :class="[isOpen && 'icon-open text-white']"
-      />
-    </div>
-    <ul v-if="item.children && item.children.length && isOpen" class="ul-temp">
-      <Item v-for="(val,index) in item.children" :key="index" :item="val" />
-    </ul>
+    <template>
+      <div
+        class="item-title relative"
+        :class="[item.children && item.children.length && 'borderbottom']"
+        @click.stop.prevent="close(item)"
+      >
+        <span class="name" :class="[isOpen && 'text-white']">{{ item.name }}</span>
+        <i
+          v-if="item.children && item.children.length"
+          class="el-icon-s-unfold icon absolute"
+          :class="[isOpen && 'icon-open text-white']"
+        />
+      </div>
+      <ul v-if="item.children && item.children.length && isOpen" class="ul-temp">
+        <Item v-for="(val,index) in item.children" :key="index" :item="val" @close="close(val)" />
+      </ul>
+    </template>
+
   </li>
 </template>
 
@@ -37,16 +40,23 @@ export default {
     openHandle(bool) {
       this.isOpen = bool
     },
-    close() {
-      // isOpen=!isOpen
-      if (this.item.path && this.item.path !== '') {
-        this.$router.push({
-          path: '/ace/main' // 此处暂时写死
-          // path: this.item.path
-        })
+    close(item) {
+      let isCloseTree = false
+      if (!item.children) {
+        isCloseTree = true
       }
-      this.$emit('close', this.index)
+      if (item.path && item.path !== '')
+        this.$router.push({
+          //path: '/ace/main' // 此处暂时写死
+          path: this.item.path
+      })
+      this.$emit('close', {
+        isOpen: this.isOpen,
+        index: this.index,
+        isCloseTree: isCloseTree
+      })
     }
+
   }
 }
 </script>
@@ -59,13 +69,13 @@ export default {
   .item-title {
     font-family: PingFangSC-Regular;
     font-size: 13px;
-    color: #CBCBCB;
+    color: #cbcbcb;
     letter-spacing: 0.88px;
     line-height: 40px;
     height: 40px;
     padding: 0 10px;
     user-select: none;
-    &:hover{
+    &:hover {
       color: #ffffff;
     }
     .icon {

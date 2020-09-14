@@ -49,7 +49,6 @@
 <script>
 import TableCommon from '@/mixin/table-common.js'
 import { listByPage } from '@/api/data/biz-attr'
-import { getUserRes } from '@/api/user'
 export default {
   mixins: [TableCommon],
   data() {

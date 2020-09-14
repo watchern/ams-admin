@@ -1,12 +1,12 @@
 <template>
   <div class="new-input flex a-center j-between flex-row" :style="styleClass">
     <template v-if="iconAround==='suffix'">
-      <input type="text" class="input h100" placeholder="查找..." :value="value" v-bind="$attrs" @keydown.enter="keydown" @input="input">
+      <input type="text" class="input h100" placeholder="placeholder" :value="value" v-bind="$attrs" @keydown.enter="keydown" @input="input">
       <i class="el-icon-search icon flex-shrink suffix-icon" />
     </template>
     <template v-if="iconAround==='prefix'">
       <i class="el-icon-search icon flex-shrink prefix-icon" />
-      <input type="text" class="input h100" placeholder="查找..." :value="value" v-bind="$attrs" @keydown.enter="keydown" @input="input">
+      <input type="text" class="input h100" placeholder="placeholder" :value="value" v-bind="$attrs" @keydown.enter="keydown" @input="input">
     </template>
   </div>
 </template>
@@ -35,6 +35,10 @@ export default {
     inputColor: {
       type: String,
       default: '#343942'
+    },
+    placeholder: {
+      type: String,
+      default: '查找...'
     }
   },
   computed: {
