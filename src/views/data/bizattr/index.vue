@@ -48,7 +48,7 @@
         <div class="new-table-content-wrap">
           <new-ag-grid ref="agGridDom" :table-options="tableOptions" :row-data="tableData"
                        :page-num="pageNum" :page-size="pageSize" :total="total"
-                        @handleCurrentChange="init()"/>
+                        @handleCurrentChange="initPage"/>
         </div>
       </div>
 
@@ -97,7 +97,7 @@ export default {
     return {
       attrName: '',
       currentPage: 1,
-      pageSize: 2,
+      pageSize: 10,
       total: 0,
       tableData: [],
       // selectedRowVal:0,
@@ -177,6 +177,10 @@ export default {
     this.init()
   },
   methods: {
+    initPage(currentPage){
+      this.currentPage = currentPage;
+      this.init();
+    },
     init() {
       var param = {
         currentPage: this.currentPage,
