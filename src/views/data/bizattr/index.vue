@@ -17,11 +17,20 @@
           <div class="tag-box flex a-center j-center">
             <i class="el-icon-edit text-white" @click="handleUpdate"/>
           </div>
-          <div class="tag-box flex a-center j-center">
-            <i class="el-icon-search text-white" @click="init()"/>
-          </div>
         </div>
         <div class="search-right h100 flex a-center j-end flex-row">
+          <el-form :inline="true" :model="query" class="demo-form-inline">
+            <el-form-item label="业务属性名称（模糊查询）">
+              <el-input v-model="query.attrName" placeholder="业务属性名称"></el-input>
+            </el-form-item>
+            <el-form-item label="业务属性代码">
+              <el-input v-model="query.attrCode" placeholder="业务属性代码"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="init">查询</el-button>
+              <el-button type="primary" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
           <!--<new-input v-model="searchVal" @keydown="keydown" placeholder="按业务属性编码查找" />-->
           <!--<div class="icon-box relative flex a-center j-center" :class="[isShowNewCard && 'icon-box-active']" @click.stop.prevent="isShowNewCard=!isShowNewCard">
             <i class="el-icon-search icon flex-shrink" />
@@ -45,7 +54,8 @@
 
 
       <!--编辑、添加页面-->
-      <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <ace-dialog :title="textMap[dialogStatus]" :is-show.sync="dialogFormVisible" :contentStyle="formStyle"
+                  @sure="dialogStatus==='create'?createData():updateData()">
         <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="120px"
                  style="width: 400px; margin-left:50px;">
           <el-form-item label="业务属性名称" prop="attrName">
@@ -58,15 +68,19 @@
             <el-input type="textarea" v-model="temp.describe"></el-input>
           </el-form-item>
         </el-form>
-        <div slot="footer" class="dialog-footer">
+        <!--<div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">
              取消
           </el-button>
           <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
             确定
           </el-button>
-        </div>
-      </el-dialog>
+        </div>-->
+      </ace-dialog>
+
+      <!--<ace-dialog :is-show.sync="isShowDialog">-->
+        <!--<span>删除后不可恢复</span>-->
+      <!--</ace-dialog>-->
 
 
 
@@ -127,11 +141,19 @@ export default {
           }
         ]
       },
+      formStyle:{
+        width: '700px',
+        height: '400px'
+      },
       temp: {
         bizAttrUuid: undefined,
         attrName: '',
         attrCode: '',
         describe: ''
+      },
+      query: {
+        attrName: '',
+        attrCode: ''
       },
       rules: {
         attrName: [{ required: true, message: '请填写业务属性名称', trigger: 'change' }],
@@ -155,27 +177,29 @@ export default {
     this.init()
   },
   methods: {
-    progressBar(params) {
-      return this.$tool.setTableCellRender(params)
-    },
     init() {
       var param = {
         currentPage: this.currentPage,
-        pageSize: this.pageSize,
-        attrName: this.attrName
-      }
+        pageSize: this.pageSize
+      };
+      Object.assign(param, this.query);
       listByPage(param).then(resp => {
         this.total = resp.data.total;
         this.tableData = resp.data.records;
       });
     },
-    keydown() {},
     resetTemp() {
       this.temp = {
         bizAttrUuid: undefined,
         attrName: '',
         attrCode: '',
         describe: ''
+      }
+    },
+    resetQuery(){
+      this.query = {
+        attrName: '',
+        attrCode: ''
       }
     },
     handleCreate() {
@@ -189,8 +213,6 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
           save(this.temp).then(() => {
             this.init();
             this.dialogFormVisible = false
@@ -198,7 +220,8 @@ export default {
               title: '成功',
               message: '创建成功',
               type: 'success',
-              duration: 2000
+              duration: 2000,
+              position: 'bottom-right'
             })
           })
         }
@@ -225,7 +248,8 @@ export default {
               title: '成功',
               message: '更新成功',
               type: 'success',
-              duration: 2000
+              duration: 2000,
+              position: 'bottom-right'
             })
           })
         }
@@ -241,8 +265,13 @@ export default {
           title: '成功',
           message: '删除成功',
           type: 'success',
-          duration: 2000
+          duration: 2000,
+          position: 'bottom-right'
         });
+        /*this.$create('ace-alert', {
+          msg: '删除成功',
+          type: 'success'
+        }).show()*/
       });
 
     },

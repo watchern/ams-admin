@@ -44,6 +44,7 @@ module.exports = {
       },
       '/amsdata': {
         target: 'http://localhost:8081'
+        //target: 'http://139.159.246.94:1064'  远程测试环境
       },
       // etl调度模块调用的地址
       '/etlscheduler': {

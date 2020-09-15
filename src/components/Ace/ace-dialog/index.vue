@@ -1,6 +1,6 @@
 <template>
   <div v-if="isShow" class="dialog flex a-center j-center">
-    <div class="content">
+    <div class="content" :style="contentStyle">
       <div class="title flex a-center j-between flex-row">
         <span class="text">{{ title }}</span>
         <img src="./提示-关闭@2x.png" class="img-icon" @click="close">
@@ -32,7 +32,7 @@ export default {
     },
     sureName: {
       type: String,
-      default: '删除'
+      default: '确定'
     },
     cancelName: {
       type: String,
@@ -41,6 +41,12 @@ export default {
     isShow: {
       type: Boolean,
       default: false
+    },
+    contentStyle: {
+      type: Object,
+      default: {
+        width: '460px'
+      }
     }
   },
   methods: {
