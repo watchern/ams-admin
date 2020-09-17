@@ -31,20 +31,13 @@
               <el-button type="primary" @click="resetQuery">重置</el-button>
             </el-form-item>
           </el-form>
-          <!--<new-input v-model="searchVal" @keydown="keydown" placeholder="按业务属性编码查找" />-->
-          <!--<div class="icon-box relative flex a-center j-center" :class="[isShowNewCard && 'icon-box-active']" @click.stop.prevent="isShowNewCard=!isShowNewCard">
-            <i class="el-icon-search icon flex-shrink" />
-            <div v-if="isShowNewCard" class="new-card-warp absolute" @click.stop.prevent="()=>{}">
-              <new-card />
-            </div>
-          </div>-->
         </div>
       </div>
       <div class="new-table-content">
-        <div class="count-total-wrap">
+        <!--<div class="count-total-wrap">
           <i class="el-icon-warning icon-waring" />
           <span class="info">共{{ total }}项 已选择 <span class="info-color">{{ selectedRowVal }}</span> 项</span>
-        </div>
+        </div>-->
         <div class="new-table-content-wrap">
           <new-ag-grid ref="agGridDom" :table-options="tableOptions" :row-data="tableData"
                        :page-num="pageNum" :page-size="pageSize" :total="total"
@@ -54,7 +47,7 @@
 
 
       <!--编辑、添加页面-->
-      <ace-dialog :title="textMap[dialogStatus]" :is-show.sync="dialogFormVisible" :contentStyle="formStyle"
+      <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                   @sure="dialogStatus==='create'?createData():updateData()">
         <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="120px"
                  style="width: 400px; margin-left:50px;">
@@ -68,15 +61,7 @@
             <el-input type="textarea" v-model="temp.describe"></el-input>
           </el-form-item>
         </el-form>
-        <!--<div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">
-             取消
-          </el-button>
-          <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-            确定
-          </el-button>
-        </div>-->
-      </ace-dialog>
+      </el-dialog>
 
       <!--<ace-dialog :is-show.sync="isShowDialog">-->
         <!--<span>删除后不可恢复</span>-->
@@ -124,15 +109,15 @@ export default {
           {
             headerName: '业务属性编码',
             field: 'attrCode',
-            pinned: 'left'
+            pinned: 'left',
+            filter: 'agNumberColumnFilter'
           },
           {
             headerName: '创建时间',
             field: 'createTime',
-            pinned: 'left',
-            valueFormatter: function(item){
-              return item.data.createTime;
-            }
+            pinned: 'left'/*,
+            sortable: true,
+            filter: true*/
           },
           {
             headerName: '描述',
@@ -140,10 +125,6 @@ export default {
             filter: 'agNumberColumnFilter'
           }
         ]
-      },
-      formStyle:{
-        width: '700px',
-        height: '400px'
       },
       temp: {
         bizAttrUuid: undefined,

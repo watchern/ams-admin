@@ -83,6 +83,7 @@ export default {
   methods: {
     initTable() {
       const eGridDiv = document.querySelector('#myGrid')
+      console.log(this.gridOptions)
       new Grid(eGridDiv, this.gridOptions)
       this.getSelectRows()
     },

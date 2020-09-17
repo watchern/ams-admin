@@ -72,10 +72,10 @@ const AceRoutes = [
         },
         component: () => import('@/views/Ace/home/main/index')
       }
-      // ====> 新的router组 import后添加在这里
     ],
   },
   dataRouter
+  // ====> 新的router组 import后添加在这里
 ]
 
 export const constantRoutes = [
