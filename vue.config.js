@@ -46,6 +46,9 @@ module.exports = {
         target: 'http://localhost:8081'
         //target: 'http://139.159.246.94:1064'  远程测试环境
       },
+      '/base':{
+        target: 'http://localhost:8085'
+      },
       // etl调度模块调用的地址
       '/etlscheduler': {
         // target: 'http://192.168.80.155:8080'
