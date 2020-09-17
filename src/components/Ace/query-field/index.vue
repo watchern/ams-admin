@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-form :inline="true" :model="query" >
-      <el-form-item v-for="fd in formData" :label="fd.label" label-position="top">
+      <el-form-item v-for="fd in formData" :label="fd.label" :style="itemStyle">
         <el-input v-if="fd.type==='text'"  v-model="query[fd.name]" ></el-input>
         <el-input v-if="fd.type==='fuzzyText'" v-model="query[fd.name]" placeholder="模糊查询"></el-input>
         <el-select v-if="fd.type==='select'" v-model="query[fd.name]">
@@ -14,6 +14,7 @@
       </el-form-item>
 
       <el-form-item>
+        <el-button type="primary" @click="clareAll">清空</el-button>
         <el-button type="primary" @click="onSubmit">查询</el-button>
       </el-form-item>
 
@@ -32,6 +33,7 @@ export default {
   data() {
     return {
       query:{},
+      itemStyle: {'vertical-align': 'top'}
     }
   },
   computed: {
@@ -54,6 +56,11 @@ export default {
     },
     onSubmit(){
       this.$emit("submit", this.query);
+    },
+    clareAll(){
+      Object.keys(this.query).forEach(o =>{
+        this.query[o] = null;
+      })
     }
   }
 }
