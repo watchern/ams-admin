@@ -12,6 +12,7 @@ import chartsRouter from './modules/charts'
 import tableRouter from './modules/table'
 import nestedRouter from './modules/nested'
 import dataRouter from './modules/data'
+import baseRouter from './modules/base/base'
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -72,9 +73,10 @@ const AceRoutes = [
         },
         component: () => import('@/views/Ace/home/main/index')
       }
-    ],
+    ]
   },
-  dataRouter
+  dataRouter,
+  baseRouter
   // ====> 新的router组 import后添加在这里
 ]
 
