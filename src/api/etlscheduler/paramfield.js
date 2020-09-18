@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 const baseURL = 'etlscheduler'
 // 分页
-export function findPageList(data) {
+export function listByPage(data) {
   return request({
     baseURL: baseURL,
     url: `/paramField/pageList`,
@@ -12,15 +12,15 @@ export function findPageList(data) {
 }
 
 // 根据id查找
-export function getById(uuid) {
+export function getById(id) {
   return request({
     baseURL: baseURL,
-    url: `/paramField/getById/${uuid}`,
+    url: `/paramField/getById/${id}`,
     method: 'get'
   })
 }
 // 添加对象
-export function create(data) {
+export function save(data) {
   return request({
     baseURL: baseURL,
     url: '/paramField/insert',
@@ -29,7 +29,7 @@ export function create(data) {
   })
 }
 // 删除对象
-export function deleteById(ids) {
+export function del(ids) {
   return request({
     baseURL: baseURL,
     url: `/paramField/delete/${ids}`,

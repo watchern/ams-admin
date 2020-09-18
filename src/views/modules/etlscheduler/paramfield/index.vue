@@ -8,9 +8,23 @@
       />
     </div>
     <div>
-      <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
-      <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="handleUpdate()">修改</el-button>
-      <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="handleDelete()">删除</el-button>
+      <el-button
+        type="primary"
+        size="mini"
+        @click="handleCreate()"
+      >添加</el-button>
+      <el-button
+        type="primary"
+        size="mini"
+        :disabled="selections.length !== 1"
+        @click="handleUpdate()"
+      >修改</el-button>
+      <el-button
+        type="danger"
+        size="mini"
+        :disabled="selections.length === 0"
+        @click="handleDelete()"
+      >删除</el-button>
     </div>
     <el-table
       :key="tableKey"
@@ -23,15 +37,75 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" />
-      <el-table-column label="业务属性名称" width="300px" align="center" prop="attrName" />
-      <el-table-column label="业务属性编码" width="300px" align="center" prop="attrCode" />
-      <el-table-column label="创建时间" width="300px" align="center" prop="createTime" />
-      <el-table-column label="描述" prop="describe" />
+      <el-table-column
+        type="selection"
+        width="55"
+      />
+      <el-table-column
+        label="参数名称"
+        width="300px"
+        align="center"
+        prop="paramName"
+      />
+      <el-table-column
+        label="参数编码"
+        width="300px"
+        align="center"
+        prop="paramCode"
+      />
+      <el-table-column
+        label="参数类型"
+        width="300px"
+        align="center"
+        prop="paramType"
+      />
+      <el-table-column
+        label="默认值"
+        width="300px"
+        align="center"
+        prop="defaultValue"
+      />
+      <el-table-column
+        label="可选值"
+        width="300px"
+        align="center"
+        prop="selectValue"
+      />
+      <el-table-column
+        label="排序号"
+        width="300px"
+        align="center"
+        prop="orderNo"
+      />
+      <el-table-column
+        label="状态"
+        width="300px"
+        align="center"
+        prop="status"
+      />
+      <el-table-column
+        label="参数描述"
+        prop="paramDesc"
+      />
+      <el-table-column
+        label="修改时间"
+        width="300px"
+        align="center"
+        prop="updateTime"
+      />
     </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="pageQuery.pageNo"
+      :limit.sync="pageQuery.pageSize"
+      @pagination="getList"
+    />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog
+      :title="textMap[dialogStatus]"
+      :visible.sync="dialogFormVisible"
+    >
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -40,19 +114,34 @@
         label-width="140px"
         style="width: 700px; margin-left:50px;"
       >
-        <el-form-item label="业务属性名称" prop="attrName">
+        <el-form-item
+          label="业务属性名称"
+          prop="attrName"
+        >
           <el-input v-model="temp.attrName" />
         </el-form-item>
-        <el-form-item label="业务属性编码" prop="attrCode">
+        <el-form-item
+          label="业务属性编码"
+          prop="attrCode"
+        >
           <el-input v-model="temp.attrCode" />
         </el-form-item>
-        <el-form-item label="描述" prop="describe">
-          <el-input v-model="temp.describe" type="textarea" />
+        <el-form-item
+          label="描述"
+          prop="describe"
+        >
+          <el-input
+            v-model="temp.describe"
+            type="textarea"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
+        <el-button
+          type="primary"
+          @click="dialogStatus==='create'?createData():updateData()"
+        >确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -60,7 +149,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, save, update, del } from '@/api/data/biz-attr'
+import { listByPage, save, update, del } from '@/api/etlscheduler/paramfield'
 import QueryField from '@/components/Ace/query-field/index'
 
 export default {
@@ -75,17 +164,48 @@ export default {
       queryFields: [
         { label: '业务属性编码', name: 'attrCode', type: 'text', value: '' },
         { label: '业务属性名称', name: 'attrName', type: 'fuzzyText' },
-        { label: '性别', name: 'sex', type: 'select',
+        {
+          label: '性别', name: 'sex', type: 'select',
           data: [{ name: '男', value: '1' }, { name: '女', value: '0' }],
-          default: '1' },
+          default: '1'
+        },
         { label: '创建时间', name: 'createTime', type: 'timePeriod' }
       ],
+      formatMap: {
+        paramType: {
+          1: '文本',
+          null: '其它'
+        },
+        status: {
+          1: '启用',
+          0: '停用'
+        }
+      },
       pageQuery: {
         condition: null,
         pageNo: 1,
         pageSize: 20,
         sortBy: 'asc',
         sortName: 'create_time'
+      },
+      paramfield: {
+        createTime: null,
+        createUserName: null,
+        createUserUuid: null,
+        defaultValue: null,
+        isDeleted: null,
+        keyword: null,
+        orderNo: null,
+        paramCode: null,
+        paramDesc: null,
+        paramName: null,
+        paramType: null,
+        paramUuid: null,
+        selectValue: null,
+        status: null,
+        updateTime: null,
+        updateUserName: null,
+        updateUserUuid: null
       },
       temp: {
         bizAttrUuid: undefined,
@@ -117,6 +237,7 @@ export default {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then(resp => {
+        console.log(resp.data)
         this.total = resp.data.total
         this.list = resp.data.records
         this.listLoading = false
@@ -178,7 +299,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
-            const index = this.list.findIndex(v => v.bizAttrUuid === this.temp.bizAttrUuid)
+            const index = this.list.findIndex(v => v.paramUuid === this.temp.paramUuid)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -194,7 +315,7 @@ export default {
     },
     handleDelete() {
       var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.bizAttrUuid) })
+      this.selections.forEach((r, i) => { ids.push(r.paramUuid) })
       del(ids.join(',')).then(() => {
         this.getList()
         this.$notify({

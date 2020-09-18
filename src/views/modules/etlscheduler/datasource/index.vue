@@ -6,7 +6,7 @@
       class="filter-container"
     >
       <el-input
-        v-model="datasource.keyWord"
+        v-model="datasource.keyword"
         :placeholder="$t('etlscheduler_table.key') "
         style="width: 500px;"
         class="filter-item"
@@ -461,7 +461,7 @@ export default {
         loginName: '',
         loginPassword: '',
         loginType: '',
-        keyWord: ''
+        keyword: ''
       },
       adddatasource: {
         jdbcDsUuid: '',
