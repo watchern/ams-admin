@@ -23,7 +23,7 @@ export function getById(id) {
 export function save(data) {
   return request({
     baseURL: baseURL,
-    url: '/paramField/insert',
+    url: '/paramField/save',
     method: 'post',
     data
   })

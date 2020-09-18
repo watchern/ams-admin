@@ -58,6 +58,7 @@
         width="300px"
         align="center"
         prop="paramType"
+        :formatter="formatType"
       />
       <el-table-column
         label="默认值"
@@ -82,6 +83,7 @@
         width="300px"
         align="center"
         prop="status"
+        :formatter="formatStatus"
       />
       <el-table-column
         label="参数描述"
@@ -115,23 +117,71 @@
         style="width: 700px; margin-left:50px;"
       >
         <el-form-item
-          label="业务属性名称"
-          prop="attrName"
+          label="参数名称"
+          prop="paramName"
         >
-          <el-input v-model="temp.attrName" />
+          <el-input v-model="temp.paramName" />
         </el-form-item>
         <el-form-item
-          label="业务属性编码"
-          prop="attrCode"
+          label="参数编码"
+          prop="paramCode"
         >
-          <el-input v-model="temp.attrCode" />
+          <el-input v-model="temp.paramCode" />
         </el-form-item>
         <el-form-item
-          label="描述"
-          prop="describe"
+          label="参数状态"
+          prop="status"
+        >
+          <el-select
+            v-model="temp.status"
+            placeholder="请选择参数状态"
+          >
+            <el-option
+              label="启用"
+              :value="1"
+            />
+            <el-option
+              label="停用"
+              :value="0"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          label="参数类型"
+          prop="paramType"
+        >
+          <el-select
+            v-model="temp.paramType"
+            placeholder="请选择参数类型"
+          >
+            <el-option
+              label="text"
+              :value="1"
+            />
+            <el-option
+              label="其它"
+              :value="0"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          label="默认值"
+          prop="defaultValue"
+        >
+          <el-input v-model="temp.defaultValue" />
+        </el-form-item>
+        <el-form-item
+          label="可选值"
+          prop="selectValue"
+        >
+          <el-input v-model="temp.selectValue" />
+        </el-form-item>
+        <el-form-item
+          label="参数描述"
+          prop="paramDesc"
         >
           <el-input
-            v-model="temp.describe"
+            v-model="temp.paramDesc"
             type="textarea"
           />
         </el-form-item>
@@ -156,21 +206,22 @@ export default {
   components: { Pagination, QueryField },
   data() {
     return {
-      tableKey: 'bizAttrUuid',
+      tableKey: 'paramUuid',
       list: null,
       total: 0,
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
-        { label: '业务属性编码', name: 'attrCode', type: 'text', value: '' },
-        { label: '业务属性名称', name: 'attrName', type: 'fuzzyText' },
+        { label: '参数编码', name: 'paramCode', type: 'fuzzyText', value: '' },
+        { label: '参数名称', name: 'paramName', type: 'fuzzyText', value: '' },
+        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
-          label: '性别', name: 'sex', type: 'select',
-          data: [{ name: '男', value: '1' }, { name: '女', value: '0' }],
+          label: '参数状态', name: 'status', type: 'select',
+          data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }],
           default: '1'
-        },
-        { label: '创建时间', name: 'createTime', type: 'timePeriod' }
+        }
       ],
+      // 格式化参数列表
       formatMap: {
         paramType: {
           1: '文本',
@@ -178,7 +229,8 @@ export default {
         },
         status: {
           1: '启用',
-          0: '停用'
+          0: '停用',
+          null: '启用'
         }
       },
       pageQuery: {
@@ -188,43 +240,32 @@ export default {
         sortBy: 'asc',
         sortName: 'create_time'
       },
-      paramfield: {
-        createTime: null,
-        createUserName: null,
-        createUserUuid: null,
+      temp: {
         defaultValue: null,
-        isDeleted: null,
-        keyword: null,
-        orderNo: null,
         paramCode: null,
         paramDesc: null,
         paramName: null,
         paramType: null,
         paramUuid: null,
         selectValue: null,
-        status: null,
-        updateTime: null,
-        updateUserName: null,
-        updateUserUuid: null
-      },
-      temp: {
-        bizAttrUuid: undefined,
-        attrName: '',
-        attrCode: '',
-        describe: ''
+        status: null
       },
       selections: [],
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑业务属性',
-        create: '添加业务属性'
+        update: '编辑参数',
+        create: '添加参数'
       },
       dialogPvVisible: false,
       rules: {
-        attrName: [{ required: true, message: '请填写业务属性名称', trigger: 'change' }],
-        attrCode: [{ required: true, message: '请填写业务属性编码', trigger: 'change' }],
-        describe: [{ max: 100, message: '长度不得超过100', trigger: 'change' }]
+        defaultValue: [{ required: true, message: '请填写参数默认值', trigger: 'change' }],
+        paramName: [{ required: true, message: '请填写参数名', trigger: 'change' }],
+        paramDesc: [{ max: 100, message: '请填写参数的描述', trigger: 'change' }],
+        paramCode: [{ required: true, message: '请填写参数的编码', trigger: 'change' }],
+        paramType: [{ required: true, message: '请选择参数的类型', trigger: 'change' }],
+        selectValue: [{ required: true, message: '请填写参数可选值', trigger: 'change' }],
+        status: [{ required: true, message: '请选择参数状态', trigger: 'change' }]
       },
       downloadLoading: false
     }
@@ -255,10 +296,14 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        bizAttrUuid: undefined,
-        attrName: '',
-        attrCode: '',
-        describe: ''
+        defaultValue: null,
+        paramCode: null,
+        paramDesc: null,
+        paramName: null,
+        paramType: null,
+        paramUuid: null,
+        selectValue: null,
+        status: null
       }
     },
     handleCreate() {
@@ -333,6 +378,13 @@ export default {
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
+    },
+    // 格式化表格
+    formatType(data) {
+      return this.formatMap.paramType[data.paramType]
+    },
+    formatStatus(data) {
+      return this.formatMap.status[data.status]
     }
   }
 }
