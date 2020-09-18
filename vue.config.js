@@ -52,7 +52,7 @@ module.exports = {
       // etl调度模块调用的地址
       '/etlscheduler': {
         // target: 'http://192.168.80.155:8080'
-        target: 'http://192.168.80.156:8880',
+        target: 'http://localhost:8082/amsetlscheduler',
         // target: process.env.ETL_API_LOCATION,
         changeOrigin: true,
         pathRewrite: {

@@ -2,26 +2,25 @@ import request from '@/utils/request'
 
 const baseURL = 'etlscheduler'
 // 分页
-export function findDSPageList(nowpage, pagesize, data) {
+export function findPageList(data) {
   return request({
     baseURL: baseURL,
-    // url: '/datasource/pageList/' + nowpage + '/' + pagesize,
-    url: `/datasource/pageList/${nowpage}/${pagesize}`,
+    url: `/datasource/pageList`,
     method: 'post',
     data
   })
 }
 
 // 根据id查找
-export function getDSById(uuid) {
+export function getById(uuid) {
   return request({
     baseURL: baseURL,
-    url: `/datasource/getByUuid/${uuid}`,
+    url: `/datasource/getById/${uuid}`,
     method: 'get'
   })
 }
 // 添加对象
-export function createDs(data) {
+export function create(data) {
   return request({
     baseURL: baseURL,
     url: '/datasource/insert',
@@ -30,7 +29,7 @@ export function createDs(data) {
   })
 }
 // 删除对象
-export function deleteDs(ids) {
+export function deleteById(ids) {
   return request({
     baseURL: baseURL,
     url: `/datasource/delete/${ids}`,
@@ -38,7 +37,7 @@ export function deleteDs(ids) {
   })
 }
 // 修改对象
-export function updateDs(data) {
+export function update(data) {
   return request({
     baseURL: baseURL,
     url: '/datasource/update',

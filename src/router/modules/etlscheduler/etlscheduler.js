@@ -1,11 +1,9 @@
 /** When your routing table is too long, you can split it into small modules **/
 
-import Layout from '@/layout'
-
 const etlschedulerRouter = {
   path: '/etlscheduler',
-  component: Layout,
   redirect: '/etlscheduler/datasource',
+  component: () => import('@/views/Ace/home/index'),
   name: 'Etlscheduler',
   meta: {
     title: 'etlscheduler',
@@ -21,8 +19,13 @@ const etlschedulerRouter = {
     {
       path: 'resources',
       name: 'Resources',
-      component: () => import('@/views/modules/etlscheduler/resources/index'),
       meta: { title: 'resources' }
+    },
+    {
+      path: 'paramfield',
+      name: 'paramfield',
+      component: () => import('@/views/modules/etlscheduler/paramfield/index'),
+      meta: { title: 'paramfield' }
     }
   ]
 }
