@@ -10,7 +10,7 @@ const baseRouter = {
     {
       path: 'opLog',
       name: '系统操作日志',
-      component: () => import('@/views/base/errorLog/index')
+      component: () => import('@/views/base/opLog/index')
     },
     {
       path: 'errorLog',
