@@ -355,3 +355,22 @@ export function removeClass(ele, cls) {
     ele.className = ele.className.replace(reg, ' ')
   }
 }
+
+export function commonNotify(options) {
+  let title = '';
+  let message = '';
+  switch (options.type) {//success/warning/info/error
+    case 'success' : {title = '成功'; message = '操作成功'; break;}
+    case 'warning' : {title = '警告'; message = ''}
+    case 'info' : {title = '信息'; message = ''}
+    case 'error' : {title = '错误'; message = ''}
+  }
+  var settings = {
+    title: title,
+    message: message,
+    type: options.type,
+    duration: 2000,
+    position: 'bottom-right'
+  };
+  return Object.assign(settings, options);
+}

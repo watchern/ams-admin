@@ -51,6 +51,7 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, save, update, del } from '@/api/data/biz-attr'
 import QueryField from '@/components/Ace/query-field/index'
+import { parseTime } from '@/utils'
 
 export default {
   components: { Pagination, QueryField},
@@ -64,9 +65,9 @@ export default {
       queryFields: [
         {label: '业务属性编码', name:'attrCode', type: 'text', value:''},
         {label: '业务属性名称', name:'attrName', type: 'fuzzyText'},
-        {label: '性别', name:'sex', type: 'select',
-          data: [{name: '男', value: '1'}, {name: '女', value: '0'}],
-          default: '1'},
+        // {label: '性别', name:'sex', type: 'select',
+        //   data: [{name: '男', value: '1'}, {name: '女', value: '0'}],
+        //   default: '1'},
         {label: '创建时间', name:'createTime', type: 'timePeriod'}
       ],
       pageQuery: {

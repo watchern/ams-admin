@@ -17,7 +17,7 @@ html,body{
 }
 
 html{
-    font-size: 100PX;
+    /*font-size: 100PX;*/
 }
 /* 列表元素去掉默认的列表样式 */
 ol, ul {
