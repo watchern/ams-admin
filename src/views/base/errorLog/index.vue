@@ -3,7 +3,7 @@
     <div class="filter-container">
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
-    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;" @sort-change="sortChange" @selection-change="handleSelectionChange">
+    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;" @sort-change="" @selection-change="">
       <el-table-column type="selection" width="55" />
       <el-table-column label="操作用户" width="100px" align="center" prop="opUserName" />
       <el-table-column label="操作IP" width="150px" align="center" prop="opIp" />
