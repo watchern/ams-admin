@@ -212,8 +212,8 @@ export default {
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
-        { label: '参数编码', name: 'paramCode', type: 'fuzzyText', value: '' },
-        { label: '参数名称', name: 'paramName', type: 'fuzzyText', value: '' },
+        { label: '参数编码', name: 'paramCode', type: 'text', value: '' },
+        { label: '参数名称', name: 'paramName', type: 'text', value: '' },
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '参数状态', name: 'status', type: 'select',
