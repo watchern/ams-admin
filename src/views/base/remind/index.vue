@@ -125,7 +125,7 @@ export default {
 
   },
   created() {
-    this.getList()
+    this.getList();
   },
   methods: {
     /**
@@ -137,17 +137,17 @@ export default {
     dateFormatter(row, column) {
       const datetime = row.remindTime
       if (datetime) {
-        var dateMat = new Date(datetime)
-        var year = dateMat.getFullYear()
-        var month = dateMat.getMonth() + 1
-        var day = dateMat.getDate()
-        var hh = dateMat.getHours()
-        var mm = dateMat.getMinutes()
-        var ss = dateMat.getSeconds()
-        var timeFormat = year + '/' + month + '/' + day + ' ' + hh + ':' + mm + ':' + ss
-        return timeFormat
+        var dateMat = new Date(datetime);
+        var year = dateMat.getFullYear();
+        var month = dateMat.getMonth() + 1;
+        var day = dateMat.getDate();
+        var hh = dateMat.getHours();
+        var mm = dateMat.getMinutes();
+        var ss = dateMat.getSeconds();
+        var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss;
+        return timeFormat;
       }
-      return ''
+      return '';
     },
     /**
      * 格式化已阅状态
@@ -156,30 +156,30 @@ export default {
      * @returns {string} 返回格式化后的数据
      */
     readStatusFormatter(row, column) {
-      var status = row.readStatus
+      var status = row.readStatus;
       if (status == 0) {
-        return '未阅'
+        return '未阅';
       } else {
-        return '已阅'
+        return '已阅';
       }
     },
     getList(query) {
       this.listLoading = true
       if (query) {
-        this.pageQuery.condition = query
+        this.pageQuery.condition = query;
       }
       listByPageRemind(this.pageQuery).then(resp => {
-        this.total = resp.data.total
-        this.list = resp.data.records
-        this.listLoading = false
+        this.total = resp.data.total;
+        this.list = resp.data.records;
+        this.listLoading = false;
       })
     },
     handleSelectionChange(val) {
-      this.selections = val
+      this.selections = val;
     },
     handleFilter() {
-      this.pageQuery.pageNo = 1
-      this.getList()
+      this.pageQuery.pageNo = 1;
+      this.getList();
     },
     sortChange(data) {
       const { prop, order } = data
@@ -202,7 +202,7 @@ export default {
       var url = data.modeUrl
       this.$router.push({
         path: url
-      })
+      });
     },
     signRead(data) {
       var obj = {
@@ -210,9 +210,9 @@ export default {
       }
       updateRemind(obj).then(result => {
         if (result.code == 0) {
-          this.getList()
+          this.getList();
         } else {
-          this.$notify({ success: '成功', message: '标记已阅失败' })
+          this.$notify({ success: '失败', message: '标记已阅失败' });
         }
       })
     }

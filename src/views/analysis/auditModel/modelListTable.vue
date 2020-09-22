@@ -5,21 +5,22 @@
     </div>
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;" @sort-change="sortChange" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" />
-      <el-table-column label="操作用户" width="100px" align="center" prop="opUserName" />
-      <el-table-column label="操作IP" width="150px" align="center" prop="opIp" />
-      <el-table-column label="操作模块" width="100px" align="center" prop="moduleName" />
-      <el-table-column label="操作类型" prop="opOperate" />
-      <el-table-column label="操作信息" prop="opInfo" />
-      <el-table-column label="操作时间" prop="opTime" :formatter="dateFormatter" />
+      <el-table-column label="模型名称" width="100px" align="center" prop="modelName" />
+      <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
+      <el-table-column label="审计事项" prop="auditItemUuid" />
+      <el-table-column label="风险等级" prop="riskLevelUuid" />
+      <el-table-column label="模型类型" prop="modelType" :formatter="modelTypeFormatter" />
+      <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
   </div>
 </template>
 <script>
-import { listByPageOperationLog } from '@/api/base/base'
+import { findModel } from '@/api/analysis/auditModel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 export default {
+  name:"ModelListTable",
   components: { Pagination, QueryField },
   data() {
     return {
@@ -28,10 +29,9 @@ export default {
       total: 0,
       listLoading: false,
       queryFields: [
-        { label: '操作用户', name: 'opUserName', type: 'fuzzyText', value: '' },
-        { label: '操作IP', name: 'opIp', type: 'fuzzyText' },
-        { label: '操作模块', name: 'moduleName', type: 'fuzzyText' },
-        { label: '操作时间范围', name: 'opTime', type: 'timePeriod' }
+        { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
+        { label: '审计事项', name: 'auditItem', type: 'fuzzyText' },
+        { label: '风险等级', name: 'riskLevelUuid', type: 'fuzzyText' }
       ],
       // selectedRowVal:0,
       tableOptions: {
@@ -49,34 +49,29 @@ export default {
             hide: true
           },
           {
-            headerName: '操作用户',
-            field: 'opUserName',
+            headerName: '模型名称',
+            field: 'modelName',
             pinned: 'left',
             filter: 'agTextColumnFilter'
           },
           {
-            headerName: '操作IP',
-            field: 'opIp',
+            headerName: '平均运行时间',
+            field: 'runTime',
             pinned: 'left'
           },
           {
-            headerName: '模块名称',
-            field: 'moduleName',
+            headerName: '审计事项',
+            field: 'auditItemUuid',
             pinned: 'left'
           },
           {
-            headerName: '操作类型',
-            field: 'opOperate',
+            headerName: '风险等级',
+            field: 'riskLevelUuid',
             filter: 'agNumberColumnFilter'
           },
           {
-            headerName: '操作时间',
-            field: 'opTime',
-            filter: 'agNumberColumnFilter'
-          },
-          {
-            headerName: '操作信息',
-            field: 'opInfo',
+            headerName: '模型类型',
+            field: 'modelType',
             filter: 'agNumberColumnFilter'
           }
         ]
@@ -86,14 +81,15 @@ export default {
         height: '400px'
       },
       temp: {
-        logSysActiUuid: '',
-        opIp: '',
-        moduleName: '',
-        opOperate: '',
-        opInfo: '',
-        opTime: '',
-        opUserId: '',
-        opUserName: ''
+        modelUuid: '',
+        modelName: '',
+        modelFolderUuid: '',
+        auditItemUuid: '',
+        riskLevelUuid: '',
+        auditIdeas: '',
+        paramConditions: '',
+        sqlValue: '',
+        modelType:''
       },
       pageQuery: {
         condition: null,
@@ -110,7 +106,7 @@ export default {
   },
   methods: {
     dateFormatter(row, column) {
-      const datetime = row.opTime
+      const datetime = row.createTime;
       if (datetime) {
         var dateMat = new Date(datetime)
         var year = dateMat.getFullYear()
@@ -124,12 +120,21 @@ export default {
       }
       return ''
     },
+    modelTypeFormatter(row, column){
+      const modelType = row.modelType;
+      if(modelType == 1){
+        return "审计模型";
+      }
+      else if(modelType == 2){
+        return "图形化模型";
+      }
+    },
     getList(query) {
       this.listLoading = true
       if (query) {
         this.pageQuery.condition = query
       }
-      listByPageOperationLog(this.pageQuery).then(resp => {
+      findModel(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records
         this.listLoading = false
@@ -158,7 +163,6 @@ export default {
           endTime: '',
           opTime: '',
           opUserName: ''
-
         }
       }
     }

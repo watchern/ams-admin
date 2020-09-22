@@ -128,7 +128,7 @@ export default {
         var hh = dateMat.getHours()
         var mm = dateMat.getMinutes()
         var ss = dateMat.getSeconds()
-        var timeFormat = year + '/' + month + '/' + day + ' ' + hh + ':' + mm + ':' + ss
+        var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
         return timeFormat
       }
       return ''
