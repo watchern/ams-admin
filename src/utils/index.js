@@ -362,9 +362,9 @@ export function commonNotify(options) {
   let message = '';
   switch (options.type) {//success/warning/info/error
     case 'success' : {title = '成功'; message = '操作成功'; break;}
-    case 'warning' : {title = '警告'; message = ''}
-    case 'info' : {title = '信息'; message = ''}
-    case 'error' : {title = '错误'; message = ''}
+    case 'warning' : {title = '警告'; message = ''; break;}
+    case 'info' : {title = '信息'; message = ''; break;}
+    case 'error' : {title = '错误'; message = ''; break;}
   }
   var settings = {
     title: title,

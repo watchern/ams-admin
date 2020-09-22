@@ -6,14 +6,24 @@
           placeholder="输入关键字进行过滤"
           v-model="filterText1">
         </el-input>
+        <!--<el-select defaultFirstOption="true" @change="handleSelectChange" :value="selectValue">
+          <el-option label="显示所有" value="all"></el-option>
+          <el-option label="只显示未注册" value="noPart"></el-option>
+          <el-option label="只显示已注册" value="yesPart"></el-option>
+        </el-select>-->
         <MyElTree
           :props="props"
           :load="loadNode1"
           lazy  :filter-node-method="filterNode"
           class="filter-tree"
-          check-strictly="true"
           ref="tree1"
           show-checkbox>
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+             <i v-if="data.type==='USER'" class="el-icon-menu" style="color:#409EFF"></i>
+             <i v-if="data.type==='TABLE'" class="el-icon-tickets" style="color:#409EFF"></i>
+             <i v-if="data.type==='COLUMN'" class="el-icon-s-ticket" style="color:#409EFF"></i>
+            <span>{{ node.label }}</span>
+          </span>
         </MyElTree>
       </el-col>
       <el-col :span="2" style="width: 45px; padding-top: 10%">
@@ -21,7 +31,7 @@
           <p class="transfer-center-item">
             <el-button
               type="primary"
-              @click="addTable"
+              @click="asyncTable"
               icon="el-icon-arrow-right"
               circle
               :disabled="fromDisabled"
@@ -51,6 +61,10 @@
           ref="tree2" nodeKey="id"
           show-checkbox>
           <span class="custom-tree-node" slot-scope="{ node, data }">
+            <i v-if="data.id==='ROOT'" class="el-icon-s-home" style="color:#409EFF"></i>
+            <i v-if="data.type==='FOLDER'" class="el-icon-folder" style="color:#409EFF"></i>
+            <i v-if="data.type==='TABLE'" class="el-icon-tickets" style="color:#409EFF"></i>
+            <i v-if="data.type==='COLUMN'" class="el-icon-c-scale-to-original" style="color:#409EFF"></i>
             <span>{{ node.label }}</span>
             <span style="margin-left: 10px">
               <!--添加： 根节点以及手工维护的节点-->
@@ -61,6 +75,9 @@
                           size="mini"  @click.stop="() => handleUpdateFolder(node, data)"> <i class="el-icon-edit"></i> </el-button>
               <!--删除： 手工维护的节点-->
               <el-button  type="text"  v-if="data.extMap && data.extMap.folder_type==='maintained'"
+                          size="mini"  @click.stop="() => handleRemoveFolder(node, data)"> <i class="el-icon-delete"></i> </el-button>
+              <!--更新： 表-->
+              <el-button  type="text"  v-if="data.type === 'TABLE'"
                           size="mini"  @click.stop="() => handleRemoveFolder(node, data)"> <i class="el-icon-delete"></i> </el-button>
             </span>
           </span>
@@ -120,8 +137,7 @@
           update: '编辑文件夹',
           create: '添加文件夹'
         },
-
-
+        selectValue: 1
       }
     },
     computed:{
@@ -190,6 +206,7 @@
         this.folderFormVisible = true
       },
       handleRemoveFolder(node, data) {
+        console.log(this.$refs.tree2.getCurrentNode());
         this.$confirm('是否删除？', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -204,15 +221,16 @@
       },
       createFolder(){
         saveFolder(this.folderForm).then(resp=>{
-          var newChild = {
+          var childData = {
             id: resp.data,
             label: this.folderForm.folderName,
             pid: this.folderForm.parentFolderUuid,
+            type: 'FOLDER',
             extMap: {
               folder_type: 'maintained'
             }
           }
-          this.$refs.tree2.append(newChild, this.parentNode);
+          this.$refs.tree2.append(childData, this.parentNode);
           this.$notify(commonNotify({type: 'success', message: '创建成功！'}));
           this.folderFormVisible = false
         })
@@ -224,34 +242,55 @@
           this.folderFormVisible = false
         })
       },
-      addTable(){
-        var ckNodes = this.$refs.tree1.getCheckedNodes();
-        var folderUuid = this.$refs.tree2.getCurrentKey();
-        if(ckNodes.length === 0){
+      handleSelectChange(val){
+
+      },
+      asyncTable(){
+        var ckTbs = this.$refs.tree1.getCheckedNodes();
+        var ckFolder = this.$refs.tree2.getCurrentNode();
+        if(ckTbs.length === 0){
           this.$notify(commonNotify({type: 'warning', message: '请勾选左侧表'}))
           return false;
         }
-        if(!folderUuid){
+        if(!ckFolder || ckFolder.type!=='FOLDER'){
           this.$notify(commonNotify({type: 'warning', message: '请选中文件夹'}))
           return false;
         }
-        debugger;
-        ckNodes.forEach(node =>{
+        ckTbs.filter(tb =>{
+          return tb.type==='TABLE'
+        }).forEach(node =>{
           let tableForm = {
+            tableMetaUuid: node.id,
             dbName: node.pid,
             tbName: node.label,
-            folderUuid: folderUuid
+            folderUuid: ckFolder.id
           };
           saveTable(tableForm).then(resp => {
-            this.$notify(commonNotify({type: 'success', message: '表<'+node.label+'>成功同步成功！'}))
-            debugger;
+            var childData = {
+              disable: false,
+              id: tableForm.tableMetaUuid,
+              label: tableForm.tbName,
+              leaf: true,
+              pid: ckFolder.id,
+              showCheckbox: true,
+              type: "TABLE",
+            };
+            this.$refs.tree2.remove(childData);
+            this.$refs.tree2.append(childData, ckFolder);
+            this.$notify(commonNotify({type: 'success', message: `表<${node.label}>成功同步成功！`}))
           })
         });
 
 
       },
       removeTable(){
-
+        var ids = this.$refs.tree2.getCheckedKeys();
+        delTable(ids.join(',')).then(resp => {
+          this.$notify(commonNotify({type: 'success', message: `成功移除${ids.length}张表`}))
+          ids.forEach(id => {
+            this.$refs.tree2.remove({id: id});
+          })
+        })
       }
     },
     components:{ MyElTree } // 注册

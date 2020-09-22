@@ -43,7 +43,7 @@
         @change="handleCheckChange"
       >
       </el-checkbox>
-      <span class="margin-left: 2px;" v-if="!node.data.showCheckbox">&nbsp;</span>
+      <span class="margin-left: 14px;" v-if="showCheckbox && !node.data.showCheckbox && node.data.leaf">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
       <span
         v-if="node.loading"
         class="el-tree-node__loading-icon el-icon-loading">
