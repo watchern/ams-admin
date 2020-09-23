@@ -54,7 +54,7 @@ module.exports = {
         target: 'http://localhost:8081'
         //target: 'http://139.159.246.94:1064'  远程测试环境
       },
-      '/base':{
+      '/base': {
         target: 'http://localhost:8085'
       },
       '/analysis':{
@@ -70,6 +70,15 @@ module.exports = {
           '^/etlscheduler': ''
         }
         // target: process.env.ETL_API_TEST_LOCATION
+      },
+      '/dolphinscheduler': {
+        timeout: 1800000,
+        target: 'http://192.168.80.183:12345',
+        changeOrigin: true
+        // ,
+        // pathRewrite: {
+        //   '^/dolphinscheduler': ''
+        // }
       }
     }
   },

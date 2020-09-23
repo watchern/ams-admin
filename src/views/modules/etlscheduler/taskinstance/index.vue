@@ -20,6 +20,18 @@
         @click="handleUpdate()"
       >修改</el-button>
       <el-button
+        type="primary"
+        size="mini"
+        :disabled="selections.length === 0"
+        @click="handleDelete()"
+      >启用</el-button>
+      <el-button
+        type="danger"
+        size="mini"
+        :disabled="selections.length === 0"
+        @click="handleDelete()"
+      >停用</el-button>
+      <el-button
         type="danger"
         size="mini"
         :disabled="selections.length === 0"
@@ -42,35 +54,10 @@
         width="55"
       />
       <el-table-column
-        label="参数名称"
+        label="流程名称"
         width="300px"
         align="center"
-        prop="paramName"
-      />
-      <el-table-column
-        label="参数编码"
-        width="300px"
-        align="center"
-        prop="paramCode"
-      />
-      <el-table-column
-        label="参数类型"
-        width="300px"
-        align="center"
-        prop="paramType"
-        :formatter="formatType"
-      />
-      <el-table-column
-        label="默认值"
-        width="300px"
-        align="center"
-        prop="defaultValue"
-      />
-      <el-table-column
-        label="可选值"
-        width="300px"
-        align="center"
-        prop="selectValue"
+        prop="xName"
       />
       <el-table-column
         label="排序号"
@@ -86,8 +73,14 @@
         :formatter="formatStatus"
       />
       <el-table-column
-        label="参数描述"
+        label="流程描述"
         prop="paramDesc"
+      />
+      <el-table-column
+        label="最新修改人"
+        width="300px"
+        align="center"
+        prop="defaultValue"
       />
       <el-table-column
         label="修改时间"
@@ -278,6 +271,7 @@ export default {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then(resp => {
+        console.log(resp.data)
         this.total = resp.data.total
         this.list = resp.data.records
         this.listLoading = false
