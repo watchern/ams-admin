@@ -35,7 +35,7 @@ import * as filters from './filters' // global filters
 // dolphin start
 
 // import i18n1 from '@/components/Dolphin/i18n'
-import en_US from 'ans-ui/lib/locale/en' // eslint-disable-line
+// import en_US from 'ans-ui/lib/locale/en' // eslint-disable-line
 import 'ans-ui/lib/ans-ui.min.css'
 import ans from 'ans-ui/lib/ans-ui.min'
 // Vue.use(ans)
@@ -47,7 +47,7 @@ import 'canvg/dist/browser/canvg.min.js'
 // } : {}
 // const useOpt = {}
 const useOpt = {
-  locale: en_US
+  // locale: en_US
 }
 
 // Vue.use(ans)

@@ -101,7 +101,9 @@ export default {
   }
   &.spin-sp1 {
     width: calc(100% - 40px);
-    height: calc(100% - 60px);
+    // height: calc(100% - 60px);
+
+    height: calc(100% - 0px);
   }
   &.spin-sp2 {
     width: calc(100% - 220px);

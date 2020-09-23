@@ -278,7 +278,6 @@ export default {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then(resp => {
-        console.log(resp.data)
         this.total = resp.data.total
         this.list = resp.data.records
         this.listLoading = false
