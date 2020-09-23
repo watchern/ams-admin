@@ -1,34 +1,45 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <QueryField ref="queryfield" :formData="queryFields"
-                  @submit="getList"
-      ></QueryField>
+      <QueryField
+        ref="queryfield"
+        :form-data="queryFields"
+        @submit="getList"
+      />
     </div>
     <div>
       <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
-      <el-button type="primary" size="mini" @click="handleUpdate()" :disabled="selections.length !== 1">修改</el-button>
-      <el-button type="danger" size="mini" @click="handleDelete()" :disabled="selections.length === 0">删除</el-button>
+      <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="handleUpdate()">修改</el-button>
+      <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="handleDelete()">删除</el-button>
     </div>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
-      border fit  highlight-current-row style="width: 100%;"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column label="业务属性名称" width="300px" align="center" prop="attrName"></el-table-column>
-      <el-table-column label="业务属性编码" width="300px" align="center" prop="attrCode"></el-table-column>
-      <el-table-column label="创建时间" width="300px"   align="center" prop="createTime"></el-table-column>
-      <el-table-column label="描述"  prop="describe"></el-table-column>
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="业务属性名称" width="300px" align="center" prop="attrName" />
+      <el-table-column label="业务属性编码" width="300px" align="center" prop="attrCode" />
+      <el-table-column label="创建时间" width="300px" align="center" prop="createTime" />
+      <el-table-column label="描述" prop="describe" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="140px"
-               style="width: 700px; margin-left:50px;">
+      <el-form
+        ref="dataForm"
+        :rules="rules"
+        :model="temp"
+        label-position="right"
+        label-width="140px"
+        style="width: 700px; margin-left:50px;"
+      >
         <el-form-item label="业务属性名称" prop="attrName">
           <el-input v-model="temp.attrName" />
         </el-form-item>
@@ -36,7 +47,7 @@
           <el-input v-model="temp.attrCode" />
         </el-form-item>
         <el-form-item label="描述" prop="describe">
-          <el-input type="textarea" v-model="temp.describe"></el-input>
+          <el-input v-model="temp.describe" type="textarea" />
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -51,30 +62,31 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, save, update, del } from '@/api/data/biz-attr'
 import QueryField from '@/components/Ace/query-field/index'
+import { parseTime } from '@/utils'
 
 export default {
-  components: { Pagination, QueryField},
+  components: { Pagination, QueryField },
   data() {
     return {
       tableKey: 'bizAttrUuid',
       list: null,
       total: 0,
       listLoading: false,
-      //text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
+      // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
-        {label: '业务属性编码', name:'attrCode', type: 'text', value:''},
-        {label: '业务属性名称', name:'attrName', type: 'fuzzyText'},
-        {label: '性别', name:'sex', type: 'select',
-          data: [{name: '男', value: '1'}, {name: '女', value: '0'}],
-          default: '1'},
-        {label: '创建时间', name:'createTime', type: 'timePeriod'}
+        { label: '业务属性编码', name: 'attrCode', type: 'text', value: '' },
+        { label: '业务属性名称', name: 'attrName', type: 'fuzzyText' },
+        // {label: '性别', name:'sex', type: 'select',
+        //   data: [{name: '男', value: '1'}, {name: '女', value: '0'}],
+        //   default: '1'},
+        { label: '创建时间', name: 'createTime', type: 'timePeriod' }
       ],
       pageQuery: {
         condition: null,
         pageNo: 1,
         pageSize: 20,
         sortBy: 'asc',
-        sortName: 'create_time',
+        sortName: 'create_time'
       },
       temp: {
         bizAttrUuid: undefined,
@@ -93,7 +105,7 @@ export default {
       rules: {
         attrName: [{ required: true, message: '请填写业务属性名称', trigger: 'change' }],
         attrCode: [{ required: true, message: '请填写业务属性编码', trigger: 'change' }],
-        describe: [{ max:100,  message: '长度不得超过100', trigger: 'change' }]
+        describe: [{ max: 100, message: '长度不得超过100', trigger: 'change' }]
       },
       downloadLoading: false
     }
@@ -104,12 +116,12 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      if(query) this.pageQuery.condition = query;
+      if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then(resp => {
-        this.total = resp.data.total;
-        this.list = resp.data.records;
+        this.total = resp.data.total
+        this.list = resp.data.records
         this.listLoading = false
-      });
+      })
     },
     handleFilter() {
       this.pageQuery.pageNo = 1
@@ -117,8 +129,8 @@ export default {
     },
     sortChange(data) {
       const { prop, order } = data
-      this.pageQuery.sortBy = order;
-      this.pageQuery.sortName = prop;
+      this.pageQuery.sortBy = order
+      this.pageQuery.sortName = prop
       this.handleFilter()
     },
     resetTemp() {
@@ -141,7 +153,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           save(this.temp).then(() => {
-            this.getList();
+            this.getList()
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -182,21 +194,21 @@ export default {
       })
     },
     handleDelete() {
-      var ids = [];
-      this.selections.forEach((r,i) =>{ids.push(r.bizAttrUuid)});
-      del(ids.join(",")).then(() => {
-        this.getList();
+      var ids = []
+      this.selections.forEach((r, i) => { ids.push(r.bizAttrUuid) })
+      del(ids.join(',')).then(() => {
+        this.getList()
         this.$notify({
           title: '成功',
           message: '删除成功',
           type: 'success',
           duration: 2000,
           position: 'bottom-right'
-        });
-      });
+        })
+      })
     },
     handleSelectionChange(val) {
-      this.selections = val;
+      this.selections = val
     },
     getSortClass: function(key) {
       const sort = this.pageQuery.sort

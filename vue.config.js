@@ -27,10 +27,16 @@ module.exports = {
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: 'static',
-  lintOnSave: process.env.NODE_ENV === 'development',
+  lintOnSave: false,
+  // lintOnSave: process.env.NODE_ENV === 'development',
   runtimeCompiler: true,
   productionSourceMap: false,
   devServer: {
+    // ignore eslint
+    overlay: {
+      warnings: false,
+      errors: false
+    },
     disableHostCheck: true,
     port: port, // 端口号
     host: 'localhost',
@@ -48,6 +54,9 @@ module.exports = {
       },
       '/base':{
         target: 'http://localhost:8085'
+      },
+      '/analysis':{
+        target:'http://localhost:8086'
       },
       // etl调度模块调用的地址
       '/etlscheduler': {

@@ -3,23 +3,24 @@
     <div class="filter-container">
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
-    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;" @sort-change="" @selection-change="">
+    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;" @sort-change="sortChange" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" />
-      <el-table-column label="操作用户" width="100px" align="center" prop="opUserName" />
-      <el-table-column label="操作IP" width="150px" align="center" prop="opIp" />
-      <el-table-column label="异常类" width="100px" align="center" prop="opClass" />
-      <el-table-column label="异常方法" prop="opMethod" />
-      <el-table-column label="异常时间" prop="logTime" :formatter="dateFormatter" />
-      <el-table-column label="异常信息" prop="logContent" />
+      <el-table-column label="模型名称" width="100px" align="center" prop="modelName" />
+      <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
+      <el-table-column label="审计事项" prop="auditItemUuid" />
+      <el-table-column label="风险等级" prop="riskLevelUuid" />
+      <el-table-column label="模型类型" prop="modelType" :formatter="modelTypeFormatter" />
+      <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
   </div>
 </template>
 <script>
-import { listByPageErrorLog } from '@/api/base/base'
+import { findModel } from '@/api/analysis/auditModel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 export default {
+  name: 'ModelListTable',
   components: { Pagination, QueryField },
   data() {
     return {
@@ -28,11 +29,9 @@ export default {
       total: 0,
       listLoading: false,
       queryFields: [
-        { label: '操作用户', name: 'opUserName', type: 'fuzzyText', value: '' },
-        { label: '操作IP', name: 'opIp', type: 'fuzzyText' },
-        { label: '异常类', name: 'opClass', type: 'fuzzyText' },
-        { label: '异常方法', name: 'opMethod', type: 'fuzzyText' },
-        { label: '日志时间区间', name: 'logTime', type: 'timePeriod' }
+        { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
+        { label: '审计事项', name: 'auditItem', type: 'fuzzyText' },
+        { label: '风险等级', name: 'riskLevelUuid', type: 'fuzzyText' }
       ],
       // selectedRowVal:0,
       tableOptions: {
@@ -50,34 +49,29 @@ export default {
             hide: true
           },
           {
-            headerName: '操作用户',
-            field: 'opUserName',
+            headerName: '模型名称',
+            field: 'modelName',
             pinned: 'left',
             filter: 'agTextColumnFilter'
           },
           {
-            headerName: '操作IP',
-            field: 'opIp',
+            headerName: '平均运行时间',
+            field: 'runTime',
             pinned: 'left'
           },
           {
-            headerName: '异常类',
-            field: 'opClass',
+            headerName: '审计事项',
+            field: 'auditItemUuid',
             pinned: 'left'
           },
           {
-            headerName: '异常方法',
-            field: 'opMethod',
+            headerName: '风险等级',
+            field: 'riskLevelUuid',
             filter: 'agNumberColumnFilter'
           },
           {
-            headerName: '异常时间',
-            field: 'logTime',
-            filter: 'agNumberColumnFilter'
-          },
-          {
-            headerName: '异常信息',
-            field: 'logContent',
+            headerName: '模型类型',
+            field: 'modelType',
             filter: 'agNumberColumnFilter'
           }
         ]
@@ -87,16 +81,15 @@ export default {
         height: '400px'
       },
       temp: {
-        errorUuid: '',
-        opUserName: '',
-        opUserId: '',
-        opIp: '',
-        opClass: '',
-        opMethod: '',
-        logContent: '',
-        logTime: '',
-        startTime: '',
-        endTime: ''
+        modelUuid: '',
+        modelName: '',
+        modelFolderUuid: '',
+        auditItemUuid: '',
+        riskLevelUuid: '',
+        auditIdeas: '',
+        paramConditions: '',
+        sqlValue: '',
+        modelType: ''
       },
       pageQuery: {
         condition: null,
@@ -112,14 +105,8 @@ export default {
     this.getList()
   },
   methods: {
-    /**
-     * 格式化时间
-     * @param row 指定行
-     * @param column 指定列
-     * @returns {string} 返回格式化后的时间
-     */
     dateFormatter(row, column) {
-      const datetime = row.logTime
+      const datetime = row.createTime
       if (datetime) {
         var dateMat = new Date(datetime)
         var year = dateMat.getFullYear()
@@ -133,33 +120,48 @@ export default {
       }
       return ''
     },
-    /**
-     * 获取列表
-     * @param query 查询对象
-     */
+    modelTypeFormatter(row, column) {
+      const modelType = row.modelType
+      if (modelType == 1) {
+        return '审计模型'
+      } else if (modelType == 2) {
+        return '图形化模型'
+      }
+    },
     getList(query) {
       this.listLoading = true
       if (query) {
         this.pageQuery.condition = query
       }
-      listByPageErrorLog(this.pageQuery).then(resp => {
+      findModel(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records
         this.listLoading = false
       })
     },
-    /**
-     * 重置搜索条件
-     */
+    handleSelectionChange(val) {
+      this.selections = val
+    },
+    handleFilter() {
+      this.pageQuery.pageNo = 1
+      this.getList()
+    },
+    sortChange(data) {
+      const { prop, order } = data
+      this.pageQuery.sortBy = order
+      this.pageQuery.sortName = prop
+      this.handleFilter()
+    },
     resetQuery() {
       this.query = {
         condition: {
-          opUserName: '',
           opIp: '',
-          opClass: '',
-          opMethod: '',
-          startTime: '',
-          endTime: ''
+          moduleName: '',
+          opOperate: '',
+          opInfo: '',
+          endTime: '',
+          opTime: '',
+          opUserName: ''
         }
       }
     }
