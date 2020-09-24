@@ -36,7 +36,7 @@
                 type="text"
                 :disabled="isDetails"
                 placeholder="请输入名称(必填)"
-                maxlength="100"
+                maxlength="100px"
                 autocomplete="off"
                 @on-blur="_verifName()"
               />
@@ -95,8 +95,8 @@
             >
               <m-priority v-model="taskInstancePriority" />
             </span>
-            <span class="text-b">Worker分组</span>
-            <m-worker-groups v-model="workerGroup" />
+            <span class="text-b" style="display:none">Worker分组</span>
+            <m-worker-groups v-model="workerGroup" style="display:none" />
           </div>
         </div>
 
@@ -475,6 +475,9 @@ export default {
     /**
      * Child workflow entry show/hide
      */
+    _isGoSubProcess() {
+      return this.taskType === 'SUB_PROCESS' && this.name
+    },
     // Define the item model
     _item() {
       return {

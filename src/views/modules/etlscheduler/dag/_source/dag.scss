@@ -78,7 +78,7 @@
 
     .title {
       height: 40px;
-      line-height: 0px;
+      line-height: 40px;
       background: #40434C;
       text-align: center;
       border-radius: 3px 0 0 0;
@@ -183,14 +183,12 @@
         .operation {
           overflow: hidden;
           display: inline-block;
-          // display: block;
           margin-right: 10px;
 
           a {
             float: left;
             width: 28px;
-            // height: 28px;
-            height: 60px;
+            height: 28px;
             text-align: center;
             line-height: 0px;
             margin-left: 6px;
@@ -220,9 +218,8 @@
     }
 
     .dag-container {
-      // height: calc(100% - 40px);
-
-      height: calc(100% - 0px);
+      height: calc(100% - 40px);
+      // height: calc(100% - 0px);
       overflow-x: auto;
 
       &::-webkit-scrollbar {
@@ -231,7 +228,7 @@
 
       ;
       // TODO
-      overflow-y: auto;
+      // overflow-y: auto;
       width:1200px;
     }
   }

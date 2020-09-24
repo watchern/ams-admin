@@ -406,10 +406,8 @@ export default {
               this.saveDAGchart().then(res => {
                 this.$message.success(res.msg)
                 this.spinnerLoading = false
-                // source @/conf/home/pages/dag/_source/editAffirmModel/index.js
                 if (sourceType !== 'affirm') {
-                  // Jump process definition
-                  this.$router.push({ name: 'projects-definition-list' })
+                  this.$router.push('/etlscheduler/processinstance')
                 }
                 resolve()
               }).catch(e => {

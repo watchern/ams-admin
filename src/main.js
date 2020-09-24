@@ -40,7 +40,6 @@ import 'ans-ui/lib/ans-ui.min.css'
 import ans from 'ans-ui/lib/ans-ui.min'
 // Vue.use(ans)
 import 'canvg/dist/browser/canvg.min.js'
-
 // Component internationalization
 // const useOpt = i18n1.globalScope.LOCALE === 'en' || i18n1.globalScope.LOCALE === 'en_US' ? {
 //   locale: en_US
@@ -64,7 +63,9 @@ Vue.use(ans, useOpt)
  * please remove it before going online ! ! !
  */
 if (process.env.NODE_ENV === 'production') {
-  const { mockXHR } = require('../mock')
+  const {
+    mockXHR
+  } = require('../mock')
   mockXHR()
 }
 

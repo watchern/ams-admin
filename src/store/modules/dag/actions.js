@@ -20,6 +20,10 @@ import io from '@/components/Dolphin/io'
 import {
   tasksState
 } from '@/views/modules/etlscheduler/dag/_source/config'
+import {
+  save,
+  datasourceList
+} from '@/api/etlscheduler/processinstance'
 
 export default {
 
@@ -216,14 +220,25 @@ export default {
         tenantId: state.tenantId,
         timeout: state.timeout
       }
-      io.post(`projects/${state.projectName}/process/save`, {
+      save({
         processDefinitionJson: JSON.stringify(data),
         name: _.trim(state.name),
         description: _.trim(state.description),
         locations: JSON.stringify(state.locations),
-        connects: JSON.stringify(state.connects)
-      }, res => {
+        connects: JSON.stringify(state.connects),
+        status: _.trim(state.status),
+        orderNo: _.trim(state.orderNo)
+      }).then(res => {
         resolve(res)
+        // })
+        // io.post(`projects/${state.projectName}/process/save`, {
+        //   processDefinitionJson: JSON.stringify(data),
+        //   name: _.trim(state.name),
+        //   description: _.trim(state.description),
+        //   locations: JSON.stringify(state.locations),
+        //   connects: JSON.stringify(state.connects)
+        // }, res => {
+        //   resolve(res)
       }).catch(e => {
         reject(e)
       })
@@ -357,9 +372,12 @@ export default {
     state
   }, payload) {
     return new Promise((resolve, reject) => {
-      io.get('datasources/list', {
-        type: payload
-      }, res => {
+      // io.get('datasources/list', {
+      //   type: payload
+      // },
+      datasourceList({
+        dbType: payload
+      }).then(res => {
         resolve(res)
       }).catch(res => {
         reject(res)

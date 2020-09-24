@@ -2,19 +2,39 @@
   <div class="udp-model">
     <div class="scrollbar contpi-boxt">
       <div class="title">
-        <span>设置DAG图名称</span>
+        <span>设置流程名称</span>
       </div>
 
       <div>
         <x-input
           v-model="name"
           type="text"
-          :disabled="router.history.current.name === 'projects-instance-details'"
           placeholder="请输入名称(必填)"
         />
       </div>
-
-      <template v-if="router.history.current.name !== 'projects-instance-details'">
+      <div style="margin-top:10px">
+        <x-input
+          v-model="orderNo"
+          type="text"
+          placeholder="请输入排序号(必填)"
+        />
+      </div>
+      <div style="margin-top:10px">
+        <x-select
+          v-model="status"
+          placeholder="请选择状态"
+          style="width: 288px;"
+          :disabled="isDetails"
+        >
+          <x-option
+            v-for="model in statusList"
+            :key="model.value"
+            :value="model.value"
+            :label="model.name"
+          />
+        </x-select>
+      </div>
+      <template>
         <div style="padding-top: 12px;">
           <x-input
             v-model="description"
@@ -28,7 +48,7 @@
 
       <div
         class="title"
-        style="padding-top: 6px;"
+        style="padding-top: 6px;display:none"
       >
         <span class="text-b">选择租户</span>
         <form-tenant v-model="tenantId" />
@@ -77,7 +97,7 @@
     </div>
     <div class="bottom">
       <div class="submit">
-        <template v-if="router.history.current.name === 'projects-instance-details'">
+        <template>
           <div class="lint-pt">
             <x-checkbox v-model="syncDefine">是否更新流程定义</x-checkbox>
           </div>
@@ -101,7 +121,6 @@ import mLocalParams from '../formModel/tasks/_source/localParams'
 import disabledState from '@/components/Dolphin/mixin/disabledState'
 import Affirm from '../jumpAffirm'
 import FormTenant from './_source/selectTenant'
-
 export default {
   name: 'Udp',
   components: { FormTenant, mLocalParams },
@@ -125,7 +144,10 @@ export default {
 
       tenantId: -1,
       // checked Timeout alarm
-      checkedTimeout: true
+      checkedTimeout: true,
+      statusList: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }],
+      orderNo: '',
+      status: null
     }
   },
   watch: {
@@ -141,16 +163,18 @@ export default {
     this.udpList = dag.globalParams
     this.udpListCache = dag.globalParams
     this.name = dag.name
+    this.status = dag.status
+    this.orderNo = dag.orderNo
     this.description = dag.description
     this.syncDefine = dag.syncDefine
     this.timeout = dag.timeout || 0
     this.checkedTimeout = this.timeout !== 0
     this.$nextTick(() => {
-      if (dag.tenantId === -1) {
-        this.tenantId = this.store.state.user.userInfo.tenantId
-      } else {
-        this.tenantId = dag.tenantId
-      }
+      // if (dag.tenantId === -1) {
+      //   this.tenantId = this.store.state.user.userInfo.tenantId
+      // } else {
+      this.tenantId = dag.tenantId
+      // }
     })
   },
   mounted() { },
@@ -182,10 +206,17 @@ export default {
      */
     ok() {
       if (!this.name) {
-        this.$message.warning(`DAG图名称不能为空`)
+        this.$message.warning(`流程名称不能为空`)
         return
       }
-
+      if (!this.orderNo) {
+        this.$message.warning(`排序号不能为空`)
+        return
+      }
+      if (!this.status) {
+        this.$message.warning(`状态不能为空`)
+        return
+      }
       const _verif = () => {
         // verification udf
         if (!this.$refs.refLocalParams._verifProp()) {

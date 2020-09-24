@@ -45,3 +45,13 @@ export function update(data) {
     data
   })
 }
+
+// 修改对象
+export function datasourceList(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/datasources/list',
+    method: 'post',
+    data
+  })
+}
