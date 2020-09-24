@@ -3,7 +3,6 @@ import request from '@/utils/request'
 const baseURL = '/amsdata'
 const controller = 'folder'
 
-
 export function saveFolder(data) {
   return request({
     baseURL: baseURL,

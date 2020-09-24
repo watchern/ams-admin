@@ -37,7 +37,25 @@ const etlschedulerRouter = {
       path: 'processschedule',
       name: 'processschedule',
       component: () => import('@/views/modules/etlscheduler/processschedule/index'),
-      meta: { title: 'processschedule' }
+      meta: { title: 'processschedule' },
+      },
+      {
+      path: 'taskinstance',
+      name: 'taskinstance',
+      component: () => import('@/views/modules/etlscheduler/taskinstance/index'),
+      meta: { title: 'taskinstance' }
+    },
+    {
+      path: 'workflow',
+      name: 'workflow',
+      component: () => import('@/views/modules/etlscheduler/workflow/index'),
+      meta: { title: 'workflow' }
+    },
+    {
+      path: 'processinstance',
+      name: 'processinstance',
+      component: () => import('@/views/modules/etlscheduler/processinstance/index'),
+      meta: { title: 'processinstance' }
     }
   ]
 }

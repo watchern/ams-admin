@@ -20,7 +20,7 @@ import { findModel } from '@/api/analysis/auditModel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 export default {
-  name:"ModelListTable",
+  name: 'ModelListTable',
   components: { Pagination, QueryField },
   data() {
     return {
@@ -89,7 +89,7 @@ export default {
         auditIdeas: '',
         paramConditions: '',
         sqlValue: '',
-        modelType:''
+        modelType: ''
       },
       pageQuery: {
         condition: null,
@@ -106,7 +106,7 @@ export default {
   },
   methods: {
     dateFormatter(row, column) {
-      const datetime = row.createTime;
+      const datetime = row.createTime
       if (datetime) {
         var dateMat = new Date(datetime)
         var year = dateMat.getFullYear()
@@ -120,13 +120,12 @@ export default {
       }
       return ''
     },
-    modelTypeFormatter(row, column){
-      const modelType = row.modelType;
-      if(modelType == 1){
-        return "审计模型";
-      }
-      else if(modelType == 2){
-        return "图形化模型";
+    modelTypeFormatter(row, column) {
+      const modelType = row.modelType
+      if (modelType == 1) {
+        return '审计模型'
+      } else if (modelType == 2) {
+        return '图形化模型'
       }
     },
     getList(query) {

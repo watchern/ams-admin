@@ -5,7 +5,7 @@ const analysisUrl = '/analysis'
  * 获取当前登录人模型分类树
  * @returns {AxiosPromise}
  */
-export function findModelFoldeTree(){
+export function findModelFoldeTree() {
   return request({
     baseURL: analysisUrl,
     url: '/modelFolderController/findModelFoldeTree',
@@ -18,7 +18,7 @@ export function findModelFoldeTree(){
  * @param data 要过滤的数据
  * @returns {AxiosPromise}
  */
-export function findModel(data){
+export function findModel(data) {
   return request({
     baseURL: analysisUrl,
     url: '/modelController/listByPage',
@@ -26,7 +26,7 @@ export function findModel(data){
     // params 以formData格式传递  后台用RequestParam
     // 直接加data以json格式传递  后台用RequestBody
     data
-  });
+  })
 }
 
 /**
@@ -34,7 +34,7 @@ export function findModel(data){
  * @param data 要删除的分类
  * @returns {AxiosPromise}
  */
-export function deleteModelFolder(data){
+export function deleteModelFolder(data) {
   return request({
     baseURL: analysisUrl,
     url: '/modelFolderController/deleteModelFolder',
@@ -42,7 +42,7 @@ export function deleteModelFolder(data){
     // params 以formData格式传递  后台用RequestParam
     // 直接加data以json格式传递  后台用RequestBody
     params: data
-  });
+  })
 }
 
 /**
@@ -50,7 +50,7 @@ export function deleteModelFolder(data){
  * @param data 要添加的分类对象
  * @returns {AxiosPromise}
  */
-export function addModelFolder(data){
+export function addModelFolder(data) {
   return request({
     baseURL: analysisUrl,
     url: '/modelFolderController/addModelFolder',
@@ -58,7 +58,7 @@ export function addModelFolder(data){
     // params 以formData格式传递  后台用RequestParam
     // 直接加data以json格式传递  后台用RequestBody
     data
-  });
+  })
 }
 
 /**
@@ -66,7 +66,7 @@ export function addModelFolder(data){
  * @param data 要修改的分类对象
  * @returns {AxiosPromise}
  */
-export function updateModelFolder(data){
+export function updateModelFolder(data) {
   return request({
     baseURL: analysisUrl,
     url: '/modelFolderController/updateModelFolder',
@@ -74,5 +74,5 @@ export function updateModelFolder(data){
     // params 以formData格式传递  后台用RequestParam
     // 直接加data以json格式传递  后台用RequestBody
     data
-  });
+  })
 }

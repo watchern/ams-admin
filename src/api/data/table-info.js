@@ -9,7 +9,7 @@ export function listUnCached(level, pid) {
     baseURL: baseURL,
     url: `/${controller1}/listUnCached`,
     method: 'get',
-    params:{
+    params: {
       level: level,
       pid: pid
     }
@@ -20,10 +20,9 @@ export function getDataTreeNode(pid) {
   return request({
     baseURL: baseURL,
     url: `/${controller1}/getDataTreeNode/${pid}`,
-    method: 'get',
+    method: 'get'
   })
 }
-
 
 export function saveTable(data) {
   return request({
@@ -50,5 +49,4 @@ export function delTable(ids) {
     method: 'delete'
   })
 }
-
 

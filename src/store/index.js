@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import getters from './getters'
+import dag from './modules/dag'
+import security from './modules/security'
 
 Vue.use(Vuex)
 
@@ -14,6 +16,10 @@ const modules = modulesFiles.keys().reduce((modules, modulePath) => {
   const moduleName = modulePath.replace(/^\.\/(.*)\.\w+$/, '$1')
   const value = modulesFiles(modulePath)
   modules[moduleName] = value.default
+
+  // 把dag用到的store加入到modules中
+  modules['dag'] = dag
+  modules['security'] = security
 
   return modules
 }, {})

@@ -179,17 +179,17 @@ export default {
      * 修改模型分类
      */
     updateFolder() {
-      this.form.modelFolderUuid = this.selectTreeNode.id;
-      this.form.parentUuid = null;
-      this.form.folderSort = null;
-      this.form.folderPath= null;
-      this.form.pbScope = null;
+      this.form.modelFolderUuid = this.selectTreeNode.id
+      this.form.parentUuid = null
+      this.form.folderSort = null
+      this.form.folderPath = null
+      this.form.pbScope = null
       updateModelFolder(this.form).then(result => {
-        if(result.code == 0){
-          this.getModelFolder();
+        if (result.code == 0) {
+          this.getModelFolder()
         }
-      });
-      this.dialogFormVisible = false;
+      })
+      this.dialogFormVisible = false
     },
     /**
      * 删除模型分类
@@ -197,9 +197,9 @@ export default {
      * @param data 节点数据
      */
     deleteFolder(node, data) {
-      if(data.pid == 0){
+      if (data.pid == 0) {
         this.$message({ success: 'info', message: '根目录不允许删除' })
-        return;
+        return
       }
       if ((data.children != undefined && data.children.length == 0) || data.children == undefined) {
         var obj = { modelFolderUuid: data.id }
@@ -210,19 +210,19 @@ export default {
         }).then(() => {
           deleteModelFolder(obj).then(result => {
             if (result.code == 0) {
-              this.getModelFolder();
+              this.getModelFolder()
               this.$message({
                 type: 'success',
                 message: '删除成功!'
-              });
+              })
             }
-          });
+          })
         }).catch(() => {
           this.$message({
             type: 'info',
             message: '已取消删除'
-          });
-        });
+          })
+        })
       } else {
         this.$message({ success: 'error', message: '该分类下有分类或模型，不允许删除' })
       }
