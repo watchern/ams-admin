@@ -13,8 +13,12 @@ import tableRouter from './modules/table'
 import nestedRouter from './modules/nested'
 import dataRouter from './modules/data'
 import baseRouter from './modules/base/base'
+<<<<<<< HEAD
 import etlschedulerRouter from './modules/etlscheduler/etlscheduler'
 
+=======
+import analysisRouter from './modules/analysis/analysis'
+>>>>>>> ab69d24b69b0e566ef087121b18714ee9c607c6d
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -79,7 +83,11 @@ const AceRoutes = [
   },
   dataRouter,
   baseRouter,
+<<<<<<< HEAD
   etlschedulerRouter
+=======
+  analysisRouter
+>>>>>>> ab69d24b69b0e566ef087121b18714ee9c607c6d
   // ====> 新的router组 import后添加在这里
 ]
 

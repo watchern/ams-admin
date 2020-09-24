@@ -1,198 +1,275 @@
 <template>
-  <div class="main-page w100 h100 flex a-center j-start flex-row">
-    <!--左侧树-->
-    <div class="main-page-left h100 flex-shrink">
-      <new-tree />
-    </div>
-    <!--右侧表-->
-    <div class="main-page-right flex1 h100">
-      <div class="new-table-search flex a-center j-between flex-row">
-        <div class="search-left h100 flex a-center j-start flex-row">
-          <div class="tag-box flex a-center j-center">
-            <i class="el-icon-plus text-white" />
-          </div>
-          <div class="tag-box flex a-center j-center">
-            <i class="el-icon-remove text-white" />
-          </div>
-          <div class="tag-box flex a-center j-center">
-            <i class="el-icon-edit text-white" />
-          </div>
-          <div class="tag-box flex a-center j-center">
-            <i class="el-icon-search text-white" />
-          </div>
+  <div>
+    <el-row :gutter="5">
+      <el-col :span="6">
+        <el-input
+          placeholder="输入关键字进行过滤"
+          v-model="filterText1">
+        </el-input>
+        <MyElTree
+          :props="props"
+          :load="loadNode1"
+          lazy  :filter-node-method="filterNode"
+          class="filter-tree"
+          check-strictly="true"
+          ref="tree1"
+          show-checkbox>
+        </MyElTree>
+      </el-col>
+      <el-col :span="2" style="width: 45px; padding-top: 10%">
+        <div class="transfer-center">
+          <p class="transfer-center-item">
+            <el-button
+              type="primary"
+              @click="addTable"
+              icon="el-icon-arrow-right"
+              circle
+              :disabled="fromDisabled"
+            ></el-button>
+          </p>
+          <p class="transfer-center-item">
+            <el-button
+              type="primary"
+              @click="removeTable"
+              :disabled="toDisabled"
+              icon="el-icon-arrow-left"
+              circle
+            ></el-button>
+          </p>
         </div>
-        <div class="search-right h100 flex a-center j-end flex-row">
-          <new-input v-model="searchVal" @keydown="keydown" :placeholder="'按业务属性编码查找'" />
-          <div class="icon-box relative flex a-center j-center" :class="[isShowNewCard && 'icon-box-active']" @click.stop.prevent="isShowNewCard=!isShowNewCard">
-            <i class="el-icon-search icon flex-shrink" />
-            <div v-if="isShowNewCard" class="new-card-warp absolute" @click.stop.prevent="()=>{}">
-              <new-card />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="new-table-content">
-        <div class="count-total-wrap">
-          <i class="el-icon-warning icon-waring" />
-          <span class="info">共{{ total }}项 已选择 <span class="info-color">{{ selectedRowVal }}</span> 项</span>
-        </div>
-        <div class="new-table-content-wrap">
-          <new-ag-grid ref="agGridDom" :table-options="tableOptions" :row-data="tableData"
-                       :page-num="pageNum" :page-size="pageSize" :total="total"
-                        @handleCurrentChange="init()"/>
-        </div>
-      </div>
-    </div>
+      </el-col>
+      <el-col :span="12">
+        <el-input
+          placeholder="输入关键字进行过滤"
+          v-model="filterText2">
+        </el-input>
+        <MyElTree
+          :props="props"
+          :load="loadNode2"
+          lazy  :filter-node-method="filterNode"
+          class="filter-tree"  highlight-current="true"
+          ref="tree2" nodeKey="id"
+          show-checkbox>
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span>{{ node.label }}</span>
+            <span style="margin-left: 10px">
+              <!--添加： 根节点以及手工维护的节点-->
+              <el-button type="text"  v-if="data.id === 'ROOT' || (data.extMap && data.extMap.folder_type==='maintained')"
+                         size="mini"  @click.stop="() => handleCreateFolder(node, data)"><i class="el-icon-circle-plus"></i></el-button>
+              <!--修改： 手工维护的节点-->
+              <el-button  type="text" v-if="data.extMap && data.extMap.folder_type==='maintained'"
+                          size="mini"  @click.stop="() => handleUpdateFolder(node, data)"> <i class="el-icon-edit"></i> </el-button>
+              <!--删除： 手工维护的节点-->
+              <el-button  type="text"  v-if="data.extMap && data.extMap.folder_type==='maintained'"
+                          size="mini"  @click.stop="() => handleRemoveFolder(node, data)"> <i class="el-icon-delete"></i> </el-button>
+            </span>
+          </span>
+        </MyElTree>
+      </el-col>
+    </el-row>
+    <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="500px">
+      <el-form ref="folderForm" :model="folderForm" label-width="80px">
+        <el-form-item label="文件夹名称" label-width="120px">
+          <el-input v-model="folderForm.folderName" style="width: 300px;"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" >
+          <el-button type="primary" @click="dialogStatus==='create'?createFolder():updateFolder()">确定</el-button>
+          <el-button @click="folderFormVisible = false">取消</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import TableCommon from '@/mixin/table-common.js'
-import { listByPage } from '@/api/data/biz-attr'
-export default {
-  mixins: [TableCommon],
-  data() {
-    return {
-      tableData: [],
-      attrName: '11',
-      currentPage: 1,
-      pageSize: 20,
-      total: 0,
-      isShowNewCard: false,
-      searchVal: '',
-      // selectedRowVal:0,
-      tableOptions: {
-        columnDefs: [
-          {
-            headerName: '',
-            checkboxSelection: true,
-            headerCheckboxSelection: true,
-            width: 50,
-            pinned: 'left'
-          },
-          {
-            headerName: '业务属性编码',
-            field: 'attrName',
-            filter: 'agTextColumnFilter',
-            pinned: 'left'
-          },
-          { headerName: '业务属性名称', field: 'attrName' },
-          {
-            headerName: '项目状态',
-            field: 'age',
-            filter: 'agNumberColumnFilter'
-          },
-          { headerName: '描述', field: 'describe', filter: 'agNumberColumnFilter' },
-        ]
+  import MyElTree from '@/components/Ace/tree/src/tree.vue'
+  import { listUnCached, getDataTreeNode, saveTable, updateTable, delTable } from '@/api/data/table-info'
+  import { saveFolder, updateFolder, delFolder }  from '@/api/data/folder'
+  import { commonNotify } from '@/utils'
+
+  export default {
+    watch: {
+      filterText1(val) {
+        this.$refs.tree1.filter(val);
+      },
+      filterText2(val) {
+        this.$refs.tree2.filter(val);
       }
-    }
-  },
-  computed: {
-    selectedRowVal() {
-      return 4
-    }
-  },
-  created() {
-    this.init()
-  },
-  methods: {
-    progressBar(params) {
-      return this.$tool.setTableCellRender(params)
     },
-    init() {
-      var param = {
-        currentPage: this.currentPage,
-        pageSize: this.pageSize,
-        attrName: this.attrName
+    data(){
+      return {
+        filterText1 : null,
+        filterText2 : null,
+        fromData: [],
+        props: {
+          label:'label',
+          isLeaf: 'leaf',
+        },
+        folderForm:{
+          folderUuid: null,
+          folderName: null,
+          parentFolderUuid: null,
+          orderNum: 0,
+          fullPath: null
+        },
+        folderFormVisible: false,
+        dialogStatus: '',
+        parentNode: {},
+        tempData: {}, //点击编辑时临时存放data
+        textMap: {
+          update: '编辑文件夹',
+          create: '添加文件夹'
+        },
+
+
       }
-      listByPage(param).then(resp => {
-        this.total = resp.data.total;
-        this.tableData = resp.data.records;
-      });
-      /*getUserRes()
-        .then(response => {
-          console.log(response)
-        })*/
     },
-    keydown() {}
+    computed:{
+      dialogTitle(){
+        return (this.parentNode.label==null ? '' : '在<'+this.parentNode.label+'>下')+this.textMap[this.dialogStatus];
+      },
+      fromDisabled(){
+        return false;
+      },
+      toDisabled(){
+        return false;
+      }
+    },
+    created(){
+    },
+    methods:{
+      filterNode(value, data) {
+        if (!value) return true;
+        return data.label.indexOf(value) !== -1;
+      },
+      loadNode1(node, resolve){
+        if(node.level <= 3){
+          var pid = node.data ? node.data.id : 'ROOT' ;
+          listUnCached(node.level, pid).then(resp => {
+            resolve(resp.data);
+          });
+        }else{
+          resolve([]);
+        }
+      },
+      loadNode2(node, resolve){
+        var pid = node.data ? node.data.id : null ;
+        if(!node.data){
+          resolve([{id: 'ROOT', label: '数据集', leaf: false}]);
+        }else{
+          getDataTreeNode(node.data.id).then(resp => {
+            resolve(resp.data);
+          })
+        }
+      },
+      resetFolderForm(){
+        Object.keys(this.folderForm).forEach(key =>{
+          this.$set(this.folderForm, key, null);
+        })
+      },
+      handleCreateFolder(node, data) {
+        this.resetFolderForm();
+        this.parentNode = node;
+        this.dialogStatus = 'create';
+        this.folderForm.parentFolderUuid = data.id;
+        var nodePath = this.$refs.tree2.getNodePath(data);
+        var fullPath = [];
+        nodePath.forEach(path => {
+          fullPath.push(path.id);
+        })
+        this.folderForm.fullPath = fullPath.join("/")
+        this.folderFormVisible = true
+      },
+      handleUpdateFolder(node, data) {
+        this.resetFolderForm();
+        this.tempData = data;
+        this.dialogStatus = 'update';
+        this.folderForm.folderUuid = data.id;
+        this.folderForm.folderName = data.label;
+        this.folderForm.fullPath = this.$refs.tree2.getNodePath(data);
+        this.folderFormVisible = true
+      },
+      handleRemoveFolder(node, data) {
+        this.$confirm('是否删除？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          delFolder(data.id).then(resp =>{
+            this.$notify(commonNotify({type: 'success', message: '删除成功！'}))
+            this.$refs.tree2.remove(data);
+          })
+        }).catch(() => {
+        });
+      },
+      createFolder(){
+        saveFolder(this.folderForm).then(resp=>{
+          var newChild = {
+            id: resp.data,
+            label: this.folderForm.folderName,
+            pid: this.folderForm.parentFolderUuid,
+            extMap: {
+              folder_type: 'maintained'
+            }
+          }
+          this.$refs.tree2.append(newChild, this.parentNode);
+          this.$notify(commonNotify({type: 'success', message: '创建成功！'}));
+          this.folderFormVisible = false
+        })
+      },
+      updateFolder(){
+        updateFolder(this.folderForm).then(resp=>{
+          this.tempData.label = this.folderForm.folderName;
+          this.$refs.tree2.updateKeyChildren(this.folderForm.folderUuid, this.tempData);
+          this.folderFormVisible = false
+        })
+      },
+      addTable(){
+        var ckNodes = this.$refs.tree1.getCheckedNodes();
+        var folderUuid = this.$refs.tree2.getCurrentKey();
+        if(ckNodes.length === 0){
+          this.$notify(commonNotify({type: 'warning', message: '请勾选左侧表'}))
+          return false;
+        }
+        if(!folderUuid){
+          this.$notify(commonNotify({type: 'warning', message: '请选中文件夹'}))
+          return false;
+        }
+        debugger;
+        ckNodes.forEach(node =>{
+          let tableForm = {
+            dbName: node.pid,
+            tbName: node.label,
+            folderUuid: folderUuid
+          };
+          saveTable(tableForm).then(resp => {
+            this.$notify(commonNotify({type: 'success', message: '表<'+node.label+'>成功同步成功！'}))
+            debugger;
+          })
+        });
+
+
+      },
+      removeTable(){
+
+      }
+    },
+    components:{ MyElTree } // 注册
   }
-}
+
+
+
 </script>
 
 <style lang="scss" scoped>
-.main-page {
-  padding: 12px;
-  overflow-y: auto;
-  &-left {
-    width: 350px;
-    background: #ffffff;
-    box-shadow: 3px 0 17px 0 rgba(0, 0, 0, 0.1);
-    box-shadow: 3px 0 17px 0 rgba(0,0,0,0.10);
-    border-radius: 30px 1px 1px 30px;
+  .filter-tree {
+    margin-top: 20px;
   }
-  &-right {
-    background: #edf1f5;
-    font-size: 12px;
-    .new-table-search {
-      height: 58px;
-      margin-bottom: 0px;
-      padding: 0 23px;
-      .search-left{
-        .tag-box{
-          background: #343942;
-          width: 24px;
-          height: 24px;
-          margin-right: 7.5px;
-          border-radius: 4px;
-        }
-      }
-      .search-right {
-        .icon-box {
-          border: 1px solid #343942;
-          box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          font-size: 16px;
-          margin-left: 11px;
-          font-size: 16px;
-          &-active{
-            background: #343942;
-            color: #C8FF8C;
-          }
-          .new-card-warp{
-            top: 40px;
-            right: 0px;
-            z-index: 100;
-          }
-        }
-      }
-    }
-    .new-table-content {
-      height: calc(100% - 80px);
-      &-wrap{
-        height: calc(100% - 36px);
-      }
-      .count-total-wrap{
-        height: 36px;
-        background: #D7C6C9;
-        border-radius: 4px;
-        font-family: PingFangSC-Regular;
-        font-size: 14px;
-        color: #343942;
-        letter-spacing: 1px;
-        line-height: 36px;
-        padding:0 11px;
-        .info-color{
-          color: #9B4C4C;
-        }
-        .icon-waring{
-          font-size: 16px;
-          color: #9B4C4C;
-          margin-right: 10px;
-        }
-      }
-    }
+  .dialog-bottom-btns{
+
   }
-}
+  .transfer-center-item{
+    width: 40px;
+    margin: 2px
+  }
 </style>

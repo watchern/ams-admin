@@ -15,7 +15,7 @@ const dataRouter = {
     },{
       path: 'table',
       name: '表注册',
-      component: () => import('@/views/Ace/home/first/index')
+      component: () => import('@/views/data/table/index')
     }
 
   ]
