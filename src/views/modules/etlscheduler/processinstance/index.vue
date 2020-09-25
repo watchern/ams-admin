@@ -179,7 +179,7 @@ export default {
     },
     handleDelete() {
       var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.paramUuid) })
+      this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
       del(ids.join(',')).then(() => {
         this.getList()
         this.$notify({
