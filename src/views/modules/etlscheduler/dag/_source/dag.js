@@ -44,8 +44,8 @@ Dag.prototype.create = function() {
     JSP.init({
       // dag: this.dag,
       // instance: this.instance,
-      dag: self.dag,
-      instance: self.instance,
+      dag: this.dag,
+      instance: this.instance,
       options: {
         onRemoveNodes($id) {
           self.dag.removeEventModelById($id)
@@ -349,6 +349,8 @@ Dag.prototype.backfill = function(arg) {
       JSP.init({
         dag: this.dag,
         instance: this.instance,
+        // dag: this.dag,
+        // instance: this.instance,
         options: {
           onRemoveNodes($id) {
             self.dag.removeEventModelById($id)

@@ -29,69 +29,73 @@
     <el-table
       :key="tableKey"
       v-loading="listLoading"
+      stripe
+      fit
+      style="width: 100%;"
       :data="list"
       border
-      fit
       highlight-current-row
-      style="width: 100%;"
+      max-height="800"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
       <el-table-column
         type="selection"
-        width="55"
+        align="center"
       />
       <el-table-column
         label="参数名称"
-        width="300px"
+        width="150px"
         align="center"
         prop="paramName"
       />
       <el-table-column
         label="参数编码"
-        width="300px"
+        width="150px"
         align="center"
         prop="paramCode"
       />
       <el-table-column
         label="参数类型"
-        width="300px"
+        width="150px"
         align="center"
         prop="paramType"
         :formatter="formatType"
       />
       <el-table-column
         label="默认值"
-        width="300px"
+        width="150px"
         align="center"
         prop="defaultValue"
       />
       <el-table-column
         label="可选值"
-        width="300px"
+        width="150px"
         align="center"
         prop="selectValue"
       />
       <el-table-column
         label="排序号"
-        width="300px"
+        width="150px"
         align="center"
         prop="orderNo"
       />
       <el-table-column
         label="状态"
-        width="300px"
+        width="150px"
         align="center"
         prop="status"
         :formatter="formatStatus"
       />
       <el-table-column
         label="参数描述"
+        width="150px"
+        align="center"
         prop="paramDesc"
       />
       <el-table-column
         label="修改时间"
-        width="300px"
+        width="200px"
         align="center"
         prop="updateTime"
       />

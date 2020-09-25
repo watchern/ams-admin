@@ -86,7 +86,8 @@
 import _ from 'lodash'
 // import store from '@/components/Dolphin/store'
 import store from '@/store'
-// import router from '@/conf/home/router'
+// import router from '@/conf/home/router
+import router from '@/router'
 import { downloadFile } from '@/components/Dolphin/download'
 import $ from 'jquery'
 
@@ -116,7 +117,7 @@ export default {
   data() {
     return {
       store,
-      // router,
+      router,
       isLog: false,
       stateId: $(`#${this.item.id}`).attr('data-state-id') || null,
       isScreen: false,

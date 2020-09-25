@@ -36,7 +36,7 @@
                 type="text"
                 :disabled="isDetails"
                 placeholder="请输入名称(必填)"
-                maxlength="100"
+                maxlength="100px"
                 autocomplete="off"
                 @on-blur="_verifName()"
               />
@@ -95,8 +95,14 @@
             >
               <m-priority v-model="taskInstancePriority" />
             </span>
-            <span class="text-b">Worker分组</span>
-            <m-worker-groups v-model="workerGroup" />
+            <span
+              class="text-b"
+              style="display:none"
+            >Worker分组</span>
+            <m-worker-groups
+              v-model="workerGroup"
+              style="display:none"
+            />
           </div>
         </div>
 
@@ -173,7 +179,8 @@ export default {
     self: Object,
     preNode: Array,
     rearList: Array,
-    instanceId: Number
+    // instanceId: Number
+    instanceId: String
   },
   data() {
     return {
@@ -361,8 +368,9 @@ export default {
         return item.id === this.workerGroup
       })
       if (item === undefined) {
-        this.$message.warning(`该Worker分组已经不存在，请选择正确的Worker分组！}`)
-        return false
+        // TODO
+        // this.$message.warning(`该Worker分组已经不存在，请选择正确的Worker分组！}`)
+        return true
       }
       return true
     },
@@ -475,6 +483,9 @@ export default {
     /**
      * Child workflow entry show/hide
      */
+    _isGoSubProcess() {
+      return this.taskType === 'SUB_PROCESS' && this.name
+    },
     // Define the item model
     _item() {
       return {
@@ -560,7 +571,8 @@ export default {
       this.dependence = o.dependence || {}
       this.cacheDependence = o.dependence || {}
     } else {
-      this.workerGroup = this.store.state.security.workerGroupsListAll[0].id
+      this.workerGroup = 1
+      // this.workerGroup = this.store.state.security.workerGroupsListAll[0].id
     }
     this.cacheBackfillItem = o
     this.isContentBox = true

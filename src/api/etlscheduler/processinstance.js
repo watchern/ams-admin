@@ -11,7 +11,7 @@ export function listByPage(data) {
   })
 }
 
-// 根据id查找
+// 根据流程id查找
 export function getById(id) {
   return request({
     baseURL: baseURL,
@@ -42,6 +42,16 @@ export function update(data) {
     baseURL: baseURL,
     url: '/processDefinition/update',
     method: 'put',
+    data
+  })
+}
+
+// 数据源列表获取
+export function datasourceList(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/datasources/list',
+    method: 'post',
     data
   })
 }

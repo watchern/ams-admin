@@ -230,9 +230,11 @@ export default {
       this.receivers = o.params.receivers && o.params.receivers.split(',') || []
       this.receiversCc = o.params.receiversCc && o.params.receiversCc.split(',') || []
     }
-    // read tasks from cache
-    if (!_.some(this.store.state.dag.cacheTasks, { id: this.createNodeId }) &&
-      this.router.history.current.name !== 'definition-create') {
+    // // read tasks from cache
+    // if (!_.some(this.store.state.dag.cacheTasks, { id: this.createNodeId }) &&
+    //   this.router.history.currentRoute.name !== 'processinstance') {
+
+    if (!_.some(this.store.state.dag.cacheTasks, { id: this.createNodeId })) {
       this._getReceiver()
     }
   },

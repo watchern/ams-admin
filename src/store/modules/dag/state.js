@@ -106,5 +106,7 @@ export default {
   isDetails: false,
   startup: {
 
-  }
+  },
+  status: '',
+  orderNo: ''
 }

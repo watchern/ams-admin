@@ -7,7 +7,10 @@
       <div class="home-right-content flex1 w100">
         <router-view />
       </div>
-      <div v-if="isShowRightFooter" class="home-right-footer flex-shrink w100">
+      <div
+        v-if="isShowRightFooter"
+        class="home-right-footer flex-shrink w100"
+      >
         <RightFooter />
       </div>
     </div>
@@ -33,17 +36,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.home{
+.home {
   height: 100vh;
-  &-left{
+  &-left {
     height: 100vh;
   }
-  &-right{
+  &-right {
     height: 100vh;
-    &-content{
+    &-content {
       height: calc(100% - 30px);
     }
-    &-footer{
+    &-footer {
       height: 30px;
     }
   }

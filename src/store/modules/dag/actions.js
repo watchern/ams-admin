@@ -20,6 +20,12 @@ import io from '@/components/Dolphin/io'
 import {
   tasksState
 } from '@/views/modules/etlscheduler/dag/_source/config'
+import {
+  save,
+  datasourceList,
+  getById,
+  update
+} from '@/api/etlscheduler/processinstance'
 
 export default {
 
@@ -109,34 +115,38 @@ export default {
     state
   }, payload) {
     return new Promise((resolve, reject) => {
-      io.get(`projects/${state.projectName}/process/select-by-id`, {
-        processId: payload
-      }, res => {
+      // io.get(`projects/${state.projectName}/process/select-by-id`,
+      getById(payload).then(
+        res => {
         // name
-        state.name = res.data.name
-        // description
-        state.description = res.data.description
-        // connects
-        state.connects = JSON.parse(res.data.connects)
-        // locations
-        state.locations = JSON.parse(res.data.locations)
-        // Process definition
-        const processDefinitionJson = JSON.parse(res.data.processDefinitionJson)
-        // tasks info
-        state.tasks = processDefinitionJson.tasks
-        // tasks cache
-        state.cacheTasks = {}
-        processDefinitionJson.tasks.forEach(v => {
-          state.cacheTasks[v.id] = v
-        })
-        // global params
-        state.globalParams = processDefinitionJson.globalParams
-        // timeout
-        state.timeout = processDefinitionJson.timeout
+          state.name = res.data.name
+          // description
+          state.description = res.data.description
+          // connects
+          state.connects = JSON.parse(res.data.connects)
+          // locations
+          state.locations = JSON.parse(res.data.locations)
+          // TODO
+          state.status = res.data.status
+          state.orderNo = res.data.orderNo
+          // Process definition
+          const processDefinitionJson = JSON.parse(res.data.processDefinitionJson)
+          // tasks info
+          state.tasks = processDefinitionJson.tasks
+          // tasks cache
+          state.cacheTasks = {}
+          processDefinitionJson.tasks.forEach(v => {
+            state.cacheTasks[v.id] = v
+          })
+          // global params
+          state.globalParams = processDefinitionJson.globalParams
+          // timeout
+          state.timeout = processDefinitionJson.timeout
 
-        state.tenantId = processDefinitionJson.tenantId
-        resolve(res.data)
-      }).catch(res => {
+          state.tenantId = processDefinitionJson.tenantId
+
+          resolve(res.data)
+        }).catch(res => {
         reject(res)
       })
     })
@@ -173,6 +183,9 @@ export default {
         state.name = res.data.name
         // desc
         state.description = res.data.description
+        // TODO
+        state.status = res.data.status
+        state.orderNo = res.data.orderNo
         // connects
         state.connects = JSON.parse(res.data.connects)
         // locations
@@ -216,14 +229,26 @@ export default {
         tenantId: state.tenantId,
         timeout: state.timeout
       }
-      io.post(`projects/${state.projectName}/process/save`, {
+      save({
         processDefinitionJson: JSON.stringify(data),
         name: _.trim(state.name),
         description: _.trim(state.description),
         locations: JSON.stringify(state.locations),
-        connects: JSON.stringify(state.connects)
-      }, res => {
+        connects: JSON.stringify(state.connects),
+        status: _.trim(state.status),
+        orderNo: _.trim(state.orderNo),
+        globalParams: JSON.stringify(state.globalParams)
+      }).then(res => {
         resolve(res)
+        // })
+        // io.post(`projects/${state.projectName}/process/save`, {
+        //   processDefinitionJson: JSON.stringify(data),
+        //   name: _.trim(state.name),
+        //   description: _.trim(state.description),
+        //   locations: JSON.stringify(state.locations),
+        //   connects: JSON.stringify(state.connects)
+        // }, res => {
+        //   resolve(res)
       }).catch(e => {
         reject(e)
       })
@@ -242,16 +267,30 @@ export default {
         tenantId: state.tenantId,
         timeout: state.timeout
       }
-      io.post(`projects/${state.projectName}/process/update`, {
+      // io.post(`projects/${state.projectName}/process/update`, {
+      //   processDefinitionJson: JSON.stringify(data),
+      //   locations: JSON.stringify(state.locations),
+      //   connects: JSON.stringify(state.connects),
+      //   name: _.trim(state.name),
+      //   description: _.trim(state.description),
+      //   status: _.trim(state.status),
+      //   orderNo: _.trim(state.orderNo),
+      //   id: payload
+      // },
+      update({
         processDefinitionJson: JSON.stringify(data),
-        locations: JSON.stringify(state.locations),
-        connects: JSON.stringify(state.connects),
         name: _.trim(state.name),
         description: _.trim(state.description),
-        id: payload
-      }, res => {
-        resolve(res)
-      }).catch(e => {
+        locations: JSON.stringify(state.locations),
+        connects: JSON.stringify(state.connects),
+        status: _.trim(state.status),
+        orderNo: _.trim(state.orderNo),
+        globalParams: JSON.stringify(state.globalParams),
+        processDefinitionUuid: payload
+      }).then(
+        res => {
+          resolve(res)
+        }).catch(e => {
         reject(e)
       })
     })
@@ -357,9 +396,12 @@ export default {
     state
   }, payload) {
     return new Promise((resolve, reject) => {
-      io.get('datasources/list', {
-        type: payload
-      }, res => {
+      // io.get('datasources/list', {
+      //   type: payload
+      // },
+      datasourceList({
+        dbType: payload
+      }).then(res => {
         resolve(res)
       }).catch(res => {
         reject(res)
