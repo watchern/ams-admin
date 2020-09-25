@@ -28,6 +28,18 @@ const etlschedulerRouter = {
       meta: { title: 'paramfield' }
     },
     {
+      path: 'dataresource',
+      name: 'dataresource',
+      component: () => import('@/views/modules/etlscheduler/dataresource/index'),
+      meta: { title: 'dataresource' }
+    },
+    {
+      path: 'processschedule',
+      name: 'processschedule',
+      component: () => import('@/views/modules/etlscheduler/processschedule/index'),
+      meta: { title: 'processschedule' },
+      },
+      {
       path: 'taskinstance',
       name: 'taskinstance',
       component: () => import('@/views/modules/etlscheduler/taskinstance/index'),
