@@ -139,6 +139,9 @@ export default {
         sortBy: 'asc',
         sortName: 'create_time'
       },
+      temp: {
+        processDefinitionUuid: null
+      },
       selections: [],
       downloadLoading: false
     }
@@ -169,22 +172,10 @@ export default {
     handleCreate() {
       this.$router.push('/etlscheduler/workflow')
     },
-    createData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          save(this.temp).then(() => {
-            this.getList()
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '创建成功',
-              type: 'success',
-              duration: 2000,
-              position: 'bottom-right'
-            })
-          })
-        }
-      })
+    handleUpdate() {
+      this.temp = Object.assign({}, this.selections[0])
+      // 编辑的页面跳转
+      this.$router.push(`/etlscheduler/definition/${this.temp.processDefinitionUuid}`)
     },
     handleDelete() {
       var ids = []

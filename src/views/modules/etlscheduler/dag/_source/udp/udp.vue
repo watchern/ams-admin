@@ -200,6 +200,9 @@ export default {
       this.store.commit('dag/setTenantId', _.cloneDeep(this.tenantId))
       this.store.commit('dag/setDesc', _.cloneDeep(this.description))
       this.store.commit('dag/setSyncDefine', this.syncDefine)
+      // TODO
+      this.store.commit('dag/setStatus', _.cloneDeep(this.status))
+      this.store.commit('dag/setOrderNo', _.cloneDeep(this.orderNo))
     },
     /**
      * submit

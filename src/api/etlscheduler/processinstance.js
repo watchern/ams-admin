@@ -11,7 +11,7 @@ export function listByPage(data) {
   })
 }
 
-// 根据id查找
+// 根据流程id查找
 export function getById(id) {
   return request({
     baseURL: baseURL,
@@ -46,7 +46,7 @@ export function update(data) {
   })
 }
 
-// 修改对象
+// 数据源列表获取
 export function datasourceList(data) {
   return request({
     baseURL: baseURL,

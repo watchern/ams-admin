@@ -1,5 +1,8 @@
 <template>
-  <div class="clearfix dag-model" style=" z-index:100">
+  <div
+    class="clearfix dag-model"
+    style=" z-index:100"
+  >
     <div class="toolbar">
       <div class="title"><span>工具栏</span></div>
       <div class="toolbar-btn">
@@ -142,7 +145,7 @@
 </template>
 <script>
 import _ from 'lodash'
-import Dag from './dag'
+import dag0 from './dag'
 import mUdp from './udp/udp'
 import { jsPlumb } from 'jsplumb'
 import Clipboard from 'clipboard'
@@ -172,7 +175,7 @@ export default {
       toolOperCode: '',
       spinnerLoading: false,
       urlParam: {
-        id: this.$route.params.id || null
+        id: this.$route.params.processDefinitionUuid || null
       },
       isRtTasks: false,
       isRefresh: false,
@@ -191,7 +194,7 @@ export default {
       $('#canvas').html('')
 
       // Destroy round robin
-      Dag.init({
+      dag0.init({
         dag: this,
         instance: jsPlumb.getInstance({
           Endpoint: [
@@ -215,18 +218,18 @@ export default {
         })
       })
       if (this.tasks.length) {
-        Dag.backfill(true)
+        dag0.backfill(true)
         if (this.type === 'instance') {
           this._getTaskState(false).then(res => { })
         }
       } else {
-        Dag.create()
+        dag0.create()
       }
     },
 
     init(args) {
       if (this.tasks.length) {
-        Dag.backfill(args)
+        dag0.backfill(args)
         // Process instances can view status
         if (this.type === 'instance') {
           this._getTaskState(false).then(res => { })
@@ -236,30 +239,30 @@ export default {
           }, 90000)
         }
       } else {
-        Dag.init({
-          dag: this,
-          instance: jsPlumb.getInstance({
-            Endpoint: [
-              'Dot', { radius: 1, cssClass: 'dot-style' }
-            ],
-            Connector: 'Bezier',
-            PaintStyle: { lineWidth: 2, stroke: '#456' }, // Connection style
-            HoverPaintStyle: { stroke: '#ccc', strokeWidth: 3 },
-            ConnectionOverlays: [
-              [
-                'Arrow',
-                {
-                  location: 1,
-                  id: 'arrow',
-                  length: 12,
-                  foldback: 0.8
-                }
-              ]
-            ],
-            Container: 'canvas'
-          })
-        })
-        Dag.create()
+        // dag0.init({
+        //   dag: this,
+        //   instance: jsPlumb.getInstance({
+        //     Endpoint: [
+        //       'Dot', { radius: 1, cssClass: 'dot-style' }
+        //     ],
+        //     Connector: 'Bezier',
+        //     PaintStyle: { lineWidth: 2, stroke: '#456' }, // Connection style
+        //     HoverPaintStyle: { stroke: '#ccc', strokeWidth: 3 },
+        //     ConnectionOverlays: [
+        //       [
+        //         'Arrow',
+        //         {
+        //           location: 1,
+        //           id: 'arrow',
+        //           length: 12,
+        //           foldback: 0.8
+        //         }
+        //       ]
+        //     ],
+        //     Container: 'canvas'
+        //   })
+        // })
+        dag0.create()
       }
     },
     /**
@@ -363,7 +366,7 @@ export default {
       }
 
       // event type
-      Dag.toolbarEvent({
+      dag0.toolbarEvent({
         item: item,
         code: code,
         is: is
@@ -384,7 +387,7 @@ export default {
       return new Promise((resolve, reject) => {
         this.spinnerLoading = true
         // Storage store
-        Dag.saveStore().then(res => {
+        dag0.saveStore().then(res => {
           if (this._verifConditions(res.tasks)) {
             if (this.urlParam.id) {
               /**
@@ -666,6 +669,30 @@ export default {
     if (this.$route.query.subProcessIds) {
       this.isRtTasks = true
     }
+
+    dag0.init({
+      dag: this,
+      instance: jsPlumb.getInstance({
+        Endpoint: [
+          'Dot', { radius: 1, cssClass: 'dot-style' }
+        ],
+        Connector: 'Bezier',
+        PaintStyle: { lineWidth: 2, stroke: '#456' }, // Connection style
+        HoverPaintStyle: { stroke: '#ccc', strokeWidth: 3 },
+        ConnectionOverlays: [
+          [
+            'Arrow',
+            {
+              location: 1,
+              id: 'arrow',
+              length: 12,
+              foldback: 0.8
+            }
+          ]
+        ],
+        Container: 'canvas'
+      })
+    })
   },
   mounted() {
     this.init(this.arg)
