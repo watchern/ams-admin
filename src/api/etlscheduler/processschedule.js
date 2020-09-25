@@ -63,3 +63,12 @@ export function updateEnableState(id) {
     method: 'put'
   })
 }
+
+// 查询参数
+export function getParamById(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/processDefinition/getById/${id}`,
+    method: 'get'
+  })
+}
