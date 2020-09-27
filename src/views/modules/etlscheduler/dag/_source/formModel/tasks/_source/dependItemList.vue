@@ -169,8 +169,8 @@ export default {
     // get processlist
     this._getProjectList().then(() => {
       if (!this.dependItemList.length) {
-        const projectId = this.projectList[0].value
-        this._getProcessByProjectId(projectId).then(definitionList => {
+        // const projectId = this.projectList[0].value
+        this._getProcessByProjectId().then(definitionList => {
           const value = definitionList[0].value
           this._getDependItemList(value).then(depTasksList => {
             this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(value, definitionList, depTasksList, projectId)))
@@ -182,7 +182,7 @@ export default {
         // get item list
         this._getDependItemList(ids, false).then(res => {
           _.map(this.dependItemList, (v, i) => {
-            this._getProcessByProjectId(v.projectId).then(definitionList => {
+            this._getProcessByProjectId().then(definitionList => {
               this.$set(this.dependItemList, i, this._rtOldParams(v.definitionId, definitionList, ['ALL'].concat(_.map(res[v.definitionId] || [], v => v.name)), v))
             })
           })
@@ -201,8 +201,8 @@ export default {
       this.isLoading = true
 
       // add task list
-      const projectId = this.projectList[0].value
-      this._getProcessByProjectId(projectId).then(definitionList => {
+      // const projectId = this.projectList[0].value
+      this._getProcessByProjectId().then(definitionList => {
         // dependItemList index
         const is = (value) => _.some(this.dependItemList, { definitionId: value })
         const noArr = _.filter(definitionList, v => !is(v.value))
@@ -254,9 +254,9 @@ export default {
         resolve(definitionList)
       })
     },
-    _getProcessByProjectId(id) {
+    _getProcessByProjectId() {
       return new Promise((resolve, reject) => {
-        this.store.dispatch('dag/getProcessByProjectId', { projectId: id }).then(res => {
+        this.store.dispatch('dag/getProcessByProjectId').then(res => {
           const definitionList = _.map(_.cloneDeep(res), v => {
             return {
               value: v.id,
@@ -273,11 +273,11 @@ export default {
     _getDependItemList(ids, is = true) {
       return new Promise((resolve, reject) => {
         if (is) {
-          this.store.dispatch('dag/getProcessTasksList', { processDefinitionId: ids }).then(res => {
+          this.store.dispatch('dag/getProcessTasksList').then(res => {
             resolve(['ALL'].concat(_.map(res, v => v.name)))
           })
         } else {
-          this.store.dispatch('dag/getTaskListDefIdAll', { processDefinitionIdList: ids }).then(res => {
+          this.store.dispatch('dag/getTaskListDefIdAll').then(res => {
             resolve(res)
           })
         }
@@ -286,8 +286,8 @@ export default {
     /**
      * change process get dependItemList
      */
-    _onChangeProjectId({ value }) {
-      this._getProcessByProjectId(value).then(definitionList => {
+    _onChangeProjectId() {
+      this._getProcessByProjectId().then(definitionList => {
         /* this.$set(this.dependItemList, this.itemIndex, this._dlOldParams(value, definitionList, item))*/
         const definitionId = definitionList[0].value
         this._getDependItemList(definitionId).then(depTasksList => {

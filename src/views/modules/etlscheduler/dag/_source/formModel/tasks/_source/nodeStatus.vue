@@ -138,7 +138,7 @@ export default {
         // get item list
         this._getDependItemList(ids, false).then(res => {
           _.map(this.dependItemList, (v, i) => {
-            this._getProcessByProjectId(v.projectId).then(definitionList => {
+            this._getProcessByProjectId().then(definitionList => {
               this.$set(this.dependItemList, i, this._rtOldParams(v.definitionId, ['ALL'].concat(_.map(res[v.definitionId] || [], v => v.name)), v))
             })
           })
@@ -182,9 +182,9 @@ export default {
         resolve()
       })
     },
-    _getProcessByProjectId(id) {
+    _getProcessByProjectId() {
       return new Promise((resolve, reject) => {
-        this.store.dispatch('dag/getProcessByProjectId', { projectId: id }).then(res => {
+        this.store.dispatch('dag/getProcessByProjectId').then(res => {
           this.definitionList = _.map(_.cloneDeep(res), v => {
             return {
               value: v.id,

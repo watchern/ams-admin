@@ -1,16 +1,21 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <QueryField
-        ref="queryfield"
-        :form-data="queryFields"
-        @submit="getList"
-      />
+      <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
     <div>
-      <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview"
-        :on-remove="handleRemove" :before-remove="beforeRemove" multiple :limit="10" :on-exceed="handleExceed">
+      <el-upload
+        class="upload-demo"
+        action="https://jsonplaceholder.typicode.com/posts/"
+        :on-preview="handlePreview"
+        :on-remove="handleRemove"
+        :before-remove="beforeRemove"
+        multiple
+        :limit="10"
+        :on-exceed="handleExceed"
+      >
         <el-button size="small" type="infor">批量导入</el-button>
+      </el-upload>
       <el-button
         type="primary"
         size="mini"
@@ -41,142 +46,170 @@
         @click="handleBear()"
       >禁用</el-button>
     </div>
-    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;"
-      @sort-change="sortChange" @selection-change="handleSelectionChange">
+    <el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+      @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="调度任务名称" width="300px" align="center" prop="scheduleName" />
-      <el-table-column label="任务流程" width="300px" align="center" prop="processDefinitionId" />
-      <el-table-column label="作业周期" width="300px" align="center" prop="crontab" />
-      <el-table-column label="参数" width="300px" align="center" prop="taskParams" />
-      <el-table-column label="依赖任务环节" width="300px" align="center" prop="dependTaskInfo" />
-      <el-table-column label="排序号" width="300px" align="center" prop="processInstancePriority" />
-      <el-table-column label="状态" width="300px" align="center" prop="enableState" :formatter="formatStatus" />
+      <el-table-column
+        label="调度任务名称"
+        width="300px"
+        align="center"
+        prop="scheduleName"
+      />
+      <el-table-column
+        label="任务流程"
+        width="300px"
+        align="center"
+        prop="processDefinitionId"
+      />
+      <el-table-column
+        label="作业周期"
+        width="300px"
+        align="center"
+        prop="crontab"
+      />
+      <el-table-column
+        label="参数"
+        width="300px"
+        align="center"
+        prop="taskParams"
+      />
+      <el-table-column
+        label="依赖任务环节"
+        width="300px"
+        align="center"
+        prop="dependTaskInfo"
+      />
+      <el-table-column
+        label="排序号"
+        width="300px"
+        align="center"
+        prop="processInstancePriority"
+      />
+      <el-table-column
+        label="状态"
+        width="300px"
+        align="center"
+        prop="enableState"
+        :formatter="formatStatus"
+      />
       <el-table-column label="调度任务描述" prop="scheduleDesc" />
-      <el-table-column label="最新修改人" width="300px" align="center" prop="updateUserName" />
-      <el-table-column label="修改时间" width="300px" align="center" prop="updateTime" />
+      <el-table-column
+        label="最新修改人"
+        width="300px"
+        align="center"
+        prop="updateUserName"
+      />
+      <el-table-column
+        label="修改时间"
+        width="300px"
+        align="center"
+        prop="updateTime"
+      />
       <el-table-column label="操作" width="400">
-   
         <template slot-scope="scope">
-          <el-button
-            type="primary"
-            size="small"
-          >添加依赖</el-button>
-          <el-button
-            type="primary"
-            size="small"
-          >手动执行</el-button>
+          <el-button type="primary" size="small">添加依赖</el-button>
+          <el-button type="primary" size="small">手动执行</el-button>
         </template>
       </el-table-column>
     </el-table>
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="pageQuery.pageNo"
       :limit.sync="pageQuery.pageSize"
       @pagination="getList"
     />
 
-    <el-dialog
-      :title="textMap[dialogStatus]"
-      :visible.sync="dialogFormVisible"
-    >
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="140px"
-        style="width: 700px; margin-left:50px;"
+        style="width: 700px; margin-left: 50px"
       >
-        <el-form-item
-          label="任务名称"
-          prop="scheduleName"
-        >
+        <el-form-item label="任务名称" prop="scheduleName">
           <el-input v-model="temp.scheduleName" />
         </el-form-item>
-        <el-form-item
-          label="排序号"
-          prop="processInstancePriority"
-        >
+        <el-form-item label="排序号" prop="processInstancePriority">
           <el-input v-model="temp.processInstancePriority" />
         </el-form-item>
-        <el-form-item
-          label="状态"
-          prop="enableState"
-        >
-          <el-select
-            v-model="temp.enableState"
-            placeholder="请选择状态"
-          >
-            <el-option
-              label="启用"
-              :value="1"
-            />
-            <el-option
-              label="停用"
-              :value="0"
-            />
+        <el-form-item label="状态" prop="enableState">
+          <el-select v-model="temp.enableState" placeholder="请选择状态">
+            <el-option label="启用" :value="1" />
+            <el-option label="停用" :value="0" />
           </el-select>
         </el-form-item>
-        <el-form-item
-          label="作业周期"
-          prop="crontab"
-        >
+        <el-form-item label="作业周期" prop="crontab">
           <el-input v-model="temp.crontab" />
         </el-form-item>
-        <el-form-item
-          label="流程描述"
-          prop="scheduleDesc"
-        >
-          <el-input
-            v-model="temp.scheduleDesc"
-            type="textarea"
-          />
+        <el-form-item label="流程描述" prop="scheduleDesc">
+          <el-input v-model="temp.scheduleDesc" type="textarea" />
         </el-form-item>
         <el-form-item label="任务流程" prop="processDefinitionId">
           <!-- 查询任务流程 -->
-          <el-select v-model="temp.processDefinitionId" :filterable="true" :remote="true" reserve-keyword placeholder="请输入关键词"
-            :remote-method="remoteMethod" :loading="loading" @change="paramMsg(temp.processDefinitionId)">
-            <el-option v-for="item in options" :key="item.processDefinitionUuid" :label="item.name" :value="item.processDefinitionUuid">
-            </el-option>
+          <el-select
+            v-model="temp.processDefinitionId"
+            :filterable="true"
+            :remote="true"
+            reserve-keyword
+            placeholder="请输入关键词"
+            :remote-method="remoteMethod"
+            :loading="loading"
+            @change="paramMsg(temp.processDefinitionId)"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.processDefinitionUuid"
+              :label="item.name"
+              :value="item.processDefinitionUuid"
+            />
           </el-select>
         </el-form-item>
 
         <el-table :data="paramData" style="width: 100%">
           <el-table-column label="参数名称" width="180">
             <template slot-scope="scope">
-              <span style="margin-left: 10px">{{scope.row.prop}}</span>
+              <span style="margin-left: 10px">{{ scope.row.prop }}</span>
             </template>
           </el-table-column>
           <el-table-column label="参数编码" width="180">
             <template slot-scope="scope">
               <el-popover trigger="hover" placement="top">
-                <p>参数名称: {{ scope.row.prop}}</p>
-                <p>参数编码: {{ scope.row.type}}</p>
+                <p>参数名称: {{ scope.row.prop }}</p>
+                <p>参数编码: {{ scope.row.type }}</p>
                 <div slot="reference" class="name-wrapper">
-                  <el-tag size="medium">{{scope.row.type}}</el-tag>
+                  <el-tag size="medium">{{ scope.row.type }}</el-tag>
                 </div>
               </el-popover>
             </template>
           </el-table-column>
           <el-table-column label="参数赋值">
             <template slot-scope="scope">
-              <input type="text" v-model="temp.taskParams" @change="makeParam" placeholder="为参数赋值" />
+              <input
+                v-model="temp.taskParams"
+                type="text"
+                placeholder="为参数赋值"
+                @change="makeParam"
+              >
             </template>
           </el-table-column>
         </el-table>
-        <el-form-item label="依赖任务">
-          <el-button
-            type="primary"
-            size="mini"
-          >新增</el-button>
-        </el-form-item>
         <!-- 添加任务依赖 -->
-
         <el-form-item>
           <div class="dependence-model">
             <m-list-box>
-              <div slot="text">添加依赖</div>
+              <div slot="text">{{ $t("Add dependency") }}</div>
               <div slot="content">
                 <div class="dep-opt">
                   <a
@@ -189,13 +222,13 @@
                       class="ans-icon-increase"
                       :class="_isDetails"
                       data-toggle="tooltip"
-                      :title="添加"
+                      :title="$t('Add')"
                     />
                     <em
                       v-if="isLoading"
                       class="ans-icon-spinner2 as as-spin"
                       data-toggle="tooltip"
-                      :title="添加"
+                      :title="$t('Add')"
                     />
                   </a>
                 </div>
@@ -205,10 +238,10 @@
                     class="dep-relation"
                     @click="!isDetails && _setGlobalRelation()"
                   >
-                    {{ relation === 'AND' ? 且 : 或 }}
+                    {{ relation === "AND" ? $t("and") : $t("or") }}
                   </span>
                   <div
-                    v-for="(el,$index) in dependTaskList"
+                    v-for="(el, $index) in dependTaskList"
                     :key="$index"
                     class="dep-list"
                   >
@@ -217,14 +250,14 @@
                       class="dep-line-pie"
                       @click="!isDetails && _setRelation($index)"
                     >
-                      {{ el.relation === 'AND' ? 且 : 或 }}
+                      {{ el.relation === "AND" ? $t("and") : $t("or") }}
                     </span>
                     <em
                       class="ans-icon-trash dep-delete"
                       data-toggle="tooltip"
                       data-container="body"
                       :class="_isDetails"
-                      :title="删除"
+                      :title="$t('delete')"
                       @click="!isDetails && _deleteDep($index)"
                     />
                     <m-depend-item-list
@@ -240,14 +273,12 @@
             </m-list-box>
           </div>
         </el-form-item>
-
-
       </el-form>
       <div slot="footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button
           type="primary"
-          @click="dialogStatus==='create'?createData():updateData()"
+          @click="dialogStatus === 'create' ? createData() : updateData()"
         >确定</el-button>
       </div>
     </el-dialog>
@@ -255,286 +286,85 @@
 </template>
 
 <script>
-  import _ from 'lodash'
-  import mListBox from './_source/listBox'
-  import mDependItemList from './_source/dependItemList'
-  import disabledState from '@/components/Dolphin/mixin/disabledState'
-  import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-  import {
-    listByPage,
-    save,
-    update,
-    del,
-    findByprocessDef,
-    updateEnableState,
-    getParamById
-  } from '@/api/etlscheduler/processschedule'
-  import QueryField from '@/components/Ace/query-field/index'
+import $ from 'jquery'
+import _ from 'lodash'
+import mListBox from './_source/listBox'
+import mDependItemList from './_source/dependItemList'
+import disabledState from '@/components/Dolphin/mixin/disabledState'
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import {
+  listByPage,
+  save,
+  update,
+  del,
+  findByprocessDef,
+  updateEnableState,
+  getParamById
+} from '@/api/etlscheduler/processschedule'
+import QueryField from '@/components/Ace/query-field/index'
 
-  export default {
-    components: {
-      Pagination,
-      QueryField,
-      mListBox,
-      mDependItemList
-    },
-    data() {
-      return {
-        // 添加依赖
-        relation: 'AND',
-        dependTaskList: [],
-        isLoading: false,
-        //  查询任务流程
-        options: [],
-        processParam: {
-          pageNo: 1,
-          pageSize: 100,
-          condition: {
-            keyword: null
-          },
-        },
-        loading: false,
-        paramData: [],
-        tableKey: 'id',
-        list: null,
-        total: 0,
-        listLoading: false,
-        // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
-        queryFields: [{
-            label: '任务名称',
-            name: 'scheduleName',
-            type: 'fuzzyText',
-            value: ''
-          },
-          {
-            label: '状态',
-            name: 'enableState',
-            type: 'select',
-            data: [{
-              name: '启用',
-              value: '1'
-            }, {
-              name: '停用',
-              value: '0'
-            }],
-            default: '0'
-          },
-          {
-            label: '模糊查询',
-            name: 'keyword',
-            type: 'fuzzyText'
-          }
-        ],
-        // 格式化参数列表
-        formatMap: {
-          enableState: {
-            1: '启用',
-            0: '停用',
-            null: '启用'
-          }
-        },
-        pageQuery: {
-          condition: null,
-          pageNo: 1,
-          pageSize: 10,
-          sortBy: 'asc',
-          sortName: 'updateTime'
-        },
-        temp: {
-          taskParams: null,
-          dependTaskInfo: null,
-          processInstancePriority: null,
-          enableState: null,
-          scheduleDesc: null,
-          updateUserName: null,
-          updateTime: null,
-          crontab: null,
-          scheduleName: null,
-          processDefinitionId: null,
-          id: null
-        },
-        selections: [],
-        dialogFormVisible: false,
-        dialogStatus: '',
-        textMap: {
-          update: '编辑参数',
-          create: '添加参数'
-        },
-        dialogPvVisible: false,
-        rules: {
-          scheduleName: [{
-            required: true,
-            message: '请填写调度任务名称',
-            trigger: 'change'
-          }],
-          processInstancePriority: [{
-            required: true,
-            message: '请填写排序号',
-            trigger: 'change'
-          }],
-          scheduleDesc: [{
-            max: 100,
-            message: '请填写流程描述',
-            trigger: 'change'
-          }],
-          crontab: [{
-            required: true,
-            message: '请填写作业周期',
-            trigger: 'change'
-          }],
-          enableState: [{
-            required: true,
-            message: '请选择参数状态',
-            trigger: 'change'
-          }],
-        },
-        downloadLoading: false
-      }
-    },
-    mixins: [disabledState],
-    props: {
-      backfillItem: Object
-    },
-    created() {
-      const o = this.backfillItem
-      const dependentResult = $(`#${o.id}`).data('dependent-result') || {}
-      this.getList()
-      // Does not represent an empty object backfill
-      if(!_.isEmpty(o)) {
-        this.relation = _.cloneDeep(o.dependence.relation) || 'AND'
-        this.dependTaskList = _.cloneDeep(o.dependence.dependTaskList) || []
-        const defaultState = this.isDetails ? 'WAITING' : ''
-        // Process instance return status display matches by key
-        _.map(this.dependTaskList, v => _.map(v.dependItemList, v1 => v1.state = dependentResult[
-          `${v1.definitionId}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}`] || defaultState))
-      }
-    },
-    methods: {
-      _addDep() {
-        if (!this.isLoading) {
-          this.isLoading = true
-          this.dependTaskList.push({
-            dependItemList: [],
-            relation: 'AND'
-          })
+export default {
+  name: 'Dependence',
+  components: {
+    Pagination,
+    QueryField,
+    mListBox,
+    mDependItemList
+  },
+  mixins: [disabledState],
+  props: {
+    backfillItem: Object
+  },
+  data() {
+    return {
+      // 添加依赖
+      relation: 'AND',
+      dependTaskList: [],
+      isLoading: false,
+      //  查询任务流程
+      options: [],
+      processParam: {
+        pageNo: 1,
+        pageSize: 100,
+        condition: {
+          keyword: null
         }
       },
-      _deleteDep(i) {
-        // remove index dependent
-        this.dependTaskList.splice(i, 1)
-
-        // remove tootip
-        $('body').find('.tooltip.fade.top.in').remove()
-      },
-      _onDeleteAll(i) {
-        this.dependTaskList.map((item, i) => {
-          if (item.dependItemList.length === 0) {
-            this.dependTaskList.splice(i, 1)
-          }
-        })
-        // this._deleteDep(i)
-      },
-      _setGlobalRelation() {
-        this.relation = this.relation === 'AND' ? 'OR' : 'AND'
-      },
-      getDependTaskList(i) {
-        // console.log('getDependTaskList',i)
-      },
-      _setRelation(i) {
-        this.dependTaskList[i].relation = this.dependTaskList[i].relation === 'AND' ? 'OR' : 'AND'
-      },
-      _verification() {
-        this.$emit('on-dependent', {
-          relation: this.relation,
-          dependTaskList: _.map(this.dependTaskList, v => {
-            return {
-              relation: v.relation,
-              dependItemList: _.map(v.dependItemList, v1 => _.omit(v1, ['depTasksList', 'state',
-                'dateValueList'
-              ]))
-            }
-          })
-        })
-        return true
-      },
-      // 参数赋值
-      makeParam(e) {
-        const {
-          value
-        } = e.target;
-        this.temp.taskParams = JSON.stringify(this.paramData[0].prop) + ":" + JSON.stringify(value)
-        // console.log("输入框===="+JSON.stringify(this.paramData[0].prop) + ":" +JSON.stringify(value))
-        // console.log("paramData"+this.paramData[0].prop)
-      },
-      // 参数详情
-      paramMsg() {
-        var id = this.temp.processDefinitionId
-        // console.log(id);
-        getParamById(id).then(resp => {
-          this.paramData = resp.data.globalParamList
-          this.temp.processDefinitionId = resp.data.name
-          // this.processName = resp.data.name
-          // this.processDefinitionId = this.processName
-          // console.log("id:"+this.processDefinitionId)
-        })
-      },
-      // 查询任务流程
-      remoteMethod(query) {
-        if (query !== '') {
-          this.loading = true;
-          setTimeout(() => {
-            this.loading = false;
-            this.processParam.condition.keyword = query
-            // console.log(this.processParam.condition.keyword)
-            findByprocessDef(this.processParam).then(resp => {
-              this.options = resp.data.records
-            })
-          }, 200);
-        } else {
-          this.options = [];
-        }
-      },
-      value: [],
       loading: false,
-      paramData: [{
-        paramName: '文件路径',
-        paramCode: 'FILE_PATH'
-      }, {
-        paramName: 'ODS表名',
-        paramCode: 'ODS_TABLE_NAME'
-      }, {
-        paramName: 'DW表名',
-        paramCode: 'DW_TABLE_NAME'
-      }],
+      paramData: [],
       tableKey: 'id',
       list: null,
       total: 0,
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
-      queryFields: [{
-        label: '任务名称',
-        name: 'scheduleName',
-        type: 'fuzzyText',
-        value: ''
-      },
-      {
-        label: '状态',
-        name: 'enableState',
-        type: 'select',
-        data: [{
-          name: '启用',
-          value: '1'
-        }, {
-          name: '停用',
-          value: '0'
-        }],
-        default: '0'
-      },
-      {
-        label: '模糊查询',
-        name: 'keyword',
-        type: 'fuzzyText'
-      }
+      queryFields: [
+        {
+          label: '任务名称',
+          name: 'scheduleName',
+          type: 'fuzzyText',
+          value: ''
+        },
+        {
+          label: '状态',
+          name: 'enableState',
+          type: 'select',
+          data: [
+            {
+              name: '启用',
+              value: '1'
+            },
+            {
+              name: '停用',
+              value: '0'
+            }
+          ],
+          default: '0'
+        },
+        {
+          label: '模糊查询',
+          name: 'keyword',
+          type: 'fuzzyText'
+        }
       ],
       // 格式化参数列表
       formatMap: {
@@ -542,10 +372,6 @@
           1: '启用',
           0: '停用',
           null: '启用'
-        },
-        processDefinitionId: {
-          1: '标准ETL流程',
-          2: '跑批计算流程'
         }
       },
       pageQuery: {
@@ -577,39 +403,92 @@
       },
       dialogPvVisible: false,
       rules: {
-        scheduleName: [{
-          required: true,
-          message: '请填写调度任务名称',
-          trigger: 'change'
-        }],
-        processInstancePriority: [{
-          required: true,
-          message: '请填写排序号',
-          trigger: 'change'
-        }],
-        scheduleDesc: [{
-          max: 100,
-          message: '请填写流程描述',
-          trigger: 'change'
-        }],
-        crontab: [{
-          required: true,
-          message: '请填写作业周期',
-          trigger: 'change'
-        }],
-        enableState: [{
-          required: true,
-          message: '请选择参数状态',
-          trigger: 'change'
-        }]
+        scheduleName: [
+          {
+            required: true,
+            message: '请填写调度任务名称',
+            trigger: 'change'
+          }
+        ],
+        processInstancePriority: [
+          {
+            required: true,
+            message: '请填写排序号',
+            trigger: 'change'
+          }
+        ],
+        scheduleDesc: [
+          {
+            max: 100,
+            message: '请填写流程描述',
+            trigger: 'change'
+          }
+        ],
+        crontab: [
+          {
+            required: true,
+            message: '请填写作业周期',
+            trigger: 'change'
+          }
+        ],
+        enableState: [
+          {
+            required: true,
+            message: '请选择参数状态',
+            trigger: 'change'
+          }
+        ]
       },
       downloadLoading: false
     }
   },
+  computed: {
+    cacheDependence() {
+      return {
+        relation: this.relation,
+        dependTaskList: _.map(this.dependTaskList, (v) => {
+          return {
+            relation: v.relation,
+            dependItemList: _.map(v.dependItemList, (v1) =>
+              _.omit(v1, ['depTasksList', 'state', 'dateValueList'])
+            )
+          }
+        })
+      }
+    }
+  },
+  watch: {
+    dependTaskList(e) {
+      setTimeout(() => {
+        this.isLoading = false
+      }, 600)
+    },
+    cacheDependence(val) {
+      this.$emit('on-cache-dependent', val)
+    }
+  },
   created() {
     this.getList()
+    const o = this.backfillItem
+    const dependentResult = $(`#${o.id}`).data('dependent-result') || {}
+    // Does not represent an empty object backfill
+    if (!_.isEmpty(o)) {
+      this.relation = _.cloneDeep(o.dependence.relation) || 'AND'
+      this.dependTaskList = _.cloneDeep(o.dependence.dependTaskList) || []
+      const defaultState = this.isDetails ? 'WAITING' : ''
+      // Process instance return status display matches by key
+      _.map(this.dependTaskList, (v) =>
+        _.map(
+          v.dependItemList,
+          (v1) =>
+            (v1.state =
+              dependentResult[
+                `${v1.definitionId}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}`
+              ] || defaultState)
+        )
+      )
+    }
   },
-
   methods: {
     _addDep() {
       if (!this.isLoading) {
@@ -627,6 +506,58 @@
       // remove tootip
       $('body').find('.tooltip.fade.top.in').remove()
     },
+    _onDeleteAll(i) {
+      this.dependTaskList.map((item, i) => {
+        if (item.dependItemList.length === 0) {
+          this.dependTaskList.splice(i, 1)
+        }
+      })
+      // this._deleteDep(i)
+    },
+    _setGlobalRelation() {
+      this.relation = this.relation === 'AND' ? 'OR' : 'AND'
+    },
+    getDependTaskList(i) {
+      // console.log('getDependTaskList',i)
+    },
+    _setRelation(i) {
+      this.dependTaskList[i].relation =
+        this.dependTaskList[i].relation === 'AND' ? 'OR' : 'AND'
+    },
+    _verification() {
+      this.$emit('on-dependent', {
+        relation: this.relation,
+        dependTaskList: _.map(this.dependTaskList, (v) => {
+          return {
+            relation: v.relation,
+            dependItemList: _.map(v.dependItemList, (v1) =>
+              _.omit(v1, ['depTasksList', 'state', 'dateValueList'])
+            )
+          }
+        })
+      })
+      return true
+    },
+    // 参数赋值
+    makeParam(e) {
+      const { value } = e.target
+      this.temp.taskParams =
+        JSON.stringify(this.paramData[0].prop) + ':' + JSON.stringify(value)
+      // console.log("输入框===="+JSON.stringify(this.paramData[0].prop) + ":" +JSON.stringify(value))
+      // console.log("paramData"+this.paramData[0].prop)
+    },
+    // 参数详情
+    paramMsg() {
+      var id = this.temp.processDefinitionId
+      // console.log(id);
+      getParamById(id).then((resp) => {
+        this.paramData = resp.data.globalParamList
+        this.temp.processDefinitionId = resp.data.name
+        // this.processName = resp.data.name
+        // this.processDefinitionId = this.processName
+        // console.log("id:"+this.processDefinitionId)
+      })
+    },
     // 查询任务流程
     remoteMethod(query) {
       if (query !== '') {
@@ -635,7 +566,7 @@
           this.loading = false
           this.processParam.condition.keyword = query
           // console.log(this.processParam.condition.keyword)
-          findByprocessDef(this.processParam).then(resp => {
+          findByprocessDef(this.processParam).then((resp) => {
             this.options = resp.data.records
           })
         }, 200)
@@ -650,7 +581,11 @@
       console.log(file)
     },
     handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择10个文件，本次选择了 ${files.length}个文件,共选择了 ${files.length + fileList.length} 个文件`)
+      this.$message.warning(
+        `当前限制选择10个文件，本次选择了 ${files.length}个文件,共选择了 ${
+          files.length + fileList.length
+        } 个文件`
+      )
     },
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}?`)
@@ -658,7 +593,7 @@
     getList(query) {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
-      listByPage(this.pageQuery).then(resp => {
+      listByPage(this.pageQuery).then((resp) => {
         this.total = resp.data.total
         this.list = resp.data.records
         this.listLoading = false
@@ -669,10 +604,7 @@
       this.getList()
     },
     sortChange(data) {
-      const {
-        prop,
-        order
-      } = data
+      const { prop, order } = data
       this.pageQuery.sortBy = order
       this.pageQuery.sortName = prop
       this.handleFilter()
@@ -728,7 +660,7 @@
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
+            const index = this.list.findIndex((v) => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -788,162 +720,135 @@
           duration: 2000,
           position: 'bottom-right'
         })
-      },
-      handleSelectionChange(val) {
-        this.selections = val
-      },
-      getSortClass: function(key) {
-        const sort = this.pageQuery.sort
-        return sort === `+${key}` ? 'asc' : 'desc'
-      },
-      // 格式化表格
-      formatStatus(data) {
-        return this.formatMap.enableState[data.enableState]
-      },
-      // formatProcessDef(data) {
-      //   return this.formatMap.processDefinitionId[data.processDefinitionId]
-      // }
-      watch: {
-        dependTaskList(e) {
-          setTimeout(() => {
-            this.isLoading = false
-          }, 600)
-        },
-        cacheDependence(val) {
-          this.$emit('on-cache-dependent', val)
-        }
-      },
-      computed: {
-        cacheDependence() {
-          return {
-            relation: this.relation,
-            dependTaskList: _.map(this.dependTaskList, v => {
-              return {
-                relation: v.relation,
-                dependItemList: _.map(v.dependItemList, v1 => _.omit(v1, ['depTasksList', 'state', 'dateValueList']))
-              }
-            })
-          }
-        }
-      }
+      })
+    },
+    handleSelectionChange(val) {
+      this.selections = val
+    },
+    getSortClass: function(key) {
+      const sort = this.pageQuery.sort
+      return sort === `+${key}` ? 'asc' : 'desc'
+    },
+    // 格式化表格
+    formatStatus(data) {
+      return this.formatMap.enableState[data.enableState]
     }
   }
 }
 </script>
-</script>
 <style lang="scss" rel="stylesheet/scss">
-  .dependence-model {
-    margin-top: -10px;
+.dependence-model {
+  margin-top: -10px;
 
-    .dep-opt {
-      margin-bottom: 10px;
-      padding-top: 3px;
-      line-height: 24px;
+  .dep-opt {
+    margin-bottom: 10px;
+    padding-top: 3px;
+    line-height: 24px;
 
-      .add-dep {
-        color: #0097e0;
-        margin-right: 10px;
+    .add-dep {
+      color: #0097e0;
+      margin-right: 10px;
 
-        i {
-          font-size: 18px;
-          vertical-align: middle;
-        }
-      }
-    }
-
-    .dep-list {
-      margin-bottom: 16px;
-      position: relative;
-      border-left: 1px solid #eee;
-      padding-left: 16px;
-      margin-left: -16px;
-      transition: all 0.2s ease-out;
-      padding-bottom: 20px;
-
-      &:hover {
-        border-left: 1px solid #0097e0;
-        transition: all 0.2s ease-out;
-
-        .dep-line-pie {
-          transition: all 0.2s ease-out;
-          border: 1px solid #0097e0;
-          background: #0097e0;
-          color: #fff;
-        }
-      }
-
-      .dep-line-pie {
-        transition: all 0.2s ease-out;
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        border: 1px solid #e2e2e2;
-        text-align: center;
-        top: 50%;
-        margin-top: -20px;
-        z-index: 1;
-        left: -10px;
-        border-radius: 10px;
-        background: #fff;
-        font-size: 12px;
-        cursor: pointer;
-
-        &::selection {
-          background: transparent;
-        }
-
-        &::-moz-selection {
-          background: transparent;
-        }
-
-        &::-webkit-selection {
-          background: transparent;
-        }
-      }
-
-      .dep-delete {
-        position: absolute;
-        bottom: -6px;
-        left: 14px;
+      i {
         font-size: 18px;
-        color: #ff0000;
-        cursor: pointer;
-      }
-    }
-
-    .dep-box {
-      border-left: 4px solid #eee;
-      margin-left: -46px;
-      padding-left: 42px;
-      position: relative;
-
-      .dep-relation {
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        border: 1px solid #e2e2e2;
-        text-align: center;
-        top: 50%;
-        margin-top: -10px;
-        z-index: 1;
-        left: -12px;
-        border-radius: 10px;
-        background: #fff;
-        font-size: 12px;
-        cursor: pointer;
-
-        &::selection {
-          background: transparent;
-        }
-
-        &::-moz-selection {
-          background: transparent;
-        }
-
-        &::-webkit-selection {
-          background: transparent;
-        }
+        vertical-align: middle;
       }
     }
   }
+
+  .dep-list {
+    margin-bottom: 16px;
+    position: relative;
+    border-left: 1px solid #eee;
+    padding-left: 16px;
+    margin-left: -16px;
+    transition: all 0.2s ease-out;
+    padding-bottom: 20px;
+
+    &:hover {
+      border-left: 1px solid #0097e0;
+      transition: all 0.2s ease-out;
+
+      .dep-line-pie {
+        transition: all 0.2s ease-out;
+        border: 1px solid #0097e0;
+        background: #0097e0;
+        color: #fff;
+      }
+    }
+
+    .dep-line-pie {
+      transition: all 0.2s ease-out;
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 1px solid #e2e2e2;
+      text-align: center;
+      top: 50%;
+      margin-top: -20px;
+      z-index: 1;
+      left: -10px;
+      border-radius: 10px;
+      background: #fff;
+      font-size: 12px;
+      cursor: pointer;
+
+      &::selection {
+        background: transparent;
+      }
+
+      &::-moz-selection {
+        background: transparent;
+      }
+
+      &::-webkit-selection {
+        background: transparent;
+      }
+    }
+
+    .dep-delete {
+      position: absolute;
+      bottom: -6px;
+      left: 14px;
+      font-size: 18px;
+      color: #ff0000;
+      cursor: pointer;
+    }
+  }
+
+  .dep-box {
+    border-left: 4px solid #eee;
+    margin-left: -46px;
+    padding-left: 42px;
+    position: relative;
+
+    .dep-relation {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 1px solid #e2e2e2;
+      text-align: center;
+      top: 50%;
+      margin-top: -10px;
+      z-index: 1;
+      left: -12px;
+      border-radius: 10px;
+      background: #fff;
+      font-size: 12px;
+      cursor: pointer;
+
+      &::selection {
+        background: transparent;
+      }
+
+      &::-moz-selection {
+        background: transparent;
+      }
+
+      &::-webkit-selection {
+        background: transparent;
+      }
+    }
+  }
+}
 </style>
