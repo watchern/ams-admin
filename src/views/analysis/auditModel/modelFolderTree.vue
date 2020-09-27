@@ -13,10 +13,11 @@
       default-expand-all
       :expand-on-click-node="false"
       @node-click="handleNodeClick"
-      @click="treeNodeClick"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
-        <span>{{ node.label }}</span>
+        <span>
+          <i :class="data.icon" />{{ node.label }}
+        </span>
         <span>
           <el-button type="text" size="mini" @click="() => setSelectTreeNode(node,data,1)"><i class="el-icon-circle-plus" /></el-button>
           <el-button type="text" size="mini" @click="() => setSelectTreeNode(node, data,2)"><i class="el-icon-edit" /></el-button>
@@ -66,6 +67,7 @@ export default {
   },
   watch: {
     filterText(val) {
+      // 搜索树
       this.$refs.tree.filter(val)
     }
   },
@@ -73,6 +75,9 @@ export default {
     this.getModelFolder()
   },
   methods: {
+    /**
+     *获取模型分类
+     */
     getModelFolder() {
       findModelFoldeTree().then(result => {
         this.data = result.data
@@ -83,7 +88,11 @@ export default {
      * @param data 树的对象数据 包括子节点
      */
     handleNodeClick(data) {
-      console.log(data)
+      if (data.type == 'model') {
+
+      } else {
+        this.$emit('refreshModelList', data)
+      }
     },
     /**
      * 树过滤
@@ -95,6 +104,12 @@ export default {
       if (!value) return true
       return data.label.indexOf(value) !== -1
     },
+    /**
+     * 设置选中的节点
+     * @param node 整个节点数据
+     * @param data 数据 要设置的节点数据
+     * @param operationType 1、添加；2、修改
+     */
     setSelectTreeNode(node, data, operationType) {
       this.operationType = operationType
       this.selectTreeNode = data
@@ -102,10 +117,6 @@ export default {
         this.form.modelFolderName = this.selectTreeNode.label
       }
       this.dialogFormVisible = true
-    },
-    treeNodeClick(node, data) {
-      console.log(data)
-      // 点击后加载模型
     },
     /**
      * 清空表单信息
@@ -162,6 +173,7 @@ export default {
             label: this.form.modelFolderName,
             children: [],
             pid: this.selectTreeNode.id,
+            icon: 'el-icon-folder',
             extMap: { pbScope: this.selectTreeNode.extMap.pbScope }
           }
           if (!this.selectTreeNode.children) {
@@ -179,17 +191,17 @@ export default {
      * 修改模型分类
      */
     updateFolder() {
-      this.form.modelFolderUuid = this.selectTreeNode.id;
-      this.form.parentUuid = null;
-      this.form.folderSort = null;
-      this.form.folderPath= null;
-      this.form.pbScope = null;
+      this.form.modelFolderUuid = this.selectTreeNode.id
+      this.form.parentUuid = null
+      this.form.folderSort = null
+      this.form.folderPath = null
+      this.form.pbScope = null
       updateModelFolder(this.form).then(result => {
-        if(result.code == 0){
-          this.getModelFolder();
+        if (result.code == 0) {
+          this.getModelFolder()
         }
-      });
-      this.dialogFormVisible = false;
+      })
+      this.dialogFormVisible = false
     },
     /**
      * 删除模型分类
@@ -197,9 +209,9 @@ export default {
      * @param data 节点数据
      */
     deleteFolder(node, data) {
-      if(data.pid == 0){
+      if (data.pid == 0) {
         this.$message({ success: 'info', message: '根目录不允许删除' })
-        return;
+        return
       }
       if ((data.children != undefined && data.children.length == 0) || data.children == undefined) {
         var obj = { modelFolderUuid: data.id }
@@ -210,19 +222,19 @@ export default {
         }).then(() => {
           deleteModelFolder(obj).then(result => {
             if (result.code == 0) {
-              this.getModelFolder();
+              this.getModelFolder()
               this.$message({
                 type: 'success',
                 message: '删除成功!'
-              });
+              })
             }
-          });
+          })
         }).catch(() => {
           this.$message({
             type: 'info',
             message: '已取消删除'
-          });
-        });
+          })
+        })
       } else {
         this.$message({ success: 'error', message: '该分类下有分类或模型，不允许删除' })
       }
