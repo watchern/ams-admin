@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import _ from 'lodash'
 import io from '@/components/Dolphin/io'
 import {
@@ -24,7 +7,9 @@ import {
   save,
   datasourceList,
   getById,
-  update
+  update,
+  getProcList,
+  findClassesByPackage
 } from '@/api/etlscheduler/processinstance'
 
 import {
@@ -122,7 +107,7 @@ export default {
       // io.get(`projects/${state.projectName}/process/select-by-id`,
       getById(payload).then(
         res => {
-        // name
+          // name
           state.name = res.data.name
           // description
           state.description = res.data.description
@@ -336,11 +321,32 @@ export default {
         resolve()
         return
       }
-
-      // io.get(`projects/${state.projectName}/process/list`, payload, res => {
-      io.get(`projects/ETL调度0819/process/list`, payload, res => {
+      getProcList('1').then(res => {
         state.processListS = res.data
-        resolve(res.data)
+        resolve(res)
+        // io.get(`projects/${state.projectName}/process/list`, payload, res => {
+        // io.get(`projects/ETL调度0819/process/list`, payload, res => {
+        //   state.processListS = res.data
+        //   resolve(res.data)
+      }).catch(res => {
+        reject(res)
+      })
+    })
+  },
+  /**
+   * Get a list of process definitions (sub-workflow usage is not paged)
+   */
+  getClassList({
+    state
+  }, payload) {
+    return new Promise((resolve, reject) => {
+      if (state.classListS.length) {
+        resolve()
+        return
+      }
+      findClassesByPackage().then(res => {
+        state.classListS = res.data
+        resolve(res)
       }).catch(res => {
         reject(res)
       })
@@ -371,12 +377,18 @@ export default {
         resolve()
         return
       }
-      io.get('projects/query-project-list', payload, res => {
-        state.projectListS = res.data
-        resolve(res.data)
-      }).catch(res => {
-        reject(res)
-      })
+      const projectL = [{
+        id: 1,
+        name: '1'
+      }]
+      state.projectListS = projectL
+      resolve(projectL)
+      // io.get('projects/query-project-list', payload, res => {
+      //   state.projectListS = res.data
+      //   resolve(res.data)
+      // }).catch(res => {
+      //   reject(res)
+      // })
     })
   },
   /**
@@ -429,14 +441,16 @@ export default {
         resolve()
         return
       }
-      io.get('resources/list', {
-        type: 'FILE'
-      }, res => {
-        state.resourcesListS = res.data
-        resolve(res.data)
-      }).catch(res => {
-        reject(res)
-      })
+      state.resourcesListS = {}
+      resolve({})
+      // io.get('resources/list', {
+      //   type: 'FILE'
+      // }, res => {
+      //   state.resourcesListS = res.data
+      //   resolve(res.data)
+      // }).catch(res => {
+      //   reject(res)
+      // })
     })
   },
   /**
@@ -450,14 +464,16 @@ export default {
         resolve()
         return
       }
-      io.get('resources/list/jar', {
-        type: 'FILE'
-      }, res => {
-        state.resourcesListJar = res.data
-        resolve(res.data)
-      }).catch(res => {
-        reject(res)
-      })
+      state.resourcesListJar = {}
+      resolve({})
+      // io.get('resources/list/jar', {
+      //   type: 'FILE'
+      // }, res => {
+      //   state.resourcesListJar = res.data
+      //   resolve(res.data)
+      // }).catch(res => {
+      //   reject(res)
+      // })
     })
   },
   /**

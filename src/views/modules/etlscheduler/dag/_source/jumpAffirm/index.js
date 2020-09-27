@@ -18,7 +18,8 @@ let $isPop = true
  * Listen for route changes
  */
 router.beforeEach((to, from, next) => {
-  if (from.name === 'projects-definition-details' || from.name === 'projects-instance-details' || from.name === 'processinstance') {
+  // if (from.name === 'projects-definition-details' || from.name === 'projects-instance-details' || from.name === 'processinstance') {
+  if (from.name === 'projects-definition-details' || from.name === 'projects-instance-details') {
     if (!Affirm.paramVerification(from.name)) {
       Affirm.isPop(() => {
         next()

@@ -107,6 +107,7 @@ export default {
     state.timeout = (payload && payload.timeout) || 0
     state.tenantId = (payload && payload.tenantId) || -1
     state.processListS = (payload && payload.processListS) || []
+    state.classListS = (payload && payload.classListS) || []
     state.resourcesListS = (payload && payload.resourcesListS) || []
     state.resourcesListJar = (payload && payload.resourcesListJar) || []
     state.projectListS = (payload && payload.projectListS) || []

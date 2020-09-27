@@ -36,7 +36,7 @@
                 type="text"
                 :disabled="isDetails"
                 placeholder="请输入名称(必填)"
-                maxlength="100px"
+                :maxlength="100"
                 autocomplete="off"
                 @on-blur="_verifName()"
               />
@@ -122,7 +122,16 @@
           @on-cache-params="_onCacheParams"
         /> -->
         <m-sql
+          v-if="taskType === 'SQL'"
           ref="SQL"
+          :create-node-id="id"
+          :backfill-item="backfillItem"
+          @on-params="_onParams"
+          @on-cache-params="_onCacheParams"
+        />
+        <m-java
+          v-if="taskType === 'JAVA'"
+          ref="JAVA"
           :create-node-id="id"
           :backfill-item="backfillItem"
           @on-params="_onParams"
@@ -155,6 +164,7 @@ import _ from 'lodash'
 import { mapActions } from 'vuex'
 import mLog from './log'
 import mSql from './tasks/sql'
+import mJava from './tasks/java'
 import JSP from './../plugIn/jsPlumbHandle'
 
 import mTimeoutAlarm from './_source/timeoutAlarm'
@@ -364,14 +374,14 @@ export default {
       return true
     },
     _verifWorkGroup() {
-      const item = this.store.state.security.workerGroupsListAll.find(item => {
-        return item.id === this.workerGroup
-      })
-      if (item === undefined) {
-        // TODO
-        // this.$message.warning(`该Worker分组已经不存在，请选择正确的Worker分组！}`)
-        return true
-      }
+      // const item = this.store.state.security.workerGroupsListAll.find(item => {
+      //   return item.id === this.workerGroup
+      // })
+      // if (item === undefined) {
+      //   // TODO
+      //   // this.$message.warning(`该Worker分组已经不存在，请选择正确的Worker分组！}`)
+      //   return true
+      // }
       return true
     },
     /**
@@ -571,8 +581,8 @@ export default {
       this.dependence = o.dependence || {}
       this.cacheDependence = o.dependence || {}
     } else {
-      this.workerGroup = 1
-      // this.workerGroup = this.store.state.security.workerGroupsListAll[0].id
+      // this.workerGroup = -1
+      this.workerGroup = this.store.state.security.workerGroupsListAll[0].id
     }
     this.cacheBackfillItem = o
     this.isContentBox = true
@@ -588,6 +598,7 @@ export default {
   },
   components: {
     mSql,
+    mJava,
     mLog,
     mTimeoutAlarm,
     mPriority,

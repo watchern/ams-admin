@@ -55,3 +55,21 @@ export function datasourceList(data) {
     data
   })
 }
+
+// 项目名获取流程
+export function getProcList(projectName) {
+  return request({
+    baseURL: baseURL,
+    url: `/processDefinition/${projectName}/list`,
+    method: 'get'
+  })
+}
+
+// 根据包名查找包里所有的类
+export function findClassesByPackage() {
+  return request({
+    baseURL: baseURL,
+    url: '/processDefinition/findClassesByPackage',
+    method: 'get'
+  })
+}

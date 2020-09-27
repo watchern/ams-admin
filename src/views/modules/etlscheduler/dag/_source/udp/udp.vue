@@ -26,6 +26,14 @@
           style="width: 288px;"
           :disabled="isDetails"
         >
+          <!-- <x-option
+            label="启用"
+            :value="1"
+          />
+          <x-option
+            label="停用"
+            :value="0"
+          /> -->
           <x-option
             v-for="model in statusList"
             :key="model.value"
@@ -51,7 +59,12 @@
         style="padding-top: 6px;display:none"
       >
         <span class="text-b">选择租户</span>
-        <form-tenant v-model="tenantId" />
+        <x-input
+          v-model="tenantId"
+          type="text"
+          autocomplete="off"
+        />
+        <!-- <form-tenant v-model="tenantId" /> -->
       </div>
       <div
         class="title"
@@ -120,10 +133,11 @@ import _ from 'lodash'
 import mLocalParams from '../formModel/tasks/_source/localParams'
 import disabledState from '@/components/Dolphin/mixin/disabledState'
 import Affirm from '../jumpAffirm'
-import FormTenant from './_source/selectTenant'
+// import FormTenant from './_source/selectTenant'
 export default {
   name: 'Udp',
-  components: { FormTenant, mLocalParams },
+  // components: { FormTenant, mLocalParams },
+  components: { mLocalParams },
   mixins: [disabledState],
   props: {
   },
@@ -145,9 +159,9 @@ export default {
       tenantId: -1,
       // checked Timeout alarm
       checkedTimeout: true,
-      statusList: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }],
+      statusList: [{ name: '停用', value: '0' }, { name: '启用', value: '1' }],
       orderNo: '',
-      status: null
+      status: ''
     }
   },
   watch: {
@@ -238,16 +252,16 @@ export default {
       }
 
       // Edit => direct storage
-      if (this.store.state.dag.name) {
-        _verif()
-      } else {
-        // New First verify that the name exists
-        this.store.dispatch('dag/verifDAGName', this.name).then(res => {
-          _verif()
-        }).catch(e => {
-          this.$message.error(e.msg || '')
-        })
-      }
+      // if (this.store.state.dag.name) {
+      _verif()
+      // } else {
+      // New First verify that the name exists
+      // this.store.dispatch('dag/verifDAGName', this.name).then(res => {
+      // _verif()
+      // }).catch(e => {
+      //   this.$message.error(e.msg || '')
+      // })
+      // }
     },
     /**
      * Close the popup

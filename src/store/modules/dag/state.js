@@ -50,6 +50,7 @@ export default {
   syncDefine: true,
   // tasks processList
   processListS: [],
+  classListS: [],
   // projectList
   projectListS: [],
   // tasks resourcesList

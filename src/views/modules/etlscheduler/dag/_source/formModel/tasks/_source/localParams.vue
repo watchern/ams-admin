@@ -11,7 +11,7 @@
         :disabled="isDetails"
         type="text"
         placeholder="prop(必填)"
-        maxlength="256"
+        :maxlength="256"
         :style="inputStyle"
         @on-blur="_verifProp()"
       />
@@ -48,7 +48,7 @@
         :disabled="isDetails"
         type="text"
         placeholder="value(选填)"
-        maxlength="256"
+        :maxlength="256"
         :style="inputStyle"
         @on-blur="_handleValue()"
       />
