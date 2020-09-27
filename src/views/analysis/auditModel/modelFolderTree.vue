@@ -13,10 +13,11 @@
       default-expand-all
       :expand-on-click-node="false"
       @node-click="handleNodeClick"
-      @click="treeNodeClick"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
-        <span>{{ node.label }}</span>
+        <span>
+          <i :class="data.icon" />{{ node.label }}
+        </span>
         <span>
           <el-button type="text" size="mini" @click="() => setSelectTreeNode(node,data,1)"><i class="el-icon-circle-plus" /></el-button>
           <el-button type="text" size="mini" @click="() => setSelectTreeNode(node, data,2)"><i class="el-icon-edit" /></el-button>
@@ -66,6 +67,7 @@ export default {
   },
   watch: {
     filterText(val) {
+      // 搜索树
       this.$refs.tree.filter(val)
     }
   },
@@ -73,6 +75,9 @@ export default {
     this.getModelFolder()
   },
   methods: {
+    /**
+     *获取模型分类
+     */
     getModelFolder() {
       findModelFoldeTree().then(result => {
         this.data = result.data
@@ -83,7 +88,11 @@ export default {
      * @param data 树的对象数据 包括子节点
      */
     handleNodeClick(data) {
-      console.log(data)
+      if (data.type == 'model') {
+
+      } else {
+        this.$emit('refreshModelList', data)
+      }
     },
     /**
      * 树过滤
@@ -95,6 +104,12 @@ export default {
       if (!value) return true
       return data.label.indexOf(value) !== -1
     },
+    /**
+     * 设置选中的节点
+     * @param node 整个节点数据
+     * @param data 数据 要设置的节点数据
+     * @param operationType 1、添加；2、修改
+     */
     setSelectTreeNode(node, data, operationType) {
       this.operationType = operationType
       this.selectTreeNode = data
@@ -102,10 +117,6 @@ export default {
         this.form.modelFolderName = this.selectTreeNode.label
       }
       this.dialogFormVisible = true
-    },
-    treeNodeClick(node, data) {
-      console.log(data)
-      // 点击后加载模型
     },
     /**
      * 清空表单信息
@@ -162,6 +173,7 @@ export default {
             label: this.form.modelFolderName,
             children: [],
             pid: this.selectTreeNode.id,
+            icon: 'el-icon-folder',
             extMap: { pbScope: this.selectTreeNode.extMap.pbScope }
           }
           if (!this.selectTreeNode.children) {

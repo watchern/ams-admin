@@ -1,0 +1,428 @@
+<template>
+  <div>
+    <el-container style="height: 500px; border: 1px solid #eee">
+      <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+        <el-tree ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick" />
+      </el-aside>
+      <div ref="basicInfo">
+        <el-form ref="basicInfoForm" :model="form" label-width="150px" :rules="rules">
+          <el-form-item label="模型名称" prop="modelName">
+            <el-input v-model="form.modelName" />
+          </el-form-item>
+          <el-form-item label="业务分类">
+            <el-input v-model="form.modelFolderName" />
+          </el-form-item>
+          <el-form-item label="审计事项" prop="auditItemUuid">
+            <el-select v-model="form.auditItemUuid" placeholder="请选择审计事项">
+              <el-option label="审计事项一" value="1" />
+              <el-option label="审计事项二" value="2" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="风险等级" prop="riskLevelUuid">
+            <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级">
+              <el-option label="高" value="1" />
+              <el-option label="中" value="2" />
+              <el-option label="低" value="3" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="审计思路">
+            <el-input v-model="form.auditIdeas" type="textarea" />
+          </el-form-item>
+          <el-form-item label="参数条件">
+            <el-input v-model="form.paramConditions" type="textarea" />
+          </el-form-item>
+        </el-form>
+      </div>
+      <div ref="modelDesign" style="display: none">
+        <el-form :model="form" label-width="150px">
+          <el-form-item style="width: 400px" prop="sqlValue">
+            <el-button type="primary" @click="getSqlObj">图形化编辑器</el-button>
+            <el-button type="primary" @click="getSqlObj">SQL编辑器</el-button>
+          </el-form-item>
+          <el-form-item label="模型SQL">
+            <el-input v-model="form.sqlValue" type="textarea" />
+          </el-form-item>
+        </el-form>
+      </div>
+      <div ref="paramDefaultValue" style="display: none">
+        <p style="color:red;font-size:large">拖拽改变参数展示顺序</p>
+        <div id="paramList">
+          <el-table
+            ref="paramData"
+            :data="paramData"
+            style="width: 100%"
+          >
+            <el-table-column prop="paramName" label="参数名称" width="180" />
+            <el-table-column prop="paramValue" label="参数默认值" width="180" />
+            <el-table-column prop="paramMemo" label="参数描述" />
+          </el-table>
+        </div>
+      </div>
+      <div ref="modelResultOutputCol" style="display: none">
+        <p style="color:red;font-size:large">支持拖拽排序    注意：只显示最后的结果列</p>
+        <el-table ref="columnData" :data="columnData" style="width: 100%">
+          <el-table-column prop="outputColumnName" label="输出列名" width="180" />
+          <el-table-column prop="" label="数据转码" width="80" />
+          <el-table-column prop="columnName" label="是否显示" width="80">
+            <template slot-scope="scope">
+              <el-select v-model="scope.row.isShow" placeholder="是否显示" value="2">
+                <el-option label="请选择" value="-1" />
+                <el-option label="是" value="1" />
+                <el-option label="否" value="0" />
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column prop="columnName" label="对应业务字段" value="1" width="180">
+            <template slot-scope="scope">
+              <el-select v-model="scope.row.businessFieldUuid" value="-1">
+                <el-option label="请选择" value="-1" />
+                <el-option
+                  v-for="state in businessColumnSelect"
+                  :key="state.uuid"
+                  :value="state.uuid"
+                  :label="state.name"
+                />
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column prop="columnName" label="别名" width="180">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" />
+            </template>
+          </el-table-column>
+          <el-table-column prop="columnName" label="字段类型标记" width="180">
+            <template slot-scope="scope">
+              <el-select v-model="scope.row.columnType" value="-1">
+                <el-option label="请选择" value="-1" />
+                <el-option
+                  v-for="state in columnTypeSelect"
+                  :key="state.uuid"
+                  :value="state.uuid"
+                  :label="state.name"
+                />
+              </el-select>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div ref="relInfo" style="display: none">
+        <p>在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
+          用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。
+          通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。</p>
+        <el-button style="float: right;position:sticky;top: 260px;" @click="createDetail">新建</el-button>
+      </div>
+      <div id="modelDetailDiv">
+        <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id" style="display: none">
+          <ModelDetail ref="child" :columns="columnData" />
+        </div>
+      </div>
+      <div ref="chartConfig" style="display: none">
+        这是图表配置
+      </div>
+      <div ref="filterShow" style="display: none">
+        <p>条件显示能够根据用户所设定的条件及显示样式，对模型执行结果中满足条件的敏感数据或重要数据进行着色显示，使这些数据变的一目了然，
+          以便审计人员对这些数据进行审计。</p>
+        <p>条件显示设计器以表格的形式列举所有由用户设定的、将被应用于模型执行结果的显示条件及显示样式，用户可通过该列表对各个条件的属性进行快速查看。
+          同时用户也可以对显示条件进行添加、修改、删除</p>
+        <el-button style="float: right;position:sticky;top: 260px;" @click="createDetail">新建</el-button>
+      </div>
+    </el-container>
+  </div>
+</template>
+<script>
+import ModelDetail from '@/views/analysis/auditModel/modelDetail'
+export default {
+  name: 'EditModel',
+  components: { ModelDetail },
+  props: ['openValue'],
+  data() {
+    return {
+      treeNodeData: [
+        {
+          id: '1',
+          label: '基本信息',
+          type: 'basicInfo'
+        },
+        {
+          id: '2',
+          label: '模型设计',
+          type: 'modelDesign'
+        },
+        {
+          id: '3',
+          label: '参数默认值',
+          type: 'paramDefaultValue'
+        },
+        {
+          id: '4',
+          label: '模型结果输出列',
+          type: 'modelResultOutputCol'
+        },
+        {
+          id: '5',
+          label: '关联详细',
+          type: 'relInfo',
+          children: []
+        },
+        {
+          id: '6',
+          label: '图表配置',
+          type: 'chartConfig'
+        },
+        {
+          id: '7',
+          label: '条件展示',
+          type: 'filterShow'
+        }
+      ],
+      defaultProps: {
+        children: 'children',
+        label: 'label'
+      },
+      paramData: [],
+      columnData: [],
+      form: {
+        modelName: '',
+        modelFolderUuid: '',
+        modelFolderName: '',
+        auditItemUuid: '',
+        riskLevelUuid: '',
+        auditIdeas: '',
+        paramConditions: '',
+        sqlValue: ''
+      },
+      parammModelRel: {},
+      sqlObj: {
+        sqlValue: '',
+        params: [],
+        column: []
+      },
+      businessColumnSelect: [],
+      columnTypeSelect: [],
+      selectTreeNode: null,
+      modelDetails: [],
+      modelDetailIndex: 0,
+      modelOriginalTable: [],
+      modelChartSetup: {},
+      rules: {
+        modelName: [
+          { required: true, message: '请输入模型名称', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 1 到 100 个字符', trigger: 'blur' }
+        ],
+        auditItemUuid: [
+          { required: true, message: '请选择审计事项', trigger: 'change' }
+        ],
+        riskLevelUuid: [
+          { type: 'date', required: true, message: '请选择风险等级', trigger: 'change' }
+        ]/*,
+          sqlValue:[{ type: 'date', required: true, message: '请选择输入模型SQL', trigger: 'blur' }]*/
+      }
+    }
+  },
+  created() {
+    // 初始化模型分类数据
+    this.selectTreeNode = this.openValue
+    this.form.modelFolderUuid = this.openValue.id
+    this.form.modelFolderName = this.openValue.label
+    // 初始化业务字段列表
+    var businessColumnSelect = [{ uuid: '1', name: '机构名称' }, { uuid: '2', name: '机构代码' }]
+    this.businessColumnSelect = businessColumnSelect
+    // 初始化字段类型
+    var columnTypeSelect = [{ uuid: '1', name: '数值' }, { uuid: '2', name: '字符串' }, { uuid: '3', name: '日期' }, { uuid: '4', name: '金额' }]
+    this.columnTypeSelect = columnTypeSelect
+  },
+  methods: {
+    handleNodeClick(data, node) {
+      this.hideModelDetail()
+      if (data.type == 'basicInfo') {
+        this.$refs.modelDesign.style.display = 'none'
+        this.$refs.paramDefaultValue.style.display = 'none'
+        this.$refs.modelResultOutputCol.style.display = 'none'
+        this.$refs.relInfo.style.display = 'none'
+        this.$refs.chartConfig.style.display = 'none'
+        this.$refs.filterShow.style.display = 'none'
+        this.$refs.basicInfo.style.display = 'block'
+      } else if (data.type == 'modelDesign') {
+        this.$refs.basicInfo.style.display = 'none'
+        this.$refs.paramDefaultValue.style.display = 'none'
+        this.$refs.modelResultOutputCol.style.display = 'none'
+        this.$refs.chartConfig.style.display = 'none'
+        this.$refs.filterShow.style.display = 'none'
+        this.$refs.relInfo.style.display = 'none'
+        this.$refs.modelDesign.style.display = 'block'
+      } else if (data.type == 'paramDefaultValue') {
+        this.$refs.basicInfo.style.display = 'none'
+        this.$refs.modelDesign.style.display = 'none'
+        this.$refs.modelResultOutputCol.style.display = 'none'
+        this.$refs.chartConfig.style.display = 'none'
+        this.$refs.filterShow.style.display = 'none'
+        this.$refs.relInfo.style.display = 'none'
+        this.$refs.paramDefaultValue.style.display = 'block'
+      } else if (data.type == 'modelResultOutputCol') {
+        this.$refs.basicInfo.style.display = 'none'
+        this.$refs.modelDesign.style.display = 'none'
+        this.$refs.paramDefaultValue.style.display = 'none'
+        this.$refs.chartConfig.style.display = 'none'
+        this.$refs.filterShow.style.display = 'none'
+        this.$refs.relInfo.style.display = 'none'
+        this.$refs.modelResultOutputCol.style.display = 'block'
+      } else if (data.type == 'relInfo') {
+        this.$refs.basicInfo.style.display = 'none'
+        this.$refs.modelDesign.style.display = 'none'
+        this.$refs.paramDefaultValue.style.display = 'none'
+        this.$refs.modelResultOutputCol.style.display = 'none'
+        this.$refs.chartConfig.style.display = 'none'
+        this.$refs.filterShow.style.display = 'none'
+        this.$refs.relInfo.style.display = 'block'
+      } else if (data.type == 'chartConfig') {
+        this.$refs.basicInfo.style.display = 'none'
+        this.$refs.modelDesign.style.display = 'none'
+        this.$refs.paramDefaultValue.style.display = 'none'
+        this.$refs.modelResultOutputCol.style.display = 'none'
+        this.$refs.filterShow.style.display = 'none'
+        this.$refs.relInfo.style.display = 'none'
+        this.$refs.chartConfig.style.display = 'block'
+      } else if (data.type == 'filterShow') {
+        this.$refs.basicInfo.style.display = 'none'
+        this.$refs.modelDesign.style.display = 'none'
+        this.$refs.paramDefaultValue.style.display = 'none'
+        this.$refs.modelResultOutputCol.style.display = 'none'
+        this.$refs.relInfo.style.display = 'none'
+        this.$refs.chartConfig.style.display = 'none'
+        this.$refs.filterShow.style.display = 'block'
+      } else if (data.type == 'relDetail') {
+        // 获取指定div
+        this.$refs.basicInfo.style.display = 'none'
+        this.$refs.modelDesign.style.display = 'none'
+        this.$refs.paramDefaultValue.style.display = 'none'
+        this.$refs.modelResultOutputCol.style.display = 'none'
+        this.$refs.relInfo.style.display = 'none'
+        this.$refs.chartConfig.style.display = 'none'
+        this.$refs.filterShow.style.display = 'none'
+        this.$refs.[data.id][0].style.display = 'block'
+      }
+    },
+    hideModelDetail() {
+      for (var i = 0; i < this.modelDetails.length; i++) {
+        this.$refs.[this.modelDetails[i].id][0].style.display = 'none'
+      }
+    },
+    /**
+       * 获取当前界面的模型对象
+       */
+    getModelObj() {
+      this.$refs['basicInfoForm'].validate((valid) => {
+        if (valid) {
+          alert('submit!')
+          return true
+        } else {
+          alert('error submit!!!')
+          return false
+        }
+      })
+      // 处理模型结果固定输出列数据
+      var columnData = this.$refs.columnData.data
+      for (var i = 0; i < columnData.length; i++) {
+        if (columnData[i].isShow == undefined) {
+          columnData[i].isShow = 1
+        }
+      }
+      this.form.modelOutputColumn = columnData
+      var paramData = this.$refs.paramData.data
+      for (var i = 0; i < paramData.length; i++) {
+        paramData[i].paramSort = ++i
+      }
+      this.form.parammModelRel = paramData
+      // 获取模型详细
+      var modelDetailRelation = []
+      for (const i in this.modelDetails) {
+        modelDetailRelation.push(this.$refs.child[i].getObj())
+      }
+      this.form.modelDetailRelation = modelDetailRelation// 模型关联详细
+      this.form.modelChartSetup = this.modelChartSetup// 图表
+      this.form.modelOriginalTable = this.modelOriginalTable// 模型SQL所用到的表
+      return this.form
+    },
+    /**
+       * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
+       */
+    getSqlObj() {
+      var sqlObj = {
+        sqlValue: 'select * from AA_AUDIT_ITEM',
+        column: ['AUDIT_ITEM_UUID', 'AUDIT_ITEM_NAME'],
+        params: [
+          { ammParamUuid: '1', paramName: '参数一', paramMemo: '这是参数一的说明', paramValue: '默认值1' },
+          { ammParamUuid: '2', paramName: '参数二', paramMemo: '这是参数二的说明', paramValue: '默认值2' }],
+        modelChartSetup: { chartJson: '哈哈哈哈' },
+        modelOriginalTable: [{ originalTableName: '表1', executionType: '1' }, { originalTableName: '表2', executionType: '2' }]
+      }
+      this.form.sqlValue = sqlObj.sqlValue
+      // 初始化默认参数
+      this.paramData = sqlObj.params
+      // 初始化固定列
+      var columnData = []
+      for (var i = 0; i < sqlObj.column.length; i++) {
+        var columnDataObj = {
+          outputColumnName: sqlObj.column[i]
+        }
+        columnData.push(columnDataObj)
+      }
+      // 列数据
+      this.columnData = columnData
+      // 模型SQL用到的数据表
+      this.modelOriginalTable = sqlObj.modelOriginalTable
+      // 处理图表JSON
+      this.modelChartSetup = sqlObj.modelChartSetup
+    },
+    /**
+       * 设置选中的树节点
+       * @param node 节点
+       */
+    setSelectTreeNode(node) {
+      this.selectTreeNode = this.openValue
+      this.form.modelFolderUuid = this.openValue.id
+      this.form.modelFolderName = this.openValue.label
+    },
+    createDetail() {
+      if (this.columnData.length == 0) {
+        this.$message({ type: 'info', message: '请先编写SQL!' })
+        return
+      }
+      ++this.modelDetailIndex
+      const newChild = {
+        id: 'rel' + this.modelDetailIndex,
+        label: '关联' + this.modelDetailIndex,
+        children: [],
+        pid: 5,
+        type: 'relDetail'
+      }
+      var treeNode = this.$refs.tree.getCurrentNode()
+      treeNode.children.push(newChild)
+      this.modelDetails.push({ id: 'rel' + this.modelDetailIndex })
+    },
+    clear() {
+      this.form = {
+        modelName: '',
+        modelFolderUuid: '',
+        modelFolderName: '',
+        auditItemUuid: '',
+        riskLevelUuid: '',
+        auditIdeas: '',
+        paramConditions: '',
+        sqlValue: ''
+      }
+      this.parammModelRel = {}
+      this.sqlObj = {
+        sqlValue: '',
+        params: [],
+        column: []
+      }
+      this.businessColumnSelect = []
+      this.columnTypeSelect = []
+      this.selectTreeNode = null
+      this.modelDetails = []
+      this.modelDetailIndex = 0
+    }
+  }
+}
+</script>
