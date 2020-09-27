@@ -86,7 +86,7 @@
               />
             </a>
           </div>
-          <x-button
+          <!-- <x-button
             v-if="(type === 'instance' || 'definition') && urlParam.id !=undefined"
             v-tooltip.light="格式化DAG"
             type="primary"
@@ -95,7 +95,7 @@
             data-container="body"
             style="vertical-align: middle;"
             @click="dagAutomaticLayout"
-          />
+          /> -->
           <x-button
             v-if="type === 'instance'"
             v-tooltip.light="刷新DAG状态"
@@ -175,7 +175,7 @@ export default {
       toolOperCode: '',
       spinnerLoading: false,
       urlParam: {
-        id: this.$route.params.processDefinitionUuid || null
+        id: this.$route.params.id || null
       },
       isRtTasks: false,
       isRefresh: false,
@@ -190,7 +190,7 @@ export default {
     ...mapMutations('dag', ['addTasks', 'cacheTasks', 'resetParams', 'setIsEditDag', 'setName']),
 
     // DAG automatic layout
-    dagAutomaticLayout() {
+    dagAutomaticLayoutdagAutomaticLayout() {
       $('#canvas').html('')
 
       // Destroy round robin
@@ -398,6 +398,7 @@ export default {
               this[this.type === 'instance' ? 'updateInstance' : 'updateDefinition'](this.urlParam.id).then(res => {
                 this.$message.success(res.msg)
                 this.spinnerLoading = false
+                this.$router.push('/etlscheduler/processinstance')
                 resolve()
               }).catch(e => {
                 this.$message.error(e.msg || '')

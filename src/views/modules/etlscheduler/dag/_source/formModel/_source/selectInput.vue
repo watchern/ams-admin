@@ -11,7 +11,7 @@
       slot="trigger"
       slot-scope="{ selectedModel }"
       :disabled="isDetails"
-      maxlength="4"
+      :maxlength="4"
       placeholder="请选择"
       :value="selectedModel === null ? '0' : selectedModel.value"
       style="width: 100%;"

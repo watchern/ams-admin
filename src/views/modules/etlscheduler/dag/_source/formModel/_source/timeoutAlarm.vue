@@ -53,7 +53,7 @@
             v-model="interval"
             style="width: 200px;"
             :disabled="isDetails"
-            maxlength="9"
+            :maxlength="9"
           >
             <span slot="append">分</span>
           </x-input>

@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     ...mapMutations('dag', ['resetParams', 'setIsDetails']),
-    ...mapActions('dag', ['getProcessList', 'getProcessDetails']),
+    ...mapActions('dag', ['getProcessList', 'getProcessDetails', 'getClassList']),
     // ...mapActions('dag', ['getProcessList', 'getProjectList', 'getResourcesList', 'getProcessDetails', 'getResourcesListJar']),
     // ...mapActions('security', ['getTenantList', 'getWorkerGroupsAll']),
     /**
@@ -44,7 +44,8 @@ export default {
         // Node details
         this.getProcessDetails(this.$route.params.id),
         // get process definition
-        this.getProcessList()
+        this.getProcessList(),
+        this.getClassList()
         // get project
         // this.getProjectList(),
         // get resource

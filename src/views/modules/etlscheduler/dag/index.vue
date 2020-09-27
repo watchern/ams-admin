@@ -24,7 +24,7 @@ export default {
   },
   methods: {
     ...mapMutations('dag', ['resetParams']),
-    ...mapActions('dag', ['getProcessList', 'getProjectList', 'getResourcesList', 'getResourcesListJar', 'getResourcesListJar']),
+    ...mapActions('dag', ['getProcessList', 'getClassList', 'getProjectList', 'getResourcesList', 'getResourcesListJar', 'getResourcesListJar']),
     ...mapActions('security', ['getTenantList', 'getWorkerGroupsAll']),
     /**
      * init
@@ -47,7 +47,8 @@ export default {
         this.getResourcesListJar(),
         // get worker group list
         this.getWorkerGroupsAll(),
-        this.getTenantList()
+        this.getTenantList(),
+        this.getClassList()
       ]).then((data) => {
         this.isLoading = false
         // Whether to pop up the box?
