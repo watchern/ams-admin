@@ -76,3 +76,33 @@ export function updateModelFolder(data) {
     data
   })
 }
+
+/**
+ * 保存模型
+ * @param data 要保存的对象
+ */
+export function saveModel(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelController/saveModel',
+    method: 'post',
+    // params 以formData格式传递  后台用RequestParam
+    // 直接加data以json格式传递  后台用RequestBody
+    data
+  })
+}
+
+/**
+ * 删除模型
+ * @param data 要删除的模型
+ */
+export function deleteModel(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelController/deleteModel',
+    method: 'post',
+    // params 以formData格式传递  后台用RequestParam
+    // 直接加data以json格式传递  后台用RequestBody
+    data
+  })
+}

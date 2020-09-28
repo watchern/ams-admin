@@ -12,6 +12,10 @@ import {
   findClassesByPackage
 } from '@/api/etlscheduler/processinstance'
 
+import {
+  scheduleList,
+  getTaskLink
+} from '@/api/etlscheduler/processschedule'
 export default {
 
   /**
@@ -388,19 +392,25 @@ export default {
     })
   },
   /**
-   * Get a list of process definitions by project id
+   *  查询所有调度任务名称
    */
   getProcessByProjectId({
     state
   }, payload) {
     return new Promise((resolve, reject) => {
-      io.get(`projects/${state.projectName}/process/queryProcessDefinitionAllByProjectId`, payload, res => {
-        resolve(res.data)
+      // io.get(`projects/${state.projectName}/process/queryProcessDefinitionAllByProjectId`, payload, res => {
+      //   resolve(res.data)
+      // }).catch(res => {
+      //   reject(res)
+      // })
+      scheduleList().then(res => {
+        resolve(res)
       }).catch(res => {
         reject(res)
       })
     })
   },
+
   /**
    * get datasource
    */
@@ -726,16 +736,20 @@ export default {
         window.navigator.msSaveBlob(blob, fileName)
       }
     }
-
-    io.get(`projects/${state.projectName}/process/export`, {
-      processDefinitionIds: payload.processDefinitionIds
-    }, res => {
-      downloadBlob(res, payload.fileName)
-    }, e => {
-
-    }, {
-      responseType: 'blob'
-    })
+    // io.get(`projects/${state.projectName}/process/export`, {
+    //   processDefinitionIds: payload.processDefinitionIds
+    // }, res => {
+    //   downloadBlob(res, payload.fileName)
+    // }, e => {
+  
+    // }, {
+    //   responseType: 'blob'
+    // })
+  return new Promise((resolve,reject) => {
+    getTaskLink(payload).then(
+      res => {
+        state.
+  
   },
 
   /**

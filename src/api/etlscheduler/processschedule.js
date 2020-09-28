@@ -63,3 +63,30 @@ export function updateEnableState(id) {
     method: 'put'
   })
 }
+
+// 查询参数
+export function getParamById(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/processDefinition/getById/${id}`,
+    method: 'get'
+  })
+}
+
+// 查询调度任务名称
+export function scheduleList() {
+  return request({
+    baseURL: baseURL,
+    url: '/schedules/list',
+    method: 'get'
+  })
+}
+
+// 查询所有任务环节
+export function getTaskLink(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/schedules/findTaskDepend/${id}`,
+    method: 'get'
+  })
+}

@@ -1,132 +1,51 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 <template>
   <div class="dep-list-model">
-    <div
-      v-for="(el,$index) in dependItemList"
-      :key="$index"
-      class="list"
-      @click="itemIndex = $index"
-    >
-      <x-select
-        v-model="el.projectId"
-        filterable
-        :style="{width:isInstance ? '450px' : '450px'}"
-        :disabled="isDetails"
-        @on-change="_onChangeProjectId"
-      >
-        <x-option
-          v-for="item in projectList"
-          :key="item.value"
-          :value="item.value"
-          :label="item.label"
-        />
+    <div v-for="(el,$index) in dependItemList" :key="$index" class="list" @click="itemIndex = $index">
+      <!-- <x-select filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails" v-model="el.projectId" @on-change="_onChangeProjectId">
+        <x-option v-for="item in projectList" :key="item.value" :value="item.value" :label="item.label">
+        </x-option>
+      </x-select> -->
+      <x-select v-model="el.definitionId" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails" @on-change="_onChangeDefinitionId">
+        <x-option v-for="item in el.definitionList" :key="item.value" :value="item.value" :label="item.label" />
       </x-select>
-      <x-select
-        v-model="el.definitionId"
-        filterable
-        :style="{width:isInstance ? '450px' : '450px'}"
-        :disabled="isDetails"
-        @on-change="_onChangeDefinitionId"
-      >
-        <x-option
-          v-for="item in el.definitionList"
-          :key="item.value"
-          :value="item.value"
-          :label="item.label"
-        />
+      <x-select v-model="el.depTasks" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails">
+        <x-option v-for="item in el.depTasksList || []" :key="item" :value="item" :label="item" />
       </x-select>
-      <x-select
-        v-model="el.depTasks"
-        filterable
-        :style="{width:isInstance ? '450px' : '450px'}"
-        :disabled="isDetails"
-      >
-        <x-option
-          v-for="item in el.depTasksList || []"
-          :key="item"
-          :value="item"
-          :label="item"
-        />
+      <x-select v-model="el.cycle" style="width: 150px;" :disabled="isDetails" @on-change="_onChangeCycle">
+        <x-option v-for="item in cycleList" :key="item.value" :value="item.value" :label="item.label" />
       </x-select>
-      <x-select
-        v-model="el.cycle"
-        style="width: 150px;"
-        :disabled="isDetails"
-        @on-change="_onChangeCycle"
-      >
-        <x-option
-          v-for="item in cycleList"
-          :key="item.value"
-          :value="item.value"
-          :label="item.label"
-        />
-      </x-select>
-      <x-select
-        v-model="el.dateValue"
-        style="width: 116px;"
-        :disabled="isDetails"
-      >
-        <x-option
-          v-for="item in el.dateValueList || []"
-          :key="item.value"
-          :value="item.value"
-          :label="item.label"
-        />
+      <x-select v-model="el.dateValue" style="width: 116px;" :disabled="isDetails">
+        <x-option v-for="item in el.dateValueList || []" :key="item.value" :value="item.value" :label="item.label" />
       </x-select>
       <template v-if="isInstance">
         <span class="instance-state">
-          <em
-            v-if="el.state === 'SUCCESS'"
-            class="iconfont ans-icon-success-solid"
-            :class="'icon-' + el.state"
-            data-toggle="tooltip"
-            data-container="body"
-            title="成功"
-          />
-          <em
-            v-if="el.state === 'WAITING'"
-            class="iconfont ans-icon-clock"
-            :class="'icon-' + el.state"
-            data-toggle="tooltip"
-            data-container="body"
-            title="等待"
-          />
-          <em
-            v-if="el.state === 'FAILED'"
-            class="iconfont ans-icon-fail-solid"
-            :class="'icon-' + el.state"
-            data-toggle="tooltip"
-            data-container="body"
-            title="失败"
-          />
+          <em v-if="el.state === 'SUCCESS'" class="iconfont ans-icon-success-solid" :class="'icon-' + el.state" data-toggle="tooltip" data-container="body" :title="$t('success')" />
+          <em v-if="el.state === 'WAITING'" class="iconfont ans-icon-clock" :class="'icon-' + el.state" data-toggle="tooltip" data-container="body" :title="$t('waiting')" />
+          <em v-if="el.state === 'FAILED'" class="iconfont ans-icon-fail-solid" :class="'icon-' + el.state" data-toggle="tooltip" data-container="body" :title="$t('failed')" />
         </span>
       </template>
       <span class="operation">
-        <a
-          href="javascript:"
-          class="delete"
-          @click="!isDetails && _remove($index)"
-        >
-          <em
-            class="ans-icon-trash"
-            :class="_isDetails"
-            data-toggle="tooltip"
-            data-container="body"
-            title="删除"
-          />
+        <a href="javascript:" class="delete" @click="!isDetails && _remove($index)">
+          <em class="ans-icon-trash" :class="_isDetails" data-toggle="tooltip" data-container="body" :title="$t('delete')" />
         </a>
-        <a
-          v-if="$index === (dependItemList.length - 1)"
-          href="javascript:"
-          class="add"
-          @click="!isDetails && _add()"
-        >
-          <em
-            class="iconfont ans-icon-increase"
-            :class="_isDetails"
-            data-toggle="tooltip"
-            data-container="body"
-            title="添加"
-          />
+        <a v-if="$index === (dependItemList.length - 1)" href="javascript:" class="add" @click="!isDetails && _add()">
+          <em class="iconfont ans-icon-increase" :class="_isDetails" data-toggle="tooltip" data-container="body" :title="$t('Add')" />
         </a>
       </span>
     </div>
@@ -136,7 +55,6 @@
 import _ from 'lodash'
 import { cycleList, dateValueList } from './commcon'
 import disabledState from '@/components/Dolphin/mixin/disabledState'
-import $ from 'jquery'
 export default {
   name: 'DepList',
   components: {},
@@ -165,11 +83,12 @@ export default {
   },
   created() {
     // is type projects-instance-details
-    this.isInstance = this.router.history.current.name === 'projects-instance-details'
+    this.isInstance = this.$router.history.current.name === 'projects-instance-details'
     // get processlist
     this._getProjectList().then(() => {
       if (!this.dependItemList.length) {
-        // const projectId = this.projectList[0].value
+        // let projectId = this.projectList[0].value
+        // let projectId = 1
         this._getProcessByProjectId().then(definitionList => {
           const value = definitionList[0].value
           this._getDependItemList(value).then(depTasksList => {
@@ -194,14 +113,15 @@ export default {
   },
   methods: {
     /**
-     * add task
-     */
+       * add task
+       */
     _add() {
       // btn loading
       this.isLoading = true
 
       // add task list
-      // const projectId = this.projectList[0].value
+      // let projectId = this.projectList[0].value
+      // let projectId = 1
       this._getProcessByProjectId().then(definitionList => {
         // dependItemList index
         const is = (value) => _.some(this.dependItemList, { definitionId: value })
@@ -218,8 +138,8 @@ export default {
       this._removeTip()
     },
     /**
-     * remove task
-     */
+       * remove task
+       */
     _remove(i) {
       this.dependTaskList[this.index].dependItemList.splice(i, 1)
       this._removeTip()
@@ -241,8 +161,8 @@ export default {
       })
     },
     /**
-     * get processlist
-     */
+       * get processlist
+       */
     _getProcessList() {
       return new Promise((resolve, reject) => {
         const definitionList = _.map(_.cloneDeep(this.store.state.dag.processListS), v => {
@@ -268,8 +188,8 @@ export default {
       })
     },
     /**
-     * get dependItemList
-     */
+       * get dependItemList
+       */
     _getDependItemList(ids, is = true) {
       return new Promise((resolve, reject) => {
         if (is) {
@@ -284,8 +204,8 @@ export default {
       })
     },
     /**
-     * change process get dependItemList
-     */
+       * change process get dependItemList
+       */
     _onChangeProjectId() {
       this._getProcessByProjectId().then(definitionList => {
         /* this.$set(this.dependItemList, this.itemIndex, this._dlOldParams(value, definitionList, item))*/
@@ -357,8 +277,8 @@ export default {
       }
     },
     /**
-     * remove tip
-     */
+       * remove tip
+       */
     _removeTip() {
       $('body').find('.tooltip.fade.top.in').remove()
     }
@@ -367,45 +287,45 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
-.dep-list-model {
-  position: relative;
-  min-height: 32px;
-  .list {
-    margin-bottom: 6px;
-    .operation {
-      padding-left: 4px;
-      a {
-        i {
-          font-size: 18px;
-          vertical-align: middle;
+  .dep-list-model {
+    position: relative;
+    min-height: 32px;
+    .list {
+      margin-bottom: 6px;
+      .operation {
+        padding-left: 4px;
+        a {
+          i {
+            font-size: 18px;
+            vertical-align: middle;
+          }
+        }
+        .delete {
+          color: #ff0000;
+        }
+        .add {
+          color: #0097e0;
         }
       }
-      .delete {
-        color: #ff0000;
-      }
-      .add {
-        color: #0097e0;
+    }
+    .instance-state {
+      display: inline-block;
+      width: 24px;
+      .iconfont {
+        font-size: 20px;
+        vertical-align: middle;
+        cursor: pointer;
+        margin-left: 6px;
+        &.icon-SUCCESS {
+          color: #33cc00;
+        }
+        &.icon-WAITING {
+          color: #888888;
+        }
+        &.icon-FAILED {
+          color: #F31322;
+        }
       }
     }
   }
-  .instance-state {
-    display: inline-block;
-    width: 24px;
-    .iconfont {
-      font-size: 20px;
-      vertical-align: middle;
-      cursor: pointer;
-      margin-left: 6px;
-      &.icon-SUCCESS {
-        color: #33cc00;
-      }
-      &.icon-WAITING {
-        color: #888888;
-      }
-      &.icon-FAILED {
-        color: #f31322;
-      }
-    }
-  }
-}
 </style>
