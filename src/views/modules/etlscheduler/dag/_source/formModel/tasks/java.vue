@@ -70,7 +70,7 @@
         </x-select>
       </div>
     </m-list-box>
-    <m-list-box>
+    <!-- <m-list-box>
       <div slot="text">自定义参数</div>
       <div slot="content">
         <m-local-params
@@ -79,7 +79,7 @@
           @on-udpData="_onUdpData"
         />
       </div>
-    </m-list-box>
+    </m-list-box> -->
     <m-list-box
       v-if="hide"
     >
@@ -87,7 +87,7 @@
       <div slot="content">
         <m-java-params
           ref="refjavaParams"
-          :udp-list="paramList"
+          :udp-list="localParams"
           @on-udpData="_onUdpDatapar"
         />
       </div>
@@ -98,7 +98,6 @@
 import _ from 'lodash'
 import mListBox from './_source/listBox'
 import mJavaParams from './_source/javaParams'
-import mLocalParams from './_source/localParams'
 import disabledState from '@/components/Dolphin/mixin/disabledState'
 import $ from 'jquery'
 import { findParams } from '@/api/etlscheduler/processinstance'
@@ -106,7 +105,7 @@ let editor
 
 export default {
   name: 'Java',
-  components: { mListBox, mLocalParams, mJavaParams },
+  components: { mListBox, mJavaParams },
   mixins: [disabledState],
   props: {
     backfillItem: Object,
@@ -135,7 +134,6 @@ export default {
       errorTime: '',
       classList: [],
       clas: '',
-      paramList: [],
       hide: false,
       errorhide: false
     }
@@ -160,8 +158,7 @@ export default {
             return showType.join(',')
           }
         })(),
-        localParams: this.localParams,
-        paramList: this.paramList
+        localParams: this.localParams
       }
     }
   },
@@ -181,10 +178,16 @@ export default {
       if (val === '1') {
         this.errorhide = true
       }
+      if (val === '0') {
+        this.errorhide = false
+      }
     },
     clas(val) {
       if (val !== '') {
         this.hide = true
+      }
+      if (val === '') {
+        this.hide = false
       }
     },
     // Watch the cacheParams
@@ -203,7 +206,7 @@ export default {
       this.errorType = o.params.errorType || ''
       this.errorTime = o.params.errorTime || ''
       this.clas = o.params.class || ''
-      this.paramList = o.params.paramList || []
+      this.localParams = o.params.localParams || ''
       if (o.params.showType === '') {
         this.showType = []
       } else {
@@ -243,7 +246,7 @@ export default {
   methods: {
     _classChange(a) {
       findParams(a.value).then(resp => {
-        this.paramList = resp.data
+        this.localParams = resp.data
       })
     },
     /**
@@ -264,11 +267,8 @@ export default {
     /**
      * return Custom parameter
      */
-    _onUdpData(a) {
-      this.localParams = a
-    },
     _onUdpDatapar(a) {
-      this.paramList = a
+      this.localParams = a
     },
     /**
      * return data source
@@ -301,8 +301,8 @@ export default {
         this.$message.warning(`请选择出错策略（必填）`)
         return false
       }
-      if (!_.trim(this.errorTime)) {
-        this.$message.warning(`请选择出错策略（必填）`)
+      if (!_.trim(this.errorTime) && _.trim(this.errorType) === 1) {
+        this.$message.warning(`请选择出错次数（必填）`)
         return false
       }
       // storage
@@ -325,8 +325,7 @@ export default {
             return showType.join(',')
           }
         })(),
-        localParams: this.localParams,
-        paramList: this.paramList
+        localParams: this.localParams
       })
       return true
     },
@@ -383,8 +382,7 @@ export default {
         taskCode: this.taskCode,
         errorType: this.errorType,
         errorTime: this.errorTime,
-        paramList: this.paramList,
-        class: this.class,
+        class: this.clas,
         showType: (() => {
           const showType = this.showType
           if (showType.length === 2 && showType[0] === 'ATTACHMENT') {

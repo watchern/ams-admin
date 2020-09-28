@@ -7,30 +7,38 @@
       @click="_getIndex($index)"
     >
       <x-input
-        v-model="paramList[$index].name"
+        v-model="paramList[$index].prop"
         :disabled="true"
         type="text"
         placeholder="prop(必填)"
-        :maxlength="256"
-        :style="inputStyle"
+        :maxlength="180"
+        style="width: 120px;"
         @on-blur="_verifProp()"
       />
       <template v-if="hide">
         <x-input
-          v-model="paramList[$index].type"
-          style="width: 118px;"
+          v-model="paramList[$index].propType"
+          style="width: 120px;"
           :disabled="true"
           @change="_handleTypeChanged"
         />
       </template>
-      <x-select
+      <!-- <x-input
         v-model="paramList[$index].value"
+        :disabled="isDetails"
+        type="text"
+        placeholder="value(选填)"
+        :maxlength="256"
+        :style="inputStyle"
+        @on-blur="_handleValue()"
+      /> -->
+      <x-select
+        v-model="paramList[$index].paramUuid"
         :disabled="isDetails"
         filterable
         placeholder="关联参数"
         :maxlength="256"
         :style="inputStyle"
-        @on-blur="_handleValue()"
         @on-change="_paramChange($index,$event)"
       >
         <x-option
@@ -77,7 +85,7 @@ export default {
   },
   computed: {
     inputStyle() {
-      return `width:${this.hide ? 160 : 262}px`
+      return `width:${this.hide ? 160 : 256}px`
     }
   },
   watch: {
@@ -127,9 +135,11 @@ export default {
      */
     _addUdp() {
       this.paramList.push({
+        prop: '',
         name: '',
         type: 'String',
         value: '',
+        paramUuid: '',
         param: {}
       })
     },

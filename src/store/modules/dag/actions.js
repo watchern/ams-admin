@@ -348,7 +348,6 @@ export default {
       })
     })
   },
-
   /**
    * Get a list of process definitions (list page usage with pagination)
    */
