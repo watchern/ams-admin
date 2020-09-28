@@ -73,3 +73,12 @@ export function findClassesByPackage() {
     method: 'get'
   })
 }
+
+// 根据类名和方法名查找方法里所有的参数
+export function findParams(className) {
+  return request({
+    baseURL: baseURL,
+    url: `/processDefinition/getParams/${className}`,
+    method: 'get'
+  })
+}

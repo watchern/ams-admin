@@ -294,7 +294,9 @@ export default {
         this.$message.warning(`新创建子工作流还未执行，不能进入子工作流`)
         return
       }
-      if (this.router.history.current.name === 'projects-instance-details') {
+      // if (this.router.history.current.name === 'projects-instance-details') {
+      const a = false
+      if (a) {
         const stateId = $(`#${this.id}`).attr('data-state-id') || null
         if (!stateId) {
           this.$message.warning(`该任务还未执行，不能进入子工作流`)

@@ -557,7 +557,7 @@ export default {
   }, payload) {
     return new Promise((resolve, reject) => {
       const workerGroupList = [{
-        id: -1,
+        id: 'default',
         name: 'default'
       }]
       state.workerGroupsListAll = workerGroupList

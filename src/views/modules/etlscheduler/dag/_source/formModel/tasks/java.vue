@@ -20,7 +20,7 @@
       <div slot="content">
         <x-select
           v-model="errorType"
-          placeholder="请选择出错策略"
+          placeholder="请选择出错策略(必填)"
           style="width: 288px;"
           :disabled="isDetails"
         >
@@ -33,7 +33,9 @@
         </x-select>
       </div>
     </m-list-box>
-    <m-list-box>
+    <m-list-box
+      v-if="errorhide"
+    >
       <div slot="text">出错次数</div>
       <div slot="content">
         <label class="label-box">
@@ -57,6 +59,7 @@
           style="width: 288px;"
           :disabled="isDetails"
           filterable
+          @on-change="_classChange"
         >
           <x-option
             v-for="model in classList"
@@ -77,13 +80,15 @@
         />
       </div>
     </m-list-box>
-    <m-list-box>
-      <div slot="text">自定义参数</div>
+    <m-list-box
+      v-if="hide"
+    >
+      <div slot="text">驱动类参数</div>
       <div slot="content">
         <m-java-params
           ref="refjavaParams"
-          :udp-list="javaParams"
-          @on-udpData="_onUdpData"
+          :udp-list="paramList"
+          @on-udpData="_onUdpDatapar"
         />
       </div>
     </m-list-box>
@@ -91,13 +96,12 @@
 </template>
 <script>
 import _ from 'lodash'
-import { mapActions } from 'vuex'
 import mListBox from './_source/listBox'
 import mJavaParams from './_source/javaParams'
 import mLocalParams from './_source/localParams'
 import disabledState from '@/components/Dolphin/mixin/disabledState'
-import codemirror from '@/components/Dolphin/file/codemirror'
 import $ from 'jquery'
+import { findParams } from '@/api/etlscheduler/processinstance'
 let editor
 
 export default {
@@ -130,7 +134,10 @@ export default {
       errorTypeList: [{ name: '不重试', value: '0' }, { name: '重试', value: '1' }],
       errorTime: '',
       classList: [],
-      clas: ''
+      clas: '',
+      paramList: [],
+      hide: false,
+      errorhide: false
     }
   },
   computed: {
@@ -153,7 +160,8 @@ export default {
             return showType.join(',')
           }
         })(),
-        localParams: this.localParams
+        localParams: this.localParams,
+        paramList: this.paramList
       }
     }
   },
@@ -167,6 +175,16 @@ export default {
         this.title = ''
         this.receivers = []
         this.receiversCc = []
+      }
+    },
+    errorType(val) {
+      if (val === '1') {
+        this.errorhide = true
+      }
+    },
+    clas(val) {
+      if (val !== '') {
+        this.hide = true
       }
     },
     // Watch the cacheParams
@@ -185,6 +203,7 @@ export default {
       this.errorType = o.params.errorType || ''
       this.errorTime = o.params.errorTime || ''
       this.clas = o.params.class || ''
+      this.paramList = o.params.paramList || []
       if (o.params.showType === '') {
         this.showType = []
       } else {
@@ -201,7 +220,7 @@ export default {
     //   this.router.history.currentRoute.name !== 'processinstance') {
 
     if (!_.some(this.store.state.dag.cacheTasks, { id: this.createNodeId })) {
-      this._getReceiver()
+      // this._getReceiver()
     }
   },
   mounted() {
@@ -209,13 +228,12 @@ export default {
       this._handlerEditor()
     }, 200)
     const dag = _.cloneDeep(this.store.state.dag)
-    debugger
     this.classList = dag.classListS
   },
   destroyed() {
     /**
      * Destroy the editor instance
-     */
+    */
     if (editor) {
       // editor.toTextArea() // Uninstall
       // editor.off($('.code-sql-mirror'), 'keypress', this.keypress)
@@ -223,7 +241,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions('dag', ['getClassList']),
+    _classChange(a) {
+      findParams(a.value).then(resp => {
+        this.paramList = resp.data
+      })
+    },
     /**
      * return sqlType
      */
@@ -244,6 +266,9 @@ export default {
      */
     _onUdpData(a) {
       this.localParams = a
+    },
+    _onUdpDatapar(a) {
+      this.paramList = a
     },
     /**
      * return data source
@@ -276,7 +301,10 @@ export default {
         this.$message.warning(`请选择出错策略（必填）`)
         return false
       }
-
+      if (!_.trim(this.errorTime)) {
+        this.$message.warning(`请选择出错策略（必填）`)
+        return false
+      }
       // storage
       this.$emit('on-params', {
         type: this.type,
@@ -298,9 +326,7 @@ export default {
           }
         })(),
         localParams: this.localParams,
-        connParams: this.connParams,
-        preStatements: this.preStatements,
-        postStatements: this.postStatements
+        paramList: this.paramList
       })
       return true
     },
@@ -310,46 +336,46 @@ export default {
     _handlerEditor() {
       this._destroyEditor()
 
-      // editor
-      editor = codemirror('code-java-mirror', {
-        mode: 'java',
-        readOnly: this.isDetails
-      })
+      // // editor
+      // editor = codemirror('code-java-mirror', {
+      //   mode: 'java',
+      //   readOnly: this.isDetails
+      // })
 
-      this.keypress = () => {
-        if (!editor.getOption('readOnly')) {
-          editor.showHint({
-            completeSingle: false
-          })
-        }
-      }
+      // this.keypress = () => {
+      //   if (!editor.getOption('readOnly')) {
+      //     editor.showHint({
+      //       completeSingle: false
+      //     })
+      //   }
+      // }
 
-      this.changes = () => {
-        this._cacheParams()
-      }
+      // this.changes = () => {
+      //   this._cacheParams()
+      // }
 
       // Monitor keyboard
-      editor.on('keypress', this.keypress)
+      // editor.on('keypress', this.keypress)
 
-      editor.on('changes', this.changes)
+      // editor.on('changes', this.changes)
 
-      editor.setValue(this.sql)
+      // editor.setValue(this.sql)
 
       return editor
     },
-    _getReceiver() {
-      const param = {}
-      const current = this.router.history.current
-      if (current.name === 'projects-definition-details') {
-        param.processDefinitionId = current.params.id
-      } else {
-        param.processInstanceId = current.params.id
-      }
-      this.store.dispatch('dag/getReceiver', param).then(res => {
-        this.receivers = res.receivers && res.receivers.split(',') || []
-        this.receiversCc = res.receiversCc && res.receiversCc.split(',') || []
-      })
-    },
+    // _getReceiver() {
+    // const param = {}
+    // const current = this.router.history.current
+    // if (current.name === 'projects-definition-details') {
+    // param.processDefinitionId = current.params.id
+    // } else {
+    // param.processInstanceId = current.params.id\
+    // }
+    // this.store.dispatch('dag/getReceiver', param).then(res => {
+    //   this.receivers = res.receivers && res.receivers.split(',') || []
+    //   this.receiversCc = res.receiversCc && res.receiversCc.split(',') || []
+    // })
+    // },
     _cacheParams() {
       this.$emit('on-cache-params', {
         type: this.type,
@@ -357,6 +383,7 @@ export default {
         taskCode: this.taskCode,
         errorType: this.errorType,
         errorTime: this.errorTime,
+        paramList: this.paramList,
         class: this.class,
         showType: (() => {
           const showType = this.showType
