@@ -11,9 +11,8 @@ import {
   getProcList,
   findClassesByPackage
 } from '@/api/etlscheduler/processinstance'
-
 import {
-  scheduleList,
+  _scheduleList,
   getTaskLink
 } from '@/api/etlscheduler/processschedule'
 export default {
@@ -392,26 +391,6 @@ export default {
     })
   },
   /**
-   *  查询所有调度任务名称
-   */
-  getProcessByProjectId({
-    state
-  }, payload) {
-    return new Promise((resolve, reject) => {
-      // io.get(`projects/${state.projectName}/process/queryProcessDefinitionAllByProjectId`, payload, res => {
-      //   resolve(res.data)
-      // }).catch(res => {
-      //   reject(res)
-      // })
-      scheduleList().then(res => {
-        resolve(res)
-      }).catch(res => {
-        reject(res)
-      })
-    })
-  },
-
-  /**
    * get datasource
    */
   getDatasourceList({
@@ -599,19 +578,24 @@ export default {
     })
   },
   /**
-   * Timing list paging
+   *  查询所有调度任务名称
    */
-  getScheduleList({
-    state
-  }, payload) {
-    return new Promise((resolve, reject) => {
-      io.get(`projects/${state.projectName}/schedule/list-paging`, payload, res => {
-        resolve(res)
-      }).catch(e => {
-        reject(e)
-      })
-    })
-  },
+  // getProcessByProjectId({
+  //   state
+  // }, payload) {
+  //   return new Promise((resolve, reject) => {
+  //     io.get(`projects/${state.projectName}/process/queryProcessDefinitionAllByProjectId`, payload, res => {
+  //       resolve(res.data)
+  //     }).catch(res => {
+  //       reject(res)
+  //     })
+  // scheduleList().then(res => {
+  //   resolve(res)
+  // }).catch(res => {
+  //   reject(res)
+  // })
+  //   })
+  // },
   /**
    * Timing online
    */
@@ -713,44 +697,56 @@ export default {
   /**
    * export definition
    */
-  exportDefinition({
-    state
-  }, payload) {
-    const downloadBlob = (data, fileNameS = 'json') => {
-      if (!data) {
-        return
-      }
-      const blob = new Blob([data])
-      const fileName = `${fileNameS}.json`
-      if ('download' in document.createElement('a')) { // 不是IE浏览器
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.style.display = 'none'
-        link.href = url
-        link.setAttribute('download', fileName)
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link) // 下载完成移除元素
-        window.URL.revokeObjectURL(url) // 释放掉blob对象
-      } else { // IE 10+
-        window.navigator.msSaveBlob(blob, fileName)
-      }
-    }
-    // io.get(`projects/${state.projectName}/process/export`, {
-    //   processDefinitionIds: payload.processDefinitionIds
-    // }, res => {
-    //   downloadBlob(res, payload.fileName)
-    // }, e => {
-  
-    // }, {
-    //   responseType: 'blob'
-    // })
-  return new Promise((resolve,reject) => {
-    getTaskLink(payload).then(
-      res => {
-        state.
-  
-  },
+  // exportDefinition({
+  //   state
+  // }, payload) {
+  //   const downloadBlob = (data, fileNameS = 'json') => {
+  //     if (!data) {
+  //       return
+  //     }
+  //     const blob = new Blob([data])
+  //     const fileName = `${fileNameS}.json`
+  //     if ('download' in document.createElement('a')) { // 不是IE浏览器
+  //       const url = window.URL.createObjectURL(blob)
+  //       const link = document.createElement('a')
+  //       link.style.display = 'none'
+  //       link.href = url
+  //       link.setAttribute('download', fileName)
+  //       document.body.appendChild(link)
+  //       link.click()
+  //       document.body.removeChild(link) // 下载完成移除元素
+  //       window.URL.revokeObjectURL(url) // 释放掉blob对象
+  //     } else { // IE 10+
+  //       window.navigator.msSaveBlob(blob, fileName)
+  //     }
+  //   }
+
+  //   io.get(`projects/${state.projectName}/process/export`, {
+  //     processDefinitionIds: payload.processDefinitionIds
+  //   }, res => {
+  //     downloadBlob(res, payload.fileName)
+  //   }, e => {
+
+  //   }, {
+  //     responseType: 'blob'
+  //   })
+  // },
+  // exportDefinition({
+  //     state
+  //   }, payload) {
+  //     return new Promise((resolve, reject) => {
+  //   //     io.get(`projects/${state.projectName}/process/queryProcessDefinitionAllByProjectId`, payload, res => {
+  //   //       resolve(res.data)
+  //   //     }).catch(res => {
+  //   //       reject(res)
+  //   //     })
+  //       scheduleList().then(res => {
+  //         resolve(res)
+  //       }).catch(res => {
+  //         reject(res)
+  //       })
+  //     })
+  //   },
 
   /**
    * Process instance get variable
@@ -878,17 +874,17 @@ export default {
       })
     })
   },
-  getTaskListDefIdAll({
-    state
-  }, payload) {
-    return new Promise((resolve, reject) => {
-      io.get(`projects/${state.projectName}/process/get-task-list`, payload, res => {
-        resolve(res.data)
-      }).catch(e => {
-        reject(e)
-      })
-    })
-  },
+  // getTaskListDefIdAll({
+  //   state
+  // }, payload) {
+  //   return new Promise((resolve, reject) => {
+  //     io.get(`projects/${state.projectName}/process/get-task-list`, payload, res => {
+  //       resolve(res.data)
+  //     }).catch(e => {
+  //       reject(e)
+  //     })
+  //   })
+  // },
   /**
    * remove timing
    */

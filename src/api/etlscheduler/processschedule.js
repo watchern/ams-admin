@@ -65,19 +65,19 @@ export function updateEnableState(id) {
 }
 
 // 查询参数
-export function getParamById(id) {
+export function getParamsByProcessId(id) {
   return request({
     baseURL: baseURL,
-    url: `/processDefinition/getById/${id}`,
+    url: `/schedules/getParamsByProcessId/${id}`,
     method: 'get'
   })
 }
 
 // 查询调度任务名称
-export function scheduleList() {
+export function getScheduleList() {
   return request({
     baseURL: baseURL,
-    url: '/schedules/list',
+    url: `/schedules/list`,
     method: 'get'
   })
 }
