@@ -1,57 +1,53 @@
 <template>
   <div class="user-def-params-model">
     <div
-      v-for="(item,$index) in localParamsList"
+      v-for="(item,$index) in paramList"
       :key="item.id"
       class="select-listpp"
       @click="_getIndex($index)"
     >
       <x-input
-        v-model="localParamsList[$index].prop"
-        :disabled="isDetails"
+        v-model="paramList[$index].prop"
+        :disabled="true"
         type="text"
         placeholder="prop(必填)"
-        :maxlength="256"
-        :style="inputStyle"
+        :maxlength="180"
+        style="width: 120px;"
         @on-blur="_verifProp()"
       />
       <template v-if="hide">
-        <x-select
-          v-model="localParamsList[$index].direct"
-          style="width: 80px;"
-          :disabled="isDetails"
-          @change="_handleDirectChanged"
-        >
-          <x-option
-            v-for="city in directList"
-            :key="city.code"
-            :value="city.code"
-            :label="city.code"
-          />
-        </x-select>
-        <x-select
-          v-model="localParamsList[$index].type"
-          style="width: 118px;"
-          :disabled="isDetails"
+        <x-input
+          v-model="paramList[$index].propType"
+          style="width: 120px;"
+          :disabled="true"
           @change="_handleTypeChanged"
-        >
-          <x-option
-            v-for="city in typeList"
-            :key="city.code"
-            :value="city.code"
-            :label="city.code"
-          />
-        </x-select>
+        />
       </template>
-      <x-input
-        v-model="localParamsList[$index].value"
+      <!-- <x-input
+        v-model="paramList[$index].value"
         :disabled="isDetails"
         type="text"
         placeholder="value(选填)"
         :maxlength="256"
         :style="inputStyle"
         @on-blur="_handleValue()"
-      />
+      /> -->
+      <x-select
+        v-model="paramList[$index].paramUuid"
+        :disabled="isDetails"
+        filterable
+        placeholder="关联参数"
+        :maxlength="256"
+        :style="inputStyle"
+        @on-change="_paramChange($index,$event)"
+      >
+        <x-option
+          v-for="model in paramListS"
+          :key="model.paramUuid"
+          :value="model.paramUuid"
+          :label="model.paramName"
+        />
+      </x-select>
     </div>
   </div>
 </template>
@@ -59,6 +55,7 @@
 import _ from 'lodash'
 import { directList, typeList } from './commcon'
 import disabledState from '@/components/Dolphin/mixin/disabledState'
+import { listByPage, getById } from '@/api/etlscheduler/paramfield'
 export default {
   name: 'JavaParams',
   components: {},
@@ -80,22 +77,30 @@ export default {
       // Increased data
       localParamsList: [],
       // Current execution index
-      localParamsIndex: null
+      localParamsIndex: null,
+      paramListS: [],
+      paramList: [],
+      paramListIndex: null
     }
   },
   computed: {
     inputStyle() {
-      return `width:${this.hide ? 160 : 262}px`
+      return `width:${this.hide ? 160 : 256}px`
     }
   },
   watch: {
     // Monitor data changes
     udpList() {
-      this.localParamsList = this.udpList
+      this.paramList = this.udpList
     }
   },
   created() {
-    this.localParamsList = this.udpList
+    this.paramList = this.udpList
+    const query = { 'pageNo': 1,
+      'pageSize': 1000 }
+    listByPage(query).then(resp => {
+      this.paramListS = resp.data.records
+    })
   },
   mounted() {
   },
@@ -104,7 +109,7 @@ export default {
      * Current index
      */
     _getIndex(index) {
-      this.localParamsIndex = index
+      this.paramListIndex = index
     },
     /**
      * handle direct
@@ -122,18 +127,20 @@ export default {
      * delete item
      */
     _removeUdp(index) {
-      this.localParamsList.splice(index, 1)
+      this.paramList.splice(index, 1)
       this._verifProp('value')
     },
     /**
      * add
      */
     _addUdp() {
-      this.localParamsList.push({
+      this.paramList.push({
         prop: '',
-        direct: 'IN',
-        type: 'VARCHAR',
-        value: ''
+        name: '',
+        type: 'String',
+        value: '',
+        paramUuid: '',
+        param: {}
       })
     },
     /**
@@ -142,32 +149,37 @@ export default {
     _handleValue() {
       this._verifProp('value')
     },
+    _paramChange(a, b) {
+      getById(b.value).then(resp => {
+        this.paramList[a].param = resp.data
+      })
+    },
     /**
      * Verify that the value exists or is empty
      */
     _verifProp(type) {
       const arr = []
-      let flag = true
-      _.map(this.localParamsList, v => {
+      // let flag = true
+      _.map(this.paramList, v => {
         arr.push(v.prop)
-        if (!v.prop) {
-          flag = false
-        }
+        // if (!v.prop) {
+        //   flag = false
+        // }
       })
-      if (!flag) {
-        if (!type) {
-          this.$message.warning(`prop不能为空`)
-        }
-        return false
-      }
-      const newArr = _.cloneDeep(_.uniqWith(arr, _.isEqual))
-      if (newArr.length !== arr.length) {
-        if (!type) {
-          this.$message.warning(`prop中有重复`)
-        }
-        return false
-      }
-      this.$emit('on-local-params', _.cloneDeep(this.localParamsList))
+      // if (!flag) {
+      //   if (!type) {
+      //     this.$message.warning(`prop不能为空`)
+      //   }
+      //   return false
+      // }
+      // const newArr = _.cloneDeep(_.uniqWith(arr, _.isEqual))
+      // if (newArr.length !== arr.length) {
+      //   if (!type) {
+      //     this.$message.warning(`prop中有重复`)
+      //   }
+      //   return false
+      // }
+      this.$emit('on-local-params', _.cloneDeep(this.paramList))
       return true
     }
   }

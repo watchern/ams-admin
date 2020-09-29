@@ -333,7 +333,7 @@ export default {
     })
   },
   /**
-   * Get a list of process definitions (sub-workflow usage is not paged)
+   * Get a list of class by package (sub-workflow usage is not paged)
    */
   getClassList({
     state

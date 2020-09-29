@@ -159,7 +159,7 @@ export default {
       tenantId: -1,
       // checked Timeout alarm
       checkedTimeout: true,
-      statusList: [{ name: '停用', value: '0' }, { name: '启用', value: '1' }],
+      statusList: [{ name: '停用', value: 0 }, { name: '启用', value: 1 }],
       orderNo: '',
       status: ''
     }
@@ -191,7 +191,8 @@ export default {
       // }
     })
   },
-  mounted() { },
+  mounted() {
+  },
   methods: {
     /**
      * udp data

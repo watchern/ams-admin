@@ -16,7 +16,7 @@
  */
 export default {
   workerGroupsListAll: [{
-    id: -1,
+    id: 'default',
     name: 'default'
   }],
   tenantAllList: [{

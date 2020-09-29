@@ -21,7 +21,7 @@ import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 export default {
   name: 'ModelListTable',
-  components: { Pagination, QueryField },
+  components: { Pagination, QueryField, EditModel },
   data() {
     return {
       tableKey: 'errorUuid',
@@ -120,12 +120,29 @@ export default {
       }
       return ''
     },
+
+    /**
+     * 格式化类型
+     * @param row 格式化行
+     * @param column 格式化列
+     * @returns {返回格式化后的字符串}
+     */
     modelTypeFormatter(row, column) {
       const modelType = row.modelType
       if (modelType == 1) {
         return '审计模型'
       } else if (modelType == 2) {
         return '图形化模型'
+      }
+    },
+    riskLevelFormatter(row, column) {
+      var riskLevel = row.riskLevelUuid
+      if (riskLevel == 1) {
+        return '高'
+      } else if (riskLevel == 2) {
+        return '中'
+      } else if (riskLevel == 3) {
+        return '低'
       }
     },
     getList(query) {
