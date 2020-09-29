@@ -22,10 +22,10 @@
         </x-option>
       </x-select> -->
       <x-select v-model="el.definitionId" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails" @on-change="_onChangeDefinitionId">
-        <x-option v-for="item in el.definitionList" :key="item.value" :value="item.value" :label="item.label" />
+        <x-option v-for="item in scheduleList" :key="item.processDefinitionId" :value="item.processDefinitionId" :label="item.scheduleName" />
       </x-select>
       <x-select v-model="el.depTasks" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails">
-        <x-option v-for="item in el.depTasksList || []" :key="item" :value="item" :label="item" />
+        <x-option v-for="item in el.depTasksList || []" :key="item.id" :value="item.id" :label="item.name" />
       </x-select>
       <x-select v-model="el.cycle" style="width: 150px;" :disabled="isDetails" @on-change="_onChangeCycle">
         <x-option v-for="item in cycleList" :key="item.value" :value="item.value" :label="item.label" />
@@ -55,6 +55,10 @@
 import _ from 'lodash'
 import { cycleList, dateValueList } from './commcon'
 import disabledState from '@/components/Dolphin/mixin/disabledState'
+import {
+  getScheduleList,
+  getTaskLink
+} from '@/api/etlscheduler/processschedule'
 export default {
   name: 'DepList',
   components: {},
@@ -70,11 +74,13 @@ export default {
   },
   data() {
     return {
+      task: null,
       list: [],
-      projectList: [],
+      // projectList: [],
       cycleList: cycleList,
       isInstance: false,
-      itemIndex: null
+      itemIndex: null,
+      scheduleList: []
     }
   },
   watch: {
@@ -84,32 +90,65 @@ export default {
   created() {
     // is type projects-instance-details
     this.isInstance = this.$router.history.current.name === 'projects-instance-details'
-    // get processlist
-    this._getProjectList().then(() => {
+
+    getScheduleList().then((resp) => {
+      this.scheduleList = resp.data
+      // console.log(JSON.stringify(this.scheduleList))
+      // const depTasksList = [{id:'1', name:'11'}];
+
       if (!this.dependItemList.length) {
-        // let projectId = this.projectList[0].value
-        // let projectId = 1
-        this._getProcessByProjectId().then(definitionList => {
-          const value = definitionList[0].value
-          this._getDependItemList(value).then(depTasksList => {
-            this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(value, definitionList, depTasksList, projectId)))
-          })
+        const value = this.scheduleList[0].processDefinitionId
+        getTaskLink(value).then((resp) => {
+          this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(value, this.scheduleList, resp.data)))
         })
       } else {
-        // get definitionId ids
         const ids = _.map(this.dependItemList, v => v.definitionId).join(',')
         // get item list
         this._getDependItemList(ids, false).then(res => {
+
+        })
+
+        getTaskLink(value).then((resp) => {
           _.map(this.dependItemList, (v, i) => {
-            this._getProcessByProjectId().then(definitionList => {
-              this.$set(this.dependItemList, i, this._rtOldParams(v.definitionId, definitionList, ['ALL'].concat(_.map(res[v.definitionId] || [], v => v.name)), v))
-            })
+            this.$set(this.dependItemList, i, this._rtOldParams(v.definitionId, scheduleList, ['ALL'].concat(_.map(res[v.definitionId] || [], v => v.name)), v))
           })
+          // this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(value, this.scheduleList, resp.data)))
         })
       }
+
+      // const value = this.scheduleList[0].id
+      // getTaskLink(value).then(depTasksList => {
+      //   this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(value, scheduleList, depTasksList)))
+      // })
     })
+
+    // // get processlist
+    // this._getProjectList().then(() => {
+    //   if (!this.dependItemList.length) {
+    //     // let projectId = this.projectList[0].value
+    //     // let projectId = 1
+    //     // this._getProcessByProjectId().then(definitionList => {
+    //     //   const value = definitionList[0].value
+    //     //   this._getDependItemList(value).then(depTasksList => {
+    //     //     this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(value, definitionList, depTasksList)))
+    //     //   })
+    //     // })
+    //   } else {
+    //     // get definitionId ids
+    //     const ids = _.map(this.dependItemList, v => v.definitionId).join(',')
+    //     // get item list
+    //     this._getDependItemList(ids, false).then(res => {
+    //       _.map(this.dependItemList, (v, i) => {
+    //         // this._getProcessByProjectId().then(definitionList => {
+    //         //   this.$set(this.dependItemList, i, this._rtOldParams(v.definitionId, definitionList, ['ALL'].concat(_.map(res[v.definitionId] || [], v => v.name)), v))
+    //         // })
+    //       })
+    //     })
+    //   }
+    // })
   },
   mounted() {
+
   },
   methods: {
     /**
@@ -122,18 +161,18 @@ export default {
       // add task list
       // let projectId = this.projectList[0].value
       // let projectId = 1
-      this._getProcessByProjectId().then(definitionList => {
-        // dependItemList index
-        const is = (value) => _.some(this.dependItemList, { definitionId: value })
-        const noArr = _.filter(definitionList, v => !is(v.value))
-        const value = noArr[0] && noArr[0].value || null
-        const val = value || definitionList[0].value
-        this._getDependItemList(val).then(depTasksList => {
-          this.$nextTick(() => {
-            this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(val, definitionList, depTasksList, projectId)))
-          })
-        })
-      })
+      // this._getProcessByProjectId().then(definitionList => {
+      //   // dependItemList index
+      //   const is = (value) => _.some(this.dependItemList, { definitionId: value })
+      //   const noArr = _.filter(definitionList, v => !is(v.value))
+      //   const value = noArr[0] && noArr[0].value || null
+      //   const val = value || definitionList[0].value
+      //   this._getDependItemList(val).then(depTasksList => {
+      //     this.$nextTick(() => {
+      //       this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(val, definitionList, depTasksList, projectId)))
+      //     })
+      //   })
+      // })
       // remove tooltip
       this._removeTip()
     },
@@ -149,44 +188,44 @@ export default {
         })
       }
     },
-    _getProjectList() {
-      return new Promise((resolve, reject) => {
-        this.projectList = _.map(_.cloneDeep(this.store.state.dag.projectListS), v => {
-          return {
-            value: v.id,
-            label: v.name
-          }
-        })
-        resolve()
-      })
-    },
-    /**
-       * get processlist
-       */
-    _getProcessList() {
-      return new Promise((resolve, reject) => {
-        const definitionList = _.map(_.cloneDeep(this.store.state.dag.processListS), v => {
-          return {
-            value: v.id,
-            label: v.name
-          }
-        })
-        resolve(definitionList)
-      })
-    },
-    _getProcessByProjectId() {
-      return new Promise((resolve, reject) => {
-        this.store.dispatch('dag/getProcessByProjectId').then(res => {
-          const definitionList = _.map(_.cloneDeep(res), v => {
-            return {
-              value: v.id,
-              label: v.name
-            }
-          })
-          resolve(definitionList)
-        })
-      })
-    },
+    // _getProjectList() {
+    //   return new Promise((resolve, reject) => {
+    //     this.projectList = _.map(_.cloneDeep(this.store.state.dag.projectListS), v => {
+    //       return {
+    //         value: v.id,
+    //         label: v.name
+    //       }
+    //     })
+    //     resolve()
+    //   })
+    // },
+    // /**
+    //    * get processlist
+    //    */
+    // _getProcessList() {
+    //   return new Promise((resolve, reject) => {
+    //     const definitionList = _.map(_.cloneDeep(this.store.state.dag.processListS), v => {
+    //       return {
+    //         value: v.id,
+    //         label: v.name
+    //       }
+    //     })
+    //     resolve(definitionList)
+    //   })
+    // },
+    // _getProcessByProjectId() {
+    //   return new Promise((resolve, reject) => {
+    //     this.store.dispatch('dag/getProcessByProjectId').then(res => {
+    //       const definitionList = _.map(_.cloneDeep(res), v => {
+    //         return {
+    //           value: v.id,
+    //           label: v.name
+    //         }
+    //       })
+    //       resolve(definitionList)
+    //     })
+    //   })
+    // },
     /**
        * get dependItemList
        */
@@ -206,40 +245,51 @@ export default {
     /**
        * change process get dependItemList
        */
-    _onChangeProjectId() {
-      this._getProcessByProjectId().then(definitionList => {
-        /* this.$set(this.dependItemList, this.itemIndex, this._dlOldParams(value, definitionList, item))*/
-        const definitionId = definitionList[0].value
-        this._getDependItemList(definitionId).then(depTasksList => {
-          const item = this.dependItemList[this.itemIndex]
-          // init set depTasks All
-          item.depTasks = 'ALL'
-          // set dependItemList item data
-          this.$set(this.dependItemList, this.itemIndex, this._cpOldParams(value, definitionId, definitionList, depTasksList, item))
-        })
-      })
-    },
+    // _onChangeProjectId() {
+    //   this._getProcessByProjectId().then(definitionList => {
+    //     /* this.$set(this.dependItemList, this.itemIndex, this._dlOldParams(value, definitionList, item))*/
+    //     const definitionId = definitionList[0].value
+    //     this._getDependItemList(definitionId).then(depTasksList => {
+    //       const item = this.dependItemList[this.itemIndex]
+    //       // init set depTasks All
+    //       item.depTasks = 'ALL'
+    //       // set dependItemList item data
+    //       this.$set(this.dependItemList, this.itemIndex, this._cpOldParams(definitionId, definitionList, depTasksList, item))
+    //     })
+    //   })
+    // },
     _onChangeDefinitionId({ value }) {
       // get depItem list data
-      this._getDependItemList(value).then(depTasksList => {
+      // 根据流程调度ID 查询任务环节
+      getTaskLink(value).then((resp) => {
+        // const depTasksList = resp.data
+        console.log(resp.data)
         const item = this.dependItemList[this.itemIndex]
         // init set depTasks All
         item.depTasks = 'ALL'
-        // set dependItemList item data
-        this.$set(this.dependItemList, this.itemIndex, this._rtOldParams(value, item.definitionList, depTasksList, item))
+        // TODO 这个干什么的
+        this.$set(this.dependItemList, this.itemIndex, this._rtOldParams(value, item.definitionList, resp.data, item))
       })
+      // this._getDependItemList(value).then(depTasksList => {
+      //   const item = this.dependItemList[this.itemIndex]
+      //   // init set depTasks All
+      //   item.depTasks = 'ALL'
+      //   // set dependItemList item data
+      //   this.$set(this.dependItemList, this.itemIndex, this._rtOldParams(value, item.definitionList, depTasksList, item))
+      // })
     },
     _onChangeCycle({ value }) {
       const list = _.cloneDeep(dateValueList[value])
       this.$set(this.dependItemList[this.itemIndex], 'dateValue', list[0].value)
       this.$set(this.dependItemList[this.itemIndex], 'dateValueList', list)
     },
-    _rtNewParams(value, definitionList, depTasksList, projectId) {
+    _rtNewParams(value, scheduleList, depTasksList) {
       return {
-        projectId: projectId,
+        projectId: 1,
         definitionId: value,
         // dependItem need private definitionList
-        definitionList: definitionList,
+        definitionList: scheduleList,
+        scheduleList: scheduleList,
         depTasks: 'ALL',
         depTasksList: depTasksList,
         cycle: 'day',
@@ -248,12 +298,13 @@ export default {
         state: ''
       }
     },
-    _rtOldParams(value, definitionList, depTasksList, item) {
+    _rtOldParams(value, scheduleList, depTasksList, item) {
       return {
         projectId: item.projectId,
         definitionId: value,
         // dependItem need private definitionList
-        definitionList: definitionList,
+        definitionList: scheduleList,
+        scheduleList: scheduleList,
         depTasks: item.depTasks || 'ALL',
         depTasksList: depTasksList,
         cycle: item.cycle,
@@ -263,10 +314,11 @@ export default {
       }
     },
 
-    _cpOldParams(value, definitionId, definitionList, depTasksList, item) {
+    _cpOldParams(definitionId, scheduleList, depTasksList, item) {
       return {
-        projectId: value,
-        definitionList: definitionList,
+        projectId: 1,
+        definitionList: scheduleList,
+        scheduleList: scheduleList,
         definitionId: definitionId,
         depTasks: item.depTasks || 'ALL',
         depTasksList: depTasksList,

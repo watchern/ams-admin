@@ -65,10 +65,17 @@
         prop="scheduleName"
       />
       <el-table-column
+        v-if="false"
         label="任务流程"
         width="300px"
         align="center"
         prop="processDefinitionId"
+      />
+      <el-table-column
+        label="任务流程"
+        width="300px"
+        align="center"
+        prop="processDefName"
       />
       <el-table-column
         label="作业周期"
@@ -177,7 +184,7 @@
           </el-select>
         </el-form-item>
 
-        <el-table :data="paramData" style="width: 100%">
+        <!-- <el-table :data="paramList" style="width: 100%">
           <el-table-column label="参数名称" width="180">
             <template slot-scope="scope">
               <span style="margin-left: 10px">{{ scope.row.prop }}</span>
@@ -204,7 +211,19 @@
               >
             </template>
           </el-table-column>
-        </el-table>
+        </el-table> -->
+        <!-- <form>
+          参数名称:<input value=""/>
+          参数赋值:<input placeholder="为参数赋值"/>
+        </form> -->
+
+        <el-form-item v-for="item in paramList" :label="item.prop" :prop="item.prop">
+          <!-- v-for="item in options"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value" -->
+          <el-input v-model="item.value" />
+        </el-form-item>
         <!-- 添加任务依赖 -->
         <el-form-item>
           <div class="dependence-model">
@@ -299,8 +318,11 @@ import {
   del,
   findByprocessDef,
   updateEnableState,
-  getParamById
+  getParamsByProcessId
 } from '@/api/etlscheduler/processschedule'
+import {
+  getById
+} from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
 
 export default {
@@ -320,6 +342,7 @@ export default {
       // 添加依赖
       relation: 'AND',
       dependTaskList: [],
+      paramList: [],
       isLoading: false,
       //  查询任务流程
       options: [],
@@ -331,7 +354,6 @@ export default {
         }
       },
       loading: false,
-      paramData: [],
       tableKey: 'id',
       list: null,
       total: 0,
@@ -392,7 +414,8 @@ export default {
         crontab: null,
         scheduleName: null,
         processDefinitionId: null,
-        id: null
+        id: null,
+        processDefName: null
       },
       selections: [],
       dialogFormVisible: false,
@@ -469,6 +492,7 @@ export default {
   },
   created() {
     this.getList()
+    this.remoteMethod()
     const o = this.backfillItem
     const dependentResult = $(`#${o.id}`).data('dependent-result') || {}
     // Does not represent an empty object backfill
@@ -541,38 +565,50 @@ export default {
     // 参数赋值
     makeParam(e) {
       const { value } = e.target
-      this.temp.taskParams =
-        JSON.stringify(this.paramData[0].prop) + ':' + JSON.stringify(value)
-      // console.log("输入框===="+JSON.stringify(this.paramData[0].prop) + ":" +JSON.stringify(value))
-      // console.log("paramData"+this.paramData[0].prop)
+      console.log(value)
+      // console.log("输入框===="+JSON.stringify(this.paramList[0].prop) + ":" +JSON.stringify(value))
+      // console.log("paramList"+this.paramList[0].prop)
     },
     // 参数详情
     paramMsg() {
       var id = this.temp.processDefinitionId
-      // console.log(id);
-      getParamById(id).then((resp) => {
-        this.paramData = resp.data.globalParamList
-        this.temp.processDefinitionId = resp.data.name
-        // this.processName = resp.data.name
-        // this.processDefinitionId = this.processName
-        // console.log("id:"+this.processDefinitionId)
+      getById(id).then((resp) => {
+        // console.log(resp.data.name)
+        this.temp.processDefName = resp.data.name
+      })
+      getParamsByProcessId(id).then((resp) => {
+        this.paramList = resp.data
+        const prop = this.paramList[0].prop
+        const value = this.paramList[0].value
+        var s = '[{' + prop + ':' + value + ']}'
+        this.temp.taskParams = s
+        // this.paramList = [
+        //   {prop: "333",
+        //    value: "444"
+        //   }]
       })
     },
     // 查询任务流程
     remoteMethod(query) {
-      if (query !== '') {
-        this.loading = true
-        setTimeout(() => {
-          this.loading = false
-          this.processParam.condition.keyword = query
-          // console.log(this.processParam.condition.keyword)
-          findByprocessDef(this.processParam).then((resp) => {
-            this.options = resp.data.records
-          })
-        }, 200)
-      } else {
-        this.options = []
-      }
+      // if (query !== '') {
+      this.loading = true
+      setTimeout(() => {
+        this.loading = false
+        this.processParam.condition.keyword = query
+        // console.log(this.processParam.condition.keyword)
+        findByprocessDef(this.processParam).then((resp) => {
+          this.options = resp.data.records
+        })
+      }, 200)
+      // } else {
+      //   // this.options = []
+      //     this.loading = false
+      //     this.processParam.condition.keyword = query
+      //     // console.log(this.processParam.condition.keyword)
+      //     findByprocessDef(this.processParam).then((resp) => {
+      //       this.options = resp.data.records
+      //     })
+      // }
     },
     handleRemove(file, fileList) {
       console.log(file, fileList)
@@ -619,7 +655,8 @@ export default {
         id: null,
         enableState: null,
         updateUserName: null,
-        updateTime: null
+        updateTime: null,
+        processDefName: null
       }
     },
     handleCreate() {
