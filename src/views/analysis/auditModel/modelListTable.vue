@@ -45,11 +45,7 @@ import Pagination from '@/components/Pagination/index'
 import EditModel from '@/views/analysis/auditModel/editModel'
 export default {
   name: 'ModelListTable',
-<<<<<<< HEAD
-  components: { Pagination, QueryField },
-=======
   components: { Pagination, QueryField, EditModel },
->>>>>>> 9d1175af27a6fa7e17abfee65afe3f428e704343
   data() {
     return {
       tableKey: 'errorUuid',
@@ -160,23 +156,18 @@ export default {
       }
       return ''
     },
-<<<<<<< HEAD
-=======
     /**
      * 格式化类型
      * @param row 格式化行
      * @param column 格式化列
      * @returns {返回格式化后的字符串}
      */
->>>>>>> 9d1175af27a6fa7e17abfee65afe3f428e704343
     modelTypeFormatter(row, column) {
       const modelType = row.modelType
       if (modelType == 1) {
         return '审计模型'
       } else if (modelType == 2) {
         return '图形化模型'
-<<<<<<< HEAD
-=======
       }
     },
     riskLevelFormatter(row, column) {
@@ -187,7 +178,6 @@ export default {
         return '中'
       } else if (riskLevel == 3) {
         return '低'
->>>>>>> 9d1175af27a6fa7e17abfee65afe3f428e704343
       }
     },
     /**
