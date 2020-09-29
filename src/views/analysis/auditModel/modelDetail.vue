@@ -5,18 +5,16 @@
     <p style="color:silver;font-size:large">———————————————————————————</p>
     <el-container style="height: 450px;">
       <div ref="basicInfo" style="float: left">
-        <el-form :model="form" label-width="90px">
-          <el-form-item label="名称">
+        <el-form :model="form" label-width="90px" :rules="rules" ref="basicInfoForm">
+          <el-form-item label="名称" prop="modelDetailName">
             <el-input v-model="form.modelDetailName" @input="nameValueChange" />
           </el-form-item>
           <el-form-item label="描述">
             <el-input v-model="form.modelDetailMemo" type="textarea" />
           </el-form-item>
-        </el-form>
-        <p style="font-size:large;font-weight:bold">关联设置</p>
-        <p style="color:silver;font-size:large">———————————————————————————</p>
-        <el-form :model="form" label-width="90px">
-          <el-form-item label="关联类型">
+          <p style="font-size:large;font-weight:bold">关联设置</p>
+          <p style="color:silver;font-size:large">———————————————————————————</p>
+          <el-form-item label="关联类型" prop="relationType">
             <el-select ref="relTypeSelect" v-model="form.relationType" placeholder="请选择关联类型" @change="relTypeSelectChange">
               <el-option label="关联模型" value="1" />
               <el-option label="关联表" value="2" />
@@ -33,7 +31,7 @@
             <el-button type="primary" size="mini" style="float: right" @click="addRelFilter(1)">添加</el-button>
             <div ref="relModelTableDiv" style="display: none">
               <el-table ref="relModelTable" :data="relModelTable" border fit highlight-current-row style="width: 100%;">
-                <el-table-column label="原模型字段" width="200" align="center" prop="modelName">
+                <el-table-column label="原模型字段" width="200" align="center">
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.resultColumn" value="-1">
                       <el-option label="请选择" value="-1" />
@@ -46,7 +44,7 @@
                     </el-select>
                   </template>
                 </el-table-column>
-                <el-table-column label="关联模型参数" width="170px" align="center" prop="modelName">
+                <el-table-column label="关联模型参数" width="170px" align="center">
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.ammParamUuid" value="-1">
                       <el-option label="请选择" value="-1" />
@@ -59,7 +57,7 @@
                     </el-select>
                   </template>
                 </el-table-column>
-                <el-table-column label="操作" width="150px" align="center" prop="runTime">
+                <el-table-column label="操作" width="150px" align="center">
                   <template slot-scope="scope">
                     <el-button type="primary" size="mini" @click.native.prevent="deleteRow(scope.$index, relModelTable)">删除</el-button>
                   </template>
@@ -68,7 +66,7 @@
             </div>
           </div>
           <div ref="relTableDivParent" style="display: none;">
-            <el-form-item label="被关联表">
+            <el-form-item label="被关联表" prop="relationObjectUuidTable">
               <el-select v-model="form.relationObjectUuid" value="-1" @change="relTableSelectChange">
                 <el-option label="请选择" value="-1" />
                 <el-option label="表1" value="1" />
@@ -112,7 +110,7 @@
 <script>
 export default {
   name: 'EditModel',
-  props: ['columns'],
+  props: ['columns','treeId'],
   data() {
     return {
       form: {
@@ -127,7 +125,21 @@ export default {
       relModelTable: [],
       relModelParam: [],
       relTable: [],
-      relTableColumn: []
+      relTableColumn: [],
+      rules: {
+        modelDetailName: [
+          { type: 'string',required: true, message: '请输入详细名称', trigger: 'blur' }
+        ],
+        relationType: [
+          { required: true, message: '请选择关联类型', trigger: 'change' }
+        ],
+/*        relationObjectUuidModel: [
+          { validator:verForm, trigger: 'change' }
+        ],
+        relationObjectUuidTable: [
+          { validator:verForm, trigger: 'change' }
+        ]*/
+      }
     }
   },
   created() {
@@ -135,6 +147,16 @@ export default {
   },
   methods: {
     getObj() {
+      var verResult = false;
+      this.$refs['basicInfoForm'].validate((valid) => {
+        if (valid) {
+          verResult = valid;
+        }
+      });
+      if(!verResult){
+        var treeId = this.treeId;
+        return {verResult:false,treeId:treeId};
+      }
       // 组织关联详细的对象
       if (this.$refs.relTypeSelect.value == 1) {
         // 如果为关联模型则取模型表的数据
@@ -200,6 +222,7 @@ export default {
     },
     nameValueChange(value) {
       // 值改变同时更改树节点名称
+      this.$emit('updateTreeNode',value);
     }
   }
 }

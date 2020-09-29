@@ -18,7 +18,7 @@
         <span>
           <i :class="data.icon" />{{ node.label }}
         </span>
-        <span>
+        <span v-if="data.type=='folder'">
           <el-button type="text" size="mini" @click="() => setSelectTreeNode(node,data,1)"><i class="el-icon-circle-plus" /></el-button>
           <el-button type="text" size="mini" @click="() => setSelectTreeNode(node, data,2)"><i class="el-icon-edit" /></el-button>
           <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-delete" /></el-button>

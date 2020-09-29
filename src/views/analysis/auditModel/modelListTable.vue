@@ -4,11 +4,11 @@
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
     <div style="float: right;">
-      <el-button type="primary" icon="el-icon-zoom-in" @click="">预览</el-button>
+      <el-button type="primary" icon="el-icon-zoom-in">预览</el-button>
       <el-button type="primary" icon="el-icon-add-location" @click="addModel">新增</el-button>
       <el-button type="primary" icon="el-icon-edit" @click="updateModel">修改</el-button>
       <el-button type="primary" icon="el-icon-delete" @click="deleteModel">删除</el-button>
-      <el-dropdown placement="bottom" trigger="click" style="margin-left: 10px;" @command="">
+      <el-dropdown placement="bottom" trigger="click" style="margin-left: 10px;">
         <el-button type="primary">其他操作<i class="el-icon-arrow-down el-icon--right" /></el-button>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="batch_remarks">导出</el-dropdown-item>
@@ -142,19 +142,19 @@ export default {
      * @returns {返回格式化后的时间字符串}
      */
     dateFormatter(row, column) {
-      const datetime = row.createTime
+      const datetime = row.createTime;
       if (datetime) {
-        var dateMat = new Date(datetime)
-        var year = dateMat.getFullYear()
-        var month = dateMat.getMonth() + 1
-        var day = dateMat.getDate()
-        var hh = dateMat.getHours()
-        var mm = dateMat.getMinutes()
-        var ss = dateMat.getSeconds()
-        var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
-        return timeFormat
+        var dateMat = new Date(datetime);
+        var year = dateMat.getFullYear();
+        var month = dateMat.getMonth() + 1;
+        var day = dateMat.getDate();
+        var hh = dateMat.getHours();
+        var mm = dateMat.getMinutes();
+        var ss = dateMat.getSeconds();
+        var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss;
+        return timeFormat;
       }
-      return ''
+      return '';
     },
     /**
      * 格式化类型
@@ -164,20 +164,20 @@ export default {
      */
     modelTypeFormatter(row, column) {
       const modelType = row.modelType
-      if (modelType == 1) {
-        return '审计模型'
-      } else if (modelType == 2) {
-        return '图形化模型'
+      if (modelType === 1) {
+        return '审计模型';
+      } else if (modelType === 2) {
+        return '图形化模型';
       }
     },
     riskLevelFormatter(row, column) {
       var riskLevel = row.riskLevelUuid
-      if (riskLevel == 1) {
-        return '高'
-      } else if (riskLevel == 2) {
-        return '中'
-      } else if (riskLevel == 3) {
-        return '低'
+      if (riskLevel === 1) {
+        return '高';
+      } else if (riskLevel === 2) {
+        return '中';
+      } else if (riskLevel === 3) {
+        return '低';
       }
     },
     /**
@@ -185,14 +185,14 @@ export default {
      * @param query 查询条件
      */
     getList(query) {
-      this.listLoading = true
+      this.listLoading = true;
       if (query) {
-        this.pageQuery.condition = query
+        this.pageQuery.condition = query;
       }
       findModel(this.pageQuery).then(resp => {
-        this.total = resp.data.total
-        this.list = resp.data.records
-        this.listLoading = false
+        this.total = resp.data.total;
+        this.list = resp.data.records;
+        this.listLoading = false;
       })
     },
     /**
@@ -200,28 +200,27 @@ export default {
      * @param data 树节点
      */
     setSelectTreeNode(data) {
-      this.selectTreeNode = data
+      this.selectTreeNode = data;
     },
     /**
      * 保存模型
      */
     save() {
-      var modelObj = this.$refs.editModel.getModelObj()
-      if (modelObj == null || modelObj == false) {
-
+      var modelObj = this.$refs.editModel.getModelObj();
+      if (modelObj == null) {
+        return;
       }
-      return
-      this.editModelShow = false
-      this.listLoading = true
+      this.editModelShow = false;
+      this.listLoading = true;
       saveModel(modelObj).then(result => {
-        if (result.code == 0) {
+        if (result.code === 0) {
           this.getList(this.query)// 刷新列表
-          this.$emit('refreshTree')
-          this.listLoading = false
-          this.$refs.editModel.clear()
+          this.$emit('refreshTree');
+          this.listLoading = false;
+          this.$refs.editModel.clear();
         } else {
-          this.$message({ type: 'error', message: '新增模型失败!' })
-          this.listLoading = false
+          this.$message({ type: 'error', message: '新增模型失败!' });
+          this.listLoading = false;
         }
       })
     },
@@ -245,16 +244,16 @@ export default {
      * 隐藏编辑模型界面
      */
     hideEditModal() {
-      this.editModelShow = false
+      this.editModelShow = false;
     },
     /**
      * 添加模型
      */
     addModel() {
       if (this.selectTreeNode == null) {
-        this.$message({ type: 'info', message: '请先选择模型分类!' })
+        this.$message({ type: 'info', message: '请先选择模型分类!' });
       } else {
-        this.editModelShow = true
+        this.editModelShow = true;
         // this.$refs.editModel.setSelectTreeNode(this.selectTreeNode);
       }
     },
@@ -270,17 +269,17 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        var selectObj = this.$refs.modelListTable.selection
-        if (selectObj == undefined || selectObj.length == 0) {
-          this.$message({ type: 'info', message: '请先选择要删除的模型!' })
-          return
+        var selectObj = this.$refs.modelListTable.selection;
+        if (selectObj == undefined || selectObj.length === 0) {
+          this.$message({ type: 'info', message: '请先选择要删除的模型!' });
+          return;
         }
         deleteModel(selectObj).then(result => {
           if (result.code == 0) {
-            this.getList(this.query)
-            this.$emit('refreshTree')
+            this.getList(this.query);
+            this.$emit('refreshTree');
           } else {
-            this.$message({ type: 'error', message: '删除失败' })
+            this.$message({ type: 'error', message: '删除失败' });
           }
         })
       }).catch(() => {
@@ -292,7 +291,7 @@ export default {
     },
     batch_remarks() {
       debugger
-      alert('这是共享')
+      alert('这是共享');
     }
   }
 }

@@ -2,10 +2,19 @@
   <div>
     <el-container style="height: 500px; border: 1px solid #eee">
       <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-        <el-tree ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick" />
+        <el-tree ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
+          <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span>
+              <i/>{{ node.label }}
+            </span>
+            <span v-if="data.type=='relDetail' || data.type=='filterShowNode'">
+              <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-delete" /></el-button>
+            </span>
+          </span>
+        </el-tree>
       </el-aside>
       <div ref="basicInfo">
-        <el-form ref="basicInfoForm" :model="form" label-width="150px" :rules="rules">
+        <el-form ref="basicInfoForm" :model="form" label-width="150px" :rules="basicInfoRules">
           <el-form-item label="模型名称" prop="modelName">
             <el-input v-model="form.modelName" />
           </el-form-item>
@@ -34,7 +43,7 @@
         </el-form>
       </div>
       <div ref="modelDesign" style="display: none">
-        <el-form :model="form" label-width="150px">
+        <el-form ref ="modelDesignForm" :model="form" label-width="150px" :rules="modelDesignRules">
           <el-form-item style="width: 400px" prop="sqlValue">
             <el-button type="primary" @click="getSqlObj">图形化编辑器</el-button>
             <el-button type="primary" @click="getSqlObj">SQL编辑器</el-button>
@@ -105,7 +114,7 @@
           </el-table-column>
         </el-table>
       </div>
-      <div ref="relInfo" style="display: none">
+      <div  ref="relInfo" style="display: none">
         <p>在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
           用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。
           通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。</p>
@@ -113,27 +122,33 @@
       </div>
       <div id="modelDetailDiv">
         <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id" style="display: none">
-          <ModelDetail ref="child" :columns="columnData" />
+          <ModelDetail ref="child" :columns="columnData" @updateTreeNode="updateTreeNode" :treeId="modelDetail.id" />
         </div>
       </div>
       <div ref="chartConfig" style="display: none">
         这是图表配置
       </div>
-      <div ref="filterShow" style="display: none">
+      <div ref="modelFilterShowParent" style="display: none">
         <p>条件显示能够根据用户所设定的条件及显示样式，对模型执行结果中满足条件的敏感数据或重要数据进行着色显示，使这些数据变的一目了然，
           以便审计人员对这些数据进行审计。</p>
         <p>条件显示设计器以表格的形式列举所有由用户设定的、将被应用于模型执行结果的显示条件及显示样式，用户可通过该列表对各个条件的属性进行快速查看。
           同时用户也可以对显示条件进行添加、修改、删除</p>
-        <el-button style="float: right;position:sticky;top: 260px;" @click="createDetail">新建</el-button>
+        <el-button style="float: right;position:sticky;top: 260px;" @click="createFilterShow">新建</el-button>
+      </div>
+      <div ref="filterShowDiv">
+        <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id" style="display: none">
+          <ModelFilterShow ref="modelFilterSHowChild" :columns="columnData" @updateTreeNode="updateTreeNode" :treeId="filterShow.id"  />
+        </div>
       </div>
     </el-container>
   </div>
 </template>
 <script>
 import ModelDetail from '@/views/analysis/auditModel/modelDetail'
+import ModelFilterShow from '@/views/analysis/auditModel/modelFilterShow'
 export default {
   name: 'EditModel',
-  components: { ModelDetail },
+  components: { ModelDetail,ModelFilterShow },
   props: ['openValue'],
   data() {
     return {
@@ -172,7 +187,8 @@ export default {
         {
           id: '7',
           label: '条件展示',
-          type: 'filterShow'
+          type: 'filterShow',
+          children: []
         }
       ],
       defaultProps: {
@@ -201,22 +217,25 @@ export default {
       columnTypeSelect: [],
       selectTreeNode: null,
       modelDetails: [],
+      filterShows:[],
       modelDetailIndex: 0,
+      modelFilterShowIndex:0,
       modelOriginalTable: [],
       modelChartSetup: {},
-      rules: {
+      currentSelectTreeNode:null,
+      basicInfoRules: {
         modelName: [
-          { required: true, message: '请输入模型名称', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 1 到 100 个字符', trigger: 'blur' }
+          { type: 'string',required: true, message: '请输入模型名称', trigger: 'blur' }
         ],
         auditItemUuid: [
           { required: true, message: '请选择审计事项', trigger: 'change' }
         ],
         riskLevelUuid: [
-          { type: 'date', required: true, message: '请选择风险等级', trigger: 'change' }
-        ]/*,
-          sqlValue:[{ type: 'date', required: true, message: '请选择输入模型SQL', trigger: 'blur' }]*/
-      }
+          { type: 'string', required: true, message: '请选择风险等级', trigger: 'change' }
+        ]
+      },
+      modelDesignRules:{
+        sqlValue:[{ type: 'string', required: true, message: '请选择输入模型SQL', trigger: 'blur' }]}
     }
   },
   created() {
@@ -225,154 +244,228 @@ export default {
     this.form.modelFolderUuid = this.openValue.id
     this.form.modelFolderName = this.openValue.label
     // 初始化业务字段列表
-    var businessColumnSelect = [{ uuid: '1', name: '机构名称' }, { uuid: '2', name: '机构代码' }]
+    let businessColumnSelect = [{ uuid: '1', name: '机构名称' }, { uuid: '2', name: '机构代码' }]
     this.businessColumnSelect = businessColumnSelect
     // 初始化字段类型
-    var columnTypeSelect = [{ uuid: '1', name: '数值' }, { uuid: '2', name: '字符串' }, { uuid: '3', name: '日期' }, { uuid: '4', name: '金额' }]
+    let columnTypeSelect = [{ uuid: '1', name: '数值' }, { uuid: '2', name: '字符串' }, { uuid: '3', name: '日期' }, { uuid: '4', name: '金额' }]
     this.columnTypeSelect = columnTypeSelect
   },
   methods: {
     handleNodeClick(data, node) {
-      this.hideModelDetail()
+      this.hideModelDetail();
       if (data.type == 'basicInfo') {
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.filterShow.style.display = 'none'
-        this.$refs.basicInfo.style.display = 'block'
+        this.$refs.modelDesign.style.display = 'none';
+        this.$refs.paramDefaultValue.style.display = 'none';
+        this.$refs.modelResultOutputCol.style.display = 'none';
+        this.$refs.relInfo.style.display = 'none';
+        this.$refs.chartConfig.style.display = 'none';
+        this.$refs.modelFilterShowParent.style.display = 'none';
+        this.$refs.basicInfo.style.display = 'block';
       } else if (data.type == 'modelDesign') {
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.filterShow.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'block'
+        this.$refs.basicInfo.style.display = 'none';
+        this.$refs.paramDefaultValue.style.display = 'none';
+        this.$refs.modelResultOutputCol.style.display = 'none';
+        this.$refs.chartConfig.style.display = 'none';
+        this.$refs.modelFilterShowParent.style.display = 'none';
+        this.$refs.relInfo.style.display = 'none';
+        this.$refs.modelDesign.style.display = 'block';
       } else if (data.type == 'paramDefaultValue') {
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.filterShow.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'block'
+        this.$refs.basicInfo.style.display = 'none';
+        this.$refs.modelDesign.style.display = 'none';
+        this.$refs.modelResultOutputCol.style.display = 'none';
+        this.$refs.chartConfig.style.display = 'none';
+        this.$refs.modelFilterShowParent.style.display = 'none';
+        this.$refs.relInfo.style.display = 'none';
+        this.$refs.paramDefaultValue.style.display = 'block';
       } else if (data.type == 'modelResultOutputCol') {
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.filterShow.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'block'
+        this.$refs.basicInfo.style.display = 'none';
+        this.$refs.modelDesign.style.display = 'none';
+        this.$refs.paramDefaultValue.style.display = 'none';
+        this.$refs.chartConfig.style.display = 'none';
+        this.$refs.modelFilterShowParent.style.display = 'none';
+        this.$refs.relInfo.style.display = 'none';
+        this.$refs.modelResultOutputCol.style.display = 'block';
       } else if (data.type == 'relInfo') {
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.filterShow.style.display = 'none'
-        this.$refs.relInfo.style.display = 'block'
+        this.$refs.basicInfo.style.display = 'none';
+        this.$refs.modelDesign.style.display = 'none';
+        this.$refs.paramDefaultValue.style.display = 'none';
+        this.$refs.modelResultOutputCol.style.display = 'none';
+        this.$refs.chartConfig.style.display = 'none';
+        this.$refs.modelFilterShowParent.style.display = 'none';
+        this.$refs.relInfo.style.display = 'block';
       } else if (data.type == 'chartConfig') {
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.filterShow.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'block'
+        this.$refs.basicInfo.style.display = 'none';
+        this.$refs.modelDesign.style.display = 'none';
+        this.$refs.paramDefaultValue.style.display = 'none';
+        this.$refs.modelResultOutputCol.style.display = 'none';
+        this.$refs.modelFilterShowParent.style.display = 'none';
+        this.$refs.relInfo.style.display = 'none';
+        this.$refs.chartConfig.style.display = 'block';
       } else if (data.type == 'filterShow') {
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.filterShow.style.display = 'block'
-      } else if (data.type == 'relDetail') {
+        this.$refs.basicInfo.style.display = 'none';
+        this.$refs.modelDesign.style.display = 'none';
+        this.$refs.paramDefaultValue.style.display = 'none';
+        this.$refs.modelResultOutputCol.style.display = 'none';
+        this.$refs.relInfo.style.display = 'none';
+        this.$refs.chartConfig.style.display = 'none';
+        this.$refs.modelFilterShowParent.style.display = 'block';
+      } else if (data.type == 'relDetail' || data.type == 'filterShowNode') {
         // 获取指定div
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.filterShow.style.display = 'none'
-        this.$refs.[data.id][0].style.display = 'block'
+        this.$refs.basicInfo.style.display = 'none';
+        this.$refs.modelDesign.style.display = 'none';
+        this.$refs.paramDefaultValue.style.display = 'none';
+        this.$refs.modelResultOutputCol.style.display = 'none';
+        this.$refs.relInfo.style.display = 'none';
+        this.$refs.chartConfig.style.display = 'none';
+        this.$refs.modelFilterShowParent.style.display = 'none';
+        if(this.$refs.[data.id][0] != undefined){
+          this.$refs.[data.id][0].style.display = 'block';
+        }
       }
+      this.currentSelectTreeNode = data;
     },
     hideModelDetail() {
-      for (var i = 0; i < this.modelDetails.length; i++) {
-        this.$refs.[this.modelDetails[i].id][0].style.display = 'none'
+      for (let i = 0; i < this.modelDetails.length; i++) {
+        let id = this.modelDetails[i].id;
+        this.$refs.[id][0].style.display = 'none'
+      }
+      for (let i = 0; i < this.filterShows.length; i++) {
+        let id = this.filterShows[i].id;
+        this.$refs.[id][0].style.display = 'none'
       }
     },
     /**
        * 获取当前界面的模型对象
        */
     getModelObj() {
+      //region 校验基本信息
+      let basicInfoVerResult = false;
       this.$refs['basicInfoForm'].validate((valid) => {
         if (valid) {
-          alert('submit!')
-          return true
-        } else {
-          alert('error submit!!!')
-          return false
+          basicInfoVerResult = valid;
         }
-      })
-      // 处理模型结果固定输出列数据
-      var columnData = this.$refs.columnData.data
-      for (var i = 0; i < columnData.length; i++) {
+      });
+      if(!basicInfoVerResult){
+        //自动选中指定树节点
+        this.handleNodeClick({
+          id: '1',
+          label: '基本信息',
+          type: 'basicInfo'
+        },null);
+        return null;
+      }
+      //endregion
+      //region 校验sql语句
+      let modelDesignVerResult = false;
+      this.$refs['modelDesignForm'].validate((valid) => {
+        if (valid) {
+          modelDesignVerResult = valid;
+        }
+      });
+      if(!modelDesignVerResult){
+        //自动选中指定树节点
+        this.handleNodeClick({
+          id: '2',
+          label: '模型设计',
+          type: 'modelDesign'
+        },null);
+        return null;
+      }
+      //endregion
+      //region 处理模型结果固定输出列数据
+      let columnData = this.$refs.columnData.data
+      for (let i = 0; i < columnData.length; i++) {
         if (columnData[i].isShow == undefined) {
-          columnData[i].isShow = 1
+          columnData[i].isShow = 1;
         }
       }
-      this.form.modelOutputColumn = columnData
-      var paramData = this.$refs.paramData.data
-      for (var i = 0; i < paramData.length; i++) {
-        paramData[i].paramSort = ++i
+      this.form.modelOutputColumn = columnData;
+      //endregion
+      //region 处理参数数据
+      let paramData = this.$refs.paramData.data;
+      for (let i = 0; i < paramData.length; i++) {
+        paramData[i].paramSort = ++i;
       }
       this.form.parammModelRel = paramData
-      // 获取模型详细
-      var modelDetailRelation = []
+      //endregion
+      //region 获取模型详细
+      let verModelDetail = true;
+      let modelDetailRelation = [];
       for (const i in this.modelDetails) {
-        modelDetailRelation.push(this.$refs.child[i].getObj())
+        let modelDetailObj = this.$refs.child[i].getObj();
+        if(modelDetailObj.verResult == undefined){
+          modelDetailRelation.push(modelDetailObj);
+        }
+        else{
+          verModelDetail = false;
+          let treeNode = {id:modelDetailObj.treeId,type:'relDetail'};
+          this.handleNodeClick(treeNode,null);
+          break;
+        }
+      }
+      if(!verModelDetail){
+        return;
       }
       this.form.modelDetailRelation = modelDetailRelation// 模型关联详细
-      this.form.modelChartSetup = this.modelChartSetup// 图表
-      this.form.modelOriginalTable = this.modelOriginalTable// 模型SQL所用到的表
-      return this.form
+      //endregion
+      //region 处理图表
+      this.form.modelChartSetup = this.modelChartSetup
+      //endregion
+      //region 模型SQL所用到的表
+      this.form.modelOriginalTable = this.modelOriginalTable
+      //endregion
+      //region 处理模型条件显示
+      let resultFilterResult = true;
+      let resultFilterShow = [];
+      for (const i in this.filterShows) {
+        let filterShowObj = this.$refs.modelFilterSHowChild[i].getForm();
+        if(filterShowObj.verResult == undefined){
+          resultFilterShow.push(filterShowObj);
+        }
+        else{
+          let treeNode = {id:filterShowObj.treeId,type:'filterShowNode'};
+          this.handleNodeClick(treeNode,null);
+          resultFilterResult = false;
+        }
+      }
+      if(!resultFilterResult){
+        return null;
+      }
+      this.form.resultFilterShow = resultFilterShow;
+      //endregion
+      return this.form;
     },
     /**
        * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
        */
     getSqlObj() {
-      var sqlObj = {
+      let sqlObj = {
         sqlValue: 'select * from AA_AUDIT_ITEM',
-        column: ['AUDIT_ITEM_UUID', 'AUDIT_ITEM_NAME'],
+        column: [{columnName:'AUDIT_ITEM_UUID',columnType:'varchar'}, {columnName:'AUDIT_ITEM_NAME',columnType:'varchar'}],
         params: [
           { ammParamUuid: '1', paramName: '参数一', paramMemo: '这是参数一的说明', paramValue: '默认值1' },
           { ammParamUuid: '2', paramName: '参数二', paramMemo: '这是参数二的说明', paramValue: '默认值2' }],
         modelChartSetup: { chartJson: '哈哈哈哈' },
         modelOriginalTable: [{ originalTableName: '表1', executionType: '1' }, { originalTableName: '表2', executionType: '2' }]
-      }
-      this.form.sqlValue = sqlObj.sqlValue
+      };
+      this.form.sqlValue = sqlObj.sqlValue;
       // 初始化默认参数
-      this.paramData = sqlObj.params
+      this.paramData = sqlObj.params;
       // 初始化固定列
-      var columnData = []
-      for (var i = 0; i < sqlObj.column.length; i++) {
-        var columnDataObj = {
-          outputColumnName: sqlObj.column[i]
+      let columnData = [];
+      for (let i = 0; i < sqlObj.column.length; i++) {
+        let columnDataObj = {
+          outputColumnName: sqlObj.column[i].columnName,
+          outputColumnType: sqlObj.column[i].columnType
         }
-        columnData.push(columnDataObj)
+        columnData.push(columnDataObj);
       }
       // 列数据
-      this.columnData = columnData
+      this.columnData = columnData;
       // 模型SQL用到的数据表
-      this.modelOriginalTable = sqlObj.modelOriginalTable
+      this.modelOriginalTable = sqlObj.modelOriginalTable;
       // 处理图表JSON
-      this.modelChartSetup = sqlObj.modelChartSetup
+      this.modelChartSetup = sqlObj.modelChartSetup;
     },
     /**
        * 设置选中的树节点
@@ -383,23 +476,48 @@ export default {
       this.form.modelFolderUuid = this.openValue.id
       this.form.modelFolderName = this.openValue.label
     },
+    /**
+     * 创建模型详细
+     */
     createDetail() {
       if (this.columnData.length == 0) {
         this.$message({ type: 'info', message: '请先编写SQL!' })
         return
       }
-      ++this.modelDetailIndex
+      ++this.modelDetailIndex;
       const newChild = {
         id: 'rel' + this.modelDetailIndex,
         label: '关联' + this.modelDetailIndex,
         children: [],
         pid: 5,
         type: 'relDetail'
-      }
-      var treeNode = this.$refs.tree.getCurrentNode()
-      treeNode.children.push(newChild)
-      this.modelDetails.push({ id: 'rel' + this.modelDetailIndex })
+      };
+      let treeNode = this.$refs.tree.getCurrentNode();
+      treeNode.children.push(newChild);
+      this.modelDetails.push({ id: 'rel' + this.modelDetailIndex });
     },
+    /**
+     * 创建过滤条件显示
+     */
+    createFilterShow(){
+      if (this.columnData.length == 0) {
+        this.$message({ type: 'info', message: '请先编写SQL!' })
+        return
+      }
+      ++this.modelFilterShowIndex;
+      const newChild = {
+        id: 'filterShow' + this.modelFilterShowIndex,
+        label: '条件显示' + this.modelFilterShowIndex,
+        children: [],
+        type: 'filterShowNode'
+      };
+      let treeNode = this.$refs.tree.getCurrentNode();
+      treeNode.children.push(newChild);
+      this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex });
+    },
+    /**
+     * 清空界面数据
+     */
     clear() {
       this.form = {
         modelName: '',
@@ -410,18 +528,90 @@ export default {
         auditIdeas: '',
         paramConditions: '',
         sqlValue: ''
-      }
-      this.parammModelRel = {}
+      };
+      this.parammModelRel = {};
       this.sqlObj = {
         sqlValue: '',
         params: [],
         column: []
+      };
+      this.businessColumnSelect = [];
+      this.columnTypeSelect = [];
+      this.selectTreeNode = null;
+      this.modelDetails = [];
+      this.modelDetailIndex = 0;
+      this.filterShows = [];
+      this.treeNodeData = [
+        {
+          id: '1',
+          label: '基本信息',
+          type: 'basicInfo'
+        },
+        {
+          id: '2',
+          label: '模型设计',
+          type: 'modelDesign'
+        },
+        {
+          id: '3',
+          label: '参数默认值',
+          type: 'paramDefaultValue'
+        },
+        {
+          id: '4',
+          label: '模型结果输出列',
+          type: 'modelResultOutputCol'
+        },
+        {
+          id: '5',
+          label: '关联详细',
+          type: 'relInfo',
+          children: []
+        },
+        {
+          id: '6',
+          label: '图表配置',
+          type: 'chartConfig'
+        },
+        {
+          id: '7',
+          label: '条件展示',
+          type: 'filterShow',
+          children: []
+        }
+      ];
+    },
+    /**
+     * 删除添加的节点
+     * @param node 树节点
+     * @param data 要删除的节点
+     */
+    deleteFolder(node, data) {
+      const parent = node.parent;
+      const children = parent.data.children || parent.data;
+      const index = children.findIndex(d => d.id === data.id);
+      children.splice(index, 1);
+      if(data.type === 'relDetail'){
+        for (let i = 0; i < this.modelDetails.length; i++) {
+          let id = this.modelDetails[i].id;
+          if(id == data.id){
+            this.modelDetails.splice(i,1);
+            break;
+          }
+        }
       }
-      this.businessColumnSelect = []
-      this.columnTypeSelect = []
-      this.selectTreeNode = null
-      this.modelDetails = []
-      this.modelDetailIndex = 0
+      else if(data.type === 'filterShowNode'){
+        for (let i = 0; i < this.filterShows.length; i++) {
+          let id = this.filterShows[i].id;
+          if(id == data.id){
+            this.filterShows.splice(i,1);
+            break;
+          }
+        }
+      }
+    },
+    updateTreeNode(value){
+      this.currentSelectTreeNode.label = value;
     }
   }
 }
