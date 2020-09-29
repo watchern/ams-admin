@@ -322,7 +322,7 @@ import {
 } from '@/api/etlscheduler/processschedule'
 import {
   getById
-} from '@/api/etlscheduler/processinstance'
+} from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
 
 export default {

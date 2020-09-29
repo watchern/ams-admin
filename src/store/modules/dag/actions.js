@@ -10,11 +10,7 @@ import {
   update,
   getProcList,
   findClassesByPackage
-} from '@/api/etlscheduler/processinstance'
-import {
-  _scheduleList,
-  getTaskLink
-} from '@/api/etlscheduler/processschedule'
+} from '@/api/etlscheduler/processdefinition'
 export default {
 
   /**
