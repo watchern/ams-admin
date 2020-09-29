@@ -23,13 +23,13 @@
         type="primary"
         size="mini"
         :disabled="selections.length === 0"
-        @click="handleUpdate()"
+        @click="handleStart()"
       >启用</el-button>
       <el-button
         type="danger"
         size="mini"
         :disabled="selections.length === 0"
-        @click="handleUpdate()"
+        @click="handleStop()"
       >停用</el-button>
       <el-button
         type="danger"
@@ -176,6 +176,9 @@ export default {
       this.temp = Object.assign({}, this.selections[0])
       // 编辑的页面跳转
       this.$router.push(`/etlscheduler/definition/${this.temp.processDefinitionUuid}`)
+    },
+    handleStart() {
+
     },
     handleDelete() {
       var ids = []
