@@ -398,7 +398,7 @@ export default {
               this[this.type === 'instance' ? 'updateInstance' : 'updateDefinition'](this.urlParam.id).then(res => {
                 this.$message.success(res.msg)
                 this.spinnerLoading = false
-                this.$router.push('/etlscheduler/processinstance')
+                this.$router.push('/etlscheduler/processdefinition')
                 resolve()
               }).catch(e => {
                 this.$message.error(e.msg || '')
@@ -411,7 +411,7 @@ export default {
                 this.$message.success(res.msg)
                 this.spinnerLoading = false
                 if (sourceType !== 'affirm') {
-                  this.$router.push('/etlscheduler/processinstance')
+                  this.$router.push('/etlscheduler/processdefinition')
                 }
                 resolve()
               }).catch(e => {

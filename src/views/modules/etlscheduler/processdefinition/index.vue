@@ -22,14 +22,14 @@
       <el-button
         type="primary"
         size="mini"
-        :disabled="selections.length === 0"
-        @click="handleUpdate()"
+        :disabled="startStatus"
+        @click="handleStart()"
       >启用</el-button>
       <el-button
         type="danger"
         size="mini"
-        :disabled="selections.length === 0"
-        @click="handleUpdate()"
+        :disabled="stopStatus"
+        @click="handleStop()"
       >停用</el-button>
       <el-button
         type="danger"
@@ -37,6 +37,12 @@
         :disabled="selections.length === 0"
         @click="handleDelete()"
       >删除</el-button>
+      <el-button
+        type="primary"
+        size="mini"
+        :disabled="selections.length === 0"
+        @click="handleDownload()"
+      >下载</el-button>
     </div>
     <el-table
       :key="tableKey"
@@ -103,7 +109,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, del } from '@/api/etlscheduler/processinstance'
+import { listByPage, del, updateDefinitionStatus, exportProcess } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
 
 export default {
@@ -143,7 +149,28 @@ export default {
         processDefinitionUuid: null
       },
       selections: [],
-      downloadLoading: false
+      downloadLoading: false,
+      startStatus: true,
+      stopStatus: true
+    }
+  },
+  watch: {
+    // 监听selections集合
+    selections() {
+      if (this.selections.length > 0) {
+        this.startStatus = false
+        this.stopStatus = false
+        this.selections.forEach((r, i) => {
+          if (r.status === 1) {
+            this.startStatus = true
+          } else if (r.status === 0) {
+            this.stopStatus = true
+          }
+        })
+      } else {
+        this.startStatus = true
+        this.stopStatus = true
+      }
     }
   },
   created() {
@@ -176,6 +203,48 @@ export default {
       this.temp = Object.assign({}, this.selections[0])
       // 编辑的页面跳转
       this.$router.push(`/etlscheduler/definition/${this.temp.processDefinitionUuid}`)
+    },
+    handleStart() {
+      var ids = []
+      this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
+      updateDefinitionStatus(ids.join(','), 1).then(() => {
+        this.getList()
+        this.$notify({
+          title: '成功',
+          message: '启用成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      })
+    },
+    handleDownload() {
+      var ids = []
+      this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
+      exportProcess(ids.join(',')).then(() => {
+        this.getList()
+        this.$notify({
+          title: '成功',
+          message: '下载成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      })
+    },
+    handleStop() {
+      var ids = []
+      this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
+      updateDefinitionStatus(ids.join(','), 0).then(() => {
+        this.getList()
+        this.$notify({
+          title: '成功',
+          message: '停用成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      })
     },
     handleDelete() {
       var ids = []

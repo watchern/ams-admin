@@ -6,9 +6,10 @@
     <div>
       <el-upload
         class="upload-demo"
-        action="https://jsonplaceholder.typicode.com/posts/"     
-         multiple
-        :limit="10">
+        action="https://jsonplaceholder.typicode.com/posts/"
+        multiple
+        :limit="10"
+      >
         <el-button size="small" type="infor">批量导入</el-button>
       </el-upload>
       <el-button
@@ -160,7 +161,7 @@
             <el-option label="每季度" value="0 0 0 1 1,4,7,10 ? *" />
             <el-option label="每半年" value="0 0 0 1 1,7 ? *" />
             <el-option label="每年" value="0 0 0 1 1 ? *" />
-            </el-select>
+          </el-select>
         </el-form-item>
         <el-form-item label="流程描述" prop="scheduleDesc">
           <el-input v-model="temp.scheduleDesc" type="textarea" />
@@ -218,12 +219,12 @@
           参数名称:<input value=""/>
           参数赋值:<input placeholder="为参数赋值"/>
         </form> -->
-        <el-form-item v-for="item in paramList" :label="item.prop" :prop="item.prop" :key="item.value">
+        <el-form-item v-for="item in paramList" :key="item.value" :label="item.prop" :prop="item.prop">
           <!-- v-for="item in options"
       :key="item.value"
       :label="item.label"
       :value="item.value" -->
-          <el-input v-model="item.value" @input="defaultValue"/>
+          <el-input v-model="item.value" @input="defaultValue" />
         </el-form-item>
         <!-- 添加任务依赖 -->
         <el-form-item>
@@ -323,7 +324,7 @@ import {
 } from '@/api/etlscheduler/processschedule'
 import {
   getById
-} from '@/api/etlscheduler/processinstance'
+} from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
 
 export default {
@@ -397,11 +398,11 @@ export default {
           null: '启用'
         },
         crontab: {
-          "0 0 0 * * ? *": '每日',
-          "0 0 0 1 * ? *": '每月',
-          "0 0 0 1 1,4,7,10 ? *": '每季度',
-          "0 0 0 1 1,7 ? *": '每半年',
-          "0 0 0 1 1 ? *": '每年'
+          '0 0 0 * * ? *': '每日',
+          '0 0 0 1 * ? *': '每月',
+          '0 0 0 1 1,4,7,10 ? *': '每季度',
+          '0 0 0 1 1,7 ? *': '每半年',
+          '0 0 0 1 1 ? *': '每年'
         }
       },
       pageQuery: {
@@ -522,17 +523,17 @@ export default {
     }
   },
   methods: {
-     defaultValue(e) {
-        const prop = this.paramList[0].prop
-        const value = this.paramList[0].value
-        if (e == value) {
+    defaultValue(e) {
+      const prop = this.paramList[0].prop
+      const value = this.paramList[0].value
+      if (e == value) {
         var s = '[{' + prop + ':' + value + ']}'
         this.temp.taskParams = s
-        }  else {
+      } else {
         var s = '[{' + prop + ':' + e + ']}'
         this.temp.taskParams = s
-        }     
-     },
+      }
+    },
     _addDep() {
       if (!this.isLoading) {
         this.isLoading = true
@@ -669,7 +670,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.dependTaskInfo ='[{name:'+ '""' + this.dependTaskList[0].dependItemList[0].depTasks + '""' + '}]'
+          this.temp.dependTaskInfo = '[{name:' + '""' + this.dependTaskList[0].dependItemList[0].depTasks + '""' + '}]'
           save(this.temp).then(() => {
             this.getList()
             this.dialogFormVisible = false
@@ -683,7 +684,7 @@ export default {
           })
           // console.log(this.dependTaskList[0].dependItemList[0])
         }
-      })     
+      })
     },
     handleUpdate() {
       this.temp = Object.assign({}, this.selections[0]) // copy obj

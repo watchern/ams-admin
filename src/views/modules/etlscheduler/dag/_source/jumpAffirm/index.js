@@ -50,7 +50,7 @@ Affirm.paramVerification = (name) => {
   }
   const dagStore = store.state.dag
   let flag = false
-  if ($routerType === 'processinstance') {
+  if ($routerType === 'processdefinition') {
     // No nodes jump out directly
     if (dagStore.tasks.length) {
       if (!dagStore.name) {

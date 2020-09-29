@@ -52,10 +52,10 @@ const etlschedulerRouter = {
       meta: { title: 'workflow' }
     },
     {
-      path: 'processinstance',
-      name: 'processinstance',
-      component: () => import('@/views/modules/etlscheduler/processinstance/index'),
-      meta: { title: 'processinstance' }
+      path: 'processdefinition',
+      name: 'processdefinition',
+      component: () => import('@/views/modules/etlscheduler/processdefinition/index'),
+      meta: { title: 'processdefinition' }
     },
     {
       path: 'definition/:id',

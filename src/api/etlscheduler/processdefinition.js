@@ -82,3 +82,19 @@ export function findParams(className) {
     method: 'get'
   })
 }
+
+export function updateDefinitionStatus(ids, status) {
+  return request({
+    baseURL: baseURL,
+    url: `/processDefinition/updateDefinitionStatus/${ids}`,
+    params: { status },
+    method: 'get'
+  })
+}
+export function exportProcess(ids) {
+  return request({
+    baseURL: baseURL,
+    url: `/processDefinition/export/${ids}`,
+    method: 'get'
+  })
+}
