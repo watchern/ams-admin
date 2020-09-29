@@ -91,3 +91,10 @@ export function updateDefinitionStatus(ids, status) {
     method: 'get'
   })
 }
+export function exportProcess(ids) {
+  return request({
+    baseURL: baseURL,
+    url: `/processDefinition/export/${ids}`,
+    method: 'get'
+  })
+}

@@ -37,6 +37,12 @@
         :disabled="selections.length === 0"
         @click="handleDelete()"
       >删除</el-button>
+      <el-button
+        type="primary"
+        size="mini"
+        :disabled="selections.length === 0"
+        @click="handleDownload()"
+      >下载</el-button>
     </div>
     <el-table
       :key="tableKey"
@@ -103,7 +109,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, del, updateDefinitionStatus } from '@/api/etlscheduler/processdefinition'
+import { listByPage, del, updateDefinitionStatus, exportProcess } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
 
 export default {
@@ -206,6 +212,20 @@ export default {
         this.$notify({
           title: '成功',
           message: '启用成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      })
+    },
+    handleDownload() {
+      var ids = []
+      this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
+      exportProcess(ids.join(',')).then(() => {
+        this.getList()
+        this.$notify({
+          title: '成功',
+          message: '下载成功',
           type: 'success',
           duration: 2000,
           position: 'bottom-right'
