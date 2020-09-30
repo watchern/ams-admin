@@ -44,7 +44,7 @@ export default {
         // Process instance details
         this.getInstancedetail(this.$route.params.id),
         // get process definition
-        this.getProcessList(),
+        // this.getProcessList(),
         // get project
         this.getProjectList(),
         // get resources

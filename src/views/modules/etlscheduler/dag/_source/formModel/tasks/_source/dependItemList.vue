@@ -243,17 +243,17 @@ export default {
     /**
      * get processlist
      */
-    _getProcessList() {
-      return new Promise((resolve, reject) => {
-        const definitionList = _.map(_.cloneDeep(this.store.state.dag.processListS), v => {
-          return {
-            value: v.id,
-            label: v.name
-          }
-        })
-        resolve(definitionList)
-      })
-    },
+    // _getProcessList() {
+    //   return new Promise((resolve, reject) => {
+    //     const definitionList = _.map(_.cloneDeep(this.store.state.dag.processListS), v => {
+    //       return {
+    //         value: v.id,
+    //         label: v.name
+    //       }
+    //     })
+    //     resolve(definitionList)
+    //   })
+    // },
     _getProcessByProjectId() {
       return new Promise((resolve, reject) => {
         this.store.dispatch('dag/getProcessByProjectId').then(res => {

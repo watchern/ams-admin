@@ -58,11 +58,11 @@ export function datasourceList(data) {
 
 // 项目名获取流程
 export function getProcList(projectName) {
-  return request({
-    baseURL: baseURL,
-    url: `/processDefinition/${projectName}/list`,
-    method: 'get'
-  })
+  // return request({
+  //   baseURL: baseURL,
+  //   url: `/processDefinition/${projectName}/list`,
+  //   method: 'get'
+  // })
 }
 
 // 根据包名查找包里所有的类
@@ -87,14 +87,9 @@ export function updateDefinitionStatus(ids, status) {
   return request({
     baseURL: baseURL,
     url: `/processDefinition/updateDefinitionStatus/${ids}`,
-    params: { status },
-    method: 'get'
-  })
-}
-export function exportProcess(ids) {
-  return request({
-    baseURL: baseURL,
-    url: `/processDefinition/export/${ids}`,
+    params: {
+      status
+    },
     method: 'get'
   })
 }

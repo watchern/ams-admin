@@ -44,7 +44,7 @@ export default {
         // Node details
         this.getProcessDetails(this.$route.params.id),
         // get process definition
-        this.getProcessList(),
+        // this.getProcessList(),
         this.getClassList()
         // get project
         // this.getProjectList(),
@@ -58,8 +58,9 @@ export default {
         // this.getTenantList()
       ]).then((data) => {
         const item = data[0]
-        this.setIsDetails(item.releaseState === 'ONLINE')
-        this.releaseState = item.releaseState
+        this.setIsDetails(item.status === 1)
+        this.status = item.status
+        this.releaseState = item.status
         this.isLoading = false
         // Whether to pop up the box?
         Affirm.init(this.$root)
@@ -73,8 +74,11 @@ export default {
     _reset() {
       this.getProcessDetails(this.$route.params.id).then(res => {
         const item = res
-        this.setIsDetails(item.releaseState === 'ONLINE')
-        this.releaseState = item.releaseState
+        this.setIsDetails(item.status === 1)
+        this.status = item.status
+        this.releaseState = item.status
+        // this.setIsDetails(item.releaseState === 'ONLINE')
+        // this.releaseState = item.releaseState
       })
     }
   },

@@ -43,6 +43,24 @@
         :disabled="selections.length === 0"
         @click="handleDownload()"
       >下载</el-button>
+      <el-upload
+        class="upload-demo"
+        action=""
+        :on-preview="handlePreview"
+        :on-remove="handleRemove"
+        :before-remove="beforeRemove"
+        multiple
+        :headers="headers"
+        :http-request="uploadFile"
+        :limit="3"
+        :on-exceed="handleExceed"
+        :file-list="fileList"
+        :auto-upload="true"
+        :on-change="handleFileChange"
+        style="float:right"
+      >
+        <el-button size="mini" type="primary">点击上传</el-button>
+      </el-upload>
     </div>
     <el-table
       :key="tableKey"
@@ -109,8 +127,9 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, del, updateDefinitionStatus, exportProcess } from '@/api/etlscheduler/processdefinition'
+import { listByPage, del, updateDefinitionStatus } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
+import axios from 'axios'
 
 export default {
   components: { Pagination, QueryField },
@@ -151,7 +170,9 @@ export default {
       selections: [],
       downloadLoading: false,
       startStatus: true,
-      stopStatus: true
+      stopStatus: true,
+      headers: { 'Content-Type': 'multipart/form-data' },
+      file: ''
     }
   },
   watch: {
@@ -221,7 +242,33 @@ export default {
     handleDownload() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
-      exportProcess(ids.join(',')).then(() => {
+      const downloadBlob = (data, fileNameS = 'json') => {
+        debugger
+        if (!data) {
+          return
+        }
+        const blob = new Blob([data])
+        const fileName = `${fileNameS}.json`
+        if ('download' in document.createElement('a')) { // 不是IE浏览器
+          const url = window.URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.style.display = 'none'
+          link.href = url
+          link.setAttribute('download', fileName)
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link) // 下载完成移除元素
+          window.URL.revokeObjectURL(url) // 释放掉blob对象
+        } else { // IE 10+
+          window.navigator.msSaveBlob(blob, fileName)
+        }
+      }
+      axios({ method: 'get',
+        url: `/etlscheduler/processDefinition/export/${ids.join(',')}`,
+        responseType: 'blob'
+      }).then((res) => {
+        debugger
+        downloadBlob(res.data, 'process_' + new Date().getTime())
         this.getList()
         this.$notify({
           title: '成功',
@@ -230,6 +277,8 @@ export default {
           duration: 2000,
           position: 'bottom-right'
         })
+      }).catch((err) => {
+        console.error(err)
       })
     },
     handleStop() {
@@ -266,6 +315,53 @@ export default {
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
+    },
+    // 上传文件，获取文件流
+    handleFileChange(file) {
+      console.log(file)
+      this.file = file.raw
+    },
+    handleRemove(file, fileList) {
+      this.file = ''
+    },
+    beforeUpload(file) {
+
+    },
+    submitUpload() {
+      if (this.file !== '') {
+        this.$refs.uploadForm.submit()
+      } else {
+        this.$message({
+          message: '请先选择文件!',
+          type: 'warning',
+          duration: '2000'
+        })
+      }
+    },
+    // 自定义上传
+    uploadFile() {
+      const index = this.file.name.lastIndexOf('.')
+      const suffix = this.file.name.substr(index + 1)
+      // 创建表单对象
+      const formData = new FormData()
+      // 后端接受参数 ，可以接受多个参数
+      formData.append('file', this.file)
+      formData.append('uploadFileName', 'git')
+      formData.append('uploadFileContentType', suffix)
+      axios({
+        url: '/etlscheduler/processDefinition/import-definition',
+        method: 'post',
+        data: formData
+      }).then((res) => {
+        this.getList()
+        this.$notify({
+          title: '成功',
+          message: '导入成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      })
     },
     // 格式化表格
     formatStatus(data) {

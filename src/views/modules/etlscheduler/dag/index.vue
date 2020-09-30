@@ -36,7 +36,7 @@ export default {
       // Promise Get node needs data
       Promise.all([
         // get process definition
-        this.getProcessList(),
+        // this.getProcessList(),
         // get project
         this.getProjectList(),
         // get jar

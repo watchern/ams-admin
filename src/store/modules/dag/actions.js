@@ -316,16 +316,17 @@ export default {
         resolve()
         return
       }
-      getProcList('1').then(res => {
-        state.processListS = res.data
-        resolve(res)
-        // io.get(`projects/${state.projectName}/process/list`, payload, res => {
-        // io.get(`projects/ETL调度0819/process/list`, payload, res => {
-        //   state.processListS = res.data
-        //   resolve(res.data)
-      }).catch(res => {
-        reject(res)
-      })
+      // TODO
+      // getProcList('1').then(res => {
+      //   state.processListS = res.data
+      //   resolve(res)
+      //   // io.get(`projects/${state.projectName}/process/list`, payload, res => {
+      //   // io.get(`projects/ETL调度0819/process/list`, payload, res => {
+      //   //   state.processListS = res.data
+      //   //   resolve(res.data)
+      // }).catch(res => {
+      //   reject(res)
+      // })
     })
   },
   /**
