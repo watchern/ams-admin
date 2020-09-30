@@ -56,74 +56,73 @@
       <el-table-column type="selection" width="55" />
       <el-table-column
         label="调度任务名称"
-        width="300px"
+        width="150px"
         align="center"
         prop="scheduleName"
       />
       <el-table-column
         v-if="false"
         label="任务流程"
-        width="300px"
+        width="100px"
         align="center"
         prop="processDefinitionId"
       />
       <el-table-column
         label="任务流程"
-        width="300px"
+        width="250px"
         align="center"
         prop="processDefName"
       />
       <el-table-column
         label="作业周期"
-        width="300px"
+        width="80px"
         align="center"
         prop="crontab"
         :formatter="formatCron"
       />
       <el-table-column
         label="参数"
-        width="300px"
+        width="150px"
         align="center"
         prop="taskParams"
       />
       <el-table-column
         label="依赖任务环节"
-        width="300px"
         align="center"
         prop="dependTaskInfo"
       />
       <el-table-column
         label="排序号"
-        width="300px"
+        width="80px"
         align="center"
         prop="processInstancePriority"
       />
       <el-table-column
         label="状态"
-        width="300px"
+        width="150px"
         align="center"
         prop="status"
         :formatter="formatStatus"
       />
-      <el-table-column label="调度任务描述" prop="scheduleDesc" />
+      <!-- <el-table-column label="调度任务描述" prop="scheduleDesc" /> -->
       <el-table-column
         label="最新修改人"
-        width="300px"
+        width="100px"
         align="center"
         prop="updateUserName"
       />
       <el-table-column
         label="修改时间"
-        width="300px"
+        width="200px"
         align="center"
         prop="updateTime"
       />
-      <el-table-column label="操作" width="400">
+      <!-- <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <el-button type="primary" size="small">添加依赖</el-button>
           <el-button type="primary" size="small">手动执行</el-button>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
     <pagination
       v-show="total > 0"
@@ -230,7 +229,7 @@
         <el-form-item>
           <div class="dependence-model">
             <m-list-box>
-              <div slot="text">{{ $t("Add dependency") }}</div>
+              <div slot="text">添加依赖</div>
               <div slot="content">
                 <div class="dep-opt">
                   <a
@@ -243,13 +242,13 @@
                       class="ans-icon-increase"
                       :class="_isDetails"
                       data-toggle="tooltip"
-                      :title="$t('Add')"
+                      title="添加"
                     />
                     <em
                       v-if="isLoading"
                       class="ans-icon-spinner2 as as-spin"
                       data-toggle="tooltip"
-                      :title="$t('Add')"
+                      title="添加"
                     />
                   </a>
                 </div>
@@ -259,7 +258,7 @@
                     class="dep-relation"
                     @click="!isDetails && _setGlobalRelation()"
                   >
-                    {{ relation === "AND" ? $t("and") : $t("or") }}
+                    {{ relation === "AND" ? '且' : '或' }}
                   </span>
                   <div
                     v-for="(el, $index) in dependTaskList"
@@ -271,14 +270,14 @@
                       class="dep-line-pie"
                       @click="!isDetails && _setRelation($index)"
                     >
-                      {{ el.relation === "AND" ? $t("and") : $t("or") }}
+                      {{ el.relation === "AND" ? '且' : '或' }}
                     </span>
                     <em
                       class="ans-icon-trash dep-delete"
                       data-toggle="tooltip"
                       data-container="body"
                       :class="_isDetails"
-                      :title="$t('delete')"
+                      title="删除"
                       @click="!isDetails && _deleteDep($index)"
                     />
                     <m-depend-item-list

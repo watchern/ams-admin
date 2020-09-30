@@ -24,7 +24,7 @@
       <x-select v-model="el.definitionId" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails" @on-change="_onChangeDefinitionId">
         <x-option v-for="item in scheduleList" :key="item.processDefinitionId" :value="item.processDefinitionId" :label="item.scheduleName" />
       </x-select>
-      <x-select v-model="el.depTasks" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails" >
+      <x-select v-model="el.depTasks" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails">
         <x-option v-for="item in el.depTasksList || []" :key="item.id" :value="item.id" :label="item.name" />
       </x-select>
       <x-select v-model="el.cycle" style="width: 150px;" :disabled="isDetails" @on-change="_onChangeCycle">
@@ -35,17 +35,17 @@
       </x-select>
       <template v-if="isInstance">
         <span class="instance-state">
-          <em v-if="el.state === 'SUCCESS'" class="iconfont ans-icon-success-solid" :class="'icon-' + el.state" data-toggle="tooltip" data-container="body" :title="$t('success')" />
-          <em v-if="el.state === 'WAITING'" class="iconfont ans-icon-clock" :class="'icon-' + el.state" data-toggle="tooltip" data-container="body" :title="$t('waiting')" />
-          <em v-if="el.state === 'FAILED'" class="iconfont ans-icon-fail-solid" :class="'icon-' + el.state" data-toggle="tooltip" data-container="body" :title="$t('failed')" />
+          <em v-if="el.state === 'SUCCESS'" class="iconfont ans-icon-success-solid" :class="'icon-' + el.state" data-toggle="tooltip" data-container="body" title="成功" />
+          <em v-if="el.state === 'WAITING'" class="iconfont ans-icon-clock" :class="'icon-' + el.state" data-toggle="tooltip" data-container="body" title="等待" />
+          <em v-if="el.state === 'FAILED'" class="iconfont ans-icon-fail-solid" :class="'icon-' + el.state" data-toggle="tooltip" data-container="body" title="失败" />
         </span>
       </template>
       <span class="operation">
         <a href="javascript:" class="delete" @click="!isDetails && _remove($index)">
-          <em class="ans-icon-trash" :class="_isDetails" data-toggle="tooltip" data-container="body" :title="$t('delete')" />
+          <em class="ans-icon-trash" :class="_isDetails" data-toggle="tooltip" data-container="body" title="删除" />
         </a>
         <a v-if="$index === (dependItemList.length - 1)" href="javascript:" class="add" @click="!isDetails && _add()">
-          <em class="iconfont ans-icon-increase" :class="_isDetails" data-toggle="tooltip" data-container="body" :title="$t('Add')" />
+          <em class="iconfont ans-icon-increase" :class="_isDetails" data-toggle="tooltip" data-container="body" title="添加" />
         </a>
       </span>
     </div>
@@ -53,7 +53,7 @@
 </template>
 <script>
 import _ from 'lodash'
-import { cycleList, dateValueList } from './commcon'
+import { cycleList, dateValueList } from '@/views/modules/etlscheduler/dag/_source/formModel/tasks/_source/commcon'
 import disabledState from '@/components/Dolphin/mixin/disabledState'
 import {
   getScheduleList,

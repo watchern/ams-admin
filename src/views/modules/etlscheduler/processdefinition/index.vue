@@ -43,13 +43,13 @@
         :disabled="selections.length === 0"
         @click="handleDownload()"
       >下载</el-button>
+      <!-- multiple -->
       <el-upload
         class="upload-demo"
         action=""
         :on-preview="handlePreview"
         :on-remove="handleRemove"
         :before-remove="beforeRemove"
-        multiple
         :headers="headers"
         :http-request="uploadFile"
         :limit="3"
@@ -57,7 +57,8 @@
         :file-list="fileList"
         :auto-upload="true"
         :on-change="handleFileChange"
-        style="float:right"
+        :show-file-list="false"
+        style="display:inline-block;padding-left:10px"
       >
         <el-button size="mini" type="primary">点击上传</el-button>
       </el-upload>
@@ -81,7 +82,7 @@
       />
       <el-table-column
         label="流程名称"
-        width="200px"
+        width="300px"
         align="center"
         prop="name"
       />
@@ -104,7 +105,7 @@
       />
       <el-table-column
         label="最新修改人"
-        width="250px"
+        width="200px"
         align="center"
         prop="updateUserName"
       />
@@ -243,7 +244,6 @@ export default {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
       const downloadBlob = (data, fileNameS = 'json') => {
-        debugger
         if (!data) {
           return
         }
