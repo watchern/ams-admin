@@ -7,12 +7,8 @@
       <el-upload
         class="upload-demo"
         action="https://jsonplaceholder.typicode.com/posts/"
-        :on-preview="handlePreview"
-        :on-remove="handleRemove"
-        :before-remove="beforeRemove"
         multiple
         :limit="10"
-        :on-exceed="handleExceed"
       >
         <el-button size="small" type="infor">批量导入</el-button>
       </el-upload>
@@ -82,6 +78,7 @@
         width="300px"
         align="center"
         prop="crontab"
+        :formatter="formatCron"
       />
       <el-table-column
         label="参数"
@@ -105,7 +102,7 @@
         label="状态"
         width="300px"
         align="center"
-        prop="enableState"
+        prop="status"
         :formatter="formatStatus"
       />
       <el-table-column label="调度任务描述" prop="scheduleDesc" />
@@ -151,14 +148,20 @@
         <el-form-item label="排序号" prop="processInstancePriority">
           <el-input v-model="temp.processInstancePriority" />
         </el-form-item>
-        <el-form-item label="状态" prop="enableState">
-          <el-select v-model="temp.enableState" placeholder="请选择状态">
+        <el-form-item label="状态" prop="status">
+          <el-select v-model="temp.status" placeholder="请选择状态">
             <el-option label="启用" :value="1" />
             <el-option label="停用" :value="0" />
           </el-select>
         </el-form-item>
         <el-form-item label="作业周期" prop="crontab">
-          <el-input v-model="temp.crontab" />
+          <el-select v-model="temp.crontab" placeholder="请选择作业周期">
+            <el-option label="每日" value="0 0 0 * * ? *" />
+            <el-option label="每月" value="0 0 0 1 * ? *" />
+            <el-option label="每季度" value="0 0 0 1 1,4,7,10 ? *" />
+            <el-option label="每半年" value="0 0 0 1 1,7 ? *" />
+            <el-option label="每年" value="0 0 0 1 1 ? *" />
+          </el-select>
         </el-form-item>
         <el-form-item label="流程描述" prop="scheduleDesc">
           <el-input v-model="temp.scheduleDesc" type="textarea" />
@@ -216,13 +219,12 @@
           参数名称:<input value=""/>
           参数赋值:<input placeholder="为参数赋值"/>
         </form> -->
-
-        <el-form-item v-for="item in paramList" :label="item.prop" :prop="item.prop">
+        <el-form-item v-for="item in paramList" :key="item.value" :label="item.prop" :prop="item.prop">
           <!-- v-for="item in options"
       :key="item.value"
       :label="item.label"
       :value="item.value" -->
-          <el-input v-model="item.value" />
+          <el-input v-model="item.value" @input="defaultValue" />
         </el-form-item>
         <!-- 添加任务依赖 -->
         <el-form-item>
@@ -281,7 +283,7 @@
                     />
                     <m-depend-item-list
                       v-model="el.dependItemList"
-                      :depend-task-list="dependTaskList"
+                      :depend-item-list="dependTaskList"
                       :index="$index"
                       @on-delete-all="_onDeleteAll"
                       @getDependTaskList="getDependTaskList"
@@ -368,7 +370,7 @@ export default {
         },
         {
           label: '状态',
-          name: 'enableState',
+          name: 'status',
           type: 'select',
           data: [
             {
@@ -390,10 +392,17 @@ export default {
       ],
       // 格式化参数列表
       formatMap: {
-        enableState: {
+        status: {
           1: '启用',
           0: '停用',
           null: '启用'
+        },
+        crontab: {
+          '0 0 0 * * ? *': '每日',
+          '0 0 0 1 * ? *': '每月',
+          '0 0 0 1 1,4,7,10 ? *': '每季度',
+          '0 0 0 1 1,7 ? *': '每半年',
+          '0 0 0 1 1 ? *': '每年'
         }
       },
       pageQuery: {
@@ -407,7 +416,7 @@ export default {
         taskParams: null,
         dependTaskInfo: null,
         processInstancePriority: null,
-        enableState: null,
+        status: null,
         scheduleDesc: null,
         updateUserName: null,
         updateTime: null,
@@ -454,7 +463,7 @@ export default {
             trigger: 'change'
           }
         ],
-        enableState: [
+        status: [
           {
             required: true,
             message: '请选择参数状态',
@@ -514,6 +523,17 @@ export default {
     }
   },
   methods: {
+    defaultValue(e) {
+      const prop = this.paramList[0].prop
+      const value = this.paramList[0].value
+      if (e == value) {
+        var s = '[{' + prop + ':' + value + ']}'
+        this.temp.taskParams = s
+      } else {
+        var s = '[{' + prop + ':' + e + ']}'
+        this.temp.taskParams = s
+      }
+    },
     _addDep() {
       if (!this.isLoading) {
         this.isLoading = true
@@ -578,10 +598,6 @@ export default {
       })
       getParamsByProcessId(id).then((resp) => {
         this.paramList = resp.data
-        const prop = this.paramList[0].prop
-        const value = this.paramList[0].value
-        var s = '[{' + prop + ':' + value + ']}'
-        this.temp.taskParams = s
         // this.paramList = [
         //   {prop: "333",
         //    value: "444"
@@ -610,22 +626,6 @@ export default {
       //     })
       // }
     },
-    handleRemove(file, fileList) {
-      console.log(file, fileList)
-    },
-    handlePreview(file) {
-      console.log(file)
-    },
-    handleExceed(files, fileList) {
-      this.$message.warning(
-        `当前限制选择10个文件，本次选择了 ${files.length}个文件,共选择了 ${
-          files.length + fileList.length
-        } 个文件`
-      )
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}?`)
-    },
     getList(query) {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
@@ -653,7 +653,7 @@ export default {
         crontab: null,
         processDefinitionId: null,
         id: null,
-        enableState: null,
+        status: null,
         updateUserName: null,
         updateTime: null,
         processDefName: null
@@ -670,6 +670,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.temp.dependTaskInfo = '[{name:' + '""' + this.dependTaskList[0].dependItemList[0].depTasks + '""' + '}]'
           save(this.temp).then(() => {
             this.getList()
             this.dialogFormVisible = false
@@ -681,6 +682,7 @@ export default {
               position: 'bottom-right'
             })
           })
+          // console.log(this.dependTaskList[0].dependItemList[0])
         }
       })
     },
@@ -768,7 +770,10 @@ export default {
     },
     // 格式化表格
     formatStatus(data) {
-      return this.formatMap.enableState[data.enableState]
+      return this.formatMap.status[data.status]
+    },
+    formatCron(data) {
+      return this.formatMap.crontab[data.crontab]
     }
   }
 }

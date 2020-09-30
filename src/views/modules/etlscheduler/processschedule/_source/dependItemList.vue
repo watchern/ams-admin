@@ -24,7 +24,7 @@
       <x-select v-model="el.definitionId" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails" @on-change="_onChangeDefinitionId">
         <x-option v-for="item in scheduleList" :key="item.processDefinitionId" :value="item.processDefinitionId" :label="item.scheduleName" />
       </x-select>
-      <x-select v-model="el.depTasks" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails">
+      <x-select v-model="el.depTasks" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails" >
         <x-option v-for="item in el.depTasksList || []" :key="item.id" :value="item.id" :label="item.name" />
       </x-select>
       <x-select v-model="el.cycle" style="width: 150px;" :disabled="isDetails" @on-change="_onChangeCycle">
