@@ -16,8 +16,8 @@
           <p style="color:silver;font-size:large">———————————————————————————</p>
           <el-form-item label="关联类型" prop="relationType">
             <el-select ref="relTypeSelect" v-model="form.relationType" placeholder="请选择关联类型" @change="relTypeSelectChange">
-              <el-option label="关联模型" value="1" />
-              <el-option label="关联表" value="2" />
+              <el-option label="关联模型" :value="1" />
+              <el-option label="关联表" :value="2" />
             </el-select>
           </el-form-item>
           <div ref="relModelDivParent" style="display: none;">
@@ -110,7 +110,7 @@
 <script>
 export default {
   name: 'EditModel',
-  props: ['columns','treeId'],
+  props: ['columns','treeId','data'],
   data() {
     return {
       form: {
@@ -143,19 +143,53 @@ export default {
     }
   },
   created() {
-    // console.log(this.columns);
+  },
+  mounted(){
+    this.initData()
   },
   methods: {
+    /**
+     * 初始化数据
+     */
+    initData(){
+      if(this.data.length != 0){
+        //如果数据不为0则证明是修改，需要反显数据
+        this.form = this.data
+        //初始化关联详细配置
+        if(this.data.relationType == 1){
+          //显示界面dom
+          this.$refs.relModelDivParent.style = "block"
+          this.$refs.relModelTableDiv.style = "block"
+          this.initModelTree()
+          //初始化完成树之后初始化被关联模型的参数
+          this.relModelSelectChange(this.data.relationObjectUuid)
+          //初始化关联模型table
+          this.relModelTable = this.data.modelDetailConfig
+        }
+        if(this.data.relationType == 2){
+          //显示界面dom
+          this.$refs.relTableDivParent.style = "block"
+          this.$refs.relTableDiv.style = "block"
+          this.initTableTree()
+          this.relTableSelectChange(this.data.relationObjectUuid)
+          //初始化关联表table
+          this.relTable = this.data.modelDetailConfig
+        }
+      }
+    },
+    /**
+     *获取要添加的对象
+     */
     getObj() {
-      var verResult = false;
+      var verResult = false
       this.$refs['basicInfoForm'].validate((valid) => {
         if (valid) {
-          verResult = valid;
+          verResult = valid
         }
       });
       if(!verResult){
-        var treeId = this.treeId;
-        return {verResult:false,treeId:treeId};
+        var treeId = this.treeId
+        return {verResult:false,treeId:treeId}
       }
       // 组织关联详细的对象
       if (this.$refs.relTypeSelect.value == 1) {
@@ -204,13 +238,24 @@ export default {
        * 关联类型下拉框改变事件
        */
     relTypeSelectChange(vId) {
+      //根据选择的类型来决定加载模型还是加载数据表
       if (vId == 1) {
         this.$refs.relTableDivParent.style.display = 'none'
         this.$refs.relModelDivParent.style.display = 'block'
+        this.initModelTree();
+        //加载模型下拉树
       } else if (vId == 2) {
         this.$refs.relModelDivParent.style.display = 'none'
         this.$refs.relTableDivParent.style.display = 'block'
+        this.initTableTree()
+        //加载数据表的下拉树
       }
+    },
+    initModelTree(){
+
+    },
+    initTableTree(){
+
     },
     /**
        * 删除表格指定行

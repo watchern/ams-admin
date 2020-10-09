@@ -106,3 +106,18 @@ export function deleteModel(data) {
     data
   })
 }
+
+/**
+ * 修改模型
+ * @param modelId 模型编号
+ */
+export function updateModel(modelId){
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelController/selectModel',
+    method: 'post',
+    // params 以formData格式传递  后台用RequestParam
+    // 直接加data以json格式传递  后台用RequestBody
+    params:{modelId:modelId}
+  })
+}

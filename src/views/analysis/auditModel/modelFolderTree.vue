@@ -25,7 +25,7 @@
         </span>
       </span>
     </el-tree>
-    <el-dialog title="请填写分类信息" :visible.sync="dialogFormVisible">
+    <el-dialog title="请填写分类信息" :visible.sync="dialogFormVisible" v-if="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="分类名称" :label-width="formLabelWidth">
           <el-input v-model="form.modelFolderName" autocomplete="off" />

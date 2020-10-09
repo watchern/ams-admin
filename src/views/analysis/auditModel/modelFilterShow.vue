@@ -77,6 +77,7 @@
           backGroundColor:backGroundColor
         };
         this.form.colorJson = JSON.stringify(colorJson);
+        this.form.filterJson = JSON.stringify(this.form.json);
         return this.form;
       },
       /**

@@ -29,8 +29,8 @@
       <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog :visible.sync="editModelShow" :title="editModelTitle">
-      <EditModel ref="editModel" :open-value="selectTreeNode" @hideModal="hideEditModal" />
+    <el-dialog :visible.sync="editModelShow" :title="editModelTitle" v-if="editModelShow">
+      <EditModel ref="editModel" :open-value="selectTreeNode" :operationObj="operationObj" @hideModal="hideEditModal" />
       <div slot="footer">
         <el-button type="primary" @click="save">保存</el-button>
         <el-button @click="hideEditModal">取消</el-button>
@@ -39,7 +39,7 @@
   </div>
 </template>
 <script>
-import { findModel, saveModel, deleteModel } from '@/api/analysis/auditModel'
+import { findModel, saveModel, deleteModel,updateModel } from '@/api/analysis/auditModel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import EditModel from '@/views/analysis/auditModel/editModel'
@@ -52,7 +52,7 @@ export default {
       list: null,
       total: 0,
       listLoading: false,
-      editModelTitle: '添加模型',
+      editModelTitle: '',
       editModelShow: false,
       dialogFormVisible: true,
       selectTreeNode: null,
@@ -63,6 +63,7 @@ export default {
           data: [{ name: '请选择', value: '-1' }, { name: '高', value: '1' }, { name: '中', value: '2' }, { name: '低', value: '3' }],
           default: '-1' }
       ],
+      operationObj:{},
       // selectedRowVal:0,
       tableOptions: {
         columnDefs: [
@@ -217,7 +218,7 @@ export default {
           this.getList(this.query)// 刷新列表
           this.$emit('refreshTree');
           this.listLoading = false;
-          this.$refs.editModel.clear();
+          //this.$refs.editModel.clear();
         } else {
           this.$message({ type: 'error', message: '新增模型失败!' });
           this.listLoading = false;
@@ -253,12 +254,38 @@ export default {
       if (this.selectTreeNode == null) {
         this.$message({ type: 'info', message: '请先选择模型分类!' });
       } else {
+        var operationObj = {operationType:1};
+        this.operationObj = operationObj;
+        this.editModelTitle = '添加模型';
         this.editModelShow = true;
         // this.$refs.editModel.setSelectTreeNode(this.selectTreeNode);
       }
     },
     updateModel() {
-
+      var selectObj = this.$refs.modelListTable.selection;
+      if(selectObj.length == 0){
+        this.$message({ type: 'info', message: '最少选择一个模型!' });
+        return;
+      }
+      if(selectObj.length > 1){
+        this.$message({ type: 'info', message: '只能选择一个模型!' });
+        return;
+      }
+      this.editModelTitle = '修改模型';
+      updateModel(selectObj[0].modelUuid).then(result => {
+        if (result.code == 0) {
+          var operationObj = {
+            operationType:2,
+            model:result.data
+          };
+          this.operationObj = operationObj;
+          this.editModelShow = true;
+          this.getList(this.query);
+          this.$emit('refreshTree');
+        } else {
+          this.$message({ type: 'error', message: '删除失败' });
+        }
+      })
     },
     /**
      * 删除模型
@@ -281,7 +308,7 @@ export default {
           } else {
             this.$message({ type: 'error', message: '删除失败' });
           }
-        })
+        });
       }).catch(() => {
         this.$message({
           type: 'info',
