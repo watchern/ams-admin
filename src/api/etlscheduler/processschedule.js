@@ -12,7 +12,7 @@ export function listByPage(data) {
 }
 
 // 根据id查找
-export function getById(id) {
+export function getByScheduleId(id) {
   return request({
     baseURL: baseURL,
     url: `/schedules/getById/${id}`,
@@ -56,10 +56,13 @@ export function findByprocessDef(data) {
 }
 
 // 启用或停用
-export function updateEnableState(id) {
+export function updateStatus(ids, status) {
   return request({
     baseURL: baseURL,
-    url: `/schedules/enableState/${id}`,
+    url: `/schedules/updateStatus/${ids}`,
+    params: {
+      status
+    },
     method: 'put'
   })
 }
