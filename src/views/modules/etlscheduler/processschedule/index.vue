@@ -4,14 +4,26 @@
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
     <div>
-      <el-upload
-        class="upload-demo"
-        action="https://jsonplaceholder.typicode.com/posts/"
-        multiple
-        :limit="10"
-      >
-        <el-button size="small" type="infor">批量导入</el-button>
-      </el-upload>
+      <p>
+        <el-upload
+          class="upload-demo"
+          action="schedules/importFiles"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :before-remove="beforeRemove"
+          :headers="headers"
+          :http-request="uploadFile"
+          :limit="3"
+          :on-exceed="handleExceed"
+          :file-list="fileList"
+          :auto-upload="true"
+          :on-change="handleFileChange"
+          :show-file-list="false"
+          style="display:inline-block;padding-left:10px"
+        >
+          <el-button size="mini" type="primary">点击上传</el-button>
+        </el-upload>
+      </p><br>
       <el-button
         type="primary"
         size="mini"
@@ -32,13 +44,13 @@
       <el-button
         type="primary"
         size="mini"
-        :disabled="selections.length === 0"
+        :disabled="startStatus"
         @click="handleUse()"
       >启用</el-button>
       <el-button
         type="danger"
         size="mini"
-        :disabled="selections.length === 0"
+        :disabled="stopStatus"
         @click="handleBear()"
       >禁用</el-button>
     </div>
@@ -85,12 +97,32 @@
         width="150px"
         align="center"
         prop="taskParams"
-      />
+      >
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="top">
+            <p>参数名称:{{ paramName(scope.row.taskParams) }}</p>
+            <p>参数值:{{ paramVal(scope.row.taskParams) }}</p>
+            <div slot="reference" class="name-wrapper">
+              <el-tag size="medium">{{ scope.row.taskParams }}</el-tag>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column
         label="依赖任务环节"
         align="center"
         prop="dependTaskInfo"
-      />
+      >
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="top">
+            <p>依赖名称:{{ dependName(scope.row.dependTaskInfo) }}</p>
+            <p>依赖环节:{{ dependVal(scope.row.dependTaskInfo) }}</p>
+            <div slot="reference" class="name-wrapper">
+              <el-tag size="medium">{{ scope.row.dependTaskInfo }}</el-tag>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column
         label="排序号"
         width="80px"
@@ -318,8 +350,9 @@ import {
   update,
   del,
   findByprocessDef,
-  updateEnableState,
-  getParamsByProcessId
+  updateStatus,
+  getParamsByProcessId,
+  getByScheduleId
 } from '@/api/etlscheduler/processschedule'
 import {
   getById
@@ -340,6 +373,9 @@ export default {
   },
   data() {
     return {
+      // 启用停用
+      startStatus: true,
+      stopStatus: true,
       // 添加依赖
       relation: 'AND',
       dependTaskList: [],
@@ -433,6 +469,8 @@ export default {
         create: '添加参数'
       },
       dialogPvVisible: false,
+      headers: { 'Content-Type': 'multipart/form-data' },
+      file: '',
       rules: {
         scheduleName: [
           {
@@ -489,6 +527,23 @@ export default {
     }
   },
   watch: {
+  // 监听selections集合
+    selections() {
+      if (this.selections.length > 0) {
+        this.startStatus = false
+        this.stopStatus = false
+        this.selections.forEach((r, i) => {
+          if (r.status === 1) {
+            this.startStatus = true
+          } else if (r.status === 0) {
+            this.stopStatus = true
+          }
+        })
+      } else {
+        this.startStatus = true
+        this.stopStatus = true
+      }
+    },
     dependTaskList(e) {
       setTimeout(() => {
         this.isLoading = false
@@ -522,16 +577,27 @@ export default {
     }
   },
   methods: {
-    defaultValue(e) {
+    paramName(v) {
+      return v.substring(v.indexOf('{') + 1, v.indexOf(':'))
+    },
+    paramVal(v) {
+      return v.substring(v.indexOf(':') + 1, v.indexOf('}'))
+    },
+    dependName(v) {
+      if (v != null) {
+        return v.substring(v.indexOf('{') + 1, v.indexOf(':'))
+      }
+    },
+    dependVal(v) {
+      if (v != null) {
+        return v.substring(v.indexOf(':') + 1, v.indexOf('}'))
+      }
+    },
+    defaultValue() {
       const prop = this.paramList[0].prop
       const value = this.paramList[0].value
-      if (e == value) {
-        var s = '[{' + prop + ':' + value + ']}'
-        this.temp.taskParams = s
-      } else {
-        var s = '[{' + prop + ':' + e + ']}'
-        this.temp.taskParams = s
-      }
+      var s = '[{' + prop + ':' + value + '}]'
+      this.temp.taskParams = s
     },
     _addDep() {
       if (!this.isLoading) {
@@ -582,12 +648,12 @@ export default {
       return true
     },
     // 参数赋值
-    makeParam(e) {
-      const { value } = e.target
-      console.log(value)
-      // console.log("输入框===="+JSON.stringify(this.paramList[0].prop) + ":" +JSON.stringify(value))
-      // console.log("paramList"+this.paramList[0].prop)
-    },
+    // makeParam(e) {
+    // const { value } = e.target
+    // console.log(value)
+    // console.log("输入框===="+JSON.stringify(this.paramList[0].prop) + ":" +JSON.stringify(value))
+    // console.log("paramList"+this.paramList[0].prop)
+    // },
     // 参数详情
     paramMsg() {
       var id = this.temp.processDefinitionId
@@ -669,7 +735,8 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.dependTaskInfo = '[{name:' + '""' + this.dependTaskList[0].dependItemList[0].depTasks + '""' + '}]'
+          this.temp.dependTaskInfo = '[{name:' + this.dependTaskList[0].dependItemList[0].depTasks + '}]'
+          console.log(this.dependTaskList[0].dependItemList[0])
           save(this.temp).then(() => {
             this.getList()
             this.dialogFormVisible = false
@@ -681,9 +748,9 @@ export default {
               position: 'bottom-right'
             })
           })
-          // console.log(this.dependTaskList[0].dependItemList[0])
         }
       })
+      location.reload() // 页面刷新有点长 暂改
     },
     handleUpdate() {
       this.temp = Object.assign({}, this.selections[0]) // copy obj
@@ -691,6 +758,16 @@ export default {
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
+      })
+      // console.log('selections:'+this.temp.processDefinitionId)
+      var id = this.temp.id
+      var processId = this.temp.processDefinitionId
+      getByScheduleId(id).then((resp) => {
+        var s = JSON.stringify(resp.data.taskParams)
+        getParamsByProcessId(processId).then((resp) => {
+          this.paramList = resp.data
+          this.paramList[0].value = s.substring(s.indexOf(':') + 1, s.indexOf(']'))
+        })
       })
     },
     updateData() {
@@ -730,10 +807,8 @@ export default {
     },
     handleUse() {
       var ids = []
-      this.selections.forEach((r, i) => {
-        ids.push(r.id)
-      })
-      updateEnableState(ids.join(',')).then(() => {
+      this.selections.forEach((r, i) => { ids.push(r.id) })
+      updateStatus(ids.join(','), 1).then(() => {
         this.getList()
         this.$notify({
           title: '成功',
@@ -746,10 +821,8 @@ export default {
     },
     handleBear() {
       var ids = []
-      this.selections.forEach((r, i) => {
-        ids.push(r.id)
-      })
-      updateEnableState(ids.join(',')).then(() => {
+      this.selections.forEach((r, i) => { ids.push(r.id) })
+      updateStatus(ids.join(','), 0).then(() => {
         this.getList()
         this.$notify({
           title: '成功',
@@ -766,6 +839,39 @@ export default {
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
+    },
+    // 上传文件，获取文件流
+    handleFileChange(file) {
+      console.log(file)
+      this.file = file.raw
+    },
+    handleRemove(file, fileList) {
+      this.file = ''
+    },
+    // 自定义上传
+    uploadFile() {
+      const index = this.file.name.lastIndexOf('.')
+      const suffix = this.file.name.substr(index + 1)
+      // 创建表单对象
+      const formData = new FormData()
+      // 后端接受参数 ，可以接受多个参数
+      formData.append('file', this.file)
+      formData.append('uploadFileName', 'git')
+      formData.append('uploadFileContentType', suffix)
+      axios({
+        url: '/etlscheduler/processDefinition/import-definition',
+        method: 'post',
+        data: formData
+      }).then((res) => {
+        this.getList()
+        this.$notify({
+          title: '成功',
+          message: '导入成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      })
     },
     // 格式化表格
     formatStatus(data) {
