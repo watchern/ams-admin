@@ -29,8 +29,8 @@
       <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog :visible.sync="editModelShow" :title="editModelTitle" v-if="editModelShow">
-      <EditModel ref="editModel" :open-value="selectTreeNode" :operationObj="operationObj" @hideModal="hideEditModal" />
+    <el-dialog v-if="editModelShow" :visible.sync="editModelShow" :title="editModelTitle">
+      <EditModel ref="editModel" :open-value="selectTreeNode" :operation-obj="operationObj" @hideModal="hideEditModal" />
       <div slot="footer">
         <el-button type="primary" @click="save">保存</el-button>
         <el-button @click="hideEditModal">取消</el-button>
@@ -39,7 +39,7 @@
   </div>
 </template>
 <script>
-import { findModel, saveModel, deleteModel,updateModel } from '@/api/analysis/auditModel'
+import { findModel, saveModel, deleteModel, updateModel } from '@/api/analysis/auditModel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import EditModel from '@/views/analysis/auditModel/editModel'
@@ -63,7 +63,7 @@ export default {
           data: [{ name: '请选择', value: '-1' }, { name: '高', value: '1' }, { name: '中', value: '2' }, { name: '低', value: '3' }],
           default: '-1' }
       ],
-      operationObj:{},
+      operationObj: {},
       // selectedRowVal:0,
       tableOptions: {
         columnDefs: [
@@ -143,19 +143,19 @@ export default {
      * @returns {返回格式化后的时间字符串}
      */
     dateFormatter(row, column) {
-      const datetime = row.createTime;
+      const datetime = row.createTime
       if (datetime) {
-        var dateMat = new Date(datetime);
-        var year = dateMat.getFullYear();
-        var month = dateMat.getMonth() + 1;
-        var day = dateMat.getDate();
-        var hh = dateMat.getHours();
-        var mm = dateMat.getMinutes();
-        var ss = dateMat.getSeconds();
-        var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss;
-        return timeFormat;
+        var dateMat = new Date(datetime)
+        var year = dateMat.getFullYear()
+        var month = dateMat.getMonth() + 1
+        var day = dateMat.getDate()
+        var hh = dateMat.getHours()
+        var mm = dateMat.getMinutes()
+        var ss = dateMat.getSeconds()
+        var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
+        return timeFormat
       }
-      return '';
+      return ''
     },
     /**
      * 格式化类型
@@ -166,19 +166,19 @@ export default {
     modelTypeFormatter(row, column) {
       const modelType = row.modelType
       if (modelType === 1) {
-        return '审计模型';
+        return '审计模型'
       } else if (modelType === 2) {
-        return '图形化模型';
+        return '图形化模型'
       }
     },
     riskLevelFormatter(row, column) {
       var riskLevel = row.riskLevelUuid
       if (riskLevel === 1) {
-        return '高';
+        return '高'
       } else if (riskLevel === 2) {
-        return '中';
+        return '中'
       } else if (riskLevel === 3) {
-        return '低';
+        return '低'
       }
     },
     /**
@@ -186,14 +186,14 @@ export default {
      * @param query 查询条件
      */
     getList(query) {
-      this.listLoading = true;
+      this.listLoading = true
       if (query) {
-        this.pageQuery.condition = query;
+        this.pageQuery.condition = query
       }
       findModel(this.pageQuery).then(resp => {
-        this.total = resp.data.total;
-        this.list = resp.data.records;
-        this.listLoading = false;
+        this.total = resp.data.total
+        this.list = resp.data.records
+        this.listLoading = false
       })
     },
     /**
@@ -201,27 +201,27 @@ export default {
      * @param data 树节点
      */
     setSelectTreeNode(data) {
-      this.selectTreeNode = data;
+      this.selectTreeNode = data
     },
     /**
      * 保存模型
      */
     save() {
-      var modelObj = this.$refs.editModel.getModelObj();
+      var modelObj = this.$refs.editModel.getModelObj()
       if (modelObj == null) {
-        return;
+        return
       }
-      this.editModelShow = false;
-      this.listLoading = true;
+      this.editModelShow = false
+      this.listLoading = true
       saveModel(modelObj).then(result => {
         if (result.code === 0) {
           this.getList(this.query)// 刷新列表
-          this.$emit('refreshTree');
-          this.listLoading = false;
-          //this.$refs.editModel.clear();
+          this.$emit('refreshTree')
+          this.listLoading = false
+          // this.$refs.editModel.clear();
         } else {
-          this.$message({ type: 'error', message: '新增模型失败!' });
-          this.listLoading = false;
+          this.$message({ type: 'error', message: '新增模型失败!' })
+          this.listLoading = false
         }
       })
     },
@@ -245,45 +245,45 @@ export default {
      * 隐藏编辑模型界面
      */
     hideEditModal() {
-      this.editModelShow = false;
+      this.editModelShow = false
     },
     /**
      * 添加模型
      */
     addModel() {
       if (this.selectTreeNode == null) {
-        this.$message({ type: 'info', message: '请先选择模型分类!' });
+        this.$message({ type: 'info', message: '请先选择模型分类!' })
       } else {
-        var operationObj = {operationType:1};
-        this.operationObj = operationObj;
-        this.editModelTitle = '添加模型';
-        this.editModelShow = true;
+        var operationObj = { operationType: 1 }
+        this.operationObj = operationObj
+        this.editModelTitle = '添加模型'
+        this.editModelShow = true
         // this.$refs.editModel.setSelectTreeNode(this.selectTreeNode);
       }
     },
     updateModel() {
-      var selectObj = this.$refs.modelListTable.selection;
-      if(selectObj.length == 0){
-        this.$message({ type: 'info', message: '最少选择一个模型!' });
-        return;
+      var selectObj = this.$refs.modelListTable.selection
+      if (selectObj.length == 0) {
+        this.$message({ type: 'info', message: '最少选择一个模型!' })
+        return
       }
-      if(selectObj.length > 1){
-        this.$message({ type: 'info', message: '只能选择一个模型!' });
-        return;
+      if (selectObj.length > 1) {
+        this.$message({ type: 'info', message: '只能选择一个模型!' })
+        return
       }
-      this.editModelTitle = '修改模型';
+      this.editModelTitle = '修改模型'
       updateModel(selectObj[0].modelUuid).then(result => {
         if (result.code == 0) {
           var operationObj = {
-            operationType:2,
-            model:result.data
-          };
-          this.operationObj = operationObj;
-          this.editModelShow = true;
-          this.getList(this.query);
-          this.$emit('refreshTree');
+            operationType: 2,
+            model: result.data
+          }
+          this.operationObj = operationObj
+          this.editModelShow = true
+          this.getList(this.query)
+          this.$emit('refreshTree')
         } else {
-          this.$message({ type: 'error', message: '删除失败' });
+          this.$message({ type: 'error', message: '删除失败' })
         }
       })
     },
@@ -296,19 +296,19 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        var selectObj = this.$refs.modelListTable.selection;
+        var selectObj = this.$refs.modelListTable.selection
         if (selectObj == undefined || selectObj.length === 0) {
-          this.$message({ type: 'info', message: '请先选择要删除的模型!' });
-          return;
+          this.$message({ type: 'info', message: '请先选择要删除的模型!' })
+          return
         }
         deleteModel(selectObj).then(result => {
           if (result.code == 0) {
-            this.getList(this.query);
-            this.$emit('refreshTree');
+            this.getList(this.query)
+            this.$emit('refreshTree')
           } else {
-            this.$message({ type: 'error', message: '删除失败' });
+            this.$message({ type: 'error', message: '删除失败' })
           }
-        });
+        })
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -318,7 +318,7 @@ export default {
     },
     batch_remarks() {
       debugger
-      alert('这是共享');
+      alert('这是共享')
     }
   }
 }

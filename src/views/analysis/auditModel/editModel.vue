@@ -5,7 +5,7 @@
         <el-tree ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>
-              <i/>{{ node.label }}
+              <i />{{ node.label }}
             </span>
             <span v-if="data.type=='relDetail' || data.type=='filterShowNode'">
               <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-delete" /></el-button>
@@ -43,7 +43,7 @@
         </el-form>
       </div>
       <div ref="modelDesign" style="display: none">
-        <el-form ref ="modelDesignForm" :model="form" label-width="150px" :rules="modelDesignRules">
+        <el-form ref="modelDesignForm" :model="form" label-width="150px" :rules="modelDesignRules">
           <el-form-item style="width: 400px" prop="sqlValue">
             <el-button type="primary" @click="getSqlObj">图形化编辑器</el-button>
             <el-button type="primary" @click="getSqlObj">SQL编辑器</el-button>
@@ -98,7 +98,7 @@
               <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" />
             </template>
           </el-table-column>
-<!--          <el-table-column prop="columnType" label="字段类型标记" width="180">
+          <!--          <el-table-column prop="columnType" label="字段类型标记" width="180">
             <template slot-scope="scope" v-model="scope.row.columnType">
               {{scope.row.columnType}}
         &lt;!&ndash;      <el-input v-model="scope.row.columnType" :value="scope.row.outputColumnType"/>
@@ -114,7 +114,7 @@
           </el-table-column>-->
         </el-table>
       </div>
-      <div  ref="relInfo" style="display: none">
+      <div ref="relInfo" style="display: none">
         <p>在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
           用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。
           通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。</p>
@@ -122,7 +122,7 @@
       </div>
       <div id="modelDetailDiv">
         <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id" style="display: none">
-          <ModelDetail ref="child" :columns="columnData" :data="modelDetail.data" @updateTreeNode="updateTreeNode" :treeId="modelDetail.id" />
+          <ModelDetail ref="child" :columns="columnData" :data="modelDetail.data" :tree-id="modelDetail.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
       <div ref="chartConfig" style="display: none">
@@ -137,7 +137,7 @@
       </div>
       <div ref="filterShowDiv">
         <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id" style="display: none">
-          <ModelFilterShow ref="modelFilterSHowChild" :columns="columnData" @updateTreeNode="updateTreeNode" :treeId="filterShow.id"  />
+          <ModelFilterShow ref="modelFilterSHowChild" :columns="columnData" :tree-id="filterShow.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
     </el-container>
@@ -148,8 +148,8 @@ import ModelDetail from '@/views/analysis/auditModel/modelDetail'
 import ModelFilterShow from '@/views/analysis/auditModel/modelFilterShow'
 export default {
   name: 'EditModel',
-  components: { ModelDetail,ModelFilterShow },
-  props: ['openValue','operationObj'],
+  components: { ModelDetail, ModelFilterShow },
+  props: ['openValue', 'operationObj'],
   data() {
     return {
       treeNodeData: [
@@ -217,15 +217,15 @@ export default {
       columnTypeSelect: [],
       selectTreeNode: null,
       modelDetails: [],
-      filterShows:[],
+      filterShows: [],
       modelDetailIndex: 0,
-      modelFilterShowIndex:0,
+      modelFilterShowIndex: 0,
       modelOriginalTable: [],
       modelChartSetup: {},
-      currentSelectTreeNode:null,
+      currentSelectTreeNode: null,
       basicInfoRules: {
         modelName: [
-          { type: 'string',required: true, message: '请输入模型名称', trigger: 'blur' }
+          { type: 'string', required: true, message: '请输入模型名称', trigger: 'blur' }
         ],
         auditItemUuid: [
           { required: true, message: '请选择审计事项', trigger: 'change' }
@@ -234,16 +234,16 @@ export default {
           { type: 'string', required: true, message: '请选择风险等级', trigger: 'change' }
         ]
       },
-      modelDesignRules:{
-        sqlValue:[{ type: 'string', required: true, message: '请选择输入模型SQL', trigger: 'blur' }]}
+      modelDesignRules: {
+        sqlValue: [{ type: 'string', required: true, message: '请选择输入模型SQL', trigger: 'blur' }] }
     }
   },
   created() {
   },
-  mounted(){
+  mounted() {
     this.initData()
-    //如果为2则反显要修改的数据
-    if(this.operationObj.operationType == 2){
+    // 如果为2则反显要修改的数据
+    if (this.operationObj.operationType == 2) {
       var model = this.operationObj.model
       this.displayData(model)
     }
@@ -252,20 +252,20 @@ export default {
     /**
      *初始化数据
      */
-    initData(){
+    initData() {
       // 初始化模型分类数据
       this.selectTreeNode = this.openValue
       this.form.modelFolderUuid = this.openValue.id
       this.form.modelFolderName = this.openValue.label
       // 初始化业务字段列表
-      let businessColumnSelect = [{ uuid: '1', name: '机构名称' }, { uuid: '2', name: '机构代码' }]
+      const businessColumnSelect = [{ uuid: '1', name: '机构名称' }, { uuid: '2', name: '机构代码' }]
       this.businessColumnSelect = businessColumnSelect
       // 初始化字段类型
-      let columnTypeSelect = [{ uuid: 'int', name: '数值' }, { uuid: 'varchar', name: '字符串' }, { uuid: 'date', name: '日期' }, { uuid: 'money', name: '金额' }]
+      const columnTypeSelect = [{ uuid: 'int', name: '数值' }, { uuid: 'varchar', name: '字符串' }, { uuid: 'date', name: '日期' }, { uuid: 'money', name: '金额' }]
       this.columnTypeSelect = columnTypeSelect
     },
     handleNodeClick(data, node) {
-      this.hideModelDetail();
+      this.hideModelDetail()
       if (data.type == 'basicInfo') {
         this.$refs.modelDesign.style.display = 'none'
         this.$refs.paramDefaultValue.style.display = 'none'
@@ -331,7 +331,7 @@ export default {
         this.$refs.relInfo.style.display = 'none'
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'none'
-        if(this.$refs.[data.id][0] != undefined){
+        if (this.$refs.[data.id][0] != undefined) {
           this.$refs.[data.id][0].style.display = 'block'
         }
       }
@@ -339,11 +339,11 @@ export default {
     },
     hideModelDetail() {
       for (let i = 0; i < this.modelDetails.length; i++) {
-        let id = this.modelDetails[i].id
+        const id = this.modelDetails[i].id
         this.$refs.[id][0].style.display = 'none'
       }
       for (let i = 0; i < this.filterShows.length; i++) {
-        let id = this.filterShows[i].id
+        const id = this.filterShows[i].id
         this.$refs.[id][0].style.display = 'none'
       }
     },
@@ -351,44 +351,44 @@ export default {
        * 获取当前界面的模型对象
        */
     getModelObj() {
-      //region 校验基本信息
+      // region 校验基本信息
       let basicInfoVerResult = false
       this.$refs['basicInfoForm'].validate((valid) => {
         if (valid) {
-          basicInfoVerResult = valid;
+          basicInfoVerResult = valid
         }
       })
-      if(!basicInfoVerResult){
-        //自动选中指定树节点
+      if (!basicInfoVerResult) {
+        // 自动选中指定树节点
         this.handleNodeClick({
           id: '1',
           label: '基本信息',
           type: 'basicInfo'
-        },null)
+        }, null)
         return null
       }
-      //endregion
-      //region 校验sql语句
+      // endregion
+      // region 校验sql语句
       let modelDesignVerResult = false
       this.$refs['modelDesignForm'].validate((valid) => {
         if (valid) {
           modelDesignVerResult = valid
         }
       })
-      if(!modelDesignVerResult){
-        //自动选中指定树节点
+      if (!modelDesignVerResult) {
+        // 自动选中指定树节点
         this.handleNodeClick({
           id: '2',
           label: '模型设计',
           type: 'modelDesign'
-        },null)
+        }, null)
         return null
       }
-      //endregion
-      //region 处理模型结果固定输出列数据
-      let columnData = this.$refs.columnData.data
+      // endregion
+      // region 处理模型结果固定输出列数据
+      const columnData = this.$refs.columnData.data
       debugger
-      let columnOrder = 0;
+      let columnOrder = 0
       for (let i = 0; i < columnData.length; i++) {
         if (columnData[i].isShow == undefined) {
           columnData[i].isShow = 1
@@ -396,69 +396,67 @@ export default {
         }
       }
       this.form.modelOutputColumn = columnData
-      //endregion
-      //region 处理参数数据
-      let paramData = this.$refs.paramData.data
+      // endregion
+      // region 处理参数数据
+      const paramData = this.$refs.paramData.data
       var paramIndex = 0
       for (let i = 0; i < paramData.length; i++) {
         paramData[i].paramSort = ++paramIndex
       }
       this.form.parammModelRel = paramData
-      //endregion
-      //region 获取模型详细
+      // endregion
+      // region 获取模型详细
       let verModelDetail = true
-      let modelDetailRelation = []
+      const modelDetailRelation = []
       for (const i in this.modelDetails) {
-        let modelDetailObj = this.$refs.child[i].getObj();
-        if(modelDetailObj.verResult == undefined){
+        const modelDetailObj = this.$refs.child[i].getObj()
+        if (modelDetailObj.verResult == undefined) {
           modelDetailRelation.push(modelDetailObj)
-        }
-        else{
-          verModelDetail = false;
-          let treeNode = {id:modelDetailObj.treeId,type:'relDetail'}
-          this.handleNodeClick(treeNode,null)
+        } else {
+          verModelDetail = false
+          const treeNode = { id: modelDetailObj.treeId, type: 'relDetail' }
+          this.handleNodeClick(treeNode, null)
           break
         }
       }
-      if(!verModelDetail){
+      if (!verModelDetail) {
         return
       }
       this.form.modelDetailRelation = modelDetailRelation// 模型关联详细
-      //endregion
-      //region 处理图表
+      // endregion
+      // region 处理图表
       this.form.modelChartSetup = this.modelChartSetup
-      //endregion
-      //region 模型SQL所用到的表
+      // endregion
+      // region 模型SQL所用到的表
       this.form.modelOriginalTable = this.modelOriginalTable
-      //endregion
-      //region 处理模型条件显示
+      // endregion
+      // region 处理模型条件显示
       let resultFilterResult = true
-      let resultFilterShow = []
+      const resultFilterShow = []
       for (const i in this.filterShows) {
-        let filterShowObj = this.$refs.modelFilterSHowChild[i].getForm();
-        if(filterShowObj.verResult == undefined){
+        const filterShowObj = this.$refs.modelFilterSHowChild[i].getForm()
+        if (filterShowObj.verResult == undefined) {
           resultFilterShow.push(filterShowObj)
-        }
-        else{
-          let treeNode = {id:filterShowObj.treeId,type:'filterShowNode'};
-          this.handleNodeClick(treeNode,null)
+        } else {
+          const treeNode = { id: filterShowObj.treeId, type: 'filterShowNode' }
+          this.handleNodeClick(treeNode, null)
           resultFilterResult = false
         }
       }
-      if(!resultFilterResult){
+      if (!resultFilterResult) {
         return null
       }
       this.form.resultFilterShow = resultFilterShow
-      //endregion
+      // endregion
       return this.form
     },
     /**
        * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
        */
     getSqlObj() {
-      let sqlObj = {
+      const sqlObj = {
         sqlValue: 'select * from AA_AUDIT_ITEM',
-        column: [{columnName:'AUDIT_ITEM_UUID',columnType:'varchar'}, {columnName:'AUDIT_ITEM_NAME',columnType:'varchar'}],
+        column: [{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }],
         params: [
           { ammParamUuid: '1', paramName: '参数一', description: '这是参数一的说明', paramValue: '默认值1' },
           { ammParamUuid: '2', paramName: '参数二', description: '这是参数二的说明', paramValue: '默认值2' }],
@@ -468,16 +466,16 @@ export default {
       this.form.sqlValue = sqlObj.sqlValue
       // 初始化默认参数
       this.paramData = sqlObj.params
-      //region 初始化固定列
-      let columnData = [];
+      // region 初始化固定列
+      const columnData = []
       for (let i = 0; i < sqlObj.column.length; i++) {
-        let columnDataObj = {
+        const columnDataObj = {
           outputColumnName: sqlObj.column[i].columnName,
           columnType: sqlObj.column[i].columnType
         }
         columnData.push(columnDataObj)
       }
-      //endregion
+      // endregion
       // 列数据
       this.columnData = columnData
       // 模型SQL用到的数据表
@@ -510,14 +508,14 @@ export default {
         pid: 5,
         type: 'relDetail'
       }
-      let treeNode = this.$refs.tree.getCurrentNode()
+      const treeNode = this.$refs.tree.getCurrentNode()
       treeNode.children.push(newChild)
-      this.modelDetails.push({ id: 'rel' + this.modelDetailIndex,data:[]})
+      this.modelDetails.push({ id: 'rel' + this.modelDetailIndex, data: [] })
     },
     /**
      * 创建过滤条件显示
      */
-    createFilterShow(){
+    createFilterShow() {
       if (this.columnData.length == 0) {
         this.$message({ type: 'info', message: '请先编写SQL!' })
         return
@@ -529,7 +527,7 @@ export default {
         children: [],
         type: 'filterShowNode'
       }
-      let treeNode = this.$refs.tree.getCurrentNode()
+      const treeNode = this.$refs.tree.getCurrentNode()
       treeNode.children.push(newChild)
       this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex })
     },
@@ -610,20 +608,19 @@ export default {
       const children = parent.data.children || parent.data
       const index = children.findIndex(d => d.id === data.id)
       children.splice(index, 1)
-      if(data.type === 'relDetail'){
+      if (data.type === 'relDetail') {
         for (let i = 0; i < this.modelDetails.length; i++) {
-          let id = this.modelDetails[i].id
-          if(id == data.id){
-            this.modelDetails.splice(i,1)
-            break;
+          const id = this.modelDetails[i].id
+          if (id == data.id) {
+            this.modelDetails.splice(i, 1)
+            break
           }
         }
-      }
-      else if(data.type === 'filterShowNode'){
+      } else if (data.type === 'filterShowNode') {
         for (let i = 0; i < this.filterShows.length; i++) {
-          let id = this.filterShows[i].id
-          if(id === data.id){
-            this.filterShows.splice(i,1)
+          const id = this.filterShows[i].id
+          if (id === data.id) {
+            this.filterShows.splice(i, 1)
             break
           }
         }
@@ -633,18 +630,18 @@ export default {
      * 修改树节点名称
      * @param value 要修改的值
      */
-    updateTreeNode(value){
+    updateTreeNode(value) {
       this.currentSelectTreeNode.label = value
     },
     /**
      * 如果是修改模型的话则反显数据
      * @param model 要反显的数据
      */
-    displayData(model){
-      //region 处理模型结果列
-      let columnData = [];
+    displayData(model) {
+      // region 处理模型结果列
+      const columnData = []
       for (let i = 0; i < model.modelOutputColumn.length; i++) {
-        let columnDataObj = {
+        const columnDataObj = {
           outputColumnName: model.modelOutputColumn[i].columnName,
           outputColumnType: model.modelOutputColumn[i].columnType
         }
@@ -652,21 +649,21 @@ export default {
       }
       // 列数据
       this.columnData = columnData
-      //endregion
-      //region 反显基本信息
+      // endregion
+      // region 反显基本信息
       model.modelFolderName = this.openValue.label
       this.form = model
-      //endregion
-      //region 反显参数默认值
+      // endregion
+      // region 反显参数默认值
       this.paramData = model.parammModelRel
-      //endregion
-      //region 模型结果输出列
+      // endregion
+      // region 模型结果输出列
       this.columnData = model.modelOutputColumn
-      //endregion
-      //region 反显关联详细
-      //拿到所有树节点并找到关联详细的父节点   试了几种办法没法通过id直接拿到节点
-      var treeNode = this.treeNodeData[4];
-      for(let i = 0;i < model.modelDetailRelation.length;i++){
+      // endregion
+      // region 反显关联详细
+      // 拿到所有树节点并找到关联详细的父节点   试了几种办法没法通过id直接拿到节点
+      var treeNode = this.treeNodeData[4]
+      for (let i = 0; i < model.modelDetailRelation.length; i++) {
         ++this.modelDetailIndex
         const newChild = {
           id: 'rel' + this.modelDetailIndex,
@@ -675,17 +672,17 @@ export default {
           pid: 5,
           type: 'relDetail'
         }
-        //添加树节点
-        treeNode.children.push(newChild);
-        this.modelDetails.push({id:'rel' + this.modelDetailIndex,data:model.modelDetailRelation[i]});
+        // 添加树节点
+        treeNode.children.push(newChild)
+        this.modelDetails.push({ id: 'rel' + this.modelDetailIndex, data: model.modelDetailRelation[i] })
       }
-      //endregion
-      //region 反显图表配置
+      // endregion
+      // region 反显图表配置
 
-      //endregion
-      //region 反显条件展示
+      // endregion
+      // region 反显条件展示
 
-      //endregion
+      // endregion
     }
   }
 }
