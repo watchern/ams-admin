@@ -47,14 +47,10 @@
       <el-upload
         class="upload-demo"
         action=""
-        :on-preview="handlePreview"
         :on-remove="handleRemove"
-        :before-remove="beforeRemove"
         :headers="headers"
         :http-request="uploadFile"
         :limit="3"
-        :on-exceed="handleExceed"
-        :file-list="fileList"
         :auto-upload="true"
         :on-change="handleFileChange"
         :show-file-list="false"
@@ -267,7 +263,6 @@ export default {
         url: `/etlscheduler/processDefinition/export/${ids.join(',')}`,
         responseType: 'blob'
       }).then((res) => {
-        debugger
         downloadBlob(res.data, 'process_' + new Date().getTime())
         this.getList()
         this.$notify({
