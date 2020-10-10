@@ -4,26 +4,6 @@
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
     <div>
-      <p>
-        <el-upload
-          class="upload-demo"
-          action="schedules/importFiles"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-remove="beforeRemove"
-          :headers="headers"
-          :http-request="uploadFile"
-          :limit="3"
-          :on-exceed="handleExceed"
-          :file-list="fileList"
-          :auto-upload="true"
-          :on-change="handleFileChange"
-          :show-file-list="false"
-          style="display:inline-block;padding-left:10px"
-        >
-          <el-button size="mini" type="primary">点击上传</el-button>
-        </el-upload>
-      </p><br>
       <el-button
         type="primary"
         size="mini"
@@ -53,6 +33,24 @@
         :disabled="stopStatus"
         @click="handleBear()"
       >禁用</el-button>
+      <el-button
+        type="danger"
+        size="mini"
+        :disabled="selections.length != 1"
+        @click="copyData()"
+      >复制</el-button>
+      <el-upload
+        class="upload-demo"
+        multiple
+        action=""
+        :headers="headers"
+        :http-request="uploadFile"
+        :limit="3"
+        :show-file-list="false"
+        style="display:inline-block;padding-left:10px"
+      >
+        <el-button size="mini" type="primary">导入</el-button>
+      </el-upload>
     </div>
     <el-table
       :key="tableKey"
@@ -255,7 +253,7 @@
       :key="item.value"
       :label="item.label"
       :value="item.value" -->
-          <el-input v-model="item.value" @input="defaultValue" />
+          <el-input v-model="item.value" @change="defaultValue" />
         </el-form-item>
         <!-- 添加任务依赖 -->
         <el-form-item>
@@ -352,7 +350,8 @@ import {
   findByprocessDef,
   updateStatus,
   getParamsByProcessId,
-  getByScheduleId
+  getByScheduleId,
+  copy
 } from '@/api/etlscheduler/processschedule'
 import {
   getById
@@ -379,6 +378,119 @@ export default {
       // 添加依赖
       relation: 'AND',
       dependTaskList: [],
+      dependTaskList: [{
+        'dependItemList': [
+          {
+            'projectId': 1,
+            'definitionId': '',
+            'depTasks': '',
+            'cycle': '',
+            'dateValue': '',
+            'state': '',
+            'depTasksList': [
+              {
+                'id': '',
+                'name': ''
+              }
+            ],
+            'dateValueList': [
+              {
+                'value': 'currentHour',
+                'label': '当前小时'
+              },
+              {
+                'value': 'last1Hour',
+                'label': '前1小时'
+              },
+              {
+                'value': 'last2Hours',
+                'label': '前2小时'
+              },
+              {
+                'value': 'last3Hours',
+                'label': '前3小时'
+              },
+              {
+                'value': 'last24Hours',
+                'label': '前24小时'
+              },
+              {
+                'value': 'thisMonth',
+                'label': '本月'
+              },
+              {
+                'value': 'lastMonth',
+                'label': '上月'
+              },
+              {
+                'value': 'lastMonthBegin',
+                'label': '上月初'
+              },
+              {
+                'value': 'lastMonthEnd',
+                'label': '上月末'
+              },
+              {
+                'value': 'thisWeek',
+                'label': '本周'
+              },
+              {
+                'value': 'lastWeek',
+                'label': '上周'
+              },
+              {
+                'value': 'lastMonday',
+                'label': '上周一'
+              },
+              {
+                'value': 'lastTuesday',
+                'label': '上周二'
+              },
+              {
+                'value': 'lastWednesday',
+                'label': '上周三'
+              },
+              {
+                'value': 'lastThursday',
+                'label': '上周四'
+              },
+              {
+                'value': 'lastFriday',
+                'label': '上周五'
+              },
+              {
+                'value': 'lastSaturday',
+                'label': '上周六'
+              },
+              {
+                'value': 'lastSunday',
+                'label': '上周日'
+              },
+              {
+                'value': 'today',
+                'label': '今天'
+              },
+              {
+                'value': 'last1Days',
+                'label': '昨天'
+              },
+              {
+                'value': 'last2Days',
+                'label': '前两天'
+              },
+              {
+                'value': 'last3Days',
+                'label': '前三天'
+              },
+              {
+                'value': 'last7Days',
+                'label': '前七天'
+              }
+            ]
+          }
+        ],
+        'relation': 'AND'
+      }],
       paramList: [],
       isLoading: false,
       //  查询任务流程
@@ -577,6 +689,22 @@ export default {
     }
   },
   methods: {
+    // 复制对象
+    copyData() {
+      this.selections.forEach((r, i) => {
+        var id = r.id
+        copy(id).then(() => {
+          this.getList()
+          this.$notify({
+            title: '成功',
+            message: '复制成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      })
+    },
     paramName(v) {
       return v.substring(v.indexOf('{') + 1, v.indexOf(':'))
     },
@@ -585,12 +713,12 @@ export default {
     },
     dependName(v) {
       if (v != null) {
-        return v.substring(v.indexOf('{') + 1, v.indexOf(':'))
+        return v.substring(v.indexOf('name') + 7, v.lastIndexOf('}]') - 3)
       }
     },
     dependVal(v) {
       if (v != null) {
-        return v.substring(v.indexOf(':') + 1, v.indexOf('}'))
+        return v.substring(v.indexOf('id') + 5, v.indexOf('name') - 3)
       }
     },
     defaultValue() {
@@ -725,6 +853,7 @@ export default {
       }
     },
     handleCreate() {
+      this._onDeleteAll()
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -735,8 +864,10 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.dependTaskInfo = '[{name:' + this.dependTaskList[0].dependItemList[0].depTasks + '}]'
-          console.log(this.dependTaskList[0].dependItemList[0])
+          this.temp.dependTaskInfo = '[{"definitionId"' + ':' + '"' + this.dependTaskList[0].dependItemList[0].definitionId + '"' + ',' +
+          '"depTasks"' + ':' + '"' + this.dependTaskList[0].dependItemList[0].depTasks + '"' + ',' + '"cycle"' + ':' + '"' + this.dependTaskList[0].dependItemList[0].cycle + '"' + ',' +
+          '"dateValue"' + ':' + '"' + this.dependTaskList[0].dependItemList[0].dateValue + '"' + ',' + '"depTasksList"' + ':' + '[{' + '"id"' + ':' + '"' + this.dependTaskList[0].dependItemList[0].depTasks + '"' + ',' +
+          '"name"' + ':' + '"' + this.dependTaskList[0].dependItemList[0].depTasksList[0].name + '"' + '}]' + '}]'
           save(this.temp).then(() => {
             this.getList()
             this.dialogFormVisible = false
@@ -764,9 +895,25 @@ export default {
       var processId = this.temp.processDefinitionId
       getByScheduleId(id).then((resp) => {
         var s = JSON.stringify(resp.data.taskParams)
+        // console.log(JSON.parse(resp.data.dependTaskInfo)[0].definitionId)
+        if (resp.data.dependTaskInfo == null || resp.data.dependTaskInfo == '') {
+          this.dependTaskList[0].dependItemList[0].definitionId = null
+          this.dependTaskList[0].dependItemList[0].depTasks = null
+          this.dependTaskList[0].dependItemList[0].cycle = null
+          this.dependTaskList[0].dependItemList[0].dateValue = null
+          this.dependTaskList[0].dependItemList[0].depTasksList[0].id = null
+          this.dependTaskList[0].dependItemList[0].depTasksList[0].name = null
+        } else {
+          this.dependTaskList[0].dependItemList[0].definitionId = JSON.parse(resp.data.dependTaskInfo)[0].definitionId
+          this.dependTaskList[0].dependItemList[0].depTasks = JSON.parse(resp.data.dependTaskInfo)[0].depTasks
+          this.dependTaskList[0].dependItemList[0].cycle = JSON.parse(resp.data.dependTaskInfo)[0].cycle
+          this.dependTaskList[0].dependItemList[0].dateValue = JSON.parse(resp.data.dependTaskInfo)[0].dateValue
+          this.dependTaskList[0].dependItemList[0].depTasksList[0].id = JSON.parse(resp.data.dependTaskInfo)[0].depTasks
+          this.dependTaskList[0].dependItemList[0].depTasksList[0].name = JSON.parse(resp.data.dependTaskInfo)[0].depTasksList[0].name
+        }
         getParamsByProcessId(processId).then((resp) => {
           this.paramList = resp.data
-          this.paramList[0].value = s.substring(s.indexOf(':') + 1, s.indexOf(']'))
+          this.paramList[0].value = s.substring(s.indexOf(':') + 1, s.indexOf('}'))
         })
       })
     },
@@ -839,39 +986,6 @@ export default {
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
-    },
-    // 上传文件，获取文件流
-    handleFileChange(file) {
-      console.log(file)
-      this.file = file.raw
-    },
-    handleRemove(file, fileList) {
-      this.file = ''
-    },
-    // 自定义上传
-    uploadFile() {
-      const index = this.file.name.lastIndexOf('.')
-      const suffix = this.file.name.substr(index + 1)
-      // 创建表单对象
-      const formData = new FormData()
-      // 后端接受参数 ，可以接受多个参数
-      formData.append('file', this.file)
-      formData.append('uploadFileName', 'git')
-      formData.append('uploadFileContentType', suffix)
-      axios({
-        url: '/etlscheduler/processDefinition/import-definition',
-        method: 'post',
-        data: formData
-      }).then((res) => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '导入成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
-        })
-      })
     },
     // 格式化表格
     formatStatus(data) {
