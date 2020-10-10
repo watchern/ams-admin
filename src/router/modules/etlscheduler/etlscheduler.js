@@ -58,6 +58,18 @@ const etlschedulerRouter = {
       meta: { title: 'processdefinition' }
     },
     {
+      path: 'taskmonitor',
+      name: 'taskmonitor',
+      component: () => import('@/views/modules/etlscheduler/taskmonitor/index'),
+      meta: { title: 'taskmonitor' }
+    },
+    {
+      path: 'processinstance',
+      name: 'processinstance',
+      component: () => import('@/views/modules/etlscheduler/processinstance/index'),
+      meta: { title: 'processinstance' }
+    },
+    {
       path: 'definition/:id',
       name: 'projects-definition-details',
       component: resolve => require(['@/views/modules/etlscheduler/workflow/details/index'], resolve),
