@@ -102,3 +102,14 @@ export function copy(id) {
     method: 'get'
   })
 }
+
+// // 导出文件
+// export function exportSchedulesFile() {
+//   return request({
+//     baseURL: baseURL,
+//     url: `/schedules/exportFile`,
+//     procgress: true,
+//     responseType: 'blob',
+//     method: 'get'
+//   })
+// }
