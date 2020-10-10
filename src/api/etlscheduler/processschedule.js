@@ -93,3 +93,23 @@ export function getTaskLink(id) {
     method: 'get'
   })
 }
+
+// 复制对象
+export function copy(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/schedules/copy/${id}`,
+    method: 'get'
+  })
+}
+
+// // 导出文件
+// export function exportSchedulesFile() {
+//   return request({
+//     baseURL: baseURL,
+//     url: `/schedules/exportFile`,
+//     procgress: true,
+//     responseType: 'blob',
+//     method: 'get'
+//   })
+// }
