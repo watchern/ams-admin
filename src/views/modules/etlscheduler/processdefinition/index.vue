@@ -179,9 +179,11 @@ export default {
         this.startStatus = false
         this.stopStatus = false
         this.selections.forEach((r, i) => {
+          // 遍历选择的数组判断状态，如果是有启用的，启用按钮不可用
           if (r.status === 1) {
             this.startStatus = true
           } else if (r.status === 0) {
+            // 遍历选择的数组判断状态，如果是有禁用的，禁用按钮不可用
             this.stopStatus = true
           }
         })
@@ -236,6 +238,7 @@ export default {
         })
       })
     },
+    // 导出流程
     handleDownload() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })

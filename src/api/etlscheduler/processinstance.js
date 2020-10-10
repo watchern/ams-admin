@@ -45,3 +45,31 @@ export function update(data) {
     data
   })
 }
+
+// 跳过环节
+export function skiptask(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/processInstance/skiptask',
+    method: 'put',
+    data
+  })
+}
+
+// 暂停流程
+export function stopInstance(ids) {
+  return request({
+    baseURL: baseURL,
+    url: `/processInstance/stopInstance/${ids}`,
+    method: 'get'
+  })
+}
+
+// 启用流程
+export function startInstance(ids) {
+  return request({
+    baseURL: baseURL,
+    url: `/processInstance/startInstance/${ids}`,
+    method: 'get'
+  })
+}
