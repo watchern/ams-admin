@@ -186,35 +186,14 @@
         <el-form-item label="任务名称" prop="scheduleName">
           <el-input v-model="temp.scheduleName" />
         </el-form-item>
-        <el-form-item label="排序号" prop="processInstancePriority">
-          <el-input v-model="temp.processInstancePriority" />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="temp.status" placeholder="请选择状态">
-            <el-option label="启用" :value="1" />
-            <el-option label="停用" :value="0" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="作业周期" prop="crontab">
-          <el-select v-model="temp.crontab" placeholder="请选择作业周期">
-            <el-option label="每日" value="0 0 0 * * ? *" />
-            <el-option label="每月" value="0 0 0 1 * ? *" />
-            <el-option label="每季度" value="0 0 0 1 1,4,7,10 ? *" />
-            <el-option label="每半年" value="0 0 0 1 1,7 ? *" />
-            <el-option label="每年" value="0 0 0 1 1 ? *" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="流程描述" prop="scheduleDesc">
-          <el-input v-model="temp.scheduleDesc" type="textarea" />
-        </el-form-item>
-        <el-form-item label="任务流程" prop="processDefinitionId">
           <!-- 查询任务流程 -->
+        <el-form-item label="任务流程" prop="processDefinitionId">
           <el-select
             v-model="temp.processDefinitionId"
             :filterable="true"
             :remote="true"
             reserve-keyword
-            placeholder="请输入关键词"
+            placeholder="请选择任务流程"
             :remote-method="remoteMethod"
             :loading="loading"
             @change="paramMsg(temp.processDefinitionId)"
@@ -227,7 +206,30 @@
             />
           </el-select>
         </el-form-item>
-
+          <el-form-item v-for="item in paramList" :key="item.value" :label="item.prop" :prop="item.prop">
+          <el-input v-model="item.value" @change="defaultValue" />
+        </el-form-item>
+        <el-form-item label="排序号" prop="processInstancePriority">
+          <el-input v-model="temp.processInstancePriority" />
+        </el-form-item>
+        <!-- <el-form-item label="状态" prop="status">
+          <el-select v-model="temp.status" placeholder="请选择状态">
+            <el-option label="启用" :value="1" />
+            <el-option label="停用" :value="0" />
+          </el-select>
+        </el-form-item> -->
+        <el-form-item label="作业周期" prop="crontab">
+          <el-select v-model="temp.crontab" placeholder="请选择作业周期">
+            <el-option label="每日" value="0 0 0 * * ? *" />
+            <el-option label="每月" value="0 0 0 1 * ? *" />
+            <el-option label="每季度" value="0 0 0 1 1,4,7,10 ? *" />
+            <el-option label="每半年" value="0 0 0 1 1,7 ? *" />
+            <el-option label="每年" value="0 0 0 1 1 ? *" />
+          </el-select>
+        </el-form-item>
+        <!-- <el-form-item label="流程描述" prop="scheduleDesc">
+          <el-input v-model="temp.scheduleDesc" type="textarea" />
+        </el-form-item> -->
         <!-- <el-table :data="paramList" style="width: 100%">
           <el-table-column label="参数名称" width="180">
             <template slot-scope="scope">
@@ -260,13 +262,13 @@
           参数名称:<input value=""/>
           参数赋值:<input placeholder="为参数赋值"/>
         </form> -->
-        <el-form-item v-for="item in paramList" :key="item.value" :label="item.prop" :prop="item.prop">
+        <!-- <el-form-item v-for="item in paramList" :key="item.value" :label="item.prop" :prop="item.prop"> -->
           <!-- v-for="item in options"
       :key="item.value"
       :label="item.label"
       :value="item.value" -->
-          <el-input v-model="item.value" @change="defaultValue" />
-        </el-form-item>
+          <!-- <el-input v-model="item.value" @change="defaultValue" />
+        </el-form-item> -->
         <!-- 添加任务依赖 -->
         <el-form-item>
           <div class="dependence-model">
@@ -555,7 +557,7 @@ export default {
         status: {
           1: '启用',
           0: '停用',
-          null: '启用'
+          null: '停用'
         },
         crontab: {
           '0 0 0 * * ? *': '每日',
@@ -576,7 +578,7 @@ export default {
         taskParams: null,
         dependTaskInfo: null,
         processInstancePriority: null,
-        status: null,
+        // status: 0,
         scheduleDesc: null,
         updateUserName: null,
         updateTime: null,
@@ -611,13 +613,13 @@ export default {
             trigger: 'change'
           }
         ],
-        scheduleDesc: [
-          {
-            max: 100,
-            message: '请填写流程描述',
-            trigger: 'change'
-          }
-        ],
+        // scheduleDesc: [
+        //   {
+        //     max: 100,
+        //     message: '请填写流程描述',
+        //     trigger: 'change'
+        //   }
+        // ],
         crontab: [
           {
             required: true,
@@ -625,10 +627,17 @@ export default {
             trigger: 'change'
           }
         ],
-        status: [
+        // status: [
+        //   {
+        //     required: true,
+        //     message: '请选择参数状态',
+        //     trigger: 'change'
+        //   }
+        // ],
+        processDefinitionId: [
           {
             required: true,
-            message: '请选择参数状态',
+            message: '请选择任务流程',
             trigger: 'change'
           }
         ]
@@ -935,7 +944,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           if( this.dependTaskList[0].dependItemList[0].depTasks == null) {
-              this.temp.dependTaskInfo = null
+              this.temp.dependTaskInfo = []
           }else {
           this.temp.dependTaskInfo = '[{"definitionId"' + ':' + '"' + this.dependTaskList[0].dependItemList[0].definitionId + '"' + ',' +
           '"depTasks"' + ':' + '"' +  this.dependTaskList[0].dependItemList[0].depTasks + '"' + ',' + '"cycle"' + ':' + '"' + this.dependTaskList[0].dependItemList[0].cycle + '"' + ','
@@ -956,6 +965,7 @@ export default {
         }
       })
      this.paramList[0].value = null
+     this.paramList[0].prop = null
     },
     handleUpdate() {   
       this.temp = Object.assign({}, this.selections[0]) // copy obj
@@ -971,12 +981,13 @@ export default {
         var s = JSON.stringify(resp.data.taskParams)
         // console.log(JSON.parse(resp.data.dependTaskInfo)[0].definitionId)
         if(resp.data.dependTaskInfo == null || resp.data.dependTaskInfo == '') {
-       this.dependTaskList[0].dependItemList[0].definitionId = null
-       this.dependTaskList[0].dependItemList[0].depTasks = null
-       this.dependTaskList[0].dependItemList[0].cycle = null
-       this.dependTaskList[0].dependItemList[0].dateValue = null
-       this.dependTaskList[0].dependItemList[0].depTasksList[0].id = null
-       this.dependTaskList[0].dependItemList[0].depTasksList[0].name = null
+      //  this.dependTaskList[0].dependItemList[0].definitionId = null
+      //  this.dependTaskList[0].dependItemList[0].depTasks = null
+      //  this.dependTaskList[0].dependItemList[0].cycle = null
+      //  this.dependTaskList[0].dependItemList[0].dateValue = null
+      //  this.dependTaskList[0].dependItemList[0].depTasksList[0].id = null
+      //  this.dependTaskList[0].dependItemList[0].depTasksList[0].name = null
+           this.dependTaskList[0].dependItemList[0] = []
         } else {
        this.dependTaskList[0].dependItemList[0].definitionId = JSON.parse(resp.data.dependTaskInfo)[0].definitionId
        this.dependTaskList[0].dependItemList[0].depTasks = JSON.parse(resp.data.dependTaskInfo)[0].depTasks
@@ -987,7 +998,7 @@ export default {
        }    
       getParamsByProcessId(processId).then((resp) => {
         this.paramList = resp.data
-        this.paramList[0].value = s.substring(s.indexOf(':') + 1, s.indexOf('}'))
+        this.paramList[0].value = s.substring(s.indexOf(':') + 3, s.indexOf('}') - 2)
         })
       })
     },

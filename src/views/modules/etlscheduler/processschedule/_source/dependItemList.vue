@@ -107,15 +107,13 @@ export default {
         this._getDependItemList(ids, false).then(res => {
 
         })
-
         getTaskLink(value).then((resp) => {
           _.map(this.dependItemList, (v, i) => {
             this.$set(this.dependItemList, i, this._rtOldParams(v.definitionId, scheduleList, ['ALL'].concat(_.map(res[v.definitionId] || [], v => v.name)), v))
           })
           // this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(value, this.scheduleList, resp.data)))
-        })
+        })       
       }
-
       // const value = this.scheduleList[0].id
       // getTaskLink(value).then(depTasksList => {
       //   this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(value, scheduleList, depTasksList)))
