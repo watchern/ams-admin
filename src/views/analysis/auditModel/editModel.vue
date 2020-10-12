@@ -65,7 +65,7 @@
             <el-table-column prop="paramName" label="参数名称" width="180" />
             <el-table-column prop="paramValue" label="参数默认值" width="180">
               <template slot-scope="scope">
-                <v-runtime-template :template="scope.row.paramValue"></v-runtime-template>
+                <v-runtime-template :template="scope.row.paramValue" />
               </template>
             </el-table-column>
             <el-table-column prop="description" label="参数描述" />
@@ -150,10 +150,10 @@
 <script>
 import ModelDetail from '@/views/analysis/auditModel/modelDetail'
 import ModelFilterShow from '@/views/analysis/auditModel/modelFilterShow'
-import VRuntimeTemplate from "v-runtime-template";
+import VRuntimeTemplate from 'v-runtime-template'
 export default {
   name: 'EditModel',
-  components: { ModelDetail, ModelFilterShow,VRuntimeTemplate },
+  components: { ModelDetail, ModelFilterShow, VRuntimeTemplate },
   props: ['openValue', 'operationObj'],
   data() {
     return {
@@ -201,7 +201,7 @@ export default {
         label: 'label'
       },
       paramData: [],
-      paramValueModel:{},
+      paramValueModel: {},
       columnData: [],
       form: {
         modelName: '',
@@ -409,7 +409,7 @@ export default {
       const paramData = this.$refs.paramData.data
       var paramIndex = 0
       for (let i = 0; i < paramData.length; i++) {
-        //todo 处理参数的值，现在拿的还是html
+        // todo 处理参数的值，现在拿的还是html
         paramData[i].paramSort = ++paramIndex
       }
       this.form.parammModelRel = paramData
@@ -541,7 +541,7 @@ export default {
       }
       const treeNode = this.$refs.tree.getCurrentNode()
       treeNode.children.push(newChild)
-      this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex,data:[]})
+      this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex, data: [] })
     },
     /**
      * 清空界面数据
@@ -667,7 +667,7 @@ export default {
       this.form = model
       // endregion
       // region 反显参数默认值
-      //todo 这块需要一起讨论一下。到底是将参数HTML存起来 还是每次根据参数重新反显
+      // todo 这块需要一起讨论一下。到底是将参数HTML存起来 还是每次根据参数重新反显
       this.paramData = model.parammModelRel
       // endregion
       // region 模型结果输出列
@@ -687,7 +687,7 @@ export default {
         }
         // 添加树节点
         treeNodeDetail.children.push(newChild)
-        this.modelDetails.push({ id: 'rel' + this.modelDetailIndex, data: model.modelDetailRelation[i]})
+        this.modelDetails.push({ id: 'rel' + this.modelDetailIndex, data: model.modelDetailRelation[i] })
       }
       // endregion
       // region 反显图表配置
@@ -698,7 +698,7 @@ export default {
       // endregion
       // region 反显条件展示
       var treeNodeFilterShow = this.treeNodeData[6]
-      for(let i = 0;i < model.resultFilterShow.length;i++){
+      for (let i = 0; i < model.resultFilterShow.length; i++) {
         ++this.modelFilterShowIndex
         const newChild = {
           id: 'filterShow' + this.modelFilterShowIndex,
@@ -707,7 +707,7 @@ export default {
           type: 'filterShowNode'
         }
         treeNodeFilterShow.children.push(newChild)
-        this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex,data:model.resultFilterShow[i]})
+        this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex, data: model.resultFilterShow[i] })
       }
       // endregion
     }

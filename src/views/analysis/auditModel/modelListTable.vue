@@ -56,7 +56,7 @@ export default {
       editModelShow: false,
       dialogFormVisible: true,
       selectTreeNode: null,
-      isUpdate:false,
+      isUpdate: false,
       queryFields: [
         { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
         { label: '审计事项', name: 'auditItemName', type: 'fuzzyText' },
@@ -214,7 +214,7 @@ export default {
       }
       this.editModelShow = false
       this.listLoading = true
-      if(!this.isUpdate){
+      if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
           if (result.code === 0) {
             this.getList(this.query)// 刷新列表
@@ -226,10 +226,9 @@ export default {
             this.listLoading = false
           }
         })
-      }
-      else{
+      } else {
         console.log(modelObj)
-        alert("这是修改")
+        alert('这是修改')
       }
     },
     /**
