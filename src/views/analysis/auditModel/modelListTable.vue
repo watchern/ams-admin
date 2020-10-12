@@ -39,7 +39,7 @@
   </div>
 </template>
 <script>
-import { findModel, saveModel, deleteModel, updateModel } from '@/api/analysis/auditModel'
+import { findModel, saveModel, deleteModel, selectModel, updateModel } from '@/api/analysis/auditModel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import EditModel from '@/views/analysis/auditModel/editModel'
@@ -166,19 +166,19 @@ export default {
      */
     modelTypeFormatter(row, column) {
       const modelType = row.modelType
-      if (modelType === 1) {
+      if (modelType === '1') {
         return '审计模型'
-      } else if (modelType === 2) {
+      } else if (modelType === '2') {
         return '图形化模型'
       }
     },
     riskLevelFormatter(row, column) {
       var riskLevel = row.riskLevelUuid
-      if (riskLevel === 1) {
+      if (riskLevel === '1') {
         return '高'
-      } else if (riskLevel === 2) {
+      } else if (riskLevel === '2') {
         return '中'
-      } else if (riskLevel === 3) {
+      } else if (riskLevel === '3') {
         return '低'
       }
     },
@@ -212,7 +212,6 @@ export default {
       if (modelObj == null) {
         return
       }
-      this.editModelShow = false
       this.listLoading = true
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
@@ -220,6 +219,7 @@ export default {
             this.getList(this.query)// 刷新列表
             this.$emit('refreshTree')
             this.listLoading = false
+            this.editModelShow = false
             // this.$refs.editModel.clear();
           } else {
             this.$message({ type: 'error', message: '新增模型失败!' })
@@ -227,8 +227,18 @@ export default {
           }
         })
       } else {
-        console.log(modelObj)
-        alert('这是修改')
+        updateModel(modelObj).then(result => {
+          if (result.code === 0) {
+            this.getList(this.query)// 刷新列表
+            this.$emit('refreshTree')
+            this.listLoading = false
+            this.editModelShow = false
+            // this.$refs.editModel.clear();
+          } else {
+            this.$message({ type: 'error', message: '修改模型失败!' })
+            this.listLoading = false
+          }
+        })
       }
     },
     /**
@@ -280,7 +290,7 @@ export default {
         return
       }
       this.editModelTitle = '修改模型'
-      updateModel(selectObj[0].modelUuid).then(result => {
+      selectModel(selectObj[0].modelUuid).then(result => {
         if (result.code == 0) {
           var operationObj = {
             operationType: 2,

@@ -45,8 +45,8 @@
       <div ref="modelDesign" style="display: none">
         <el-form ref="modelDesignForm" :model="form" label-width="150px" :rules="modelDesignRules">
           <el-form-item style="width: 400px" prop="sqlValue">
-            <el-button type="primary" @click="getSqlObj">图形化编辑器</el-button>
-            <el-button type="primary" @click="getSqlObj">SQL编辑器</el-button>
+            <el-button type="primary" @click="getSqlObj(2)">图形化编辑器</el-button>
+            <el-button type="primary" @click="getSqlObj(1)">SQL编辑器</el-button>
           </el-form-item>
           <el-form-item label="模型SQL">
             <el-input v-model="form.sqlValue" type="textarea" />
@@ -462,7 +462,7 @@ export default {
     /**
        * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
        */
-    getSqlObj() {
+    getSqlObj(modelType) {
       const sqlObj = {
         sqlValue: 'select * from AA_AUDIT_ITEM',
         column: [{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }],
@@ -494,6 +494,8 @@ export default {
       this.modelOriginalTable = sqlObj.modelOriginalTable
       // 处理图表JSON
       this.modelChartSetup = sqlObj.modelChartSetup
+      // 处理类型
+      this.form.modelType = modelType
     },
     /**
        * 设置选中的树节点

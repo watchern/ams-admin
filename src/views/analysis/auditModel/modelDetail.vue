@@ -28,8 +28,8 @@
                 <el-option label="模型2" value="2" />
               </el-select>
             </el-form-item>
-            <el-button type="primary" size="mini" style="float: right" @click="addRelFilter(1)">添加</el-button>
             <div ref="relModelTableDiv" style="display: none">
+              <el-button type="primary" size="mini" style="float: right" @click="addRelFilter(1)">添加</el-button>
               <el-table ref="relModelTable" :data="relModelTable" border fit highlight-current-row style="width: 100%;">
                 <el-table-column label="原模型字段" width="200" align="center">
                   <template slot-scope="scope">
@@ -73,8 +73,8 @@
                 <el-option label="表2" value="2" />
               </el-select>
             </el-form-item>
-            <el-button type="primary" size="mini" style="float: right" @click="addRelFilter(2)">添加</el-button>
             <div ref="relTableDiv" style="display: none">
+              <el-button type="primary" size="mini" style="float: right" @click="addRelFilter(2)">添加</el-button>
               <el-table ref="relTable" :data="relTable" border fit highlight-current-row style="width: 100%;">
                 <el-table-column label="关联表字段" width="200" align="center" prop="modelName">
                   <template slot-scope="scope">
@@ -220,6 +220,7 @@ export default {
         this.$refs.relModelTableDiv.style.display = 'none'
       } else {
         // 加载选择模型的参数
+        // todo 获取选中模型的关联参数
         var relModelParam = [{ ammParamUuid: 'canshu1', ammParamName: '參數1' }, { ammParamUuid: 'canshu2', ammParamName: '參數2' }]
         this.relModelParam = relModelParam
         this.$refs.relModelTableDiv.style.display = 'block'
@@ -229,6 +230,7 @@ export default {
       if (vId == -1) {
         this.$refs.relTableDiv.style.display = 'none'
       } else {
+        // todo 获取选中表的列id，列名称等信息，具体等张闯
         var relTableColumn = [{ columnUuid: 'lie1', columnName: '列1' }, { columnUuid: 'lie2', columnName: '列2' }]
         this.relTableColumn = relTableColumn
         this.$refs.relTableDiv.style.display = 'block'

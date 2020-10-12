@@ -14,7 +14,7 @@
           <p style="font-size:large;font-weight:bold">条件展示设置</p>
           <p style="color:silver;font-size:large">———————————————————————————</p>
           <el-form-item label="过滤条件" prop="filterValue">
-            <queryBuilder ref="queryBuilder" v-model="form.filterJson" :rules="queryRules" @sql="getSql" />
+            <queryBuilder ref="queryBuilder" v-model="form.queryBuilderJson" :rules="queryRules" @sql="getSql" />
           </el-form-item>
           <el-form-item label="字体颜色">
             <Colorpicker v-model="form.fontColor" />
@@ -24,7 +24,6 @@
           </el-form-item>
         </el-form>
       </div>
-      <el-button @click="test">哈哈哈哈</el-button>
     </el-container>
   </div>
 </template>
@@ -40,11 +39,12 @@ export default {
       form: {
         filterName: '',
         filterMemo: '',
-        filterJson: {},
+        filterJson: '',
         filterValue: '',
         colorJson: '',
         fontColor: '',
-        backGroundColor: ''
+        backGroundColor: '',
+        queryBuilderJson: {}
       },
       queryRules: [],
       rules: {
@@ -65,21 +65,12 @@ export default {
      *初始化数据
      */
     initData() {
-      /*      this.form: {
-        filterName: '',
-          filterMemo: '',
-          filterJson: {},
-        filterValue: '',
-          colorJson: '',
-          fontColor: '',
-          backGroundColor: ''
-      },*/
       // 如果数据不为0则证明是修改，需要反显数据
       if (this.data.length != 0) {
         // 反显数据
         this.form.filterName = this.data.filterName
         this.form.filterMemo = this.data.filterMemo
-        this.form.filterJson = JSON.parse(this.data.filterJson)
+        this.form.queryBuilderJson = JSON.parse(this.data.filterJson)
         this.form.filterValue = this.data.filterValue
         // 反显背景色和字体颜色
         const colorJson = JSON.parse(this.data.colorJson)
@@ -105,7 +96,7 @@ export default {
         backGroundColor: backGroundColor
       }
       this.form.colorJson = JSON.stringify(colorJson)
-      this.form.filterJson = JSON.stringify(this.form.filterJson)
+      this.form.filterJson = JSON.stringify(this.form.queryBuilderJson)
       return this.form
     },
     /**
