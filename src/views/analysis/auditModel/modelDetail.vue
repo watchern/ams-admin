@@ -89,7 +89,7 @@
                     </el-select>
                   </template>
                 </el-table-column>
-                <el-table-column label="关联模型参数" width="170px" align="center" prop="">
+                <el-table-column label="过滤条件" width="170px" align="center" prop="">
                   <template slot-scope="scope">
                     <el-input v-model="scope.row.relFilterValue" />
                   </template>

@@ -63,7 +63,11 @@
           >
             <el-table-column prop="ammParamUuid" label="参数编号" width="180" />
             <el-table-column prop="paramName" label="参数名称" width="180" />
-            <el-table-column prop="paramValue" label="参数默认值" width="180" />
+            <el-table-column prop="paramValue" label="参数默认值" width="180">
+              <template slot-scope="scope">
+                <v-runtime-template :template="scope.row.paramValue"></v-runtime-template>
+              </template>
+            </el-table-column>
             <el-table-column prop="description" label="参数描述" />
           </el-table>
         </div>
@@ -137,7 +141,7 @@
       </div>
       <div ref="filterShowDiv">
         <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id" style="display: none">
-          <ModelFilterShow ref="modelFilterSHowChild" :columns="columnData" :tree-id="filterShow.id" @updateTreeNode="updateTreeNode" />
+          <ModelFilterShow ref="modelFilterSHowChild" :columns="columnData" :data="filterShow.data" :tree-id="filterShow.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
     </el-container>
@@ -146,9 +150,10 @@
 <script>
 import ModelDetail from '@/views/analysis/auditModel/modelDetail'
 import ModelFilterShow from '@/views/analysis/auditModel/modelFilterShow'
+import VRuntimeTemplate from "v-runtime-template";
 export default {
   name: 'EditModel',
-  components: { ModelDetail, ModelFilterShow },
+  components: { ModelDetail, ModelFilterShow,VRuntimeTemplate },
   props: ['openValue', 'operationObj'],
   data() {
     return {
@@ -196,6 +201,7 @@ export default {
         label: 'label'
       },
       paramData: [],
+      paramValueModel:{},
       columnData: [],
       form: {
         modelName: '',
@@ -337,6 +343,9 @@ export default {
       }
       this.currentSelectTreeNode = data
     },
+    /**
+     *隐藏模型详细
+     */
     hideModelDetail() {
       for (let i = 0; i < this.modelDetails.length; i++) {
         const id = this.modelDetails[i].id
@@ -387,7 +396,6 @@ export default {
       // endregion
       // region 处理模型结果固定输出列数据
       const columnData = this.$refs.columnData.data
-      debugger
       let columnOrder = 0
       for (let i = 0; i < columnData.length; i++) {
         if (columnData[i].isShow == undefined) {
@@ -401,6 +409,7 @@ export default {
       const paramData = this.$refs.paramData.data
       var paramIndex = 0
       for (let i = 0; i < paramData.length; i++) {
+        //todo 处理参数的值，现在拿的还是html
         paramData[i].paramSort = ++paramIndex
       }
       this.form.parammModelRel = paramData
@@ -458,8 +467,11 @@ export default {
         sqlValue: 'select * from AA_AUDIT_ITEM',
         column: [{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }],
         params: [
-          { ammParamUuid: '1', paramName: '参数一', description: '这是参数一的说明', paramValue: '默认值1' },
-          { ammParamUuid: '2', paramName: '参数二', description: '这是参数二的说明', paramValue: '默认值2' }],
+          { ammParamUuid: '1', paramName: '参数一', description: '这是参数一的说明', paramValue: '<input value="haha"></input>' },
+          { ammParamUuid: '2', paramName: '参数二', description: '这是参数二的说明', paramValue: '<select placeholder="是否显示" value="1">\n' +
+              '                  <option label="是" :value="1" />\n' +
+              '                  <option label="否" :value="0" />\n' +
+              '                </select>' }],
         modelChartSetup: { chartJson: '哈哈哈哈' },
         modelOriginalTable: [{ originalTableName: '表1', executionType: '1' }, { originalTableName: '表2', executionType: '2' }]
       }
@@ -529,7 +541,7 @@ export default {
       }
       const treeNode = this.$refs.tree.getCurrentNode()
       treeNode.children.push(newChild)
-      this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex })
+      this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex,data:[]})
     },
     /**
      * 清空界面数据
@@ -655,6 +667,7 @@ export default {
       this.form = model
       // endregion
       // region 反显参数默认值
+      //todo 这块需要一起讨论一下。到底是将参数HTML存起来 还是每次根据参数重新反显
       this.paramData = model.parammModelRel
       // endregion
       // region 模型结果输出列
@@ -662,7 +675,7 @@ export default {
       // endregion
       // region 反显关联详细
       // 拿到所有树节点并找到关联详细的父节点   试了几种办法没法通过id直接拿到节点
-      var treeNode = this.treeNodeData[4]
+      var treeNodeDetail = this.treeNodeData[4]
       for (let i = 0; i < model.modelDetailRelation.length; i++) {
         ++this.modelDetailIndex
         const newChild = {
@@ -673,15 +686,29 @@ export default {
           type: 'relDetail'
         }
         // 添加树节点
-        treeNode.children.push(newChild)
-        this.modelDetails.push({ id: 'rel' + this.modelDetailIndex, data: model.modelDetailRelation[i] })
+        treeNodeDetail.children.push(newChild)
+        this.modelDetails.push({ id: 'rel' + this.modelDetailIndex, data: model.modelDetailRelation[i]})
       }
       // endregion
       // region 反显图表配置
 
       // endregion
+      // region 反显模型历史表
+      this.modelOriginalTable = model.modelOriginalTable
+      // endregion
       // region 反显条件展示
-
+      var treeNodeFilterShow = this.treeNodeData[6]
+      for(let i = 0;i < model.resultFilterShow.length;i++){
+        ++this.modelFilterShowIndex
+        const newChild = {
+          id: 'filterShow' + this.modelFilterShowIndex,
+          label: model.resultFilterShow[i].filterName,
+          children: [],
+          type: 'filterShowNode'
+        }
+        treeNodeFilterShow.children.push(newChild)
+        this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex,data:model.resultFilterShow[i]})
+      }
       // endregion
     }
   }

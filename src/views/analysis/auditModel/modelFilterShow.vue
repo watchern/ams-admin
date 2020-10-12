@@ -14,7 +14,7 @@
           <p style="font-size:large;font-weight:bold">条件展示设置</p>
           <p style="color:silver;font-size:large">———————————————————————————</p>
           <el-form-item label="过滤条件" prop="filterValue">
-            <queryBuilder ref="queryBuilder" v-model="form.json" :rules="queryRules" @sql="getSql" />
+            <queryBuilder ref="queryBuilder" v-model="form.filterJson" :rules="queryRules" @sql="getSql" />
           </el-form-item>
           <el-form-item label="字体颜色">
             <Colorpicker v-model="form.fontColor" />
@@ -34,18 +34,17 @@ import queryBuilder from '@/components/Ace/vue-query-builder/src/VueQueryBuilder
 export default {
   name: 'ModelFilterShow',
   components: { Colorpicker, queryBuilder },
-  props: ['columns', 'treeId'],
+  props: ['columns', 'treeId','data'],
   data() {
     return {
       form: {
         filterName: '',
         filterMemo: '',
-        filterJson: '',
+        filterJson: {},
         filterValue: '',
         colorJson: '',
         fontColor: '',
-        backGroundColor: '',
-        json: {}
+        backGroundColor: ''
       },
       queryRules: [],
       rules: {
@@ -58,7 +57,36 @@ export default {
     this.setQueryBuilderColumn()
     this.setColor()
   },
+  mounted() {
+    this.initData()
+  },
   methods: {
+    /**
+     *初始化数据
+     */
+    initData(){
+/*      this.form: {
+        filterName: '',
+          filterMemo: '',
+          filterJson: {},
+        filterValue: '',
+          colorJson: '',
+          fontColor: '',
+          backGroundColor: ''
+      },*/
+      // 如果数据不为0则证明是修改，需要反显数据
+      if (this.data.length != 0) {
+        //反显数据
+        this.form.filterName = this.data.filterName;
+        this.form.filterMemo = this.data.filterMemo;
+        this.form.filterJson = JSON.parse(this.data.filterJson);
+        this.form.filterValue = this.data.filterValue;
+        //反显背景色和字体颜色
+        let colorJson = JSON.parse(this.data.colorJson);
+        this.form.fontColor = colorJson.fontColor
+        this.form.backGroundColor = colorJson.backGroundColor
+      }
+    },
     getForm() {
       let verResult = false
       this.$refs['basicInfoForm'].validate((valid) => {
@@ -77,7 +105,7 @@ export default {
         backGroundColor: backGroundColor
       }
       this.form.colorJson = JSON.stringify(colorJson)
-      this.form.filterJson = JSON.stringify(this.form.json)
+      this.form.filterJson = JSON.stringify(this.form.filterJson)
       return this.form
     },
     /**
@@ -117,9 +145,9 @@ export default {
        */
     getQueryBuilderOperators(columnObj) {
       let operators = []
-      if (columnObj.outputColumnType.indexOf('varchar') != -1) {
+      if (columnObj.columnType.indexOf('varchar') != -1) {
         operators = ['=', '<>', 'like', 'not like']
-      } else if (columnObj.outputColumnType.indexOf('int') != -1 || columnObj.outputColumnType.indexOf('number') != -1) {
+      } else if (columnObj.columnType.indexOf('int') != -1 || columnObj.columnType.indexOf('number') != -1) {
         operators = ['=', '<>', '<', '<=', '>', '>=']
       }
       // 初始化querybuilder
@@ -133,6 +161,7 @@ export default {
       console.log(sql)
     },
     queryToSql(query) {
+      debugger
       const sql = []
       const that = this
       const logicalOperator = query.logicalOperator

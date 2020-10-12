@@ -56,6 +56,7 @@ export default {
       editModelShow: false,
       dialogFormVisible: true,
       selectTreeNode: null,
+      isUpdate:false,
       queryFields: [
         { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
         { label: '审计事项', name: 'auditItemName', type: 'fuzzyText' },
@@ -213,17 +214,23 @@ export default {
       }
       this.editModelShow = false
       this.listLoading = true
-      saveModel(modelObj).then(result => {
-        if (result.code === 0) {
-          this.getList(this.query)// 刷新列表
-          this.$emit('refreshTree')
-          this.listLoading = false
-          // this.$refs.editModel.clear();
-        } else {
-          this.$message({ type: 'error', message: '新增模型失败!' })
-          this.listLoading = false
-        }
-      })
+      if(!this.isUpdate){
+        saveModel(modelObj).then(result => {
+          if (result.code === 0) {
+            this.getList(this.query)// 刷新列表
+            this.$emit('refreshTree')
+            this.listLoading = false
+            // this.$refs.editModel.clear();
+          } else {
+            this.$message({ type: 'error', message: '新增模型失败!' })
+            this.listLoading = false
+          }
+        })
+      }
+      else{
+        console.log(modelObj)
+        alert("这是修改")
+      }
     },
     /**
      * 重置查询
@@ -251,6 +258,7 @@ export default {
      * 添加模型
      */
     addModel() {
+      this.isUpdate = false
       if (this.selectTreeNode == null) {
         this.$message({ type: 'info', message: '请先选择模型分类!' })
       } else {
@@ -262,6 +270,7 @@ export default {
       }
     },
     updateModel() {
+      this.isUpdate = true
       var selectObj = this.$refs.modelListTable.selection
       if (selectObj.length == 0) {
         this.$message({ type: 'info', message: '最少选择一个模型!' })
@@ -317,8 +326,7 @@ export default {
       })
     },
     batch_remarks() {
-      debugger
-      alert('这是共享')
+
     }
   }
 }
