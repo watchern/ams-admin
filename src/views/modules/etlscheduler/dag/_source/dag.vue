@@ -165,7 +165,7 @@ export default {
   mixins: [disabledState],
   props: {
     type: String,
-    releaseState: String
+    releaseState: Number
   },
   data() {
     return {

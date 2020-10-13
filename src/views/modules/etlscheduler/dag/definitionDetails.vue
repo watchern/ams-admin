@@ -58,7 +58,8 @@ export default {
         // this.getTenantList()
       ]).then((data) => {
         const item = data[0]
-        this.setIsDetails(item.status === 1)
+        // this.setIsDetails(item.status === 1)
+        this.setIsDetails(false)
         this.status = item.status
         this.releaseState = item.status
         this.isLoading = false

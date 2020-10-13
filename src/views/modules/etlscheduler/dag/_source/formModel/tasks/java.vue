@@ -1,6 +1,6 @@
 <template>
   <div class="java-model">
-    <m-list-box>
+    <!-- <m-list-box>
       <div slot="text">节点编码</div>
       <div slot="content">
         <label class="label-box">
@@ -14,8 +14,8 @@
           />
         </label>
       </div>
-    </m-list-box>
-    <m-list-box>
+    </m-list-box> -->
+    <!-- <m-list-box>
       <div slot="text">出错策略</div>
       <div slot="content">
         <x-select
@@ -49,14 +49,14 @@
           />
         </label>
       </div>
-    </m-list-box>
+    </m-list-box> -->
     <m-list-box>
       <div slot="text">驱动类</div>
       <div slot="content">
         <x-select
           v-model="clas"
           placeholder="请选择驱动类"
-          style="width: 288px;"
+          style="width: 500px;"
           :disabled="isDetails"
           filterable
           @on-change="_classChange"
@@ -128,10 +128,10 @@ export default {
       title: '',
       // Form/attachment
       showType: ['TABLE'],
-      taskCode: '',
-      errorType: '',
-      errorTypeList: [{ name: '不重试', value: '0' }, { name: '重试', value: '1' }],
-      errorTime: '',
+      // taskCode: '',
+      // errorType: '',
+      // errorTypeList: [{ name: '不重试', value: '0' }, { name: '重试', value: '1' }],
+      // errorTime: '',
       classList: [],
       clas: '',
       hide: false,
@@ -146,9 +146,9 @@ export default {
         udfs: this.udfs,
         sqlType: this.sqlType,
         title: this.title,
-        taskCode: this.taskCode,
-        errorType: this.errorType,
-        errorTime: this.errorTime,
+        // taskCode: this.taskCode,
+        // errorType: this.errorType,
+        // errorTime: this.errorTime,
         clas: this.clas,
         showType: (() => {
           const showType = this.showType
@@ -174,14 +174,14 @@ export default {
         this.receiversCc = []
       }
     },
-    errorType(val) {
-      if (val === '1') {
-        this.errorhide = true
-      }
-      if (val === '0') {
-        this.errorhide = false
-      }
-    },
+    // errorType(val) {
+    //   if (val === '1') {
+    //     this.errorhide = true
+    //   }
+    //   if (val === '0') {
+    //     this.errorhide = false
+    //   }
+    // },
     clas(val) {
       if (val !== '') {
         this.hide = true
@@ -202,9 +202,9 @@ export default {
     if (!_.isEmpty(o)) {
       // backfill
       this.type = o.params.type || ''
-      this.taskCode = o.params.taskCode || ''
-      this.errorType = o.params.errorType || ''
-      this.errorTime = o.params.errorTime || ''
+      // this.taskCode = o.params.taskCode || ''
+      // this.errorType = o.params.errorType || ''
+      // this.errorTime = o.params.errorTime || ''
       this.clas = o.params.class || ''
       this.localParams = o.params.localParams || ''
       if (o.params.showType === '') {
@@ -293,25 +293,25 @@ export default {
      * verification
      */
     _verification() {
-      if (!_.trim(this.taskCode)) {
-        this.$message.warning(`请输入节点编码（必填）`)
-        return false
-      }
-      if (!_.trim(this.errorType)) {
-        this.$message.warning(`请选择出错策略（必填）`)
-        return false
-      }
-      if (!_.trim(this.errorTime) && _.trim(this.errorType) === 1) {
-        this.$message.warning(`请选择出错次数（必填）`)
-        return false
-      }
+      // if (!_.trim(this.taskCode)) {
+      //   this.$message.warning(`请输入节点编码（必填）`)
+      //   return false
+      // }
+      // if (!_.trim(this.errorType)) {
+      //   this.$message.warning(`请选择出错策略（必填）`)
+      //   return false
+      // }
+      // if (!_.trim(this.errorTime) && _.trim(this.errorType) === 1) {
+      //   this.$message.warning(`请选择出错次数（必填）`)
+      //   return false
+      // }
       // storage
       this.$emit('on-params', {
         type: this.type,
         title: this.title,
-        taskCode: this.taskCode,
-        errorType: this.errorType,
-        errorTime: this.errorTime,
+        // taskCode: this.taskCode,
+        // errorType: this.errorType,
+        // errorTime: this.errorTime,
         class: this.clas,
         showType: (() => {
           /**
@@ -379,9 +379,9 @@ export default {
       this.$emit('on-cache-params', {
         type: this.type,
         datasource: this.rtDatasource,
-        taskCode: this.taskCode,
-        errorType: this.errorType,
-        errorTime: this.errorTime,
+        // taskCode: this.taskCode,
+        // errorType: this.errorType,
+        // errorTime: this.errorTime,
         class: this.clas,
         showType: (() => {
           const showType = this.showType

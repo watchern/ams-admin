@@ -10,9 +10,10 @@
         />
       </div>
     </m-list-box>
-    <m-list-box>
+    <m-list-box style="display: none">
       <div slot="text">sql类型</div>
       <div slot="content">
+        <!-- 默认为非查询，不显示 -->
         <div style="display: inline-block;">
           <m-sql-type
             :sql-type="sqlType"
@@ -141,7 +142,7 @@ export default {
       // UDF function
       udfs: '',
       // Sql type
-      sqlType: '0',
+      sqlType: '1',
       // Email title
       title: '',
       // Form/attachment
@@ -304,13 +305,13 @@ export default {
       }
 
       // datasource Subcomponent verification
-      if (!this.$refs.refDs._verifDatasource()) {
-        return false
-      }
-      if (this.sqlType === 0 && !this.showType.length) {
-        this.$message.warning(`表格、附件必须勾选一个`)
-        return false
-      }
+      // if (!this.$refs.refDs._verifDatasource()) {
+      //   return false
+      // }
+      // if (this.sqlType === 0 && !this.showType.length) {
+      //   this.$message.warning(`表格、附件必须勾选一个`)
+      //   return false
+      // }
       // if (this.sqlType === 0 && !this.title) {
       //   this.$message.warning(`邮件主题必填`)
       //   return false
@@ -412,17 +413,17 @@ export default {
       return editor
     },
     _getReceiver() {
-      const param = {}
-      const current = this.router.history.current
-      if (current.name === 'projects-definition-details') {
-        param.processDefinitionId = current.params.id
-      } else {
-        param.processInstanceId = current.params.id
-      }
-      this.store.dispatch('dag/getReceiver', param).then(res => {
-        this.receivers = res.receivers && res.receivers.split(',') || []
-        this.receiversCc = res.receiversCc && res.receiversCc.split(',') || []
-      })
+      // const param = {}
+      // const current = this.router.history.current
+      // if (current.name === 'projects-definition-details') {
+      //   param.processDefinitionId = current.params.id
+      // } else {
+      //   param.processInstanceId = current.params.id
+      // }
+      // this.store.dispatch('dag/getReceiver', param).then(res => {
+      //   this.receivers = res.receivers && res.receivers.split(',') || []
+      //   this.receiversCc = res.receiversCc && res.receiversCc.split(',') || []
+      // })
     },
     _cacheParams() {
       this.$emit('on-cache-params', {

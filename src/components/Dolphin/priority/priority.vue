@@ -2,7 +2,7 @@
   <div class="priority-model">
     <x-select
       v-model="value"
-      style="width: 130px;"
+      style="width: 500px;"
       :disabled="isDetails"
       @on-change="_onChange"
     >
@@ -15,8 +15,8 @@
           class="input-element"
           :class="isDetails?'disabled' : ''"
         >
-          <span v-html="_rtUnicode(selectedModel ? selectedModel.label : 'MEDIUM')" />
-          <span class="label-p">{{ selectedModel ? selectedModel.label : 'MEDIUM' }}</span>
+          <span v-html="_rtUnicode(selectedModel ? selectedModel.value : 'MEDIUM')" />
+          <span class="label-p">{{ selectedModel ? selectedModel.label : '中' }}</span>
           <em class="ans-icon-arrow-down" />
         </div>
       </div>
@@ -24,7 +24,8 @@
         v-for="item in priorityList"
         :key="item.code"
         :value="item.code"
-        :label="item.code"
+        :label="item.name"
+        style="width: 500px;"
       >
         <li class="ans-option ans-option-listp">
           <span class="default-option-class">
@@ -32,7 +33,7 @@
               :class="item.unicode"
               :style="{color:item.color}"
             />
-            {{ item.code }}
+            {{ item.name }}
           </span>
         </li>
       </x-option>
@@ -62,26 +63,31 @@ export default {
       priorityList: [
         {
           code: 'HIGHEST',
+          name: '最高',
           unicode: 'ans-icon-line-arrow-up',
           color: '#ff0000'
         },
         {
           code: 'HIGH',
+          name: '高',
           unicode: 'ans-icon-line-arrow-up',
           color: '#ff0000'
         },
         {
           code: 'MEDIUM',
+          name: '中',
           unicode: 'ans-icon-line-arrow-up',
           color: '#EA7D24'
         },
         {
           code: 'LOW',
+          name: '低',
           unicode: 'ans-icon-line-arrow-down',
           color: '#2A8734'
         },
         {
           code: 'LOWEST',
+          name: '最低',
           unicode: 'ans-icon-line-arrow-down',
           color: '#2A8734'
         }
@@ -99,6 +105,7 @@ export default {
     },
     _onChange(o) {
       this.value = o.value
+      this.title = o.label
       this.$emit('priorityEvent', o.value)
     }
   }
