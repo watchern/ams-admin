@@ -51,7 +51,7 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, save, update, del } from '@/api/data/biz-attr'
 import QueryField from '@/components/Ace/query-field/index'
-import { parseTime } from '@/utils'
+import { parseTime, getDict } from '@/utils'
 
 export default {
   components: { Pagination, QueryField},
@@ -131,6 +131,9 @@ export default {
       }
     },
     handleCreate() {
+      getDict('sex').then(data => {
+        console.log(data)
+      });
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true

@@ -1,5 +1,5 @@
 
-import { cacheDict } from '@/api/data/sys-dict'
+import { cacheDict } from '@/api/base/sys-dict'
 /**
  * Created by PanJiaChen on 16/11/18.
  */
@@ -381,7 +381,7 @@ export function commonNotify(options) {
 /*
 * 获取系统字典信息
 * 1.数据维护：
-*   需要在AMS_DATA.SYS_DICT中维护数据，参照示例“性别”
+*   需要在AMSBASE.AB_DICT中维护数据，参照示例“性别”
 * 2.调用方式
 *  import { getDict } from '@/utils'
 *  getDict('sex').then(data => {

@@ -1,12 +1,11 @@
 import request from '@/utils/request'
 
-const baseURL = '/amsdata'
-const controller = 'sysDict';
+const baseURL = '/base'
 
 export function cacheDict() {
   return request({
     baseURL: baseURL,
-    url: `/${controller}/cacheAll`,
+    url: `/dict/cacheAll`,
     method: 'get'
   })
 }
