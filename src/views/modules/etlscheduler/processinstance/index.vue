@@ -36,7 +36,7 @@
         type="danger"
         size="mini"
         :disabled="doneStatus"
-        @click="handleDone()"
+        @click="handleCancel()"
       >取消</el-button>
     </div>
     <el-table
@@ -164,7 +164,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, update, stopInstance, startInstance } from '@/api/etlscheduler/processinstance'
+import { listByPage, skipTask, execute } from '@/api/etlscheduler/processinstance'
 import { getTaskLink } from '@/api/etlscheduler/processschedule'
 import QueryField from '@/components/Ace/query-field/index'
 
@@ -289,8 +289,8 @@ export default {
     selections() {
       // 终态数组
       const alreadyStatuses = [6, 7, 8]
-      // 等待状态数组
-      const waitStatuses = [1, 2, 3]
+      // 可以取消状态数组
+      const waitStatuses = [1, 2, 3, 4, 5]
       // 执行和启用以外的状态
       const otherStatuses = [1, 2, 3, 6, 7, 8]
       // 选择1条数据
@@ -388,10 +388,12 @@ export default {
       this.dialogFormVisible = true
     },
     taskSkip() {
-      this.temp.skipInfo = JSON.stringify(this.checkedTask)
+      var checkedTasks = []
+      checkedTasks.push(this.checkedTask)
+      this.temp.skipInfo = JSON.stringify(checkedTasks)
       this.temp.isSkipNode = 1
       const tempData = Object.assign({}, this.temp)
-      update(tempData).then(() => {
+      skipTask(tempData).then(() => {
         const index = this.list.findIndex(v => v.processDefinitionUuid === this.temp.processDefinitionUuid)
         this.list.splice(index, 1, this.temp)
         this.dialogFormVisible = false
@@ -409,7 +411,7 @@ export default {
     handleStop() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
-      stopInstance(ids.join(',')).then(() => {
+      execute(ids.join(','), 'TIME_OUT').then(() => {
         this.getList()
         this.$notify({
           title: '成功',
@@ -424,11 +426,39 @@ export default {
     handleStart() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
-      startInstance(ids.join(',')).then(() => {
+      execute(ids.join(','), 'START_UP').then(() => {
         this.getList()
         this.$notify({
           title: '成功',
           message: '启用成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      })
+    },
+    handleReStart() {
+      var ids = []
+      this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
+      execute(ids.join(','), 'RE_START').then(() => {
+        this.getList()
+        this.$notify({
+          title: '成功',
+          message: '重新运行成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      })
+    },
+    handleCancel() {
+      var ids = []
+      this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
+      execute(ids.join(','), 'CANCEL').then(() => {
+        this.getList()
+        this.$notify({
+          title: '成功',
+          message: '取消成功',
           type: 'success',
           duration: 2000,
           position: 'bottom-right'
