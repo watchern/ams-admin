@@ -21,8 +21,8 @@
         <x-option v-for="item in projectList" :key="item.value" :value="item.value" :label="item.label">
         </x-option>
       </x-select> -->
-      <x-select v-model="el.definitionId" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails" @on-change="_onChangeDefinitionId">
-        <x-option v-for="item in scheduleList" :key="item.processDefinitionId" :value="item.processDefinitionId" :label="item.scheduleName" />
+      <x-select v-model="el.id" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails" @on-change="_onChangeDefinitionId">
+        <x-option v-for="item in scheduleList" :key="item.id" :value="item.id" :label="item.scheduleName" />
       </x-select>
       <x-select v-model="el.depTasks" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails">
         <x-option v-for="item in el.depTasksList || []" :key="item.id" :value="item.id" :label="item.name" />
@@ -95,21 +95,21 @@ export default {
       this.scheduleList = resp.data
       // console.log(JSON.stringify(this.scheduleList))
       // const depTasksList = [{id:'1', name:'11'}];
-
+      // 判断 dependItemList 是否有值（无值的时候）
+      const value = this.scheduleList[0].id
       if (!this.dependItemList.length) {
-        const value = this.scheduleList[0].processDefinitionId
         getTaskLink(value).then((resp) => {
           this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(value, this.scheduleList, resp.data)))
         })
       } else {
-        const ids = _.map(this.dependItemList, v => v.definitionId).join(',')
+        const ids = _.map(this.dependItemList, v => v.id).join(',')
         // get item list
         this._getDependItemList(ids, false).then(res => {
 
         })
-        getTaskLink(value).then((resp) => {
+        getTaskLink(value).then((res) => {
           _.map(this.dependItemList, (v, i) => {
-            this.$set(this.dependItemList, i, this._rtOldParams(v.definitionId, scheduleList, ['ALL'].concat(_.map(res[v.definitionId] || [], v => v.name)), v))
+            this.$set(this.dependItemList, i, this._rtOldParams(v.id, this.scheduleList, ['ALL'].concat(_.map(res[v.id] || [], v => v.name)), v))
           })
           // this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(value, this.scheduleList, resp.data)))
         })       
@@ -132,13 +132,13 @@ export default {
     //     //   })
     //     // })
     //   } else {
-    //     // get definitionId ids
-    //     const ids = _.map(this.dependItemList, v => v.definitionId).join(',')
+    //     // get id ids
+    //     const ids = _.map(this.dependItemList, v => v.id).join(',')
     //     // get item list
     //     this._getDependItemList(ids, false).then(res => {
     //       _.map(this.dependItemList, (v, i) => {
     //         // this._getProcessByProjectId().then(definitionList => {
-    //         //   this.$set(this.dependItemList, i, this._rtOldParams(v.definitionId, definitionList, ['ALL'].concat(_.map(res[v.definitionId] || [], v => v.name)), v))
+    //         //   this.$set(this.dependItemList, i, this._rtOldParams(v.id, definitionList, ['ALL'].concat(_.map(res[v.id] || [], v => v.name)), v))
     //         // })
     //       })
     //     })
@@ -161,7 +161,7 @@ export default {
       // let projectId = 1
       // this._getProcessByProjectId().then(definitionList => {
       //   // dependItemList index
-      //   const is = (value) => _.some(this.dependItemList, { definitionId: value })
+      //   const is = (value) => _.some(this.dependItemList, { id: value })
       //   const noArr = _.filter(definitionList, v => !is(v.value))
       //   const value = noArr[0] && noArr[0].value || null
       //   const val = value || definitionList[0].value
@@ -234,9 +234,9 @@ export default {
             resolve(['ALL'].concat(_.map(res, v => v.name)))
           })
         } else {
-          this.store.dispatch('dag/getTaskListDefIdAll').then(res => {
-            resolve(res)
-          })
+          // this.store.dispatch('dag/getTaskListDefIdAll').then(res => {
+          //   resolve(res)
+          // })
         }
       })
     },
@@ -246,26 +246,25 @@ export default {
     // _onChangeProjectId() {
     //   this._getProcessByProjectId().then(definitionList => {
     //     /* this.$set(this.dependItemList, this.itemIndex, this._dlOldParams(value, definitionList, item))*/
-    //     const definitionId = definitionList[0].value
-    //     this._getDependItemList(definitionId).then(depTasksList => {
+    //     const id = definitionList[0].value
+    //     this._getDependItemList(id).then(depTasksList => {
     //       const item = this.dependItemList[this.itemIndex]
     //       // init set depTasks All
     //       item.depTasks = 'ALL'
     //       // set dependItemList item data
-    //       this.$set(this.dependItemList, this.itemIndex, this._cpOldParams(definitionId, definitionList, depTasksList, item))
+    //       this.$set(this.dependItemList, this.itemIndex, this._cpOldParams(id, definitionList, depTasksList, item))
     //     })
     //   })
     // },
     _onChangeDefinitionId({ value }) {
       // get depItem list data
-      // 根据流程调度ID 查询任务环节
+      // 根据流程调度ID 查
       getTaskLink(value).then((resp) => {
         // const depTasksList = resp.data
-        console.log(resp.data)
+        // console.log(resp.data)
         const item = this.dependItemList[this.itemIndex]
         // init set depTasks All
         item.depTasks = 'ALL'
-        // TODO 这个干什么的
         this.$set(this.dependItemList, this.itemIndex, this._rtOldParams(value, item.definitionList, resp.data, item))
       })
       // this._getDependItemList(value).then(depTasksList => {
@@ -284,7 +283,7 @@ export default {
     _rtNewParams(value, scheduleList, depTasksList) {
       return {
         projectId: 1,
-        definitionId: value,
+        id: value,
         // dependItem need private definitionList
         definitionList: scheduleList,
         scheduleList: scheduleList,
@@ -299,7 +298,7 @@ export default {
     _rtOldParams(value, scheduleList, depTasksList, item) {
       return {
         projectId: item.projectId,
-        definitionId: value,
+        id: value,
         // dependItem need private definitionList
         definitionList: scheduleList,
         scheduleList: scheduleList,
@@ -312,12 +311,12 @@ export default {
       }
     },
 
-    _cpOldParams(definitionId, scheduleList, depTasksList, item) {
+    _cpOldParams(id, scheduleList, depTasksList, item) {
       return {
         projectId: 1,
         definitionList: scheduleList,
         scheduleList: scheduleList,
-        definitionId: definitionId,
+        id: id,
         depTasks: item.depTasks || 'ALL',
         depTasksList: depTasksList,
         cycle: item.cycle,

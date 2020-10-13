@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <!-- 查询条件区域 -->
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
     <div> 
@@ -60,6 +61,7 @@
         <el-button
         type="primary"
         size="mini"
+        :disabled="selections.length === 0"
         @click="exportFile()"
       >导出</el-button>
       </el-menu>
@@ -78,7 +80,7 @@
       <el-table-column type="selection" width="55" />
       <el-table-column
         label="调度任务名称"
-        width="150px"
+        width="250px"
         align="center"
         prop="scheduleName"
       />
@@ -106,14 +108,13 @@
         label="参数"
         width="150px"
         align="center"
-        prop="taskParams"
+        prop="taskParamsList"
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <!-- <p>参数名称:{{ paramName(scope.row.taskParams)}}</p> -->
-            <!-- <p>参数值:{{ paramVal(scope.row.taskParams)}}</p> -->
+            <p>{{scope.row.taskParamsList}}</p>        
             <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{scope.row.taskParams}}</el-tag>
+               <el-tag><i class="el-icon-tickets" /></el-tag>
             </div>
           </el-popover>
         </template>
@@ -122,13 +123,13 @@
         label="依赖任务环节"
         align="center"
         prop="dependTaskInfo"
+        width="150px"
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <!-- <p>依赖名称:{{ dependName(scope.row.dependTaskInfo) }}</p> -->
-            <!-- <p>依赖环节:{{ dependVal(scope.row.dependTaskInfo) }}</p> -->
+            <p>{{scope.row.dependTaskInfo}}</p>        
             <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.dependTaskInfo }}</el-tag>
+               <el-tag><i class="el-icon-tickets" /></el-tag>
             </div>
           </el-popover>
         </template>
@@ -155,7 +156,6 @@
       />
       <el-table-column
         label="修改时间"
-        width="200px"
         align="center"
         prop="updateTime"
       />
@@ -207,7 +207,7 @@
           </el-select>
         </el-form-item>
           <el-form-item v-for="item in paramList" :key="item.value" :label="item.prop" :prop="item.prop">
-          <el-input v-model="item.value" @change="defaultValue" />
+          <el-input v-model="item.value" />
         </el-form-item>
         <el-form-item label="排序号" prop="processInstancePriority">
           <el-input v-model="temp.processInstancePriority" />
@@ -393,119 +393,7 @@ export default {
       stopStatus: true,
       // 添加依赖
       relation: 'AND',
-      dependTaskList: [{
-      "dependItemList":[
-        {
-            "projectId":1,
-            "definitionId":'',         
-            "depTasks":"",     
-            "cycle":"",
-            "dateValue":"",
-            "state":"",
-            "depTasksList":[
-        {   
-            "id":"",
-            "name":""
-        }
-           ],
-            "dateValueList":[
-        {
-            "value":"currentHour",
-            "label":"当前小时"
-        },
-        {
-            "value":"last1Hour",
-            "label":"前1小时"
-        },
-        {
-            "value":"last2Hours",
-            "label":"前2小时"
-        },
-        {
-            "value":"last3Hours",
-            "label":"前3小时"
-        },
-        {
-            "value":"last24Hours",
-            "label":"前24小时"
-        },
-        {
-            "value":"thisMonth",
-            "label":"本月"
-        },
-        {
-            "value":"lastMonth",
-            "label":"上月"
-        },
-        {
-             "value":"lastMonthBegin",
-              "label":"上月初"
-        },
-        {
-             "value":"lastMonthEnd",
-             "label":"上月末"
-        },
-        {
-            "value":"thisWeek",
-             "label":"本周"
-        },
-        {
-            "value":"lastWeek",
-             "label":"上周"
-        },
-        {
-            "value":"lastMonday",
-             "label":"上周一"
-        },
-        {
-            "value":"lastTuesday",
-             "label":"上周二"
-        },
-        {
-            "value":"lastWednesday",
-             "label":"上周三"
-        },
-        {
-            "value":"lastThursday",
-             "label":"上周四"
-        },
-        {
-            "value":"lastFriday",
-             "label":"上周五"
-        },
-        {
-            "value":"lastSaturday",
-             "label":"上周六"
-        },
-        {
-            "value":"lastSunday",
-             "label":"上周日"
-        },
-        {
-            "value":"today",
-            "label":"今天"
-        },
-        {
-            "value":"last1Days",
-            "label":"昨天"
-        },
-        {
-            "value":"last2Days",
-            "label":"前两天"
-        },
-        {
-            "value":"last3Days",
-            "label":"前三天"
-        },
-        {
-            "value":"last7Days",
-            "label":"前七天"
-        }
-    ]
-        }
-    ],
-    "relation":"AND"
-}],
+      dependTaskList: [],
       paramList: [],
       isLoading: false,
       //  查询任务流程
@@ -576,7 +464,9 @@ export default {
       },
       temp: {
         taskParams: null,
-        dependTaskInfo: null,
+        taskParamsList: null,
+        dependTaskInfo: null,        
+        dependTaskInfoList: null,
         processInstancePriority: null,
         // status: 0,
         scheduleDesc: null,
@@ -704,70 +594,76 @@ export default {
           (v1) =>
             (v1.state =
               dependentResult[
-                `${v1.definitionId}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}`
+                `${v1.id}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}`
               ] || defaultState)
         )
       )
     }
   },
   methods: {
-    //导出
-    exportFile() { 
-     axios({
-       method: 'get',
-       url: `/etlscheduler/schedules/exportFile`, 
-       responseType: 'blob'
-     })
-      .then(res => {
-        const filename = decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1])
-        const blob = new Blob([res.data], {
-        type: 'application/octet-stream'
+    //导出 excel 格式
+    // exportFile() { 
+    //  axios({
+    //    method: 'get',
+    //    url: `/etlscheduler/schedules/exportFile`, 
+    //    responseType: 'blob'
+    //  })
+    //   .then(res => {
+    //     const filename = decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1])
+    //     const blob = new Blob([res.data], {
+    //     type: 'application/octet-stream'
+    //   })
+    //     let url = window.URL.createObjectURL(blob);
+    //     let link = document.createElement('a');
+    //     link.style.display = 'none';
+    //     link.href = url;
+    //     link.setAttribute('download', filename);
+    //     document.body.appendChild(link);
+    //     link.click()
+    //  })
+    // }, 
+    // 导出JSON格式
+     // 导出流程
+    exportFile() {
+      var ids = []
+      this.selections.forEach((r, i) => { ids.push(r.id) })
+      const downloadBlob = (data, fileNameS = 'json') => {
+        if (!data) {
+          return
+        }
+        const blob = new Blob([data])
+        const fileName = `${fileNameS}.json`
+        if ('download' in document.createElement('a')) { // 不是IE浏览器
+          const url = window.URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.style.display = 'none'
+          link.href = url
+          link.setAttribute('download', fileName)
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link) // 下载完成移除元素
+          window.URL.revokeObjectURL(url) // 释放掉blob对象
+        } else { // IE 10+
+          window.navigator.msSaveBlob(blob, fileName)
+        }
+      }
+      axios({ method: 'get',
+        url: `/etlscheduler/schedules/export/${ids.join(',')}`,
+        responseType: 'blob'
+      }).then((res) => {
+        downloadBlob(res.data, 'schedules_' + new Date().getTime())
+        this.getList()
+        this.$notify({
+          title: '成功',
+          message: '下载成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      }).catch((err) => {
+        console.error(err)
       })
-        let url = window.URL.createObjectURL(blob);
-        let link = document.createElement('a');
-        link.style.display = 'none';
-        link.href = url;
-        link.setAttribute('download', filename);
-        document.body.appendChild(link);
-        link.click()
-     })
-      // const downloadBlob = (data, fileNameS = 'json') => {
-      //   if (!data) {
-      //     return
-      //   }
-      //   const blob = new Blob([data])
-      //   const fileName = `${fileNameS}.json`
-      //   if ('download' in document.createElement('a')) { // 不是IE浏览器
-      //     const url = window.URL.createObjectURL(blob)
-      //     const link = document.createElement('a')
-      //     link.style.display = 'none'
-      //     link.href = url
-      //     link.setAttribute('download', fileName)
-      //     document.body.appendChild(link)
-      //     link.click()
-      //     document.body.removeChild(link) // 下载完成移除元素
-      //     window.URL.revokeObjectURL(url) // 释放掉blob对象
-      //   } else { // IE 10+
-      //     window.navigator.msSaveBlob(blob, fileName)
-      //   }
-      // }
-      // axios({ method: 'post',
-      //   url: `/etlscheduler/schedules/exportFile`,
-      //   responseType: 'blob'
-      // }).then((res) => {
-      //   downloadBlob(res.data, 'rong' + new Date().getTime())
-      //   this.getList()
-      //   this.$notify({
-      //     title: '成功',
-      //     message: '导出成功',
-      //     type: 'success',
-      //     duration: 2000,
-      //     position: 'bottom-right'
-      //   })
-      // }).catch((err) => {
-      //   console.error(err)
-      // })
-    }, 
+    },
     // 复制对象
     copyData() {
        this.selections.forEach((r, i) => {
@@ -783,28 +679,6 @@ export default {
         })      
        })
       }) 
-    },
-    // paramName(v) {
-    //   return v.substring(v.indexOf('{') + 1, v.indexOf(':'))
-    // },
-    // paramVal(v) {
-    //   return v.substring(v.indexOf(':') + 1, v.indexOf('}'))
-    // },
-    // dependName(v) {
-    //   if (v != null) {
-    //     return v.substring(v.indexOf('name') + 7, v.lastIndexOf('}]') - 3)
-    //   }
-    // },
-    // dependVal(v) {
-    //   if (v != null) {
-    //     return v.substring(v.indexOf('id') + 5, v.indexOf('name') - 3)
-    //   }
-    // },
-    defaultValue() {
-      const prop = this.paramList[0].prop
-      const value = this.paramList[0].value
-      var s = '[{' + '"' + prop + '"'+ ':' + '"'+ value + '"' + '}]'
-      this.temp.taskParams = s
     },
     _addDep() {
       if (!this.isLoading) {
@@ -837,7 +711,6 @@ export default {
       // console.log('getDependTaskList',i)
     },
     _setRelation(i) {
-      this.dependTaskList[i].relation =
         this.dependTaskList[i].relation === 'AND' ? 'OR' : 'AND'
     },
     _verification() {
@@ -854,26 +727,14 @@ export default {
       })
       return true
     },
-    // 参数赋值
-    // makeParam(e) {
-    // const { value } = e.target
-    // console.log(value)
-    // console.log("输入框===="+JSON.stringify(this.paramList[0].prop) + ":" +JSON.stringify(value))
-    // console.log("paramList"+this.paramList[0].prop)
-    // },
     // 参数详情
     paramMsg() {
       var id = this.temp.processDefinitionId
       getById(id).then((resp) => {
-        // console.log(resp.data.name)
         this.temp.processDefName = resp.data.name
       })
-      getParamsByProcessId(id).then((resp) => {
-        this.paramList = resp.data
-        // this.paramList = [
-        //   {prop: "333",
-        //    value: "444"
-        //   }]
+      getParamsByProcessId(id).then((resp) => {      
+        this.paramList = resp.data    
       })
     },
     // 查询任务流程
@@ -928,10 +789,16 @@ export default {
         status: null,
         updateUserName: null,
         updateTime: null,
-        processDefName: null
+        processDefName: null,
+        taskParams: null,
+        dependTaskInfo:null,
+        dependTaskInfoList:null,
+        taskParamsList: null
       }
     },
     handleCreate() {
+      this.paramList = []
+      this.dependTaskList = []
       this._onDeleteAll()
       this.resetTemp()
       this.dialogStatus = 'create'
@@ -943,13 +810,14 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          if( this.dependTaskList[0].dependItemList[0].depTasks == null) {
-              this.temp.dependTaskInfo = []
+          this.temp.taskParamsList = this.paramList
+
+          if(!this.dependTaskList.length) {            
+              this.temp.dependTaskInfo = null
+              this.temp.dependTaskInfoList = []
           }else {
-          this.temp.dependTaskInfo = '[{"definitionId"' + ':' + '"' + this.dependTaskList[0].dependItemList[0].definitionId + '"' + ',' +
-          '"depTasks"' + ':' + '"' +  this.dependTaskList[0].dependItemList[0].depTasks + '"' + ',' + '"cycle"' + ':' + '"' + this.dependTaskList[0].dependItemList[0].cycle + '"' + ','
-          + '"dateValue"' + ':' + '"' + this.dependTaskList[0].dependItemList[0].dateValue + '"' + ',' + '"depTasksList"' + ':' + '[{' + '"id"' + ':' + '"' + this.dependTaskList[0].dependItemList[0].depTasks + '"' + ',' 
-          + '"name"' + ':' + '"' + this.dependTaskList[0].dependItemList[0].depTasksList[0].name + '"' + '}]' + '}]' 
+            this.temp.dependTaskInfoList = this.dependTaskList
+            this.temp.dependTaskInfo = JSON.stringify(this.dependTaskList)
           }       
           save(this.temp).then(() => {
             this.getList()
@@ -964,49 +832,40 @@ export default {
           })
         }
       })
-     this.paramList[0].value = null
-     this.paramList[0].prop = null
     },
-    handleUpdate() {   
+    handleUpdate() {
       this.temp = Object.assign({}, this.selections[0]) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
-      // console.log('selections:'+this.temp.processDefinitionId)
       var id = this.temp.id
       var processId = this.temp.processDefinitionId
       getByScheduleId(id).then((resp) => {
-        var s = JSON.stringify(resp.data.taskParams)
-        // console.log(JSON.parse(resp.data.dependTaskInfo)[0].definitionId)
-        if(resp.data.dependTaskInfo == null || resp.data.dependTaskInfo == '') {
-      //  this.dependTaskList[0].dependItemList[0].definitionId = null
-      //  this.dependTaskList[0].dependItemList[0].depTasks = null
-      //  this.dependTaskList[0].dependItemList[0].cycle = null
-      //  this.dependTaskList[0].dependItemList[0].dateValue = null
-      //  this.dependTaskList[0].dependItemList[0].depTasksList[0].id = null
-      //  this.dependTaskList[0].dependItemList[0].depTasksList[0].name = null
-           this.dependTaskList[0].dependItemList[0] = []
+      
+        if(resp.data.dependTaskInfoList !== null) {
+            this.dependTaskList = resp.data.dependTaskInfoList
         } else {
-       this.dependTaskList[0].dependItemList[0].definitionId = JSON.parse(resp.data.dependTaskInfo)[0].definitionId
-       this.dependTaskList[0].dependItemList[0].depTasks = JSON.parse(resp.data.dependTaskInfo)[0].depTasks
-       this.dependTaskList[0].dependItemList[0].cycle = JSON.parse(resp.data.dependTaskInfo)[0].cycle
-       this.dependTaskList[0].dependItemList[0].dateValue = JSON.parse(resp.data.dependTaskInfo)[0].dateValue  
-       this.dependTaskList[0].dependItemList[0].depTasksList[0].id = JSON.parse(resp.data.dependTaskInfo)[0].depTasks
-       this.dependTaskList[0].dependItemList[0].depTasksList[0].name = JSON.parse(resp.data.dependTaskInfo)[0].depTasksList[0].name
-       }    
-      getParamsByProcessId(processId).then((resp) => {
-        this.paramList = resp.data
-        this.paramList[0].value = s.substring(s.indexOf(':') + 3, s.indexOf('}') - 2)
-        })
+           this.dependTaskList = []
+        }  
+        if (resp.data.taskParamsList !== null && resp.data.taskParamsList !=='') {     
+         getByScheduleId(id).then((resp) => {          
+           this.paramList = resp.data.taskParamsList
+          })
+        } else {
+          this.paramList = []
+        }
       })
     },
     updateData() {
+      this.temp.dependTaskInfoList = this.dependTaskList
+      this.temp.taskParamsList = this.paramList
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
+            this.getList()
             const index = this.list.findIndex((v) => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
@@ -1019,7 +878,8 @@ export default {
             })
           })
         }
-      })
+      }) 
+      
     },
     handleDelete() {
       var ids = []
@@ -1074,7 +934,7 @@ export default {
     },
     // 上传文件，获取文件流
     handleFileChange(file) {
-      console.log(file)
+      // console.log(file)
       this.file = file.raw
     },
     handleRemove(file, fileList) {

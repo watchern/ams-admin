@@ -11,7 +11,7 @@ export function listByPage(data) {
   })
 }
 
-// 根据id查找
+// 根据id查找调度详情
 export function getByScheduleId(id) {
   return request({
     baseURL: baseURL,
@@ -89,7 +89,7 @@ export function getScheduleList() {
 export function getTaskLink(id) {
   return request({
     baseURL: baseURL,
-    url: `/schedules/findTaskDepend/${id}`,
+    url: `/schedules/findTasks/${id}`,
     method: 'get'
   })
 }
@@ -102,14 +102,3 @@ export function copy(id) {
     method: 'get'
   })
 }
-
-// // 导出文件
-// export function exportSchedulesFile() {
-//   return request({
-//     baseURL: baseURL,
-//     url: `/schedules/exportFile`,
-//     procgress: true,
-//     responseType: 'blob',
-//     method: 'get'
-//   })
-// }
