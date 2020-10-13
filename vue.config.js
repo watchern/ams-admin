@@ -49,6 +49,9 @@ module.exports = {
       '/base':{
         target: 'http://localhost:8085'
       },
+      '/analysis':{
+        target:'http://localhost:8086'
+      },
       // etl调度模块调用的地址
       '/etlscheduler': {
         // target: 'http://192.168.80.155:8080'
