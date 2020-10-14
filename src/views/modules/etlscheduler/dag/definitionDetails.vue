@@ -24,7 +24,9 @@ export default {
       // loading
       isLoading: true,
       // state
-      releaseState: ''
+      releaseState: '',
+      // 状态为编辑还是查看
+      isDetails: false
     }
   },
   methods: {
@@ -39,6 +41,9 @@ export default {
       this.isLoading = true
       // Initialization parameters
       this.resetParams()
+      if (this.$route.params.status === '1' || this.$route.params.status === 1) {
+        this.isDetails = true
+      }
       // Promise Get node needs data
       Promise.all([
         // Node details
@@ -59,7 +64,7 @@ export default {
       ]).then((data) => {
         const item = data[0]
         // this.setIsDetails(item.status === 1)
-        this.setIsDetails(false)
+        this.setIsDetails(this.isDetails)
         this.status = item.status
         this.releaseState = item.status
         this.isLoading = false

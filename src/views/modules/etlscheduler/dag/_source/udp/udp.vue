@@ -130,6 +130,7 @@
         <x-button
           type="primary"
           shape="circle"
+          :disabled="isDetails"
           @click="ok()"
         >添加</x-button>
       </div>

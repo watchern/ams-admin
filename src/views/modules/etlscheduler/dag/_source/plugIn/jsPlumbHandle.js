@@ -68,11 +68,11 @@ JSP.prototype.init = function({
 
   // Initial configuration
   this.setConfig({
-    // isDrag: !store.state.dag.isDetails,
-    isDrag: true,
+    isDrag: !store.state.dag.isDetails,
+    // isDrag: true,
     isAttachment: false,
-    isNewNodes: true,
-    // isNewNodes: !store.state.dag.isDetails, // Permissions.getAuth() === false ? false : !store.state.dag.isDetails,
+    // isNewNodes: true,
+    isNewNodes: !store.state.dag.isDetails, // Permissions.getAuth() === false ? false : !store.state.dag.isDetails,
     isDblclick: true,
     isContextmenu: true,
     isClick: false

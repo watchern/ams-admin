@@ -70,7 +70,8 @@ const etlschedulerRouter = {
       meta: { title: 'processinstance' }
     },
     {
-      path: 'definition/:id',
+    // 传递状态为1为查看，0为编辑
+      path: 'definition/:id/:status',
       name: 'projects-definition-details',
       component: resolve => require(['@/views/modules/etlscheduler/workflow/details/index'], resolve),
       meta: { title: `流程定义详情` }
