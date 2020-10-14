@@ -124,13 +124,13 @@
           label="参数名称"
           prop="paramName"
         >
-          <el-input v-model="temp.paramName" />
+          <el-input v-model="temp.paramName" class="propwidth" />
         </el-form-item>
         <el-form-item
           label="参数编码"
           prop="paramCode"
         >
-          <el-input v-model="temp.paramCode" />
+          <el-input v-model="temp.paramCode" class="propwidth" />
         </el-form-item>
         <el-form-item
           label="参数状态"
@@ -138,6 +138,7 @@
         >
           <el-select
             v-model="temp.status"
+            class="propwidth"
             placeholder="请选择参数状态"
           >
             <el-option
@@ -156,6 +157,7 @@
         >
           <el-select
             v-model="temp.paramType"
+            class="propwidth"
             placeholder="请选择参数类型"
           >
             <el-option
@@ -172,13 +174,13 @@
           label="默认值"
           prop="defaultValue"
         >
-          <el-input v-model="temp.defaultValue" />
+          <el-input v-model="temp.defaultValue" class="propwidth" />
         </el-form-item>
         <el-form-item
           label="可选值"
           prop="selectValue"
         >
-          <el-input v-model="temp.selectValue" />
+          <el-input v-model="temp.selectValue" class="propwidth" />
         </el-form-item>
         <el-form-item
           label="参数描述"
@@ -187,6 +189,7 @@
           <el-input
             v-model="temp.paramDesc"
             type="textarea"
+            class="propwidth"
           />
         </el-form-item>
       </el-form>
@@ -392,3 +395,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+  .propwidth{
+    width: 400px;
+  }
+</style>
