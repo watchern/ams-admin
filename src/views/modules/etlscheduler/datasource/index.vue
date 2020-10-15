@@ -340,6 +340,7 @@ export default {
             on: {
               onUpdate() {
                 self._debounceGET('false')
+                self.getList()
                 modal.remove()
               },
               close() {
