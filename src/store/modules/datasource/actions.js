@@ -1,7 +1,6 @@
 import io from '@/components/Dolphin/io'
 import {
   save,
-  getById,
   update,
   testConn
 } from '@/api/etlscheduler/datasource1'
@@ -91,13 +90,6 @@ export default {
    * Data source editing
    */
   updateDatasource({ state }, payload) {
-    // return new Promise((resolve, reject) => {
-    //   io.post('datasources/update', payload, res => {
-    //     resolve(res)
-    //   }).catch(e => {
-    //     reject(e)
-    //   })
-    // })
     payload.connectionParams = JSON.stringify(payload)
     return new Promise((resolve, reject) => {
       update(payload).then(res => {
@@ -105,11 +97,6 @@ export default {
       }).catch(e => {
         reject(e)
       })
-      // io.post('datasources/create', payload, res => {
-      //   resolve(res)
-      // }).catch(e => {
-      //   reject(e)
-      // })
     })
   },
   // getEditDatasource({ state }, payload) {
@@ -121,15 +108,15 @@ export default {
   //     })
   //   })
   // },
-  verifyName({ state }, payload) {
-    return new Promise((resolve, reject) => {
-      io.get('datasources/verify-name', payload, res => {
-        resolve(res.data)
-      }).catch(e => {
-        reject(e)
-      })
-    })
-  },
+  // verifyName({ state }, payload) {
+  //   return new Promise((resolve, reject) => {
+  //     io.get('datasources/verify-name', payload, res => {
+  //       resolve(res.data)
+  //     }).catch(e => {
+  //       reject(e)
+  //     })
+  //   })
+  // },
   getKerberosStartupState({ state }, payload) {
     return new Promise((resolve, reject) => {
       io.get('datasources/kerberos-startup-state', payload, res => {

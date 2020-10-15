@@ -51,6 +51,7 @@
       max-height="800"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
+      @on-update="_onUpdate"
     >
       <el-table-column
         type="selection"
@@ -86,7 +87,7 @@
       </el-table-column>
       <el-table-column
         label="描述"
-        width="150px"
+        width="200px"
         align="center"
         prop="note"
       />
@@ -119,20 +120,13 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import { pageList, save, update, deleteByIds } from '@/api/etlscheduler/datasource'
 import QueryField from '@/components/Ace/query-field/index'
 
-import _ from 'lodash'
 import { mapActions } from 'vuex'
-import mList from './pages/list/_source/list'
-import mSpin from '@/components/Dolphin/spin/spin'
-import mNoData from '@/components/Dolphin/noData/noData'
 import mCreateDataSource from './pages/list/_source/createDataSource'
 import listUrlParamHandle from '@/components/Dolphin/mixin/listUrlParamHandle'
-import mConditions from '@/components/Dolphin/conditions/conditions'
-import mListConstruction from '@/components/Dolphin/listConstruction/listConstruction'
-import { findComponentDownward } from '@/components/Dolphin/util/'
 
 export default {
   name: 'DatasourceIndexP',
-  components: { Pagination, QueryField, mList, mConditions, mSpin, mListConstruction, mNoData },
+  components: { Pagination, QueryField },
   mixins: [listUrlParamHandle],
   props: {},
   data() {
@@ -146,16 +140,18 @@ export default {
         { label: '数据源名称', name: 'name', type: 'text', value: '' },
         { label: '数据源类型', name: 'type', type: 'select',
           data: [{ name: 'mysql', value: '0' }, { name: 'postgresql', value: '1' },
-            { name: 'hive', value: '2' }, { name: 'spark', value: '3' }]
+            { name: 'hive', value: '2' }, { name: 'spark', value: '3' },
+            { name: 'clickhouse', value: '4' }, { name: 'oracle', value: '5' },
+            { name: 'SQLServer', value: '6' }, { name: 'db2', value: '7' }]
         },
         // { label: '登录方式', name: 'loginTyp', type: 'select',
         //   data: [{ name: '用户名密码', value: '1' }, { name: 'kerbors认证', value: '2' }]
         // },
-        {
-          label: '参数状态', name: 'status', type: 'select',
-          data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }],
-          default: '1'
-        },
+        // {
+        //   label: '参数状态', name: 'status', type: 'select',
+        //   data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }],
+        //   default: '1'
+        // },
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
       ],
       // 格式化参数列表
@@ -235,7 +231,7 @@ export default {
       this.getList()
     },
     hadleCreate() {
-      this._create('')
+      this._create()
     },
     sortChange(data) {
       const { prop, order } = data
@@ -307,7 +303,7 @@ export default {
     },
     handleDelete() {
       var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.paramUuid) })
+      this.selections.forEach((r, i) => { ids.push(r.datasourceUuid) })
       deleteByIds(ids.join(',')).then(() => {
         this.getList()
         this.$notify({
@@ -361,6 +357,9 @@ export default {
       const item = Object.assign({}, this.selections[0])
       // findComponentDownward(this.$root, 'datasource-indexP')
       this._create(item)
+    },
+    _onUpdate() {
+      this._debounceGET('false')
     }
     /**
      * get data(List)
