@@ -13,7 +13,7 @@
         resize="none"
         :autosize="{minRows:1}"
         placeholder="请输入非查询sql语句"
-        style="width: 525px;"
+        style="width: 500px;"
         @on-blur="_verifProp()"
       />
       <span class="lt-add">

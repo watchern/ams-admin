@@ -1,7 +1,7 @@
 <template>
   <div class="datasource-model">
     <div class="select-listpp">
-      <x-select
+      <!-- <x-select
         v-model="type"
         style="width: 160px;"
         :disabled="isDetails"
@@ -13,11 +13,11 @@
           :value="city.code"
           :label="city.code"
         />
-      </x-select>
+      </x-select> -->
       <x-select
         v-model="datasource"
         placeholder="请选择数据源"
-        style="width: 288px;"
+        style="width: 500px;"
         :disabled="isDetails"
       >
         <x-option
@@ -123,7 +123,7 @@ export default {
        */
     _getDatasourceData() {
       return new Promise((resolve, reject) => {
-        this.store.dispatch('dag/getDatasourceList', this.type).then(res => {
+        this.store.dispatch('dag/getDatasourceList', 'ORACLE').then(res => {
           this.datasourceList = _.map(res.data, v => {
             return {
               id: v.id,

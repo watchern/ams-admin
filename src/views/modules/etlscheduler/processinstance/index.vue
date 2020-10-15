@@ -64,6 +64,27 @@
         :formatter="formatStatus"
       />
       <el-table-column
+        label="运行状态"
+        align="center"
+        width="150px"
+      >
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="top">
+            <p style="text-align:center">{{ statusList[scope.row.status===null? 8 : scope.row.status-1].name }}</p>
+            <div slot="reference" class="name-wrapper">
+              <el-tag>
+                <a target="_blank" class="buttonText" @click="handleSkipTask()">
+                  <i
+                    :class="statusList[scope.row.status===null? 8 : scope.row.status-1].unicode"
+                    :style="{color: statusList[scope.row.status===null? 8 : scope.row.status-1].color}"
+                  />
+                </a>
+              </el-tag>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
         label="执行方式"
         width="150px"
         align="center"
@@ -144,13 +165,15 @@
         label-width="140px"
         style="width: 700px; margin-left:50px;"
       >
-        <el-checkbox-group
-          v-model="checkedTask"
-        >
-          <el-radio-group v-model="checkedTask">
-            <el-radio v-for="task in tasks" :key="task.id" :label="task">{{ task.name }}</el-radio>
-          </el-radio-group>
-        </el-checkbox-group></el-form>
+        <el-radio-group v-model="checkedTaskId">
+          <el-radio
+            v-for="task in tasks"
+            :key="task.id"
+            :label="task.id"
+            @change="changeSkipInfo"
+          >{{ task.name }}</el-radio>
+        </el-radio-group>
+      </el-form>
       <div slot="footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button
@@ -164,8 +187,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, skipTask, execute } from '@/api/etlscheduler/processinstance'
-import { getTaskLink } from '@/api/etlscheduler/processschedule'
+import { listByPage, skipTask, execute, getTaskLink } from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
 
 export default {
@@ -214,6 +236,62 @@ export default {
           null: '--'
         }
       },
+      statusList: [
+        {
+          value: 1,
+          name: '等待中',
+          unicode: 'el-icon-s-help',
+          color: '#f9be0a'
+        },
+        {
+          value: 2,
+          name: '等待文件中',
+          unicode: 'el-icon-document',
+          color: '#f9be0a'
+        },
+        {
+          value: 3,
+          name: '等待依赖任务',
+          unicode: 'el-icon-share',
+          color: '#f9be0a'
+        },
+        {
+          value: 4,
+          name: '执行中',
+          unicode: 'el-icon-loading',
+          color: '#333'
+        },
+        {
+          value: 5,
+          name: '暂停中',
+          unicode: 'el-icon-video-pause',
+          color: '#409eff'
+        },
+        {
+          value: 6,
+          name: '已取消',
+          unicode: 'el-icon-circle-close',
+          color: '#ff0000'
+        },
+        {
+          value: 7,
+          name: '执行完成',
+          unicode: 'el-icon-finished',
+          color: '#95F204'
+        },
+        {
+          value: 8,
+          name: '执行失败',
+          unicode: 'el-icon-error',
+          color: 'red'
+        },
+        {
+          value: null,
+          name: '--',
+          unicode: 'el-icon-remove-outline',
+          color: '#888888'
+        }
+      ],
       pageQuery: {
         condition: null,
         pageNo: 1,
@@ -277,7 +355,8 @@ export default {
       dialogPvVisible: false,
       downloadLoading: false,
       tasks: null,
-      checkedTask: {},
+      checkedTask: null,
+      checkedTaskId: '',
       skipStatus: true,
       stopStatus: true,
       startStatus: true,
@@ -382,7 +461,17 @@ export default {
     // 跳过环节
     handleSkipTask() {
       this.temp = Object.assign({}, this.selections[0])
-      getTaskLink(this.temp.processDefinitionUuid).then(resp => {
+      // 如果已有跳过的环节进行反写
+      if (this.temp.skipInfo !== null && this.temp.skipInfo !== '') {
+        var checkedTasks = JSON.parse(this.temp.skipInfo)
+        this.checkedTask = checkedTasks[0]
+        this.checkedTaskId = this.checkedTask.id
+      }
+      if (this.temp.processInstanceJson === null || this.temp.processInstanceJson === '') {
+        this.dialogFormVisible = false
+        return
+      }
+      getTaskLink(this.temp.processInstanceUuid).then(resp => {
         this.tasks = resp.data
       })
       this.dialogFormVisible = true
@@ -391,10 +480,9 @@ export default {
       var checkedTasks = []
       checkedTasks.push(this.checkedTask)
       this.temp.skipInfo = JSON.stringify(checkedTasks)
-      this.temp.isSkipNode = 1
       const tempData = Object.assign({}, this.temp)
       skipTask(tempData).then(() => {
-        const index = this.list.findIndex(v => v.processDefinitionUuid === this.temp.processDefinitionUuid)
+        const index = this.list.findIndex(v => v.processInstanceUuid === this.temp.processInstanceUuid)
         this.list.splice(index, 1, this.temp)
         this.dialogFormVisible = false
         this.$notify({
@@ -406,6 +494,14 @@ export default {
         })
       })
       this.checkedTask = null
+      this.checkedTaskId = null
+      this.tasks = null
+    },
+    changeSkipInfo(a) {
+      const index0 = this.tasks.findIndex(v => v.id === a)
+      if (index0 > -1) {
+        this.checkedTask = this.tasks[index0]
+      }
     },
     // 暂停
     handleStop() {

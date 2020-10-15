@@ -1,5 +1,5 @@
 <template>
-  <div class="udp-model">
+  <div class="udp-model" style="margin-bottom: 60px;">
     <div class="scrollbar contpi-boxt">
       <div class="title">
         <span>设置流程名称</span>
@@ -9,6 +9,7 @@
         <x-input
           v-model="name"
           type="text"
+          :disabled="isDetails"
           placeholder="请输入名称(必填)"
         />
       </div>
@@ -16,6 +17,7 @@
         <x-input
           v-model="orderNo"
           type="text"
+          :disabled="isDetails"
           placeholder="请输入排序号(必填)"
         />
       </div>
@@ -23,7 +25,7 @@
         <x-select
           v-model="status"
           placeholder="请选择状态"
-          style="width: 288px;"
+          style="width: 566px;"
           :disabled="isDetails"
         >
           <!-- <x-option
@@ -46,6 +48,7 @@
         <div style="padding-top: 12px;">
           <x-input
             v-model="description"
+            :disabled="isDetails"
             type="textarea"
             :autosize="{minRows:2}"
             placeholder="请输入描述(选填)"
@@ -62,6 +65,7 @@
         <x-input
           v-model="tenantId"
           type="text"
+          :disabled="isDetails"
           autocomplete="off"
         />
         <!-- <form-tenant v-model="tenantId" /> -->
@@ -69,6 +73,7 @@
       <div
         class="title"
         style="padding-top: 6px;"
+        :disabled="isDetails"
       >
         <span class="text-b">超时告警</span>
         <span style="padding-left: 6px;">
@@ -78,12 +83,14 @@
       <div
         v-if="checkedTimeout"
         class="content"
+        :disabled="isDetails"
         style="padding-bottom: 10px;"
       >
         <span>
           <x-input
             v-model="timeout"
             style="width: 160px;"
+            :disabled="isDetails"
             maxlength="9"
           >
             <span slot="append">分</span>
@@ -103,6 +110,7 @@
             ref="refLocalParams"
             :udp-list="udpList"
             :hide="false"
+            :disabled="isDetails"
             @on-local-params="_onLocalParams"
           />
         </div>
@@ -122,6 +130,7 @@
         <x-button
           type="primary"
           shape="circle"
+          :disabled="isDetails"
           @click="ok()"
         >添加</x-button>
       </div>

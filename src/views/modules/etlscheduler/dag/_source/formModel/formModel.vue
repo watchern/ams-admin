@@ -25,7 +25,7 @@
       v-if="isContentBox"
       class="content-box"
     >
-      <div class="from-model">
+      <div class="from-model" style="margin-bottom: 100px;">
         <!-- Node name -->
         <div class="clearfix list">
           <div class="text-box"><span>节点名称</span></div>
@@ -38,6 +38,26 @@
                 placeholder="请输入名称(必填)"
                 :maxlength="100"
                 autocomplete="off"
+                class="propwidth"
+                @on-blur="_verifName()"
+              />
+            </label>
+          </div>
+        </div>
+
+        <!-- task Node -->
+        <div class="clearfix list">
+          <div class="text-box"><span>节点编码</span></div>
+          <div class="cont-box">
+            <label class="label-box">
+              <x-input
+                v-model="taskCode"
+                type="text"
+                :disabled="isDetails"
+                placeholder="请输入节点编码(必填)"
+                :maxlength="100"
+                autocomplete="off"
+                class="propwidth"
                 @on-blur="_verifName()"
               />
             </label>
@@ -45,7 +65,7 @@
         </div>
 
         <!-- Running sign -->
-        <div class="clearfix list">
+        <div class="clearfix list" style="display:none">
           <div class="text-box"><span>运行标志</span></div>
           <div class="cont-box">
             <label class="label-box">
@@ -59,26 +79,6 @@
                   :disabled="isDetails"
                 >禁止执行</x-radio>
               </x-radio-group>
-            </label>
-          </div>
-        </div>
-
-        <!-- description -->
-        <div class="clearfix list">
-          <div class="text-box">
-            <span>描述</span>
-          </div>
-          <div class="cont-box">
-            <label class="label-box">
-              <x-input
-                v-model="description"
-                resize
-                :autosize="{minRows:2}"
-                type="textarea"
-                :disabled="isDetails"
-                placeholder="请输入描述"
-                autocomplete="off"
-              />
             </label>
           </div>
         </div>
@@ -106,12 +106,51 @@
           </div>
         </div>
 
+        <div class="clearfix list">
+          <div class="text-box"><span>出错策略</span></div>
+          <div class="cont-box">
+            <!-- <label class="label-box"> -->
+            <x-select
+              v-model="errorType"
+              :disabled="isDetails"
+              placeholder="请选择出错策略(必填)"
+              class="propwidth"
+              @on-blur="_verifName()"
+            >
+              <x-option
+                v-for="model in errorTypeList"
+                :key="model.value"
+                :value="model.value"
+                :label="model.name"
+              />
+            </x-select>
+            <!-- </label> -->
+          </div>
+        </div>
+        <div v-if="errorhide" class="clearfix list">
+          <div class="text-box"><span>出错次数</span></div>
+          <div class="cont-box">
+            <label class="label-box">
+              <x-input
+                v-model="errorNumbers"
+                type="text"
+                :disabled="isDetails"
+                placeholder="请输入出错次数(必填)"
+                :maxlength="100"
+                autocomplete="off"
+                class="propwidth"
+                @on-blur="_verifName()"
+              />
+            </label>
+          </div>
+        </div>
         <!-- Task timeout alarm -->
         <m-timeout-alarm
           ref="timeout"
           :backfill-item="backfillItem"
           @on-timeout="_onTimeout"
         />
+
         <!-- sql node -->
         <!-- <m-sql
           v-if="taskType == 'SQL'"
@@ -137,6 +176,26 @@
           @on-params="_onParams"
           @on-cache-params="_onCacheParams"
         />
+        <!-- description -->
+        <div class="clearfix list">
+          <div class="text-box">
+            <span>节点描述</span>
+          </div>
+          <div class="cont-box">
+            <label class="label-box">
+              <x-input
+                v-model="description"
+                resize
+                :autosize="{minRows:2}"
+                type="textarea"
+                :disabled="isDetails"
+                placeholder="请输入描述"
+                autocomplete="off"
+                class="propwidth"
+              />
+            </label>
+          </div>
+        </div>
       </div>
     </div>
     <div class="bottom-box">
@@ -166,7 +225,6 @@ import mLog from './log'
 import mSql from './tasks/sql'
 import mJava from './tasks/java'
 import JSP from './../plugIn/jsPlumbHandle'
-
 import mTimeoutAlarm from './_source/timeoutAlarm'
 import mWorkerGroups from './_source/workerGroups'
 import clickoutside from '@/components/Dolphin/util/clickoutside'
@@ -198,6 +256,7 @@ export default {
       spinnerLoading: false,
       // node name
       name: '',
+      taskCode: '',
       // description
       description: '',
       // Node echo data
@@ -234,6 +293,10 @@ export default {
       taskInstancePriority: 'MEDIUM',
       // worker group id
       workerGroup: 'default',
+      errorType: '',
+      errorTypeList: [{ name: '不重试', value: '0' }, { name: '重试', value: '1' }],
+      errorNumbers: '',
+      errorhide: false,
       stateList: [
         {
           value: 'success',
@@ -337,6 +400,9 @@ export default {
           type: this.taskType,
           id: this.id,
           name: this.name,
+          taskCode: this.taskCode,
+          errorType: this.errorType,
+          errorNumbers: this.errorNumbers,
           params: this.params,
           description: this.description,
           runFlag: this.runFlag,
@@ -360,6 +426,20 @@ export default {
       if (!_.trim(this.name)) {
         this.$message.warning(`请输入名称（必填）`)
         return false
+      }
+      if (!_.trim(this.taskCode)) {
+        this.$message.warning(`请输入节点编码（必填）`)
+        return false
+      }
+      if (!_.trim(this.errorType)) {
+        this.$message.warning(`请选择出错策略（必填）`)
+        return false
+      }
+      if (this.errorType === '1') {
+        if (!_.trim(this.errorNumbers)) {
+          this.$message.warning(`请输入出错次数（必填）`)
+          return false
+        }
       }
       if (this.successBranch !== '' && this.successBranch != null && this.successBranch === this.failedBranch) {
         this.$message.warning(`成功分支流转和失败分支流转不能选择同一个节点`)
@@ -416,6 +496,9 @@ export default {
           type: this.taskType,
           id: this.id,
           name: this.name,
+          taskCode: this.taskCode,
+          errorType: this.errorType,
+          errorNumbers: this.errorNumbers,
           params: this.params,
           description: this.description,
           runFlag: this.runFlag,
@@ -473,6 +556,9 @@ export default {
           type: this.cacheBackfillItem.type,
           id: this.cacheBackfillItem.id,
           name: this.cacheBackfillItem.name,
+          taskCode: this.cacheBackfillItem.taskCode,
+          errorType: this.cacheBackfillItem.errorType,
+          errorNumbers: this.cacheBackfillItem.errorNumbers,
           params: this.cacheBackfillItem.params,
           description: this.cacheBackfillItem.description,
           runFlag: this.cacheBackfillItem.runFlag,
@@ -504,6 +590,9 @@ export default {
         type: this.taskType,
         id: this.id,
         name: this.name,
+        taskCode: this.taskCode,
+        errorType: this.errorType,
+        errorNumbers: this.errorNumbers,
         description: this.description,
         runFlag: this.runFlag,
         dependence: this.cacheDependence,
@@ -523,6 +612,15 @@ export default {
      **/
     _item(val) {
       // this._cacheItem()
+    },
+    errorType(val) {
+      if (val === '1') {
+        this.errorhide = true
+      }
+      if (val === '0') {
+        this.errorhide = false
+        this.errorNumbers = null
+      }
     }
   },
   created() {
@@ -550,11 +648,15 @@ export default {
     // Non-null objects represent backfill
     if (!_.isEmpty(o)) {
       this.name = o.name
+      this.taskCode = o.taskCode
+      this.errorType = o.errorType
+      this.errorNumbers = o.errorNumbers
       this.taskInstancePriority = o.taskInstancePriority
       this.runFlag = o.runFlag || 'NORMAL'
       this.description = o.description
       this.maxRetryTimes = o.maxRetryTimes
       this.retryInterval = o.retryInterval
+      this.timeout = o.timeout
       if (o.conditionResult) {
         this.successBranch = o.conditionResult.successNode[0]
         this.failedBranch = o.conditionResult.failedNode[0]
@@ -615,5 +717,8 @@ export default {
   .ans-radio-inner:after {
     background-color: #6f8391;
   }
+}
+.propwidth{
+  width:500px
 }
 </style>

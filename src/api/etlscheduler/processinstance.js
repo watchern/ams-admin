@@ -64,3 +64,12 @@ export function execute(ids, executeType) {
     method: 'post'
   })
 }
+
+// 查询所有任务环节
+export function getTaskLink(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/processInstance/findTasks/${id}`,
+    method: 'get'
+  })
+}

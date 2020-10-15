@@ -6,9 +6,7 @@
  * @desc tooltip
  */
 const toolOper = (dagThis) => {
-  // TODO
-  const disabled = false
-  // const disabled = !!dagThis.$store.state.dag.isDetails // Permissions.getAuth() === false ? false : !dagThis.$store.state.dag.isDetails
+  const disabled = !!dagThis.$store.state.dag.isDetails // Permissions.getAuth() === false ? false : !dagThis.$store.state.dag.isDetails
   return [{
     code: 'pointer',
     icon: 'ans-icon-pointer',

@@ -76,12 +76,20 @@
         type="selection"
         width="55"
       />
-      <el-table-column
+      <!-- <el-table-column
         label="流程名称"
         width="300px"
         align="center"
         prop="name"
-      />
+        @cell-click="handleView()"
+      /> -->
+
+      <el-table-column label="流程名称" width="300" align="center" show-overflow-tooltip>
+        <template slot-scope="scope">
+          <a target="_blank" class="buttonText" @click="handleView(scope.row.processDefinitionUuid)">{{ scope.row.name }}</a>
+        </template>
+      </el-table-column>
+
       <el-table-column
         label="排序号"
         width="150px"
@@ -221,8 +229,12 @@ export default {
     },
     handleUpdate() {
       this.temp = Object.assign({}, this.selections[0])
-      // 编辑的页面跳转
-      this.$router.push(`/etlscheduler/definition/${this.temp.processDefinitionUuid}`)
+      // 编辑的页面跳转,传递状态为0为编辑
+      this.$router.push(`/etlscheduler/definition/${this.temp.processDefinitionUuid}/0`)
+    },
+    handleView(processDefinitionUuid) {
+      // 查看详情的页面跳转,传递状态为1为查看
+      this.$router.push(`/etlscheduler/definition/${processDefinitionUuid}/1`)
     },
     handleStart() {
       var ids = []
@@ -368,3 +380,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.buttonText{
+  color: #409eff;
+}
+</style>

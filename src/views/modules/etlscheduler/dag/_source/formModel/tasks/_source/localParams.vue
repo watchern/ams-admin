@@ -10,12 +10,12 @@
         v-model="localParamsList[$index].prop"
         :disabled="isDetails"
         type="text"
-        placeholder="prop(必填)"
+        placeholder="参数名(必填)"
         :maxlength="256"
         :style="inputStyle"
         @on-blur="_verifProp()"
       />
-      <template v-if="hide">
+      <!-- <template v-if="hide">
         <x-select
           v-model="localParamsList[$index].direct"
           style="width: 80px;"
@@ -42,16 +42,33 @@
             :label="city.code"
           />
         </x-select>
-      </template>
-      <x-input
+      </template> -->
+      <!-- <x-input
         v-model="localParamsList[$index].value"
         :disabled="isDetails"
         type="text"
         placeholder="value(选填)"
         :maxlength="256"
         :style="inputStyle"
+
         @on-blur="_handleValue()"
-      />
+      /> -->
+      <x-select
+        v-model="localParamsList[$index].paramUuid"
+        :disabled="isDetails"
+        filterable
+        placeholder="关联参数"
+        :maxlength="256"
+        :style="inputStyle"
+        @on-change="_paramChange($index,$event)"
+      >
+        <x-option
+          v-for="model in paramListS"
+          :key="model.paramUuid"
+          :value="model.paramUuid"
+          :label="model.paramName"
+        />
+      </x-select>
       <span class="lt-add">
         <a
           href="javascript:"
@@ -105,6 +122,7 @@
 import _ from 'lodash'
 import { directList, typeList } from './commcon'
 import disabledState from '@/components/Dolphin/mixin/disabledState'
+import { listByPage, getById } from '@/api/etlscheduler/paramfield'
 export default {
   name: 'UserDefParams',
   components: {},
@@ -126,12 +144,13 @@ export default {
       // Increased data
       localParamsList: [],
       // Current execution index
-      localParamsIndex: null
+      localParamsIndex: null,
+      paramListS: []
     }
   },
   computed: {
     inputStyle() {
-      return `width:${this.hide ? 160 : 262}px`
+      return `width:${this.hide ? 250 : 262}px`
     }
   },
   watch: {
@@ -142,6 +161,11 @@ export default {
   },
   created() {
     this.localParamsList = this.udpList
+    const query = { 'pageNo': 1,
+      'pageSize': 1000 }
+    listByPage(query).then(resp => {
+      this.paramListS = resp.data.records
+    })
   },
   mounted() {
   },
@@ -164,6 +188,11 @@ export default {
     _handleTypeChanged() {
       this._verifProp('value')
     },
+    _paramChange(a, b) {
+      getById(b.value).then(resp => {
+        this.localParamsList[a].param = resp.data
+      })
+    },
     /**
      * delete item
      */
@@ -177,9 +206,11 @@ export default {
     _addUdp() {
       this.localParamsList.push({
         prop: '',
-        direct: 'IN',
-        type: 'VARCHAR',
-        value: ''
+        // direct: 'IN',
+        type: 'String',
+        value: '',
+        paramUuid: '',
+        param: {}
       })
     },
     /**

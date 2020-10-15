@@ -29,6 +29,8 @@
     <div class="dag-contect">
       <div class="dag-toolbar">
         <div class="assist-btn">
+          <!--
+            :disabled="$route.name !== 'projects-instance-details'" -->
           <x-button
             style="vertical-align: middle;"
             data-toggle="tooltip"
@@ -36,8 +38,8 @@
             data-container="body"
             type="primary"
             size="xsmall"
-            :disabled="$route.name !== 'projects-instance-details'"
             icon="ans-icon-code"
+            :disabled="isDetails"
             @click="_toggleView"
           />
           <x-button
@@ -165,7 +167,7 @@ export default {
   mixins: [disabledState],
   props: {
     type: String,
-    releaseState: String
+    releaseState: Number
   },
   data() {
     return {
@@ -658,13 +660,17 @@ export default {
       deep: true,
       handler(o) {
         // Edit state does not allow deletion of node a...
-        this.setIsEditDag(true)
+        // 是否可以编辑
+        this.setIsEditDag(!this.isDetails)
+        // this.setIsEditDag(true)
       }
     }
   },
   created() {
     // Edit state does not allow deletion of node a...
-    this.setIsEditDag(true)
+    // this.setIsEditDag(true)
+    // 是否可以编辑
+    this.setIsEditDag(!this.isDetails)
     // this.initApp()
 
     if (this.$route.query.subProcessIds) {
