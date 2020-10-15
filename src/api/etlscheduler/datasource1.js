@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 const baseURL = 'etlscheduler'
 // 分页
-export function pageList(data) {
+export function findPageList(data) {
   return request({
     baseURL: baseURL,
     url: `/datasource/pageList`,
@@ -29,7 +29,7 @@ export function create(data) {
   })
 }
 // 删除对象
-export function deleteByIds(ids) {
+export function deleteById(ids) {
   return request({
     baseURL: baseURL,
     url: `/datasource/delete/${ids}`,
@@ -50,6 +50,15 @@ export function testConn(id) {
   return request({
     baseURL: baseURL,
     url: `/datasource/testConnection/${id}`,
+    method: 'get'
+  })
+}
+
+// 校验数据源名称
+export function verifyDSName(name) {
+  return request({
+    baseURL: baseURL,
+    url: `/datasource/delete/${name}`,
     method: 'get'
   })
 }
