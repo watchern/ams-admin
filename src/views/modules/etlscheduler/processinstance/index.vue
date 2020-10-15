@@ -182,6 +182,32 @@
         >确定</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      :visible.sync="skipDialogFormVisible"
+    >
+      <el-form
+        ref="dataForm"
+        label-position="right"
+        label-width="140px"
+        style="width: 700px; margin-left:50px;"
+      >
+        <el-radio-group v-model="checkedTaskId">
+          <el-radio
+            v-for="task in tasks"
+            :key="task.id"
+            :label="task.id"
+            @change="changeSkipInfo"
+          >{{ task.name }}</el-radio>
+        </el-radio-group>
+      </el-form>
+      <div slot="footer">
+        <el-button @click="skipDialogFormVisible = false">取消</el-button>
+        <el-button
+          type="primary"
+          @click="taskSkip()"
+        >确定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -351,6 +377,7 @@ export default {
       },
       selections: [],
       dialogFormVisible: false,
+      skipDialogFormVisible: false,
       dialogStatus: '',
       dialogPvVisible: false,
       downloadLoading: false,
