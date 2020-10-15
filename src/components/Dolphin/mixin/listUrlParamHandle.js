@@ -46,7 +46,7 @@ export default {
      * @desc Prevent function from being called multiple times
      */
     _debounceGET: _.debounce(function(flag) {
-      this._getList(flag)
+      // this._getList(flag)
     }, 100, {
       leading: false,
       trailing: true

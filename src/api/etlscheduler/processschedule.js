@@ -55,14 +55,20 @@ export function findByprocessDef(data) {
   })
 }
 
-// 启用或停用
-export function updateStatus(ids, status) {
+// 启用
+export function startScheduleStatus(ids) {
   return request({
     baseURL: baseURL,
-    url: `/schedules/updateStatus/${ids}`,
-    params: {
-      status
-    },
+    url: `/schedules/start/${ids}`,
+    method: 'put'
+  })
+}
+
+// 停用
+export function stopScheduleStatus(ids) {
+  return request({
+    baseURL: baseURL,
+    url: `/schedules/stop/${ids}`,
     method: 'put'
   })
 }

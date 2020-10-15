@@ -363,7 +363,8 @@ import {
   update,
   del,
   findByprocessDef,
-  updateStatus,
+  startScheduleStatus,
+  stopScheduleStatus,
   getParamsByProcessId,
   getByScheduleId,
   copy
@@ -602,68 +603,68 @@ export default {
   },
   methods: {
     //导出 excel 格式
-    // exportFile() { 
-    //  axios({
-    //    method: 'get',
-    //    url: `/etlscheduler/schedules/exportFile`, 
-    //    responseType: 'blob'
-    //  })
-    //   .then(res => {
-    //     const filename = decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1])
-    //     const blob = new Blob([res.data], {
-    //     type: 'application/octet-stream'
-    //   })
-    //     let url = window.URL.createObjectURL(blob);
-    //     let link = document.createElement('a');
-    //     link.style.display = 'none';
-    //     link.href = url;
-    //     link.setAttribute('download', filename);
-    //     document.body.appendChild(link);
-    //     link.click()
-    //  })
-    // }, 
+    exportFile() { 
+     axios({
+       method: 'get',
+       url: `/etlscheduler/schedules/exportFile`, 
+       responseType: 'blob'
+     })
+      .then(res => {
+        const filename = decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1])
+        const blob = new Blob([res.data], {
+        type: 'application/octet-stream'
+      })
+        let url = window.URL.createObjectURL(blob);
+        let link = document.createElement('a');
+        link.style.display = 'none';
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click()
+     })
+    }, 
     // 导出JSON格式
      // 导出流程
-    exportFile() {
-      var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.id) })
-      const downloadBlob = (data, fileNameS = 'json') => {
-        if (!data) {
-          return
-        }
-        const blob = new Blob([data])
-        const fileName = `${fileNameS}.json`
-        if ('download' in document.createElement('a')) { // 不是IE浏览器
-          const url = window.URL.createObjectURL(blob)
-          const link = document.createElement('a')
-          link.style.display = 'none'
-          link.href = url
-          link.setAttribute('download', fileName)
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link) // 下载完成移除元素
-          window.URL.revokeObjectURL(url) // 释放掉blob对象
-        } else { // IE 10+
-          window.navigator.msSaveBlob(blob, fileName)
-        }
-      }
-      axios({ method: 'get',
-        url: `/etlscheduler/schedules/export/${ids.join(',')}`,
-        responseType: 'blob'
-      }).then((res) => {
-        downloadBlob(res.data, 'schedules_' + new Date().getTime())
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '下载成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
-        })
-      }).catch((err) => {
-        console.error(err)
-      })
-    },
+    // exportFile() {
+    //   var ids = []
+    //   this.selections.forEach((r, i) => { ids.push(r.id) })
+    //   const downloadBlob = (data, fileNameS = 'json') => {
+    //     if (!data) {
+    //       return
+    //     }
+    //     const blob = new Blob([data])
+    //     const fileName = `${fileNameS}.json`
+    //     if ('download' in document.createElement('a')) { // 不是IE浏览器
+    //       const url = window.URL.createObjectURL(blob)
+    //       const link = document.createElement('a')
+    //       link.style.display = 'none'
+    //       link.href = url
+    //       link.setAttribute('download', fileName)
+    //       document.body.appendChild(link)
+    //       link.click()
+    //       document.body.removeChild(link) // 下载完成移除元素
+    //       window.URL.revokeObjectURL(url) // 释放掉blob对象
+    //     } else { // IE 10+
+    //       window.navigator.msSaveBlob(blob, fileName)
+    //     }
+    //   }
+    //   axios({ method: 'get',
+    //     url: `/etlscheduler/schedules/export/${ids.join(',')}`,
+    //     responseType: 'blob'
+    //   }).then((res) => {
+    //     downloadBlob(res.data, 'schedules_' + new Date().getTime())
+    //     this.getList()
+    //     this.$notify({
+    //       title: '成功',
+    //       message: '下载成功',
+    //       type: 'success',
+    //       duration: 2000,
+    //       position: 'bottom-right'
+    //     })
+    //   }).catch((err) => {
+    //     console.error(err)
+    //   })
+    // },
     // 复制对象
     copyData() {
        this.selections.forEach((r, i) => {
@@ -745,8 +746,13 @@ export default {
         this.loading = false
         this.processParam.condition.keyword = query
         // console.log(this.processParam.condition.keyword)
-        findByprocessDef(this.processParam).then((resp) => {
-          this.options = resp.data.records
+        findByprocessDef(this.processParam).then((resp) => {   
+        this.options = resp.data.records
+        for (var i =0; i < this.options.length; i++) {
+            if((this.options[i].status) == 0) {
+             this.options.pop(i)
+            }                    
+          }     
         })
       }, 200)
       // } else {
@@ -900,7 +906,7 @@ export default {
     handleUse() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.id) })
-      updateStatus(ids.join(','), 1).then(() => {
+      startScheduleStatus(ids.join(','), 1).then(() => {
         this.getList()
         this.$notify({
           title: '成功',
@@ -914,7 +920,7 @@ export default {
     handleBear() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.id) })
-      updateStatus(ids.join(','), 0).then(() => {
+      stopScheduleStatus(ids.join(','), 0).then(() => {
         this.getList()
         this.$notify({
           title: '成功',
