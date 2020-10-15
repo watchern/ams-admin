@@ -20,10 +20,10 @@ export function getById(uuid) {
   })
 }
 // 添加对象
-export function create(data) {
+export function save(data) {
   return request({
     baseURL: baseURL,
-    url: '/datasource/insert',
+    url: '/datasource/save',
     method: 'post',
     data
   })
@@ -46,11 +46,12 @@ export function update(data) {
   })
 }
 // 测试连接
-export function testConn(id) {
+export function testConn(data) {
   return request({
     baseURL: baseURL,
-    url: `/datasource/testConnection/${id}`,
-    method: 'get'
+    url: `/datasource/connect`,
+    method: 'post',
+    data
   })
 }
 
@@ -58,7 +59,7 @@ export function testConn(id) {
 export function verifyDSName(name) {
   return request({
     baseURL: baseURL,
-    url: `/datasource/delete/${name}`,
+    url: `/datasource/verifyName/${name}`,
     method: 'get'
   })
 }

@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 <template>
   <div class="list-model">
     <div class="table-box">
@@ -25,98 +9,124 @@
           <th scope="col">
             <span>Datasource Name</span>
           </th>
-          <th scope="col"
-              width="120">
+          <th
+            scope="col"
+            width="120"
+          >
             <span>Datasource Type</span>
           </th>
-          <th scope="col"
-              width="100">
+          <th
+            scope="col"
+            width="100"
+          >
             <span>Datasource Parameter</span>
           </th>
           <th scope="col">
             <span>Description</span>
           </th>
-          <th scope="col"
-              width="150">
+          <th
+            scope="col"
+            width="150"
+          >
             <span>Create Time</span>
           </th>
-          <th scope="col"
-              width="150">
+          <th
+            scope="col"
+            width="150"
+          >
             <span>Update Time</span>
           </th>
-          <th scope="col"
-              width="80">
+          <th
+            scope="col"
+            width="80"
+          >
             <span>Operation</span>
           </th>
         </tr>
-        <tr v-for="(item, $index) in list"
-            :key="$index">
+        <tr
+          v-for="(item, $index) in list"
+          :key="$index"
+        >
           <td>
-            <span>{{parseInt(pageNo === 1 ? ($index + 1) : (($index + 1) + (pageSize * (pageNo - 1))))}}</span>
+            <span>{{ parseInt(pageNo === 1 ? ($index + 1) : (($index + 1) + (pageSize * (pageNo - 1)))) }}</span>
           </td>
           <td>
             <span class="ellipsis">
-              {{item.name}}
+              {{ item.name }}
             </span>
           </td>
           <td>
-            <span>{{item.type}}</span>
+            <span>{{ item.type }}</span>
           </td>
           <td>
-            <m-tooltips-JSON :JSON="JSON.parse(item.connectionParams)"
-                             :id="item.id">
+            <m-tooltips-JSON
+              :id="item.id"
+              :j-s-o-n="JSON.parse(item.connectionParams)"
+            >
               <span slot="reference">
-                <a href="javascript:"
-                   class="links"
-                   style="font-size: 12px;">Click to view</a>
+                <a
+                  href="javascript:"
+                  class="links"
+                  style="font-size: 12px;"
+                >Click to view</a>
               </span>
             </m-tooltips-JSON>
           </td>
           <td>
-            <span v-if="item.note"
-                  class="ellipsis"
-                  v-tooltip.large.top.start.light="{text: item.note, maxWidth: '500px'}">{{item.note}}</span>
+            <span
+              v-if="item.note"
+              v-tooltip.large.top.start.light="{text: item.note, maxWidth: '500px'}"
+              class="ellipsis"
+            >{{ item.note }}</span>
             <span v-else>-</span>
           </td>
           <td>
-            <span v-if="item.createTime">{{item.createTime | formatDate}}</span>
+            <span v-if="item.createTime">{{ item.createTime | formatDate }}</span>
             <span v-else>-</span>
           </td>
           <td>
-            <span v-if="item.updateTime">{{item.updateTime | formatDate}}</span>
+            <span v-if="item.updateTime">{{ item.updateTime | formatDate }}</span>
             <span v-else>-</span>
           </td>
           <td>
-            <x-button type="info"
-                      shape="circle"
-                      size="xsmall"
-                      data-toggle="tooltip"
-                      title="Edit"
-                      icon="ans-icon-edit"
-                      @click="_edit(item)">
-            </x-button>
-            <x-poptip :ref="'poptip-delete-' + $index"
-                      placement="bottom-end"
-                      width="90">
+            <x-button
+              type="info"
+              shape="circle"
+              size="xsmall"
+              data-toggle="tooltip"
+              title="Edit"
+              icon="ans-icon-edit"
+              @click="_edit(item)"
+            />
+            <x-poptip
+              :ref="'poptip-delete-' + $index"
+              placement="bottom-end"
+              width="90"
+            >
               <p>Delete?</p>
               <div style="text-align: right; margin: 0;padding-top: 4px;">
-                <x-button type="text"
-                          size="xsmall"
-                          shape="circle"
-                          @click="_closeDelete($index)">Cancel</x-button>
-                <x-button type="primary"
-                          size="xsmall"
-                          shape="circle"
-                          @click="_delete(item,$index)">Confirm</x-button>
+                <x-button
+                  type="text"
+                  size="xsmall"
+                  shape="circle"
+                  @click="_closeDelete($index)"
+                >Cancel</x-button>
+                <x-button
+                  type="primary"
+                  size="xsmall"
+                  shape="circle"
+                  @click="_delete(item,$index)"
+                >Confirm</x-button>
               </div>
               <template slot="reference">
-                <x-button type="error"
-                          shape="circle"
-                          size="xsmall"
-                          icon="ans-icon-trash"
-                          data-toggle="tooltip"
-                          title="删除">
-                </x-button>
+                <x-button
+                  type="error"
+                  shape="circle"
+                  size="xsmall"
+                  icon="ans-icon-trash"
+                  data-toggle="tooltip"
+                  title="删除"
+                />
               </template>
             </x-poptip>
           </td>
@@ -131,13 +141,7 @@ import { findComponentDownward } from '@/components/Dolphin/util/'
 import mTooltipsJSON from '@/components/Dolphin/tooltipsJSON/tooltipsJSON'
 
 export default {
-  name: 'datasource-list',
-  data () {
-    return {
-      // list
-      list: []
-    }
-  },
+  name: 'DatasourceList',
   props: {
     // External incoming data
     datasourcesList: Array,
@@ -146,18 +150,24 @@ export default {
     // Total number of articles
     pageSize: Number
   },
+  data() {
+    return {
+      // list
+      list: []
+    }
+  },
   methods: {
     ...mapActions('datasource', ['deleteDatasource']),
     /**
      * Close delete popup layer
      */
-    _closeDelete (i) {
+    _closeDelete(i) {
       this.$refs[`poptip-delete-${i}`][0].doClose()
     },
     /**
      * Delete current line
      */
-    _delete (item, i) {
+    _delete(item, i) {
       this.$refs[`poptip-delete-${i}`][0].doClose()
       this.deleteDatasource({
         id: item.id
@@ -171,7 +181,7 @@ export default {
     /**
      * edit
      */
-    _edit (item) {
+    _edit(item) {
       findComponentDownward(this.$root, 'datasource-indexP')._create(item)
     }
   },
@@ -179,17 +189,17 @@ export default {
     /**
      * Monitor external data changes
      */
-    datasourcesList (a) {
+    datasourcesList(a) {
       this.list = []
       setTimeout(() => {
         this.list = a
       })
     }
   },
-  created () {
+  created() {
     this.list = this.datasourcesList
   },
-  mounted () {
+  mounted() {
   },
   components: { mTooltipsJSON }
 }

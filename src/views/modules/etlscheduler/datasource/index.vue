@@ -8,22 +8,29 @@
       />
     </div>
     <div>
-  <m-list-construction>
-    <template slot="conditions">
-      <m-conditions>
-        <template slot="button-group">
-          <x-button type="ghost"
-                    size="mini"
-                    @click="_create('')">添加</x-button>
+      <!-- <m-list-construction>
+        <template slot="conditions">
+          <m-conditions>
+            <template slot="button-group">
+              <x-button
+                type="primary"
+                size="mini"
+                @click="_create('')"
+              >添加</x-button>
+            </template>
+          </m-conditions>
         </template>
-      </m-conditions>
-    </template>
-  </m-list-construction>
+      </m-list-construction> -->
+      <el-button
+        type="primary"
+        size="mini"
+        @click="hadleCreate"
+      >添加</el-button>
       <el-button
         type="primary"
         size="mini"
         :disabled="selections.length !== 1"
-        @click="handleUpdate()"
+        @click="_edit"
       >修改</el-button>
       <el-button
         type="danger"
@@ -55,7 +62,7 @@
         align="center"
         prop="name"
       />
-       <el-table-column
+      <el-table-column
         label="数据源类型"
         width="250px"
         align="center"
@@ -64,13 +71,13 @@
       />
       <el-table-column
         label="数据源参数"
-        width="250px"
+        width="200px"
         align="center"
         prop="connectionParams"
       >
-      <template slot-scope="scope">
+        <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p>{{scope.row.connectionParams}}</p>
+            <p>{{ scope.row.connectionParams }}</p>
             <div slot="reference" class="name-wrapper">
               <el-tag><i class="el-icon-tickets" /></el-tag>
             </div>
@@ -79,6 +86,7 @@
       </el-table-column>
       <el-table-column
         label="描述"
+        width="150px"
         align="center"
         prop="note"
       />
@@ -89,13 +97,13 @@
         prop="createTime"
       />
       <el-table-column
-        label="修改时间"  
+        label="修改时间"
         align="center"
         width="250px"
         prop="updateTime"
       />
     </el-table>
-   
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -120,10 +128,13 @@ import mCreateDataSource from './pages/list/_source/createDataSource'
 import listUrlParamHandle from '@/components/Dolphin/mixin/listUrlParamHandle'
 import mConditions from '@/components/Dolphin/conditions/conditions'
 import mListConstruction from '@/components/Dolphin/listConstruction/listConstruction'
+import { findComponentDownward } from '@/components/Dolphin/util/'
 
 export default {
-  name: 'datasource-indexP',
-  components: { Pagination, QueryField },
+  name: 'DatasourceIndexP',
+  components: { Pagination, QueryField, mList, mConditions, mSpin, mListConstruction, mNoData },
+  mixins: [listUrlParamHandle],
+  props: {},
   data() {
     return {
       tableKey: 'datasourceUuid',
@@ -133,19 +144,19 @@ export default {
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '数据源名称', name: 'name', type: 'text', value: '' },
-        { label: '数据源类型', name: 'type', type: 'select',  
-          data: [{ name: 'mysql', value: '0'}, { name: 'postgresql', value: '1' },
-                 { name: 'hive', value: '2' }, { name: 'spark', value: '3' }],     
+        { label: '数据源类型', name: 'type', type: 'select',
+          data: [{ name: 'mysql', value: '0' }, { name: 'postgresql', value: '1' },
+            { name: 'hive', value: '2' }, { name: 'spark', value: '3' }]
         },
-        { label: '登录方式', name: 'type', loginType: 'select', 
-          data:[{ name: '用户名密码', value: '1' }, { name: 'kerbors认证', value: '2' }]
-        },
+        // { label: '登录方式', name: 'loginTyp', type: 'select',
+        //   data: [{ name: '用户名密码', value: '1' }, { name: 'kerbors认证', value: '2' }]
+        // },
         {
           label: '参数状态', name: 'status', type: 'select',
           data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }],
           default: '1'
         },
-         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
+        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
       ],
       // 格式化参数列表
       formatMap: {
@@ -159,7 +170,7 @@ export default {
           6: 'SQLSERVER',
           7: 'DB2',
           null: '其它'
-        }    
+        }
       },
       pageQuery: {
         condition: null,
@@ -185,31 +196,31 @@ export default {
       },
       dialogPvVisible: false,
       rules: {
-       status: [{ required: true, message: '请选择参数状态', trigger: 'change' }]
+        status: [{ required: true, message: '请选择参数状态', trigger: 'change' }]
       },
-      downloadLoading: false,
-      // is Loading
-      isLoading: true,
-      // Total number of articles
-      total: 20,
-      // data sources(List)
-      datasourcesList: [],
-      searchParams: {
-        // Number of pages per page
-        pageSize: 10,
-        // Number of pages
-        pageNo: 1,
-        // Search value
-        searchVal: ''
-      }
+      downloadLoading: false
+      // ,
+    //   // is Loading
+    //   isLoading: true,
+    //   // data sources(List)
+    //   datasourcesList: [],
+    //   searchParams: {
+    //     // Number of pages per page
+    //     pageSize: 10,
+    //     // Number of pages
+    //     pageNo: 1,
+    //     // Search value
+    //     searchVal: ''
+    //   }
     }
   },
-  mixins: [listUrlParamHandle],
-  props: {},
+  watch: {
+  },
   created() {
     this.getList()
   },
   methods: {
+    ...mapActions('datasource', ['getDatasourcesListP']),
     getList(query) {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
@@ -222,6 +233,9 @@ export default {
     handleFilter() {
       this.pageQuery.pageNo = 1
       this.getList()
+    },
+    hadleCreate() {
+      this._create('')
     },
     sortChange(data) {
       const { prop, order } = data
@@ -316,8 +330,8 @@ export default {
     formatType(data) {
       return this.formatMap.type[data.type]
     },
-    //添加事件
-    _create (item) {
+    // 添加事件
+    _create(item) {
       const self = this
       const modal = this.$modal.dialog({
         closable: false,
@@ -325,14 +339,14 @@ export default {
         escClose: true,
         className: 'v-modal-custom',
         transitionName: 'opacityp',
-        render (h) {
+        render(h) {
           return h(mCreateDataSource, {
             on: {
-              onUpdate () {
+              onUpdate() {
                 self._debounceGET('false')
                 modal.remove()
               },
-              close () {
+              close() {
                 modal.remove()
               }
             },
@@ -343,6 +357,11 @@ export default {
         }
       })
     },
+    _edit() {
+      const item = Object.assign({}, this.selections[0])
+      // findComponentDownward(this.$root, 'datasource-indexP')
+      this._create(item)
+    }
     /**
      * get data(List)
      */
@@ -361,10 +380,7 @@ export default {
     //     this.isLoading = false
     //   })
     // }
-  },
-  watch: {
-  },
-  components: { mList, mConditions, mSpin, mListConstruction, mNoData }
+  }
 }
 </script>
 <style scoped>
