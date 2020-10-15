@@ -29,7 +29,7 @@
       <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog v-if="editModelShow" :visible.sync="editModelShow" :title="editModelTitle">
+    <el-dialog v-if="editModelShow" :visible.sync="editModelShow" :title="editModelTitle" width="100%">
       <EditModel ref="editModel" :open-value="selectTreeNode" :operation-obj="operationObj" @hideModal="hideEditModal" />
       <div slot="footer">
         <el-button type="primary" @click="save">保存</el-button>
@@ -275,7 +275,6 @@ export default {
         this.operationObj = operationObj
         this.editModelTitle = '添加模型'
         this.editModelShow = true
-        // this.$refs.editModel.setSelectTreeNode(this.selectTreeNode);
       }
     },
     updateModel() {

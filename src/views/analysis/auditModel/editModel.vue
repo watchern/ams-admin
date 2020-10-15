@@ -48,6 +48,11 @@
             <el-button type="primary" @click="getSqlObj(2)">图形化编辑器</el-button>
             <el-button type="primary" @click="getSqlObj(1)">SQL编辑器</el-button>
           </el-form-item>
+          <el-dialog v-if="SQLEditorShow" :append-to-body="appendToBody" :visible.sync="SQLEditorShow" title="SQL编辑器" width="100%">
+            <SQLEditor ref="SQLEditor" />
+            <el-button type="primary" @click="">保存</el-button>
+            <el-button @click="">取消</el-button>
+          </el-dialog>
           <el-form-item label="模型SQL">
             <el-input v-model="form.sqlValue" type="textarea" />
           </el-form-item>
@@ -150,10 +155,11 @@
 <script>
 import ModelDetail from '@/views/analysis/auditModel/modelDetail'
 import ModelFilterShow from '@/views/analysis/auditModel/modelFilterShow'
+import SQLEditor from '@/views/analysis/SQLEditor/index'
 import VRuntimeTemplate from 'v-runtime-template'
 export default {
   name: 'EditModel',
-  components: { ModelDetail, ModelFilterShow, VRuntimeTemplate },
+  components: { ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor },
   props: ['openValue', 'operationObj'],
   data() {
     return {
@@ -200,6 +206,8 @@ export default {
         children: 'children',
         label: 'label'
       },
+      SQLEditorShow: false,
+      appendToBody: true,
       paramData: [],
       paramValueModel: {},
       columnData: [],
@@ -463,6 +471,11 @@ export default {
        * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
        */
     getSqlObj(modelType) {
+      // 打开sql编辑器窗体
+      this.SQLEditorShow = true
+      // this.$router.push({path: '/analysis/SQLEditor', query: {id: '123123'}})
+      // window.open( '#/analysis/SQLEditor')
+      return
       const sqlObj = {
         sqlValue: 'select * from AA_AUDIT_ITEM',
         column: [{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }],
