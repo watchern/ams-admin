@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import getters from './getters'
 import dag from './modules/dag'
 import security from './modules/security'
+import datasource from './modules/datasource'
 
 Vue.use(Vuex)
 
@@ -20,6 +21,7 @@ const modules = modulesFiles.keys().reduce((modules, modulePath) => {
   // 把dag用到的store加入到modules中
   modules['dag'] = dag
   modules['security'] = security
+  modules['datasource'] = datasource
 
   return modules
 }, {})

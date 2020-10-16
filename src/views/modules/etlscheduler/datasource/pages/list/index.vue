@@ -1,53 +1,44 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 <template>
-  <m-list-construction title='Datasource'>
+  <m-list-construction title="Datasource">
     <template slot="conditions">
       <m-conditions @on-conditions="_onConditions">
         <template slot="button-group">
-          <x-button type="ghost"
-                    size="small"
-                    @click="_create('')">'Create Datasource'</x-button>
+          <x-button
+            type="ghost"
+            size="small"
+            @click="_create('')"
+          >'Create Datasource'</x-button>
         </template>
       </m-conditions>
     </template>
     <template slot="content">
       <template v-if="datasourcesList.length || total>0">
-        <m-list @on-update="_onUpdate"
-                :datasources-list="datasourcesList"
-                :page-no="searchParams.pageNo"
-                :page-size="searchParams.pageSize"></m-list>
+        <m-list
+          :datasources-list="datasourcesList"
+          :page-no="searchParams.pageNo"
+          :page-size="searchParams.pageSize"
+          @on-update="_onUpdate"
+        />
         <div class="page-box">
-          <x-page :current="parseInt(searchParams.pageNo)"
-                  :total="total"
-                  :page-size="searchParams.pageSize"
-                  show-elevator
-                  @on-change="_page"
-                  show-sizer
-                  :page-size-options="[10,30,50]"
-                  @on-size-change="_pageSize"></x-page>
+          <x-page
+            :current="parseInt(searchParams.pageNo)"
+            :total="total"
+            :page-size="searchParams.pageSize"
+            show-elevator
+            show-sizer
+            :page-size-options="[10,30,50]"
+            @on-change="_page"
+            @on-size-change="_pageSize"
+          />
         </div>
       </template>
       <template v-if="!datasourcesList.length && total<=0">
-        <m-no-data></m-no-data>
+        <m-no-data />
       </template>
-      <m-spin :is-spin="isLoading"
-              :is-left="false">
-      </m-spin>
+      <m-spin
+        :is-spin="isLoading"
+        :is-left="false"
+      />
     </template>
   </m-list-construction>
 </template>
@@ -63,8 +54,10 @@ import mConditions from '@/components/Dolphin/conditions/conditions'
 import mListConstruction from '@/components/Dolphin/listConstruction/listConstruction'
 
 export default {
-  name: 'datasource-indexP',
-  data () {
+  name: 'DatasourceIndexP',
+  mixins: [listUrlParamHandle],
+  props: {},
+  data() {
     return {
       // loading
       isLoading: true,
@@ -82,14 +75,12 @@ export default {
       }
     }
   },
-  mixins: [listUrlParamHandle],
-  props: {},
   methods: {
     ...mapActions('datasource', ['getDatasourcesListP']),
     /**
      * create data source
      */
-    _create (item) {
+    _create(item) {
       const self = this
       const modal = this.$modal.dialog({
         closable: false,
@@ -97,14 +88,14 @@ export default {
         escClose: true,
         className: 'v-modal-custom',
         transitionName: 'opacityp',
-        render (h) {
+        render(h) {
           return h(mCreateDataSource, {
             on: {
-              onUpdate () {
+              onUpdate() {
                 self._debounceGET('false')
                 modal.remove()
               },
-              close () {
+              close() {
                 modal.remove()
               }
             },
@@ -118,23 +109,23 @@ export default {
     /**
      * page
      */
-    _page (val) {
+    _page(val) {
       this.searchParams.pageNo = val
     },
-    _pageSize (val) {
+    _pageSize(val) {
       this.searchParams.pageSize = val
     },
     /**
      * conditions event
      */
-    _onConditions (o) {
+    _onConditions(o) {
       this.searchParams = _.assign(this.searchParams, o)
       this.searchParams.pageNo = 1
     },
     /**
      * get data(List)
      */
-    _getList (flag) {
+    _getList(flag) {
       this.isLoading = !flag
       this.getDatasourcesListP(this.searchParams).then(res => {
         if (this.searchParams.pageNo > 1 && res.totalList.length == 0) {
@@ -149,20 +140,20 @@ export default {
         this.isLoading = false
       })
     },
-    _onUpdate () {
+    _onUpdate() {
       this._debounceGET('false')
     }
   },
   watch: {
     // router
-    '$route' (a) {
+    '$route'(a) {
       // url no params get instance list
       this.searchParams.pageNo = _.isEmpty(a.query) ? 1 : a.query.pageNo
     }
   },
-  created () {
+  created() {
   },
-  mounted () {
+  mounted() {
   },
   components: { mList, mConditions, mSpin, mListConstruction, mNoData }
 }
