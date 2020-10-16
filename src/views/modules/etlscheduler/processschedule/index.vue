@@ -61,9 +61,8 @@
         <el-button
         type="primary"
         size="mini"
-        :disabled="selections.length === 0"
-        @click="exportFile()"
-      >导出</el-button>
+        @click="dialogFormVisible1 = true"
+      >下载流程模板</el-button>
       </el-menu>
     </div>
     <el-table
@@ -174,17 +173,17 @@
       @pagination="getList"
     />
 
+        <!-- style="width: 700px; margin-left: 50px" -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
         label-position="right"
-        label-width="140px"
-        style="width: 700px; margin-left: 50px"
+        label-width="80px"
       >
         <el-form-item label="任务名称" prop="scheduleName">
-          <el-input v-model="temp.scheduleName" />
+          <el-input v-model="temp.scheduleName"  class="propwidth" placeholder="请输入任务名称" />
         </el-form-item>
           <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="processDefinitionId">
@@ -197,6 +196,7 @@
             :remote-method="remoteMethod"
             :loading="loading"
             @change="paramMsg(temp.processDefinitionId)"
+            class="propwidth"
           >
             <el-option
               v-for="item in options"
@@ -207,10 +207,10 @@
           </el-select>
         </el-form-item>
           <el-form-item v-for="item in paramList" :key="item.value" :label="item.prop" :prop="item.prop">
-          <el-input v-model="item.value" />
+          <el-input v-model="item.value" class="propwidth" />
         </el-form-item>
         <el-form-item label="排序号" prop="processInstancePriority">
-          <el-input v-model="temp.processInstancePriority" />
+          <el-input v-model="temp.processInstancePriority" class="propwidth" placeholder="请输入排序号"/>
         </el-form-item>
         <!-- <el-form-item label="状态" prop="status">
           <el-select v-model="temp.status" placeholder="请选择状态">
@@ -219,7 +219,7 @@
           </el-select>
         </el-form-item> -->
         <el-form-item label="作业周期" prop="crontab">
-          <el-select v-model="temp.crontab" placeholder="请选择作业周期">
+          <el-select v-model="temp.crontab" placeholder="请选择作业周期" class="propwidth">
             <el-option label="每日" value="0 0 0 * * ? *" />
             <el-option label="每月" value="0 0 0 1 * ? *" />
             <el-option label="每季度" value="0 0 0 1 1,4,7,10 ? *" />
@@ -227,53 +227,11 @@
             <el-option label="每年" value="0 0 0 1 1 ? *" />
           </el-select>
         </el-form-item>
-        <!-- <el-form-item label="流程描述" prop="scheduleDesc">
-          <el-input v-model="temp.scheduleDesc" type="textarea" />
-        </el-form-item> -->
-        <!-- <el-table :data="paramList" style="width: 100%">
-          <el-table-column label="参数名称" width="180">
-            <template slot-scope="scope">
-              <span style="margin-left: 10px">{{ scope.row.prop }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="参数编码" width="180">
-            <template slot-scope="scope">
-              <el-popover trigger="hover" placement="top">
-                <p>参数名称: {{ scope.row.prop }}</p>
-                <p>参数编码: {{ scope.row.type }}</p>
-                <div slot="reference" class="name-wrapper">
-                  <el-tag size="medium">{{ scope.row.type }}</el-tag>
-                </div>
-              </el-popover>
-            </template>
-          </el-table-column>
-          <el-table-column label="参数赋值">
-            <template slot-scope="scope">
-              <input
-                v-model="temp.taskParams"
-                type="text"
-                placeholder="为参数赋值"
-                @change="makeParam"
-              >
-            </template>
-          </el-table-column>
-        </el-table> -->
-        <!-- <form>
-          参数名称:<input value=""/>
-          参数赋值:<input placeholder="为参数赋值"/>
-        </form> -->
-        <!-- <el-form-item v-for="item in paramList" :key="item.value" :label="item.prop" :prop="item.prop"> -->
-          <!-- v-for="item in options"
-      :key="item.value"
-      :label="item.label"
-      :value="item.value" -->
-          <!-- <el-input v-model="item.value" @change="defaultValue" />
-        </el-form-item> -->
         <!-- 添加任务依赖 -->
-        <el-form-item>
+        <el-form-item label="添加依赖">
           <div class="dependence-model">
             <m-list-box>
-              <div slot="text">添加依赖</div>
+              <!-- <div slot="text">添加依赖</div> -->
               <div slot="content">
                 <div class="dep-opt">
                   <a
@@ -345,9 +303,46 @@
           @click="dialogStatus === 'create' ? createData() : updateData()"
         >确定</el-button>
       </div>
-    </el-dialog>
+    </el-dialog> 
+   <el-dialog title="下载流程模板" :visible.sync="dialogFormVisible1">
+  <el-form 
+  ref="dataForm"
+  :rules="rules"
+  :model="temp"
+  label-position="right"
+  label-width="80px"
+  >
+     <!-- 查询任务流程 -->
+        <el-form-item label="任务流程" prop="processDefinitionId">
+          <el-select
+            v-model="temp.processDefinitionId"
+            :filterable="true"
+            :remote="true"
+            reserve-keyword
+            placeholder="请选择任务流程"
+            :remote-method="remoteMethod"
+            :loading="loading"
+            @change="paramMsg(temp.processDefinitionId)"
+            class="propwidth"
+          >
+          <el-option
+              v-for="item in options"
+              :key="item.processDefinitionUuid"
+              :label="item.name"
+              :value="item.processDefinitionUuid"
+            />
+          </el-select>
+        </el-form-item>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible1 = false">取 消</el-button>
+    <el-button type="primary" @click="exportFile()">确 定</el-button>
   </div>
+</el-dialog>
+</div>
+    
 </template>
+
 
 <script>
 import axios from 'axios'
@@ -368,7 +363,6 @@ import {
   getParamsByProcessId,
   getByScheduleId,
   copy
-  // exportSchedulesFile
 } from '@/api/etlscheduler/processschedule'
 import {
   getById
@@ -481,6 +475,7 @@ export default {
       },
       selections: [],
       dialogFormVisible: false,
+      dialogFormVisible1: false,
       dialogStatus: '',
       textMap: {
         update: '编辑参数',
@@ -603,10 +598,13 @@ export default {
   },
   methods: {
     //导出 excel 格式
-    exportFile() { 
+    exportFile() {
+      var id = this.temp.processDefinitionId
+      // var ids = []
+      // this.selections.forEach((r, i) => { ids.push(r.id)}) 
      axios({
        method: 'get',
-       url: `/etlscheduler/schedules/exportFile`, 
+       url: `/etlscheduler/schedules/exportFile/${id}`, 
        responseType: 'blob'
      })
       .then(res => {
@@ -622,49 +620,8 @@ export default {
         document.body.appendChild(link);
         link.click()
      })
+      this.dialogFormVisible1 = false
     }, 
-    // 导出JSON格式
-     // 导出流程
-    // exportFile() {
-    //   var ids = []
-    //   this.selections.forEach((r, i) => { ids.push(r.id) })
-    //   const downloadBlob = (data, fileNameS = 'json') => {
-    //     if (!data) {
-    //       return
-    //     }
-    //     const blob = new Blob([data])
-    //     const fileName = `${fileNameS}.json`
-    //     if ('download' in document.createElement('a')) { // 不是IE浏览器
-    //       const url = window.URL.createObjectURL(blob)
-    //       const link = document.createElement('a')
-    //       link.style.display = 'none'
-    //       link.href = url
-    //       link.setAttribute('download', fileName)
-    //       document.body.appendChild(link)
-    //       link.click()
-    //       document.body.removeChild(link) // 下载完成移除元素
-    //       window.URL.revokeObjectURL(url) // 释放掉blob对象
-    //     } else { // IE 10+
-    //       window.navigator.msSaveBlob(blob, fileName)
-    //     }
-    //   }
-    //   axios({ method: 'get',
-    //     url: `/etlscheduler/schedules/export/${ids.join(',')}`,
-    //     responseType: 'blob'
-    //   }).then((res) => {
-    //     downloadBlob(res.data, 'schedules_' + new Date().getTime())
-    //     this.getList()
-    //     this.$notify({
-    //       title: '成功',
-    //       message: '下载成功',
-    //       type: 'success',
-    //       duration: 2000,
-    //       position: 'bottom-right'
-    //     })
-    //   }).catch((err) => {
-    //     console.error(err)
-    //   })
-    // },
     // 复制对象
     copyData() {
        this.selections.forEach((r, i) => {
@@ -1110,4 +1067,9 @@ export default {
     }
   }
 }
+</style>
+<style scoped>
+  .propwidth{
+    
+  }
 </style>
