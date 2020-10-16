@@ -50,7 +50,7 @@ export function update(data) {
 export function datasourceList(data) {
   return request({
     baseURL: baseURL,
-    url: '/datasources/list',
+    url: '/datasource/list',
     method: 'post',
     data
   })

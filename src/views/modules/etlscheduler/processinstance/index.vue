@@ -56,13 +56,13 @@
         type="selection"
         align="center"
       />
-      <el-table-column
+      <!-- <el-table-column
         label="运行状态"
         width="150px"
         align="center"
         prop="status"
         :formatter="formatStatus"
-      />
+      /> -->
       <el-table-column
         label="运行状态"
         align="center"
@@ -73,7 +73,7 @@
             <p style="text-align:center">{{ statusList[scope.row.status===null? 8 : scope.row.status-1].name }}</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
-                <a target="_blank" class="buttonText" @click="handleSkipTask()">
+                <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <i
                     :class="statusList[scope.row.status===null? 8 : scope.row.status-1].unicode"
                     :style="{color: statusList[scope.row.status===null? 8 : scope.row.status-1].color}"
@@ -191,14 +191,77 @@
         label-width="140px"
         style="width: 700px; margin-left:50px;"
       >
-        <el-radio-group v-model="checkedTaskId">
-          <el-radio
-            v-for="task in tasks"
-            :key="task.id"
-            :label="task.id"
-            @change="changeSkipInfo"
-          >{{ task.name }}</el-radio>
-        </el-radio-group>
+        <el-row
+          v-for="task in logTasks"
+          :key="task.id"
+          :label="task.id"
+        >
+          <el-col :span="6" class="logcol">
+            {{ task.name }}
+          </el-col>
+          <el-col :span="15">
+            <!-- <el-col
+              v-for="log in logsTime[task.id]"
+              :key="log.taskInstanceUuid"
+              :label="log.taskInstanceUuid"
+              class="logtype"
+            >
+              {{ log.name }}
+            </el-col> -->
+            <el-col class="logtype">
+              {{ logsTime[task.id] != null ? `耗时：`+ logsTime[task.id].time/1000 + '秒': '' }}
+            </el-col>
+            <el-col
+              v-for="log in logs[task.id]"
+              :key="log.taskLogUuid"
+              :label="log.taskLogUuid"
+              class="logtype"
+              style="margin-top:10px"
+            >
+              {{ log.logTime + log.logMessage }}
+            </el-col>
+          </el-col>
+        </el-row>
+        <!-- <div style="height: 300px;">
+          <el-steps direction="vertical" :active="1">
+            <el-step
+              v-for="task in logTasks"
+              :key="task.id"
+              :title="task.name"
+              :label="task.id"
+            >
+              <el-col :span="15">
+                -- <el-col
+              v-for="log in logsTime[task.id]"
+              :key="log.taskInstanceUuid"
+              :label="log.taskInstanceUuid"
+              class="logtype"
+            >
+              {{ log.name }}
+            </el-col> --
+                <el-col class="logtype">
+                  {{ logsTime[task.id] != null ? `耗时：`+ logsTime[task.id].time/1000 + '秒': '' }}
+                </el-col>
+                <el-col
+                  v-for="log in logs[task.id]"
+                  :key="log.taskLogUuid"
+                  :label="log.taskLogUuid"
+                  class="logtype"
+                  style="margin-top:10px"
+                >
+                  {{ log.logTime + log.logMessage }}
+                </el-col>
+              </el-col>
+            </el-step>
+          </el-steps>
+        </div>
+        <div style="height: 300px;">
+          <el-steps direction="vertical" :active="1">
+            <el-step title="步骤 1" />
+            <el-step title="步骤 2" />
+            <el-step title="步骤 3" description="这是一段很长很长很长的描述性文字" />
+          </el-steps>
+        </div> -->
       </el-form>
       <div slot="footer">
         <el-button @click="logDialogFromVisible = false">取消</el-button>
@@ -213,7 +276,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, skipTask, execute, getTaskLink } from '@/api/etlscheduler/processinstance'
+import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
 
 export default {
@@ -388,7 +451,10 @@ export default {
       stopStatus: true,
       startStatus: true,
       reStartStatus: true,
-      doneStatus: true
+      doneStatus: true,
+      logTasks: null,
+      logs: null,
+      logsTime: null
     }
   },
   watch: {
@@ -484,6 +550,22 @@ export default {
       this.pageQuery.sortBy = order
       this.pageQuery.sortName = prop
       this.handleFilter()
+    },
+    handleTasksLogs(data) {
+      if (data.processInstanceJson === null || data.processInstanceJson === '') {
+        this.logDialogFromVisible = false
+        return
+      }
+      getTaskLink(data.processInstanceUuid).then(resp => {
+        this.logTasks = resp.data
+      })
+      findTaskLogs(data.processInstanceUuid).then(resp => {
+        this.logs = resp.data
+      })
+      findTaskInstanceById(data.processInstanceUuid).then(resp => {
+        this.logsTime = resp.data
+      })
+      this.logDialogFromVisible = true
     },
     // 跳过环节
     handleSkipTask() {
@@ -628,5 +710,19 @@ export default {
 	color: #409eff;
   font-size: 22px;
   cursor: pointer;
+  }
+  .logcol{
+  font-size: 24px;
+	font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+	font-weight: 700;
+	font-style: normal;
+	font-size: 18px;
+	color: #676A6C;
+  }
+  .logtype{
+	font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+	font-weight: 700;
+	font-style: normal;
+	color: #008000;
   }
 </style>
