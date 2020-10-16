@@ -166,12 +166,11 @@
 <script>
 import store from '@/store'
 import { isJson } from '@/components/Dolphin/util/util'
-import mPopup from '@/components/Dolphin/popup/popup'
 import mListBoxF from '@/components/Dolphin/listBoxF/listBoxF'
 import { verifyDSName, getById } from '@/api/etlscheduler/datasource1'
 export default {
   name: 'CreateDatasource',
-  components: { mPopup, mListBoxF },
+  components: { mListBoxF },
   props: {
     item: Object
   },
@@ -230,25 +229,25 @@ export default {
       // Set default port for each type datasource Set default port for each type datasource 为每个类型数据源设置默认端口
       this._setDefaultValues(value)
 
-      return new Promise((resolve, reject) => {
-        if ((value === 'HIVE' || value === 'SPARK')) {
-          this.showPrincipal = false
-        } else {
-          this.showPrincipal = true
-        }
-        // TODOKerberos
-        // this.store.dispatch('datasource/getKerberosStartupState').then(res => {
-        //   this.isShowPrincipal = res
-        //   if ((value === 'HIVE' || value === 'SPARK') && this.isShowPrincipal === true) {
-        //     this.showPrincipal = false
-        //   } else {
-        //     this.showPrincipal = true
-        //   }
-        // }).catch(e => {
-        //   this.$message.error(e.msg || '')
-        //   reject(e)
-        // })
-      })
+      // if ((value === 'HIVE' || value === 'SPARK')) {
+      //   this.showPrincipal = true
+      // } else {
+      //   this.showPrincipal = false
+      // }
+      // TODOKerberos
+      // return new Promise((resolve, reject) => {
+      // this.store.dispatch('datasource/getKerberosStartupState').then(res => {
+      //   this.isShowPrincipal = res
+      //   if ((value === 'HIVE' || value === 'SPARK') && this.isShowPrincipal === true) {
+      //     this.showPrincipal = false
+      //   } else {
+      //     this.showPrincipal = true
+      //   }
+      // }).catch(e => {
+      //   this.$message.error(e.msg || '')
+      //   reject(e)
+      // })
+      // })
     },
     /**
      * Cache the previous input port for each type datasource 为每个类型数据源缓存以前的输入端口

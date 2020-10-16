@@ -231,7 +231,7 @@ export default {
       this.getList()
     },
     hadleCreate() {
-      this._create()
+      this._create('')
     },
     sortChange(data) {
       const { prop, order } = data

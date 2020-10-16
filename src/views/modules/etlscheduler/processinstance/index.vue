@@ -183,7 +183,7 @@
       </div>
     </el-dialog>
     <el-dialog
-      :visible.sync="skipDialogFormVisible"
+      :visible.sync="logDialogFromVisible"
     >
       <el-form
         ref="dataForm"
@@ -201,7 +201,7 @@
         </el-radio-group>
       </el-form>
       <div slot="footer">
-        <el-button @click="skipDialogFormVisible = false">取消</el-button>
+        <el-button @click="logDialogFromVisible = false">取消</el-button>
         <el-button
           type="primary"
           @click="taskSkip()"
@@ -377,7 +377,7 @@ export default {
       },
       selections: [],
       dialogFormVisible: false,
-      skipDialogFormVisible: false,
+      logDialogFromVisible: false,
       dialogStatus: '',
       dialogPvVisible: false,
       downloadLoading: false,
