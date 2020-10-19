@@ -151,7 +151,6 @@
         prop="status"
         :formatter="formatStatus"
       />
-      <!-- <el-table-column label="调度任务描述" prop="scheduleDesc" /> -->
       <el-table-column
         label="最新修改人"
         width="100px"
@@ -159,12 +158,6 @@
         prop="updateUserName"
       />
       <el-table-column label="修改时间" align="center" prop="updateTime" />
-      <!-- <el-table-column label="操作" width="200">
-        <template slot-scope="scope">
-          <el-button type="primary" size="small">添加依赖</el-button>
-          <el-button type="primary" size="small">手动执行</el-button>
-        </template>
-      </el-table-column> -->
     </el-table>
     <pagination
       v-show="total > 0"
@@ -243,14 +236,15 @@
             <el-date-picker
               type="date"
               placeholder="选择日期"
-              style="width: 100%"
+              v-model="temp.startTime"
             ></el-date-picker>
           </el-col>
-          <el-col class="line" :span="2">-</el-col>
+          <el-col class="line" :span="1">-</el-col>
           <el-col :span="11">
             <el-date-picker
               type="date"
               placeholder="选择日期"
+              v-model="temp.endTime"
             ></el-date-picker>
           </el-col>
         </el-form-item>
@@ -511,6 +505,8 @@ export default {
         sortName: "updateTime",
       },
       temp: {
+        startTime: null,
+        endTime: null,
         taskParams: null,
         taskParamsList: null,
         dependTaskInfo: null,
@@ -582,6 +578,13 @@ export default {
             trigger: "change",
           },
         ],
+        // startTime: [
+        //   {
+        //     required: true,
+        //     message: "请填写开始执行日期",
+        //     trigger: "change",
+        //   },
+        // ],
       },
       downloadLoading: false,
     };
@@ -832,6 +835,8 @@ export default {
         dependTaskInfo: null,
         dependTaskInfoList: null,
         taskParamsList: null,
+        startTime: null,
+        endTime: null
       };
     },
     handleCreate() {
