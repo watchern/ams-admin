@@ -234,18 +234,18 @@ export default {
 
   methods: {
     currentIndexChange() {
-      const dis = this.isShrink ? 110 : 120
-      this.$nextTick(() => {
-        const offset = this.$refs.navDom[this.currentIndex].offsetTop - dis
-        console.log(offset)
-        this.scrollTop = {
-          allowScroll: true,
-          offset: offset,
-          complete: () => {
-            this.scrollTop = false
-          }
-        }
-      })
+      // const dis = this.isShrink ? 110 : 120
+      // this.$nextTick(() => {
+      //   const offset = this.$refs.navDom[this.currentIndex].offsetTop - dis
+      //   console.log(offset)
+      //   this.scrollTop = {
+      //     allowScroll: true,
+      //     offset: offset,
+      //     complete: () => {
+      //       this.scrollTop = false
+      //     }
+      //   }
+      // })
     },
     // menuEnter() {
     //   //this.isShrink = false
