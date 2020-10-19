@@ -1,11 +1,11 @@
 <template>
-  <div class="app-container">
+  <div class="list-container">
     <div class="filter-container">
       <!-- 查询条件区域 -->
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
-    <div>
-      <el-button type="primary" size="mini" @click="handleCreate()"
+    <!-- <div> -->
+      <!-- <el-button type="primary" size="mini" @click="handleCreate()"
         >添加</el-button
       >
       <el-button
@@ -21,8 +21,35 @@
         :disabled="selections.length === 0"
         @click="handleDelete()"
         >删除</el-button
+      > -->
+      <div style="float: left;">
+      <el-button type="primary" class="oper-btn add" @click="handleCreate()" />
+      <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
+      <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
+      <el-button type="primary" class="oper-btn" icon="el-icon-video-play" @click="handleUse()"  :disabled="startStatus" />
+      <el-button type="primary" class="oper-btn" icon="el-icon-video-pause" @click="handleBear()" :disabled="stopStatus"/>
+      <el-button type="primary" class="oper-btn" @click="copyData()" icon="el-icon-document-copy" :disabled="selections.length != 1" />
+      <el-upload
+        multiple
+        class="upload-demo"
+        action=""
+        :on-remove="handleRemove"
+        :headers="headers"
+        :http-request="uploadFile"
+        :limit="3"
+        :auto-upload="true"
+        :on-change="handleFileChange"
+        :show-file-list="false"
+        style="display: inline-block; padding-left: 10px"
       >
-      <el-button
+        <el-button type="primary" class="oper-btn" icon="el-icon-upload2">导入</el-button>
+      </el-upload>
+       <el-menu style="display: inline-block; padding-left: 10px">
+        <el-button type="primary" class="oper-btn" icon="el-icon-download" @click="dialogFormVisible1 = true"></el-button
+        >
+      </el-menu>
+    </div>
+      <!-- <el-button
         type="primary"
         size="mini"
         :disabled="startStatus"
@@ -42,8 +69,8 @@
         :disabled="selections.length != 1"
         @click="copyData()"
         >复制</el-button
-      >
-      <el-upload
+      > -->
+      <!-- <el-upload
         multiple
         class="upload-demo"
         action=""
@@ -57,13 +84,13 @@
         style="display: inline-block; padding-left: 10px"
       >
         <el-button size="mini" type="primary">导入</el-button>
-      </el-upload>
-      <el-menu style="display: inline-block; padding-left: 10px">
+      </el-upload> -->
+      <!-- <el-menu style="display: inline-block; padding-left: 10px">
         <el-button type="primary" size="mini" @click="dialogFormVisible1 = true"
           >下载流程模板</el-button
         >
-      </el-menu>
-    </div>
+      </el-menu> -->
+    <!-- </div> -->
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -171,8 +198,9 @@
         ref="dataForm"
         :rules="rules"
         :model="temp"
+        class="detail-form"
         label-position="right"
-        label-width="80px"
+        label-width="100px"
       >
         <el-form-item label="任务名称" prop="scheduleName">
           <el-input
@@ -236,6 +264,7 @@
               type="date"
               placeholder="选择日期"
               v-model="temp.startTime"
+              :disabled="disableUpdate"
             ></el-date-picker>
           </el-col>
           <el-col class="line" :span="1">-</el-col>
@@ -244,6 +273,7 @@
               type="date"
               placeholder="选择日期"
               v-model="temp.endTime"
+              :disabled="disableUpdate"
             ></el-date-picker>
           </el-col>
         </el-form-item>
@@ -270,6 +300,9 @@
               <div slot="content">
                 <div class="dep-opt">
                   <a
+                  :style="{
+                        'pointer-events': disableUpdate === true ? 'none' : '',
+                      }"
                     href="javascript:"
                     class="add-dep"
                     @click="!isDetails && _addDep()"
@@ -456,8 +489,8 @@ export default {
         {
           label: "任务名称",
           name: "scheduleName",
-          type: "fuzzyText",
-          value: "",
+          type: "text",
+          value: ''
         },
         {
           label: "状态",
@@ -911,7 +944,6 @@ export default {
       });
     },
     updateData() {
-      console.log("测试时间:"+(JSON.stringify(this.temp.startTime)))
       this.temp.dependTaskInfoList = this.dependTaskList;
       this.temp.taskParamsList = this.paramList;
       this.$refs["dataForm"].validate((valid) => {
@@ -1063,21 +1095,31 @@ export default {
       const date = row[column.property]
       const onTime = (JSON.stringify(row.startTime)).substring(1,5) +'年' + (JSON.stringify(row.startTime)).substring(6,8) +'月' + JSON.stringify(parseInt((JSON.stringify(row.startTime)).substring(9,11)) + 1 ) +'日'
       const overTime = (JSON.stringify(row.endTime)).substring(1,5) +'年' + (JSON.stringify(row.endTime)).substring(6,8) +'月' + JSON.stringify(parseInt((JSON.stringify(row.endTime)).substring(9,11)) + 1 ) +'日'
-     if (date == '0 0 0 * * ? *') {
+     if (date == '0 0 0 * * ? *' && overTime.indexOf('年') == 4 && onTime.indexOf('年') == 4 ) {
           return onTime + '-' + overTime + '-每日' 
+      } else {
+         return onTime + '-至今' + '-每日'
       }
-      if (date == '0 0 0 1 * ? *') {
+      if (date == '0 0 0 1 * ? *' && overTime.indexOf('年') == 4) {
           return onTime + '-' + overTime + '-每月' 
+      } else {
+         return onTime + '-至今' + '-每日'
       }
-      if (date == '0 0 0 1 1,4,7,10 ? *') {
+      if (date == '0 0 0 1 1,4,7,10 ? *' && overTime.indexOf('年') == 4) {
           return onTime + '-' + overTime + '-每季度' 
+      }else {
+         return onTime + '-至今' + '-每日'
       }
-      if (date == '0 0 0 1 1,7 ? *') {
+      if (date == '0 0 0 1 1,7 ? *' && overTime.indexOf('年') == 4) {
           return onTime + '-' + overTime + '-每半年' 
+      }else {
+         return onTime + '-至今' + '-每日'
       }
-      if (date == '0 0 0 1 1 ? *') {
+      if (date == '0 0 0 1 1 ? *' && overTime.indexOf('年') == 4) {
           return onTime + '-' + overTime + '-每年' 
-      }  
+      }  else {
+         return onTime + '-至今' + '-每日'
+      }
     },
   },
 };

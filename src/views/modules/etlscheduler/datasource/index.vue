@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="list-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -24,20 +24,23 @@
       <el-button
         type="primary"
         size="mini"
+        class="oper-btn add"
         @click="hadleCreate"
-      >添加</el-button>
+      />
       <el-button
         type="primary"
         size="mini"
+        class="oper-btn edit"
         :disabled="selections.length !== 1"
         @click="_edit"
-      >修改</el-button>
+      />
       <el-button
         type="danger"
         size="mini"
+        class="oper-btn delete"
         :disabled="selections.length === 0"
         @click="handleDelete()"
-      >删除</el-button>
+      />
     </div>
     <el-table
       :key="tableKey"
@@ -100,7 +103,6 @@
       <el-table-column
         label="修改时间"
         align="center"
-        width="250px"
         prop="updateTime"
       />
     </el-table>
