@@ -192,7 +192,7 @@ export default {
     ...mapMutations('dag', ['addTasks', 'cacheTasks', 'resetParams', 'setIsEditDag', 'setName']),
 
     // DAG automatic layout
-    dagAutomaticLayout() {
+    dagAutomaticLayoutdagAutomaticLayout() {
       $('#canvas').html('')
 
       // Destroy round robin
