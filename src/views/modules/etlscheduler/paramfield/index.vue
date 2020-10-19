@@ -277,12 +277,10 @@ export default {
       },
       dialogPvVisible: false,
       rules: {
-        defaultValue: [{ required: true, message: '请填写参数默认值', trigger: 'change' }],
         paramName: [{ required: true, message: '请填写参数名', trigger: 'change' }],
         paramDesc: [{ max: 100, message: '请填写参数的描述', trigger: 'change' }],
         paramCode: [{ required: true, message: '请填写参数的编码', trigger: 'change' }],
         paramType: [{ required: true, message: '请选择参数的类型', trigger: 'change' }],
-        selectValue: [{ required: true, message: '请填写参数可选值', trigger: 'change' }],
         status: [{ required: true, message: '请选择参数状态', trigger: 'change' }]
       },
       downloadLoading: false
@@ -408,9 +406,9 @@ export default {
 </script>
 <style scoped>
   .propwidth{
-    width: 400px;
+    /* width: 400px; */
   }
   .el-select .el-input {
-    width: 380px;
+    /* width: 380px; */
 }
 </style>

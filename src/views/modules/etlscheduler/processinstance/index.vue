@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="list-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -12,32 +12,47 @@
         type="primary"
         size="mini"
         :disabled="skipStatus"
+        class="oper-btn"
+        icon="el-icon-remove-outline"
         @click="handleSkipTask()"
-      >跳过指定环节</el-button>
+      />
+      <!-- 跳过指定环节 -->
       <el-button
         type="primary"
         size="mini"
         :disabled="stopStatus"
+        class="oper-btn"
+        icon="el-icon-video-pause"
         @click="handleStop()"
-      >暂停</el-button>
+      />
+      <!-- 暂停 -->
       <el-button
         type="primary"
         size="mini"
+        class="oper-btn"
+        icon="el-icon-video-play"
         :disabled="startStatus"
         @click="handleStart()"
-      >启动</el-button>
+      />
+      <!-- 启动 -->
       <el-button
         type="primary"
         size="mini"
+        class="oper-btn"
+        icon="el-icon-refresh-left"
         :disabled="reStartStatus"
         @click="handleReStart()"
-      >重新运行</el-button>
+      />
+      <!-- 重新运行 -->
       <el-button
         type="danger"
         size="mini"
+        class="oper-btn"
+        icon="el-icon-circle-close"
         :disabled="doneStatus"
         @click="handleCancel()"
-      >取消</el-button>
+      />
+      <!-- 取消 -->
     </div>
     <el-table
       :key="tableKey"
@@ -164,6 +179,7 @@
         ref="dataForm"
         label-position="right"
         label-width="140px"
+        class="detail-form"
         style="width: 700px; margin-left:50px;"
       >
         <el-radio-group v-model="checkedTaskId">
@@ -385,8 +401,8 @@ export default {
         condition: null,
         pageNo: 1,
         pageSize: 20,
-        sortBy: 'asc',
-        sortName: 'create_time'
+        sortBy: 'desc',
+        sortName: 'startTime'
       },
       temp: {
         commandParam: null,
