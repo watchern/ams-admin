@@ -78,7 +78,7 @@
       <el-table-column type="selection" width="55" />
       <el-table-column
         label="调度任务名称"
-        width="250px"
+        width="200px"
         align="center"
         prop="scheduleName"
       >
@@ -97,20 +97,19 @@
       />
       <el-table-column
         label="任务流程"
-        width="250px"
+        width="200px"
         align="center"
         prop="processDefName"
       />
       <el-table-column
         label="作业周期"
-        width="80px"
         align="center"
         prop="crontab"
         :formatter="formatCron"
       />
       <el-table-column
         label="参数"
-        width="150px"
+        width="70px"
         align="center"
         prop="taskParamsList"
       >
@@ -127,7 +126,7 @@
         label="依赖任务环节"
         align="center"
         prop="dependTaskInfo"
-        width="150px"
+        width="120px"
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
@@ -146,7 +145,7 @@
       />
       <el-table-column
         label="状态"
-        width="150px"
+        width="100px"
         align="center"
         prop="status"
         :formatter="formatStatus"
@@ -157,7 +156,7 @@
         align="center"
         prop="updateUserName"
       />
-      <el-table-column label="修改时间" align="center" prop="updateTime" />
+      <el-table-column label="修改时间" align="center" prop="updateTime"  width="200px"/>
     </el-table>
     <pagination
       v-show="total > 0"
@@ -521,6 +520,10 @@ export default {
         processDefinitionId: null,
         id: null,
         processDefName: null,
+      },
+      groupTime: {
+        startTimeSpilt: null,
+        endTimeSpilt: null
       },
       selections: [],
       dialogFormVisible: false,
@@ -908,6 +911,7 @@ export default {
       });
     },
     updateData() {
+      console.log("测试时间:"+(JSON.stringify(this.temp.startTime)))
       this.temp.dependTaskInfoList = this.dependTaskList;
       this.temp.taskParamsList = this.paramList;
       this.$refs["dataForm"].validate((valid) => {
@@ -1029,7 +1033,17 @@ export default {
         url: "/etlscheduler/schedules/importFiles",
         method: "post",
         data: formData,
-      }).then((res) => { 
+      }).then((res) => {
+        if (res.data.code == 2501) {
+          this.getList();
+          this.$notify({
+            title: "失败",
+            message: res.data.msg,
+            type: "error",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        } else {
           this.getList();
           this.$notify({
             title: "成功",
@@ -1037,15 +1051,33 @@ export default {
             type: "success",
             duration: 2000,
             position: "bottom-right",
-          })
-      })
+          });
+        }
+      });
     },
     // 格式化表格
     formatStatus(data) {
-      return this.formatMap.status[data.status]
+      return this.formatMap.status[data.status];
     },
-    formatCron(data) {
-      return this.formatMap.crontab[data.crontab]
+    formatCron(row, column) {
+      const date = row[column.property]
+      const onTime = (JSON.stringify(row.startTime)).substring(1,5) +'年' + (JSON.stringify(row.startTime)).substring(6,8) +'月' + JSON.stringify(parseInt((JSON.stringify(row.startTime)).substring(9,11)) + 1 ) +'日'
+      const overTime = (JSON.stringify(row.endTime)).substring(1,5) +'年' + (JSON.stringify(row.endTime)).substring(6,8) +'月' + JSON.stringify(parseInt((JSON.stringify(row.endTime)).substring(9,11)) + 1 ) +'日'
+     if (date == '0 0 0 * * ? *') {
+          return onTime + '-' + overTime + '-每日' 
+      }
+      if (date == '0 0 0 1 * ? *') {
+          return onTime + '-' + overTime + '-每月' 
+      }
+      if (date == '0 0 0 1 1,4,7,10 ? *') {
+          return onTime + '-' + overTime + '-每季度' 
+      }
+      if (date == '0 0 0 1 1,7 ? *') {
+          return onTime + '-' + overTime + '-每半年' 
+      }
+      if (date == '0 0 0 1 1 ? *') {
+          return onTime + '-' + overTime + '-每年' 
+      }  
     },
   },
 };
