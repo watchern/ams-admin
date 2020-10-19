@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="list-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -7,7 +7,7 @@
         @submit="getList"
       />
     </div>
-    <div>
+    <!-- <div>
       <el-button
         type="primary"
         size="mini"
@@ -25,6 +25,11 @@
         :disabled="selections.length === 0"
         @click="handleDelete()"
       >删除</el-button>
+    </div> -->
+    <div style="float: left;">
+      <el-button type="primary" class="oper-btn add" @click="handleCreate()" />
+      <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
+      <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
     </div>
     <el-table
       :key="tableKey"
@@ -112,12 +117,13 @@
       :title="textMap[dialogStatus]"
       :visible.sync="dialogFormVisible"
     >
+      <!-- label-width="140px" -->
       <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
         label-position="right"
-        label-width="140px"
+        class="detail-form"
         style="width: 700px; margin-left:50px;"
       >
         <el-form-item

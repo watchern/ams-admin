@@ -20,17 +20,13 @@ const etlschedulerRouter = {
     //   path: 'datasource/:id',
     //   name: 'datasource',
     //   component: resolve => require(['@/views/modules/etlscheduler/workflow/details/index'], resolve),
-<<<<<<< HEAD
     //   meta: { title: `流程定义详情` }
-=======
-    //   meta: { title: `流程定义详情` }
->>>>>>> dev-etl-li
     // },
     {
       path: 'datasource',
       component: () => import('@/views/modules/etlscheduler/datasource/index'),
       name: 'datasource',
-      meta: { title: 'datasource' },
+      meta: { title: 'datasource' }
     },
     {
       path: 'resources',

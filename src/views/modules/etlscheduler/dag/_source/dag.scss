@@ -1,6 +1,6 @@
 .dag-model {
   background: url("../img/dag_bg.png");
-  height: calc(100vh - 20px);
+  height: calc(100vh - 100px);
 
   ::selection {
     background: transparent;
@@ -234,7 +234,7 @@
       // TODO
       // overflow-y: auto;
       // width: 1350px;
-      width: calc(100vw - 180px);
+      width: calc(100vw - 210px);
     }
   }
 
