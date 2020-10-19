@@ -6,7 +6,7 @@
       placeholder="输入关键字进行过滤"
       class="tree-search"
     />
-    <el-tree
+    <MyElTree
       ref="tree"
       :data="data"
       :props="defaultProps"
@@ -14,6 +14,7 @@
       default-expand-all
       :expand-on-click-node="false"
       @node-click="handleNodeClick"
+      nodeKey="id"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <span>
@@ -25,7 +26,7 @@
           <el-button type="text" size="mini" class="tree-line-btn" @click="() => deleteFolder(node, data)"><svg-icon icon-class="icon-delete-1" /></el-button>
         </span>
       </span>
-    </el-tree>
+    </MyElTree>
     <el-dialog v-if="dialogFormVisible" title="请填写分类信息" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="分类名称" :label-width="formLabelWidth">
@@ -41,9 +42,12 @@
 
 </template>
 <script>
+import MyElTree from '@/components/Ace/tree/src/tree.vue'
 import { findModelFoldeTree, deleteModelFolder, addModelFolder, updateModelFolder } from '@/api/analysis/auditModel'
 export default {
   name: 'ModelFolderTree',
+  props:['publicModel'],
+  components:{MyElTree},
   data() {
     return {
       filterText: null,
@@ -81,8 +85,43 @@ export default {
      */
     getModelFolder() {
       findModelFoldeTree().then(result => {
-        this.data = result.data
+        let newData = [];
+        if(this.publicModel === "publicModel"){
+          //处理数据  只保留公共分类的文件夹数据 模型也不保留
+          for (let i = 0;i < result.data.length;i++){
+            if(result.data[i].id == 1){
+              newData.push(result.data[i]);
+            }
+          }
+          if(newData[0].children.length > 0){
+            this.deleteModelData(newData[0])
+          }
+        }
+/*        else if(this.publicModel === "cancelModel"){
+          for (let i = 0;i < result.data.length;i++){
+            if(result.data[i].id == 2){
+              newData.push(result.data[i]);
+            }
+          }
+          if(newData[0].children.length > 0){
+            this.deleteModelData(newData[0])
+          }
+        }*/
+        else{
+          newData = result.data
+        }
+        this.data = newData
       })
+    },
+    deleteModelData(newData){
+      for(let i = 0; i < newData.children.length;i++){
+        if(newData.children[i].type == "model"){
+          newData.children.splice(i,1);
+        }
+        else{
+          this.deleteModelData(newData.children[i]);
+        }
+      }
     },
     /**
      * 树的点击事件
@@ -90,8 +129,8 @@ export default {
      */
     handleNodeClick(data) {
       if (data.type === 'model') {
-        console.log('')
       } else {
+        this.selectTreeNode = data
         this.$emit('refreshModelList', data)
       }
     },
@@ -165,7 +204,13 @@ export default {
       this.form.modelFolderUuid = this.getGuuid()
       this.form.parentUuid = this.selectTreeNode.id
       this.form.folderSort = 0
-      this.form.folderPath = ''
+      debugger
+      let nodePath = this.$refs.tree.getNodePath(this.selectTreeNode);
+      let fullPath = [];
+      nodePath.forEach(path => {
+        fullPath.push(path.id);
+      })
+      this.form.folderPath = fullPath.join("/") + '/' + this.form.modelFolderUuid
       this.form.pbScope = this.selectTreeNode.extMap.pbScope
       addModelFolder(this.form).then(result => {
         if (result != null && result.code === 0) {
@@ -175,7 +220,8 @@ export default {
             children: [],
             pid: this.selectTreeNode.id,
             icon: 'el-icon-folder',
-            extMap: { pbScope: this.selectTreeNode.extMap.pbScope }
+            extMap: { pbScope: this.selectTreeNode.extMap.pbScope },
+            type:'folder'
           }
           if (!this.selectTreeNode.children) {
             this.$set(this.selectTreeNode, 'children', [])
@@ -239,6 +285,9 @@ export default {
       } else {
         this.$message({ success: 'error', message: '该分类下有分类或模型，不允许删除' })
       }
+    },
+    getSelectNode(){
+      return this.selectTreeNode;
     }
   }
 }

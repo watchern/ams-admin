@@ -131,3 +131,19 @@ export function selectModel(modelId) {
     params: { modelId: modelId }
   })
 }
+
+/**
+ * 批量修改模型基本信息
+ * @param data 要修改的模型数组
+ * @returns {AxiosPromise}
+ */
+export function updateModelBasicInfo(data){
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelController/updateModelBasicInfo',
+    method: 'post',
+    // params 以formData格式传递  后台用RequestParam
+    // 直接加data以json格式传递  后台用RequestBody
+    data
+  })
+}

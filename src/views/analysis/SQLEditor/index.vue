@@ -57,7 +57,7 @@
             <button type="button" class="btn btn-primary" @click="sqlFormat()">格式化</button>&nbsp;
             <!-- <button type="button" class="btn btn-primary" onclick="alertVerify()">SQL语法校验</button> -->
             <button type="button" class="btn btn-primary" onclick="sqlEditor.ecexuteSql()">执行</button>&nbsp;
-            <button type="button" class="btn btn-primary" onclick="sqlEditor.selectSqlDraft()">打开SQL</button>&nbsp;
+            <button type="button" class="btn btn-primary" @click="openSqlDraftList()">打开SQL</button>&nbsp;
             <div class="btn-group">
               <button type="button" class="btn btn-primary" data-toggle="dropdown">
                 保存SQL
@@ -65,10 +65,10 @@
               </button>
               <ul class="dropdown-menu">
                 <li>
-                  <a href="#" onclick="sqlEditor.saveSqlDraft(1)" ondragstart="return false;">保存</a>
+                  <a href="#" @click="openSaveSqlDialog(1)" ondragstart="return false;">保存</a>
                 </li>
                 <li>
-                  <a href="#" onclick="sqlEditor.saveSqlDraft(2)" ondragstart="return false;">另存为</a>
+                  <a href="#" @click="openSaveSqlDialog(2)" ondragstart="return false;">另存为</a>
                 </li>
               </ul>
             </div>
@@ -121,19 +121,19 @@
       <input id="personId" type="hidden" value="<%=LoginUserInfo.getLoginUserId()%>">
       <div id="tableMenu" class="rightMenu">
         <ul>
-          <li onclick="sqlEditor.getSelectSql('tableMenu')">生成SELECT语句</li>
+          <li @click="getSelectSql('tableMenu')">生成SELECT语句</li>
           <li onclick="sqlEditor.viewTableDetail()">查看表信息</li>
           <li onclick="sqlEditor.viewTableRelation()">查看表关联信息</li>
         </ul>
       </div>
       <div id="tableMenuTwo" class="rightMenu">
         <ul>
-          <li onclick="sqlEditor.getSelectSql('tableMenuTwo')">生成SELECT语句</li>
+          <li onclick="getSelectSql('tableMenuTwo')">生成SELECT语句</li>
         </ul>
       </div>
       <div id="importTableMenu" class="rightMenu">
         <ul>
-          <li onclick="sqlEditor.getSelectSql('importTableMenu')">生成SELECT语句</li>
+          <li onclick="getSelectSql('importTableMenu')">生成SELECT语句</li>
           <li onclick="sqlEditor.editTable()">修改表结构</li>
           <li onclick="sqlEditor.deleteTable()">删除</li>
         </ul>
@@ -185,17 +185,52 @@
         <input id="tableName" name="tableName" type="text" class="form-control">
       </div>
     </div>
+    <el-dialog v-if="sqlDraftDialogFormVisible" title="请填写SQL草稿名称" :visible.sync="sqlDraftDialogFormVisible" :append-to-body="true">
+      <el-form :model="sqlDraftForm" :rules="sqlDraftFormRules" ref="sqlDraftForm">
+        <el-form-item label="草稿名称" :label-width="formLabelWidth" prop="draftTitle">
+          <el-input v-model="sqlDraftForm.draftTitle" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="sqlDraftDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveSqlDialog()">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog v-if="sqlDraftDialog" title="SQL草稿列表" :visible.sync="sqlDraftDialog" :append-to-body="true" width="50%">
+      <sqlDraftList ref="sqlDraftList"></sqlDraftList>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="sqlDraftDialog = false">关闭</el-button>
+        <el-button type="primary" @click="useSql">使用SQL</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import { initSQLEditor, initDragAndDrop, initTableTip, initIcon,
   initTableTree, initFunctionTree, initEvent, initParamTree,
   tableTreeSearch, paramTreeSearch, functionTreeSearch, sqlFormat, findAndReplace,
-  caseTransformation, selectSqlNotes, selectSqlCancelNotes } from '@/api/analysis/SQLEditor/SQLEditor'
+  caseTransformation, selectSqlNotes, selectSqlCancelNotes,getSaveInfo,getSelectSql
+  ,getSaveSqlDraftObj,saveSqlDraft,useSql,initVariable} from '@/api/analysis/SQLEditor/SQLEditor'
+import sqlDraftList from '@/views/analysis/SQLEditor/sqlDraftList'
+import { updateDraft}  from '@/api/analysis/SQLEditor/SQLDraft'
 export default {
   name: 'SQLEditor',
+  components:{sqlDraftList},
   data() {
     return {
+      sqlDraftForm:{
+        sqlDraftUuid:'',
+        draftTitle:'',
+        draftSql:'',
+        paramJson:''
+      },
+      sqlDraftFormRules:{
+        draftTitle: [
+          { type: 'string', required: true, message: '请输入草稿名称', trigger: 'blur' }]
+      },
+      sqlDraftDialogFormVisible:false,
+      sqlDraftDialog:false,
+      formLabelWidth: '120px'
     }
   },
   mounted() {
@@ -207,6 +242,7 @@ export default {
       initIcon()
       initTableTree()
       initFunctionTree()
+      initVariable();
       initEvent()
       initParamTree()
       initTableTip().then(result => {
@@ -240,6 +276,118 @@ export default {
     },
     selectSqlCancelNotes() {
       selectSqlCancelNotes()
+    },
+    getSaveInfo(){
+      return getSaveInfo();
+    },
+    getSelectSql(menuId){
+      getSelectSql(menuId);
+    },
+    openSaveSqlDialog(type){
+      if(type == 1){
+        //如果对象是旧的对象则证明是打开的sql草稿 因此直接保存  否则直接修改
+        let sqlObj = getSaveSqlDraftObj(type);
+        let sql = sqlObj.draftSql;
+        if (sql === "") {
+          this.$notify({
+            title:'提示',
+            message:'请输入sql语句',
+            type:'info',
+            duration:2000,
+            position:'bottom-right'
+          });
+          return;
+        }
+        else{
+          if(!sqlObj.isOld){
+            this.sqlDraftDialogFormVisible = true;
+          }
+          else{
+            updateDraft(sqlObj).then(result => {
+              if(result.code == 0){
+                this.$notify({
+                  title:'提示',
+                  message:'保存成功',
+                  type:'success',
+                  duration:2000,
+                  position:'bottom-right'
+                });
+              }
+              else{
+                this.$notify({
+                  title:'提示',
+                  message:'保存失败',
+                  type:'error',
+                  duration:2000,
+                  position:'bottom-right'
+                });
+              }
+            })
+          }
+        }
+      }
+      else{
+        this.sqlDraftDialogFormVisible = true;
+      }
+    },
+    saveSqlDialog(){
+      let verResult = false;
+      this.$refs['sqlDraftForm'].validate((valid) => {
+        if (valid) {
+          verResult = valid;
+        }
+      })
+      if(verResult){
+        let sqlObj = getSaveSqlDraftObj(1);
+        this.sqlDraftForm.draftSql = sqlObj.draftSql
+        this.sqlDraftForm.paramJson = sqlObj.paramJson
+        saveSqlDraft(this.sqlDraftForm).then(result=>{
+          if(result.code == 0){
+            this.$notify({
+              title:'提示',
+              message:'保存成功',
+              type:'success',
+              duration:2000,
+              position:'bottom-right'
+            });
+            this.sqlDraftDialogFormVisible = false;
+            //手动销毁数据  多层dialog v-if失效 不知道为啥 没找到解决办法
+            this.sqlDraftForm = {
+              sqlDraftUuid:'',
+              draftTitle:'',
+              draftSql:'',
+              paramJson:''
+            };
+          }
+          else{
+            this.$notify({
+              title:'提示',
+              message:'保存失败',
+              type:'error',
+              duration:2000,
+              position:'bottom-right'
+            });
+          }
+        });
+      }
+    },
+    openSqlDraftList(){
+      this.sqlDraftDialog = true;
+    },
+    useSql(){
+      let returnObj = this.$refs.sqlDraftList.getSelectRow();
+      if(returnObj.verify){
+        this.$confirm('该操作会清空当前SQL编辑器中的语句,是否继续？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.sqlDraftDialog = false;
+          useSql(returnObj);
+        })
+      }else{
+        return;
+      }
     }
   }
 }

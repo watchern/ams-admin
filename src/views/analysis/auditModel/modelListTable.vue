@@ -1,5 +1,5 @@
 <template>
-  ·  <div class="list-container">
+  <div class="list-container">
     <div class="filter-container">
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
@@ -13,9 +13,9 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="batch_remarks">导出</el-dropdown-item>
           <el-dropdown-item command="export_excel">导入</el-dropdown-item>
-          <el-dropdown-item @click="batch_remarks">共享</el-dropdown-item>
-          <el-dropdown-item command="batch_remarks">发布</el-dropdown-item>
-          <el-dropdown-item command="batch_remarks">撤销发布</el-dropdown-item>
+          <el-dropdown-item @click="">共享</el-dropdown-item>
+          <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
+          <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -36,16 +36,24 @@
         <el-button @click="hideEditModal">取消</el-button>
       </div>
     </el-dialog>
+    <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
+      <ModelFolderTree ref="modelFolderTree" :publicModel="publicModelValue"/>
+      <div slot="footer">
+        <el-button type="primary" @click="updatePublicModel">确定</el-button>
+        <el-button @click="treeSelectShow=false">取消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { findModel, saveModel, deleteModel, selectModel, updateModel } from '@/api/analysis/auditModel'
+import { findModel, saveModel, deleteModel, selectModel, updateModel,updateModelBasicInfo } from '@/api/analysis/auditModel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
+import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
 import EditModel from '@/views/analysis/auditModel/editModel'
 export default {
   name: 'ModelListTable',
-  components: { Pagination, QueryField, EditModel },
+  components: { Pagination, QueryField, EditModel,ModelFolderTree },
   data() {
     return {
       tableKey: 'errorUuid',
@@ -53,7 +61,9 @@ export default {
       total: 0,
       listLoading: false,
       editModelTitle: '',
+      treeSelectShow:false,
       editModelShow: false,
+      publicModelValue:"publicModel",
       dialogFormVisible: true,
       selectTreeNode: null,
       isUpdate: false,
@@ -134,7 +144,7 @@ export default {
 
   },
   created() {
-    this.getList()
+    this.getList({ modelFolderUuid: 1 })
   },
   methods: {
     /**
@@ -308,16 +318,16 @@ export default {
      * 删除模型
      */
     deleteModel() {
+      var selectObj = this.$refs.modelListTable.selection
+      if (selectObj == undefined || selectObj.length === 0) {
+        this.$message({ type: 'info', message: '请先选择要删除的模型!' })
+        return
+      }
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        var selectObj = this.$refs.modelListTable.selection
-        if (selectObj == undefined || selectObj.length === 0) {
-          this.$message({ type: 'info', message: '请先选择要删除的模型!' })
-          return
-        }
         deleteModel(selectObj).then(result => {
           if (result.code == 0) {
             this.getList(this.query)
@@ -326,15 +336,86 @@ export default {
             this.$message({ type: 'error', message: '删除失败' })
           }
         })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
       })
     },
-    batch_remarks() {
-
+    /**
+     * 发布模型
+     */
+    publicModel(value){
+      this.publicModelValue = value;
+      var selectObj = this.$refs.modelListTable.selection
+      if (selectObj == undefined || selectObj.length === 0) {
+        this.$message({ type: 'info', message: '请先选择要发布的模型!' })
+        return
+      }
+      this.$confirm('是否确定将选中的模型发布到公共模型下?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.treeSelectShow = true;
+      })
+    },
+    /**
+     *撤销发布
+     */
+    cancelPublicModel(){
+      if(this.selectTreeNode.id != 2){
+        this.$message({ type: 'info', message: '只能撤销公共模型下的模型' })
+        return
+      }
+      var selectObj = this.$refs.modelListTable.selection
+      if (selectObj == undefined || selectObj.length === 0) {
+        this.$message({ type: 'info', message: '请先选择要撤销发布的模型!' })
+        return
+      }
+      this.$confirm('是否确定将选中的模型撤销发布?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        for(let i = 0;i < selectObj.length;i++){
+          selectObj[i].modelFolderUuid = 2
+        }
+        this.updateModelBasicInfo(selectObj,"撤销发布")
+      })
+    },
+    /**
+     * 修改要发布的模型
+     */
+    updatePublicModel(){
+      let selectNode = this.$refs.modelFolderTree.getSelectNode()
+      var selectObj = this.$refs.modelListTable.selection
+      for(let i = 0;i < selectObj.length;i++){
+        selectObj[i].modelFolderUuid = selectNode.id
+      }
+      this.updateModelBasicInfo(selectObj)
+    },
+    updateModelBasicInfo(selectObj,tips){
+      updateModelBasicInfo(selectObj).then(result => {
+        if(result.code == 0){
+          this.treeSelectShow = false;
+          this.$notify({
+            title:'提示',
+            message:tips + '成功',
+            type:'success',
+            duration:2000,
+            position:'bottom-right'
+          });
+          this.getList(this.query)// 刷新列表
+          this.$emit('refreshTree')
+          //刷新树和列表
+        }
+        else{
+          this.$notify({
+            title:'提示',
+            message:tips + '失败',
+            type:'error',
+            duration:2000,
+            position:'bottom-right'
+          });
+        }
+      })
     }
   }
 }

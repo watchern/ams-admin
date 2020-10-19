@@ -46,15 +46,17 @@
         <el-form ref="modelDesignForm" :model="form" label-width="150px" :rules="modelDesignRules">
           <el-form-item style="width: 400px" prop="sqlValue">
             <el-button type="primary" @click="getSqlObj(2)">图形化编辑器</el-button>
-            <el-button type="primary" @click="getSqlObj(1)">SQL编辑器</el-button>
+            <el-button type="primary" @click="openSqlEditor">SQL编辑器</el-button>
           </el-form-item>
-          <el-dialog v-if="SQLEditorShow" :append-to-body="appendToBody" :visible.sync="SQLEditorShow" title="SQL编辑器" width="100%">
-            <SQLEditor ref="SQLEditor" />
-            <el-button type="primary" @click="">保存</el-button>
+          <el-dialog :fullscreen=true v-if="SQLEditorShow" :destroy-on-close="true" :append-to-body="appendToBody" :visible.sync="SQLEditorShow" title="SQL编辑器" width="100%" @close="sqlEditorCloseEvent">
+            <SQLEditor ref="SQLEditor" v-if="SQLEditorShow"/>
+            <el-button type="primary" @click="getSqlObj">保存</el-button>
             <el-button @click="">取消</el-button>
           </el-dialog>
           <el-form-item label="模型SQL">
-            <el-input v-model="form.sqlValue" type="textarea" />
+            <div id="sqlValueView"
+                 style="height: 300px; overflow-y: auto; border: 1px solid #e0e0e0; margin-left: 30px; width: 100%; padding: 15px;"></div>
+            <el-input  type="textarea" v-model="form.sqlValue" style="display: none;"/>
           </el-form-item>
         </el-form>
       </div>
@@ -365,8 +367,8 @@ export default {
       }
     },
     /**
-       * 获取当前界面的模型对象
-       */
+     * 获取当前界面的模型对象
+     */
     getModelObj() {
       // region 校验基本信息
       let basicInfoVerResult = false
@@ -468,14 +470,24 @@ export default {
       return this.form
     },
     /**
-       * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
-       */
-    getSqlObj(modelType) {
+     *打开sql编辑器
+     */
+    openSqlEditor(){
       // 打开sql编辑器窗体
       this.SQLEditorShow = true
-      // this.$router.push({path: '/analysis/SQLEditor', query: {id: '123123'}})
-      // window.open( '#/analysis/SQLEditor')
-      return
+    },
+    /**
+     * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
+     */
+    getSqlObj(modelType) {
+      /*      let returnObj = this.$refs.SQLEditor.getSaveInfo();
+            //region 初始化SQL语句显示
+            this.displaySQL(returnObj);
+            //endregion
+            console.log(returnObj);
+            this.changeParamDataFormat(returnObj.params);
+            //重置参数对象属性，因为SQL编辑器是移植的，因此兼容那边的数据格式，因此对数据格式进行转换
+            return;*/
       const sqlObj = {
         sqlValue: 'select * from AA_AUDIT_ITEM',
         column: [{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }],
@@ -511,9 +523,66 @@ export default {
       this.form.modelType = modelType
     },
     /**
-       * 设置选中的树节点
-       * @param node 节点
-       */
+     *相互转换param数据格式
+     */
+    changeParamDataFormat(paramObj,type){
+      if(paramObj == undefined || paramObj == null){
+        return;
+      }
+      if(type == 1){
+        //SQL编辑器参数对象转编辑界面参数对象
+        let params = [];
+        for(let i = 0;i < paramObj.length;i++){
+          let obj = {
+            ammParamUuid:paramObj[i].moduleParamId,
+            paramName:paramObj[i].name,
+            copyParamId:paramObj[i].copyParamId,
+            description:"",
+            paramValue:""
+          };
+          params.push(obj);
+        }
+        return params;
+      }
+      else if(type == 2){
+        //参数界面编辑对象转SQL编辑器参数对象
+        var returnObj = {"arr" : []};
+        for(let b = 0; b< paramObj.length;b++){
+          let id = "{#"+paramObj[b].ammParamUuid+"#}";
+          let name = paramObj[b].paramName;
+          let moduleParamId = paramObj[b].linkParamUuid;
+          let allowedNull = typeof paramObj[b].ammParamChoice.allowedNull != "undefined" ? paramObj[b].ammParamChoice.allowedNull : 1;
+          var obj = {
+            id : id,
+            name : name,
+            moduleParamId:moduleParamId,
+            copyParamId:id,
+            allowedNull:allowedNull
+          };
+          returnObj.arr.push(obj);
+        }
+        return returnObj;
+      }
+    },
+    displaySQL(returnObj){
+      let sql = returnObj.sqlValue;
+      let arrPram = returnObj.params;
+      let sqlStr = returnObj.sqlValue;
+      let reg;
+      for(let i = 0 ; i <arrPram.length; i++){
+        reg = new RegExp(arrPram[i].id , "g" );
+        let html = " <button class='divEditorBtn' type='button' id='"+arrPram[i].id+"'>"+arrPram[i].name+"</button> ";
+        sql = sql.replace(reg, html);
+        sqlStr = sqlStr.replace(reg,""+arrPram[i].id+"");
+      }
+      this.form.sqlValue = sqlStr
+      $("#sqlValue").val();
+      $("#sqlValueView").html(sql);
+    },
+    /**
+     * 设置选中的树节点
+     * @param node 节点
+     */
     setSelectTreeNode(node) {
       this.selectTreeNode = this.openValue
       this.form.modelFolderUuid = this.openValue.id
@@ -681,15 +750,20 @@ export default {
       model.modelFolderName = this.openValue.label
       this.form = model
       // endregion
+      // region 反显SQL显示
+      let paramObj = this.changeParamDataFormat(model.parammModelRel,2)
+      let returnObj = {};
+      returnObj.params = paramObj.arr;
+      returnObj.sqlValue = this.form.sqlValue;
+      this.displaySQL(returnObj);
+      // endregion
       // region 反显参数默认值
-      // todo 这块需要一起讨论一下。到底是将参数HTML存起来 还是每次根据参数重新反显
       this.paramData = model.parammModelRel
       // endregion
       // region 模型结果输出列
       this.columnData = model.modelOutputColumn
       // endregion
       // region 反显关联详细
-      // 拿到所有树节点并找到关联详细的父节点   试了几种办法没法通过id直接拿到节点
       var treeNodeDetail = this.treeNodeData[4]
       for (let i = 0; i < model.modelDetailRelation.length; i++) {
         ++this.modelDetailIndex
@@ -722,9 +796,13 @@ export default {
           type: 'filterShowNode'
         }
         treeNodeFilterShow.children.push(newChild)
-        this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex, data: model.resultFilterShow[i] })
+        this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex, data: model.resultFilterShow[i]})
       }
       // endregion
+    },
+    sqlEditorCloseEvent(){
+      //sql编辑器关闭时候销毁数据
+      this.SQLEditorShow = false;
     }
   }
 }
