@@ -1,99 +1,71 @@
 @import './variables.scss';
 
-@mixin colorBtn($color) {
-  background: $color;
 
-  &:hover {
-    color: $color;
-
-    &:before,
-    &:after {
-      background: $color;
-    }
-  }
+.el-button {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #353A43;
+  font-weight: bold;
 }
 
-.blue-btn {
-  @include colorBtn($blue)
-}
-
-.light-blue-btn {
-  @include colorBtn($light-blue)
-}
-
-.red-btn {
-  @include colorBtn($red)
-}
-
-.pink-btn {
-  @include colorBtn($pink)
-}
-
-.green-btn {
-  @include colorBtn($green)
-}
-
-.tiffany-btn {
-  @include colorBtn($tiffany)
-}
-
-.yellow-btn {
-  @include colorBtn($yellow)
-}
-
-.pan-btn {
-  font-size: 14px;
-  color: #fff;
-  padding: 14px 36px;
-  border-radius: 8px;
-  border: none;
+.el-button:active {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #353A43;
   outline: none;
-  transition: 600ms ease all;
-  position: relative;
-  display: inline-block;
-
-  &:hover {
-    background: #fff;
-
-    &:before,
-    &:after {
-      width: 100%;
-      transition: 600ms ease all;
-    }
-  }
-
-  &:before,
-  &:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 2px;
-    width: 0;
-    transition: 400ms ease all;
-  }
-
-  &::after {
-    right: inherit;
-    top: inherit;
-    left: 0;
-    bottom: 0;
-  }
+  font-weight: bold;
 }
 
-.custom-button {
-  display: inline-block;
-  line-height: 1;
-  white-space: nowrap;
-  cursor: pointer;
-  background: #fff;
-  color: #fff;
-  -webkit-appearance: none;
-  text-align: center;
-  box-sizing: border-box;
-  outline: 0;
-  margin: 0;
-  padding: 10px 15px;
-  font-size: 14px;
-  border-radius: 4px;
+.el-button:hover, .el-button:focus {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #353A43;
+  font-weight: bold;
+}
+
+.el-button--primary {
+  background: #353A43;
+  border-color: #353A43;
+  color: #C8FF8C;
+  font-weight: bold;
+}
+
+.el-button--primary:active {
+  background: #353A43;
+  border-color: #353A43;
+  color: #C8FF8C;
+  outline: none;
+  font-weight: bold;
+}
+
+.el-button--primary:hover, .el-button--primary:focus {
+  background: #434954;
+  border-color: #434954;
+  color: #C8FF8C;
+  font-weight: bold;
+}
+
+.oper-btn{
+  background: #343942;
+  width:24px;
+  height:24px;
+  padding: 4px;
+  color:#ffffff;
+  font-family: "iconfont" !important;
+  font-weight: normal!important;
+}
+.oper-btn.add:after{
+  content:'\e60a'!important;
+}
+.oper-btn.edit:after{
+  content:'\e604'!important;
+}
+.oper-btn.delete:after{
+  content:'\e601'!important;
+}
+.oper-btn.show:after{
+  content:'\e609'!important;
+}
+.oper-btn.more:after{
+  content:'\e605'!important;
 }

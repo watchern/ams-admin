@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'Audit Manage System',
+  title: '审计系统',
 
   /**
    * @type {boolean} true | false

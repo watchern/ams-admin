@@ -4,8 +4,9 @@
     <el-input
       v-model="filterText"
       placeholder="输入关键字进行过滤"
+      class="tree-search"
     />
-    <el-tree
+    <MyElTree
       ref="tree"
       :data="data"
       :props="defaultProps"
@@ -13,19 +14,20 @@
       default-expand-all
       :expand-on-click-node="false"
       @node-click="handleNodeClick"
+      nodeKey="id"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <span>
           <i :class="data.icon" />{{ node.label }}
         </span>
-        <span>
-          <el-button type="text" size="mini" @click="() => setSelectTreeNode(node,data,1)"><i class="el-icon-circle-plus" /></el-button>
-          <el-button type="text" size="mini" @click="() => setSelectTreeNode(node, data,2)"><i class="el-icon-edit" /></el-button>
-          <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-delete" /></el-button>
+        <span v-if="data.type=='folder'">
+          <el-button type="text" size="mini" class="tree-line-btn" @click="() => setSelectTreeNode(node,data,1)"><svg-icon icon-class="icon-add-1" /></el-button>
+          <el-button type="text" size="mini" class="tree-line-btn" @click="() => setSelectTreeNode(node, data,2)"><svg-icon icon-class="icon-edit-1" /></el-button>
+          <el-button type="text" size="mini" class="tree-line-btn" @click="() => deleteFolder(node, data)"><svg-icon icon-class="icon-delete-1" /></el-button>
         </span>
       </span>
-    </el-tree>
-    <el-dialog title="请填写分类信息" :visible.sync="dialogFormVisible">
+    </MyElTree>
+    <el-dialog v-if="dialogFormVisible" title="请填写分类信息" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="分类名称" :label-width="formLabelWidth">
           <el-input v-model="form.modelFolderName" autocomplete="off" />
@@ -40,9 +42,12 @@
 
 </template>
 <script>
+import MyElTree from '@/components/Ace/tree/src/tree.vue'
 import { findModelFoldeTree, deleteModelFolder, addModelFolder, updateModelFolder } from '@/api/analysis/auditModel'
 export default {
   name: 'ModelFolderTree',
+  props:['publicModel'],
+  components:{MyElTree},
   data() {
     return {
       filterText: null,
@@ -80,17 +85,52 @@ export default {
      */
     getModelFolder() {
       findModelFoldeTree().then(result => {
-        this.data = result.data
+        let newData = [];
+        if(this.publicModel === "publicModel"){
+          //处理数据  只保留公共分类的文件夹数据 模型也不保留
+          for (let i = 0;i < result.data.length;i++){
+            if(result.data[i].id == 1){
+              newData.push(result.data[i]);
+            }
+          }
+          if(newData[0].children.length > 0){
+            this.deleteModelData(newData[0])
+          }
+        }
+/*        else if(this.publicModel === "cancelModel"){
+          for (let i = 0;i < result.data.length;i++){
+            if(result.data[i].id == 2){
+              newData.push(result.data[i]);
+            }
+          }
+          if(newData[0].children.length > 0){
+            this.deleteModelData(newData[0])
+          }
+        }*/
+        else{
+          newData = result.data
+        }
+        this.data = newData
       })
+    },
+    deleteModelData(newData){
+      for(let i = 0; i < newData.children.length;i++){
+        if(newData.children[i].type == "model"){
+          newData.children.splice(i,1);
+        }
+        else{
+          this.deleteModelData(newData.children[i]);
+        }
+      }
     },
     /**
      * 树的点击事件
      * @param data 树的对象数据 包括子节点
      */
     handleNodeClick(data) {
-      if (data.type == 'model') {
-
+      if (data.type === 'model') {
       } else {
+        this.selectTreeNode = data
         this.$emit('refreshModelList', data)
       }
     },
@@ -113,7 +153,7 @@ export default {
     setSelectTreeNode(node, data, operationType) {
       this.operationType = operationType
       this.selectTreeNode = data
-      if (operationType == 2) {
+      if (operationType === 2) {
         this.form.modelFolderName = this.selectTreeNode.label
       }
       this.dialogFormVisible = true
@@ -151,7 +191,7 @@ export default {
      * 表单确定按钮
      */
     enterBtn() {
-      if (this.operationType == 1) {
+      if (this.operationType === 1) {
         this.addModelFolder()
       } else {
         this.updateFolder()
@@ -164,17 +204,24 @@ export default {
       this.form.modelFolderUuid = this.getGuuid()
       this.form.parentUuid = this.selectTreeNode.id
       this.form.folderSort = 0
-      this.form.folderPath = ''
+      debugger
+      let nodePath = this.$refs.tree.getNodePath(this.selectTreeNode);
+      let fullPath = [];
+      nodePath.forEach(path => {
+        fullPath.push(path.id);
+      })
+      this.form.folderPath = fullPath.join("/") + '/' + this.form.modelFolderUuid
       this.form.pbScope = this.selectTreeNode.extMap.pbScope
       addModelFolder(this.form).then(result => {
-        if (result != null && result.code == 0) {
+        if (result != null && result.code === 0) {
           const newChild = {
             id: this.form.modelFolderUuid,
             label: this.form.modelFolderName,
             children: [],
             pid: this.selectTreeNode.id,
             icon: 'el-icon-folder',
-            extMap: { pbScope: this.selectTreeNode.extMap.pbScope }
+            extMap: { pbScope: this.selectTreeNode.extMap.pbScope },
+            type:'folder'
           }
           if (!this.selectTreeNode.children) {
             this.$set(this.selectTreeNode, 'children', [])
@@ -197,7 +244,7 @@ export default {
       this.form.folderPath = null
       this.form.pbScope = null
       updateModelFolder(this.form).then(result => {
-        if (result.code == 0) {
+        if (result.code === 0) {
           this.getModelFolder()
         }
       })
@@ -209,11 +256,11 @@ export default {
      * @param data 节点数据
      */
     deleteFolder(node, data) {
-      if (data.pid == 0) {
+      if (data.pid === 0) {
         this.$message({ success: 'info', message: '根目录不允许删除' })
         return
       }
-      if ((data.children != undefined && data.children.length == 0) || data.children == undefined) {
+      if ((data.children !== undefined && data.children.length === 0) || data.children === undefined) {
         var obj = { modelFolderUuid: data.id }
         this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
           confirmButtonText: '确定',
@@ -221,7 +268,7 @@ export default {
           type: 'warning'
         }).then(() => {
           deleteModelFolder(obj).then(result => {
-            if (result.code == 0) {
+            if (result.code === 0) {
               this.getModelFolder()
               this.$message({
                 type: 'success',
@@ -238,6 +285,9 @@ export default {
       } else {
         this.$message({ success: 'error', message: '该分类下有分类或模型，不允许删除' })
       }
+    },
+    getSelectNode(){
+      return this.selectTreeNode;
     }
   }
 }

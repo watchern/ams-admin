@@ -1,0 +1,555 @@
+.side-menu-container {
+    position: fixed;
+    top: 0px;
+    left: 0;
+    bottom: 22px;
+    width: 212px;
+    background: #DDE0E9;
+    border-right: 1px solid #ECECEC;
+    padding-bottom: 40px;
+    overflow-y: auto;
+}
+
+/*
+ * zTree鐔忕疆
+ */
+.ztree {
+    padding: 0;
+}
+
+.ztree li ul {
+    padding-left: 0;
+}
+
+.ztree li a {
+    padding-left: 5px;
+    display: block;
+    height: 25px;
+    line-height: 30px;
+    outline: none;
+    border: none;
+}
+
+.ztree li a:hover {
+    text-decoration: none;
+}
+
+.ztree li span.button.ico_docu {
+    vertical-align: middle;
+}
+
+.ztree li a.curSelectedNode {
+    padding-top: 0px;
+    background-color: #fff;
+    color: black;
+    height: 30px;
+    line-height: 30px;
+    border: none;
+    opacity: 1;
+}
+
+.ztree li span {
+    vertical-align: middle;
+}
+
+.ztree li span.button.ico_open,
+.ztree li span.button.ico_close {
+    vertical-align: middle;
+    position: relative;
+    margin-top: -2px;
+}
+
+.ztree a.level0,
+.ztree ul.level0 a.level1,
+.ztree ul.level1 > li {
+    border-bottom: 1px solid #ECECEC;
+}
+
+.ztree > li.level0 > ul.level0 {
+    padding-left: 13px;
+}
+
+.ztree li span.button.ztree_1_ico_open,
+.ztree li span.button.ztree_1_ico_close {
+    background: url("../icons/icon-document@1x.png") no-repeat center;
+}
+
+.ztree li span.button.ztree_2_ico_open {
+    background: url("../icons/icon-folder-open@1x.png") no-repeat center;
+}
+
+.ztree li span.button.ztree_2_ico_docu,
+.ztree li span.button.ztree_2_ico_close {
+    background: url("../icons/icon-folder-close@1x.png") no-repeat center;
+}
+
+.ztree li span.button.ztree_3_ico_docu {
+    background: url("../icons/icon-ps@1x.png") no-repeat center;
+}
+
+.ztree li span.button.ztree_4_ico_open,
+.ztree li span.button.ztree_4_ico_close {
+    background: url("../icons/icon-fenxi.png") no-repeat center;
+}
+
+.ztree li span.button.ztree_5_ico_docu,
+.ztree li span.button.ztree_5_ico_open {
+    background: url("../icons/sanjiao.png") no-repeat center;
+}
+
+.ztree li span.button.ztree_5_ico_close {
+    background: url("../icons/sanjiao-right.png") no-repeat center;
+}
+
+.ztree li span.button.ztree_no_ico_docu,
+.ztree li span.button.ztree_no_ico_open,
+.ztree li span.button.ztree_no_ico_close {
+    background: none;
+}
+
+.ztree li span.button.ztree_6_ico_docu,
+.ztree li span.button.ztree_6_ico_open,
+.ztree li span.button.ztree_6_ico_close {
+    background: url("../icons/icon-weidu.png") no-repeat center;
+    margin-top: -2px;
+}
+
+.ztree li span.button.ztree_7_ico_docu,
+.ztree li span.button.ztree_7_ico_open,
+.ztree li span.button.ztree_7_ico_close {
+    background: url("../icons/icon-duliang.png") no-repeat center;
+    margin-top: -2px;
+}
+
+.ztree li span.button.switch {
+    display: none;
+}
+
+.icon-circle-3 {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    background: url("../icons/more.png") no-repeat center;
+    float: right;
+    margin-top: 8px;
+}
+
+.icon-circle-4 {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    background: url("../icons/icon-shu@1x.png") no-repeat center;
+    float: right;
+    margin-top: 8px;
+}
+
+.icon-circle-5 {
+    float: right;
+}
+
+.icon-circle-5 i {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    background: url("../icons/shouqi.png") no-repeat center;
+    vertical-align: middle;
+}
+
+.icon-circle-5 span {
+    margin-right: 0;
+    margin-left: 2px;
+    color: #AEBBD2;
+    font-size: 12px;
+}
+
+.icon-circle-6 {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    background: url("../icons/shouqi.png") no-repeat center;
+    float: right;
+    margin-top: 8px;
+}
+
+.menu-icon {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    vertical-align: middle;
+}
+
+.icon-menu {
+    background: url("../icons/icon-menu@1x.png") no-repeat center;
+}
+
+/*top-collapse*/
+.top-collapse-con {
+    position: fixed;
+    left: 212px;
+    top: 0px;
+    right: 0;
+    height: 270px;
+    background-color: #fff;
+    box-shadow: 8px 0 8px 0 rgba(0, 0, 0, 0.20);
+    border-bottom: 1px solid #dce0e4;
+    padding: 6px 13px;
+    /*z-index: 99;*/
+}
+
+.collapse-panel {
+    padding-right: 10px;
+}
+
+.collapse-panel-head {
+    color: #5887B3;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.collapse-panel-head > span {
+    color: #F5A624;
+    font-family: Arial;
+}
+
+.tag-left-con,
+.tag-right-con {
+    display: table-cell;
+}
+
+.tag-left-con {
+    width: 462px;
+    height: 115px;
+    overflow-y: scroll;
+}
+
+.tags-item-con {
+    font-size: 0;
+    background: #F7F7F7;
+    border: 1px solid #F3F3F3;
+    padding: 3px 9px 0;
+    margin-bottom: 10px;
+}
+
+.tag-select {
+    font-size: 0;
+    display: inline-block;
+    height: 21px;
+    line-height: 18px;
+    border: 1px dashed transparent;
+    border-radius: 6px;
+    margin-right: 9px;
+    margin-bottom: 9px;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+.tag-select i {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-size: 12px;
+    font-style: normal;
+}
+
+.tag-select i.icon-close {
+    background-image: url("../lib/icons/close.png");
+    border-right: 1px solid #DCE6ED;
+    padding-left: 4px;
+}
+
+.tag-select i.icon-down {
+    background-image: url("../lib/icons/sanjiao.png");
+}
+
+.tag-select i.icon-clock {
+    margin-top: -2px;
+    background-image: url("../icons/linshi.png");
+}
+
+.tag-select i.icon-add {
+    color: #000000;
+    font-size: 16px;
+    line-height: 15px;
+}
+
+.tag-info.active > span {
+    font-family: PingFangSC-Regular;
+    font-size: 12px;
+    color: #759EEC;
+    letter-spacing: 0;
+}
+
+.tag-info.active {
+    border-color: #749EEC;
+}
+
+.tag-select span {
+    display: inline-block;
+    height: 21px;
+    font-family: PingFangSC-Regular;
+    font-size: 12px;
+    letter-spacing: 0;
+    color: #9D9D9D;
+    min-width: 50px;
+}
+
+.tag-select i, .tag-select span {
+    vertical-align: middle;
+}
+
+.tag-default {
+    background: #BDBDBD;
+}
+
+.tag-info {
+    background: #E1E9F8;
+}
+
+.tag-warning {
+    background: #FCCC77;
+}
+
+.tag-default span,
+.tag-warning span,
+.tag-info span {
+    color: #434343;
+}
+
+.tag-ouline {
+    background-color: #fff;
+}
+
+.tag-warning.tag-ouline {
+    color: #FCCC77;
+    border-color: #FCCC77;
+    border-style: solid;
+}
+
+.tag-warning.active > span {
+    font-family: PingFangSC-Regular;
+    font-size: 12px;
+    color: #F3A71F;
+    letter-spacing: 0;
+}
+
+.tag-warning.active {
+    border-color: #F3A71F;
+    background-color: #FBD694;
+}
+
+.tag-warning.active .icon-clock {
+    background-image: url("../icons/linshiweidu.png");
+}
+
+.tag-gray {
+    background-color: #edeef2;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.tag-gray .icon-down {
+    border-left: 1px solid #e8e9ec;
+    border-right: 1px solid #e8e9ec;
+    background-image: url("../../AuditAnalysis/lib/icons/icon-down-blue.png") !important;
+}
+
+.tag-gray span {
+    color: #3d84c8;
+}
+
+.icon-edit {
+    background-image: url("../../AuditAnalysis/lib/icons/icon-edit.png");
+}
+
+.grid-row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+[class^="grid-col-"] {
+    float: left;
+}
+
+.grid-col-35 {
+    width: 100%;
+}
+
+.grid-col-35 .collapse-panel-body .tags-item-con {
+    height: 35px;
+    overflow-y: scroll;
+}
+
+.grid-col-30 {
+    width: 30%;
+}
+
+.grid-col-30 .collapse-panel-body .tags-item-con {
+    height: 145px;
+    overflow-y: scroll;
+}
+
+.main-view-container {
+    position: fixed;
+    top: 294px;
+    left: 213px;
+    bottom: 22px;
+    right: 0;
+    background-color: #fff;
+    z-index: 98;
+}
+
+.main-view-heading {
+    border-bottom: 1px solid #dce0e4;
+}
+
+.main-view-heading:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.main-view-heading .icon-group {
+    float: left;
+    font-size: 0;
+}
+
+.main-view-heading .icon-group > a {
+    display: inline-block;
+    height: 46px;
+    line-height: 46px;
+    padding: 0 20px;
+}
+
+.main-view-heading .icon-group > a:hover,
+.main-view-heading .icon-group > a.active{
+    background-color: #e1e9f8;
+}
+
+.main-view-heading .icon-group > a > span {
+    ont-family: PingFangSC-Regular;
+    font-size: 14px;
+    color: #4A4A4A;
+    vertical-align: middle;
+}
+
+.main-view-heading .icon-group > a > i {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.view-icon-table {
+    background-image: url("../icons/view-icon-table.png");
+}
+.view-icon-bar{
+    background-image: url("../icons/view-icon-bar.png");
+}
+.view-icon-line{
+    background-image: url("../icons/view-icon-line.png");
+}
+.view-icon-scatter{
+    background-image: url("../icons/view-icon-scatter.png");
+}
+.view-icon-pie{
+    background-image: url("../icons/view-icon-pie.png");
+}
+.view-icon-radar{
+    background-image: url("../icons/view-icon-radar.png");
+}
+
+.main-view-heading .btn-group{
+    float: right;
+    padding-top: 12px;
+    font-size: 0;
+}
+.main-view-heading .btn-group a{
+    display: inline-block;
+    background-color: #3d80c4;
+    color: #fff;
+    padding: 4px 12px;
+    font-size: 12px;
+    margin-right: 10px;
+}
+
+.title{
+    border:1px solid #DEE1E5;
+    height:30px;
+}
+
+.cunFangQu{
+    border:1px solid #DEE1E5;
+    height:155px;
+}
+
+.title-fontStyle{
+    font-weight: bolder;
+    font-size: 17px;
+}
+
+.menuDemo {position:absolute; display:none; top:0;text-align: left;padding: 2px;}
+
+.menuDemo ul{
+    display: block;
+    min-width: 70px;
+}
+
+.menuDemo ul li{
+    margin: 1px 0;
+    padding: 0 5px;
+    cursor: pointer;
+    list-style: none outside none;
+}
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+    margin-left: -1px;
+    -webkit-border-radius: 0 6px 6px 6px;
+    -moz-border-radius: 0 6px 6px;
+    border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu>a:after {
+    display: block;
+    content: " ";
+    float: right;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #ccc;
+    margin-top: 5px;
+    margin-right: -10px;
+}
+
+.dropdown-submenu:hover>a:after {
+    border-left-color: #fff;
+}
+
+.dropdown-submenu.pull-left {
+    float: none;
+}
+
+.dropdown-submenu.pull-left>.dropdown-menu {
+    left: -100%;
+    margin-left: 10px;
+    -webkit-border-radius: 6px 0 6px 6px;
+    -moz-border-radius: 6px 0 6px 6px;
+    border-radius: 6px 0 6px 6px;
+}

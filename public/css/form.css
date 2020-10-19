@@ -1,0 +1,11 @@
+@charset "UTF-8";
+form {
+	padding: 10px;
+	background-color: #FFFFFF;
+}
+.form-control  {
+	background-color: #FBFBFB;
+}
+body{
+	overflow-x:hidden
+}

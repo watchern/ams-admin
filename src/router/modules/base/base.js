@@ -3,7 +3,7 @@
 const baseRouter = {
   path: '/base',
   name: '公共管理',
-  component: () => import('@/views/Ace/home/index'),
+  component: () => import('@/portal/default/index'),
   meta: {
   },
   children: [

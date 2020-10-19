@@ -1,9 +1,8 @@
 /** When your routing table is too long, you can split it into small modules **/
-
 const dataRouter = {
   path: '/data',
   name: '审计数据管理',
-  component: () => import('@/views/Ace/home/index'),
+  component: () => import('@/portal/default/index'),
   meta: {
   },
   children: [

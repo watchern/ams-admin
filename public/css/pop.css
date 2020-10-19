@@ -1,0 +1,265 @@
+.modal {
+	
+}
+
+.modal-green:after {
+	border-bottom-color: #2D6466;
+}
+
+.modal-head {
+	padding: 10px;
+}
+
+.modal-blue .modal-head {
+	background-color: #276195;
+}
+
+.modal-green .modal-head {
+	background-color: #2D6466;
+}
+
+.modal-head:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.modal-head>.icon-logo {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-image: url("../images/Icons/icon-logo@2x.png");
+	background-repeat: no-repeat;
+	background-size: cover;
+	vertical-align: middle;
+	margin-right: 5px;
+}
+
+.modal-head>span {
+	font-size: 16px;
+	color: #fff;
+	vertical-align: middle;
+}
+
+.come-in {
+	background: #3D80C4;
+	border: 1px solid #3D80C4;
+	border-radius: 4px;
+	padding: 3px 10px;
+}
+
+.come-in>i {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background: url("../images/Icons/icon-come-in@1x.png") no-repeat center;
+	vertical-align: middle;
+	margin-right: 6px;
+}
+
+.come-in>span {
+	color: #fff;
+	font-size: 14px;
+	vertical-align: middle;
+}
+
+.modal-dis-table {
+	display: table;
+	width: 100%;
+}
+
+.modal-dis-table-cell {
+	display: table-cell;
+}
+
+.modal-body-left {
+	width: 500px;
+}
+
+.modal-body-right {
+	border-left: 1px solid #B9B9BA;
+}
+
+.modal-panel-head {
+	padding: 10px;
+	background-color: #ECEDF1;
+}
+
+.modal-panel-body{
+	width: 495px;
+}
+
+.modal-panel-head .modal-panel-head-icon {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-repeat: no-repeat;
+	background-position: center;
+	vertical-align: middle;
+	margin-right: 5px;
+}
+
+.modal-blue .modal-icon-list {
+	background-image: url("../images/Icons/icon-modal-list-blue.png");
+}
+
+.modal-blue .modal-icon-remind {
+	background-image: url("../images/Icons/icon-modal-remind-blue@1x.png");
+}
+
+.modal-blue .modal-icon-notice {
+	background-image: url("../images/Icons/icon-modal-notice-blue@1x.png");
+}
+
+.modal-green .modal-icon-list {
+	background-image: url("../images/Icons/icon-modal-list-green.png");
+}
+
+.modal-green .modal-icon-remind {
+	background-image: url("../images/Icons/icon-modal-remind-green@1x.png");
+}
+
+.modal-green .modal-icon-notice {
+	background-image: url("../images/Icons/icon-modal-notice-green@1x.png");
+}
+
+.modal-panel-head>span {
+	font-size: 15px;
+	color: #4F4F50;
+	vertical-align: middle;
+	margin-right: 10px;
+}
+
+.modal-panel-head>em {
+	display: inline-block;
+	font-style: normal;
+	vertical-align: middle;
+	color: #276195;
+	font-weight: bold;
+	font-family: arial;
+	font-size: 16px;
+}
+
+.module-list>li {
+	padding: 10px;
+}
+
+.module-list>li+li {
+	border-top: 1px solid #EBE9E9;
+}
+
+.module-list .module-tag {
+	margin-bottom: 5px;
+}
+
+.module-list .module-tag span {
+	display: inline-block;
+	height: 20px;
+	line-height: 20px;
+	background-color: #aaa;
+	color: #fff;
+	border-radius: 10px;
+	padding: 0 10px;
+	font-size: 12px;
+}
+
+.modal-blue .module-tag span {
+	background-color: #77A5D4;
+}
+
+.modal-green .module-tag span {
+	background-color: #FC9712;
+}
+
+.module-list .module-content {
+	max-width: 319px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: #606E77;
+	font-size: 14px;
+	margin-bottom: 5px;
+}
+
+.module-footer:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.module-footer i {
+	display: inline-block;
+	vertical-align: middle;
+	width: 16px;
+	height: 16px;
+	margin-right: 5px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.module-footer span {
+	display: inline-block;
+	vertical-align: middle;
+	color: #ABABAB;
+	font-size: 14px;
+}
+
+.module-footer .item-submit {
+	float: left;
+	width: 90px;
+}
+
+.module-footer .item-submit i {
+	background-image: url("../images/Icons/icon-modal-submit@1x.png");
+}
+
+.module-footer .item-name {
+	float: left;
+}
+
+.module-footer .item-name i {
+	background-image: url("../images/Icons/icon-modal-name@1x.png");
+}
+
+.module-footer .item-date {
+	float: right;
+}
+
+.remind-list>li {
+	padding: 5px 10px;
+}
+
+.remind-list>li:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.remind-list>li>a {
+	display: inline-block;
+	color: #67757D;
+	max-width: 60%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.remind-list>li>span {
+	float: right;
+	vertical-align: middle;
+	color: #ABABAB;
+	font-size: 14px;
+}
+
+.notice-list>li {
+	padding: 10px;
+}
+
+.notice-list .notice-content {
+	color: #5B5B5B;
+	margin-bottom: 5px;
+}
+
+.notice-list .notice-date {
+	color: #D2D2D3;
+}

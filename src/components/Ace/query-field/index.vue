@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="query-field">
     <el-form :inline="true" :model="query" label-position="bottom">
       <el-form-item v-for="fd in formData" :label="fd.label">
         <el-input v-if="fd.type==='text'" v-model="query[fd.name]" />

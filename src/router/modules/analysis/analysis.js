@@ -3,7 +3,7 @@
 const analysisRouter = {
   path: '/analysis',
   name: '审计分析',
-  component: () => import('@/views/Ace/home/index'),
+  component: () => import('@/portal/default/index'),
   meta: {
   },
   children: [
@@ -11,6 +11,11 @@ const analysisRouter = {
       path: 'auditModel',
       name: '审计模型',
       component: () => import('@/views/analysis/auditModel/index')
+    },
+    {
+      path: 'auditModelResult',
+      name: '模型运行结果',
+      component: () => import('@/views/analysis/auditModelResult/index')
     }
   ]
 }

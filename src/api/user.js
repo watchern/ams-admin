@@ -18,8 +18,6 @@ export function getInfo(token) {
     params: { token }
   })
 }
-
-
 export function getUserRes() {
   return request({
     baseURL: baseURL,
@@ -27,7 +25,6 @@ export function getUserRes() {
     method: 'post'
   })
 }
-
 export function logout() {
   return request({
     url: '/logout',

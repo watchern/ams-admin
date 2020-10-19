@@ -3,7 +3,7 @@
 const etlschedulerRouter = {
   path: '/etlscheduler',
   redirect: '/etlscheduler/datasource',
-  component: () => import('@/views/Ace/home/index'),
+  component: () => import('@/portal/default/index'),
   name: 'Etlscheduler',
   meta: {
     title: 'etlscheduler',
@@ -20,14 +20,18 @@ const etlschedulerRouter = {
     //   path: 'datasource/:id',
     //   name: 'datasource',
     //   component: resolve => require(['@/views/modules/etlscheduler/workflow/details/index'], resolve),
-    //   meta: { title: `流程定义详情` }              
+<<<<<<< HEAD
+    //   meta: { title: `流程定义详情` }
+=======
+    //   meta: { title: `流程定义详情` }
+>>>>>>> dev-etl-li
     // },
     {
       path: 'datasource',
       component: () => import('@/views/modules/etlscheduler/datasource/index'),
       name: 'datasource',
       meta: { title: 'datasource' },
-    },    
+    },
     {
       path: 'resources',
       name: 'Resources',

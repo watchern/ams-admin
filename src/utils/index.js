@@ -1,3 +1,5 @@
+
+import { cacheDict } from '@/api/base/sys-dict'
 /**
  * Created by PanJiaChen on 16/11/18.
  */
@@ -358,13 +360,13 @@ export function removeClass(ele, cls) {
 }
 
 export function commonNotify(options) {
-  let title = ''
-  let message = ''
-  switch (options.type) { // success/warning/info/error
-    case 'success' : { title = '成功'; message = '操作成功'; break }
-    case 'warning' : { title = '警告'; message = '' }
-    case 'info' : { title = '信息'; message = '' }
-    case 'error' : { title = '错误'; message = '' }
+  let title = '';
+  let message = '';
+  switch (options.type) {//success/warning/info/error
+    case 'success' : {title = '成功'; message = '操作成功'; break;}
+    case 'warning' : {title = '警告'; message = ''; break;}
+    case 'info' : {title = '信息'; message = ''; break;}
+    case 'error' : {title = '错误'; message = ''; break;}
   }
   var settings = {
     title: title,
@@ -372,6 +374,37 @@ export function commonNotify(options) {
     type: options.type,
     duration: 2000,
     position: 'bottom-right'
-  }
-  return Object.assign(settings, options)
+  };
+  return Object.assign(settings, options);
+}
+
+/*
+* 获取系统字典信息
+* 1.数据维护：
+*   需要在AMSBASE.AB_DICT中维护数据，参照示例“性别”
+* 2.调用方式
+*  import { getDict } from '@/utils'
+*  getDict('sex').then(data => {
+        console.log(data)
+   });
+  3. 实现细节
+  采用懒加载的方式，第一次调用getDict的时候将远程数据库字典信息加载到sessionStorage，
+  当字典信息变更的时候，需要重新打开浏览器才能加载最新的字典信息
+* */
+export function getDict(code) {
+  return new Promise((resolve, reject) => {
+    var sysDict =  JSON.parse(sessionStorage.getItem("sysDict"));
+    if(sysDict == null){
+      //缓存字典信息
+      cacheDict().then(resp => {
+        sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
+        resolve(resp.data);
+      });
+    }else{
+      resolve(sysDict);
+    }
+  }).then(dict =>{
+    var parent = dict.filter(obj => {return obj.dictCode === code});
+    return  dict.filter(obj => {return obj.parentDictUuid === parent[0].dictUuid});
+  })
 }

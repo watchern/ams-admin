@@ -1,0 +1,102 @@
+.kssj-table-outputbtn, .kssj-table-delbtn,.kssj-table-draftbtn,.kssj-table-addbtn,.kssj-table-editbtn,
+.kssj-table-delbtn ,.kssj-table-breakbtn,.kssj-table-choosebtn,.kssj-table-downloadbtn,.kssj-table-exportbtn,
+.kssj-table-generalbtn ,.kssj-table-importbtn,.kssj-table-increasebtn,.kssj-table-maintenbtn,.kssj-table-passbtn,
+.kssj-table-printbtn,.kssj-table-reducebtn,.kssj-table-resetbtn,.kssj-table-runbtn,.kssj-table-unpassbtn,
+.kssj-table-uploadbtn,.kssj-table-viewbtn,.kssj-table-backbtn,.kssj-table-determinebtn ,.kssj-table-lastbtn,.kssj-table-nextbtn ,
+.kssj-table-startbtn,.kssj-table-endbtn,.kssj-table-lastbigbtn,.kssj-table-submitbtn 
+{ display: block;  padding-left: 40px; padding-right: 8px; line-height: 22px; font-size: 12px; background-repeat: no-repeat; background-position: 7px center; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; }
+.kssj-table-outputbtn { background-image: url("../img/icon/icon_tab-outpbtn.png"); }
+.kssj-table-delbtn  { background-image: url("../img/icon/icon_tab-delbtn.png"); }
+/*填报、起草*/
+.kssj-table-draftbtn { background-image: url("../img/button/button_draft.png"); }
+/*添加*/
+.kssj-table-addbtn { background-image: url("../img/button/button_add.png"); }
+/*编辑*/
+.kssj-table-editbtn { background-image: url("../img/button/button_edit.png"); }
+/*删除*/
+.kssj-table-delbtn { background-image: url("../img/button/button_del.png"); }
+/*返回*/
+.kssj-table-backbtn { background-image: url("../img/button/button_back.png"); }
+/*确定*/
+.kssj-table-determinebtn { background-image: url("../img/button/button_determine.png"); }
+/*上一步*/
+.kssj-table-lastbtn { background-image: url("../img/button/button_last.png"); }
+/*下一步*/
+.kssj-table-nextbtn { background-image: url("../img/button/button_next.png"); }
+
+/*分解*/
+.kssj-table-breakbtn { background-image: url("../img/button/button_break.png"); }
+/*选择*/
+.kssj-table-choosebtn { background-image: url("../img/button/button_choose.png"); }
+/*下载*/
+.kssj-table-downloadbtn { background-image: url("../img/button/button_download.png"); }
+/*导出*/
+.kssj-table-exportbtn { background-image: url("../img/button/button_export.png"); }
+/*生成*/
+.kssj-table-generalbtn { background-image: url("../img/button/button_general.png"); }
+/*导入*/
+.kssj-table-importbtn { background-image: url("../img/button/button_import.png"); }
+/*调增*/
+.kssj-table-increasebtn { background-image: url("../img/button/button_increase.png"); }
+
+/*维护*/
+.kssj-table-maintenbtn { background-image: url("../img/button/button_mainten.png"); }
+
+/*通过*/
+.kssj-table-passbtn { background-image: url("../img/button/button_pass.png"); }
+/*打印*/
+.kssj-table-printbtn { background-image: url("../img/button/button_print.png");}
+/*调减*/
+.kssj-table-reducebtn { background-image: url("../img/button/button_reduce.png");}
+/*重置*/
+.kssj-table-resetbtn { background-image: url("../img/button/button_reset.png");}
+/*运行*/
+.kssj-table-runbtn { background-image: url("../img/button/button_run.png");}
+/*不通过*/
+.kssj-table-unpassbtn { background-image: url("../img/button/button_unpass.png");}
+
+/*上传*/
+.kssj-table-uploadbtn { background-image: url("../img/button/button_upload.png");}
+/*浏览*/
+.kssj-table-viewbtn { background-image: url("../img/button/button_view.png");}
+/*启用*/
+.kssj-table-startbtn { background-image: url("../img/button/button_start.png");}
+
+/*停用*/
+.kssj-table-endbtn { background-image: url("../img/button/button_end.png");}
+
+/*提交*/
+.kssj-table-submitbtn { background-image: url("../img/button/button_submit.png"); }
+/*查看*/
+.kssj-table-viewbtn { background-image: url("../img/button/button_view.png"); }
+
+/*浏览*/
+.kssj-table-viewsbtn { background-image: url("../img/button/button_views.png"); }
+/*关于大按钮*/
+.kssj-table-lastbigbtn,.kssj-table-savebigbtn,.kssj-table-backbigbtn,.kssj-table-nextbigbtn,
+.kssj-table-submitbigbtn ,.kssj-table-determinebigbtn 
+{ background-color:rgb(0, 153, 187);  padding-left: 40px; padding-right: 8px; line-height: 37px; font-size: 15px; background-repeat: no-repeat;margin-left:10px;  border-radius:5px; background-position: 0px center; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; }
+
+/*上一步*/
+.kssj-table-lastbigbtn { background-image: url("../img/button/button_last_big.png"); }
+/*下一步*/
+.kssj-table-nextbigbtn { background-image: url("../img/button/button_next_big.png"); }
+/*保存*/
+.kssj-table-savebigbtn { background-image: url("../img/button/button_save_big.png"); }
+/*返回*/
+.kssj-table-backbigbtn { background-image: url("../img/button/button_back_big.png"); }
+/*提交*/
+.kssj-table-submitbigbtn { background-image: url("../img/button/button_submit_big.png"); }
+/*确定*/
+.kssj-table-determinebigbtn { background-image: url("../img/button/button_determine_big.png"); }
+
+/*关于在文本框旁边的按钮样式1[废弃]*/
+/* .kssj-table-my-choosebtn,.kssj-table-my-viewsbtn 
+{ float:right; padding-left: 20px; padding-right: 5px; line-height: 30px; font-size: 11px; background-repeat: no-repeat; background-position: 3px center; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; }
+
+.kssj-table-my-choosebtn { background-image: url("../img/button/button_choose.png"); }
+
+.kssj-table-my-viewsbtn { background-image: url("../img/button/button_views.png"); } */
+.kssj-table-my-littlebtn
+{ float:right; padding-left: 8px; padding-right: 5px; line-height: 30px; font-size: 12px; background-repeat: no-repeat; background-position: 3px center; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; }
+

@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <!--模型分类树-->
-    <el-container style="height: 500px; border: 1px solid #eee">
-      <el-aside width="300px" style="background-color: rgb(238, 241, 246)">
+    <el-container>
+      <el-aside class="tree-side">
         <ModelFolderTree ref="modelFolderTree" @refreshModelList="refreshModelList" />
       </el-aside>
       <ModelListTable ref="modelListTable" @refreshTree="refreshTree" />

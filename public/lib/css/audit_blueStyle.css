@@ -1,0 +1,160 @@
+@import url("colorStyle.css");
+
+/*背景颜色*/
+.bgfff { background-color: #fff; }
+.bgfafbfc { background-color: #fafbfc; }
+.bgeee { background-color: #eee; }
+.bga7a8a8 { background-color: #a7a8a8; }
+/* .bg0099bb { background-color: var(--body-bg-color); } */
+.bg64c4c9 { background-color: #64c4c9; }
+.bgecba6e { background-color: #ecba6e; }
+.bg53b6eb { background-color: #53b6eb }
+.bgf9fbfc { background-color: #f9fbfc; }
+.bgff5c26 { background-color: #ff5c26; }
+.bg0399ba { background-color: #0399ba; }
+.bgff7f00 { background-color: #ff5722; }
+/*文字颜色*/
+.cl384659 { color: #384659; }
+.cl333 { color: #333; }
+.cl777 { color: #777; }
+.cl22a3de { color: #22a3de; }
+.cl666 { color: #666; }
+.cl46a9d4 { color: #46a9d4; }
+.cl999 { color: #999; }
+.clfff { color: #fff; }
+.cl09b { color: #09b; }
+.cl525252 { color: #525252; }
+.cl009ba { color: #0099ba; }
+.clffffcc { color: #ffc; }
+/*边框颜色*/
+.borcl-bbb { border-color: #bbb; }
+.borcl-ccc { border-color: #ccc; }
+.borcl-cdcdcd { border-color: #cdcdcd; }
+.borcl-eee { border-color: #eee; }
+/* .borcl-46a9d5 { border-color: var(--header-line-color); } */
+.borcl-53b6eb { border-top-color: #53b6eb; }
+.borcl-ddd { border-color: #ddd; }
+.borcl-74c8cd { border-color: #74c8cd; }
+.borcl-b0b1b1 { border-color: #b0b1b1; }
+.borcl-09b { border-color: #09b; !important }
+.borcl-bfbfbf { border-color: #bfbfbf; }
+/*圆角*/
+.cr { /*circle radius*/ border-style: solid; behavior: url(../css/PIE.htc); }
+/*阴影*/
+.bs {
+    /*一般情况：inset x-offset y-offset blur-radius spread-radius color，
+    【spread-radius扩展半径】来控制阴影的扩展方向：扩展半径有两个值，如果取值为正值，则个阴影会向外扩展，如果你给其取负值，整个阴影向内缩小。
+    */
+    /* x-offset, y-offset, blur,和 color。*/
+    -webkit-box-shadow: 1px 1px 10px #b0b0b0;
+    -moz-box-shadow: 1px 1px 10px #b0b0b0;
+    box-shadow: 1px 1px 10px #b0b0b0;
+    -pie-background: linear-gradient(#fff, #fff); /*gradient为渐变，现在设为白色，不然会变黑，见http://css3pie.com/*/
+    behavior: url(../css/PIE.htc);
+}
+.bsrgb {
+    -webkit-box-shadow: 1px 1px 25px rgba(135, 135, 135, 0.96);
+    -moz-box-shadow: 1px 1px 25px rgba(135, 135, 135, 0.96);
+    box-shadow: 1px 1px 25px rgba(135, 135, 135, 0.96);
+    -pie-background: linear-gradient(#fff, #fff); /*gradient为渐变，现在设为白色，不然会变黑，见http://css3pie.com/*/
+    behavior: url(../css/PIE.htc);
+}
+/*按钮*/
+.ripple {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+button {
+    /* background-color: var(--btn-bg-color); */
+    color: white;
+}
+/*重定义layui样式*/
+.layui-form-radio { margin: 0; padding-right: 32px; font-size: 14px; line-height: 15px; color: #777; }
+.layui-form-radio i { margin-right: 6px; font-size: 15px; color: #11a0c0; }
+.layui-form-radio i:hover, .layui-form-radioed i { color: #09b; }
+.layui-form-checked, .layui-form-checked:hover { border-color: #09b }
+.layui-form-checked span, .layui-form-checked:hover span { background-color: #09b }
+.layui-form-checked i, .layui-form-checked:hover i { color: #09b }
+.layui-form-checked[lay-skin=primary] i { border-color: #09b; background-color: #09b; color: #fff; }
+.layui-form-checkbox[lay-skin=primary]:hover i { border-color: #09b; color: #fff; }
+.layui-form-select .layui-edge { border-top-color: #09b; }
+.layui-form-select dl dd.layui-this { background-color: #09b; }
+.layui-badge-rim, .layui-colla-content, .layui-colla-item, .layui-collapse, .layui-elem-field, .layui-form-pane .layui-form-item[pane], .layui-form-pane .layui-form-label, .layui-input, .layui-layedit, .layui-layedit-tool, .layui-quote-nm, .layui-select, .layui-tab-bar, .layui-tab-card, .layui-tab-title, .layui-tab-title .layui-this:after, .layui-textarea {
+    border-color: #cdcdcd;
+}
+.layui-input:hover, .layui-textarea:hover {
+    border-color: #039abc !important;
+}
+.layui-input:focus, .layui-textarea:focus {
+    border-color: #039abc !important;
+}
+/*列表*/
+.kssj-table thead tr { background-color: #728591; color: #fff; }
+.kssj-table thead th { border-width: 0 0 2px; border-bottom-color: #09b; /* font-weight:bold;  */}
+.kssj-table thead th:first-child {/*设置table左边边框*/
+    border-top-left-radius: 3px;
+}
+.kssj-table thead th:last-child {/*设置table左边边框*/
+    border-top-right-radius: 3px;
+}
+.kssj-table tbody tr:last-child td:first-child {/*设置table左边边框*/
+    border-bottom-left-radius: 3px;
+}
+.kssj-table tbody tr:last-child td:last-child {/*设置table左边边框*/
+    border-bottom-right-radius: 3px;
+}
+
+.kssj-table tr:last-child>td {
+     border-bottom: 2px solid #D6D6D6!important;
+}
+.kssj-table .kssj-table-fj:hover { background-color: #00c8a5; }
+.kssj-table .kssj-table-fj:hover a { color: #fff; }
+/*树形结构 begin*/
+.kssj-treeitm span { border-top: 1px solid #ccc; }
+.kssj-treeitm:first-child span { border-top: 0; }
+.kssj-treeopen span { color: #fff; background: #09b url("../img/icon/icon_treeopen1.png") no-repeat 12px center; }
+.kssj-treeopen i { background: url("../img/icon/icon_treeopen2.png") no-repeat; }
+/*首页*/
+
+/* .kssj-dbsx-tabtit span.kssj-dbsx-current { color: #fff; background-color: var(--item-bg-color); } */
+.more { background-image: url("img/icon/icon_more.png") }
+.kssj-index-usertxt h2 { color: #156f99; border-bottom: 1px solid #bbb; }
+.kssj-index-tztit { border-bottom: 1px solid #d2d2d2; }
+.kssj-index-tztit span { background-color: #eaeaea; color: #333; }
+/* .kssj-index-tztit span.kssj-index-tzcurrent { background-color: var(--item-bg-color); color: #fff; } */
+.kssj-index-tzmain ul{ display: none;position: absolute;width: 287px; }
+.kssj-index-tzmain ul:first-child{display: block; }
+.kssj-index-tzmain li { color: #333; }
+.nav-current { background-color: #006b83; }
+.nav-item span:hover { background-color: #006b83; }
+.subnavbox, .subnavbox a { color: #ddd; }
+/*弹出框*/
+.kssj-pop, .subnavbox { background-color: rgba(9, 39, 55, .85); }
+.pop-tapbtn { background-color: rgba(9, 39, 55, .5); }
+.pop-tapbtn-current { background-color: rgba(255, 255, 255, .1); }
+@media \0screen\,screen\9 {
+    /* 只支持IE6、7、8 */
+    .kssj-pop, .subnavbox { background-color: #092737; filter: alpha(opacity=85); }
+    .pop-tapbtn { background-color: #092737; filter: alpha(opacity=50); }
+    .pop-tapbtn-current { background-color: #fff; filter: alpha(opacity=10); }
+}
+/*日历插件更改*/
+.calendar-display {
+    color: #333;
+}
+.calendar-display .m{
+    color: #156f99;
+}
+.calendar .calendar-views .now {
+    color: #fff;
+    background: #0099bb!important;
+}
+.calendar .calendar-views .dot {
+    position: absolute;
+    left: 50%;
+    bottom: 4px;
+    margin-left: -2px;
+    width: 4px;
+    height: 4px;
+    background: #0099bb;
+    border-radius: 50%;
+}
