@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import { deleteModel } from '@/api/analysis/auditModel'
 const analysisUrl = '/analysis'
 /**
  *
@@ -77,6 +78,24 @@ var paramDivArr = []
  * @type {*[]}
  */
 var paramIdDivArr = []
+
+/**
+ * 模型图表设置，如果模型设置了图表则该对象有值
+ * @type {{}}
+ */
+var modelChartSetup = {}
+
+/**
+ * 模型里面所用到的数据表 在SQL执行完成之后直接带出来
+ * @type {*[]}
+ */
+var modelOriginalTable = [];
+
+/**
+ * sql草稿对象
+ * @type {{}}
+ */
+var sqlDraftObj;
 /**
  * 初始化界面托拉拽事件
  */
@@ -153,7 +172,22 @@ export function initDragAndDrop() {
 }
 
 /**
- * 初始化时间
+ * 初始化变量
+ */
+export function initVariable(){
+  nowPick = false
+  cursor = null
+  isFirstPaste = true
+  checkSqlText = ''
+  paramObj = {}
+  paramDivArr = []
+  paramIdDivArr = []
+  modelChartSetup = {}
+  modelOriginalTable = [];
+  sqlDraftObj = undefined;
+}
+/**
+ * 初始化事件
  */
 export function initEvent() {
   $('body').mousemove(function(e) {
@@ -401,7 +435,8 @@ export function initTableTree() {
             request({
               baseURL: analysisUrl,
               url: '/SQLEditorController/getTableColsByName',
-              method: 'get'
+              method: 'get',
+              params:{tableName:tableName}
             }).then(result => {
               if (result.data.isError) {
                 alert('错误' + e.message + 'error')
@@ -1271,4 +1306,178 @@ export function selectSqlCancelNotes() {
   } else {
     alert('请选择待取消注释的内容')
   }
+}
+
+/**
+ * 获取SQL编辑器里面的对象
+ * @returns {{arr: [], flag: (jQuery|string|undefined|*), InfoFlag: jQuery, outColumn: jQuery, flag2: (jQuery|string|undefined), sql: *}}
+ */
+export function getSaveInfo(){
+  //
+  //组装对象
+  var returnObj = {
+    sqlValue : editorObj.getValue(),
+    params : [],
+    flag: $("#flag").val(),
+    flag2:$("#flag2").val(),
+    InfoFlag : $("#InfoFlag").text(),
+    outColumn : $("#outColumn").val(),
+    modelChartSetup:modelChartSetup,
+    modelOriginalTable:modelOriginalTable
+  };
+  for(var i=0; i<paramDivArr.length; i++){
+    if(paramDivArr[i].opt === 1){//如果当前参数有效
+      for(var j=0; j<paramObj.arr.length; j++){
+        if(paramDivArr[i].id === paramObj.arr[j].id){//在已拖拽过得参数（包含中间删掉的参数）中匹配参数
+          returnObj.params.push(paramObj.arr[j]);
+          break;
+        }
+      }
+    }
+  }
+  return returnObj;
+}
+
+/**
+ * 生成select语句
+ * @param menuId 菜单编号
+ */
+export function getSelectSql(menuId){
+  hideRMenu(menuId);
+  var nodes = zTreeObj.getSelectedNodes();
+  if(nodes.length > 0) {
+    var tableName = nodes[0].name;
+    var columns = CodeMirror.tableColMapping[tableName];
+    var oldSql = editorObj.getValue();
+    if(!columns || (columns && columns.length === 0)){
+      var loading = $("body").mLoading({"text":"正在生成SELECT语句，请稍后……"});
+      request({
+        baseURL: analysisUrl,
+        url: '/SQLEditorController/getTableColsByName',
+        method: 'get',
+        params:{tableName:tableName}
+      }).then(result=>{
+        if(result.data.isError){
+          loading.destroy();
+          alert("错误");
+        }else{
+          if(result.data.columns && result.data.columns.length > 0){
+            CodeMirror.tableColMapping[tableName] = result.data.columns;
+            editorObj.options.hintOptions.tables[tableName] = result.data.columns;
+            getSelectSQLByColumns(result.data.columns, tableName, oldSql, loading);
+          }else{
+            loading.destroy();
+          }
+        }
+      })
+    }else{
+      getSelectSQLByColumns(columns, tableName, oldSql, null);
+    }
+  }
+}
+
+/**
+ * 获取数据表的列后组装SELECT语句并格式化
+ * @param columns 数据表的列
+ * @param tableName 数据表名称
+ * @param oldSql SQL编辑器内原语句
+ * @param loading 有遮罩层就传，没有就传null
+ */
+function getSelectSQLByColumns(columns, tableName, oldSql, loading){
+  var sql = "SELECT ";
+  $(columns).each(function(idx){
+    if(idx !== 0) {
+      sql += "," + this;
+    }else{
+      sql += this;
+    }
+  });
+  sql += " FROM " +  tableName;
+  request({
+    baseURL:analysisUrl,
+    url:"/SQLEditorController/formatSql",
+    method:"get",
+    params:{"sql" : sql}
+  }).then(result=>{
+    if(result.data.isError){
+      if(loading){
+        loading.destroy();
+      }
+      alert("SQL语句书写不正确，格式化时出错");
+    }else {
+      editorObj.setValue(oldSql === "" ? result.data.sql : oldSql + "\n" + result.data.sql);
+      //如果有参数，替换显示状态
+      var newParamObj = {"arr":[]};//为了调用replaceParam方法申明的变量
+      for(var i = 0; i <paramObj.arr.length;i++) {//循环有效的参数数组
+        if (oldSql.indexOf(paramObj.arr[i].id) != -1) {//找出注释SQL语句中所包含的参数
+          newParamObj.arr.push(paramObj.arr[i]);
+        }
+      }
+      replaceParam(newParamObj);
+      if(loading){
+        loading.destroy();
+      }
+    }
+  })
+}
+
+/**
+ * 保存SQL
+ */
+export function saveSqlDraft(data){
+  return request({
+    baseURL: analysisUrl,
+    url: '/sqlDraft/save',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 获取保存SQL草稿的数据
+ * @param type 1、保存 2、另存为
+ * @returns {{}}
+ */
+export function getSaveSqlDraftObj(type){
+  if(type == 1){
+    var sql = editorObj.getValue();
+    if(sqlDraftObj != undefined){
+      sqlDraftObj.isOld = true;
+      sqlDraftObj.draftSql = sql;
+      sqlDraftObj.paramJson = JSON.stringify(paramObj);
+      return sqlDraftObj;
+    }
+    else {
+      return getSqlDraftObj();
+    }
+  }
+  else if(type ==2){
+    return getSqlDraftObj();
+  }
+}
+
+/**
+ * 获取sql草稿对象
+ * @returns {{}}
+ */
+function getSqlDraftObj(){
+  var data = {};
+  data.draftSql = editorObj.getValue();
+  data.paramJson = JSON.stringify(paramObj);
+  data.isOld = false;
+  return data;
+}
+/**
+ * 使用sql
+ * @param returnObj sql草稿对象
+ */
+export function useSql(returnObj){
+  if (returnObj.sqlDraftObj.paramJson !== "" && returnObj.sqlDraftObj.paramJson !== "{}") {
+    //有参数树时才能执行此方法
+    paramObj = JSON.parse(returnObj.sqlDraftObj.paramJson);
+  }
+  sqlDraftObj = returnObj.sqlDraftObj;
+  $("#sqlDraft").html("当前SQL名称：" + sqlDraftObj.draftTitle).show();
+  editorObj.setValue(sqlDraftObj.draftSql);
+  replaceParam(JSON.parse(sqlDraftObj.paramJson));
 }
