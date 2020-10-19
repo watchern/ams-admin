@@ -3,7 +3,7 @@
 const analysisRouter = {
   path: '/analysis',
   name: '审计分析',
-  component: () => import('@/views/Ace/home/index'),
+  component: () => import('@/portal/default/index'),
   meta: {
   },
   children: [

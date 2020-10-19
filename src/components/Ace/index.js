@@ -6,7 +6,6 @@ import newSelect from '@/components/Ace/form/new-select'
 import newCard from '@/components/Ace/base/new-card'
 import newCalender from '@/components/Ace/base/new-calender'
 import newDropdown from '@/components/Ace/base/new-dropdown'
-import AceTree from '@/components/Ace/ace-tree/index'
 import ToolsTemplate from '@/components/Ace/base/tools-template'
 import NewTime from '@/components/Ace/base/new-time'
 import AceAlert from '@/components/Ace/ace-alert/index'
@@ -24,7 +23,6 @@ export default {
     Vue.component('new-card', newCard)
     Vue.component('new-calender', newCalender)
     Vue.component('new-dropdown', newDropdown)
-    Vue.component('ace-tree', AceTree)
     Vue.component('tools-template', ToolsTemplate)
     Vue.component('new-time', NewTime)
     Vue.component('ace-alert', AceAlert)

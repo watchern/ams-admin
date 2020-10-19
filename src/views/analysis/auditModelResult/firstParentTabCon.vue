@@ -155,7 +155,6 @@ import {
 } from '@/api/analysis/auditModelResult'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
-import data from '@/views/pdf/content'
 import { elementInside } from 'dropzone'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
