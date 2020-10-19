@@ -73,3 +73,21 @@ export function getTaskLink(id) {
     method: 'get'
   })
 }
+
+// 查询任务环节日志
+export function findTaskLogs(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/processInstance/findTaskLogs/${id}`,
+    method: 'get'
+  })
+}
+
+// 查询任务实例
+export function findTaskInstanceById(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/processInstance/findTaskInstanceById/${id}`,
+    method: 'get'
+  })
+}

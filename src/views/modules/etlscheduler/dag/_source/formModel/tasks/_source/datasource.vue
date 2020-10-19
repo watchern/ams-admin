@@ -58,6 +58,7 @@ export default {
     cacheParams() {
       return {
         type: this.type,
+        // type: this.datasource.dbType,
         datasource: this.datasource
       }
     }
@@ -88,6 +89,7 @@ export default {
       if (_.isEmpty(this.data)) {
         this.$nextTick(() => {
           this.datasource = this.datasourceList[0].id
+          this.type = this.datasourceList[0].type
         })
       } else {
         this.$nextTick(() => {
@@ -96,6 +98,7 @@ export default {
       }
       this.$emit('on-dsData', {
         type: this.type,
+        // type: this.datasource.dbType,
         datasource: this.datasource
       })
     })
@@ -113,6 +116,7 @@ export default {
         return false
       }
       this.$emit('on-dsData', {
+        // type: this.datasource.dbType,
         type: this.type,
         datasource: this.datasource
       })
@@ -123,10 +127,11 @@ export default {
        */
     _getDatasourceData() {
       return new Promise((resolve, reject) => {
-        this.store.dispatch('dag/getDatasourceList', 'ORACLE').then(res => {
+        this.store.dispatch('dag/getDatasourceList', null).then(res => {
           this.datasourceList = _.map(res.data, v => {
             return {
-              id: v.id,
+              id: v.datasourceUuid,
+              type: v.dbType,
               code: v.name,
               disabled: false
             }

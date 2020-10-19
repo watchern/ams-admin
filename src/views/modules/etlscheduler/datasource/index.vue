@@ -231,7 +231,7 @@ export default {
       this.getList()
     },
     hadleCreate() {
-      this._create()
+      this._create('')
     },
     sortChange(data) {
       const { prop, order } = data
@@ -248,58 +248,6 @@ export default {
         createTime: null,
         updateTime: null
       }
-    },
-    handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    createData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          save(this.temp).then(() => {
-            this.getList()
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '创建成功',
-              type: 'success',
-              duration: 2000,
-              position: 'bottom-right'
-            })
-          })
-        }
-      })
-    },
-    handleUpdate() {
-      this.temp = Object.assign({}, this.selections[0]) // copy obj
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          update(tempData).then(() => {
-            const index = this.list.findIndex(v => v.paramUuid === this.temp.paramUuid)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '更新成功',
-              type: 'success',
-              duration: 2000,
-              position: 'bottom-right'
-            })
-          })
-        }
-      })
     },
     handleDelete() {
       var ids = []

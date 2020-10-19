@@ -56,13 +56,13 @@
         type="selection"
         align="center"
       />
-      <el-table-column
+      <!-- <el-table-column
         label="运行状态"
         width="150px"
         align="center"
         prop="status"
         :formatter="formatStatus"
-      />
+      /> -->
       <el-table-column
         label="运行状态"
         align="center"
@@ -71,9 +71,10 @@
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <p style="text-align:center">{{ statusList[scope.row.status===null? 8 : scope.row.status-1].name }}</p>
+            <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
-                <a target="_blank" class="buttonText" @click="handleSkipTask()">
+                <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <i
                     :class="statusList[scope.row.status===null? 8 : scope.row.status-1].unicode"
                     :style="{color: statusList[scope.row.status===null? 8 : scope.row.status-1].color}"
@@ -183,29 +184,85 @@
       </div>
     </el-dialog>
     <el-dialog
-      :visible.sync="skipDialogFormVisible"
+      :visible.sync="logDialogFromVisible"
     >
-      <el-form
+      <!-- <el-form
         ref="dataForm"
         label-position="right"
         label-width="140px"
         style="width: 700px; margin-left:50px;"
       >
-        <el-radio-group v-model="checkedTaskId">
-          <el-radio
-            v-for="task in tasks"
-            :key="task.id"
-            :label="task.id"
-            @change="changeSkipInfo"
-          >{{ task.name }}</el-radio>
-        </el-radio-group>
-      </el-form>
+        <el-row
+          v-for="task in logTasks"
+          :key="task.id"
+          :label="task.id"
+        >
+          <el-col :span="6" class="logcol">
+            {{ task.name }}
+          </el-col>
+          <el-col :span="15">
+            <el-col class="logtype">
+              {{ logsTime[task.id] != null ? '耗时：'+ logsTime[task.id].time/1000 + ' 秒': '' }}
+            </el-col>
+            <el-col
+              v-for="log in logs[task.id]"
+              :key="log.taskLogUuid"
+              :label="log.taskLogUuid"
+              class="red"
+              :style="{color: logColorList[log.status===null ? 1 : log.status-1].color}"
+              style="margin-top:10px"
+            >
+              {{ log.logTime +' '+ log.logMessage }}
+            </el-col>
+          </el-col>
+        </el-row> -->
+      <el-timeline style="margin-left:7%">
+        <el-timeline-item
+          v-for="task in logTasks"
+          :key="task.id"
+          class="logtype"
+          :icon="logsTime[task.id] != null ? 'el-icon-more': null"
+          :color="logsTime[task.id] != null ? '#0bbd87' : null"
+          size="large"
+        >
+          <el-collapse :value="task.id" style="width:85%;border:0;">
+            <el-collapse-item :title="task.name" :name="task.id">
+              <el-card style="padding-bottom: 3%">
+                <el-col class="logtype">
+                  {{ logsTime[task.id] != null ? '耗时：'+ logsTime[task.id].time/1000 + ' 秒': '' }}
+                </el-col>
+                <el-col
+                  v-for="log in logs[task.id]"
+                  :key="log.taskLogUuid"
+                  :label="log.taskLogUuid"
+                  class="red"
+                  :style="{color: logColorList[log.status===null ? 1 : log.status-1].color}"
+                  style="margin-top:10px"
+                >
+                  {{ log.logTime +' '+ log.logMessage }}
+                </el-col>
+              </el-card>
+            </el-collapse-item>
+          </el-collapse>
+          <!-- <el-card style="width:80%;padding-bottom:2%">
+              <el-col class="logtype">
+                {{ logsTime[task.id] != null ? '耗时：'+ logsTime[task.id].time/1000 + ' 秒': '' }}
+              </el-col>
+              <el-col
+                v-for="log in logs[task.id]"
+                :key="log.taskLogUuid"
+                :label="log.taskLogUuid"
+                class="red"
+                :style="{color: logColorList[log.status===null ? 1 : log.status-1].color}"
+                style="margin-top:10px"
+              >
+                {{ log.logTime +' '+ log.logMessage }}
+              </el-col></el-card> -->
+        </el-timeline-item>
+      </el-timeline>
+      <!-- </el-form> -->
       <div slot="footer">
-        <el-button @click="skipDialogFormVisible = false">取消</el-button>
-        <el-button
-          type="primary"
-          @click="taskSkip()"
-        >确定</el-button>
+        <el-button type="primary" @click="logDialogFromVisible = false">关闭</el-button>
       </div>
     </el-dialog>
   </div>
@@ -213,7 +270,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, skipTask, execute, getTaskLink } from '@/api/etlscheduler/processinstance'
+import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
 
 export default {
@@ -318,6 +375,12 @@ export default {
           color: '#888888'
         }
       ],
+      logColorList: [
+        { value: '成功', color: '#008000' },
+        { value: '失败', color: 'red' },
+        { value: '警告', color: '#f9be0a' },
+        { value: '其它', color: '#888888' }
+      ],
       pageQuery: {
         condition: null,
         pageNo: 1,
@@ -377,7 +440,7 @@ export default {
       },
       selections: [],
       dialogFormVisible: false,
-      skipDialogFormVisible: false,
+      logDialogFromVisible: false,
       dialogStatus: '',
       dialogPvVisible: false,
       downloadLoading: false,
@@ -388,7 +451,10 @@ export default {
       stopStatus: true,
       startStatus: true,
       reStartStatus: true,
-      doneStatus: true
+      doneStatus: true,
+      logTasks: null,
+      logs: null,
+      logsTime: null
     }
   },
   watch: {
@@ -484,6 +550,22 @@ export default {
       this.pageQuery.sortBy = order
       this.pageQuery.sortName = prop
       this.handleFilter()
+    },
+    handleTasksLogs(data) {
+      if (data.processInstanceJson === null || data.processInstanceJson === '') {
+        this.logDialogFromVisible = false
+        return
+      }
+      getTaskLink(data.processInstanceUuid).then(resp => {
+        this.logTasks = resp.data
+      })
+      findTaskLogs(data.processInstanceUuid).then(resp => {
+        this.logs = resp.data
+      })
+      findTaskInstanceById(data.processInstanceUuid).then(resp => {
+        this.logsTime = resp.data
+      })
+      this.logDialogFromVisible = true
     },
     // 跳过环节
     handleSkipTask() {
@@ -629,4 +711,19 @@ export default {
   font-size: 22px;
   cursor: pointer;
   }
+  .logcol{
+  font-size: 24px;
+	font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+	font-weight: 700;
+	font-style: normal;
+	font-size: 18px;
+	color: #676A6C;
+  }
+  .logtype{
+	font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+	font-weight: 700;
+	font-style: normal;
+	color: #888888;
+  }
+
 </style>

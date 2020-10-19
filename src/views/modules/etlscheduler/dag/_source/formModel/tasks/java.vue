@@ -51,7 +51,7 @@
       </div>
     </m-list-box> -->
     <m-list-box>
-      <div slot="text">驱动类</div>
+      <div slot="text"><span style="color: red;">*</span>驱动类</div>
       <div slot="content">
         <x-select
           v-model="clas"
@@ -83,7 +83,7 @@
     <m-list-box
       v-if="hide"
     >
-      <div slot="text">驱动类参数</div>
+      <div slot="text"><span style="color: red;">*</span>驱动类参数</div>
       <div slot="content">
         <m-java-params
           ref="refjavaParams"

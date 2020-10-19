@@ -124,13 +124,17 @@
           label="参数名称"
           prop="paramName"
         >
-          <el-input v-model="temp.paramName" class="propwidth" />
+          <el-input
+            v-model="temp.paramName"
+            placeholder="请输入参数名称"
+            class="propwidth"
+          />
         </el-form-item>
         <el-form-item
           label="参数编码"
           prop="paramCode"
         >
-          <el-input v-model="temp.paramCode" class="propwidth" />
+          <el-input v-model="temp.paramCode" placeholder="请输入参数编码" class="propwidth" />
         </el-form-item>
         <el-form-item
           label="参数状态"
@@ -174,13 +178,13 @@
           label="默认值"
           prop="defaultValue"
         >
-          <el-input v-model="temp.defaultValue" class="propwidth" />
+          <el-input v-model="temp.defaultValue" placeholder="请输入参数默认值" class="propwidth" />
         </el-form-item>
         <el-form-item
           label="可选值"
           prop="selectValue"
         >
-          <el-input v-model="temp.selectValue" class="propwidth" />
+          <el-input v-model="temp.selectValue" placeholder="请输入参数可选值" class="propwidth" />
         </el-form-item>
         <el-form-item
           label="参数描述"
@@ -188,6 +192,7 @@
         >
           <el-input
             v-model="temp.paramDesc"
+            placeholder="请输入参数描述"
             type="textarea"
             class="propwidth"
           />
@@ -397,6 +402,9 @@ export default {
 </script>
 <style scoped>
   .propwidth{
-    width: 400px;
+    /* width: 400px; */
   }
+  .el-select .el-input {
+    width: 380px;
+}
 </style>

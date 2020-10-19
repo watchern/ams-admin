@@ -28,7 +28,9 @@
       <div class="from-model" style="margin-bottom: 100px;">
         <!-- Node name -->
         <div class="clearfix list">
-          <div class="text-box"><span>节点名称</span></div>
+          <div class="text-box">
+            <span style="color: red;">*</span>
+            <span>节点名称</span></div>
           <div class="cont-box">
             <label class="label-box">
               <x-input
@@ -39,7 +41,6 @@
                 :maxlength="100"
                 autocomplete="off"
                 class="propwidth"
-                @on-blur="_verifName()"
               />
             </label>
           </div>
@@ -47,7 +48,9 @@
 
         <!-- task Node -->
         <div class="clearfix list">
-          <div class="text-box"><span>节点编码</span></div>
+          <div class="text-box">
+            <span style="color: red;">*</span>
+            <span>节点编码</span></div>
           <div class="cont-box">
             <label class="label-box">
               <x-input
@@ -58,7 +61,6 @@
                 :maxlength="100"
                 autocomplete="off"
                 class="propwidth"
-                @on-blur="_verifName()"
               />
             </label>
           </div>
@@ -66,7 +68,8 @@
 
         <!-- Running sign -->
         <div class="clearfix list" style="display:none">
-          <div class="text-box"><span>运行标志</span></div>
+          <div class="text-box">
+            <span>运行标志</span></div>
           <div class="cont-box">
             <label class="label-box">
               <x-radio-group v-model="runFlag">
@@ -107,7 +110,9 @@
         </div>
 
         <div class="clearfix list">
-          <div class="text-box"><span>出错策略</span></div>
+          <div class="text-box">
+            <span style="color: red;">*</span>
+            <span>出错策略</span></div>
           <div class="cont-box">
             <!-- <label class="label-box"> -->
             <x-select
@@ -115,7 +120,6 @@
               :disabled="isDetails"
               placeholder="请选择出错策略(必填)"
               class="propwidth"
-              @on-blur="_verifName()"
             >
               <x-option
                 v-for="model in errorTypeList"
@@ -128,7 +132,9 @@
           </div>
         </div>
         <div v-if="errorhide" class="clearfix list">
-          <div class="text-box"><span>出错次数</span></div>
+          <div class="text-box">
+            <span style="color: red;">*</span>
+            <span>出错次数</span></div>
           <div class="cont-box">
             <label class="label-box">
               <x-input
@@ -139,7 +145,6 @@
                 :maxlength="100"
                 autocomplete="off"
                 class="propwidth"
-                @on-blur="_verifName()"
               />
             </label>
           </div>
@@ -295,7 +300,7 @@ export default {
       workerGroup: 'default',
       errorType: '',
       errorTypeList: [{ name: '不重试', value: '0' }, { name: '重试', value: '1' }],
-      errorNumbers: '',
+      errorNumbers: null,
       errorhide: false,
       stateList: [
         {
@@ -316,6 +321,14 @@ export default {
      */
     _onDependent(o) {
       this.dependence = Object.assign(this.dependence, {}, o)
+    },
+    _veriferrorNumbers() {
+      const reg = /^[1-9]\d*$/
+      if (!reg.test(this.errorNumbers)) {
+        this.$message.warning(`重试次数请输入大于 0 的正整数`)
+        return false
+      }
+      return true
     },
     /**
      * cache dependent
@@ -440,6 +453,9 @@ export default {
           this.$message.warning(`请输入出错次数（必填）`)
           return false
         }
+      }
+      if (this.errorNumbers && !this._veriferrorNumbers()) {
+        return false
       }
       if (this.successBranch !== '' && this.successBranch != null && this.successBranch === this.failedBranch) {
         this.$message.warning(`成功分支流转和失败分支流转不能选择同一个节点`)
@@ -616,6 +632,9 @@ export default {
     errorType(val) {
       if (val === '1') {
         this.errorhide = true
+        if (this.errorNumbers == null) {
+          this.errorNumbers = 3
+        }
       }
       if (val === '0') {
         this.errorhide = false

@@ -1,7 +1,7 @@
 <template>
   <div class="sql-model">
     <m-list-box>
-      <div slot="text">数据源</div>
+      <div slot="text"><span style="color: red;">*</span>数据源</div>
       <div slot="content">
         <m-datasource
           ref="refDs"
@@ -50,7 +50,7 @@
       </div>
     </m-list-box>
     <m-list-box>
-      <div slot="text">sql语句</div>
+      <div slot="text"><span style="color: red;">*</span>sql语句</div>
       <div slot="content">
         <div class="from-mirror">
           <textarea
