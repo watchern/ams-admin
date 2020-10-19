@@ -4,46 +4,49 @@
       <!-- 查询条件区域 -->
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
-    <div> 
-      <el-button
-        type="primary"
-        size="mini"
-        @click="handleCreate()"
-      >添加</el-button>
+    <div>
+      <el-button type="primary" size="mini" @click="handleCreate()"
+        >添加</el-button
+      >
       <el-button
         type="primary"
         size="mini"
         :disabled="selections.length !== 1"
         @click="handleUpdate()"
-      >修改</el-button>
+        >修改</el-button
+      >
       <el-button
         type="danger"
         size="mini"
         :disabled="selections.length === 0"
         @click="handleDelete()"
-      >删除</el-button>
+        >删除</el-button
+      >
       <el-button
         type="primary"
         size="mini"
         :disabled="startStatus"
         @click="handleUse()"
-      >启用</el-button>
+        >启用</el-button
+      >
       <el-button
         type="danger"
         size="mini"
         :disabled="stopStatus"
         @click="handleBear()"
-      >禁用</el-button>
+        >禁用</el-button
+      >
       <el-button
         type="danger"
         size="mini"
         :disabled="selections.length != 1"
         @click="copyData()"
-      >复制</el-button>
+        >复制</el-button
+      >
       <el-upload
-         multiple
-         class="upload-demo"
-         action=""
+        multiple
+        class="upload-demo"
+        action=""
         :on-remove="handleRemove"
         :headers="headers"
         :http-request="uploadFile"
@@ -51,18 +54,14 @@
         :auto-upload="true"
         :on-change="handleFileChange"
         :show-file-list="false"
-        style="display:inline-block;padding-left:10px"
+        style="display: inline-block; padding-left: 10px"
       >
-          <el-button size="mini" type="primary">导入</el-button>
-        </el-upload>
-       <el-menu
-       style="display:inline-block;padding-left:10px"
-       >
-        <el-button
-        type="primary"
-        size="mini"
-        @click="dialogFormVisible1 = true"
-      >下载流程模板</el-button>
+        <el-button size="mini" type="primary">导入</el-button>
+      </el-upload>
+      <el-menu style="display: inline-block; padding-left: 10px">
+        <el-button type="primary" size="mini" @click="dialogFormVisible1 = true"
+          >下载流程模板</el-button
+        >
       </el-menu>
     </div>
     <el-table
@@ -82,7 +81,13 @@
         width="250px"
         align="center"
         prop="scheduleName"
-      />
+      >
+        <template slot-scope="scope">
+          <a class="buttonText" @click="findSchedule(scope.row)">{{
+            scope.row.scheduleName
+          }}</a>
+        </template>
+      </el-table-column>
       <el-table-column
         v-if="false"
         label="任务流程"
@@ -111,9 +116,9 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p>{{scope.row.taskParamsList}}</p>        
+            <p>任务参数:{{ scope.row.taskParams }}</p>
             <div slot="reference" class="name-wrapper">
-               <el-tag><i class="el-icon-tickets" /></el-tag>
+              <el-tag><i class="el-icon-tickets" /></el-tag>
             </div>
           </el-popover>
         </template>
@@ -126,9 +131,9 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p>{{scope.row.dependTaskInfo}}</p>        
+            <p>{{ scope.row.dependTaskInfo }}</p>
             <div slot="reference" class="name-wrapper">
-               <el-tag><i class="el-icon-tickets" /></el-tag>
+              <el-tag><i class="el-icon-tickets" /></el-tag>
             </div>
           </el-popover>
         </template>
@@ -153,11 +158,7 @@
         align="center"
         prop="updateUserName"
       />
-      <el-table-column
-        label="修改时间"
-        align="center"
-        prop="updateTime"
-      />
+      <el-table-column label="修改时间" align="center" prop="updateTime" />
       <!-- <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <el-button type="primary" size="small">添加依赖</el-button>
@@ -172,8 +173,7 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getList"
     />
-
-        <!-- style="width: 700px; margin-left: 50px" -->
+    <!-- style="width: 700px; margin-left: 50px" -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
         ref="dataForm"
@@ -183,11 +183,17 @@
         label-width="80px"
       >
         <el-form-item label="任务名称" prop="scheduleName">
-          <el-input v-model="temp.scheduleName"  class="propwidth" placeholder="请输入任务名称" />
+          <el-input
+            v-model="temp.scheduleName"
+            class="propwidth"
+            placeholder="请输入任务名称"
+            :disabled="disableUpdate"
+          />
         </el-form-item>
-          <!-- 查询任务流程 -->
+        <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="processDefinitionId">
           <el-select
+            :disabled="disableUpdate"
             v-model="temp.processDefinitionId"
             :filterable="true"
             :remote="true"
@@ -206,11 +212,25 @@
             />
           </el-select>
         </el-form-item>
-          <el-form-item v-for="item in paramList" :key="item.value" :label="item.prop" :prop="item.prop">
-          <el-input v-model="item.value" class="propwidth" />
+        <el-form-item
+          v-for="item in paramList"
+          :key="item.value"
+          :label="item.prop"
+          :prop="item.prop"
+        >
+          <el-input
+            v-model="item.value"
+            class="propwidth"
+            :disabled="disableUpdate"
+          />
         </el-form-item>
         <el-form-item label="排序号" prop="processInstancePriority">
-          <el-input v-model="temp.processInstancePriority" class="propwidth" placeholder="请输入排序号"/>
+          <el-input
+            v-model="temp.processInstancePriority"
+            class="propwidth"
+            placeholder="请输入排序号"
+            :disabled="disableUpdate"
+          />
         </el-form-item>
         <!-- <el-form-item label="状态" prop="status">
           <el-select v-model="temp.status" placeholder="请选择状态">
@@ -218,8 +238,30 @@
             <el-option label="停用" :value="0" />
           </el-select>
         </el-form-item> -->
+        <el-form-item label="作业周期范围">
+          <el-col :span="11">
+            <el-date-picker
+              type="date"
+              placeholder="选择日期"
+              style="width: 100%"
+            ></el-date-picker>
+          </el-col>
+          <el-col class="line" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-date-picker
+              type="date"
+              placeholder="选择日期"
+            ></el-date-picker>
+          </el-col>
+        </el-form-item>
+
         <el-form-item label="作业周期" prop="crontab">
-          <el-select v-model="temp.crontab" placeholder="请选择作业周期" class="propwidth">
+          <el-select
+            v-model="temp.crontab"
+            placeholder="请选择作业周期"
+            class="propwidth"
+            :disabled="disableUpdate"
+          >
             <el-option label="每日" value="0 0 0 * * ? *" />
             <el-option label="每月" value="0 0 0 1 * ? *" />
             <el-option label="每季度" value="0 0 0 1 1,4,7,10 ? *" />
@@ -260,7 +302,7 @@
                     class="dep-relation"
                     @click="!isDetails && _setGlobalRelation()"
                   >
-                    {{ relation === "AND" ? '且' : '或' }}
+                    {{ relation === "AND" ? "且" : "或" }}
                   </span>
                   <div
                     v-for="(el, $index) in dependTaskList"
@@ -272,7 +314,7 @@
                       class="dep-line-pie"
                       @click="!isDetails && _setRelation($index)"
                     >
-                      {{ el.relation === "AND" ? '且' : '或' }}
+                      {{ el.relation === "AND" ? "且" : "或" }}
                     </span>
                     <em
                       class="ans-icon-trash dep-delete"
@@ -280,6 +322,9 @@
                       data-container="body"
                       :class="_isDetails"
                       title="删除"
+                      :style="{
+                        'pointer-events': disableUpdate === true ? 'none' : '',
+                      }"
                       @click="!isDetails && _deleteDep($index)"
                     />
                     <m-depend-item-list
@@ -297,22 +342,31 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button v-if="!closeStatus" @click="dialogFormVisible = false"
+          >取消</el-button
+        >
         <el-button
           type="primary"
+          v-if="closeStatus"
+          @click="dialogFormVisible = false"
+          >关闭</el-button
+        >
+        <el-button
+          type="primary"
+          v-if="!closeStatus"
           @click="dialogStatus === 'create' ? createData() : updateData()"
-        >确定</el-button>
+          >确定</el-button
+        >
       </div>
-    </el-dialog> 
-   <el-dialog title="下载流程模板" :visible.sync="dialogFormVisible1">
-  <el-form 
-  ref="dataForm"
-  :rules="rules"
-  :model="temp"
-  label-position="right"
-  label-width="80px"
-  >
-     <!-- 查询任务流程 -->
+    </el-dialog>
+    <el-dialog title="下载流程模板" :visible.sync="dialogFormVisible1">
+      <el-form
+        :rules="rules"
+        :model="temp"
+        label-position="right"
+        label-width="80px"
+      >
+        <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="processDefinitionId">
           <el-select
             v-model="temp.processDefinitionId"
@@ -325,7 +379,7 @@
             @change="paramMsg(temp.processDefinitionId)"
             class="propwidth"
           >
-          <el-option
+            <el-option
               v-for="item in options"
               :key="item.processDefinitionUuid"
               :label="item.name"
@@ -333,25 +387,24 @@
             />
           </el-select>
         </el-form-item>
-  </el-form>
-  <div slot="footer" class="dialog-footer">
-    <el-button @click="dialogFormVisible1 = false">取 消</el-button>
-    <el-button type="primary" @click="exportFile()">确 定</el-button>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible1 = false">取 消</el-button>
+        <el-button type="primary" @click="exportFile()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
-</el-dialog>
-</div>
-    
 </template>
 
 
 <script>
-import axios from 'axios'
-import $ from 'jquery'
-import _ from 'lodash'
-import mListBox from './_source/listBox'
-import mDependItemList from './_source/dependItemList'
-import disabledState from '@/components/Dolphin/mixin/disabledState'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import axios from "axios";
+import $ from "jquery";
+import _ from "lodash";
+import mListBox from "./_source/listBox";
+import mDependItemList from "./_source/dependItemList";
+import disabledState from "@/components/Dolphin/mixin/disabledState";
+import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
 import {
   listByPage,
   save,
@@ -362,32 +415,32 @@ import {
   stopScheduleStatus,
   getParamsByProcessId,
   getByScheduleId,
-  copy
-} from '@/api/etlscheduler/processschedule'
-import {
-  getById
-} from '@/api/etlscheduler/processdefinition'
-import QueryField from '@/components/Ace/query-field/index'
+  copy,
+} from "@/api/etlscheduler/processschedule";
+import { getById } from "@/api/etlscheduler/processdefinition";
+import QueryField from "@/components/Ace/query-field/index";
 
 export default {
-  name: 'Dependence',
+  name: "Dependence",
   components: {
     Pagination,
     QueryField,
     mListBox,
-    mDependItemList
+    mDependItemList,
   },
   mixins: [disabledState],
   props: {
-    backfillItem: Object
+    backfillItem: Object,
   },
   data() {
     return {
+      disableUpdate: false,
+      closeStatus: false,
       // 启用停用
       startStatus: true,
       stopStatus: true,
       // 添加依赖
-      relation: 'AND',
+      relation: "AND",
       dependTaskList: [],
       paramList: [],
       isLoading: false,
@@ -397,70 +450,70 @@ export default {
         pageNo: 1,
         pageSize: 100,
         condition: {
-          keyword: null
-        }
+          keyword: null,
+        },
       },
       loading: false,
-      tableKey: 'id',
+      tableKey: "id",
       list: null,
       total: 0,
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         {
-          label: '任务名称',
-          name: 'scheduleName',
-          type: 'fuzzyText',
-          value: ''
+          label: "任务名称",
+          name: "scheduleName",
+          type: "fuzzyText",
+          value: "",
         },
         {
-          label: '状态',
-          name: 'status',
-          type: 'select',
+          label: "状态",
+          name: "status",
+          type: "select",
           data: [
             {
-              name: '启用',
-              value: '1'
+              name: "启用",
+              value: "1",
             },
             {
-              name: '停用',
-              value: '0'
-            }
+              name: "停用",
+              value: "0",
+            },
           ],
-          default: '0'
+          default: "0",
         },
         {
-          label: '模糊查询',
-          name: 'keyword',
-          type: 'fuzzyText'
-        }
+          label: "模糊查询",
+          name: "keyword",
+          type: "fuzzyText",
+        },
       ],
       // 格式化参数列表
       formatMap: {
         status: {
-          1: '启用',
-          0: '停用',
-          null: '停用'
+          1: "启用",
+          0: "停用",
+          null: "停用",
         },
         crontab: {
-          '0 0 0 * * ? *': '每日',
-          '0 0 0 1 * ? *': '每月',
-          '0 0 0 1 1,4,7,10 ? *': '每季度',
-          '0 0 0 1 1,7 ? *': '每半年',
-          '0 0 0 1 1 ? *': '每年'
-        }
+          "0 0 0 * * ? *": "每日",
+          "0 0 0 1 * ? *": "每月",
+          "0 0 0 1 1,4,7,10 ? *": "每季度",
+          "0 0 0 1 1,7 ? *": "每半年",
+          "0 0 0 1 1 ? *": "每年",
+        },
       },
       pageQuery: {
         condition: null,
         pageNo: 1,
         pageSize: 10,
-        sortBy: 'asc',
-        sortName: 'updateTime'
+        sortBy: "asc",
+        sortName: "updateTime",
       },
       temp: {
         taskParams: null,
         taskParamsList: null,
-        dependTaskInfo: null,        
+        dependTaskInfo: null,
         dependTaskInfoList: null,
         processInstancePriority: null,
         // status: 0,
@@ -471,33 +524,35 @@ export default {
         scheduleName: null,
         processDefinitionId: null,
         id: null,
-        processDefName: null
+        processDefName: null,
       },
       selections: [],
       dialogFormVisible: false,
       dialogFormVisible1: false,
-      dialogStatus: '',
+      dialogVisible2: false,
+      dialogStatus: "",
       textMap: {
-        update: '编辑参数',
-        create: '添加参数'
+        update: "编辑参数",
+        create: "添加参数",
+        show: "查看参数",
       },
       dialogPvVisible: false,
-      headers: { 'Content-Type': 'multipart/form-data' },
-      file: '',
+      headers: { "Content-Type": "multipart/form-data" },
+      file: "",
       rules: {
         scheduleName: [
           {
             required: true,
-            message: '请填写调度任务名称',
-            trigger: 'change'
-          }
+            message: "请填写调度任务名称",
+            trigger: "change",
+          },
         ],
         processInstancePriority: [
           {
             required: true,
-            message: '请填写排序号',
-            trigger: 'change'
-          }
+            message: "请填写排序号",
+            trigger: "change",
+          },
         ],
         // scheduleDesc: [
         //   {
@@ -509,9 +564,9 @@ export default {
         crontab: [
           {
             required: true,
-            message: '请填写作业周期',
-            trigger: 'change'
-          }
+            message: "请填写作业周期",
+            trigger: "change",
+          },
         ],
         // status: [
         //   {
@@ -523,13 +578,13 @@ export default {
         processDefinitionId: [
           {
             required: true,
-            message: '请选择任务流程',
-            trigger: 'change'
-          }
-        ]
+            message: "请选择任务流程",
+            trigger: "change",
+          },
+        ],
       },
-      downloadLoading: false
-    }
+      downloadLoading: false,
+    };
   },
   computed: {
     cacheDependence() {
@@ -539,50 +594,50 @@ export default {
           return {
             relation: v.relation,
             dependItemList: _.map(v.dependItemList, (v1) =>
-              _.omit(v1, ['depTasksList', 'state', 'dateValueList'])
-            )
-          }
-        })
-      }
-    }
+              _.omit(v1, ["depTasksList", "state", "dateValueList"])
+            ),
+          };
+        }),
+      };
+    },
   },
   watch: {
-  // 监听selections集合
+    // 监听selections集合
     selections() {
       if (this.selections.length > 0) {
-        this.startStatus = false
-        this.stopStatus = false
+        this.startStatus = false;
+        this.stopStatus = false;
         this.selections.forEach((r, i) => {
           if (r.status === 1) {
-            this.startStatus = true
+            this.startStatus = true;
           } else if (r.status === 0) {
-            this.stopStatus = true
+            this.stopStatus = true;
           }
-        })
+        });
       } else {
-        this.startStatus = true
-        this.stopStatus = true
+        this.startStatus = true;
+        this.stopStatus = true;
       }
     },
     dependTaskList(e) {
       setTimeout(() => {
-        this.isLoading = false
-      }, 600)
+        this.isLoading = false;
+      }, 600);
     },
     cacheDependence(val) {
-      this.$emit('on-cache-dependent', val)
-    }
+      this.$emit("on-cache-dependent", val);
+    },
   },
   created() {
-    this.getList()
-    this.remoteMethod()
-    const o = this.backfillItem
-    const dependentResult = $(`#${o.id}`).data('dependent-result') || {}
+    this.getList();
+    this.remoteMethod();
+    const o = this.backfillItem;
+    const dependentResult = $(`#${o.id}`).data("dependent-result") || {};
     // Does not represent an empty object backfill
     if (!_.isEmpty(o)) {
-      this.relation = _.cloneDeep(o.dependence.relation) || 'AND'
-      this.dependTaskList = _.cloneDeep(o.dependence.dependTaskList) || []
-      const defaultState = this.isDetails ? 'WAITING' : ''
+      this.relation = _.cloneDeep(o.dependence.relation) || "AND";
+      this.dependTaskList = _.cloneDeep(o.dependence.dependTaskList) || [];
+      const defaultState = this.isDetails ? "WAITING" : "";
       // Process instance return status display matches by key
       _.map(this.dependTaskList, (v) =>
         _.map(
@@ -593,153 +648,173 @@ export default {
                 `${v1.id}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}`
               ] || defaultState)
         )
-      )
+      );
     }
   },
   methods: {
+    findSchedule(data) {
+      this.closeStatus = true;
+      this.disableUpdate = true;
+      this.temp = Object.assign({}, data); // copy obj
+      this.dialogStatus = "show";
+      this.dialogFormVisible = true;
+      this.$nextTick(() => {
+        this.$refs["dataForm"].clearValidate();
+      });
+      var id = this.temp.id;
+      var processId = this.temp.processDefinitionId;
+      getByScheduleId(id).then((resp) => {
+        if (resp.data.dependTaskInfoList !== null) {
+          this.dependTaskList = resp.data.dependTaskInfoList;
+        } else {
+          this.dependTaskList = [];
+        }
+        if (
+          resp.data.taskParamsList !== null &&
+          resp.data.taskParamsList !== ""
+        ) {
+          getByScheduleId(id).then((resp) => {
+            this.paramList = resp.data.taskParamsList;
+          });
+        } else {
+          this.paramList = [];
+        }
+      });
+    },
     //导出 excel 格式
     exportFile() {
-      var id = this.temp.processDefinitionId
+      var id = this.temp.processDefinitionId;
       // var ids = []
-      // this.selections.forEach((r, i) => { ids.push(r.id)}) 
-     axios({
-       method: 'get',
-       url: `/etlscheduler/schedules/exportFile/${id}`, 
-       responseType: 'blob'
-     })
-      .then(res => {
-        const filename = decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1])
+      // this.selections.forEach((r, i) => { ids.push(r.id)})
+      axios({
+        method: "get",
+        url: `/etlscheduler/schedules/exportFile/${id}`,
+        responseType: "blob",
+      }).then((res) => {
+        const filename = decodeURI(
+          res.headers["content-disposition"].split(";")[1].split("=")[1]
+        );
         const blob = new Blob([res.data], {
-        type: 'application/octet-stream'
-      })
+          type: "application/octet-stream",
+        });
         let url = window.URL.createObjectURL(blob);
-        let link = document.createElement('a');
-        link.style.display = 'none';
+        let link = document.createElement("a");
+        link.style.display = "none";
         link.href = url;
-        link.setAttribute('download', filename);
+        link.setAttribute("download", filename);
         document.body.appendChild(link);
-        link.click()
-     })
-      this.dialogFormVisible1 = false
-    }, 
+        link.click();
+      });
+      this.dialogFormVisible1 = false;
+    },
     // 复制对象
     copyData() {
-       this.selections.forEach((r, i) => {
-       var id = r.id
-       copy(id).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '复制成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
-        })      
-       })
-      }) 
+      this.selections.forEach((r, i) => {
+        var id = r.id;
+        copy(id).then(() => {
+          this.getList();
+          this.$notify({
+            title: "成功",
+            message: "复制成功",
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        });
+      });
     },
     _addDep() {
       if (!this.isLoading) {
-        this.isLoading = true
+        this.isLoading = true;
         this.dependTaskList.push({
           dependItemList: [],
-          relation: 'AND'
-        })
+          relation: "AND",
+        });
       }
     },
     _deleteDep(i) {
       // remove index dependent
-      this.dependTaskList.splice(i, 1)
+      this.dependTaskList.splice(i, 1);
 
       // remove tootip
-      $('body').find('.tooltip.fade.top.in').remove()
+      $("body").find(".tooltip.fade.top.in").remove();
     },
     _onDeleteAll(i) {
       this.dependTaskList.map((item, i) => {
         if (item.dependItemList.length === 0) {
-          this.dependTaskList.splice(i, 1)
+          this.dependTaskList.splice(i, 1);
         }
-      })
+      });
       // this._deleteDep(i)
     },
     _setGlobalRelation() {
-      this.relation = this.relation === 'AND' ? 'OR' : 'AND'
+      this.relation = this.relation === "AND" ? "OR" : "AND";
     },
     getDependTaskList(i) {
       // console.log('getDependTaskList',i)
     },
     _setRelation(i) {
-        this.dependTaskList[i].relation === 'AND' ? 'OR' : 'AND'
+      this.dependTaskList[i].relation === "AND" ? "OR" : "AND";
     },
     _verification() {
-      this.$emit('on-dependent', {
+      this.$emit("on-dependent", {
         relation: this.relation,
         dependTaskList: _.map(this.dependTaskList, (v) => {
           return {
             relation: v.relation,
             dependItemList: _.map(v.dependItemList, (v1) =>
-              _.omit(v1, ['depTasksList', 'state', 'dateValueList'])
-            )
-          }
-        })
-      })
-      return true
+              _.omit(v1, ["depTasksList", "state", "dateValueList"])
+            ),
+          };
+        }),
+      });
+      return true;
     },
     // 参数详情
-    paramMsg() {
-      var id = this.temp.processDefinitionId
+    paramMsg(data) {
+      var id = data;
       getById(id).then((resp) => {
-        this.temp.processDefName = resp.data.name
-      })
-      getParamsByProcessId(id).then((resp) => {      
-        this.paramList = resp.data    
-      })
+        this.temp.processDefName = resp.data.name;
+      });
+      getParamsByProcessId(id).then((resp) => {
+        this.paramList = resp.data;
+      });
     },
     // 查询任务流程
     remoteMethod(query) {
-      // if (query !== '') {
-      this.loading = true
+      this.loading = true;
       setTimeout(() => {
-        this.loading = false
-        this.processParam.condition.keyword = query
+        this.loading = false;
+        this.processParam.condition.keyword = query;
         // console.log(this.processParam.condition.keyword)
-        findByprocessDef(this.processParam).then((resp) => {   
-        this.options = resp.data.records
-        for (var i =0; i < this.options.length; i++) {
-            if((this.options[i].status) == 0) {
-             this.options.pop(i)
-            }                    
-          }     
-        })
-      }, 200)
-      // } else {
-      //   // this.options = []
-      //     this.loading = false
-      //     this.processParam.condition.keyword = query
-      //     // console.log(this.processParam.condition.keyword)
-      //     findByprocessDef(this.processParam).then((resp) => {
-      //       this.options = resp.data.records
-      //     })
-      // }
+        findByprocessDef(this.processParam).then((resp) => {
+          this.options = resp.data.records;
+          for (var i = 0; i < this.options.length; i++) {
+            if (this.options[i].status == 0) {
+              this.options.pop(i);
+            }
+          }
+        });
+      }, 200);
     },
     getList(query) {
-      this.listLoading = true
-      if (query) this.pageQuery.condition = query
+      this.listLoading = true;
+      if (query) this.pageQuery.condition = query;
       listByPage(this.pageQuery).then((resp) => {
-        this.total = resp.data.total
-        this.list = resp.data.records
-        this.listLoading = false
-      })
+        this.total = resp.data.total;
+        this.list = resp.data.records;
+        this.listLoading = false;
+      });
     },
     handleFilter() {
-      this.pageQuery.pageNo = 1
-      this.getList()
+      this.pageQuery.pageNo = 1;
+      this.getList();
     },
     sortChange(data) {
-      const { prop, order } = data
-      this.pageQuery.sortBy = order
-      this.pageQuery.sortName = prop
-      this.handleFilter()
+      const { prop, order } = data;
+      this.pageQuery.sortBy = order;
+      this.pageQuery.sortName = prop;
+      this.handleFilter();
     },
     resetTemp() {
       this.temp = {
@@ -754,203 +829,232 @@ export default {
         updateTime: null,
         processDefName: null,
         taskParams: null,
-        dependTaskInfo:null,
-        dependTaskInfoList:null,
-        taskParamsList: null
-      }
+        dependTaskInfo: null,
+        dependTaskInfoList: null,
+        taskParamsList: null,
+      };
     },
     handleCreate() {
-      this.paramList = []
-      this.dependTaskList = []
-      this._onDeleteAll()
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
+      this.disableUpdate = false;
+      this.closeStatus = false;
+      this.paramList = [];
+      this.dependTaskList = [];
+      this._onDeleteAll();
+      this.resetTemp();
+      this.dialogStatus = "create";
+      this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+        this.$refs["dataForm"].clearValidate();
+      });
     },
     createData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs["dataForm"].validate((valid) => {
         if (valid) {
-          this.temp.taskParamsList = this.paramList
+          this.temp.taskParamsList = this.paramList;
 
-          if(!this.dependTaskList.length) {            
-              this.temp.dependTaskInfo = null
-              this.temp.dependTaskInfoList = []
-          }else {
-            this.temp.dependTaskInfoList = this.dependTaskList
-            this.temp.dependTaskInfo = JSON.stringify(this.dependTaskList)
-          }       
+          if (!this.dependTaskList.length) {
+            this.temp.dependTaskInfo = null;
+            this.temp.dependTaskInfoList = [];
+          } else {
+            this.temp.dependTaskInfoList = this.dependTaskList;
+            this.temp.dependTaskInfo = JSON.stringify(this.dependTaskList);
+          }
           save(this.temp).then(() => {
-            this.getList()
-            this.dialogFormVisible = false
+            this.getList();
+            this.dialogFormVisible = false;
             this.$notify({
-              title: '成功',
-              message: '创建成功',
-              type: 'success',
+              title: "成功",
+              message: "创建成功",
+              type: "success",
               duration: 2000,
-              position: 'bottom-right'
-            })
-          })
+              position: "bottom-right",
+            });
+          });
         }
-      })
+      });
     },
     handleUpdate() {
-      this.temp = Object.assign({}, this.selections[0]) // copy obj
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
+      this.disableUpdate = false;
+      this.closeStatus = false;
+      this.temp = Object.assign({}, this.selections[0]); // copy obj
+      this.dialogStatus = "update";
+      this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-      var id = this.temp.id
-      var processId = this.temp.processDefinitionId
+        this.$refs["dataForm"].clearValidate();
+      });
+      var id = this.temp.id;
+      var processId = this.temp.processDefinitionId;
       getByScheduleId(id).then((resp) => {
-      
-        if(resp.data.dependTaskInfoList !== null) {
-            this.dependTaskList = resp.data.dependTaskInfoList
+        if (resp.data.dependTaskInfoList !== null) {
+          this.dependTaskList = resp.data.dependTaskInfoList;
         } else {
-           this.dependTaskList = []
-        }  
-        if (resp.data.taskParamsList !== null && resp.data.taskParamsList !=='') {     
-         getByScheduleId(id).then((resp) => {          
-           this.paramList = resp.data.taskParamsList
-          })
-        } else {
-          this.paramList = []
+          this.dependTaskList = [];
         }
-      })
+        if (
+          resp.data.taskParamsList !== null &&
+          resp.data.taskParamsList !== ""
+        ) {
+          getByScheduleId(id).then((resp) => {
+            this.paramList = resp.data.taskParamsList;
+          });
+        } else {
+          this.paramList = [];
+        }
+      });
     },
     updateData() {
-      this.temp.dependTaskInfoList = this.dependTaskList
-      this.temp.taskParamsList = this.paramList
-      this.$refs['dataForm'].validate((valid) => {
+      this.temp.dependTaskInfoList = this.dependTaskList;
+      this.temp.taskParamsList = this.paramList;
+      this.$refs["dataForm"].validate((valid) => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp)
+          const tempData = Object.assign({}, this.temp);
           update(tempData).then(() => {
-            this.getList()
-            const index = this.list.findIndex((v) => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
+            this.getList();
+            const index = this.list.findIndex((v) => v.id === this.temp.id);
+            this.list.splice(index, 1, this.temp);
+            this.dialogFormVisible = false;
             this.$notify({
-              title: '成功',
-              message: '更新成功',
-              type: 'success',
+              title: "成功",
+              message: "更新成功",
+              type: "success",
               duration: 2000,
-              position: 'bottom-right'
-            })
-          })
+              position: "bottom-right",
+            });
+          });
         }
-      }) 
-      
+      });
     },
+    // 查询参数详情
     handleDelete() {
-      var ids = []
+      var ids = [];
       this.selections.forEach((r, i) => {
-        ids.push(r.id)
-      })
-      del(ids.join(',')).then(() => {
-        this.getList()
+        ids.push(r.id);
+      });
+      del(ids.join(",")).then(() => {
+        this.getList();
         this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
+          title: "成功",
+          message: "删除成功",
+          type: "success",
           duration: 2000,
-          position: 'bottom-right'
-        })
-      })
+          position: "bottom-right",
+        });
+      });
     },
     handleUse() {
-      var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.id) })
-      startScheduleStatus(ids.join(','), 1).then(() => {
-        this.getList()
+      var ids = [];
+      this.selections.forEach((r, i) => {
+        ids.push(r.id);
+      });
+      startScheduleStatus(ids.join(","), 1).then((res) => {
+        if (res.data.code == 1000) {
+          this.getList();
+          this.$notify({
+            title: "失败",
+            message: res.data.msg,
+            type: "error",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }
+        this.getList();
         this.$notify({
-          title: '成功',
-          message: '启用成功',
-          type: 'success',
+          title: "成功",
+          message: "启用成功",
+          type: "success",
           duration: 2000,
-          position: 'bottom-right'
-        })
-      })
+          position: "bottom-right",
+        });
+      });
     },
     handleBear() {
-      var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.id) })
-      stopScheduleStatus(ids.join(','), 0).then(() => {
-        this.getList()
+      var ids = [];
+      this.selections.forEach((r, i) => {
+        ids.push(r.id);
+      });
+      stopScheduleStatus(ids.join(","), 0).then(() => {
+        this.getList();
         this.$notify({
-          title: '成功',
-          message: '停用成功',
-          type: 'success',
+          title: "成功",
+          message: "停用成功",
+          type: "success",
           duration: 2000,
-          position: 'bottom-right'
-        })
-      })
+          position: "bottom-right",
+        });
+      });
     },
     handleSelectionChange(val) {
-      this.selections = val
+      this.selections = val;
     },
-    getSortClass: function(key) {
-      const sort = this.pageQuery.sort
-      return sort === `+${key}` ? 'asc' : 'desc'
+    getSortClass: function (key) {
+      const sort = this.pageQuery.sort;
+      return sort === `+${key}` ? "asc" : "desc";
     },
     // 上传文件，获取文件流
     handleFileChange(file) {
       // console.log(file)
-      this.file = file.raw
+      this.file = file.raw;
     },
     handleRemove(file, fileList) {
-      this.file = ''
+      this.file = "";
     },
-    beforeUpload(file) {
-
-    },
+    beforeUpload(file) {},
     submitUpload() {
-      if (this.file !== '') {
-        this.$refs.uploadForm.submit()
+      if (this.file !== "") {
+        this.$refs.uploadForm.submit();
       } else {
         this.$message({
-          message: '请先选择文件!',
-          type: 'warning',
-          duration: '2000'
-        })
+          message: "请先选择文件!",
+          type: "warning",
+          duration: "2000",
+        });
       }
     },
     // 自定义上传
     uploadFile() {
-      const index = this.file.name.lastIndexOf('.')
-      const suffix = this.file.name.substr(index + 1)
+      const index = this.file.name.lastIndexOf(".");
+      const suffix = this.file.name.substr(index + 1);
       // 创建表单对象
-      const formData = new FormData()
+      const formData = new FormData();
       // 后端接受参数 ，可以接受多个参数
-      formData.append('schdeuleFile', this.file)
-      formData.append('uploadFileName', 'git')
-      formData.append('uploadFileContentType', suffix)
+      formData.append("schdeuleFile", this.file);
+      formData.append("uploadFileName", "git");
+      formData.append("uploadFileContentType", suffix);
       axios({
-        url: '/etlscheduler/schedules/importFiles',
-        method: 'post',
-        data: formData
+        url: "/etlscheduler/schedules/importFiles",
+        method: "post",
+        data: formData,
       }).then((res) => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '导入成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
-        })
-      })
+        if (res.data.code == 2501) {
+          this.getList();
+          this.$notify({
+            title: "失败",
+            message: res.data.msg,
+            type: "error",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        } else {
+          this.getList();
+          this.$notify({
+            title: "成功",
+            message: "导入成功",
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }
+      });
     },
     // 格式化表格
     formatStatus(data) {
-      return this.formatMap.status[data.status]
+      return this.formatMap.status[data.status];
     },
     formatCron(data) {
-      return this.formatMap.crontab[data.crontab]
-    }
-  }
-}
+      return this.formatMap.crontab[data.crontab];
+    },
+  },
+};
 </script>
 <style lang="scss" rel="stylesheet/scss">
 .dependence-model {
@@ -1069,7 +1173,7 @@ export default {
 }
 </style>
 <style scoped>
-  .propwidth{
-    
-  }
+.buttonText {
+  color: #409eff;
+}
 </style>
