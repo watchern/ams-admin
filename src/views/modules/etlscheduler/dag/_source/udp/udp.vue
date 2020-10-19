@@ -60,7 +60,7 @@
                 v-for="model in statusList"
                 :key="model.value"
                 :value="model.value"
-                :label="model.name"
+                :label="model.label"
               />
             </x-select>
           </label>
@@ -125,13 +125,16 @@
           </span>
         </div>
 
-        <div
+        <!-- <div
           class="title"
           style="padding-top: 6px;"
         >
           <span>设置全局</span>
-        </div>
-        <div class="content">
+        </div> -->
+        <div
+          class="content"
+          style="display:none"
+        >
           <div>
             <m-local-params
               ref="refLocalParams"
@@ -163,7 +166,8 @@
         </div>
       </div>
     </div>
-  </div></template>
+  </div>
+</template>
 <script>
 import _ from 'lodash'
 import mLocalParams from '../formModel/tasks/_source/localParams'
@@ -195,7 +199,7 @@ export default {
       tenantId: -1,
       // checked Timeout alarm
       checkedTimeout: true,
-      statusList: [{ name: '停用', value: '0' }, { name: '启用', value: '1' }],
+      statusList: [{ label: '停用', value: `0` }, { label: '启用', value: `1` }],
       orderNo: '',
       status: null
     }

@@ -71,6 +71,7 @@
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <p style="text-align:center">{{ statusList[scope.row.status===null? 8 : scope.row.status-1].name }}</p>
+            <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
@@ -185,7 +186,7 @@
     <el-dialog
       :visible.sync="logDialogFromVisible"
     >
-      <el-form
+      <!-- <el-form
         ref="dataForm"
         label-position="right"
         label-width="140px"
@@ -200,75 +201,68 @@
             {{ task.name }}
           </el-col>
           <el-col :span="15">
-            <!-- <el-col
-              v-for="log in logsTime[task.id]"
-              :key="log.taskInstanceUuid"
-              :label="log.taskInstanceUuid"
-              class="logtype"
-            >
-              {{ log.name }}
-            </el-col> -->
             <el-col class="logtype">
-              {{ logsTime[task.id] != null ? `耗时：`+ logsTime[task.id].time/1000 + '秒': '' }}
+              {{ logsTime[task.id] != null ? '耗时：'+ logsTime[task.id].time/1000 + ' 秒': '' }}
             </el-col>
             <el-col
               v-for="log in logs[task.id]"
               :key="log.taskLogUuid"
               :label="log.taskLogUuid"
-              class="logtype"
+              class="red"
+              :style="{color: logColorList[log.status===null ? 1 : log.status-1].color}"
               style="margin-top:10px"
             >
-              {{ log.logTime + log.logMessage }}
+              {{ log.logTime +' '+ log.logMessage }}
             </el-col>
           </el-col>
-        </el-row>
-        <!-- <div style="height: 300px;">
-          <el-steps direction="vertical" :active="1">
-            <el-step
-              v-for="task in logTasks"
-              :key="task.id"
-              :title="task.name"
-              :label="task.id"
-            >
-              <el-col :span="15">
-                -- <el-col
-              v-for="log in logsTime[task.id]"
-              :key="log.taskInstanceUuid"
-              :label="log.taskInstanceUuid"
-              class="logtype"
-            >
-              {{ log.name }}
-            </el-col> --
+        </el-row> -->
+      <el-timeline style="margin-left:7%">
+        <el-timeline-item
+          v-for="task in logTasks"
+          :key="task.id"
+          class="logtype"
+          :icon="logsTime[task.id] != null ? 'el-icon-more': null"
+          :color="logsTime[task.id] != null ? '#0bbd87' : null"
+          size="large"
+        >
+          <el-collapse :value="task.id" style="width:85%;border:0;">
+            <el-collapse-item :title="task.name" :name="task.id">
+              <el-card style="padding-bottom: 3%">
                 <el-col class="logtype">
-                  {{ logsTime[task.id] != null ? `耗时：`+ logsTime[task.id].time/1000 + '秒': '' }}
+                  {{ logsTime[task.id] != null ? '耗时：'+ logsTime[task.id].time/1000 + ' 秒': '' }}
                 </el-col>
                 <el-col
                   v-for="log in logs[task.id]"
                   :key="log.taskLogUuid"
                   :label="log.taskLogUuid"
-                  class="logtype"
+                  class="red"
+                  :style="{color: logColorList[log.status===null ? 1 : log.status-1].color}"
                   style="margin-top:10px"
                 >
-                  {{ log.logTime + log.logMessage }}
+                  {{ log.logTime +' '+ log.logMessage }}
                 </el-col>
+              </el-card>
+            </el-collapse-item>
+          </el-collapse>
+          <!-- <el-card style="width:80%;padding-bottom:2%">
+              <el-col class="logtype">
+                {{ logsTime[task.id] != null ? '耗时：'+ logsTime[task.id].time/1000 + ' 秒': '' }}
               </el-col>
-            </el-step>
-          </el-steps>
-        </div>
-        <div style="height: 300px;">
-          <el-steps direction="vertical" :active="1">
-            <el-step title="步骤 1" />
-            <el-step title="步骤 2" />
-            <el-step title="步骤 3" description="这是一段很长很长很长的描述性文字" />
-          </el-steps>
-        </div> -->
-      </el-form>
+              <el-col
+                v-for="log in logs[task.id]"
+                :key="log.taskLogUuid"
+                :label="log.taskLogUuid"
+                class="red"
+                :style="{color: logColorList[log.status===null ? 1 : log.status-1].color}"
+                style="margin-top:10px"
+              >
+                {{ log.logTime +' '+ log.logMessage }}
+              </el-col></el-card> -->
+        </el-timeline-item>
+      </el-timeline>
+      <!-- </el-form> -->
       <div slot="footer">
-        <el-button @click="logDialogFromVisible = false">取消</el-button>
-        <el-button
-          type="primary"
-          @click="taskSkip()"
-        >确定</el-button>
+        <el-button type="primary" @click="logDialogFromVisible = false">关闭</el-button>
       </div>
     </el-dialog>
   </div>
@@ -380,6 +374,12 @@ export default {
           unicode: 'el-icon-remove-outline',
           color: '#888888'
         }
+      ],
+      logColorList: [
+        { value: '成功', color: '#008000' },
+        { value: '失败', color: 'red' },
+        { value: '警告', color: '#f9be0a' },
+        { value: '其它', color: '#888888' }
       ],
       pageQuery: {
         condition: null,
@@ -723,6 +723,7 @@ export default {
 	font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
 	font-weight: 700;
 	font-style: normal;
-	color: #008000;
+	color: #888888;
   }
+
 </style>
