@@ -360,13 +360,13 @@ export function removeClass(ele, cls) {
 }
 
 export function commonNotify(options) {
-  let title = ''
-  let message = ''
-  switch (options.type) { // success/warning/info/error
-    case 'success' : { title = '成功'; message = '操作成功'; break }
-    case 'warning' : { title = '警告'; message = ''; break }
-    case 'info' : { title = '信息'; message = ''; break }
-    case 'error' : { title = '错误'; message = ''; break }
+  let title = '';
+  let message = '';
+  switch (options.type) {//success/warning/info/error
+    case 'success' : {title = '成功'; message = '操作成功'; break;}
+    case 'warning' : {title = '警告'; message = ''; break;}
+    case 'info' : {title = '信息'; message = ''; break;}
+    case 'error' : {title = '错误'; message = ''; break;}
   }
   var settings = {
     title: title,
@@ -374,8 +374,8 @@ export function commonNotify(options) {
     type: options.type,
     duration: 2000,
     position: 'bottom-right'
-  }
-  return Object.assign(settings, options)
+  };
+  return Object.assign(settings, options);
 }
 
 /*
@@ -393,18 +393,18 @@ export function commonNotify(options) {
 * */
 export function getDict(code) {
   return new Promise((resolve, reject) => {
-    var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
-    if (sysDict == null) {
-      // 缓存字典信息
+    var sysDict =  JSON.parse(sessionStorage.getItem("sysDict"));
+    if(sysDict == null){
+      //缓存字典信息
       cacheDict().then(resp => {
-        sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
-        resolve(resp.data)
-      })
-    } else {
-      resolve(sysDict)
+        sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
+        resolve(resp.data);
+      });
+    }else{
+      resolve(sysDict);
     }
-  }).then(dict => {
-    var parent = dict.filter(obj => { return obj.dictCode === code })
-    return dict.filter(obj => { return obj.parentDictUuid === parent[0].dictUuid })
+  }).then(dict =>{
+    var parent = dict.filter(obj => {return obj.dictCode === code});
+    return  dict.filter(obj => {return obj.parentDictUuid === parent[0].dictUuid});
   })
 }

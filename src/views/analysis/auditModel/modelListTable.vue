@@ -37,7 +37,7 @@
       </div>
     </el-dialog>
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
-      <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
+      <ModelFolderTree ref="modelFolderTree" :publicModel="publicModelValue"/>
       <div slot="footer">
         <el-button type="primary" @click="updatePublicModel">确定</el-button>
         <el-button @click="treeSelectShow=false">取消</el-button>
@@ -46,14 +46,14 @@
   </div>
 </template>
 <script>
-import { findModel, saveModel, deleteModel, selectModel, updateModel, updateModelBasicInfo } from '@/api/analysis/auditModel'
+import { findModel, saveModel, deleteModel, selectModel, updateModel,updateModelBasicInfo } from '@/api/analysis/auditModel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
 import EditModel from '@/views/analysis/auditModel/editModel'
 export default {
   name: 'ModelListTable',
-  components: { Pagination, QueryField, EditModel, ModelFolderTree },
+  components: { Pagination, QueryField, EditModel,ModelFolderTree },
   data() {
     return {
       tableKey: 'errorUuid',
@@ -61,9 +61,9 @@ export default {
       total: 0,
       listLoading: false,
       editModelTitle: '',
-      treeSelectShow: false,
+      treeSelectShow:false,
       editModelShow: false,
-      publicModelValue: 'publicModel',
+      publicModelValue:"publicModel",
       dialogFormVisible: true,
       selectTreeNode: null,
       isUpdate: false,
@@ -341,8 +341,8 @@ export default {
     /**
      * 发布模型
      */
-    publicModel(value) {
-      this.publicModelValue = value
+    publicModel(value){
+      this.publicModelValue = value;
       var selectObj = this.$refs.modelListTable.selection
       if (selectObj == undefined || selectObj.length === 0) {
         this.$message({ type: 'info', message: '请先选择要发布的模型!' })
@@ -353,14 +353,14 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.treeSelectShow = true
+        this.treeSelectShow = true;
       })
     },
     /**
      *撤销发布
      */
-    cancelPublicModel() {
-      if (this.selectTreeNode.id != 2) {
+    cancelPublicModel(){
+      if(this.selectTreeNode.id != 2){
         this.$message({ type: 'info', message: '只能撤销公共模型下的模型' })
         return
       }
@@ -374,45 +374,46 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        for (let i = 0; i < selectObj.length; i++) {
+        for(let i = 0;i < selectObj.length;i++){
           selectObj[i].modelFolderUuid = 2
         }
-        this.updateModelBasicInfo(selectObj, '撤销发布')
+        this.updateModelBasicInfo(selectObj,"撤销发布")
       })
     },
     /**
      * 修改要发布的模型
      */
-    updatePublicModel() {
-      const selectNode = this.$refs.modelFolderTree.getSelectNode()
+    updatePublicModel(){
+      let selectNode = this.$refs.modelFolderTree.getSelectNode()
       var selectObj = this.$refs.modelListTable.selection
-      for (let i = 0; i < selectObj.length; i++) {
+      for(let i = 0;i < selectObj.length;i++){
         selectObj[i].modelFolderUuid = selectNode.id
       }
       this.updateModelBasicInfo(selectObj)
     },
-    updateModelBasicInfo(selectObj, tips) {
+    updateModelBasicInfo(selectObj,tips){
       updateModelBasicInfo(selectObj).then(result => {
-        if (result.code == 0) {
-          this.treeSelectShow = false
+        if(result.code == 0){
+          this.treeSelectShow = false;
           this.$notify({
-            title: '提示',
-            message: tips + '成功',
-            type: 'success',
-            duration: 2000,
-            position: 'bottom-right'
-          })
+            title:'提示',
+            message:tips + '成功',
+            type:'success',
+            duration:2000,
+            position:'bottom-right'
+          });
           this.getList(this.query)// 刷新列表
           this.$emit('refreshTree')
-          // 刷新树和列表
-        } else {
+          //刷新树和列表
+        }
+        else{
           this.$notify({
-            title: '提示',
-            message: tips + '失败',
-            type: 'error',
-            duration: 2000,
-            position: 'bottom-right'
-          })
+            title:'提示',
+            message:tips + '失败',
+            type:'error',
+            duration:2000,
+            position:'bottom-right'
+          });
         }
       })
     }
