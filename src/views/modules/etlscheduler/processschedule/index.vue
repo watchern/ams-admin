@@ -952,16 +952,16 @@ export default {
         ids.push(r.id);
       });
       startScheduleStatus(ids.join(","), 1).then((res) => {
-        if (res.data.code == 1000) {
-          this.getList();
-          this.$notify({
-            title: "失败",
-            message: res.data.msg,
-            type: "error",
-            duration: 2000,
-            position: "bottom-right",
-          });
-        }
+        // if (res.data.code == 1000) {
+        //   this.getList();
+        //   this.$notify({
+        //     title: "失败",
+        //     message: res.data.msg,
+        //     type: "error",
+        //     duration: 2000,
+        //     position: "bottom-right",
+        //   });
+        // }
         this.getList();
         this.$notify({
           title: "成功",
@@ -1029,17 +1029,7 @@ export default {
         url: "/etlscheduler/schedules/importFiles",
         method: "post",
         data: formData,
-      }).then((res) => {
-        if (res.data.code == 2501) {
-          this.getList();
-          this.$notify({
-            title: "失败",
-            message: res.data.msg,
-            type: "error",
-            duration: 2000,
-            position: "bottom-right",
-          });
-        } else {
+      }).then((res) => { 
           this.getList();
           this.$notify({
             title: "成功",
@@ -1047,16 +1037,15 @@ export default {
             type: "success",
             duration: 2000,
             position: "bottom-right",
-          });
-        }
-      });
+          })
+      })
     },
     // 格式化表格
     formatStatus(data) {
-      return this.formatMap.status[data.status];
+      return this.formatMap.status[data.status]
     },
     formatCron(data) {
-      return this.formatMap.crontab[data.crontab];
+      return this.formatMap.crontab[data.crontab]
     },
   },
 };
