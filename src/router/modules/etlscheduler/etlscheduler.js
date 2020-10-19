@@ -3,7 +3,7 @@
 const etlschedulerRouter = {
   path: '/etlscheduler',
   redirect: '/etlscheduler/datasource',
-  component: () => import('@/views/Ace/home/index'),
+  component: () => import('@/portal/default/index'),
   name: 'Etlscheduler',
   meta: {
     title: 'etlscheduler',
