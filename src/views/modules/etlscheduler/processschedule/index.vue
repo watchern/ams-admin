@@ -285,11 +285,12 @@
             class="propwidth"
             :disabled="disableUpdate"
           >
-            <el-option label="每日" value="0 0 0 * * ? *" />
-            <el-option label="每月" value="0 0 0 1 * ? *" />
-            <el-option label="每季度" value="0 0 0 1 1,4,7,10 ? *" />
-            <el-option label="每半年" value="0 0 0 1 1,7 ? *" />
-            <el-option label="每年" value="0 0 0 1 1 ? *" />
+            <el-option label="每2分钟" value="0 */1 * * * ?" />
+            <el-option label="每日" value="0 0 0 * * ?" />
+            <el-option label="每月" value="0 0 0 1 * ? " />
+            <el-option label="每季度" value="0 0 0 1 1,4,7,10 ?" />
+            <el-option label="每半年" value="0 0 0 1 1,7 ?" />
+            <el-option label="每年" value="0 0 0 1 1 ?" />
           </el-select>
         </el-form-item>
         <!-- 添加任务依赖 -->
@@ -445,6 +446,7 @@ import {
 } from "@/api/etlscheduler/processschedule";
 import { getById } from "@/api/etlscheduler/processdefinition";
 import QueryField from "@/components/Ace/query-field/index";
+// import _ from lodash
 
 export default {
   name: "Dependence",
@@ -522,12 +524,19 @@ export default {
           null: "停用",
         },
         crontab: {
-          "0 0 0 * * ? *": "每日",
-          "0 0 0 1 * ? *": "每月",
-          "0 0 0 1 1,4,7,10 ? *": "每季度",
-          "0 0 0 1 1,7 ? *": "每半年",
-          "0 0 0 1 1 ? *": "每年",
+          "0 0 0 * * ?": "每日",
+          "0 0 0 1 * ?": "每月",
+          "0 0 0 1 1,4,7,10 ?": "每季度",
+          "0 0 0 1 1,7 ?": "每半年",
+          "0 0 0 1 1 ?": "每年"
         },
+        crontabs: [
+          {id: "0 0 0 * * ?",  name: "每日"},
+          {id: "0 0 0 1 * ?",  name: "每月"},
+          {id: "0 0 0 1 1,4,7,10 ?",  name: "每季度"},
+          {id: "0 0 0 1 1,7 ?",  name: "每半年"},
+          {id: "0 0 0 1 1 ?",  name: "每年"}
+        ]
       },
       pageQuery: {
         condition: null,
@@ -703,17 +712,16 @@ export default {
       var id = this.temp.id;
       var processId = this.temp.processDefinitionId;
       getByScheduleId(id).then((resp) => {
-        if (resp.data.dependTaskInfoList !== null) {
-          this.dependTaskList = resp.data.dependTaskInfoList;
+        const _dependTaskInfoList = resp.data.dependTaskInfoList;
+        const _taskParamsList = resp.data.taskParamsList;
+        if (_dependTaskInfoList !== null) {
+          this.dependTaskList = _dependTaskInfoList;
         } else {
           this.dependTaskList = [];
         }
-        if (
-          resp.data.taskParamsList !== null &&
-          resp.data.taskParamsList !== ""
-        ) {
+        if (_taskParamsList !== null && _taskParamsList !== "") {
           getByScheduleId(id).then((resp) => {
-            this.paramList = resp.data.taskParamsList;
+            this.paramList = _taskParamsList;
           });
         } else {
           this.paramList = [];
@@ -825,7 +833,6 @@ export default {
       setTimeout(() => {
         this.loading = false;
         this.processParam.condition.keyword = query;
-        // console.log(this.processParam.condition.keyword)
         findByprocessDef(this.processParam).then((resp) => {
           this.options = resp.data.records;
           for (var i = 0; i < this.options.length; i++) {
@@ -926,17 +933,16 @@ export default {
       var id = this.temp.id;
       var processId = this.temp.processDefinitionId;
       getByScheduleId(id).then((resp) => {
-        if (resp.data.dependTaskInfoList !== null) {
-          this.dependTaskList = resp.data.dependTaskInfoList;
+        const _dependTaskInfoList = resp.data.dependTaskInfoList
+        const _taskParamsList = resp.data.taskParamsList
+        if (_dependTaskInfoList !== null) {
+          this.dependTaskList = _dependTaskInfoList;
         } else {
           this.dependTaskList = [];
         }
-        if (
-          resp.data.taskParamsList !== null &&
-          resp.data.taskParamsList !== ""
-        ) {
+        if (_taskParamsList !== null && _taskParamsList !== "") {
           getByScheduleId(id).then((resp) => {
-            this.paramList = resp.data.taskParamsList;
+            this.paramList = _taskParamsList;
           });
         } else {
           this.paramList = [];
@@ -1095,28 +1101,33 @@ export default {
       const date = row[column.property]
       const onTime = (JSON.stringify(row.startTime)).substring(1,5) +'年' + (JSON.stringify(row.startTime)).substring(6,8) +'月' + JSON.stringify(parseInt((JSON.stringify(row.startTime)).substring(9,11)) + 1 ) +'日'
       const overTime = (JSON.stringify(row.endTime)).substring(1,5) +'年' + (JSON.stringify(row.endTime)).substring(6,8) +'月' + JSON.stringify(parseInt((JSON.stringify(row.endTime)).substring(9,11)) + 1 ) +'日'
-     if (date == '0 0 0 * * ? *' && overTime.indexOf('年') == 4 && onTime.indexOf('年') == 4 ) {
-          return onTime + '-' + overTime + '-每日' 
+
+      // console.log(JSON.stringify(this.crontabs))
+      // // console.log(JSON.stringify(o))
+      // const o = _.find(this.crontabs, ['value', date])
+
+      if (date == '0 0 0 * * ?' && overTime.indexOf('年') == 4 && onTime.indexOf('年') == 4 ) {
+          return onTime + '-' + overTime + '-每日'
       } else {
          return onTime + '-至今' + '-每日'
       }
-      if (date == '0 0 0 1 * ? *' && overTime.indexOf('年') == 4) {
-          return onTime + '-' + overTime + '-每月' 
+      if (date == '0 0 0 1 * ?' && overTime.indexOf('年') == 4) {
+          return onTime + '-' + overTime + '-每月'
       } else {
          return onTime + '-至今' + '-每日'
       }
-      if (date == '0 0 0 1 1,4,7,10 ? *' && overTime.indexOf('年') == 4) {
-          return onTime + '-' + overTime + '-每季度' 
+      if (date == '0 0 0 1 1,4,7,10 ?' && overTime.indexOf('年') == 4) {
+          return onTime + '-' + overTime + '-每季度'
       }else {
          return onTime + '-至今' + '-每日'
       }
-      if (date == '0 0 0 1 1,7 ? *' && overTime.indexOf('年') == 4) {
-          return onTime + '-' + overTime + '-每半年' 
+      if (date == '0 0 0 1 1,7 ?' && overTime.indexOf('年') == 4) {
+          return onTime + '-' + overTime + '-每半年'
       }else {
          return onTime + '-至今' + '-每日'
       }
-      if (date == '0 0 0 1 1 ? *' && overTime.indexOf('年') == 4) {
-          return onTime + '-' + overTime + '-每年' 
+      if (date == '0 0 0 1 1 ?' && overTime.indexOf('年') == 4) {
+          return onTime + '-' + overTime + '-每年'
       }  else {
          return onTime + '-至今' + '-每日'
       }
