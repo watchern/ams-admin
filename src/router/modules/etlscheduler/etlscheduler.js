@@ -26,7 +26,7 @@ const etlschedulerRouter = {
       path: 'datasource',
       component: () => import('@/views/modules/etlscheduler/datasource/index'),
       name: 'datasource',
-      meta: { title: 'datasource' },
+      meta: { title: 'datasource' }
     },
     {
       path: 'resources',
