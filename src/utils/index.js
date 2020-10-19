@@ -360,6 +360,7 @@ export function removeClass(ele, cls) {
 }
 
 export function commonNotify(options) {
+<<<<<<< HEAD
   let title = '';
   let message = '';
   switch (options.type) {//success/warning/info/error
@@ -367,6 +368,15 @@ export function commonNotify(options) {
     case 'warning' : {title = '警告'; message = ''; break;}
     case 'info' : {title = '信息'; message = ''; break;}
     case 'error' : {title = '错误'; message = ''; break;}
+=======
+  let title = ''
+  let message = ''
+  switch (options.type) { // success/warning/info/error
+    case 'success' : { title = '成功'; message = '操作成功'; break }
+    case 'warning' : { title = '警告'; message = '' }
+    case 'info' : { title = '信息'; message = '' }
+    case 'error' : { title = '错误'; message = '' }
+>>>>>>> dev-etl
   }
   var settings = {
     title: title,
@@ -374,8 +384,8 @@ export function commonNotify(options) {
     type: options.type,
     duration: 2000,
     position: 'bottom-right'
-  };
-  return Object.assign(settings, options);
+  }
+  return Object.assign(settings, options)
 }
 
 /*

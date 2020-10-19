@@ -32,6 +32,28 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
+// dolphin start
+
+// import i18n1 from '@/components/Dolphin/i18n'
+// import en_US from 'ans-ui/lib/locale/en' // eslint-disable-line
+import 'ans-ui/lib/ans-ui.min.css'
+import ans from 'ans-ui/lib/ans-ui.min'
+// Vue.use(ans)
+import 'canvg/dist/browser/canvg.min.js'
+// Component internationalization
+// const useOpt = i18n1.globalScope.LOCALE === 'en' || i18n1.globalScope.LOCALE === 'en_US' ? {
+//   locale: en_US
+// } : {}
+// const useOpt = {}
+const useOpt = {
+  // locale: en_US
+}
+
+// Vue.use(ans)
+Vue.use(ans, useOpt)
+
+// end dolphin
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -41,7 +63,9 @@ import * as filters from './filters' // global filters
  * please remove it before going online ! ! !
  */
 if (process.env.NODE_ENV === 'production') {
-  const { mockXHR } = require('../mock')
+  const {
+    mockXHR
+  } = require('../mock')
   mockXHR()
 }
 

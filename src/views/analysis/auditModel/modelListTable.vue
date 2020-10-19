@@ -3,6 +3,7 @@
     <div class="filter-container">
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
+<<<<<<< HEAD
     <div style="float: right;">
       <el-button type="primary" class="oper-btn show" @click="addModel" />
       <el-button type="primary" class="oper-btn add" @click="addModel" />
@@ -20,15 +21,19 @@
       </el-dropdown>
     </div>
     <el-table :key="tableKey" ref="modelListTable" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;">
+=======
+    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;" @sort-change="sortChange" @selection-change="handleSelectionChange">
+>>>>>>> dev-etl
       <el-table-column type="selection" width="55" />
       <el-table-column label="模型名称" width="100px" align="center" prop="modelName" />
       <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
-      <el-table-column label="审计事项" prop="auditItemName" />
-      <el-table-column label="风险等级" prop="riskLevelUuid" :formatter="riskLevelFormatter" />
+      <el-table-column label="审计事项" prop="auditItemUuid" />
+      <el-table-column label="风险等级" prop="riskLevelUuid" />
       <el-table-column label="模型类型" prop="modelType" :formatter="modelTypeFormatter" />
       <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
+<<<<<<< HEAD
     <el-dialog v-if="editModelShow" :visible.sync="editModelShow" :title="editModelTitle" width="100%">
       <EditModel ref="editModel" :open-value="selectTreeNode" :operation-obj="operationObj" @hideModal="hideEditModal" />
       <div slot="footer">
@@ -40,9 +45,14 @@
 </template>
 <script>
 import { findModel, saveModel, deleteModel, selectModel, updateModel } from '@/api/analysis/auditModel'
+=======
+  </div>
+</template>
+<script>
+import { findModel } from '@/api/analysis/auditModel'
+>>>>>>> dev-etl
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
-import EditModel from '@/views/analysis/auditModel/editModel'
 export default {
   name: 'ModelListTable',
   components: { Pagination, QueryField, EditModel },
@@ -52,17 +62,18 @@ export default {
       list: null,
       total: 0,
       listLoading: false,
+<<<<<<< HEAD
       editModelTitle: '',
       editModelShow: false,
       dialogFormVisible: true,
       selectTreeNode: null,
       isUpdate: false,
+=======
+>>>>>>> dev-etl
       queryFields: [
         { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
-        { label: '审计事项', name: 'auditItemName', type: 'fuzzyText' },
-        { label: '风险等级', name: 'riskLevelUuid', type: 'select',
-          data: [{ name: '请选择', value: '-1' }, { name: '高', value: '1' }, { name: '中', value: '2' }, { name: '低', value: '3' }],
-          default: '-1' }
+        { label: '审计事项', name: 'auditItem', type: 'fuzzyText' },
+        { label: '风险等级', name: 'riskLevelUuid', type: 'fuzzyText' }
       ],
       operationObj: {},
       // selectedRowVal:0,
@@ -137,12 +148,6 @@ export default {
     this.getList()
   },
   methods: {
-    /**
-     * 格式化时间字符串
-     * @param row 格式化行
-     * @param column 格式化列
-     * @returns {返回格式化后的时间字符串}
-     */
     dateFormatter(row, column) {
       const datetime = row.createTime
       if (datetime) {
@@ -158,6 +163,7 @@ export default {
       }
       return ''
     },
+
     /**
      * 格式化类型
      * @param row 格式化行
@@ -182,10 +188,6 @@ export default {
         return '低'
       }
     },
-    /**
-     * 获取模型列表
-     * @param query 查询条件
-     */
     getList(query) {
       this.listLoading = true
       if (query) {
@@ -197,13 +199,10 @@ export default {
         this.listLoading = false
       })
     },
-    /**
-     * 设置选中的树节点
-     * @param data 树节点
-     */
-    setSelectTreeNode(data) {
-      this.selectTreeNode = data
+    handleSelectionChange(val) {
+      this.selections = val
     },
+<<<<<<< HEAD
     /**
      * 保存模型
      */
@@ -240,10 +239,18 @@ export default {
           }
         })
       }
+=======
+    handleFilter() {
+      this.pageQuery.pageNo = 1
+      this.getList()
     },
-    /**
-     * 重置查询
-     */
+    sortChange(data) {
+      const { prop, order } = data
+      this.pageQuery.sortBy = order
+      this.pageQuery.sortName = prop
+      this.handleFilter()
+>>>>>>> dev-etl
+    },
     resetQuery() {
       this.query = {
         condition: {
@@ -256,6 +263,7 @@ export default {
           opUserName: ''
         }
       }
+<<<<<<< HEAD
     },
     /**
      * 隐藏编辑模型界面
@@ -335,6 +343,8 @@ export default {
     },
     batch_remarks() {
 
+=======
+>>>>>>> dev-etl
     }
   }
 }

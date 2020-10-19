@@ -1,448 +1,342 @@
 <template>
   <div class="app-container">
-    <div id="searchAll" class="filter-container">
-      <el-input v-model="key" :placeholder="$t('etlscheduler_table.key') " style="width: 500px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <span id="search-down"><i class="el-icon-caret-bottom myicon" /></span>
-      <el-button v-waves class="filter-item search-all" type="primary" icon="el-icon-search" @click="handleFilter">
-        {{ $t('table.search') }}
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }}
-      </el-button>
+    <div class="filter-container">
+      <QueryField
+        ref="queryfield"
+        :form-data="queryFields"
+        @submit="getList"
+      />
     </div>
-    <div id="searchSwitch" class="filter-container">
-      <el-input v-model="datasource.dsName" :placeholder="$t('etlscheduler_table.dsName') " style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="datasource.dsStatus" :placeholder="$t('etlscheduler_table.dsStatus') " clearable style="width: 200px" class="filter-item">
-        <!--label是显示的值，value是传递的值  -->
-        <el-option v-for="item in importanceOptions" :key="item" :label="item.value" :value="item.id" />
-      </el-select>
-      <span id="search-up"><i class="el-icon-caret-top myicon" /></span>
-      <el-button v-waves class="filter-item search" type="primary" icon="el-icon-search" @click="handleFilter">
-        {{ $t('table.search') }}
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }}
-      </el-button>
+    <div>
+      <!-- <m-list-construction>
+        <template slot="conditions">
+          <m-conditions>
+            <template slot="button-group">
+              <x-button
+                type="primary"
+                size="mini"
+                @click="_create('')"
+              >添加</x-button>
+            </template>
+          </m-conditions>
+        </template>
+      </m-list-construction> -->
+      <el-button
+        type="primary"
+        size="mini"
+        @click="hadleCreate"
+      >添加</el-button>
+      <el-button
+        type="primary"
+        size="mini"
+        :disabled="selections.length !== 1"
+        @click="_edit"
+      >修改</el-button>
+      <el-button
+        type="danger"
+        size="mini"
+        :disabled="selections.length === 0"
+        @click="handleDelete()"
+      >删除</el-button>
     </div>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
+      stripe
+      fit
+      style="width: 100%;"
       :data="list"
       border
-      fit
       highlight-current-row
-      style="width: 100%;"
+      max-height="800"
       @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
+      @on-update="_onUpdate"
     >
-      <el-table-column prop="dsName" :label="$t('etlscheduler_table.dsName')" width="150" sortable align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.dsName }}</span>
+      <el-table-column
+        type="selection"
+        align="center"
+      />
+      <el-table-column
+        label="数据源名称"
+        width="250px"
+        align="center"
+        prop="name"
+      />
+      <el-table-column
+        label="数据源类型"
+        width="250px"
+        align="center"
+        prop="type"
+        :formatter="formatType"
+      />
+      <el-table-column
+        label="数据源参数"
+        width="200px"
+        align="center"
+        prop="connectionParams"
+      >
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="top">
+            <p>{{ scope.row.connectionParams }}</p>
+            <div slot="reference" class="name-wrapper">
+              <el-tag><i class="el-icon-tickets" /></el-tag>
+            </div>
+          </el-popover>
         </template>
       </el-table-column>
-      <el-table-column prop="dsType" :label="$t('etlscheduler_table.dsType')" width="150" :formatter="dataFormatType" sortable>
-        <template slot-scope="{row}">
-          <span>{{ dataFormatType(row.dsType) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="jdbcUrl" :label="$t('etlscheduler_table.jdbcUrl')" width="150" sortable>
-        <template slot-scope="{row}">
-          <span>{{ row.jdbcUrl }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="driverClass" :label="$t('etlscheduler_table.driverClass')" width="150" sortable>
-        <template slot-scope="{row}">
-          <span>{{ row.driverClass }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="loginType" :label="$t('etlscheduler_table.loginType')" width="150" :formatter="dataFormatLoginType" sortable>
-        <template slot-scope="{row}">
-          <span>{{ dataFormatLoginType(row.loginType) }}</span>
-        </template></el-table-column>
-      <el-table-column prop="authFilePath" :label="$t('etlscheduler_table.authFilePath')" width="150" sortable>
-        <template slot-scope="{row}">
-          <span>{{ row.authFilePath }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="loginName" :label="$t('etlscheduler_table.loginName')" width="150" sortable>
-        <template slot-scope="{row}">
-          <span>{{ row.loginName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="dsStatus" :label="$t('etlscheduler_table.dsStatus')" width="150" :formatter="dataFormatStatus" sortable>
-        <template slot-scope="{row}">
-          <span>{{ dataFormatStatus(row.dsStatus) }}</span>
-        </template></el-table-column>
-      <el-table-column prop="updateTime" :label="$t('etlscheduler_table.updateTime')" width="240" :formatter="dataFormatTime" sortable>
-        <template slot-scope="{row}">
-          <span>{{ dataFormatTime(row.updateTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="280" class-name="small-padding fixed-width" fixed="right">
-        <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
-          </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row)">测试连接
-          </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            {{ $t('table.delete') }}
-          </el-button>
-        </template>
-      </el-table-column>
+      <el-table-column
+        label="描述"
+        width="200px"
+        align="center"
+        prop="note"
+      />
+      <el-table-column
+        label="创建时间"
+        width="250px"
+        align="center"
+        prop="createTime"
+      />
+      <el-table-column
+        label="修改时间"
+        align="center"
+        width="250px"
+        prop="updateTime"
+      />
     </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
-    <!-- 添加、修改使用的表单 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="datasource" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('etlscheduler_table.dsName')" prop="dsName">
-          <el-input v-model="adddatasource.dsName" />
-        </el-form-item>
-        <el-form-item :label="$t('etlscheduler_table.jdbcUrl')" prop="jdbcUrl">
-          <el-input v-model="adddatasource.jdbcUrl" />
-        </el-form-item>
-        <el-form-item :label="$t('etlscheduler_table.dsType')" prop="dsType">
-          <el-select v-model="adddatasource.dsType" :placeholder="$t('etlscheduler_table.switchDsType')">
-            <el-option :label="$t('etlscheduler_table.dsTypeOne')" :value="1" />
-            <el-option :label="$t('etlscheduler_table.dsTypeTwo')" :value="2" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('etlscheduler_table.driverClass')" prop="driverClass">
-          <el-input v-model="adddatasource.driverClass" />
-        </el-form-item>
-        <el-form-item :label="$t('etlscheduler_table.loginType')" prop="loginType">
-          <el-select v-model="adddatasource.loginType" :placeholder="$t('etlscheduler_table.switchLoginType')">
-            <el-option :label="$t('etlscheduler_table.loginTypeOne')" :value="1" />
-            <el-option :label="$t('etlscheduler_table.loginTypeTwo')" :value="2" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('etlscheduler_table.loginName')" prop="loginName">
-          <el-input v-model="adddatasource.loginName" />
-        </el-form-item>
-        <el-form-item :label="$t('etlscheduler_table.loginPassword')" prop="loginPassword">
-          <el-input v-model="adddatasource.loginPassword" show-password />
-        </el-form-item>
-        <el-form-item :label="$t('etlscheduler_table.dsStatus')" prop="dsStatus">
-          <el-select v-model="adddatasource.dsStatus" :placeholder="$t('etlscheduler_table.switchDsStatus')">
-            <el-option :label="$t('etlscheduler_table.dsStatusTypeOne')" :value="1" />
-            <el-option :label="$t('etlscheduler_table.dsStatusTypeTwo')" :value="0" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('etlscheduler_table.authFilePath')" prop="authFilePath">
-          <el-input v-model="adddatasource.authFilePath" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          {{ $t('table.cancel') }}
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
-        </el-button>
-      </div>
-    </el-dialog>
+
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="pageQuery.pageNo"
+      :limit.sync="pageQuery.pageSize"
+      @pagination="getList"
+    />
   </div>
 </template>
 
 <script>
-
-import { findDSPageList, createDs, deleteDs, testConn, getDSById, updateDs } from '@/api/etlscheduler/datasource.js'
-import waves from '@/directive/waves' // waves directive
-// import { parseTime } from '@/utils'
-import moment from 'moment'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import $ from 'jquery'
+import { pageList, save, update, deleteByIds } from '@/api/etlscheduler/datasource'
+import QueryField from '@/components/Ace/query-field/index'
 
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
+import { mapActions } from 'vuex'
+import mCreateDataSource from './pages/list/_source/createDataSource'
+import listUrlParamHandle from '@/components/Dolphin/mixin/listUrlParamHandle'
 
-$(function() {
-  $('#search-down').click(function() {
-    $('#searchAll').css('display', 'none')
-    $('#searchSwitch').css('display', 'block')
-  })
-  $('#search-up').click(function() {
-    $('#searchAll').css('display', 'block')
-    $('#searchSwitch').css('display', 'none')
-  })
-})
 export default {
-  name: 'DataSource',
-  components: { Pagination },
-  directives: { waves },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
-    } },
+  name: 'DatasourceIndexP',
+  components: { Pagination, QueryField },
+  mixins: [listUrlParamHandle],
+  props: {},
   data() {
     return {
-      // filter-container使用
-      listQuery: {
-        page: 1,
-        limit: 10,
-        importance: undefined,
-        title: undefined,
-        type: undefined
-      },
-      // el-table使用
-      tableKey: 0,
-      list: [],
-      listLoading: true,
+      tableKey: 'datasourceUuid',
+      list: null,
       total: 0,
-      // 自定义的对象
-      datasource: {
-        jdbcDsUuid: '',
-        jdbcUrl: '',
-        authFilePath: '',
-        driverClass: '',
-        dsName: '',
-        dsStatus: '',
-        dsType: '',
-        isDel: '',
-        createTime: '',
-        createUserName: '',
-        createUserUuid: '',
-        updateTime: '',
-        updateUserName: '',
-        updateUserUuid: '',
-        loginName: '',
-        loginPassword: '',
-        loginType: ''
+      listLoading: false,
+      // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
+      queryFields: [
+        { label: '数据源名称', name: 'name', type: 'text', value: '' },
+        { label: '数据源类型', name: 'type', type: 'select',
+          data: [{ name: 'mysql', value: '0' }, { name: 'postgresql', value: '1' },
+            { name: 'hive', value: '2' }, { name: 'spark', value: '3' },
+            { name: 'clickhouse', value: '4' }, { name: 'oracle', value: '5' },
+            { name: 'SQLServer', value: '6' }, { name: 'db2', value: '7' }]
+        },
+        // { label: '登录方式', name: 'loginTyp', type: 'select',
+        //   data: [{ name: '用户名密码', value: '1' }, { name: 'kerbors认证', value: '2' }]
+        // },
+        // {
+        //   label: '参数状态', name: 'status', type: 'select',
+        //   data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }],
+        //   default: '1'
+        // },
+        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
+      ],
+      // 格式化参数列表
+      formatMap: {
+        type: {
+          0: 'MYSQL',
+          1: 'POSTGRESQL',
+          2: 'HIVE/IMPALA',
+          3: 'SPARK',
+          4: 'CLICKHOUSE',
+          5: 'ORACLE',
+          6: 'SQLSERVER',
+          7: 'DB2',
+          null: '其它'
+        }
       },
-      adddatasource: {
-        jdbcDsUuid: '',
-        jdbcUrl: '',
-        authFilePath: '',
-        driverClass: '',
-        dsName: '',
-        dsStatus: '',
-        dsType: '',
-        isDel: '',
-        createTime: '',
-        createUserName: '',
-        createUserUuid: '',
-        updateTime: '',
-        updateUserName: '',
-        updateUserUuid: '',
-        loginName: '',
-        loginPassword: '',
-        loginType: ''
+      pageQuery: {
+        condition: null,
+        pageNo: 1,
+        pageSize: 20,
+        sortBy: 'asc',
+        sortName: 'create_time'
       },
-      // 添加修改表单使用
-      textMap: {
-        update: '编辑数据源',
-        create: '添加数据源'
+      temp: {
+        name: null,
+        type: null,
+        connectionParams: null,
+        note: null,
+        createTime: null,
+        updateTime: null
       },
+      selections: [],
       dialogFormVisible: false,
       dialogStatus: '',
-      // 查询
-      importanceOptions: [{ id: 0, value: '停用' }, { id: 1, value: '启用' }],
-      // buzhidao
-      calendarTypeOptions,
-      key: ''
+      textMap: {
+        update: '修改数据源',
+        create: '添加数据源'
+      },
+      dialogPvVisible: false,
+      rules: {
+        status: [{ required: true, message: '请选择参数状态', trigger: 'change' }]
+      },
+      downloadLoading: false
+      // ,
+    //   // is Loading
+    //   isLoading: true,
+    //   // data sources(List)
+    //   datasourcesList: [],
+    //   searchParams: {
+    //     // Number of pages per page
+    //     pageSize: 10,
+    //     // Number of pages
+    //     pageNo: 1,
+    //     // Search value
+    //     searchVal: ''
+    //   }
     }
   },
+  watch: {
+  },
   created() {
-    // 初始化list赋值
     this.getList()
   },
   methods: {
-    getList() {
+    ...mapActions('datasource', ['getDatasourcesListP']),
+    getList(query) {
       this.listLoading = true
-      findDSPageList(this.listQuery.page, this.listQuery.limit, this.datasource).then(response => {
-        this.list = response.list
-        this.total = response.total
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+      if (query) this.pageQuery.condition = query
+      pageList(this.pageQuery).then(resp => {
+        this.total = resp.data.total
+        this.list = resp.data.records
+        this.listLoading = false
       })
     },
-    // 显示第一页
     handleFilter() {
-      this.listQuery.page = 1
+      this.pageQuery.pageNo = 1
       this.getList()
     },
-    // 排序
+    hadleCreate() {
+      this._create('')
+    },
     sortChange(data) {
       const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
-      }
-    },
-    sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
-      } else {
-        this.listQuery.sort = '-id'
-      }
+      this.pageQuery.sortBy = order
+      this.pageQuery.sortName = prop
       this.handleFilter()
     },
-    // 表单格式化
-    dataFormatTime(data) {
-      if (data === '' || data == null) {
-        return null
-      } else {
-        return moment(data).format('YYYY-MM-DD HH:mm:ss')
+    resetTemp() {
+      this.temp = {
+        name: null,
+        type: null,
+        connectionParams: null,
+        note: null,
+        createTime: null,
+        updateTime: null
       }
     },
-    dataFormatType(data) {
-      return data === 1 ? 'oracle' : data === 2 ? 'hive' : '未知'
-    },
-    dataFormatLoginType(data) {
-      return data === 1 ? '用户名密码' : data === 2 ? 'kerbors认证' : '未知'
-    },
-    dataFormatStatus(data) {
-      return data === 1 ? '启用' : data === 0 ? '停用' : '未知'
-    },
-    // 添加和修改的对象初始化
-    resetDatasource() {
-      this.adddatasource = {
-        jdbcDsUuid: '',
-        jdbcUrl: '',
-        authFilePath: '',
-        driverClass: '',
-        dsName: '',
-        dsStatus: '',
-        dsType: '',
-        isDel: '',
-        createTime: '',
-        createUserName: '',
-        createUserUuid: '',
-        updateTime: '',
-        updateUserName: '',
-        updateUserUuid: '',
-        loginName: '',
-        loginPassword: '',
-        loginType: ''
-      }
-    },
-    // 添加对象
-    handleCreate() {
-      this.resetDatasource()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    createData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          // this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          // this.temp.author = 'vue-element-admin'
-          createDs(this.adddatasource).then(() => {
-            this.list.unshift(this.adddatasource)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '创建成功',
-              type: 'success',
-              duration: 2000
-            })
-            this.getList()
-          })
-        }
-      })
-    },
-    // 修改对象
-    handleUpdate(row) {
-      getDSById(row.jdbcDsUuid).then(res => {
-        this.adddatasource = res.data
-      })
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          // const tempData = Object.assign({}, this.datasource)
-          updateDs(this.adddatasource).then(() => {
-            // const index = this.list.findIndex(v => v.id === this.temp.id)
-            // this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '更新成功',
-              type: 'success',
-              duration: 2000
-            })
-            this.getList()
-          })
-        }
-      })
-    },
-    // 删除
-    handleDelete(row) {
-      deleteDs(row.jdbcDsUuid).then(() => {
+    handleDelete() {
+      var ids = []
+      this.selections.forEach((r, i) => { ids.push(r.datasourceUuid) })
+      deleteByIds(ids.join(',')).then(() => {
         this.getList()
         this.$notify({
           title: '成功',
           message: '删除成功',
           type: 'success',
-          duration: 2000
+          duration: 2000,
+          position: 'bottom-right'
         })
       })
     },
-    // 测试连接的方法
-    handleModifyStatus(row) {
-      testConn(row.jdbcDsUuid).then(res => {
-        if (res.code === 0) {
-          this.$notify({
-            title: '测试成功',
-            message: '测试成功',
-            type: 'success',
-            duration: 2000
-          })
-        } else {
-          this.$notify({
-            title: '测试失败',
-            message: '测试失败',
-            type: 'danger',
-            duration: 2000
+    handleSelectionChange(val) {
+      this.selections = val
+    },
+    getSortClass: function(key) {
+      const sort = this.pageQuery.sort
+      return sort === `+${key}` ? 'asc' : 'desc'
+    },
+    // 格式化表格
+    formatType(data) {
+      return this.formatMap.type[data.type]
+    },
+    // 添加事件
+    _create(item) {
+      const self = this
+      const modal = this.$modal.dialog({
+        closable: false,
+        showMask: true,
+        escClose: true,
+        className: 'v-modal-custom',
+        transitionName: 'opacityp',
+        render(h) {
+          return h(mCreateDataSource, {
+            on: {
+              onUpdate() {
+                self._debounceGET('false')
+                self.getList()
+                modal.remove()
+              },
+              close() {
+                modal.remove()
+              }
+            },
+            props: {
+              item: item
+            }
           })
         }
       })
+    },
+    _edit() {
+      const item = Object.assign({}, this.selections[0])
+      // findComponentDownward(this.$root, 'datasource-indexP')
+      this._create(item)
+    },
+    _onUpdate() {
+      this._debounceGET('false')
     }
+    /**
+     * get data(List)
+     */
+    // _getList (flag) {
+    //   this.isLoading = !flag
+    //   this.getDatasourcesListP(this.searchParams).then(res => {
+    //     if (this.searchParams.pageNo > 1 && res.totalList.length == 0) {
+    //       this.searchParams.pageNo = this.searchParams.pageNo - 1
+    //     } else {
+    //       this.datasourcesList = []
+    //       this.datasourcesList = res.totalList
+    //       this.total = res.total
+    //       this.isLoading = false
+    //     }
+    //   }).catch(e => {
+    //     this.isLoading = false
+    //   })
+    // }
   }
 }
 </script>
 <style scoped>
-    .search{
-      margin-left: 290px;
-    }
-    .search-all{
-      margin-left: 190px;
-    }
-    .myicon{
-      font-size: 100;
-      cursor: pointer;
-    }
-    #searchSwitch{
-      display:none;
-    }
+  .el-tag {
+	background-color: transparent;
+	border-color: transparent;
+	color: #409eff;
+  font-size: 22px;
+  cursor: pointer;
+  }
 </style>

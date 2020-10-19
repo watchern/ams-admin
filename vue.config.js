@@ -13,7 +13,9 @@ const name = defaultSettings.title || 'Audit Manage System' // page title
 // For example, Mac: sudo npm run
 // You can change the port by the following method:
 // port = 9527 npm run dev OR npm run dev --port = 9527
-const port = process.env.port || process.env.npm_config_port || 9527 // dev port
+// const port = process.env.port || process.env.npm_config_port || 9527 // dev port
+
+const port = process.env.port || 9527 // dev port
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
@@ -27,10 +29,16 @@ module.exports = {
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: 'static',
-  lintOnSave: process.env.NODE_ENV === 'development',
+  lintOnSave: false,
+  // lintOnSave: process.env.NODE_ENV === 'development',
   runtimeCompiler: true,
   productionSourceMap: false,
   devServer: {
+    // ignore eslint
+    overlay: {
+      warnings: false,
+      errors: false
+    },
     disableHostCheck: true,
     port: port, // 端口号
     host: 'localhost',
@@ -46,7 +54,7 @@ module.exports = {
         target: 'http://localhost:8081'
         //target: 'http://139.159.246.94:1064'  远程测试环境
       },
-      '/base':{
+      '/base': {
         target: 'http://localhost:8085'
       },
       '/analysis':{
@@ -55,13 +63,22 @@ module.exports = {
       // etl调度模块调用的地址
       '/etlscheduler': {
         // target: 'http://192.168.80.155:8080'
-        target: 'http://192.168.80.156:8880',
+        target: 'http://localhost:8082/amsetlscheduler',
         // target: process.env.ETL_API_LOCATION,
         changeOrigin: true,
         pathRewrite: {
           '^/etlscheduler': ''
         }
         // target: process.env.ETL_API_TEST_LOCATION
+      },
+      '/dolphinscheduler': {
+        timeout: 1800000,
+        target: 'http://192.168.80.183:12345',
+        changeOrigin: true
+        // ,
+        // pathRewrite: {
+        //   '^/dolphinscheduler': ''
+        // }
       }
     }
   },
