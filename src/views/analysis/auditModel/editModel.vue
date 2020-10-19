@@ -13,8 +13,8 @@
           </span>
         </el-tree>
       </el-aside>
-      <div ref="basicInfo">
-        <el-form ref="basicInfoForm" :model="form" label-width="150px" :rules="basicInfoRules">
+      <div ref="basicInfo" class="detail-form">
+        <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules">
           <el-form-item label="模型名称" prop="modelName">
             <el-input v-model="form.modelName" />
           </el-form-item>

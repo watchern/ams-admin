@@ -1,15 +1,15 @@
 <template>
-  <div class="app-container">
+  ·  <div class="list-container">
     <div class="filter-container">
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
     <div style="float: right;">
-      <el-button type="primary" icon="el-icon-zoom-in">预览</el-button>
-      <el-button type="primary" icon="el-icon-add-location" @click="addModel">新增</el-button>
-      <el-button type="primary" icon="el-icon-edit" @click="updateModel">修改</el-button>
-      <el-button type="primary" icon="el-icon-delete" @click="deleteModel">删除</el-button>
+      <el-button type="primary" class="oper-btn show" @click="addModel" />
+      <el-button type="primary" class="oper-btn add" @click="addModel" />
+      <el-button type="primary" class="oper-btn edit" @click="updateModel" />
+      <el-button type="primary" class="oper-btn delete" @click="deleteModel" />
       <el-dropdown placement="bottom" trigger="click" style="margin-left: 10px;">
-        <el-button type="primary">其他操作<i class="el-icon-arrow-down el-icon--right" /></el-button>
+        <el-button type="primary" class="oper-btn more" />
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="batch_remarks">导出</el-dropdown-item>
           <el-dropdown-item command="export_excel">导入</el-dropdown-item>
