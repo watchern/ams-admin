@@ -172,7 +172,7 @@
         :rules="rules"
         :model="temp"
         label-position="right"
-        label-width="80px"
+        label-width="100px"
       >
         <el-form-item label="任务名称" prop="scheduleName">
           <el-input
@@ -456,8 +456,8 @@ export default {
         {
           label: "任务名称",
           name: "scheduleName",
-          type: "fuzzyText",
-          value: "",
+          type: "text",
+          value: ''
         },
         {
           label: "状态",
@@ -911,7 +911,6 @@ export default {
       });
     },
     updateData() {
-      console.log("测试时间:"+(JSON.stringify(this.temp.startTime)))
       this.temp.dependTaskInfoList = this.dependTaskList;
       this.temp.taskParamsList = this.paramList;
       this.$refs["dataForm"].validate((valid) => {
@@ -1063,21 +1062,31 @@ export default {
       const date = row[column.property]
       const onTime = (JSON.stringify(row.startTime)).substring(1,5) +'年' + (JSON.stringify(row.startTime)).substring(6,8) +'月' + JSON.stringify(parseInt((JSON.stringify(row.startTime)).substring(9,11)) + 1 ) +'日'
       const overTime = (JSON.stringify(row.endTime)).substring(1,5) +'年' + (JSON.stringify(row.endTime)).substring(6,8) +'月' + JSON.stringify(parseInt((JSON.stringify(row.endTime)).substring(9,11)) + 1 ) +'日'
-     if (date == '0 0 0 * * ? *') {
+     if (date == '0 0 0 * * ? *' && overTime.indexOf('年') == 4 && onTime.indexOf('年') == 4 ) {
           return onTime + '-' + overTime + '-每日' 
+      } else {
+         return onTime + '-至今' + '-每日'
       }
-      if (date == '0 0 0 1 * ? *') {
+      if (date == '0 0 0 1 * ? *' && overTime.indexOf('年') == 4) {
           return onTime + '-' + overTime + '-每月' 
+      } else {
+         return onTime + '-至今' + '-每日'
       }
-      if (date == '0 0 0 1 1,4,7,10 ? *') {
+      if (date == '0 0 0 1 1,4,7,10 ? *' && overTime.indexOf('年') == 4) {
           return onTime + '-' + overTime + '-每季度' 
+      }else {
+         return onTime + '-至今' + '-每日'
       }
-      if (date == '0 0 0 1 1,7 ? *') {
+      if (date == '0 0 0 1 1,7 ? *' && overTime.indexOf('年') == 4) {
           return onTime + '-' + overTime + '-每半年' 
+      }else {
+         return onTime + '-至今' + '-每日'
       }
-      if (date == '0 0 0 1 1 ? *') {
+      if (date == '0 0 0 1 1 ? *' && overTime.indexOf('年') == 4) {
           return onTime + '-' + overTime + '-每年' 
-      }  
+      }  else {
+         return onTime + '-至今' + '-每日'
+      }
     },
   },
 };
