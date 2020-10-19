@@ -306,14 +306,27 @@ export default {
       })
     },
     handleDelete() {
-      var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
-      del(ids.join(',')).then(() => {
-        this.getList()
+      this.$confirm('此操作将删除相关的调度任务, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
+        del(ids.join(',')).then(() => {
+          this.getList()
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      }).catch(() => {
         this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
+          title: '消息',
+          message: '已取消删除',
           duration: 2000,
           position: 'bottom-right'
         })

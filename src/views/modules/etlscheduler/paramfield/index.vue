@@ -402,7 +402,7 @@ export default {
 </script>
 <style scoped>
   .propwidth{
-    /* width: 400px; */
+    width: 400px;
   }
   .el-select .el-input {
     width: 380px;
