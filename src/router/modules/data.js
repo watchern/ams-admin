@@ -14,6 +14,10 @@ const dataRouter = {
       path: 'table',
       name: '表注册',
       component: () => import('@/views/data/table/index')
+    }, {
+      path: 'transCode',
+      name: '数据转码',
+      component: () => import('@/views/data/transCode/index')
     }
 
   ]
