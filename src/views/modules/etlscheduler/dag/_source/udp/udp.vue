@@ -99,7 +99,7 @@
         </div>
         <div
           class="title"
-          style="padding-top: 6px;"
+          style="padding-top: 6px;display:none"
           :disabled="isDetails"
         >
           <span class="text-b">超时告警</span>
@@ -330,8 +330,9 @@ export default {
   display:inline-block;
 }
 .inputcss{
-  width:85%;
-  padding-left: 3%;
+  // width:85%;
+  width:32vw;
+  padding-left: 1vw;
 }
 .udp-model {
   width: 624px;
