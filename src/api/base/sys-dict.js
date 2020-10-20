@@ -5,9 +5,8 @@ const baseURL = '/base'
 export function cacheDict() {
   return request({
     baseURL: baseURL,
-    url: `/dict/cacheAll`,
+    url: `/zhBaseCodeInfo/allBaseCode`,
     method: 'get'
   })
 }
-
 
