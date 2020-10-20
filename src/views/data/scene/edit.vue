@@ -1,61 +1,26 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <QueryField
-        ref="queryfield"
-        :form-data="queryFields"
-        @submit="getList"
-      />
-    </div>
-    <div>
-      <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
-      <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="handleUpdate()">修改</el-button>
-      <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="handleDelete()">删除</el-button>
-    </div>
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="55" />
-      <el-table-column label="业务属性名称" width="300px" align="center" prop="attrName" />
-      <el-table-column label="业务属性编码" width="300px" align="center" prop="attrCode" />
-      <el-table-column label="创建时间" width="300px" align="center" prop="createTime" />
-      <el-table-column label="描述" prop="describe" />
-    </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <div class="detail-form">
-        <el-form
-          ref="dataForm"
-          :rules="rules"
-          :model="temp"
-          label-position="right"
-          style="width: 700px; margin-left:50px;"
-        >
-          <el-form-item label="业务属性名称" prop="attrName">
-            <el-input v-model="temp.attrName" />
-          </el-form-item>
-          <el-form-item label="业务属性编码" prop="attrCode">
-            <el-input v-model="temp.attrCode" />
-          </el-form-item>
-          <el-form-item label="描述" prop="describe">
-            <el-input v-model="temp.describe" type="textarea" />
-          </el-form-item>
-        </el-form>
-      </div>
-      <div slot="footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
-      </div>
-    </el-dialog>
+    <div class="detail-form">
+      <el-form
+        ref="dataForm"
+        :rules="rules"
+        :model="temp"
+        label-position="right"
+        style="width: 700px; margin-left:50px;"
+      >
+        <el-form-item label="业务场景名称" prop="attrName">
+          <el-input v-model="temp.attrName" />
+        </el-form-item>
+        <el-form-item label="初始化参数名称" prop="attrCode">
+          <el-input v-model="temp.attrCode" />
+        </el-form-item>
+        <el-form-item label="描述" prop="describe">
+          <el-input v-model="temp.describe" type="textarea" />
+        </el-form-item>
+      </el-form>
+
+    </div>
   </div>
 </template>
 
@@ -143,11 +108,6 @@ export default {
       }
     },
     handleCreate() {
-      /* console.log(this.$store.getters.personuuid);
-      getDict('sex').then(data => {
-        console.log(data)
-      });*/
-      this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
