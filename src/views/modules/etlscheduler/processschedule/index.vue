@@ -234,12 +234,12 @@
         </el-form-item>
         <el-form-item
           v-for="item in paramList"
-          :key="item.value"
-          :label="item.prop"
-          :prop="item.prop"
+          :key="item.paramUuid"
+          :label="item.param.paramName"
+          :prop="item.param.defaultValue"
         >
           <el-input
-            v-model="item.value"
+            v-model="item.param.defaultValue"
             class="propwidth"
             :disabled="disableUpdate"
           />
@@ -258,10 +258,11 @@
             <el-option label="停用" :value="0" />
           </el-select>
         </el-form-item> -->
-        <el-form-item label="作业周期范围">
+        <el-form-item label="作业周期范围" >
           <el-col :span="11">
             <el-date-picker
               type="date"
+              prop="startTime"
               placeholder="选择日期"
               v-model="temp.startTime"
               :disabled="disableUpdate"
@@ -285,11 +286,12 @@
             class="propwidth"
             :disabled="disableUpdate"
           >
-            <el-option label="每日" value="0 0 0 * * ? *" />
-            <el-option label="每月" value="0 0 0 1 * ? *" />
-            <el-option label="每季度" value="0 0 0 1 1,4,7,10 ? *" />
-            <el-option label="每半年" value="0 0 0 1 1,7 ? *" />
-            <el-option label="每年" value="0 0 0 1 1 ? *" />
+             <el-option
+              v-for="item in crontabFormat"
+              :key="item.code"
+              :label="item.msg"
+              :value="item.code"
+            />
           </el-select>
         </el-form-item>
         <!-- 添加任务依赖 -->
@@ -324,6 +326,9 @@
                 </div>
                 <div class="dep-box">
                   <span
+                     :style="{
+                        'pointer-events': disableUpdate === true ? 'none' : '',
+                      }"
                     v-if="dependTaskList.length"
                     class="dep-relation"
                     @click="!isDetails && _setGlobalRelation()"
@@ -331,6 +336,9 @@
                     {{ relation === "AND" ? "且" : "或" }}
                   </span>
                   <div
+                   :style="{
+                        'pointer-events': disableUpdate === true ? 'none' : '',
+                      }"
                     v-for="(el, $index) in dependTaskList"
                     :key="$index"
                     class="dep-list"
@@ -479,6 +487,29 @@ export default {
           keyword: null,
         },
       },
+      // 作业周期格式化
+      crontabFormat: [
+          {
+            'code': '0 0 0 * * ? *',
+            'msg': '每日'
+           },
+          {
+            'code': '0 0 0 1 * ? *',
+            'msg': '每月'
+            },
+          {
+            'code': '0 0 0 1 1,4,7,10 ? *',
+            'msg': '每季度'
+            },
+          {
+            'code': '0 0 0 1 1,7 ? *',
+            'msg': '每半年'
+            },
+          {
+            'code': '0 0 0 1 1 ? *',
+            'msg': '每年'
+            }
+        ],
       loading: false,
       tableKey: "id",
       list: null,
@@ -520,14 +551,7 @@ export default {
           1: "启用",
           0: "停用",
           null: "停用",
-        },
-        crontab: {
-          "0 0 0 * * ? *": "每日",
-          "0 0 0 1 * ? *": "每月",
-          "0 0 0 1 1,4,7,10 ? *": "每季度",
-          "0 0 0 1 1,7 ? *": "每半年",
-          "0 0 0 1 1 ? *": "每年",
-        },
+        }
       },
       pageQuery: {
         condition: null,
@@ -614,13 +638,13 @@ export default {
             trigger: "change",
           },
         ],
-        // startTime: [
-        //   {
-        //     required: true,
-        //     message: "请填写开始执行日期",
-        //     trigger: "change",
-        //   },
-        // ],
+        startTime: [
+          {
+            required: true,
+            message: "请填写开始执行日期",
+            trigger: "change",
+          }
+        ],
       },
       downloadLoading: false,
     };
@@ -703,22 +727,17 @@ export default {
       var id = this.temp.id;
       var processId = this.temp.processDefinitionId;
       getByScheduleId(id).then((resp) => {
-        if (resp.data.dependTaskInfoList !== null) {
+        // if (resp.data.dependTaskInfoList !== null) {
           this.dependTaskList = resp.data.dependTaskInfoList;
-        } else {
-          this.dependTaskList = [];
-        }
-        if (
-          resp.data.taskParamsList !== null &&
-          resp.data.taskParamsList !== ""
-        ) {
-          getByScheduleId(id).then((resp) => {
+        // } else {
+        //   this.dependTaskList = [];
+        // }
+        // if (resp.data.taskParamsList !== null && resp.data.taskParamsList !== "") {     
             this.paramList = resp.data.taskParamsList;
-          });
-        } else {
-          this.paramList = [];
-        }
-      });
+        // } else {
+        //   this.paramList = [];
+        // }
+      })
     },
     //导出 excel 格式
     exportFile() {
@@ -812,12 +831,12 @@ export default {
     // 参数详情
     paramMsg(data) {
       var id = data;
-      getById(id).then((resp) => {
-        this.temp.processDefName = resp.data.name;
+      getById(id).then((res) => {
+        this.temp.processDefName = res.data.name;
       });
-      getParamsByProcessId(id).then((resp) => {
-        this.paramList = resp.data;
-      });
+      getParamsByProcessId(id).then((res) => {
+        this.paramList = res.data        
+      })
     },
     // 查询任务流程
     remoteMethod(query) {
@@ -926,22 +945,17 @@ export default {
       var id = this.temp.id;
       var processId = this.temp.processDefinitionId;
       getByScheduleId(id).then((resp) => {
-        if (resp.data.dependTaskInfoList !== null) {
+        // if (resp.data.dependTaskInfoList !== null) {
           this.dependTaskList = resp.data.dependTaskInfoList;
-        } else {
-          this.dependTaskList = [];
-        }
-        if (
-          resp.data.taskParamsList !== null &&
-          resp.data.taskParamsList !== ""
-        ) {
-          getByScheduleId(id).then((resp) => {
-            this.paramList = resp.data.taskParamsList;
-          });
-        } else {
-          this.paramList = [];
-        }
-      });
+        // } else {
+          // this.dependTaskList = [];
+        // }
+        // if (resp.data.taskParamsList !== null && resp.data.taskParamsList !== "") {      
+            this.paramList = resp.data.taskParamsList;      
+        // } else {
+          // this.paramList = [];
+        // }
+      })
     },
     updateData() {
       this.temp.dependTaskInfoList = this.dependTaskList;
@@ -1081,7 +1095,7 @@ export default {
             title: "成功",
             message: "导入成功",
             type: "success",
-            duration: 2000,
+            duration: 5000,
             position: "bottom-right",
           });
         }
@@ -1089,42 +1103,33 @@ export default {
     },
     // 格式化表格
     formatStatus(data) {
-      return this.formatMap.status[data.status];
+      return this.formatMap.status[data.status]
     },
     formatCron(row, column) {
       const date = row[column.property]
-      const onTime = (JSON.stringify(row.startTime)).substring(1,5) +'年' + (JSON.stringify(row.startTime)).substring(6,8) +'月' + JSON.stringify(parseInt((JSON.stringify(row.startTime)).substring(9,11)) + 1 ) +'日'
-      const overTime = (JSON.stringify(row.endTime)).substring(1,5) +'年' + (JSON.stringify(row.endTime)).substring(6,8) +'月' + JSON.stringify(parseInt((JSON.stringify(row.endTime)).substring(9,11)) + 1 ) +'日'
-     if (date == '0 0 0 * * ? *' && overTime.indexOf('年') == 4 && onTime.indexOf('年') == 4 ) {
-          return onTime + '-' + overTime + '-每日' 
-      } else {
-         return onTime + '-至今' + '-每日'
-      }
-      if (date == '0 0 0 1 * ? *' && overTime.indexOf('年') == 4) {
-          return onTime + '-' + overTime + '-每月' 
-      } else {
-         return onTime + '-至今' + '-每日'
-      }
-      if (date == '0 0 0 1 1,4,7,10 ? *' && overTime.indexOf('年') == 4) {
-          return onTime + '-' + overTime + '-每季度' 
-      }else {
-         return onTime + '-至今' + '-每日'
-      }
-      if (date == '0 0 0 1 1,7 ? *' && overTime.indexOf('年') == 4) {
-          return onTime + '-' + overTime + '-每半年' 
-      }else {
-         return onTime + '-至今' + '-每日'
-      }
-      if (date == '0 0 0 1 1 ? *' && overTime.indexOf('年') == 4) {
-          return onTime + '-' + overTime + '-每年' 
-      }  else {
-         return onTime + '-至今' + '-每日'
-      }
-    },
+       var onJsonDate = new Date(row.startTime)
+       var onTime= onJsonDate.toLocaleDateString()
+       var stopJsonDate = new Date(row.endTime)
+       var stopTime= stopJsonDate.toLocaleDateString()
+       var message = ''
+       this.crontabFormat.forEach((r,i) => {
+         if (date == r.code) {
+             message = r.msg
+         }
+       })   
+        return onTime + '-' + stopTime + message;
+      },
   },
 };
 </script>
 <style lang="scss" rel="stylesheet/scss">
+.el-tag {
+	background-color: transparent;
+	border-color: transparent;
+	color: #409eff;
+  font-size: 22px;
+  cursor: pointer;
+  }
 .dependence-model {
   margin-top: -10px;
 
@@ -1239,9 +1244,9 @@ export default {
     }
   }
 }
-</style>
-<style scoped>
 .buttonText {
   color: #409eff;
 }
 </style>
+
+
