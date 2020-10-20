@@ -405,7 +405,11 @@ export function getDictList(code) {
     }
   }).then(dict => {
     var parent = dict.filter(obj => { return obj.dataSortValue === code })
-    return dict.filter(obj => { return obj.dataSortUuid === parent[0].dataSortUuid })
+    if (parent.length === 0) {
+      return parent
+    } else {
+      return dict.filter(obj => { return obj.dataSortUuid === parent[0].dataSortUuid })
+    }
   })
 }
 // 根据codeValue的得到所有下级节点的方法
@@ -422,10 +426,12 @@ export function getDictSonList(code) {
       resolve(sysDict)
     }
   }).then(dict => {
-    var parent = dict.filter(obj => {
-      return obj.codeValue === code
-    })
-    return dict.filter(obj => { return obj.parentCodeUuid === parent[0].codeUuid })
+    var parent = dict.filter(obj => { return obj.codeValue === code })
+    if (parent.length === 0) {
+      return parent
+    } else {
+      return dict.filter(obj => { return obj.parentCodeUuid === parent[0].codeUuid })
+    }
   })
 }
 
