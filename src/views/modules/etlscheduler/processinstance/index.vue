@@ -8,6 +8,7 @@
       />
     </div>
     <div>
+      <!-- 跳过指定环节 -->
       <el-button
         type="primary"
         size="mini"
@@ -16,7 +17,7 @@
         icon="el-icon-remove-outline"
         @click="handleSkipTask()"
       />
-      <!-- 跳过指定环节 -->
+      <!-- 暂停 -->
       <el-button
         type="primary"
         size="mini"
@@ -25,7 +26,7 @@
         icon="el-icon-video-pause"
         @click="handleStop()"
       />
-      <!-- 暂停 -->
+      <!-- 启动 -->
       <el-button
         type="primary"
         size="mini"
@@ -34,7 +35,7 @@
         :disabled="startStatus"
         @click="handleStart()"
       />
-      <!-- 启动 -->
+      <!-- 重新运行 -->
       <el-button
         type="primary"
         size="mini"
@@ -43,7 +44,7 @@
         :disabled="reStartStatus"
         @click="handleReStart()"
       />
-      <!-- 重新运行 -->
+      <!-- 取消 -->
       <el-button
         type="danger"
         size="mini"
@@ -52,7 +53,6 @@
         :disabled="doneStatus"
         @click="handleCancel()"
       />
-      <!-- 取消 -->
     </div>
     <el-table
       :key="tableKey"
@@ -71,13 +71,6 @@
         type="selection"
         align="center"
       />
-      <!-- <el-table-column
-        label="运行状态"
-        width="150px"
-        align="center"
-        prop="status"
-        :formatter="formatStatus"
-      /> -->
       <el-table-column
         label="运行状态"
         align="center"
@@ -90,6 +83,7 @@
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
+                  <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色 -->
                   <i
                     :class="statusList[scope.row.status===null? 8 : scope.row.status-1].unicode"
                     :style="{color: statusList[scope.row.status===null? 8 : scope.row.status-1].color}"
@@ -125,6 +119,7 @@
         width="130px"
       >
         <template slot-scope="scope">
+          <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top">
             <p>任务参数:{{ scope.row.taskParams }}</p>
             <div slot="reference" class="name-wrapper">
@@ -172,6 +167,7 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getList"
     />
+    <!-- 跳过环节的dialog -->
     <el-dialog
       :visible.sync="dialogFormVisible"
     >
@@ -199,53 +195,28 @@
         >确定</el-button>
       </div>
     </el-dialog>
+    <!-- 显示任务日志的dialog -->
     <el-dialog
       :visible.sync="logDialogFromVisible"
     >
-      <!-- <el-form
-        ref="dataForm"
-        label-position="right"
-        label-width="140px"
-        style="width: 700px; margin-left:50px;"
-      >
-        <el-row
-          v-for="task in logTasks"
-          :key="task.id"
-          :label="task.id"
-        >
-          <el-col :span="6" class="logcol">
-            {{ task.name }}
-          </el-col>
-          <el-col :span="15">
-            <el-col class="logtype">
-              {{ logsTime[task.id] != null ? '耗时：'+ logsTime[task.id].time/1000 + ' 秒': '' }}
-            </el-col>
-            <el-col
-              v-for="log in logs[task.id]"
-              :key="log.taskLogUuid"
-              :label="log.taskLogUuid"
-              class="red"
-              :style="{color: logColorList[log.status===null ? 1 : log.status-1].color}"
-              style="margin-top:10px"
-            >
-              {{ log.logTime +' '+ log.logMessage }}
-            </el-col>
-          </el-col>
-        </el-row> -->
       <el-timeline style="margin-left:7%">
+        <!-- 使用时间线任务实例的环节和运行的状态 -->
+        <!-- 已运行的环节，改变颜色和图标 -->
         <el-timeline-item
           v-for="task in logTasks"
           :key="task.id"
           class="logtype"
-          :icon="logsTime[task.id] != null ? 'el-icon-more': null"
-          :color="logsTime[task.id] != null ? '#0bbd87' : null"
+          :icon="taskslogsList[task.id] != null ? 'el-icon-more': null"
+          :color="taskslogsList[task.id] != null ? '#0bbd87' : null"
           size="large"
         >
+          <!-- value和name一致，默认展开 -->
           <el-collapse :value="task.id" style="width:85%;border:0;">
+            <!-- title环节名称 -->
             <el-collapse-item :title="task.name" :name="task.id">
               <el-card style="padding-bottom: 3%">
                 <el-col class="logtype">
-                  {{ logsTime[task.id] != null ? '耗时：'+ logsTime[task.id].time/1000 + ' 秒': '' }}
+                  {{ taskslogsList[task.id] != null ? '耗时：'+ taskslogsList[task.id].time/1000 + ' 秒': '' }}
                 </el-col>
                 <el-col
                   v-for="log in logs[task.id]"
@@ -260,23 +231,8 @@
               </el-card>
             </el-collapse-item>
           </el-collapse>
-          <!-- <el-card style="width:80%;padding-bottom:2%">
-              <el-col class="logtype">
-                {{ logsTime[task.id] != null ? '耗时：'+ logsTime[task.id].time/1000 + ' 秒': '' }}
-              </el-col>
-              <el-col
-                v-for="log in logs[task.id]"
-                :key="log.taskLogUuid"
-                :label="log.taskLogUuid"
-                class="red"
-                :style="{color: logColorList[log.status===null ? 1 : log.status-1].color}"
-                style="margin-top:10px"
-              >
-                {{ log.logTime +' '+ log.logMessage }}
-              </el-col></el-card> -->
         </el-timeline-item>
       </el-timeline>
-      <!-- </el-form> -->
       <div slot="footer">
         <el-button type="primary" @click="logDialogFromVisible = false">关闭</el-button>
       </div>
@@ -322,17 +278,6 @@ export default {
           2: '单次任务',
           3: '重跑',
           null: '其它'
-        },
-        status: {
-          1: '等待中',
-          2: '等待文件中',
-          3: '等待依赖任务',
-          4: '执行中',
-          5: '暂停中',
-          6: '已取消',
-          7: '执行完成',
-          8: '执行失败',
-          null: '--'
         }
       },
       statusList: [
@@ -401,6 +346,7 @@ export default {
         condition: null,
         pageNo: 1,
         pageSize: 20,
+        // 开始运行时间，倒序排序
         sortBy: 'desc',
         sortName: 'startTime'
       },
@@ -470,7 +416,7 @@ export default {
       doneStatus: true,
       logTasks: null,
       logs: null,
-      logsTime: null
+      taskslogsList: null
     }
   },
   watch: {
@@ -567,23 +513,27 @@ export default {
       this.pageQuery.sortName = prop
       this.handleFilter()
     },
+    // 任务环节弹框显示
     handleTasksLogs(data) {
       if (data.processInstanceJson === null || data.processInstanceJson === '') {
         this.logDialogFromVisible = false
         return
       }
+      // 获取任务环节
       getTaskLink(data.processInstanceUuid).then(resp => {
         this.logTasks = resp.data
       })
+      // 获取任务日志
       findTaskLogs(data.processInstanceUuid).then(resp => {
         this.logs = resp.data
       })
+      // 获取调度实例已运行的环节
       findTaskInstanceById(data.processInstanceUuid).then(resp => {
-        this.logsTime = resp.data
+        this.taskslogsList = resp.data
       })
       this.logDialogFromVisible = true
     },
-    // 跳过环节
+    // 跳过环节弹框显示
     handleSkipTask() {
       this.temp = Object.assign({}, this.selections[0])
       // 如果已有跳过的环节进行反写
@@ -592,15 +542,18 @@ export default {
         this.checkedTask = checkedTasks[0]
         this.checkedTaskId = this.checkedTask.id
       }
+      // 判断调度实例的json是否为空，为空的话，不显示弹框
       if (this.temp.processInstanceJson === null || this.temp.processInstanceJson === '') {
         this.dialogFormVisible = false
         return
       }
+      // 获取任务环节
       getTaskLink(this.temp.processInstanceUuid).then(resp => {
         this.tasks = resp.data
       })
       this.dialogFormVisible = true
     },
+    // 跳过环节
     taskSkip() {
       var checkedTasks = []
       checkedTasks.push(this.checkedTask)
@@ -623,6 +576,7 @@ export default {
       this.tasks = null
     },
     changeSkipInfo(a) {
+      // 更改跳过的环节
       const index0 = this.tasks.findIndex(v => v.id === a)
       if (index0 > -1) {
         this.checkedTask = this.tasks[index0]
@@ -658,6 +612,7 @@ export default {
         })
       })
     },
+    // 重新运行
     handleReStart() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
@@ -672,6 +627,7 @@ export default {
         })
       })
     },
+    // 取消
     handleCancel() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
@@ -697,10 +653,7 @@ export default {
     formatType(data) {
       return this.formatMap.execType[data.execType]
     },
-    formatStatus(data) {
-      return this.formatMap.status[data.status]
-    },
-    // 格式化时间
+    // 格式化耗时
     formatterTimeConsuming(data) {
       const time = data.timeConsuming
       if (time === null || time === '' || time === 0) {

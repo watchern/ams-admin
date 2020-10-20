@@ -8,12 +8,14 @@
       />
     </div>
     <div style="float: left">
+      <!-- 添加 -->
       <el-button
         type="primary"
         size="mini"
         class="oper-btn add"
         @click="handleCreate()"
       />
+      <!-- 修改 -->
       <el-button
         type="primary"
         size="mini"
@@ -21,6 +23,7 @@
         :disabled="selections.length !== 1"
         @click="handleUpdate()"
       />
+      <!-- 启用 -->
       <el-button
         type="primary"
         size="mini"
@@ -29,6 +32,7 @@
         :disabled="startStatus"
         @click="handleStart()"
       />
+      <!-- 停用 -->
       <el-button
         type="danger"
         size="mini"
@@ -37,6 +41,7 @@
         icon="el-icon-video-pause"
         @click="handleStop()"
       />
+      <!-- 删除 -->
       <el-button
         type="danger"
         size="mini"
@@ -44,6 +49,7 @@
         :disabled="selections.length === 0"
         @click="handleDelete()"
       />
+      <!-- 下载 -->
       <el-button
         type="primary"
         size="mini"
@@ -52,6 +58,7 @@
         :disabled="selections.length === 0"
         @click="handleDownload()"
       />
+      <!-- 上传 -->
       <!-- multiple -->
       <el-upload
         class="upload-demo"
@@ -85,20 +92,11 @@
         type="selection"
         width="55"
       />
-      <!-- <el-table-column
-        label="流程名称"
-        width="300px"
-        align="center"
-        prop="name"
-        @cell-click="handleView()"
-      /> -->
-
       <el-table-column label="流程名称" width="300" align="center" show-overflow-tooltip>
         <template slot-scope="scope">
           <a target="_blank" class="buttonText" @click="handleView(scope.row.processDefinitionUuid)">{{ scope.row.name }}</a>
         </template>
       </el-table-column>
-
       <el-table-column
         label="排序号"
         width="150px"
@@ -234,6 +232,7 @@ export default {
       this.handleFilter()
     },
     handleCreate() {
+      // 流程定义添加
       this.$router.push('/etlscheduler/workflow')
     },
     handleUpdate() {
