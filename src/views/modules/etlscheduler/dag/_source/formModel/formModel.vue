@@ -153,6 +153,7 @@
         <m-timeout-alarm
           ref="timeout"
           :backfill-item="backfillItem"
+          style="display:none"
           @on-timeout="_onTimeout"
         />
 
