@@ -39,17 +39,6 @@
           </template>
         </m-list-box-f>
         <m-list-box-f>
-          <template slot="name">描述</template>
-          <template slot="content">
-            <x-input
-              v-model="note"
-              type="textarea"
-              placeholder="请输入描述"
-              autocomplete="off"
-            />
-          </template>
-        </m-list-box-f>
-        <m-list-box-f>
           <template slot="name"><strong>*</strong>IP主机名</template>
           <template slot="content">
             <x-input
@@ -105,18 +94,6 @@
             />
           </template>
         </m-list-box-f>
-        <m-list-box-f>
-          <template slot="name"><strong :class="{hidden:showdDatabase}">*</strong>数据库名</template>
-          <template slot="content">
-            <x-input
-              v-model="database"
-              type="input"
-              :maxlength="60"
-              placeholder="请输入数据库名"
-              autocomplete="off"
-            />
-          </template>
-        </m-list-box-f>
         <m-list-box-f v-if="showConnectType">
           <template slot="name"><strong>*</strong>服务名或SID</template>
           <template slot="content">
@@ -130,6 +107,18 @@
           </template>
         </m-list-box-f>
         <m-list-box-f>
+          <template slot="name"><strong :class="{hidden:showdDatabase}">*</strong>数据库名</template>
+          <template slot="content">
+            <x-input
+              v-model="database"
+              type="input"
+              :maxlength="60"
+              placeholder="请输入数据库名"
+              autocomplete="off"
+            />
+          </template>
+        </m-list-box-f>
+        <m-list-box-f>
           <template slot="name">jdbc连接参数</template>
           <template slot="content">
             <x-input
@@ -137,6 +126,17 @@
               type="textarea"
               :autosize="{minRows:2}"
               :placeholder="_rtOtherPlaceholder()"
+              autocomplete="off"
+            />
+          </template>
+        </m-list-box-f>
+        <m-list-box-f>
+          <template slot="name">描述</template>
+          <template slot="content">
+            <x-input
+              v-model="note"
+              type="textarea"
+              placeholder="请输入描述"
               autocomplete="off"
             />
           </template>

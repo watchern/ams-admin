@@ -222,7 +222,7 @@
     }
 
     .dag-container {
-      height: calc(100% - 40px);
+      height: calc(100% - 20px);
       // height: calc(100% - 0px);
       overflow-x: auto;
 
@@ -233,7 +233,8 @@
       ;
       // TODO
       // overflow-y: auto;
-      width:1200px;
+      // width: 1350px;
+      width: calc(100vw - 210px);
     }
   }
 
@@ -334,8 +335,10 @@ svg path:hover {
 }
 
 .jtk-demo {
-  //min-width: calc(100% - 220px);
+  min-width: calc(100% - 180px);
   width: 8000px;
+
+  // width: 300vh;
   height: 5000px;
 
   svg:not(:root) {

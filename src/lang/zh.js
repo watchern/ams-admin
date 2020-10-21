@@ -66,7 +66,13 @@ export default {
     profile: '个人中心',
     etlscheduler: 'ETL调度',
     'datasource': '数据源管理',
-    'resources': '资源管理'
+    'paramfield': '参数管理',
+    'dataresource': '数据资源管理',
+    'resources': '资源管理',
+    'processdefinition': '流程定义管理',
+    'processschedule': '调度任务管理',
+    'taskmonitor': '调度监控',
+    'workflow': '流程定义管理'
   },
   navbar: {
     dashboard: '首页',

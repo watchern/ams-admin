@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="list-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -7,42 +7,58 @@
         @submit="getList"
       />
     </div>
-    <div>
+    <div style="float: left">
+      <!-- 添加 -->
       <el-button
         type="primary"
         size="mini"
+        class="oper-btn add"
         @click="handleCreate()"
-      >添加</el-button>
+      />
+      <!-- 修改 -->
       <el-button
         type="primary"
         size="mini"
+        class="oper-btn edit"
         :disabled="selections.length !== 1"
         @click="handleUpdate()"
-      >修改</el-button>
+      />
+      <!-- 启用 -->
       <el-button
         type="primary"
         size="mini"
+        class="oper-btn"
+        icon="el-icon-video-play"
         :disabled="startStatus"
         @click="handleStart()"
-      >启用</el-button>
+      />
+      <!-- 停用 -->
       <el-button
         type="danger"
         size="mini"
         :disabled="stopStatus"
+        class="oper-btn"
+        icon="el-icon-video-pause"
         @click="handleStop()"
-      >停用</el-button>
+      />
+      <!-- 删除 -->
       <el-button
         type="danger"
         size="mini"
+        class="oper-btn delete"
         :disabled="selections.length === 0"
         @click="handleDelete()"
-      >删除</el-button>
+      />
+      <!-- 下载 -->
       <el-button
         type="primary"
         size="mini"
+        class="oper-btn"
+        icon="el-icon-download"
         :disabled="selections.length === 0"
         @click="handleDownload()"
-      >下载</el-button>
+      />
+      <!-- 上传 -->
       <!-- multiple -->
       <el-upload
         class="upload-demo"
@@ -56,7 +72,7 @@
         :show-file-list="false"
         style="display:inline-block;padding-left:10px"
       >
-        <el-button size="mini" type="primary">点击上传</el-button>
+        <el-button size="mini" type="primary" icon="el-icon-upload" class="oper-btn" />
       </el-upload>
     </div>
     <el-table
@@ -76,20 +92,11 @@
         type="selection"
         width="55"
       />
-      <!-- <el-table-column
-        label="流程名称"
-        width="300px"
-        align="center"
-        prop="name"
-        @cell-click="handleView()"
-      /> -->
-
       <el-table-column label="流程名称" width="300" align="center" show-overflow-tooltip>
         <template slot-scope="scope">
           <a target="_blank" class="buttonText" @click="handleView(scope.row.processDefinitionUuid)">{{ scope.row.name }}</a>
         </template>
       </el-table-column>
-
       <el-table-column
         label="排序号"
         width="150px"
@@ -225,6 +232,7 @@ export default {
       this.handleFilter()
     },
     handleCreate() {
+      // 流程定义添加
       this.$router.push('/etlscheduler/workflow')
     },
     handleUpdate() {
@@ -306,14 +314,27 @@ export default {
       })
     },
     handleDelete() {
-      var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
-      del(ids.join(',')).then(() => {
-        this.getList()
+      this.$confirm('此操作将删除相关的调度任务, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
+        del(ids.join(',')).then(() => {
+          this.getList()
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      }).catch(() => {
         this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
+          title: '消息',
+          message: '已取消删除',
           duration: 2000,
           position: 'bottom-right'
         })

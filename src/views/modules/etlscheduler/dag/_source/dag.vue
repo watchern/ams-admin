@@ -32,7 +32,7 @@
           <!--
             :disabled="$route.name !== 'projects-instance-details'" -->
           <x-button
-            style="vertical-align: middle;"
+            style="vertical-align: middle; display:none"
             data-toggle="tooltip"
             title="查看变量"
             data-container="body"
@@ -43,7 +43,7 @@
             @click="_toggleView"
           />
           <x-button
-            style="vertical-align: middle;"
+            style="vertical-align: middle;display:none"
             data-toggle="tooltip"
             title="启动参数"
             data-container="body"
@@ -192,7 +192,7 @@ export default {
     ...mapMutations('dag', ['addTasks', 'cacheTasks', 'resetParams', 'setIsEditDag', 'setName']),
 
     // DAG automatic layout
-    dagAutomaticLayoutdagAutomaticLayout() {
+    dagAutomaticLayout() {
       $('#canvas').html('')
 
       // Destroy round robin
