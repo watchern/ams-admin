@@ -5,7 +5,7 @@
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
     <!-- <div> -->
-      <!-- <el-button type="primary" size="mini" @click="handleCreate()"
+    <!-- <el-button type="primary" size="mini" @click="handleCreate()"
         >添加</el-button
       >
       <el-button
@@ -22,13 +22,13 @@
         @click="handleDelete()"
         >删除</el-button
       > -->
-      <div style="float: left;">
+    <div style="float: left;">
       <el-button type="primary" class="oper-btn add" @click="handleCreate()" />
       <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
       <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
-      <el-button type="primary" class="oper-btn" icon="el-icon-video-play" @click="handleUse()"  :disabled="startStatus" />
-      <el-button type="primary" class="oper-btn" icon="el-icon-video-pause" @click="handleBear()" :disabled="stopStatus"/>
-      <el-button type="primary" class="oper-btn" @click="copyData()" icon="el-icon-document-copy" :disabled="selections.length != 1" />
+      <el-button type="primary" class="oper-btn" icon="el-icon-video-play" :disabled="startStatus" @click="handleUse()" />
+      <el-button type="primary" class="oper-btn" icon="el-icon-video-pause" :disabled="stopStatus" @click="handleBear()" />
+      <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length != 1" @click="copyData()" />
       <el-upload
         multiple
         class="upload-demo"
@@ -44,12 +44,11 @@
       >
         <el-button type="primary" class="oper-btn" icon="el-icon-upload2">导入</el-button>
       </el-upload>
-       <el-menu style="display: inline-block; padding-left: 10px">
-        <el-button type="primary" class="oper-btn" icon="el-icon-download" @click="dialogFormVisible1 = true"></el-button
-        >
+      <el-menu style="display: inline-block; padding-left: 10px">
+        <el-button type="primary" class="oper-btn" icon="el-icon-download" @click="dialogFormVisible1 = true" />
       </el-menu>
     </div>
-      <!-- <el-button
+    <!-- <el-button
         type="primary"
         size="mini"
         :disabled="startStatus"
@@ -70,7 +69,7 @@
         @click="copyData()"
         >复制</el-button
       > -->
-      <!-- <el-upload
+    <!-- <el-upload
         multiple
         class="upload-demo"
         action=""
@@ -85,7 +84,7 @@
       >
         <el-button size="mini" type="primary">导入</el-button>
       </el-upload> -->
-      <!-- <el-menu style="display: inline-block; padding-left: 10px">
+    <!-- <el-menu style="display: inline-block; padding-left: 10px">
         <el-button type="primary" size="mini" @click="dialogFormVisible1 = true"
           >下载流程模板</el-button
         >
@@ -183,7 +182,7 @@
         align="center"
         prop="updateUserName"
       />
-      <el-table-column label="修改时间" align="center" prop="updateTime"  width="200px"/>
+      <el-table-column label="修改时间" align="center" prop="updateTime" width="200px" />
     </el-table>
     <pagination
       v-show="total > 0"
@@ -213,16 +212,16 @@
         <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="processDefinitionId">
           <el-select
-            :disabled="disableUpdate"
             v-model="temp.processDefinitionId"
+            :disabled="disableUpdate"
             :filterable="true"
             :remote="true"
             reserve-keyword
             placeholder="请选择任务流程"
             :remote-method="remoteMethod"
             :loading="loading"
-            @change="paramMsg(temp.processDefinitionId)"
             class="propwidth"
+            @change="paramMsg(temp.processDefinitionId)"
           >
             <el-option
               v-for="item in options"
@@ -234,12 +233,12 @@
         </el-form-item>
         <el-form-item
           v-for="item in paramList"
-          :key="item.value"
-          :label="item.prop"
-          :prop="item.prop"
+          :key="item.paramUuid"
+          :label="item.param.paramName"
+          :prop="item.param.defaultValue"
         >
           <el-input
-            v-model="item.value"
+            v-model="item.param.defaultValue"
             class="propwidth"
             :disabled="disableUpdate"
           />
@@ -261,20 +260,21 @@
         <el-form-item label="作业周期范围">
           <el-col :span="11">
             <el-date-picker
-              type="date"
-              placeholder="选择日期"
               v-model="temp.startTime"
+              type="date"
+              prop="startTime"
+              placeholder="选择日期"
               :disabled="disableUpdate"
-            ></el-date-picker>
+            />
           </el-col>
           <el-col class="line" :span="1">-</el-col>
           <el-col :span="11">
             <el-date-picker
+              v-model="temp.endTime"
               type="date"
               placeholder="选择日期"
-              v-model="temp.endTime"
               :disabled="disableUpdate"
-            ></el-date-picker>
+            />
           </el-col>
         </el-form-item>
 
@@ -285,12 +285,12 @@
             class="propwidth"
             :disabled="disableUpdate"
           >
-            <el-option label="每2分钟" value="0 */1 * * * ?" />
-            <el-option label="每日" value="0 0 0 * * ?" />
-            <el-option label="每月" value="0 0 0 1 * ? " />
-            <el-option label="每季度" value="0 0 0 1 1,4,7,10 ?" />
-            <el-option label="每半年" value="0 0 0 1 1,7 ?" />
-            <el-option label="每年" value="0 0 0 1 1 ?" />
+            <el-option
+              v-for="item in crontabFormat"
+              :key="item.code"
+              :label="item.msg"
+              :value="item.code"
+            />
           </el-select>
         </el-form-item>
         <!-- 添加任务依赖 -->
@@ -301,9 +301,9 @@
               <div slot="content">
                 <div class="dep-opt">
                   <a
-                  :style="{
-                        'pointer-events': disableUpdate === true ? 'none' : '',
-                      }"
+                    :style="{
+                      'pointer-events': disableUpdate === true ? 'none' : '',
+                    }"
                     href="javascript:"
                     class="add-dep"
                     @click="!isDetails && _addDep()"
@@ -326,6 +326,9 @@
                 <div class="dep-box">
                   <span
                     v-if="dependTaskList.length"
+                    :style="{
+                      'pointer-events': disableUpdate === true ? 'none' : '',
+                    }"
                     class="dep-relation"
                     @click="!isDetails && _setGlobalRelation()"
                   >
@@ -334,6 +337,9 @@
                   <div
                     v-for="(el, $index) in dependTaskList"
                     :key="$index"
+                    :style="{
+                      'pointer-events': disableUpdate === true ? 'none' : '',
+                    }"
                     class="dep-list"
                   >
                     <span
@@ -369,21 +375,20 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button v-if="!closeStatus" @click="dialogFormVisible = false"
-          >取消</el-button
-        >
         <el-button
-          type="primary"
-          v-if="closeStatus"
-          @click="dialogFormVisible = false"
-          >关闭</el-button
-        >
-        <el-button
-          type="primary"
           v-if="!closeStatus"
+          @click="dialogFormVisible = false"
+        >取消</el-button>
+        <el-button
+          v-if="closeStatus"
+          type="primary"
+          @click="dialogFormVisible = false"
+        >关闭</el-button>
+        <el-button
+          v-if="!closeStatus"
+          type="primary"
           @click="dialogStatus === 'create' ? createData() : updateData()"
-          >确定</el-button
-        >
+        >确定</el-button>
       </div>
     </el-dialog>
     <el-dialog title="下载流程模板" :visible.sync="dialogFormVisible1">
@@ -403,8 +408,8 @@
             placeholder="请选择任务流程"
             :remote-method="remoteMethod"
             :loading="loading"
-            @change="paramMsg(temp.processDefinitionId)"
             class="propwidth"
+            @change="paramMsg(temp.processDefinitionId)"
           >
             <el-option
               v-for="item in options"
@@ -423,15 +428,14 @@
   </div>
 </template>
 
-
 <script>
-import axios from "axios";
-import $ from "jquery";
-import _ from "lodash";
-import mListBox from "./_source/listBox";
-import mDependItemList from "./_source/dependItemList";
-import disabledState from "@/components/Dolphin/mixin/disabledState";
-import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
+import axios from 'axios'
+import $ from 'jquery'
+import _ from 'lodash'
+import mListBox from './_source/listBox'
+import mDependItemList from './_source/dependItemList'
+import disabledState from '@/components/Dolphin/mixin/disabledState'
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import {
   listByPage,
   save,
@@ -442,23 +446,23 @@ import {
   stopScheduleStatus,
   getParamsByProcessId,
   getByScheduleId,
-  copy,
-} from "@/api/etlscheduler/processschedule";
-import { getById } from "@/api/etlscheduler/processdefinition";
-import QueryField from "@/components/Ace/query-field/index";
+  copy
+} from '@/api/etlscheduler/processschedule'
+import { getById } from '@/api/etlscheduler/processdefinition'
+import QueryField from '@/components/Ace/query-field/index'
 // import _ from lodash
 
 export default {
-  name: "Dependence",
+  name: 'Dependence',
   components: {
     Pagination,
     QueryField,
     mListBox,
-    mDependItemList,
+    mDependItemList
   },
   mixins: [disabledState],
   props: {
-    backfillItem: Object,
+    backfillItem: Object
   },
   data() {
     return {
@@ -468,7 +472,7 @@ export default {
       startStatus: true,
       stopStatus: true,
       // 添加依赖
-      relation: "AND",
+      relation: 'AND',
       dependTaskList: [],
       paramList: [],
       isLoading: false,
@@ -478,72 +482,81 @@ export default {
         pageNo: 1,
         pageSize: 100,
         condition: {
-          keyword: null,
-        },
+          keyword: null
+        }
       },
+      // 作业周期格式化
+      crontabFormat: [
+        {
+          'code': '0 0 0 * * ? *',
+          'msg': '每日'
+        },
+        {
+          'code': '0 0 0 1 * ? *',
+          'msg': '每月'
+        },
+        {
+          'code': '0 0 0 1 1,4,7,10 ? *',
+          'msg': '每季度'
+        },
+        {
+          'code': '0 0 0 1 1,7 ? *',
+          'msg': '每半年'
+        },
+        {
+          'code': '0 0 0 1 1 ? *',
+          'msg': '每年'
+        }
+      ],
       loading: false,
-      tableKey: "id",
+      tableKey: 'id',
       list: null,
       total: 0,
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         {
-          label: "任务名称",
-          name: "scheduleName",
-          type: "text",
+          label: '任务名称',
+          name: 'scheduleName',
+          type: 'text',
           value: ''
         },
         {
-          label: "状态",
-          name: "status",
-          type: "select",
+          label: '状态',
+          name: 'status',
+          type: 'select',
           data: [
             {
-              name: "启用",
-              value: "1",
+              name: '启用',
+              value: '1'
             },
             {
-              name: "停用",
-              value: "0",
-            },
+              name: '停用',
+              value: '0'
+            }
           ],
-          default: "0",
+          default: '0'
         },
         {
-          label: "模糊查询",
-          name: "keyword",
-          type: "fuzzyText",
-        },
+          label: '模糊查询',
+          name: 'keyword',
+          type: 'fuzzyText'
+        }
       ],
       // 格式化参数列表
       formatMap: {
         status: {
-          1: "启用",
-          0: "停用",
-          null: "停用",
-        },
-        crontab: {
-          "0 0 0 * * ?": "每日",
-          "0 0 0 1 * ?": "每月",
-          "0 0 0 1 1,4,7,10 ?": "每季度",
-          "0 0 0 1 1,7 ?": "每半年",
-          "0 0 0 1 1 ?": "每年"
-        },
-        crontabs: [
-          {id: "0 0 0 * * ?",  name: "每日"},
-          {id: "0 0 0 1 * ?",  name: "每月"},
-          {id: "0 0 0 1 1,4,7,10 ?",  name: "每季度"},
-          {id: "0 0 0 1 1,7 ?",  name: "每半年"},
-          {id: "0 0 0 1 1 ?",  name: "每年"}
-        ]
+          1: '启用',
+          0: '停用',
+          null: '停用'
+        }
       },
       pageQuery: {
         condition: null,
         pageNo: 1,
         pageSize: 10,
-        sortBy: "asc",
-        sortName: "updateTime",
+        sortBy: 'asc',
+        sortName: 'updateTime'
       },
       temp: {
         startTime: null,
@@ -561,7 +574,7 @@ export default {
         scheduleName: null,
         processDefinitionId: null,
         id: null,
-        processDefName: null,
+        processDefName: null
       },
       groupTime: {
         startTimeSpilt: null,
@@ -571,29 +584,29 @@ export default {
       dialogFormVisible: false,
       dialogFormVisible1: false,
       dialogVisible2: false,
-      dialogStatus: "",
+      dialogStatus: '',
       textMap: {
-        update: "编辑参数",
-        create: "添加参数",
-        show: "查看参数",
+        update: '编辑参数',
+        create: '添加参数',
+        show: '查看参数'
       },
       dialogPvVisible: false,
-      headers: { "Content-Type": "multipart/form-data" },
-      file: "",
+      headers: { 'Content-Type': 'multipart/form-data' },
+      file: '',
       rules: {
         scheduleName: [
           {
             required: true,
-            message: "请填写调度任务名称",
-            trigger: "change",
-          },
+            message: '请填写调度任务名称',
+            trigger: 'change'
+          }
         ],
         processInstancePriority: [
           {
             required: true,
-            message: "请填写排序号",
-            trigger: "change",
-          },
+            message: '请填写排序号',
+            trigger: 'change'
+          }
         ],
         // scheduleDesc: [
         //   {
@@ -605,9 +618,9 @@ export default {
         crontab: [
           {
             required: true,
-            message: "请填写作业周期",
-            trigger: "change",
-          },
+            message: '请填写作业周期',
+            trigger: 'change'
+          }
         ],
         // status: [
         //   {
@@ -619,20 +632,20 @@ export default {
         processDefinitionId: [
           {
             required: true,
-            message: "请选择任务流程",
-            trigger: "change",
-          },
+            message: '请选择任务流程',
+            trigger: 'change'
+          }
         ],
-        // startTime: [
-        //   {
-        //     required: true,
-        //     message: "请填写开始执行日期",
-        //     trigger: "change",
-        //   },
-        // ],
+        startTime: [
+          {
+            required: true,
+            message: '请填写开始执行日期',
+            trigger: 'change'
+          }
+        ]
       },
-      downloadLoading: false,
-    };
+      downloadLoading: false
+    }
   },
   computed: {
     cacheDependence() {
@@ -642,50 +655,50 @@ export default {
           return {
             relation: v.relation,
             dependItemList: _.map(v.dependItemList, (v1) =>
-              _.omit(v1, ["depTasksList", "state", "dateValueList"])
-            ),
-          };
-        }),
-      };
-    },
+              _.omit(v1, ['depTasksList', 'state', 'dateValueList'])
+            )
+          }
+        })
+      }
+    }
   },
   watch: {
     // 监听selections集合
     selections() {
       if (this.selections.length > 0) {
-        this.startStatus = false;
-        this.stopStatus = false;
+        this.startStatus = false
+        this.stopStatus = false
         this.selections.forEach((r, i) => {
           if (r.status === 1) {
-            this.startStatus = true;
+            this.startStatus = true
           } else if (r.status === 0) {
-            this.stopStatus = true;
+            this.stopStatus = true
           }
-        });
+        })
       } else {
-        this.startStatus = true;
-        this.stopStatus = true;
+        this.startStatus = true
+        this.stopStatus = true
       }
     },
     dependTaskList(e) {
       setTimeout(() => {
-        this.isLoading = false;
-      }, 600);
+        this.isLoading = false
+      }, 600)
     },
     cacheDependence(val) {
-      this.$emit("on-cache-dependent", val);
-    },
+      this.$emit('on-cache-dependent', val)
+    }
   },
   created() {
-    this.getList();
-    this.remoteMethod();
-    const o = this.backfillItem;
-    const dependentResult = $(`#${o.id}`).data("dependent-result") || {};
+    this.getList()
+    this.remoteMethod()
+    const o = this.backfillItem
+    const dependentResult = $(`#${o.id}`).data('dependent-result') || {}
     // Does not represent an empty object backfill
     if (!_.isEmpty(o)) {
-      this.relation = _.cloneDeep(o.dependence.relation) || "AND";
-      this.dependTaskList = _.cloneDeep(o.dependence.dependTaskList) || [];
-      const defaultState = this.isDetails ? "WAITING" : "";
+      this.relation = _.cloneDeep(o.dependence.relation) || 'AND'
+      this.dependTaskList = _.cloneDeep(o.dependence.dependTaskList) || []
+      const defaultState = this.isDetails ? 'WAITING' : ''
       // Process instance return status display matches by key
       _.map(this.dependTaskList, (v) =>
         _.map(
@@ -696,171 +709,167 @@ export default {
                 `${v1.id}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}`
               ] || defaultState)
         )
-      );
+      )
     }
   },
   methods: {
     findSchedule(data) {
-      this.closeStatus = true;
-      this.disableUpdate = true;
-      this.temp = Object.assign({}, data); // copy obj
-      this.dialogStatus = "show";
-      this.dialogFormVisible = true;
+      this.closeStatus = true
+      this.disableUpdate = true
+      this.temp = Object.assign({}, data) // copy obj
+      this.dialogStatus = 'show'
+      this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
-      var id = this.temp.id;
-      var processId = this.temp.processDefinitionId;
+        this.$refs['dataForm'].clearValidate()
+      })
+      var id = this.temp.id
+      var processId = this.temp.processDefinitionId
       getByScheduleId(id).then((resp) => {
-        const _dependTaskInfoList = resp.data.dependTaskInfoList;
-        const _taskParamsList = resp.data.taskParamsList;
-        if (_dependTaskInfoList !== null) {
-          this.dependTaskList = _dependTaskInfoList;
-        } else {
-          this.dependTaskList = [];
-        }
-        if (_taskParamsList !== null && _taskParamsList !== "") {
-          getByScheduleId(id).then((resp) => {
-            this.paramList = _taskParamsList;
-          });
-        } else {
-          this.paramList = [];
-        }
-      });
+        // if (resp.data.dependTaskInfoList !== null) {
+        this.dependTaskList = resp.data.dependTaskInfoList
+        // } else {
+        //   this.dependTaskList = [];
+        // }
+        // if (resp.data.taskParamsList !== null && resp.data.taskParamsList !== "") {
+        this.paramList = resp.data.taskParamsList
+        // } else {
+        //   this.paramList = [];
+        // }
+      })
     },
-    //导出 excel 格式
+    // 导出 excel 格式
     exportFile() {
-      var id = this.temp.processDefinitionId;
+      var id = this.temp.processDefinitionId
       // var ids = []
       // this.selections.forEach((r, i) => { ids.push(r.id)})
       axios({
-        method: "get",
+        method: 'get',
         url: `/etlscheduler/schedules/exportFile/${id}`,
-        responseType: "blob",
+        responseType: 'blob'
       }).then((res) => {
         const filename = decodeURI(
-          res.headers["content-disposition"].split(";")[1].split("=")[1]
-        );
+          res.headers['content-disposition'].split(';')[1].split('=')[1]
+        )
         const blob = new Blob([res.data], {
-          type: "application/octet-stream",
-        });
-        let url = window.URL.createObjectURL(blob);
-        let link = document.createElement("a");
-        link.style.display = "none";
-        link.href = url;
-        link.setAttribute("download", filename);
-        document.body.appendChild(link);
-        link.click();
-      });
-      this.dialogFormVisible1 = false;
+          type: 'application/octet-stream'
+        })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = url
+        link.setAttribute('download', filename)
+        document.body.appendChild(link)
+        link.click()
+      })
+      this.dialogFormVisible1 = false
     },
     // 复制对象
     copyData() {
       this.selections.forEach((r, i) => {
-        var id = r.id;
+        var id = r.id
         copy(id).then(() => {
-          this.getList();
+          this.getList()
           this.$notify({
-            title: "成功",
-            message: "复制成功",
-            type: "success",
+            title: '成功',
+            message: '复制成功',
+            type: 'success',
             duration: 2000,
-            position: "bottom-right",
-          });
-        });
-      });
+            position: 'bottom-right'
+          })
+        })
+      })
     },
     _addDep() {
       if (!this.isLoading) {
-        this.isLoading = true;
+        this.isLoading = true
         this.dependTaskList.push({
           dependItemList: [],
-          relation: "AND",
-        });
+          relation: 'AND'
+        })
       }
     },
     _deleteDep(i) {
       // remove index dependent
-      this.dependTaskList.splice(i, 1);
+      this.dependTaskList.splice(i, 1)
 
       // remove tootip
-      $("body").find(".tooltip.fade.top.in").remove();
+      $('body').find('.tooltip.fade.top.in').remove()
     },
     _onDeleteAll(i) {
       this.dependTaskList.map((item, i) => {
         if (item.dependItemList.length === 0) {
-          this.dependTaskList.splice(i, 1);
+          this.dependTaskList.splice(i, 1)
         }
-      });
+      })
       // this._deleteDep(i)
     },
     _setGlobalRelation() {
-      this.relation = this.relation === "AND" ? "OR" : "AND";
+      this.relation = this.relation === 'AND' ? 'OR' : 'AND'
     },
     getDependTaskList(i) {
       // console.log('getDependTaskList',i)
     },
     _setRelation(i) {
-      this.dependTaskList[i].relation === "AND" ? "OR" : "AND";
+      this.dependTaskList[i].relation === 'AND' ? 'OR' : 'AND'
     },
     _verification() {
-      this.$emit("on-dependent", {
+      this.$emit('on-dependent', {
         relation: this.relation,
         dependTaskList: _.map(this.dependTaskList, (v) => {
           return {
             relation: v.relation,
             dependItemList: _.map(v.dependItemList, (v1) =>
-              _.omit(v1, ["depTasksList", "state", "dateValueList"])
-            ),
-          };
-        }),
-      });
-      return true;
+              _.omit(v1, ['depTasksList', 'state', 'dateValueList'])
+            )
+          }
+        })
+      })
+      return true
     },
     // 参数详情
     paramMsg(data) {
-      var id = data;
-      getById(id).then((resp) => {
-        this.temp.processDefName = resp.data.name;
-      });
-      getParamsByProcessId(id).then((resp) => {
-        this.paramList = resp.data;
-      });
+      var id = data
+      getById(id).then((res) => {
+        this.temp.processDefName = res.data.name
+      })
+      getParamsByProcessId(id).then((res) => {
+        this.paramList = res.data
+      })
     },
     // 查询任务流程
     remoteMethod(query) {
-      this.loading = true;
+      this.loading = true
       setTimeout(() => {
-        this.loading = false;
-        this.processParam.condition.keyword = query;
+        this.loading = false
+        this.processParam.condition.keyword = query
         findByprocessDef(this.processParam).then((resp) => {
-          this.options = resp.data.records;
+          this.options = resp.data.records
           for (var i = 0; i < this.options.length; i++) {
             if (this.options[i].status == 0) {
-              this.options.pop(i);
+              this.options.pop(i)
             }
           }
-        });
-      }, 200);
+        })
+      }, 200)
     },
     getList(query) {
-      this.listLoading = true;
-      if (query) this.pageQuery.condition = query;
+      this.listLoading = true
+      if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then((resp) => {
-        this.total = resp.data.total;
-        this.list = resp.data.records;
-        this.listLoading = false;
-      });
+        this.total = resp.data.total
+        this.list = resp.data.records
+        this.listLoading = false
+      })
     },
     handleFilter() {
-      this.pageQuery.pageNo = 1;
-      this.getList();
+      this.pageQuery.pageNo = 1
+      this.getList()
     },
     sortChange(data) {
-      const { prop, order } = data;
-      this.pageQuery.sortBy = order;
-      this.pageQuery.sortName = prop;
-      this.handleFilter();
+      const { prop, order } = data
+      this.pageQuery.sortBy = order
+      this.pageQuery.sortName = prop
+      this.handleFilter()
     },
     resetTemp() {
       this.temp = {
@@ -880,120 +889,116 @@ export default {
         taskParamsList: null,
         startTime: null,
         endTime: null
-      };
+      }
     },
     handleCreate() {
-      this.disableUpdate = false;
-      this.closeStatus = false;
-      this.paramList = [];
-      this.dependTaskList = [];
-      this._onDeleteAll();
-      this.resetTemp();
-      this.dialogStatus = "create";
-      this.dialogFormVisible = true;
+      this.disableUpdate = false
+      this.closeStatus = false
+      this.paramList = []
+      this.dependTaskList = []
+      this._onDeleteAll()
+      this.resetTemp()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     createData() {
-      this.$refs["dataForm"].validate((valid) => {
+      this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.taskParamsList = this.paramList;
+          this.temp.taskParamsList = this.paramList
 
           if (!this.dependTaskList.length) {
-            this.temp.dependTaskInfo = null;
-            this.temp.dependTaskInfoList = [];
+            this.temp.dependTaskInfo = null
+            this.temp.dependTaskInfoList = []
           } else {
-            this.temp.dependTaskInfoList = this.dependTaskList;
-            this.temp.dependTaskInfo = JSON.stringify(this.dependTaskList);
+            this.temp.dependTaskInfoList = this.dependTaskList
+            this.temp.dependTaskInfo = JSON.stringify(this.dependTaskList)
           }
           save(this.temp).then(() => {
-            this.getList();
-            this.dialogFormVisible = false;
+            this.getList()
+            this.dialogFormVisible = false
             this.$notify({
-              title: "成功",
-              message: "创建成功",
-              type: "success",
+              title: '成功',
+              message: '创建成功',
+              type: 'success',
               duration: 2000,
-              position: "bottom-right",
-            });
-          });
+              position: 'bottom-right'
+            })
+          })
         }
-      });
+      })
     },
     handleUpdate() {
-      this.disableUpdate = false;
-      this.closeStatus = false;
-      this.temp = Object.assign({}, this.selections[0]); // copy obj
-      this.dialogStatus = "update";
-      this.dialogFormVisible = true;
+      this.disableUpdate = false
+      this.closeStatus = false
+      this.temp = Object.assign({}, this.selections[0]) // copy obj
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
-      var id = this.temp.id;
-      var processId = this.temp.processDefinitionId;
+        this.$refs['dataForm'].clearValidate()
+      })
+      var id = this.temp.id
+      var processId = this.temp.processDefinitionId
       getByScheduleId(id).then((resp) => {
-        const _dependTaskInfoList = resp.data.dependTaskInfoList
-        const _taskParamsList = resp.data.taskParamsList
-        if (_dependTaskInfoList !== null) {
-          this.dependTaskList = _dependTaskInfoList;
-        } else {
-          this.dependTaskList = [];
-        }
-        if (_taskParamsList !== null && _taskParamsList !== "") {
-          getByScheduleId(id).then((resp) => {
-            this.paramList = _taskParamsList;
-          });
-        } else {
-          this.paramList = [];
-        }
-      });
+        // if (resp.data.dependTaskInfoList !== null) {
+        this.dependTaskList = resp.data.dependTaskInfoList
+        // } else {
+        // this.dependTaskList = [];
+        // }
+        // if (resp.data.taskParamsList !== null && resp.data.taskParamsList !== "") {
+        this.paramList = resp.data.taskParamsList
+        // } else {
+        // this.paramList = [];
+        // }
+      })
     },
     updateData() {
-      this.temp.dependTaskInfoList = this.dependTaskList;
-      this.temp.taskParamsList = this.paramList;
-      this.$refs["dataForm"].validate((valid) => {
+      this.temp.dependTaskInfoList = this.dependTaskList
+      this.temp.taskParamsList = this.paramList
+      this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp);
+          const tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
-            this.getList();
-            const index = this.list.findIndex((v) => v.id === this.temp.id);
-            this.list.splice(index, 1, this.temp);
-            this.dialogFormVisible = false;
+            this.getList()
+            const index = this.list.findIndex((v) => v.id === this.temp.id)
+            this.list.splice(index, 1, this.temp)
+            this.dialogFormVisible = false
             this.$notify({
-              title: "成功",
-              message: "更新成功",
-              type: "success",
+              title: '成功',
+              message: '更新成功',
+              type: 'success',
               duration: 2000,
-              position: "bottom-right",
-            });
-          });
+              position: 'bottom-right'
+            })
+          })
         }
-      });
+      })
     },
     // 查询参数详情
     handleDelete() {
-      var ids = [];
+      var ids = []
       this.selections.forEach((r, i) => {
-        ids.push(r.id);
-      });
-      del(ids.join(",")).then(() => {
-        this.getList();
+        ids.push(r.id)
+      })
+      del(ids.join(',')).then(() => {
+        this.getList()
         this.$notify({
-          title: "成功",
-          message: "删除成功",
-          type: "success",
+          title: '成功',
+          message: '删除成功',
+          type: 'success',
           duration: 2000,
-          position: "bottom-right",
-        });
-      });
+          position: 'bottom-right'
+        })
+      })
     },
     handleUse() {
-      var ids = [];
+      var ids = []
       this.selections.forEach((r, i) => {
-        ids.push(r.id);
-      });
-      startScheduleStatus(ids.join(","), 1).then((res) => {
+        ids.push(r.id)
+      })
+      startScheduleStatus(ids.join(','), 1).then((res) => {
         // if (res.data.code == 1000) {
         //   this.getList();
         //   this.$notify({
@@ -1004,138 +1009,124 @@ export default {
         //     position: "bottom-right",
         //   });
         // }
-        this.getList();
+        this.getList()
         this.$notify({
-          title: "成功",
-          message: "启用成功",
-          type: "success",
+          title: '成功',
+          message: '启用成功',
+          type: 'success',
           duration: 2000,
-          position: "bottom-right",
-        });
-      });
+          position: 'bottom-right'
+        })
+      })
     },
     handleBear() {
-      var ids = [];
+      var ids = []
       this.selections.forEach((r, i) => {
-        ids.push(r.id);
-      });
-      stopScheduleStatus(ids.join(","), 0).then(() => {
-        this.getList();
+        ids.push(r.id)
+      })
+      stopScheduleStatus(ids.join(','), 0).then(() => {
+        this.getList()
         this.$notify({
-          title: "成功",
-          message: "停用成功",
-          type: "success",
+          title: '成功',
+          message: '停用成功',
+          type: 'success',
           duration: 2000,
-          position: "bottom-right",
-        });
-      });
+          position: 'bottom-right'
+        })
+      })
     },
     handleSelectionChange(val) {
-      this.selections = val;
+      this.selections = val
     },
-    getSortClass: function (key) {
-      const sort = this.pageQuery.sort;
-      return sort === `+${key}` ? "asc" : "desc";
+    getSortClass: function(key) {
+      const sort = this.pageQuery.sort
+      return sort === `+${key}` ? 'asc' : 'desc'
     },
     // 上传文件，获取文件流
     handleFileChange(file) {
       // console.log(file)
-      this.file = file.raw;
+      this.file = file.raw
     },
     handleRemove(file, fileList) {
-      this.file = "";
+      this.file = ''
     },
     beforeUpload(file) {},
     submitUpload() {
-      if (this.file !== "") {
-        this.$refs.uploadForm.submit();
+      if (this.file !== '') {
+        this.$refs.uploadForm.submit()
       } else {
         this.$message({
-          message: "请先选择文件!",
-          type: "warning",
-          duration: "2000",
-        });
+          message: '请先选择文件!',
+          type: 'warning',
+          duration: '2000'
+        })
       }
     },
     // 自定义上传
     uploadFile() {
-      const index = this.file.name.lastIndexOf(".");
-      const suffix = this.file.name.substr(index + 1);
+      const index = this.file.name.lastIndexOf('.')
+      const suffix = this.file.name.substr(index + 1)
       // 创建表单对象
-      const formData = new FormData();
+      const formData = new FormData()
       // 后端接受参数 ，可以接受多个参数
-      formData.append("schdeuleFile", this.file);
-      formData.append("uploadFileName", "git");
-      formData.append("uploadFileContentType", suffix);
+      formData.append('schdeuleFile', this.file)
+      formData.append('uploadFileName', 'git')
+      formData.append('uploadFileContentType', suffix)
       axios({
-        url: "/etlscheduler/schedules/importFiles",
-        method: "post",
-        data: formData,
+        url: '/etlscheduler/schedules/importFiles',
+        method: 'post',
+        data: formData
       }).then((res) => {
         if (res.data.code == 2501) {
-          this.getList();
+          this.getList()
           this.$notify({
-            title: "失败",
+            title: '失败',
             message: res.data.msg,
-            type: "error",
+            type: 'error',
             duration: 2000,
-            position: "bottom-right",
-          });
+            position: 'bottom-right'
+          })
         } else {
-          this.getList();
+          this.getList()
           this.$notify({
-            title: "成功",
-            message: "导入成功",
-            type: "success",
-            duration: 2000,
-            position: "bottom-right",
-          });
+            title: '成功',
+            message: '导入成功',
+            type: 'success',
+            duration: 5000,
+            position: 'bottom-right'
+          })
         }
-      });
+      })
     },
     // 格式化表格
     formatStatus(data) {
-      return this.formatMap.status[data.status];
+      return this.formatMap.status[data.status]
     },
     formatCron(row, column) {
       const date = row[column.property]
-      const onTime = (JSON.stringify(row.startTime)).substring(1,5) +'年' + (JSON.stringify(row.startTime)).substring(6,8) +'月' + JSON.stringify(parseInt((JSON.stringify(row.startTime)).substring(9,11)) + 1 ) +'日'
-      const overTime = (JSON.stringify(row.endTime)).substring(1,5) +'年' + (JSON.stringify(row.endTime)).substring(6,8) +'月' + JSON.stringify(parseInt((JSON.stringify(row.endTime)).substring(9,11)) + 1 ) +'日'
-
-      // console.log(JSON.stringify(this.crontabs))
-      // // console.log(JSON.stringify(o))
-      // const o = _.find(this.crontabs, ['value', date])
-
-      if (date == '0 0 0 * * ?' && overTime.indexOf('年') == 4 && onTime.indexOf('年') == 4 ) {
-          return onTime + '-' + overTime + '-每日'
-      } else {
-         return onTime + '-至今' + '-每日'
-      }
-      if (date == '0 0 0 1 * ?' && overTime.indexOf('年') == 4) {
-          return onTime + '-' + overTime + '-每月'
-      } else {
-         return onTime + '-至今' + '-每日'
-      }
-      if (date == '0 0 0 1 1,4,7,10 ?' && overTime.indexOf('年') == 4) {
-          return onTime + '-' + overTime + '-每季度'
-      }else {
-         return onTime + '-至今' + '-每日'
-      }
-      if (date == '0 0 0 1 1,7 ?' && overTime.indexOf('年') == 4) {
-          return onTime + '-' + overTime + '-每半年'
-      }else {
-         return onTime + '-至今' + '-每日'
-      }
-      if (date == '0 0 0 1 1 ?' && overTime.indexOf('年') == 4) {
-          return onTime + '-' + overTime + '-每年'
-      }  else {
-         return onTime + '-至今' + '-每日'
-      }
-    },
-  },
-};
+      var onJsonDate = new Date(row.startTime)
+      var onTime = onJsonDate.toLocaleDateString()
+      var stopJsonDate = new Date(row.endTime)
+      var stopTime = stopJsonDate.toLocaleDateString()
+      var message = ''
+      this.crontabFormat.forEach((r, i) => {
+        if (date == r.code) {
+          message = r.msg
+        }
+      })
+      return onTime + '-' + stopTime + message
+    }
+  }
+}
 </script>
 <style lang="scss" rel="stylesheet/scss">
+.el-tag {
+	background-color: transparent;
+	border-color: transparent;
+	color: #409eff;
+  font-size: 22px;
+  cursor: pointer;
+  }
 .dependence-model {
   margin-top: -10px;
 
@@ -1250,8 +1241,6 @@ export default {
     }
   }
 }
-</style>
-<style scoped>
 .buttonText {
   color: #409eff;
 }

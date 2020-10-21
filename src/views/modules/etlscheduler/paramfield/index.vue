@@ -27,8 +27,11 @@
       >删除</el-button>
     </div> -->
     <div style="float: left;">
+      <!-- 添加 -->
       <el-button type="primary" class="oper-btn add" @click="handleCreate()" />
+      <!-- 修改 -->
       <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
+      <!-- 删除 -->
       <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
     </div>
     <el-table
@@ -112,7 +115,7 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getList"
     />
-
+    <!-- 添加和编辑的弹框 -->
     <el-dialog
       :title="textMap[dialogStatus]"
       :visible.sync="dialogFormVisible"
@@ -276,6 +279,7 @@ export default {
         create: '添加参数'
       },
       dialogPvVisible: false,
+      // 添加的表单验证
       rules: {
         paramName: [{ required: true, message: '请填写参数名', trigger: 'change' }],
         paramDesc: [{ max: 100, message: '请填写参数的描述', trigger: 'change' }],
