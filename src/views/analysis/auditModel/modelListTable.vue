@@ -4,7 +4,7 @@
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
     <div style="float: right;">
-      <el-button type="primary" class="oper-btn show" @click="addModel" />
+      <el-button type="primary" class="oper-btn detail" @click="addModel" />
       <el-button type="primary" class="oper-btn add" @click="addModel" />
       <el-button type="primary" class="oper-btn edit" @click="updateModel" />
       <el-button type="primary" class="oper-btn delete" @click="deleteModel" />
