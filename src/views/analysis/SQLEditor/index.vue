@@ -240,15 +240,20 @@ export default {
     initData() {
       initDragAndDrop()
       initIcon()
-      initTableTree()
+      let userId = this.$store.getters.personuuid;
+      initTableTree(userId)
       initFunctionTree()
       initVariable();
       initEvent()
       initParamTree()
-      initTableTip().then(result => {
+      initTableTip(userId).then(result => {
         var relTableMap = {}
-        if (!result.data.isError) {
-          relTableMap = result.data.result
+        if(result.data != null){
+          for(let i = 0;i < result.data.length;i++){
+            if(result.data[i].type === "table"){
+              relTableMap[result.data[i].name] = []
+            }
+          }
         }
         initSQLEditor(document.getElementById('sql'), relTableMap)
       })
@@ -443,7 +448,7 @@ export default {
 #vertical {
   position: absolute;
   top: 0;
-  left: 17.3%;
+  left: 16.5%;
   height: 114vh;
   width: 3px;
   overflow: hidden;

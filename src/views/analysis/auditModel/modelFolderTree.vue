@@ -21,15 +21,15 @@
           <i :class="data.icon" />{{ node.label }}
         </span>
         <span v-if="data.type=='folder'">
-          <el-button type="text" size="mini" class="tree-line-btn" @click="() => setSelectTreeNode(node,data,1)"><svg-icon icon-class="icon-add-1" /></el-button>
-          <el-button type="text" size="mini" class="tree-line-btn" @click="() => setSelectTreeNode(node, data,2)"><svg-icon icon-class="icon-edit-1" /></el-button>
-          <el-button type="text" size="mini" class="tree-line-btn" @click="() => deleteFolder(node, data)"><svg-icon icon-class="icon-delete-1" /></el-button>
+          <el-button type="text" size="mini" class="tree-line-btn" @click.stop="() => setSelectTreeNode(node,data,1)"><svg-icon icon-class="icon-add-1" /></el-button>
+          <el-button type="text" size="mini" class="tree-line-btn" @click.stop="() => setSelectTreeNode(node, data,2)"><svg-icon icon-class="icon-edit-1" /></el-button>
+          <el-button type="text" size="mini" class="tree-line-btn" @click.stop="() => deleteFolder(node, data)"><svg-icon icon-class="icon-delete-1" /></el-button>
         </span>
       </span>
     </MyElTree>
     <el-dialog v-if="dialogFormVisible" title="请填写分类信息" :visible.sync="dialogFormVisible">
       <el-form :model="form">
-        <el-form-item label="分类名称" :label-width="formLabelWidth">
+        <el-form-item label="分类名称">
           <el-input v-model="form.modelFolderName" autocomplete="off" />
         </el-form-item>
       </el-form>
@@ -66,8 +66,7 @@ export default {
         folderSort: '',
         folderPath: '',
         pbScope: ''
-      },
-      formLabelWidth: '120px'
+      }
     }
   },
   watch: {
@@ -89,7 +88,7 @@ export default {
         if(this.publicModel === "publicModel"){
           //处理数据  只保留公共分类的文件夹数据 模型也不保留
           for (let i = 0;i < result.data.length;i++){
-            if(result.data[i].id == 1){
+            if(result.data[i].id == 'gonggong'){
               newData.push(result.data[i]);
             }
           }

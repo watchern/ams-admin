@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 import { deleteModel } from '@/api/analysis/auditModel'
 const analysisUrl = '/analysis'
+const dataUrl = '/amsdata'
 /**
  *
  * @type {boolean}
@@ -61,6 +62,12 @@ var mouseY
  * @type {string}
  */
 var columnIconPath = '../../images/ico/column.png'
+
+/**
+ * 表图标路径
+ * @type {string}
+ */
+var tableIconPath = '../../images/ico/table_1.png'
 
 /**
  * 参数对象
@@ -356,7 +363,7 @@ export function initIcon() {
 /**
  * 初始化数据表树
  */
-export function initTableTree() {
+export function initTableTree(userId) {
   // 数据表树加载,开始
   var setting = {
     // 异步加载
@@ -401,9 +408,6 @@ export function initTableTree() {
         if (treeNode.type === 'table' || treeNode.type === 'view' || treeNode.type === 'datasource') {
           menuId = 'tableMenu'
           history.scrollRestoration = 'manual'
-          if (treeNode.idPath.indexOf('bussDataRoot') == -1 || treeNode.pid === 'tempTable' || treeNode.pid === 'modelResultTable' || treeNode.pid == 'graphDataTable') {
-            menuId = 'tableMenuTwo'
-          }
           // 判断是不是导入数据节点、和分享节点，右键可便捷表结构
           if (treeNode.pid === 'importDataTable') {
             menuId = 'importTableMenu'
@@ -429,23 +433,29 @@ export function initTableTree() {
         if ((!treeNode.children || treeNode.children.length === 0) && treeNode.type === 'table' || treeNode.type === 'view' || treeNode.type === 'datasource') {
           zTreeObj.removeChildNodes(treeNode)
           var tableName = treeNode.name
+          var tableMetaUuid = treeNode.id
           // 先从codeMirror里面找 如果能找到则不找数据库  找不到则找数据库
           var columns = CodeMirror.tableColMapping[tableName]
           if (!columns || (columns && columns.length === 0)) {
             request({
-              baseURL: analysisUrl,
-              url: '/SQLEditorController/getTableColsByName',
-              method: 'get',
-              params:{tableName:tableName}
+              baseURL: dataUrl,
+              url: '/tableMeta/getCols',
+              method: 'post',
+              params:{tableMetaUuid:tableMetaUuid}
             }).then(result => {
-              if (result.data.isError) {
+              if (result.data == null) {
                 alert('错误' + e.message + 'error')
               } else {
-                if (result.data.columns && result.data.columns.length > 0) {
-                  CodeMirror.tableColMapping[tableName] = result.data.columns
-                  editorObj.options.hintOptions.tables[tableName] = result.data.columns
+                //处理拿回来的数据 处理成列表
+                let columns = []
+                for(let i = 0;i < result.data.length;i++){
+                  columns.push(result.data[i].colName)
+                }
+                if (columns.length > 0) {
+                  CodeMirror.tableColMapping[tableName] = columns
+                  editorObj.options.hintOptions.tables[tableName] = columns
                   var nodeList = []
-                  $(result.data.columns).each(function() {
+                  $(columns).each(function() {
                     var node = {
                       'id': tableName + '_' + this,
                       'name': this.toString(),
@@ -495,12 +505,21 @@ export function initTableTree() {
       }
     }
   }
+  let params = {isRightControl:"1",dataUserId:userId};
   // 调用后台获取数据表数据
   request({
-    baseURL: analysisUrl,
-    url: '/SQLEditorController/getTableTree',
-    method: 'get'
+    baseURL: dataUrl,
+    url: '/tableMeta/getResTree',
+    method: 'post',
+    params:params
   }).then(result => {
+    //设置图标
+    for(let i = 0;i < result.data.length;i++){
+      if(result.data[i].type === "table"){
+        result.data[i].icon = tableIconPath
+        result.data[i].isParent = true
+      }
+    }
     result.data.push({
       'id': 'ALL_DATA',
       'pid': null,
@@ -515,6 +534,9 @@ export function initTableTree() {
   })
 }
 
+/**
+ * 初始化参数树
+ */
 export function initParamTree() {
   var paramSetting = {
     data: {
@@ -662,14 +684,17 @@ function onDrop(event, treeId, treeNodes) {
 }
 
 /**
- * 初始化只能提示的数据表
+ * 初始化智能提示的数据表
  * @returns {AxiosPromise}
  */
-export function initTableTip() {
+export function initTableTip(userId) {
+  let params = {isRightControl:"1",dataUserId:userId};
+  // 调用后台获取数据表数据
   return request({
-    baseURL: analysisUrl,
-    url: '/SQLEditorController/getTableColumnRelationsMap',
-    method: 'get'
+    baseURL: dataUrl,
+    url: '/tableMeta/getResTree',
+    method: 'post',
+    params:params
   })
 }
 

@@ -29,9 +29,12 @@
           </el-form-item>
           <el-form-item label="风险等级" prop="riskLevelUuid">
             <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级">
-              <el-option label="高" value="1" />
-              <el-option label="中" value="2" />
-              <el-option label="低" value="3" />
+              <el-option
+                v-for="state in riskLeve"
+                :key="state.codeValue"
+                :value="state.codeValue"
+                :label="state.codeName"
+              />
             </el-select>
           </el-form-item>
           <el-form-item label="审计思路">
@@ -48,10 +51,12 @@
             <el-button type="primary" @click="getSqlObj(2)">图形化编辑器</el-button>
             <el-button type="primary" @click="openSqlEditor">SQL编辑器</el-button>
           </el-form-item>
-          <el-dialog :fullscreen=true v-if="SQLEditorShow" :destroy-on-close="true" :append-to-body="appendToBody" :visible.sync="SQLEditorShow" title="SQL编辑器" width="100%" @close="sqlEditorCloseEvent">
+          <el-dialog :fullscreen=true v-if="SQLEditorShow" :destroy-on-close="true" :append-to-body="appendToBody" :visible.sync="SQLEditorShow" title="SQL编辑器" width="80%" @close="sqlEditorCloseEvent">
             <SQLEditor ref="SQLEditor" v-if="SQLEditorShow"/>
-            <el-button type="primary" @click="getSqlObj">保存</el-button>
-            <el-button @click="">取消</el-button>
+            <div slot="footer">
+              <el-button type="primary" @click="getSqlObj">保存</el-button>
+              <el-button @click="">取消</el-button>
+            </div>
           </el-dialog>
           <el-form-item label="模型SQL">
             <div id="sqlValueView"
@@ -159,6 +164,7 @@ import ModelDetail from '@/views/analysis/auditModel/modelDetail'
 import ModelFilterShow from '@/views/analysis/auditModel/modelFilterShow'
 import SQLEditor from '@/views/analysis/SQLEditor/index'
 import VRuntimeTemplate from 'v-runtime-template'
+import {getDictList} from '@/utils/index'
 export default {
   name: 'EditModel',
   components: { ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor },
@@ -235,6 +241,7 @@ export default {
       modelDetails: [],
       filterShows: [],
       modelDetailIndex: 0,
+      riskLeve:[],
       modelFilterShowIndex: 0,
       modelOriginalTable: [],
       modelChartSetup: {},
@@ -279,6 +286,11 @@ export default {
       // 初始化字段类型
       const columnTypeSelect = [{ uuid: 'int', name: '数值' }, { uuid: 'varchar', name: '字符串' }, { uuid: 'date', name: '日期' }, { uuid: 'money', name: '金额' }]
       this.columnTypeSelect = columnTypeSelect
+      //初始化风险等级
+      getDictList('002002').then(result=>{
+        this.riskLeve = result
+      })
+      //初始化审计事项
     },
     handleNodeClick(data, node) {
       this.hideModelDetail()
