@@ -233,7 +233,7 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          v-for="item in paramList"
+          v-for="item in distinctParamList"
           :key="item.paramUuid"
           :label="item.param.paramName"
           :prop="item.param.defaultValue"
@@ -477,6 +477,7 @@ export default {
       relation: "AND",
       dependTaskList: [],
       paramList: [],
+      distinctParamList: [],
       isLoading: false,
       //  查询任务流程
       options: [],
@@ -835,7 +836,10 @@ export default {
         this.temp.processDefName = res.data.name;
       });
       getParamsByProcessId(id).then((res) => {
-        this.paramList = res.data        
+        this.paramList = res.data 
+          // 去重 
+        const resmap = new Map();
+        this.distinctParamList=this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))
       })
     },
     // 查询任务流程
@@ -897,7 +901,7 @@ export default {
     handleCreate() {
       this.disableUpdate = false;
       this.closeStatus = false;
-      this.paramList = [];
+      this.distinctParamList = [];
       this.dependTaskList = [];
       this._onDeleteAll();
       this.resetTemp();
@@ -910,8 +914,7 @@ export default {
     createData() {
       this.$refs["dataForm"].validate((valid) => {
         if (valid) {
-          this.temp.taskParamsList = this.paramList;
-
+          this.temp.taskParamsList = this.distinctParamList;
           if (!this.dependTaskList.length) {
             this.temp.dependTaskInfo = null;
             this.temp.dependTaskInfoList = [];
@@ -951,7 +954,10 @@ export default {
           // this.dependTaskList = [];
         // }
         // if (resp.data.taskParamsList !== null && resp.data.taskParamsList !== "") {      
-            this.paramList = resp.data.taskParamsList;      
+            this.paramList = resp.data.taskParamsList;
+              //  去重
+            const resmap = new Map()
+            this.distinctParamList=this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))
         // } else {
           // this.paramList = [];
         // }
@@ -959,7 +965,7 @@ export default {
     },
     updateData() {
       this.temp.dependTaskInfoList = this.dependTaskList;
-      this.temp.taskParamsList = this.paramList;
+      this.temp.taskParamsList = this.distinctParamList;
       this.$refs["dataForm"].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp);
@@ -979,7 +985,6 @@ export default {
         }
       });
     },
-    // 查询参数详情
     handleDelete() {
       var ids = [];
       this.selections.forEach((r, i) => {
