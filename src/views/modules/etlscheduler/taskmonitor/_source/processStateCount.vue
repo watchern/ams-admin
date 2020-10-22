@@ -1,0 +1,138 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+<template>
+  <div class="process-state-count-model">
+    <div v-show="!msg">
+      <div v-spin="isSpin" class="data-area" style="height: 430px;">
+        <div class="col-md-7">
+          <div id="process-state-pie" style="height:260px;margin-top: 100px;" />
+        </div>
+        <div class="col-md-5">
+          <div class="table-small-model">
+            <table>
+              <tr>
+                <th width="40">编号</th>
+                <th>数量</th>
+                <th>状态</th>
+              </tr>
+              <tr v-for="(item,$index) in processStateList" :key="$index">
+                <td><span>{{ $index+1 }}</span></td>
+                <td><span><a href="javascript:" :class="searchParams.projectId ?'links':''" @click="searchParams.projectId && _goProcess(item.key)">{{ item.value }}</a></span></td>
+                <td><span class="ellipsis" style="width: 98%;" :title="item.key">{{ item.key }}</span></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-show="msg">
+      <m-no-data v-if="msg" :msg="msg" :height="430" />
+    </div>
+  </div>
+</template>
+<script>
+import _ from 'lodash'
+import { mapActions } from 'vuex'
+import { pie } from './chartConfig'
+import Chart from '@/components/Dolphin/ana-charts'
+import mNoData from '@/components/Dolphin/noData/noData'
+import { stateType } from './common'
+export default {
+  name: 'ProcessStateCount',
+  props: {
+    searchParams: Object
+  },
+  data() {
+    return {
+      isSpin: true,
+      msg: '',
+      processStateList: []
+    }
+  },
+  methods: {
+    ...mapActions('projects', ['getProcessStateCount']),
+    _goProcess(name) {
+      this.$router.push({
+        name: 'projects-instance-list',
+        query: {
+          stateType: _.find(stateType, ['label', name])['code'],
+          startDate: this.searchParams.startDate,
+          endDate: this.searchParams.endDate
+        }
+      })
+    },
+    _handleProcessState(res) {
+      const data = res.data.taskCountDtos
+      this.processStateList = _.map(data, v => {
+        return {
+          key: _.find(stateType, ['code', v.taskStateType])['label'],
+          value: v.count
+        }
+      })
+      const myChart = Chart.pie('#process-state-pie', this.processStateList, { title: '' })
+      myChart.echart.setOption(pie)
+      // 首页不允许跳转
+      if (this.searchParams.projectId) {
+        myChart.echart.on('click', e => {
+          this._goProcess(e.data.name)
+        })
+      }
+    }
+  },
+  computed: {},
+  watch: {
+    'searchParams': {
+      deep: true,
+      immediate: true,
+      handler(o) {
+        this.isSpin = true
+        this.getProcessStateCount(o).then(res => {
+          this.processStateList = []
+          this._handleProcessState(res)
+          this.isSpin = false
+        }).catch(e => {
+          this.msg = e.msg || 'error'
+          this.isSpin = false
+        })
+      }
+    }
+  },
+  beforeCreate() {
+  },
+  created() {
+  },
+  beforeMount() {
+  },
+  mounted() {
+  },
+  beforeUpdate() {
+  },
+  updated() {
+  },
+  beforeDestroy() {
+  },
+  destroyed() {
+  },
+  components: { mNoData }
+}
+</script>
+
+<style lang="scss" rel="stylesheet/scss">
+  .process-state-count-model {
+
+  }
+</style>
