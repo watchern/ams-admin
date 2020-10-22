@@ -18,6 +18,16 @@ const baseRouter = {
       component: () => import('@/views/base/errorLog/index')
     },
     {
+      path: 'sysDate',
+      name: '基础数据',
+      component: () => import('@/views/base/sysDate/index')
+    },
+    {
+      path: 'baseCodeTree',
+      name: '基础数据树',
+      component: () => import('@/views/base/sysDate/BaseCodeTreeInfo')
+    },
+    {
       path: 'remind',
       name: '系统提醒',
       component: () => import('@/views/base/remind/index')

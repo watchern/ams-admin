@@ -66,13 +66,13 @@
     line-height : 12px!important;
 }
 
-.list-container {
+.page-container {
     height: 100%;
     padding:20px;
   }
 
 .query-field{
-    padding:20px;
+  padding: 20px 0px;
 }
 
 .query-field input{
@@ -96,6 +96,10 @@ table tr:nth-child(odd)
 table th{
     color: #102033;
     font-weight: bold;
+}
+
+.el-table {
+  background-color: #edf1f5!important;
 }
 .el-table--group, .el-table--border {
     border: 0px!important;
@@ -130,6 +134,10 @@ table th{
 }
 .el-dialog__title {
     font-weight: bold;
+}
+
+form {
+  background-color: #edf1f5!important;
 }
 
 .el-form-item__label {

@@ -1,5 +1,5 @@
 <template>
-  <div class="list-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -23,20 +23,21 @@
       </m-list-construction> -->
       <el-button
         type="primary"
-        size="mini"
+        title="添加"
         class="oper-btn add"
         @click="hadleCreate"
+        
       />
       <el-button
         type="primary"
-        size="mini"
+        title="编辑"
         class="oper-btn edit"
         :disabled="selections.length !== 1"
         @click="_edit"
       />
       <el-button
         type="danger"
-        size="mini"
+        title="删除"
         class="oper-btn delete"
         :disabled="selections.length === 0"
         @click="handleDelete()"

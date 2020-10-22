@@ -45,6 +45,12 @@
   font-weight: bold;
 }
 
+.el-button--primary.is-disabled, .el-button--primary.is-disabled:hover, .el-button--primary.is-disabled:focus, .el-button--primary.is-disabled:active {
+  color: #fff;
+  background-color: #c6cfd6;
+  border-color: #c6cfd6;
+}
+
 .oper-btn{
   background: #343942;
   width:24px;
@@ -63,7 +69,7 @@
 .oper-btn.delete:after{
   content:'\e601'!important;
 }
-.oper-btn.show:after{
+.oper-btn.detail:after{
   content:'\e609'!important;
 }
 .oper-btn.more:after{

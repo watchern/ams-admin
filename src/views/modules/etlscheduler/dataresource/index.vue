@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -27,10 +27,10 @@
       >删除</el-button>
     </div> -->
     <div style="float: left;">
-      <el-button type="primary" class="oper-btn add" @click="handleCreate()" />
-      <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
-      <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
-      </div>
+      <el-button type="primary" class="oper-btn add" @click="handleCreate()" title="添加" />
+      <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" title="编辑"/>
+      <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" title="删除" />
+    </div>
     <el-table
       :key="tableKey"
       v-loading="listLoading"

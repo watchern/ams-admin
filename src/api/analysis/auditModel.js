@@ -147,3 +147,38 @@ export function updateModelBasicInfo(data){
     data
   })
 }
+
+export function setModelSession(data){
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelController/setModelSession',
+    method: 'post',
+    // params 以formData格式传递  后台用RequestParam
+    // 直接加data以json格式传递  后台用RequestBody
+    data
+  })
+}
+
+/**
+ * 导出模型
+ */
+export function exportModel(){
+  let url = analysisUrl + "/modelController/exportModel";
+  window.location.href = url;
+}
+
+/**
+ * 共享模型
+ * @param data 数据
+ * @returns {AxiosPromise}
+ */
+export function shareModel(data){
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelController/saveBatch',
+    method: 'post',
+    // params 以formData格式传递  后台用RequestParam
+    // 直接加data以json格式传递  后台用RequestBody
+    data
+  })
+}
