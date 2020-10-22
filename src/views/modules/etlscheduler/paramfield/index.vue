@@ -1,5 +1,5 @@
 <template>
-  <div class="list-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -7,32 +7,13 @@
         @submit="getList"
       />
     </div>
-    <!-- <div>
-      <el-button
-        type="primary"
-        size="mini"
-        @click="handleCreate()"
-      >添加</el-button>
-      <el-button
-        type="primary"
-        size="mini"
-        :disabled="selections.length !== 1"
-        @click="handleUpdate()"
-      >修改</el-button>
-      <el-button
-        type="danger"
-        size="mini"
-        :disabled="selections.length === 0"
-        @click="handleDelete()"
-      >删除</el-button>
-    </div> -->
     <div style="float: left;">
       <!-- 添加 -->
-      <el-button type="primary" class="oper-btn add" @click="handleCreate()" />
+      <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
       <!-- 修改 -->
-      <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
+      <el-button type="primary" class="oper-btn edit" title="修改" :disabled="selections.length !== 1" @click="handleUpdate()" />
       <!-- 删除 -->
-      <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
+      <el-button type="primary" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="handleDelete()" />
     </div>
     <el-table
       :key="tableKey"

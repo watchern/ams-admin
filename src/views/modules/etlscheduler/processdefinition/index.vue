@@ -1,5 +1,5 @@
 <template>
-  <div class="list-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -11,14 +11,14 @@
       <!-- 添加 -->
       <el-button
         type="primary"
-        size="mini"
+        title="添加"
         class="oper-btn add"
         @click="handleCreate()"
       />
       <!-- 修改 -->
       <el-button
         type="primary"
-        size="mini"
+        title="修改"
         class="oper-btn edit"
         :disabled="selections.length !== 1"
         @click="handleUpdate()"
@@ -26,7 +26,7 @@
       <!-- 启用 -->
       <el-button
         type="primary"
-        size="mini"
+        title="启用"
         class="oper-btn"
         icon="el-icon-video-play"
         :disabled="startStatus"
@@ -34,8 +34,8 @@
       />
       <!-- 停用 -->
       <el-button
-        type="danger"
-        size="mini"
+        type="primary"
+        title="停用"
         :disabled="stopStatus"
         class="oper-btn"
         icon="el-icon-video-pause"
@@ -43,8 +43,8 @@
       />
       <!-- 删除 -->
       <el-button
-        type="danger"
-        size="mini"
+        type="primary"
+        title="删除"
         class="oper-btn delete"
         :disabled="selections.length === 0"
         @click="handleDelete()"
@@ -52,7 +52,7 @@
       <!-- 下载 -->
       <el-button
         type="primary"
-        size="mini"
+        title="下载"
         class="oper-btn"
         icon="el-icon-download"
         :disabled="selections.length === 0"
@@ -72,7 +72,7 @@
         :show-file-list="false"
         style="display:inline-block;padding-left:10px"
       >
-        <el-button size="mini" type="primary" icon="el-icon-upload" class="oper-btn" />
+        <el-button type="primary" title="上传" icon="el-icon-upload" class="oper-btn" />
       </el-upload>
     </div>
     <el-table
