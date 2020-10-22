@@ -4,7 +4,7 @@
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
     <div style="float: right;">
-      <el-button type="primary" class="oper-btn show" @click="addModel" />
+      <el-button type="primary" class="oper-btn detail" @click="addModel" />
       <el-button type="primary" class="oper-btn add" @click="addModel" />
       <el-button type="primary" class="oper-btn edit" @click="updateModel" />
       <el-button type="primary" class="oper-btn delete" @click="deleteModel" />
@@ -37,27 +37,28 @@
       </div>
     </el-dialog>
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
-      <ModelFolderTree ref="modelFolderTree" :publicModel="publicModelValue"/>
+      <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
         <el-button type="primary" @click="updatePublicModel">确定</el-button>
         <el-button @click="treeSelectShow=false">取消</el-button>
       </div>
     </el-dialog>
-    <el-upload style="position: relative;top: -40px;left: 240px;display: none"
-               :show-file-list="false"
-               :on-success="onSuccess"
-               :on-error="onError"
-               :before-upload="beforeUpload"
-               :on-remove="handleRemove"
-               action="/modelController/importModel"
-               accept=".json"
+    <el-upload
+      style="position: relative;top: -40px;left: 240px;display: none"
+      :show-file-list="false"
+      :on-success="onSuccess"
+      :on-error="onError"
+      :before-upload="beforeUpload"
+      :on-remove="handleRemove"
+      action="/modelController/importModel"
+      accept=".json"
     >
       <el-button id="importBtn" plain type="primary">导入</el-button>
     </el-upload>
   </div>
 </template>
 <script>
-import { findModel, saveModel, deleteModel, selectModel, updateModel,updateModelBasicInfo,exportModel,setModelSession } from '@/api/analysis/auditModel'
+import { findModel, saveModel, deleteModel, selectModel, updateModel, updateModelBasicInfo, exportModel, setModelSession } from '@/api/analysis/auditModel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
@@ -65,7 +66,7 @@ import EditModel from '@/views/analysis/auditModel/editModel'
 import { getOneDict } from '@/utils'
 export default {
   name: 'ModelListTable',
-  components: { Pagination, QueryField, EditModel,ModelFolderTree },
+  components: { Pagination, QueryField, EditModel, ModelFolderTree },
   data() {
     return {
       tableKey: 'errorUuid',
@@ -73,9 +74,9 @@ export default {
       total: 0,
       listLoading: false,
       editModelTitle: '',
-      treeSelectShow:false,
+      treeSelectShow: false,
       editModelShow: false,
-      publicModelValue:"publicModel",
+      publicModelValue: 'publicModel',
       dialogFormVisible: true,
       selectTreeNode: null,
       isUpdate: false,
@@ -156,7 +157,7 @@ export default {
 
   },
   created() {
-    //this.getList({ modelFolderUuid: 1 })
+    // this.getList({ modelFolderUuid: 1 })
   },
   methods: {
     /**
@@ -195,9 +196,9 @@ export default {
       }
     },
     riskLevelFormatter(row, column) {
-      let riskLevel = row.riskLevelUuid
-      let value = ""
-      getOneDict(riskLevel).then(result=>{
+      const riskLevel = row.riskLevelUuid
+      let value = ''
+      getOneDict(riskLevel).then(result => {
         value = result[0].codeName
       })
       return value
@@ -351,12 +352,12 @@ export default {
     /**
      * 发布模型
      */
-    publicModel(value){
-      if(this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') != -1){
+    publicModel(value) {
+      if (this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') != -1) {
         this.$message({ type: 'info', message: '只能发布非公共模型下的模型' })
         return
       }
-      this.publicModelValue = value;
+      this.publicModelValue = value
       var selectObj = this.$refs.modelListTable.selection
       if (selectObj == undefined || selectObj.length === 0) {
         this.$message({ type: 'info', message: '请先选择要发布的模型!' })
@@ -367,14 +368,14 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.treeSelectShow = true;
+        this.treeSelectShow = true
       })
     },
     /**
      *撤销发布
      */
-    cancelPublicModel(){
-      if(this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') == -1){
+    cancelPublicModel() {
+      if (this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') == -1) {
         this.$message({ type: 'info', message: '只能撤销公共模型下的模型' })
         return
       }
@@ -388,75 +389,74 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        for(let i = 0;i < selectObj.length;i++){
+        for (let i = 0; i < selectObj.length; i++) {
           selectObj[i].modelFolderUuid = 'xiaxian'
         }
-        this.updateModelBasicInfo(selectObj,"撤销发布")
-      }).catch(()=>{
+        this.updateModelBasicInfo(selectObj, '撤销发布')
+      }).catch(() => {
 
       })
     },
     /**
      * 修改要发布的模型
      */
-    updatePublicModel(){
-      let selectNode = this.$refs.modelFolderTree.getSelectNode()
+    updatePublicModel() {
+      const selectNode = this.$refs.modelFolderTree.getSelectNode()
       var selectObj = this.$refs.modelListTable.selection
-      for(let i = 0;i < selectObj.length;i++){
+      for (let i = 0; i < selectObj.length; i++) {
         selectObj[i].modelFolderUuid = selectNode.id
       }
-      this.updateModelBasicInfo(selectObj,"发布")
+      this.updateModelBasicInfo(selectObj, '发布')
     },
     /**
      * 修改模型基本信息
      * @param selectObj 要修改的数组对象
      * @param tips 提示信息
      */
-    updateModelBasicInfo(selectObj,tips){
+    updateModelBasicInfo(selectObj, tips) {
       updateModelBasicInfo(selectObj).then(result => {
-        if(result.code == 0){
-          this.treeSelectShow = false;
+        if (result.code == 0) {
+          this.treeSelectShow = false
           this.$notify({
-            title:'提示',
-            message:tips + '成功',
-            type:'success',
-            duration:2000,
-            position:'bottom-right'
-          });
+            title: '提示',
+            message: tips + '成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
           this.getList(this.query)// 刷新列表
           this.$emit('refreshTree')
-          //刷新树和列表
-        }
-        else{
+          // 刷新树和列表
+        } else {
           this.$notify({
-            title:'提示',
-            message:tips + '失败',
-            type:'error',
-            duration:2000,
-            position:'bottom-right'
-          });
+            title: '提示',
+            message: tips + '失败',
+            type: 'error',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         }
       })
     },
     /**
      * 导出模型
      */
-    exportModel(){
+    exportModel() {
       var selectObj = this.$refs.modelListTable.selection
       if (selectObj == undefined || selectObj.length === 0) {
         this.$message({ type: 'info', message: '请先选择要导出的模型!' })
         return
       }
-      let modelIds = [];
-      for(let i = 0;i < selectObj.length;i++){
+      const modelIds = []
+      for (let i = 0; i < selectObj.length; i++) {
         modelIds.push(selectObj[i].modelUuid)
       }
-      setModelSession(modelIds).then(result=>{
+      setModelSession(modelIds).then(result => {
         exportModel()
       })
     },
-    importData(){
-      $("#importBtn").click();
+    importData() {
+      $('#importBtn').click()
     },
     handleRemove(file, fileList) {
     },
@@ -464,16 +464,16 @@ export default {
      * 上传之前回调函数
      */
     beforeUpload(file) {
-      this.uploaDialog = true;
+      this.uploaDialog = true
     },
     /**
      * 上传失败回调函数
      */
     onError(err, file, fileList) {
       this.$message({
-        message: "上传失败",
-        type: "error"
-      });
+        message: '上传失败',
+        type: 'error'
+      })
     },
     /**
      * 上传成功回调函数
@@ -481,14 +481,14 @@ export default {
     onSuccess(response, file, fileList) {
       this.$message({
         message: response.msg,
-        type: "info"
-      });
-      file = [];
-      fileList = [];
+        type: 'info'
+      })
+      file = []
+      fileList = []
     },
-    shareModel(){
-      //弹出人员选择窗体
-    },
+    shareModel() {
+      // 弹出人员选择窗体
+    }
   }
 }
 </script>

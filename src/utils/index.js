@@ -1,5 +1,3 @@
-
-import { cacheDict } from '@/api/base/sys-dict'
 /**
  * Created by PanJiaChen on 16/11/18.
  */
@@ -392,62 +390,27 @@ export function commonNotify(options) {
   当字典信息变更的时候，需要重新打开浏览器才能加载最新的字典信息
 * */
 export function getDictList(code) {
-  return new Promise((resolve) => {
-    var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
-    if (sysDict == null) {
-      // 缓存字典信息
-      cacheDict().then(resp => {
-        sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
-        resolve(resp.data)
-      })
-    } else {
-      resolve(sysDict)
-    }
-  }).then(dict => {
-    var parent = dict.filter(obj => { return obj.dataSortValue === code })
-    if (parent.length === 0) {
-      return parent
-    } else {
-      return dict.filter(obj => { return obj.dataSortUuid === parent[0].dataSortUuid })
-    }
-  })
+  var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
+  console.log(sysDict)
+  var parent = sysDict.filter(obj => { return obj.dataSortValue === code })
+  if (parent.length === 0) {
+    return parent
+  } else {
+    return sysDict.filter(obj => { return obj.dataSortUuid === parent[0].dataSortUuid })
+  }
 }
 // 根据codeValue的得到所有下级节点的方法
 export function getDictSonList(code) {
-  return new Promise((resolve) => {
-    var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
-    if (sysDict == null) {
-      // 缓存字典信息
-      cacheDict().then(resp => {
-        sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
-        resolve(resp.data)
-      })
-    } else {
-      resolve(sysDict)
-    }
-  }).then(dict => {
-    var parent = dict.filter(obj => { return obj.codeValue === code })
-    if (parent.length === 0) {
-      return parent
-    } else {
-      return dict.filter(obj => { return obj.parentCodeUuid === parent[0].codeUuid })
-    }
-  })
+  var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
+  var parent = sysDict.filter(obj => { return obj.codeValue === code })
+  if (parent.length === 0) {
+    return parent
+  } else {
+    return sysDict.filter(obj => { return obj.parentCodeUuid === parent[0].codeUuid })
+  }
 }
 
 export function getOneDict(code) {
-  return new Promise((resolve) => {
-    var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
-    if (sysDict == null) {
-      // 缓存字典信息
-      cacheDict().then(resp => {
-        sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
-        resolve(resp.data)
-      })
-    } else {
-      resolve(sysDict)
-    }
-  }).then(dict => {
-    return dict.filter(obj => { return obj.codeValue === code })
-  })
+  var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
+  return sysDict.filter(obj => { return obj.codeValue === code })
 }

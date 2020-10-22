@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="list-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -7,7 +7,7 @@
         @submit="getList"
       />
     </div>
-    <div>
+    <!-- <div>
       <el-button
         type="primary"
         size="mini"
@@ -25,6 +25,14 @@
         :disabled="selections.length === 0"
         @click="handleDelete()"
       >删除</el-button>
+    </div> -->
+    <div style="float: left;">
+      <!-- 添加 -->
+      <el-button type="primary" class="oper-btn add" @click="handleCreate()" />
+      <!-- 修改 -->
+      <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
+      <!-- 删除 -->
+      <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
     </div>
     <el-table
       :key="tableKey"
@@ -107,17 +115,18 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getList"
     />
-
+    <!-- 添加和编辑的弹框 -->
     <el-dialog
       :title="textMap[dialogStatus]"
       :visible.sync="dialogFormVisible"
     >
+      <!-- label-width="140px" -->
       <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
         label-position="right"
-        label-width="140px"
+        class="detail-form"
         style="width: 700px; margin-left:50px;"
       >
         <el-form-item
@@ -270,13 +279,12 @@ export default {
         create: '添加参数'
       },
       dialogPvVisible: false,
+      // 添加的表单验证
       rules: {
-        defaultValue: [{ required: true, message: '请填写参数默认值', trigger: 'change' }],
         paramName: [{ required: true, message: '请填写参数名', trigger: 'change' }],
         paramDesc: [{ max: 100, message: '请填写参数的描述', trigger: 'change' }],
         paramCode: [{ required: true, message: '请填写参数的编码', trigger: 'change' }],
         paramType: [{ required: true, message: '请选择参数的类型', trigger: 'change' }],
-        selectValue: [{ required: true, message: '请填写参数可选值', trigger: 'change' }],
         status: [{ required: true, message: '请选择参数状态', trigger: 'change' }]
       },
       downloadLoading: false
@@ -405,6 +413,6 @@ export default {
     /* width: 400px; */
   }
   .el-select .el-input {
-    width: 380px;
+    /* width: 380px; */
 }
 </style>
