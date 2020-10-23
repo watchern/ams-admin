@@ -62,7 +62,7 @@ import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
 import EditModel from '@/views/analysis/auditModel/editModel'
-import { getOneDict } from '@/utils'
+import { getOneDict } from '@/utils/index'
 export default {
   name: 'ModelListTable',
   components: { Pagination, QueryField, EditModel,ModelFolderTree },
@@ -197,9 +197,7 @@ export default {
     riskLevelFormatter(row, column) {
       let riskLevel = row.riskLevelUuid
       let value = ""
-      getOneDict(riskLevel).then(result=>{
-        value = result[0].codeName
-      })
+      value = getOneDict(riskLevel)[0].codeName;
       return value
     },
     /**

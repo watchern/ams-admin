@@ -287,9 +287,7 @@ export default {
       const columnTypeSelect = [{ uuid: 'int', name: '数值' }, { uuid: 'varchar', name: '字符串' }, { uuid: 'date', name: '日期' }, { uuid: 'money', name: '金额' }]
       this.columnTypeSelect = columnTypeSelect
       //初始化风险等级
-      getDictList('002002').then(result=>{
-        this.riskLeve = result
-      })
+      this.riskLeve = getDictList('002002')
       //初始化审计事项
     },
     handleNodeClick(data, node) {
@@ -492,7 +490,7 @@ export default {
      * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
      */
     getSqlObj(modelType) {
-      /*      let returnObj = this.$refs.SQLEditor.getSaveInfo();
+/*            let returnObj = this.$refs.SQLEditor.getSaveInfo();
             //region 初始化SQL语句显示
             this.displaySQL(returnObj);
             //endregion
