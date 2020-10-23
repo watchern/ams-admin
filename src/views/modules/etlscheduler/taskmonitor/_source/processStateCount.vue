@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 <template>
   <div class="process-state-count-model">
     <div v-show="!msg">
@@ -26,8 +10,8 @@
             <table>
               <tr>
                 <th width="40">编号</th>
-                <th>数量</th>
-                <th>状态</th>
+                <th width="40">数量</th>
+                <th width="40">状态</th>
               </tr>
               <tr v-for="(item,$index) in processStateList" :key="$index">
                 <td><span>{{ $index+1 }}</span></td>
@@ -70,8 +54,10 @@ export default {
         name: 'projects-instance-list',
         query: {
           stateType: _.find(stateType, ['label', name])['code'],
-          startDate: this.searchParams.startDate,
-          endDate: this.searchParams.endDate
+          // startDate: this.searchParams.startDate,
+          // endDate: this.searchParams.endDate
+          startTimeStart: this.searchParams.startTimeStart,
+          startTimeEnd: this.searchParams.startTimeEnd
         }
       })
     },
@@ -105,7 +91,7 @@ export default {
           this._handleProcessState(res)
           this.isSpin = false
         }).catch(e => {
-          this.msg = e.msg || 'error'
+          // this.msg = e.msg || 'error'
           this.isSpin = false
         })
       }
@@ -135,4 +121,42 @@ export default {
   .process-state-count-model {
 
   }
+  .table-small-model {
+  padding: 0 10px;
+  table {
+    width: 100%;
+    tr{
+      background: #edf1f5;
+      th,td {
+        padding-left: 8px;
+      }
+      th {
+        height: 36px;
+        line-height: 38px;
+        font-size: 12px;
+        font-weight: bold;
+        color: #333;
+        border-bottom: 2px solid #ECEDEC;
+      }
+      td {
+        height: 32px;
+        line-height: 32px;
+        border-bottom: 1px solid #ECEDEC;
+        span {
+          font-size: 12px;
+          color: #333;
+        }
+        .links {
+          color:#2d8cf0;
+        }
+      }
+      &:hover {
+        td {
+          background: #ddecff;
+        }
+      }
+    }
+  }
+}
+
 </style>
