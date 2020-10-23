@@ -56,7 +56,7 @@
           <div class="row table-view-caption" style="margin-left: 30px;height:40px;padding-top:8px;">
             <button type="button" class="btn btn-primary" @click="sqlFormat()">格式化</button>&nbsp;
             <!-- <button type="button" class="btn btn-primary" onclick="alertVerify()">SQL语法校验</button> -->
-            <button type="button" class="btn btn-primary" onclick="sqlEditor.ecexuteSql()">执行</button>&nbsp;
+            <button type="button" class="btn btn-primary" @click="executeSQL">执行</button>&nbsp;
             <button type="button" class="btn btn-primary" @click="openSqlDraftList()">打开SQL</button>&nbsp;
             <div class="btn-group">
               <button type="button" class="btn btn-primary" data-toggle="dropdown">
@@ -210,7 +210,7 @@ import { initSQLEditor, initDragAndDrop, initTableTip, initIcon,
   initTableTree, initFunctionTree, initEvent, initParamTree,
   tableTreeSearch, paramTreeSearch, functionTreeSearch, sqlFormat, findAndReplace,
   caseTransformation, selectSqlNotes, selectSqlCancelNotes,getSaveInfo,getSelectSql
-  ,getSaveSqlDraftObj,saveSqlDraft,useSql,initVariable} from '@/api/analysis/SQLEditor/SQLEditor'
+  ,getSaveSqlDraftObj,saveSqlDraft,useSql,initVariable,getSql,executeSQL} from '@/api/analysis/SQLEditor/SQLEditor'
 import sqlDraftList from '@/views/analysis/SQLEditor/sqlDraftList'
 import { updateDraft}  from '@/api/analysis/SQLEditor/SQLDraft'
 export default {
@@ -222,7 +222,8 @@ export default {
         sqlDraftUuid:'',
         draftTitle:'',
         draftSql:'',
-        paramJson:''
+        paramJson:'',
+        webSocket:null
       },
       sqlDraftFormRules:{
         draftTitle: [
@@ -235,8 +236,55 @@ export default {
   },
   mounted() {
     this.initData()
+    this.initWebSocket()
   },
   methods: {
+    /**
+     *初始化webSocket
+     */
+    initWebSocket(){
+      this.webSocket = this.getWebSocket();
+    },
+    /**
+     * WebSocket客户端
+     *
+     * 使用说明：
+     * 1、WebSocket客户端通过回调函数来接收服务端消息。例如：webSocket.onmessage
+     * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
+     */
+    getWebSocket() {
+      let webSocketPath = "ws://192.168.80.185:8086/analysis/websocket?" + this.$store.getters.personuuid;
+     //WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
+       this.webSocket = new WebSocket(webSocketPath);//建立与服务端的连接
+      //当服务端打开连接
+      this.webSocket.onopen = function (event) {
+        console.log('WebSocket打开连接');
+      };
+      //发送消息
+      this.webSocket.onmessage = function (event) {
+        console.log(event)
+        console.log('WebSocket收到消息：%c' + event.data, 'color:green');
+        //获取服务端消息
+      };
+      this.webSocket.onclose = function (event) {
+        console.log('WebSocket关闭连接');
+      };
+
+    //通信失败
+      this.webSocket.onerror = function (event) {
+        console.log('WebSocket发生异常');
+      };
+    },
+    /**
+     * 通过WebSocket对象发送消息给服务端
+     * 此处没有主动发消息给服务端，如果调用此方法，则会发送消息至socket服务端onMessage()方法上
+     */
+    sendMsgToServer() {
+      let message = "123";
+      if (message) {
+        this.webSocket.send(JSON.stringify({username: $('#username').text(), msg: message}));
+      }
+    },
     initData() {
       initDragAndDrop()
       initIcon()
@@ -393,9 +441,24 @@ export default {
       }else{
         return;
       }
+    },
+    executeSQL(){
+      let sql = getSql();
+      if(sql === ""){
+        this.$message({ type: 'info', message: '请输入sql!' })
+        return
+      }
+      //开始调用执行
+      executeSQL();
     }
   }
 }
+
+
+
+
+
+
 </script>
 <style>
 #tableSearchImg,#paramSearchImg,#funSearchImg{

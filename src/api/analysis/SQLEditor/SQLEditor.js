@@ -655,7 +655,7 @@ export function initParamTree() {
   }
   request({
     baseURL: analysisUrl,
-    url: '/SQLEditorController/getParamTree',
+    url: '/ParamFolderController/getParamsTree',
     method: 'get'
   }).then(result => {
     if (result.data.isError) {
@@ -844,7 +844,7 @@ function loadParamChildrenNodes(treeNode) {
   dataParam.isPersonalParam = getRootNodeType(treeNode, paramZtree)
   request({
     baseURL: analysisUrl,
-    url: '/SQLEditorController/getFolderAndParams',
+    url: '/paramController/getFolderAndParams',
     method: 'get',
     params: dataParam
   }).then(result => {
@@ -1505,4 +1505,65 @@ export function useSql(returnObj){
   $("#sqlDraft").html("当前SQL名称：" + sqlDraftObj.draftTitle).show();
   editorObj.setValue(sqlDraftObj.draftSql);
   replaceParam(JSON.parse(sqlDraftObj.paramJson));
+}
+
+/**
+ * 获取sql
+ */
+export function getSql(){
+  var selText = editorObj.getSelection();
+  //如果选中执行等于全部待执行SQL或者没有选中直接执行SQL 则视为满足模型生成条件第一条 即：必须将SQL编译器的内容全部执行才可以保存模型结果 flag为控制标识
+  if($.trim(selText) === "" || selText === editorObj.getValue()){
+    selText = editorObj.getValue();
+  }
+  return selText;
+}
+/**
+ * 执行SQL
+ */
+export function executeSQL(){
+  //这是存放参数的数组
+  var arr = new Array();
+  var selText = editorObj.getSelection();
+  var isAllRun = true;
+  //如果选中执行等于全部待执行SQL或者没有选中直接执行SQL 则视为满足模型生成条件第一条 即：必须将SQL编译器的内容全部执行才可以保存模型结果 flag为控制标识
+  if($.trim(selText) === "" || selText === editorObj.getValue()){
+    selText = editorObj.getValue();
+  }
+  else{
+    isAllRun = false;
+  }
+  //处理带参数的sql语句 去掉被删除的参数
+  for(var i = 0; i<paramDivArr.length; i++){
+    if(paramDivArr[i].opt === 1){//如果当前参数有效
+      for(var j=0; j<paramObj.arr.length; j++){
+        if(paramDivArr[i].id === paramObj.arr[j].id){//在已拖拽过得参数（包含中间删掉的参数）中匹配参数
+          arr.push(paramObj.arr[j]);
+          break;
+        }
+      }
+    }
+  }
+  paramObj.arr = arr;
+  paramObj.sql = selText;
+  //将SQL送入后台然后等待websocket将结果返回
+  var parArrs =[];
+  for (var i = 0; i < arr.length; i++) {
+    if (selText.indexOf(arr[i].id) > -1) {
+      parArrs.push(arr[i]);
+    }
+  }
+  if (parArrs.length === 0){
+    var data = {
+      sqls:selText
+    };
+    request({
+      baseURL: analysisUrl,
+      url: '/SQLEditorController/executeSql',
+      method: 'post',
+      data
+    }).then(result=>{})
+  }else{
+    alert('带参数的sql暂不支持');
+  }
 }
