@@ -331,31 +331,28 @@ export default {
         this.columnDefs = col;
         this.rowData = da;
         this.isLoading = false;
-      } else {
+      }  else if(this.useType =="sqlEditor") {
         this.loading = true;
         this.nextValue = nextValue;
         var col = [];
         var rowData = [];
-        for (var i = 0; i < this.nextValue.length; i++) {
-          if (this.prePersonalVal.id == this.nextValue[i].executeSQL.id) {
-            for (var j = 0; j <= this.nextValue[i].columns.length; j++) {
+          if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
+            for (var j = 0; j <= this.nextValue.columns.length; j++) {
               var rowColom = {
-                headerName: this.nextValue[i].columns[j],
-                field: this.nextValue[i].columns[j],
+                headerName: this.nextValue.columns[j],
+                field: this.nextValue.columns[j],
               };
-              var key = this.nextValue[i].columns[j];
-              var value = this.nextValue[i].result[j];
+              var key = this.nextValue.columns[j];
+              var value = this.nextValue.result[j];
               col.push(rowColom);
             }
-            for (var k = 0; k < this.nextValue[i].result.length; k++) {
-              rowData.push(this.nextValue[i].result[k]);
+            for (var k = 0; k < this.nextValue.result.length; k++) {
+              rowData.push(this.nextValue.result[k]);
             }
             this.columnDefs = col;
             this.rowData = rowData;
             this.isLoading = false;
-            break;
           }
-        }
       }
     },
     // 点击查询按钮触发事件

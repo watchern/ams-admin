@@ -32,7 +32,7 @@ export default {
   },
   methods: {
       loadTableData(nextValue){
-        this.$refs.child.initData(null,nextValue)
+        this.$refs.child[0].initData(null,nextValue)
       }
   },
   /**
