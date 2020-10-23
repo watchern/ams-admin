@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 <template>
   <div class="task-ctatus-count-model">
     <div v-show="!msg">
@@ -26,8 +10,8 @@
             <table>
               <tr>
                 <th width="40">编号</th>
-                <th>数量</th>
-                <th>状态</th>
+                <th width="40">数量</th>
+                <th width="40">状态</th>
               </tr>
               <tr v-for="(item,$index) in taskCtatusList" :key="$index">
                 <td><span>{{ $index+1 }}</span></td>
@@ -75,8 +59,8 @@ export default {
         name: 'task-instance',
         query: {
           stateType: _.find(stateType, ['label', name])['code'],
-          startDate: this.searchParams.startDate,
-          endDate: this.searchParams.endDate
+          startTimeStart: this.searchParams.startTimeStart,
+          startTimeEnd: this.searchParams.startTimeEnd
         }
       })
     },
@@ -112,7 +96,7 @@ export default {
           this._handleTaskCtatus(res)
           this.isSpin = false
         }).catch(e => {
-          this.msg = e.msg || 'error'
+          // this.msg = e.msg || 'error'
           this.isSpin = false
         })
       }

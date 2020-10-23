@@ -8,7 +8,6 @@ import {
   datasourceList,
   getById,
   update,
-  getProcList,
   findClassesByPackage
 } from '@/api/etlscheduler/processdefinition'
 

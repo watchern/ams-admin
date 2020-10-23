@@ -22,42 +22,68 @@ const stateType = [
   {
     code: '',
     label: '无'
+  },
+  // {
+  //   code: 'SUBMITTED_SUCCESS',
+  //   label: '提交成功'
+  // }, {
+  //   code: 'RUNNING_EXEUTION',
+  //   label: '正在运行'
+  // }, {
+  //   code: 'READY_PAUSE',
+  //   label: '准备暂停'
+  // }, {
+  //   code: 'PAUSE',
+  //   label: '暂停'
+  // }, {
+  //   code: 'READY_STOP',
+  //   label: '准备停止'
+  // }, {
+  //   code: 'STOP',
+  //   label: '停止'
+  // }, {
+  //   code: 'FAILURE',
+  //   label: '失败'
+  // }, {
+  //   code: 'SUCCESS',
+  //   label: '成功'
+  // }, {
+  //   code: 'NEED_FAULT_TOLERANCE',
+  //   label: '需要容错'
+  // }, {
+  //   code: 'KILL',
+  //   label: 'kill'
+  // }, {
+  //   code: 'WAITTING_THREAD',
+  //   label: '等待线程'
+  // }, {
+  //   code: 'WAITTING_DEPEND',
+  //   label: '等待依赖完成'
+  // }
+  {
+    code: 'WAITING',
+    label: '等待中'
   }, {
-    code: 'SUBMITTED_SUCCESS',
-    label: '提交成功'
+    code: 'WAITING_FOR_FILE',
+    label: '等待文件中'
   }, {
-    code: 'RUNNING_EXEUTION',
-    label: '正在运行'
-  }, {
-    code: 'READY_PAUSE',
-    label: '准备暂停'
+    code: 'WAITTING_DEPEND',
+    label: '等待依赖中'
   }, {
     code: 'PAUSE',
     label: '暂停'
   }, {
-    code: 'READY_STOP',
-    label: '准备停止'
-  }, {
-    code: 'STOP',
-    label: '停止'
-  }, {
-    code: 'FAILURE',
-    label: '失败'
-  }, {
-    code: 'SUCCESS',
-    label: '成功'
-  }, {
-    code: 'NEED_FAULT_TOLERANCE',
-    label: '需要容错'
+    code: 'RUNNING_EXEUTION',
+    label: '执行中'
   }, {
     code: 'KILL',
-    label: 'kill'
+    label: '已取消'
   }, {
-    code: 'WAITTING_THREAD',
-    label: '等待线程'
+    code: 'FAILURE',
+    label: '执行失败'
   }, {
-    code: 'WAITTING_DEPEND',
-    label: '等待依赖完成'
+    code: 'SUCCESS',
+    label: '执行成功'
   }
 ]
 
