@@ -111,7 +111,7 @@ export default {
       conditionShowData: [],
       primaryKey: "",
       isLoading: true,
-      nextValue:[]
+      nextValue: [],
     };
   },
   mounted() {
@@ -287,7 +287,7 @@ export default {
       // 获取选中单元格所在行的数据
       console.log(cell.data);
     },
-    initData(sql,nextValue) {
+    initData(sql, nextValue) {
       if (this.useType == "modelRunResult") {
         this.isLoading = true;
         // 当当前表是主表的时候myFlag赋值为true
@@ -333,7 +333,7 @@ export default {
         this.isLoading = false;
       } else {
         this.loading = true;
-        this.nextValue = nextValue
+        this.nextValue = nextValue;
         var col = [];
         var rowData = [];
         for (var i = 0; i < this.nextValue.length; i++) {
@@ -407,9 +407,12 @@ export default {
      * 在渲染表格之前拿到渲染表格时需要的数据
      */
     getRenderTableData() {
-      if (this.modelUuid != undefined) {
-        selectConditionShow(this.modelUuid, this.nowtable.resultTableName).then(
-          (resp) => {
+      if (this.useType == "modelRunResult") {
+        if (this.modelUuid != undefined) {
+          selectConditionShow(
+            this.modelUuid,
+            this.nowtable.resultTableName
+          ).then((resp) => {
             this.conditionShowData = resp.data;
             selectPrimaryKeyByTableName(this.nowtable.resultTableName).then(
               (resp) => {
@@ -417,10 +420,10 @@ export default {
                 this.initData();
               }
             );
-          }
-        );
-      } else {
-        this.initData();
+          });
+        } else {
+          this.initData();
+        }
       }
     },
   },
