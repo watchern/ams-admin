@@ -337,12 +337,12 @@ export default {
         var col = [];
         var rowData = [];
           if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
-            for (var j = 0; j <= this.nextValue.columns.length; j++) {
+            for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
               var rowColom = {
-                headerName: this.nextValue.columns[j],
-                field: this.nextValue.columns[j],
+                headerName: this.nextValue.columnNames[j],
+                field: this.nextValue.columnNames[j],
               };
-              var key = this.nextValue.columns[j];
+              var key = this.nextValue.columnNames[j];
               var value = this.nextValue.result[j];
               col.push(rowColom);
             }
