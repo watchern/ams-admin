@@ -496,6 +496,8 @@ export default {
       // 启用停用
       startStatus: true,
       stopStatus: true,
+      editStatus: true,
+      deleteStatus: true,
       // 添加依赖
       relation: 'AND',
       dependTaskList: [],
@@ -697,13 +699,24 @@ export default {
         this.selections.forEach((r, i) => {
           if (r.status === 1) {
             this.startStatus = true
+           this.deleteStatus = true
           } else if (r.status === 0) {
             this.stopStatus = true
+            this.deleteStatus = false
           }
         })
       } else {
         this.startStatus = true
         this.stopStatus = true
+      }
+      if (this.selections.length === 1) {
+            this.selections.forEach((r, i) => {
+          if (r.status === 0) {
+            this.editStatus = false
+          } else if (r.status === 1) {
+            this.editStatus = true
+          }
+        })
       }
     },
     dependTaskList(e) {
