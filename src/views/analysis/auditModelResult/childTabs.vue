@@ -27,12 +27,14 @@ export default {
   },
   data() {
     return {
-      
+      index:0
     };
   },
   methods: {
       loadTableData(nextValue){
-        this.$refs.child[0].initData(null,nextValue)
+        this.$refs.child[this.index].initData(null,nextValue)
+        this.
+          index++;
       }
   },
   /**
