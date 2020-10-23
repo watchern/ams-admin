@@ -16,6 +16,11 @@ const analysisRouter = {
       path: 'auditModelResult',
       name: '模型运行结果',
       component: () => import('@/views/analysis/auditModelResult/index')
+    },
+    {
+      path: 'auditModelParam',
+      name: '模型运行结果',
+      component: () => import('@/views/analysis/modelParam/index')
     }
   ]
 }
