@@ -8,7 +8,7 @@
         :useType="useType"
     /></el-tab-pane>
     <el-tab-pane
-      v-for="(item, key) in useType=='modelRunResult'?helptables:nextValue"
+      v-for="(item, key) in useType=='modelRunResult'?helptables:preValue"
       :key="key"
       :label="
         useType == 'modelRunResult' ? '辅表' + (key + 1) : '结果' + (key + 1)
@@ -43,8 +43,7 @@ export default {
     "helptables",
     "modelUuid",
     "useType",
-    "preValue",
-    "",
+    "preValue"
   ],
 };
 </script>
