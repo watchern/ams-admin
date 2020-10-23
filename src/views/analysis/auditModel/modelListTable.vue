@@ -37,20 +37,21 @@
       </div>
     </el-dialog>
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
-      <ModelFolderTree ref="modelFolderTree" :publicModel="publicModelValue"/>
+      <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
         <el-button type="primary" @click="updatePublicModel">确定</el-button>
         <el-button @click="treeSelectShow=false">取消</el-button>
       </div>
     </el-dialog>
-    <el-upload style="position: relative;top: -40px;left: 240px;display: none"
-               :show-file-list="false"
-               :on-success="onSuccess"
-               :on-error="onError"
-               :before-upload="beforeUpload"
-               :on-remove="handleRemove"
-               action="/modelController/importModel"
-               accept=".json"
+    <el-upload
+      style="position: relative;top: -40px;left: 240px;display: none"
+      :show-file-list="false"
+      :on-success="onSuccess"
+      :on-error="onError"
+      :before-upload="beforeUpload"
+      :on-remove="handleRemove"
+      action="/modelController/importModel"
+      accept=".json"
     >
       <el-button id="importBtn" plain type="primary">导入</el-button>
     </el-upload>
@@ -62,7 +63,7 @@ import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
 import EditModel from '@/views/analysis/auditModel/editModel'
-import { getOneDict } from '@/utils'
+import { getOneDict } from '@/utils/index'
 export default {
   name: 'ModelListTable',
   components: { Pagination, QueryField, EditModel,ModelFolderTree },
@@ -197,9 +198,7 @@ export default {
     riskLevelFormatter(row, column) {
       let riskLevel = row.riskLevelUuid
       let value = ""
-      getOneDict(riskLevel).then(result=>{
-        value = result[0].codeName
-      })
+      value = getOneDict(riskLevel)[0].codeName;
       return value
     },
     /**
