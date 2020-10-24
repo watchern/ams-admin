@@ -18,3 +18,28 @@ export function processStateCount(data) {
     data
   })
 }
+
+export function getDataFileList() {
+  return request({
+    baseURL: baseURL,
+    url: `/monitor/getDataFileList`,
+    method: 'get'
+  })
+}
+
+export function processTakeTime(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/monitor/processTakeTime`,
+    method: 'put',
+    data
+  })
+}
+
+export function takeTime() {
+  return request({
+    baseURL: baseURL,
+    url: `/monitor/takeTime`,
+    method: 'get'
+  })
+}

@@ -4,6 +4,7 @@
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
+        :query-default="queryDefault"
         @submit="getList"
       />
     </div>
@@ -21,7 +22,7 @@
       <el-button
         type="primary"
         title="暂停"
-        :disabled="stopStatus"
+        :disabled="pusStatus"
         class="oper-btn"
         icon="el-icon-video-pause"
         @click="handleStop()"
@@ -78,15 +79,15 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p style="text-align:center">{{ statusList[scope.row.status===null? 8 : scope.row.status-1].name }}</p>
+            <p style="text-align:center">{{ statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].name }}</p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色 -->
                   <i
-                    :class="statusList[scope.row.status===null? 8 : scope.row.status-1].unicode"
-                    :style="{color: statusList[scope.row.status===null? 8 : scope.row.status-1].color}"
+                    :class="statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].unicode"
+                    :style="{color: statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].color}"
                   />
                 </a>
               </el-tag>
@@ -145,8 +146,11 @@
         width="150px"
         align="center"
         prop="timeConsuming"
-        :formatter="formatterTimeConsuming"
-      />
+      >
+        <template slot-scope="scope">
+          {{ scope.row.timeConsuming | timeFilter }}
+        </template>
+      </el-table-column>
       <el-table-column
         label="环节进度"
         width="150px"
@@ -215,8 +219,8 @@
             <!-- title环节名称 -->
             <el-collapse-item :title="task.name" :name="task.id">
               <el-card style="padding-bottom: 3%">
-                <el-col class="logtype">
-                  {{ taskslogsList[task.id] != null ? '耗时：'+ taskslogsList[task.id].time/1000 + ' 秒': '' }}
+                <el-col v-if="taskslogsList[task.id] != null" class="logtype">
+                  耗时： {{ taskslogsList[task.id] != null ? taskslogsList[task.id].time : 0 | timeFilter }}
                 </el-col>
                 <el-col
                   v-for="log in logs[task.id]"
@@ -246,12 +250,29 @@ import QueryField from '@/components/Ace/query-field/index'
 
 export default {
   components: { Pagination, QueryField },
+  filters: {
+    timeFilter(value) {
+      const time = value
+      if (time === null || time === '' || time === 0) {
+        return 0 + '秒'
+      } else {
+        if (time / 1000 >= 0 && time / 1000 < 60) {
+          return (time / 1000).toFixed(1) + '秒'
+        } else if (time / 1000 >= 60 && time / 1000 < 3600) {
+          return (time / 60000).toFixed(1) + '分'
+        } else if (time / 1000 > 3600) {
+          return (time / 3600000).toFixed(1) + '时'
+        }
+      }
+    }
+  },
   data() {
     return {
       tableKey: 'processInstanceUuid',
       list: null,
       total: 0,
       listLoading: false,
+      queryDefault: {},
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '流程实例名称', name: 'name', type: 'text', value: '' },
@@ -409,7 +430,7 @@ export default {
       checkedTask: null,
       checkedTaskId: '',
       skipStatus: true,
-      stopStatus: true,
+      pusStatus: true,
       startStatus: true,
       reStartStatus: true,
       doneStatus: true,
@@ -440,7 +461,7 @@ export default {
           switch (r.status) {
             // 判断状态是否为执行中,如果是执行中，暂停按钮可用
             case 4:
-              this.stopStatus = false
+              this.pusStatus = false
               break
             // 判断状态是否为暂停中,如果是暂停中，执行按钮可用
             case 5:
@@ -459,7 +480,7 @@ export default {
         this.skipStatus = true
         // 其它按钮取消禁用
         this.startStatus = false
-        this.stopStatus = false
+        this.pusStatus = false
         this.doneStatus = false
         this.reStartStatus = false
         this.selections.forEach((r, i) => {
@@ -477,20 +498,23 @@ export default {
           }
           // 遍历选择的数组判断状态，如果是有状态不是暂停中的，启用按钮不可用
           if (r.status === 5 || otherStatuses.indexOf(r.status) >= 0) {
-            this.stopStatus = true
+            this.pusStatus = true
           }
         })
       } else {
         this.skipStatus = true
         this.startStatus = true
-        this.stopStatus = true
+        this.pusStatus = true
         this.doneStatus = true
         this.reStartStatus = true
       }
     }
   },
   created() {
-    this.getList()
+    if (this.$route.params instanceof Object) {
+      this.queryDefault = this.$route.params
+    }
+    this.getList(this.queryDefault)
   },
   methods: {
     getList(query) {
@@ -651,21 +675,6 @@ export default {
     // 格式化表格
     formatType(data) {
       return this.formatMap.execType[data.execType]
-    },
-    // 格式化耗时
-    formatterTimeConsuming(data) {
-      const time = data.timeConsuming
-      if (time === null || time === '' || time === 0) {
-        return 0 + '秒'
-      } else {
-        if (time / 1000 >= 0 && time / 1000 < 60) {
-          return (time / 1000).toFixed(1) + '秒'
-        } else if (time / 1000 >= 60 && time / 1000 < 3600) {
-          return (time / 60000).toFixed(1) + '分'
-        } else if (time / 1000 > 3600) {
-          return (time / 3600000).toFixed(1) + '时'
-        }
-      }
     }
   }
 }
