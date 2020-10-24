@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 
 const baseURL = '/amsdata'
-const controller1 = 'warehouse'
-const controller2 = 'tableMeta'
 
+/* 元数据操作*/
+const controller1 = 'warehouse'
 export function listUnCached(level, pid) {
   return request({
     baseURL: baseURL,
@@ -15,7 +15,6 @@ export function listUnCached(level, pid) {
     }
   })
 }
-
 export function getDataTreeNode(pid) {
   return request({
     baseURL: baseURL,
@@ -24,6 +23,8 @@ export function getDataTreeNode(pid) {
   })
 }
 
+/* 缓存数据操作*/
+const controller2 = 'tableMeta'
 export function saveTable(data) {
   return request({
     baseURL: baseURL,
@@ -32,7 +33,6 @@ export function saveTable(data) {
     data
   })
 }
-
 export function updateTable(data) {
   return request({
     baseURL: baseURL,
@@ -41,12 +41,28 @@ export function updateTable(data) {
     data
   })
 }
-
 export function delTable(ids) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/delete/${ids}`,
     method: 'delete'
+  })
+}
+export function getResELTree(rightControl, userid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getResELTree?isRightControl=${rightControl}&dataUserId=${userid}`,
+    method: 'get'
+  })
+}
+
+/* 角色表操作*/
+const controller3 = 'roleTable'
+export function getResByRole(roleUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller3}/getResByRole/${roleUuid}`,
+    method: 'get'
   })
 }
 

@@ -39,6 +39,10 @@ const dataRouter = {
       name: '数据角色维护',
       component: () => import('@/views/data/role/index')
     }, {
+      path: 'roleRes/:roleUuid',
+      name: '数据角色维护-角色资源绑定',
+      component: () => import('@/views/data/role-res/index')
+    }, {
       path: 'transCode',
       name: '数据转码',
       component: () => import('@/views/data/transCode/index')
