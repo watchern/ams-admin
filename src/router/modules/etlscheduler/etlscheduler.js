@@ -82,6 +82,12 @@ const etlschedulerRouter = {
       meta: { title: 'processinstance' }
     },
     {
+      path: 'taskinstance',
+      name: 'taskinstance',
+      component: () => import('@/views/modules/etlscheduler/taskinstance/index'),
+      meta: { title: 'taskinstance' }
+    },
+    {
     // 传递状态为1为查看，0为编辑
       path: 'definition/:id/:status',
       name: 'projects-definition-details',
