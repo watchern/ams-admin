@@ -16,7 +16,6 @@ export default {
     }
   },
   created() {
-    console.log(333)
   }
 }
 </script>
