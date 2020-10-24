@@ -22,7 +22,7 @@
         </x-option>
       </x-select> -->
       <x-select v-model="el.id" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails" @on-change="_onChangeDefinitionId">
-        <x-option v-for="item in scheduleList" :key="item.id" :value="item.id" :label="item.scheduleName" />
+        <x-option v-for="item in scheduleList" :key="item.processSchedulesUuid" :value="item.processSchedulesUuid" :label="item.scheduleName" />
       </x-select>
       <x-select v-model="el.depTasks" filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails">
         <x-option v-for="item in el.depTasksList || []" :key="item.id" :value="item.id" :label="item.name" />
@@ -90,19 +90,16 @@ export default {
   created() {
     // is type projects-instance-details
     this.isInstance = this.$router.history.current.name === 'projects-instance-details'
-
     getScheduleList().then((resp) => {
       this.scheduleList = resp.data
-      // console.log(JSON.stringify(this.scheduleList))
-      // const depTasksList = [{id:'1', name:'11'}];
       // 判断 dependItemList 是否有值（无值的时候）
-      const value = this.scheduleList[0].id
+      const value = this.scheduleList[0].processSchedulesUuid
       if (!this.dependItemList.length) {
         getTaskLink(value).then((resp) => {
           this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(value, this.scheduleList, resp.data)))
         })
       } else {
-        const ids = _.map(this.dependItemList, v => v.id).join(',')
+        const ids = _.map(this.dependItemList, v => v.processSchedulesUuid).join(',')
         // get item list
         this._getDependItemList(ids, false).then(res => {
 
@@ -297,7 +294,7 @@ export default {
     },
     _rtOldParams(value, scheduleList, depTasksList, item) {
       return {
-        projectId: item.projectId,
+        projectId: 1,
         id: value,
         // dependItem need private definitionList
         definitionList: scheduleList,
