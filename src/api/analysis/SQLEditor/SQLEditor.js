@@ -1570,19 +1570,29 @@ export function executeSQL(){
   }
   if (parArrs.length === 0){
     var data = {
-      sqls:selText
+      sqls:selText,
+      isExistParam:false
     };
-    return request({
-      baseURL: analysisUrl,
-      url: '/SQLEditorController/executeSql',
-      method: 'post',
-      data
-    })
+    return data;
   }else{
-    alert('带参数的sql暂不支持');
+    paramObj.isExistParam = true;
+    return paramObj;
+    //alert('带参数的sql暂不支持');
   }
 }
 
+/**
+ * 开始执行SQL
+ * @param {*} data 要执行的数据
+ */
+export function startExecuteSql(data){
+  return request({
+    baseURL: analysisUrl,
+    url: '/SQLEditorController/executeSql',
+    method: 'post',
+    data
+  })
+}
 /**
  * 编辑模型
  * @param sql 要编辑的sql
