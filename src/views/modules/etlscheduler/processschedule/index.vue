@@ -42,11 +42,11 @@
         :show-file-list="false"
         style="display: inline-block; padding-left: 10px"
       >
-        <el-button type="primary" class="oper-btn" icon="el-icon-upload2" title="导入">导入</el-button>
+        <el-button type="primary" class="oper-btn" icon="el-icon-upload2" title="导入"></el-button>
       </el-upload>
-      <el-menu style="display: inline-block; padding-left: 10px">
+    <el style="display: inline-block; padding-left: 10px">
         <el-button type="primary" class="oper-btn" icon="el-icon-download" title="下载流程模板" @click="dialogFormVisible1 = true" />
-      </el-menu>
+     </el>
     </div>
     <!-- <el-button
         type="primary"
@@ -230,14 +230,18 @@
             />
           </el-select>
         </el-form-item>
+        <!-- 
+
+          :rules="{
+            required: true, message: '请输入参数值', trigger: 'blur'
+          }"
+         -->
         <el-form-item
           v-for="(item, index) in distinctParamList"
           :key="item.paramUuid"
           :label="item.param.paramName"
-          prop="item"
-          :rules="{
-            required: true, message: '请输入参数值', trigger: 'change'
-          }">
+           prop="item"
+          >
           <el-input
             v-model="item.param.defaultValue"
             class="propwidth"
