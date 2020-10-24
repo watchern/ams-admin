@@ -1,5 +1,5 @@
 <template>
-  <div class="list-container">
+  <div class="page-container">
     <div class="filter-container">
       <!-- 查询条件区域 -->
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
@@ -23,12 +23,12 @@
         >删除</el-button
       > -->
     <div style="float: left;">
-      <el-button type="primary" class="oper-btn add" @click="handleCreate()" />
-      <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
-      <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
-      <el-button type="primary" class="oper-btn" icon="el-icon-video-play" :disabled="startStatus" @click="handleUse()" />
-      <el-button type="primary" class="oper-btn" icon="el-icon-video-pause" :disabled="stopStatus" @click="handleBear()" />
-      <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length != 1" @click="copyData()" />
+      <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
+      <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" title="修改" @click="handleUpdate()" />
+      <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" title="删除" @click="handleDelete()" />
+      <el-button type="primary" class="oper-btn" icon="el-icon-video-play" :disabled="startStatus" title="启用" @click="handleUse()" />
+      <el-button type="primary" class="oper-btn" icon="el-icon-video-pause" :disabled="stopStatus" title="停用" @click="handleBear()" />
+      <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length != 1" title="复制" @click="copyData()" />
       <el-upload
         multiple
         class="upload-demo"
@@ -42,10 +42,10 @@
         :show-file-list="false"
         style="display: inline-block; padding-left: 10px"
       >
-        <el-button type="primary" class="oper-btn" icon="el-icon-upload2">导入</el-button>
+        <el-button type="primary" class="oper-btn" icon="el-icon-upload2" title="导入">导入</el-button>
       </el-upload>
       <el-menu style="display: inline-block; padding-left: 10px">
-        <el-button type="primary" class="oper-btn" icon="el-icon-download" @click="dialogFormVisible1 = true" />
+        <el-button type="primary" class="oper-btn" icon="el-icon-download" title="下载流程模板" @click="dialogFormVisible1 = true" />
       </el-menu>
     </div>
     <!-- <el-button
@@ -199,7 +199,6 @@
         :model="temp"
         class="detail-form"
         label-position="right"
-        label-width="100px"
       >
         <el-form-item label="任务名称" prop="scheduleName">
           <el-input
@@ -232,7 +231,7 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          v-for="item in paramList"
+          v-for="item in distinctParamList"
           :key="item.paramUuid"
           :label="item.param.paramName"
           :prop="item.param.defaultValue"
@@ -257,10 +256,11 @@
             <el-option label="停用" :value="0" />
           </el-select>
         </el-form-item> -->
-        <el-form-item label="作业周期范围">
+        <el-form-item label="作业周期范围" prop="startTime">
           <el-col :span="11">
             <el-date-picker
               v-model="temp.startTime"
+              :picker-options="startTime"
               type="date"
               prop="startTime"
               placeholder="选择日期"
@@ -271,6 +271,7 @@
           <el-col :span="11">
             <el-date-picker
               v-model="temp.endTime"
+              :picker-options="endTime"
               type="date"
               placeholder="选择日期"
               :disabled="disableUpdate"
@@ -466,6 +467,30 @@ export default {
   },
   data() {
     return {
+      // 开始时间大于今天
+      startTime: {
+        disabledDate: time => {
+          if (this.temp.endTime) {
+            return (
+              time.getTime() > new Date(this.temp.endTime).getTime()
+            )
+          } else {
+            return time.getTime() < Date.now()
+          }
+        }
+      },
+      endTime: {
+        disabledDate: time => {
+          if (this.temp.startTime) {
+            return (
+              time.getTime() < Date.now() ||
+              time.getTime() < new Date(this.temp.startTime).getTime()
+            )
+          } else {
+            return time.getTime() < Date.now()
+          }
+        }
+      },
       disableUpdate: false,
       closeStatus: false,
       // 启用停用
@@ -475,6 +500,7 @@ export default {
       relation: 'AND',
       dependTaskList: [],
       paramList: [],
+      distinctParamList: [],
       isLoading: false,
       //  查询任务流程
       options: [],
@@ -586,9 +612,9 @@ export default {
       dialogVisible2: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑参数',
-        create: '添加参数',
-        show: '查看参数'
+        update: '编辑调度任务',
+        create: '添加调度任务',
+        show: '查看调度任务详情'
       },
       dialogPvVisible: false,
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -601,20 +627,13 @@ export default {
             trigger: 'change'
           }
         ],
-        processInstancePriority: [
+        processDefName: [
           {
             required: true,
-            message: '请填写排序号',
+            message: '请输入参数值',
             trigger: 'change'
           }
         ],
-        // scheduleDesc: [
-        //   {
-        //     max: 100,
-        //     message: '请填写流程描述',
-        //     trigger: 'change'
-        //   }
-        // ],
         crontab: [
           {
             required: true,
@@ -640,6 +659,13 @@ export default {
           {
             required: true,
             message: '请填写开始执行日期',
+            trigger: 'change'
+          }
+        ],
+        defaultValue: [
+          {
+            required: true,
+            message: '请输入参数值',
             trigger: 'change'
           }
         ]
@@ -834,6 +860,9 @@ export default {
       })
       getParamsByProcessId(id).then((res) => {
         this.paramList = res.data
+        // 去重
+        const resmap = new Map()
+        this.distinctParamList = this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))
       })
     },
     // 查询任务流程
@@ -894,7 +923,7 @@ export default {
     handleCreate() {
       this.disableUpdate = false
       this.closeStatus = false
-      this.paramList = []
+      this.distinctParamList = []
       this.dependTaskList = []
       this._onDeleteAll()
       this.resetTemp()
@@ -907,8 +936,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.taskParamsList = this.paramList
-
+          this.temp.taskParamsList = this.distinctParamList
           if (!this.dependTaskList.length) {
             this.temp.dependTaskInfo = null
             this.temp.dependTaskInfoList = []
@@ -949,6 +977,9 @@ export default {
         // }
         // if (resp.data.taskParamsList !== null && resp.data.taskParamsList !== "") {
         this.paramList = resp.data.taskParamsList
+        //  去重
+        const resmap = new Map()
+        this.distinctParamList = this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))
         // } else {
         // this.paramList = [];
         // }
@@ -956,7 +987,7 @@ export default {
     },
     updateData() {
       this.temp.dependTaskInfoList = this.dependTaskList
-      this.temp.taskParamsList = this.paramList
+      this.temp.taskParamsList = this.distinctParamList
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
@@ -976,7 +1007,6 @@ export default {
         }
       })
     },
-    // 查询参数详情
     handleDelete() {
       var ids = []
       this.selections.forEach((r, i) => {

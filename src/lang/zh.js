@@ -72,6 +72,8 @@ export default {
     'processdefinition': '流程定义管理',
     'processschedule': '调度任务管理',
     'taskmonitor': '调度监控',
+    'processinstance': '流程实例',
+    'taskinstance': '任务实例',
     'workflow': '流程定义管理'
   },
   navbar: {

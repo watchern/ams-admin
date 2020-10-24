@@ -115,6 +115,7 @@ import mStatementList from './_source/statementList'
 import disabledState from '@/components/Dolphin/mixin/disabledState'
 import codemirror from '@/components/Dolphin/file/codemirror'
 import $ from 'jquery'
+
 let editor
 
 export default {
@@ -383,30 +384,35 @@ export default {
      * Processing code highlighting
      */
     _handlerEditor() {
-      this._destroyEditor()
+      // this._destroyEditor()
 
       // editor
       editor = codemirror('code-sql-mirror', {
         mode: 'sql',
         readOnly: this.isDetails
       })
-
       this.keypress = () => {
         if (!editor.getOption('readOnly')) {
-          editor.showHint({
-            completeSingle: false
-          })
+          editor.showHint(
+            {
+              completeSingle: false
+            }
+          )
         }
       }
 
       this.changes = () => {
+        // editor.showHint()
         this._cacheParams()
       }
 
       // Monitor keyboard
       editor.on('keypress', this.keypress)
 
-      editor.on('changes', this.changes)
+      // editor.on('changes', this.changes)
+
+      // 代码自动提示功能，记住使用cursorActivity事件不要使用change事件，这是一个坑，那样页面直接会卡死
+      editor.on('cursorActivity', this.changes)
 
       editor.setValue(this.sql)
 
@@ -453,7 +459,7 @@ export default {
       if (editor) {
         editor.toTextArea() // Uninstall
         editor.off($('.code-sql-mirror'), 'keypress', this.keypress)
-        editor.off($('.code-sql-mirror'), 'changes', this.changes)
+        editor.off($('.code-sql-mirror'), 'cursorActivity', this.changes)
       }
     }
   }
