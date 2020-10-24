@@ -54,6 +54,7 @@
       <div id="rightPart" class="col-sm-10" style="height:100vh;">
         <div id="sqlEditorDiv" class="col-sm-12" style="padding:0px;height:50vh;">
           <div class="row table-view-caption" style="margin-left: 30px;height:40px;padding-top:8px;">
+            <button type="button" class="btn btn-primary" @click="test()">test</button>&nbsp;
             <button type="button" class="btn btn-primary" @click="sqlFormat()">格式化</button>&nbsp;
             <!-- <button type="button" class="btn btn-primary" onclick="alertVerify()">SQL语法校验</button> -->
             <button type="button" class="btn btn-primary" @click="executeSQL">执行</button>&nbsp;
@@ -110,11 +111,13 @@
         <!-- 结果展示和参数输入区域 -->
         <div id="bottomPart" class="layui-tab col-sm-12" lay-filter="result-data">
           <ul class="layui-tab-title" />
-          <div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;display: none;" onclick="maxOpen()">
+          <div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;" onclick="maxOpen()">
             <img id="iconImg" class="iconImg" alt="最大化">
             <span class="iconText">最大化</span>
           </div>
-          <div id="dataShow" class="layui-tab-content" />
+          <div id="dataShow" v-for="result in resultShow" class="layui-tab-content">
+            <childTabs  ref="childTabsRef" :key="result.id" :preValue="currentExecuteSQL" use-type="sqlEditor"></childTabs>
+          </div>
         </div>
       </div>
       <div id="vertical" />
@@ -122,8 +125,8 @@
       <div id="tableMenu" class="rightMenu">
         <ul>
           <li @click="getSelectSql('tableMenu')">生成SELECT语句</li>
-          <li onclick="sqlEditor.viewTableDetail()">查看表信息</li>
-          <li onclick="sqlEditor.viewTableRelation()">查看表关联信息</li>
+          <li onclick="">查看表信息</li>
+          <li onclick="">查看表关联信息</li>
         </ul>
       </div>
       <div id="tableMenuTwo" class="rightMenu">
@@ -134,8 +137,8 @@
       <div id="importTableMenu" class="rightMenu">
         <ul>
           <li onclick="getSelectSql('importTableMenu')">生成SELECT语句</li>
-          <li onclick="sqlEditor.editTable()">修改表结构</li>
-          <li onclick="sqlEditor.deleteTable()">删除</li>
+          <li onclick="">修改表结构</li>
+          <li onclick="">删除</li>
         </ul>
       </div>
       <div id="paramFolderMenu1" class="rightMenu">
@@ -210,20 +213,47 @@ import { initSQLEditor, initDragAndDrop, initTableTip, initIcon,
   initTableTree, initFunctionTree, initEvent, initParamTree,
   tableTreeSearch, paramTreeSearch, functionTreeSearch, sqlFormat, findAndReplace,
   caseTransformation, selectSqlNotes, selectSqlCancelNotes,getSaveInfo,getSelectSql
-  ,getSaveSqlDraftObj,saveSqlDraft,useSql,initVariable,getSql,executeSQL} from '@/api/analysis/SQLEditor/SQLEditor'
+  ,getSaveSqlDraftObj,saveSqlDraft,useSql,initVariable,getSql,executeSQL,verifySql,editorSql} from '@/api/analysis/SQLEditor/SQLEditor'
 import sqlDraftList from '@/views/analysis/SQLEditor/sqlDraftList'
 import { updateDraft}  from '@/api/analysis/SQLEditor/SQLDraft'
+import childTabs from '@/views/analysis/auditModelResult/childTabs'
+/**
+ * 当前执行进度
+ * @type {number}
+ */
+let currentExecuteProgress = 0
+/**
+ * 最后一个结果集的列
+ * @type {*[]}
+ */
+let lastResultColumn = []
+/**
+ * 是否全部执行成功
+ * @type {boolean}
+ */
+let isAllExecuteSuccess = false
+
+/**
+ * 最后模型结果列类型
+ * @type {*[]}
+ */
+let lastResultColumnType = []
+
+/**
+ * 数据界面对象
+ */
+let childTabsRef;
 export default {
   name: 'SQLEditor',
-  components:{sqlDraftList},
+  components:{sqlDraftList,childTabs},
+  props:['sqlEditorParamObj','sqlValue'],
   data() {
     return {
       sqlDraftForm:{
         sqlDraftUuid:'',
         draftTitle:'',
         draftSql:'',
-        paramJson:'',
-        webSocket:null
+        paramJson:''
       },
       sqlDraftFormRules:{
         draftTitle: [
@@ -231,7 +261,12 @@ export default {
       },
       sqlDraftDialogFormVisible:false,
       sqlDraftDialog:false,
-      formLabelWidth: '120px'
+      formLabelWidth: '120px',
+      currentExecuteSQL:[],//当前执行的全部sql,
+      webSocket:null,
+      resultShow:[],
+      isAllExecute:false,//是否全部执行
+      modelOriginalTable:[]
     }
   },
   mounted() {
@@ -246,7 +281,6 @@ export default {
       this.webSocket = this.getWebSocket();
     },
     /**
-     * WebSocket客户端
      *
      * 使用说明：
      * 1、WebSocket客户端通过回调函数来接收服务端消息。例如：webSocket.onmessage
@@ -258,21 +292,31 @@ export default {
        this.webSocket = new WebSocket(webSocketPath);//建立与服务端的连接
       //当服务端打开连接
       this.webSocket.onopen = function (event) {
-        console.log('WebSocket打开连接');
       };
       //发送消息
       this.webSocket.onmessage = function (event) {
-        console.log(event)
-        console.log('WebSocket收到消息：%c' + event.data, 'color:green');
-        //获取服务端消息
+        let dataObj = JSON.parse(event.data)
+        //todo  这块得加判断  判断sql是否全部执行成功，失败则不加1
+        currentExecuteProgress++
+        //如果当前执行等于总的执行进度  说明最后的结果集已经拿到 取出最后一个结果集的列做为模型结果列
+        if(currentExecuteProgress == dataObj.executeTask.executeSQL.length){
+          isAllExecuteSuccess = true
+          lastResultColumn = dataObj.columnNames
+          //todo 现在暂时还拿不到类型  后续需要改
+          //lastResultColumnType = dataObj.columnTypes
+        }
+        func1(dataObj)
+        //console.log(event.data);
       };
+      let func2 = function func3(val) {
+        this.$refs.childTabsRef[0].loadTableData(val)
+      }
+      let func1 = func2.bind(this)
       this.webSocket.onclose = function (event) {
-        console.log('WebSocket关闭连接');
       };
 
     //通信失败
       this.webSocket.onerror = function (event) {
-        console.log('WebSocket发生异常');
       };
     },
     /**
@@ -304,7 +348,12 @@ export default {
           }
         }
         initSQLEditor(document.getElementById('sql'), relTableMap)
+        if(this.sqlValue != ""){
+          //编辑模型的sql  反显数据
+          editorSql(this.sqlValue,this.sqlEditorParamObj)
+        }
       })
+
     },
     tableTreeSearch() {
       tableTreeSearch()
@@ -331,7 +380,25 @@ export default {
       selectSqlCancelNotes()
     },
     getSaveInfo(){
-      return getSaveInfo();
+      if(!this.isAllExecute){
+        this.$message({ type: 'info', message: '全部执行才可以保存!' })
+        return;
+      }
+      //如果当前执行进度与要执行的sql数量相等 则证明数据已经全部拿到，允许保存
+      if(currentExecuteProgress != this.currentExecuteSQL.length){
+        this.$message({ type: 'info', message: '全部执行成功才可以保存!' })
+        return;
+      }
+      console.log("当前执行总进度:" + currentExecuteProgress)
+      console.log("是否全部执行成功:" + isAllExecuteSuccess)
+      console.log(this.currentExecuteSQL)
+      console.log(lastResultColumn)
+      let returnObj = getSaveInfo();
+      returnObj.columnNames = lastResultColumn
+      returnObj.columnTypes = lastResultColumnType
+      returnObj.modelOriginalTable = this.modelOriginalTable
+      returnObj.modelType = 1
+      return returnObj;
     },
     getSelectSql(menuId){
       getSelectSql(menuId);
@@ -443,22 +510,40 @@ export default {
       }
     },
     executeSQL(){
-      let sql = getSql();
-      if(sql === ""){
+      let result = getSql();
+      if(result.sql === ""){
         this.$message({ type: 'info', message: '请输入sql!' })
         return
       }
-      //开始调用执行
-      executeSQL();
+      this.isAllExecute = result.isAllExecute
+       verifySql().then(result=>{
+        if(!result.data.verify){
+          this.$message({ type: 'info', message: 'SQL不合法，请重新输入' })
+          return;
+        }
+        this.resultShow = []//清空数据展示对象
+        isAllExecuteSuccess = false
+        currentExecuteProgress = 0
+        this.currentExecuteSQL = []
+        lastResultColumn = []
+        //开始调用执行
+        executeSQL().then(result=>{
+          if(!result.data.isError){
+            this.currentExecuteSQL = result.data.executeSQLList
+            this.modelOriginalTable = result.data.tables
+            this.resultShow.push({id:1})
+          }
+          else{
+            this.$message({ type: 'info', message: '执行失败' })
+          }
+        });
+      })
     }
   }
 }
-
-
-
-
-
-
+function test(){
+  return this.$refs.childTabsRef
+}
 </script>
 <style>
 #tableSearchImg,#paramSearchImg,#funSearchImg{

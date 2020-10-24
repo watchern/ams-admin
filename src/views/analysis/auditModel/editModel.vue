@@ -19,7 +19,7 @@
             <el-input v-model="form.modelName" />
           </el-form-item>
           <el-form-item label="业务分类">
-            <el-input v-model="form.modelFolderName" />
+            <el-input v-model="form.modelFolderName" :disabled="true" />
           </el-form-item>
           <el-form-item label="审计事项" prop="auditItemUuid">
             <el-select v-model="form.auditItemUuid" placeholder="请选择审计事项">
@@ -52,7 +52,7 @@
             <el-button type="primary" @click="openSqlEditor">SQL编辑器</el-button>
           </el-form-item>
           <el-dialog :fullscreen=true v-if="SQLEditorShow" :destroy-on-close="true" :append-to-body="appendToBody" :visible.sync="SQLEditorShow" title="SQL编辑器" width="80%" @close="sqlEditorCloseEvent">
-            <SQLEditor ref="SQLEditor" v-if="SQLEditorShow"/>
+            <SQLEditor ref="SQLEditor" v-if="SQLEditorShow" :sqlEditorParamObj="sqlEditorParamObj" :sqlValue="form.sqlValue"/>
             <div slot="footer">
               <el-button type="primary" @click="getSqlObj">保存</el-button>
               <el-button @click="">取消</el-button>
@@ -240,6 +240,9 @@ export default {
       selectTreeNode: null,
       modelDetails: [],
       filterShows: [],
+      newRelInfoValue:{},
+      newFilterShowValue:{},
+      sqlEditorParamObj:{},
       modelDetailIndex: 0,
       riskLeve:[],
       modelFilterShowIndex: 0,
@@ -259,6 +262,18 @@ export default {
       },
       modelDesignRules: {
         sqlValue: [{ type: 'string', required: true, message: '请选择输入模型SQL', trigger: 'blur' }] }
+    }
+  },
+  watch: {
+    newRelInfoValue(newChild) {
+      this.$nextTick(function(){
+        this.handleNodeClick(newChild)
+      })
+    },
+    newFilterShowValue(newChild){
+      this.$nextTick(function(){
+        this.handleNodeClick(newChild)
+      })
     }
   },
   created() {
@@ -291,6 +306,7 @@ export default {
       //初始化审计事项
     },
     handleNodeClick(data, node) {
+      debugger
       this.hideModelDetail()
       if (data.type == 'basicInfo') {
         this.$refs.modelDesign.style.display = 'none'
@@ -490,15 +506,28 @@ export default {
      * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
      */
     getSqlObj(modelType) {
-/*            let returnObj = this.$refs.SQLEditor.getSaveInfo();
-            //region 初始化SQL语句显示
-            this.displaySQL(returnObj);
-            //endregion
-            console.log(returnObj);
-            this.changeParamDataFormat(returnObj.params);
-            //重置参数对象属性，因为SQL编辑器是移植的，因此兼容那边的数据格式，因此对数据格式进行转换
-            return;*/
-      const sqlObj = {
+      let returnObj = this.$refs.SQLEditor.getSaveInfo();
+      if(returnObj == undefined){
+        return
+      }
+      //region 初始化SQL语句显示
+      this.displaySQL(returnObj);
+      //endregion
+      console.log(returnObj);
+      //转换参数格式 重置参数对象属性，因为SQL编辑器是移植的，因此兼容那边的数据格式，因此对数据格式进行转换
+      let params = this.changeParamDataFormat(returnObj.params,1);
+      //转换列格式 处理sql编辑器返回的列数据信息，拼接成该界面能识别的格式
+      let column = this.changeColumnDataFormat(returnObj.columnNames,returnObj.columnTypes);
+      //处理历史表
+      let modelOriginalTable = this.changeOriginalTable(returnObj.modelOriginalTable);
+      let sqlObj = {
+        sqlValue:returnObj.sqlValue,
+        params:params,
+        column:column,
+        modelChartSetup:returnObj.modelChartSetup,
+        modelOriginalTable:modelOriginalTable
+      };
+/*      const sqlObj = {
         sqlValue: 'select * from AA_AUDIT_ITEM',
         column: [{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }],
         params: [
@@ -509,7 +538,7 @@ export default {
               '                </select>' }],
         modelChartSetup: { chartJson: '哈哈哈哈' },
         modelOriginalTable: [{ originalTableName: '表1', executionType: '1' }, { originalTableName: '表2', executionType: '2' }]
-      }
+      }*/
       this.form.sqlValue = sqlObj.sqlValue
       // 初始化默认参数
       this.paramData = sqlObj.params
@@ -529,8 +558,7 @@ export default {
       this.modelOriginalTable = sqlObj.modelOriginalTable
       // 处理图表JSON
       this.modelChartSetup = sqlObj.modelChartSetup
-      // 处理类型
-      this.form.modelType = modelType
+      this.SQLEditorShow = false
     },
     /**
      *相互转换param数据格式
@@ -573,6 +601,38 @@ export default {
         }
         return returnObj;
       }
+    },
+    /**
+     *转换列对象
+     * @param columnNames 列名称
+     * @param columnType 列类型
+     */
+    changeColumnDataFormat(columnNames,columnType){
+      //[{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }]
+      let returnObj = []
+      for (let i = 0;i < columnNames.length;i++){
+        var obj = {
+          columnName:columnNames[i],
+          columnType:"varchar"
+        }
+        returnObj.push(obj)
+      }
+      return returnObj
+    },
+    /**
+     * 转换列对象
+     * @param originalTableObj 历史表对象
+     */
+    changeOriginalTable(originalTableObj){
+      let resultObj = []
+      for(let i = 0;i < originalTableObj.length;i++){
+        let obj = {
+          originalTableName:originalTableObj[i].tableName,
+          executionType:originalTableObj[i].tableType
+        }
+        resultObj.push(obj)
+      }
+      return resultObj
     },
     displaySQL(returnObj){
       let sql = returnObj.sqlValue;
@@ -617,6 +677,7 @@ export default {
       const treeNode = this.$refs.tree.getCurrentNode()
       treeNode.children.push(newChild)
       this.modelDetails.push({ id: 'rel' + this.modelDetailIndex, data: [] })
+      this.newRelInfoValue = newChild
     },
     /**
      * 创建过滤条件显示
@@ -636,6 +697,7 @@ export default {
       const treeNode = this.$refs.tree.getCurrentNode()
       treeNode.children.push(newChild)
       this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex, data: [] })
+      this.newFilterShowValue = newChild
     },
     /**
      * 清空界面数据
@@ -763,9 +825,10 @@ export default {
       // region 反显SQL显示
       let paramObj = this.changeParamDataFormat(model.parammModelRel,2)
       let returnObj = {};
-      returnObj.params = paramObj.arr;
-      returnObj.sqlValue = this.form.sqlValue;
-      this.displaySQL(returnObj);
+      returnObj.params = paramObj.arr
+      this.sqlEditorParamObj = paramObj
+      returnObj.sqlValue = this.form.sqlValue
+      this.displaySQL(returnObj)
       // endregion
       // region 反显参数默认值
       this.paramData = model.parammModelRel

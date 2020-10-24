@@ -93,12 +93,6 @@ var paramIdDivArr = []
 var modelChartSetup = {}
 
 /**
- * 模型里面所用到的数据表 在SQL执行完成之后直接带出来
- * @type {*[]}
- */
-var modelOriginalTable = [];
-
-/**
  * sql草稿对象
  * @type {{}}
  */
@@ -190,7 +184,6 @@ export function initVariable(){
   paramDivArr = []
   paramIdDivArr = []
   modelChartSetup = {}
-  modelOriginalTable = [];
   sqlDraftObj = undefined;
 }
 /**
@@ -273,7 +266,7 @@ export function initSQLEditor(textarea, relTableMap) {
       }
     }
     // 如果是粘贴操作
-    if (changeObj.origin === 'paste' && paramObj && paramObj.arr.length > 0) {
+    if (changeObj.origin === 'paste' && paramObj && paramObj.arr != undefined && paramObj.arr.length > 0) {
       var hasPaste = false
       for (var i = 0; i < paramObj.arr.length; i++) {
         if (changeText.indexOf(paramObj.arr[i].id) != -1) { // 如果粘贴的是已含有的参数
@@ -1343,12 +1336,7 @@ export function getSaveInfo(){
   var returnObj = {
     sqlValue : editorObj.getValue(),
     params : [],
-    flag: $("#flag").val(),
-    flag2:$("#flag2").val(),
-    InfoFlag : $("#InfoFlag").text(),
-    outColumn : $("#outColumn").val(),
-    modelChartSetup:modelChartSetup,
-    modelOriginalTable:modelOriginalTable
+    modelChartSetup:modelChartSetup
   };
   for(var i=0; i<paramDivArr.length; i++){
     if(paramDivArr[i].opt === 1){//如果当前参数有效
@@ -1511,13 +1499,40 @@ export function useSql(returnObj){
  * 获取sql
  */
 export function getSql(){
+  var result = {};
+  var isAllExecute = false;
   var selText = editorObj.getSelection();
   //如果选中执行等于全部待执行SQL或者没有选中直接执行SQL 则视为满足模型生成条件第一条 即：必须将SQL编译器的内容全部执行才可以保存模型结果 flag为控制标识
   if($.trim(selText) === "" || selText === editorObj.getValue()){
     selText = editorObj.getValue();
+    isAllExecute = true
   }
-  return selText;
+  result.isAllExecute = isAllExecute;
+  result.sql = selText;
+  return result;
 }
+
+//校验sql 只返回true或者false
+ export function verifySql(){
+  var selText = editorObj.getSelection();
+  if($.trim(selText) === ""){
+    selText = editorObj.getValue();
+  }
+  if(paramObj && Object.keys(paramObj).length > 0){
+    var arr = paramObj.arr;
+    for(var i=0;i<arr.length; i++){
+      selText = selText.replace(arr[i].id,arr[i].name+"_rpm_JL");
+    }
+  }
+  var data = {sqls:selText};
+    return request({
+      baseURL: analysisUrl,
+      url: "/SQLEditorController/checkSql",
+      method: 'post',
+      data
+    })
+}
+
 /**
  * 执行SQL
  */
@@ -1557,13 +1572,23 @@ export function executeSQL(){
     var data = {
       sqls:selText
     };
-    request({
+    return request({
       baseURL: analysisUrl,
       url: '/SQLEditorController/executeSql',
       method: 'post',
       data
-    }).then(result=>{})
+    })
   }else{
     alert('带参数的sql暂不支持');
   }
+}
+
+/**
+ * 编辑模型
+ * @param sql 要编辑的sql
+ * @param paramObj 参数对象
+ */
+export function editorSql(sql,paramObj){
+  editorObj.setValue(sql)
+  replaceParam(paramObj)
 }

@@ -27,6 +27,7 @@
                 <el-option label="模型1" value="1" />
                 <el-option label="模型2" value="2" />
               </el-select>
+              <el-input></el-input>
             </el-form-item>
             <div ref="relModelTableDiv" style="display: none">
               <el-button type="primary" size="mini" style="float: right" @click="addRelFilter(1)">添加</el-button>
