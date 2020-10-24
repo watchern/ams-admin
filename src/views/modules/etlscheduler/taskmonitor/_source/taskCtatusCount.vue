@@ -3,7 +3,7 @@
     <div v-show="!msg">
       <div v-spin="isSpin" class="data-area" style="height: 430px;">
         <div class="col-md-7">
-          <div id="task-status-pie" style="height:260px;margin-top: 100px;" />
+          <div id="task-status-pie" style="height:260px;margin-top: 10px;" />
         </div>
         <div class="col-md-5">
           <div class="table-small-model">
@@ -17,7 +17,7 @@
                 <td><span>{{ $index+1 }}</span></td>
                 <td>
                   <span>
-                    <a href="javascript:" :class="searchParams.projectId ?'links':''" @click="searchParams.projectId && _goTask(item.key)">{{ item.value }}</a>
+                    <a href="javascript:" :class="searchParams.projectId ?'links':''" @click="handleSchedule(item.key)">{{ item.value }}</a>
                   </span>
                 </td>
                 <td><span class="ellipsis" style="width: 98%;" :title="item.key">{{ item.key }}</span></td>
@@ -63,6 +63,13 @@ export default {
           startTimeEnd: this.searchParams.startTimeEnd
         }
       })
+    },
+    handleSchedule(name) {
+      this.$router.push({ path: '/etlscheduler/taskinstance', name: 'taskinstance', params: {
+        status: JSON.stringify(_.find(stateType, ['label', name]).value),
+        startTimeStart: this.searchParams.startTimeStart,
+        startTimeEnd: this.searchParams.startTimeEnd
+      }})
     },
     _handleTaskCtatus(res) {
       const data = res.data.taskCountDtos

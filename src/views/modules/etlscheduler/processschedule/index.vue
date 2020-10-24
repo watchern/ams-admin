@@ -42,11 +42,11 @@
         :show-file-list="false"
         style="display: inline-block; padding-left: 10px"
       >
-        <el-button type="primary" class="oper-btn" icon="el-icon-upload2" title="导入">导入</el-button>
+        <el-button type="primary" class="oper-btn" icon="el-icon-upload2" title="导入"></el-button>
       </el-upload>
-      <el-menu style="display: inline-block; padding-left: 10px">
+    <span style="display: inline-block; padding-left: 10px">
         <el-button type="primary" class="oper-btn" icon="el-icon-download" title="下载流程模板" @click="dialogFormVisible1 = true" />
-      </el-menu>
+     </span>
     </div>
     <!-- <el-button
         type="primary"
@@ -234,14 +234,13 @@
           v-for="(item, index) in distinctParamList"
           :key="item.paramUuid"
           :label="item.param.paramName"
-          prop="item"
-          :rules="{
-            required: true, message: '请输入参数值', trigger: 'change'
-          }">
+          :rules="{required: true, message: '请输入参数值', trigger: 'change'}"
+          >
           <el-input
             v-model="item.param.defaultValue"
             class="propwidth"
             :disabled="disableUpdate"
+            @blur="changeParamValue(item.param.defaultValue,item.param.paramName )"
           />
         </el-form-item>
         <el-form-item label="排序号" prop="processInstancePriority">
@@ -250,15 +249,9 @@
             class="propwidth"
             placeholder="请输入排序号"
             :disabled="disableUpdate"
-            @blur="inputprocessInstancePriority(temp.processInstancePriority)"
+            type="number"
           />
         </el-form-item>
-          <el-alert
-            title="排序号请输入数字类型"
-            type="error"
-            v-if="inputOrder"
-            >
-          </el-alert>
         <!-- <el-form-item label="状态" prop="status">
           <el-select v-model="temp.status" placeholder="请选择状态">
             <el-option label="启用" :value="1" />
@@ -511,7 +504,6 @@ export default {
       paramList: [],
       distinctParamList: [],
       isLoading: false,
-      inputOrder: false,
       //  查询任务流程
       options: [],
       processParam: {
@@ -671,6 +663,13 @@ export default {
             message: '请填写开始执行日期',
             trigger: 'change'
           }
+        ],
+        defaultValue: [
+          {
+            required: true,
+            message: '请输入参数值',
+            trigger: 'change'
+          }
         ]
       },
       downloadLoading: false
@@ -755,12 +754,13 @@ export default {
     }
   },
   methods: {
-    // 校验排序号类型是否为数字类型
-    inputprocessInstancePriority(value) {
-        if(value !== '') {
-          if(isNaN(value)){
-         this.inputOrder = true
-        }
+    // 
+    changeParamValue(value, name) {
+      if(value == ''){
+          this.$message({
+          message: '请为参数名称【' + name + '】赋值',
+          type: 'warning'
+        })
       }
     },
     findSchedule(data) {
@@ -1289,5 +1289,9 @@ export default {
 }
 .buttonText {
   color: #409eff;
+}
+.el-popover{
+  width: 60%;
+  overflow: auto;
 }
 </style>
