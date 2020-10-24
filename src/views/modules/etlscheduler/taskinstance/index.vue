@@ -4,6 +4,7 @@
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
+        :query-default="queryDefault"
         @submit="getList"
       />
     </div>
@@ -31,15 +32,15 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p style="text-align:center">{{ statusList[scope.row.status===null? 6 : scope.row.status-1].name }}</p>
+            <p style="text-align:center">{{ statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].name }}</p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色 -->
                   <i
-                    :class="statusList[scope.row.status===null? 6 : scope.row.status-1].unicode"
-                    :style="{color: statusList[scope.row.status===null? 6 : scope.row.status-1].color}"
+                    :class="statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].unicode"
+                    :style="{color: statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].color}"
                   />
                 </a>
               </el-tag>
@@ -96,8 +97,10 @@
         label="共耗时"
         align="center"
         prop="time"
-        :formatter="formatterTime"
-      />
+      >
+        <template slot-scope="scope">
+          {{ scope.row.time | timeFilter }}
+        </template></el-table-column>
     </el-table>
     <pagination
       v-show="total>0"
@@ -113,8 +116,8 @@
       <el-col class="logtype">
         {{ task!=null ? task.name : null }}
       </el-col>
-      <el-col class="logtype" style="font-size: 13px;">
-        {{ task != null ? '耗时：'+ task.time/1000 + ' 秒': '' }}
+      <el-col v-if="task != null" class="logtype" style="font-size: 13px;">
+        耗时 {{ task != null ? task.time: 0 | timeFilter }}
       </el-col>
       <el-card style="padding-bottom: 3%;margin-top:10px">
         <!-- <el-col class="logtype">
@@ -149,12 +152,29 @@ import QueryField from '@/components/Ace/query-field/index'
 
 export default {
   components: { Pagination, QueryField },
+  filters: {
+    timeFilter(value) {
+      const time = value
+      if (time === null || time === '' || time === 0) {
+        return 0 + '秒'
+      } else {
+        if (time / 1000 >= 0 && time / 1000 < 60) {
+          return (time / 1000).toFixed(1) + '秒'
+        } else if (time / 1000 >= 60 && time / 1000 < 3600) {
+          return (time / 60000).toFixed(1) + '分'
+        } else if (time / 1000 > 3600) {
+          return (time / 3600000).toFixed(1) + '时'
+        }
+      }
+    }
+  },
   data() {
     return {
       tableKey: 'taskInstanceUuid',
       list: null,
       total: 0,
       listLoading: false,
+      queryDefault: {},
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '流程实例名称', name: 'name', type: 'text', value: '' },
@@ -165,8 +185,10 @@ export default {
             { name: '等待文件中', value: '2' },
             { name: '等待依赖任务', value: '3' },
             { name: '执行中', value: '4' },
-            { name: '执行完成', value: '5' },
-            { name: '执行失败', value: '6' }],
+            { name: '暂停中', value: '5' },
+            { name: '已取消', value: '6' },
+            { name: '执行完成', value: '7' },
+            { name: '执行失败', value: '8' }],
           default: '1'
         },
         { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
@@ -174,13 +196,13 @@ export default {
       statusList: [
         {
           value: 1,
-          name: '等待执行',
+          name: '等待中',
           unicode: 'el-icon-s-help',
           color: '#f9be0a'
         },
         {
           value: 2,
-          name: '等待文件',
+          name: '等待文件中',
           unicode: 'el-icon-document',
           color: '#f9be0a'
         },
@@ -198,12 +220,24 @@ export default {
         },
         {
           value: 5,
-          name: '执行成功',
+          name: '暂停中',
           unicode: 'el-icon-video-pause',
           color: '#409eff'
         },
         {
           value: 6,
+          name: '已取消',
+          unicode: 'el-icon-circle-close',
+          color: '#666666'
+        },
+        {
+          value: 7,
+          name: '执行完成',
+          unicode: 'el-icon-finished',
+          color: '#95F204'
+        },
+        {
+          value: 8,
           name: '执行失败',
           unicode: 'el-icon-error',
           color: 'red'
@@ -284,7 +318,20 @@ export default {
   watch: {
   },
   created() {
-    this.getList()
+    // this.select.startTimeStart = this.$route.params.startTimeStart
+    // this.select.startTimeEnd = this.$route.params.startTimeEnd
+    // this.select.status = this.$route.params.stateType
+    // const condition = {
+    //   startTimeStart: JSON.stringify(this.$route.query.startTimeStart),
+    //   startTimeEnd: JSON.stringify(this.$route.query.startTimeEnd),
+    //   status: JSON.stringify(this.$route.query.stateType)
+    // }
+    // console.log(condition)
+
+    if (this.$route.params instanceof Object) {
+      this.queryDefault = this.$route.params
+    }
+    this.getList(this.queryDefault)
   },
   methods: {
     getList(query) {
@@ -322,21 +369,6 @@ export default {
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
-    },
-    // 格式化耗时
-    formatterTime(data) {
-      const time = data.time
-      if (time === null || time === '' || time === 0) {
-        return 0 + '秒'
-      } else {
-        if (time / 1000 >= 0 && time / 1000 < 60) {
-          return (time / 1000).toFixed(1) + '秒'
-        } else if (time / 1000 >= 60 && time / 1000 < 3600) {
-          return (time / 60000).toFixed(1) + '分'
-        } else if (time / 1000 > 3600) {
-          return (time / 3600000).toFixed(1) + '时'
-        }
-      }
     }
   }
 }

@@ -3,7 +3,7 @@
     <div v-show="!msg">
       <div v-spin="isSpin" class="data-area" style="height: 430px;">
         <div class="col-md-7">
-          <div id="process-state-pie" style="height:260px;margin-top: 100px;" />
+          <div id="process-state-pie" style="height:260px;margin-top: 10px;" />
         </div>
         <div class="col-md-5">
           <div class="table-small-model">
@@ -15,7 +15,7 @@
               </tr>
               <tr v-for="(item,$index) in processStateList" :key="$index">
                 <td><span>{{ $index+1 }}</span></td>
-                <td><span><a href="javascript:" :class="searchParams.projectId ?'links':''" @click="searchParams.projectId && _goProcess(item.key)">{{ item.value }}</a></span></td>
+                <td><span><a href="javascript:" :class="searchParams.projectId ?'links':''" @click="handleProcess(item.key)">{{ item.value }}</a></span></td>
                 <td><span class="ellipsis" style="width: 98%;" :title="item.key">{{ item.key }}</span></td>
               </tr>
             </table>
@@ -60,6 +60,13 @@ export default {
           startTimeEnd: this.searchParams.startTimeEnd
         }
       })
+    },
+    handleProcess(name) {
+      this.$router.push({ path: '/etlscheduler/processinstance', name: 'processinstance', params: {
+        status: JSON.stringify(_.find(stateType, ['label', name]).value),
+        startTimeStart: this.searchParams.startTimeStart,
+        startTimeEnd: this.searchParams.startTimeEnd
+      }})
     },
     _handleProcessState(res) {
       const data = res.data.taskCountDtos
@@ -156,6 +163,9 @@ export default {
         }
       }
     }
+  }
+  a{
+     color:#2d8cf0;
   }
 }
 
