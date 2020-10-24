@@ -11,6 +11,8 @@
       <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
       <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="handleUpdate()">修改</el-button>
       <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="handleDelete()">删除</el-button>
+      <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="bindRes()">绑定资源</el-button>
+      <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="authentic()">授权</el-button>
     </div>
     <el-table
       :key="tableKey"
@@ -26,7 +28,7 @@
       <el-table-column type="selection" width="55" />
       <el-table-column label="数据角色名称" width="200px" align="center" prop="dataRoleName" />
       <el-table-column label="创建时间" width="300px" align="center" :formatter="formatCreateTime" prop="createTime" />
-      <el-table-column label="授权方式" width="200px" align="center" :formatter="formatType" prop="authenType" />
+      <el-table-column label="授权方式" width="200px" align="center" prop="authenType" />
       <el-table-column label="数据筛选器状态" prop="filterState" style="width = 200px" />
       <el-table-column label="数据有效期" prop="timeDuring" :formatter="formatDuring" style="width = 400px" />
     </el-table>
@@ -244,12 +246,12 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    formatType(row, column) {
-      var data = getDictList('004001')
-      // 根据row.authenType筛选出基础数据 将name值返显
-      var getOne = data.filter(obj => { return row.authenType === obj.codeValue })
-      return getOne[0].codeName
-    },
+    // formatType(row, column) {
+    //   var data = getDictList('004001')
+    //   // 根据row.authenType筛选出基础数据 将name值返显
+    //   var getOne = data.filter(obj => { return row.authenType === obj.codeValue })
+    //   return getOne[0].codeName
+    // },
     formatCreateTime(row, column) {
       // 拼接日期规格为YYYY-MM-DD hh:mm:ss
       var createTime = new Date(row.createTime)
@@ -302,6 +304,16 @@ export default {
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
+    },
+
+    authentic() {
+
+    },
+    bindRes() {
+      var roleUuid = this.selections[0].dataRoleUuid
+      this.$router.push({
+        path: '/data/roleRes/' + roleUuid
+      })
     }
   }
 }

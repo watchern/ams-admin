@@ -74,7 +74,7 @@ export function getTaskLink(id) {
   })
 }
 
-// 查询任务环节日志
+// 根据流程实例查询任务环节日志
 export function findTaskLogs(id) {
   return request({
     baseURL: baseURL,

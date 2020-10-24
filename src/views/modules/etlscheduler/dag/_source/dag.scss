@@ -1,6 +1,7 @@
 .dag-model {
   background: url("../img/dag_bg.png");
-  height: calc(100vh - 100px);
+  height: calc(100vh - 75px);
+  width: calc(100vw - 101px);
 
   ::selection {
     background: transparent;
@@ -79,6 +80,7 @@
     background: #F2F3F7;
     float: left;
     border-radius: 0 0 0 3px;
+    // padding-top: 25px;
 
     .title {
       height: 40px;
@@ -222,19 +224,20 @@
     }
 
     .dag-container {
-      height: calc(100% - 20px);
+      height: calc(100% - 30px);
       // height: calc(100% - 0px);
       overflow-x: auto;
 
       &::-webkit-scrollbar {
         width: 9px;
+        height: 9px;
       }
 
       ;
       // TODO
       // overflow-y: auto;
       // width: 1350px;
-      width: calc(100vw - 210px);
+      width: calc(100vw - 150px);
     }
   }
 

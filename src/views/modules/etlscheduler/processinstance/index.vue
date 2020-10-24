@@ -1,5 +1,5 @@
 <template>
-  <div class="list-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -11,7 +11,7 @@
       <!-- 跳过指定环节 -->
       <el-button
         type="primary"
-        size="mini"
+        title="跳过指定环节"
         :disabled="skipStatus"
         class="oper-btn"
         icon="el-icon-remove-outline"
@@ -20,7 +20,7 @@
       <!-- 暂停 -->
       <el-button
         type="primary"
-        size="mini"
+        title="暂停"
         :disabled="stopStatus"
         class="oper-btn"
         icon="el-icon-video-pause"
@@ -29,7 +29,7 @@
       <!-- 启动 -->
       <el-button
         type="primary"
-        size="mini"
+        title="启动"
         class="oper-btn"
         icon="el-icon-video-play"
         :disabled="startStatus"
@@ -38,7 +38,7 @@
       <!-- 重新运行 -->
       <el-button
         type="primary"
-        size="mini"
+        title="重新运行"
         class="oper-btn"
         icon="el-icon-refresh-left"
         :disabled="reStartStatus"
@@ -46,8 +46,8 @@
       />
       <!-- 取消 -->
       <el-button
-        type="danger"
-        size="mini"
+        type="primary"
+        title="取消"
         class="oper-btn"
         icon="el-icon-circle-close"
         :disabled="doneStatus"
@@ -120,7 +120,7 @@
       >
         <template slot-scope="scope">
           <!-- 任务参数使用图标进行显示 -->
-          <el-popover trigger="hover" placement="top">
+          <el-popover trigger="hover" placement="top" width="700">
             <p>任务参数:{{ scope.row.taskParams }}</p>
             <div slot="reference" class="name-wrapper">
               <el-tag><i class="el-icon-tickets" /></el-tag>
@@ -135,7 +135,7 @@
         prop="startTime"
       />
       <el-table-column
-        label="停止运行时间"
+        label="结束运行时间"
         width="200px"
         align="center"
         prop="endTime"
@@ -222,7 +222,6 @@
                   v-for="log in logs[task.id]"
                   :key="log.taskLogUuid"
                   :label="log.taskLogUuid"
-                  class="red"
                   :style="{color: logColorList[log.status===null ? 1 : log.status-1].color}"
                   style="margin-top:10px"
                 >
