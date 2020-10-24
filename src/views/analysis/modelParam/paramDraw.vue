@@ -1,0 +1,40 @@
+<template>
+  <div>
+    <form class="form-horizontal">
+      <div class="col-sm-12">
+        <div class="panel-group" id="accordion">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a
+                  data-toggle="collapse"
+                  data-parent="#accordion"
+                  href="#collapse"
+                ></a>
+              </h4>
+            </div>
+            <div id="collapse" class="panel-collapse collapse in">
+              <div id="paramCom" class="panel-body" style="padding: 10px 0">123123123123</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</template>
+<script>
+import { initParamHtml } from "@/api/analysis/auditParam";
+export default {
+    data(){
+        return{
+            
+        }
+    },
+    methods:{
+      initParamHtmlSS(sql,paramsArr,name,modelId){
+        alert(123);
+        initParamHtml(sql,paramsArr,name,modelId)
+      }
+    }
+}
+</script>

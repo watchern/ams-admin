@@ -8,7 +8,7 @@
           class="col-sm-2 leftCon"
           style="overflow: auto; height: 100vh"
         >
-          <myZtree></myZtree>
+          <!-- <myZtree></myZtree> -->
         </div>
         <div id="rightPart" class="col-sm-10" style="height: 100vh">
           <QueryField
@@ -26,7 +26,9 @@
             </div>
           </el-dialog>
           <el-row>
-            <el-button type="primary" @click="test">渲染参数界面</el-button>
+            <el-button type="primary" @click="openParamDraw"
+              >渲染参数界面</el-button
+            >
             <el-button type="primary" @click="addVisible = true"
               >新增</el-button
             >
@@ -35,6 +37,9 @@
             <el-button type="primary" @click="disableParam">停用</el-button>
             <el-button type="primary" @click="deleteParam">删除</el-button>
           </el-row>
+          <el-dialog title="参数渲染" :visible.sync="dialogFormVisible">
+            <paramDraw></paramDraw>
+          </el-dialog>
           <el-table
             id="table"
             :key="tableKey"
@@ -97,11 +102,13 @@
 import QueryField from "@/components/Ace/query-field/index";
 import Pagination from "@/components/Pagination/index";
 import myZtree from "@/views/analysis/modelParam/myZtree";
+import paramDraw from "@/views/analysis/modelParam/paramDraw";
 import {
   getListByAmmParam,
   updateEnabled,
   updateDisenable,
   deleteParams,
+  initParamHtml,
 } from "@/api/analysis/auditParam";
 import addParamWindow from "@/views/analysis/modelParam/addParamWindow";
 export default {
@@ -110,6 +117,7 @@ export default {
     Pagination,
     QueryField,
     addParamWindow,
+    paramDraw,
   },
   created() {
     this.getLikeList();
@@ -155,6 +163,7 @@ export default {
       selectedObj: [],
       selectedIds: [],
       addVisible: false,
+      dialogFormVisible: false,
     };
   },
   methods: {
@@ -299,16 +308,44 @@ export default {
         });
       }
     },
-    test(){
-      let obj = [{"id":"{#C91B89F3705000014C91C82013231830#}","copyParamId":"C91B89F3705000014C91C82013231830","moduleParamId":"4028c3817038f8e5017038f980eb0001","allowedNull":"1","name":"kmh"}];
-      let sql = "select * from AA_MODEL WHERE MODEL_UUID = '{#C91B89F3705000014C91C82013231830#}'"
-      let paramsArr = JSON.parse(obj)
-      console.log(JSON.stringify(parArrs))
-      console.log(selText)
-      createParamHtml(sql,paramsArr,"请输入参数值","",function (returnObj) {
-          console.log(returnObj)
+    test() {
+      let obj = [
+        {
+          id: "{#C91B89F3705000014C91C82013231830#}",
+          copyParamId: "C91B89F3705000014C91C82013231830",
+          moduleParamId: "4028c3817038f8e5017038f980eb0001",
+          allowedNull: "1",
+          name: "kmh",
+        },
+      ];
+      let sql =
+        "select * from AA_MODEL WHERE MODEL_UUID = '{#C91B89F3705000014C91C82013231830#}'";
+      let paramsArr = JSON.parse(obj);
+      console.log(JSON.stringify(parArrs));
+      console.log(selText);
+      createParamHtml(sql, paramsArr, "请输入参数值", "", function (returnObj) {
+        console.log(returnObj);
       });
-    }
+    },
+    openParamDraw() {
+      console.log(11111111111);
+      let obj = [
+        {
+          id: "{#C91B89F3705000014C91C82013231830#}",
+          copyParamId: "C91B89F3705000014C91C82013231830",
+          moduleParamId: "4028c3817038f8e5017038f980eb0001",
+          allowedNull: "1",
+          name: "kmh",
+        },
+      ];
+      let sql =
+        "select * from AA_MODEL WHERE MODEL_UUID = '{#C91B89F3705000014C91C82013231830#}'";
+      let paramsArr = obj;
+      console.log(222222222222);
+      this.dialogFormVisible = true;
+      initParamHtml(sql, obj, "你好呀", null); //前后加遮罩
+      console.log(3333333333333);
+    },
   },
 };
 </script>
