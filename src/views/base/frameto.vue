@@ -1,6 +1,7 @@
 <template>
-  <div>this is frame to</div>
-  <iframe id="mainContentFrame" class="main-frame" :src="frameUrl" />
+  <div class="app-container">
+    <iframe id="mainContentFrame" class="main-frame" :src="frameUrl" />
+  </div>
 </template>
 
 <script>
@@ -13,6 +14,9 @@ export default {
     frameUrl: function() {
       return unescape(this.$route.fullPath.replace('/frameto?url=', ''))
     }
+  },
+  created() {
+    console.log(333)
   }
 }
 </script>
