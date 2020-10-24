@@ -199,10 +199,10 @@ export default {
     getUserRes()
       .then(response => {
         console.log(response)
-        response.data.application.forEach(app => {
+        response.data.application.forEach((app, index) => {
           // 设置左侧应用栏数据
           this.applications.push({
-            img: require('../style/images/icon1.png'),
+            img: require(`../style/images/icon${index + 1}.png`),
             name: app.name,
             id: app.id
           })
@@ -214,7 +214,7 @@ export default {
             menuList.push({
               id: menu.id,
               name: menu.name,
-              path: menu.routepath
+              path: menu.src
             })
           })
           if (!this.menugroup[grp.appuuid]) {

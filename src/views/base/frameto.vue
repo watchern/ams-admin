@@ -12,7 +12,7 @@ export default {
   },
   computed: {
     frameUrl: function() {
-      return unescape(this.$route.fullPath.replace('/frameto?url=', ''))
+      return unescape(this.$route.fullPath.replace('/base/frameto?url=', ''))
     }
   },
   created() {
