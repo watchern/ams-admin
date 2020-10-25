@@ -2,37 +2,53 @@
   <div class="page-container">
     <div class="filter-container">
       <!-- 查询条件区域 -->
-      <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
+      <QueryField ref="queryfield" :form-data="queryFields" :query-default="queryDefault" @submit="getList" />
     </div>
-    <!-- <div> -->
-    <!-- <el-button type="primary" size="mini" @click="handleCreate()"
-        >添加</el-button
-      >
-      <el-button
-        type="primary"
-        size="mini"
-        :disabled="selections.length !== 1"
-        @click="handleUpdate()"
-        >修改</el-button
-      >
-      <el-button
-        type="danger"
-        size="mini"
-        :disabled="selections.length === 0"
-        @click="handleDelete()"
-        >删除</el-button
-      > -->
+    <!-- 操作按钮 -->
     <div style="float: left;">
       <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
-      <el-button type="primary" class="oper-btn edit" :disabled="editStatus" title="修改" @click="handleUpdate()" />
-      <el-button type="primary" class="oper-btn delete" :disabled="deleteStatus" title="删除" @click="handleDelete()" />
-      <el-button type="primary" class="oper-btn" icon="el-icon-video-play" :disabled="startStatus" title="启用" @click="handleUse()" />
-      <el-button type="primary" class="oper-btn" icon="el-icon-video-pause" :disabled="stopStatus" title="停用" @click="handleBear()" />
-      <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length != 1" title="复制" @click="copyData()" />
+      <el-button
+        type="primary"
+        class="oper-btn edit"
+        :disabled="editStatus"
+        title="修改"
+        @click="handleUpdate()"
+      />
+      <el-button
+        type="primary"
+        class="oper-btn delete"
+        :disabled="deleteStatus"
+        title="删除"
+        @click="handleDelete()"
+      />
+      <el-button
+        type="primary"
+        class="oper-btn"
+        icon="el-icon-video-play"
+        :disabled="startStatus"
+        title="启用"
+        @click="handleUse()"
+      />
+      <el-button
+        type="primary"
+        class="oper-btn"
+        icon="el-icon-video-pause"
+        :disabled="stopStatus"
+        title="停用"
+        @click="handleBear()"
+      />
+      <el-button
+        type="primary"
+        class="oper-btn"
+        icon="el-icon-document-copy"
+        :disabled="selections.length != 1"
+        title="复制"
+        @click="copyData()"
+      />
       <el-upload
         multiple
         class="upload-demo"
-        action=""
+        action
         :on-remove="handleRemove"
         :headers="headers"
         :http-request="uploadFile"
@@ -42,54 +58,18 @@
         :show-file-list="false"
         style="display: inline-block; padding-left: 10px"
       >
-        <el-button type="primary" class="oper-btn" icon="el-icon-upload2" title="导入"></el-button>
+        <el-button type="primary" class="oper-btn" icon="el-icon-upload2" title="导入" />
       </el-upload>
-    <span style="display: inline-block; padding-left: 10px">
-        <el-button type="primary" class="oper-btn" icon="el-icon-download" title="下载流程模板" @click="dialogFormVisible1 = true" />
-     </span>
+      <span style="display: inline-block; padding-left: 10px">
+        <el-button
+          type="primary"
+          class="oper-btn"
+          icon="el-icon-download"
+          title="下载流程模板"
+          @click="dialogFormVisible1 = true"
+        />
+      </span>
     </div>
-    <!-- <el-button
-        type="primary"
-        size="mini"
-        :disabled="startStatus"
-        @click="handleUse()"
-        >启用</el-button
-      >
-      <el-button
-        type="danger"
-        size="mini"
-        :disabled="stopStatus"
-        @click="handleBear()"
-        >禁用</el-button
-      >
-      <el-button
-        type="danger"
-        size="mini"
-        :disabled="selections.length != 1"
-        @click="copyData()"
-        >复制</el-button
-      > -->
-    <!-- <el-upload
-        multiple
-        class="upload-demo"
-        action=""
-        :on-remove="handleRemove"
-        :headers="headers"
-        :http-request="uploadFile"
-        :limit="3"
-        :auto-upload="true"
-        :on-change="handleFileChange"
-        :show-file-list="false"
-        style="display: inline-block; padding-left: 10px"
-      >
-        <el-button size="mini" type="primary">导入</el-button>
-      </el-upload> -->
-    <!-- <el-menu style="display: inline-block; padding-left: 10px">
-        <el-button type="primary" size="mini" @click="dialogFormVisible1 = true"
-          >下载流程模板</el-button
-        >
-      </el-menu> -->
-    <!-- </div> -->
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -102,16 +82,13 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column
-        label="调度任务名称"
-        width="200px"
-        align="center"
-        prop="scheduleName"
-      >
+      <el-table-column label="调度任务名称" width="200px" align="center" prop="scheduleName">
         <template slot-scope="scope">
-          <a class="buttonText" @click="findSchedule(scope.row)">{{
-            scope.row.scheduleName
-          }}</a>
+          <a class="buttonText" @click="findSchedule(scope.row)">
+            {{
+              scope.row.scheduleName
+            }}
+          </a>
         </template>
       </el-table-column>
       <el-table-column
@@ -121,54 +98,33 @@
         align="center"
         prop="processDefinitionId"
       />
-      <el-table-column
-        label="任务流程"
-        width="200px"
-        align="center"
-        prop="processDefName"
-      />
-      <el-table-column
-        label="作业周期"
-        align="center"
-        prop="crontab"
-        :formatter="formatCron"
-      />
-      <el-table-column
-        label="参数"
-        width="70px"
-        align="center"
-        prop="taskParamsList"
-      >
+      <el-table-column label="任务流程" width="200px" align="center" prop="processDefName" />
+      <el-table-column label="作业周期" align="center" prop="crontab" :formatter="formatCron" />
+      <el-table-column label="参数" width="70px" align="center" prop="taskParamsList">
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <p>任务参数:{{ scope.row.taskParams }}</p>
             <div slot="reference" class="name-wrapper">
-              <el-tag><i class="el-icon-tickets" /></el-tag>
+              <el-tag>
+                <i class="el-icon-tickets" />
+              </el-tag>
             </div>
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column
-        label="依赖任务环节"
-        align="center"
-        prop="dependTaskInfo"
-        width="120px"
-      >
+      <el-table-column label="依赖任务环节" align="center" prop="dependTaskInfo" width="120px">
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <p>{{ scope.row.dependTaskInfo }}</p>
             <div slot="reference" class="name-wrapper">
-              <el-tag><i class="el-icon-tickets" /></el-tag>
+              <el-tag>
+                <i class="el-icon-tickets" />
+              </el-tag>
             </div>
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column
-        label="排序号"
-        width="80px"
-        align="center"
-        prop="processInstancePriority"
-      />
+      <el-table-column label="排序号" width="80px" align="center" prop="processInstancePriority" />
       <el-table-column
         label="状态"
         width="100px"
@@ -176,12 +132,7 @@
         prop="status"
         :formatter="formatStatus"
       />
-      <el-table-column
-        label="最新修改人"
-        width="100px"
-        align="center"
-        prop="updateUserName"
-      />
+      <el-table-column label="最新修改人" width="100px" align="center" prop="updateUserName" />
       <el-table-column label="修改时间" align="center" prop="updateTime" width="200px" />
     </el-table>
     <pagination
@@ -235,7 +186,7 @@
           :key="item.paramUuid"
           :label="item.param.paramName"
           :rules="{required: true, message: '请输入参数值', trigger: 'change'}"
-          >
+        >
           <el-input
             v-model="item.param.defaultValue"
             class="propwidth"
@@ -257,7 +208,7 @@
             <el-option label="启用" :value="1" />
             <el-option label="停用" :value="0" />
           </el-select>
-        </el-form-item> -->
+        </el-form-item>-->
         <el-form-item label="作业周期范围" prop="startTime">
           <el-col :span="11">
             <el-date-picker
@@ -342,7 +293,6 @@
                     :style="{
                       'pointer-events': disableUpdate === true ? 'none' : '',
                     }"
-                    
                   >
                     <span
                       v-if="el.dependItemList.length"
@@ -376,15 +326,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button
-          v-if="!closeStatus"
-          @click="dialogFormVisible = false"
-        >取消</el-button>
-        <el-button
-          v-if="closeStatus"
-          type="primary"
-          @click="dialogFormVisible = false"
-        >关闭</el-button>
+        <el-button v-if="!closeStatus" @click="dialogFormVisible = false">取消</el-button>
+        <el-button v-if="closeStatus" type="primary" @click="dialogFormVisible = false">关闭</el-button>
         <el-button
           v-if="!closeStatus"
           type="primary"
@@ -393,12 +336,7 @@
       </div>
     </el-dialog>
     <el-dialog title="下载流程模板" :visible.sync="dialogFormVisible1">
-      <el-form
-        :rules="rules"
-        :model="temp"
-        label-position="right"
-        label-width="80px"
-      >
+      <el-form :rules="rules" :model="temp" label-position="right" label-width="80px">
         <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="processDefinitionId">
           <el-select
@@ -463,24 +401,23 @@ export default {
   },
   mixins: [disabledState],
   props: {
+    // eslint-disable-next-line vue/require-default-prop
     backfillItem: Object
   },
   data() {
     return {
       // 开始时间大于今天
       startTime: {
-        disabledDate: time => {
+        disabledDate: (time) => {
           if (this.temp.endTime) {
-            return (
-              time.getTime() > new Date(this.temp.endTime).getTime()
-            )
+            return time.getTime() > new Date(this.temp.endTime).getTime()
           } else {
             return time.getTime() < Date.now()
           }
         }
       },
       endTime: {
-        disabledDate: time => {
+        disabledDate: (time) => {
           if (this.temp.startTime) {
             return (
               time.getTime() < Date.now() ||
@@ -510,30 +447,31 @@ export default {
         pageNo: 1,
         pageSize: 100,
         condition: {
-          keyword: null
+          keyword: null,
+          status: 1
         }
       },
       // 作业周期格式化
       crontabFormat: [
         {
-          'code': '0 0 0 * * ?',
-          'msg': '每日'
+          code: '0 0 0 * * ?',
+          msg: '每日'
         },
         {
-          'code': '0 0 0 1 * ?',
-          'msg': '每月'
+          code: '0 0 0 1 * ?',
+          msg: '每月'
         },
         {
-          'code': '0 0 0 1 1,4,7,10 ?',
-          'msg': '每季度'
+          code: '0 0 0 1 1,4,7,10 ?',
+          msg: '每季度'
         },
         {
-          'code': '0 0 0 1 1,7 ?',
-          'msg': '每半年'
+          code: '0 0 0 1 1,7 ?',
+          msg: '每半年'
         },
         {
-          'code': '0 0 0 1 1 ?',
-          'msg': '每年'
+          code: '0 0 0 1 1 ?',
+          msg: '每年'
         }
       ],
       loading: false,
@@ -541,6 +479,7 @@ export default {
       list: null,
       total: 0,
       listLoading: false,
+      queryDefault: {},
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         {
@@ -700,7 +639,7 @@ export default {
         this.selections.forEach((r, i) => {
           if (r.status === 1) {
             this.startStatus = true
-           this.deleteStatus = true
+            this.deleteStatus = true
           } else if (r.status === 0) {
             this.stopStatus = true
             this.deleteStatus = false
@@ -712,7 +651,7 @@ export default {
         this.editStatus = true
       }
       if (this.selections.length === 1) {
-            this.selections.forEach((r, i) => {
+        this.selections.forEach((r, i) => {
           if (r.status === 0) {
             this.editStatus = false
           } else if (r.status === 1) {
@@ -732,7 +671,7 @@ export default {
   },
   created() {
     this.getList()
-    this.remoteMethod()
+    this.remoteMethod('')
     const o = this.backfillItem
     const dependentResult = $(`#${o}`).data('dependent-result') || {}
     // Does not represent an empty object backfill
@@ -754,10 +693,10 @@ export default {
     }
   },
   methods: {
-    // 
+    //
     changeParamValue(value, name) {
-      if(value == ''){
-          this.$message({
+      if (value == '') {
+        this.$message({
           message: '请为参数名称【' + name + '】赋值',
           type: 'warning'
         })
@@ -776,12 +715,12 @@ export default {
         // if (resp.data.dependTaskInfoList !== null) {
         this.dependTaskList = resp.data.dependTaskInfoList
         // } else {
-        //   this.dependTaskList = [];
+        //   this.dependTaskList = []
         // }
-        // if (resp.data.taskParamsList !== null && resp.data.taskParamsList !== "") {
+        // if (resp.data.taskParamsList !== null && resp.data.taskParamsList !== '') {
         this.paramList = resp.data.taskParamsList
         // } else {
-        //   this.paramList = [];
+        //   this.paramList = []
         // }
       })
     },
@@ -794,7 +733,7 @@ export default {
         responseType: 'blob'
       }).then((res) => {
         const filename = decodeURI(
-          res.headers['content-disposition'].split(';')[1].split('=')[1]
+          res.headers['content-disposition'].split('')[1].split('=')[1]
         )
         const blob = new Blob([res.data], {
           type: 'application/octet-stream'
@@ -880,22 +819,26 @@ export default {
         this.paramList = res.data
         // 去重
         const resmap = new Map()
-        this.distinctParamList = this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))
+        this.distinctParamList = this.paramList.filter(
+          (a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1)
+        )
       })
     },
     // 查询任务流程
     remoteMethod(query) {
+      var _self = this
       this.loading = true
       setTimeout(() => {
         this.loading = false
         this.processParam.condition.keyword = query
         findByprocessDef(this.processParam).then((resp) => {
-          this.options = resp.data.records
-          for (var i = 0; i < this.options.length; i++) {
-            if (this.options[i].status == 0) {
-              this.options.pop(i)
-            }
-          }
+          // debugger
+          _self.options = resp.data.records
+          // for (var i = 0; i < this.options.length; i++) {
+          //   if (this.options[i].status === 0) {
+          //     this.options.pop(i)
+          //   }
+          // }
         })
       }, 200)
     },
@@ -989,15 +932,17 @@ export default {
         // if (resp.data.dependTaskInfoList !== null) {
         this.dependTaskList = resp.data.dependTaskInfoList
         // } else {
-        // this.dependTaskList = [];
+        // this.dependTaskList = []
         // }
-        // if (resp.data.taskParamsList !== null && resp.data.taskParamsList !== "") {
+        // if (resp.data.taskParamsList !== null && resp.data.taskParamsList !== '') {
         this.paramList = resp.data.taskParamsList
         //  去重
         const resmap = new Map()
-        this.distinctParamList = this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))
+        this.distinctParamList = this.paramList.filter(
+          (a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1)
+        )
         // } else {
-        // this.paramList = [];
+        // this.paramList = []
         // }
       })
     },
@@ -1009,7 +954,9 @@ export default {
           const tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
             this.getList()
-            const index = this.list.findIndex((v) => v.processSchedulesUuid === this.temp.processSchedulesUuid)
+            const index = this.list.findIndex(
+              (v) => v.processSchedulesUuid === this.temp.processSchedulesUuid
+            )
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -1046,14 +993,14 @@ export default {
       })
       startScheduleStatus(ids.join(','), 1).then((res) => {
         // if (res.data.code == 1000) {
-        //   this.getList();
+        //   this.getList()
         //   this.$notify({
         //     title: "失败",
         //     message: res.data.msg,
         //     type: "error",
         //     duration: 2000,
         //     position: "bottom-right",
-        //   });
+        //   })
         // }
         this.getList()
         this.$notify({
@@ -1167,12 +1114,12 @@ export default {
 </script>
 <style lang="scss" rel="stylesheet/scss">
 .el-tag {
-	background-color: transparent;
-	border-color: transparent;
-	color: #409eff;
+  background-color: transparent;
+  border-color: transparent;
+  color: #409eff;
   font-size: 22px;
   cursor: pointer;
-  }
+}
 .dependence-model {
   margin-top: -10px;
 
@@ -1290,7 +1237,7 @@ export default {
 .buttonText {
   color: #409eff;
 }
-.el-popover{
+.el-popover {
   width: 60%;
   overflow: auto;
 }
