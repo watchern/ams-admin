@@ -14,13 +14,12 @@
                   data-toggle="collapse"
                   data-parent="#accordion"
                   href="#collapse"
-                  >数据表</a
-                >
+                >数据表</a>
               </h4>
             </div>
             <div class="panel-collapse collapse in">
               <div class="panel-body" style="overflow-x: auto">
-                <img id="tableSearchImg" @click="tableTreeSearch" />
+                <img id="tableSearchImg" @click="tableTreeSearch">
                 <input
                   id="dataSearch"
                   name="dataSearch"
@@ -28,7 +27,7 @@
                   class="form-control"
                   autocomplete="off"
                   placeholder="查询"
-                />
+                >
                 <ul id="dataTree" class="ztree" style="overflow: auto" />
               </div>
             </div>
@@ -42,13 +41,12 @@
                   data-toggle="collapse"
                   data-parent="#accordion1"
                   href="#collapse1"
-                  >参数</a
-                >
+                >参数</a>
               </h4>
             </div>
             <div class="panel-collapse collapse in">
               <div class="panel-body" style="overflow-x: auto">
-                <img id="paramSearchImg" @click="paramTreeSearch" />
+                <img id="paramSearchImg" @click="paramTreeSearch">
                 <input
                   id="paramSearch"
                   name="paramSearch"
@@ -56,7 +54,7 @@
                   class="form-control"
                   autocomplete="off"
                   placeholder="查询"
-                />
+                >
                 <ul id="paramTree" class="ztree" style="max-height: 400px" />
               </div>
             </div>
@@ -70,13 +68,12 @@
                   data-toggle="collapse"
                   data-parent="#accordion2"
                   href="#collapse2"
-                  >SQL函数</a
-                >
+                >SQL函数</a>
               </h4>
             </div>
             <div class="panel-collapse collapse in">
               <div class="panel-body" style="overflow-x: auto">
-                <img id="funSearchImg" @click="functionTreeSearch" />
+                <img id="funSearchImg" @click="functionTreeSearch">
                 <input
                   id="sqlSearch"
                   name="sqlSearch"
@@ -84,7 +81,7 @@
                   class="form-control"
                   autocomplete="off"
                   placeholder="查询"
-                />
+                >
                 <ul id="sqlFunTree" class="ztree" />
               </div>
             </div>
@@ -102,22 +99,18 @@
             style="margin-left: 30px; height: 40px; padding-top: 8px"
           >
             <button type="button" class="btn btn-primary" @click="test()">
-              test</button
-            >&nbsp;
+              test</button>&nbsp;
             <button type="button" class="btn btn-primary" @click="sqlFormat()">
-              格式化</button
-            >&nbsp;
+              格式化</button>&nbsp;
             <!-- <button type="button" class="btn btn-primary" onclick="alertVerify()">SQL语法校验</button> -->
             <button type="button" class="btn btn-primary" @click="executeSQL">
-              执行</button
-            >&nbsp;
+              执行</button>&nbsp;
             <button
               type="button"
               class="btn btn-primary"
               @click="openSqlDraftList()"
             >
-              打开SQL</button
-            >&nbsp;
+              打开SQL</button>&nbsp;
             <div class="btn-group">
               <button
                 type="button"
@@ -131,18 +124,16 @@
                 <li>
                   <a
                     href="#"
-                    @click="openSaveSqlDialog(1)"
                     ondragstart="return false;"
-                    >保存</a
-                  >
+                    @click="openSaveSqlDialog(1)"
+                  >保存</a>
                 </li>
                 <li>
                   <a
                     href="#"
-                    @click="openSaveSqlDialog(2)"
                     ondragstart="return false;"
-                    >另存为</a
-                  >
+                    @click="openSaveSqlDialog(2)"
+                  >另存为</a>
                 </li>
               </ul>
             </div>
@@ -161,57 +152,52 @@
                     href="#"
                     ondragstart="return false;"
                     @click="findAndReplace(2)"
-                    >查找</a
-                  >
+                  >查找</a>
                 </li>
                 <li>
                   <a
                     href="#"
                     ondragstart="return false;"
                     @click="findAndReplace(1)"
-                    >替换</a
-                  >
+                  >替换</a>
                 </li>
                 <li>
                   <a
                     href="#"
                     ondragstart="return false;"
                     @click="caseTransformation(1)"
-                    >转大写</a
-                  >
+                  >转大写</a>
                 </li>
                 <li>
                   <a
                     href="#"
                     ondragstart="return false;"
                     @click="caseTransformation(2)"
-                    >转小写</a
-                  >
+                  >转小写</a>
                 </li>
                 <li>
                   <a
                     href="#"
                     ondragstart="return false;"
                     @click="selectSqlNotes()"
-                    >注释选中行</a
-                  >
+                  >注释选中行</a>
                 </li>
                 <li>
                   <a
                     href="#"
                     ondragstart="return false;"
                     @click="selectSqlCancelNotes()"
-                    >取消注释</a
-                  >
+                  >取消注释</a>
                 </li>
               </ul>
             </div>
-            <label id="InfoFlag" style="display: none"
-              >SQL必须全部执行后才可保存</label
-            >
-            <input id="flag" type="hidden" value="false" />
-            <input id="flag2" type="hidden" value="false" />
-            <input id="outColumn" type="hidden" value="" />
+            <label
+              id="InfoFlag"
+              style="display: none"
+            >SQL必须全部执行后才可保存</label>
+            <input id="flag" type="hidden" value="false">
+            <input id="flag2" type="hidden" value="false">
+            <input id="outColumn" type="hidden" value="">
           </div>
           <div
             id="sqlDraft"
@@ -239,16 +225,16 @@
             style="width: 80px; position: absolute; right: 0; top: 15px"
             onclick="maxOpen()"
           >
-            <img id="iconImg" class="iconImg" alt="最大化" />
+            <img id="iconImg" class="iconImg" alt="最大化">
             <span class="iconText">最大化</span>
           </div>
-          <div id="dataShow" v-for="result in resultShow" class="layui-tab-content">
+          <div v-for="result in resultShow" id="dataShow" class="layui-tab-content">
             <childTabs
               ref="childTabsRef"
               :key="result.id"
-              :preValue="currentExecuteSQL"
+              :pre-value="currentExecuteSQL"
               use-type="sqlEditor"
-            ></childTabs>
+            />
           </div>
         </div>
       </div>
@@ -257,7 +243,7 @@
         id="personId"
         type="hidden"
         value="<%=LoginUserInfo.getLoginUserId()%>"
-      />
+      >
       <div id="tableMenu" class="rightMenu">
         <ul>
           <li @click="getSelectSql('tableMenu')">生成SELECT语句</li>
@@ -337,7 +323,7 @@
           name="tableName"
           type="text"
           class="form-control"
-        />
+        >
       </div>
     </div>
     <el-dialog
@@ -347,9 +333,9 @@
       :append-to-body="true"
     >
       <el-form
+        ref="sqlDraftForm"
         :model="sqlDraftForm"
         :rules="sqlDraftFormRules"
-        ref="sqlDraftForm"
       >
         <el-form-item
           label="草稿名称"
@@ -371,17 +357,17 @@
       :append-to-body="true"
       width="50%"
     >
-      <sqlDraftList ref="sqlDraftList"></sqlDraftList>
+      <sqlDraftList ref="sqlDraftList" />
       <div slot="footer" class="dialog-footer">
         <el-button @click="sqlDraftDialog = false">关闭</el-button>
         <el-button type="primary" @click="useSql">使用SQL</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="参数渲染" :visible.sync="dialogFormVisible">
-      <paramDraw ref="paramDrawRef"></paramDraw>
+    <el-dialog title="参数渲染" :visible.sync="dialogFormVisible" :append-to-body="true">
+      <paramDraw ref="paramDrawRef" />
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
-        <el-button type="primary" @click="">确定</el-button>
+        <el-button type="primary" @click="replaceNodeParam">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -415,90 +401,91 @@ import {
   verifySql,
   editorSql,
   startExecuteSql
-} from "@/api/analysis/SQLEditor/SQLEditor";
-import sqlDraftList from "@/views/analysis/SQLEditor/sqlDraftList";
-import { updateDraft } from "@/api/analysis/SQLEditor/SQLDraft";
-import childTabs from "@/views/analysis/auditModelResult/childTabs";
-import paramDraw from "@/views/analysis/modelParam/paramDraw";
+} from '@/api/analysis/SQLEditor/SQLEditor'
+import sqlDraftList from '@/views/analysis/SQLEditor/sqlDraftList'
+import { updateDraft } from '@/api/analysis/SQLEditor/SQLDraft'
+import childTabs from '@/views/analysis/auditModelResult/childTabs'
+import paramDraw from '@/views/analysis/modelParam/paramDraw'
+import { replaceNodeParam } from '@/api/analysis/auditParam'
 /**
  * 当前执行进度
  * @type {number}
  */
-let currentExecuteProgress = 0;
+let currentExecuteProgress = 0
 /**
  * 最后一个结果集的列
  * @type {*[]}
  */
-let lastResultColumn = [];
+let lastResultColumn = []
 /**
  * 是否全部执行成功
  * @type {boolean}
  */
-let isAllExecuteSuccess = false;
+let isAllExecuteSuccess = false
 
 /**
  * 最后模型结果列类型
  * @type {*[]}
  */
-let lastResultColumnType = [];
+const lastResultColumnType = []
 
 /**
  * 数据界面对象
  */
-let childTabsRef;
+let childTabsRef
 export default {
-  name: "SQLEditor",
+  name: 'SQLEditor',
   components: { sqlDraftList, childTabs, paramDraw },
-  props: ["sqlEditorParamObj", "sqlValue"],
-  watch:{
-    dialogFormVisible(value){
-      this.$nextTick(function(){
-        if(value){
-          this.$refs.paramDrawRef.initParamHtmlSS(this.executeData.sql, this.executeData.arr, "请输入参数", null); //前后加遮罩
-        }
-      })
-    }
-  },
+  props: ['sqlEditorParamObj', 'sqlValue'],
   data() {
     return {
       sqlDraftForm: {
-        sqlDraftUuid: "",
-        draftTitle: "",
-        draftSql: "",
-        paramJson: "",
+        sqlDraftUuid: '',
+        draftTitle: '',
+        draftSql: '',
+        paramJson: ''
       },
       sqlDraftFormRules: {
         draftTitle: [
           {
-            type: "string",
+            type: 'string',
             required: true,
-            message: "请输入草稿名称",
-            trigger: "blur",
-          },
-        ],
+            message: '请输入草稿名称',
+            trigger: 'blur'
+          }
+        ]
       },
       sqlDraftDialogFormVisible: false,
       sqlDraftDialog: false,
-      dialogFormVisible:false,
-      formLabelWidth: "120px",
-      currentExecuteSQL: [], //当前执行的全部sql,
+      dialogFormVisible: false,
+      formLabelWidth: '120px',
+      currentExecuteSQL: [], // 当前执行的全部sql,
       webSocket: null,
       resultShow: [],
-      isAllExecute: false, //是否全部执行
+      isAllExecute: false, // 是否全部执行
       modelOriginalTable: [],
-      executeData:{}
-    };
+      executeData: {}
+    }
+  },
+  watch: {
+    dialogFormVisible(value) {
+      this.$nextTick(function() {
+        if (value) {
+          this.$refs.paramDrawRef.initParamHtmlSS(this.executeData.sql, this.executeData.arr, '请输入参数', null) // 前后加遮罩
+        }
+      })
+    }
   },
   mounted() {
-    this.initData();
-    this.initWebSocket();
+    this.initData()
+    this.initWebSocket()
   },
   methods: {
     /**
      *初始化webSocket
      */
     initWebSocket() {
-      this.webSocket = this.getWebSocket();
+      this.webSocket = this.getWebSocket()
     },
     /**
      *
@@ -507,268 +494,284 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-      let webSocketPath =
-        "ws://localhost:8086/analysis/websocket?" +
-        this.$store.getters.personuuid;
-      //WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
-      this.webSocket = new WebSocket(webSocketPath); //建立与服务端的连接
-      //当服务端打开连接
-      this.webSocket.onopen = function (event) {};
-      //发送消息
-      this.webSocket.onmessage = function (event) {
-        let dataObj = JSON.parse(event.data);
-        //todo  这块得加判断  判断sql是否全部执行成功，失败则不加1
-        currentExecuteProgress++;
-        //如果当前执行等于总的执行进度  说明最后的结果集已经拿到 取出最后一个结果集的列做为模型结果列
+      const webSocketPath =
+        'ws://localhost:8086/analysis/websocket?' +
+        this.$store.getters.personuuid
+      // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
+      this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
+      // 当服务端打开连接
+      this.webSocket.onopen = function(event) {}
+      // 发送消息
+      this.webSocket.onmessage = function(event) {
+        const dataObj = JSON.parse(event.data)
+        // todo  这块得加判断  判断sql是否全部执行成功，失败则不加1
+        currentExecuteProgress++
+        // 如果当前执行等于总的执行进度  说明最后的结果集已经拿到 取出最后一个结果集的列做为模型结果列
         if (currentExecuteProgress == dataObj.executeTask.executeSQL.length) {
-          isAllExecuteSuccess = true;
-          lastResultColumn = dataObj.columnNames;
-          //todo 现在暂时还拿不到类型  后续需要改
-          //lastResultColumnType = dataObj.columnTypes
+          isAllExecuteSuccess = true
+          lastResultColumn = dataObj.columnNames
+          // todo 现在暂时还拿不到类型  后续需要改
+          // lastResultColumnType = dataObj.columnTypes
         }
-        func1(dataObj);
-        //console.log(event.data);
-      };
-      let func2 = function func3(val) {
-        this.$refs.childTabsRef[0].loadTableData(val);
-      };
-      let func1 = func2.bind(this);
-      this.webSocket.onclose = function (event) {};
+        func1(dataObj)
+      }
+      const func2 = function func3(val) {
+        this.$refs.childTabsRef[0].loadTableData(val)
+      }
+      const func1 = func2.bind(this)
+      this.webSocket.onclose = function(event) {}
 
-      //通信失败
-      this.webSocket.onerror = function (event) {};
+      // 通信失败
+      this.webSocket.onerror = function(event) {}
     },
     /**
      * 通过WebSocket对象发送消息给服务端
      * 此处没有主动发消息给服务端，如果调用此方法，则会发送消息至socket服务端onMessage()方法上
      */
     sendMsgToServer() {
-      let message = "123";
+      const message = '123'
       if (message) {
         this.webSocket.send(
-          JSON.stringify({ username: $("#username").text(), msg: message })
-        );
+          JSON.stringify({ username: $('#username').text(), msg: message })
+        )
       }
     },
     initData() {
-      initDragAndDrop();
-      initIcon();
-      let userId = this.$store.getters.personuuid;
-      initTableTree(userId);
-      initFunctionTree();
-      initVariable();
-      initEvent();
-      initParamTree();
+      initDragAndDrop()
+      initIcon()
+      const userId = this.$store.getters.personuuid
+      initTableTree(userId)
+      initFunctionTree()
+      initVariable()
+      initEvent()
+      initParamTree()
       initTableTip(userId).then((result) => {
-        var relTableMap = {};
+        var relTableMap = {}
         if (result.data != null) {
           for (let i = 0; i < result.data.length; i++) {
-            if (result.data[i].type === "table") {
-              relTableMap[result.data[i].name] = [];
+            if (result.data[i].type === 'table') {
+              relTableMap[result.data[i].name] = []
             }
           }
         }
-        initSQLEditor(document.getElementById("sql"), relTableMap);
-        if (this.sqlValue != "") {
-          //编辑模型的sql  反显数据
-          editorSql(this.sqlValue, this.sqlEditorParamObj);
+        initSQLEditor(document.getElementById('sql'), relTableMap)
+        if (this.sqlValue != '') {
+          // 编辑模型的sql  反显数据
+          editorSql(this.sqlValue, this.sqlEditorParamObj)
         }
-      });
+      })
     },
     tableTreeSearch() {
-      tableTreeSearch();
+      tableTreeSearch()
     },
     paramTreeSearch() {
-      paramTreeSearch();
+      paramTreeSearch()
     },
     functionTreeSearch() {
-      functionTreeSearch();
+      functionTreeSearch()
     },
     sqlFormat() {
-      sqlFormat();
+      sqlFormat()
     },
     findAndReplace(type) {
-      findAndReplace(type);
+      findAndReplace(type)
     },
     caseTransformation(type) {
-      caseTransformation(type);
+      caseTransformation(type)
     },
     selectSqlNotes() {
-      selectSqlNotes();
+      selectSqlNotes()
     },
     selectSqlCancelNotes() {
-      selectSqlCancelNotes();
+      selectSqlCancelNotes()
     },
     getSaveInfo() {
       if (!this.isAllExecute) {
-        this.$message({ type: "info", message: "全部执行才可以保存!" });
-        return;
+        this.$message({ type: 'info', message: '全部执行才可以保存!' })
+        return
       }
-      //如果当前执行进度与要执行的sql数量相等 则证明数据已经全部拿到，允许保存
+      // 如果当前执行进度与要执行的sql数量相等 则证明数据已经全部拿到，允许保存
       if (currentExecuteProgress != this.currentExecuteSQL.length) {
-        this.$message({ type: "info", message: "全部执行成功才可以保存!" });
-        return;
+        this.$message({ type: 'info', message: '全部执行成功才可以保存!' })
+        return
       }
-      console.log("当前执行总进度:" + currentExecuteProgress);
+      /*      console.log("当前执行总进度:" + currentExecuteProgress);
       console.log("是否全部执行成功:" + isAllExecuteSuccess);
       console.log(this.currentExecuteSQL);
-      console.log(lastResultColumn);
-      let returnObj = getSaveInfo();
-      returnObj.columnNames = lastResultColumn;
-      returnObj.columnTypes = lastResultColumnType;
-      returnObj.modelOriginalTable = this.modelOriginalTable;
-      returnObj.modelType = 1;
-      return returnObj;
+      console.log(lastResultColumn);*/
+      const returnObj = getSaveInfo()
+      returnObj.columnNames = lastResultColumn
+      returnObj.columnTypes = lastResultColumnType
+      returnObj.modelOriginalTable = this.modelOriginalTable
+      returnObj.modelType = 1
+      return returnObj
     },
     getSelectSql(menuId) {
-      getSelectSql(menuId);
+      getSelectSql(menuId)
     },
     openSaveSqlDialog(type) {
       if (type == 1) {
-        //如果对象是旧的对象则证明是打开的sql草稿 因此直接保存  否则直接修改
-        let sqlObj = getSaveSqlDraftObj(type);
-        let sql = sqlObj.draftSql;
-        if (sql === "") {
+        // 如果对象是旧的对象则证明是打开的sql草稿 因此直接保存  否则直接修改
+        const sqlObj = getSaveSqlDraftObj(type)
+        const sql = sqlObj.draftSql
+        if (sql === '') {
           this.$notify({
-            title: "提示",
-            message: "请输入sql语句",
-            type: "info",
+            title: '提示',
+            message: '请输入sql语句',
+            type: 'info',
             duration: 2000,
-            position: "bottom-right",
-          });
-          return;
+            position: 'bottom-right'
+          })
+          return
         } else {
           if (!sqlObj.isOld) {
-            this.sqlDraftDialogFormVisible = true;
+            this.sqlDraftDialogFormVisible = true
           } else {
             updateDraft(sqlObj).then((result) => {
               if (result.code == 0) {
                 this.$notify({
-                  title: "提示",
-                  message: "保存成功",
-                  type: "success",
+                  title: '提示',
+                  message: '保存成功',
+                  type: 'success',
                   duration: 2000,
-                  position: "bottom-right",
-                });
+                  position: 'bottom-right'
+                })
               } else {
                 this.$notify({
-                  title: "提示",
-                  message: "保存失败",
-                  type: "error",
+                  title: '提示',
+                  message: '保存失败',
+                  type: 'error',
                   duration: 2000,
-                  position: "bottom-right",
-                });
+                  position: 'bottom-right'
+                })
               }
-            });
+            })
           }
         }
       } else {
-        this.sqlDraftDialogFormVisible = true;
+        this.sqlDraftDialogFormVisible = true
       }
     },
     saveSqlDialog() {
-      let verResult = false;
-      this.$refs["sqlDraftForm"].validate((valid) => {
+      let verResult = false
+      this.$refs['sqlDraftForm'].validate((valid) => {
         if (valid) {
-          verResult = valid;
+          verResult = valid
         }
-      });
+      })
       if (verResult) {
-        let sqlObj = getSaveSqlDraftObj(1);
-        this.sqlDraftForm.draftSql = sqlObj.draftSql;
-        this.sqlDraftForm.paramJson = sqlObj.paramJson;
+        const sqlObj = getSaveSqlDraftObj(1)
+        this.sqlDraftForm.draftSql = sqlObj.draftSql
+        this.sqlDraftForm.paramJson = sqlObj.paramJson
         saveSqlDraft(this.sqlDraftForm).then((result) => {
           if (result.code == 0) {
             this.$notify({
-              title: "提示",
-              message: "保存成功",
-              type: "success",
+              title: '提示',
+              message: '保存成功',
+              type: 'success',
               duration: 2000,
-              position: "bottom-right",
-            });
-            this.sqlDraftDialogFormVisible = false;
-            //手动销毁数据  多层dialog v-if失效 不知道为啥 没找到解决办法
+              position: 'bottom-right'
+            })
+            this.sqlDraftDialogFormVisible = false
+            // 手动销毁数据  多层dialog v-if失效 不知道为啥 没找到解决办法
             this.sqlDraftForm = {
-              sqlDraftUuid: "",
-              draftTitle: "",
-              draftSql: "",
-              paramJson: "",
-            };
+              sqlDraftUuid: '',
+              draftTitle: '',
+              draftSql: '',
+              paramJson: ''
+            }
           } else {
             this.$notify({
-              title: "提示",
-              message: "保存失败",
-              type: "error",
+              title: '提示',
+              message: '保存失败',
+              type: 'error',
               duration: 2000,
-              position: "bottom-right",
-            });
+              position: 'bottom-right'
+            })
           }
-        });
+        })
       }
     },
     openSqlDraftList() {
-      this.sqlDraftDialog = true;
+      this.sqlDraftDialog = true
     },
     useSql() {
-      let returnObj = this.$refs.sqlDraftList.getSelectRow();
+      const returnObj = this.$refs.sqlDraftList.getSelectRow()
       if (returnObj.verify) {
-        this.$confirm("该操作会清空当前SQL编辑器中的语句,是否继续？", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
+        this.$confirm('该操作会清空当前SQL编辑器中的语句,是否继续？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         }).then(() => {
-          this.sqlDraftDialog = false;
-          useSql(returnObj);
-        });
+          this.sqlDraftDialog = false
+          useSql(returnObj)
+        })
       } else {
-        return;
+        return
       }
     },
     executeSQL() {
-      let result = getSql();
-      if (result.sql === "") {
-        this.$message({ type: "info", message: "请输入sql!" });
-        return;
+      const result = getSql()
+      if (result.sql === '') {
+        this.$message({ type: 'info', message: '请输入sql!' })
+        return
       }
-      this.isAllExecute = result.isAllExecute;
+      this.isAllExecute = result.isAllExecute
       verifySql().then((result) => {
         if (!result.data.verify) {
-          this.$message({ type: "info", message: "SQL不合法，请重新输入" });
-          return;
+          this.$message({ type: 'info', message: 'SQL不合法，请重新输入' })
+          return
         }
-        this.resultShow = []; //清空数据展示对象
-        isAllExecuteSuccess = false;
-        currentExecuteProgress = 0;
-        this.currentExecuteSQL = [];
-        lastResultColumn = [];
-        let obj = executeSQL()
-        if(!obj.isExistParam){
+        this.resultShow = [] // 清空数据展示对象
+        isAllExecuteSuccess = false
+        currentExecuteProgress = 0
+        this.currentExecuteSQL = []
+        lastResultColumn = []
+        const obj = executeSQL()
+        if (!obj.isExistParam) {
           startExecuteSql(obj).then((result) => {
-            console.log(result);
             if (!result.data.isError) {
-              this.currentExecuteSQL = result.data.executeSQLList;
-              this.modelOriginalTable = result.data.tables;
-              this.resultShow.push({ id: 1 });
+              this.currentExecuteSQL = result.data.executeSQLList
+              this.modelOriginalTable = result.data.tables
+              this.resultShow.push({ id: 1 })
             } else {
-              this.$message({ type: "info", message: "执行失败" });
+              this.$message({ type: 'info', message: '执行失败' })
             }
-          });
-        }
-        else{
-          obj.sql = obj.sqls
+          })
+        } else {
           this.openParamDraw(obj)
-          console.log(obj)
         }
-      });
+      })
     },
     openParamDraw(data) {
-      this.dialogFormVisible = true;
-       this.executeData = data
+      this.dialogFormVisible = true
+      this.executeData = data
     },
-  },
-};
+    /**
+     * 获取替换参数后的sql  直接直接
+     */
+    replaceNodeParam() {
+      var obj = replaceNodeParam()
+      if (!obj.verify) {
+        this.$message({ type: 'info', message: obj.message })
+        return
+      }
+      obj.sqls = obj.sql
+      startExecuteSql(obj).then((result) => {
+        if (!result.data.isError) {
+          this.currentExecuteSQL = result.data.executeSQLList
+          this.modelOriginalTable = result.data.tables
+          this.resultShow.push({ id: 1 })
+          this.dialogFormVisible = false
+        } else {
+          this.$message({ type: 'info', message: '执行失败' })
+        }
+      })
+    }
+  }
+}
 function test() {
-  return this.$refs.childTabsRef;
+  return this.$refs.childTabsRef
 }
 </script>
 <style>

@@ -29,7 +29,7 @@
       <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog v-if="editModelShow" :visible.sync="editModelShow" :title="editModelTitle" width="80%">
+    <el-dialog v-if="editModelShow" :close-on-click-modal="false" :v-loading="editorModelLoading" :visible.sync="editModelShow" :title="editModelTitle" width="60%">
       <EditModel ref="editModel" :open-value="selectTreeNode" :operation-obj="operationObj" @hideModal="hideEditModal" />
       <div slot="footer">
         <el-button type="primary" @click="save">保存</el-button>
@@ -58,7 +58,7 @@
   </div>
 </template>
 <script>
-import { findModel, saveModel, deleteModel, selectModel, updateModel,updateModelBasicInfo,exportModel,setModelSession } from '@/api/analysis/auditModel'
+import { findModel, saveModel, deleteModel, selectModel, updateModel, updateModelBasicInfo, exportModel, setModelSession } from '@/api/analysis/auditModel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
@@ -66,7 +66,7 @@ import EditModel from '@/views/analysis/auditModel/editModel'
 import { getOneDict } from '@/utils/index'
 export default {
   name: 'ModelListTable',
-  components: { Pagination, QueryField, EditModel,ModelFolderTree },
+  components: { Pagination, QueryField, EditModel, ModelFolderTree },
   data() {
     return {
       tableKey: 'errorUuid',
@@ -74,11 +74,12 @@ export default {
       total: 0,
       listLoading: false,
       editModelTitle: '',
-      treeSelectShow:false,
+      treeSelectShow: false,
       editModelShow: false,
-      publicModelValue:"publicModel",
+      publicModelValue: 'publicModel',
       dialogFormVisible: true,
       selectTreeNode: null,
+      editorModelLoading: false,
       isUpdate: false,
       queryFields: [
         { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
@@ -157,7 +158,7 @@ export default {
 
   },
   created() {
-    //this.getList({ modelFolderUuid: 1 })
+    // this.getList({ modelFolderUuid: 1 })
   },
   methods: {
     /**
@@ -196,9 +197,9 @@ export default {
       }
     },
     riskLevelFormatter(row, column) {
-      let riskLevel = row.riskLevelUuid
-      let value = ""
-      value = getOneDict(riskLevel)[0].codeName;
+      const riskLevel = row.riskLevelUuid
+      let value = ''
+      value = getOneDict(riskLevel)[0].codeName
       return value
     },
     /**
@@ -231,18 +232,18 @@ export default {
       if (modelObj == null) {
         return
       }
-      this.listLoading = true
+      this.editorModelLoading = true
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
           if (result.code === 0) {
             this.getList(this.query)// 刷新列表
             this.$emit('refreshTree')
-            this.listLoading = false
+            this.editorModelLoading = false
             this.editModelShow = false
             // this.$refs.editModel.clear();
           } else {
             this.$message({ type: 'error', message: '新增模型失败!' })
-            this.listLoading = false
+            this.editorModelLoading = false
           }
         })
       } else {
@@ -250,12 +251,12 @@ export default {
           if (result.code === 0) {
             this.getList(this.query)// 刷新列表
             this.$emit('refreshTree')
-            this.listLoading = false
+            this.editorModelLoading = false
             this.editModelShow = false
             // this.$refs.editModel.clear();
           } else {
             this.$message({ type: 'error', message: '修改模型失败!' })
-            this.listLoading = false
+            this.editorModelLoading = false
           }
         })
       }
@@ -332,7 +333,7 @@ export default {
         this.$message({ type: 'info', message: '请先选择要删除的模型!' })
         return
       }
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该模型, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -350,12 +351,12 @@ export default {
     /**
      * 发布模型
      */
-    publicModel(value){
-      if(this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') != -1){
+    publicModel(value) {
+      if (this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') != -1) {
         this.$message({ type: 'info', message: '只能发布非公共模型下的模型' })
         return
       }
-      this.publicModelValue = value;
+      this.publicModelValue = value
       var selectObj = this.$refs.modelListTable.selection
       if (selectObj == undefined || selectObj.length === 0) {
         this.$message({ type: 'info', message: '请先选择要发布的模型!' })
@@ -366,14 +367,14 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.treeSelectShow = true;
+        this.treeSelectShow = true
       })
     },
     /**
      *撤销发布
      */
-    cancelPublicModel(){
-      if(this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') == -1){
+    cancelPublicModel() {
+      if (this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') == -1) {
         this.$message({ type: 'info', message: '只能撤销公共模型下的模型' })
         return
       }
@@ -387,75 +388,74 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        for(let i = 0;i < selectObj.length;i++){
+        for (let i = 0; i < selectObj.length; i++) {
           selectObj[i].modelFolderUuid = 'xiaxian'
         }
-        this.updateModelBasicInfo(selectObj,"撤销发布")
-      }).catch(()=>{
+        this.updateModelBasicInfo(selectObj, '撤销发布')
+      }).catch(() => {
 
       })
     },
     /**
      * 修改要发布的模型
      */
-    updatePublicModel(){
-      let selectNode = this.$refs.modelFolderTree.getSelectNode()
+    updatePublicModel() {
+      const selectNode = this.$refs.modelFolderTree.getSelectNode()
       var selectObj = this.$refs.modelListTable.selection
-      for(let i = 0;i < selectObj.length;i++){
+      for (let i = 0; i < selectObj.length; i++) {
         selectObj[i].modelFolderUuid = selectNode.id
       }
-      this.updateModelBasicInfo(selectObj,"发布")
+      this.updateModelBasicInfo(selectObj, '发布')
     },
     /**
      * 修改模型基本信息
      * @param selectObj 要修改的数组对象
      * @param tips 提示信息
      */
-    updateModelBasicInfo(selectObj,tips){
+    updateModelBasicInfo(selectObj, tips) {
       updateModelBasicInfo(selectObj).then(result => {
-        if(result.code == 0){
-          this.treeSelectShow = false;
+        if (result.code == 0) {
+          this.treeSelectShow = false
           this.$notify({
-            title:'提示',
-            message:tips + '成功',
-            type:'success',
-            duration:2000,
-            position:'bottom-right'
-          });
+            title: '提示',
+            message: tips + '成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
           this.getList(this.query)// 刷新列表
           this.$emit('refreshTree')
-          //刷新树和列表
-        }
-        else{
+          // 刷新树和列表
+        } else {
           this.$notify({
-            title:'提示',
-            message:tips + '失败',
-            type:'error',
-            duration:2000,
-            position:'bottom-right'
-          });
+            title: '提示',
+            message: tips + '失败',
+            type: 'error',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         }
       })
     },
     /**
      * 导出模型
      */
-    exportModel(){
+    exportModel() {
       var selectObj = this.$refs.modelListTable.selection
       if (selectObj == undefined || selectObj.length === 0) {
         this.$message({ type: 'info', message: '请先选择要导出的模型!' })
         return
       }
-      let modelIds = [];
-      for(let i = 0;i < selectObj.length;i++){
+      const modelIds = []
+      for (let i = 0; i < selectObj.length; i++) {
         modelIds.push(selectObj[i].modelUuid)
       }
-      setModelSession(modelIds).then(result=>{
+      setModelSession(modelIds).then(result => {
         exportModel()
       })
     },
-    importData(){
-      $("#importBtn").click();
+    importData() {
+      $('#importBtn').click()
     },
     handleRemove(file, fileList) {
     },
@@ -463,16 +463,16 @@ export default {
      * 上传之前回调函数
      */
     beforeUpload(file) {
-      this.uploaDialog = true;
+      this.uploaDialog = true
     },
     /**
      * 上传失败回调函数
      */
     onError(err, file, fileList) {
       this.$message({
-        message: "上传失败",
-        type: "error"
-      });
+        message: '上传失败',
+        type: 'error'
+      })
     },
     /**
      * 上传成功回调函数
@@ -480,14 +480,14 @@ export default {
     onSuccess(response, file, fileList) {
       this.$message({
         message: response.msg,
-        type: "info"
-      });
-      file = [];
-      fileList = [];
+        type: 'info'
+      })
+      file = []
+      fileList = []
     },
-    shareModel(){
-      //弹出人员选择窗体
-    },
+    shareModel() {
+      // 弹出人员选择窗体
+    }
   }
 }
 </script>
