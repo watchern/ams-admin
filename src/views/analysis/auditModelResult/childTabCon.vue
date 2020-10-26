@@ -7,6 +7,7 @@
         ref="myquerybuilder"
         :columns="queryData"
         :data="queryJson"
+        @queryconditionchangetable="queryConditionChangeTable"
       />
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
@@ -358,6 +359,14 @@ export default {
     queryCondition() {
       this.$refs.myquerybuilder.selectSql();
       this.dialogVisible = false;
+    },
+    // 查询完以后，子组件触发父组件的事件
+    queryConditionChangeTable(sql, queryJson) {
+      this.queryJson = queryJson;
+      if (sql == "") {
+        sql = "undefined";
+      }
+      this.initData(sql);
     },
     /**
      * 点击查询条件设置按钮触发
