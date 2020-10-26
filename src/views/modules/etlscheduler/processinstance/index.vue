@@ -75,7 +75,7 @@
       <el-table-column
         label="运行状态"
         align="center"
-        width="100px"
+        width="80px"
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
@@ -97,7 +97,7 @@
       </el-table-column>
       <el-table-column
         label="运行类型"
-        width="150px"
+        width="120px"
         align="center"
         prop="commandType"
         :formatter="formatType"
@@ -110,14 +110,14 @@
       />
       <el-table-column
         label="流程名称"
-        width="150px"
+        width="130px"
         align="center"
         prop="processDefinitionName"
       />
       <el-table-column
         label="任务参数"
         align="center"
-        width="100px"
+        width="80px"
       >
         <template slot-scope="scope">
           <!-- 任务参数使用图标进行显示 -->
@@ -131,25 +131,25 @@
       </el-table-column>
       <el-table-column
         label="调度时间"
-        width="180px"
+        width="160px"
         align="center"
         prop="scheduleTime"
       />
       <el-table-column
         label="开始运行时间"
-        width="180px"
+        width="160px"
         align="center"
         prop="startTime"
       />
       <el-table-column
         label="结束运行时间"
-        width="180px"
+        width="160px"
         align="center"
         prop="endTime"
       />
       <el-table-column
         label="共耗时"
-        width="150px"
+        width="100px"
         align="center"
         prop="timeConsuming"
       >
@@ -159,15 +159,15 @@
       </el-table-column>
       <el-table-column
         label="环节进度"
-        width="150px"
+        width="100px"
         align="center"
-        :formatter="formatSchedule"
+        prop="schedule"
       />
       <el-table-column
         label="当前环节"
-        width="150px"
+        width="120px"
         align="center"
-        :formatter="formatTask"
+        prop="nowTask"
       />
     </el-table>
     <pagination
@@ -436,7 +436,9 @@ export default {
         warningGroupId: null,
         warningType: null,
         workerGroup: null,
-        processDefinitionName: null
+        processDefinitionName: null,
+        schedule: null,
+        nowTask: null
       },
       selections: [],
       dialogFormVisible: false,
@@ -695,31 +697,32 @@ export default {
     // 格式化表格
     formatType(data) {
       return this.formatMap.commandType[data.commandType]
-    },
-    formatSchedule(data) {
-      // 获取任务环节
-      getTaskLink(data.processInstanceUuid).then(resp => {
-        this.logTasks = resp.data
-        // 获取调度实例已运行的环节
-        findTaskInstanceById(data.processInstanceUuid).then(res => {
-          this.taskslogsList = res.data
-          if (this.taskslogsList !== null && this.logTasks !== null) {
-            this.schedule = Object.keys(this.taskslogsList).length + '/' + this.logTasks.length
-          }
-        })
-      })
-      return this.schedule
-    },
-    formatTask(data) {
-      // 获取调度实例已运行的环节
-      findTaskInstanceById(data.processInstanceUuid).then(res => {
-        this.taskslogsList = res.data
-        if (this.taskslogsList !== null) {
-          this.nowTask = Object.keys(this.taskslogsList).reverse()[0]
-        }
-      })
-      return this.nowTask
     }
+    // ,
+    // formatSchedule(data) {
+    //   // 获取任务环节
+    //   getTaskLink(data.processInstanceUuid).then(resp => {
+    //     this.logTasks = resp.data
+    //     // 获取调度实例已运行的环节
+    //     findTaskInstanceById(data.processInstanceUuid).then(res => {
+    //       this.taskslogsList = res.data
+    //       if (this.taskslogsList !== null && this.logTasks !== null) {
+    //         this.schedule = Object.keys(this.taskslogsList).length + '/' + this.logTasks.length
+    //       }
+    //     })
+    //   })
+    //   return this.schedule
+    // },
+    // formatTask(data) {
+    //   // 获取调度实例已运行的环节
+    //   findTaskInstanceById(data.processInstanceUuid).then(res => {
+    //     this.taskslogsList = res.data
+    //     if (this.taskslogsList !== null) {
+    //       this.nowTask = Object.keys(this.taskslogsList).reverse()[0]
+    //     }
+    //   })
+    //   return this.nowTask
+    // }
   }
 }
 </script>

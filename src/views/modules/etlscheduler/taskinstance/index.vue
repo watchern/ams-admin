@@ -159,6 +159,7 @@ import QueryField from '@/components/Ace/query-field/index'
 export default {
   components: { Pagination, QueryField },
   filters: {
+    // 耗时的时间格式转换
     timeFilter(value) {
       const time = value
       if (time === null || time === '' || time === 0) {

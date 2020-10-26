@@ -47,7 +47,6 @@
                     style="margin-left:10px;margin-top:-10px;"
                     type="primary"
                     title="查看详情"
-                    :disabled="stopStatus"
                     class="oper-btn"
                     icon="el-icon-more"
                     @click="handleprocess()"
@@ -63,7 +62,6 @@
                   style="margin-left:10px;margin-top:-10px;"
                   type="primary"
                   title="查看详情"
-                  :disabled="stopStatus"
                   class="oper-btn"
                   icon="el-icon-more"
                   @click="handletask()"
@@ -183,38 +181,38 @@ export default {
     this.searchParams.startTimeEnd = dayjs().format('YYYY-MM-DD')
     // console.log('开始' + this.searchParams.startTimeStart + typeof (this.searchParams.startTimeStart))
     // console.log('结束' + this.searchParams.startTimeEnd + typeof (this.searchParams.startTimeEnd))
+    // 获取任务的总耗时
     takeTime().then(resp => {
       this.taketime = resp.data
     })
+    // 获取任务的历时
     processTakeTime({
       startTimeStart: dayjs().format('YYYY-MM-DD'),
       startTimeEnd: dayjs().format('YYYY-MM-DD')
     }).then(resp => {
       this.processtime = resp.data
     })
+    // 获取文件资源的列表
     getDataFileList().then(resp => {
       this.dataResourceStatistics = resp.data
     })
   },
   methods: {
-    handleProcess() {
-      this.$router.push('/etlscheduler/processinstance')
-    },
-    handleSchedule() {
-      this.$router.push('/etlscheduler/taskinstance')
-    },
+    // 带着开始和结束时间跳转到任务实例页面
     handletask() {
       this.$router.push({ path: '/etlscheduler/taskinstance', name: 'taskinstance', params: {
         startTimeStart: this.searchParams.startTimeStart,
         startTimeEnd: this.searchParams.startTimeEnd
       }})
     },
+    // 带着开始和结束时间跳转到流程实例页面
     handleprocess() {
       this.$router.push({ path: '/etlscheduler/processinstance', name: 'processinstance', params: {
         startTimeStart: this.searchParams.startTimeStart,
         startTimeEnd: this.searchParams.startTimeEnd
       }})
     },
+    // 根据时间范围获取任务历时
     _datepicker(val) {
       this.searchParams.startTimeStart = val[0]
       this.searchParams.startTimeEnd = val[1]
