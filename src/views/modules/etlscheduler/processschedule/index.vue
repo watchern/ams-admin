@@ -141,7 +141,7 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p>任务参数:{{ scope.row.taskParams }}</p>
+           {{scope.row.taskParamsList}}
             <div slot="reference" class="name-wrapper">
               <el-tag><i class="el-icon-tickets" /></el-tag>
             </div>
@@ -163,12 +163,12 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         label="排序号"
         width="80px"
         align="center"
         prop="processInstancePriority"
-      />
+      /> -->
       <el-table-column
         label="状态"
         width="100px"
@@ -243,7 +243,7 @@
             @blur="changeParamValue(item.param.defaultValue,item.param.paramName )"
           />
         </el-form-item>
-        <el-form-item label="排序号" prop="processInstancePriority">
+        <!-- <el-form-item label="排序号" prop="processInstancePriority">
           <el-input
             v-model="temp.processInstancePriority"
             class="propwidth"
@@ -251,7 +251,8 @@
             :disabled="disableUpdate"
             type="number"
           />
-        </el-form-item>
+        </el-form-item> -->
+
         <!-- <el-form-item label="状态" prop="status">
           <el-select v-model="temp.status" placeholder="请选择状态">
             <el-option label="启用" :value="1" />
@@ -313,7 +314,7 @@
                   >
                     <em
                       v-if="!isLoading"
-                      class="ans-icon-increase"
+                      class="oper-btn add"
                       :class="_isDetails"
                       data-toggle="tooltip"
                       title="添加"
@@ -351,7 +352,7 @@
                       <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
                     </span>
                     <em
-                      class="ans-icon-trash dep-delete"
+                      class="oper-btn delete"
                       data-toggle="tooltip"
                       data-container="body"
                       :class="_isDetails"
@@ -447,7 +448,8 @@ import {
   stopScheduleStatus,
   getParamsByProcessId,
   getByScheduleId,
-  copy
+  copy,
+  queryProcessLike
 } from '@/api/etlscheduler/processschedule'
 import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
@@ -504,6 +506,7 @@ export default {
       paramList: [],
       distinctParamList: [],
       isLoading: false,
+      flag: Boolean,
       //  查询任务流程
       options: [],
       processParam: {
@@ -564,6 +567,12 @@ export default {
             }
           ],
           default: '0'
+        },
+        {
+          label: '流程名称',
+          name: 'processDefinitionId',
+          type: 'select',
+          data: []
         },
         {
           label: '模糊查询',
@@ -731,10 +740,13 @@ export default {
     }
   },
   created() {
+    queryProcessLike().then((resp) => {
+      this.queryFields[2].data = resp.data
+    })
     this.getList()
     this.remoteMethod()
     const o = this.backfillItem
-    const dependentResult = $(`#${o}`).data('dependent-result') || {}
+    const dependentResult = $(`#${o.processSchedulesUuid}`).data('dependent-result') || {}
     // Does not represent an empty object backfill
     if (!_.isEmpty(o)) {
       this.relation = _.cloneDeep(o.dependence.relation) || 'AND'
@@ -747,20 +759,22 @@ export default {
           (v1) =>
             (v1.state =
               dependentResult[
-                `${v1.id}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}`
+                `${v1.processSchedulesUuid}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}`
               ] || defaultState)
         )
       )
     }
   },
   methods: {
-    // 
     changeParamValue(value, name) {
       if(value == ''){
           this.$message({
           message: '请为参数名称【' + name + '】赋值',
           type: 'warning'
         })
+        this.flag = false
+      } else {
+        this.flag = true
       }
     },
     findSchedule(data) {
@@ -852,7 +866,7 @@ export default {
       this.relation = this.relation === 'AND' ? 'OR' : 'AND'
     },
     getDependTaskList(i) {
-      // console.log('getDependTaskList',i)
+      console.log('getDependTaskList' + i)
     },
     _setRelation(i) {
       this.dependTaskList[i].relation === 'AND' ? 'OR' : 'AND'
@@ -891,11 +905,11 @@ export default {
         this.processParam.condition.keyword = query
         findByprocessDef(this.processParam).then((resp) => {
           this.options = resp.data.records
-          for (var i = 0; i < this.options.length; i++) {
-            if (this.options[i].status == 0) {
-              this.options.pop(i)
-            }
-          }
+          // for (var i = 0; i < this.options.length; i++) {
+          //   if (this.options[i].status == 0) {
+          //     this.options.pop(i)
+          //   }
+          // }
         })
       }, 200)
     },
@@ -953,7 +967,17 @@ export default {
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
+        if (this.flag == false) {
+              this.$notify({
+              title: '失败',
+              message: '请输入参数值',
+              type: 'error',
+              duration: 3000,
+              position: 'bottom-right'
+            })
+        } else {
+          this.flag = true
+          if (valid) {
           this.temp.taskParamsList = this.distinctParamList
           if (!this.dependTaskList.length) {
             this.temp.dependTaskInfo = null
@@ -974,6 +998,7 @@ export default {
             })
           })
         }
+       }
       })
     },
     handleUpdate() {
@@ -1002,10 +1027,20 @@ export default {
       })
     },
     updateData() {
-      this.temp.dependTaskInfoList = this.dependTaskList
-      this.temp.taskParamsList = this.distinctParamList
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
+      if (this.flag == false) {
+              this.$notify({
+              title: '失败',
+              message: '请输入参数值',
+              type: 'error',
+              duration: 3000,
+              position: 'bottom-right'
+            })
+        } else {
+          this.flag = true
+          this.temp.dependTaskInfoList = this.dependTaskList
+          this.temp.taskParamsList = this.distinctParamList
+          this.$refs['dataForm'].validate((valid) => {
+          if (valid) {
           const tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
             this.getList()
@@ -1022,7 +1057,8 @@ export default {
           })
         }
       })
-    },
+    }
+  },
     handleDelete() {
       var ids = []
       this.selections.forEach((r, i) => {

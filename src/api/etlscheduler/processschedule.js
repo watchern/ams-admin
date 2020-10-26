@@ -108,3 +108,11 @@ export function copy(id) {
     method: 'get'
   })
 }
+// 根据流程模糊查询
+export function queryProcessLike() {
+  return request({
+    baseURL: baseURL,
+    url: `/schedules/findProcessBySchedulId`,
+    method: 'get'
+  })
+}
