@@ -180,7 +180,7 @@ export function initVariable(){
   cursor = null
   isFirstPaste = true
   checkSqlText = ''
-  paramObj = {}
+  paramObj = {arr:[]}
   paramDivArr = []
   paramIdDivArr = []
   modelChartSetup = {}
@@ -1363,7 +1363,6 @@ export function getSelectSql(menuId){
     var columns = CodeMirror.tableColMapping[tableName];
     var oldSql = editorObj.getValue();
     if(!columns || (columns && columns.length === 0)){
-      var loading = $("body").mLoading({"text":"正在生成SELECT语句，请稍后……"});
       request({
         baseURL: analysisUrl,
         url: '/SQLEditorController/getTableColsByName',
@@ -1371,15 +1370,13 @@ export function getSelectSql(menuId){
         params:{tableName:tableName}
       }).then(result=>{
         if(result.data.isError){
-          loading.destroy();
           alert("错误");
         }else{
           if(result.data.columns && result.data.columns.length > 0){
             CodeMirror.tableColMapping[tableName] = result.data.columns;
             editorObj.options.hintOptions.tables[tableName] = result.data.columns;
-            getSelectSQLByColumns(result.data.columns, tableName, oldSql, loading);
+            getSelectSQLByColumns(result.data.columns, tableName, oldSql, null);
           }else{
-            loading.destroy();
           }
         }
       })

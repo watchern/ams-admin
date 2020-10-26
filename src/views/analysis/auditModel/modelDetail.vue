@@ -15,23 +15,24 @@
           <p style="font-size:large;font-weight:bold">关联设置</p>
           <p style="color:silver;font-size:large">———————————————————————————</p>
           <el-form-item label="关联类型" prop="relationType">
-            <el-select ref="relTypeSelect" v-model="form.relationType" placeholder="请选择关联类型" @change="relTypeSelectChange">
-              <el-option label="关联模型" :value="1" />
-              <el-option label="关联表" :value="2" />
-            </el-select>
+            <el-col>
+              <el-row span="20">
+                <el-select ref="relTypeSelect" v-model="form.relationType" placeholder="请选择关联类型" @change="relTypeSelectChange">
+                  <el-option label="关联模型" :value="1" />
+                  <el-option label="关联表" :value="2" />
+                </el-select>
+              </el-row>
+            </el-col>
           </el-form-item>
           <div ref="relModelDivParent" style="display: none;">
-            <el-form-item label="被关联模型">
-              <!--<el-select v-model="form.relationObjectUuid" value="-1" @change="relModelSelectChange">
-                <el-option label="请选择" value="-1" />
-                <el-option label="模型1" value="1" />
-                <el-option label="模型2" value="2" />
-              </el-select>-->
-              <div>
-                <el-input :disabled=true style="float:left"></el-input>
-                <el-button type="primary" style="float: right" @click="selectModel">选择</el-button>
-              </div>
-            </el-form-item>
+            <el-row>
+              <el-form-item label="被关联模型">
+                <el-col span="20">
+                  <el-input :disabled=true></el-input>
+                </el-col>
+                <el-button @click="selectModel">选择</el-button>
+              </el-form-item>
+            </el-row>
             <div ref="relModelTableDiv" style="display: none">
               <el-button type="primary" size="mini" style="float: right" @click="addRelFilter(1)">添加</el-button>
               <el-table ref="relModelTable" :data="relModelTable" border fit highlight-current-row style="width: 100%;">

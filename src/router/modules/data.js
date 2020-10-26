@@ -14,7 +14,7 @@ const dataRouter = {
       path: 'table',
       name: '表注册',
       component: () => import('@/views/data/table/index')
-    }, {
+    }/*, {
       path: 'directory',
       name: '数据资源目录',
       component: () => import('@/views/data/directory/index')
@@ -46,7 +46,7 @@ const dataRouter = {
       path: 'transCode',
       name: '数据转码',
       component: () => import('@/views/data/transCode/index')
-    }
+    }*/
   ]
 }
 export default dataRouter

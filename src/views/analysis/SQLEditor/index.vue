@@ -377,7 +377,7 @@
         <el-button type="primary" @click="useSql">使用SQL</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="参数渲染" :visible.sync="dialogFormVisible">
+    <el-dialog title="参数渲染" :visible.sync="dialogFormVisible" :append-to-body="true">
       <paramDraw ref="paramDrawRef"></paramDraw>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
@@ -528,7 +528,6 @@ export default {
           //lastResultColumnType = dataObj.columnTypes
         }
         func1(dataObj);
-        //console.log(event.data);
       };
       let func2 = function func3(val) {
         this.$refs.childTabsRef[0].loadTableData(val);
@@ -610,10 +609,10 @@ export default {
         this.$message({ type: "info", message: "全部执行成功才可以保存!" });
         return;
       }
-      console.log("当前执行总进度:" + currentExecuteProgress);
+/*      console.log("当前执行总进度:" + currentExecuteProgress);
       console.log("是否全部执行成功:" + isAllExecuteSuccess);
       console.log(this.currentExecuteSQL);
-      console.log(lastResultColumn);
+      console.log(lastResultColumn);*/
       let returnObj = getSaveInfo();
       returnObj.columnNames = lastResultColumn;
       returnObj.columnTypes = lastResultColumnType;
@@ -745,7 +744,6 @@ export default {
         let obj = executeSQL()
         if(!obj.isExistParam){
           startExecuteSql(obj).then((result) => {
-            console.log(result);
             if (!result.data.isError) {
               this.currentExecuteSQL = result.data.executeSQLList;
               this.modelOriginalTable = result.data.tables;
@@ -757,7 +755,6 @@ export default {
         }
         else{
           this.openParamDraw(obj)
-          console.log(obj)
         }
       });
     },
@@ -765,8 +762,26 @@ export default {
       this.dialogFormVisible = true;
        this.executeData = data
     },
+    /**
+     * 获取替换参数后的sql  直接直接
+     */
     replaceNodeParam(){
       var obj = replaceNodeParam()
+      if(!obj.verify){
+        this.$message({ type: 'info', message: obj.message })
+        return
+      }
+      obj.sqls = obj.sql
+      startExecuteSql(obj).then((result) => {
+        if (!result.data.isError) {
+          this.currentExecuteSQL = result.data.executeSQLList;
+          this.modelOriginalTable = result.data.tables;
+          this.resultShow.push({ id: 1 });
+          this.dialogFormVisible = false;
+        } else {
+          this.$message({ type: "info", message: "执行失败" });
+        }
+      });
     }
   },
 };

@@ -84,51 +84,53 @@
           </el-table>
         </div>
       </div>
-      <div ref="modelResultOutputCol" style="display: none">
-        <p style="color:red;font-size:large">支持拖拽排序    注意：只显示最后的结果列</p>
-        <el-table ref="columnData" :data="columnData" style="width: 100%">
-          <el-table-column prop="outputColumnName" label="输出列名" width="180" />
-          <el-table-column prop="" label="数据转码" width="80" />
-          <el-table-column prop="columnName" label="是否显示" width="80">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1">
-                <el-option label="是" :value="1" />
-                <el-option label="否" :value="0" />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column prop="columnName" label="对应业务字段" width="180">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.businessFieldUuid" value="-1">
-                <el-option
-                  v-for="state in businessColumnSelect"
-                  :key="state.uuid"
-                  :value="state.uuid"
-                  :label="state.name"
-                />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column prop="columnName" label="别名" width="180">
-            <template slot-scope="scope">
-              <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" />
-            </template>
-          </el-table-column>
-          <!--          <el-table-column prop="columnType" label="字段类型标记" width="180">
-            <template slot-scope="scope" v-model="scope.row.columnType">
-              {{scope.row.columnType}}
-        &lt;!&ndash;      <el-input v-model="scope.row.columnType" :value="scope.row.outputColumnType"/>
-              <el-select v-model="scope.row.columnType" :value="scope.row.outputColumnType">
-                <el-option
-                  v-for="state in columnTypeSelect"
-                  :key="state.uuid"
-                  :value="state.uuid"
-                  :label="state.name"
-                />
-              </el-select>&ndash;&gt;
-            </template>
-          </el-table-column>-->
-        </el-table>
+      <div ref="modelResultOutputCol" style="display: none;">
+        <p style="color:red;font-size:large">注意：只显示最后的结果列</p>
+        <div style="height:476px;overflow:scroll">
+          <el-table ref="columnData" :data="columnData" style="width: 100%">
+            <el-table-column prop="outputColumnName" label="输出列名" width="180" />
+            <el-table-column prop="" label="数据转码" width="80" />
+            <el-table-column prop="columnName" label="是否显示" width="80">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1">
+                  <el-option label="是" :value="1" />
+                  <el-option label="否" :value="0" />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column prop="columnName" label="对应业务字段" width="180">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.businessFieldUuid" value="-1">
+                  <el-option
+                    v-for="state in businessColumnSelect"
+                    :key="state.uuid"
+                    :value="state.uuid"
+                    :label="state.name"
+                  />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column prop="columnName" label="别名" width="180">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" />
+              </template>
+            </el-table-column>
+            <!--          <el-table-column prop="columnType" label="字段类型标记" width="180">
+              <template slot-scope="scope" v-model="scope.row.columnType">
+                {{scope.row.columnType}}
+          &lt;!&ndash;      <el-input v-model="scope.row.columnType" :value="scope.row.outputColumnType"/>
+                <el-select v-model="scope.row.columnType" :value="scope.row.outputColumnType">
+                  <el-option
+                    v-for="state in columnTypeSelect"
+                    :key="state.uuid"
+                    :value="state.uuid"
+                    :label="state.name"
+                  />
+                </el-select>&ndash;&gt;
+              </template>
+            </el-table-column>-->
+          </el-table>
+        </div>
       </div>
       <div ref="relInfo" style="display: none">
         <p>在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
@@ -440,6 +442,7 @@ export default {
       this.form.modelOutputColumn = columnData
       // endregion
       // region 处理参数数据
+      //todo 获取到参数的默认值，是个JSON，将JSON存入到数据库
       const paramData = this.$refs.paramData.data
       var paramIndex = 0
       for (let i = 0; i < paramData.length; i++) {
@@ -539,6 +542,7 @@ export default {
       }*/
       this.form.sqlValue = sqlObj.sqlValue
       // 初始化默认参数
+      //todo 在这初始化界面
       this.paramData = sqlObj.params
       // region 初始化固定列
       const columnData = []
