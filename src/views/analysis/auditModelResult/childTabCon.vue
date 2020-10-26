@@ -30,12 +30,13 @@
         >重置</el-button -->
       <el-button type="primary" @click="reSet">重置</el-button>
     </el-row>
-    <el-row v-if="useType == 'sqlEditor' ? true : false">
+    <el-row v-if="modelResultButtonIsShow">
       <el-button type="primary">导出</el-button>
       <el-button type="primary">图标展示</el-button>
     </el-row>
     <!-- 使用ag-grid-vue组件 其中columnDefs为列，rowData为表格数据 -->
     <ag-grid-vue
+      v-if="isSee"
       style="height: 200px"
       class="table ag-theme-balham"
       :column-defs="columnDefs"
@@ -47,6 +48,9 @@
       @gridReady="onGridReady"
       v-loading="isLoading"
     />
+    <el-card v-if="!isSee" class="box-card">
+      <div>{{errorMessage}}</div>
+    </el-card>
     <pagination
       v-show="total > 0"
       :total="total"
@@ -54,6 +58,17 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="initData"
     />
+    <el-pagination
+      v-if="modelResultPageIsSee"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="page"
+      :page-sizes="[10,20,30,50]"
+      :page-size="limit"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total1"
+    >
+    </el-pagination>
   </div>
 </template>
 
@@ -108,10 +123,19 @@ export default {
       dataArray: [], // 保存当前表格中的数据
       queryData: [], // 保存列信息，用来传给子组件(queryBuilder组件)
       queryJson: {}, // 用来储存由子组件传过来的 queryBuilder 的 Json数据
-      conditionShowData: [],
-      primaryKey: "",
-      isLoading: true,
-      nextValue: [],
+      conditionShowData: [], // 存放模型运行结果需要渲染的数据
+      primaryKey: "",  //存放模型运行结果主键
+      isLoading: true, 
+      nextValue: [], //存放模型结果后传进来的值
+      modelResultData: [],  //用来存放模型结果数据
+      modelResultColumnNames: [],  // 用来存放模型结果的列名
+      limit: 10,  ////模型结果前台分页的初始一页有多少条数据属性
+      total1: null, //模型结果前台分页的total属性
+      page: 1, //模型结果前台分页的当前页属性
+      isSee:true, //当输入sql错误和结果集为0的时候不显示aggrid表格
+      errorMessage:'',  //存放模型结果错误消息
+      modelResultPageIsSee:false, //模型结果分页是否可见
+      modelResultButtonIsShow:false //模型结果按钮是否可见
     };
   },
   mounted() {
@@ -331,28 +355,41 @@ export default {
         this.columnDefs = col;
         this.rowData = da;
         this.isLoading = false;
-      }  else if(this.useType =="sqlEditor") {
+      } else if (this.useType == "sqlEditor") {
         this.loading = true;
         this.nextValue = nextValue;
         var col = [];
         var rowData = [];
-          if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
-            for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
-              var rowColom = {
-                headerName: this.nextValue.columnNames[j],
-                field: this.nextValue.columnNames[j],
-              };
-              var key = this.nextValue.columnNames[j];
-              var value = this.nextValue.result[j];
-              col.push(rowColom);
-            }
-            for (var k = 0; k < this.nextValue.result.length; k++) {
-              rowData.push(this.nextValue.result[k]);
-            }
-            this.columnDefs = col;
-            this.rowData = rowData;
-            this.isLoading = false;
+        if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
+          if(this.nextValue.result == undefined){
+              this.isSee = false
+              this.modelResultPageIsSee = false
+              this.modelResultButtonIsShow = false
+              this.errorMessage = this.nextValue.executeSQL.message
+          }else{
+            this.modelResultButtonIsShow = true
+            this.modelResultPageIsSee = true
+               this.modelResultData = this.nextValue.result;
+          this.modelResultColumnNames = this.nextValue.columnNames;
+          for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
+            var rowColom = {
+              headerName: this.nextValue.columnNames[j],
+              field: this.nextValue.columnNames[j],
+            };
+            var key = this.nextValue.columnNames[j];
+            var value = this.nextValue.result[j];
+            col.push(rowColom);
           }
+          for (var k = 0; k < this.nextValue.result.length; k++) {
+            rowData.push(this.nextValue.result[k]);
+          }
+          this.columnDefs = col;
+          this.getList()
+          // this.rowData = rowData 
+          
+          }
+          this.isLoading = false;
+        }
       }
     },
     // 点击查询按钮触发事件
@@ -422,6 +459,29 @@ export default {
           this.initData();
         }
       }
+    },
+    // 处理数据
+    getList() {
+      console.log(this.modelResultData)
+      // es6过滤得到满足搜索条件的展示数据list
+      this.rowData = this.modelResultData.filter(
+        (item, index) =>
+          index < this.page * this.limit &&
+          index >= this.limit * (this.page - 1)
+      );
+      this.total1 = this.modelResultData.length;
+    },
+    // 当每页数量改变
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+      this.limit = val;
+      this.getList();
+    },
+    // 当当前页改变
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.page = val;
+      this.getList();
     },
   },
 };
