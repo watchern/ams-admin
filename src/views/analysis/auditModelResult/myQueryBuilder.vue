@@ -84,7 +84,7 @@ export default {
     /**
      * 为了获取queryBuilder中得到的sql语句和返显的Json数据
      */
-    selectSql1() {
+    getSelectSql() {
       if (this.queryJson.children == null) {
         alert("请添加条件后在进行查询！");
       } else {
