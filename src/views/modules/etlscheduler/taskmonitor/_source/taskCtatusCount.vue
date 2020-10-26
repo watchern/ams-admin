@@ -64,6 +64,7 @@ export default {
         }
       })
     },
+    // 带着状态和开始结束时间进行页面的跳转，跳转到任务实例页面
     handleSchedule(name) {
       this.$router.push({ path: '/etlscheduler/taskinstance', name: 'taskinstance', params: {
         status: JSON.stringify(_.find(stateType, ['label', name]).value),
