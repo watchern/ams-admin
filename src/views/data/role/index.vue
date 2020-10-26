@@ -252,6 +252,12 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
+    formatCreateTime(row, column) {
+      // 拼接日期规格为YYYY-MM-DD hh:mm:ss
+      var createTime = new Date(row.createTime)
+      var createTimeRow = createTime.getFullYear() + '-' + (createTime.getMonth() + 1) + '-' + createTime.getDate() + ' ' + createTime.getHours() + ':' + createTime.getMinutes() + ':' + createTime.getSeconds()
+      return createTimeRow
+    },
     formatDuring(row, column) {
       var startDate = new Date(row.startTime)
       var rowStart = startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate() + ' ' + startDate.getHours() + ':' + startDate.getMinutes() + ':' + startDate.getSeconds()
