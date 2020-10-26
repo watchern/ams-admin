@@ -767,8 +767,6 @@ export default {
     },
     replaceNodeParam(){
       var obj = replaceNodeParam()
-      console.log(6666666666666666)
-      console.log(obj)
     }
   },
 };
