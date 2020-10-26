@@ -28,7 +28,7 @@
       <el-table-column
         label="运行状态"
         align="center"
-        width="150px"
+        width="100px"
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
@@ -81,6 +81,12 @@
           </el-popover>
         </template>
       </el-table-column>
+      <el-table-column
+        label="调度时间"
+        width="200px"
+        align="center"
+        prop="scheduleTime"
+      />
       <el-table-column
         label="开始运行时间"
         width="200px"
@@ -177,10 +183,10 @@ export default {
       queryDefault: {},
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
-        { label: '流程实例名称', name: 'name', type: 'text', value: '' },
+        { label: '任务实例名称', name: 'name', type: 'text', value: '' },
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
-          label: '流程状态', name: 'status', type: 'select',
+          label: '任务实例状态', name: 'status', type: 'select',
           data: [{ name: '等待中', value: '1' },
             { name: '等待文件中', value: '2' },
             { name: '等待依赖任务', value: '3' },
@@ -301,7 +307,8 @@ export default {
         processInstance1: null,
         processDefine: null,
         processInstanceName: null,
-        params: null
+        params: null,
+        scheduleTime: null
       },
       selections: [],
       logDialogFromVisible: false,
@@ -312,7 +319,8 @@ export default {
       logTasks: null,
       logs: null,
       taskslogsList: null,
-      task: null
+      task: null,
+      scTime: null
     }
   },
   watch: {

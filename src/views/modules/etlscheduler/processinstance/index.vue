@@ -75,7 +75,7 @@
       <el-table-column
         label="运行状态"
         align="center"
-        width="150px"
+        width="100px"
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
@@ -96,10 +96,10 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="执行方式"
+        label="运行类型"
         width="150px"
         align="center"
-        prop="execType"
+        prop="commandType"
         :formatter="formatType"
       />
       <el-table-column
@@ -117,7 +117,7 @@
       <el-table-column
         label="任务参数"
         align="center"
-        width="130px"
+        width="100px"
       >
         <template slot-scope="scope">
           <!-- 任务参数使用图标进行显示 -->
@@ -130,14 +130,20 @@
         </template>
       </el-table-column>
       <el-table-column
+        label="调度时间"
+        width="180px"
+        align="center"
+        prop="scheduleTime"
+      />
+      <el-table-column
         label="开始运行时间"
-        width="200px"
+        width="180px"
         align="center"
         prop="startTime"
       />
       <el-table-column
         label="结束运行时间"
-        width="200px"
+        width="180px"
         align="center"
         prop="endTime"
       />
@@ -155,13 +161,13 @@
         label="环节进度"
         width="150px"
         align="center"
-        prop=""
+        :formatter="formatSchedule"
       />
       <el-table-column
-        label="当前环节状态"
+        label="当前环节"
         width="150px"
         align="center"
-        prop=""
+        :formatter="formatTask"
       />
     </el-table>
     <pagination
@@ -207,7 +213,7 @@
         <!-- 使用时间线任务实例的环节和运行的状态 -->
         <!-- 已运行的环节，改变颜色和图标 -->
         <el-timeline-item
-          v-for="task in logTasks"
+          v-for="(task,$index) in logTasks"
           :key="task.id"
           class="logtype"
           :icon="taskslogsList[task.id] != null ? 'el-icon-more': null"
@@ -217,7 +223,7 @@
           <!-- value和name一致，默认展开 -->
           <el-collapse :value="task.id" style="width:85%;border:0;">
             <!-- title环节名称 -->
-            <el-collapse-item :title="task.name" :name="task.id">
+            <el-collapse-item :title="($index+1)+'/'+logTasks.length+'  '+task.name" :name="task.id">
               <el-card style="padding-bottom: 3%">
                 <el-col v-if="taskslogsList[task.id] != null" class="logtype">
                   耗时： {{ taskslogsList[task.id] != null ? taskslogsList[task.id].time : 0 | timeFilter }}
@@ -293,10 +299,22 @@ export default {
       ],
       // 格式化参数列表
       formatMap: {
-        execType: {
-          1: '定时任务',
-          2: '单次任务',
-          3: '重跑',
+        commandType: {
+          0: '开启新流程',
+          1: '从当前节点开启新流程',
+          2: '重启容错流程',
+          3: '重启补数流程',
+          4: '从失败任务节点启动流程',
+          5: '补数',
+          6: '启动调度任务',
+          7: '重复运行流程',
+          8: '暂停流程',
+          9: '停止流程',
+          10: '重新运行等待线程流程',
+          11: '超时',
+          12: '启动',
+          13: '重新运行',
+          14: '取消',
           null: '其它'
         }
       },
@@ -436,7 +454,9 @@ export default {
       doneStatus: true,
       logTasks: null,
       logs: null,
-      taskslogsList: null
+      taskslogsList: null,
+      schedule: null,
+      nowTask: null
     }
   },
   watch: {
@@ -674,7 +694,31 @@ export default {
     },
     // 格式化表格
     formatType(data) {
-      return this.formatMap.execType[data.execType]
+      return this.formatMap.commandType[data.commandType]
+    },
+    formatSchedule(data) {
+      // 获取任务环节
+      getTaskLink(data.processInstanceUuid).then(resp => {
+        this.logTasks = resp.data
+        // 获取调度实例已运行的环节
+        findTaskInstanceById(data.processInstanceUuid).then(res => {
+          this.taskslogsList = res.data
+          if (this.taskslogsList !== null && this.logTasks !== null) {
+            this.schedule = Object.keys(this.taskslogsList).length + '/' + this.logTasks.length
+          }
+        })
+      })
+      return this.schedule
+    },
+    formatTask(data) {
+      // 获取调度实例已运行的环节
+      findTaskInstanceById(data.processInstanceUuid).then(res => {
+        this.taskslogsList = res.data
+        if (this.taskslogsList !== null) {
+          this.nowTask = Object.keys(this.taskslogsList).reverse()[0]
+        }
+      })
+      return this.nowTask
     }
   }
 }
