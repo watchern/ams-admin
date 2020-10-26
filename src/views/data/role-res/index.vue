@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="page-container">
     <el-row :gutter="5">
 
       <el-col :span="6">
@@ -96,17 +96,36 @@
           </span>
         </MyElTree>
       </el-col>
+
+      <el-col :span="6">
+        <!--<el-table
+          :key="tableKey"
+          v-loading="listLoading"
+          :data="list"
+          border
+          fit highlight-current-row
+          style="width: 100%;"
+          @sort-change="sortChange"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55" />
+          <el-table-column label="列名" width="200px" align="center" prop="dataRoleName" />
+          <el-table-column label="别名" width="300px" align="center" :formatter="formatCreateTime" prop="createTime" />
+          <el-table-column label="加密策略" width="200px" align="center" prop="authenType" />
+        </el-table>-->
+      </el-col>
+
     </el-row>
 
-    <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="500px">
-      <el-form ref="folderForm" :model="folderForm" label-width="80px">
+    <el-dialog :title="dialogTitle" :visible.sync="accessFormVisible" width="500px">
+      <el-form ref="accessForm" :model="accessForm" label-width="80px">
         <el-form-item label="文件夹名称" label-width="120px">
-          <el-input v-model="folderForm.folderName" style="width: 300px;" />
+          <el-input v-model="accessForm.folderName" style="width: 300px;" />
         </el-form-item>
       </el-form>
       <span slot="footer">
         <el-button type="primary" @click="dialogStatus==='create'?createFolder():updateFolder()">确定</el-button>
-        <el-button @click="folderFormVisible = false">取消</el-button>
+        <el-button @click="accessFormVisible = false">取消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -121,21 +140,21 @@ export default {
   components: { MyElTree },
   data() {
     return {
+
       filterText1: null,
       filterText2: null,
-      fromData: [],
       props: {
         label: 'label',
         isLeaf: 'leaf'
       },
-      folderForm: {
+      accessForm: {
         folderUuid: null,
         folderName: null,
         parentFolderUuid: null,
         orderNum: 0,
         fullPath: null
       },
-      folderFormVisible: false,
+      accessFormVisible: false,
       dialogStatus: '',
       parentNode: {},
       tempData: {}, // 点击编辑时临时存放data
@@ -149,7 +168,8 @@ export default {
         id: 'ROOT',
         label: '角色数据',
         children: []
-      }]
+      }],
+      listLoading: false
     }
   },
   computed: {
@@ -204,32 +224,32 @@ export default {
         })
       }
     },
-    resetFolderForm() {
-      Object.keys(this.folderForm).forEach(key => {
-        this.$set(this.folderForm, key, null)
+    resetaccessForm() {
+      Object.keys(this.accessForm).forEach(key => {
+        this.$set(this.accessForm, key, null)
       })
     },
     handleCreateFolder(node, data) {
-      this.resetFolderForm()
+      this.resetaccessForm()
       this.parentNode = node
       this.dialogStatus = 'create'
-      this.folderForm.parentFolderUuid = data.id
+      this.accessForm.parentFolderUuid = data.id
       var nodePath = this.$refs.tree2.getNodePath(data)
       var fullPath = []
       nodePath.forEach(path => {
         fullPath.push(path.id)
       })
-      this.folderForm.fullPath = fullPath.join('/')
-      this.folderFormVisible = true
+      this.accessForm.fullPath = fullPath.join('/')
+      this.accessFormVisible = true
     },
     handleUpdateFolder(node, data) {
-      this.resetFolderForm()
+      this.resetaccessForm()
       this.tempData = data
       this.dialogStatus = 'update'
-      this.folderForm.folderUuid = data.id
-      this.folderForm.folderName = data.label
-      this.folderForm.fullPath = this.$refs.tree2.getNodePath(data)
-      this.folderFormVisible = true
+      this.accessForm.folderUuid = data.id
+      this.accessForm.folderName = data.label
+      this.accessForm.fullPath = this.$refs.tree2.getNodePath(data)
+      this.accessFormVisible = true
     },
     handleRemoveFolder(node, data) {
       console.log(this.$refs.tree2.getCurrentNode())
@@ -246,11 +266,11 @@ export default {
       })
     },
     createFolder() {
-      saveFolder(this.folderForm).then(resp => {
+      saveFolder(this.accessForm).then(resp => {
         var childData = {
           id: resp.data,
-          label: this.folderForm.folderName,
-          pid: this.folderForm.parentFolderUuid,
+          label: this.accessForm.folderName,
+          pid: this.accessForm.parentFolderUuid,
           type: 'FOLDER',
           extMap: {
             folder_type: 'maintained'
@@ -258,14 +278,14 @@ export default {
         }
         this.$refs.tree2.append(childData, this.parentNode)
         this.$notify(commonNotify({ type: 'success', message: '创建成功！' }))
-        this.folderFormVisible = false
+        this.accessFormVisible = false
       })
     },
     updateFolder() {
-      updateFolder(this.folderForm).then(resp => {
-        this.tempData.label = this.folderForm.folderName
-        this.$refs.tree2.updateKeyChildren(this.folderForm.folderUuid, this.tempData)
-        this.folderFormVisible = false
+      updateFolder(this.accessForm).then(resp => {
+        this.tempData.label = this.accessForm.folderName
+        this.$refs.tree2.updateKeyChildren(this.accessForm.folderUuid, this.tempData)
+        this.accessFormVisible = false
       })
     },
     handleSelectChange(val) {
