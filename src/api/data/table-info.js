@@ -65,4 +65,22 @@ export function getResByRole(roleUuid) {
     method: 'get'
   })
 }
+export function getRoleCols(roleUuid, tableUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller3}/getRoleCols?roleUuid=${roleUuid}&tableMetaUuid=${tableUuid}`,
+    method: 'get'
+  })
+}
+export function saveRoleTable(roleUuid, rfolders, rtables, rcols) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/save?roleUuid=${roleUuid}`,
+    method: 'post',
+    roleUuid: roleUuid,
+    roleFolders: rfolders,
+    roleTables: rtables,
+    roleCols: rcols
+  })
+}
 

@@ -2,7 +2,7 @@
   <div class="page-container">
     <el-row :gutter="5">
 
-      <el-col :span="6">
+      <el-col :span="6" class="left-tree">
         <el-input
           v-model="filterText1"
           placeholder="输入关键字进行过滤"
@@ -11,9 +11,10 @@
           ref="tree1"
           :props="props"
           class="filter-tree"
-          highlight-current="true"
+          :highlight-current="true"
           :data="treeData1"
           node-key="id"
+          :filter-node-method="filterNode"
           show-checkbox
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
@@ -24,6 +25,7 @@
             <span :title="node.name">{{ node.label }}</span>
           </span>
         </MyElTree>
+
       </el-col>
 
       <el-col :span="2" style="width: 45px; padding-top: 10%">
@@ -33,14 +35,12 @@
               type="primary"
               icon="el-icon-arrow-right"
               circle
-              :disabled="fromDisabled"
               @click="addRoleTable"
             />
           </p>
           <p class="transfer-center-item">
             <el-button
               type="primary"
-              :disabled="toDisabled"
               icon="el-icon-arrow-left"
               circle
               @click="removeTable"
@@ -58,7 +58,7 @@
           ref="tree2"
           :props="props"
           class="filter-tree"
-          highlight-current="true"
+          :highlight-current="true"
           :data="treeData2"
           node-key="id"
           show-checkbox
@@ -68,54 +68,41 @@
             <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
             <i v-if="data.type==='table'" class="el-icon-tickets" style="color:#409EFF" />
             <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
-            <span :title="node.name">{{ node.label }}</span>
+            <span :title="node.name" @click="onclick2(node)">{{ node.label }}</span>
+            <!--<span v-if="data.id!=='root'"></span>-->
           </span>
         </MyElTree>
       </el-col>
 
-      <el-col :span="6">
-        <el-input
-          v-model="filterText2"
-          placeholder="输入关键字进行过滤"
-        />
-        <MyElTree
-          ref="tree2"
-          :props="props"
-          class="filter-tree"
-          highlight-current="true"
-          :data="treeData2"
-          node-key="id"
-          show-checkbox
-        >
-          <span slot-scope="{ node, data }" class="custom-tree-node">
-            <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
-            <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
-            <i v-if="data.type==='table'" class="el-icon-tickets" style="color:#409EFF" />
-            <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
-            <span :title="node.name">{{ node.label }}</span>
-          </span>
-        </MyElTree>
-      </el-col>
-
-      <el-col :span="6">
-        <!--<el-table
-          :key="tableKey"
-          v-loading="listLoading"
-          :data="list"
-          border
-          fit highlight-current-row
-          style="width: 100%;"
-          @sort-change="sortChange"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="55" />
-          <el-table-column label="列名" width="200px" align="center" prop="dataRoleName" />
-          <el-table-column label="别名" width="300px" align="center" :formatter="formatCreateTime" prop="createTime" />
-          <el-table-column label="加密策略" width="200px" align="center" prop="authenType" />
-        </el-table>-->
+      <el-col :span="8">
+        <div v-if="currentData !== {}">
+          <el-table
+            key="colMetaUuid"
+            v-loading="listLoading"
+            :data="currentData.cols"
+            border
+            fit
+            highlight-current-row
+            style="width: 100%;"
+            @select="onSelectCol"
+          >
+            <el-table-column width="55">
+              <template slot-scope="scope">
+                <el-checkbox v-model="scope.row.selected" />
+              </template>
+            </el-table-column>
+            <el-table-column label="列名" width="200px" align="center" prop="colName" />
+            <el-table-column label="别名" width="200px" align="center" prop="chnName" />
+            <el-table-column label="加密策略" width="150px" align="center" prop="encryptType" />
+          </el-table>
+        </div>
       </el-col>
 
     </el-row>
+    <div class="bottom-btn">
+      <el-button @click="save">保存</el-button>
+      <el-button @click="goBack">返回</el-button>
+    </div>
 
     <el-dialog :title="dialogTitle" :visible.sync="accessFormVisible" width="500px">
       <el-form ref="accessForm" :model="accessForm" label-width="80px">
@@ -133,14 +120,14 @@
 
 <script>
 import MyElTree from '@/components/Ace/tree/src/tree.vue'
-import { getResELTree, getResByRole } from '@/api/data/table-info'
+import { getResELTree, getResByRole, getRoleCols, saveRoleTable } from '@/api/data/table-info'
 import { commonNotify } from '@/utils'
 
 export default {
   components: { MyElTree },
   data() {
     return {
-
+      roleUuid: this.$route.params.roleUuid,
       filterText1: null,
       filterText2: null,
       props: {
@@ -169,18 +156,14 @@ export default {
         label: '角色数据',
         children: []
       }],
-      listLoading: false
+      listLoading: false,
+      currentData: {}, // 当前选中的数据表
+      currentSelection: []
     }
   },
   computed: {
     dialogTitle() {
       return (this.parentNode.label == null ? '' : '在<' + this.parentNode.label + '>下') + this.textMap[this.dialogStatus]
-    },
-    fromDisabled() {
-      return false
-    },
-    toDisabled() {
-      return false
     }
   },
   watch: {
@@ -196,7 +179,9 @@ export default {
       this.treeData1 = resp.data
     })
     getResByRole(this.$route.params.roleUuid).then(resp => {
-      this.treeData2.children.push(resp.data)
+      resp.data.forEach(item => {
+        this.treeData2[0].children.push(item)
+      })
     })
   },
   methods: {
@@ -204,33 +189,13 @@ export default {
       if (!value) return true
       return data.label.indexOf(value) !== -1
     },
-    loadNode1(node, resolve) {
-      if (node.level <= 3) {
-        var pid = node.data ? node.data.id : 'ROOT'
-        listUnCached(node.level, pid).then(resp => {
-          resolve(resp.data)
-        })
-      } else {
-        resolve([])
-      }
-    },
-    loadNode2(node, resolve) {
-      var pid = node.data ? node.data.id : null
-      if (!node.data) {
-        resolve([{ id: 'ROOT', label: '数据集', leaf: false }])
-      } else {
-        getDataTreeNode(node.data.id).then(resp => {
-          resolve(resp.data)
-        })
-      }
-    },
-    resetaccessForm() {
+    resetAccessForm() {
       Object.keys(this.accessForm).forEach(key => {
         this.$set(this.accessForm, key, null)
       })
     },
     handleCreateFolder(node, data) {
-      this.resetaccessForm()
+      this.resetAccessForm()
       this.parentNode = node
       this.dialogStatus = 'create'
       this.accessForm.parentFolderUuid = data.id
@@ -243,7 +208,7 @@ export default {
       this.accessFormVisible = true
     },
     handleUpdateFolder(node, data) {
-      this.resetaccessForm()
+      this.resetAccessForm()
       this.tempData = data
       this.dialogStatus = 'update'
       this.accessForm.folderUuid = data.id
@@ -267,7 +232,7 @@ export default {
     },
     createFolder() {
       saveFolder(this.accessForm).then(resp => {
-        var childData = {
+        /* var childData = {
           id: resp.data,
           label: this.accessForm.folderName,
           pid: this.accessForm.parentFolderUuid,
@@ -278,7 +243,7 @@ export default {
         }
         this.$refs.tree2.append(childData, this.parentNode)
         this.$notify(commonNotify({ type: 'success', message: '创建成功！' }))
-        this.accessFormVisible = false
+        this.accessFormVisible = false*/
       })
     },
     updateFolder() {
@@ -288,9 +253,7 @@ export default {
         this.accessFormVisible = false
       })
     },
-    handleSelectChange(val) {
 
-    },
     addRoleTable() {
       var ckTbs = this.$refs.tree1.getCheckedNodes(false, true)
       ckTbs.forEach((item) => {
@@ -311,14 +274,61 @@ export default {
       })
     },
     removeTable() {
-      var ids = this.$refs.tree2.getCheckedKeys()
-      delTable(ids.join(',')).then(resp => {
-        this.$notify(commonNotify({ type: 'success', message: `成功移除${ids.length}张表` }))
-        ids.forEach(id => {
-          this.$refs.tree2.remove({ id: id })
-        })
+
+    },
+    /* 点击角色数据 展示列和wherestr */
+    onclick2(node, data) {
+      if (node.data.type === 'table') {
+        if (node.data.cols) {
+          this.currentData = node.data
+        } else {
+          getRoleCols(this.roleUuid, node.data.id).then(resp => {
+            node.data.cols = resp.data
+            this.currentData = node.data
+            this.currentData.cols.forEach(d => {
+              this.$set(d, 'selected', d.roleCol !== null)
+            })
+          })
+        }
+      }
+    },
+
+    save() {
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
       })
+      var allNodes = this.$refs.tree2.getAllNodes()
+      var folders = []
+      var tables = []
+      var cols = []
+      console.log(allNodes)
+      allNodes.forEach(node => {
+        var data = node.data
+        if (data === 'folder') {
+          folders.push({
+            dataRoleUuid: this.dataRoleUuid,
+            folderUuid: data.id,
+            accessType: 0
+          })
+        } else if (data === 'table') {
+          tables.push({
+            dataRoleUuid: this.dataRoleUuid,
+            tableMetaUuid: data.id,
+            whereStr: data.extMap.whereStr
+          })
+        }
+      })
+      saveRoleTable().then(() => {
+        loading.close()
+      })
+    },
+    goBack() {
+      this.$router.go(-1)
     }
+
   } // 注册
 }
 
@@ -334,5 +344,13 @@ export default {
   .transfer-center-item{
     width: 40px;
     margin: 2px
+  }
+  .page-container .left-tree{
+    height: 80vh;
+    overflow: scroll;
+  }
+  .bottom-btn{
+    float: right;
+    padding-right: 100px
   }
 </style>
