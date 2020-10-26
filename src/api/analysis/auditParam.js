@@ -456,7 +456,6 @@ var replaceSql = ""; //待替换的SQL语句（含参数）
  * @author 梁瑞
  */
 export function initParamHtml(sql, paramsArr, name, modelId) {
-  debugger
   replaceSql = sql;
   $("#accordion").find("a").html(name);
   modelId = (modelId == null || typeof modelId == "undefined") ? "" : modelId;
@@ -1545,7 +1544,6 @@ export function replaceNodeParam() {
         })
       }
       if (replaceSql !== "") {
-        debugger
         //替换参数SQL中的ID（多值怎么替换？）
         for (var j = 0; j < filterArr.length; j++) { //遍历所有母参数信息
           var moduleParamId = filterArr[j].moduleParamId;
