@@ -252,18 +252,6 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    // formatType(row, column) {
-    //   var data = getDictList('004001')
-    //   // 根据row.authenType筛选出基础数据 将name值返显
-    //   var getOne = data.filter(obj => { return row.authenType === obj.codeValue })
-    //   return getOne[0].codeName
-    // },
-    formatCreateTime(row, column) {
-      // 拼接日期规格为YYYY-MM-DD hh:mm:ss
-      var createTime = new Date(row.createTime)
-      var createTimeRow = createTime.getFullYear() + '-' + (createTime.getMonth() + 1) + '-' + createTime.getDate() + ' ' + createTime.getHours() + ':' + createTime.getMinutes() + ':' + createTime.getSeconds()
-      return createTimeRow
-    },
     formatDuring(row, column) {
       var startDate = new Date(row.startTime)
       var rowStart = startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate() + ' ' + startDate.getHours() + ':' + startDate.getMinutes() + ':' + startDate.getSeconds()

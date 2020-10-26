@@ -16,7 +16,7 @@
           <el-row>
             <el-form-item label="过滤条件" prop="filterValue">
               <el-col span="20">
-                <el-input v-model="form.filterValue" :disabled="true"></el-input>
+                <el-input v-model="form.filterValue" :disabled="true" />
               </el-col>
               <el-button @click="showQueryBuilder">设置</el-button>
             </el-form-item>
@@ -52,7 +52,7 @@
 </template>
 <script>
 import Colorpicker from '@/components/Ace/vue-color-picker/packages/color-picker/src/color-picker'
-import myQueryBuilder from "@/views/analysis/auditModelResult/myQueryBuilder";
+import myQueryBuilder from '@/views/analysis/auditModelResult/myQueryBuilder'
 export default {
   name: 'ModelFilterShow',
   components: { Colorpicker, myQueryBuilder },
@@ -70,7 +70,7 @@ export default {
         queryBuilderJson: {}
       },
       queryRules: {},
-      queryBuilderDialogVisible:false,
+      queryBuilderDialogVisible: false,
       rules: {
         filterName: [{ type: 'string', required: true, message: '请输入名称', trigger: 'blur' }],
         filterValue: [{ type: 'string', required: true, message: '请输入过滤条件', trigger: 'blur' }]
@@ -151,15 +151,15 @@ export default {
     getSql(sql) {
       this.form.filterValue = sql
     },
-    showQueryBuilder(){
+    showQueryBuilder() {
       this.queryBuilderDialogVisible = true
     },
     queryCondition() {
-      let obj = this.$refs.myQueryBuilder.getSelectSql()
+      const obj = this.$refs.myQueryBuilder.getSelectSql()
       this.form.filterValue = obj.sql
       this.form.queryBuilderJson = obj.queryJson
       this.queryBuilderDialogVisible = false
-    },
+    }
   }
 }
 </script>

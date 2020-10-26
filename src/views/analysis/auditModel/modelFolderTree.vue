@@ -13,8 +13,8 @@
       :filter-node-method="filterNode"
       default-expand-all
       :expand-on-click-node="false"
+      node-key="id"
       @node-click="handleNodeClick"
-      nodeKey="id"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <span>
@@ -46,8 +46,8 @@ import MyElTree from '@/components/Ace/tree/src/tree.vue'
 import { findModelFoldeTree, deleteModelFolder, addModelFolder, updateModelFolder } from '@/api/analysis/auditModel'
 export default {
   name: 'ModelFolderTree',
-  props:['publicModel'],
-  components:{MyElTree},
+  components: { MyElTree },
+  props: ['publicModel'],
   data() {
     return {
       filterText: null,
@@ -84,19 +84,19 @@ export default {
      */
     getModelFolder() {
       findModelFoldeTree().then(result => {
-        let newData = [];
-        if(this.publicModel === "publicModel"){
-          //处理数据  只保留公共分类的文件夹数据 模型也不保留
-          for (let i = 0;i < result.data.length;i++){
-            if(result.data[i].id == 'gonggong'){
-              newData.push(result.data[i]);
+        let newData = []
+        if (this.publicModel === 'publicModel') {
+          // 处理数据  只保留公共分类的文件夹数据 模型也不保留
+          for (let i = 0; i < result.data.length; i++) {
+            if (result.data[i].id == 'gonggong') {
+              newData.push(result.data[i])
             }
           }
-          if(newData[0].children.length > 0){
+          if (newData[0].children.length > 0) {
             this.deleteModelData(newData[0])
           }
         }
-/*        else if(this.publicModel === "cancelModel"){
+        /*        else if(this.publicModel === "cancelModel"){
           for (let i = 0;i < result.data.length;i++){
             if(result.data[i].id == 2){
               newData.push(result.data[i]);
@@ -106,19 +106,18 @@ export default {
             this.deleteModelData(newData[0])
           }
         }*/
-        else{
+        else {
           newData = result.data
         }
         this.data = newData
       })
     },
-    deleteModelData(newData){
-      for(let i = 0; i < newData.children.length;i++){
-        if(newData.children[i].type == "model"){
-          newData.children.splice(i,1);
-        }
-        else{
-          this.deleteModelData(newData.children[i]);
+    deleteModelData(newData) {
+      for (let i = 0; i < newData.children.length; i++) {
+        if (newData.children[i].type == 'model') {
+          newData.children.splice(i, 1)
+        } else {
+          this.deleteModelData(newData.children[i])
         }
       }
     },
@@ -204,12 +203,12 @@ export default {
       this.form.parentUuid = this.selectTreeNode.id
       this.form.folderSort = 0
       debugger
-      let nodePath = this.$refs.tree.getNodePath(this.selectTreeNode);
-      let fullPath = [];
+      const nodePath = this.$refs.tree.getNodePath(this.selectTreeNode)
+      const fullPath = []
       nodePath.forEach(path => {
-        fullPath.push(path.id);
+        fullPath.push(path.id)
       })
-      this.form.folderPath = fullPath.join("/") + '/' + this.form.modelFolderUuid
+      this.form.folderPath = fullPath.join('/') + '/' + this.form.modelFolderUuid
       this.form.pbScope = this.selectTreeNode.extMap.pbScope
       addModelFolder(this.form).then(result => {
         if (result != null && result.code === 0) {
@@ -220,18 +219,18 @@ export default {
             pid: this.selectTreeNode.id,
             icon: 'el-icon-folder',
             extMap: { pbScope: this.selectTreeNode.extMap.pbScope },
-            type:'folder'
+            type: 'folder'
           }
           if (!this.selectTreeNode.children) {
             this.$set(this.selectTreeNode, 'children', [])
           }
           this.selectTreeNode.children.push(newChild)
         } else {
-          this.$notify({ title: "提示",
-            message: "请选择模型",
-            type: "info",
+          this.$notify({ title: '提示',
+            message: '请选择模型',
+            type: 'info',
             duration: 2000,
-            position: "bottom-right",
+            position: 'bottom-right'
           })
         }
       })
@@ -290,8 +289,8 @@ export default {
         this.$message({ success: 'error', message: '该分类下有分类或模型，不允许删除' })
       }
     },
-    getSelectNode(){
-      return this.selectTreeNode;
+    getSelectNode() {
+      return this.selectTreeNode
     }
   }
 }

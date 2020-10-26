@@ -28,7 +28,7 @@
             <el-row>
               <el-form-item label="被关联模型">
                 <el-col span="20">
-                  <el-input :disabled=true></el-input>
+                  <el-input :disabled="true" />
                 </el-col>
                 <el-button @click="selectModel">选择</el-button>
               </el-form-item>
@@ -111,7 +111,7 @@
       </div>
     </el-container>
     <el-dialog v-if="ModelTreeDialog" v-loading="modelTreeLoading" :destroy-on-close="true" :append-to-body="true" :visible.sync="ModelTreeDialog" title="请选择模型" width="80%">
-      <ModelFolderTree ref="modelFolderTree"/>
+      <ModelFolderTree ref="modelFolderTree" />
       <div slot="footer">
         <el-button type="primary" @click="getSelectModel">确定</el-button>
         <el-button @click="ModelTreeDialog = false">取消</el-button>
@@ -121,11 +121,11 @@
 </template>
 <script>
 import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
-import {selectModel } from '@/api/analysis/auditModel'
+import { selectModel } from '@/api/analysis/auditModel'
 export default {
   name: 'EditModel',
+  components: { ModelFolderTree },
   props: ['columns', 'treeId', 'data'],
-  components: { ModelFolderTree},
   data() {
     return {
       form: {
@@ -137,8 +137,8 @@ export default {
         relationObjectUuid: '',
         modelDetailConfig: []
       },
-      ModelTreeDialog:false,
-      modelTreeLoading:false,
+      ModelTreeDialog: false,
+      modelTreeLoading: false,
       relModelTable: [],
       relModelParam: [],
       relTable: [],
@@ -294,34 +294,32 @@ export default {
     /**
      * 关联模型选择模型窗体
      */
-    selectModel(){
+    selectModel() {
       this.ModelTreeDialog = true
     },
     /**
      * 获取模型选择窗体选择的数据
      */
-    getSelectModel(){
-      let modelTreeNode = this.$refs.modelFolderTree.getSelectNode()
-      if(modelTreeNode.type != "model"){
+    getSelectModel() {
+      const modelTreeNode = this.$refs.modelFolderTree.getSelectNode()
+      if (modelTreeNode.type != 'model') {
         this.$message({ type: 'info', message: '请选择模型!' })
-        return;
+        return
       }
       this.modelTreeLoading = true
-      //获取模型基本信息开始初始化能关联的参数
-      selectModel(modelTreeNode.id).then(result=>{
+      // 获取模型基本信息开始初始化能关联的参数
+      selectModel(modelTreeNode.id).then(result => {
         this.modelTreeLoading = false
-        if(result.data == null){
+        if (result.data == null) {
           this.$message({ type: 'error', message: '获取模型信息失败!' })
           return
         }
-        if(result.data.parammModelRel.length == 0){
+        if (result.data.parammModelRel.length == 0) {
           this.$message({ type: 'info', message: '该模型没有参数,请重新选择!' })
           return
         }
-        //初始化模型的参数
+        // 初始化模型的参数
       })
-
-
     }
   }
 }
