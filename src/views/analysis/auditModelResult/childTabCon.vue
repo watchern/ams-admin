@@ -294,7 +294,6 @@ export default {
     },
     // ag-grid创建完成后执行的事件
     onGridReady(params) {
-      console.log(params);
       // 获取gridApi
       this.gridApi = params.api;
       this.columnApi = params.columnApi;
@@ -303,13 +302,6 @@ export default {
     },
     // 单元格点击事件
     onCellClicked(cell) {
-      console.log(cell);
-      // 获取选中单元格的数据
-      console.log(cell.value);
-      // 获取选中单元格所在行号
-      console.log(cell.rowIndex);
-      // 获取选中单元格所在行的数据
-      console.log(cell.data);
     },
     initData(sql, nextValue) {
       if (this.useType == "modelRunResult") {
@@ -462,7 +454,6 @@ export default {
     },
     // 处理数据
     getList() {
-      console.log(this.modelResultData)
       // es6过滤得到满足搜索条件的展示数据list
       this.rowData = this.modelResultData.filter(
         (item, index) =>
@@ -473,13 +464,11 @@ export default {
     },
     // 当每页数量改变
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
       this.limit = val;
       this.getList();
     },
     // 当当前页改变
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
       this.page = val;
       this.getList();
     },
