@@ -455,6 +455,9 @@ export default {
     dialogFormVisible(value){
       this.$nextTick(function(){
         if(value){
+          console.log(7777777777777777)
+          console.log(this.executeData.sqls)
+          console.log(this.executeData.arr)
           this.$refs.paramDrawRef.initParamHtmlSS(this.executeData.sql, this.executeData.arr, "请输入参数", null); //前后加遮罩
         }
       })

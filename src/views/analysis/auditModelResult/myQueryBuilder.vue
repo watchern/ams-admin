@@ -77,8 +77,20 @@ export default {
         alert("请添加条件后在进行查询！");
       } else {
         var sql = this.queryToSql(this.queryJson);
-        obj = {sql:sql,queryJson:this.queryJson}
-        return obj
+        var obj = { sql: sql, queryJson: this.queryJson };
+        this.$emit("queryconditionchangetable", sql, this.queryJson);
+      }
+    },
+    /**
+     * 为了获取queryBuilder中得到的sql语句和返显的Json数据
+     */
+    selectSql1() {
+      if (this.queryJson.children == null) {
+        alert("请添加条件后在进行查询！");
+      } else {
+        var sql = this.queryToSql(this.queryJson);
+        var obj = { sql: sql, queryJson: this.queryJson };
+        return obj;
       }
     },
     queryToSql(query) {
