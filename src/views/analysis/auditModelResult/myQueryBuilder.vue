@@ -54,10 +54,10 @@ export default {
     getQueryBuilderOperators(columnObj) {
       let operators = [];
       if (columnObj.columnType.toUpperCase().indexOf("TIMESTAMP") != -1) {
-        columnObj.columnType = "VARCHAR2";
+        columnObj.columnType = "VARCHAR";
       }
       if (
-        columnObj.columnType.toUpperCase().indexOf("VARCHAR2") != -1 ||
+        columnObj.columnType.toUpperCase().indexOf("VARCHAR") != -1 ||
         columnObj.columnType.toUpperCase().indexOf("CLOB") != -1
       ) {
         operators = ["=", "<>", "like", "not like"];
@@ -114,7 +114,7 @@ export default {
           console.log(dataTypeObj);
           if (
             dataTypeObj.columnType == "TIMESTAMP" ||
-            dataTypeObj.columnType == "VARCHAR2" ||
+            dataTypeObj.columnType == "VARCHAR" ||
             dataTypeObj.columnType == "CLOB"
           ) {
             if (

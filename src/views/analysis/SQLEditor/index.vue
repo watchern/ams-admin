@@ -759,7 +759,6 @@ export default {
           });
         }
         else{
-          obj.sql = obj.sqls
           this.openParamDraw(obj)
           console.log(obj)
         }

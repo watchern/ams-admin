@@ -22,12 +22,15 @@
           </el-form-item>
           <div ref="relModelDivParent" style="display: none;">
             <el-form-item label="被关联模型">
-              <el-select v-model="form.relationObjectUuid" value="-1" @change="relModelSelectChange">
+              <!--<el-select v-model="form.relationObjectUuid" value="-1" @change="relModelSelectChange">
                 <el-option label="请选择" value="-1" />
                 <el-option label="模型1" value="1" />
                 <el-option label="模型2" value="2" />
-              </el-select>
-              <el-input></el-input>
+              </el-select>-->
+              <div>
+                <el-input :disabled=true style="float:left"></el-input>
+                <el-button type="primary" style="float: right" @click="selectModel">选择</el-button>
+              </div>
             </el-form-item>
             <div ref="relModelTableDiv" style="display: none">
               <el-button type="primary" size="mini" style="float: right" @click="addRelFilter(1)">添加</el-button>
@@ -106,12 +109,22 @@
         </el-form>
       </div>
     </el-container>
+    <el-dialog v-if="ModelTreeDialog" v-loading="modelTreeLoading" :destroy-on-close="true" :append-to-body="true" :visible.sync="ModelTreeDialog" title="请选择模型" width="80%">
+      <ModelFolderTree ref="modelFolderTree"/>
+      <div slot="footer">
+        <el-button type="primary" @click="getSelectModel">确定</el-button>
+        <el-button @click="ModelTreeDialog = false">取消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
+import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
+import {selectModel } from '@/api/analysis/auditModel'
 export default {
   name: 'EditModel',
   props: ['columns', 'treeId', 'data'],
+  components: { ModelFolderTree},
   data() {
     return {
       form: {
@@ -123,6 +136,8 @@ export default {
         relationObjectUuid: '',
         modelDetailConfig: []
       },
+      ModelTreeDialog:false,
+      modelTreeLoading:false,
       relModelTable: [],
       relModelParam: [],
       relTable: [],
@@ -268,9 +283,44 @@ export default {
     deleteRow(index, rows) {
       rows.splice(index, 1)
     },
+    /**
+     * 值改变同时更改树节点名称
+     * @param value 改变的值
+     */
     nameValueChange(value) {
-      // 值改变同时更改树节点名称
       this.$emit('updateTreeNode', value)
+    },
+    /**
+     * 关联模型选择模型窗体
+     */
+    selectModel(){
+      this.ModelTreeDialog = true
+    },
+    /**
+     * 获取模型选择窗体选择的数据
+     */
+    getSelectModel(){
+      let modelTreeNode = this.$refs.modelFolderTree.getSelectNode()
+      if(modelTreeNode.type != "model"){
+        this.$message({ type: 'info', message: '请选择模型!' })
+        return;
+      }
+      this.modelTreeLoading = true
+      //获取模型基本信息开始初始化能关联的参数
+      selectModel(modelTreeNode.id).then(result=>{
+        this.modelTreeLoading = false
+        if(result.data == null){
+          this.$message({ type: 'error', message: '获取模型信息失败!' })
+          return
+        }
+        if(result.data.parammModelRel.length == 0){
+          this.$message({ type: 'info', message: '该模型没有参数,请重新选择!' })
+          return
+        }
+        //初始化模型的参数
+      })
+
+
     }
   }
 }

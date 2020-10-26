@@ -127,9 +127,9 @@ export default {
      * @param data 树的对象数据 包括子节点
      */
     handleNodeClick(data) {
+      this.selectTreeNode = data
       if (data.type === 'model') {
       } else {
-        this.selectTreeNode = data
         this.$emit('refreshModelList', data)
       }
     },
@@ -227,7 +227,12 @@ export default {
           }
           this.selectTreeNode.children.push(newChild)
         } else {
-          this.$notify({ success: '失败', message: '添加模型分类失败' })
+          this.$notify({ title: "提示",
+            message: "请选择模型",
+            type: "info",
+            duration: 2000,
+            position: "bottom-right",
+          })
         }
       })
       // this.clearForm();
