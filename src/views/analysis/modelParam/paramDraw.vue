@@ -32,7 +32,6 @@ export default {
     },
     methods:{
       initParamHtmlSS(sql,paramsArr,name,modelId){
-        alert(123);
         initParamHtml(sql,paramsArr,name,modelId)
       }
     }
