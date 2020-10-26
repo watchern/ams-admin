@@ -30,8 +30,14 @@
         >重置</el-button -->
       <el-button type="primary" @click="reSet">重置</el-button>
     </el-row>
+    <el-row v-if="modelResultButtonIsShow">
+      <el-button type="primary">导出</el-button>
+      <el-button type="primary">图标展示</el-button>
+    </el-row>
     <!-- 使用ag-grid-vue组件 其中columnDefs为列，rowData为表格数据 -->
     <ag-grid-vue
+      v-if="isSee"
+      v-loading="isLoading"
       style="height: 200px"
       class="table ag-theme-balham"
       :column-defs="columnDefs"
@@ -42,12 +48,25 @@
       @cellClicked="onCellClicked"
       @gridReady="onGridReady"
     />
+    <el-card v-if="!isSee" class="box-card">
+      <div>{{ errorMessage }}</div>
+    </el-card>
     <pagination
       v-show="total > 0"
       :total="total"
       :page.sync="pageQuery.pageNo"
       :limit.sync="pageQuery.pageSize"
       @pagination="initData"
+    />
+    <el-pagination
+      v-if="modelResultPageIsSee"
+      :current-page="page"
+      :page-sizes="[10,20,30,50]"
+      :page-size="limit"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total1"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
     />
   </div>
 </template>
@@ -79,7 +98,10 @@ export default {
     Pagination,
     myQueryBuilder
   },
-  props: ['nowtable', 'modelUuid'],
+  /**
+   * 模型运行结果使用变量：nowtable：表示模型结果表对象   modelUuid：根据modelUUid进行表格渲染，只有主表用渲染
+   */
+  props: ['nowtable', 'modelUuid', 'useType', 'prePersonalVal'],
   data() {
     return {
       dialogVisible: false,
@@ -100,8 +122,19 @@ export default {
       dataArray: [], // 保存当前表格中的数据
       queryData: [], // 保存列信息，用来传给子组件(queryBuilder组件)
       queryJson: {}, // 用来储存由子组件传过来的 queryBuilder 的 Json数据
-      conditionShowData: [],
-      primaryKey: ''
+      conditionShowData: [], // 存放模型运行结果需要渲染的数据
+      primaryKey: '', // 存放模型运行结果主键
+      isLoading: true,
+      nextValue: [], // 存放模型结果后传进来的值
+      modelResultData: [], // 用来存放模型结果数据
+      modelResultColumnNames: [], // 用来存放模型结果的列名
+      limit: 10, // //模型结果前台分页的初始一页有多少条数据属性
+      total1: null, // 模型结果前台分页的total属性
+      page: 1, // 模型结果前台分页的当前页属性
+      isSee: true, // 当输入sql错误和结果集为0的时候不显示aggrid表格
+      errorMessage: '', // 存放模型结果错误消息
+      modelResultPageIsSee: false, // 模型结果分页是否可见
+      modelResultButtonIsShow: false // 模型结果按钮是否可见
     }
   },
   mounted() {
@@ -260,7 +293,6 @@ export default {
     },
     // ag-grid创建完成后执行的事件
     onGridReady(params) {
-      console.log(params)
       // 获取gridApi
       this.gridApi = params.api
       this.columnApi = params.columnApi
@@ -269,55 +301,86 @@ export default {
     },
     // 单元格点击事件
     onCellClicked(cell) {
-      console.log(cell)
-      // 获取选中单元格的数据
-      console.log(cell.value)
-      // 获取选中单元格所在行号
-      console.log(cell.rowIndex)
-      // 获取选中单元格所在行的数据
-      console.log(cell.data)
     },
-    initData(sql) {
-      // 当当前表是主表的时候myFlag赋值为true
-      if (this.nowtable.tableType == 1) {
-        this.myFlag = true
-      }
-      var colNames = []
-      var col = []
-      var da = []
-      this.pageQuery.condition = this.nowtable
-      selectTable(this.pageQuery, sql).then((resp) => {
-        this.total = resp.data.total
-        this.dataArray = resp.data.records[0].result
-        this.queryData = resp.data.records[0].columnInfo
-        // 将返回对象的所有属性，按顺序提取出来，用于后续生成ag-grid列信息
-        for (const key in resp.data.records[0].result[0]) {
-          colNames.push(key)
+    initData(sql, nextValue) {
+      if (this.useType == 'modelRunResult') {
+        this.isLoading = true
+        // 当当前表是主表的时候myFlag赋值为true
+        if (this.nowtable.tableType == 1) {
+          this.myFlag = true
         }
-        // 生成ag-grid列信息
-        for (var i = 0; i < colNames.length; i++) {
-          if (i == 0) {
-            var rowColom = {
-              headerName: colNames[i],
-              field: colNames[i],
-              checkboxSelection: true
-            }
-          } else {
-            var rowColom = {
-              headerName: colNames[i],
-              field: colNames[i]
-            }
+        var colNames = []
+        var col = []
+        var da = []
+        this.pageQuery.condition = this.nowtable
+        selectTable(this.pageQuery, sql).then((resp) => {
+          this.total = resp.data.total
+          this.dataArray = resp.data.records[0].result
+          this.queryData = resp.data.records[0].columnInfo
+          // 将返回对象的所有属性，按顺序提取出来，用于后续生成ag-grid列信息
+          for (const key in resp.data.records[0].result[0]) {
+            colNames.push(key)
           }
+          // 生成ag-grid列信息
+          for (var i = 0; i < colNames.length; i++) {
+            if (i == 0) {
+              var rowColom = {
+                headerName: colNames[i],
+                field: colNames[i],
+                checkboxSelection: true
+              }
+            } else {
+              var rowColom = {
+                headerName: colNames[i],
+                field: colNames[i]
+              }
+            }
 
-          col.push(rowColom)
+            col.push(rowColom)
+          }
+          // 生成ag-frid表格数据
+          for (var i = 0; i < resp.data.records[0].result.length; i++) {
+            da.push(resp.data.records[0].result[i])
+          }
+        })
+        this.columnDefs = col
+        this.rowData = da
+        this.isLoading = false
+      } else if (this.useType == 'sqlEditor') {
+        this.loading = true
+        this.nextValue = nextValue
+        var col = []
+        var rowData = []
+        if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
+          if (this.nextValue.result == undefined) {
+            this.isSee = false
+            this.modelResultPageIsSee = false
+            this.modelResultButtonIsShow = false
+            this.errorMessage = this.nextValue.executeSQL.message
+          } else {
+            this.modelResultButtonIsShow = true
+            this.modelResultPageIsSee = true
+            this.modelResultData = this.nextValue.result
+            this.modelResultColumnNames = this.nextValue.columnNames
+            for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
+              var rowColom = {
+                headerName: this.nextValue.columnNames[j],
+                field: this.nextValue.columnNames[j]
+              }
+              var key = this.nextValue.columnNames[j]
+              var value = this.nextValue.result[j]
+              col.push(rowColom)
+            }
+            for (var k = 0; k < this.nextValue.result.length; k++) {
+              rowData.push(this.nextValue.result[k])
+            }
+            this.columnDefs = col
+            this.getList()
+            // this.rowData = rowData
+          }
+          this.isLoading = false
         }
-        // 生成ag-frid表格数据
-        for (var i = 0; i < resp.data.records[0].result.length; i++) {
-          da.push(resp.data.records[0].result[i])
-        }
-      })
-      this.columnDefs = col
-      this.rowData = da
+      }
     },
     // 点击查询按钮触发事件
     queryCondition() {
@@ -351,9 +414,14 @@ export default {
       if (this.modelUuid != undefined) {
         for (var i = 0; i < this.conditionShowData[0].length; i++) {
           for (var j = 0; j < this.conditionShowData[0][i].length; j++) {
-            if (params.data[this.primaryKey] == this.conditionShowData[0][i][j]) {
-              return { 'background-color': JSON.parse(this.conditionShowData[1][i]).backGroundColor,
-                'color': JSON.parse(this.conditionShowData[1][i]).fontColor }
+            if (
+              params.data[this.primaryKey] == this.conditionShowData[0][i][j]
+            ) {
+              return {
+                'background-color': JSON.parse(this.conditionShowData[1][i])
+                  .backGroundColor,
+                color: JSON.parse(this.conditionShowData[1][i]).fontColor
+              }
             }
           }
         }
@@ -363,19 +431,44 @@ export default {
      * 在渲染表格之前拿到渲染表格时需要的数据
      */
     getRenderTableData() {
-      if (this.modelUuid != undefined) {
-        selectConditionShow(this.modelUuid, this.nowtable.resultTableName).then((resp) => {
-          this.conditionShowData = resp.data
-          selectPrimaryKeyByTableName(this.nowtable.resultTableName).then((resp) => {
-            this.primaryKey = resp.data
-            this.initData()
-          }
-          )
+      if (this.useType == 'modelRunResult') {
+        if (this.modelUuid != undefined) {
+          selectConditionShow(
+            this.modelUuid,
+            this.nowtable.resultTableName
+          ).then((resp) => {
+            this.conditionShowData = resp.data
+            selectPrimaryKeyByTableName(this.nowtable.resultTableName).then(
+              (resp) => {
+                this.primaryKey = resp.data
+                this.initData()
+              }
+            )
+          })
+        } else {
+          this.initData()
         }
-        )
-      } else {
-        this.initData()
       }
+    },
+    // 处理数据
+    getList() {
+      // es6过滤得到满足搜索条件的展示数据list
+      this.rowData = this.modelResultData.filter(
+        (item, index) =>
+          index < this.page * this.limit &&
+          index >= this.limit * (this.page - 1)
+      )
+      this.total1 = this.modelResultData.length
+    },
+    // 当每页数量改变
+    handleSizeChange(val) {
+      this.limit = val
+      this.getList()
+    },
+    // 当当前页改变
+    handleCurrentChange(val) {
+      this.page = val
+      this.getList()
     }
   }
 }

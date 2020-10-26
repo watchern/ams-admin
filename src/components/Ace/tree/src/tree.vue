@@ -378,6 +378,10 @@ export default {
       return this.store.getCheckedNodes(leafOnly, includeHalfChecked)
     },
 
+    getAllNodes() {
+      return this.store._getAllNodes()
+    },
+
     getCheckedKeys(leafOnly) {
       return this.store.getCheckedKeys(leafOnly)
     },

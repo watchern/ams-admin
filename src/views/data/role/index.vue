@@ -1,30 +1,19 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.title" :placeholder="$t('table.title')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance" :placeholder="$t('table.importance')" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
-      </el-select>
-      <el-select v-model="listQuery.type" :placeholder="$t('table.type')" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
-      </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        {{ $t('table.search') }}
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }}
-      </el-button>
-      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        {{ $t('table.reviewer') }}
-      </el-checkbox>
+      <QueryField
+        ref="queryfield"
+        :form-data="queryFields"
+        @submit="getList"
+      />
     </div>
-
+    <div>
+      <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
+      <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="handleUpdate()">修改</el-button>
+      <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="handleDelete()">删除</el-button>
+      <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="bindRes()">绑定资源</el-button>
+      <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="authentic()">授权</el-button>
+    </div>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -34,194 +23,128 @@
       highlight-current-row
       style="width: 100%;"
       @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
     >
-      <el-table-column :label="$t('table.id')" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
-        <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.date')" width="150px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.title')" min-width="150px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.author')" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="showReviewer" :label="$t('table.reviewer')" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span style="color:red;">{{ row.reviewer }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.importance')" width="80px">
-        <template slot-scope="{row}">
-          <svg-icon v-for="n in +row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.readings')" align="center" width="95">
-        <template slot-scope="{row}">
-          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
-          <span v-else>0</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.status')" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
-          </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
-            {{ $t('table.publish') }}
-          </el-button>
-          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            {{ $t('table.draft') }}
-          </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            {{ $t('table.delete') }}
-          </el-button>
-        </template>
-      </el-table-column>
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="数据角色名称" width="200px" align="center" prop="dataRoleName" />
+      <el-table-column label="创建时间" width="300px" align="center" :formatter="formatCreateTime" prop="createTime" />
+      <el-table-column label="授权方式" width="200px" align="center" prop="authenType" />
+      <el-table-column label="数据筛选器状态" prop="filterState" style="width = 200px" />
+      <el-table-column label="数据有效期" prop="timeDuring" :formatter="formatDuring" style="width = 400px" />
     </el-table>
-
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('table.type')" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.date')" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
-        </el-form-item>
-        <el-form-item :label="$t('table.title')" prop="title">
-          <el-input v-model="temp.title" />
-        </el-form-item>
-        <el-form-item :label="$t('table.status')">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.importance')">
-          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
-        </el-form-item>
-        <el-form-item :label="$t('table.remark')">
-          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          {{ $t('table.cancel') }}
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
-        </el-button>
+      <div class="detail-form">
+        <el-form
+          ref="dataForm"
+          :rules="rules"
+          :model="temp"
+          label-position="right"
+          style="width: 700px; margin-left:50px;"
+        >
+          <el-form-item label="数据角色名称" prop="dataRoleName">
+            <el-input v-model="temp.dataRoleName" />
+          </el-form-item>
+          <el-form-item label="授权方式" prop="authenType">
+            <el-select ref="authenType" v-model="temp.authenType" placeholder="请选择授权方式">
+              <el-option
+                v-for="item in authenTypeJson"
+                :key="item.codeValue"
+                :label="item.codeName"
+                :value="item.codeValue"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="数据筛选器状态" prop="filterState">
+            <el-input v-model="temp.filterState" type="textarea" />
+          </el-form-item>
+          <el-form-item label="开始时间" prop="startTime">
+            <el-date-picker
+              v-model="temp.startTime"
+              format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              clearable
+              style="width: 100%"
+              :picker-options="startDatePicker"
+              :disabled="dialogStatus=='view'"
+              type="datetime"
+              :placeholder="dialogStatus=='view'?'':'请输入生效开始时间'"
+            />
+          </el-form-item>
+          <el-form-item label="结束时间" prop="endTime">
+            <el-date-picker
+              v-model="temp.endTime"
+              format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              clearable
+              style="width: 100%"
+              :picker-options="endDatePicker"
+              :disabled="dialogStatus=='view'"
+              type="datetime"
+              :placeholder="dialogStatus=='view'?'':'请输入生效结束时间'"
+            />
+          </el-form-item>
+        </el-form>
       </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
-      </span>
+      <div slot="footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
-import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
+import { listByPage, save, update, del } from '@/api/data/role'
+import QueryField from '@/components/Ace/query-field/index'
+import { getDictList } from '@/utils'
 
 export default {
-  name: 'ComplexTable',
-  components: { Pagination },
-  directives: { waves },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
-    }
-  },
+  components: { Pagination, QueryField },
   data() {
     return {
-      tableKey: 0,
+      startDatePicker: this.beginDate(),
+      endDatePicker: this.processDate(),
+      tableKey: 'dataRoleUuid',
       list: null,
       total: 0,
-      listLoading: true,
-      listQuery: {
-        page: 1,
-        limit: 20,
-        importance: undefined,
-        title: undefined,
-        type: undefined,
-        sort: '+id'
+      listLoading: false,
+      // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
+      queryFields: [
+        { label: '数据角色名称', name: 'dataRoleName', type: 'text', value: '' }
+      ],
+      pageQuery: {
+        condition: null,
+        pageNo: 1,
+        pageSize: 20,
+        sortBy: 'asc',
+        sortName: 'create_time'
       },
-      importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
+      authenTypeJson: [],
       temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
+        dataRoleUuid: undefined,
+        dataRoleName: '',
+        authenType: '',
+        filterState: '',
+        startTime: '',
+        endTime: ''
       },
+      selections: [],
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: 'Edit',
-        create: 'Create'
+        update: '编辑业务属性',
+        create: '添加业务属性'
       },
       dialogPvVisible: false,
-      pvData: [],
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
+        dataRoleName: [{ required: true, message: '请填写数据角色名称', trigger: 'change' }],
+        authenType: [{ required: true, message: '请选择授权方式', trigger: 'change' }],
+        startTime: [{ required: true, message: '请填写生效开始时间', trigger: 'change' }],
+        endTime: [{ required: true, message: '请填写生效结束时间', trigger: 'change' }],
+        filterState: [{ max: 100, message: '长度不得超过100', trigger: 'change' }]
       },
       downloadLoading: false
     }
@@ -230,55 +153,65 @@ export default {
     this.getList()
   },
   methods: {
-    getList() {
+    beginDate() {
+      const self = this
+      return {
+        disabledDate(time) {
+          if (self.temp.endTime) { // 如果结束时间不为空，则小于结束时间
+            return new Date(self.temp.endTime).getTime() < time.getTime()
+          } else {
+            // return time.getTime() > Date.now()//开始时间不选时，结束时间最大值小于等于当天
+          }
+        }
+      }
+    },
+    processDate() {
+      const self = this
+      return {
+        disabledDate(time) {
+          if (self.temp.startTime) { // 如果开始时间不为空，则结束时间大于开始时间
+            return new Date(self.temp.startTime).getTime() > time.getTime()
+          } else {
+            // return time.getTime() > Date.now()//开始时间不选时，结束时间最大值小于等于当天
+          }
+        }
+      }
+    },
+    getList(query) {
+      this.authenTypeJson = getDictList('004001')
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+      if (query) this.pageQuery.condition = query
+      listByPage(this.pageQuery).then(resp => {
+        this.total = resp.data.total
+        this.list = resp.data.records
+        this.listLoading = false
       })
     },
     handleFilter() {
-      this.listQuery.page = 1
+      this.pageQuery.pageNo = 1
       this.getList()
-    },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作成功',
-        type: 'success'
-      })
-      row.status = status
     },
     sortChange(data) {
       const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
-      }
-    },
-    sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
-      } else {
-        this.listQuery.sort = '-id'
-      }
+      this.pageQuery.sortBy = order
+      this.pageQuery.sortName = prop
       this.handleFilter()
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
+        dataRoleUuid: undefined,
+        dataRoleName: '',
+        authenType: '',
+        filterState: '',
+        startTime: '',
+        endTime: ''
       }
     },
     handleCreate() {
+      /* console.log(this.$store.getters.personuuid);
+      getDict('sex').then(data => {
+        console.log(data)
+      });*/
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -287,92 +220,104 @@ export default {
       })
     },
     createData() {
+      var starDate = new Date(this.temp.startTime)
+      this.temp.startTime = starDate
+      var endDate = new Date(this.temp.endTime)
+      this.temp.endTime = endDate
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
+          save(this.temp).then(() => {
+            this.getList()
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
               message: '创建成功',
               type: 'success',
-              duration: 2000
+              duration: 2000,
+              position: 'bottom-right'
             })
           })
         }
       })
     },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
+    handleUpdate() {
+      this.temp = Object.assign({}, this.selections[0]) // copy obj
+      var startTime = new Date(this.temp.startTime)
+      this.temp.startTime = startTime.getFullYear() + '-' + (startTime.getMonth() + 1) + '-' + startTime.getDate() + ' ' + startTime.getHours() + ':' + startTime.getMinutes() + ':' + startTime.getSeconds()
+      var endTime = new Date(this.temp.endTime)
+      this.temp.endTime = endTime.getFullYear() + '-' + (endTime.getMonth() + 1) + '-' + endTime.getDate() + ' ' + endTime.getHours() + ':' + endTime.getMinutes() + ':' + endTime.getSeconds()
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
+    formatCreateTime(row, column) {
+      // 拼接日期规格为YYYY-MM-DD hh:mm:ss
+      var createTime = new Date(row.createTime)
+      var createTimeRow = createTime.getFullYear() + '-' + (createTime.getMonth() + 1) + '-' + createTime.getDate() + ' ' + createTime.getHours() + ':' + createTime.getMinutes() + ':' + createTime.getSeconds()
+      return createTimeRow
+    },
+    formatDuring(row, column) {
+      var startDate = new Date(row.startTime)
+      var rowStart = startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate() + ' ' + startDate.getHours() + ':' + startDate.getMinutes() + ':' + startDate.getSeconds()
+      var endDate = new Date(row.endTime)
+      var rowEnd = endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate() + ' ' + endDate.getHours() + ':' + endDate.getMinutes() + ':' + endDate.getSeconds()
+      return rowStart + '至' + rowEnd
+    },
     updateData() {
+      var starDate = new Date(this.temp.startTime)
+      this.temp.startTime = starDate
+      var endDate = new Date(this.temp.endTime)
+      this.temp.endTime = endDate
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
+          update(tempData).then(() => {
+            const index = this.list.findIndex(v => v.dataRoleUuid === this.temp.dataRoleUuid)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
               message: '更新成功',
               type: 'success',
-              duration: 2000
+              duration: 2000,
+              position: 'bottom-right'
             })
           })
         }
       })
     },
-    handleDelete(row, index) {
-      this.$notify({
-        title: '成功',
-        message: '删除成功',
-        type: 'success',
-        duration: 2000
-      })
-      this.list.splice(index, 1)
-    },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
-    },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
-        const data = this.formatJson(filterVal)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'table-list'
+    handleDelete() {
+      var ids = []
+      this.selections.forEach((r, i) => { ids.push(r.dataRoleUuid) })
+      del(ids.join(',')).then(() => {
+        this.getList()
+        this.$notify({
+          title: '成功',
+          message: '删除成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
         })
-        this.downloadLoading = false
       })
     },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
+    handleSelectionChange(val) {
+      this.selections = val
     },
     getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
+      const sort = this.pageQuery.sort
+      return sort === `+${key}` ? 'asc' : 'desc'
+    },
+
+    authentic() {
+
+    },
+    bindRes() {
+      var roleUuid = this.selections[0].dataRoleUuid
+      this.$router.push({
+        path: '/data/roleRes/' + roleUuid
+      })
     }
   }
 }
