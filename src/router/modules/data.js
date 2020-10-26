@@ -23,13 +23,17 @@ const dataRouter = {
       name: '业务场景维护',
       component: () => import('@/views/data/scene/index')
     }, {
+      path: 'sceneEdit',
+      name: '业务场景详情维护',
+      component: () => import('@/views/data/scene/edit')
+    }, {
       path: 'resquery',
       name: '用户资源查询',
       component: () => import('@/views/data/resquery/index')
     }, {
       path: 'dict',
       name: '数据字典维护',
-      component: () => import('@/views/data/dict/index')
+      component: () => import('@/views/base/sysDate/index')
     }, {
       path: 'tblrel',
       name: '表关联关系维护',
