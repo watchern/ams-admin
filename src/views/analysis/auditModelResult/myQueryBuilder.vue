@@ -77,11 +77,11 @@ export default {
         alert("请添加条件后在进行查询！");
       } else {
         var sql = this.queryToSql(this.queryJson);
-        this.$emit("queryconditionchangetable", sql, this.queryJson);
+        obj = {sql:sql,queryJson:this.queryJson}
+        return obj
       }
     },
     queryToSql(query) {
-      debugger;
       const sql = [];
       const that = this;
       const logicalOperator = query.logicalOperator;

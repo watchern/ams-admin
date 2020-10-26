@@ -381,7 +381,7 @@
       <paramDraw ref="paramDrawRef"></paramDraw>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
-        <el-button type="primary" @click="">确定</el-button>
+        <el-button type="primary" @click="replaceNodeParam">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -420,6 +420,7 @@ import sqlDraftList from "@/views/analysis/SQLEditor/sqlDraftList";
 import { updateDraft } from "@/api/analysis/SQLEditor/SQLDraft";
 import childTabs from "@/views/analysis/auditModelResult/childTabs";
 import paramDraw from "@/views/analysis/modelParam/paramDraw";
+import { replaceNodeParam } from "@/api/analysis/auditParam";
 /**
  * 当前执行进度
  * @type {number}
@@ -765,6 +766,11 @@ export default {
       this.dialogFormVisible = true;
        this.executeData = data
     },
+    replaceNodeParam(){
+      var obj = replaceNodeParam()
+      console.log(6666666666666666)
+      console.log(obj)
+    }
   },
 };
 function test() {
