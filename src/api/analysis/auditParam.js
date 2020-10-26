@@ -456,7 +456,6 @@ var replaceSql = ""; //待替换的SQL语句（含参数）
  * @author 梁瑞
  */
 export function initParamHtml(sql, paramsArr, name, modelId) {
-  debugger
   replaceSql = sql;
   $("#accordion").find("a").html(name);
   modelId = (modelId == null || typeof modelId == "undefined") ? "" : modelId;
@@ -1378,6 +1377,7 @@ function matchingPcRelation(dataArr) {
  * 替换节点的参数
  */
 export function replaceNodeParam() {
+  debugger
   var returnObj = {
     "verify": true, //校验是否通过
     "message": "", //提示信息
@@ -1528,7 +1528,10 @@ export function replaceNodeParam() {
     $(".textParam").each(function (t, v) {
       var dataLength = $(this).attr("data-datalength"); //获取参数值长度
       var paramName = $(this).attr("data-name"); //获取参数名称
-      if (typeof dataLength !== "undefined" && $(this).val().length !== parseInt(dataLength)) { //如果该参数有长度限制且默认值不等于设置的长度值
+      if(dataLength=='null'){
+        dataLength=null
+      }
+      if (dataLength !== null && $(this).val().length !== parseInt(dataLength)) { //如果该参数有长度限制且默认值不等于设置的长度值
         returnObj.verify = false;
         returnObj.message = "参数【" + paramName + "】输入值的长度与设置的长度值【" + parseInt(dataLength) + "】不相等";
         return false;
@@ -1545,7 +1548,6 @@ export function replaceNodeParam() {
         })
       }
       if (replaceSql !== "") {
-        debugger
         //替换参数SQL中的ID（多值怎么替换？）
         for (var j = 0; j < filterArr.length; j++) { //遍历所有母参数信息
           var moduleParamId = filterArr[j].moduleParamId;

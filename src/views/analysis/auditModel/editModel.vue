@@ -51,7 +51,7 @@
             <el-button type="primary" @click="getSqlObj(2)">图形化编辑器</el-button>
             <el-button type="primary" @click="openSqlEditor">SQL编辑器</el-button>
           </el-form-item>
-          <el-dialog :fullscreen=true v-if="SQLEditorShow" :destroy-on-close="true" :append-to-body="appendToBody" :visible.sync="SQLEditorShow" title="SQL编辑器" width="80%" @close="sqlEditorCloseEvent">
+          <el-dialog :fullscreen=true v-if="SQLEditorShow" :destroy-on-close="true" :append-to-body="true" :visible.sync="SQLEditorShow" title="SQL编辑器" width="80%" @close="sqlEditorCloseEvent">
             <SQLEditor ref="SQLEditor" v-if="SQLEditorShow" :sqlEditorParamObj="sqlEditorParamObj" :sqlValue="form.sqlValue"/>
             <div slot="footer">
               <el-button type="primary" @click="getSqlObj">保存</el-button>
@@ -215,7 +215,6 @@ export default {
         label: 'label'
       },
       SQLEditorShow: false,
-      appendToBody: true,
       paramData: [],
       paramValueModel: {},
       columnData: [],
@@ -306,7 +305,6 @@ export default {
       //初始化审计事项
     },
     handleNodeClick(data, node) {
-      debugger
       this.hideModelDetail()
       if (data.type == 'basicInfo') {
         this.$refs.modelDesign.style.display = 'none'
