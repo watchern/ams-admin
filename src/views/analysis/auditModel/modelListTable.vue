@@ -70,17 +70,16 @@ export default {
   data() {
     return {
       tableKey: 'errorUuid',
-      list: null,
+      list: null,//list列表
       total: 0,
-      listLoading: false,
-      editModelTitle: '',
-      treeSelectShow:false,
-      editModelShow: false,
-      publicModelValue:"publicModel",
-      dialogFormVisible: true,
-      selectTreeNode: null,
-      editorModelLoading:false,
-      isUpdate: false,
+      listLoading: false,//遮罩
+      editModelTitle: '',//编辑框名称
+      treeSelectShow:false,//发布模型dialog
+      editModelShow: false,//编辑模型dialog
+      publicModelValue:"publicModel",//发布模型
+      selectTreeNode: null,//选中树节点
+      editorModelLoading:false,//编辑模型遮罩
+      isUpdate: false,//是否修改
       queryFields: [
         { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
         { label: '审计事项', name: 'auditItemName', type: 'fuzzyText' },
@@ -88,8 +87,7 @@ export default {
           data: [{ name: '请选择', value: '-1' }, { name: '高', value: '1' }, { name: '中', value: '2' }, { name: '低', value: '3' }],
           default: '-1' }
       ],
-      operationObj: {},
-      // selectedRowVal:0,
+      operationObj: {},//是否编辑模型对象
       tableOptions: {
         columnDefs: [
           {
@@ -199,7 +197,11 @@ export default {
     riskLevelFormatter(row, column) {
       let riskLevel = row.riskLevelUuid
       let value = ""
-      value = getOneDict(riskLevel)[0].codeName;
+      let dicObj = getOneDict(riskLevel)
+      if(dicObj.length == 0){
+        return "";
+      }
+      value = dicObj[0].codeName;
       return value
     },
     /**

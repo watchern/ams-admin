@@ -103,9 +103,9 @@
                 <el-select v-model="scope.row.businessFieldUuid" value="-1">
                   <el-option
                     v-for="state in businessColumnSelect"
-                    :key="state.uuid"
-                    :value="state.uuid"
-                    :label="state.name"
+                    :key="state.attrCode"
+                    :value="state.attrCode"
+                    :label="state.attrName"
                   />
                 </el-select>
               </template>
@@ -165,6 +165,7 @@
 import ModelDetail from '@/views/analysis/auditModel/modelDetail'
 import ModelFilterShow from '@/views/analysis/auditModel/modelFilterShow'
 import SQLEditor from '@/views/analysis/SQLEditor/index'
+import {getBusinessAttribute} from '@/api/analysis/auditModel'
 import VRuntimeTemplate from 'v-runtime-template'
 import {getDictList} from '@/utils/index'
 export default {
@@ -297,8 +298,12 @@ export default {
       this.form.modelFolderUuid = this.openValue.id
       this.form.modelFolderName = this.openValue.label
       // 初始化业务字段列表
-      const businessColumnSelect = [{ uuid: '1', name: '机构名称' }, { uuid: '2', name: '机构代码' }]
-      this.businessColumnSelect = businessColumnSelect
+      getBusinessAttribute().then(result=>{
+        if(result.data != null){
+          //const businessColumnSelect = [{ uuid: '1', name: '机构名称' }, { uuid: '2', name: '机构代码' }]
+          this.businessColumnSelect = result.data
+        }
+      })
       // 初始化字段类型
       const columnTypeSelect = [{ uuid: 'int', name: '数值' }, { uuid: 'varchar', name: '字符串' }, { uuid: 'date', name: '日期' }, { uuid: 'money', name: '金额' }]
       this.columnTypeSelect = columnTypeSelect
