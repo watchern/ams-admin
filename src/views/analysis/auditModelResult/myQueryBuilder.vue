@@ -113,9 +113,9 @@ export default {
           }
           console.log(dataTypeObj);
           if (
-            dataTypeObj.columnType == "TIMESTAMP" ||
-            dataTypeObj.columnType == "VARCHAR" ||
-            dataTypeObj.columnType == "CLOB"
+            dataTypeObj.columnType.toUpperCase() == "TIMESTAMP" ||
+            dataTypeObj.columnType.toUpperCase() == "VARCHAR" ||
+            dataTypeObj.columnType.toUpperCase() == "CLOB"
           ) {
             if (
               child.query.operator == "like" ||
