@@ -47,7 +47,7 @@
             <el-input v-model="temp.dataRoleName" />
           </el-form-item>
           <el-form-item label="授权方式" prop="authenType">
-            <el-select ref="authenType" v-model="temp.authenType" placeholder="请选择展现形式">
+            <el-select ref="authenType" v-model="temp.authenType" placeholder="请选择授权方式">
               <el-option
                 v-for="item in authenTypeJson"
                 :key="item.codeValue"
@@ -141,6 +141,9 @@ export default {
       dialogPvVisible: false,
       rules: {
         dataRoleName: [{ required: true, message: '请填写数据角色名称', trigger: 'change' }],
+        authenType: [{ required: true, message: '请选择授权方式', trigger: 'change' }],
+        startTime: [{ required: true, message: '请填写生效开始时间', trigger: 'change' }],
+        endTime: [{ required: true, message: '请填写生效结束时间', trigger: 'change' }],
         filterState: [{ max: 100, message: '长度不得超过100', trigger: 'change' }]
       },
       downloadLoading: false
@@ -221,7 +224,6 @@ export default {
       this.temp.startTime = starDate
       var endDate = new Date(this.temp.endTime)
       this.temp.endTime = endDate
-      console.log(this.temp)
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           save(this.temp).then(() => {
@@ -240,6 +242,10 @@ export default {
     },
     handleUpdate() {
       this.temp = Object.assign({}, this.selections[0]) // copy obj
+      var startTime = new Date(this.temp.startTime)
+      this.temp.startTime = startTime.getFullYear() + '-' + (startTime.getMonth() + 1) + '-' + startTime.getDate() + ' ' + startTime.getHours() + ':' + startTime.getMinutes() + ':' + startTime.getSeconds()
+      var endTime = new Date(this.temp.endTime)
+      this.temp.endTime = endTime.getFullYear() + '-' + (endTime.getMonth() + 1) + '-' + endTime.getDate() + ' ' + endTime.getHours() + ':' + endTime.getMinutes() + ':' + endTime.getSeconds()
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -266,6 +272,10 @@ export default {
       return rowStart + '至' + rowEnd
     },
     updateData() {
+      var starDate = new Date(this.temp.startTime)
+      this.temp.startTime = starDate
+      var endDate = new Date(this.temp.endTime)
+      this.temp.endTime = endDate
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
