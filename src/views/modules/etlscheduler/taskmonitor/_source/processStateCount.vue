@@ -61,6 +61,7 @@ export default {
         }
       })
     },
+    // 带着状态和开始结束时间进行页面的跳转，跳转到流程实例页面
     handleProcess(name) {
       this.$router.push({ path: '/etlscheduler/processinstance', name: 'processinstance', params: {
         status: JSON.stringify(_.find(stateType, ['label', name]).value),

@@ -57,8 +57,8 @@ export default {
   computed: {
     cacheParams() {
       return {
-        type: this.type,
-        // type: this.datasource.dbType,
+        // type: this.type,
+        type: this.datasource.dbType,
         datasource: this.datasource
       }
     }
@@ -67,7 +67,8 @@ export default {
   watch: {
     datasource(val) {
       this.$emit('on-dsData', {
-        type: this.type,
+        // type: this.type,
+        type: val.dbType,
         datasource: val
       })
     }
@@ -82,14 +83,16 @@ export default {
       }
       this.typeList = _.filter(this.typeList, v => is(v.code))
     }
+    // this.type = _.cloneDeep(this.data.type) || this.typeList[0].code
+    this.type = _.cloneDeep(this.data.dbType) || this.typeList[0].code
 
-    this.type = _.cloneDeep(this.data.type) || this.typeList[0].code
     // init data
     this._getDatasourceData().then(res => {
       if (_.isEmpty(this.data)) {
         this.$nextTick(() => {
           this.datasource = this.datasourceList[0].id
-          this.type = this.datasourceList[0].type
+          this.type = this.datasourceList[0].dbType
+          //  this.type = this.datasourceList[0].type
         })
       } else {
         this.$nextTick(() => {
@@ -97,8 +100,8 @@ export default {
         })
       }
       this.$emit('on-dsData', {
-        type: this.type,
-        // type: this.datasource.dbType,
+        // type: this.type,
+        type: this.datasource.dbType,
         datasource: this.datasource
       })
     })
@@ -116,8 +119,8 @@ export default {
         return false
       }
       this.$emit('on-dsData', {
-        // type: this.datasource.dbType,
-        type: this.type,
+        type: this.datasource.dbType,
+        // type: this.type,
         datasource: this.datasource
       })
       return true
@@ -148,7 +151,8 @@ export default {
       this._getDatasourceData().then(res => {
         this.datasource = this.datasourceList.length && this.datasourceList[0].id || ''
         this.$emit('on-dsData', {
-          type: this.type,
+          // type: this.type,
+          type: this.datasource.dbType,
           datasource: this.datasource
         })
       })
