@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 const analysisUrl = '/analysis'
+const dataUrl = '/amsdata'
 
 /**
  * 获取当前登录人模型分类树
@@ -180,5 +181,17 @@ export function shareModel(data){
     // params 以formData格式传递  后台用RequestParam
     // 直接加data以json格式传递  后台用RequestBody
     data
+  })
+}
+
+/**
+ * 获取业务属性
+ * @returns {AxiosPromise}
+ */
+export function getBusinessAttribute(){
+  return request({
+    baseURL: dataUrl,
+    url: '/bizAttr/list',
+    method: 'post',
   })
 }

@@ -79,6 +79,15 @@ module.exports = {
         // pathRewrite: {
         //   '^/dolphinscheduler': ''
         // }
+      },
+      '/AuditAnalysis': {
+        timeout: 1800000,
+        target: 'http://localhost:8080',
+        changeOrigin: true
+        // ,
+        // pathRewrite: {
+        //   '^/dolphinscheduler': ''
+        // }
       }
     }
   },

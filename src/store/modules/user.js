@@ -1,6 +1,7 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+import { cacheDict } from '@/api/base/sys-dict'
 
 const state = {
   token: getToken(),
@@ -48,6 +49,9 @@ const actions = {
         commit('SET_TOKEN', data.personUuid)
         setToken(data.personUuid)
         resolve()
+        cacheDict().then(resp => {
+          sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
+        })
       }).catch(error => {
         reject(error)
       })
@@ -57,7 +61,7 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      console.log("state" + state.id);
+      console.log('state' + state.id)
       getInfo(state.token).then(response => {
         const { data } = response
 
@@ -65,15 +69,15 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        console.log("data" + data.id);
+        console.log('data' + data.id)
         const { roles, name, avatar, introduction, id } = data
 
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
-        if(id != null) commit('SET_ID', id)
-        if(roles != null) commit('SET_ROLES', roles)
+        if (id != null) commit('SET_ID', id)
+        if (roles != null) commit('SET_ROLES', roles)
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         commit('SET_INTRODUCTION', introduction)

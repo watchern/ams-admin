@@ -13,6 +13,7 @@ import AceDialog from '@/components/Ace/ace-dialog/index'
 import AceSelect from '@/components/Ace/ace-select/index'
 import AceSelectCalender from '@/components/Ace/ace-select-calender/index'
 import AceProgress from '@/components/Ace/ace-progress/index'
+
 export default {
   install(Vue) {
     Vue.component('new-ag-grid', NewAgGrid)

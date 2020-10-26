@@ -19,7 +19,7 @@
             <el-input v-model="form.modelName" />
           </el-form-item>
           <el-form-item label="业务分类">
-            <el-input v-model="form.modelFolderName" />
+            <el-input v-model="form.modelFolderName" :disabled="true" />
           </el-form-item>
           <el-form-item label="审计事项" prop="auditItemUuid">
             <el-select v-model="form.auditItemUuid" placeholder="请选择审计事项">
@@ -51,17 +51,19 @@
             <el-button type="primary" @click="getSqlObj(2)">图形化编辑器</el-button>
             <el-button type="primary" @click="openSqlEditor">SQL编辑器</el-button>
           </el-form-item>
-          <el-dialog :fullscreen=true v-if="SQLEditorShow" :destroy-on-close="true" :append-to-body="appendToBody" :visible.sync="SQLEditorShow" title="SQL编辑器" width="80%" @close="sqlEditorCloseEvent">
-            <SQLEditor ref="SQLEditor" v-if="SQLEditorShow"/>
+          <el-dialog v-if="SQLEditorShow" :fullscreen="true" :destroy-on-close="true" :append-to-body="true" :visible.sync="SQLEditorShow" title="SQL编辑器" width="80%" @close="sqlEditorCloseEvent">
+            <SQLEditor v-if="SQLEditorShow" ref="SQLEditor" :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" />
             <div slot="footer">
               <el-button type="primary" @click="getSqlObj">保存</el-button>
               <el-button @click="">取消</el-button>
             </div>
           </el-dialog>
           <el-form-item label="模型SQL">
-            <div id="sqlValueView"
-                 style="height: 300px; overflow-y: auto; border: 1px solid #e0e0e0; margin-left: 30px; width: 100%; padding: 15px;"></div>
-            <el-input  type="textarea" v-model="form.sqlValue" style="display: none;"/>
+            <div
+              id="sqlValueView"
+              style="height: 300px; overflow-y: auto; border: 1px solid #e0e0e0; margin-left: 30px; width: 100%; padding: 15px;"
+            />
+            <el-input v-model="form.sqlValue" type="textarea" style="display: none;" />
           </el-form-item>
         </el-form>
       </div>
@@ -84,51 +86,53 @@
           </el-table>
         </div>
       </div>
-      <div ref="modelResultOutputCol" style="display: none">
-        <p style="color:red;font-size:large">支持拖拽排序    注意：只显示最后的结果列</p>
-        <el-table ref="columnData" :data="columnData" style="width: 100%">
-          <el-table-column prop="outputColumnName" label="输出列名" width="180" />
-          <el-table-column prop="" label="数据转码" width="80" />
-          <el-table-column prop="columnName" label="是否显示" width="80">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1">
-                <el-option label="是" :value="1" />
-                <el-option label="否" :value="0" />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column prop="columnName" label="对应业务字段" width="180">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.businessFieldUuid" value="-1">
-                <el-option
-                  v-for="state in businessColumnSelect"
-                  :key="state.uuid"
-                  :value="state.uuid"
-                  :label="state.name"
-                />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column prop="columnName" label="别名" width="180">
-            <template slot-scope="scope">
-              <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" />
-            </template>
-          </el-table-column>
-          <!--          <el-table-column prop="columnType" label="字段类型标记" width="180">
-            <template slot-scope="scope" v-model="scope.row.columnType">
-              {{scope.row.columnType}}
-        &lt;!&ndash;      <el-input v-model="scope.row.columnType" :value="scope.row.outputColumnType"/>
-              <el-select v-model="scope.row.columnType" :value="scope.row.outputColumnType">
-                <el-option
-                  v-for="state in columnTypeSelect"
-                  :key="state.uuid"
-                  :value="state.uuid"
-                  :label="state.name"
-                />
-              </el-select>&ndash;&gt;
-            </template>
-          </el-table-column>-->
-        </el-table>
+      <div ref="modelResultOutputCol" style="display: none;">
+        <p style="color:red;font-size:large">注意：只显示最后的结果列</p>
+        <div style="height:476px;overflow:scroll">
+          <el-table ref="columnData" :data="columnData" style="width: 100%">
+            <el-table-column prop="outputColumnName" label="输出列名" width="180" />
+            <el-table-column prop="" label="数据转码" width="80" />
+            <el-table-column prop="columnName" label="是否显示" width="80">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1">
+                  <el-option label="是" :value="1" />
+                  <el-option label="否" :value="0" />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column prop="columnName" label="对应业务字段" width="180">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.businessFieldUuid" value="-1">
+                  <el-option
+                    v-for="state in businessColumnSelect"
+                    :key="state.attrCode"
+                    :value="state.attrCode"
+                    :label="state.attrName"
+                  />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column prop="columnName" label="别名" width="180">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" />
+              </template>
+            </el-table-column>
+            <!--          <el-table-column prop="columnType" label="字段类型标记" width="180">
+              <template slot-scope="scope" v-model="scope.row.columnType">
+                {{scope.row.columnType}}
+          &lt;!&ndash;      <el-input v-model="scope.row.columnType" :value="scope.row.outputColumnType"/>
+                <el-select v-model="scope.row.columnType" :value="scope.row.outputColumnType">
+                  <el-option
+                    v-for="state in columnTypeSelect"
+                    :key="state.uuid"
+                    :value="state.uuid"
+                    :label="state.name"
+                  />
+                </el-select>&ndash;&gt;
+              </template>
+            </el-table-column>-->
+          </el-table>
+        </div>
       </div>
       <div ref="relInfo" style="display: none">
         <p>在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
@@ -163,8 +167,9 @@
 import ModelDetail from '@/views/analysis/auditModel/modelDetail'
 import ModelFilterShow from '@/views/analysis/auditModel/modelFilterShow'
 import SQLEditor from '@/views/analysis/SQLEditor/index'
+import {getBusinessAttribute} from '@/api/analysis/auditModel'
 import VRuntimeTemplate from 'v-runtime-template'
-import {getDictList} from '@/utils/index'
+import { getDictList } from '@/utils/index'
 export default {
   name: 'EditModel',
   components: { ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor },
@@ -215,7 +220,6 @@ export default {
         label: 'label'
       },
       SQLEditorShow: false,
-      appendToBody: true,
       paramData: [],
       paramValueModel: {},
       columnData: [],
@@ -240,8 +244,11 @@ export default {
       selectTreeNode: null,
       modelDetails: [],
       filterShows: [],
+      newRelInfoValue: {},
+      newFilterShowValue: {},
+      sqlEditorParamObj: {},
       modelDetailIndex: 0,
-      riskLeve:[],
+      riskLeve: [],
       modelFilterShowIndex: 0,
       modelOriginalTable: [],
       modelChartSetup: {},
@@ -259,6 +266,18 @@ export default {
       },
       modelDesignRules: {
         sqlValue: [{ type: 'string', required: true, message: '请选择输入模型SQL', trigger: 'blur' }] }
+    }
+  },
+  watch: {
+    newRelInfoValue(newChild) {
+      this.$nextTick(function() {
+        this.handleNodeClick(newChild)
+      })
+    },
+    newFilterShowValue(newChild) {
+      this.$nextTick(function() {
+        this.handleNodeClick(newChild)
+      })
     }
   },
   created() {
@@ -281,14 +300,18 @@ export default {
       this.form.modelFolderUuid = this.openValue.id
       this.form.modelFolderName = this.openValue.label
       // 初始化业务字段列表
-      const businessColumnSelect = [{ uuid: '1', name: '机构名称' }, { uuid: '2', name: '机构代码' }]
-      this.businessColumnSelect = businessColumnSelect
+      getBusinessAttribute().then(result=>{
+        if(result.data != null){
+          //const businessColumnSelect = [{ uuid: '1', name: '机构名称' }, { uuid: '2', name: '机构代码' }]
+          this.businessColumnSelect = result.data
+        }
+      })
       // 初始化字段类型
       const columnTypeSelect = [{ uuid: 'int', name: '数值' }, { uuid: 'varchar', name: '字符串' }, { uuid: 'date', name: '日期' }, { uuid: 'money', name: '金额' }]
       this.columnTypeSelect = columnTypeSelect
-      //初始化风险等级
+      // 初始化风险等级
       this.riskLeve = getDictList('002002')
-      //初始化审计事项
+      // 初始化审计事项
     },
     handleNodeClick(data, node) {
       this.hideModelDetail()
@@ -426,6 +449,7 @@ export default {
       this.form.modelOutputColumn = columnData
       // endregion
       // region 处理参数数据
+      // todo 获取到参数的默认值，是个JSON，将JSON存入到数据库
       const paramData = this.$refs.paramData.data
       var paramIndex = 0
       for (let i = 0; i < paramData.length; i++) {
@@ -482,7 +506,7 @@ export default {
     /**
      *打开sql编辑器
      */
-    openSqlEditor(){
+    openSqlEditor() {
       // 打开sql编辑器窗体
       this.SQLEditorShow = true
     },
@@ -490,15 +514,28 @@ export default {
      * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
      */
     getSqlObj(modelType) {
-/*            let returnObj = this.$refs.SQLEditor.getSaveInfo();
-            //region 初始化SQL语句显示
-            this.displaySQL(returnObj);
-            //endregion
-            console.log(returnObj);
-            this.changeParamDataFormat(returnObj.params);
-            //重置参数对象属性，因为SQL编辑器是移植的，因此兼容那边的数据格式，因此对数据格式进行转换
-            return;*/
+      const returnObj = this.$refs.SQLEditor.getSaveInfo()
+      if (returnObj == undefined) {
+        return
+      }
+      // region 初始化SQL语句显示
+      this.displaySQL(returnObj)
+      // endregion
+      console.log(returnObj)
+      // 转换参数格式 重置参数对象属性，因为SQL编辑器是移植的，因此兼容那边的数据格式，因此对数据格式进行转换
+      const params = this.changeParamDataFormat(returnObj.params, 1)
+      // 转换列格式 处理sql编辑器返回的列数据信息，拼接成该界面能识别的格式
+      const column = this.changeColumnDataFormat(returnObj.columnNames, returnObj.columnTypes)
+      // 处理历史表
+      const modelOriginalTable = this.changeOriginalTable(returnObj.modelOriginalTable)
       const sqlObj = {
+        sqlValue: returnObj.sqlValue,
+        params: params,
+        column: column,
+        modelChartSetup: returnObj.modelChartSetup,
+        modelOriginalTable: modelOriginalTable
+      }
+      /*      const sqlObj = {
         sqlValue: 'select * from AA_AUDIT_ITEM',
         column: [{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }],
         params: [
@@ -509,9 +546,10 @@ export default {
               '                </select>' }],
         modelChartSetup: { chartJson: '哈哈哈哈' },
         modelOriginalTable: [{ originalTableName: '表1', executionType: '1' }, { originalTableName: '表2', executionType: '2' }]
-      }
+      }*/
       this.form.sqlValue = sqlObj.sqlValue
       // 初始化默认参数
+      // todo 在这初始化界面
       this.paramData = sqlObj.params
       // region 初始化固定列
       const columnData = []
@@ -529,65 +567,95 @@ export default {
       this.modelOriginalTable = sqlObj.modelOriginalTable
       // 处理图表JSON
       this.modelChartSetup = sqlObj.modelChartSetup
-      // 处理类型
-      this.form.modelType = modelType
+      this.SQLEditorShow = false
     },
     /**
      *相互转换param数据格式
      */
-    changeParamDataFormat(paramObj,type){
-      if(paramObj == undefined || paramObj == null){
-        return;
+    changeParamDataFormat(paramObj, type) {
+      if (paramObj == undefined || paramObj == null) {
+        return
       }
-      if(type == 1){
-        //SQL编辑器参数对象转编辑界面参数对象
-        let params = [];
-        for(let i = 0;i < paramObj.length;i++){
-          let obj = {
-            ammParamUuid:paramObj[i].moduleParamId,
-            paramName:paramObj[i].name,
-            copyParamId:paramObj[i].copyParamId,
-            description:"",
-            paramValue:""
-          };
-          params.push(obj);
+      if (type == 1) {
+        // SQL编辑器参数对象转编辑界面参数对象
+        const params = []
+        for (let i = 0; i < paramObj.length; i++) {
+          const obj = {
+            ammParamUuid: paramObj[i].moduleParamId,
+            paramName: paramObj[i].name,
+            copyParamId: paramObj[i].copyParamId,
+            description: '',
+            paramValue: ''
+          }
+          params.push(obj)
         }
-        return params;
-      }
-      else if(type == 2){
-        //参数界面编辑对象转SQL编辑器参数对象
-        var returnObj = {"arr" : []};
-        for(let b = 0; b< paramObj.length;b++){
-          let id = "{#"+paramObj[b].ammParamUuid+"#}";
-          let name = paramObj[b].paramName;
-          let moduleParamId = paramObj[b].linkParamUuid;
-          let allowedNull = typeof paramObj[b].ammParamChoice.allowedNull != "undefined" ? paramObj[b].ammParamChoice.allowedNull : 1;
+        return params
+      } else if (type == 2) {
+        // 参数界面编辑对象转SQL编辑器参数对象
+        var returnObj = { 'arr': [] }
+        for (let b = 0; b < paramObj.length; b++) {
+          const id = '{#' + paramObj[b].ammParamUuid + '#}'
+          const name = paramObj[b].paramName
+          const moduleParamId = paramObj[b].linkParamUuid
+          const allowedNull = typeof paramObj[b].ammParamChoice.allowedNull !== 'undefined' ? paramObj[b].ammParamChoice.allowedNull : 1
           var obj = {
-            id : id,
-            name : name,
-            moduleParamId:moduleParamId,
-            copyParamId:id,
-            allowedNull:allowedNull
-          };
-          returnObj.arr.push(obj);
+            id: id,
+            name: name,
+            moduleParamId: moduleParamId,
+            copyParamId: id,
+            allowedNull: allowedNull
+          }
+          returnObj.arr.push(obj)
         }
-        return returnObj;
+        return returnObj
       }
     },
-    displaySQL(returnObj){
-      let sql = returnObj.sqlValue;
-      let arrPram = returnObj.params;
-      let sqlStr = returnObj.sqlValue;
-      let reg;
-      for(let i = 0 ; i <arrPram.length; i++){
-        reg = new RegExp(arrPram[i].id , "g" );
-        let html = " <button class='divEditorBtn' type='button' id='"+arrPram[i].id+"'>"+arrPram[i].name+"</button> ";
-        sql = sql.replace(reg, html);
-        sqlStr = sqlStr.replace(reg,""+arrPram[i].id+"");
+    /**
+     *转换列对象
+     * @param columnNames 列名称
+     * @param columnType 列类型
+     */
+    changeColumnDataFormat(columnNames, columnType) {
+      // [{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }]
+      const returnObj = []
+      for (let i = 0; i < columnNames.length; i++) {
+        var obj = {
+          columnName: columnNames[i],
+          columnType: 'varchar'
+        }
+        returnObj.push(obj)
+      }
+      return returnObj
+    },
+    /**
+     * 转换列对象
+     * @param originalTableObj 历史表对象
+     */
+    changeOriginalTable(originalTableObj) {
+      const resultObj = []
+      for (let i = 0; i < originalTableObj.length; i++) {
+        const obj = {
+          originalTableName: originalTableObj[i].tableName,
+          executionType: originalTableObj[i].tableType
+        }
+        resultObj.push(obj)
+      }
+      return resultObj
+    },
+    displaySQL(returnObj) {
+      let sql = returnObj.sqlValue
+      const arrPram = returnObj.params
+      let sqlStr = returnObj.sqlValue
+      let reg
+      for (let i = 0; i < arrPram.length; i++) {
+        reg = new RegExp(arrPram[i].id, 'g')
+        const html = " <button class='divEditorBtn' type='button' id='" + arrPram[i].id + "'>" + arrPram[i].name + '</button> '
+        sql = sql.replace(reg, html)
+        sqlStr = sqlStr.replace(reg, '' + arrPram[i].id + '')
       }
       this.form.sqlValue = sqlStr
-      $("#sqlValue").val();
-      $("#sqlValueView").html(sql);
+      $('#sqlValue').val()
+      $('#sqlValueView').html(sql)
     },
     /**
      * 设置选中的树节点
@@ -617,6 +685,7 @@ export default {
       const treeNode = this.$refs.tree.getCurrentNode()
       treeNode.children.push(newChild)
       this.modelDetails.push({ id: 'rel' + this.modelDetailIndex, data: [] })
+      this.newRelInfoValue = newChild
     },
     /**
      * 创建过滤条件显示
@@ -636,6 +705,7 @@ export default {
       const treeNode = this.$refs.tree.getCurrentNode()
       treeNode.children.push(newChild)
       this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex, data: [] })
+      this.newFilterShowValue = newChild
     },
     /**
      * 清空界面数据
@@ -761,11 +831,12 @@ export default {
       this.form = model
       // endregion
       // region 反显SQL显示
-      let paramObj = this.changeParamDataFormat(model.parammModelRel,2)
-      let returnObj = {};
-      returnObj.params = paramObj.arr;
-      returnObj.sqlValue = this.form.sqlValue;
-      this.displaySQL(returnObj);
+      const paramObj = this.changeParamDataFormat(model.parammModelRel, 2)
+      const returnObj = {}
+      returnObj.params = paramObj.arr
+      this.sqlEditorParamObj = paramObj
+      returnObj.sqlValue = this.form.sqlValue
+      this.displaySQL(returnObj)
       // endregion
       // region 反显参数默认值
       this.paramData = model.parammModelRel
@@ -806,13 +877,13 @@ export default {
           type: 'filterShowNode'
         }
         treeNodeFilterShow.children.push(newChild)
-        this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex, data: model.resultFilterShow[i]})
+        this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex, data: model.resultFilterShow[i] })
       }
       // endregion
     },
-    sqlEditorCloseEvent(){
-      //sql编辑器关闭时候销毁数据
-      this.SQLEditorShow = false;
+    sqlEditorCloseEvent() {
+      // sql编辑器关闭时候销毁数据
+      this.SQLEditorShow = false
     }
   }
 }
