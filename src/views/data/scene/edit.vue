@@ -44,7 +44,7 @@
           <el-table-column label="创建时间" width="300px" align="center" prop="createTime" :formatter="formatCreateTime" />
           <el-table-column label="操作" align="center" min-width="100">
             <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="selectFilterOne(scope.row.grpSql)">预览</el-button>
+              <el-button type="primary" size="mini" @click="selectFilterOne(scope.row.sceneGrpUuid)">预览</el-button>
               <el-button type="primary" size="mini" @click="updateGrp(scope.row.sceneGrpUuid)">修改</el-button>
               <el-button type="danger" size="mini" @click="deleteGrp(scope.row.sceneGrpUuid)">删除</el-button>
             </template>
@@ -355,14 +355,13 @@ export default {
       this.getList()
       this.getListFilter()
     },
-    selectFilterOne(sql) {
+    selectFilterOne(sceneGrpUuid) {
       var data = []
-      data.inValueSql = sql
-      this.pageQueryFilter.condition = this.tempFilter
-      this.pageQueryFilter.condition.inValueSql = sql
+      data.sceneGrpUuid = sceneGrpUuid
+      this.pageQuery.condition = this.tempGrp
+      this.pageQuery.condition.sceneGrpUuid = sceneGrpUuid
       this.dialogFormVisibleTree = true
-      initSceneTree(this.pageQueryFilter).then(resp => {
-        console.log(resp)
+      initSceneTree(this.pageQuery).then(resp => {
         this.treeData1 = resp.data
       })
     },
