@@ -60,10 +60,10 @@ export default {
     getQueryBuilderOperators(columnObj) {
       let operators = []
       if (columnObj.columnType.toUpperCase().indexOf('TIMESTAMP') != -1) {
-        columnObj.columnType = 'VARCHAR2'
+        columnObj.columnType = 'VARCHAR'
       }
       if (
-        columnObj.columnType.toUpperCase().indexOf('VARCHAR2') != -1 ||
+        columnObj.columnType.toUpperCase().indexOf('VARCHAR') != -1 ||
         columnObj.columnType.toUpperCase().indexOf('CLOB') != -1
       ) {
         operators = ['=', '<>', 'like', 'not like']
@@ -83,11 +83,23 @@ export default {
         alert('请添加条件后在进行查询！')
       } else {
         var sql = this.queryToSql(this.queryJson)
+        var obj = { sql: sql, queryJson: this.queryJson }
         this.$emit('queryconditionchangetable', sql, this.queryJson)
       }
     },
+    /**
+     * 为了获取queryBuilder中得到的sql语句和返显的Json数据
+     */
+    getSelectSql() {
+      if (this.queryJson.children == null) {
+        alert('请添加条件后在进行查询！')
+      } else {
+        var sql = this.queryToSql(this.queryJson)
+        var obj = { sql: sql, queryJson: this.queryJson }
+        return obj
+      }
+    },
     queryToSql(query) {
-      debugger
       const sql = []
       const that = this
       const logicalOperator = query.logicalOperator
@@ -107,9 +119,9 @@ export default {
           }
           console.log(dataTypeObj)
           if (
-            dataTypeObj.columnType == 'TIMESTAMP' ||
-            dataTypeObj.columnType == 'VARCHAR2' ||
-            dataTypeObj.columnType == 'CLOB'
+            dataTypeObj.columnType.toUpperCase() == 'TIMESTAMP' ||
+            dataTypeObj.columnType.toUpperCase() == 'VARCHAR' ||
+            dataTypeObj.columnType.toUpperCase() == 'CLOB'
           ) {
             if (
               child.query.operator == 'like' ||

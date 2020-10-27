@@ -8,7 +8,6 @@ import dataRouter from './modules/data'
 import baseRouter from './modules/base/base'
 import etlschedulerRouter from './modules/etlscheduler/etlscheduler'
 import analysisRouter from './modules/analysis/analysis'
-
 const AmsRoutes = [
   {
     path: '/',
@@ -40,6 +39,11 @@ const AmsRoutes = [
         component: () => import('@/views/ams/home/main/index')
       }
     ]
+  },
+  {
+    path: '/frameto',
+    name: 'frameto',
+    component: () => import('@/views/base/frameto')
   },
   dataRouter,
   baseRouter,

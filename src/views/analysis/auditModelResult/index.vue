@@ -24,6 +24,7 @@
           :maintable="item.mainTable"
           :helptables="item.helpTables"
           :model-uuid="item.modeluuid"
+          useType="modelRunResult"
         />
       </el-tab-pane>
     </el-tabs>

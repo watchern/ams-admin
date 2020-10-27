@@ -1,0 +1,35 @@
+.layui-form-new select, 
+.layui-form-new input[type=checkbox],
+.layui-form-new input[type=radio]{display: none;}
+.layui-form-new *[lay-ignore]{display: initial;}
+
+.layui-form-new .layui-input-inline{display: inline-block; vertical-align: middle;}
+
+.layui-form-new .layui-input-block, .layui-input-inline{position: relative;}
+
+.layui-form-new .layui-input, .layui-textarea, .layui-select{height: 25px; line-height: 1.3; line-height: 25px;
+	border-width: 1px; border-style: solid; background-color: #fff; border-radius: 2px;}
+.layui-form-new .Wdate{height:23px;line-height:23px; vertical-align: middle;}
+
+.layui-form-new .layui-input::-webkit-input-placeholder,
+.layui-form-new .layui-textarea::-webkit-input-placeholder,
+.layui-form-new .layui-select::-webkit-input-placeholder{line-height: 1.3;}
+/*.layui-form-new .layui-input, .layui-textarea{display: block; width: 100%; padding-left: 10px;}*/
+.layui-form-new .layui-input, .layui-textarea{display: inline-block; width: 163px; padding-left: 10px;}
+.layui-form-new .Wdate{display: inline-block; width: 163px;}
+
+
+.layui-form-new .layui-input:hover, .layui-textarea:hover{border-color: #D2D2D2 !important;}
+.layui-form-new .layui-input:focus, .layui-textarea:focus{border-color: #C9C9C9 !important;}
+.layui-form-new .layui-textarea{position: relative; min-height: 100px; height: auto; line-height: 20px;
+	padding: 6px 10px; }
+.layui-form-new .layui-select{padding: 0 10px;}
+
+/*当输入框和下拉框长度固定时，需要调整下拉框箭头的位置  
+.layui-form-new .layui-form-select .layui-edge{right:15px;}*/
+/*下拉框时，由于div元素替换select对象，导致select的style属性无法应用到替换的div下的input上去，因此加上  */
+.layui-form-new .layui-select-title .layui-input{display: inline-block; width: 100%; padding-left: 10px;}
+.layui-form-new .layui-form-select {display: inline-block;width: 163px;}
+/* 警告域 */
+.layui-form-new .layui-form-danger:focus
+,.layui-form-new .layui-form-danger+.layui-input-inline>.layui-form-select .layui-input{border-color: #FF5722 !important;}

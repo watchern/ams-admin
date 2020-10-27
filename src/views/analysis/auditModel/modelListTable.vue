@@ -29,7 +29,7 @@
       <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog v-if="editModelShow" :visible.sync="editModelShow" :title="editModelTitle" width="80%">
+    <el-dialog :close-on-click-modal="false" v-if="editModelShow" :v-loading="editorModelLoading"  :visible.sync="editModelShow" :title="editModelTitle" width="60%">
       <EditModel ref="editModel" :open-value="selectTreeNode" :operation-obj="operationObj" @hideModal="hideEditModal" />
       <div slot="footer">
         <el-button type="primary" @click="save">保存</el-button>
@@ -37,20 +37,21 @@
       </div>
     </el-dialog>
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
-      <ModelFolderTree ref="modelFolderTree" :publicModel="publicModelValue"/>
+      <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
         <el-button type="primary" @click="updatePublicModel">确定</el-button>
         <el-button @click="treeSelectShow=false">取消</el-button>
       </div>
     </el-dialog>
-    <el-upload style="position: relative;top: -40px;left: 240px;display: none"
-               :show-file-list="false"
-               :on-success="onSuccess"
-               :on-error="onError"
-               :before-upload="beforeUpload"
-               :on-remove="handleRemove"
-               action="/modelController/importModel"
-               accept=".json"
+    <el-upload
+      style="position: relative;top: -40px;left: 240px;display: none"
+      :show-file-list="false"
+      :on-success="onSuccess"
+      :on-error="onError"
+      :before-upload="beforeUpload"
+      :on-remove="handleRemove"
+      action="/modelController/importModel"
+      accept=".json"
     >
       <el-button id="importBtn" plain type="primary">导入</el-button>
     </el-upload>
@@ -62,23 +63,23 @@ import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
 import EditModel from '@/views/analysis/auditModel/editModel'
-import { getOneDict } from '@/utils'
+import { getOneDict } from '@/utils/index'
 export default {
   name: 'ModelListTable',
   components: { Pagination, QueryField, EditModel,ModelFolderTree },
   data() {
     return {
       tableKey: 'errorUuid',
-      list: null,
+      list: null,//list列表
       total: 0,
-      listLoading: false,
-      editModelTitle: '',
-      treeSelectShow:false,
-      editModelShow: false,
-      publicModelValue:"publicModel",
-      dialogFormVisible: true,
-      selectTreeNode: null,
-      isUpdate: false,
+      listLoading: false,//遮罩
+      editModelTitle: '',//编辑框名称
+      treeSelectShow:false,//发布模型dialog
+      editModelShow: false,//编辑模型dialog
+      publicModelValue:"publicModel",//发布模型
+      selectTreeNode: null,//选中树节点
+      editorModelLoading:false,//编辑模型遮罩
+      isUpdate: false,//是否修改
       queryFields: [
         { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
         { label: '审计事项', name: 'auditItemName', type: 'fuzzyText' },
@@ -86,8 +87,7 @@ export default {
           data: [{ name: '请选择', value: '-1' }, { name: '高', value: '1' }, { name: '中', value: '2' }, { name: '低', value: '3' }],
           default: '-1' }
       ],
-      operationObj: {},
-      // selectedRowVal:0,
+      operationObj: {},//是否编辑模型对象
       tableOptions: {
         columnDefs: [
           {
@@ -197,9 +197,11 @@ export default {
     riskLevelFormatter(row, column) {
       let riskLevel = row.riskLevelUuid
       let value = ""
-      getOneDict(riskLevel).then(result=>{
-        value = result[0].codeName
-      })
+      let dicObj = getOneDict(riskLevel)
+      if(dicObj.length == 0){
+        return "";
+      }
+      value = dicObj[0].codeName;
       return value
     },
     /**
@@ -232,18 +234,18 @@ export default {
       if (modelObj == null) {
         return
       }
-      this.listLoading = true
+      this.editorModelLoading = true
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
           if (result.code === 0) {
             this.getList(this.query)// 刷新列表
             this.$emit('refreshTree')
-            this.listLoading = false
+            this.editorModelLoading = false
             this.editModelShow = false
             // this.$refs.editModel.clear();
           } else {
             this.$message({ type: 'error', message: '新增模型失败!' })
-            this.listLoading = false
+            this.editorModelLoading = false
           }
         })
       } else {
@@ -251,12 +253,12 @@ export default {
           if (result.code === 0) {
             this.getList(this.query)// 刷新列表
             this.$emit('refreshTree')
-            this.listLoading = false
+            this.editorModelLoading = false
             this.editModelShow = false
             // this.$refs.editModel.clear();
           } else {
             this.$message({ type: 'error', message: '修改模型失败!' })
-            this.listLoading = false
+            this.editorModelLoading = false
           }
         })
       }
@@ -333,7 +335,7 @@ export default {
         this.$message({ type: 'info', message: '请先选择要删除的模型!' })
         return
       }
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该模型, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

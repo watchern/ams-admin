@@ -32,24 +32,29 @@
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="temp"
-        label-position="right"
-        label-width="140px"
-        style="width: 700px; margin-left:50px;"
-      >
-        <el-form-item label="业务属性名称" prop="attrName">
-          <el-input v-model="temp.attrName" />
-        </el-form-item>
-        <el-form-item label="业务属性编码" prop="attrCode">
-          <el-input v-model="temp.attrCode" />
-        </el-form-item>
-        <el-form-item label="描述" prop="describe">
-          <el-input v-model="temp.describe" type="textarea" />
-        </el-form-item>
-      </el-form>
+      <div class="detail-form">
+        <el-form
+          ref="dataForm"
+          :rules="rules"
+          :model="temp"
+          label-position="right"
+          style="width: 700px; margin-left:50px;"
+        >
+          <el-form-item label="业务属性名称" prop="attrName">
+            <el-input v-model="temp.attrName" />
+          </el-form-item>
+          <el-form-item label="业务属性编码" prop="attrCode">
+            <el-input v-model="temp.attrCode" />
+          </el-form-item>
+          <el-form-item label="描述" prop="describe">
+            <el-input v-model="temp.describe" type="textarea" />
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -138,9 +143,10 @@ export default {
       }
     },
     handleCreate() {
+      /* console.log(this.$store.getters.personuuid);
       getDict('sex').then(data => {
         console.log(data)
-      });
+      });*/
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true

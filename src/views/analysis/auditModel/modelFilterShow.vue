@@ -13,26 +13,49 @@
           </el-form-item>
           <p style="font-size:large;font-weight:bold">条件展示设置</p>
           <p style="color:silver;font-size:large">———————————————————————————</p>
-          <el-form-item label="过滤条件" prop="filterValue">
-            <queryBuilder ref="queryBuilder" v-model="form.queryBuilderJson" :rules="queryRules" @sql="getSql" />
-          </el-form-item>
-          <el-form-item label="字体颜色">
-            <Colorpicker v-model="form.fontColor" />
-          </el-form-item>
-          <el-form-item label="背景色">
-            <Colorpicker v-model="form.backGroundColor" />
-          </el-form-item>
+          <el-row>
+            <el-form-item label="过滤条件" prop="filterValue">
+              <el-col span="20">
+                <el-input v-model="form.filterValue" :disabled="true" />
+              </el-col>
+              <el-button @click="showQueryBuilder">设置</el-button>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-col span="8">
+              <el-form-item label="字体颜色">
+                <Colorpicker v-model="form.fontColor" />
+              </el-form-item>
+            </el-col>
+            <el-col span="8">
+              <el-form-item label="背景色">
+                <Colorpicker v-model="form.backGroundColor" />
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
       </div>
     </el-container>
+    <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true">
+      <myQueryBuilder
+        v-if="queryBuilderDialogVisible"
+        ref="myQueryBuilder"
+        :columns="queryRules"
+        :data="form.queryBuilderJson"
+      />select * from aa_model
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="queryBuilderDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="queryCondition">确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
 import Colorpicker from '@/components/Ace/vue-color-picker/packages/color-picker/src/color-picker'
-import queryBuilder from '@/components/Ace/vue-query-builder/src/VueQueryBuilder'
+import myQueryBuilder from '@/views/analysis/auditModelResult/myQueryBuilder'
 export default {
   name: 'ModelFilterShow',
-  components: { Colorpicker, queryBuilder },
+  components: { Colorpicker, myQueryBuilder },
   props: ['columns', 'treeId', 'data'],
   data() {
     return {
@@ -46,7 +69,8 @@ export default {
         backGroundColor: '',
         queryBuilderJson: {}
       },
-      queryRules: [],
+      queryRules: {},
+      queryBuilderDialogVisible: false,
       rules: {
         filterName: [{ type: 'string', required: true, message: '请输入名称', trigger: 'blur' }],
         filterValue: [{ type: 'string', required: true, message: '请输入过滤条件', trigger: 'blur' }]
@@ -105,15 +129,13 @@ export default {
     setQueryBuilderColumn() {
       const queryRules = []
       for (let i = 0; i < this.columns.length; i++) {
-        const operators = this.getQueryBuilderOperators(this.columns[i])
         const obj = {}
-        obj.type = 'text'
-        obj.id = this.columns[i].outputColumnName
-        obj.label = this.columns[i].outputColumnName
-        obj.operators = operators
+        obj.columnType = this.columns[i].columnType
+        obj.columnName = this.columns[i].outputColumnName
         queryRules.push(obj)
       }
-      this.queryRules = queryRules
+      console.log(queryRules)
+      this.queryRules.columnList = queryRules
     },
     /**
        * 设置默认颜色
@@ -128,50 +150,15 @@ export default {
     },
     getSql(sql) {
       this.form.filterValue = sql
-      console.log(sql)
     },
-    /**
-       * 获取queryBuilder的过滤选项  只分两种，数值和字符串
-       * @returns {string[]}
-       */
-    getQueryBuilderOperators(columnObj) {
-      let operators = []
-      if (columnObj.columnType.indexOf('varchar') != -1) {
-        operators = ['=', '<>', 'like', 'not like']
-      } else if (columnObj.columnType.indexOf('int') != -1 || columnObj.columnType.indexOf('number') != -1) {
-        operators = ['=', '<>', '<', '<=', '>', '>=']
-      }
-      // 初始化querybuilder
-      return operators
+    showQueryBuilder() {
+      this.queryBuilderDialogVisible = true
     },
-    test() {
-      console.log(this.$refs.queryBuilder)
-      console.log(this.form)
-      console.log(JSON.stringify(this.form.json))
-      const sql = this.queryToSql(this.form.json)
-      console.log(sql)
-    },
-    queryToSql(query) {
-      debugger
-      const sql = []
-      const that = this
-      const logicalOperator = query.logicalOperator
-      const children = query.children
-      children.forEach((child) => {
-        const type = child.type
-        if (type === 'query-builder-rule') {
-          sql.push(child.query.rule)
-          sql.push(child.query.operator)
-          sql.push(child.query.value)
-        } else {
-          sql.push('(')
-          sql.push(that.queryToSql(child.query))
-          sql.push(')')
-        }
-        sql.push(logicalOperator)
-      })
-      sql.splice(sql.length - 1, sql.length)
-      return sql.join(' ')
+    queryCondition() {
+      const obj = this.$refs.myQueryBuilder.getSelectSql()
+      this.form.filterValue = obj.sql
+      this.form.queryBuilderJson = obj.queryJson
+      this.queryBuilderDialogVisible = false
     }
   }
 }

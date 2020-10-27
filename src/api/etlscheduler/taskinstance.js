@@ -5,7 +5,7 @@ const baseURL = 'etlscheduler'
 export function listByPage(data) {
   return request({
     baseURL: baseURL,
-    url: `/taskinstance/pageList`,
+    url: `/taskInstance/pageList`,
     method: 'post',
     data
   })
@@ -15,7 +15,7 @@ export function listByPage(data) {
 export function getById(id) {
   return request({
     baseURL: baseURL,
-    url: `/taskinstance/getById/${id}`,
+    url: `/taskInstance/getById/${id}`,
     method: 'get'
   })
 }
@@ -23,7 +23,7 @@ export function getById(id) {
 export function save(data) {
   return request({
     baseURL: baseURL,
-    url: '/taskinstance/save',
+    url: '/taskInstance/save',
     method: 'post',
     data
   })
@@ -32,7 +32,7 @@ export function save(data) {
 export function del(ids) {
   return request({
     baseURL: baseURL,
-    url: `/taskinstance/delete/${ids}`,
+    url: `/taskInstance/delete/${ids}`,
     method: 'delete'
   })
 }
@@ -40,8 +40,17 @@ export function del(ids) {
 export function update(data) {
   return request({
     baseURL: baseURL,
-    url: '/taskinstance/update',
+    url: '/taskInstance/update',
     method: 'put',
     data
+  })
+}
+
+// 根据任务实例查找任务日志
+export function findTaskLogs(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/taskInstance/findTaskLogs/${id}`,
+    method: 'get'
   })
 }
