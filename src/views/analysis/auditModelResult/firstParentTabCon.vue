@@ -171,6 +171,7 @@ export default {
       this.$nextTick(function(){
         if(value){
           let obj =[{"id":"{#C91D28BBB63000015328946CD72016FD#}","copyParamId":"C91D28BBB63000015328946CD72016FD","moduleParamId":"402884c9703337a601703349eb240003","allowedNull":"0","name":"name"},{"id":"{#C91D28BD3C2000016F3E21B91A401BB0#}","copyParamId":"C91D28BD3C2000016F3E21B91A401BB0","moduleParamId":"e720b3056f3bc011016f3c59df0300ee","allowedNull":"null","name":"客户姓名"}];
+          // let obj = []
           let sql =
             "select * from AA_MODEL WHERE MODEL_UUID = '{#C91B89F3705000014C91C82013231830#}'";
           this.$refs.apple.createParamTableHtml(true, obj, true);

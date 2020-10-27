@@ -463,7 +463,6 @@ export function initParamHtml(sql, paramsArr, name, modelId) {
     //获取数据库所有母参数信息集合以及该模型用到的参数集合（可以不传模型ID）
     findParamsAndModelRelParams(modelId).then((e) => {
       if (e.isError) {
-        load.hide();
         alertMsg("错误", e.data.message, "info");
       } else {
         var paramList = e.data.paramList; //定义所有母参信息数组
@@ -1969,7 +1968,6 @@ export function  createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
   //第一步：先判断编辑的参数SQL语句是否有变化
   if (!sqlIsChanged) {
     //如果SQL无变化
-    load.hide();
     return;
   }
   //第二步：遍历已配置过得参数行（若已配置行的参数被删除，则删除）,同时找到已配置的参数
@@ -1999,7 +1997,6 @@ export function  createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
     }
   }
   if (paramArr.length === 0) {
-    load.hide();
     alertMsg("提示", "您尚未设置参数，无法进行参数配置", "info");
     return;
   }
@@ -2081,6 +2078,7 @@ export function  createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
       }
       html +=
         "<td>" + htmlContent + "</td><td>" + description + "</td></tr>";
+        $("#mochu").empty()
       if (canEditor) {
         $("#paramTable>tbody").append(html).sortable().disableSelection()
       } else {
