@@ -155,9 +155,6 @@ export default {
     }
   },
   computed: {
-    dialogTitle() {
-      return (this.parentNode.label == null ? '' : '在<' + this.parentNode.label + '>下') + this.textMap[this.dialogStatus]
-    }
   },
   watch: {
     filterText1(val) {

@@ -37,3 +37,12 @@ export function del(ids) {
     method: 'delete'
   })
 }
+
+export function getAllScene() {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/getAllScene`,
+    method: 'get'
+  })
+}
+
