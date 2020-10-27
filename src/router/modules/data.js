@@ -23,6 +23,10 @@ const dataRouter = {
       name: '业务场景维护',
       component: () => import('@/views/data/scene/index')
     }, {
+      path: 'sceneEdit',
+      name: '业务场景维护',
+      component: () => import('@/views/data/scene/edit')
+    }, {
       path: 'resquery',
       name: '用户资源查询',
       component: () => import('@/views/data/resquery/index')
