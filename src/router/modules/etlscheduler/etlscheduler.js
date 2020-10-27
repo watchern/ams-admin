@@ -76,6 +76,18 @@ const etlschedulerRouter = {
       meta: { title: 'taskmonitor' }
     },
     {
+      path: 'servermonitor',
+      name: 'servermonitor',
+      component: () => import('@/views/modules/etlscheduler/servermonitor/index'),
+      meta: { title: 'servermonitor' }
+    },
+    {
+      path: 'dbmonitor',
+      name: 'dbmonitor',
+      component: () => import('@/views/modules/etlscheduler/dbmonitor/index'),
+      meta: { title: 'dbmonitor' }
+    },
+    {
       path: 'processinstance',
       name: 'processinstance',
       component: () => import('@/views/modules/etlscheduler/processinstance/index'),
