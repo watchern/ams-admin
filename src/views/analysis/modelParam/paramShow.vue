@@ -8,7 +8,7 @@
           <th align="center">参数说明</th>
         </tr>
       </thead>
-      <tbody id="paramTable"></tbody>
+      <tbody></tbody>
     </table>
   </div>
 </template>
@@ -21,8 +21,8 @@ import {
 } from "@/api/analysis/auditParam";
 export default {
   methods: {
-    createParamTableHtml(tableId, sqlIsChanged, paramArr, canEditor){
-        createParamTableHtml(tableId, sqlIsChanged, paramArr, canEditor)
+    createParamTableHtml(sqlIsChanged, paramArr, canEditor){
+        createParamTableHtml(sqlIsChanged, paramArr, canEditor)
     }
   }
 };

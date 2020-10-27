@@ -14,7 +14,7 @@
               </h4>
             </div>
             <div id="collapse" class="panel-collapse collapse in">
-              <div id="paramCom" class="panel-body" style="padding: 10px 0" />
+              <div id="paramCom" class="panel-body" style="padding: 10px 0;display: flex" />
             </div>
           </div>
         </div>

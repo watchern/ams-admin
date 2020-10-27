@@ -1962,7 +1962,7 @@ export function getParentParamByParamArr(data) {
   });
 }
 
-export function  createParamTableHtml(tableId, sqlIsChanged, paramArr, canEditor) {
+export function  createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
   if (typeof canEditor === "undefined") {
     canEditor = false;
   }
@@ -2082,9 +2082,9 @@ export function  createParamTableHtml(tableId, sqlIsChanged, paramArr, canEditor
       html +=
         "<td>" + htmlContent + "</td><td>" + description + "</td></tr>";
       if (canEditor) {
-        $("#" + tableId+ ">tbody").append(html).sortable().disableSelection()
+        $("#paramTable>tbody").append(html).sortable().disableSelection()
       } else {
-        $("#" + tableId + ">tbody").append(html)
+        $("#paramTable>tbody").append(html)
       }
     }
     //第六步：统一初始化参数的html（文本框、下拉列表、下拉树），并反显已配置参数的信息（包括默认值和排序值）
