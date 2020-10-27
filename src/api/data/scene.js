@@ -38,6 +38,15 @@ export function del(ids) {
   })
 }
 
+export function initSceneTree(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/initSceneTree`,
+    method: 'post',
+    data
+  })
+}
+
 export function getAllScene() {
   return request({
     baseURL: baseURL,
