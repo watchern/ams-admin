@@ -37,3 +37,21 @@ export function del(ids) {
     method: 'delete'
   })
 }
+
+export function initSceneTree(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/initSceneTree`,
+    method: 'post',
+    data
+  })
+}
+
+export function getAllScene() {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/getAllScene`,
+    method: 'get'
+  })
+}
+
