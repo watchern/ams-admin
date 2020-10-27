@@ -38,12 +38,11 @@ export function del(ids) {
   })
 }
 
-export function initSceneTree(data) {
+export function initSceneTree(grpUuid) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/initSceneTree`,
-    method: 'post',
-    data
+    url: `/${controllerName}/initSceneTree?grpUuid=${grpUuid}`,
+    method: 'post'
   })
 }
 

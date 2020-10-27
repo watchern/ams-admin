@@ -356,12 +356,8 @@ export default {
       this.getListFilter()
     },
     selectFilterOne(sceneGrpUuid) {
-      var data = []
-      data.sceneGrpUuid = sceneGrpUuid
-      this.pageQuery.condition = this.tempGrp
-      this.pageQuery.condition.sceneGrpUuid = sceneGrpUuid
       this.dialogFormVisibleTree = true
-      initSceneTree(this.pageQuery).then(resp => {
+      initSceneTree(sceneGrpUuid).then(resp => {
         this.treeData1 = resp.data
       })
     },
