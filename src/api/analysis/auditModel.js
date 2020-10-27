@@ -195,3 +195,17 @@ export function getBusinessAttribute(){
     method: 'post',
   })
 }
+
+/**
+ * 获取数据表列
+ * @param data
+ * @returns {AxiosPromise}
+ */
+export function getTableCol(tableMetaUuid){
+  return request({
+    baseURL: dataUrl,
+    url: '/tableMeta/getCols',
+    method: 'post',
+    params: { tableMetaUuid: tableMetaUuid }
+  })
+}
