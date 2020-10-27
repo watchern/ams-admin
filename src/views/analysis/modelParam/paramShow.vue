@@ -8,7 +8,7 @@
           <th align="center">参数说明</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody><div align='center'>暂无数据</div></tbody>
     </table>
   </div>
 </template>
