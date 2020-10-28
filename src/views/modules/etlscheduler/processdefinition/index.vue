@@ -118,7 +118,6 @@
       />
       <el-table-column
         label="最新修改人"
-        width="200px"
         align="center"
         prop="updateUserName"
       />
