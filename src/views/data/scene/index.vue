@@ -37,7 +37,7 @@
           :rules="rules"
           :model="temp"
           label-position="right"
-          style="width: 700px; margin-left:50px;"
+          style="width: 600px; margin-left:50px;"
         >
           <el-form-item label="业务场景名称" prop="sceneName">
             <el-input v-model="temp.sceneName" />
@@ -93,13 +93,13 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑业务属性',
-        create: '添加业务属性'
+        update: '编辑业务场景',
+        create: '添加业务场景'
       },
       dialogPvVisible: false,
       rules: {
         sceneName: [{ required: true, message: '请填写业务场景名称', trigger: 'change' }],
-        sceneCode: [{ required: true, message: '请填写业务属性编码', trigger: 'change' }]
+        sceneCode: [{ required: true, message: '请填写业务场景编码', trigger: 'change' }]
       },
       downloadLoading: false
     }
