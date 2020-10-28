@@ -15,12 +15,12 @@
         class="oper-btn add"
         @click="handleCreate()"
       />
-      <!-- 修改 -->
+      <!-- 修改 selections.length !== 1 -->
       <el-button
         type="primary"
-        title="修改"
+        title="编辑已停用的流程"
         class="oper-btn edit"
-        :disabled="selections.length !== 1"
+        :disabled="updateStatus"
         @click="handleUpdate()"
       />
       <!-- 启用 -->
@@ -44,9 +44,9 @@
       <!-- 删除 -->
       <el-button
         type="primary"
-        title="删除"
+        title="删除已停用的流程"
         class="oper-btn delete"
-        :disabled="selections.length === 0"
+        :disabled="deleteStatus"
         @click="handleDelete()"
       />
       <!-- 下载 -->
@@ -97,12 +97,14 @@
           <a target="_blank" class="buttonText" @click="handleView(scope.row.processDefinitionUuid)">{{ scope.row.name }}</a>
         </template>
       </el-table-column>
+      <!--
       <el-table-column
         label="排序号"
         width="150px"
         align="center"
         prop="orderNo"
       />
+      -->
       <el-table-column
         label="状态"
         width="150px"
@@ -116,7 +118,6 @@
       />
       <el-table-column
         label="最新修改人"
-        width="200px"
         align="center"
         prop="updateUserName"
       />
@@ -183,6 +184,8 @@ export default {
       downloadLoading: false,
       startStatus: true,
       stopStatus: true,
+      updateStatus: true,
+      deleteStatus: true,
       headers: { 'Content-Type': 'multipart/form-data' },
       file: ''
     }
@@ -193,10 +196,12 @@ export default {
       if (this.selections.length > 0) {
         this.startStatus = false
         this.stopStatus = false
+        this.deleteStatus = false
         this.selections.forEach((r, i) => {
-          // 遍历选择的数组判断状态，如果是有启用的，启用按钮不可用
+          // 遍历选择的数组判断状态，如果是有启用的，启用按钮和删除不可用
           if (r.status === 1) {
             this.startStatus = true
+            this.deleteStatus = true
           } else if (r.status === 0) {
             // 遍历选择的数组判断状态，如果是有禁用的，禁用按钮不可用
             this.stopStatus = true
@@ -205,6 +210,19 @@ export default {
       } else {
         this.startStatus = true
         this.stopStatus = true
+      }
+      if (this.selections.length === 1) {
+        this.selections.forEach((r, i) => {
+          // 遍历选择的数组判断状态，如果是有启用的，修改按钮不可用
+          if (r.status === 1) {
+            this.updateStatus = true
+          } else if (r.status === 0) {
+            // 遍历选择的数组判断状态，如果是有禁用的，修改按钮不可用
+            this.updateStatus = false
+          }
+        })
+      } else {
+        this.updateStatus = true
       }
     }
   },

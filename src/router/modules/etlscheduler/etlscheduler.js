@@ -76,6 +76,18 @@ const etlschedulerRouter = {
       meta: { title: 'taskmonitor' }
     },
     {
+      path: 'servermonitor',
+      name: 'servermonitor',
+      component: () => import('@/views/modules/etlscheduler/servermonitor/index'),
+      meta: { title: 'servermonitor' }
+    },
+    {
+      path: 'dbmonitor',
+      name: 'dbmonitor',
+      component: () => import('@/views/modules/etlscheduler/dbmonitor/index'),
+      meta: { title: 'dbmonitor' }
+    },
+    {
       path: 'processinstance',
       name: 'processinstance',
       component: () => import('@/views/modules/etlscheduler/processinstance/index'),
@@ -88,11 +100,23 @@ const etlschedulerRouter = {
       meta: { title: 'taskinstance' }
     },
     {
+      path: 'resourceStatistics',
+      name: 'resourceStatistics',
+      component: () => import('@/views/modules/etlscheduler/resourceStatistics/index'),
+      meta: { title: 'resourceStatistics' }
+    },
+    {
     // 传递状态为1为查看，0为编辑
       path: 'definition/:id/:status',
       name: 'projects-definition-details',
       component: resolve => require(['@/views/modules/etlscheduler/workflow/details/index'], resolve),
       meta: { title: `流程定义详情` }
+    },
+    {
+      path: 'dataFile',
+      name: 'dataFile',
+      component: () => import('@/views/modules/etlscheduler/dataFile/index'),
+      meta: { title: 'dataFile' }
     }
   ]
 }
