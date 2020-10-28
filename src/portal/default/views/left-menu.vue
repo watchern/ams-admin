@@ -132,7 +132,7 @@
 <script>
 import { getUserRes } from '@/api/user'
 import MenuTree from './menu-tree/index.vue'
-
+import { cacheDict } from '@/api/base/sys-dict'
 export default {
   components: { MenuTree },
   data() {
@@ -226,6 +226,12 @@ export default {
             children: menuList
           })
         })
+        var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
+        if (sysDict == null) {
+          cacheDict().then(resp => {
+            sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
+          })
+        }
       })
       .catch(error => {
         console.error(error)
