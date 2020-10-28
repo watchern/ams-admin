@@ -117,13 +117,13 @@
       <el-table-column
         v-if="false"
         label="任务流程"
-        width="100px"
+        width="150px"
         align="center"
         prop="processDefinitionId"
       />
       <el-table-column
         label="任务流程"
-        width="200px"
+        width="100px"
         align="center"
         prop="processDefName"
       />
@@ -177,12 +177,6 @@
           </el-popover>
         </template>
       </el-table-column>
-      <!-- <el-table-column
-        label="排序号"
-        width="80px"
-        align="center"
-        prop="processInstancePriority"
-      /> -->
       <el-table-column
         label="状态"
         width="100px"
@@ -192,11 +186,10 @@
       />
       <el-table-column
         label="最新修改人"
-        width="100px"
         align="center"
         prop="updateUserName"
       />
-      <el-table-column label="修改时间" align="center" prop="updateTime" width="200px" />
+      <el-table-column label="修改时间" align="center" prop="updateTime" />
     </el-table>
     <pagination
       v-show="total > 0"

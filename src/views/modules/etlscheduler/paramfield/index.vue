@@ -111,7 +111,6 @@
         :model="temp"
         label-position="right"
         class="detail-form"
-        style="width: 700px; margin-left:50px;"
       >
         <el-form-item
           label="参数名称"
