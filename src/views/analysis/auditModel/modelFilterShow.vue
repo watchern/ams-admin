@@ -15,19 +15,19 @@
           <p style="color:silver;font-size:large">———————————————————————————</p>
           <el-row>
             <el-form-item label="过滤条件" prop="filterValue">
-              <el-col span="20">
+              <el-col :span="20">
                 <el-input v-model="form.filterValue" :disabled="true" />
               </el-col>
               <el-button @click="showQueryBuilder">设置</el-button>
             </el-form-item>
           </el-row>
           <el-row>
-            <el-col span="8">
+            <el-col :span="8">
               <el-form-item label="字体颜色">
                 <Colorpicker v-model="form.fontColor" />
               </el-form-item>
             </el-col>
-            <el-col span="8">
+            <el-col :span="8">
               <el-form-item label="背景色">
                 <Colorpicker v-model="form.backGroundColor" />
               </el-form-item>
@@ -42,7 +42,7 @@
         ref="myQueryBuilder"
         :columns="queryRules"
         :data="form.queryBuilderJson"
-      />select * from aa_model
+      />
       <span slot="footer" class="dialog-footer">
         <el-button @click="queryBuilderDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="queryCondition">确定</el-button>

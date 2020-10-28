@@ -141,7 +141,14 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-           {{scope.row.taskParamsList}}
+            <el-row v-for="taskParam in scope.row.distinctParamList">
+            <label class="col-md-2">
+            {{taskParam.name}}:
+            </label>
+            <div class="col-md-10">
+             {{taskParam.value}}
+             </div>
+            </el-row>
             <div slot="reference" class="name-wrapper">
               <el-tag><i class="el-icon-tickets" /></el-tag>
             </div>
@@ -157,6 +164,15 @@
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <p>{{ scope.row.dependTaskInfo }}</p>
+            <el-row v-for="dependTask in scope.row.dependTaskInfoList">
+
+            <label class="col-md-2">
+            依赖:
+            </label>
+            <div class="col-md-10">
+             {{dependTask.dependItemList}}
+             </div>
+            </el-row>
             <div slot="reference" class="name-wrapper">
               <el-tag><i class="el-icon-tickets" /></el-tag>
             </div>
@@ -298,12 +314,11 @@
           </el-select>
         </el-form-item>
         <!-- 添加任务依赖 -->
-        <el-form-item label="添加依赖">
+        <el-form-item >
           <div class="dependence-model">
             <m-list-box>
-              <!-- <div slot="text">添加依赖</div> -->
               <div slot="content">
-                <div class="dep-opt">
+                <div>
                   <a
                     :style="{
                       'pointer-events': disableUpdate === true ? 'none' : '',
@@ -312,22 +327,17 @@
                     class="add-dep"
                     @click="!isDetails && _addDep()"
                   >
+                   <div slot="text">添加依赖
                     <em
                       v-if="!isLoading"
-                      class="oper-btn add"
-                      :class="_isDetails"
+                      :class="{'oper-btn add': iconDisable}"
                       data-toggle="tooltip"
                       title="添加"
                     />
-                    <em
-                      v-if="isLoading"
-                      class="ans-icon-spinner2 as as-spin"
-                      data-toggle="tooltip"
-                      title="添加"
-                    />
+                   </div>
                   </a>
                 </div>
-                <div>
+                <div class="dep-box">
                   <span
                     v-if="dependTaskList.length"
                     :style="{
@@ -343,7 +353,6 @@
                     :style="{
                       'pointer-events': disableUpdate === true ? 'none' : '',
                     }"
-                    
                   >
                     <span
                       v-if="el.dependItemList.length"
@@ -351,24 +360,25 @@
                     >
                       <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
                     </span>
-                    <em
-                      class="oper-btn delete"
-                      data-toggle="tooltip"
-                      data-container="body"
-                      :class="_isDetails"
-                      title="删除"
-                      :style="{
-                        'pointer-events': disableUpdate === true ? 'none' : '',
-                      }"
-                      @click="!isDetails && _deleteDep($index)"
-                    />
+                   
                     <m-depend-item-list
                       v-model="el.dependItemList"
                       :depend-item-list="dependTaskList"
                       :index="$index"
                       @on-delete-all="_onDeleteAll"
                       @getDependTaskList="getDependTaskList"
-                    />
+                    />   
+                     <em
+                      :class="{'oper-btn delete': iconDisable}"
+                      class="deleteIcon"
+                      data-toggle="tooltip"
+                      data-container="body"
+                      title="删除"
+                      :style="{
+                        'pointer-events': disableUpdate === true ? 'none' : '',
+                      }"
+                      @click="!isDetails && _deleteDep($index)"
+                    />       
                   </div>
                 </div>
               </div>
@@ -509,6 +519,8 @@ export default {
       flag: Boolean,
       //  查询任务流程
       options: [],
+      // 依赖图标显示和隐藏
+      iconDisable: true,
       processParam: {
         pageNo: 1,
         pageSize: 100,
@@ -778,6 +790,7 @@ export default {
       }
     },
     findSchedule(data) {
+      this.iconDisable = false
       this.closeStatus = true
       this.disableUpdate = true
       this.temp = Object.assign({}, data) // copy obj
@@ -793,7 +806,7 @@ export default {
         //   this.dependTaskList = [];
         // }
         // if (resp.data.taskParamsList !== null && resp.data.taskParamsList !== "") {
-        this.paramList = resp.data.taskParamsList
+        this.distinctParamList = resp.data.taskParamsList
         // } else {
         //   this.paramList = [];
         // }
@@ -866,7 +879,7 @@ export default {
       this.relation = this.relation === 'AND' ? 'OR' : 'AND'
     },
     getDependTaskList(i) {
-      console.log('getDependTaskList' + i)
+      
     },
     _setRelation(i) {
       this.dependTaskList[i].relation === 'AND' ? 'OR' : 'AND'
@@ -953,6 +966,7 @@ export default {
       }
     },
     handleCreate() {
+      this.iconDisable = true
       this.disableUpdate = false
       this.closeStatus = false
       this.distinctParamList = []
@@ -1002,6 +1016,7 @@ export default {
       })
     },
     handleUpdate() {
+      this.iconDisable = true
       this.disableUpdate = false
       this.closeStatus = false
       this.temp = Object.assign({}, this.selections[0]) // copy obj
@@ -1329,5 +1344,14 @@ export default {
 .el-popover{
   width: 60%;
   overflow: auto;
+}
+.m-depend-item-list{
+  position: static;
+ 
+}
+.deleteIcon{
+  position: relative;
+  left: 460px;
+  bottom: 115px;
 }
 </style>

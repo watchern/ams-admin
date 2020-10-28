@@ -521,7 +521,6 @@ export default {
       // region 初始化SQL语句显示
       this.displaySQL(returnObj)
       // endregion
-      console.log(returnObj)
       // 转换参数格式 重置参数对象属性，因为SQL编辑器是移植的，因此兼容那边的数据格式，因此对数据格式进行转换
       const params = this.changeParamDataFormat(returnObj.params, 1)
       // 转换列格式 处理sql编辑器返回的列数据信息，拼接成该界面能识别的格式
@@ -654,7 +653,6 @@ export default {
         sqlStr = sqlStr.replace(reg, '' + arrPram[i].id + '')
       }
       this.form.sqlValue = sqlStr
-      $('#sqlValue').val()
       $('#sqlValueView').html(sql)
     },
     /**

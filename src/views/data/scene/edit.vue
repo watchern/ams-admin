@@ -9,7 +9,7 @@
         label-position="right"
         style="width: 700px; margin-left:50px;"
       >
-        <div class="tableTitle"><span class="midText">业务场景维护：</span></div>
+        <span class="midText">业务场景维护：</span>
         <el-row>
           <el-col :span="12">
             <el-form-item label="业务场景名称" prop="sceneName" label-width="150px">
@@ -44,13 +44,13 @@
           <el-table-column label="创建时间" width="300px" align="center" prop="createTime" :formatter="formatCreateTime" />
           <el-table-column label="操作" align="center" min-width="100">
             <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="selectGrpOne(scope.row.sceneGrpUuid)">预览</el-button>
+              <el-button type="primary" size="mini" @click="selectFilterOne(scope.row.sceneGrpUuid)">预览</el-button>
               <el-button type="primary" size="mini" @click="updateGrp(scope.row.sceneGrpUuid)">修改</el-button>
               <el-button type="danger" size="mini" @click="deleteGrp(scope.row.sceneGrpUuid)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
-        <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
+        <!-- <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" /> -->
 
         <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
           <div class="detail-form">
@@ -67,7 +67,7 @@
               <el-form-item label="组代码" prop="grpCode">
                 <el-input v-model="tempGrp.grpCode" />
               </el-form-item>
-              <el-form-item label="组用户来源SQL" prop="grpSql">
+              <el-form-item label="组用户来源SQL(所写SQL中必须有id,name,pid 三列才可预览查看)" prop="grpSql">
                 <el-input v-model="tempGrp.grpSql" type="textarea" />
               </el-form-item>
             </el-form>
@@ -96,17 +96,17 @@
         >
           <el-table-column type="index" label="序号" width="50" align="center" />
           <el-table-column label="筛选器名称" width="200px" align="center" prop="filterName" />
-          <el-table-column label="IN值SQL" width="200px" align="center" prop="inValueSql" />
-          <el-table-column label="描述" width="200px" align="center" prop="describe" />
+          <el-table-column label="IN值SQL" width="300px" align="center" prop="inValueSql" />
+          <el-table-column label="描述" width="100px" align="center" prop="describe" />
           <el-table-column label="操作" align="center" min-width="100">
             <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="selectFilterOne(scope.row.sceneFilterUuid)">预览</el-button>
+              <el-button type="primary" size="mini" @click="selectFilterOne(scope.row.inValueSql)">预览</el-button>
               <el-button type="primary" size="mini" @click="updateFilter(scope.row.sceneFilterUuid)">修改</el-button>
               <el-button type="danger" size="mini" @click="deleteFilter(scope.row.sceneFilterUuid)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
-        <pagination v-show="totalFilter>0" :total="totalFilter" :page.sync="pageQueryFilter.pageNo" :limit.sync="pageQueryFilter.pageSize" @pagination="getListFilter" />
+        <!-- <pagination v-show="totalFilter>0" :total="totalFilter" :page.sync="pageQueryFilter.pageNo" :limit.sync="pageQueryFilter.pageSize" @pagination="getListFilter" /> -->
 
         <el-dialog :title="textMap[dialogStatusFilter]" :visible.sync="dialogFormVisibleFilter">
           <div class="detail-form">
@@ -120,7 +120,7 @@
               <el-form-item label="过滤器名称" prop="filterName">
                 <el-input v-model="tempFilter.filterName" />
               </el-form-item>
-              <el-form-item label="IN值SQL" prop="inValueSql">
+              <el-form-item label="IN值SQL(所写SQL中必须有id,name,pid 三列才可预览查看)" prop="inValueSql">
                 <el-input v-model="tempFilter.inValueSql" />
               </el-form-item>
               <el-form-item label="描述" prop="describe">
@@ -143,6 +143,28 @@
             <el-button type="primary" @click="dialogStatusFilter==='create'?createDataFilter():updateDataFilter()">确定</el-button>
           </div>
         </el-dialog>
+
+        <el-dialog :title="textMap['预览']" :visible.sync="dialogFormVisibleTree">
+          <MyElTree
+            ref="tree1"
+            v-loading="tree1Loading"
+            :props="props"
+            class="filter-tree"
+            :highlight-current="true"
+            :data="treeData1"
+            node-key="id"
+            :filter-node-method="filterNode"
+            show-checkbox
+          >
+            <span slot-scope="{ node, data }" class="custom-tree-node">
+              <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
+              <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
+              <i v-if="data.type==='table'" class="el-icon-tickets" style="color:#409EFF" />
+              <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
+              <span :title="node.name">{{ node.label }}</span>
+            </span>
+          </MyElTree>
+        </el-dialog>
       </div>
     </div>
     <div slot="footer" style="float:right; margin-right:100px">
@@ -153,23 +175,29 @@
 </template>
 
 <script>
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { update } from '@/api/data/scene'
+import MyElTree from '@/components/Ace/tree/src/tree.vue'
+import { update, initSceneTree } from '@/api/data/scene'
 import { listByPage } from '@/api/data/biz-attr'
 import { listByPageGrp, saveGrp, updateGrp, delGrp, getById } from '@/api/data/sceneGrp'
 import { listByPageFilter, saveFilter, updateFilter, delFilter, getByIdFilter } from '@/api/data/sceneFilter'
 export default {
-  components: { Pagination },
+  components: { MyElTree },
   data() {
     return {
+      treeData1: [],
       tableKey: 'sceneUuid',
       tableKeyFilter: 'sceneUuid',
       list: null,
       listFilter: null,
+      props: {
+        label: 'label',
+        isLeaf: 'leaf'
+      },
       total: 0,
       totalFilter: 0,
       listLoading: false,
       listLoadingFilter: false,
+      tree1Loading: false,
       bizJson: [],
       pageQuery: {
         condition: null,
@@ -207,6 +235,7 @@ export default {
       selectionsFilter: [],
       dialogFormVisible: false,
       dialogFormVisibleFilter: false,
+      dialogFormVisibleTree: false,
       dialogStatus: '',
       dialogStatusFilter: '',
       textMap: {
@@ -235,6 +264,89 @@ export default {
     this.allList()
   },
   methods: {
+    filterNode(value, data) {
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
+    },
+    // showOrEdit(data) {
+    //   debugger
+    //   if (this.isEdit) {
+    //     return <input type='text' style='width:80px' value={data.Name} on-blur={ev => this.edit_sure(ev, data)}/>
+    //   } else {
+    //     return <span>{data.Name}</span>
+    //   }
+    // },
+    // renderContent(h, { node, data, store }) {
+    //   if (data.enabled === true && data.parentId === 0) {
+    //     return (
+    //       <span>
+    //         <span>
+    //           { this.showOrEdit(data) }
+    //         </span>
+    //         <span style='margin-left: 15px;'>
+    //           <i class='el-icon-plus' on-click={ () => this.NodeAdd(node, data) }></i>
+    //         </span>
+    //       </span>)
+    //   } else if (data.enabled === true && data.parentId !== 0) {
+    //     return (
+    //       <span>
+    //         <span>
+    //           { this.showOrEdit(data) }
+    //         </span>
+    //       </span>)
+    //   } else {
+    //     return (
+    //       <span>
+    //         <span style='color: red;'>
+    //           { this.showOrEdit(data) }
+    //         </span>
+    //       </span>)
+    //   }
+    // },
+    // getListData(datas) {
+    //   const dataArray = []
+    //   for (var i = 0; i < datas.length; i++) {
+    //     const parentId = datas[i].PID
+    //     if (parentId === '0000000000000000000000000000000000000000000000000000000000000000') {
+    //       const objTemp = {
+    //         id: datas[i].ID,
+    //         name: datas[i].NAME,
+    //         parentId: parentId
+    //       }
+    //       dataArray.push(objTemp)
+    //     }
+    //   }
+    //   this.data2treeDG(this.datas, dataArray)
+    // },
+    // data2treeDG(datas, dataArray) {
+    //   debugger
+    //   for (let j = 0; j < dataArray.length; j++) {
+    //     const dataArrayIndex = dataArray[j]
+    //     const childrenArray = []
+    //     const Id = dataArrayIndex.id
+    //     for (let i = 0; i < datas.length; i++) {
+    //       const data = datas[i]
+    //       if (data.enabled === true) {
+    //         const parentId = data.parentId
+    //         if (parentId === Id) { // 判断是否为儿子节点
+    //           const objTemp = {
+    //             id: data.id,
+    //             name: data.name,
+    //             order: data.order,
+    //             parentId: parentId
+    //           }
+    //           childrenArray.push(objTemp)
+    //         }
+    //       }
+    //     }
+    //     dataArrayIndex.children = childrenArray
+    //     if (childrenArray.length > 0) { // 有儿子节点则递归
+    //       this.data2treeDG(datas, childrenArray)
+    //     }
+    //   }
+    //   this.setTree = dataArray
+    //   return dataArray
+    // },
     // 初始化页面所有列表
     allList() {
       this.temp.sceneUuid = this.$route.query.sceneUuid
@@ -242,6 +354,12 @@ export default {
       this.temp.sceneCode = this.$route.query.sceneCode
       this.getList()
       this.getListFilter()
+    },
+    selectFilterOne(sceneGrpUuid) {
+      this.dialogFormVisibleTree = true
+      initSceneTree(sceneGrpUuid).then(resp => {
+        this.treeData1 = resp.data
+      })
     },
     // 初始化用户组定义
     getList() {

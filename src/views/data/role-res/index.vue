@@ -9,6 +9,7 @@
         />
         <MyElTree
           ref="tree1"
+          v-loading="tree1Loading"
           :props="props"
           class="filter-tree"
           :highlight-current="true"
@@ -61,6 +62,7 @@
           :highlight-current="true"
           :data="treeData2"
           node-key="id"
+          :expand-on-click-node="false"
           show-checkbox
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
@@ -75,46 +77,52 @@
       </el-col>
 
       <el-col :span="8">
-        <div v-if="currentData !== {}">
-          <el-table
-            key="colMetaUuid"
-            v-loading="listLoading"
-            :data="currentData.cols"
-            border
-            fit
-            highlight-current-row
-            style="width: 100%;"
-            @select="onSelectCol"
-          >
-            <el-table-column width="55">
-              <template slot-scope="scope">
-                <el-checkbox v-model="scope.row.selected" />
-              </template>
-            </el-table-column>
-            <el-table-column label="列名" width="200px" align="center" prop="colName" />
-            <el-table-column label="别名" width="200px" align="center" prop="chnName" />
-            <el-table-column label="加密策略" width="150px" align="center" prop="encryptType" />
-          </el-table>
+        <div v-if="currentData !== null">
+          <span>{{ currentData.label }}</span>
+          <div v-if="currentData.type==='table'">
+            <el-table
+              key="colMetaUuid"
+              v-loading="listLoading"
+              :data="currentData.cols"
+              border
+              fit
+              highlight-current-row
+              style="width: 100%;"
+            >
+              <el-table-column width="55">
+                <template slot-scope="scope">
+                  <el-checkbox v-model="scope.row.selected" />
+                </template>
+              </el-table-column>
+              <el-table-column label="列名" width="200px" align="center" prop="colName" />
+              <el-table-column label="别名" width="200px" align="center" prop="chnName" />
+              <el-table-column label="加密策略" width="150px" align="center" prop="encryptType" />
+            </el-table>
+            <div>
+              <el-input
+                v-model="currentData.extMap.whereStr"
+                type="textarea"
+                :rows="2"
+                placeholder="请输入筛选语句，如： name='张三' and age=19 "
+              />
+            </div>
+          </div>
+          <div>
+            <div>访问类型</div>
+            <el-checkbox
+              v-model="currentData.extMap.accessType"
+              label="完全控制"
+              true-label="1"
+              false-label="0"
+            />
+          </div>
         </div>
       </el-col>
-
     </el-row>
     <div class="bottom-btn">
       <el-button @click="save">保存</el-button>
       <el-button @click="goBack">返回</el-button>
     </div>
-
-    <el-dialog :title="dialogTitle" :visible.sync="accessFormVisible" width="500px">
-      <el-form ref="accessForm" :model="accessForm" label-width="80px">
-        <el-form-item label="文件夹名称" label-width="120px">
-          <el-input v-model="accessForm.folderName" style="width: 300px;" />
-        </el-form-item>
-      </el-form>
-      <span slot="footer">
-        <el-button type="primary" @click="dialogStatus==='create'?createFolder():updateFolder()">确定</el-button>
-        <el-button @click="accessFormVisible = false">取消</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -130,41 +138,23 @@ export default {
       roleUuid: this.$route.params.roleUuid,
       filterText1: null,
       filterText2: null,
+      tree1Loading: false,
+      listLoading: false,
       props: {
         label: 'label',
         isLeaf: 'leaf'
       },
-      accessForm: {
-        folderUuid: null,
-        folderName: null,
-        parentFolderUuid: null,
-        orderNum: 0,
-        fullPath: null
-      },
-      accessFormVisible: false,
-      dialogStatus: '',
-      parentNode: {},
-      tempData: {}, // 点击编辑时临时存放data
-      textMap: {
-        update: '编辑文件夹',
-        create: '添加文件夹'
-      },
-      selectValue: 1,
       treeData1: [],
       treeData2: [{
         id: 'ROOT',
         label: '角色数据',
         children: []
       }],
-      listLoading: false,
-      currentData: {}, // 当前选中的数据表
+      currentData: null, // 当前选中的数据表
       currentSelection: []
     }
   },
   computed: {
-    dialogTitle() {
-      return (this.parentNode.label == null ? '' : '在<' + this.parentNode.label + '>下') + this.textMap[this.dialogStatus]
-    }
   },
   watch: {
     filterText1(val) {
@@ -175,11 +165,15 @@ export default {
     }
   },
   created() {
+    this.tree1Loading = true
     getResELTree(0, '').then(resp => {
       this.treeData1 = resp.data
+      this.tree1Loading = false
     })
     getResByRole(this.$route.params.roleUuid).then(resp => {
       resp.data.forEach(item => {
+        // 将 accessType 的 0， 1 转为 false， true 让elcheckbox认识
+        item.extMap.accessType = item.extMap.accessType === 1
         this.treeData2[0].children.push(item)
       })
     })
@@ -189,71 +183,6 @@ export default {
       if (!value) return true
       return data.label.indexOf(value) !== -1
     },
-    resetAccessForm() {
-      Object.keys(this.accessForm).forEach(key => {
-        this.$set(this.accessForm, key, null)
-      })
-    },
-    handleCreateFolder(node, data) {
-      this.resetAccessForm()
-      this.parentNode = node
-      this.dialogStatus = 'create'
-      this.accessForm.parentFolderUuid = data.id
-      var nodePath = this.$refs.tree2.getNodePath(data)
-      var fullPath = []
-      nodePath.forEach(path => {
-        fullPath.push(path.id)
-      })
-      this.accessForm.fullPath = fullPath.join('/')
-      this.accessFormVisible = true
-    },
-    handleUpdateFolder(node, data) {
-      this.resetAccessForm()
-      this.tempData = data
-      this.dialogStatus = 'update'
-      this.accessForm.folderUuid = data.id
-      this.accessForm.folderName = data.label
-      this.accessForm.fullPath = this.$refs.tree2.getNodePath(data)
-      this.accessFormVisible = true
-    },
-    handleRemoveFolder(node, data) {
-      console.log(this.$refs.tree2.getCurrentNode())
-      this.$confirm('是否删除？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        delFolder(data.id).then(resp => {
-          this.$notify(commonNotify({ type: 'success', message: '删除成功！' }))
-          this.$refs.tree2.remove(data)
-        })
-      }).catch(() => {
-      })
-    },
-    createFolder() {
-      saveFolder(this.accessForm).then(resp => {
-        /* var childData = {
-          id: resp.data,
-          label: this.accessForm.folderName,
-          pid: this.accessForm.parentFolderUuid,
-          type: 'FOLDER',
-          extMap: {
-            folder_type: 'maintained'
-          }
-        }
-        this.$refs.tree2.append(childData, this.parentNode)
-        this.$notify(commonNotify({ type: 'success', message: '创建成功！' }))
-        this.accessFormVisible = false*/
-      })
-    },
-    updateFolder() {
-      updateFolder(this.accessForm).then(resp => {
-        this.tempData.label = this.accessForm.folderName
-        this.$refs.tree2.updateKeyChildren(this.accessForm.folderUuid, this.tempData)
-        this.accessFormVisible = false
-      })
-    },
-
     addRoleTable() {
       var ckTbs = this.$refs.tree1.getCheckedNodes(false, true)
       ckTbs.forEach((item) => {
@@ -282,14 +211,19 @@ export default {
         if (node.data.cols) {
           this.currentData = node.data
         } else {
+          this.listLoading = true
           getRoleCols(this.roleUuid, node.data.id).then(resp => {
+            this.listLoading = false
             node.data.cols = resp.data
             this.currentData = node.data
+            // if(!this.currentData.extMap) this.$set(this.currentData, 'extMap', null);
             this.currentData.cols.forEach(d => {
               this.$set(d, 'selected', d.roleCol !== null)
             })
           })
         }
+      } else if (node.data.type === 'folder') {
+        this.currentData = node.data
       }
     },
 
@@ -304,24 +238,34 @@ export default {
       var folders = []
       var tables = []
       var cols = []
-      console.log(allNodes)
+      console.log(this.roleUuid)
       allNodes.forEach(node => {
         var data = node.data
-        if (data === 'folder') {
+        if (data.type === 'folder') {
           folders.push({
-            dataRoleUuid: this.dataRoleUuid,
+            dataRoleUuid: this.roleUuid,
             folderUuid: data.id,
-            accessType: 0
+            accessType: data.extMap.accessType
           })
-        } else if (data === 'table') {
+        } else if (data.type === 'table') {
           tables.push({
-            dataRoleUuid: this.dataRoleUuid,
+            dataRoleUuid: this.roleUuid,
             tableMetaUuid: data.id,
             whereStr: data.extMap.whereStr
           })
+          if (data.cols) {
+            data.cols.forEach(col => {
+              if (col.selected) {
+                cols.push({
+                  colMetaUuid: col.colMetaUuid,
+                  dataRoleUuid: this.roleUuid
+                })
+              }
+            })
+          }
         }
       })
-      saveRoleTable().then(() => {
+      saveRoleTable(this.roleUuid, folders, tables, cols).then(() => {
         loading.close()
       })
     },

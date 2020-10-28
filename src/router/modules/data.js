@@ -23,6 +23,10 @@ const dataRouter = {
       name: '业务场景维护',
       component: () => import('@/views/data/scene/index')
     }, {
+      path: 'sceneEdit',
+      name: '业务场景维护',
+      component: () => import('@/views/data/scene/edit')
+    }, {
       path: 'resquery',
       name: '用户资源查询',
       component: () => import('@/views/data/resquery/index')
@@ -42,6 +46,10 @@ const dataRouter = {
       path: 'roleRes/:roleUuid',
       name: '数据角色维护-角色资源绑定',
       component: () => import('@/views/data/role-res/index')
+    }, {
+      path: 'roleGrp/:roleUuid',
+      name: '数据角色维护-角色用户组绑定',
+      component: () => import('@/views/data/role-grp/index')
     }, {
       path: 'transCode',
       name: '数据转码',

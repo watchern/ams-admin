@@ -111,6 +111,12 @@ const etlschedulerRouter = {
       name: 'projects-definition-details',
       component: resolve => require(['@/views/modules/etlscheduler/workflow/details/index'], resolve),
       meta: { title: `流程定义详情` }
+    },
+    {
+      path: 'dataFile',
+      name: 'dataFile',
+      component: () => import('@/views/modules/etlscheduler/dataFile/index'),
+      meta: { title: 'dataFile' }
     }
   ]
 }
