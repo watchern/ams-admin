@@ -1,10 +1,10 @@
 <template>
   <div class="page-container">
     <div class="filter-container">
+      <!-- :query-default="queryDefault" -->
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
-        :query-default="queryDefault"
         @submit="getList"
       />
     </div>
@@ -340,7 +340,9 @@ export default {
     if (this.$route.params instanceof Object) {
       this.queryDefault = this.$route.params
     }
-    this.getList(this.queryDefault)
+    // this.getList(this.queryDefault)
+
+    this.getList()
   },
   methods: {
     getList(query) {

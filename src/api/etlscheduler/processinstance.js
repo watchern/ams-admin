@@ -11,6 +11,16 @@ export function listByPage(data) {
   })
 }
 
+// 分页获取资源消耗列表
+export function resourceStatisticsList(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/processInstance/resourceStatisticsList`,
+    method: 'post',
+    data
+  })
+}
+
 // 根据id查找
 export function getById(id) {
   return request({

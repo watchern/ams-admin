@@ -1,10 +1,10 @@
 <template>
   <div class="page-container">
     <div class="filter-container">
+      <!-- :query-default="queryDefault" -->
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
-        :query-default="queryDefault"
         @submit="getList"
       />
     </div>
@@ -114,13 +114,13 @@
         align="center"
         prop="processDefinitionName"
       />
-      <el-table-column
+      <!-- <el-table-column
         label="任务参数"
         align="center"
         width="80px"
       >
         <template slot-scope="scope">
-          <!-- 任务参数使用图标进行显示 -->
+           任务参数使用图标进行显示
           <el-popover trigger="hover" placement="top" width="700">
             <p>任务参数:{{ scope.row.taskParams }}</p>
             <div slot="reference" class="name-wrapper">
@@ -128,7 +128,7 @@
             </div>
           </el-popover>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         label="调度时间"
         width="160px"
@@ -536,7 +536,8 @@ export default {
     if (this.$route.params instanceof Object) {
       this.queryDefault = this.$route.params
     }
-    this.getList(this.queryDefault)
+    // this.getList(this.queryDefault)
+    this.getList()
   },
   methods: {
     getList(query) {

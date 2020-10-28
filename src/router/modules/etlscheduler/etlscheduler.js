@@ -100,6 +100,12 @@ const etlschedulerRouter = {
       meta: { title: 'taskinstance' }
     },
     {
+      path: 'resourceStatistics',
+      name: 'resourceStatistics',
+      component: () => import('@/views/modules/etlscheduler/resourceStatistics/index'),
+      meta: { title: 'resourceStatistics' }
+    },
+    {
     // 传递状态为1为查看，0为编辑
       path: 'definition/:id/:status',
       name: 'projects-definition-details',

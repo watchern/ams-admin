@@ -83,6 +83,7 @@ export function findParams(className) {
   })
 }
 
+// 流程定义状态修改
 export function updateDefinitionStatus(ids, status) {
   return request({
     baseURL: baseURL,
