@@ -141,7 +141,14 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-           {{scope.row.taskParamsList}}
+            <el-row v-for="taskParam in scope.row.taskParamsList">
+            <label class="col-md-2">
+            {{taskParam.param.paramName}}:
+            </label>
+            <div class="col-md-10">
+             {{taskParam.value}}
+             </div>
+            </el-row>
             <div slot="reference" class="name-wrapper">
               <el-tag><i class="el-icon-tickets" /></el-tag>
             </div>
