@@ -218,7 +218,7 @@
           <el-input
             v-model="temp.scheduleName"
             class="propwidth"
-            placeholder="请输入任务名称"
+            placeholder=""
             :disabled="disableUpdate"
           />
         </el-form-item>
@@ -248,7 +248,7 @@
           v-for="(item, index) in distinctParamList"
           :key="item.paramUuid"
           :label="item.param.paramName"
-          :rules="{required: true, message: '请输入参数值', trigger: 'change'}"
+          :rules="{required: true, message: '', trigger: 'change'}"
           >
           <el-input
             v-model="item.param.defaultValue"
@@ -261,7 +261,7 @@
           <el-input
             v-model="temp.processInstancePriority"
             class="propwidth"
-            placeholder="请输入排序号"
+            placeholder=""
             :disabled="disableUpdate"
             type="number"
           />
@@ -280,7 +280,7 @@
               :picker-options="startTime"
               type="date"
               prop="startTime"
-              placeholder="选择日期"
+              placeholder=""
               :disabled="disableUpdate"
             />
           </el-col>
@@ -290,7 +290,7 @@
               v-model="temp.endTime"
               :picker-options="endTime"
               type="date"
-              placeholder="选择日期"
+              placeholder=""
               :disabled="disableUpdate"
             />
           </el-col>

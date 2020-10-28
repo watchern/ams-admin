@@ -57,18 +57,22 @@
         align="center"
         prop="defaultValue"
       />
+      <!--
       <el-table-column
         label="可选值"
         width="150px"
         align="center"
         prop="selectValue"
       />
+      -->
+       <!--
       <el-table-column
         label="排序号"
-        width="150px"
+        width="120px"
         align="center"
         prop="orderNo"
       />
+      -->
       <el-table-column
         label="状态"
         width="120px"
@@ -78,7 +82,6 @@
       />
       <el-table-column
         label="参数描述"
-        width="150px"
         align="center"
         prop="paramDesc"
       />
