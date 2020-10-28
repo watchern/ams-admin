@@ -1,6 +1,7 @@
 <template>
   <div class="page-container">
     <div class="filter-container">
+      <!-- :query-default="queryDefault" -->
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
@@ -21,7 +22,7 @@
       <el-button
         type="primary"
         title="暂停"
-        :disabled="stopStatus"
+        :disabled="pusStatus"
         class="oper-btn"
         icon="el-icon-video-pause"
         @click="handleStop()"
@@ -74,19 +75,19 @@
       <el-table-column
         label="运行状态"
         align="center"
-        width="150px"
+        width="80px"
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p style="text-align:center">{{ statusList[scope.row.status===null? 8 : scope.row.status-1].name }}</p>
+            <p style="text-align:center">{{ statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].name }}</p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色 -->
                   <i
-                    :class="statusList[scope.row.status===null? 8 : scope.row.status-1].unicode"
-                    :style="{color: statusList[scope.row.status===null? 8 : scope.row.status-1].color}"
+                    :class="statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].unicode"
+                    :style="{color: statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].color}"
                   />
                 </a>
               </el-tag>
@@ -95,10 +96,10 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="执行方式"
-        width="150px"
+        label="运行类型"
+        width="120px"
         align="center"
-        prop="execType"
+        prop="commandType"
         :formatter="formatType"
       />
       <el-table-column
@@ -109,17 +110,17 @@
       />
       <el-table-column
         label="流程名称"
-        width="150px"
+        width="130px"
         align="center"
         prop="processDefinitionName"
       />
-      <el-table-column
+      <!-- <el-table-column
         label="任务参数"
         align="center"
-        width="130px"
+        width="80px"
       >
         <template slot-scope="scope">
-          <!-- 任务参数使用图标进行显示 -->
+           任务参数使用图标进行显示
           <el-popover trigger="hover" placement="top" width="700">
             <p>任务参数:{{ scope.row.taskParams }}</p>
             <div slot="reference" class="name-wrapper">
@@ -127,37 +128,46 @@
             </div>
           </el-popover>
         </template>
-      </el-table-column>
+      </el-table-column> -->
+      <el-table-column
+        label="调度时间"
+        width="160px"
+        align="center"
+        prop="scheduleTime"
+      />
       <el-table-column
         label="开始运行时间"
-        width="200px"
+        width="160px"
         align="center"
         prop="startTime"
       />
       <el-table-column
         label="结束运行时间"
-        width="200px"
+        width="160px"
         align="center"
         prop="endTime"
       />
       <el-table-column
         label="共耗时"
-        width="150px"
+        width="100px"
         align="center"
         prop="timeConsuming"
-        :formatter="formatterTimeConsuming"
-      />
+      >
+        <template slot-scope="scope">
+          {{ scope.row.timeConsuming | timeFilter }}
+        </template>
+      </el-table-column>
       <el-table-column
         label="环节进度"
-        width="150px"
+        width="100px"
         align="center"
-        prop=""
+        prop="schedule"
       />
       <el-table-column
-        label="当前环节状态"
-        width="150px"
+        label="当前环节"
+        width="120px"
         align="center"
-        prop=""
+        prop="nowTask"
       />
     </el-table>
     <pagination
@@ -203,7 +213,7 @@
         <!-- 使用时间线任务实例的环节和运行的状态 -->
         <!-- 已运行的环节，改变颜色和图标 -->
         <el-timeline-item
-          v-for="task in logTasks"
+          v-for="(task,$index) in logTasks"
           :key="task.id"
           class="logtype"
           :icon="taskslogsList[task.id] != null ? 'el-icon-more': null"
@@ -213,10 +223,10 @@
           <!-- value和name一致，默认展开 -->
           <el-collapse :value="task.id" style="width:85%;border:0;">
             <!-- title环节名称 -->
-            <el-collapse-item :title="task.name" :name="task.id">
+            <el-collapse-item :title="($index+1)+'/'+logTasks.length+'  '+task.name" :name="task.id">
               <el-card style="padding-bottom: 3%">
-                <el-col class="logtype">
-                  {{ taskslogsList[task.id] != null ? '耗时：'+ taskslogsList[task.id].time/1000 + ' 秒': '' }}
+                <el-col v-if="taskslogsList[task.id] != null" class="logtype">
+                  耗时： {{ taskslogsList[task.id] != null ? taskslogsList[task.id].time : 0 | timeFilter }}
                 </el-col>
                 <el-col
                   v-for="log in logs[task.id]"
@@ -246,12 +256,29 @@ import QueryField from '@/components/Ace/query-field/index'
 
 export default {
   components: { Pagination, QueryField },
+  filters: {
+    timeFilter(value) {
+      const time = value
+      if (time === null || time === '' || time === 0) {
+        return 0 + '秒'
+      } else {
+        if (time / 1000 >= 0 && time / 1000 < 60) {
+          return (time / 1000).toFixed(1) + '秒'
+        } else if (time / 1000 >= 60 && time / 1000 < 3600) {
+          return (time / 60000).toFixed(1) + '分'
+        } else if (time / 1000 > 3600) {
+          return (time / 3600000).toFixed(1) + '时'
+        }
+      }
+    }
+  },
   data() {
     return {
       tableKey: 'processInstanceUuid',
       list: null,
       total: 0,
       listLoading: false,
+      queryDefault: {},
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '流程实例名称', name: 'name', type: 'text', value: '' },
@@ -272,10 +299,22 @@ export default {
       ],
       // 格式化参数列表
       formatMap: {
-        execType: {
-          1: '定时任务',
-          2: '单次任务',
-          3: '重跑',
+        commandType: {
+          0: '开启新流程',
+          1: '从当前节点开启新流程',
+          2: '重启容错流程',
+          3: '重启补数流程',
+          4: '从失败任务节点启动流程',
+          5: '补数',
+          6: '启动调度任务',
+          7: '重复运行流程',
+          8: '暂停流程',
+          9: '停止流程',
+          10: '重新运行等待线程流程',
+          11: '超时',
+          12: '启动',
+          13: '重新运行',
+          14: '取消',
           null: '其它'
         }
       },
@@ -397,7 +436,9 @@ export default {
         warningGroupId: null,
         warningType: null,
         workerGroup: null,
-        processDefinitionName: null
+        processDefinitionName: null,
+        schedule: null,
+        nowTask: null
       },
       selections: [],
       dialogFormVisible: false,
@@ -409,13 +450,15 @@ export default {
       checkedTask: null,
       checkedTaskId: '',
       skipStatus: true,
-      stopStatus: true,
+      pusStatus: true,
       startStatus: true,
       reStartStatus: true,
       doneStatus: true,
       logTasks: null,
       logs: null,
-      taskslogsList: null
+      taskslogsList: null,
+      schedule: null,
+      nowTask: null
     }
   },
   watch: {
@@ -440,7 +483,7 @@ export default {
           switch (r.status) {
             // 判断状态是否为执行中,如果是执行中，暂停按钮可用
             case 4:
-              this.stopStatus = false
+              this.pusStatus = false
               break
             // 判断状态是否为暂停中,如果是暂停中，执行按钮可用
             case 5:
@@ -459,7 +502,7 @@ export default {
         this.skipStatus = true
         // 其它按钮取消禁用
         this.startStatus = false
-        this.stopStatus = false
+        this.pusStatus = false
         this.doneStatus = false
         this.reStartStatus = false
         this.selections.forEach((r, i) => {
@@ -477,19 +520,23 @@ export default {
           }
           // 遍历选择的数组判断状态，如果是有状态不是暂停中的，启用按钮不可用
           if (r.status === 5 || otherStatuses.indexOf(r.status) >= 0) {
-            this.stopStatus = true
+            this.pusStatus = true
           }
         })
       } else {
         this.skipStatus = true
         this.startStatus = true
-        this.stopStatus = true
+        this.pusStatus = true
         this.doneStatus = true
         this.reStartStatus = true
       }
     }
   },
   created() {
+    if (this.$route.params instanceof Object) {
+      this.queryDefault = this.$route.params
+    }
+    // this.getList(this.queryDefault)
     this.getList()
   },
   methods: {
@@ -650,23 +697,33 @@ export default {
     },
     // 格式化表格
     formatType(data) {
-      return this.formatMap.execType[data.execType]
-    },
-    // 格式化耗时
-    formatterTimeConsuming(data) {
-      const time = data.timeConsuming
-      if (time === null || time === '' || time === 0) {
-        return 0 + '秒'
-      } else {
-        if (time / 1000 >= 0 && time / 1000 < 60) {
-          return (time / 1000).toFixed(1) + '秒'
-        } else if (time / 1000 >= 60 && time / 1000 < 3600) {
-          return (time / 60000).toFixed(1) + '分'
-        } else if (time / 1000 > 3600) {
-          return (time / 3600000).toFixed(1) + '时'
-        }
-      }
+      return this.formatMap.commandType[data.commandType]
     }
+    // ,
+    // formatSchedule(data) {
+    //   // 获取任务环节
+    //   getTaskLink(data.processInstanceUuid).then(resp => {
+    //     this.logTasks = resp.data
+    //     // 获取调度实例已运行的环节
+    //     findTaskInstanceById(data.processInstanceUuid).then(res => {
+    //       this.taskslogsList = res.data
+    //       if (this.taskslogsList !== null && this.logTasks !== null) {
+    //         this.schedule = Object.keys(this.taskslogsList).length + '/' + this.logTasks.length
+    //       }
+    //     })
+    //   })
+    //   return this.schedule
+    // },
+    // formatTask(data) {
+    //   // 获取调度实例已运行的环节
+    //   findTaskInstanceById(data.processInstanceUuid).then(res => {
+    //     this.taskslogsList = res.data
+    //     if (this.taskslogsList !== null) {
+    //       this.nowTask = Object.keys(this.taskslogsList).reverse()[0]
+    //     }
+    //   })
+    //   return this.nowTask
+    // }
   }
 }
 </script>

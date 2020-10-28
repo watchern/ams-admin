@@ -57,34 +57,37 @@
         align="center"
         prop="defaultValue"
       />
+      <!--
       <el-table-column
         label="可选值"
         width="150px"
         align="center"
         prop="selectValue"
       />
+      -->
+       <!--
       <el-table-column
         label="排序号"
-        width="150px"
+        width="120px"
         align="center"
         prop="orderNo"
       />
+      -->
       <el-table-column
         label="状态"
-        width="150px"
+        width="120px"
         align="center"
         prop="status"
         :formatter="formatStatus"
       />
       <el-table-column
         label="参数描述"
-        width="150px"
         align="center"
         prop="paramDesc"
       />
       <el-table-column
         label="修改时间"
-        width="200px"
+        width="180px"
         align="center"
         prop="updateTime"
       />
@@ -108,7 +111,6 @@
         :model="temp"
         label-position="right"
         class="detail-form"
-        style="width: 700px; margin-left:50px;"
       >
         <el-form-item
           label="参数名称"

@@ -74,6 +74,8 @@ export default {
     'taskmonitor': '调度监控',
     'processinstance': '流程实例',
     'taskinstance': '任务实例',
+    'servermonitor': '服务器监控',
+    'resourceStatistics': '资源消耗统计',
     'workflow': '流程定义管理'
   },
   navbar: {

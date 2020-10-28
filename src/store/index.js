@@ -5,6 +5,7 @@ import dag from './modules/dag'
 import security from './modules/security'
 import datasource from './modules/datasource'
 import projects from './modules/projects'
+import monitor from './modules/monitor'
 
 Vue.use(Vuex)
 
@@ -24,6 +25,7 @@ const modules = modulesFiles.keys().reduce((modules, modulePath) => {
   modules['security'] = security
   modules['datasource'] = datasource
   modules['projects'] = projects
+  modules['monitor'] = monitor
   return modules
 }, {})
 
