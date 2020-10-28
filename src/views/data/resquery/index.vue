@@ -1,5 +1,5 @@
 <template>
-  <div><data-tree /></div>
+  <div><data-tree @node-click="handleClick" /></div>
 </template>
 
 <script>
@@ -15,6 +15,9 @@ export default {
   created() {
   },
   methods: {
+    handleClick(data, node, tree) {
+      console.log(data, node, tree)
+    }
   }
 }
 </script>

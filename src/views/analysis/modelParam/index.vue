@@ -37,9 +37,6 @@
             <el-button type="primary" @click="disableParam">停用</el-button>
             <el-button type="primary" @click="deleteParam">删除</el-button>
           </el-row>
-          <el-dialog title="参数替换" :visible.sync="dialogFormVisible">
-            <test></test>
-          </el-dialog>
           <el-table
             id="table"
             :key="tableKey"
@@ -103,7 +100,6 @@ import QueryField from "@/components/Ace/query-field/index";
 import Pagination from "@/components/Pagination/index";
 import myZtree from "@/views/analysis/modelParam/myZtree";
 import paramDraw from "@/views/analysis/modelParam/paramDraw";
-import test from "@/views/analysis/modelParam/test";
 import {
   getListByAmmParam,
   updateEnabled,
@@ -120,7 +116,6 @@ export default {
     QueryField,
     addParamWindow,
     paramDraw,
-    test
   },
   created() {
     this.getLikeList();

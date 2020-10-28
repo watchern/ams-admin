@@ -37,7 +37,7 @@ export default {
           if (state.rightFooterTags.length) {
             router.push(state.rightFooterTags[state.rightFooterTags.length - 1].path)
           } else {
-            router.push('/ams/home')
+            router.push('/ams/first')
           }
           break
         case 'closeOther':
@@ -46,7 +46,7 @@ export default {
           break
         case 'closeAll':
           state.rightFooterTags = []
-          router.push('/ams/home')
+          router.push('/ams/first')
           break
         default:
           break

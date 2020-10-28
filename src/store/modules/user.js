@@ -49,9 +49,12 @@ const actions = {
         commit('SET_TOKEN', data.personUuid)
         setToken(data.personUuid)
         resolve()
-        cacheDict().then(resp => {
-          sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
-        })
+        var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
+        if (sysDict == null) {
+          cacheDict().then(resp => {
+            sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
+          })
+        }
       }).catch(error => {
         reject(error)
       })
