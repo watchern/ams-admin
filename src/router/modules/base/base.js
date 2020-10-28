@@ -31,6 +31,11 @@ const baseRouter = {
       path: 'remind',
       name: '系统提醒',
       component: () => import('@/views/base/remind/index')
+    },
+    {
+      path: 'frameto',
+      name: '跳转',
+      component: () => import('@/views/base/frameto')
     }
   ]
 }

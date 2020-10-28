@@ -162,7 +162,7 @@
             shape="circle"
             :disabled="isDetails"
             @click="ok()"
-          >添加</x-button>
+          >保存</x-button>
         </div>
       </div>
     </div>
