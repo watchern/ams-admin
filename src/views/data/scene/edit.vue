@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" style="overflow: auto;">
+  <div class="page-container" style="overflow: auto;">
 
     <div class="detail-form">
       <el-form
@@ -67,7 +67,7 @@
               <el-form-item label="组代码" prop="grpCode">
                 <el-input v-model="tempGrp.grpCode" />
               </el-form-item>
-              <el-form-item label="组用户来源SQL(所写SQL中必须有id,name,pid 三列才可预览查看)" prop="grpSql">
+              <el-form-item label="组用户来源SQL(所写SQL中必须有id,name,pid,type(1组2使用者) 四列才可预览查看)" prop="grpSql">
                 <el-input v-model="tempGrp.grpSql" type="textarea" />
               </el-form-item>
             </el-form>

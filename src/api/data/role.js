@@ -37,3 +37,24 @@ export function del(ids) {
     method: 'delete'
   })
 }
+
+const controllerName1 = 'roleGrp'
+export function saveRoleGrp(roleUuid, roleGrps) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName1}/save`,
+    method: 'post',
+    data: {
+      roleUuid: roleUuid,
+      roleGrps: roleGrps
+    }
+  })
+}
+export function getRoleGrp(roleUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName1}/list?roleUuid=${roleUuid}`,
+    method: 'get'
+  })
+}
+
