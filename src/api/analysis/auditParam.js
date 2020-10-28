@@ -1602,7 +1602,7 @@ export function getParamSettingArr(paramArr){
               if(dataLength=='null'){
                 dataLength=null
               }
-              if(typeof dataLength !== "undefined" && defaultVal.length !== parseInt(dataLength)){//如果该参数有长度限制且默认值不等于设置的长度值
+              if(dataLength !== null && defaultVal.length !== parseInt(dataLength)){//如果该参数有长度限制且默认值不等于设置的长度值
                   returnObj.verify = false;
                   returnObj.message = "参数【"+paramName+"】输入值的长度与设置的长度值【"+parseInt(dataLength)+"】不相等";
                   return false;
@@ -2022,69 +2022,72 @@ export function  createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
         }
       }
     }
-    //第五步：找出有效参数集合中未配置的参数,并追加TR行
+    //第五步：找出有效参数集合中未配置的参数,并追加TR行 $("#mochu").empty()
     var moduleParamArr = []; //存储已匹配的母版参数集合
-    for (var j = 0; j < paramArr.length; j++) {
-      //遍历有效的参数集合
-      var hasExist = false;
-      $(".setParamTr").each(function (t, v) {
-        var moduleParamId = $(this).attr("data-moduleParamId");
-        if (moduleParamId === paramArr[j].moduleParamId) {
-          hasExist = true;
-          return false;
-        }
-      });
-      if (
-        $.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) != -1 &&
-        hasExist
-      ) {
-        //过滤掉有效参数集合中已经配置过的参数
-        continue;
-      }
-      if ($.inArray(paramArr[j].moduleParamId, moduleParamArr) != -1) {
-        //过滤paramArr中母参重复的复制参数
-        continue;
-      }
-      //生成列表行html
-      var html =
-        '<tr class="setParamTr" data-moduleParamId="' +
-        paramArr[j].moduleParamId +
-        '"><td align="center">' +
-        paramArr[j].name +
-        "</td>";
-      var htmlContent = "",
-        description = "";
-      for (var k = 0; k < paramList.length; k++) {
-        //循环所有母版参数
-        var moduleParamId = paramList[k].ammParamUuid;
+    if(paramArr.length>0){
+      $("#mochu").empty()
+      for (var j = 0; j < paramArr.length; j++) {
+        //遍历有效的参数集合
+        var hasExist = false;
+        $(".setParamTr").each(function (t, v) {
+          var moduleParamId = $(this).attr("data-moduleParamId");
+          if (moduleParamId === paramArr[j].moduleParamId) {
+            hasExist = true;
+            return false;
+          }
+        });
         if (
-          moduleParamId === paramArr[j].moduleParamId &&
-          $.inArray(moduleParamId, moduleParamArr) == -1
+          $.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) != -1 &&
+          hasExist
         ) {
-          //匹配复制参数的母版参数ID
-          var returnObj = initParamHtml_Common(paramList[k]);
-          if (!returnObj.isError) {
-            htmlContent = returnObj.htmlContent;
-          }
-          moduleParamArr.push(moduleParamId);
-          if(paramList[k].description==null){
-            paramList[k].description = '无'
-          }
-          if (typeof paramList[k].description !== "undefined") {
-            description = paramList[k].description;
-          }
-          break;
+          //过滤掉有效参数集合中已经配置过的参数
+          continue;
         }
-      }
-      html +=
-        "<td>" + htmlContent + "</td><td>" + description + "</td></tr>";
-        $("#mochu").empty()
-      if (canEditor) {
-        $("#paramTable>tbody").append(html).sortable().disableSelection()
-      } else {
-        $("#paramTable>tbody").append(html)
+        if ($.inArray(paramArr[j].moduleParamId, moduleParamArr) != -1) {
+          //过滤paramArr中母参重复的复制参数
+          continue;
+        }
+        //生成列表行html
+        var html =
+          '<tr class="setParamTr" data-moduleParamId="' +
+          paramArr[j].moduleParamId +
+          '"><td align="center">' +
+          paramArr[j].name +
+          "</td>";
+        var htmlContent = "",
+          description = "";
+        for (var k = 0; k < paramList.length; k++) {
+          //循环所有母版参数
+          var moduleParamId = paramList[k].ammParamUuid;
+          if (
+            moduleParamId === paramArr[j].moduleParamId &&
+            $.inArray(moduleParamId, moduleParamArr) == -1
+          ) {
+            //匹配复制参数的母版参数ID
+            var returnObj = initParamHtml_Common(paramList[k]);
+            if (!returnObj.isError) {
+              htmlContent = returnObj.htmlContent;
+            }
+            moduleParamArr.push(moduleParamId);
+            if(paramList[k].description==null){
+              paramList[k].description = '无'
+            }
+            if (typeof paramList[k].description !== "undefined") {
+              description = paramList[k].description;
+            }
+            break;
+          }
+        }
+        html +=
+          "<td>" + htmlContent + "</td><td>" + description + "</td></tr>";
+        if (canEditor) {
+          $("#paramTable>tbody").append(html).sortable().disableSelection()
+        } else {
+          $("#paramTable>tbody").append(html)
+        }
       }
     }
+    
     //第六步：统一初始化参数的html（文本框、下拉列表、下拉树），并反显已配置参数的信息（包括默认值和排序值）
     initParam(canEditor);
   });

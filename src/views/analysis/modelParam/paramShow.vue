@@ -33,8 +33,8 @@ export default {
     createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
       createParamTableHtml(sqlIsChanged, paramArr, canEditor);
     },
-    getParamSettingArr() {
-      getParamSettingArr()
+    getParamSettingArr(paramArr) {
+     return getParamSettingArr(paramArr)
     },
   },
 };
