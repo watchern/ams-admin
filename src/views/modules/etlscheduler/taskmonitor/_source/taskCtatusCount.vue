@@ -3,7 +3,7 @@
     <div v-show="!msg">
       <div v-spin="isSpin" class="data-area" style="height: 430px;">
         <div class="col-md-7">
-          <div id="task-status-pie" style="height:260px;margin-top: 10px;" />
+          <div id="task-status-pie" style="height:260px;margin-top: 130px;" />
         </div>
         <div class="col-md-5">
           <div class="table-small-model">

@@ -116,6 +116,48 @@ const tasksState = {
     color: '#A9A9A9',
     icoUnicode: 'ans-icon-success-empty',
     isSpin: false
+  },
+  READY_PAUSE: {
+    id: 8,
+    desc: '准备暂停',
+    color: '#0097e0',
+    icoUnicode: 'ans-icon-gear',
+    isSpin: false
+  },
+  READY_STOP: {
+    id: 9,
+    desc: '准备停止',
+    color: '#0097e0',
+    icoUnicode: 'ans-icon-gear',
+    isSpin: false
+  },
+  SUBMITTED_SUCCESS: {
+    id: 10,
+    desc: '提交成功',
+    color: '#0097e0',
+    icoUnicode: 'ans-icon-gear',
+    isSpin: false
+  },
+  STOP: {
+    id: 11,
+    desc: '停止',
+    color: '#0097e0',
+    icoUnicode: 'ans-icon-gear',
+    isSpin: false
+  },
+  NEED_FAULT_TOLERANCE: {
+    id: 12,
+    desc: '需要容错',
+    color: '#0097e0',
+    icoUnicode: 'ans-icon-gear',
+    isSpin: false
+  },
+  WAITTING_THREAD: {
+    id: 13,
+    desc: '等待线程',
+    color: '#0097e0',
+    icoUnicode: 'ans-icon-gear',
+    isSpin: false
   }
 }
 
