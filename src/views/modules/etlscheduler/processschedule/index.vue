@@ -141,9 +141,9 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <el-row v-for="taskParam in scope.row.taskParamsList">
+            <el-row v-for="taskParam in scope.row.distinctParamList">
             <label class="col-md-2">
-            {{taskParam.param.paramName}}:
+            {{taskParam.name}}:
             </label>
             <div class="col-md-10">
              {{taskParam.value}}
