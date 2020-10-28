@@ -8,9 +8,9 @@
       />
     </div>
     <div>
-      <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
-      <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="handleUpdate()">修改</el-button>
-      <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="handleDelete()">删除</el-button>
+      <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
+      <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
+      <el-button type="danger" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
       <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="bindRes()">绑定资源</el-button>
       <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="authentic()">授权</el-button>
     </div>
@@ -28,7 +28,7 @@
       <el-table-column type="selection" width="55" />
       <el-table-column label="数据角色名称" width="200px" align="center" prop="dataRoleName" />
       <el-table-column label="创建时间" width="300px" align="center" :formatter="formatCreateTime" prop="createTime" />
-      <el-table-column label="授权方式" width="200px" align="center" prop="authenType" />
+      <el-table-column label="授权方式" width="200px" align="center" prop="authenType" :formatter="formatAuthenType" />
       <el-table-column label="数据筛选器状态" prop="filterState" style="width = 200px" />
       <el-table-column label="数据有效期" prop="timeDuring" :formatter="formatDuring" style="width = 400px" />
     </el-table>
@@ -55,9 +55,6 @@
                 :value="item.codeValue"
               />
             </el-select>
-          </el-form-item>
-          <el-form-item label="数据筛选器状态" prop="filterState">
-            <el-input v-model="temp.filterState" type="textarea" />
           </el-form-item>
           <el-form-item label="开始时间" prop="startTime">
             <el-date-picker
@@ -135,16 +132,15 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑业务属性',
-        create: '添加业务属性'
+        update: '编辑数据角色',
+        create: '添加数据角色'
       },
       dialogPvVisible: false,
       rules: {
         dataRoleName: [{ required: true, message: '请填写数据角色名称', trigger: 'change' }],
         authenType: [{ required: true, message: '请选择授权方式', trigger: 'change' }],
         startTime: [{ required: true, message: '请填写生效开始时间', trigger: 'change' }],
-        endTime: [{ required: true, message: '请填写生效结束时间', trigger: 'change' }],
-        filterState: [{ max: 100, message: '长度不得超过100', trigger: 'change' }]
+        endTime: [{ required: true, message: '请填写生效结束时间', trigger: 'change' }]
       },
       downloadLoading: false
     }
@@ -257,6 +253,13 @@ export default {
       var createTime = new Date(row.createTime)
       var createTimeRow = createTime.getFullYear() + '-' + (createTime.getMonth() + 1) + '-' + createTime.getDate() + ' ' + createTime.getHours() + ':' + createTime.getMinutes() + ':' + createTime.getSeconds()
       return createTimeRow
+    },
+    formatAuthenType(row, column) {
+      var data = getDictList('004001')
+      var authenObj = data.filter(obj => { return obj.codeValue === row.authenType })
+      if (authenObj !== null) {
+        return authenObj[0].codeName
+      }
     },
     formatDuring(row, column) {
       var startDate = new Date(row.startTime)

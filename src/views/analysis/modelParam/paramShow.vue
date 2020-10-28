@@ -3,11 +3,11 @@
     <table class="table table-bordered" id="paramTable">
       <thead>
         <tr>
-          <th align="center">参数名称</th>
-          <th align="center" width="400px" style="text-align: center">
+          <th align="center" style="background-color:#dfe6ec;color:black">参数名称</th>
+          <th align="center" width="400px" style="text-align: center;background-color:#dfe6ec;color:black">
             默认值设置
           </th>
-          <th align="center">参数说明</th>
+          <th align="center" style="background-color:#dfe6ec;color:black">参数说明</th>
         </tr>
       </thead>
       <tbody id="tbody">

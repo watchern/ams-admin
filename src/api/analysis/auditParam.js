@@ -463,7 +463,11 @@ export function initParamHtml(sql, paramsArr, name, modelId) {
     //获取数据库所有母参数信息集合以及该模型用到的参数集合（可以不传模型ID）
     findParamsAndModelRelParams(modelId).then((e) => {
       if (e.isError) {
-        this.$message(e.data.message)
+        this.$message({
+          type: 'error',
+          message: e.data.message
+        })
+        // this.$message(e.data.message)
         // alertMsg("错误", e.data.message, "info");
       } else {
         var paramList = e.data.paramList; //定义所有母参信息数组
@@ -535,7 +539,11 @@ export function initParamHtml(sql, paramsArr, name, modelId) {
           }
         }
         if (isError) {
-          this.$message(message)
+          this.$message({
+            type: 'error',
+            message: message
+          })
+          // this.$message(message)
           // alertMsg("错误", message, "info");
         } else {
           //$(".panel-body").html(paramHtml);    
@@ -575,7 +583,11 @@ export function initcrossrangeParamHtml(sql, paramsArr, name, modelId) {
     //获取数据库所有母参数信息集合以及该模型用到的参数集合（可以不传模型ID）
     findParamsAndModelRelParams(modelId).then((e) => {
       if (e.isError) {
-        this.$message(e.data.message)
+        this.$message({
+          type: 'error',
+          message: e.data.message
+        })
+        // this.$message(e.data.message)
         // alertMsg("错误", e.data.message, "info");
       } else {
         var paramList = e.data.paramList; //定义所有母参信息数组
@@ -647,7 +659,11 @@ export function initcrossrangeParamHtml(sql, paramsArr, name, modelId) {
           }
         }
         if (isError) {
-          this.$message(message)
+          this.$message({
+            type: 'error',
+            message: message
+          })
+          // this.$message(message)
           // alertMsg("错误", message, "info");
         } else {
           //$(".panel-body").html(paramHtml);    
@@ -1304,7 +1320,11 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
           sql = "SELECT * FROM (" + sql + ") where 1=1" + sqlWhereStr;
           executeParamSql(sql).then(res => {
             if (res.data.isError) {
-              this.$message("获取参数【" + paramName + "】的值的失败，原因：" + res.data.message)
+              this.$message({
+                type: 'error',
+                message: "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message
+              })
+              // this.$message("获取参数【" + paramName + "】的值的失败，原因：" + res.data.message)
               // alertMsg("错误", "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message, "error");
             } else {
               var newDataArr = [];
@@ -1336,7 +1356,11 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
         initDataArr = true;
         executeParamSql(sql).then(res => {
           if (res.data.isError) {
-            this.$message( "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message)
+            this.$message({
+              type: 'error',
+              message: "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message
+            })
+            // this.$message( "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message)
             // alertMsg("错误", "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message, "error");
           } else {
             if (idStr === "#selectParam") {
@@ -1365,7 +1389,11 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
           sql = "SELECT * FROM (" + sql + ") where 1=1" + sqlWhereStr;
           getSelectTreeData(sql).then(res => {
             if (res.data.isError) {
-              this.$message( "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message)
+              this.$message({
+                type: 'error',
+                message: "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message
+              })
+              // this.$message( "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message)
               // alertMsg("错误", "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message, "error");
             } else {
               var newDataArr = [];
@@ -1396,7 +1424,11 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
         initDataArr = true;
         getSelectTreeData(sql).then(res => {
           if (res.data.isError) {
-            this.$message("获取参数【" + paramName + "】的值的失败，原因：" + res.data.message)
+            this.$message({
+              type: 'error',
+              message: "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message
+            })
+            // this.$message("获取参数【" + paramName + "】的值的失败，原因：" + res.data.message)
             // alertMsg("错误", "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message, "error");
           } else {
             if (idStr === "#selectParam") {
@@ -1430,7 +1462,11 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
 
     }
   } catch (e) {
-    this.$message("程序执行出错，刷新参数数据失败")
+    this.$message({
+      type: 'error',
+      message: "程序执行出错，刷新参数数据失败"
+    })
+    // this.$message("程序执行出错，刷新参数数据失败")
     // alertMsg("错误", "程序执行出错，刷新参数数据失败", "error");
     console.info(e);
   }
@@ -2298,7 +2334,11 @@ export function  createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
     }
   }
   if (paramArr.length === 0) {
-    this.$message("您尚未设置参数，无法进行参数配置")
+    this.$message({
+      type: 'error',
+      message: '您尚未设置参数，无法进行参数配置'
+    })
+    // this.$message("您尚未设置参数，无法进行参数配置")
     // alertMsg("提示", "您尚未设置参数，无法进行参数配置", "info");
     return;
   }
@@ -2307,9 +2347,10 @@ export function  createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
     var paramList = e.data.paramList; //定义所有母参信息数组
     //   var paramRelList = e.data.paramRelList;//定义所有与该模型关联的参数集合
     //第四步：将模型下关联的参数的默认值和排序值绑定到对应的母参上
-    if ( paramArr[0].sort == undefined && paramArr[0].paramValue == undefined) {
+    if (typeof paramArr[0].sort == undefined &&typeof paramArr[0].paramValue == undefined) {
 
     } else {
+      $("#tbody").empty()
       for (var k = 0; k < paramList.length; k++) {
         //遍历所有母版参数
         var moduleParamId = paramList[k].ammParamUuid;
