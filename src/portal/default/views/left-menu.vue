@@ -213,7 +213,7 @@ export default {
             menuList.push({
               id: menu.id,
               name: menu.name,
-              path: menu.src
+              path: this.getCleanSrc(menu.src)
             })
           })
           if (!this.menugroup[grp.appuuid]) {
@@ -279,6 +279,14 @@ export default {
     },
     jumpHome() {
       this.$router.push({ path: '/ams/first' })
+    },
+    getCleanSrc(src) {
+      if (src.indexOf('&resUUID') !== -1) {
+        src = src.split('&resUUID')[0]
+      } else if (src.indexOf('?resUUID') !== -1) {
+        src = src.split('?resUUID')[0]
+      }
+      return src
     },
     async logout() {
       await this.$store.dispatch('user/logout')

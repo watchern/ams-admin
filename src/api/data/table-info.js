@@ -75,12 +75,14 @@ export function getRoleCols(roleUuid, tableUuid) {
 export function saveRoleTable(roleUuid, rfolders, rtables, rcols) {
   return request({
     baseURL: baseURL,
-    url: `/${controller2}/save?roleUuid=${roleUuid}`,
+    url: `/${controller3}/save`,
     method: 'post',
-    roleUuid: roleUuid,
-    roleFolders: rfolders,
-    roleTables: rtables,
-    roleCols: rcols
+    data: {
+      roleUuid: roleUuid,
+      rfolders: rfolders,
+      rtables: rtables,
+      rcols: rcols
+    }
   })
 }
 

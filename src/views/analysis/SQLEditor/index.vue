@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div id="container">
+    <div id="container" v-loading="executeLoading">
       <div
         id="leftPart"
         class="col-sm-2 leftCon"
@@ -459,6 +459,7 @@ export default {
       sqlDraftDialog: false,
       dialogFormVisible: false,
       formLabelWidth: '120px',
+      executeLoading:false,
       currentExecuteSQL: [], // 当前执行的全部sql,
       webSocket: null,
       resultShow: [],
@@ -729,7 +730,9 @@ export default {
         lastResultColumn = []
         const obj = executeSQL()
         if (!obj.isExistParam) {
+          this.executeLoading = true
           startExecuteSql(obj).then((result) => {
+            this.executeLoading = false
             if (!result.data.isError) {
               this.currentExecuteSQL = result.data.executeSQLList
               this.modelOriginalTable = result.data.tables

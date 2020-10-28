@@ -37,8 +37,8 @@
             <el-button type="primary" @click="disableParam">停用</el-button>
             <el-button type="primary" @click="deleteParam">删除</el-button>
           </el-row>
-          <el-dialog title="参数渲染" :visible.sync="dialogFormVisible">
-            <paramDraw></paramDraw>
+          <el-dialog title="参数替换" :visible.sync="dialogFormVisible">
+            <test></test>
           </el-dialog>
           <el-table
             id="table"
@@ -103,12 +103,14 @@ import QueryField from "@/components/Ace/query-field/index";
 import Pagination from "@/components/Pagination/index";
 import myZtree from "@/views/analysis/modelParam/myZtree";
 import paramDraw from "@/views/analysis/modelParam/paramDraw";
+import test from "@/views/analysis/modelParam/test";
 import {
   getListByAmmParam,
   updateEnabled,
   updateDisenable,
   deleteParams,
   initParamHtml,
+  createParamTableHtml
 } from "@/api/analysis/auditParam";
 import addParamWindow from "@/views/analysis/modelParam/addParamWindow";
 export default {
@@ -118,6 +120,7 @@ export default {
     QueryField,
     addParamWindow,
     paramDraw,
+    test
   },
   created() {
     this.getLikeList();
@@ -328,7 +331,6 @@ export default {
       });
     },
     openParamDraw() {
-      console.log(11111111111);
       let obj = [
         {
           id: "{#C91B89F3705000014C91C82013231830#}",
@@ -341,10 +343,9 @@ export default {
       let sql =
         "select * from AA_MODEL WHERE MODEL_UUID = '{#C91B89F3705000014C91C82013231830#}'";
       let paramsArr = obj;
-      console.log(222222222222);
       this.dialogFormVisible = true;
-      initParamHtml(sql, obj, "你好呀", null); //前后加遮罩
-      console.log(3333333333333);
+      createParamTableHtml(1, true, null , obj,true); //前后加遮罩
+     // function createParamTableHtml(tableId,sqlIsChanged,modelId,paramArr,canEditor){
     },
   },
 };

@@ -37,3 +37,20 @@ export function del(ids) {
     method: 'delete'
   })
 }
+
+export function initSceneTree(grpUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/initSceneTree?grpUuid=${grpUuid}`,
+    method: 'post'
+  })
+}
+
+export function getAllScene() {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/getAllScene`,
+    method: 'get'
+  })
+}
+

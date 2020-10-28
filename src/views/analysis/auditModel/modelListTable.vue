@@ -1,5 +1,5 @@
 <template>
-  <div class="list-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
@@ -29,8 +29,8 @@
       <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog :close-on-click-modal="false" v-if="editModelShow" :v-loading="editorModelLoading"  :visible.sync="editModelShow" :title="editModelTitle" width="60%">
-      <EditModel ref="editModel" :open-value="selectTreeNode" :operation-obj="operationObj" @hideModal="hideEditModal" />
+    <el-dialog :close-on-click-modal="false" v-if="editModelShow"   :visible.sync="editModelShow" :title="editModelTitle" width="60%">
+      <EditModel ref="editModel" :open-value="selectTreeNode" :operation-obj="operationObj" v-loading="editorModelLoading" @hideModal="hideEditModal" />
       <div slot="footer">
         <el-button type="primary" @click="save">保存</el-button>
         <el-button @click="hideEditModal">取消</el-button>
