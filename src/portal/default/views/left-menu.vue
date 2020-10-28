@@ -99,8 +99,8 @@
     </template>
     <div v-if="isShowTreeList" class="tree-list absolute">
       <div class="tree-list-title">
-        <i class="el-icon-platform-eleme" />
-        审计作业
+        <!-- <i class="el-icon-platform-eleme" /> -->
+        {{ nowAppName }}
       </div>
       <div class="tree-list-content">
         <menu-tree :list="currentMenuGroup" @closetree="isShowTreeList=false;isShrink=true" />
@@ -146,6 +146,7 @@ export default {
       isShowSettingList: false,
       isShowToolsList: false,
       isShrink: false,
+      nowAppName: '',
       menugroup: {},
       settingList: [
         {
@@ -185,7 +186,6 @@ export default {
   watch: {
     isShrink: {
       handler: function(newVal, oldVal) {
-        console.log('newVal', newVal)
         this.$store.commit('aceState/setLeftMenuShrink', newVal)
       },
       immediate: true
@@ -197,7 +197,6 @@ export default {
   mounted() {
     getUserRes()
       .then(response => {
-        console.log(response)
         response.data.application.forEach((app, index) => {
           // 设置左侧应用栏数据
           this.applications.push({
@@ -272,6 +271,7 @@ export default {
       this.currentIndex = index
       this.isShowTreeList = true
       this.isShowSettingList = false
+      this.nowAppName = app.name
     },
     action(type) {
       if (type === 'prev') {
