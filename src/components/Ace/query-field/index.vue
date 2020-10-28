@@ -8,8 +8,8 @@
           <el-option v-for="opt in fd.data" :label="opt.name" :value="opt.value" />
         </el-select>
         <template v-if="fd.type==='timePeriod'">
-          <el-date-picker v-model="query[fd.name+'Start']" :max-date="query[fd.name+'End']" type="date" placeholder="开始时间" />-
-          <el-date-picker v-model="query[fd.name+'End']" :min-date="query[fd.name+'Start']" type="date" placeholder="结束时间" />
+          <el-date-picker v-model="query[fd.name+'Start']" type="date" placeholder="开始时间" />-
+          <el-date-picker v-model="query[fd.name+'End']" type="date" placeholder="结束时间" />
         </template>
       </el-form-item>
 

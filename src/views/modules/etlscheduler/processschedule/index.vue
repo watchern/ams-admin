@@ -162,10 +162,8 @@
         width="120px"
       >
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>{{ scope.row.dependTaskInfo }}</p>
+          <el-popover trigger="hover" placement="top">           
             <el-row v-for="dependTask in scope.row.dependTaskInfoList">
-
             <label class="col-md-2">
             依赖:
             </label>
