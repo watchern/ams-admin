@@ -71,8 +71,9 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { resourceStatisticsList } from '@/api/etlscheduler/processinstance'
+import { resourceStatisticsList } from '@/api/etlscheduler/statistics'
 import axios from 'axios'
+import qs from 'qs'
 
 export default {
   components: { Pagination },
@@ -166,12 +167,11 @@ export default {
       this.getList()
     },
     exportFile() {
-      var id = this.temp.processDefinitionId
-      axios({
-        method: 'get',
-        url: `/etlscheduler/schedules/exportFile/${id}`,
-        responseType: 'blob'
-      }).then((res) => {
+      axios.post(`/etlscheduler/statistics/exportFile`, qs.stringify({ resourceStatistics: JSON.stringify(this.list) }),
+        { responseType: 'blob', headers: {
+          'Content-Type': 'application/x-www-form-urlencoded' // 请求的数据类型为form data格式
+        }}
+      ).then((res) => {
         const filename = decodeURI(
           res.headers['content-disposition'].split(';')[1].split('=')[1]
         )
@@ -235,11 +235,11 @@ export default {
   }
   .el-select{
   /* display: inline-flex !important; */
-  border: 1px solid #343942 !important;
+  /* border: 1px solid #343942 !important; */
   /* border-radius: 19px !important; */
   /* border-radius:19px !important; */
   font-size: 12px;
-  color: #343942;
+  /* color: #343942; */
   letter-spacing: 0;
   line-height: 12px;
  }
