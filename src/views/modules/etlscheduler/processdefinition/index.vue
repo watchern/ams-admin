@@ -97,12 +97,14 @@
           <a target="_blank" class="buttonText" @click="handleView(scope.row.processDefinitionUuid)">{{ scope.row.name }}</a>
         </template>
       </el-table-column>
+      <!--
       <el-table-column
         label="排序号"
         width="150px"
         align="center"
         prop="orderNo"
       />
+      -->
       <el-table-column
         label="状态"
         width="150px"
