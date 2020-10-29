@@ -106,6 +106,12 @@ const etlschedulerRouter = {
       meta: { title: 'resourceStatistics' }
     },
     {
+      path: 'etlconfigure',
+      name: 'etlconfigure',
+      component: () => import('@/views/modules/etlscheduler/etlconfigure/index'),
+      meta: { title: 'etlconfigure' }
+    },
+    {
     // 传递状态为1为查看，0为编辑
       path: 'definition/:id/:status',
       name: 'projects-definition-details',

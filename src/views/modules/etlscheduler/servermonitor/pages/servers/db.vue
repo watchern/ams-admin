@@ -67,6 +67,44 @@
             <div class="text-1">数据库当前活跃连接数</div>
           </div>
         </div>
+        <div class="col-md-12" style="margin-top:20px;">
+          <div class="db-title">
+            <span>PGA内存状态</span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="text-num-model text">
+            <div class="title">
+              <span>PGA内存占用率</span>
+            </div>
+            <div class="value-p">
+              <strong :style="{color:color[5]}" style="font-size:70px">{{ (item.sumPgaUsedMem/item.sumPgaAllocMem*100).toFixed(1) + '%' }}</strong>
+            </div>
+            <div class="text-1">PGA内存占用率</div>
+            <div style="text-align:center;margin-bottom:10px;">
+              <div><label>分配内存：</label>{{ item.sumPgaAllocMem | change }} <label>已使用：</label>{{ item.sumPgaUsedMem | change }} </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12" style="margin-top:20px;">
+          <div class="db-title">
+            <span>会话状态</span>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <table class="col-md-12 text-num-model text">
+            <tr>
+              <th>编号</th>
+              <th>用户名</th>
+              <th>会话连接数</th>
+            </tr>
+            <tr v-for="(user,$in) in item.userConn" :key="$in" style="height:30px">
+              <td><span>{{ $in+1 }}</span></td>
+              <td><span>{{ user.username }}</span></td>
+              <td><span>{{ user.sessionCount }}</span></td>
+            </tr>
+          </table>
+        </div>
       </div>
     </div>
     <div v-if="!mysqlList.length">
@@ -88,6 +126,26 @@ export default {
     formatDate(value, fmt) {
       fmt = fmt || 'YYYY-MM-DD HH:mm:ss'
       return dayjs(value).format(fmt)
+    },
+    change(limit) {
+      var size = ''
+      if (limit < 0.1 * 1024) { // 小于0.1KB，则转化成B
+        size = limit.toFixed(2) + 'B'
+      } else if (limit < 0.1 * 1024 * 1024) { // 小于0.1MB，则转化成KB
+        size = (limit / 1024).toFixed(2) + 'KB'
+      } else if (limit < 0.1 * 1024 * 1024 * 1024) { // 小于0.1GB，则转化成MB
+        size = (limit / (1024 * 1024)).toFixed(2) + 'MB'
+      } else { // 其他转化成GB
+        size = (limit / (1024 * 1024 * 1024)).toFixed(2) + 'GB'
+      }
+
+      var sizeStr = size + '' // 转成字符串
+      var index = sizeStr.indexOf('.') // 获取小数点处的索引
+      var dou = sizeStr.substr(index + 1, 2) // 获取小数点后两位的值
+      if (dou == '00') { // 判断后两位是否为00，如果是则删除00
+        return sizeStr.substring(0, index) + sizeStr.substr(index + 3, 2)
+      }
+      return size
     }
   },
   props: {},

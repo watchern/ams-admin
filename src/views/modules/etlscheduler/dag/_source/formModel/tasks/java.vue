@@ -205,7 +205,7 @@ export default {
       // this.taskCode = o.params.taskCode || ''
       // this.errorType = o.params.errorType || ''
       // this.errorTime = o.params.errorTime || ''
-      this.clas = o.params.class || ''
+      this.clas = o.params.mainClass || ''
       this.localParams = o.params.localParams || ''
       if (o.params.showType === '') {
         this.showType = []
@@ -312,7 +312,7 @@ export default {
         // taskCode: this.taskCode,
         // errorType: this.errorType,
         // errorTime: this.errorTime,
-        class: this.clas,
+        mainClass: this.clas,
         showType: (() => {
           /**
            * Special processing return order TABLE,ATTACHMENT
@@ -382,7 +382,7 @@ export default {
         // taskCode: this.taskCode,
         // errorType: this.errorType,
         // errorTime: this.errorTime,
-        class: this.clas,
+        mainClass: this.clas,
         showType: (() => {
           const showType = this.showType
           if (showType.length === 2 && showType[0] === 'ATTACHMENT') {

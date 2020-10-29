@@ -12,6 +12,7 @@
       :data="treeData1"
       :filter-node-method="filterNode"
       node-key="id"
+      @node-click="nodeClick"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
@@ -67,6 +68,9 @@ export default {
     },
     getTree() {
       return this.$refs.tree1
+    },
+    nodeClick(data, node, tree) {
+      this.$emit('node-click', data, node, tree)
     }
   } // 注册
 }

@@ -104,7 +104,6 @@
       />
       <el-table-column
         label="流程实例名称"
-        width="150px"
         align="center"
         prop="name"
       />
@@ -151,12 +150,8 @@
         label="共耗时"
         width="100px"
         align="center"
-        prop="timeConsuming"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.timeConsuming | timeFilter }}
-        </template>
-      </el-table-column>
+        prop="timeConsum"
+      />
       <el-table-column
         label="环节进度"
         width="100px"
@@ -226,7 +221,7 @@
             <el-collapse-item :title="($index+1)+'/'+logTasks.length+'  '+task.name" :name="task.id">
               <el-card style="padding-bottom: 3%">
                 <el-col v-if="taskslogsList[task.id] != null" class="logtype">
-                  耗时： {{ taskslogsList[task.id] != null ? taskslogsList[task.id].time : 0 | timeFilter }}
+                  耗时： {{ taskslogsList[task.id] != null ? taskslogsList[task.id].time : 0+'秒' }}
                 </el-col>
                 <el-col
                   v-for="log in logs[task.id]"
@@ -288,11 +283,17 @@ export default {
           data: [{ name: '等待中', value: '1' },
             { name: '等待文件中', value: '2' },
             { name: '等待依赖任务', value: '3' },
+            { name: '等待线程', value: '31' },
             { name: '执行中', value: '4' },
             { name: '暂停中', value: '5' },
             { name: '已取消', value: '6' },
             { name: '执行完成', value: '7' },
-            { name: '执行失败', value: '8' }],
+            { name: '执行失败', value: '8' },
+            { name: '停止', value: '9' },
+            { name: '提交成功', value: '40' },
+            { name: '准备暂停', value: '50' },
+            { name: '需要容错', value: '80' },
+            { name: '准备停止', value: '90' }],
           default: '1'
         },
         { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
@@ -338,6 +339,12 @@ export default {
           color: '#f9be0a'
         },
         {
+          value: 31,
+          name: '等待线程',
+          unicode: 'el-icon-share',
+          color: '#f9be0a'
+        },
+        {
           value: 4,
           name: '执行中',
           unicode: 'el-icon-loading',
@@ -366,6 +373,36 @@ export default {
           name: '执行失败',
           unicode: 'el-icon-error',
           color: 'red'
+        },
+        {
+          value: 9,
+          name: '停止',
+          unicode: 'el-icon-video-pause',
+          color: '#409eff'
+        },
+        {
+          value: 80,
+          name: '需要容错',
+          unicode: 'el-icon-loading',
+          color: '#333'
+        },
+        {
+          value: 40,
+          name: '提交成功',
+          unicode: 'el-icon-loading',
+          color: '#333'
+        },
+        {
+          value: 50,
+          name: '准备暂停',
+          unicode: 'el-icon-loading',
+          color: '#333'
+        },
+        {
+          value: 90,
+          name: '准备停止',
+          unicode: 'el-icon-loading',
+          color: '#333'
         },
         {
           value: null,

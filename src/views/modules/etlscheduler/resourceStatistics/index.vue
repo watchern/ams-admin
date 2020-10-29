@@ -53,11 +53,12 @@
       <el-table-column
         label="耗时"
         align="center"
-        prop="timeConsuming"
-      >
-        <template slot-scope="scope">
+        prop="timeConsum"
+      />
+      <!-- <template slot-scope="scope">
           {{ scope.row.timeConsuming | timeFilter }}
-        </template></el-table-column>
+        </template> -->
+      <!-- </el-table-column> -->
     </el-table>
     <pagination
       v-show="total>0"
