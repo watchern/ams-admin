@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="app-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -8,9 +8,9 @@
       />
     </div>
     <div>
-      <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
-      <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="handleUpdate()">修改</el-button>
-      <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="handleDelete()">删除</el-button>
+      <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
+      <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
+      <el-button type="danger" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
       <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="bindRes()">绑定资源</el-button>
       <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="authentic()">授权</el-button>
     </div>
@@ -28,13 +28,13 @@
       <el-table-column type="selection" width="55" />
       <el-table-column label="数据角色名称" width="200px" align="center" prop="dataRoleName" />
       <el-table-column label="创建时间" width="300px" align="center" :formatter="formatCreateTime" prop="createTime" />
-      <el-table-column label="授权方式" width="200px" align="center" prop="authenType" />
+      <el-table-column label="授权方式" width="200px" align="center" prop="authenType" :formatter="formatAuthenType" />
       <el-table-column label="数据筛选器状态" style="width: 200px">
         <template slot-scope="scope">
-          <a @click="openFilterPanel(scope.filters)">{{ scope.filters.length }} / {{ allFilters.length }}</a>
+          <a @click="openFilterPanel(scope.row.dataRoleUuid)">{{ allFilters.length }}</a>
         </template>
       </el-table-column>
-      <el-table-column label="数据有效期" prop="timeDuring" :formatter="formatDuring" style="width: 400px" />
+      <el-table-column label="数据有效期" prop="timeDuring" :formatter="formatDuring" style="width : 400px" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
@@ -94,15 +94,27 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="数据筛选器选择" :visible.sync="filterVisible" />
+    <el-dialog title="数据筛选器选择" :visible.sync="filterVisible">
+      <div class="detail-form">
+        <el-form>
+          <el-form-item>
+            <el-checkbox v-for="(filter, index) in allFilters" v-model="filter.roleUuid" :label="filter.filterName" />
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer">
+        <el-button @click="filterVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSaveRoleFilter">确定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, save, update, del } from '@/api/data/role'
+import { listByPage, save, update, del, getSceneFilter, changeRoleFilter } from '@/api/data/role'
 import QueryField from '@/components/Ace/query-field/index'
-import { getDictList } from '@/utils'
+import { getDictList, commonNotify } from '@/utils'
 
 export default {
   components: { Pagination, QueryField },
@@ -138,20 +150,21 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑业务属性',
-        create: '添加业务属性'
+        update: '编辑数据角色',
+        create: '添加数据角色'
       },
       dialogPvVisible: false,
       rules: {
         dataRoleName: [{ required: true, message: '请填写数据角色名称', trigger: 'change' }],
         authenType: [{ required: true, message: '请选择授权方式', trigger: 'change' }],
         startTime: [{ required: true, message: '请填写生效开始时间', trigger: 'change' }],
-        endTime: [{ required: true, message: '请填写生效结束时间', trigger: 'change' }],
-        filterState: [{ max: 100, message: '长度不得超过100', trigger: 'change' }]
+        endTime: [{ required: true, message: '请填写生效结束时间', trigger: 'change' }]
       },
       downloadLoading: false,
 
-      filterVisible: false
+      filterVisible: false,
+      currentRoleUuid: '',
+      allFilters: []
 
     }
   },
@@ -264,6 +277,13 @@ export default {
       var createTimeRow = createTime.getFullYear() + '-' + (createTime.getMonth() + 1) + '-' + createTime.getDate() + ' ' + createTime.getHours() + ':' + createTime.getMinutes() + ':' + createTime.getSeconds()
       return createTimeRow
     },
+    formatAuthenType(row, column) {
+      var data = getDictList('004001')
+      var authenObj = data.filter(obj => { return obj.codeValue === row.authenType })
+      if (authenObj !== null) {
+        return authenObj[0].codeName
+      }
+    },
     formatDuring(row, column) {
       var startDate = new Date(row.startTime)
       var rowStart = startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate() + ' ' + startDate.getHours() + ':' + startDate.getMinutes() + ':' + startDate.getSeconds()
@@ -327,8 +347,31 @@ export default {
         path: '/data/roleRes/' + roleUuid
       })
     },
-    openFilterPanel(filters) {
-
+    openFilterPanel(roleUuid) {
+      getSceneFilter(roleUuid).then(resp => {
+        console.log(resp.data)
+        resp.data.forEach(f => {
+          f.roleUuid = (f.roleUuid != null)
+        })
+        this.allFilters = resp.data
+        this.filterVisible = true
+        this.currentRoleUuid = roleUuid
+      })
+    },
+    handleSaveRoleFilter() {
+      debugger
+      var datas = []
+      this.allFilters.forEach(f => {
+        datas.push({
+          sceneFilterUuid: f.sceneFilterUuid,
+          roleUuid: this.currentRoleUuid,
+          isSave: f.roleUuid // true or false
+        })
+      })
+      changeRoleFilter(datas).then(resp => {
+        this.$notify(commonNotify({ type: 'success', message: '保存成功！' }))
+        this.filterVisible = false
+      })
     }
   }
 }

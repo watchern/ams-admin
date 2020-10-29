@@ -38,6 +38,23 @@ export function del(ids) {
   })
 }
 
+/* 维护角色下的filter*/
+export function getSceneFilter(roleUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/getSceneFilter?roleUuid=${roleUuid}`,
+    method: 'get'
+  })
+}
+export function changeRoleFilter(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/changeRoleFilter`,
+    data: data,
+    method: 'post'
+  })
+}
+
 const controllerName1 = 'roleGrp'
 export function saveRoleGrp(roleUuid, roleGrps) {
   return request({
