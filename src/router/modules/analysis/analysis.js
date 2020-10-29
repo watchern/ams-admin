@@ -21,6 +21,11 @@ const analysisRouter = {
       path: 'auditModelParam',
       name: '模型参数',
       component: () => import('@/views/analysis/modelParam/index')
+    },
+    {
+      path: 'editorModel',
+      name: '编辑模型',
+      component: () => import('@/views/analysis/auditModel/editModel')
     }
   ]
 }

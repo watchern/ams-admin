@@ -6,11 +6,12 @@ const dataUrl = '/amsdata'
  * 获取当前登录人模型分类树
  * @returns {AxiosPromise}
  */
-export function findModelFoldeTree() {
+export function findModelFolderTree(isShowModel) {
   return request({
     baseURL: analysisUrl,
-    url: '/modelFolderController/findModelFoldeTree',
-    method: 'get'
+    url: '/modelFolderController/findModelFolderTree',
+    method: 'get',
+    params: {isShowModel:isShowModel}
   })
 }
 
@@ -207,5 +208,17 @@ export function getTableCol(tableMetaUuid){
     url: '/tableMeta/getCols',
     method: 'post',
     params: { tableMetaUuid: tableMetaUuid }
+  })
+}
+
+/**
+ * 获取审计事项数据
+ * @returns {AxiosPromise}
+ */
+export function getAuditItem(){
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelFolderController/getAuditItemTree',
+    method: 'get',
   })
 }
