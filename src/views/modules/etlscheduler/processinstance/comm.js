@@ -1,4 +1,5 @@
-const statusList = [
+// 状态显示图标颜色
+const statusListComm = [
   {
     value: 1,
     name: '等待中',
@@ -38,7 +39,7 @@ const statusList = [
   {
     value: 7,
     name: '执行完成',
-    unicode: 'el-icon-circle-check',
+    unicode: 'el-icon-success',
     color: '#00bb00'
   },
   {
@@ -90,6 +91,55 @@ const statusList = [
     color: '#888888'
   }
 ]
+// 查询状态的下拉框
+const statuSelect = [{ name: '等待中', value: '1' },
+  { name: '等待文件中', value: '2' },
+  { name: '等待依赖任务', value: '3' },
+  { name: '等待线程', value: '31' },
+  { name: '执行中', value: '4' },
+  { name: '暂停中', value: '5' },
+  { name: '已取消', value: '6' },
+  { name: '执行完成', value: '7' },
+  { name: '执行失败', value: '8' },
+  { name: '停止', value: '9' },
+  { name: '提交成功', value: '40' },
+  { name: '准备暂停', value: '50' },
+  { name: '需要容错', value: '80' },
+  { name: '准备停止', value: '90' }]
+// 命令的类型
+const commandTypeObj = {
+  0: '开启新流程',
+  1: '从当前节点开启新流程',
+  2: '重启容错流程',
+  3: '重启补数流程',
+  4: '从失败任务节点启动流程',
+  5: '补数',
+  6: '启动调度任务',
+  7: '重复运行流程',
+  8: '暂停流程',
+  9: '停止流程',
+  10: '重新运行等待线程流程',
+  11: '超时',
+  12: '启动',
+  13: '重新运行',
+  14: '取消',
+  null: '其它'
+}
+// 日志颜色
+const colorList = [
+  { value: '成功', color: '#008000' },
+  { value: '失败', color: 'red' },
+  { value: '警告', color: '#f9be0a' },
+  { value: '其它', color: '#888888' }
+]
+
+/**
+ * Formatting time
+ */
+// const getArrayIndex = (value, list) => {
+//   return (list || []).findIndex((item) => item.value === value)
+// }
+
 export {
-  statusList
+  statusListComm, statuSelect, commandTypeObj, colorList
 }
