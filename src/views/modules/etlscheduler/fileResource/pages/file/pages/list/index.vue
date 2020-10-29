@@ -30,7 +30,7 @@ import _ from 'lodash'
 import { mapActions } from 'vuex'
 import mList from './_source/list'
 import mSpin from '@/components/Dolphin/spin/spin'
-import { findComponentDownward } from '@/components/Dolphin/util/'
+import { findComponentDownward } from '@/components/Dolphin/util/index'
 import mNoData from '@/components/Dolphin/noData/noData'
 import listUrlParamHandle from '@/components/Dolphin/mixin/listUrlParamHandle'
 import mConditions from '@/components/Dolphin/conditions/conditions'
@@ -74,14 +74,14 @@ export default {
       this.searchParams.pageSize = val
     },
     _getList(flag) {
-      if (sessionStorage.getItem('isLeft') == 0) {
+      if (sessionStorage.getItem('isLeft') === 0) {
         this.isLeft = false
       } else {
         this.isLeft = true
       }
       this.isLoading = !flag
       this.getResourcesListP(this.searchParams).then(res => {
-        if (this.searchParams.pageNo > 1 && res.totalList.length == 0) {
+        if (this.searchParams.pageNo > 1 && res.totalList.length === 0) {
           this.searchParams.pageNo = this.searchParams.pageNo - 1
         } else {
           this.fileResourcesList = res.totalList

@@ -38,6 +38,7 @@ import localStore from '@/components/Dolphin/util/localStorage'
 import mNoData from '@/components/Dolphin/noData/noData'
 import { handlerSuffix } from '../details/_source/utils'
 import mListConstruction from '@/components/Dolphin/listConstruction/listConstruction'
+import $ from 'jquery'
 
 let editor
 

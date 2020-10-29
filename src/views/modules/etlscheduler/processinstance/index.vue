@@ -79,15 +79,16 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p style="text-align:center">{{ statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].name }}</p>
+            <p style="text-align:center">{{ statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].name }}</p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色 -->
                   <i
-                    :class="statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].unicode"
-                    :style="{color: statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].color}"
+                    :class="statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].unicode"
+                    :style="{color: statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].color}"
+                    style="font-size:25px;font-weight:bold"
                   />
                 </a>
               </el-tag>
@@ -248,6 +249,7 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
+import { statusList } from './comm.js'
 
 export default {
   components: { Pagination, QueryField },
@@ -265,6 +267,9 @@ export default {
           return (time / 3600000).toFixed(1) + '时'
         }
       }
+    },
+    statusFilter(value) {
+      return (statusList || []).findIndex((item) => item.value === value)
     }
   },
   data() {
@@ -339,12 +344,6 @@ export default {
           color: '#f9be0a'
         },
         {
-          value: 31,
-          name: '等待线程',
-          unicode: 'el-icon-share',
-          color: '#f9be0a'
-        },
-        {
           value: 4,
           name: '执行中',
           unicode: 'el-icon-loading',
@@ -365,8 +364,8 @@ export default {
         {
           value: 7,
           name: '执行完成',
-          unicode: 'el-icon-finished',
-          color: '#95F204'
+          unicode: 'el-icon-circle-check',
+          color: '#00bb00'
         },
         {
           value: 8,
@@ -379,6 +378,12 @@ export default {
           name: '停止',
           unicode: 'el-icon-video-pause',
           color: '#409eff'
+        },
+        {
+          value: 31,
+          name: '等待线程',
+          unicode: 'el-icon-share',
+          color: '#f9be0a'
         },
         {
           value: 80,

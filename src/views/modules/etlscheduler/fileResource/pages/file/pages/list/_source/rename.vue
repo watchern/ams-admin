@@ -30,7 +30,6 @@
 </template>
 <script>
 import store from '@/store'
-import localStore from '@/components/Dolphin/util/localStorage'
 import mPopup from '@/components/Dolphin/popup/popup'
 import mListBoxF from '@/components/Dolphin/listBoxF/listBoxF'
 export default {

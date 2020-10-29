@@ -51,7 +51,7 @@
           <template slot="content">
             <div class="submit">
               <x-button type="primary" shape="circle" :loading="spinnerLoading" @click="ok()">{{ spinnerLoading ? 'Loading...' : '创建' }} </x-button>
-              <x-button type="text" @click="() => $router.push({name: 'file'})"> 取消 </x-button>
+              <x-button type="text" @click="() => $router.push({name: 'fileResource'})"> 取消 </x-button>
             </div>
           </template>
         </m-list-box-f>
@@ -65,8 +65,6 @@ import { filtTypeArr } from '../_source/common'
 import { handlerSuffix } from '../details/_source/utils'
 import codemirror from '../_source/codemirror'
 import mListBoxF from '@/components/Dolphin/listBoxF/listBoxF'
-import mSpin from '@/components/Dolphin/spin/spin'
-import mConditions from '@/components/Dolphin/conditions/conditions'
 import localStore from '@/components/Dolphin/util/localStorage'
 import mListConstruction from '@/components/Dolphin/listConstruction/listConstruction'
 
@@ -164,7 +162,7 @@ export default {
     editor.toTextArea() // uninstall
     editor.off($('.code-create-mirror'), 'keypress', this.keypress)
   },
-  components: { mListConstruction, mConditions, mSpin, mListBoxF }
+  components: { mListConstruction, mListBoxF }
 }
 </script>
 

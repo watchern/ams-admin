@@ -39,6 +39,7 @@ import mSpin from '@/components/Dolphin/spin/spin'
 import localStore from '@/components/Dolphin/util/localStorage'
 import mNoData from '@/components/Dolphin/noData/noData'
 import mListConstruction from '@/components/Dolphin/listConstruction/listConstruction'
+import $ from 'jquery'
 
 let editor
 
