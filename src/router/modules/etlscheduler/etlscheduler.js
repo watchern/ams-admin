@@ -123,6 +123,68 @@ const etlschedulerRouter = {
       name: 'dataFile',
       component: () => import('@/views/modules/etlscheduler/dataFile/index'),
       meta: { title: 'dataFile' }
+    },
+    {
+      path: 'fileResource',
+      name: 'fileResource',
+      component: () => import('@/views/modules/etlscheduler/fileResource/index'),
+      meta: { title: 'fileResource' }
+    },
+    {
+      path: '/resource/file/create',
+      name: 'resource-file-create',
+      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/create/index'], resolve),
+      meta: {
+        title: `创建文件`
+      }
+    },
+    {
+      path: '/resource/file/createFolder',
+      name: 'resource-file-createFolder',
+      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/createFolder/index'], resolve),
+      meta: {
+        title: `创建文件夹`
+      }
+    },
+    {
+      path: '/resource/file/subFileFolder/:id',
+      name: 'resource-file-subFileFolder',
+      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/subFileFolder/index'], resolve),
+      meta: {
+        title: `创建资源`
+      }
+    },
+    {
+      path: '/resource/file/subFile/:id',
+      name: 'resource-file-subFile',
+      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/subFile/index'], resolve),
+      meta: {
+        title: `创建资源`
+      }
+    },
+    {
+      path: '/resource/file/list/:id',
+      name: 'resource-file-details',
+      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/details/index'], resolve),
+      meta: {
+        title: `文件详情`
+      }
+    },
+    {
+      path: '/resource/file/subdirectory/:id',
+      name: 'resource-file-subdirectory',
+      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/subdirectory/index'], resolve),
+      meta: {
+        title: `文件管理`
+      }
+    },
+    {
+      path: '/resource/file/edit/:id',
+      name: 'resource-file-edit',
+      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/edit/index'], resolve),
+      meta: {
+        title: `文件编辑`
+      }
     }
   ]
 }
