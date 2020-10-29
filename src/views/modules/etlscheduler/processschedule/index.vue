@@ -213,6 +213,7 @@
             class="propwidth"
             placeholder=""
             :disabled="disableUpdate"
+            placeholder="请输入任务名称"
           />
         </el-form-item>
         <!-- 查询任务流程 -->
@@ -749,7 +750,7 @@ export default {
     this.getList()
     this.remoteMethod()
     const o = this.backfillItem
-    const dependentResult = $(`#${o.processSchedulesUuid}`).data('dependent-result') || {}
+    const dependentResult = $(`#${o}`).data('dependent-result') || {}
     // Does not represent an empty object backfill
     if (!_.isEmpty(o)) {
       this.relation = _.cloneDeep(o.dependence.relation) || 'AND'
