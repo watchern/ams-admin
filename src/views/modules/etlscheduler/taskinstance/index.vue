@@ -74,7 +74,14 @@
         <template slot-scope="scope">
           <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="700">
-            <p width="50vw">任务参数:{{ scope.row.params }}</p>
+            <el-row v-for="taskParam in scope.row.taskParamList">
+            <label class="col-md-2">
+            {{taskParam.name}}:
+            </label>
+            <div class="col-md-10">
+             {{taskParam.value}}
+             </div>
+            </el-row>
             <div slot="reference" class="name-wrapper">
               <el-tag><i class="el-icon-tickets" /></el-tag>
             </div>
