@@ -210,6 +210,7 @@ export default {
       } else {
         this.startStatus = true
         this.stopStatus = true
+        this.deleteStatus = true
       }
       if (this.selections.length === 1) {
         this.selections.forEach((r, i) => {

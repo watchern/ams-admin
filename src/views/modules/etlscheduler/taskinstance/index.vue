@@ -32,7 +32,7 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p style="text-align:center">{{ statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].name }}</p>
+            <p style="text-align:center" :style="{color: statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].color}"><strong>{{ statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].name }}</strong></p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
@@ -41,6 +41,7 @@
                   <i
                     :class="statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].unicode"
                     :style="{color: statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].color}"
+                    style="font-size:25px;font-weight:bold"
                   />
                 </a>
               </el-tag>
@@ -134,7 +135,6 @@
             v-for="log in logs[task.taskCode]"
             :key="log.taskLogUuid"
             :label="log.taskLogUuid"
-            class="logtype"
             :style="{color: logColorList[log.status===null ? 1 : log.status-1].color}"
           >
             {{ log.logTime +' '+ log.logMessage }}
@@ -152,7 +152,7 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, findTaskLogs } from '@/api/etlscheduler/taskinstance'
 import QueryField from '@/components/Ace/query-field/index'
-import { statusList } from '@/views/modules/etlscheduler/processinstance/comm.js'
+import { statusListComm, statuSelect,colorList } from '@/views/modules/etlscheduler/processinstance/comm.js'
 
 export default {
   components: { Pagination, QueryField },
@@ -173,7 +173,7 @@ export default {
       }
     },
     statusFilter(value) {
-      return (statusList || []).findIndex((item) => item.value === value)
+      return (statusListComm || []).findIndex((item) => item.value === value)
     }
   },
   data() {
@@ -189,122 +189,13 @@ export default {
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '任务实例状态', name: 'status', type: 'select',
-          data: [{ name: '等待中', value: '1' },
-            { name: '等待文件中', value: '2' },
-            { name: '等待依赖任务', value: '3' },
-            { name: '等待线程', value: '31' },
-            { name: '执行中', value: '4' },
-            { name: '暂停中', value: '5' },
-            { name: '已取消', value: '6' },
-            { name: '执行完成', value: '7' },
-            { name: '执行失败', value: '8' },
-            { name: '停止', value: '9' },
-            { name: '提交成功', value: '40' },
-            { name: '准备暂停', value: '50' },
-            { name: '需要容错', value: '80' },
-            { name: '准备停止', value: '90' }],
+          data: statuSelect,
           default: '1'
         },
         { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
       ],
-      statusList: [
-        {
-          value: 1,
-          name: '等待中',
-          unicode: 'el-icon-s-help',
-          color: '#f9be0a'
-        },
-        {
-          value: 2,
-          name: '等待文件中',
-          unicode: 'el-icon-document',
-          color: '#f9be0a'
-        },
-        {
-          value: 3,
-          name: '等待依赖任务',
-          unicode: 'el-icon-share',
-          color: '#f9be0a'
-        },
-        {
-          value: 4,
-          name: '执行中',
-          unicode: 'el-icon-loading',
-          color: '#333'
-        },
-        {
-          value: 5,
-          name: '暂停中',
-          unicode: 'el-icon-video-pause',
-          color: '#409eff'
-        },
-        {
-          value: 6,
-          name: '已取消',
-          unicode: 'el-icon-circle-close',
-          color: '#ff0000'
-        },
-        {
-          value: 7,
-          name: '执行完成',
-          unicode: 'el-icon-circle-check',
-          color: '#00bb00'
-        },
-        {
-          value: 8,
-          name: '执行失败',
-          unicode: 'el-icon-error',
-          color: 'red'
-        },
-        {
-          value: 9,
-          name: '停止',
-          unicode: 'el-icon-video-pause',
-          color: '#409eff'
-        },
-        {
-          value: 31,
-          name: '等待线程',
-          unicode: 'el-icon-share',
-          color: '#f9be0a'
-        },
-        {
-          value: 80,
-          name: '需要容错',
-          unicode: 'el-icon-loading',
-          color: '#333'
-        },
-        {
-          value: 40,
-          name: '提交成功',
-          unicode: 'el-icon-loading',
-          color: '#333'
-        },
-        {
-          value: 50,
-          name: '准备暂停',
-          unicode: 'el-icon-loading',
-          color: '#333'
-        },
-        {
-          value: 90,
-          name: '准备停止',
-          unicode: 'el-icon-loading',
-          color: '#333'
-        },
-        {
-          value: null,
-          name: '--',
-          unicode: 'el-icon-remove-outline',
-          color: '#888888'
-        }
-      ],
-      logColorList: [
-        { value: '成功', color: '#008000' },
-        { value: '失败', color: 'red' },
-        { value: '警告', color: '#f9be0a' },
-        { value: '其它', color: '#888888' }
-      ],
+      statusList: statusListComm,
+      logColorList: colorList,
       pageQuery: {
         condition: null,
         pageNo: 1,
@@ -386,6 +277,9 @@ export default {
     // this.getList(this.queryDefault)
 
     this.getList()
+  },
+  mounted() {
+    // this.statusList = statusListComm
   },
   methods: {
     getList(query) {
