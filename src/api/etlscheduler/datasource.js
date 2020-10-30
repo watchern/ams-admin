@@ -45,11 +45,22 @@ export function update(data) {
     data
   })
 }
+
 // 测试连接
-export function testConn(id) {
+export function testConn(data) {
   return request({
     baseURL: baseURL,
-    url: `/datasource/testConnection/${id}`,
+    url: `/datasource/connect`,
+    method: 'post',
+    data
+  })
+}
+
+// 校验数据源名称
+export function verifyDSName(name) {
+  return request({
+    baseURL: baseURL,
+    url: `/datasource/verifyName/${name}`,
     method: 'get'
   })
 }

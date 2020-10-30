@@ -34,7 +34,7 @@
         label="文件名称"
         width="300px"
         align="center"
-        prop="fileName"
+        prop="fullPath"
       />
       <el-table-column
         label="对应表"
@@ -46,13 +46,13 @@
         label="接收时间"
        
         align="center"
-        prop="dataDate"
+        prop="createTime"
       />
       <el-table-column
         label="状态"
         width="300px"
         align="center"
-        prop=""
+        prop="status"
         :formatter="formatStatus"
       />
     </el-table>
@@ -88,11 +88,11 @@ export default {
       },
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
-        { label: '文件名称', name: 'fileName', type: 'text', value: '' },
+        { label: '文件名称', name: 'fullPath', type: 'text', value: '' },
         { label: '表名称', name: 'odsTableName', type: 'text', value: '' },
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
-          label: '接收状态', name: '', type: 'select',
+          label: '接收状态', name: 'status', type: 'select',
           data: [{ name: '已接收', value: '1' }, { name: '未接收', value: '0' }],
         },
         { label: '时间', name: '', type: 'timePeriod', value: '' }
@@ -102,14 +102,13 @@ export default {
         pageNo: 1,
         pageSize: 20,
         sortBy: 'asc',
-        sortName: 'dataDate'
+        sortName: 'createTime'
       },
       temp: {
         dataResourceCode: null,
-        fileDirectory: null,
-        fileName: null,
-        dataDate: null,
-        dataType: null
+        fullPath: null,
+        odsTableName: null,
+        createTime: null,
       },
       selections: [],
     }

@@ -3,7 +3,7 @@ import {
   save,
   update,
   testConn
-} from '@/api/etlscheduler/datasource1'
+} from '@/api/etlscheduler/datasource'
 
 export default {
   /**
