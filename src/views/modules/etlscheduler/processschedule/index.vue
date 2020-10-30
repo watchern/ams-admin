@@ -324,7 +324,6 @@
         :rules="rules"
         :model="temp"
         label-position="right"
-        label-width="80px"
       >
         <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="processDefinitionId">
