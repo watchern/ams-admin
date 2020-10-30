@@ -10,12 +10,6 @@ const etlschedulerRouter = {
     icon: 'nested'
   },
   children: [
-    {
-      path: 'datasource1',
-      component: () => import('@/views/modules/etlscheduler/datasource1/index'),
-      name: 'datasource1',
-      meta: { title: 'datasource1' }
-    },
     // {
     //   path: 'datasource/:id',
     //   name: 'datasource',

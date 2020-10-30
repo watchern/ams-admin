@@ -52,7 +52,7 @@
         label="状态"
         width="300px"
         align="center"
-        prop=""
+        prop="status"
         :formatter="formatStatus"
       />
     </el-table>
@@ -92,7 +92,7 @@ export default {
         { label: '表名称', name: 'odsTableName', type: 'text', value: '' },
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
-          label: '接收状态', name: '', type: 'select',
+          label: '接收状态', name: 'status', type: 'select',
           data: [{ name: '已接收', value: '1' }, { name: '未接收', value: '0' }],
         },
         { label: '时间', name: '', type: 'timePeriod', value: '' }

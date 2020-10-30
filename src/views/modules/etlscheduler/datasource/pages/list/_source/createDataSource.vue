@@ -167,7 +167,7 @@
 import store from '@/store'
 import { isJson } from '@/components/Dolphin/util/util'
 import mListBoxF from '@/components/Dolphin/listBoxF/listBoxF'
-import { verifyDSName, getById } from '@/api/etlscheduler/datasource1'
+import { verifyDSName, getById } from '@/api/etlscheduler/datasource'
 export default {
   name: 'CreateDatasource',
   components: { mListBoxF },
