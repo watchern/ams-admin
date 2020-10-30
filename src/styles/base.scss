@@ -135,6 +135,14 @@ table th{
 .el-dialog__title {
     font-weight: bold;
 }
+.el-dialog__header{
+  padding: 10px 20px;
+  padding-bottom: 0px;
+}
+
+.el-dialog__body{
+  padding: 5px 20px!important;
+}
 
 form {
   background-color: #edf1f5!important;
