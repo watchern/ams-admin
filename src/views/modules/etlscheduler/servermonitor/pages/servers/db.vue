@@ -75,14 +75,14 @@
         <div class="col-md-3">
           <div class="text-num-model text">
             <div class="title">
-              <span>PGA内存占用率</span>
+              <span>PGA内存使用率</span>
             </div>
             <div class="value-p">
               <strong :style="{color:color[5]}" style="font-size:70px">{{ (item.sumPgaUsedMem/item.sumPgaAllocMem*100).toFixed(1) + '%' }}</strong>
             </div>
-            <div class="text-1">PGA内存占用率</div>
+            <div class="text-1">PGA内存使用率</div>
             <div style="text-align:center;margin-bottom:10px;">
-              <div><label>分配内存：</label>{{ item.sumPgaAllocMem | change }} <label>已使用：</label>{{ item.sumPgaUsedMem | change }} </div>
+              <div><label>分配内存：</label>{{ item.sumPgaAllocMem | changeBite }} <label>已使用：</label>{{ item.sumPgaUsedMem | changeBite }} </div>
             </div>
           </div>
         </div>
@@ -127,22 +127,21 @@ export default {
       fmt = fmt || 'YYYY-MM-DD HH:mm:ss'
       return dayjs(value).format(fmt)
     },
-    change(limit) {
+    changeBite(limit) {
       var size = ''
-      if (limit < 0.1 * 1024) { // 小于0.1KB，则转化成B
+      if (limit < 1 * 1024) { // 小于1KB，则转化成B
         size = limit.toFixed(2) + 'B'
-      } else if (limit < 0.1 * 1024 * 1024) { // 小于0.1MB，则转化成KB
+      } else if (limit < 1 * 1024 * 1024) { // 小于1MB，则转化成KB
         size = (limit / 1024).toFixed(2) + 'KB'
-      } else if (limit < 0.1 * 1024 * 1024 * 1024) { // 小于0.1GB，则转化成MB
+      } else if (limit < 1 * 1024 * 1024 * 1024) { // 小于1GB，则转化成MB
         size = (limit / (1024 * 1024)).toFixed(2) + 'MB'
       } else { // 其他转化成GB
         size = (limit / (1024 * 1024 * 1024)).toFixed(2) + 'GB'
       }
-
       var sizeStr = size + '' // 转成字符串
       var index = sizeStr.indexOf('.') // 获取小数点处的索引
       var dou = sizeStr.substr(index + 1, 2) // 获取小数点后两位的值
-      if (dou == '00') { // 判断后两位是否为00，如果是则删除00
+      if (dou === '00') { // 判断后两位是否为00，如果是则删除00
         return sizeStr.substring(0, index) + sizeStr.substr(index + 3, 2)
       }
       return size
