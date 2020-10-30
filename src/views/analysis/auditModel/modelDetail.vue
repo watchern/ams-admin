@@ -28,7 +28,8 @@
             <el-row>
               <el-form-item label="被关联模型">
                 <el-col :span="20">
-                  <el-input :disabled="true" />
+                  <el-input :disabled="true" v-model="form.relationObjectUuid"/>
+                  <el-input :disabled="true" v-model="form.relationObjectName"/>
                 </el-col>
                 <el-button @click="selectModel">选择</el-button>
               </el-form-item>
@@ -57,7 +58,7 @@
                         v-for="state in relModelParam"
                         :key="state.ammParamUuid"
                         :value="state.ammParamUuid"
-                        :label="state.ammParamName"
+                        :label="state.paramName"
                       />
                     </el-select>
                   </template>
@@ -191,7 +192,7 @@ export default {
           this.$refs.relModelDivParent.style = 'block'
           this.$refs.relModelTableDiv.style = 'block'
           // 初始化完成树之后初始化被关联模型的参数
-          this.relModelSelectChange(this.data.relationObjectUuid)
+          this.loadParamInfo(this.data.relationObjectUuid)
           // 初始化关联模型table
           this.relModelTable = this.data.modelDetailConfig
         }
@@ -200,7 +201,6 @@ export default {
           this.$refs.relTableDivParent.style = 'block'
           this.$refs.relTableDiv.style = 'block'
           this.initTableTree()
-          this.relTableSelectChange(this.data.relationObjectUuid)
           // 初始化关联表table
           this.relTable = this.data.modelDetailConfig
         }
@@ -320,7 +320,14 @@ export default {
       }
       this.modelTreeLoading = true
       // 获取模型基本信息开始初始化能关联的参数
-      selectModel(modelTreeNode.id).then(result => {
+      this.loadParamInfo(modelTreeNode.id)
+    },
+    /**
+     * 加载模型参数信息
+     * @param modelUuid 模型编号
+     */
+    loadParamInfo(modelUuid){
+      selectModel(modelUuid).then(result => {
         this.modelTreeLoading = false
         if (result.data == null) {
           this.$message({ type: 'error', message: '获取模型信息失败!' })
@@ -330,7 +337,13 @@ export default {
           this.$message({ type: 'info', message: '该模型没有参数,请重新选择!' })
           return
         }
+        this.ModelTreeDialog = false
         // 初始化模型的参数
+        this.relModelParam = result.data.parammModelRel
+        //设置对象
+        this.form.relationObjectUuid = result.data.modelUuid
+        this.form.relationObjectName = result.data.modelName
+        this.$refs.relModelTableDiv.style = 'block'
       })
     },
     /**

@@ -33,7 +33,7 @@ export default {
     initParamHtmlSS(sql, paramsArr, name, modelId) {
       initParamHtml(sql, paramsArr, name, modelId)
     },
-    
+
   }
 }
 </script>

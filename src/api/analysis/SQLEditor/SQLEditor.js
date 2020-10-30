@@ -1592,7 +1592,8 @@ export function startExecuteSql(data) {
  * @param sql 要编辑的sql
  * @param paramObj 参数对象
  */
-export function editorSql(sql, paramObj) {
+export function editorSql(sql, paramObjOne) {
   editorObj.setValue(sql)
-  replaceParam(paramObj)
+  paramObj = paramObjOne
+  replaceParam(paramObjOne)
 }
