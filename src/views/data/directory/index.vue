@@ -12,7 +12,6 @@
 
 <script>
 import DataTree from '@/views/data/role-res/data-tree'
-import BaseDirectoryList from '@/views/data/directory/directoryList'
 
 export default {
   components: { DataTree, BaseDirectoryList },
