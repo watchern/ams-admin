@@ -4,24 +4,6 @@
       <!-- 查询条件区域 -->
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
-    <!-- <div> -->
-    <!-- <el-button type="primary" size="mini" @click="handleCreate()"
-        >添加</el-button
-      >
-      <el-button
-        type="primary"
-        size="mini"
-        :disabled="selections.length !== 1"
-        @click="handleUpdate()"
-        >修改</el-button
-      >
-      <el-button
-        type="danger"
-        size="mini"
-        :disabled="selections.length === 0"
-        @click="handleDelete()"
-        >删除</el-button
-      > -->
     <div style="float: left;">
       <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
       <el-button type="primary" class="oper-btn edit" :disabled="editStatus" title="修改" @click="handleUpdate()" />
@@ -48,48 +30,6 @@
         <el-button type="primary" class="oper-btn" icon="el-icon-download" title="下载流程模板" @click="dialogFormVisible1 = true" />
      </span>
     </div>
-    <!-- <el-button
-        type="primary"
-        size="mini"
-        :disabled="startStatus"
-        @click="handleUse()"
-        >启用</el-button
-      >
-      <el-button
-        type="danger"
-        size="mini"
-        :disabled="stopStatus"
-        @click="handleBear()"
-        >禁用</el-button
-      >
-      <el-button
-        type="danger"
-        size="mini"
-        :disabled="selections.length != 1"
-        @click="copyData()"
-        >复制</el-button
-      > -->
-    <!-- <el-upload
-        multiple
-        class="upload-demo"
-        action=""
-        :on-remove="handleRemove"
-        :headers="headers"
-        :http-request="uploadFile"
-        :limit="3"
-        :auto-upload="true"
-        :on-change="handleFileChange"
-        :show-file-list="false"
-        style="display: inline-block; padding-left: 10px"
-      >
-        <el-button size="mini" type="primary">导入</el-button>
-      </el-upload> -->
-    <!-- <el-menu style="display: inline-block; padding-left: 10px">
-        <el-button type="primary" size="mini" @click="dialogFormVisible1 = true"
-          >下载流程模板</el-button
-        >
-      </el-menu> -->
-    <!-- </div> -->
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -213,6 +153,7 @@
             class="propwidth"
             placeholder=""
             :disabled="disableUpdate"
+            placeholder="请输入任务名称"
           />
         </el-form-item>
         <!-- 查询任务流程 -->
@@ -250,22 +191,6 @@
             @blur="changeParamValue(item.param.defaultValue,item.param.paramName )"
           />
         </el-form-item>
-        <!-- <el-form-item label="排序号" prop="processInstancePriority">
-          <el-input
-            v-model="temp.processInstancePriority"
-            class="propwidth"
-            placeholder=""
-            :disabled="disableUpdate"
-            type="number"
-          />
-        </el-form-item> -->
-
-        <!-- <el-form-item label="状态" prop="status">
-          <el-select v-model="temp.status" placeholder="请选择状态">
-            <el-option label="启用" :value="1" />
-            <el-option label="停用" :value="0" />
-          </el-select>
-        </el-form-item> -->
         <el-form-item label="作业周期范围" prop="startTime">
           <el-col :span="11">
             <el-date-picker
@@ -454,6 +379,7 @@ import {
 } from '@/api/etlscheduler/processschedule'
 import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
+import {crontabExpression} from './common.js'
 // import _ from lodash
 
 export default {
@@ -520,28 +446,7 @@ export default {
         }
       },
       // 作业周期格式化
-      crontabFormat: [
-        {
-          'code': '0 0 0 * * ?',
-          'msg': '每日'
-        },
-        {
-          'code': '0 0 0 1 * ?',
-          'msg': '每月'
-        },
-        {
-          'code': '0 0 0 1 1,4,7,10 ?',
-          'msg': '每季度'
-        },
-        {
-          'code': '0 0 0 1 1,7 ?',
-          'msg': '每半年'
-        },
-        {
-          'code': '0 0 0 1 1 ?',
-          'msg': '每年'
-        }
-      ],
+      crontabFormat: crontabExpression,
       loading: false,
       tableKey: 'processSchedulesUuid',
       list: null,
@@ -655,13 +560,6 @@ export default {
             trigger: 'change'
           }
         ],
-        // status: [
-        //   {
-        //     required: true,
-        //     message: '请选择参数状态',
-        //     trigger: 'change'
-        //   }
-        // ],
         processDefinitionId: [
           {
             required: true,
@@ -722,6 +620,7 @@ export default {
         this.startStatus = true
         this.stopStatus = true
         this.editStatus = true
+        this.deleteStatus = true
       }
       if (this.selections.length === 1) {
             this.selections.forEach((r, i) => {
@@ -749,7 +648,7 @@ export default {
     this.getList()
     this.remoteMethod()
     const o = this.backfillItem
-    const dependentResult = $(`#${o.processSchedulesUuid}`).data('dependent-result') || {}
+    const dependentResult = $(`#${o}`).data('dependent-result') || {}
     // Does not represent an empty object backfill
     if (!_.isEmpty(o)) {
       this.relation = _.cloneDeep(o.dependence.relation) || 'AND'
@@ -791,16 +690,8 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
       getByScheduleId(this.temp.processSchedulesUuid).then((resp) => {
-        // if (resp.data.dependTaskInfoList !== null) {
         this.dependTaskList = resp.data.dependTaskInfoList
-        // } else {
-        //   this.dependTaskList = [];
-        // }
-        // if (resp.data.taskParamsList !== null && resp.data.taskParamsList !== "") {
         this.distinctParamList = resp.data.taskParamsList
-        // } else {
-        //   this.paramList = [];
-        // }
       })
     },
     // 导出 excel 格式
@@ -909,11 +800,6 @@ export default {
         this.processParam.condition.keyword = query
         findByprocessDef(this.processParam).then((resp) => {
           this.options = resp.data.records
-          // for (var i = 0; i < this.options.length; i++) {
-          //   if (this.options[i].status == 0) {
-          //     this.options.pop(i)
-          //   }
-          // }
         })
       }, 200)
     },
@@ -1017,19 +903,11 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
       getByScheduleId(this.temp.processSchedulesUuid).then((resp) => {
-        // if (resp.data.dependTaskInfoList !== null) {
         this.dependTaskList = resp.data.dependTaskInfoList
-        // } else {
-        // this.dependTaskList = [];
-        // }
-        // if (resp.data.taskParamsList !== null && resp.data.taskParamsList !== "") {
         this.paramList = resp.data.taskParamsList
         //  去重
         const resmap = new Map()
         this.distinctParamList = this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))
-        // } else {
-        // this.paramList = [];
-        // }
       })
     },
     updateData() {
@@ -1087,16 +965,6 @@ export default {
         ids.push(r.processSchedulesUuid)
       })
       startScheduleStatus(ids.join(','), 1).then((res) => {
-        // if (res.data.code == 1000) {
-        //   this.getList();
-        //   this.$notify({
-        //     title: "失败",
-        //     message: res.data.msg,
-        //     type: "error",
-        //     duration: 2000,
-        //     position: "bottom-right",
-        //   });
-        // }
         this.getList()
         this.$notify({
           title: '成功',
@@ -1202,7 +1070,7 @@ export default {
           message = r.msg
         }
       })
-      return onTime + '-' + stopTime + message
+      return onTime + '-' + stopTime +' '+ message
     }
   }
 }
