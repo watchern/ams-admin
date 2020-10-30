@@ -127,7 +127,7 @@
       <el-col class="logtype">
         {{ task!=null ? task.name : null }}
       </el-col>
-      <el-col v-if="task != null" class="logtype" style="font-size: 13px;">
+      <el-col v-if="task != null" class="logtype" style="font-size: 13px;color:#888888">
         耗时 {{ task != null ? task.time: 0+'秒' }}
       </el-col>
       <el-card style="padding-bottom: 3%;margin-top:10px">

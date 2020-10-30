@@ -212,7 +212,7 @@
     <el-dialog
       :visible.sync="logDialogFromVisible"
     >
-      <el-timeline style="margin-left:7%">
+      <el-timeline style="margin-left:7%;margin-top:7%">
         <!-- 使用时间线任务实例的环节和运行的状态 -->
         <!-- 已运行的环节，改变颜色和图标 -->
         <el-timeline-item

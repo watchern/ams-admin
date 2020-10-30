@@ -53,7 +53,6 @@
 import _ from 'lodash'
 import { mapActions } from 'vuex'
 import mGauge from './_source/gauge'
-import mList from './_source/zookeeperList'
 import mSpin from '@/components/Dolphin/spin/spin'
 import mNoData from '@/components/Dolphin/noData/noData'
 import themeData from '@/components/Dolphin/echarts/themeData.json'
@@ -95,7 +94,7 @@ export default {
       this.isLoading = false
     })
   },
-  components: { mList, mListConstruction, mSpin, mNoData, mGauge }
+  components: { mListConstruction, mSpin, mNoData, mGauge }
 }
 </script>
 <style lang="scss" rel="stylesheet/scss">
