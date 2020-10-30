@@ -337,6 +337,7 @@
             :loading="loading"
             class="propwidth"
             @change="paramMsg(temp.processDefinitionId)"
+             label-width="80px"
           >
             <el-option
               v-for="item in options"
