@@ -114,21 +114,28 @@
         align="center"
         prop="processDefinitionName"
       /> -->
-      <!-- <el-table-column
+      <el-table-column
         label="任务参数"
         align="center"
         width="80px"
       >
         <template slot-scope="scope">
-           任务参数使用图标进行显示
+           <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="700">
-            <p>任务参数:{{ scope.row.taskParams }}</p>
+            <el-row v-for="taskParam in scope.row.distinctParamList">
+            <label class="col-md-2">
+            {{taskParam.name}}:
+            </label>
+            <div class="col-md-10">
+             {{taskParam.value}}
+             </div>
+            </el-row>
             <div slot="reference" class="name-wrapper">
               <el-tag><i class="el-icon-tickets" /></el-tag>
             </div>
           </el-popover>
         </template>
-      </el-table-column> -->
+      </el-table-column>
       <el-table-column
         label="调度时间"
         width="160px"

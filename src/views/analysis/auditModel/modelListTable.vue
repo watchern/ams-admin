@@ -29,7 +29,7 @@
       <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog :close-on-click-modal="false" v-if="editModelShow"   :visible.sync="editModelShow" :title="editModelTitle" width="60%">
+    <el-dialog :close-on-click-modal="false" :fullscreen="true" v-if="editModelShow"   :visible.sync="editModelShow" :title="editModelTitle">
       <EditModel ref="editModel" :open-value="selectTreeNode" :operation-obj="operationObj" v-loading="editorModelLoading" @hideModal="hideEditModal" />
       <div slot="footer">
         <el-button type="primary" @click="save">保存</el-button>
@@ -181,18 +181,20 @@ export default {
       return ''
     },
     /**
-     * 格式化类型
+     * 格式化模型类型
      * @param row 格式化行
      * @param column 格式化列
      * @returns {返回格式化后的字符串}
      */
     modelTypeFormatter(row, column) {
       const modelType = row.modelType
-      if (modelType === '1') {
-        return '审计模型'
-      } else if (modelType === '2') {
-        return '图形化模型'
+      let dicObj = getOneDict(modelType)
+      let value = ""
+      if(dicObj.length == 0){
+        return "";
       }
+      value = dicObj[0].codeName;
+      return value
     },
     riskLevelFormatter(row, column) {
       let riskLevel = row.riskLevelUuid
@@ -290,14 +292,18 @@ export default {
      */
     addModel() {
       this.isUpdate = false
-      if (this.selectTreeNode == null) {
-        this.$message({ type: 'info', message: '请先选择模型分类!' })
-      } else {
-        var operationObj = { operationType: 1 }
-        this.operationObj = operationObj
-        this.editModelTitle = '添加模型'
-        this.editModelShow = true
+      let operationObj = { operationType:1,folderId:"",folderName:""}
+      if(this.selectTreeNode != null){
+        operationObj = { operationType:1,folderId:this.selectTreeNode.id,folderName:this.selectTreeNode.label}
       }
+      sessionStorage.setItem('operationObj', JSON.stringify(operationObj));
+      this.$store.commit('aceState/setRightFooterTags',{
+        type:'active',
+        val:{
+          name:'添加模型',
+          path:'/analysis/editorModel'
+        }
+      })
     },
     updateModel() {
       this.isUpdate = true
@@ -315,14 +321,20 @@ export default {
         if (result.code == 0) {
           var operationObj = {
             operationType: 2,
-            model: result.data
+            model: result.data,
+            folderId:"",
+            folderName:""
           }
-          this.operationObj = operationObj
-          this.editModelShow = true
-          this.getList(this.query)
-          this.$emit('refreshTree')
+          sessionStorage.setItem('operationObj', JSON.stringify(operationObj));
+          this.$store.commit('aceState/setRightFooterTags',{
+            type:'active',
+            val:{
+              name:'修改模型',
+              path:'/analysis/editorModel'
+            }
+          })
         } else {
-          this.$message({ type: 'error', message: '删除失败' })
+          this.$message({ type: 'error', message: '修改失败' })
         }
       })
     },

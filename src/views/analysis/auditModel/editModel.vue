@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="overflow-y: scroll;height: 1000px">
     <el-container style="height: 500px; border: 1px solid #eee">
       <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
         <el-tree ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
@@ -15,28 +15,53 @@
       </el-aside>
       <div ref="basicInfo" class="detail-form">
         <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules">
-          <el-form-item label="模型名称" prop="modelName">
-            <el-input v-model="form.modelName" />
-          </el-form-item>
-          <el-form-item label="业务分类">
-            <el-input v-model="form.modelFolderName" :disabled="true" />
-          </el-form-item>
-          <el-form-item label="审计事项" prop="auditItemUuid">
-            <el-select v-model="form.auditItemUuid" placeholder="请选择审计事项">
-              <el-option label="审计事项一" value="1" />
-              <el-option label="审计事项二" value="2" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="风险等级" prop="riskLevelUuid">
-            <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级">
-              <el-option
-                v-for="state in riskLeve"
-                :key="state.codeValue"
-                :value="state.codeValue"
-                :label="state.codeName"
-              />
-            </el-select>
-          </el-form-item>
+            <el-form-item label="模型名称" prop="modelName">
+                <el-input v-model="form.modelName" />
+            </el-form-item>
+          <el-row>
+            <el-form-item label="业务分类">
+              <el-col :span="22">
+                <el-input v-model="form.modelFolderUuid" style="display: none" :disabled="true"></el-input>
+                <el-input v-model="form.modelFolderName" :disabled="true" />
+              </el-col>
+              <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true">选择</el-button>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="审计事项" prop="auditItemUuid">
+              <el-col :span="22">
+                <el-input v-model="form.auditItemUuid" style="display: none" :disabled="true"></el-input>
+                <el-input v-model="form.auditItemName" :disabled="true"></el-input>
+              </el-col>
+              <el-button @click="showAuditItemTree">选择</el-button>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="风险等级" prop="riskLevelUuid">
+                  <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级">
+                    <el-option
+                      v-for="state in riskLeve"
+                      :key="state.codeValue"
+                      :value="state.codeValue"
+                      :label="state.codeName"
+                    />
+                  </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="模型类型" prop="modelType">
+                <el-select v-model="form.modelType" placeholder="请选择模型类型" @change="modelTypeChangeEvent">
+                  <el-option
+                    v-for="state in modelTypeData"
+                    :key="state.codeValue"
+                    :value="state.codeValue"
+                    :label="state.codeName"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
           <el-form-item label="审计思路">
             <el-input v-model="form.auditIdeas" type="textarea" />
           </el-form-item>
@@ -45,24 +70,12 @@
           </el-form-item>
         </el-form>
       </div>
-      <div ref="modelDesign" style="display: none">
-        <el-form ref="modelDesignForm" :model="form" label-width="150px" :rules="modelDesignRules">
-          <el-form-item style="width: 400px" prop="sqlValue">
-            <el-button type="primary" @click="getSqlObj(2)">图形化编辑器</el-button>
-            <el-button type="primary" @click="openSqlEditor">SQL编辑器</el-button>
-          </el-form-item>
-          <el-dialog v-if="SQLEditorShow" :fullscreen="true" :destroy-on-close="true" :append-to-body="true" :visible.sync="SQLEditorShow" title="SQL编辑器" width="80%" @close="sqlEditorCloseEvent">
-            <SQLEditor v-if="SQLEditorShow" ref="SQLEditor" :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" />
-            <div slot="footer">
-              <el-button type="primary" @click="getSqlObj">保存</el-button>
-              <el-button @click="">取消</el-button>
-            </div>
-          </el-dialog>
-          <el-form-item label="模型SQL">
-            <div
-              id="sqlValueView"
-              style="height: 300px; overflow-y: auto; border: 1px solid #e0e0e0; margin-left: 30px; width: 100%; padding: 15px;"
-            />
+      <div ref="modelDesign" style="display: none;width:100%;height: 100%">
+        <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules">
+          <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id">
+            <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor" :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue"style="height: 1000px;overflow-y:scroll" />
+          </div>
+          <el-form-item label="模型名称" prop="sqlValue">
             <el-input v-model="form.sqlValue" type="textarea" style="display: none;" />
           </el-form-item>
         </el-form>
@@ -70,7 +83,8 @@
       <div ref="paramDefaultValue" style="display: none">
         <p style="color:red;font-size:large">拖拽改变参数展示顺序</p>
         <div id="paramList">
-          <el-table
+          <paramShow ref="apple"></paramShow>
+<!--          <el-table
             ref="paramData"
             :data="paramData"
             style="width: 100%"
@@ -83,7 +97,7 @@
               </template>
             </el-table-column>
             <el-table-column prop="description" label="参数描述" />
-          </el-table>
+          </el-table>-->
         </div>
       </div>
       <div ref="modelResultOutputCol" style="display: none;">
@@ -161,18 +175,39 @@
         </div>
       </div>
     </el-container>
+    <el-dialog v-if="auditItemTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="auditItemTree" title="请选择审计事项" width="80%">
+      <AuditItemTree ref="auditItemTreeRef"></AuditItemTree>
+      <div slot="footer">
+        <el-button type="primary" @click="getAuditItem">确定</el-button>
+        <el-button @click="auditItemTree=false">取消</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog v-if="modelFolderTreeDialog" :visible.sync="modelFolderTreeDialog" title="选择业务分类" width="50%">
+      <ModelFolderTree ref="modelFolderTree" public-model="editorModel" />
+      <div slot="footer">
+        <el-button type="primary" @click="setBusinessFolder">确定</el-button>
+        <el-button @click="modelFolderTreeDialog=false">取消</el-button>
+      </div>
+    </el-dialog>
+    <div>
+      <el-button type="primary" @click="save">保存</el-button>
+      <el-button @click="closeWinfrom">取消</el-button>
+    </div>
   </div>
 </template>
 <script>
 import ModelDetail from '@/views/analysis/auditModel/modelDetail'
 import ModelFilterShow from '@/views/analysis/auditModel/modelFilterShow'
 import SQLEditor from '@/views/analysis/SQLEditor/index'
-import {getBusinessAttribute} from '@/api/analysis/auditModel'
+import AuditItemTree from '@/views/analysis/auditModel/auditItemTree'
+import { getBusinessAttribute, saveModel, updateModel } from '@/api/analysis/auditModel'
 import VRuntimeTemplate from 'v-runtime-template'
+import paramShow from "@/views/analysis/modelParam/paramShow";
 import { getDictList } from '@/utils/index'
+import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
 export default {
   name: 'EditModel',
-  components: { ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor },
+  components: { ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree },
   props: ['openValue', 'operationObj'],
   data() {
     return {
@@ -220,8 +255,9 @@ export default {
         label: 'label'
       },
       SQLEditorShow: false,
-      paramData: [],
+      auditItemTree:false,
       paramValueModel: {},
+      modelFolderTreeDialog:false,
       columnData: [],
       form: {
         modelName: '',
@@ -231,7 +267,9 @@ export default {
         riskLevelUuid: '',
         auditIdeas: '',
         paramConditions: '',
-        sqlValue: ''
+        sqlValue: '',
+        auditItemName:'',
+        modelType:''
       },
       parammModelRel: {},
       sqlObj: {
@@ -239,9 +277,9 @@ export default {
         params: [],
         column: []
       },
+      pathParam:{},
       businessColumnSelect: [],
       columnTypeSelect: [],
-      selectTreeNode: null,
       modelDetails: [],
       filterShows: [],
       newRelInfoValue: {},
@@ -249,10 +287,12 @@ export default {
       sqlEditorParamObj: {},
       modelDetailIndex: 0,
       riskLeve: [],
+      modelTypeData:[],
       modelFilterShowIndex: 0,
       modelOriginalTable: [],
       modelChartSetup: {},
       currentSelectTreeNode: null,
+      modelTypeObj:[],
       basicInfoRules: {
         modelName: [
           { type: 'string', required: true, message: '请输入模型名称', trigger: 'blur' }
@@ -262,6 +302,8 @@ export default {
         ],
         riskLevelUuid: [
           { type: 'string', required: true, message: '请选择风险等级', trigger: 'change' }
+        ],
+        modelType: [{ type: 'string', required: true, message: '请选择模型类型', trigger: 'change' }
         ]
       },
       modelDesignRules: {
@@ -283,26 +325,38 @@ export default {
   created() {
   },
   mounted() {
-    this.initData()
+    var operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
+    this.initData(operationObj)
     // 如果为2则反显要修改的数据
-    if (this.operationObj.operationType == 2) {
-      var model = this.operationObj.model
+    if (operationObj.operationType == 2) {
+      this.isUpdate = true
+      var model = operationObj.model
       this.displayData(model)
     }
   },
   methods: {
+     getKeyValue(url){
+       let paraString = url.substring(url.indexOf("?")+1,url.length).split("&")
+       let data = {}
+      for(let i = 0;i < paraString.length;i++){
+        let attribute = paraString[i].split("=")[0]
+        let value = paraString[i].split("=")[1]
+        data[attribute] = value
+      }
+      this.pathParam = data
+    },
     /**
      *初始化数据
      */
-    initData() {
+    initData(operationObj) {
       // 初始化模型分类数据
-      this.selectTreeNode = this.openValue
-      this.form.modelFolderUuid = this.openValue.id
-      this.form.modelFolderName = this.openValue.label
+      if(operationObj.folderId != ""){
+        this.form.modelFolderUuid = operationObj.folderId
+        this.form.modelFolderName = operationObj.folderName
+      }
       // 初始化业务字段列表
       getBusinessAttribute().then(result=>{
         if(result.data != null){
-          //const businessColumnSelect = [{ uuid: '1', name: '机构名称' }, { uuid: '2', name: '机构代码' }]
           this.businessColumnSelect = result.data
         }
       })
@@ -312,6 +366,7 @@ export default {
       // 初始化风险等级
       this.riskLeve = getDictList('002002')
       // 初始化审计事项
+      this.modelTypeData = getDictList('002003')
     },
     handleNodeClick(data, node) {
       this.hideModelDetail()
@@ -449,14 +504,28 @@ export default {
       this.form.modelOutputColumn = columnData
       // endregion
       // region 处理参数数据
-      // todo 获取到参数的默认值，是个JSON，将JSON存入到数据库
-      const paramData = this.$refs.paramData.data
-      var paramIndex = 0
-      for (let i = 0; i < paramData.length; i++) {
-        // todo 处理参数的值，现在拿的还是html
-        paramData[i].paramSort = ++paramIndex
+      // 获取到参数的默认值，是个JSON，将JSON存入到数据库  以便下次反显时使用
+      if(this.sqlEditorParamObj.arr.length != 0){
+        let paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
+        if(!paramDefaultValue.verify){
+          this.$message({ type: 'info', message: paramDefaultValue.message})
+          return null
+        }
+        //拿到默认值后组织成后台数据库的格式
+        const paramData = paramDefaultValue.paramSettingArr
+        let newParamData = []
+        for (let i = 0; i < paramData.length; i++) {
+          var obj = {
+            ammParamUuid:paramData[i].copyParamId,
+            resourceType:1,
+            paramValue:JSON.stringify(paramData[i]),
+            paramSort:paramData[i].sort,
+            moduleParamId:paramData[i].moduleParamId
+          }
+          newParamData.push(obj)
+        }
+        this.form.parammModelRel = newParamData
       }
-      this.form.parammModelRel = paramData
       // endregion
       // region 获取模型详细
       let verModelDetail = true
@@ -513,14 +582,12 @@ export default {
     /**
      * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
      */
-    getSqlObj(modelType) {
-      const returnObj = this.$refs.SQLEditor.getSaveInfo()
+    getSqlObj() {
+      //const returnObj = this.$refs.SQLEditor.getSaveInfo()
+      const returnObj = this.$refs.SQLEditor[0].getSaveInfo()
       if (returnObj == undefined) {
         return
       }
-      // region 初始化SQL语句显示
-      this.displaySQL(returnObj)
-      // endregion
       // 转换参数格式 重置参数对象属性，因为SQL编辑器是移植的，因此兼容那边的数据格式，因此对数据格式进行转换
       const params = this.changeParamDataFormat(returnObj.params, 1)
       // 转换列格式 处理sql编辑器返回的列数据信息，拼接成该界面能识别的格式
@@ -534,22 +601,13 @@ export default {
         modelChartSetup: returnObj.modelChartSetup,
         modelOriginalTable: modelOriginalTable
       }
-      /*      const sqlObj = {
-        sqlValue: 'select * from AA_AUDIT_ITEM',
-        column: [{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }],
-        params: [
-          { ammParamUuid: '1', paramName: '参数一', description: '这是参数一的说明', paramValue: '<input value="haha"></input>' },
-          { ammParamUuid: '2', paramName: '参数二', description: '这是参数二的说明', paramValue: '<select placeholder="是否显示" value="1">\n' +
-              '                  <option label="是" :value="1" />\n' +
-              '                  <option label="否" :value="0" />\n' +
-              '                </select>' }],
-        modelChartSetup: { chartJson: '哈哈哈哈' },
-        modelOriginalTable: [{ originalTableName: '表1', executionType: '1' }, { originalTableName: '表2', executionType: '2' }]
-      }*/
       this.form.sqlValue = sqlObj.sqlValue
       // 初始化默认参数
-      // todo 在这初始化界面
-      this.paramData = sqlObj.params
+      // 初始化参数默认值界面界面
+      if(returnObj.params.length != 0){
+        this.$refs.apple.createParamTableHtml(true, returnObj.params, true);
+      }
+      this.sqlEditorParamObj = {arr:returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
       // region 初始化固定列
       const columnData = []
       for (let i = 0; i < sqlObj.column.length; i++) {
@@ -626,6 +684,15 @@ export default {
       }
       return returnObj
     },
+    closeWinfrom(){
+      this.$store.commit('aceState/setRightFooterTags',{
+        type:'close',
+        val:{
+          name:'添加模型',
+          path:'/analysis/editorModel'
+        }
+      })
+    },
     /**
      * 转换列对象
      * @param originalTableObj 历史表对象
@@ -645,24 +712,20 @@ export default {
       let sql = returnObj.sqlValue
       const arrPram = returnObj.params
       let sqlStr = returnObj.sqlValue
-      let reg
-      for (let i = 0; i < arrPram.length; i++) {
-        reg = new RegExp(arrPram[i].id, 'g')
-        const html = " <button class='divEditorBtn' type='button' id='" + arrPram[i].id + "'>" + arrPram[i].name + '</button> '
-        sql = sql.replace(reg, html)
-        sqlStr = sqlStr.replace(reg, '' + arrPram[i].id + '')
-      }
+      //初始化sql编辑器
+      this.modelTypeObj = []
+      this.sqlEditorParamObj = arrPram
       this.form.sqlValue = sqlStr
+      if(this.form.modelType == "002003001"){
+        let obj = {
+          id:'002003001'
+        }
+        this.modelTypeObj.push(obj)
+      }
+      else if(this.form.modelType == "002003002"){
+        this.$message({ type: 'info', message: "暂时不支持图形化模型"})
+      }
       $('#sqlValueView').html(sql)
-    },
-    /**
-     * 设置选中的树节点
-     * @param node 节点
-     */
-    setSelectTreeNode(node) {
-      this.selectTreeNode = this.openValue
-      this.form.modelFolderUuid = this.openValue.id
-      this.form.modelFolderName = this.openValue.label
     },
     /**
      * 创建模型详细
@@ -731,7 +794,6 @@ export default {
       this.modelDetails = []
       this.modelDetailIndex = 0
       this.filterShows = []
-      this.paramData = []
       this.treeNodeData = [
         {
           id: '1',
@@ -825,19 +887,29 @@ export default {
       this.columnData = columnData
       // endregion
       // region 反显基本信息
-      model.modelFolderName = this.openValue.label
       this.form = model
       // endregion
       // region 反显SQL显示
-      const paramObj = this.changeParamDataFormat(model.parammModelRel, 2)
+      //组织参数默认值等数据，用于sql反显以及参数默认值反显
+      let displayParamObj = []
+      for(let i = 0;i < model.parammModelRel.length;i++){
+        if(model.parammModelRel[i].paramValue === ""){
+          continue
+        }
+        displayParamObj.push(JSON.parse(model.parammModelRel[i].paramValue))
+      }
+      const paramObj = {}
+      paramObj.arr = displayParamObj
       const returnObj = {}
-      returnObj.params = paramObj.arr
+      returnObj.params = paramObj
       this.sqlEditorParamObj = paramObj
       returnObj.sqlValue = this.form.sqlValue
       this.displaySQL(returnObj)
       // endregion
       // region 反显参数默认值
-      this.paramData = model.parammModelRel
+      if(returnObj.params.arr.length != 0){
+        this.$refs.apple.createParamTableHtml(true, displayParamObj, true);
+      }
       // endregion
       // region 模型结果输出列
       this.columnData = model.modelOutputColumn
@@ -882,6 +954,91 @@ export default {
     sqlEditorCloseEvent() {
       // sql编辑器关闭时候销毁数据
       this.SQLEditorShow = false
+    },
+    /**
+     *显示审计事项树
+     */
+    showAuditItemTree(){
+      this.auditItemTree = true
+    },
+    /**
+     * 获取审计事项
+     */
+    getAuditItem(){
+      let tree = this.$refs.auditItemTreeRef.getTree()
+      let currentNode = tree.getCurrentNode()
+      this.form.auditItemUuid = currentNode.id
+      this.form.auditItemName = currentNode.label
+      this.auditItemTree = false
+    },
+    /**
+     *根据选择的数据加载指定sql编辑界面
+     * @param vId  002003001审计模型编号  002003002图形化编号
+     */
+    modelTypeChangeEvent(vId){
+      this.modelTypeObj = []
+      if(vId == "002003001"){
+        let obj = {
+          id:'002003001'
+        }
+        this.modelTypeObj.push(obj)
+      }
+      if(vId == "002003002"){
+        this.$message({ type: 'info', message: "暂时不支持图形化模型"})
+      }
+    },
+    /**
+     * 设置业务分类
+     */
+    setBusinessFolder(){
+      let selectNode = this.$refs.modelFolderTree.getSelectNode()
+      if(selectNode.id == undefined){
+        this.$message({ type: 'info', message: "请选择业务分类"})
+        return
+      }
+      else{
+        this.form.modelFolderUuid = selectNode.id
+        this.form.modelFolderName = selectNode.label
+        this.modelFolderTreeDialog = false
+      }
+    },
+    /**
+     * 保存模型
+     */
+    save() {
+      var modelObj = this.getModelObj()
+      if (modelObj == null) {
+        return
+      }
+      this.editorModelLoading = true
+      if (!this.isUpdate) {
+        saveModel(modelObj).then(result => {
+          if (result.code === 0) {
+            this.$message({ type: 'success', message: '新增成功!' })
+            this.$store.commit('aceState/setRightFooterTags',{
+              type:'close',
+              val:{
+                name:'添加模型',
+                path:'/analysis/editorModel'
+              }
+            })
+            // this.$refs.editModel.clear();
+          } else {
+            this.$message({ type: 'error', message: '新增模型失败!' })
+            this.editorModelLoading = false
+          }
+        })
+      } else {
+        updateModel(modelObj).then(result => {
+          if (result.code === 0) {
+            this.$message({ type: 'error', message: '修改成功!' })
+            // this.$refs.editModel.clear();
+          } else {
+            this.$message({ type: 'error', message: '修改模型失败!' })
+            this.editorModelLoading = false
+          }
+        })
+      }
     }
   }
 }
