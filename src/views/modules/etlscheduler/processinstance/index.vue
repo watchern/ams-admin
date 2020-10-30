@@ -120,15 +120,15 @@
         width="80px"
       >
         <template slot-scope="scope">
-           <!-- 任务参数使用图标进行显示 -->
+          <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="700">
-            <el-row v-for="taskParam in scope.row.distinctParamList">
-            <label class="col-md-2">
-            {{taskParam.name}}:
-            </label>
-            <div class="col-md-10">
-             {{taskParam.value}}
-             </div>
+            <el-row v-for="taskParam in scope.row.distinctParamList" :key="taskParam.value">
+              <label class="col-md-2">
+                {{ taskParam.name }}:
+              </label>
+              <div class="col-md-10">
+                {{ taskParam.value }}
+              </div>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <el-tag><i class="el-icon-tickets" /></el-tag>
@@ -217,7 +217,7 @@
         <!-- 已运行的环节，改变颜色和图标 -->
         <el-timeline-item
           v-for="(task,$index) in logTasks"
-          :key="task.id" 
+          :key="task.id"
           :icon="taskslogsList[task.id] != null ? 'el-icon-more': null"
           :color="taskslogsList[task.id] != null ? '#0bbd87' : null"
           size="large"
