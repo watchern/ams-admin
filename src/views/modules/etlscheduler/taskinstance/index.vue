@@ -135,7 +135,7 @@
             v-for="log in logs[task.taskCode]"
             :key="log.taskLogUuid"
             :label="log.taskLogUuid"
-            :style="{color: logColorList[log.status===null ? 1 : log.status-1].color}"
+            :style="{color: logColorList[log.status===null ? 1 : (log.status | colorFilter)-1].color}"
           >
             {{ log.logTime +' '+ log.logMessage }}
           </el-col>
@@ -152,30 +152,30 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, findTaskLogs } from '@/api/etlscheduler/taskinstance'
 import QueryField from '@/components/Ace/query-field/index'
-import { statusListComm, statuSelect,colorList } from '@/views/modules/etlscheduler/processinstance/comm.js'
+import { statusListComm, statuSelect, colorList } from '@/views/modules/etlscheduler/processinstance/comm.js'
 
 export default {
   components: { Pagination, QueryField },
-  filters: {
-    // 耗时的时间格式转换
-    timeFilter(value) {
-      const time = value
-      if (time === null || time === '' || time === 0) {
-        return 0 + '秒'
-      } else {
-        if (time / 1000 >= 0 && time / 1000 < 60) {
-          return (time / 1000).toFixed(1) + '秒'
-        } else if (time / 1000 >= 60 && time / 1000 < 3600) {
-          return (time / 60000).toFixed(1) + '分'
-        } else if (time / 1000 > 3600) {
-          return (time / 3600000).toFixed(1) + '时'
-        }
-      }
-    },
-    statusFilter(value) {
-      return (statusListComm || []).findIndex((item) => item.value === value)
-    }
-  },
+  // filters: {
+  // 耗时的时间格式转换
+  // timeFilter(value) {
+  //   const time = value
+  //   if (time === null || time === '' || time === 0) {
+  //     return 0 + '秒'
+  //   } else {
+  //     if (time / 1000 >= 0 && time / 1000 < 60) {
+  //       return (time / 1000).toFixed(1) + '秒'
+  //     } else if (time / 1000 >= 60 && time / 1000 < 3600) {
+  //       return (time / 60000).toFixed(1) + '分'
+  //     } else if (time / 1000 > 3600) {
+  //       return (time / 3600000).toFixed(1) + '时'
+  //     }
+  //   }
+  // },
+  // statusFilter(value) {
+  //   return (statusListComm || []).findIndex((item) => item.value === value)
+  // }
+  // },
   data() {
     return {
       tableKey: 'taskInstanceUuid',
@@ -282,6 +282,13 @@ export default {
     // this.statusList = statusListComm
   },
   methods: {
+    // 根据状态查找该状态在数据中的下标
+    statusFilter(value) {
+      return (statusListComm || []).findIndex((item) => item.value === value)
+    },
+    colorFilter(value) {
+      return (colorList || []).findIndex((item) => item.value === value)
+    },
     getList(query) {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
@@ -305,7 +312,6 @@ export default {
     handleTasksLogs(data) {
       // 获取任务日志
       this.task = data
-      console.log(this.task)
       findTaskLogs(data.taskInstanceUuid).then(resp => {
         this.logs = resp.data
       })

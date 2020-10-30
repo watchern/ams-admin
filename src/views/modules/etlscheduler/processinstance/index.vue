@@ -84,7 +84,7 @@
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
-                  <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色 -->
+                  <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色-->
                   <i
                     :class="statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].unicode"
                     :style="{color: statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].color}"
@@ -210,8 +210,7 @@
         <!-- 已运行的环节，改变颜色和图标 -->
         <el-timeline-item
           v-for="(task,$index) in logTasks"
-          :key="task.id"
-          class="logtype"
+          :key="task.id" 
           :icon="taskslogsList[task.id] != null ? 'el-icon-more': null"
           :color="taskslogsList[task.id] != null ? '#0bbd87' : null"
           size="large"
@@ -228,7 +227,7 @@
                   v-for="log in logs[task.id]"
                   :key="log.taskLogUuid"
                   :label="log.taskLogUuid"
-                  :style="{color: logColorList[log.status===null ? 1 : log.status-1].color}"
+                  :style="{color: logColorList[log.status===null ? 1 : (log.status | colorFilter)-1].color}"
                   style="margin-top:10px"
                 >
                   {{ log.logTime +' '+ log.logMessage }}
@@ -253,25 +252,6 @@ import { statusListComm, statuSelect, commandTypeObj, colorList } from './comm.j
 
 export default {
   components: { Pagination, QueryField },
-  filters: {
-    timeFilter(value) {
-      const time = value
-      if (time === null || time === '' || time === 0) {
-        return 0 + '秒'
-      } else {
-        if (time / 1000 >= 0 && time / 1000 < 60) {
-          return (time / 1000).toFixed(1) + '秒'
-        } else if (time / 1000 >= 60 && time / 1000 < 3600) {
-          return (time / 60000).toFixed(1) + '分'
-        } else if (time / 1000 > 3600) {
-          return (time / 3600000).toFixed(1) + '时'
-        }
-      }
-    },
-    statusFilter(value) {
-      return (statusListComm || []).findIndex((item) => item.value === value)
-    }
-  },
   data() {
     return {
       tableKey: 'processInstanceUuid',
@@ -456,6 +436,13 @@ export default {
     this.getList()
   },
   methods: {
+    // 根据状态查找该状态在数据中的下标
+    statusFilter(value) {
+      return (statusListComm || []).findIndex((item) => item.value === value)
+    },
+    colorFilter(value) {
+      return (colorList || []).findIndex((item) => item.value === value)
+    },
     getList(query) {
       this.listLoading = true
       if (query) this.pageQuery.condition = query

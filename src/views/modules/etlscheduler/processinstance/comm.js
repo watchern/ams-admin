@@ -127,10 +127,10 @@ const commandTypeObj = {
 }
 // 日志颜色
 const colorList = [
-  { value: '成功', color: '#008000' },
-  { value: '失败', color: 'red' },
-  { value: '警告', color: '#f9be0a' },
-  { value: '其它', color: '#888888' }
+  { label: '成功', value: 1, color: '#008000' },
+  { label: '失败', value: 2,  color: 'red' },
+  { label: '警告', value: 3,  color: '#f9be0a' },
+  { label: '其它', value: 4,  color: '#888888' }
 ]
 
 /**
