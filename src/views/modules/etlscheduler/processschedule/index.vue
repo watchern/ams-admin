@@ -164,7 +164,7 @@
       </el-table-column>
       <el-table-column label="依赖任务环节" align="center" prop="dependTaskInfo" width="120px">
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">           
+          <el-popover trigger="hover" placement="top">
             <el-row v-for="dependTask in scope.row.dependTaskInfoList">
             <label class="col-md-2">
             依赖:
@@ -369,14 +369,14 @@
                     >
                       <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
                     </span>
-                   
+
                     <m-depend-item-list
                       v-model="el.dependItemList"
                       :depend-item-list="dependTaskList"
                       :index="$index"
                       @on-delete-all="_onDeleteAll"
                       @getDependTaskList="getDependTaskList"
-                    />   
+                    />
                      <em
                       :class="{'oper-btn delete': iconDisable}"
                       class="deleteIcon"
@@ -387,7 +387,7 @@
                         'pointer-events': disableUpdate === true ? 'none' : '',
                       }"
                       @click="!isDetails && _deleteDep($index)"
-                    />       
+                    />
                   </div>
                 </div>
               </div>
@@ -535,32 +535,7 @@ export default {
         }
       },
       // 作业周期格式化
-<<<<<<< HEAD
-      crontabFormat: [
-        {
-          code: '0 0 0 * * ?',
-          msg: '每日'
-        },
-        {
-          code: '0 0 0 1 * ?',
-          msg: '每月'
-        },
-        {
-          code: '0 0 0 1 1,4,7,10 ?',
-          msg: '每季度'
-        },
-        {
-          code: '0 0 0 1 1,7 ?',
-          msg: '每半年'
-        },
-        {
-          code: '0 0 0 1 1 ?',
-          msg: '每年'
-        }
-      ],
-=======
       crontabFormat: crontabExpression,
->>>>>>> f821ce82e17fd75ac34b8b5da7c336f9821c0284
       loading: false,
       tableKey: 'processSchedulesUuid',
       list: null,
@@ -887,7 +862,7 @@ export default {
       this.relation = this.relation === 'AND' ? 'OR' : 'AND'
     },
     getDependTaskList(i) {
-      
+
     },
     _setRelation(i) {
       this.dependTaskList[i].relation === 'AND' ? 'OR' : 'AND'
@@ -1366,7 +1341,7 @@ export default {
 }
 .m-depend-item-list{
   position: static;
- 
+
 }
 .deleteIcon{
   position: relative;
