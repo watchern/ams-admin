@@ -83,7 +83,7 @@ export default {
      *获取模型分类
      */
     getModelFolder() {
-      if(this.publicModel != undefined && this.publicModel != ""){
+      if (this.publicModel != undefined && this.publicModel != '') {
         findModelFolderTree(false).then(result => {
           let newData = []
           if (this.publicModel === 'publicModel') {
@@ -93,22 +93,19 @@ export default {
                 newData.push(result.data[i])
               }
             }
-          }
-          else if(this.publicModel === 'editorModel'){
-            //todo 揉入权限信息
+          } else if (this.publicModel === 'editorModel') {
+            // todo 揉入权限信息
             for (let i = 0; i < result.data.length; i++) {
               if (result.data[i].id == 'gonggong' || result.data[i].id == this.$store.getters.personuuid) {
                 newData.push(result.data[i])
               }
             }
-          }
-          else {
+          } else {
             newData = result.data
           }
           this.data = newData
         })
-      }
-      else{
+      } else {
         findModelFolderTree(true).then(result => {
           this.data = result.data
         })

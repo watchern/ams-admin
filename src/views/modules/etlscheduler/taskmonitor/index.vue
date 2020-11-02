@@ -158,7 +158,7 @@ export default {
         {
           value: 1,
           name: '执行完成',
-          unicode: 'el-icon-finished',
+          unicode: 'el-icon-success',
           color: '#95F204'
         },
         {

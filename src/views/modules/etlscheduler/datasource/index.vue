@@ -35,7 +35,7 @@
         @click="_edit"
       />
       <el-button
-        type="danger"
+        type="primary"
         title="删除"
         class="oper-btn delete"
         :disabled="selections.length === 0"

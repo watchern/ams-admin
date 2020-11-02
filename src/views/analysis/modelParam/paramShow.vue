@@ -1,6 +1,6 @@
 <template>
   <div>
-    <table class="table table-bordered" id="paramTable">
+    <table id="paramTable" class="table table-bordered">
       <thead>
         <tr>
           <th align="center" style="background-color:#dfe6ec;color:black">参数名称</th>
@@ -12,9 +12,9 @@
       </thead>
       <tbody id="tbody">
         <tr>
-          <th align="center"></th>
+          <th align="center" />
           <th width="400px" style="text-align: center">暂无数据</th>
-          <th align="center"></th>
+          <th align="center" />
         </tr>
       </tbody>
     </table>
@@ -26,16 +26,16 @@ import {
   initParam,
   initParamHtml_Common,
   createParamTableHtml,
-  getParamSettingArr,
-} from "@/api/analysis/auditParam";
+  getParamSettingArr
+} from '@/api/analysis/auditParam'
 export default {
   methods: {
     createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
-      createParamTableHtml(sqlIsChanged, paramArr, canEditor);
+      createParamTableHtml(sqlIsChanged, paramArr, canEditor)
     },
     getParamSettingArr(paramArr) {
-     return getParamSettingArr(paramArr)
-    },
-  },
-};
+      return getParamSettingArr(paramArr)
+    }
+  }
+}
 </script>

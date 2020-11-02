@@ -15,13 +15,13 @@
       </el-aside>
       <div ref="basicInfo" class="detail-form">
         <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules">
-            <el-form-item label="模型名称" prop="modelName">
-                <el-input v-model="form.modelName" />
-            </el-form-item>
+          <el-form-item label="模型名称" prop="modelName">
+            <el-input v-model="form.modelName" />
+          </el-form-item>
           <el-row>
             <el-form-item label="业务分类">
               <el-col :span="22">
-                <el-input v-model="form.modelFolderUuid" style="display: none" :disabled="true"></el-input>
+                <el-input v-model="form.modelFolderUuid" style="display: none" :disabled="true" />
                 <el-input v-model="form.modelFolderName" :disabled="true" />
               </el-col>
               <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true">选择</el-button>
@@ -30,8 +30,8 @@
           <el-row>
             <el-form-item label="审计事项" prop="auditItemUuid">
               <el-col :span="22">
-                <el-input v-model="form.auditItemUuid" style="display: none" :disabled="true"></el-input>
-                <el-input v-model="form.auditItemName" :disabled="true"></el-input>
+                <el-input v-model="form.auditItemUuid" style="display: none" :disabled="true" />
+                <el-input v-model="form.auditItemName" :disabled="true" />
               </el-col>
               <el-button @click="showAuditItemTree">选择</el-button>
             </el-form-item>
@@ -39,14 +39,14 @@
           <el-row>
             <el-col :span="8">
               <el-form-item label="风险等级" prop="riskLevelUuid">
-                  <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级">
-                    <el-option
-                      v-for="state in riskLeve"
-                      :key="state.codeValue"
-                      :value="state.codeValue"
-                      :label="state.codeName"
-                    />
-                  </el-select>
+                <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级">
+                  <el-option
+                    v-for="state in riskLeve"
+                    :key="state.codeValue"
+                    :value="state.codeValue"
+                    :label="state.codeName"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="8">
@@ -73,7 +73,7 @@
       <div ref="modelDesign" style="display: none;width:100%;height: 100%">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id">
-            <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor" :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue"style="height: 1000px;overflow-y:scroll" />
+            <SQLEditor v-if="state.id=='002003001'" ref="SQLEditor" :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" style="height: 1000px;overflow-y:scroll"@getSqlObj="getSqlObj" />
           </div>
           <el-form-item label="模型名称" prop="sqlValue">
             <el-input v-model="form.sqlValue" type="textarea" style="display: none;" />
@@ -83,8 +83,8 @@
       <div ref="paramDefaultValue" style="display: none">
         <p style="color:red;font-size:large">拖拽改变参数展示顺序</p>
         <div id="paramList">
-          <paramShow ref="apple"></paramShow>
-<!--          <el-table
+          <paramShow ref="apple" />
+          <!--          <el-table
             ref="paramData"
             :data="paramData"
             style="width: 100%"
@@ -176,7 +176,7 @@
       </div>
     </el-container>
     <el-dialog v-if="auditItemTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="auditItemTree" title="请选择审计事项" width="80%">
-      <AuditItemTree ref="auditItemTreeRef"></AuditItemTree>
+      <AuditItemTree ref="auditItemTreeRef" />
       <div slot="footer">
         <el-button type="primary" @click="getAuditItem">确定</el-button>
         <el-button @click="auditItemTree=false">取消</el-button>
@@ -202,12 +202,12 @@ import SQLEditor from '@/views/analysis/SQLEditor/index'
 import AuditItemTree from '@/views/analysis/auditModel/auditItemTree'
 import { getBusinessAttribute, saveModel, updateModel } from '@/api/analysis/auditModel'
 import VRuntimeTemplate from 'v-runtime-template'
-import paramShow from "@/views/analysis/modelParam/paramShow";
+import paramShow from '@/views/analysis/modelParam/paramShow'
 import { getDictList } from '@/utils/index'
 import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
 export default {
   name: 'EditModel',
-  components: { ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree },
+  components: { ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor, AuditItemTree, paramShow, ModelFolderTree },
   props: ['openValue', 'operationObj'],
   data() {
     return {
@@ -255,9 +255,9 @@ export default {
         label: 'label'
       },
       SQLEditorShow: false,
-      auditItemTree:false,
+      auditItemTree: false,
       paramValueModel: {},
-      modelFolderTreeDialog:false,
+      modelFolderTreeDialog: false,
       columnData: [],
       form: {
         modelName: '',
@@ -268,8 +268,8 @@ export default {
         auditIdeas: '',
         paramConditions: '',
         sqlValue: '',
-        auditItemName:'',
-        modelType:''
+        auditItemName: '',
+        modelType: ''
       },
       parammModelRel: {},
       sqlObj: {
@@ -277,7 +277,7 @@ export default {
         params: [],
         column: []
       },
-      pathParam:{},
+      pathParam: {},
       businessColumnSelect: [],
       columnTypeSelect: [],
       modelDetails: [],
@@ -287,12 +287,12 @@ export default {
       sqlEditorParamObj: {},
       modelDetailIndex: 0,
       riskLeve: [],
-      modelTypeData:[],
+      modelTypeData: [],
       modelFilterShowIndex: 0,
       modelOriginalTable: [],
       modelChartSetup: {},
       currentSelectTreeNode: null,
-      modelTypeObj:[],
+      modelTypeObj: [],
       basicInfoRules: {
         modelName: [
           { type: 'string', required: true, message: '请输入模型名称', trigger: 'blur' }
@@ -325,7 +325,7 @@ export default {
   created() {
   },
   mounted() {
-    var operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
+    var operationObj = JSON.parse(sessionStorage.getItem('operationObj'))
     this.initData(operationObj)
     // 如果为2则反显要修改的数据
     if (operationObj.operationType == 2) {
@@ -335,12 +335,12 @@ export default {
     }
   },
   methods: {
-     getKeyValue(url){
-       let paraString = url.substring(url.indexOf("?")+1,url.length).split("&")
-       let data = {}
-      for(let i = 0;i < paraString.length;i++){
-        let attribute = paraString[i].split("=")[0]
-        let value = paraString[i].split("=")[1]
+    getKeyValue(url) {
+      const paraString = url.substring(url.indexOf('?') + 1, url.length).split('&')
+      const data = {}
+      for (let i = 0; i < paraString.length; i++) {
+        const attribute = paraString[i].split('=')[0]
+        const value = paraString[i].split('=')[1]
         data[attribute] = value
       }
       this.pathParam = data
@@ -350,13 +350,13 @@ export default {
      */
     initData(operationObj) {
       // 初始化模型分类数据
-      if(operationObj.folderId != ""){
+      if (operationObj.folderId != '') {
         this.form.modelFolderUuid = operationObj.folderId
         this.form.modelFolderName = operationObj.folderName
       }
       // 初始化业务字段列表
-      getBusinessAttribute().then(result=>{
-        if(result.data != null){
+      getBusinessAttribute().then(result => {
+        if (result.data != null) {
           this.businessColumnSelect = result.data
         }
       })
@@ -505,22 +505,22 @@ export default {
       // endregion
       // region 处理参数数据
       // 获取到参数的默认值，是个JSON，将JSON存入到数据库  以便下次反显时使用
-      if(this.sqlEditorParamObj.arr.length != 0){
-        let paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
-        if(!paramDefaultValue.verify){
-          this.$message({ type: 'info', message: paramDefaultValue.message})
+      if (this.sqlEditorParamObj.arr.length != 0) {
+        const paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr)
+        if (!paramDefaultValue.verify) {
+          this.$message({ type: 'info', message: paramDefaultValue.message })
           return null
         }
-        //拿到默认值后组织成后台数据库的格式
+        // 拿到默认值后组织成后台数据库的格式
         const paramData = paramDefaultValue.paramSettingArr
-        let newParamData = []
+        const newParamData = []
         for (let i = 0; i < paramData.length; i++) {
           var obj = {
-            ammParamUuid:paramData[i].copyParamId,
-            resourceType:1,
-            paramValue:JSON.stringify(paramData[i]),
-            paramSort:paramData[i].sort,
-            moduleParamId:paramData[i].moduleParamId
+            ammParamUuid: paramData[i].copyParamId,
+            resourceType: 1,
+            paramValue: JSON.stringify(paramData[i]),
+            paramSort: paramData[i].sort,
+            moduleParamId: paramData[i].moduleParamId
           }
           newParamData.push(obj)
         }
@@ -583,7 +583,7 @@ export default {
      * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
      */
     getSqlObj() {
-      //const returnObj = this.$refs.SQLEditor.getSaveInfo()
+      // const returnObj = this.$refs.SQLEditor.getSaveInfo()
       const returnObj = this.$refs.SQLEditor[0].getSaveInfo()
       if (returnObj == undefined) {
         return
@@ -604,10 +604,10 @@ export default {
       this.form.sqlValue = sqlObj.sqlValue
       // 初始化默认参数
       // 初始化参数默认值界面界面
-      if(returnObj.params.length != 0){
-        this.$refs.apple.createParamTableHtml(true, returnObj.params, true);
+      if (returnObj.params.length != 0) {
+        this.$refs.apple.createParamTableHtml(true, returnObj.params, true)
       }
-      this.sqlEditorParamObj = {arr:returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
+      this.sqlEditorParamObj = { arr: returnObj.params }// 给sql编辑器的参数对象赋值，编辑使用
       // region 初始化固定列
       const columnData = []
       for (let i = 0; i < sqlObj.column.length; i++) {
@@ -684,12 +684,12 @@ export default {
       }
       return returnObj
     },
-    closeWinfrom(){
-      this.$store.commit('aceState/setRightFooterTags',{
-        type:'close',
-        val:{
-          name:'添加模型',
-          path:'/analysis/editorModel'
+    closeWinfrom() {
+      this.$store.commit('aceState/setRightFooterTags', {
+        type: 'close',
+        val: {
+          name: '添加模型',
+          path: '/analysis/editorModel'
         }
       })
     },
@@ -709,21 +709,20 @@ export default {
       return resultObj
     },
     displaySQL(returnObj) {
-      let sql = returnObj.sqlValue
+      const sql = returnObj.sqlValue
       const arrPram = returnObj.params
-      let sqlStr = returnObj.sqlValue
-      //初始化sql编辑器
+      const sqlStr = returnObj.sqlValue
+      // 初始化sql编辑器
       this.modelTypeObj = []
       this.sqlEditorParamObj = arrPram
       this.form.sqlValue = sqlStr
-      if(this.form.modelType == "002003001"){
-        let obj = {
-          id:'002003001'
+      if (this.form.modelType == '002003001') {
+        const obj = {
+          id: '002003001'
         }
         this.modelTypeObj.push(obj)
-      }
-      else if(this.form.modelType == "002003002"){
-        this.$message({ type: 'info', message: "暂时不支持图形化模型"})
+      } else if (this.form.modelType == '002003002') {
+        this.$message({ type: 'info', message: '暂时不支持图形化模型' })
       }
       $('#sqlValueView').html(sql)
     },
@@ -890,10 +889,10 @@ export default {
       this.form = model
       // endregion
       // region 反显SQL显示
-      //组织参数默认值等数据，用于sql反显以及参数默认值反显
-      let displayParamObj = []
-      for(let i = 0;i < model.parammModelRel.length;i++){
-        if(model.parammModelRel[i].paramValue === ""){
+      // 组织参数默认值等数据，用于sql反显以及参数默认值反显
+      const displayParamObj = []
+      for (let i = 0; i < model.parammModelRel.length; i++) {
+        if (model.parammModelRel[i].paramValue === '') {
           continue
         }
         displayParamObj.push(JSON.parse(model.parammModelRel[i].paramValue))
@@ -907,8 +906,8 @@ export default {
       this.displaySQL(returnObj)
       // endregion
       // region 反显参数默认值
-      if(returnObj.params.arr.length != 0){
-        this.$refs.apple.createParamTableHtml(true, displayParamObj, true);
+      if (returnObj.params.arr.length != 0) {
+        this.$refs.apple.createParamTableHtml(true, displayParamObj, true)
       }
       // endregion
       // region 模型结果输出列
@@ -958,15 +957,15 @@ export default {
     /**
      *显示审计事项树
      */
-    showAuditItemTree(){
+    showAuditItemTree() {
       this.auditItemTree = true
     },
     /**
      * 获取审计事项
      */
-    getAuditItem(){
-      let tree = this.$refs.auditItemTreeRef.getTree()
-      let currentNode = tree.getCurrentNode()
+    getAuditItem() {
+      const tree = this.$refs.auditItemTreeRef.getTree()
+      const currentNode = tree.getCurrentNode()
       this.form.auditItemUuid = currentNode.id
       this.form.auditItemName = currentNode.label
       this.auditItemTree = false
@@ -975,28 +974,27 @@ export default {
      *根据选择的数据加载指定sql编辑界面
      * @param vId  002003001审计模型编号  002003002图形化编号
      */
-    modelTypeChangeEvent(vId){
+    modelTypeChangeEvent(vId) {
       this.modelTypeObj = []
-      if(vId == "002003001"){
-        let obj = {
-          id:'002003001'
+      if (vId == '002003001') {
+        const obj = {
+          id: '002003001'
         }
         this.modelTypeObj.push(obj)
       }
-      if(vId == "002003002"){
-        this.$message({ type: 'info', message: "暂时不支持图形化模型"})
+      if (vId == '002003002') {
+        this.$message({ type: 'info', message: '暂时不支持图形化模型' })
       }
     },
     /**
      * 设置业务分类
      */
-    setBusinessFolder(){
-      let selectNode = this.$refs.modelFolderTree.getSelectNode()
-      if(selectNode.id == undefined){
-        this.$message({ type: 'info', message: "请选择业务分类"})
+    setBusinessFolder() {
+      const selectNode = this.$refs.modelFolderTree.getSelectNode()
+      if (selectNode.id == undefined) {
+        this.$message({ type: 'info', message: '请选择业务分类' })
         return
-      }
-      else{
+      } else {
         this.form.modelFolderUuid = selectNode.id
         this.form.modelFolderName = selectNode.label
         this.modelFolderTreeDialog = false
@@ -1015,11 +1013,11 @@ export default {
         saveModel(modelObj).then(result => {
           if (result.code === 0) {
             this.$message({ type: 'success', message: '新增成功!' })
-            this.$store.commit('aceState/setRightFooterTags',{
-              type:'close',
-              val:{
-                name:'添加模型',
-                path:'/analysis/editorModel'
+            this.$store.commit('aceState/setRightFooterTags', {
+              type: 'close',
+              val: {
+                name: '添加模型',
+                path: '/analysis/editorModel'
               }
             })
             // this.$refs.editModel.clear();

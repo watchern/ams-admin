@@ -4,25 +4,43 @@
       <el-collapse v-model="DefaultExpansion">
         <div id="leftPart" class="col-sm-2 leftCon" style="overflow: auto; height: 100vh">
           <el-collapse-item class="" title="数据表" name="1">
-            <el-input id="dataSearch" v-model="tableSearchInput" name="dataSearch" type="text" autocomplete="off"
-                      placeholder="查询">
-              <el-button slot="append" icon="el-icon-search" @click="tableTreeSearch"></el-button>
+            <el-input
+              id="dataSearch"
+              v-model="tableSearchInput"
+              name="dataSearch"
+              type="text"
+              autocomplete="off"
+              placeholder="查询"
+            >
+              <el-button slot="append" icon="el-icon-search" @click="tableTreeSearch" />
             </el-input>
-            <ul id="dataTree" class="ztree" style="overflow: auto"/>
+            <ul id="dataTree" class="ztree" style="overflow: auto" />
           </el-collapse-item>
           <el-collapse-item title="参数" name="2">
-            <el-input id="paramSearch" name="paramSearch" type="text" v-model="paramSearchInput" autocomplete="off"
-                      placeholder="查询">
-              <el-button slot="append" icon="el-icon-search" @click="paramTreeSearch"></el-button>
+            <el-input
+              id="paramSearch"
+              v-model="paramSearchInput"
+              name="paramSearch"
+              type="text"
+              autocomplete="off"
+              placeholder="查询"
+            >
+              <el-button slot="append" icon="el-icon-search" @click="paramTreeSearch" />
             </el-input>
-            <ul id="paramTree" class="ztree" style="max-height: 400px"/>
+            <ul id="paramTree" class="ztree" style="max-height: 400px" />
           </el-collapse-item>
           <el-collapse-item title="SQL函数" name="3">
-            <el-input id="sqlSearch" name="sqlSearch" type="text" v-model="functionInput" autocomplete="off"
-                      placeholder="查询">
-              <el-button slot="append" icon="el-icon-search" @click="functionTreeSearch"></el-button>
+            <el-input
+              id="sqlSearch"
+              v-model="functionInput"
+              name="sqlSearch"
+              type="text"
+              autocomplete="off"
+              placeholder="查询"
+            >
+              <el-button slot="append" icon="el-icon-search" @click="functionTreeSearch" />
             </el-input>
-            <ul id="sqlFunTree" class="ztree"/>
+            <ul id="sqlFunTree" class="ztree" />
           </el-collapse-item>
         </div>
       </el-collapse>
@@ -33,14 +51,14 @@
             <el-button type="primary" size="small" @click="executeSQL">执行</el-button>
             <el-button type="primary" size="small" @click="openSqlDraftList">打开SQL</el-button>
             <el-dropdown>
-              <el-button type="primary" size="small">保存<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+              <el-button type="primary" size="small">保存<i class="el-icon-arrow-down el-icon--right" /></el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="openSaveSqlDialog(1)">保存</el-dropdown-item>
                 <el-dropdown-item @click.native="openSaveSqlDialog(2)">另存为</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
             <el-dropdown type="primary">
-              <el-button type="primary" size="small">工具箱<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+              <el-button type="primary" size="small">工具箱<i class="el-icon-arrow-down el-icon--right" /></el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="findAndReplace(2)">查找</el-dropdown-item>
                 <el-dropdown-item @click.native="findAndReplace(1)">替换</el-dropdown-item>
@@ -69,9 +87,9 @@
               font-weight: bold;
             "
           />
-          <textarea id="sql"/>
+          <textarea id="sql" />
         </div>
-        <div id="horizontal"/>
+        <div id="horizontal" />
         <!-- 结果展示和参数输入区域 -->
         <div id="bottomPart" class="layui-tab col-sm-12" lay-filter="result-data" style="margin-top:2px;width: 100%;">
           <div id="maxOpen" style="width: 80px; position: absolute; right: 0; top: 15px" onclick="">
@@ -79,11 +97,11 @@
             <span class="iconText">最大化</span>
           </div>
           <div v-for="result in resultShow" id="dataShow" style="margin-left: -14px">
-            <childTabs ref="childTabsRef" :key="result.id" :pre-value="currentExecuteSQL" use-type="sqlEditor" style="width: 105%"/>
+            <childTabs ref="childTabsRef" :key="result.id" :pre-value="currentExecuteSQL" use-type="sqlEditor" style="width: 105%" />
           </div>
         </div>
       </div>
-      <div id="vertical"/>
+      <div id="vertical" />
       <input id="personId" type="hidden" value="<%=LoginUserInfo.getLoginUserId()%>">
       <div id="tableMenu" class="rightMenu">
         <ul>
@@ -139,7 +157,7 @@
           :label-width="formLabelWidth"
           prop="draftTitle"
         >
-          <el-input v-model="sqlDraftForm.draftTitle" autocomplete="off"/>
+          <el-input v-model="sqlDraftForm.draftTitle" autocomplete="off" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -154,14 +172,14 @@
       :append-to-body="true"
       width="50%"
     >
-      <sqlDraftList ref="sqlDraftList"/>
+      <sqlDraftList ref="sqlDraftList" />
       <div slot="footer" class="dialog-footer">
         <el-button @click="sqlDraftDialog = false">关闭</el-button>
         <el-button type="primary" @click="useSql">使用SQL</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="请输入参数" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" :append-to-body="true">
-      <paramDraw ref="paramDrawRef"/>
+    <el-dialog v-if="dialogFormVisible" title="请输入参数" :visible.sync="dialogFormVisible" :append-to-body="true">
+      <paramDraw ref="paramDrawRef" />
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
         <el-button type="primary" @click="replaceNodeParam">确定</el-button>
@@ -322,9 +340,9 @@ export default {
       }
       const func2 = function func3(val) {
         this.$refs.childTabsRef[0].loadTableData(val)
-        //已经全部执行完成，调用父组件方法初始化参数列等信息
-        if(isAllExecuteSuccess){
-          this.$emit('getSqlObj');
+        // 已经全部执行完成，调用父组件方法初始化参数列等信息
+        if (isAllExecuteSuccess) {
+          this.$emit('getSqlObj')
         }
       }
       const func1 = func2.bind(this)

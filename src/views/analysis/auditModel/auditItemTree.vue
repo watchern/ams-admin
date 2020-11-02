@@ -6,12 +6,12 @@
     />
     <MyElTree
       ref="tree1"
+      v-loading="treeLoading"
       :props="props"
       class="filter-tree"
       :highlight-current="true"
       :data="treeData1"
       :filter-node-method="filterNode"
-      v-loading="treeLoading"
       node-key="id"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
@@ -45,7 +45,7 @@ export default {
         fullPath: null
       },
       treeData1: [],
-      treeLoading:true
+      treeLoading: true
     }
   },
   computed: {

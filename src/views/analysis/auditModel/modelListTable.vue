@@ -29,8 +29,8 @@
       <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog :close-on-click-modal="false" :fullscreen="true" v-if="editModelShow"   :visible.sync="editModelShow" :title="editModelTitle">
-      <EditModel ref="editModel" :open-value="selectTreeNode" :operation-obj="operationObj" v-loading="editorModelLoading" @hideModal="hideEditModal" />
+    <el-dialog v-if="editModelShow" :close-on-click-modal="false" :fullscreen="true" :visible.sync="editModelShow" :title="editModelTitle">
+      <EditModel ref="editModel" v-loading="editorModelLoading" :open-value="selectTreeNode" :operation-obj="operationObj" @hideModal="hideEditModal" />
       <div slot="footer">
         <el-button type="primary" @click="save">保存</el-button>
         <el-button @click="hideEditModal">取消</el-button>
@@ -58,7 +58,7 @@
   </div>
 </template>
 <script>
-import { findModel, saveModel, deleteModel, selectModel, updateModel,updateModelBasicInfo,exportModel,setModelSession } from '@/api/analysis/auditModel'
+import { findModel, saveModel, deleteModel, selectModel, updateModel, updateModelBasicInfo, exportModel, setModelSession } from '@/api/analysis/auditModel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
@@ -66,20 +66,20 @@ import EditModel from '@/views/analysis/auditModel/editModel'
 import { getOneDict } from '@/utils/index'
 export default {
   name: 'ModelListTable',
-  components: { Pagination, QueryField, EditModel,ModelFolderTree },
+  components: { Pagination, QueryField, EditModel, ModelFolderTree },
   data() {
     return {
       tableKey: 'errorUuid',
-      list: null,//list列表
+      list: null, // list列表
       total: 0,
-      listLoading: false,//遮罩
-      editModelTitle: '',//编辑框名称
-      treeSelectShow:false,//发布模型dialog
-      editModelShow: false,//编辑模型dialog
-      publicModelValue:"publicModel",//发布模型
-      selectTreeNode: null,//选中树节点
-      editorModelLoading:false,//编辑模型遮罩
-      isUpdate: false,//是否修改
+      listLoading: false, // 遮罩
+      editModelTitle: '', // 编辑框名称
+      treeSelectShow: false, // 发布模型dialog
+      editModelShow: false, // 编辑模型dialog
+      publicModelValue: 'publicModel', // 发布模型
+      selectTreeNode: null, // 选中树节点
+      editorModelLoading: false, // 编辑模型遮罩
+      isUpdate: false, // 是否修改
       queryFields: [
         { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
         { label: '审计事项', name: 'auditItemName', type: 'fuzzyText' },
@@ -87,7 +87,7 @@ export default {
           data: [{ name: '请选择', value: '-1' }, { name: '高', value: '1' }, { name: '中', value: '2' }, { name: '低', value: '3' }],
           default: '-1' }
       ],
-      operationObj: {},//是否编辑模型对象
+      operationObj: {}, // 是否编辑模型对象
       tableOptions: {
         columnDefs: [
           {
@@ -156,7 +156,7 @@ export default {
 
   },
   created() {
-    //this.getList({ modelFolderUuid: 1 })
+    // this.getList({ modelFolderUuid: 1 })
   },
   methods: {
     /**
@@ -188,22 +188,22 @@ export default {
      */
     modelTypeFormatter(row, column) {
       const modelType = row.modelType
-      let dicObj = getOneDict(modelType)
-      let value = ""
-      if(dicObj.length == 0){
-        return "";
+      const dicObj = getOneDict(modelType)
+      let value = ''
+      if (dicObj.length == 0) {
+        return ''
       }
-      value = dicObj[0].codeName;
+      value = dicObj[0].codeName
       return value
     },
     riskLevelFormatter(row, column) {
-      let riskLevel = row.riskLevelUuid
-      let value = ""
-      let dicObj = getOneDict(riskLevel)
-      if(dicObj.length == 0){
-        return "";
+      const riskLevel = row.riskLevelUuid
+      let value = ''
+      const dicObj = getOneDict(riskLevel)
+      if (dicObj.length == 0) {
+        return ''
       }
-      value = dicObj[0].codeName;
+      value = dicObj[0].codeName
       return value
     },
     /**
@@ -292,16 +292,16 @@ export default {
      */
     addModel() {
       this.isUpdate = false
-      let operationObj = { operationType:1,folderId:"",folderName:""}
-      if(this.selectTreeNode != null){
-        operationObj = { operationType:1,folderId:this.selectTreeNode.id,folderName:this.selectTreeNode.label}
+      let operationObj = { operationType: 1, folderId: '', folderName: '' }
+      if (this.selectTreeNode != null) {
+        operationObj = { operationType: 1, folderId: this.selectTreeNode.id, folderName: this.selectTreeNode.label }
       }
-      sessionStorage.setItem('operationObj', JSON.stringify(operationObj));
-      this.$store.commit('aceState/setRightFooterTags',{
-        type:'active',
-        val:{
-          name:'添加模型',
-          path:'/analysis/editorModel'
+      sessionStorage.setItem('operationObj', JSON.stringify(operationObj))
+      this.$store.commit('aceState/setRightFooterTags', {
+        type: 'active',
+        val: {
+          name: '添加模型',
+          path: '/analysis/editorModel'
         }
       })
     },
@@ -322,15 +322,15 @@ export default {
           var operationObj = {
             operationType: 2,
             model: result.data,
-            folderId:"",
-            folderName:""
+            folderId: '',
+            folderName: ''
           }
-          sessionStorage.setItem('operationObj', JSON.stringify(operationObj));
-          this.$store.commit('aceState/setRightFooterTags',{
-            type:'active',
-            val:{
-              name:'修改模型',
-              path:'/analysis/editorModel'
+          sessionStorage.setItem('operationObj', JSON.stringify(operationObj))
+          this.$store.commit('aceState/setRightFooterTags', {
+            type: 'active',
+            val: {
+              name: '修改模型',
+              path: '/analysis/editorModel'
             }
           })
         } else {
@@ -365,12 +365,12 @@ export default {
     /**
      * 发布模型
      */
-    publicModel(value){
-      if(this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') != -1){
+    publicModel(value) {
+      if (this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') != -1) {
         this.$message({ type: 'info', message: '只能发布非公共模型下的模型' })
         return
       }
-      this.publicModelValue = value;
+      this.publicModelValue = value
       var selectObj = this.$refs.modelListTable.selection
       if (selectObj == undefined || selectObj.length === 0) {
         this.$message({ type: 'info', message: '请先选择要发布的模型!' })
@@ -381,14 +381,14 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.treeSelectShow = true;
+        this.treeSelectShow = true
       })
     },
     /**
      *撤销发布
      */
-    cancelPublicModel(){
-      if(this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') == -1){
+    cancelPublicModel() {
+      if (this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') == -1) {
         this.$message({ type: 'info', message: '只能撤销公共模型下的模型' })
         return
       }
@@ -402,75 +402,74 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        for(let i = 0;i < selectObj.length;i++){
+        for (let i = 0; i < selectObj.length; i++) {
           selectObj[i].modelFolderUuid = 'xiaxian'
         }
-        this.updateModelBasicInfo(selectObj,"撤销发布")
-      }).catch(()=>{
+        this.updateModelBasicInfo(selectObj, '撤销发布')
+      }).catch(() => {
 
       })
     },
     /**
      * 修改要发布的模型
      */
-    updatePublicModel(){
-      let selectNode = this.$refs.modelFolderTree.getSelectNode()
+    updatePublicModel() {
+      const selectNode = this.$refs.modelFolderTree.getSelectNode()
       var selectObj = this.$refs.modelListTable.selection
-      for(let i = 0;i < selectObj.length;i++){
+      for (let i = 0; i < selectObj.length; i++) {
         selectObj[i].modelFolderUuid = selectNode.id
       }
-      this.updateModelBasicInfo(selectObj,"发布")
+      this.updateModelBasicInfo(selectObj, '发布')
     },
     /**
      * 修改模型基本信息
      * @param selectObj 要修改的数组对象
      * @param tips 提示信息
      */
-    updateModelBasicInfo(selectObj,tips){
+    updateModelBasicInfo(selectObj, tips) {
       updateModelBasicInfo(selectObj).then(result => {
-        if(result.code == 0){
-          this.treeSelectShow = false;
+        if (result.code == 0) {
+          this.treeSelectShow = false
           this.$notify({
-            title:'提示',
-            message:tips + '成功',
-            type:'success',
-            duration:2000,
-            position:'bottom-right'
-          });
+            title: '提示',
+            message: tips + '成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
           this.getList(this.query)// 刷新列表
           this.$emit('refreshTree')
-          //刷新树和列表
-        }
-        else{
+          // 刷新树和列表
+        } else {
           this.$notify({
-            title:'提示',
-            message:tips + '失败',
-            type:'error',
-            duration:2000,
-            position:'bottom-right'
-          });
+            title: '提示',
+            message: tips + '失败',
+            type: 'error',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         }
       })
     },
     /**
      * 导出模型
      */
-    exportModel(){
+    exportModel() {
       var selectObj = this.$refs.modelListTable.selection
       if (selectObj == undefined || selectObj.length === 0) {
         this.$message({ type: 'info', message: '请先选择要导出的模型!' })
         return
       }
-      let modelIds = [];
-      for(let i = 0;i < selectObj.length;i++){
+      const modelIds = []
+      for (let i = 0; i < selectObj.length; i++) {
         modelIds.push(selectObj[i].modelUuid)
       }
-      setModelSession(modelIds).then(result=>{
+      setModelSession(modelIds).then(result => {
         exportModel()
       })
     },
-    importData(){
-      $("#importBtn").click();
+    importData() {
+      $('#importBtn').click()
     },
     handleRemove(file, fileList) {
     },
@@ -478,16 +477,16 @@ export default {
      * 上传之前回调函数
      */
     beforeUpload(file) {
-      this.uploaDialog = true;
+      this.uploaDialog = true
     },
     /**
      * 上传失败回调函数
      */
     onError(err, file, fileList) {
       this.$message({
-        message: "上传失败",
-        type: "error"
-      });
+        message: '上传失败',
+        type: 'error'
+      })
     },
     /**
      * 上传成功回调函数
@@ -495,14 +494,14 @@ export default {
     onSuccess(response, file, fileList) {
       this.$message({
         message: response.msg,
-        type: "info"
-      });
-      file = [];
-      fileList = [];
+        type: 'info'
+      })
+      file = []
+      fileList = []
     },
-    shareModel(){
-      //弹出人员选择窗体
-    },
+    shareModel() {
+      // 弹出人员选择窗体
+    }
   }
 }
 </script>
