@@ -35,6 +35,9 @@ import mNoData from '@/components/Dolphin/noData/noData'
 import listUrlParamHandle from '@/components/Dolphin/mixin/listUrlParamHandle'
 import mConditions from '@/components/Dolphin/conditions/conditions'
 import mListConstruction from '@/components/Dolphin/listConstruction/listConstruction'
+import mFileUpdate from '@/components/Dolphin/fileUpdate/fileUpdate'
+import mDefinitionUpdate from '@/components/Dolphin/fileUpdate/definitionUpdate'
+import $ from 'jquery'
 
 export default {
   name: 'ResourceListIndexFILE',
@@ -52,6 +55,7 @@ export default {
         searchVal: '',
         type: 'FILE'
       },
+      progress: 0,
       isLeft: true
     }
   },
@@ -61,7 +65,76 @@ export default {
        * File Upload
        */
     _uploading() {
-      findComponentDownward(this.$root, 'roof-nav')._fileUpdate('FILE')
+      // findComponentDownward(this.$root, 'roof-nav')._fileUpdate('FILE')
+      this._fileUpdate('FILE')
+    },
+    _toggleArchive() {
+      $('.update-file-modal').show()
+    },
+    _fileUpdate(type) {
+      if (this.progress) {
+        this._toggleArchive()
+        return
+      }
+      const self = this
+      const modal = this.$modal.dialog({
+        closable: false,
+        showMask: true,
+        escClose: true,
+        className: 'update-file-modal',
+        transitionName: 'opacityp',
+        render(h) {
+          if (type === 'DEFINITION') {
+            return h(mDefinitionUpdate, {
+              on: {
+                onProgress(val) {
+                  self.progress = val
+                },
+                onUpdate() {
+                  findComponentDownward(self.$root, `definition-list-index`)._updateList()
+                  self.isUpdate = false
+                  self.progress = 0
+                  modal.remove()
+                },
+                onArchive() {
+                  self.isUpdate = true
+                },
+                close() {
+                  self.progress = 0
+                  modal.remove()
+                }
+              },
+              props: {
+                type: type
+              }
+            })
+          } else {
+            return h(mFileUpdate, {
+              on: {
+                onProgress(val) {
+                  self.progress = val
+                },
+                onUpdate() {
+                  findComponentDownward(self.$root, `resource-list-index-${type}`)._updateList()
+                  self.isUpdate = false
+                  self.progress = 0
+                  modal.remove()
+                },
+                onArchive() {
+                  self.isUpdate = true
+                },
+                close() {
+                  self.progress = 0
+                  modal.remove()
+                }
+              },
+              props: {
+                type: type
+              }
+            })
+          }
+        }
+      })
     },
     _onConditions(o) {
       this.searchParams = _.assign(this.searchParams, o)

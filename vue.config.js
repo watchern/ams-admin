@@ -74,7 +74,8 @@ module.exports = {
       },
       '/dolphinscheduler': {
         timeout: 1800000,
-        target: 'http://192.168.80.183:12345',
+        // target: 'http://192.168.80.183:12345',
+        target: 'http://localhost:8082/amsetlscheduler',
         changeOrigin: true
         // ,
         // pathRewrite: {

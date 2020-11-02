@@ -125,6 +125,12 @@ const etlschedulerRouter = {
       meta: { title: 'fileResource' }
     },
     {
+      path: 'fileDirectory',
+      name: 'fileDirectory',
+      component: () => import('@/views/modules/etlscheduler/fileDirectory/index'),
+      meta: { title: 'fileDirectory' }
+    },
+    {
       path: '/resource/file/create',
       name: 'resource-file-create',
       component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/create/index'], resolve),

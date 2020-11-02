@@ -78,7 +78,8 @@ export default {
     'resourceStatistics': '资源消耗统计',
     'workflow': '流程定义管理',
     'etlconfigure': '调度配置',
-    'fileResource': '文件目录管理'
+    'fileResource': '文件管理',
+    'fileDirectory': '文件目录管理'
   },
   navbar: {
     dashboard: '首页',
