@@ -124,7 +124,7 @@ import QueryField from '@/components/Ace/query-field/index'
 
 import { mapActions } from 'vuex'
 import mCreateDataSource from './pages/list/_source/createDataSource'
-import listUrlParamHandle from '@/components/Dolphin/mixin/listUrlParamHandle'
+import listUrlParamHandle from '@/components/etl/mixin/listUrlParamHandle'
 
 export default {
   name: 'DatasourceIndexP',

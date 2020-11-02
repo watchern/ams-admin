@@ -2,7 +2,7 @@ import _ from 'lodash'
 import canvg from 'canvg'
 import { tasksAll } from './util'
 import html2canvas from 'html2canvas'
-import { findComponentDownward } from '@/components/Dolphin/util'
+import { findComponentDownward } from '@/components/etl/util'
 import $ from 'jquery'
 
 const DownChart = function() {

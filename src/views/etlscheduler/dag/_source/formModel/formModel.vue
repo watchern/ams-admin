@@ -233,10 +233,10 @@ import mJava from './tasks/java'
 import JSP from './../plugIn/jsPlumbHandle'
 import mTimeoutAlarm from './_source/timeoutAlarm'
 import mWorkerGroups from './_source/workerGroups'
-import clickoutside from '@/components/Dolphin/util/clickoutside'
-import disabledState from '@/components/Dolphin/mixin/disabledState'
+import clickoutside from '@/components/etl/util/clickoutside'
+import disabledState from '@/components/etl/mixin/disabledState'
 import { isNameExDag, rtBantpl } from './../plugIn/util'
-import mPriority from '@/components/Dolphin/priority/priority'
+import mPriority from '@/components/etl/priority/priority'
 import $ from 'jquery'
 
 export default {

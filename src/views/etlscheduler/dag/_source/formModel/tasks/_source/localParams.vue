@@ -121,7 +121,7 @@
 <script>
 import _ from 'lodash'
 import { directList, typeList } from './commcon'
-import disabledState from '@/components/Dolphin/mixin/disabledState'
+import disabledState from '@/components/etl/mixin/disabledState'
 import { listByPage, getById } from '@/api/etlscheduler/paramfield'
 export default {
   name: 'UserDefParams',

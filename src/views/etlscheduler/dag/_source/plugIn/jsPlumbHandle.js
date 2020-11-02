@@ -14,7 +14,7 @@ import router from '@/router'
 import {
   uuid,
   findComponentDownward
-} from '@/components/Dolphin/util/'
+} from '@/components/etl/util/'
 
 import {
   tasksAll,

@@ -12,11 +12,11 @@
 <script>
 import mDag from './_source/dag.vue'
 import { mapActions, mapMutations } from 'vuex'
-import mSpin from '@/components/Dolphin/spin/spin'
+import mSpin from '@/components/etl/spin/spin'
 import mVariable from './_source/variable'
 import mStartingParam from './_source/startingParam'
 import Affirm from './_source/jumpAffirm'
-import disabledState from '@/components/Dolphin/mixin/disabledState'
+import disabledState from '@/components/etl/mixin/disabledState'
 
 export default {
   name: 'InstanceDetails',

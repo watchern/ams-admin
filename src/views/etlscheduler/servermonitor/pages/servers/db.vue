@@ -115,9 +115,9 @@
 </template>
 <script>
 import { mapActions } from 'vuex'
-import mSpin from '@/components/Dolphin/spin/spin'
-import mNoData from '@/components/Dolphin/noData/noData'
-import themeData from '@/components/Dolphin/echarts/themeData.json'
+import mSpin from '@/components/etl/spin/spin'
+import mNoData from '@/components/etl/noData/noData'
+import themeData from '@/components/etl/echarts/themeData.json'
 import dayjs from 'dayjs'
 
 export default {

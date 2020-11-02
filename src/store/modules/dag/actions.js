@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import io from '@/components/Dolphin/io'
+import io from '@/components/etl/io'
 import {
   tasksState
 } from '@/views/etlscheduler/dag/_source/config'

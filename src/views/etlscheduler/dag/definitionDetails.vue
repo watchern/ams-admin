@@ -10,9 +10,9 @@
 </template>
 <script>
 import mDag from './_source/dag.vue'
-import mSpin from '@/components/Dolphin/spin/spin'
+import mSpin from '@/components/etl/spin/spin'
 import Affirm from './_source/jumpAffirm'
-import disabledState from '@/components/Dolphin/mixin/disabledState'
+import disabledState from '@/components/etl/mixin/disabledState'
 import { mapActions, mapMutations } from 'vuex'
 
 export default {

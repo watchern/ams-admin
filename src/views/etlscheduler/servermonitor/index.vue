@@ -10,7 +10,7 @@
   </div>
 </template>
 <script>
-import mSecondaryMenu from '@/components/Dolphin/secondaryMenu/secondaryMenu'
+import mSecondaryMenu from '@/components/etl/secondaryMenu/secondaryMenu'
 import mMaster from './pages/servers/master'
 import mWork from './pages/servers/worker'
 import mZookeeper from './pages/servers/zookeeper'

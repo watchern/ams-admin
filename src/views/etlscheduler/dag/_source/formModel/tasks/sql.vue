@@ -112,8 +112,8 @@ import mSqlType from './_source/sqlType'
 import mDatasource from './_source/datasource'
 import mLocalParams from './_source/localParams'
 import mStatementList from './_source/statementList'
-import disabledState from '@/components/Dolphin/mixin/disabledState'
-import codemirror from '@/components/Dolphin/file/codemirror'
+import disabledState from '@/components/etl/mixin/disabledState'
+import codemirror from '@/components/etl/file/codemirror'
 import $ from 'jquery'
 
 let editor

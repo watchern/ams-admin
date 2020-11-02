@@ -9,7 +9,7 @@
   </div>
 </template>
 <script>
-import mPopup from '@/components/Dolphin/popup/popup'
+import mPopup from '@/components/etl/popup/popup'
 
 export default {
   name: 'Affirm',

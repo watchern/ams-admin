@@ -88,7 +88,7 @@ import _ from 'lodash'
 import store from '@/store'
 // import router from '@/conf/home/router
 import router from '@/router'
-import { downloadFile } from '@/components/Dolphin/download'
+import { downloadFile } from '@/components/etl/download'
 import $ from 'jquery'
 
 /**

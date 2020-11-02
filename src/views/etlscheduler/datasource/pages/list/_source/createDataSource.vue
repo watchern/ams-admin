@@ -165,8 +165,8 @@
 </template>
 <script>
 import store from '@/store'
-import { isJson } from '@/components/Dolphin/util/util'
-import mListBoxF from '@/components/Dolphin/listBoxF/listBoxF'
+import { isJson } from '@/components/etl/util/util'
+import mListBoxF from '@/components/etl/listBoxF/listBoxF'
 import { verifyDSName, getById } from '@/api/etlscheduler/datasource'
 export default {
   name: 'CreateDatasource',
