@@ -4,40 +4,56 @@ const stateType = [
     code: '',
     label: '无'
   },
+  {
+    value: 40,
+    code: 'SUBMITTED_SUCCESS',
+    label: '提交成功'
+  },
   // {
-  //   code: 'SUBMITTED_SUCCESS',
-  //   label: '提交成功'
-  // }, {
   //   code: 'RUNNING_EXEUTION',
   //   label: '正在运行'
-  // }, {
-  //   code: 'READY_PAUSE',
-  //   label: '准备暂停'
-  // }, {
+  // },
+  {
+    value: 50,
+    code: 'READY_PAUSE',
+    label: '准备暂停'
+  },
+  // {
   //   code: 'PAUSE',
   //   label: '暂停'
-  // }, {
-  //   code: 'READY_STOP',
-  //   label: '准备停止'
-  // }, {
-  //   code: 'STOP',
-  //   label: '停止'
-  // }, {
+  // },
+  {
+    value: 90,
+    code: 'READY_STOP',
+    label: '准备停止'
+  },
+  {
+    value: 9,
+    code: 'STOP',
+    label: '停止'
+  },
+  // {
   //   code: 'FAILURE',
   //   label: '失败'
   // }, {
   //   code: 'SUCCESS',
   //   label: '成功'
-  // }, {
-  //   code: 'NEED_FAULT_TOLERANCE',
-  //   label: '需要容错'
-  // }, {
+  // },
+  {
+    value: 80,
+    code: 'NEED_FAULT_TOLERANCE',
+    label: '需要容错'
+  },
+  // {
   //   code: 'KILL',
   //   label: 'kill'
-  // }, {
-  //   code: 'WAITTING_THREAD',
-  //   label: '等待线程'
-  // }, {
+  // },
+  {
+    value: 31,
+    code: 'WAITTING_THREAD',
+    label: '等待线程'
+  },
+  // {
   //   code: 'WAITTING_DEPEND',
   //   label: '等待依赖完成'
   // }

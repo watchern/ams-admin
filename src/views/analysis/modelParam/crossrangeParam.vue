@@ -4,8 +4,7 @@
       <div class="col-sm-12">
         <div id="accordion" class="panel-group">
           <div class="panel-default">
-            <div>
-            </div>
+            <div />
             <div id="collapse" class="panel-collapse collapse in">
               <div id="paramCom" style="padding: 10px 0;display: flex;flex-wrap: wrap" />
             </div>

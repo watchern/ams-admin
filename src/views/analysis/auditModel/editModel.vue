@@ -15,13 +15,13 @@
       </el-aside>
       <div ref="basicInfo" class="detail-form">
         <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules">
-            <el-form-item label="模型名称" prop="modelName">
-                <el-input v-model="form.modelName" />
-            </el-form-item>
+          <el-form-item label="模型名称" prop="modelName">
+            <el-input v-model="form.modelName" />
+          </el-form-item>
           <el-row>
             <el-form-item label="业务分类">
               <el-col :span="22">
-                <el-input v-model="form.modelFolderUuid" style="display: none" :disabled="true"></el-input>
+                <el-input v-model="form.modelFolderUuid" style="display: none" :disabled="true" />
                 <el-input v-model="form.modelFolderName" :disabled="true" />
               </el-col>
               <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true">选择</el-button>
@@ -30,8 +30,8 @@
           <el-row>
             <el-form-item label="审计事项" prop="auditItemUuid">
               <el-col :span="22">
-                <el-input v-model="form.auditItemUuid" style="display: none" :disabled="true"></el-input>
-                <el-input v-model="form.auditItemName" :disabled="true"></el-input>
+                <el-input v-model="form.auditItemUuid" style="display: none" :disabled="true" />
+                <el-input v-model="form.auditItemName" :disabled="true" />
               </el-col>
               <el-button @click="showAuditItemTree">选择</el-button>
             </el-form-item>
