@@ -73,13 +73,13 @@
         </div>
         <div id="horizontal"/>
         <!-- 结果展示和参数输入区域 -->
-        <div id="bottomPart" class="layui-tab col-sm-12" lay-filter="result-data" style="margin-top:2px;width: 100%;">
+        <div id="bottomPart" class="layui-tab col-sm-12" lay-filter="result-data" style="margin-top:-111px;width: 100%;">
           <div id="maxOpen" style="width: 80px; position: absolute; right: 0; top: 15px" onclick="">
             <img id="iconImg" class="iconImg" alt="最大化">
             <span class="iconText">最大化</span>
           </div>
           <div v-for="result in resultShow" id="dataShow" style="margin-left: -14px">
-            <childTabs ref="childTabsRef" :key="result.id" :pre-value="currentExecuteSQL" use-type="sqlEditor" style="width: 105%"/>
+            <childTabs ref="childTabsRef" :key="result.id" :pre-value="currentExecuteSQL" use-type="sqlEditor" style="width: 101.5%"/>
           </div>
         </div>
       </div>
@@ -275,7 +275,7 @@ export default {
     dialogFormVisible(value) {
       this.$nextTick(function() {
         if (value) {
-          this.$refs.paramDrawRef.initParamHtmlSS(this.executeData.sql, this.executeData.arr, '请输入参数', null) // 前后加遮罩
+          this.$refs.paramDrawRef.initParamHtmlSS(this.executeData.sql, this.executeData.arr, '请输入参数', null)
         }
       })
     }
@@ -663,13 +663,14 @@ function test() {
   overflow: hidden;
   background: #c0c5d4;
   cursor: w-resize;
+  display: none;
 }
 
 #horizontal {
   position: absolute;
-  top: 50%;
+  top: 36%;
   /* width: 100vh; */
-  width: 100%;
+  width: 97.5%;
   height: 3px;
   overflow: hidden;
   background: #c0c5d4;

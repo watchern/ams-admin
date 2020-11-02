@@ -28,7 +28,7 @@
             <el-row>
               <el-form-item label="被关联模型">
                 <el-col :span="20">
-                  <el-input :disabled="true" v-model="form.relationObjectUuid"/>
+                  <el-input :disabled="true" v-model="form.relationObjectUuid" style="display: none"/>
                   <el-input :disabled="true" v-model="form.relationObjectName"/>
                 </el-col>
                 <el-button @click="selectModel">选择</el-button>
@@ -241,20 +241,6 @@ export default {
         this.relTable.push({})
       }
     },
-    /**
-       * 关联模型下拉框改变事件
-       */
-    relModelSelectChange(vId) {
-      if (vId == -1) {
-        this.$refs.relModelTableDiv.style.display = 'none'
-      } else {
-        // 加载选择模型的参数
-        // todo 获取选中模型的关联参数
-        var relModelParam = [{ ammParamUuid: 'canshu1', ammParamName: '參數1' }, { ammParamUuid: 'canshu2', ammParamName: '參數2' }]
-        this.relModelParam = relModelParam
-        this.$refs.relModelTableDiv.style.display = 'block'
-      }
-    },
     loadTableCol(data) {
         //获取选中表的列id，列名称等信息
       getTableCol(data.id).then(result=>{
@@ -262,7 +248,6 @@ export default {
           this.$message({ type: 'info', message: '加载数据表列失败!' })
           return
         }
-        debugger
         this.relTableColumn = result.data
         this.$refs.relTableDiv.style.display = 'block'
       })

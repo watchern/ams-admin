@@ -70,17 +70,18 @@
           </el-form-item>
         </el-form>
       </div>
-      <div ref="modelDesign" style="display: none;width:100%;height: 100%">
+      <div ref="modelDesign" style="display: none;width:100%">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id">
-            <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor" :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue"style="height: 1000px;overflow-y:scroll" />
+            <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor"
+                       :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue"style="height: 740px;overflow-y:scroll" />
           </div>
-          <el-form-item label="模型名称" prop="sqlValue">
-            <el-input v-model="form.sqlValue" type="textarea" style="display: none;" />
+          <el-form-item label="模型sql" prop="sqlValue" style="display: none;">
+            <el-input v-model="form.sqlValue" type="textarea"/>
           </el-form-item>
         </el-form>
       </div>
-      <div ref="paramDefaultValue" style="display: none">
+      <div ref="paramDefaultValue" style="display: none;">
         <p style="color:red;font-size:large">拖拽改变参数展示顺序</p>
         <div id="paramList">
           <paramShow ref="apple"></paramShow>
@@ -148,7 +149,7 @@
           </el-table>
         </div>
       </div>
-      <div ref="relInfo" style="display: none">
+      <div ref="relInfo" style="display: none;">
         <p>在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
           用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。
           通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。</p>
@@ -159,10 +160,10 @@
           <ModelDetail ref="child" :columns="columnData" :data="modelDetail.data" :tree-id="modelDetail.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
-      <div ref="chartConfig" style="display: none">
+      <div ref="chartConfig" style="display: none;">
         这是图表配置
       </div>
-      <div ref="modelFilterShowParent" style="display: none">
+      <div ref="modelFilterShowParent" style="display: none;">
         <p>条件显示能够根据用户所设定的条件及显示样式，对模型执行结果中满足条件的敏感数据或重要数据进行着色显示，使这些数据变的一目了然，
           以便审计人员对这些数据进行审计。</p>
         <p>条件显示设计器以表格的形式列举所有由用户设定的、将被应用于模型执行结果的显示条件及显示样式，用户可通过该列表对各个条件的属性进行快速查看。
@@ -174,6 +175,7 @@
           <ModelFilterShow ref="modelFilterSHowChild" :columns="columnData" :data="filterShow.data" :tree-id="filterShow.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
+
     </el-container>
     <el-dialog v-if="auditItemTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="auditItemTree" title="请选择审计事项" width="80%">
       <AuditItemTree ref="auditItemTreeRef"></AuditItemTree>
@@ -189,7 +191,7 @@
         <el-button @click="modelFolderTreeDialog=false">取消</el-button>
       </div>
     </el-dialog>
-    <div>
+    <div style="margin-top: 220px;float:right">
       <el-button type="primary" @click="save">保存</el-button>
       <el-button @click="closeWinfrom">取消</el-button>
     </div>
@@ -254,11 +256,13 @@ export default {
         children: 'children',
         label: 'label'
       },
-      SQLEditorShow: false,
+      //是否显示审计事项树
       auditItemTree:false,
-      paramValueModel: {},
+      //是否显示模型分类树
       modelFolderTreeDialog:false,
+      //列数据
       columnData: [],
+      //实体对象
       form: {
         modelName: '',
         modelFolderUuid: '',
@@ -271,13 +275,15 @@ export default {
         auditItemName:'',
         modelType:''
       },
+      //参数模型关联对象
       parammModelRel: {},
+      //sql对象
       sqlObj: {
         sqlValue: '',
         params: [],
         column: []
       },
-      pathParam:{},
+      //选择的业务列
       businessColumnSelect: [],
       columnTypeSelect: [],
       modelDetails: [],
@@ -293,6 +299,7 @@ export default {
       modelChartSetup: {},
       currentSelectTreeNode: null,
       modelTypeObj:[],
+      formName:"",
       basicInfoRules: {
         modelName: [
           { type: 'string', required: true, message: '请输入模型名称', trigger: 'blur' }
@@ -332,19 +339,13 @@ export default {
       this.isUpdate = true
       var model = operationObj.model
       this.displayData(model)
+      this.formName = "修改模型"
+    }
+    else{
+      this.formName = "新增模型"
     }
   },
   methods: {
-     getKeyValue(url){
-       let paraString = url.substring(url.indexOf("?")+1,url.length).split("&")
-       let data = {}
-      for(let i = 0;i < paraString.length;i++){
-        let attribute = paraString[i].split("=")[0]
-        let value = paraString[i].split("=")[1]
-        data[attribute] = value
-      }
-      this.pathParam = data
-    },
     /**
      *初始化数据
      */
@@ -573,13 +574,6 @@ export default {
       return this.form
     },
     /**
-     *打开sql编辑器
-     */
-    openSqlEditor() {
-      // 打开sql编辑器窗体
-      this.SQLEditorShow = true
-    },
-    /**
      * 获取SQL编辑器或图形化编辑器编辑的sql等信息并展示到界面
      */
     getSqlObj() {
@@ -624,7 +618,6 @@ export default {
       this.modelOriginalTable = sqlObj.modelOriginalTable
       // 处理图表JSON
       this.modelChartSetup = sqlObj.modelChartSetup
-      this.SQLEditorShow = false
     },
     /**
      *相互转换param数据格式
@@ -688,7 +681,7 @@ export default {
       this.$store.commit('aceState/setRightFooterTags',{
         type:'close',
         val:{
-          name:'添加模型',
+          name:this.formName,
           path:'/analysis/editorModel'
         }
       })
@@ -714,8 +707,6 @@ export default {
       let sqlStr = returnObj.sqlValue
       //初始化sql编辑器
       this.modelTypeObj = []
-      this.sqlEditorParamObj = arrPram
-      this.form.sqlValue = sqlStr
       if(this.form.modelType == "002003001"){
         let obj = {
           id:'002003001'
@@ -789,11 +780,17 @@ export default {
         column: []
       }
       this.businessColumnSelect = []
+      //列类型列表
       this.columnTypeSelect = []
+      //选择树节点
       this.selectTreeNode = null
+      //模型详细数组
       this.modelDetails = []
+      //模型详细索引
       this.modelDetailIndex = 0
+      //条件显示数组
       this.filterShows = []
+      //树数据
       this.treeNodeData = [
         {
           id: '1',
@@ -904,7 +901,6 @@ export default {
       returnObj.params = paramObj
       this.sqlEditorParamObj = paramObj
       returnObj.sqlValue = this.form.sqlValue
-      this.displaySQL(returnObj)
       // endregion
       // region 反显参数默认值
       if(returnObj.params.arr.length != 0){
@@ -950,10 +946,7 @@ export default {
         this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex, data: model.resultFilterShow[i] })
       }
       // endregion
-    },
-    sqlEditorCloseEvent() {
-      // sql编辑器关闭时候销毁数据
-      this.SQLEditorShow = false
+      this.displaySQL(returnObj)
     },
     /**
      *显示审计事项树
@@ -1015,14 +1008,7 @@ export default {
         saveModel(modelObj).then(result => {
           if (result.code === 0) {
             this.$message({ type: 'success', message: '新增成功!' })
-            this.$store.commit('aceState/setRightFooterTags',{
-              type:'close',
-              val:{
-                name:'添加模型',
-                path:'/analysis/editorModel'
-              }
-            })
-            // this.$refs.editModel.clear();
+            this.closeWinfrom()
           } else {
             this.$message({ type: 'error', message: '新增模型失败!' })
             this.editorModelLoading = false
@@ -1031,8 +1017,8 @@ export default {
       } else {
         updateModel(modelObj).then(result => {
           if (result.code === 0) {
-            this.$message({ type: 'error', message: '修改成功!' })
-            // this.$refs.editModel.clear();
+            this.$message({ type: 'success', message: '修改成功!' })
+            this.closeWinfrom()
           } else {
             this.$message({ type: 'error', message: '修改模型失败!' })
             this.editorModelLoading = false
@@ -1043,3 +1029,9 @@ export default {
   }
 }
 </script>
+<style>
+.divCss{
+  margin-left: 20px;
+  width: 100%;
+}
+</style>
