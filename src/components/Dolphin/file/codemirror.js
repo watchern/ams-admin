@@ -16,7 +16,7 @@
  */
 
 import CodeMirror from 'codemirror/lib/codemirror'
-import 'codemirror/lib/codemirror.css'
+import '@/views/modules/etlscheduler/fileresource/pages/file/pages/_source/node_modules/codemirror/lib/codemirror.css'
 import 'codemirror/addon/hint/show-hint'
 import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/xml-hint'
@@ -25,8 +25,8 @@ import 'codemirror/mode/sql/sql'
 import 'codemirror/mode/xml/xml'
 import 'codemirror/mode/textile/textile'
 import 'codemirror/mode/shell/shell'
-import 'codemirror/theme/mdn-like.css'
-import 'codemirror/addon/hint/show-hint.css'
+import '@/views/modules/etlscheduler/fileresource/pages/file/pages/_source/node_modules/codemirror/theme/mdn-like.css'
+import '@/views/modules/etlscheduler/fileresource/pages/file/pages/_source/node_modules/codemirror/addon/hint/show-hint.css'
 
 export default (id, o) => {
   return CodeMirror.fromTextArea(document.getElementById(id), Object.assign({

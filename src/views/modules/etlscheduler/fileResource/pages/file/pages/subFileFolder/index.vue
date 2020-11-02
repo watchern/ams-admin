@@ -45,7 +45,7 @@
           <template slot="content">
             <div class="submit">
               <x-button type="primary" shape="circle" :loading="spinnerLoading" @click="ok()">{{ spinnerLoading ? 'Loading...' : '创建' }} </x-button>
-              <x-button type="text" @click="() => $router.push({name: 'fileResource'})"> 取消 </x-button>
+              <x-button type="text" @click="() => $router.push({name: 'fileresource'})"> 取消 </x-button>
             </div>
           </template>
         </m-list-box-f>

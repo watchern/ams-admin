@@ -9,7 +9,7 @@
 <script>
 import etlDataResource from '@/views/modules/etlscheduler/dataresource'
 import etlDataSource from '@/views/modules/etlscheduler/datasource'
-import etlFileDirectory from '@/views/modules/etlscheduler/fileDirectory'
+import etlFileDirectory from '@/views/modules/etlscheduler/filedirectory'
 export default {
   components: { etlDataResource, etlDataSource, etlFileDirectory }
 }
