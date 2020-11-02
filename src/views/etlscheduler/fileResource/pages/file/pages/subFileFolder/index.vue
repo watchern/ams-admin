@@ -56,9 +56,9 @@
 <script>
 import { mapActions } from 'vuex'
 import { folderList } from '../_source/common'
-import mListBoxF from '@/components/Dolphin/listBoxF/listBoxF'
-import localStore from '@/components/Dolphin/util/localStorage'
-import mListConstruction from '@/components/Dolphin/listConstruction/listConstruction'
+import mListBoxF from '@/components/etl/listBoxF/listBoxF'
+import localStore from '@/components/etl/util/localStorage'
+import mListConstruction from '@/components/etl/listConstruction/listConstruction'
 
 export default {
   name: 'ResourceListCreateFILE',

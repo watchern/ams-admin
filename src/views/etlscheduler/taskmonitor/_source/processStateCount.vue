@@ -32,8 +32,8 @@
 import _ from 'lodash'
 import { mapActions } from 'vuex'
 import { pie } from './chartConfig'
-import Chart from '@/components/Dolphin/ana-charts'
-import mNoData from '@/components/Dolphin/noData/noData'
+import Chart from '@/components/etl/ana-charts'
+import mNoData from '@/components/etl/noData/noData'
 import { stateType } from './common'
 export default {
   name: 'ProcessStateCount',

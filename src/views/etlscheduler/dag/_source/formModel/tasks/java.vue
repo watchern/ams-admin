@@ -98,7 +98,7 @@
 import _ from 'lodash'
 import mListBox from './_source/listBox'
 import mJavaParams from './_source/javaParams'
-import disabledState from '@/components/Dolphin/mixin/disabledState'
+import disabledState from '@/components/etl/mixin/disabledState'
 import $ from 'jquery'
 import { findParams } from '@/api/etlscheduler/processdefinition'
 let editor

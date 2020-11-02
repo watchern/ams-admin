@@ -14,9 +14,9 @@
 <script>
 import { mapActions } from 'vuex'
 import mList from './_source/zookeeperList'
-import mSpin from '@/components/Dolphin/spin/spin'
-import mNoData from '@/components/Dolphin/noData/noData'
-import mListConstruction from '@/components/Dolphin/listConstruction/listConstruction'
+import mSpin from '@/components/etl/spin/spin'
+import mNoData from '@/components/etl/noData/noData'
+import mListConstruction from '@/components/etl/listConstruction/listConstruction'
 
 export default {
   name: 'ServersZookeeper',

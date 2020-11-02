@@ -18,7 +18,7 @@
 <script>
 // import _ from 'lodash'
 import { sqlTypeList } from './commcon'
-import disabledState from '@/components/Dolphin/mixin/disabledState'
+import disabledState from '@/components/etl/mixin/disabledState'
 export default {
   name: 'SqlType',
   mixins: [disabledState],

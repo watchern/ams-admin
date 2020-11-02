@@ -171,7 +171,7 @@
 <script>
 import _ from 'lodash'
 import mLocalParams from '../formModel/tasks/_source/localParams'
-import disabledState from '@/components/Dolphin/mixin/disabledState'
+import disabledState from '@/components/etl/mixin/disabledState'
 import Affirm from '../jumpAffirm'
 // import FormTenant from './_source/selectTenant'
 export default {

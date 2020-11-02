@@ -22,8 +22,8 @@
 <script>
 import _ from 'lodash'
 import mListBox from './listBox'
-import disabledState from '@/components/Dolphin/mixin/disabledState'
-import codemirror from '@/components/Dolphin/file/codemirror'
+import disabledState from '@/components/etl/mixin/disabledState'
+import codemirror from '@/components/etl/file/codemirror'
 import $ from 'jquery'
 let editor
 

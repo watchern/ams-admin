@@ -211,7 +211,7 @@ import dayjs from 'dayjs'
 import mEmail from './email.vue'
 import store from '@/store'
 import { warningTypeList } from './utilstart'
-import mPriority from '@/components/Dolphin/priority/priority'
+import mPriority from '@/components/etl/priority/priority'
 import mWorkerGroups from '@/views/etlscheduler/dag/_source/formModel/_source/workerGroups'
 
 export default {

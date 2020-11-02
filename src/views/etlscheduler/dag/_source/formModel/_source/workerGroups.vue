@@ -14,7 +14,7 @@
   </x-select>
 </template>
 <script>
-import disabledState from '@/components/Dolphin/mixin/disabledState'
+import disabledState from '@/components/etl/mixin/disabledState'
 export default {
   name: 'FormWorkerGroup',
   mixins: [disabledState],

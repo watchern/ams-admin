@@ -93,7 +93,7 @@
 <script>
 import _ from 'lodash'
 import { cycleList, nodeStatusList } from './commcon'
-import disabledState from '@/components/Dolphin/mixin/disabledState'
+import disabledState from '@/components/etl/mixin/disabledState'
 import $ from 'jquery'
 export default {
   name: 'NodeStatus',

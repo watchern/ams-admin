@@ -30,9 +30,9 @@
 </template>
 <script>
 import store from '@/store'
-import localStore from '@/components/Dolphin/util/localStorage'
-import mPopup from '@/components/Dolphin/popup/popup'
-import mListBoxF from '@/components/Dolphin/listBoxF/listBoxF'
+import localStore from '@/components/etl/util/localStorage'
+import mPopup from '@/components/etl/popup/popup'
+import mListBoxF from '@/components/etl/listBoxF/listBoxF'
 
 export default {
   name: 'ResourceFileRename',

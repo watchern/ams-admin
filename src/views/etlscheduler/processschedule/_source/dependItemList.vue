@@ -108,7 +108,7 @@ import {
   cycleList,
   dateValueList,
 } from "@/views/etlscheduler/dag/_source/formModel/tasks/_source/commcon"
-import disabledState from "@/components/Dolphin/mixin/disabledState"
+import disabledState from "@/components/etl/mixin/disabledState"
 import {
   getScheduleList,
   getTaskLink,

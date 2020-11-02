@@ -34,13 +34,13 @@
 import _ from 'lodash'
 import { mapActions } from 'vuex'
 import mList from './_source/list'
-import localStore from '@/components/Dolphin/util/localStorage'
-import mSpin from '@/components/Dolphin/spin/spin'
-import { findComponentDownward } from '@/components/Dolphin/util/'
-import mNoData from '@/components/Dolphin/noData/noData'
-import listUrlParamHandle from '@/components/Dolphin/mixin/listUrlParamHandle'
-import mConditions from '@/components/Dolphin/conditions/conditions'
-import mListConstruction from '@/components/Dolphin/listConstruction/listConstruction'
+import localStore from '@/components/etl/util/localStorage'
+import mSpin from '@/components/etl/spin/spin'
+import { findComponentDownward } from '@/components/etl/util/'
+import mNoData from '@/components/etl/noData/noData'
+import listUrlParamHandle from '@/components/etl/mixin/listUrlParamHandle'
+import mConditions from '@/components/etl/conditions/conditions'
+import mListConstruction from '@/components/etl/listConstruction/listConstruction'
 
 export default {
   name: 'ResourceListIndexFILE',

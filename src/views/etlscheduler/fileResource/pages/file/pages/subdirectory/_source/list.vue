@@ -117,9 +117,9 @@ import _ from 'lodash'
 import mRename from './rename'
 import { mapActions } from 'vuex'
 import { filtTypeArr } from '../../_source/common'
-import { bytesToSize } from '@/components/Dolphin/util/util'
-import { downloadFile } from '@/components/Dolphin/download'
-import localStore from '@/components/Dolphin/util/localStorage'
+import { bytesToSize } from '@/components/etl/util/util'
+import { downloadFile } from '@/components/etl/download'
+import localStore from '@/components/etl/util/localStorage'
 
 export default {
   name: 'FileManageList',
