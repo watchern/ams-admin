@@ -102,7 +102,7 @@ const etlschedulerRouter = {
     {
       path: 'resourcestatistics',
       name: 'resourcestatistics',
-      component: () => import('@/views/etlscheduler/resourcestatistics/index'),
+      component: () => import('@/views/etlscheduler/statistics/resourcestatistics/index'),
       meta: { title: 'resourcestatistics' }
     },
     {
