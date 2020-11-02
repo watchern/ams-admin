@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import mDb from '@/views/modules/etlscheduler/servermonitor/pages/servers/db'
+import mDb from '@/views/etlscheduler/servermonitor/pages/servers/db'
 export default {
   name: 'DbMonitor',
   components: { mDb },

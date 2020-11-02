@@ -24,7 +24,7 @@ import {
   rtTargetarrArr,
   computeScale
 } from './util'
-import mStart from '@/views/modules/etlscheduler/workflow/start'
+import mStart from '@/views/etlscheduler/workflow/start'
 import $ from 'jquery'
 
 const JSP = function() {

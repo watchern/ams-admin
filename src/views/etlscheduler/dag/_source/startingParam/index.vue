@@ -34,8 +34,8 @@
 // import store from '@/components/Dolphin/store'
 import _ from 'lodash'
 import store from '@/store'
-import { runningType } from '@/views/modules/etlsheduler/dag/_source/config'
-import { warningTypeList } from '@/views/modules/etlsheduler/workflow/util'
+import { runningType } from '@/views/etlscheduler/dag/_source/config'
+import { warningTypeList } from '@/views/etlscheduler/workflow/util'
 
 export default {
   name: 'StartingParamsDagIndex',

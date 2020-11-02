@@ -107,7 +107,7 @@ import _ from "lodash"
 import {
   cycleList,
   dateValueList,
-} from "@/views/modules/etlscheduler/dag/_source/formModel/tasks/_source/commcon"
+} from "@/views/etlscheduler/dag/_source/formModel/tasks/_source/commcon"
 import disabledState from "@/components/Dolphin/mixin/disabledState"
 import {
   getScheduleList,

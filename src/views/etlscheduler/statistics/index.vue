@@ -5,7 +5,7 @@
   </el-tabs>
 </template>
 <script>
-import etlResourceStatistics from '@/views/modules/etlscheduler/resourcestatistics'
+import etlResourceStatistics from '@/views/etlscheduler/resourcestatistics'
 export default {
   components: { etlResourceStatistics }
 }

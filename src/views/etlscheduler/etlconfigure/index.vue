@@ -7,9 +7,9 @@
   </el-tabs>
 </template>
 <script>
-import etlDataResource from '@/views/modules/etlscheduler/dataresource'
-import etlDataSource from '@/views/modules/etlscheduler/datasource'
-import etlFileDirectory from '@/views/modules/etlscheduler/filedirectory'
+import etlDataResource from '@/views/etlscheduler/dataresource'
+import etlDataSource from '@/views/etlscheduler/datasource'
+import etlFileDirectory from '@/views/etlscheduler/filedirectory'
 export default {
   components: { etlDataResource, etlDataSource, etlFileDirectory }
 }

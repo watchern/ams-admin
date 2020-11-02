@@ -159,7 +159,7 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, findTaskLogs } from '@/api/etlscheduler/taskinstance'
 import QueryField from '@/components/Ace/query-field/index'
-import { statusListComm, statuSelect, colorList } from '@/views/modules/etlscheduler/processinstance/comm.js'
+import { statusListComm, statuSelect, colorList } from '@/views/etlscheduler/processinstance/comm.js'
 
 export default {
   components: { Pagination, QueryField },

@@ -212,7 +212,7 @@ import mEmail from './email.vue'
 import store from '@/store'
 import { warningTypeList } from './utilstart'
 import mPriority from '@/components/Dolphin/priority/priority'
-import mWorkerGroups from '@/views/modules/etlscheduler/dag/_source/formModel/_source/workerGroups'
+import mWorkerGroups from '@/views/etlscheduler/dag/_source/formModel/_source/workerGroups'
 
 export default {
   name: 'StartProcess',
