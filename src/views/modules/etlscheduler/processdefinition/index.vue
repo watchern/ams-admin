@@ -97,12 +97,14 @@
           <a target="_blank" class="buttonText" @click="handleView(scope.row.processDefinitionUuid)">{{ scope.row.name }}</a>
         </template>
       </el-table-column>
+      <!--
       <el-table-column
         label="排序号"
         width="150px"
         align="center"
         prop="orderNo"
       />
+      -->
       <el-table-column
         label="状态"
         width="150px"
@@ -116,7 +118,6 @@
       />
       <el-table-column
         label="最新修改人"
-        width="200px"
         align="center"
         prop="updateUserName"
       />
@@ -209,6 +210,7 @@ export default {
       } else {
         this.startStatus = true
         this.stopStatus = true
+        this.deleteStatus = true
       }
       if (this.selections.length === 1) {
         this.selections.forEach((r, i) => {
@@ -366,7 +368,7 @@ export default {
     },
     // 上传文件，获取文件流
     handleFileChange(file) {
-      console.log(file)
+      // console.log(file)
       this.file = file.raw
     },
     handleRemove(file, fileList) {

@@ -7,9 +7,9 @@
         :rules="rules"
         :model="temp"
         label-position="right"
-        style="width: 700px; margin-left:50px;"
+        style="width: 700px;"
       >
-        <div class="tableTitle"><span class="midText">业务场景维护：</span></div>
+        <span class="midText">业务场景维护：</span>
         <el-row>
           <el-col :span="12">
             <el-form-item label="业务场景名称" prop="sceneName" label-width="150px">
@@ -25,7 +25,7 @@
       <div style="height :160px">
         <div class="tableTitle"><span class="midText">用户组定义：</span></div>
         <div style="float:right">
-          <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
+          <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
         </div>
         <el-table
           :key="tableKey"
@@ -40,17 +40,17 @@
           <el-table-column type="index" label="序号" width="50" align="center" />
           <el-table-column label="组名称" width="200px" align="center" prop="grpName" />
           <el-table-column label="组代码" width="200px" align="center" prop="grpCode" />
-          <el-table-column label="组用户来源SQL" width="300px" align="center" prop="grpSql" />
+          <el-table-column label="组用户来源SQL" width="300px" align="center" prop="grpSql" show-overflow-tooltip />
           <el-table-column label="创建时间" width="300px" align="center" prop="createTime" :formatter="formatCreateTime" />
           <el-table-column label="操作" align="center" min-width="100">
             <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="selectGrpOne(scope.row.sceneGrpUuid)">预览</el-button>
-              <el-button type="primary" size="mini" @click="updateGrp(scope.row.sceneGrpUuid)">修改</el-button>
-              <el-button type="danger" size="mini" @click="deleteGrp(scope.row.sceneGrpUuid)">删除</el-button>
+              <el-button type="primary" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.sceneGrpUuid)" />
+              <el-button type="primary" class="oper-btn edit" size="mini" @click="updateGrp(scope.row.sceneGrpUuid)" />
+              <el-button type="danger" class="oper-btn delete" size="mini" @click="deleteGrp(scope.row.sceneGrpUuid)" />
             </template>
           </el-table-column>
         </el-table>
-        <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
+        <!-- <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" /> -->
 
         <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
           <div class="detail-form">
@@ -59,16 +59,16 @@
               :rules="rulesGrp"
               :model="tempGrp"
               label-position="right"
-              style="width: 700px;hieght:400px;margin-left:50px;"
+              style="width: 600px;hieght:400px;margin-left:50px;"
             >
               <el-form-item label="组名称" prop="grpName">
-                <el-input v-model="tempGrp.grpName" />
+                <el-input v-model="tempGrp.grpName" style="width:500px" />
               </el-form-item>
               <el-form-item label="组代码" prop="grpCode">
-                <el-input v-model="tempGrp.grpCode" />
+                <el-input v-model="tempGrp.grpCode" style="width:500px" />
               </el-form-item>
-              <el-form-item label="组用户来源SQL" prop="grpSql">
-                <el-input v-model="tempGrp.grpSql" type="textarea" />
+              <el-form-item label="组用户来源SQL(所写SQL中必须有id,name,pid 三列才可预览查看)" prop="grpSql">
+                <el-input v-model="tempGrp.grpSql" :rows="6" type="textarea" style="width:500px" />
               </el-form-item>
             </el-form>
           </div>
@@ -82,8 +82,7 @@
       <div style="height :260px;margin-top:150px">
         <div class="tableTitleFilter"><span>维护业务场景下数据筛选器：</span></div>
         <div style="float:right">
-          <el-button type="primary" size="mini" @click="handleCreateFilter()">添加</el-button>
-        </div>
+          <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreateFilter()" /></div>
         <el-table
           :key="tableKeyFilter"
           v-loading="listLoadingFilter"
@@ -96,38 +95,38 @@
         >
           <el-table-column type="index" label="序号" width="50" align="center" />
           <el-table-column label="筛选器名称" width="200px" align="center" prop="filterName" />
-          <el-table-column label="IN值SQL" width="200px" align="center" prop="inValueSql" />
-          <el-table-column label="描述" width="200px" align="center" prop="describe" />
+          <el-table-column label="IN值SQL" width="300px" align="center" prop="inValueSql" show-overflow-tooltip />
+          <el-table-column label="描述" width="100px" align="center" prop="describe" />
           <el-table-column label="操作" align="center" min-width="100">
             <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="selectFilterOne(scope.row.sceneFilterUuid)">预览</el-button>
-              <el-button type="primary" size="mini" @click="updateFilter(scope.row.sceneFilterUuid)">修改</el-button>
-              <el-button type="danger" size="mini" @click="deleteFilter(scope.row.sceneFilterUuid)">删除</el-button>
+              <el-button type="primary" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.inValueSql)" />
+              <el-button type="primary" class="oper-btn edit" size="mini" @click="updateFilter(scope.row.sceneFilterUuid)" />
+              <el-button type="danger" class="oper-btn delete" size="mini" @click="deleteFilter(scope.row.sceneFilterUuid)" />
             </template>
           </el-table-column>
         </el-table>
-        <pagination v-show="totalFilter>0" :total="totalFilter" :page.sync="pageQueryFilter.pageNo" :limit.sync="pageQueryFilter.pageSize" @pagination="getListFilter" />
+        <!-- <pagination v-show="totalFilter>0" :total="totalFilter" :page.sync="pageQueryFilter.pageNo" :limit.sync="pageQueryFilter.pageSize" @pagination="getListFilter" /> -->
 
-        <el-dialog :title="textMap[dialogStatusFilter]" :visible.sync="dialogFormVisibleFilter">
+        <el-dialog :title="textMapFilter[dialogStatusFilter]" :visible.sync="dialogFormVisibleFilter">
           <div class="detail-form">
             <el-form
               ref="dataFormFilter"
               :rules="rulesFilter"
               :model="tempFilter"
               label-position="right"
-              style="width: 700px;hieght:400px;margin-left:50px;"
+              style="width: 600px;hieght:400px;margin-left:50px;"
             >
-              <el-form-item label="过滤器名称" prop="filterName">
-                <el-input v-model="tempFilter.filterName" />
+              <el-form-item label="筛选器名称" prop="filterName">
+                <el-input v-model="tempFilter.filterName" style="width:500px" />
               </el-form-item>
               <el-form-item label="IN值SQL" prop="inValueSql">
-                <el-input v-model="tempFilter.inValueSql" />
+                <el-input v-model="tempFilter.inValueSql" type="textarea" :rows="5" style="width:500px" />
               </el-form-item>
               <el-form-item label="描述" prop="describe">
-                <el-input v-model="tempFilter.describe" type="textarea" />
+                <el-input v-model="tempFilter.describe" type="textarea" :rows="4" style="width:500px" />
               </el-form-item>
-              <el-form-item label="业务属性" prop="bizAttrUuid">
-                <el-select ref="bizAttrUuid" v-model="tempFilter.bizAttrUuid" placeholder="请选择业务属性">
+              <el-form-item label="关联业务属性" prop="bizAttrUuid">
+                <el-select ref="bizAttrUuid" v-model="tempFilter.bizAttrUuid" style="width:500px" placeholder="请选择业务属性">
                   <el-option
                     v-for="item in bizJson"
                     :key="item.bizAttrUuid"
@@ -143,6 +142,28 @@
             <el-button type="primary" @click="dialogStatusFilter==='create'?createDataFilter():updateDataFilter()">确定</el-button>
           </div>
         </el-dialog>
+
+        <el-dialog :title="预览" :visible.sync="dialogFormVisibleTree">
+          <MyElTree
+            ref="tree1"
+            v-loading="tree1Loading"
+            :props="props"
+            class="filter-tree"
+            :highlight-current="true"
+            :data="treeData1"
+            node-key="id"
+            :filter-node-method="filterNode"
+            show-checkbox
+          >
+            <span slot-scope="{ node, data }" class="custom-tree-node">
+              <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
+              <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
+              <i v-if="data.type==='table'" class="el-icon-tickets" style="color:#409EFF" />
+              <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
+              <span :title="node.name">{{ node.label }}</span>
+            </span>
+          </MyElTree>
+        </el-dialog>
       </div>
     </div>
     <div slot="footer" style="float:right; margin-right:100px">
@@ -153,23 +174,29 @@
 </template>
 
 <script>
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { update } from '@/api/data/scene'
+import MyElTree from '@/components/Ace/tree/src/tree.vue'
+import { update, initSceneTree } from '@/api/data/scene'
 import { listByPage } from '@/api/data/biz-attr'
 import { listByPageGrp, saveGrp, updateGrp, delGrp, getById } from '@/api/data/sceneGrp'
 import { listByPageFilter, saveFilter, updateFilter, delFilter, getByIdFilter } from '@/api/data/sceneFilter'
 export default {
-  components: { Pagination },
+  components: { MyElTree },
   data() {
     return {
+      treeData1: [],
       tableKey: 'sceneUuid',
       tableKeyFilter: 'sceneUuid',
       list: null,
       listFilter: null,
+      props: {
+        label: 'label',
+        isLeaf: 'leaf'
+      },
       total: 0,
       totalFilter: 0,
       listLoading: false,
       listLoadingFilter: false,
+      tree1Loading: false,
       bizJson: [],
       pageQuery: {
         condition: null,
@@ -207,15 +234,20 @@ export default {
       selectionsFilter: [],
       dialogFormVisible: false,
       dialogFormVisibleFilter: false,
+      dialogFormVisibleTree: false,
       dialogStatus: '',
       dialogStatusFilter: '',
       textMap: {
-        update: '编辑业务属性',
-        create: '添加业务属性'
+        update: '修改用户组定义',
+        create: '新增用户组定义'
+      },
+      textMapFilter: {
+        update: '修改数据筛选器',
+        create: '新增数据筛选器'
       },
       rules: {
-        sceneName: [{ required: true, message: '请填写业务属性名称', trigger: 'change' }],
-        sceneCode: [{ required: true, message: '请填写业务属性编码', trigger: 'change' }]
+        sceneName: [{ required: true, message: '请填写场景名称', trigger: 'change' }],
+        sceneCode: [{ required: true, message: '请填写场景编码', trigger: 'change' }]
       },
       rulesGrp: {
         grpName: [{ required: true, message: '请填写组名称', trigger: 'change' }],
@@ -235,6 +267,10 @@ export default {
     this.allList()
   },
   methods: {
+    filterNode(value, data) {
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
+    },
     // 初始化页面所有列表
     allList() {
       this.temp.sceneUuid = this.$route.query.sceneUuid
@@ -242,6 +278,12 @@ export default {
       this.temp.sceneCode = this.$route.query.sceneCode
       this.getList()
       this.getListFilter()
+    },
+    selectFilterOne(sceneGrpUuid) {
+      this.dialogFormVisibleTree = true
+      initSceneTree(sceneGrpUuid).then(resp => {
+        this.treeData1 = resp.data
+      })
     },
     // 初始化用户组定义
     getList() {

@@ -9,6 +9,8 @@
       />
     </div>
     <el-row>
+      <el-button type="primary" @click="openParamDraw">渲染参数界面</el-button>
+      <el-button type="primary" @click="giveValuetoParam">给参数赋值</el-button>
       <el-button
         type="primary"
         @click="relationProject('453453', '项目2')"
@@ -25,6 +27,9 @@
       >结果共享</el-button>
       <el-button type="primary" @click="exportExcel">导出</el-button>
     </el-row>
+    <el-dialog title="参数替换" :visible.sync="dialogFormVisible">
+      <paramShow ref="apple" />
+    </el-dialog>
     <el-table
       id="table"
       :key="tableKey"
@@ -159,8 +164,10 @@ import { elementInside } from 'dropzone'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import AV from 'leancloud-storage'
+import paramShow from '@/views/analysis/modelParam/paramShow'
+import { getParamSettingArr } from '@/api/analysis/auditParam'
 export default {
-  components: { Pagination, QueryField },
+  components: { Pagination, QueryField, paramShow },
   data() {
     return {
       tableKey: 'errorUuid',
@@ -187,10 +194,24 @@ export default {
       notShare: [], // 存储不是共享的运行结果
       success: false, // 用来测试open2方法里的batchDeleteRunTaskRel方法返回值是否为true，如果为true则success为true
       success1: false, // 用来测试open2方法里的deleteRunResultShare方法返回值是否为true，如果为true则success为true
-      selected1: [] // 存储表格中选中的数据
+      selected1: [], // 存储表格中选中的数据
+      dialogFormVisible: false
     }
   },
   computed: {},
+  watch: {
+    dialogFormVisible(value) {
+      this.$nextTick(function() {
+        if (value) {
+          const obj = [{ 'id': '{#C91D28BBB63000015328946CD72016FD#}', 'copyParamId': 'C91D28BBB63000015328946CD72016FD', 'moduleParamId': '402884c9703337a601703349eb240003', 'allowedNull': '0', 'name': 'name' }, { 'id': '{#C91D28BD3C2000016F3E21B91A401BB0#}', 'copyParamId': 'C91D28BD3C2000016F3E21B91A401BB0', 'moduleParamId': 'e720b3056f3bc011016f3c59df0300ee', 'allowedNull': 'null', 'name': '客户姓名' }]
+          // let obj = []
+          const sql =
+            "select * from AA_MODEL WHERE MODEL_UUID = '{#C91B89F3705000014C91C82013231830#}'"
+          this.$refs.apple.createParamTableHtml(true, obj, true)
+        }
+      })
+    }
+  },
   created() {
     this.getLikeList()
   },
@@ -619,6 +640,22 @@ export default {
       // 触发父类方法addTab在index.vue界面，同时穿过三个参数assistTables：辅表（运行结果表）数组  mainTable：主表（运行结果表对象）
       // modelName：模型的名称，用来给新页签赋值title属性用
       this.$emit('addtab', assistTables, mainTable, modelName, modelUuid)
+    },
+    openParamDraw() {
+      this.dialogFormVisible = true
+    },
+    giveValuetoParam() {
+      const obj = [
+        {
+          id: '{#C91B89F3705000014C91C82013231830#}',
+          copyParamId: 'C91B89F3705000014C91C82013231830',
+          moduleParamId: '4028c3817038f8e5017038f980eb0001',
+          allowedNull: '1',
+          name: 'kmh'
+        }
+      ]
+      var obj1 = getParamSettingArr(obj)
+      console.log(obj1)
     }
   }
 }

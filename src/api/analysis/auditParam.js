@@ -459,8 +459,12 @@ export function initParamHtml(sql, paramsArr, name, modelId) {
     // 获取数据库所有母参数信息集合以及该模型用到的参数集合（可以不传模型ID）
     findParamsAndModelRelParams(modelId).then((e) => {
       if (e.isError) {
-        load.hide()
-        alertMsg('错误', e.data.message, 'info')
+        this.$message({
+          type: 'error',
+          message: e.data.message
+        })
+        // this.$message(e.data.message)
+        // alertMsg("错误", e.data.message, "info");
       } else {
         var paramList = e.data.paramList // 定义所有母参信息数组
         if (modelId != '') { // 如果模型ID不为空，暂定认为是模型运行
@@ -531,7 +535,132 @@ export function initParamHtml(sql, paramsArr, name, modelId) {
           }
         }
         if (isError) {
-          alertMsg('错误', message, 'info')
+          this.$message({
+            type: 'error',
+            message: message
+          })
+          // this.$message(message)
+          // alertMsg("错误", message, "info");
+        } else {
+          // $(".panel-body").html(paramHtml);
+          $('#paramCom').html(paramHtml)
+          console.log($('.panel-body'))
+          console.log($('#paramCom'))
+          initParamInputAndSelect()
+        }
+      }
+    })
+  } catch (e) {
+    console.info(e)
+  }
+}
+
+/**
+ * 根据有效的参数数组组织参数html界面 横向渲染
+ * @param paramsArr 有效的参数数组集合（模型不用传此参数）
+ * @param name 标题名称（可以是SQL编辑器或某个模型的名称）
+ * @param modelId 模型名称（SQL编辑器不用传此参数）
+ * @description 只适用于SQL编辑器执行和单个模型的运行
+ * paramsArr中的对象结构：
+ * var obj = {
+ *      "id" : xx,//加上占位符后的复制参数ID
+ *      "copyParamId" : xx,//复制参数ID
+ *      "moduleParamId":xx,//复制参数的母参ID
+ *      "allowedNull": xx,//是否允许为空（0、否，1、是）
+ *      "name" : xx//参数名称
+ *  }
+ * @author 梁瑞
+ */
+export function initcrossrangeParamHtml(sql, paramsArr, name, modelId) {
+  replaceSql = sql
+  $('#accordion').find('a').html(name)
+  modelId = (modelId == null || typeof modelId === 'undefined') ? '' : modelId
+  try {
+    // 获取数据库所有母参数信息集合以及该模型用到的参数集合（可以不传模型ID）
+    findParamsAndModelRelParams(modelId).then((e) => {
+      if (e.isError) {
+        this.$message({
+          type: 'error',
+          message: e.data.message
+        })
+        // this.$message(e.data.message)
+        // alertMsg("错误", e.data.message, "info");
+      } else {
+        var paramList = e.data.paramList // 定义所有母参信息数组
+        if (modelId != '') { // 如果模型ID不为空，暂定认为是模型运行
+          var paramRelList = e.data.paramRelList // 定义所有与该模型关联的参数集合
+          // 先组织有效参数数组集合paramsArr
+          paramsArr = []
+          for (var i = 0; i < paramRelList.length; i++) { // 遍历所有模型关联参数
+            var obj = {
+              'id': '{#' + paramRelList[i].PARAM_ID + '#}',
+              'copyParamId': paramRelList[i].PARAM_ID,
+              'moduleParamId': paramRelList[i].LINK_PARAM_UUID,
+              'name': paramRelList[i].PARAM_NAME
+            }
+            allParamFor: for (var j = 0; j < paramList.length; j++) { // 设置模型关联参数的是否允许为空属性为母参的是否为空的属性
+              if (paramRelList[i].LINK_PARAM_UUID == paramList[j].ammParamUuid) {
+                if (typeof paramList[j].paramChoice.allowedNull === 'undefined') {
+                  obj.allowedNull = '1' // 默认为可以为空
+                } else {
+                  obj.allowedNull = paramList[j].paramChoice.allowedNull
+                }
+                break allParamFor
+              }
+            }
+            paramsArr.push(obj) // paramRelList中是按照排序值升序的条件进行存储，因此paramsArr是有顺序的
+          }
+          // 如果是模型运行，则给每个母参设置默认值和排序值
+          for (var j = 0; j < paramList.length; j++) { // 遍历所有母版参数
+            allParamRelFor: for (var k = 0; k < paramRelList.length; k++) { // 遍历所有模型关联参数
+              if (paramRelList[k].LINK_PARAM_UUID == paramList[j].ammParamUuid) { // 在关联参数中匹配骑对应的母参ID
+                if (paramList[j].inputType == 'lineinp' || paramList[j].inputType == 'treeinp') { // 下拉列表或下拉树参数
+                  paramList[j].defaultVal = JSON.parse(paramRelList[k].PARAM_VALUE) // 默认值为数组字符串
+                } else { // 文本框或日期参数
+                  paramList[j].defaultVal = paramRelList[k].PARAM_VALUE // 默认值为字符串
+                }
+                paramList[j].sortVal = paramRelList[k].PARAM_SORT // 排序值
+                break allParamRelFor
+              }
+            }
+          }
+        }
+        arr = paramsArr
+        var paramHtml = ''
+        var moduleParamIdArr = [] // 存放已匹配的母参ID
+        var isError = false
+        var message = ''
+        paramsArrFor: for (var i = 0; i < paramsArr.length; i++) { // 遍历所有有效参数
+          for (var j = 0; j < paramList.length; j++) { // 遍历所有母参
+            var description = '（参数说明：无）'
+            if (typeof paramList[j].description !== 'undefined') {
+              description = '（参数说明：' + paramList[j].description + '）'
+            }
+            if (paramsArr[i].moduleParamId === paramList[j].ammParamUuid && $.inArray(paramsArr[i].moduleParamId, moduleParamIdArr) == -1) { // 匹配复制参数的母版参数ID
+              paramHtml += "<div class='row' style='white-space: nowrap;'><div class='col-sm-12'><div class='form-group'><label class='col-sm-2' style='text-align: right;padding: 10px 7px;width:100px'>" + paramsArr[i].name + "&nbsp;&nbsp;</label><div class='col-sm-4'>" // 加上前面的参数名称
+              var RO = initCrossrangeParamHtml_Common(paramList[j])
+              if (RO.isError) {
+                isError = RO.isError
+                message = RO.message
+                paramHtml += "</div><label class='col-sm-4'></label></div></div></div>"
+              } else {
+                paramHtml += RO.htmlContent + RO.spanHtml + '</div></div></div></div>'
+              }
+              moduleParamIdArr.push(paramsArr[i].moduleParamId)
+              break
+            }
+          }
+          if (isError) {
+            break paramsArrFor
+          }
+        }
+        if (isError) {
+          this.$message({
+            type: 'error',
+            message: message
+          })
+          // this.$message(message)
+          // alertMsg("错误", message, "info");
         } else {
           // $(".panel-body").html(paramHtml);
           $('#paramCom').html(paramHtml)
@@ -554,7 +683,7 @@ export function initParamHtml(sql, paramsArr, name, modelId) {
  * @param selectTreeNum 下拉树参数的个数
  * @author JL
  */
-function initParamHtml_Common(paramObj, selectNum, selectTreeNum) {
+export function initParamHtml_Common(paramObj, selectNum, selectTreeNum) {
   var obj = {
     'htmlContent': '',
     'isError': false,
@@ -562,7 +691,186 @@ function initParamHtml_Common(paramObj, selectNum, selectTreeNum) {
   }
   var divWidth = 'width: calc(100% - 40px);'
   var title = paramObj.paramChoice.allowedNull === 0 ? '不可为空' : '可为空'
-  obj.spanHtml = paramObj.paramChoice.allowedNull === 0 ? '<div style="color: red;display: inline-block;font-weight: bold;font-size: 20px;">*</div>' : '' // 如果不可为空则在后面加上*
+  obj.spanHtml = paramObj.paramChoice.allowedNull === 0 ? '<div style="color: red;display: inline-block;font-weight: bold;font-size: 20px;">*&nbsp&nbsp</div>' : '' // 如果不可为空则在后面加上*
+  switch (paramObj.inputType) {
+    case 'lineinp': // 下拉列表
+      var hasSql = false // 下拉列表是非SQL方式或者是SQL方式但值为空
+      var dataArr = [] // 下拉列表数据的数组
+      var paramArr = [] // 影响当前参数的主参集合
+      var associatedParamIdArr = [] // 受当前参数影响的被关联参数ID集合
+      var paramSql = paramObj.paramChoice.optionsSql
+      // 备选sql为空的情况下 取静态的option值
+      if (!paramSql) { // 如果没有被选sql的时候进入
+        $.each(paramObj.paramChoice.paramOptionsList, function(i, v) {
+          if (v.optionsVal && v.optionsName) {
+            // 组织下拉选项数据
+            var optionObj = {
+              'name': v.optionsName,
+              'value': v.optionsVal
+            }
+            dataArr.push(optionObj)
+          }
+        })
+      } else { // 如果有被选sql的时候
+        if (paramSql !== '') {
+          hasSql = true // 下拉列表是SQL方式
+          if (typeof paramObj.defaultVal !== 'undefined') { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据  当时写的时候有sql和没sql是分开的
+            executeParamSql(paramObj.paramChoice.optionsSql).then(e => {
+              if (e.data.isError) {
+                obj.isError = true
+                obj.message = '获取参数【' + paramObj.paramName + '】的值的失败，原因：' + e.data.message
+              } else {
+                if (e.data.valueList && e.data.valueList.length > 0) {
+                  for (var k = 0; k < e.data.valueList.length; k++) {
+                    var paramObj = {
+                      'name': e.data.valueList[k].paramName,
+                      'value': e.data.valueList[k].paramValue
+                    }
+                    dataArr.push(paramObj)
+                  }
+                }
+              }
+            }).catch(function() {
+              obj.isError = true
+              obj.message = '获取参数【' + paramObj.paramName + '】的值的请求失败'
+            })
+          }
+          // 获取当前参数与被关联参数之间的关系数据
+          // $.ajax({
+          //   url: contextPath + "/param/findParamRelations",
+          //   method: "POST",
+          //   cache: false,
+          //   data: {
+          //     "paramId": paramObj.ammParamUuid
+          //   },
+          //   dataType: "json",
+          //   async: false,
+          //   success: function (e) {
+          //     if (e.isError) {
+          //       obj.isError = true;
+          //       obj.message = e.message;
+          //     } else {
+          //       paramArr = (e.paramList && e.paramList.length > 0) ? e.paramList : [];
+          //       var associatedParamArr = e.associatedParamList ? e.associatedParamList : [];
+          //       for (var k = 0; k < associatedParamArr.length; k++) {
+          //         associatedParamIdArr.push(associatedParamArr[k].associatedParamId);
+          //       }
+          //     }
+          //   },
+          //   error: function () {
+          //     obj.isError = true;
+          //     obj.message = "获取参数【" + paramObj.paramName + "】的关联参数的请求失败";
+          //   }
+          // });
+        }
+      }
+      var divId = 'selectParam' + (typeof selectNum !== 'undefined' ? selectNum : paramObj.ammParamUuid)
+      obj.htmlContent += "<div id='" + divId + "' title='" + title + "'  data-id='" + paramObj.ammParamUuid + "' data-name='" + paramObj.paramName + "' data-choiceType='" + paramObj.paramChoice.choiceType + "'" +
+        (hasSql ? " data-sql='" + strEncryption(paramSql) + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
+        (typeof paramObj.defaultVal !== 'undefined' ? " data-defaultVal='" + JSON.stringify(paramObj.defaultVal) + "' " : '') +
+        (dataArr.length > 0 ? " data='" + JSON.stringify(dataArr) + "' " : '') +
+        (typeof paramObj.paramChoice.allowedNull !== 'undefined' ? " data-allowedNull='" + paramObj.paramChoice.allowedNull + "' " : '') +
+        " class='xm-select-demo selectParam paramTr' style='" + divWidth + "display: inline-block;'></div>"
+      if (typeof selectNum !== 'undefined') {
+        obj.selectNum = selectNum + 1
+      }
+      break
+    case 'textinp': // 文本框
+      if (typeof paramObj.dataLength !== 'undefined') {
+        title += ',参数值的长度为' + paramObj.dataLength
+      }
+      obj.htmlContent += "<input type='text' title='" + title + "' class='textParam paramOption form-control paramTr' data-id='" + paramObj.ammParamUuid + "' data-name='" + paramObj.paramName + "'" +
+        (typeof paramObj.paramChoice.allowedNull !== 'undefined' ? " data-allowedNull='" + paramObj.paramChoice.allowedNull + "' " : '') +
+        (typeof paramObj.defaultVal !== 'undefined' ? " data-defaultVal='" + paramObj.defaultVal + "' " : '') +
+        (typeof paramObj.dataLength !== 'undefined' ? "data-dataLength='" + paramObj.dataLength + "'" : '') + " style='" + divWidth + "display: inline-block;'/>"
+      break
+    case 'timeinp': // 时间
+      if (paramObj.dataType === 'date') { // 暂时只支持日期，不支持时间段
+        obj.htmlContent += "<div class='input-group date form_date' title='" + title + "' data-date-format='yyyy-mm-dd' data-link-format='yyyy-mm-dd' style='" + divWidth + "display: inline-flex;'>" +
+          "<input class='form-control paramOption dataParam paramTr' data-id='" + paramObj.ammParamUuid + "' data-name='" + paramObj.paramName + "' " +
+          (typeof paramObj.paramChoice.allowedNull !== 'undefined' ? " data-allowedNull='" + paramObj.paramChoice.allowedNull + "' " : '') +
+          (typeof paramObj.defaultVal !== 'undefined' ? " data-defaultVal='" + paramObj.defaultVal + "'" : '') + " readonly type='text'/>" +
+          "<span class='input-group-addon' style='width: auto;'><span class='glyphicon glyphicon-remove'></span></span></div>"
+      }
+      break
+    case 'treeinp': // 下拉树
+      var dataArr = [] // 下拉树数据的数组
+      var paramArr = [] // 影响当前参数的主参集合
+      var associatedParamIdArr = [] // 受当前参数影响的被关联参数ID集合
+      var paramSql = paramObj.paramChoice.optionsSql
+      if (paramSql !== '') {
+        if (typeof paramObj.defaultVal !== 'undefined') { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
+          getSelectTreeData(paramSql).then(e => {
+            if (e.data.isError) {
+              obj.isError = true
+              obj.message = '获取参数【' + paramObj.paramName + '】的值的失败，原因：' + e.data.message
+            } else {
+              dataArr = (e.data.result && e.data.result.length > 0) ? organizeSelectTreeData(e.data.result) : []
+            }
+          }).catch(function(error) {
+            obj.isError = true
+            obj.message = '获取参数【' + paramObj.paramName + '】的值的请求失败'
+          })
+        }
+        // 获取当前参数与被关联参数之间的关系数据
+        // $.ajax({
+        //   url: contextPath + "/param/findParamRelations",
+        //   method: "POST",
+        //   cache: false,
+        //   data: {
+        //     "paramId": paramObj.ammParamUuid
+        //   },
+        //   dataType: "json",
+        //   async: false,
+        //   success: function (e) {
+        //     if (e.isError) {
+        //       obj.isError = true;
+        //       obj.message = e.message;
+        //     } else {
+        //       paramArr = (e.paramList && e.paramList.length > 0) ? e.paramList : [];
+        //       var associatedParamArr = e.associatedParamList ? e.associatedParamList : [];
+        //       for (var k = 0; k < associatedParamArr.length; k++) {
+        //         associatedParamIdArr.push(associatedParamArr[k].associatedParamId);
+        //       }
+        //     }
+        //   },
+        //   error: function () {
+        //     obj.isError = true;
+        //     obj.message = "获取参数【" + paramObj.paramName + "】的关联参数的请求失败";
+        //   }
+        // });
+      }
+      var divId = 'selectTreeParam' + (typeof selectTreeNum !== 'undefined' ? selectTreeNum : paramObj.ammParamUuid)
+      obj.htmlContent += "<div id='" + divId + "' title='" + title + "'  data-id='" + paramObj.ammParamUuid + "' data-name='" + paramObj.paramName + "' data-choiceType='" + paramObj.paramChoice.choiceType + "' " +
+        (typeof paramObj.paramChoice.allowedNull !== 'undefined' ? " data-allowedNull='" + paramObj.paramChoice.allowedNull + "' " : '') +
+        (paramSql !== '' ? " data-sql='" + strEncryption(paramSql) + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
+        (typeof paramObj.defaultVal !== 'undefined' ? " data-defaultVal='" + JSON.stringify(paramObj.defaultVal) + "' data='" + JSON.stringify(dataArr) + "' " : '') +
+        " class='xm-select-demo selectTreeParam paramTr' style='" + divWidth + "display: inline-block;'></div>"
+      if (typeof selectTreeNum !== 'undefined') {
+        obj.selectTreeNum = selectTreeNum + 1
+      }
+      break
+  }
+  return obj
+}
+
+/**
+ * 根据参数类型组织参数的HTML元素
+ * createParamNodeHtml()方法内部调用的方法
+ * @param paramObj 参数对象
+ * @param selectNum 下拉列表参数的个数
+ * @param selectTreeNum 下拉树参数的个数
+ * @author JL
+ */
+export function initCrossrangeParamHtml_Common(paramObj, selectNum, selectTreeNum) {
+  var obj = {
+    'htmlContent': '',
+    'isError': false,
+    'message': ''
+  }
+  var divWidth = 'width: 200px;'
+  var title = paramObj.paramChoice.allowedNull === 0 ? '不可为空' : '可为空'
+  obj.spanHtml = paramObj.paramChoice.allowedNull === 0 ? '<div style="color: red;display: inline-block;font-weight: bold;font-size: 20px;">*&nbsp&nbsp</div>' : '' // 如果不可为空则在后面加上*
   switch (paramObj.inputType) {
     case 'lineinp': // 下拉列表
       var hasSql = false // 下拉列表是非SQL方式或者是SQL方式但值为空
@@ -1002,7 +1310,12 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
           sql = 'SELECT * FROM (' + sql + ') where 1=1' + sqlWhereStr
           executeParamSql(sql).then(res => {
             if (res.data.isError) {
-              alertMsg('错误', '获取参数【' + paramName + '】的值的失败，原因：' + res.data.message, 'error')
+              this.$message({
+                type: 'error',
+                message: '获取参数【' + paramName + '】的值的失败，原因：' + res.data.message
+              })
+              // this.$message("获取参数【" + paramName + "】的值的失败，原因：" + res.data.message)
+              // alertMsg("错误", "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message, "error");
             } else {
               var newDataArr = []
               if (idStr === '#selectParam') {
@@ -1032,7 +1345,12 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
         initDataArr = true
         executeParamSql(sql).then(res => {
           if (res.data.isError) {
-            alertMsg('错误', '获取参数【' + paramName + '】的值的失败，原因：' + res.data.message, 'error')
+            this.$message({
+              type: 'error',
+              message: '获取参数【' + paramName + '】的值的失败，原因：' + res.data.message
+            })
+            // this.$message( "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message)
+            // alertMsg("错误", "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message, "error");
           } else {
             if (idStr === '#selectParam') {
               for (var k = 0; k < res.data.paramList.length; k++) {
@@ -1059,7 +1377,12 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
           sql = 'SELECT * FROM (' + sql + ') where 1=1' + sqlWhereStr
           getSelectTreeData(sql).then(res => {
             if (res.data.isError) {
-              alertMsg('错误', '获取参数【' + paramName + '】的值的失败，原因：' + res.data.message, 'error')
+              this.$message({
+                type: 'error',
+                message: '获取参数【' + paramName + '】的值的失败，原因：' + res.data.message
+              })
+              // this.$message( "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message)
+              // alertMsg("错误", "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message, "error");
             } else {
               var newDataArr = []
               if (idStr === '#selectParam') {
@@ -1088,7 +1411,12 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
         initDataArr = true
         getSelectTreeData(sql).then(res => {
           if (res.data.isError) {
-            alertMsg('错误', '获取参数【' + paramName + '】的值的失败，原因：' + res.data.message, 'error')
+            this.$message({
+              type: 'error',
+              message: '获取参数【' + paramName + '】的值的失败，原因：' + res.data.message
+            })
+            // this.$message("获取参数【" + paramName + "】的值的失败，原因：" + res.data.message)
+            // alertMsg("错误", "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message, "error");
           } else {
             if (idStr === '#selectParam') {
               for (var k = 0; k < res.data.paramList.length; k++) {
@@ -1119,7 +1447,12 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
       $(idStr + paramId).removeAttr('data-sqlWhereStr')
     }
   } catch (e) {
-    alertMsg('错误', '程序执行出错，刷新参数数据失败', 'error')
+    this.$message({
+      type: 'error',
+      message: '程序执行出错，刷新参数数据失败'
+    })
+    // this.$message("程序执行出错，刷新参数数据失败")
+    // alertMsg("错误", "程序执行出错，刷新参数数据失败", "error");
     console.info(e)
   }
   return initDataArr
@@ -1373,9 +1706,9 @@ export function replaceNodeParam() {
   // 循环所有节点
   var filterArr = [] // 参数条件的数组，包含参数ID和参数值
   var paramNum = 0 // 记录参数不允许为空却未输入值的参数数量
-  var hasAllowedNullParam = false // 本次设置是否含有可为空的参数条件
+  var hasAllowedNullParam = false; // 本次设置是否含有可为空的参数条件
   // 获取参数查询条件（文本框）
-  $('.paramOption').each(function() {
+  ($('#paramCom').find('.paramOption')).each(function() {
     var moduleParamId = $(this).attr('data-id') // 母参数ID
     var paramName = $(this).attr('data-name') // 母参数名称
     var allowedNull = typeof $(this).attr('data-allowedNull') !== 'undefined' ? $(this).attr('data-allowedNull') : '1' // 是否允许为空，当为undefined时默认为可为空
@@ -1404,9 +1737,9 @@ export function replaceNodeParam() {
         paramNum++
       }
     }
-  })
+  });
   // 获取参数查询条件（下拉列表）
-  $('.selectParam').each(function(i, v) {
+  ($('#paramCom').find('.selectParam')).each(function(i, v) {
     var moduleParamId = $(this).attr('data-id') // 母参数ID
     var paramName = $(this).attr('data-name') // 母参数名称
     var allowedNull = typeof $(this).attr('data-allowedNull') !== 'undefined' ? $(this).attr('data-allowedNull') : '1' // 是否允许为空，当为undefined时默认为可为空
@@ -1454,10 +1787,10 @@ export function replaceNodeParam() {
         paramNum++
       }
     }
-  })
+  });
 
   // 获取参数查询条件（下拉树）
-  $('.selectTreeParam').each(function(i, v) {
+  ($('#paramCom').find('.selectTreeParam')).each(function(i, v) {
     var moduleParamId = $(this).attr('data-id') // 母参数ID
     var paramName = $(this).attr('data-name') // 母参数名称
     var allowedNull = typeof $(this).attr('data-allowedNull') !== 'undefined' ? $(this).attr('data-allowedNull') : '1' // 是否允许为空，当为undefined时默认为可为空
@@ -1552,6 +1885,323 @@ export function replaceNodeParam() {
   return returnObj
 }
 
+/**
+ * 获取设置的参数默认值和排序值
+ * @param paramArr 有效的参数数组集合（被拖拽使用的参数集合）
+ * @return returnObj
+ * @description 返回值对象结构：
+ * var returnObj = {
+ *     "verify" : xx,//验证是否通过
+ *     "message" : xx,//异常信息
+ *     "paramSettingArr" : [] //返回组织好的参数数组
+ *   }
+ * paramSettingArr数组中的对象结构：
+ * var obj = {
+ *      "paramId" : xx,//参数ID
+ *      "moduleParamId" : xx,//母参ID
+ *      "defaultVal" : xx,//参数默认值（若对象中没有此属性，则默认该对象无默认值）
+ *      "sortVal" : xx//参数排序值
+ *   }
+ * @author JL
+ */
+export function getParamSettingArr(paramArr) {
+  // 组装对象
+  var returnObj = {
+    'verify': true,
+    'message': '',
+    'paramSettingArr': []
+  }
+  // 绑定文本框输入的默认值
+  $('.paramOption').each(function(i, v) {
+    if ($(this).val() !== '') { // 如果当前值不为空
+      var defaultVal = $(this).val()
+      if ($(this).hasClass('textParam')) { // 如果是文本框参数（非日期）验证文本框参数值的长度是否满足
+        var paramName = $(this).attr('data-name')// 获取参数名称
+        var dataLength = $(this).attr('data-dataLength')// 获取参数值长度
+        if (dataLength == 'null') {
+          dataLength = null
+        }
+        if (dataLength !== null && defaultVal.length !== parseInt(dataLength)) { // 如果该参数有长度限制且默认值不等于设置的长度值
+          returnObj.verify = false
+          returnObj.message = '参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
+          return false
+        }
+      }
+      $(this).attr('data-value', defaultVal)
+    }
+  })
+  if (!returnObj.verify) {
+    return returnObj
+  }
+  // 绑定下拉列表选中的默认值
+  $('.selectParam').each(function(i, v) {
+    var moduleParamId = $(this).attr('data-id')// 母参ID
+    var selectParamXs = xmSelect.get('#selectParam' + moduleParamId, true)
+    var paramSelectedObj = selectParamXs.getValue()// 获取选中的参数值名称
+    var defaultValueArr = []
+    for (var j = 0; j < paramSelectedObj.length; j++) {
+      defaultValueArr.push(paramSelectedObj[j].value)
+    }
+    if (defaultValueArr.length > 0) {
+      $(this).attr('data-value', JSON.stringify(defaultValueArr))
+    }
+  })
+  // 绑定下拉树选中的默认值
+  $('.selectTreeParam').each(function(i, v) {
+    var moduleParamId = $(this).attr('data-id')// 母参ID
+    var selectTreeParamXs = xmSelect.get('#selectTreeParam' + moduleParamId, true)
+    var paramSelectedObj = selectTreeParamXs.getValue()// 获取选中的参数值名称
+    var defaultValueArr = []
+    for (var j = 0; j < paramSelectedObj.length; j++) {
+      defaultValueArr.push(paramSelectedObj[j].value)
+    }
+    if (defaultValueArr.length > 0) {
+      $(this).attr('data-value', JSON.stringify(defaultValueArr))
+    }
+  })
+
+  for (var j = 0; j < paramArr.length; j++) {
+    var obj = {
+      'id': '{#' + paramArr[j].copyParamId + '#}',
+      'copyParamId': paramArr[j].copyParamId,
+      'moduleParamId': paramArr[j].moduleParamId,
+      'sort': 1, // 默认排序值为1
+      'name': paramArr[j].name
+    }
+    // 设置该参数的默认值和排序值
+    var defaultVal = ''
+    var sortVal = ''
+    $('.paramTr').each(function(k, v) { // 遍历表格行中的参数标签
+      var moduleParamId = $(this).attr('data-id')// 取得当前行绑定的参数ID
+      if (obj.moduleParamId === moduleParamId) {
+        if (typeof ($(this).attr('data-value')) !== 'undefined') {
+          if ($(this).hasClass('paramOption')) { // 文本框
+            defaultVal = $(this).attr('data-value')
+          } else { // 下拉框
+            defaultVal = JSON.parse($(this).attr('data-value'))
+          }
+        }
+        sortVal = parseInt(k + 1)
+        return false
+      }
+    })
+    obj.paramValue = defaultVal
+    if (sortVal !== '') {
+      obj.sort = sortVal
+    }
+    returnObj.paramSettingArr.push(obj)
+  }
+  return returnObj
+}
+
+/**
+ * 反显已配置的参数（默认值和排序）
+ * @param canEditor 表单元素是否可编辑
+ * @author JL
+ */
+export function initParam(canEditor) {
+  // 初始化普通文本框
+  if ($('.textParam').length > 0) {
+    $('.textParam').each(function(i, v) {
+      if (canEditor === false) {
+        $(this).attr('readonly', 'readonly')
+      }
+      // 设置默认值
+      var defaultVal = $(this).attr('data-defaultVal')
+      if (typeof defaultVal !== 'undefined') {
+        $(this).val(defaultVal)// 设置默认值
+      }
+    })
+  }
+  // 初始化日期插件
+  if ($('.form_date').length > 0) {
+    $('.form_date').each(function(i, v) {
+      var setting = {
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        todayBtn: true,
+        autoclose: true,
+        todayHighlight: true,
+        startView: 2,
+        showMeridian: true,
+        minView: 2
+      }
+      if (canEditor === false) {
+        $(this).find('.dataParam').attr('disabled', 'disabled')
+        $(this).find('.input-group-addon').hide()
+      }
+      // 设置默认值
+      var defaultVal = $(this).find('.dataParam').attr('data-defaultVal')
+      if (typeof defaultVal !== 'undefined') {
+        $(this).find('.dataParam').val(defaultVal)// 设置默认值
+      }
+      $(this).datetimepicker(setting)
+    })
+  }
+  // 初始化下拉列表
+  if ($('.selectParam').length > 0) {
+    $('.selectParam').each(function(i, v) {
+      var choiceType = $(this).attr('data-choiceType')// 下拉列表的数据是单选还是多选
+      var moduleParamId = $(this).attr('data-id')// 母参ID
+      var paramName = $(this).attr('data-name')// 母参数名称
+      var sql = typeof $(this).attr('data-sql') !== 'undefined' ? strDecryption($(this).attr('data-sql')) : ''// 该参数是否有SQL语句（0否1是）
+      var dataArr = typeof $(this).attr('data') !== 'undefined' ? JSON.parse($(this).attr('data')) : []// 下拉列表数据
+      var initDataArr = false// 是否初始化数据
+      var selectSetting = {
+        el: '#selectParam' + moduleParamId, // 此处不使用【i】的原因在于每个参数都唯一不会重复，故【el】唯一
+        filterable: true,
+        filterMethod: function(val, item, index, prop) {
+          if (val === item.value) { // 把value相同的搜索出来
+            return true
+          }
+          if (item.name && item.name.indexOf(val) != -1) { // 名称中包含的搜索出来
+            return true
+          }
+          return false// 不知道的就不管了
+        },
+        data: dataArr
+      }
+      if (choiceType == 1) { // 单选
+        selectSetting.radio = true
+        selectSetting.clickClose = true
+      }
+      if (canEditor === false) {
+        selectSetting.disabled = true
+      } else {
+        if (sql !== '') { // 当前参数是SQL语句方式
+          var associatedParamIdArr = typeof $(this).attr('data-associatedParamIdArr') !== 'undefined' ? JSON.parse($(this).attr('data-associatedParamIdArr')) : []// 当前参数的被关联的参数的集合
+          var paramArr = typeof $(this).attr('data-paramArr') !== 'undefined' ? JSON.parse($(this).attr('data-paramArr')) : []// 影响当前参数的主参数的集合
+          selectSetting.show = function() {
+            initDataArr = selectShow('#selectParam', moduleParamId, paramName, sql, choiceType, paramArr, dataArr, initDataArr)
+          }
+          selectSetting.hide = function() {
+            if (initDataArr && dataArr.length === 0) {
+              var selectXs = xmSelect.get('#selectParam' + moduleParamId, true)// 获取当前下拉框的实体对象
+              dataArr = selectXs.options.data
+              initDataArr = false
+            }
+            selectHide(associatedParamIdArr)
+          }
+        }
+      }
+      // 设置默认值
+      var defaultVal = $(this).attr('data-defaultVal')
+      if (typeof defaultVal !== 'undefined') {
+        var defaultValArr = JSON.parse(defaultVal)
+        if (defaultValArr.length > 0) {
+          selectSetting.initValue = defaultValArr// 初始化默认值
+        }
+      }
+      xmSelect.render(selectSetting)
+    })
+  }
+  // 初始化下拉树
+  if ($('.selectTreeParam').length > 0) {
+    $('.selectTreeParam').each(function(i, v) {
+      var choiceType = $(this).attr('data-choiceType')// 下拉树的数据是单选还是多选
+      var moduleParamId = $(this).attr('data-id')// 母参ID
+      var paramName = $(this).attr('data-name')// 母参数名称
+      var sql = typeof $(this).attr('data-sql') !== 'undefined' ? strDecryption($(this).attr('data-sql')) : ''// 该参数是否有SQL语句（0否1是）
+      var dataArr = typeof $(this).attr('data') !== 'undefined' ? JSON.parse($(this).attr('data')) : []// 下拉树数据
+      var initDataArr = false// 是否初始化数据
+      var selectSetting = {
+        el: '#selectTreeParam' + moduleParamId, // 此处不使用【i】的原因在于每个参数都唯一不会重复，故【el】唯一
+        // autoRow: true,
+        filterable: true,
+        tree: {
+          show: true,
+          showFolderIcon: true, // 显示三角标
+          showLine: true, // 显示虚线
+          indent: 30, // 间距
+          strict: false// 严格父子结构
+        },
+        height: 'auto',
+        data: dataArr
+      }
+      if (canEditor === false) {
+        selectSetting.disabled = true
+      } else {
+        if (sql !== '') { // 当前参数是SQL语句方式
+          var associatedParamIdArr = typeof $(this).attr('data-associatedParamIdArr') !== 'undefined' ? JSON.parse($(this).attr('data-associatedParamIdArr')) : []// 当前参数的被关联的参数的集合
+          var paramArr = typeof $(this).attr('data-paramArr') !== 'undefined' ? JSON.parse($(this).attr('data-paramArr')) : []// 影响当前参数的主参数的集合
+          selectSetting.show = function() {
+            initDataArr = selectShow('#selectTreeParam', moduleParamId, paramName, sql, choiceType, paramArr, dataArr, initDataArr)
+          }
+          selectSetting.hide = function() {
+            if (initDataArr && dataArr.length === 0) {
+              var selectXs = xmSelect.get('#selectTreeParam' + moduleParamId, true)// 获取当前下拉框的实体对象
+              dataArr = selectXs.options.data
+              initDataArr = false
+            }
+            selectHide(associatedParamIdArr)
+          }
+        }
+      }
+      // 设置默认值
+      var defaultVal = $(this).attr('data-defaultVal')
+      if (typeof defaultVal !== 'undefined') {
+        var defaultValArr = JSON.parse(defaultVal)
+        if (defaultValArr.length > 0) {
+          selectSetting.initValue = defaultValArr// 初始化默认值
+        }
+      }
+      if (choiceType == 1) { // 单选
+        selectSetting.radio = true
+        selectSetting.clickClose = true
+      } else { // 多选
+        selectSetting.on = function(data) {
+          var arr = data.arr
+          var change = data.change[0]// 每次选中change只有一个值
+          var newDataArr = []
+          var checkData = data.change.slice(0, 1)// 当前选中的节点数据
+          newDataArr.push(checkData[0])
+          newDataArr = getChildrenData(checkData[0], newDataArr)// 获取当前选中的节点数据和其子孙节点数据
+          if (data.isAdd) { // 选中时
+            // 先将dataArr在arr中已存在的部分移除
+            for (var k = 0; k < newDataArr.length; k++) { // 遍历即将取消选中的上级节点
+              for (var j = arr.length - 1; j >= 0; j--) { // 倒叙遍历所有选中的节点
+                if (arr[j].value === newDataArr[k].value && arr[j].pValue === newDataArr[k].pValue) { // 若存在
+                  arr.splice(j, 1)// 则倒序移除
+                  break
+                }
+              }
+            }
+            // 将下拉树组装好的数据进行拆分，把每个对象的孩子差分出来
+            var preDataArr = getSplitDataArr(dataArr)
+            // 根据当前节点递归获取未被选中的且需要被选中的上级节点
+            var parentUnCheckedArr = getParentUnChecked(checkData[0], [], preDataArr, arr)
+            newDataArr = newDataArr.concat(parentUnCheckedArr)
+            arr.push.apply(arr, newDataArr)// 将新选中的与已选中的进行合并
+          } else { // 取消选中时
+            // 根据当前节点递归获取被选中的且需要取消选中的上级节点
+            var parentCheckedArr = getParentChecked(checkData[0], [], arr)
+            // 遍历取消上级节点的选中状态
+            for (var k = 0; k < parentCheckedArr.length; k++) { // 遍历即将取消选中的上级节点
+              for (var j = arr.length - 1; j >= 0; j--) { // 倒叙遍历所有选中的节点
+                if (arr[j].value === parentCheckedArr[k].value && arr[j].pValue === parentCheckedArr[k].pValue) { // 若存在
+                  arr.splice(j, 1)// 则倒序移除
+                  break
+                }
+              }
+            }
+            // 遍历取消当前节点的子孙节点的选中状态
+            for (var k = 0; k < newDataArr.length; k++) { // 遍历即将取消选中的节点
+              for (var j = arr.length - 1; j >= 0; j--) { // 倒叙遍历所有选中的节点
+                if (arr[j].value === newDataArr[k].value && arr[j].pValue === newDataArr[k].pValue) { // 若存在
+                  arr.splice(j, 1)// 则倒序移除
+                  break
+                }
+              }
+            }
+          }
+          return arr
+        }
+      }
+      xmSelect.render(selectSetting)
+    })
+  }
+}
+
 // 加密的key
 var enctyptionKey = 'icsshxyhprojects'
 // 加密字符串
@@ -1616,5 +2266,152 @@ async function replaceModelSqlByParams(sql, paramArr) {
     url: '/paramController/replaceSqlByAllowedNull',
     method: 'post',
     data
+  })
+}
+
+export function getParentParamByParamArr(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/paramController/getParentParamByParamArr',
+    method: 'post',
+    data
+  })
+}
+
+export function createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
+  if (typeof canEditor === 'undefined') {
+    canEditor = false
+  }
+  // 第一步：先判断编辑的参数SQL语句是否有变化
+  if (!sqlIsChanged) {
+    // 如果SQL无变化
+    return
+  }
+  // 第二步：遍历已配置过得参数行（若已配置行的参数被删除，则删除）,同时找到已配置的参数
+  var hasSetParamIdArr = [] // 存放有效参数集合中已配置过得参数集合
+  var trLen = $('.setParamTr').length
+  for (var i = trLen - 1; i >= 0; i--) {
+    // 倒序遍历参数配置行
+    var moduleParamId = $('.setParamTr:eq(' + i + ')').attr(
+      'data-moduleParamId'
+    ) // 取得当前行绑定的母参ID
+    var num = 0 // 记录参数比较值不相等的次数
+    for (var j = 0; j < paramArr.length; j++) {
+      // 遍历有效的参数集合
+      if (moduleParamId !== paramArr[j].moduleParamId) {
+        num++
+      }
+      if (
+        $.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) == -1 &&
+        moduleParamId === paramArr[j].moduleParamId
+      ) {
+        hasSetParamIdArr.push(paramArr[j].moduleParamId)
+      }
+    }
+    if (num === paramArr.length) {
+      // 如果参数配置行的参数与有效参数集合匹配不上
+      $('.setParamTr:eq(' + i + ')').remove() // 则删除当前行
+    }
+  }
+  if (paramArr.length === 0) {
+    this.$message({
+      type: 'error',
+      message: '您尚未设置参数，无法进行参数配置'
+    })
+    // this.$message("您尚未设置参数，无法进行参数配置")
+    // alertMsg("提示", "您尚未设置参数，无法进行参数配置", "info");
+    return
+  }
+  // 第三步：获取数据库所有母参数信息集合以及该模型用到的参数集合
+  getParentParamByParamArr(paramArr).then((e) => {
+    var paramList = e.data.paramList // 定义所有母参信息数组
+    //   var paramRelList = e.data.paramRelList;//定义所有与该模型关联的参数集合
+    // 第四步：将模型下关联的参数的默认值和排序值绑定到对应的母参上
+    if (typeof paramArr[0].sort === undefined && typeof paramArr[0].paramValue === undefined) {
+
+    } else {
+      $('#tbody').empty()
+      for (var k = 0; k < paramList.length; k++) {
+        // 遍历所有母版参数
+        var moduleParamId = paramList[k].ammParamUuid
+        for (var t = 0; t < paramArr.length; t++) {
+          // 遍历所有模型关联参数
+          if (paramArr[t].moduleParamId === moduleParamId) {
+            // 匹配参数的默认值和排序值
+            paramList[k].defaultVal = paramArr[t].paramValue
+            paramList[k].sortVal = paramArr[t].sort // 排序值
+            break
+          }
+        }
+      }
+    }
+    // 第五步：找出有效参数集合中未配置的参数,并追加TR行 $("#mochu").empty()
+    var moduleParamArr = [] // 存储已匹配的母版参数集合
+    if (paramArr.length > 0) {
+      $('#mochu').empty()
+      for (var j = 0; j < paramArr.length; j++) {
+        // 遍历有效的参数集合
+        var hasExist = false
+        $('.setParamTr').each(function(t, v) {
+          var moduleParamId = $(this).attr('data-moduleParamId')
+          if (moduleParamId === paramArr[j].moduleParamId) {
+            hasExist = true
+            return false
+          }
+        })
+        if (
+          $.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) != -1 &&
+          hasExist
+        ) {
+          // 过滤掉有效参数集合中已经配置过的参数
+          continue
+        }
+        if ($.inArray(paramArr[j].moduleParamId, moduleParamArr) != -1) {
+          // 过滤paramArr中母参重复的复制参数
+          continue
+        }
+        // 生成列表行html
+        var html =
+          '<tr class="setParamTr" data-moduleParamId="' +
+          paramArr[j].moduleParamId +
+          '"><td align="center">' +
+          paramArr[j].name +
+          '</td>'
+        var htmlContent = ''
+        var description = ''
+        for (var k = 0; k < paramList.length; k++) {
+          // 循环所有母版参数
+          var moduleParamId = paramList[k].ammParamUuid
+          if (
+            moduleParamId === paramArr[j].moduleParamId &&
+            $.inArray(moduleParamId, moduleParamArr) == -1
+          ) {
+            // 匹配复制参数的母版参数ID
+            var returnObj = initParamHtml_Common(paramList[k])
+            if (!returnObj.isError) {
+              htmlContent = returnObj.htmlContent
+            }
+            moduleParamArr.push(moduleParamId)
+            if (paramList[k].description == null) {
+              paramList[k].description = '无'
+            }
+            if (typeof paramList[k].description !== 'undefined') {
+              description = paramList[k].description
+            }
+            break
+          }
+        }
+        html +=
+          '<td>' + htmlContent + '</td><td>' + description + '</td></tr>'
+        if (canEditor) {
+          $('#paramTable>tbody').append(html).sortable().disableSelection()
+        } else {
+          $('#paramTable>tbody').append(html)
+        }
+      }
+    }
+
+    // 第六步：统一初始化参数的html（文本框、下拉列表、下拉树），并反显已配置参数的信息（包括默认值和排序值）
+    initParam(canEditor)
   })
 }

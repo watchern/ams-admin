@@ -1,196 +1,73 @@
 <template>
   <div class="app-container">
-    <div id="container">
-      <div
-        id="leftPart"
-        class="col-sm-2 leftCon"
-        style="overflow: auto; height: 100vh"
-      >
-        <div class="panel-group">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h4 class="panel-title">
-                <a
-                  data-toggle="collapse"
-                  data-parent="#accordion"
-                  href="#collapse"
-                >数据表</a>
-              </h4>
-            </div>
-            <div class="panel-collapse collapse in">
-              <div class="panel-body" style="overflow-x: auto">
-                <img id="tableSearchImg" @click="tableTreeSearch">
-                <input
-                  id="dataSearch"
-                  name="dataSearch"
-                  type="text"
-                  class="form-control"
-                  autocomplete="off"
-                  placeholder="查询"
-                >
-                <ul id="dataTree" class="ztree" style="overflow: auto" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="panel-group">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h4 class="panel-title">
-                <a
-                  data-toggle="collapse"
-                  data-parent="#accordion1"
-                  href="#collapse1"
-                >参数</a>
-              </h4>
-            </div>
-            <div class="panel-collapse collapse in">
-              <div class="panel-body" style="overflow-x: auto">
-                <img id="paramSearchImg" @click="paramTreeSearch">
-                <input
-                  id="paramSearch"
-                  name="paramSearch"
-                  type="text"
-                  class="form-control"
-                  autocomplete="off"
-                  placeholder="查询"
-                >
-                <ul id="paramTree" class="ztree" style="max-height: 400px" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="panel-group">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h4 class="panel-title">
-                <a
-                  data-toggle="collapse"
-                  data-parent="#accordion2"
-                  href="#collapse2"
-                >SQL函数</a>
-              </h4>
-            </div>
-            <div class="panel-collapse collapse in">
-              <div class="panel-body" style="overflow-x: auto">
-                <img id="funSearchImg" @click="functionTreeSearch">
-                <input
-                  id="sqlSearch"
-                  name="sqlSearch"
-                  type="text"
-                  class="form-control"
-                  autocomplete="off"
-                  placeholder="查询"
-                >
-                <ul id="sqlFunTree" class="ztree" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="rightPart" class="col-sm-10" style="height: 100vh">
-        <div
-          id="sqlEditorDiv"
-          class="col-sm-12"
-          style="padding: 0px; height: 50vh"
-        >
-          <div
-            class="row table-view-caption"
-            style="margin-left: 30px; height: 40px; padding-top: 8px"
-          >
-            <button type="button" class="btn btn-primary" @click="test()">
-              test</button>&nbsp;
-            <button type="button" class="btn btn-primary" @click="sqlFormat()">
-              格式化</button>&nbsp;
-            <!-- <button type="button" class="btn btn-primary" onclick="alertVerify()">SQL语法校验</button> -->
-            <button type="button" class="btn btn-primary" @click="executeSQL">
-              执行</button>&nbsp;
-            <button
-              type="button"
-              class="btn btn-primary"
-              @click="openSqlDraftList()"
+    <div id="container" v-loading="executeLoading">
+      <el-collapse v-model="DefaultExpansion">
+        <div id="leftPart" class="col-sm-2 leftCon" style="overflow: auto; height: 100vh">
+          <el-collapse-item class="" title="数据表" name="1">
+            <el-input
+              id="dataSearch"
+              v-model="tableSearchInput"
+              name="dataSearch"
+              type="text"
+              autocomplete="off"
+              placeholder="查询"
             >
-              打开SQL</button>&nbsp;
-            <div class="btn-group">
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-toggle="dropdown"
-              >
-                保存SQL
-                <span class="caret" />
-              </button>
-              <ul class="dropdown-menu">
-                <li>
-                  <a
-                    href="#"
-                    ondragstart="return false;"
-                    @click="openSaveSqlDialog(1)"
-                  >保存</a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    ondragstart="return false;"
-                    @click="openSaveSqlDialog(2)"
-                  >另存为</a>
-                </li>
-              </ul>
-            </div>
-            <div class="btn-group">
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-toggle="dropdown"
-              >
-                工具箱
-                <span class="caret" />
-              </button>
-              <ul class="dropdown-menu">
-                <li>
-                  <a
-                    href="#"
-                    ondragstart="return false;"
-                    @click="findAndReplace(2)"
-                  >查找</a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    ondragstart="return false;"
-                    @click="findAndReplace(1)"
-                  >替换</a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    ondragstart="return false;"
-                    @click="caseTransformation(1)"
-                  >转大写</a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    ondragstart="return false;"
-                    @click="caseTransformation(2)"
-                  >转小写</a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    ondragstart="return false;"
-                    @click="selectSqlNotes()"
-                  >注释选中行</a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    ondragstart="return false;"
-                    @click="selectSqlCancelNotes()"
-                  >取消注释</a>
-                </li>
-              </ul>
-            </div>
+              <el-button slot="append" icon="el-icon-search" @click="tableTreeSearch" />
+            </el-input>
+            <ul id="dataTree" class="ztree" style="overflow: auto" />
+          </el-collapse-item>
+          <el-collapse-item title="参数" name="2">
+            <el-input
+              id="paramSearch"
+              v-model="paramSearchInput"
+              name="paramSearch"
+              type="text"
+              autocomplete="off"
+              placeholder="查询"
+            >
+              <el-button slot="append" icon="el-icon-search" @click="paramTreeSearch" />
+            </el-input>
+            <ul id="paramTree" class="ztree" style="max-height: 400px" />
+          </el-collapse-item>
+          <el-collapse-item title="SQL函数" name="3">
+            <el-input
+              id="sqlSearch"
+              v-model="functionInput"
+              name="sqlSearch"
+              type="text"
+              autocomplete="off"
+              placeholder="查询"
+            >
+              <el-button slot="append" icon="el-icon-search" @click="functionTreeSearch" />
+            </el-input>
+            <ul id="sqlFunTree" class="ztree" />
+          </el-collapse-item>
+        </div>
+      </el-collapse>
+      <div id="rightPart" class="col-sm-10" style="height: 100vh">
+        <div id="sqlEditorDiv" class="col-sm-12" style="padding: 0px; height: 50vh">
+          <div class="row table-view-caption" style="margin-left: 30px; height: 40px; padding-top: 8px">
+            <el-button type="primary" size="small" @click="sqlFormat">格式化</el-button>
+            <el-button type="primary" size="small" @click="executeSQL">执行</el-button>
+            <el-button type="primary" size="small" @click="openSqlDraftList">打开SQL</el-button>
+            <el-dropdown>
+              <el-button type="primary" size="small">保存<i class="el-icon-arrow-down el-icon--right" /></el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="openSaveSqlDialog(1)">保存</el-dropdown-item>
+                <el-dropdown-item @click.native="openSaveSqlDialog(2)">另存为</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <el-dropdown type="primary">
+              <el-button type="primary" size="small">工具箱<i class="el-icon-arrow-down el-icon--right" /></el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="findAndReplace(2)">查找</el-dropdown-item>
+                <el-dropdown-item @click.native="findAndReplace(1)">替换</el-dropdown-item>
+                <el-dropdown-item @click.native="caseTransformation(1)">转大写</el-dropdown-item>
+                <el-dropdown-item @click.native="caseTransformation(2)">转小写</el-dropdown-item>
+                <el-dropdown-item @click.native="selectSqlNotes()">注释选中行</el-dropdown-item>
+                <el-dropdown-item @click.native="selectSqlCancelNotes()">取消注释</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
             <label
               id="InfoFlag"
               style="display: none"
@@ -214,85 +91,23 @@
         </div>
         <div id="horizontal" />
         <!-- 结果展示和参数输入区域 -->
-        <div
-          id="bottomPart"
-          class="layui-tab col-sm-12"
-          lay-filter="result-data"
-        >
-          <ul class="layui-tab-title" />
-          <div
-            id="maxOpen"
-            style="width: 80px; position: absolute; right: 0; top: 15px"
-            onclick="maxOpen()"
-          >
+        <div id="bottomPart" class="layui-tab col-sm-12" lay-filter="result-data" style="margin-top:2px;width: 100%;">
+          <div id="maxOpen" style="width: 80px; position: absolute; right: 0; top: 15px" onclick="">
             <img id="iconImg" class="iconImg" alt="最大化">
             <span class="iconText">最大化</span>
           </div>
-          <div v-for="result in resultShow" id="dataShow" class="layui-tab-content">
-            <childTabs
-              ref="childTabsRef"
-              :key="result.id"
-              :pre-value="currentExecuteSQL"
-              use-type="sqlEditor"
-            />
+          <div v-for="result in resultShow" id="dataShow" style="margin-left: -14px">
+            <childTabs ref="childTabsRef" :key="result.id" :pre-value="currentExecuteSQL" use-type="sqlEditor" style="width: 105%" />
           </div>
         </div>
       </div>
       <div id="vertical" />
-      <input
-        id="personId"
-        type="hidden"
-        value="<%=LoginUserInfo.getLoginUserId()%>"
-      >
+      <input id="personId" type="hidden" value="<%=LoginUserInfo.getLoginUserId()%>">
       <div id="tableMenu" class="rightMenu">
         <ul>
           <li @click="getSelectSql('tableMenu')">生成SELECT语句</li>
           <li onclick="">查看表信息</li>
           <li onclick="">查看表关联信息</li>
-        </ul>
-      </div>
-      <div id="tableMenuTwo" class="rightMenu">
-        <ul>
-          <li onclick="getSelectSql('tableMenuTwo')">生成SELECT语句</li>
-        </ul>
-      </div>
-      <div id="importTableMenu" class="rightMenu">
-        <ul>
-          <li onclick="getSelectSql('importTableMenu')">生成SELECT语句</li>
-          <li onclick="">修改表结构</li>
-          <li onclick="">删除</li>
-        </ul>
-      </div>
-      <div id="paramFolderMenu1" class="rightMenu">
-        <ul>
-          <li onclick="addParam(1)">添加参数</li>
-          <li onclick="addFolder(1)">添加分类</li>
-          <li onclick="editFolder()">修改分类</li>
-          <li onclick="delFolder()">删除分类</li>
-        </ul>
-      </div>
-      <div id="paramMenu" class="rightMenu">
-        <ul>
-          <li onclick="editParam()">修改参数</li>
-          <li onclick="delParam()">删除参数</li>
-          <li onclick="selectRelation()">查看参数关联</li>
-          <li onclick="viewParam()">查看属性</li>
-        </ul>
-      </div>
-      <div id="paramFolderMenu2" class="rightMenu">
-        <ul>
-          <li onclick="addParam(2)">添加参数</li>
-          <li onclick="addFolder(2)">添加分类</li>
-        </ul>
-      </div>
-      <div id="rootMenu" class="rightMenu">
-        <ul>
-          <li id="rootDataRefresh" onclick="rootDataRefresh()">刷新</li>
-        </ul>
-      </div>
-      <div id="importDataMenu" class="rightMenu">
-        <ul>
-          <li id="importData" onclick="importData()">导入数据</li>
         </ul>
       </div>
     </div>
@@ -363,7 +178,7 @@
         <el-button type="primary" @click="useSql">使用SQL</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="参数渲染" :visible.sync="dialogFormVisible" :append-to-body="true">
+    <el-dialog v-if="dialogFormVisible" title="请输入参数" :visible.sync="dialogFormVisible" :append-to-body="true">
       <paramDraw ref="paramDrawRef" />
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
@@ -407,6 +222,7 @@ import { updateDraft } from '@/api/analysis/SQLEditor/SQLDraft'
 import childTabs from '@/views/analysis/auditModelResult/childTabs'
 import paramDraw from '@/views/analysis/modelParam/paramDraw'
 import { replaceNodeParam } from '@/api/analysis/auditParam'
+
 /**
  * 当前执行进度
  * @type {number}
@@ -455,16 +271,22 @@ export default {
           }
         ]
       },
+      DefaultExpansion: ['1', '2', '3'],
       sqlDraftDialogFormVisible: false,
       sqlDraftDialog: false,
       dialogFormVisible: false,
       formLabelWidth: '120px',
+      executeLoading: false,
       currentExecuteSQL: [], // 当前执行的全部sql,
       webSocket: null,
       resultShow: [],
       isAllExecute: false, // 是否全部执行
       modelOriginalTable: [],
-      executeData: {}
+      executeData: {},
+      paramDrawLoading: false,
+      tableSearchInput: '',
+      paramSearchInput: '',
+      functionInput: ''
     }
   },
   watch: {
@@ -500,7 +322,8 @@ export default {
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
       // 当服务端打开连接
-      this.webSocket.onopen = function(event) {}
+      this.webSocket.onopen = function(event) {
+      }
       // 发送消息
       this.webSocket.onmessage = function(event) {
         const dataObj = JSON.parse(event.data)
@@ -517,12 +340,18 @@ export default {
       }
       const func2 = function func3(val) {
         this.$refs.childTabsRef[0].loadTableData(val)
+        // 已经全部执行完成，调用父组件方法初始化参数列等信息
+        if (isAllExecuteSuccess) {
+          this.$emit('getSqlObj')
+        }
       }
       const func1 = func2.bind(this)
-      this.webSocket.onclose = function(event) {}
+      this.webSocket.onclose = function(event) {
+      }
 
       // 通信失败
-      this.webSocket.onerror = function(event) {}
+      this.webSocket.onerror = function(event) {
+      }
     },
     /**
      * 通过WebSocket对象发送消息给服务端
@@ -729,7 +558,9 @@ export default {
         lastResultColumn = []
         const obj = executeSQL()
         if (!obj.isExistParam) {
+          this.executeLoading = true
           startExecuteSql(obj).then((result) => {
+            this.executeLoading = false
             if (!result.data.isError) {
               this.currentExecuteSQL = result.data.executeSQLList
               this.modelOriginalTable = result.data.tables
@@ -745,6 +576,7 @@ export default {
     },
     openParamDraw(data) {
       this.dialogFormVisible = true
+      this.paramDrawLoading = true
       this.executeData = data
     },
     /**
@@ -770,6 +602,7 @@ export default {
     }
   }
 }
+
 function test() {
   return this.$refs.childTabsRef
 }
@@ -786,16 +619,19 @@ function test() {
   float: right;
   cursor: pointer;
 }
+
 .CodeMirror-hint-table {
   color: #af0000 !important;
   font-size: 15pt;
 }
+
 .CodeMirror-hint-table:before {
   content: " ";
   width: 30px;
   height: 20px;
   background-image: url("/lib/codemirror/img/ic-table.png");
 }
+
 .menuDemo {
   position: absolute;
   display: none;
@@ -803,42 +639,50 @@ function test() {
   text-align: left;
   padding: 2px;
 }
+
 .menuDemo ul {
   display: block;
   min-width: 43px;
 }
+
 .menuDemo ul li {
   margin: 1px 0;
   padding: 0 5px;
   cursor: pointer;
   list-style: none outside none;
 }
+
 .iconImg {
   width: 20px;
   height: 20px;
   margin-bottom: 4px;
 }
+
 .iconText {
   font-size: 14px;
   cursor: pointer;
 }
+
 #sql {
   width: 100%;
   height: 320px;
 }
+
 .table-view {
   overflow-x: auto;
 }
+
 #vertical {
   position: absolute;
-  top: 0;
-  left: 16.5%;
-  height: 114vh;
+  top: 20;
+  left: 28.9%;
+  height: 94vh;
   width: 3px;
   overflow: hidden;
   background: #c0c5d4;
   cursor: w-resize;
 }
+
 #horizontal {
   position: absolute;
   top: 50%;
@@ -849,15 +693,19 @@ function test() {
   background: #c0c5d4;
   cursor: s-resize;
 }
+
 .errorHighlight {
   background-color: #f99999;
 }
+
 .successHighlight {
   background-color: transparent !important;
 }
+
 .CodeMirror-hints {
   z-index: 1000;
 }
+
 #dataShow > pre {
   color: red;
   padding: 9.5px;
@@ -865,5 +713,9 @@ function test() {
   font-size: 16px;
   background: none;
   border: none;
+}
+
+.shoufengqin {
+  font-size: 16px;
 }
 </style>

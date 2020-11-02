@@ -4,6 +4,7 @@
       <!-- 查询条件区域 -->
       <QueryField ref="queryfield" :form-data="queryFields" :query-default="queryDefault" @submit="getList" />
     </div>
+<<<<<<< HEAD
     <!-- 操作按钮 -->
     <div style="float: left;">
       <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
@@ -49,6 +50,19 @@
         multiple
         class="upload-demo"
         action
+=======
+    <div style="float: left;">
+      <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
+      <el-button type="primary" class="oper-btn edit" :disabled="editStatus" title="修改" @click="handleUpdate()" />
+      <el-button type="primary" class="oper-btn delete" :disabled="deleteStatus" title="删除" @click="handleDelete()" />
+      <el-button type="primary" class="oper-btn" icon="el-icon-video-play" :disabled="startStatus" title="启用" @click="handleUse()" />
+      <el-button type="primary" class="oper-btn" icon="el-icon-video-pause" :disabled="stopStatus" title="停用" @click="handleBear()" />
+      <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length != 1" title="复制" @click="copyData()" />
+      <el-upload
+        multiple
+        class="upload-demo"
+        action=""
+>>>>>>> f821ce82e17fd75ac34b8b5da7c336f9821c0284
         :on-remove="handleRemove"
         :headers="headers"
         :http-request="uploadFile"
@@ -58,6 +72,7 @@
         :show-file-list="false"
         style="display: inline-block; padding-left: 10px"
       >
+<<<<<<< HEAD
         <el-button type="primary" class="oper-btn" icon="el-icon-upload2" title="导入" />
       </el-upload>
       <span style="display: inline-block; padding-left: 10px">
@@ -69,6 +84,13 @@
           @click="dialogFormVisible1 = true"
         />
       </span>
+=======
+        <el-button type="primary" class="oper-btn" icon="el-icon-upload2" title="导入"></el-button>
+      </el-upload>
+    <span style="display: inline-block; padding-left: 10px">
+        <el-button type="primary" class="oper-btn" icon="el-icon-download" title="下载流程模板" @click="dialogFormVisible1 = true" />
+     </span>
+>>>>>>> f821ce82e17fd75ac34b8b5da7c336f9821c0284
     </div>
     <el-table
       :key="tableKey"
@@ -94,16 +116,44 @@
       <el-table-column
         v-if="false"
         label="任务流程"
-        width="100px"
+        width="150px"
         align="center"
         prop="processDefinitionId"
       />
+<<<<<<< HEAD
       <el-table-column label="任务流程" width="200px" align="center" prop="processDefName" />
       <el-table-column label="作业周期" align="center" prop="crontab" :formatter="formatCron" />
       <el-table-column label="参数" width="70px" align="center" prop="taskParamsList">
+=======
+      <el-table-column
+        label="任务流程"
+        width="100px"
+        align="center"
+        prop="processDefName"
+      />
+      <el-table-column
+        label="作业周期"
+        align="center"
+        prop="crontab"
+        :formatter="formatCron"
+      />
+      <el-table-column
+        label="参数"
+        width="70px"
+        align="center"
+        prop="taskParamsList"
+      >
+>>>>>>> f821ce82e17fd75ac34b8b5da7c336f9821c0284
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-           {{scope.row.taskParamsList}}
+            <el-row v-for="taskParam in scope.row.distinctParamList">
+            <label class="col-md-2">
+            {{taskParam.name}}:
+            </label>
+            <div class="col-md-10">
+             {{taskParam.value}}
+             </div>
+            </el-row>
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <i class="el-icon-tickets" />
@@ -114,8 +164,15 @@
       </el-table-column>
       <el-table-column label="依赖任务环节" align="center" prop="dependTaskInfo" width="120px">
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>{{ scope.row.dependTaskInfo }}</p>
+          <el-popover trigger="hover" placement="top">           
+            <el-row v-for="dependTask in scope.row.dependTaskInfoList">
+            <label class="col-md-2">
+            依赖:
+            </label>
+            <div class="col-md-10">
+             {{dependTask.dependItemList}}
+             </div>
+            </el-row>
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <i class="el-icon-tickets" />
@@ -124,12 +181,6 @@
           </el-popover>
         </template>
       </el-table-column>
-      <!-- <el-table-column
-        label="排序号"
-        width="80px"
-        align="center"
-        prop="processInstancePriority"
-      /> -->
       <el-table-column
         label="状态"
         width="100px"
@@ -137,8 +188,17 @@
         prop="status"
         :formatter="formatStatus"
       />
+<<<<<<< HEAD
       <el-table-column label="最新修改人" width="100px" align="center" prop="updateUserName" />
       <el-table-column label="修改时间" align="center" prop="updateTime" width="200px" />
+=======
+      <el-table-column
+        label="最新修改人"
+        align="center"
+        prop="updateUserName"
+      />
+      <el-table-column label="修改时间" align="center" prop="updateTime" />
+>>>>>>> f821ce82e17fd75ac34b8b5da7c336f9821c0284
     </el-table>
     <pagination
       v-show="total > 0"
@@ -160,8 +220,9 @@
           <el-input
             v-model="temp.scheduleName"
             class="propwidth"
-            placeholder="请输入任务名称"
+            placeholder=""
             :disabled="disableUpdate"
+            placeholder="请输入任务名称"
           />
         </el-form-item>
         <!-- 查询任务流程 -->
@@ -190,8 +251,13 @@
           v-for="(item, index) in distinctParamList"
           :key="item.paramUuid"
           :label="item.param.paramName"
+<<<<<<< HEAD
           :rules="{required: true, message: '请输入参数值', trigger: 'change'}"
         >
+=======
+          :rules="{required: true, message: '', trigger: 'change'}"
+          >
+>>>>>>> f821ce82e17fd75ac34b8b5da7c336f9821c0284
           <el-input
             v-model="item.param.defaultValue"
             class="propwidth"
@@ -199,6 +265,7 @@
             @blur="changeParamValue(item.param.defaultValue,item.param.paramName )"
           />
         </el-form-item>
+<<<<<<< HEAD
         <!-- <el-form-item label="排序号" prop="processInstancePriority">
           <el-input
             v-model="temp.processInstancePriority"
@@ -215,6 +282,8 @@
             <el-option label="停用" :value="0" />
           </el-select>
         </el-form-item>-->
+=======
+>>>>>>> f821ce82e17fd75ac34b8b5da7c336f9821c0284
         <el-form-item label="作业周期范围" prop="startTime">
           <el-col :span="11">
             <el-date-picker
@@ -222,7 +291,7 @@
               :picker-options="startTime"
               type="date"
               prop="startTime"
-              placeholder="选择日期"
+              placeholder=""
               :disabled="disableUpdate"
             />
           </el-col>
@@ -232,7 +301,7 @@
               v-model="temp.endTime"
               :picker-options="endTime"
               type="date"
-              placeholder="选择日期"
+              placeholder=""
               :disabled="disableUpdate"
             />
           </el-col>
@@ -254,12 +323,11 @@
           </el-select>
         </el-form-item>
         <!-- 添加任务依赖 -->
-        <el-form-item label="添加依赖">
+        <el-form-item >
           <div class="dependence-model">
             <m-list-box>
-              <!-- <div slot="text">添加依赖</div> -->
               <div slot="content">
-                <div class="dep-opt">
+                <div>
                   <a
                     :style="{
                       'pointer-events': disableUpdate === true ? 'none' : '',
@@ -268,22 +336,17 @@
                     class="add-dep"
                     @click="!isDetails && _addDep()"
                   >
+                   <div slot="text">添加依赖
                     <em
                       v-if="!isLoading"
-                      class="oper-btn add"
-                      :class="_isDetails"
+                      :class="{'oper-btn add': iconDisable}"
                       data-toggle="tooltip"
                       title="添加"
                     />
-                    <em
-                      v-if="isLoading"
-                      class="ans-icon-spinner2 as as-spin"
-                      data-toggle="tooltip"
-                      title="添加"
-                    />
+                   </div>
                   </a>
                 </div>
-                <div>
+                <div class="dep-box">
                   <span
                     v-if="dependTaskList.length"
                     :style="{
@@ -306,24 +369,25 @@
                     >
                       <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
                     </span>
-                    <em
-                      class="oper-btn delete"
-                      data-toggle="tooltip"
-                      data-container="body"
-                      :class="_isDetails"
-                      title="删除"
-                      :style="{
-                        'pointer-events': disableUpdate === true ? 'none' : '',
-                      }"
-                      @click="!isDetails && _deleteDep($index)"
-                    />
+                   
                     <m-depend-item-list
                       v-model="el.dependItemList"
                       :depend-item-list="dependTaskList"
                       :index="$index"
                       @on-delete-all="_onDeleteAll"
                       @getDependTaskList="getDependTaskList"
-                    />
+                    />   
+                     <em
+                      :class="{'oper-btn delete': iconDisable}"
+                      class="deleteIcon"
+                      data-toggle="tooltip"
+                      data-container="body"
+                      title="删除"
+                      :style="{
+                        'pointer-events': disableUpdate === true ? 'none' : '',
+                      }"
+                      @click="!isDetails && _deleteDep($index)"
+                    />       
                   </div>
                 </div>
               </div>
@@ -342,7 +406,15 @@
       </div>
     </el-dialog>
     <el-dialog title="下载流程模板" :visible.sync="dialogFormVisible1">
+<<<<<<< HEAD
       <el-form :rules="rules" :model="temp" label-position="right" label-width="80px">
+=======
+      <el-form
+        :rules="rules"
+        :model="temp"
+        label-position="right"
+      >
+>>>>>>> f821ce82e17fd75ac34b8b5da7c336f9821c0284
         <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="processDefinitionId">
           <el-select
@@ -396,6 +468,7 @@ import {
 } from '@/api/etlscheduler/processschedule'
 import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
+import {crontabExpression} from './common.js'
 // import _ from lodash
 
 export default {
@@ -451,6 +524,8 @@ export default {
       flag: Boolean,
       //  查询任务流程
       options: [],
+      // 依赖图标显示和隐藏
+      iconDisable: true,
       processParam: {
         pageNo: 1,
         pageSize: 100,
@@ -460,6 +535,7 @@ export default {
         }
       },
       // 作业周期格式化
+<<<<<<< HEAD
       crontabFormat: [
         {
           code: '0 0 0 * * ?',
@@ -482,6 +558,9 @@ export default {
           msg: '每年'
         }
       ],
+=======
+      crontabFormat: crontabExpression,
+>>>>>>> f821ce82e17fd75ac34b8b5da7c336f9821c0284
       loading: false,
       tableKey: 'processSchedulesUuid',
       list: null,
@@ -596,13 +675,6 @@ export default {
             trigger: 'change'
           }
         ],
-        // status: [
-        //   {
-        //     required: true,
-        //     message: '请选择参数状态',
-        //     trigger: 'change'
-        //   }
-        // ],
         processDefinitionId: [
           {
             required: true,
@@ -663,6 +735,7 @@ export default {
         this.startStatus = true
         this.stopStatus = true
         this.editStatus = true
+        this.deleteStatus = true
       }
       if (this.selections.length === 1) {
         this.selections.forEach((r, i) => {
@@ -690,7 +763,7 @@ export default {
     this.getList()
     this.remoteMethod('')
     const o = this.backfillItem
-    const dependentResult = $(`#${o.processSchedulesUuid}`).data('dependent-result') || {}
+    const dependentResult = $(`#${o}`).data('dependent-result') || {}
     // Does not represent an empty object backfill
     if (!_.isEmpty(o)) {
       this.relation = _.cloneDeep(o.dependence.relation) || 'AND'
@@ -722,6 +795,7 @@ export default {
       }
     },
     findSchedule(data) {
+      this.iconDisable = false
       this.closeStatus = true
       this.disableUpdate = true
       this.temp = Object.assign({}, data) // copy obj
@@ -731,8 +805,8 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
       getByScheduleId(this.temp.processSchedulesUuid).then((resp) => {
-        // if (resp.data.dependTaskInfoList !== null) {
         this.dependTaskList = resp.data.dependTaskInfoList
+<<<<<<< HEAD
         // } else {
         //   this.dependTaskList = []
         // }
@@ -741,6 +815,9 @@ export default {
         // } else {
         //   this.paramList = []
         // }
+=======
+        this.distinctParamList = resp.data.taskParamsList
+>>>>>>> f821ce82e17fd75ac34b8b5da7c336f9821c0284
       })
     },
     // 导出 excel 格式
@@ -810,7 +887,7 @@ export default {
       this.relation = this.relation === 'AND' ? 'OR' : 'AND'
     },
     getDependTaskList(i) {
-      console.log('getDependTaskList' + i)
+      
     },
     _setRelation(i) {
       this.dependTaskList[i].relation === 'AND' ? 'OR' : 'AND'
@@ -852,11 +929,6 @@ export default {
         this.processParam.condition.keyword = query
         findByprocessDef(this.processParam).then((resp) => {
           this.options = resp.data.records
-          // for (var i = 0; i < this.options.length; i++) {
-          //   if (this.options[i].status == 0) {
-          //     this.options.pop(i)
-          //   }
-          // }
         })
       }, 200)
     },
@@ -900,6 +972,7 @@ export default {
       }
     },
     handleCreate() {
+      this.iconDisable = true
       this.disableUpdate = false
       this.closeStatus = false
       this.distinctParamList = []
@@ -949,6 +1022,7 @@ export default {
       })
     },
     handleUpdate() {
+      this.iconDisable = true
       this.disableUpdate = false
       this.closeStatus = false
       this.temp = Object.assign({}, this.selections[0]) // copy obj
@@ -958,8 +1032,8 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
       getByScheduleId(this.temp.processSchedulesUuid).then((resp) => {
-        // if (resp.data.dependTaskInfoList !== null) {
         this.dependTaskList = resp.data.dependTaskInfoList
+<<<<<<< HEAD
         // } else {
         // this.dependTaskList = []
         // }
@@ -973,6 +1047,12 @@ export default {
         // } else {
         // this.paramList = []
         // }
+=======
+        this.paramList = resp.data.taskParamsList
+        //  去重
+        const resmap = new Map()
+        this.distinctParamList = this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))
+>>>>>>> f821ce82e17fd75ac34b8b5da7c336f9821c0284
       })
     },
     updateData() {
@@ -1032,6 +1112,7 @@ export default {
         ids.push(r.processSchedulesUuid)
       })
       startScheduleStatus(ids.join(','), 1).then((res) => {
+<<<<<<< HEAD
         // if (res.data.code == 1000) {
         //   this.getList()
         //   this.$notify({
@@ -1042,6 +1123,8 @@ export default {
         //     position: "bottom-right",
         //   })
         // }
+=======
+>>>>>>> f821ce82e17fd75ac34b8b5da7c336f9821c0284
         this.getList()
         this.$notify({
           title: '成功',
@@ -1147,7 +1230,7 @@ export default {
           message = r.msg
         }
       })
-      return onTime + '-' + stopTime + message
+      return onTime + '-' + stopTime +' '+ message
     }
   }
 }
@@ -1280,5 +1363,14 @@ export default {
 .el-popover {
   width: 60%;
   overflow: auto;
+}
+.m-depend-item-list{
+  position: static;
+ 
+}
+.deleteIcon{
+  position: relative;
+  left: 460px;
+  bottom: 115px;
 }
 </style>

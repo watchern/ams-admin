@@ -47,19 +47,19 @@
         width="55"
       />
       <el-table-column
-        label="资源名称"
+        label="系统名称"
         width="300px"
         align="center"
         prop="dataResourceName"
       />
       <el-table-column
-        label="资源编码"
+        label="系统编码"
         width="300px"
         align="center"
         prop="dataResourceCode"
       />
       <el-table-column
-        label="资源描述"
+        label="系统描述"
         prop="dataResourceDesc"
       />
       <el-table-column

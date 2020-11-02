@@ -16,7 +16,7 @@
           <p style="color:silver;font-size:large">———————————————————————————</p>
           <el-form-item label="关联类型" prop="relationType">
             <el-col>
-              <el-row span="20">
+              <el-row :span="20">
                 <el-select ref="relTypeSelect" v-model="form.relationType" placeholder="请选择关联类型" @change="relTypeSelectChange">
                   <el-option label="关联模型" :value="1" />
                   <el-option label="关联表" :value="2" />
@@ -27,8 +27,9 @@
           <div ref="relModelDivParent" style="display: none;">
             <el-row>
               <el-form-item label="被关联模型">
-                <el-col span="20">
-                  <el-input :disabled="true" />
+                <el-col :span="20">
+                  <el-input v-model="form.relationObjectUuid" :disabled="true" />
+                  <el-input v-model="form.relationObjectName" :disabled="true" />
                 </el-col>
                 <el-button @click="selectModel">选择</el-button>
               </el-form-item>
@@ -57,7 +58,7 @@
                         v-for="state in relModelParam"
                         :key="state.ammParamUuid"
                         :value="state.ammParamUuid"
-                        :label="state.ammParamName"
+                        :label="state.paramName"
                       />
                     </el-select>
                   </template>
@@ -71,13 +72,15 @@
             </div>
           </div>
           <div ref="relTableDivParent" style="display: none;">
-            <el-form-item label="被关联表" prop="relationObjectUuidTable">
-              <el-select v-model="form.relationObjectUuid" value="-1" @change="relTableSelectChange">
-                <el-option label="请选择" value="-1" />
-                <el-option label="表1" value="1" />
-                <el-option label="表2" value="2" />
-              </el-select>
-            </el-form-item>
+            <el-row>
+              <el-form-item label="被关联表" prop="relationObjectUuidTable">
+                <el-col :span="20">
+                  <el-input v-model="form.relationObjectUuid" style="display: none" :disabled="true" />
+                  <el-input v-model="form.relationObjectName" :disabled="true" />
+                </el-col>
+                <el-button @click="showDataTree">选择</el-button>
+              </el-form-item>
+            </el-row>
             <div ref="relTableDiv" style="display: none">
               <el-button type="primary" size="mini" style="float: right" @click="addRelFilter(2)">添加</el-button>
               <el-table ref="relTable" :data="relTable" border fit highlight-current-row style="width: 100%;">
@@ -87,9 +90,9 @@
                       <el-option label="请选择" value="-1" />
                       <el-option
                         v-for="state in relTableColumn"
-                        :key="state.columnUuid"
-                        :value="state.columnUuid"
-                        :label="state.columnName"
+                        :key="state.colMetaUuid"
+                        :value="state.colMetaUuid"
+                        :label="state.chnName"
                       />
                     </el-select>
                   </template>
@@ -110,21 +113,29 @@
         </el-form>
       </div>
     </el-container>
-    <el-dialog v-if="ModelTreeDialog" v-loading="modelTreeLoading" :destroy-on-close="true" :append-to-body="true" :visible.sync="ModelTreeDialog" title="请选择模型" width="80%">
-      <ModelFolderTree ref="modelFolderTree" />
+    <el-dialog v-if="ModelTreeDialog" :destroy-on-close="true" :append-to-body="true" :visible.sync="ModelTreeDialog" title="请选择模型" width="80%">
+      <ModelFolderTree ref="modelFolderTree" v-loading="modelTreeLoading" />
       <div slot="footer">
         <el-button type="primary" @click="getSelectModel">确定</el-button>
         <el-button @click="ModelTreeDialog = false">取消</el-button>
       </div>
     </el-dialog>
+    <el-dialog v-if="dataTableTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%">
+      <data-tree ref="dataTableTree" v-loading="dataTableTreeLoading" />
+      <div slot="footer">
+        <el-button type="primary" @click="getDataTable">确定</el-button>
+        <el-button @click="dataTableTree = false">取消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
+import dataTree from '@/views/data/role-res/data-tree'
 import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
-import { selectModel } from '@/api/analysis/auditModel'
+import { selectModel, getTableCol } from '@/api/analysis/auditModel'
 export default {
   name: 'EditModel',
-  components: { ModelFolderTree },
+  components: { ModelFolderTree, dataTree },
   props: ['columns', 'treeId', 'data'],
   data() {
     return {
@@ -135,10 +146,13 @@ export default {
         modelDetailMemo: '',
         relationType: '',
         relationObjectUuid: '',
+        relationObjectName: '',
         modelDetailConfig: []
       },
       ModelTreeDialog: false,
       modelTreeLoading: false,
+      dataTableTree: false,
+      dataTableTreeLoading: false,
       relModelTable: [],
       relModelParam: [],
       relTable: [],
@@ -177,9 +191,8 @@ export default {
           // 显示界面dom
           this.$refs.relModelDivParent.style = 'block'
           this.$refs.relModelTableDiv.style = 'block'
-          this.initModelTree()
           // 初始化完成树之后初始化被关联模型的参数
-          this.relModelSelectChange(this.data.relationObjectUuid)
+          this.loadParamInfo(this.data.relationObjectUuid)
           // 初始化关联模型table
           this.relModelTable = this.data.modelDetailConfig
         }
@@ -188,7 +201,6 @@ export default {
           this.$refs.relTableDivParent.style = 'block'
           this.$refs.relTableDiv.style = 'block'
           this.initTableTree()
-          this.relTableSelectChange(this.data.relationObjectUuid)
           // 初始化关联表table
           this.relTable = this.data.modelDetailConfig
         }
@@ -243,15 +255,17 @@ export default {
         this.$refs.relModelTableDiv.style.display = 'block'
       }
     },
-    relTableSelectChange(vId) {
-      if (vId == -1) {
-        this.$refs.relTableDiv.style.display = 'none'
-      } else {
-        // todo 获取选中表的列id，列名称等信息，具体等张闯
-        var relTableColumn = [{ columnUuid: 'lie1', columnName: '列1' }, { columnUuid: 'lie2', columnName: '列2' }]
-        this.relTableColumn = relTableColumn
+    loadTableCol(data) {
+      // 获取选中表的列id，列名称等信息
+      getTableCol(data.id).then(result => {
+        if (result.data == null) {
+          this.$message({ type: 'info', message: '加载数据表列失败!' })
+          return
+        }
+        debugger
+        this.relTableColumn = result.data
         this.$refs.relTableDiv.style.display = 'block'
-      }
+      })
     },
     /**
        * 关联类型下拉框改变事件
@@ -261,20 +275,17 @@ export default {
       if (vId == 1) {
         this.$refs.relTableDivParent.style.display = 'none'
         this.$refs.relModelDivParent.style.display = 'block'
-        this.initModelTree()
-        // 加载模型下拉树
+        this.$refs.relTableDiv.style.display = 'none'
       } else if (vId == 2) {
         this.$refs.relModelDivParent.style.display = 'none'
         this.$refs.relTableDivParent.style.display = 'block'
-        this.initTableTree()
-        // 加载数据表的下拉树
+        this.$refs.relModelTableDiv.style.display = 'none'
       }
-    },
-    initModelTree() {
-
-    },
-    initTableTree() {
-
+      // 清空数据
+      this.relTable = []
+      this.relModelTable = []
+      this.form.relationObjectName = ''
+      this.form.relationObjectUuid = ''
     },
     /**
        * 删除表格指定行
@@ -308,7 +319,14 @@ export default {
       }
       this.modelTreeLoading = true
       // 获取模型基本信息开始初始化能关联的参数
-      selectModel(modelTreeNode.id).then(result => {
+      this.loadParamInfo(modelTreeNode.id)
+    },
+    /**
+     * 加载模型参数信息
+     * @param modelUuid 模型编号
+     */
+    loadParamInfo(modelUuid) {
+      selectModel(modelUuid).then(result => {
         this.modelTreeLoading = false
         if (result.data == null) {
           this.$message({ type: 'error', message: '获取模型信息失败!' })
@@ -318,8 +336,32 @@ export default {
           this.$message({ type: 'info', message: '该模型没有参数,请重新选择!' })
           return
         }
+        this.ModelTreeDialog = false
         // 初始化模型的参数
+        this.relModelParam = result.data.parammModelRel
+        // 设置对象
+        this.form.relationObjectUuid = result.data.modelUuid
+        this.form.relationObjectName = result.data.modelName
+        this.$refs.relModelTableDiv.style = 'block'
       })
+    },
+    /**
+     * 显示数据表树
+     */
+    showDataTree() {
+      this.dataTableTree = true
+    },
+    getDataTable() {
+      const dataTree = this.$refs.dataTableTree.getTree()
+      const currentNode = dataTree.getCurrentNode()
+      if (currentNode.type != 'table') {
+        this.$message({ type: 'info', message: '请选择数据表!' })
+        return
+      }
+      this.loadTableCol(currentNode)
+      this.form.relationObjectName = currentNode.label
+      this.form.relationObjectUuid = currentNode.id
+      this.dataTableTree = false
     }
   }
 }

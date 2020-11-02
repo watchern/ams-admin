@@ -1,10 +1,10 @@
 <template>
   <div class="page-container">
     <div class="filter-container">
+      <!-- :query-default="queryDefault" -->
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
-        :query-default="queryDefault"
         @submit="getList"
       />
     </div>
@@ -32,15 +32,16 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p style="text-align:center">{{ statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].name }}</p>
+            <p style="text-align:center" :style="{color: statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].color}"><strong>{{ statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].name }}</strong></p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色 -->
                   <i
-                    :class="statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].unicode"
-                    :style="{color: statusList[scope.row.status===null? statusList.length-1 : scope.row.status-1].color}"
+                    :class="statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].unicode"
+                    :style="{color: statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].color}"
+                    style="font-size:25px;font-weight:bold"
                   />
                 </a>
               </el-tag>
@@ -74,7 +75,14 @@
         <template slot-scope="scope">
           <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="700">
-            <p width="50vw">任务参数:{{ scope.row.params }}</p>
+            <el-row v-for="taskParam in scope.row.taskParamList" :key="taskParam.value">
+              <label class="col-md-2">
+                {{ taskParam.name }}:
+              </label>
+              <div class="col-md-10">
+                {{ taskParam.value }}
+              </div>
+            </el-row>
             <div slot="reference" class="name-wrapper">
               <el-tag><i class="el-icon-tickets" /></el-tag>
             </div>
@@ -103,10 +111,7 @@
         label="共耗时"
         align="center"
         prop="time"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.time | timeFilter }}
-        </template></el-table-column>
+      />
     </el-table>
     <pagination
       v-show="total>0"
@@ -123,7 +128,7 @@
         {{ task!=null ? task.name : null }}
       </el-col>
       <el-col v-if="task != null" class="logtype" style="font-size: 13px;">
-        耗时 {{ task != null ? task.time: 0 | timeFilter }}
+        耗时 {{ task != null ? task.time: 0+'秒' }}
       </el-col>
       <el-card style="padding-bottom: 3%;margin-top:10px">
         <!-- <el-col class="logtype">
@@ -137,8 +142,7 @@
             v-for="log in logs[task.taskCode]"
             :key="log.taskLogUuid"
             :label="log.taskLogUuid"
-            class="logtype"
-            :style="{color: logColorList[log.status===null ? 1 : log.status-1].color}"
+            :style="{color: logColorList[log.status===null ? 1 : (log.status | colorFilter)-1].color}"
           >
             {{ log.logTime +' '+ log.logMessage }}
           </el-col>
@@ -155,26 +159,30 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, findTaskLogs } from '@/api/etlscheduler/taskinstance'
 import QueryField from '@/components/Ace/query-field/index'
+import { statusListComm, statuSelect, colorList } from '@/views/modules/etlscheduler/processinstance/comm.js'
 
 export default {
   components: { Pagination, QueryField },
-  filters: {
-    // 耗时的时间格式转换
-    timeFilter(value) {
-      const time = value
-      if (time === null || time === '' || time === 0) {
-        return 0 + '秒'
-      } else {
-        if (time / 1000 >= 0 && time / 1000 < 60) {
-          return (time / 1000).toFixed(1) + '秒'
-        } else if (time / 1000 >= 60 && time / 1000 < 3600) {
-          return (time / 60000).toFixed(1) + '分'
-        } else if (time / 1000 > 3600) {
-          return (time / 3600000).toFixed(1) + '时'
-        }
-      }
-    }
-  },
+  // filters: {
+  // 耗时的时间格式转换
+  // timeFilter(value) {
+  //   const time = value
+  //   if (time === null || time === '' || time === 0) {
+  //     return 0 + '秒'
+  //   } else {
+  //     if (time / 1000 >= 0 && time / 1000 < 60) {
+  //       return (time / 1000).toFixed(1) + '秒'
+  //     } else if (time / 1000 >= 60 && time / 1000 < 3600) {
+  //       return (time / 60000).toFixed(1) + '分'
+  //     } else if (time / 1000 > 3600) {
+  //       return (time / 3600000).toFixed(1) + '时'
+  //     }
+  //   }
+  // },
+  // statusFilter(value) {
+  //   return (statusListComm || []).findIndex((item) => item.value === value)
+  // }
+  // },
   data() {
     return {
       tableKey: 'taskInstanceUuid',
@@ -188,80 +196,13 @@ export default {
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '任务实例状态', name: 'status', type: 'select',
-          data: [{ name: '等待中', value: '1' },
-            { name: '等待文件中', value: '2' },
-            { name: '等待依赖任务', value: '3' },
-            { name: '执行中', value: '4' },
-            { name: '暂停中', value: '5' },
-            { name: '已取消', value: '6' },
-            { name: '执行完成', value: '7' },
-            { name: '执行失败', value: '8' }],
+          data: statuSelect,
           default: '1'
         },
         { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
       ],
-      statusList: [
-        {
-          value: 1,
-          name: '等待中',
-          unicode: 'el-icon-s-help',
-          color: '#f9be0a'
-        },
-        {
-          value: 2,
-          name: '等待文件中',
-          unicode: 'el-icon-document',
-          color: '#f9be0a'
-        },
-        {
-          value: 3,
-          name: '等待依赖任务',
-          unicode: 'el-icon-share',
-          color: '#f9be0a'
-        },
-        {
-          value: 4,
-          name: '执行中',
-          unicode: 'el-icon-loading',
-          color: '#333'
-        },
-        {
-          value: 5,
-          name: '暂停中',
-          unicode: 'el-icon-video-pause',
-          color: '#409eff'
-        },
-        {
-          value: 6,
-          name: '已取消',
-          unicode: 'el-icon-circle-close',
-          color: '#666666'
-        },
-        {
-          value: 7,
-          name: '执行完成',
-          unicode: 'el-icon-finished',
-          color: '#95F204'
-        },
-        {
-          value: 8,
-          name: '执行失败',
-          unicode: 'el-icon-error',
-          color: 'red'
-        },
-        {
-          value: null,
-          name: '--',
-          unicode: 'el-icon-remove-outline',
-          color: '#888888'
-        }
-      ],
-      logColorList: [
-        { value: '成功', color: '#008000' },
-        { value: '失败', color: 'red' },
-        { value: '警告', color: '#f9be0a' },
-        { value: '其它', color: '#888888' }
-      ],
+      statusList: statusListComm,
+      logColorList: colorList,
       pageQuery: {
         condition: null,
         pageNo: 1,
@@ -340,9 +281,21 @@ export default {
     if (this.$route.params instanceof Object) {
       this.queryDefault = this.$route.params
     }
-    this.getList(this.queryDefault)
+    // this.getList(this.queryDefault)
+
+    this.getList()
+  },
+  mounted() {
+    // this.statusList = statusListComm
   },
   methods: {
+    // 根据状态查找该状态在数据中的下标
+    statusFilter(value) {
+      return (statusListComm || []).findIndex((item) => item.value === value)
+    },
+    colorFilter(value) {
+      return (colorList || []).findIndex((item) => item.value === value)
+    },
     getList(query) {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
@@ -366,7 +319,6 @@ export default {
     handleTasksLogs(data) {
       // 获取任务日志
       this.task = data
-      console.log(this.task)
       findTaskLogs(data.taskInstanceUuid).then(resp => {
         this.logs = resp.data
       })

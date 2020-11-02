@@ -17,29 +17,29 @@
             @submit="getLikeList"
           />
           <el-dialog title="添加参数" :visible.sync="addVisible">
-            <addParamWindow></addParamWindow>
+            <addParamWindow />
             <div slot="footer" class="dialog-footer">
               <el-button @click="addVisible = false">取 消</el-button>
-              <el-button type="primary" @click="addVisible = false"
-                >确 定</el-button
-              >
+              <el-button
+                type="primary"
+                @click="addVisible = false"
+              >确 定</el-button>
             </div>
           </el-dialog>
           <el-row>
-            <el-button type="primary" @click="openParamDraw"
-              >渲染参数界面</el-button
-            >
-            <el-button type="primary" @click="addVisible = true"
-              >新增</el-button
-            >
+            <el-button
+              type="primary"
+              @click="openParamDraw"
+            >渲染参数界面</el-button>
+            <el-button
+              type="primary"
+              @click="addVisible = true"
+            >新增</el-button>
             <el-button type="primary">修改</el-button>
             <el-button type="primary" @click="enableParam">启用</el-button>
             <el-button type="primary" @click="disableParam">停用</el-button>
             <el-button type="primary" @click="deleteParam">删除</el-button>
           </el-row>
-          <el-dialog title="参数渲染" :visible.sync="dialogFormVisible">
-            <paramDraw></paramDraw>
-          </el-dialog>
           <el-table
             id="table"
             :key="tableKey"
@@ -99,72 +99,73 @@
   </div>
 </template>
 <script>
-import QueryField from "@/components/Ace/query-field/index";
-import Pagination from "@/components/Pagination/index";
-import myZtree from "@/views/analysis/modelParam/myZtree";
-import paramDraw from "@/views/analysis/modelParam/paramDraw";
+import QueryField from '@/components/Ace/query-field/index'
+import Pagination from '@/components/Pagination/index'
+import myZtree from '@/views/analysis/modelParam/myZtree'
+import paramDraw from '@/views/analysis/modelParam/paramDraw'
 import {
   getListByAmmParam,
   updateEnabled,
   updateDisenable,
   deleteParams,
   initParamHtml,
-} from "@/api/analysis/auditParam";
-import addParamWindow from "@/views/analysis/modelParam/addParamWindow";
+  createParamTableHtml
+} from '@/api/analysis/auditParam'
+import addParamWindow from '@/views/analysis/modelParam/addParamWindow'
 export default {
   components: {
     myZtree,
     Pagination,
     QueryField,
     addParamWindow,
-    paramDraw,
-  },
-  created() {
-    this.getLikeList();
+    paramDraw
   },
   data() {
     return {
-      tableKey: "errorUuid",
+      tableKey: 'errorUuid',
       listLoading: false,
       pageQuery: {
         condition: null,
         pageNo: 1,
-        pageSize: 20,
+        pageSize: 20
       },
       total: 0,
       list: null,
       queryFields: [
-        { label: "参数名称", name: "paramName", type: "fuzzyText" },
+        { label: '参数名称', name: 'paramName', type: 'fuzzyText' },
         {
-          label: "数据类型",
-          name: "dataType",
-          type: "select",
+          label: '数据类型',
+          name: 'dataType',
+          type: 'select',
           data: [
-            { name: "请选择", value: "-1" },
-            { name: "数字", value: "num" },
-            { name: "日期时间", value: "date" },
-            { name: "文本", value: "str" },
+            { name: '请选择', value: '-1' },
+            { name: '数字', value: 'num' },
+            { name: '日期时间', value: 'date' },
+            { name: '文本', value: 'str' }
           ],
-          default: "-1",
+          default: '-1'
         },
         {
-          label: "状态",
-          name: "enabled",
-          type: "select",
+          label: '状态',
+          name: 'enabled',
+          type: 'select',
           data: [
-            { name: "请选择", value: "-1" },
-            { name: "启用", value: "1" },
-            { name: "停用", value: "0" },
-            { name: "测试", value: "2" },
+            { name: '请选择', value: '-1' },
+            { name: '启用', value: '1' },
+            { name: '停用', value: '0' },
+            { name: '测试', value: '2' }
           ],
-          default: "-1",
-        },
+          default: '-1'
+        }
       ],
       selectedObj: [],
       selectedIds: [],
       addVisible: false,
-      dialogFormVisible: false,
-    };
+      dialogFormVisible: false
+    }
+  },
+  created() {
+    this.getLikeList()
   },
   methods: {
     /**
@@ -174,69 +175,69 @@ export default {
      * @returns {string} 返回格式化后的字符串
      */
     dateFormatter(row, column) {
-      const datetime = row.createTime;
+      const datetime = row.createTime
       if (datetime) {
-        var dateMat = new Date(datetime);
-        var year = dateMat.getFullYear();
-        var month = dateMat.getMonth() + 1;
-        var day = dateMat.getDate();
-        var hh = dateMat.getHours();
-        var mm = dateMat.getMinutes();
-        var ss = dateMat.getSeconds();
+        var dateMat = new Date(datetime)
+        var year = dateMat.getFullYear()
+        var month = dateMat.getMonth() + 1
+        var day = dateMat.getDate()
+        var hh = dateMat.getHours()
+        var mm = dateMat.getMinutes()
+        var ss = dateMat.getSeconds()
         var timeFormat =
-          year + "-" + month + "-" + day + " " + hh + ":" + mm + ":" + ss;
-        return timeFormat;
+          year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
+        return timeFormat
       }
-      return "";
+      return ''
     },
     /**
      * 当多选框改变时触发
      */
     handleSelectionChange(val) {
       // 把选中的所有数据赋值给selected1，供后续方法使用
-      this.selectedObj = val;
-      var ids = [];
+      this.selectedObj = val
+      var ids = []
       for (var i = 0; i < val.length; i++) {
-        ids.push(val[i].ammParamUuid);
+        ids.push(val[i].ammParamUuid)
       }
-      this.selectedIds = ids;
+      this.selectedIds = ids
     },
     sortChange(data) {
-      const { prop, order } = data;
-      this.pageQuery.sortBy = order;
-      this.pageQuery.sortName = prop;
-      this.handleFilter();
+      const { prop, order } = data
+      this.pageQuery.sortBy = order
+      this.pageQuery.sortName = prop
+      this.handleFilter()
     },
     getLikeList(query) {
       if (query == undefined) {
-        query = {};
+        query = {}
       }
-      this.listLoading = true;
-      this.pageQuery.condition = query;
+      this.listLoading = true
+      this.pageQuery.condition = query
       getListByAmmParam(this.pageQuery).then((resp) => {
-        this.total = resp.data.total;
-        this.list = resp.data.records;
-        this.listLoading = false;
-      });
+        this.total = resp.data.total
+        this.list = resp.data.records
+        this.listLoading = false
+      })
     },
     readEnabled(row, column) {
-      var status = row.enabled;
+      var status = row.enabled
       if (status == 0) {
-        return "停用";
+        return '停用'
       } else if (status == 1) {
-        return "启用";
+        return '启用'
       } else if (status == 2) {
-        return "测试";
+        return '测试'
       }
     },
     readDataType(row, column) {
-      var status = row.dataType;
-      if (status == "str") {
-        return "文本";
-      } else if (status == "num") {
-        return "数字";
-      } else if (status == "date") {
-        return "日期时间";
+      var status = row.dataType
+      if (status == 'str') {
+        return '文本'
+      } else if (status == 'num') {
+        return '数字'
+      } else if (status == 'date') {
+        return '日期时间'
       }
     },
     /**
@@ -244,22 +245,22 @@ export default {
      */
     enableParam() {
       if (this.selectedIds.length == 0) {
-        alert("请选择后再进行启用");
+        alert('请选择后再进行启用')
       } else {
-        updateEnabled(this.selectedIds.join(",")).then((resp) => {
+        updateEnabled(this.selectedIds.join(',')).then((resp) => {
           if (resp.data == true) {
-            this.getLikeList();
+            this.getLikeList()
             this.$message({
-              type: "success",
-              message: "启用成功!",
-            });
+              type: 'success',
+              message: '启用成功!'
+            })
           } else {
             this.$message({
-              type: "error",
-              message: "启用失败!",
-            });
+              type: 'error',
+              message: '启用失败!'
+            })
           }
-        });
+        })
       }
     },
     /**
@@ -267,22 +268,22 @@ export default {
      */
     disableParam() {
       if (this.selectedIds.length == 0) {
-        alert("请选择后再进行停用");
+        alert('请选择后再进行停用')
       } else {
-        updateDisenable(this.selectedIds.join(",")).then((resp) => {
+        updateDisenable(this.selectedIds.join(',')).then((resp) => {
           if (resp.data == true) {
-            this.getLikeList();
+            this.getLikeList()
             this.$message({
-              type: "success",
-              message: "停用成功!",
-            });
+              type: 'success',
+              message: '停用成功!'
+            })
           } else {
             this.$message({
-              type: "error",
-              message: "启用失败!",
-            });
+              type: 'error',
+              message: '启用失败!'
+            })
           }
-        });
+        })
       }
     },
     /**
@@ -290,62 +291,60 @@ export default {
      */
     deleteParam() {
       if (this.selectedIds.length == 0) {
-        alert("请选择后再进行删除");
+        alert('请选择后再进行删除')
       } else {
-        deleteParams(this.selectedIds.join(",")).then((resp) => {
+        deleteParams(this.selectedIds.join(',')).then((resp) => {
           if (resp.data == true) {
-            this.getLikeList();
+            this.getLikeList()
             this.$message({
-              type: "success",
-              message: "删除成功!",
-            });
+              type: 'success',
+              message: '删除成功!'
+            })
           } else {
             this.$message({
-              type: "error",
-              message: "删除失败!",
-            });
+              type: 'error',
+              message: '删除失败!'
+            })
           }
-        });
+        })
       }
     },
     test() {
-      let obj = [
+      const obj = [
         {
-          id: "{#C91B89F3705000014C91C82013231830#}",
-          copyParamId: "C91B89F3705000014C91C82013231830",
-          moduleParamId: "4028c3817038f8e5017038f980eb0001",
-          allowedNull: "1",
-          name: "kmh",
-        },
-      ];
-      let sql =
-        "select * from AA_MODEL WHERE MODEL_UUID = '{#C91B89F3705000014C91C82013231830#}'";
-      let paramsArr = JSON.parse(obj);
-      console.log(JSON.stringify(parArrs));
-      console.log(selText);
-      createParamHtml(sql, paramsArr, "请输入参数值", "", function (returnObj) {
-        console.log(returnObj);
-      });
+          id: '{#C91B89F3705000014C91C82013231830#}',
+          copyParamId: 'C91B89F3705000014C91C82013231830',
+          moduleParamId: '4028c3817038f8e5017038f980eb0001',
+          allowedNull: '1',
+          name: 'kmh'
+        }
+      ]
+      const sql =
+        "select * from AA_MODEL WHERE MODEL_UUID = '{#C91B89F3705000014C91C82013231830#}'"
+      const paramsArr = JSON.parse(obj)
+      console.log(JSON.stringify(parArrs))
+      console.log(selText)
+      createParamHtml(sql, paramsArr, '请输入参数值', '', function(returnObj) {
+        console.log(returnObj)
+      })
     },
     openParamDraw() {
-      console.log(11111111111);
-      let obj = [
+      const obj = [
         {
-          id: "{#C91B89F3705000014C91C82013231830#}",
-          copyParamId: "C91B89F3705000014C91C82013231830",
-          moduleParamId: "4028c3817038f8e5017038f980eb0001",
-          allowedNull: "1",
-          name: "kmh",
-        },
-      ];
-      let sql =
-        "select * from AA_MODEL WHERE MODEL_UUID = '{#C91B89F3705000014C91C82013231830#}'";
-      let paramsArr = obj;
-      console.log(222222222222);
-      this.dialogFormVisible = true;
-      initParamHtml(sql, obj, "你好呀", null); //前后加遮罩
-      console.log(3333333333333);
-    },
-  },
-};
+          id: '{#C91B89F3705000014C91C82013231830#}',
+          copyParamId: 'C91B89F3705000014C91C82013231830',
+          moduleParamId: '4028c3817038f8e5017038f980eb0001',
+          allowedNull: '1',
+          name: 'kmh'
+        }
+      ]
+      const sql =
+        "select * from AA_MODEL WHERE MODEL_UUID = '{#C91B89F3705000014C91C82013231830#}'"
+      const paramsArr = obj
+      this.dialogFormVisible = true
+      createParamTableHtml(1, true, null, obj, true) // 前后加遮罩
+      // function createParamTableHtml(tableId,sqlIsChanged,modelId,paramArr,canEditor){
+    }
+  }
+}
 </script>

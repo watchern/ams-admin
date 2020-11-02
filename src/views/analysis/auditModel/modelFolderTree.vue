@@ -43,7 +43,7 @@
 </template>
 <script>
 import MyElTree from '@/components/Ace/tree/src/tree.vue'
-import { findModelFoldeTree, deleteModelFolder, addModelFolder, updateModelFolder } from '@/api/analysis/auditModel'
+import { findModelFolderTree, deleteModelFolder, addModelFolder, updateModelFolder } from '@/api/analysis/auditModel'
 export default {
   name: 'ModelFolderTree',
   components: { MyElTree },
@@ -83,39 +83,38 @@ export default {
      *获取模型分类
      */
     getModelFolder() {
-      findModelFoldeTree().then(result => {
-        let newData = []
-        if (this.publicModel === 'publicModel') {
-          // 处理数据  只保留公共分类的文件夹数据 模型也不保留
-          for (let i = 0; i < result.data.length; i++) {
-            if (result.data[i].id == 'gonggong') {
-              newData.push(result.data[i])
+      if (this.publicModel != undefined && this.publicModel != '') {
+        findModelFolderTree(false).then(result => {
+          let newData = []
+          if (this.publicModel === 'publicModel') {
+            // 处理数据  只保留公共分类的文件夹数据
+            for (let i = 0; i < result.data.length; i++) {
+              if (result.data[i].id == 'gonggong') {
+                newData.push(result.data[i])
+              }
             }
-          }
-          if (newData[0].children.length > 0) {
-            this.deleteModelData(newData[0])
-          }
-        }
-        /*        else if(this.publicModel === "cancelModel"){
-          for (let i = 0;i < result.data.length;i++){
-            if(result.data[i].id == 2){
-              newData.push(result.data[i]);
+          } else if (this.publicModel === 'editorModel') {
+            // todo 揉入权限信息
+            for (let i = 0; i < result.data.length; i++) {
+              if (result.data[i].id == 'gonggong' || result.data[i].id == this.$store.getters.personuuid) {
+                newData.push(result.data[i])
+              }
             }
+          } else {
+            newData = result.data
           }
-          if(newData[0].children.length > 0){
-            this.deleteModelData(newData[0])
-          }
-        }*/
-        else {
-          newData = result.data
-        }
-        this.data = newData
-      })
+          this.data = newData
+        })
+      } else {
+        findModelFolderTree(true).then(result => {
+          this.data = result.data
+        })
+      }
     },
     deleteModelData(newData) {
       for (let i = 0; i < newData.children.length; i++) {
         if (newData.children[i].type == 'model') {
-          newData.children.splice(i, 1)
+          newData.children[i].isShow = false
         } else {
           this.deleteModelData(newData.children[i])
         }
