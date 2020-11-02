@@ -42,9 +42,9 @@
         align="center"
         prop="odsTableName"
       />
-     <el-table-column
+      <el-table-column
         label="接收时间"
-       
+
         align="center"
         prop="createTime"
       />
@@ -68,7 +68,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import {listByPage} from '@/api/etlscheduler/dataFile'
+import { listByPage } from '@/api/etlscheduler/dataFile'
 import QueryField from '@/components/Ace/query-field/index'
 
 export default {
@@ -79,7 +79,7 @@ export default {
       list: null,
       total: 0,
       listLoading: false,
-       // 格式化状态
+      // 格式化状态
       formatMap: {
         status: {
           1: '已接收',
@@ -93,7 +93,7 @@ export default {
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '接收状态', name: 'status', type: 'select',
-          data: [{ name: '已接收', value: '1' }, { name: '未接收', value: '0' }],
+          data: [{ name: '已接收', value: '1' }, { name: '未接收', value: '0' }]
         },
         { label: '时间', name: '', type: 'timePeriod', value: '' }
       ],
@@ -108,9 +108,9 @@ export default {
         dataResourceCode: null,
         fullPath: null,
         odsTableName: null,
-        createTime: null,
+        createTime: null
       },
-      selections: [],
+      selections: []
     }
   },
   created() {
@@ -151,5 +151,5 @@ export default {
 }
 </script>
 <style>
- 
+
 </style>

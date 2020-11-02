@@ -11,7 +11,7 @@ export function findModelFolderTree(isShowModel) {
     baseURL: analysisUrl,
     url: '/modelFolderController/findModelFolderTree',
     method: 'get',
-    params: {isShowModel:isShowModel}
+    params: { isShowModel: isShowModel }
   })
 }
 
@@ -139,7 +139,7 @@ export function selectModel(modelId) {
  * @param data 要修改的模型数组
  * @returns {AxiosPromise}
  */
-export function updateModelBasicInfo(data){
+export function updateModelBasicInfo(data) {
   return request({
     baseURL: analysisUrl,
     url: '/modelController/updateModelBasicInfo',
@@ -150,7 +150,7 @@ export function updateModelBasicInfo(data){
   })
 }
 
-export function setModelSession(data){
+export function setModelSession(data) {
   return request({
     baseURL: analysisUrl,
     url: '/modelController/setModelSession',
@@ -164,9 +164,9 @@ export function setModelSession(data){
 /**
  * 导出模型
  */
-export function exportModel(){
-  let url = analysisUrl + "/modelController/exportModel";
-  window.location.href = url;
+export function exportModel() {
+  const url = analysisUrl + '/modelController/exportModel'
+  window.location.href = url
 }
 
 /**
@@ -174,7 +174,7 @@ export function exportModel(){
  * @param data 数据
  * @returns {AxiosPromise}
  */
-export function shareModel(data){
+export function shareModel(data) {
   return request({
     baseURL: analysisUrl,
     url: '/modelController/saveBatch',
@@ -189,11 +189,11 @@ export function shareModel(data){
  * 获取业务属性
  * @returns {AxiosPromise}
  */
-export function getBusinessAttribute(){
+export function getBusinessAttribute() {
   return request({
     baseURL: dataUrl,
     url: '/bizAttr/list',
-    method: 'post',
+    method: 'post'
   })
 }
 
@@ -202,7 +202,7 @@ export function getBusinessAttribute(){
  * @param data
  * @returns {AxiosPromise}
  */
-export function getTableCol(tableMetaUuid){
+export function getTableCol(tableMetaUuid) {
   return request({
     baseURL: dataUrl,
     url: '/tableMeta/getCols',
@@ -215,10 +215,10 @@ export function getTableCol(tableMetaUuid){
  * 获取审计事项数据
  * @returns {AxiosPromise}
  */
-export function getAuditItem(){
+export function getAuditItem() {
   return request({
     baseURL: analysisUrl,
     url: '/modelFolderController/getAuditItemTree',
-    method: 'get',
+    method: 'get'
   })
 }

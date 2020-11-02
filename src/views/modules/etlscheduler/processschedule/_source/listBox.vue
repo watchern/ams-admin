@@ -1,4 +1,3 @@
-
 <template>
   <div class="clearfix list">
     <div class="text-box">
