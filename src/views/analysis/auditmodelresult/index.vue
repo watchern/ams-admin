@@ -31,8 +31,8 @@
   </div>
 </template>
 <script>
-import firstParentTabCon from '@/views/analysis/auditModelResult/firstParentTabCon'
-import childTabs from '@/views/analysis/auditModelResult/childTabs'
+import firstParentTabCon from '@/views/analysis/auditmodelresult/firstparenttabcon'
+import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 export default {
   components: {
     firstParentTabCon,

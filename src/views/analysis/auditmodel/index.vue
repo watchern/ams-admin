@@ -10,8 +10,8 @@
   </div>
 </template>
 <script>
-import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
-import ModelListTable from '@/views/analysis/auditModel/modelListTable'
+import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
+import ModelListTable from '@/views/analysis/auditmodel/modellisttable'
 export default {
   components: { ModelFolderTree, ModelListTable },
   methods: {

@@ -24,7 +24,7 @@
   </div>
 </template>
 <script>
-import {findSqlDraft,deleteSqlDraft} from '@/api/analysis/SQLEditor/SQLDraft'
+import {findSqlDraft,deleteSqlDraft} from '@/api/analysis/sqleditor/sqldraft'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 export default {

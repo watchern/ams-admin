@@ -52,7 +52,7 @@
 </template>
 <script>
 import Colorpicker from '@/components/Ace/vue-color-picker/packages/color-picker/src/color-picker'
-import myQueryBuilder from '@/views/analysis/auditModelResult/myQueryBuilder'
+import myQueryBuilder from '@/views/analysis/auditmodelresult/myquerybuilder'
 export default {
   name: 'ModelFilterShow',
   components: { Colorpicker, myQueryBuilder },
@@ -134,7 +134,6 @@ export default {
         obj.columnName = this.columns[i].outputColumnName
         queryRules.push(obj)
       }
-      console.log(queryRules)
       this.queryRules.columnList = queryRules
     },
     /**

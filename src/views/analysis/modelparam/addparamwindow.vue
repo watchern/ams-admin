@@ -108,10 +108,10 @@
       </el-form-item>
     </el-form>
  </div> -->
- 
+
 </template>
 <script>
-import { setSelectValue } from "@/api/analysis/auditParam";
+import { setSelectValue } from "@/api/analysis/auditparam";
 import { getDictSonList } from "@/utils/index";
 export default {
   created() {
@@ -201,7 +201,7 @@ export default {
       console.log(this.form.vals);
 	},
 	  openSQLRule() {
-        this.$alert(`1、SQL语句的格式为：SELECT A,B FROM C 
+        this.$alert(`1、SQL语句的格式为：SELECT A,B FROM C
 
                      2、其中【A】字段为真实值，【B】字段为显示值，若字段过多（或者存在【*】），则默认只使用前两列进行真实值与显示值的匹配`, '标题名称', {
           confirmButtonText: '关闭'
