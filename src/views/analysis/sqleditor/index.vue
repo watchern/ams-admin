@@ -309,8 +309,9 @@ export default {
       // 发送消息
       this.webSocket.onmessage = function(event) {
         const dataObj = JSON.parse(event.data)
-        // todo  这块得加判断  判断sql是否全部执行成功，失败则不加1
-        currentExecuteProgress++
+        if(dataObj.result != null){
+          currentExecuteProgress++
+        }
         // 如果当前执行等于总的执行进度  说明最后的结果集已经拿到 取出最后一个结果集的列做为模型结果列
         if (currentExecuteProgress == dataObj.executeTask.executeSQL.length) {
           isAllExecuteSuccess = true

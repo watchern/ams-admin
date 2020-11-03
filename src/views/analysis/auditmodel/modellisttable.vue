@@ -1,54 +1,59 @@
 <template>
   <div class="page-container">
-    <el-row>
-      <el-col>
-        <el-tabs v-model="editableTabsValue" type="card" @tab-click="" closable @tab-remove="removeTab">
-          <el-tab-pane label="模型列表" name="modelList">
-            <div class="filter-container">
-              <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
-            </div>
-            <div style="float: right">
-              <el-button type="primary" class="oper-btn detail" @click="previewModel" />
-              <el-button type="primary" class="oper-btn add" @click="addModel" />
-              <el-button type="primary" class="oper-btn edit" @click="updateModel" />
-              <el-button type="primary" class="oper-btn delete" @click="deleteModel" />
-              <el-dropdown placement="bottom" trigger="click" style="margin-left: 10px;">
-                <el-button type="primary" class="oper-btn more" />
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
-                  <el-dropdown-item @click.native="importData">导入</el-dropdown-item>
-                  <el-dropdown-item @click.native="shareModel">共享</el-dropdown-item>
-                  <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
-                  <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-            <el-table :key="tableKey" ref="modelListTable" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;height: 450px;overflow-y: scroll">
-              <el-table-column type="selection" width="55" />
-              <el-table-column label="模型名称" width="100px" align="center" prop="modelName" />
-              <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
-              <el-table-column label="审计事项" prop="auditItemName" />
-              <el-table-column label="风险等级" prop="riskLevelUuid" :formatter="riskLevelFormatter" />
-              <el-table-column label="模型类型" prop="modelType" :formatter="modelTypeFormatter" />
-              <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
-            </el-table>
-            <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-          </el-tab-pane>
-          <el-tab-pane
-            v-for="(item, index) in editableTabs"
-            :key="item.name"
-            :label="item.title"
-            :name="item.name">
-            <!--增加参数输入组件-->
+    <el-tabs v-model="editableTabsValue" closable @tab-remove="removeTab">
+      <el-tab-pane label="模型列表" name="modelList">
+        <div class="filter-container">
+          <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
+        </div>
+        <div style="float: right">
+          <el-button type="primary" class="oper-btn detail" @click="previewModel" />
+          <el-button type="primary" class="oper-btn add" @click="addModel" />
+          <el-button type="primary" class="oper-btn edit" @click="updateModel" />
+          <el-button type="primary" class="oper-btn delete" @click="deleteModel" />
+          <el-dropdown placement="bottom" trigger="click" style="margin-left: 10px;">
+            <el-button type="primary" class="oper-btn more" />
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
+              <el-dropdown-item @click.native="importData">导入</el-dropdown-item>
+              <el-dropdown-item @click.native="shareModel">共享</el-dropdown-item>
+              <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
+              <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+        <el-table :key="tableKey" ref="modelListTable" v-loading="listLoading" :data="list" border fit highlight-current-row>
+          <el-table-column type="selection" width="55" />
+          <el-table-column label="模型名称" width="100px" align="center" prop="modelName" />
+          <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
+          <el-table-column label="审计事项" prop="auditItemName" />
+          <el-table-column label="风险等级" prop="riskLevelUuid" :formatter="riskLevelFormatter" />
+          <el-table-column label="模型类型" prop="modelType" :formatter="modelTypeFormatter" />
+          <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
+        </el-table>
+        <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
+      </el-tab-pane>
+      <el-tab-pane
+        v-for="(item, index) in editableTabs"
+        :key="item.name"
+        :label="item.title"
+        :name="item.name">
+        <!--增加参数输入组件-->
+        <el-row>
+          <el-col :span="22">
             <crossrangeParam v-if="item.isExistParam" :ref="item.name + 'param'"></crossrangeParam>
-            <!--增加结果组件-->
-           <div style="margin-left: -14px">
-             <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor" style="width:1260px"/>
-           </div>
-          </el-tab-pane>
-        </el-tabs>
-      </el-col>
-    </el-row>
+          </el-col>
+          <el-col :span="2">
+            <el-button type="primary">查询</el-button>
+          </el-col>
+        </el-row>
+        <!--增加结果组件-->
+         <el-row>
+           <el-col :span="24">
+              <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor"/>
+           </el-col>
+         </el-row>
+      </el-tab-pane>
+    </el-tabs>
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
       <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
@@ -199,8 +204,9 @@ export default {
       }
       const func2 = function func3(val) {
         const dataObj = JSON.parse(val.data)
-        console.log(this.$refs.[dataObj.modelUuid + 'param'])
-        this.$refs.[dataObj.modelUuid + 'param'][0].initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', null)
+        if(this.currentPreviewModelParamAndSql.paramObj != undefined){
+          this.$refs.[dataObj.modelUuid + 'param'][0].initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', null)
+        }
         this.$refs.[dataObj.modelUuid][0].loadTableData(dataObj)
       }
       const func1 = func2.bind(this)
@@ -660,9 +666,19 @@ export default {
         this.$message({ type: 'info', message: obj.message })
         return
       }
+      debugger
       obj.sqls = obj.sql
       obj.modelUuid = selectObj[0].modelUuid
-
+      startExecuteSql(obj).then((result) => {
+        this.dialogFormVisible = false
+        if (!result.data.isError) {
+          this.addTab(selectObj[0],true,result.data.executeSQLList)
+        } else {
+          this.$message({ type: 'info', message: '执行失败' })
+        }
+      })
+    },
+    queryModel(modelUuid){
       startExecuteSql(obj).then((result) => {
         this.dialogFormVisible = false
         if (!result.data.isError) {
