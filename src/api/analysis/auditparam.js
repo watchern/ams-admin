@@ -453,10 +453,9 @@ var replaceSql = '' // 待替换的SQL语句（含参数）
  *  }
  * @author 梁瑞
  */
-export function initParamHtml(sql, paramsArr, name, modelId) {
+export function initParamHtml(sql, paramsArr, name) {
   replaceSql = sql
   $('#accordion').find('a').html(name)
-  modelId = (modelId == null || typeof modelId === 'undefined') ? '' : modelId
   try {
     // 获取数据库所有母参数信息集合以及该模型用到的参数集合（可以不传模型ID）
     findParamsAndModelRelParams().then((e) => {
@@ -592,9 +591,7 @@ export function initcrossrangeParamHtml(sql, paramsArr, name,id) {
           // alertMsg("错误", message, "info");
         } else {
           // $(".panel-body").html(paramHtml);
-          $('#paramCom').html(paramHtml)
-          console.log($('.panel-body'))
-          console.log($('#paramCom'))
+          $('#'+id).html(paramHtml)
           initParamInputAndSelect()
         }
       }
@@ -1832,7 +1829,7 @@ export function replaceCrossrangeNodeParam(modelId) {
   var paramNum = 0 // 记录参数不允许为空却未输入值的参数数量
   var hasAllowedNullParam = false; // 本次设置是否含有可为空的参数条件
   // 获取参数查询条件（文本框）
-  ($('#paramCom').find('.paramOption')).each(function() {
+  ($('#'+modelId).find('.paramOption')).each(function() {
     var moduleParamId = $(this).attr('data-id') // 母参数ID
     var paramName = $(this).attr('data-name') // 母参数名称
     var allowedNull = typeof $(this).attr('data-allowedNull') !== 'undefined' ? $(this).attr('data-allowedNull') : '1' // 是否允许为空，当为undefined时默认为可为空
@@ -1863,7 +1860,7 @@ export function replaceCrossrangeNodeParam(modelId) {
     }
   });
   // 获取参数查询条件（下拉列表）
-  ($('#paramCom').find('.selectParam')).each(function(i, v) {
+  ($('#'+modelId).find('.selectParam')).each(function(i, v) {
     var moduleParamId = $(this).attr('data-id') // 母参数ID
     var paramName = $(this).attr('data-name') // 母参数名称
     var allowedNull = typeof $(this).attr('data-allowedNull') !== 'undefined' ? $(this).attr('data-allowedNull') : '1' // 是否允许为空，当为undefined时默认为可为空
@@ -1914,7 +1911,7 @@ export function replaceCrossrangeNodeParam(modelId) {
   });
 
   // 获取参数查询条件（下拉树）
-  ($('#paramCom').find('.selectTreeParam')).each(function(i, v) {
+  ($('#'+modelId).find('.selectTreeParam')).each(function(i, v) {
     var moduleParamId = $(this).attr('data-id') // 母参数ID
     var paramName = $(this).attr('data-name') // 母参数名称
     var allowedNull = typeof $(this).attr('data-allowedNull') !== 'undefined' ? $(this).attr('data-allowedNull') : '1' // 是否允许为空，当为undefined时默认为可为空
