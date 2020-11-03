@@ -1,6 +1,6 @@
 <template>
       <div id="collapse">
-        <div id="paramCom" style="padding: 10px 0;display: flex;flex-wrap: wrap" />
+        <div :id="myId" style="padding: 10px 0;display: flex;flex-wrap: wrap" />
       </div>
 </template>
 <script>
@@ -10,9 +10,11 @@ export default {
     return {
     }
   },
+  props:['myId']
+  ,
   methods: {
-    initParamHtmlSS(sql, paramsArr, name, modelId) {
-      initcrossrangeParamHtml(sql, paramsArr, name, modelId)
+    initParamHtmlSS(sql, paramsArr, name,id) {
+      initcrossrangeParamHtml(sql, paramsArr, name,id)
     }
   }
 }
