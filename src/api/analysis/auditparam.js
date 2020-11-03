@@ -452,6 +452,7 @@ var replaceSql = '' // 待替换的SQL语句（含参数）
  * @author 梁瑞
  */
 export function initParamHtml(sql, paramsArr, name, modelId) {
+  debugger
   replaceSql = sql
   $('#accordion').find('a').html(name)
   modelId = (modelId == null || typeof modelId === 'undefined') ? '' : modelId
@@ -467,44 +468,6 @@ export function initParamHtml(sql, paramsArr, name, modelId) {
         // alertMsg("错误", e.data.message, "info");
       } else {
         var paramList = e.data.paramList // 定义所有母参信息数组
-        if (modelId != '') { // 如果模型ID不为空，暂定认为是模型运行
-          var paramRelList = e.data.paramRelList // 定义所有与该模型关联的参数集合
-          // 先组织有效参数数组集合paramsArr
-          paramsArr = []
-          for (var i = 0; i < paramRelList.length; i++) { // 遍历所有模型关联参数
-            var obj = {
-              'id': '{#' + paramRelList[i].PARAM_ID + '#}',
-              'copyParamId': paramRelList[i].PARAM_ID,
-              'moduleParamId': paramRelList[i].LINK_PARAM_UUID,
-              'name': paramRelList[i].PARAM_NAME
-            }
-            allParamFor: for (var j = 0; j < paramList.length; j++) { // 设置模型关联参数的是否允许为空属性为母参的是否为空的属性
-              if (paramRelList[i].LINK_PARAM_UUID == paramList[j].ammParamUuid) {
-                if (typeof paramList[j].paramChoice.allowedNull === 'undefined') {
-                  obj.allowedNull = '1' // 默认为可以为空
-                } else {
-                  obj.allowedNull = paramList[j].paramChoice.allowedNull
-                }
-                break allParamFor
-              }
-            }
-            paramsArr.push(obj) // paramRelList中是按照排序值升序的条件进行存储，因此paramsArr是有顺序的
-          }
-          // 如果是模型运行，则给每个母参设置默认值和排序值
-          for (var j = 0; j < paramList.length; j++) { // 遍历所有母版参数
-            allParamRelFor: for (var k = 0; k < paramRelList.length; k++) { // 遍历所有模型关联参数
-              if (paramRelList[k].LINK_PARAM_UUID == paramList[j].ammParamUuid) { // 在关联参数中匹配骑对应的母参ID
-                if (paramList[j].inputType == 'lineinp' || paramList[j].inputType == 'treeinp') { // 下拉列表或下拉树参数
-                  paramList[j].defaultVal = JSON.parse(paramRelList[k].PARAM_VALUE) // 默认值为数组字符串
-                } else { // 文本框或日期参数
-                  paramList[j].defaultVal = paramRelList[k].PARAM_VALUE // 默认值为字符串
-                }
-                paramList[j].sortVal = paramRelList[k].PARAM_SORT // 排序值
-                break allParamRelFor
-              }
-            }
-          }
-        }
         arr = paramsArr
         var paramHtml = ''
         var moduleParamIdArr = [] // 存放已匹配的母参ID
@@ -517,6 +480,7 @@ export function initParamHtml(sql, paramsArr, name, modelId) {
               description = '（参数说明：' + paramList[j].description + '）'
             }
             if (paramsArr[i].moduleParamId === paramList[j].ammParamUuid && $.inArray(paramsArr[i].moduleParamId, moduleParamIdArr) == -1) { // 匹配复制参数的母版参数ID
+                paramList[j].defaultVal = JSON.stringify(paramsArr[i])
               paramHtml += "<div class='row'><div class='col-sm-12'><div class='form-group'><label class='col-sm-2' style='text-align: right;padding: 10px 7px;'>" + paramsArr[i].name + "&nbsp;&nbsp;</label><div class='col-sm-4'>" // 加上前面的参数名称
               var RO = initParamHtml_Common(paramList[j])
               if (RO.isError) {
@@ -779,6 +743,7 @@ export function initParamHtml_Common(paramObj, selectNum, selectTreeNum) {
       if (typeof paramObj.dataLength !== 'undefined') {
         title += ',参数值的长度为' + paramObj.dataLength
       }
+      debugger
       obj.htmlContent += "<input type='text' title='" + title + "' class='textParam paramOption form-control paramTr' data-id='" + paramObj.ammParamUuid + "' data-name='" + paramObj.paramName + "'" +
         (typeof paramObj.paramChoice.allowedNull !== 'undefined' ? " data-allowedNull='" + paramObj.paramChoice.allowedNull + "' " : '') +
         (typeof paramObj.defaultVal !== 'undefined' ? " data-defaultVal='" + paramObj.defaultVal + "' " : '') +
@@ -1045,6 +1010,9 @@ function initParamInputAndSelect() {
       // 设置默认值
       var defaultVal = $(this).attr('data-defaultVal')
       if (typeof defaultVal !== 'undefined') {
+        debugger
+        var a = JSON.parse(defaultVal)
+        var b = JSON.parse(defaultVal).paramValue
         $(this).val(JSON.parse(defaultVal).paramValue) // 设置默认值
       }
     })
@@ -2270,6 +2238,10 @@ async function replaceModelSqlByParams(sql, paramArr) {
   })
 }
 
+/**
+ * 根据模型关联的参数查询对应的母参对象
+ * @param {*} data 与模型关联的参数json字符串
+ */
 export function getParentParamByParamArr(data) {
   return request({
     baseURL: analysisUrl,
@@ -2278,6 +2250,8 @@ export function getParentParamByParamArr(data) {
     data
   })
 }
+
+
 
 export function createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
   if (typeof canEditor === 'undefined') {
