@@ -54,6 +54,9 @@ Vue.use(ans, useOpt)
 
 // end dolphin
 
+// file Upload
+import uploader from 'vue-simple-uploader'
+Vue.use(uploader)
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

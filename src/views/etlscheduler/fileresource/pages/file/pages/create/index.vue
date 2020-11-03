@@ -63,7 +63,7 @@
 import { mapActions } from 'vuex'
 import { filtTypeArr } from '../_source/common'
 import { handlerSuffix } from '../details/_source/utils'
-import codemirror from '../_source/codemirror'
+import codemirror from '@/components/etl/file/codemirror'
 import mListBoxF from '@/components/etl/listBoxF/listBoxF'
 import mListConstruction from '@/components/etl/listConstruction/listConstruction'
 import $ from 'jquery'
