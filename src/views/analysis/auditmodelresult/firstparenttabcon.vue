@@ -157,15 +157,15 @@ import {
   insertRunResultShare,
   deleteRunResultShare,
   exportRunTaskRel
-} from '@/api/analysis/auditModelResult'
+} from '@/api/analysis/auditmodelresult'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import { elementInside } from 'dropzone'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import AV from 'leancloud-storage'
-import paramShow from '@/views/analysis/modelParam/paramShow'
-import { getParamSettingArr } from '@/api/analysis/auditParam'
+import paramShow from '@/views/analysis/modelparam/paramshow'
+import { getParamSettingArr } from '@/api/analysis/auditparam'
 export default {
   components: { Pagination, QueryField, paramShow },
   data() {

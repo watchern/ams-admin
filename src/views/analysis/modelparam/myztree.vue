@@ -26,7 +26,7 @@
   </div>
 </template>
 <script>
-import { initParamTree, paramTreeSearch,initIcon } from "@/api/analysis/auditParam";
+import { initParamTree, paramTreeSearch,initIcon } from "@/api/analysis/auditparam";
 export default {
   mounted() {
     this.initTree();

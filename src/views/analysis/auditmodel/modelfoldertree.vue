@@ -43,7 +43,7 @@
 </template>
 <script>
 import MyElTree from '@/components/Ace/tree/src/tree.vue'
-import { findModelFolderTree, deleteModelFolder, addModelFolder, updateModelFolder } from '@/api/analysis/auditModel'
+import { findModelFolderTree, deleteModelFolder, addModelFolder, updateModelFolder } from '@/api/analysis/auditmodel'
 export default {
   name: 'ModelFolderTree',
   components: { MyElTree },

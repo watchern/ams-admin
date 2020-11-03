@@ -120,7 +120,7 @@ export default {
           console.log(dataTypeObj)
           if (
             dataTypeObj.columnType.toUpperCase() == 'TIMESTAMP' ||
-            dataTypeObj.columnType.toUpperCase() == 'VARCHAR' ||
+            dataTypeObj.columnType.toUpperCase().indexOf('VARCHAR') > -1 ||
             dataTypeObj.columnType.toUpperCase() == 'CLOB'
           ) {
             if (
