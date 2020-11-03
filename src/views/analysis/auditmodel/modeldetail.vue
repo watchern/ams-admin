@@ -131,8 +131,8 @@
 </template>
 <script>
 import dataTree from '@/views/data/role-res/data-tree'
-import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
-import { selectModel,getTableCol } from '@/api/analysis/auditModel'
+import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
+import { selectModel,getTableCol } from '@/api/analysis/auditmodel'
 export default {
   name: 'EditModel',
   components: { ModelFolderTree,dataTree},

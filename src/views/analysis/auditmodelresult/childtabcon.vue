@@ -119,11 +119,11 @@ import {
   removeResultDetailProjectRel,
   selectConditionShow,
   selectModel
-} from '@/api/analysis/auditModelResult'
+} from '@/api/analysis/auditmodelresult'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import AV from 'leancloud-storage'
-import myQueryBuilder from '@/views/analysis/auditModelResult/myQueryBuilder'
+import myQueryBuilder from '@/views/analysis/auditmodelresult/myquerybuilder'
 import { string } from 'jszip/lib/support'
 export default {
   // 注册draggable组件

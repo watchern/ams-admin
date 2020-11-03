@@ -198,12 +198,12 @@ import {
   verifySql,
   editorSql,
   startExecuteSql
-} from '@/api/analysis/SQLEditor/SQLEditor'
-import sqlDraftList from '@/views/analysis/SQLEditor/sqlDraftList'
-import { updateDraft } from '@/api/analysis/SQLEditor/SQLDraft'
-import childTabs from '@/views/analysis/auditModelResult/childTabs'
-import paramDraw from '@/views/analysis/modelParam/paramDraw'
-import { replaceNodeParam } from '@/api/analysis/auditParam'
+} from '@/api/analysis/sqleditor/sqleditor'
+import sqlDraftList from '@/views/analysis/sqleditor/sqldraftlist'
+import { updateDraft } from '@/api/analysis/sqleditor/sqldraft'
+import childTabs from '@/views/analysis/auditmodelresult/childtabs'
+import paramDraw from '@/views/analysis/modelparam/paramdraw'
+import { replaceNodeParam } from '@/api/analysis/auditparam'
 
 /**
  * 当前执行进度

@@ -52,7 +52,7 @@
 </template>
 <script>
 import Colorpicker from '@/components/Ace/vue-color-picker/packages/color-picker/src/color-picker'
-import myQueryBuilder from '@/views/analysis/auditModelResult/myQueryBuilder'
+import myQueryBuilder from '@/views/analysis/auditmodelresult/myquerybuilder'
 export default {
   name: 'ModelFilterShow',
   components: { Colorpicker, myQueryBuilder },

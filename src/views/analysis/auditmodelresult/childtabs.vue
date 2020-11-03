@@ -18,7 +18,7 @@
   </el-tabs>
 </template>
 <script>
-import childTabCon from "@/views/analysis/auditModelResult/childTabCon";
+import childTabCon from "@/views/analysis/auditmodelresult/childtabcon";
 import { now } from "moment";
 export default {
   components: {

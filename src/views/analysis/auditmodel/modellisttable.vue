@@ -1,50 +1,54 @@
 <template>
   <div class="page-container">
-    <el-tabs v-model="editableTabsValue" type="card" @tab-click="" closable @tab-remove="removeTab">
-      <el-tab-pane label="模型列表" name="modelList">
-        <div class="filter-container">
-          <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
-        </div>
-        <div style="float: right;">
-          <el-button type="primary" class="oper-btn detail" @click="previewModel" />
-          <el-button type="primary" class="oper-btn add" @click="addModel" />
-          <el-button type="primary" class="oper-btn edit" @click="updateModel" />
-          <el-button type="primary" class="oper-btn delete" @click="deleteModel" />
-          <el-dropdown placement="bottom" trigger="click" style="margin-left: 10px;">
-            <el-button type="primary" class="oper-btn more" />
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
-              <el-dropdown-item @click.native="importData">导入</el-dropdown-item>
-              <el-dropdown-item @click.native="shareModel">共享</el-dropdown-item>
-              <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
-              <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </div>
-        <el-table :key="tableKey" ref="modelListTable" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;">
-          <el-table-column type="selection" width="55" />
-          <el-table-column label="模型名称" width="100px" align="center" prop="modelName" />
-          <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
-          <el-table-column label="审计事项" prop="auditItemName" />
-          <el-table-column label="风险等级" prop="riskLevelUuid" :formatter="riskLevelFormatter" />
-          <el-table-column label="模型类型" prop="modelType" :formatter="modelTypeFormatter" />
-          <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
-        </el-table>
-        <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-      </el-tab-pane>
-      <el-tab-pane
-        v-for="(item, index) in editableTabs"
-        :key="item.name"
-        :label="item.title"
-        :name="item.name">
-        <!--增加参数输入组件-->
-        <crossrangeParam v-if="item.isExistParam == true" :ref="item.name + 'param'"></crossrangeParam>
-        <!--增加结果组件-->
-       <div :ref="item.name + 'div'" style="margin-left: -14px">
-          <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor" style="width:1260px"/>
-        </div>
-      </el-tab-pane>
-    </el-tabs>
+    <el-row>
+      <el-col>
+        <el-tabs v-model="editableTabsValue" type="card" @tab-click="" closable @tab-remove="removeTab">
+          <el-tab-pane label="模型列表" name="modelList">
+            <div class="filter-container">
+              <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
+            </div>
+            <div style="float: right">
+              <el-button type="primary" class="oper-btn detail" @click="previewModel" />
+              <el-button type="primary" class="oper-btn add" @click="addModel" />
+              <el-button type="primary" class="oper-btn edit" @click="updateModel" />
+              <el-button type="primary" class="oper-btn delete" @click="deleteModel" />
+              <el-dropdown placement="bottom" trigger="click" style="margin-left: 10px;">
+                <el-button type="primary" class="oper-btn more" />
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
+                  <el-dropdown-item @click.native="importData">导入</el-dropdown-item>
+                  <el-dropdown-item @click.native="shareModel">共享</el-dropdown-item>
+                  <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
+                  <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </div>
+            <el-table :key="tableKey" ref="modelListTable" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;height: 450px;overflow-y: scroll">
+              <el-table-column type="selection" width="55" />
+              <el-table-column label="模型名称" width="100px" align="center" prop="modelName" />
+              <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
+              <el-table-column label="审计事项" prop="auditItemName" />
+              <el-table-column label="风险等级" prop="riskLevelUuid" :formatter="riskLevelFormatter" />
+              <el-table-column label="模型类型" prop="modelType" :formatter="modelTypeFormatter" />
+              <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
+            </el-table>
+            <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
+          </el-tab-pane>
+          <el-tab-pane
+            v-for="(item, index) in editableTabs"
+            :key="item.name"
+            :label="item.title"
+            :name="item.name">
+            <!--增加参数输入组件-->
+            <crossrangeParam v-if="item.isExistParam" :ref="item.name + 'param'"></crossrangeParam>
+            <!--增加结果组件-->
+           <div style="margin-left: -14px">
+             <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor" style="width:1260px"/>
+           </div>
+          </el-tab-pane>
+        </el-tabs>
+      </el-col>
+    </el-row>
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
       <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
@@ -74,17 +78,17 @@
   </div>
 </template>
 <script>
-import { findModel, saveModel, deleteModel, selectModel, updateModel,updateModelBasicInfo,exportModel,setModelSession } from '@/api/analysis/auditModel'
+import { findModel, saveModel, deleteModel, selectModel, updateModel,updateModelBasicInfo,exportModel,setModelSession } from '@/api/analysis/auditmodel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
-import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
-import EditModel from '@/views/analysis/auditModel/editModel'
+import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
+import EditModel from '@/views/analysis/auditmodel/editmodel'
 import { getOneDict } from '@/utils/index'
-import childTabs from '@/views/analysis/auditModelResult/childTabs'
-import { startExecuteSql } from '@/api/analysis/SQLEditor/SQLEditor'
-import crossrangeParam from '@/views/analysis/modelParam/crossrangeParam'
-import paramDraw from '@/views/analysis/modelParam/paramDraw'
-import { initcrossrangeParamHtml, replaceNodeParam } from '@/api/analysis/auditParam'
+import childTabs from '@/views/analysis/auditmodelresult/childtabs'
+import { startExecuteSql } from '@/api/analysis/sqleditor/sqleditor'
+import crossrangeParam from '@/views/analysis/modelparam/crossrangeparam'
+import paramDraw from '@/views/analysis/modelparam/paramdraw'
+import { initcrossrangeParamHtml, replaceNodeParam } from '@/api/analysis/auditparam'
 export default {
   name: 'ModelListTable',
   components: { Pagination, QueryField, EditModel,ModelFolderTree,childTabs,crossrangeParam,paramDraw },
@@ -161,7 +165,6 @@ export default {
     dialogFormVisible(value){
       this.$nextTick(function(){
         if(value){
-          debugger
           this.$refs.paramDrawRef.initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', null)
         }
       })
@@ -196,7 +199,8 @@ export default {
       }
       const func2 = function func3(val) {
         const dataObj = JSON.parse(val.data)
-        console.log(this.$refs.[dataObj.modelUuid])
+        console.log(this.$refs.[dataObj.modelUuid + 'param'])
+        this.$refs.[dataObj.modelUuid + 'param'][0].initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', null)
         this.$refs.[dataObj.modelUuid][0].loadTableData(dataObj)
       }
       const func1 = func2.bind(this)
@@ -650,19 +654,19 @@ export default {
      * 获取替换参数后的sql
      */
     replaceNodeParam() {
+      var selectObj = this.$refs.modelListTable.selection
       var obj = replaceNodeParam()
       if (!obj.verify) {
         this.$message({ type: 'info', message: obj.message })
         return
       }
       obj.sqls = obj.sql
-      console.log(obj)
-      return;
+      obj.modelUuid = selectObj[0].modelUuid
+
       startExecuteSql(obj).then((result) => {
+        this.dialogFormVisible = false
         if (!result.data.isError) {
-          var selectObj = this.$refs.modelListTable.selection
           this.addTab(selectObj[0],true,result.data.executeSQLList)
-          this.dialogFormVisible = false
         } else {
           this.$message({ type: 'info', message: '执行失败' })
         }

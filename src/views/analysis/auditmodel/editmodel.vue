@@ -198,15 +198,15 @@
   </div>
 </template>
 <script>
-import ModelDetail from '@/views/analysis/auditModel/modelDetail'
-import ModelFilterShow from '@/views/analysis/auditModel/modelFilterShow'
-import SQLEditor from '@/views/analysis/SQLEditor/index'
-import AuditItemTree from '@/views/analysis/auditModel/auditItemTree'
-import { getBusinessAttribute, saveModel, updateModel } from '@/api/analysis/auditModel'
+import ModelDetail from '@/views/analysis/auditmodel/modeldetail'
+import ModelFilterShow from '@/views/analysis/auditmodel/modelfiltershow'
+import SQLEditor from '@/views/analysis/sqleditor/index'
+import AuditItemTree from '@/views/analysis/auditmodel/auditItemtree'
+import { getBusinessAttribute, saveModel, updateModel } from '@/api/analysis/auditmodel'
 import VRuntimeTemplate from 'v-runtime-template'
-import paramShow from "@/views/analysis/modelParam/paramShow";
+import paramShow from "@/views/analysis/modelparam/paramshow";
 import { getDictList } from '@/utils/index'
-import ModelFolderTree from '@/views/analysis/auditModel/modelFolderTree'
+import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 export default {
   name: 'EditModel',
   components: { ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree },

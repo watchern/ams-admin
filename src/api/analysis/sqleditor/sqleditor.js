@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { deleteModel } from '@/api/analysis/auditModel'
+import { deleteModel } from '@/api/analysis/auditmodel'
 const analysisUrl = '/analysis'
 const dataUrl = '/amsdata'
 /**

@@ -101,8 +101,8 @@
 <script>
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
-import myZtree from '@/views/analysis/modelParam/myZtree'
-import paramDraw from '@/views/analysis/modelParam/paramDraw'
+import myZtree from '@/views/analysis/modelparam/myztree'
+import paramDraw from '@/views/analysis/modelparam/paramdraw'
 import {
   getListByAmmParam,
   updateEnabled,
@@ -110,8 +110,8 @@ import {
   deleteParams,
   initParamHtml,
   createParamTableHtml
-} from '@/api/analysis/auditParam'
-import addParamWindow from '@/views/analysis/modelParam/addParamWindow'
+} from '@/api/analysis/auditparam'
+import addParamWindow from '@/views/analysis/modelparam/addparamwindow'
 export default {
   components: {
     myZtree,

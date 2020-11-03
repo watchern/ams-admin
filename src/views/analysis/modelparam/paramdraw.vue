@@ -23,7 +23,7 @@
   </div>
 </template>
 <script>
-import { initParamHtml } from '@/api/analysis/auditParam'
+import { initParamHtml } from '@/api/analysis/auditparam'
 export default {
   data() {
     return {
