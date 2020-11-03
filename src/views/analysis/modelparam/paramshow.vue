@@ -27,7 +27,7 @@ import {
   initParamHtml_Common,
   createParamTableHtml,
   getParamSettingArr
-} from '@/api/analysis/auditParam'
+} from '@/api/analysis/auditparam'
 export default {
   methods: {
     createParamTableHtml(sqlIsChanged, paramArr, canEditor) {

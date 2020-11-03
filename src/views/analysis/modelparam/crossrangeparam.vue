@@ -15,7 +15,7 @@
   </div>
 </template>
 <script>
-import { initcrossrangeParamHtml } from '@/api/analysis/auditParam'
+import { initcrossrangeParamHtml } from '@/api/analysis/auditparam'
 export default {
   data() {
     return {
