@@ -305,7 +305,7 @@ export default {
         return 1
       }
       const index1 = (colorList || []).findIndex((item) => item.value === value)
-      if (!index1 || index1 === null || index1 < 0) {
+      if (!index1 || index1 === null || index1 < 1) {
         return 1
       }
       return index1 - 1
