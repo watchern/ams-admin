@@ -1,8 +1,8 @@
 import _ from 'lodash'
-import io from '@/components/Dolphin/io'
+import io from '@/components/etl/io'
 import {
   tasksState
-} from '@/views/modules/etlscheduler/dag/_source/config'
+} from '@/views/etlscheduler/dag/_source/config'
 import {
   save,
   datasourceList,

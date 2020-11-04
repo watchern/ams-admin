@@ -75,10 +75,11 @@ export default {
     'processinstance': '流程实例',
     'taskinstance': '任务实例',
     'servermonitor': '服务器监控',
-    'resourceStatistics': '资源消耗统计',
+    'resourcestatistics': '资源消耗统计',
     'workflow': '流程定义管理',
     'etlconfigure': '调度配置',
-    'fileResource': '文件目录管理'
+    'fileresource': '文件管理',
+    'filedirectory': '文件目录管理'
   },
   navbar: {
     dashboard: '首页',

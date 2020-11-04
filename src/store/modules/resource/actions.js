@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import io from '@/components/Dolphin/io'
+import io from '@/components/etl/io'
 
 export default {
   /**
