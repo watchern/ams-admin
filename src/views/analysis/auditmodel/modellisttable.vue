@@ -181,7 +181,7 @@ export default {
         }
       })
     },
-    editableTabs(value){
+    editableTabs(){
       this.$nextTick(function(){
         //页签添加完成后初始化新界面的参数
         if(this.currentPreviewModelParamAndSql.paramObj != undefined){
