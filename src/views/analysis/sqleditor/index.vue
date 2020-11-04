@@ -2,8 +2,8 @@
   <div class="app-container">
     <div id="container" v-loading="executeLoading">
       <el-collapse v-model="DefaultExpansion">
-        <div id="leftPart" class="col-sm-2 leftCon" style="overflow: auto; height: 100vh">
-          <el-collapse-item class="" title="数据表" name="1">
+        <div id="leftPart" class="left-part">
+          <el-collapse-item title="数据表" name="1">
             <el-input id="dataSearch" v-model="tableSearchInput" name="dataSearch" type="text" autocomplete="off"
                       placeholder="查询">
               <el-button slot="append" icon="el-icon-search" @click="tableTreeSearch"></el-button>
@@ -27,7 +27,7 @@
         </div>
       </el-collapse>
       <div id="rightPart" class="col-sm-10" style="height: 100vh">
-        <div id="sqlEditorDiv" class="col-sm-12" style="padding: 0px; height: 50vh">
+        <div id="sqlEditorDiv" class="sql-editor-div">
           <div class="row table-view-caption" style="margin-left: 30px; height: 40px; padding-top: 8px">
             <el-button type="primary" size="small" @click="sqlFormat">格式化</el-button>
             <el-button type="primary" size="small" @click="executeSQL">执行</el-button>
@@ -72,13 +72,13 @@
           <textarea id="sql"/>
         </div>
         <div id="horizontal"/>
+        <div id="maxOpen" class="max-size" @click="maxOpenBtn">
+          <img id="iconImg" class="iconImg" alt="最大化">
+          <span class="iconText">最大化</span>
+        </div>
         <!-- 结果展示和参数输入区域 -->
-        <div id="bottomPart" class="layui-tab col-sm-12" lay-filter="result-data" style="margin-top:-111px;width: 100%;">
-          <div id="maxOpen" style="width: 80px; position: absolute; right: 0; top: 15px" onclick="">
-            <img id="iconImg" class="iconImg" alt="最大化">
-            <span class="iconText">最大化</span>
-          </div>
-          <div v-for="result in resultShow" id="dataShow" style="margin-left: -14px">
+        <div id="bottomPart" lay-filter="result-data">
+          <div v-for="result in resultShow" id="dataShow" class="data-show">
             <childTabs ref="childTabsRef" :key="result.id" :pre-value="currentExecuteSQL" use-type="sqlEditor" style="width: 101.5%"/>
           </div>
         </div>
@@ -582,12 +582,11 @@ export default {
           this.$message({ type: 'info', message: '执行失败' })
         }
       })
+    },
+    maxOpenBtn(){
+      alert(123)
     }
   }
-}
-
-function test() {
-  return this.$refs.childTabsRef
 }
 </script>
 <style>
@@ -658,13 +657,12 @@ function test() {
 #vertical {
   position: absolute;
   top: 20;
-  left: 28.9%;
+  left: 31.8%;
   height: 94vh;
   width: 3px;
   overflow: hidden;
   background: #c0c5d4;
   cursor: w-resize;
-  display: none;
 }
 
 #horizontal {
@@ -699,7 +697,35 @@ function test() {
   border: none;
 }
 
-.shoufengqin {
-  font-size: 16px;
+.layui-tab{
+  margin:10px 0;
+  text-align:left!important;
+  width:100%;
+}
+
+.max-size{
+  width: 80px;
+  position: relative;
+  right: 0;
+  top: 2%;
+  float: right;
+}
+
+.sql-editor-div{
+  padding: 0px;
+  width: 100%;
+  height: 37%;
+}
+
+.data-show{
+  margin-top: 4%;
+  width: 98.7%;
+}
+
+.left-part{
+  overflow: auto;
+  height: 100vh;
+  width: 16.66666667%;
+  float: left;
 }
 </style>
