@@ -284,7 +284,7 @@ export default {
       statusList: statusListComm,
       logColorList: colorList,
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
         // 开始运行时间，倒序排序
@@ -511,11 +511,12 @@ export default {
     },
     // 跳过环节
     taskSkip() {
-      var checkedTasks = []
-      checkedTasks.push(this.checkedTask)
-      this.temp.skipInfo = JSON.stringify(checkedTasks)
-      const tempData = Object.assign({}, this.temp)
-      skipTask(tempData).then(() => {
+      this.temp.skipInfo = JSON.stringify([this.checkedTask])
+      const tempData1 = {
+        processInstanceUuid: this.temp.processInstanceUuid,
+        skipInfo: this.temp.skipInfo
+      }
+      skipTask(tempData1).then(() => {
         const index = this.list.findIndex(v => v.processInstanceUuid === this.temp.processInstanceUuid)
         this.list.splice(index, 1, this.temp)
         this.dialogFormVisible = false
@@ -526,10 +527,10 @@ export default {
           duration: 2000,
           position: 'bottom-right'
         })
+        this.tasks = null
       })
       this.checkedTask = null
       this.checkedTaskId = null
-      this.tasks = null
     },
     changeSkipInfo(a) {
       // 更改跳过的环节
