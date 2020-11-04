@@ -35,6 +35,12 @@ export default {
         this.$refs.child[this.index].initData(null,nextValue)
         this.
           index++;
+      },
+      reSetTable(){
+        for(var i = 0;i<this.preValue.length;i++){
+          this.$refs.child[i].reSet()
+        }
+        this.index = 0
       }
   },
   /**

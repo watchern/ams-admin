@@ -240,14 +240,9 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        defaultValue: null,
-        paramCode: null,
-        paramDesc: null,
-        paramName: null,
-        paramType: null,
-        paramUuid: null,
-        selectValue: null,
-        status: null
+        directoryType: null,
+        directoryPath: null,
+        name: null
       }
     },
     handleCreate() {

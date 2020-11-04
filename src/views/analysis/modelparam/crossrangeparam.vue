@@ -1,18 +1,7 @@
 <template>
-  <div>
-    <form class="form-horizontal">
-      <div class="col-sm-12">
-        <div id="accordion" class="panel-group">
-          <div class="panel-default">
-            <div />
-            <div id="collapse" class="panel-collapse collapse in">
-              <div id="paramCom" style="padding: 10px 0;display: flex;flex-wrap: wrap" />
-            </div>
-          </div>
-        </div>
+      <div id="collapse">
+        <div :id="myId" style="padding: 10px 0;display: flex;flex-wrap: wrap" />
       </div>
-    </form>
-  </div>
 </template>
 <script>
 import { initcrossrangeParamHtml } from '@/api/analysis/auditparam'
@@ -21,9 +10,11 @@ export default {
     return {
     }
   },
+  props:['myId']
+  ,
   methods: {
-    initParamHtmlSS(sql, paramsArr, name, modelId) {
-      initcrossrangeParamHtml(sql, paramsArr, name, modelId)
+    initParamHtmlSS(sql, paramsArr, name,id) {
+      initcrossrangeParamHtml(sql, paramsArr, name,id)
     }
   }
 }
