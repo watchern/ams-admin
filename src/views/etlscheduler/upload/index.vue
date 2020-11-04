@@ -10,11 +10,15 @@
       @file-progress="onFileProgress"
       @file-error="onFileError"
     >
-      <!-- <uploader-unsupport />
+      <uploader-unsupport />
       <uploader-drop>
         <uploader-btn :attrs="attrs">选择文件或者拖拽文件至此处</uploader-btn>
-      </uploader-drop>-->
-      <uploader-btn :attrs="attrs">选择文件</uploader-btn>
+      </uploader-drop>
+      <!-- <uploader-btn :attrs="attrs"><el-button title="上传" icon="el-icon-upload" class="oper-btn" type="primary" /></uploader-btn> -->
+      <!-- <uploader-btn :attrs="attrs" title="上传" icon="el-icon-upload" class="oper-btn el-button el-button--primary el-button--medium" /> -->
+      <!-- <uploader-btn :attrs="attrs" title="上传" icon="el-icon-upload" class="oper-btn" type="primary" /> -->
+
+      <!-- <uploader-btn :attrs="attrs" title="上传" icon="el-icon-upload" class="oper-btn" type="primary" /> -->
       <uploader-list />
     </uploader>
   </div>
@@ -120,15 +124,25 @@ export default {
 
 <style>
   .uploader-example {
-    width: 90%;
-    padding: 15px;
-    margin: 40px auto 0;
-    font-size: 12px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+    /* width: 90%; */
+    /* padding: 15px; */
+    /* margin: 40px auto 0; */
+    /* font-size: 12px; */
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, .4); */
   }
 
-  .uploader-example .uploader-btn {
-    margin-right: 4px;
+  .uploader-btn {
+    /* margin-right: 4px; */
+    /* display: inline-block;
+    position: relative;
+    padding: 4px 8px;
+    font-size: 100%;
+    line-height: 1.4;
+    color: #666;
+    border: 1px solid #666;
+    cursor: pointer;
+    border-radius: 2px;
+    outline: none; */
   }
 
   .uploader-example .uploader-list {
