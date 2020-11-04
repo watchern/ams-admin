@@ -426,13 +426,7 @@ export default {
         const sqlObj = getSaveSqlDraftObj(type)
         const sql = sqlObj.draftSql
         if (sql === '') {
-          this.$notify({
-            title: '提示',
-            message: '请输入sql语句',
-            type: 'info',
-            duration: 2000,
-            position: 'bottom-right'
-          })
+          this.$message({ type: 'info', message: '请输入sql语句!' })
           return
         } else {
           if (!sqlObj.isOld) {
@@ -492,6 +486,7 @@ export default {
               paramJson: ''
             }
           } else {
+
             this.$notify({
               title: '提示',
               message: '保存失败',

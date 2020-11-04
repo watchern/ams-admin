@@ -364,7 +364,7 @@ export default {
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.basicInfo.style.display = 'block'
-        this.$refs.btnDivRef.style.marginTop = '12%'
+        this.$refs.btnDivRef.style.marginTop = '10%'
       } else if (data.type == 'modelDesign') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.paramDefaultValue.style.display = 'none'
@@ -382,6 +382,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.paramDefaultValue.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '34%'
       } else if (data.type == 'modelResultOutputCol') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -390,6 +391,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.modelResultOutputCol.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '3%'
       } else if (data.type == 'relInfo') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -398,6 +400,7 @@ export default {
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '34%'
       } else if (data.type == 'chartConfig') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -406,6 +409,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.chartConfig.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '34%'
       } else if (data.type == 'filterShow') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -414,6 +418,7 @@ export default {
         this.$refs.relInfo.style.display = 'none'
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '34%'
       } else if (data.type == 'relDetail' || data.type == 'filterShowNode') {
         // 获取指定div
         this.$refs.basicInfo.style.display = 'none'
