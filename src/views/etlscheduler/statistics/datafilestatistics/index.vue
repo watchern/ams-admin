@@ -76,9 +76,9 @@ export default {
       total: 0,
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
-      StratTimeStart: new Date(),
-      StratTimeEnd: new Date(),
-      datepickerType: 'year',
+      StratTimeStart: null,
+      StratTimeEnd: null,
+      datepickerType: 'date',
       pageQuery: {
         condition: null,
         pageNo: 1,
@@ -88,13 +88,6 @@ export default {
     }
   },
   watch: {
-    // granularity() {
-    //   if (this.granularity.value !== this.datepickerType) {
-    //     this.datepickerType = this.granularity.value
-    //     this.StratTimeStart = null
-    //     this.StratTimeEnd = null
-    //   }
-    // }
   },
   mounted() {
    
@@ -105,10 +98,15 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      datafileStatisticsList({stratTimeStart: this.StratTimeStart, stratTimeEnd: this.StratTimeEnd }).then(resp => {
-        this.list = resp.data
-        this.listLoading = false
+      // datafileStatisticsList({stratTimeStart: this.StratTimeStart, stratTimeEnd: this.StratTimeEnd }).then(resp => {
+      //   this.list = resp.data
+      //   this.listLoading = false
+      // })
+      datafileStatisticsList().then(resp => {
+       console.log('map-map-map:' + resp)
       })
+      this.list = null
+      this.listLoading = false
     },
     onSubmit() {
       this.getList()

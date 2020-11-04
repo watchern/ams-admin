@@ -142,7 +142,7 @@
             v-for="log in logs[task.taskCode]"
             :key="log.taskLogUuid"
             :label="log.taskLogUuid"
-            :style="{color: logColorList[(log.status | colorFilter)].color}"
+            :style="{color: logColorList[(log.status | colorFilter)-1].color}"
           >
             {{ log.logTime +' '+ log.logMessage }}
           </el-col>
@@ -277,7 +277,6 @@ export default {
     //   status: JSON.stringify(this.$route.query.stateType)
     // }
     // console.log(condition)
-
     if (this.$route.params instanceof Object) {
       this.queryDefault = this.$route.params
     }
@@ -291,25 +290,20 @@ export default {
   methods: {
     // 根据状态查找该状态在数据中的下标
     statusFilter(value) {
-      return 1
-      // if (value == null || value.trim() === '') {
-      //   return this.statusList.length - 1
-      // }
-      // const index1 = (this.statusList || []).findIndex((item) => item.value === value)
-      // if (!index1 || index1 === null || index1 < 1) {
-      //   return this.statusList.length - 1
-      // }
-      // return index1 - 1
+      if (value == null || value.trim() === '') {
+        return this.statusList.length
+      }
+      return (this.statusList || []).findIndex((item) => item.value === value)
     },
     colorFilter(value) {
       if (value == null || value.trim() === '') {
-        return this.logColorList.length-1
+        return colorList.length
       }
-      const index2 = (this.logColorList || []).findIndex((item) => item.value === value)
-      if (!index2 || index2 === null || index2 < 1) {
-        return this.logColorList.length-1
-      }
-      return index2 -1
+      return (colorList || []).findIndex((item) => item.value === value)
+      // if (!index2 || index2 === null || index2 < 0) {
+      //   return colorList.length - 1
+      // }
+      // return index2 - 1
     },
     getList(query) {
       this.listLoading = true
