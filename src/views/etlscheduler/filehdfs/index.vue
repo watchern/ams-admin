@@ -9,7 +9,7 @@
     </div>
     <div style="float: left;">
       <!-- 添加 -->
-      <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
+      <el-button type="primary" class="oper-btn add" title="上传文件夹" :disabled="createDirStatus" @click="handleCreate()" />
       <!-- 修改 -->
       <el-button type="primary" class="oper-btn edit" title="修改" :disabled="selections.length !== 1" @click="handleUpdate()" />
       <!-- 删除 -->
@@ -25,9 +25,9 @@
       border
       highlight-current-row
       max-height="800"
-      border
-      default-expand-all
-      :tree-props="{children: 'children'}"
+      lazy
+      row-key="path"
+      :tree-props="{children: 'children', hasChildren: 'isDir'}"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -48,16 +48,9 @@
       <el-table-column
         label="文件大小"
         align="center"
-        prop="size"
+        prop="sizeString"
       />
     </el-table>
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="pageQuery.pageNo"
-      :limit.sync="pageQuery.pageSize"
-      @pagination="getList"
-    />
     <!-- 添加和编辑的弹框 -->
     <el-dialog
       :title="textMap[dialogStatus]"
@@ -132,12 +125,11 @@
 </template>
 
 <script>
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, save, update, del } from '@/api/etlscheduler/filehdfs'
+import { getBylist, save, update, del } from '@/api/etlscheduler/filehdfs'
 import QueryField from '@/components/Ace/query-field/index'
 
 export default {
-  components: { Pagination, QueryField },
+  components: { QueryField },
   data() {
     return {
       tableKey: 'fileDirectoryUuid',
@@ -156,22 +148,14 @@ export default {
         }
       },
       queryFields: [
-        { label: '参数名称', name: 'name', type: 'text', value: '' },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
-          label: '参数状态', name: 'directoryType', type: 'select',
+          label: '目录类型', name: 'directoryType', type: 'select',
           data: [{ name: '存储目录', value: '1' }, { name: '执行目录', value: '2' },
             { name: '备份目录', value: '3' }, { name: '异常目录', value: '4' }, { name: '手动备份目录', value: '5' }],
           default: '1'
         }
       ],
-      pageQuery: {
-        condition: null,
-        pageNo: 1,
-        pageSize: 20,
-        sortBy: 'asc',
-        sortName: 'create_time'
-      },
+      pageQuery: {},
       temp: {
         directoryType: null,
         directoryPath: null,
@@ -191,7 +175,23 @@ export default {
         paramType: [{ required: true, message: '请选择文件的类型', trigger: 'change' }],
         status: [{ required: true, message: '请填写文件的路径', trigger: 'change' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      createDirStatus: true
+    }
+  },
+  watch: {
+    selections() {
+      // 选择1条数据
+      if (this.selections.length === 1) {
+        this.selections.forEach((r, i) => {
+          // 如果是文件夹的话，创建文件夹可用
+          if (r.isDir) {
+            this.createDirStatus = false
+          }
+        })
+      } else {
+        this.createDirStatus = true
+      }
     }
   },
   created() {
@@ -200,10 +200,9 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      if (query) this.pageQuery.condition = query
-      listByPage(this.pageQuery).then(resp => {
-        this.total = resp.data.total
-        this.list = resp.data.records
+      if (query) this.pageQuery = query
+      getBylist(this.pageQuery).then(resp => {
+        this.list = resp.data
         this.listLoading = false
       })
     },
