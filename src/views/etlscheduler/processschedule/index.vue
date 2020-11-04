@@ -49,9 +49,8 @@
         prop="scheduleName"
       >
         <template slot-scope="scope">
-          <a class="buttonText" @click="findSchedule(scope.row)">{{
-            scope.row.scheduleName
-          }}</a>
+          <a class="buttonText" @click="findSchedule(scope.row)">
+            {{scope.row.scheduleName}}</a>
         </template>
       </el-table-column>
       <el-table-column

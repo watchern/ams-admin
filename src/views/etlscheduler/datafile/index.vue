@@ -95,7 +95,7 @@ export default {
           label: '接收状态', name: 'status', type: 'select',
           data: [{ name: '已接收', value: '1' }, { name: '未接收', value: '0' }]
         },
-        { label: '时间', name: '', type: 'timePeriod', value: '' }
+        { label: '时间', name: 'createTime', type: 'timePeriod', value: '' }
       ],
       pageQuery: {
         condition: null,
@@ -117,7 +117,7 @@ export default {
     this.getList()
   },
   methods: {
-    getList(query) {
+    getList(query) { 
       this.listLoading = true
       console.log('query:' + JSON.stringify(query))
       if (query) this.pageQuery.condition = query
