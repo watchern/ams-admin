@@ -55,7 +55,6 @@ export function initParamTree() {
     },
     callback: {
       onRightClick: function(event, treeId, treeNode) {
-        console.log(treeNode)
         if (!treeNode) {
           return false
         }
@@ -91,7 +90,6 @@ export function initParamTree() {
     url: '/ParamFolderController/findParamFoldeTree',
     method: 'get'
   }).then(result => {
-    console.log(result.data)
     paramZtree = $.fn.zTree.init($('#paramTree'), paramSetting, result.data)
   })
 }
@@ -508,8 +506,6 @@ export function initParamHtml(sql, paramsArr, name) {
         } else {
           // $(".panel-body").html(paramHtml);
           $('#paramCom').html(paramHtml)
-          console.log($('.panel-body'))
-          console.log($('#paramCom'))
           initParamInputAndSelect()
         }
       }
@@ -1978,6 +1974,7 @@ export function replaceCrossrangeNodeParam(modelId) {
       }
     })
     var replaceSql1 = overallParmaobj[modelId].sql
+    var arr1 = overallParmaobj[modelId].paramsArr
     if (returnObj.verify) {
       if (hasAllowedNullParam) { // 如果存在可为空的参数并且为空值，走后台进行空参替换
         replaceModelSqlByParams(replaceSql1, JSON.stringify(arr)).then(e => {
@@ -1993,9 +1990,9 @@ export function replaceCrossrangeNodeParam(modelId) {
         for (var j = 0; j < filterArr.length; j++) { // 遍历所有母参数信息
           var moduleParamId = filterArr[j].moduleParamId
           var paramId = ''
-          for (var k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数
-            if (arr[k].moduleParamId === moduleParamId) {
-              replaceSql1 = replaceSql1.replace(arr[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
+          for (var k = 0; k < arr1.length; k++) { // 遍历当前节点绑定的参数
+            if (arr1[k].moduleParamId === moduleParamId) {
+              replaceSql1 = replaceSql1.replace(arr1[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
             }
           }
         }
