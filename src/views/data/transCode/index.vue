@@ -321,12 +321,14 @@ export default {
       })
     },
     selectTransRule() {
+      var transObj
       var rulObj = Object.assign({}, this.selections[0]) // copy obj
       if (rulObj !== null) {
         selectOne(rulObj).then(res => {
-          this.temp = res.data
+          transObj = res.data
         })
       }
+      return transObj
     },
     updateData() {
       // 先移除输入行
