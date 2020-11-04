@@ -195,8 +195,8 @@ const etlschedulerRouter = {
     {
       path: 'datafileStatistics',
       name: 'datafileStatistics',
-      component: () => import('@/views/modules/etlscheduler/datafileStatistics/index'),
-      meta: { title: 'datafileStatistics' }
+      component: () => import('@/views/modules/etlscheduler/statistics/datafileStatistics/index'),
+      meta: { title: '上游数据文件统计' }
     },
   ]
 }
