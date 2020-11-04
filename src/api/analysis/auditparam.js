@@ -18,6 +18,8 @@ var initivalDatatype = ''
 
 var tabsigns = 0
 
+var overallParmaobj = {}
+
 /**
  * 初始化图标
  */
@@ -451,13 +453,12 @@ var replaceSql = '' // 待替换的SQL语句（含参数）
  *  }
  * @author 梁瑞
  */
-export function initParamHtml(sql, paramsArr, name, modelId) {
+export function initParamHtml(sql, paramsArr, name) {
   replaceSql = sql
   $('#accordion').find('a').html(name)
-  modelId = (modelId == null || typeof modelId === 'undefined') ? '' : modelId
   try {
     // 获取数据库所有母参数信息集合以及该模型用到的参数集合（可以不传模型ID）
-    findParamsAndModelRelParams(modelId).then((e) => {
+    findParamsAndModelRelParams().then((e) => {
       if (e.isError) {
         this.$message({
           type: 'error',
@@ -467,44 +468,6 @@ export function initParamHtml(sql, paramsArr, name, modelId) {
         // alertMsg("错误", e.data.message, "info");
       } else {
         var paramList = e.data.paramList // 定义所有母参信息数组
-        if (modelId != '') { // 如果模型ID不为空，暂定认为是模型运行
-          var paramRelList = e.data.paramRelList // 定义所有与该模型关联的参数集合
-          // 先组织有效参数数组集合paramsArr
-          paramsArr = []
-          for (var i = 0; i < paramRelList.length; i++) { // 遍历所有模型关联参数
-            var obj = {
-              'id': '{#' + paramRelList[i].PARAM_ID + '#}',
-              'copyParamId': paramRelList[i].PARAM_ID,
-              'moduleParamId': paramRelList[i].LINK_PARAM_UUID,
-              'name': paramRelList[i].PARAM_NAME
-            }
-            allParamFor: for (var j = 0; j < paramList.length; j++) { // 设置模型关联参数的是否允许为空属性为母参的是否为空的属性
-              if (paramRelList[i].LINK_PARAM_UUID == paramList[j].ammParamUuid) {
-                if (typeof paramList[j].paramChoice.allowedNull === 'undefined') {
-                  obj.allowedNull = '1' // 默认为可以为空
-                } else {
-                  obj.allowedNull = paramList[j].paramChoice.allowedNull
-                }
-                break allParamFor
-              }
-            }
-            paramsArr.push(obj) // paramRelList中是按照排序值升序的条件进行存储，因此paramsArr是有顺序的
-          }
-          // 如果是模型运行，则给每个母参设置默认值和排序值
-          for (var j = 0; j < paramList.length; j++) { // 遍历所有母版参数
-            allParamRelFor: for (var k = 0; k < paramRelList.length; k++) { // 遍历所有模型关联参数
-              if (paramRelList[k].LINK_PARAM_UUID == paramList[j].ammParamUuid) { // 在关联参数中匹配骑对应的母参ID
-                if (paramList[j].inputType == 'lineinp' || paramList[j].inputType == 'treeinp') { // 下拉列表或下拉树参数
-                  paramList[j].defaultVal = JSON.parse(paramRelList[k].PARAM_VALUE) // 默认值为数组字符串
-                } else { // 文本框或日期参数
-                  paramList[j].defaultVal = paramRelList[k].PARAM_VALUE // 默认值为字符串
-                }
-                paramList[j].sortVal = paramRelList[k].PARAM_SORT // 排序值
-                break allParamRelFor
-              }
-            }
-          }
-        }
         arr = paramsArr
         var paramHtml = ''
         var moduleParamIdArr = [] // 存放已匹配的母参ID
@@ -517,6 +480,7 @@ export function initParamHtml(sql, paramsArr, name, modelId) {
               description = '（参数说明：' + paramList[j].description + '）'
             }
             if (paramsArr[i].moduleParamId === paramList[j].ammParamUuid && $.inArray(paramsArr[i].moduleParamId, moduleParamIdArr) == -1) { // 匹配复制参数的母版参数ID
+                paramList[j].defaultVal = JSON.stringify(paramsArr[i])
               paramHtml += "<div class='row'><div class='col-sm-12'><div class='form-group'><label class='col-sm-2' style='text-align: right;padding: 10px 7px;'>" + paramsArr[i].name + "&nbsp;&nbsp;</label><div class='col-sm-4'>" // 加上前面的参数名称
               var RO = initParamHtml_Common(paramList[j])
               if (RO.isError) {
@@ -571,13 +535,14 @@ export function initParamHtml(sql, paramsArr, name, modelId) {
  *  }
  * @author 梁瑞
  */
-export function initcrossrangeParamHtml(sql, paramsArr, name, modelId) {
+export function initcrossrangeParamHtml(sql, paramsArr, name,id) {
+  var paramObj =  {'sql':sql,'paramsArr':paramsArr}
+  overallParmaobj[id] = paramObj
   replaceSql = sql
   $('#accordion').find('a').html(name)
-  modelId = (modelId == null || typeof modelId === 'undefined') ? '' : modelId
   try {
     // 获取数据库所有母参数信息集合以及该模型用到的参数集合（可以不传模型ID）
-    findParamsAndModelRelParams(modelId).then((e) => {
+    findParamsAndModelRelParams().then((e) => {
       if (e.isError) {
         this.$message({
           type: 'error',
@@ -587,44 +552,6 @@ export function initcrossrangeParamHtml(sql, paramsArr, name, modelId) {
         // alertMsg("错误", e.data.message, "info");
       } else {
         var paramList = e.data.paramList // 定义所有母参信息数组
-        if (modelId != '') { // 如果模型ID不为空，暂定认为是模型运行
-          var paramRelList = e.data.paramRelList // 定义所有与该模型关联的参数集合
-          // 先组织有效参数数组集合paramsArr
-          paramsArr = []
-          for (var i = 0; i < paramRelList.length; i++) { // 遍历所有模型关联参数
-            var obj = {
-              'id': '{#' + paramRelList[i].PARAM_ID + '#}',
-              'copyParamId': paramRelList[i].PARAM_ID,
-              'moduleParamId': paramRelList[i].LINK_PARAM_UUID,
-              'name': paramRelList[i].PARAM_NAME
-            }
-            allParamFor: for (var j = 0; j < paramList.length; j++) { // 设置模型关联参数的是否允许为空属性为母参的是否为空的属性
-              if (paramRelList[i].LINK_PARAM_UUID == paramList[j].ammParamUuid) {
-                if (typeof paramList[j].paramChoice.allowedNull === 'undefined') {
-                  obj.allowedNull = '1' // 默认为可以为空
-                } else {
-                  obj.allowedNull = paramList[j].paramChoice.allowedNull
-                }
-                break allParamFor
-              }
-            }
-            paramsArr.push(obj) // paramRelList中是按照排序值升序的条件进行存储，因此paramsArr是有顺序的
-          }
-          // 如果是模型运行，则给每个母参设置默认值和排序值
-          for (var j = 0; j < paramList.length; j++) { // 遍历所有母版参数
-            allParamRelFor: for (var k = 0; k < paramRelList.length; k++) { // 遍历所有模型关联参数
-              if (paramRelList[k].LINK_PARAM_UUID == paramList[j].ammParamUuid) { // 在关联参数中匹配骑对应的母参ID
-                if (paramList[j].inputType == 'lineinp' || paramList[j].inputType == 'treeinp') { // 下拉列表或下拉树参数
-                  paramList[j].defaultVal = JSON.parse(paramRelList[k].PARAM_VALUE) // 默认值为数组字符串
-                } else { // 文本框或日期参数
-                  paramList[j].defaultVal = paramRelList[k].PARAM_VALUE // 默认值为字符串
-                }
-                paramList[j].sortVal = paramRelList[k].PARAM_SORT // 排序值
-                break allParamRelFor
-              }
-            }
-          }
-        }
         arr = paramsArr
         var paramHtml = ''
         var moduleParamIdArr = [] // 存放已匹配的母参ID
@@ -637,6 +564,7 @@ export function initcrossrangeParamHtml(sql, paramsArr, name, modelId) {
               description = '（参数说明：' + paramList[j].description + '）'
             }
             if (paramsArr[i].moduleParamId === paramList[j].ammParamUuid && $.inArray(paramsArr[i].moduleParamId, moduleParamIdArr) == -1) { // 匹配复制参数的母版参数ID
+              paramList[j].defaultVal = JSON.stringify(paramsArr[i])
               paramHtml += "<div class='row' style='white-space: nowrap;'><div class='col-sm-12'><div class='form-group'><label class='col-sm-2' style='text-align: right;padding: 10px 7px;width:100px'>" + paramsArr[i].name + "&nbsp;&nbsp;</label><div class='col-sm-4'>" // 加上前面的参数名称
               var RO = initCrossrangeParamHtml_Common(paramList[j])
               if (RO.isError) {
@@ -663,9 +591,7 @@ export function initcrossrangeParamHtml(sql, paramsArr, name, modelId) {
           // alertMsg("错误", message, "info");
         } else {
           // $(".panel-body").html(paramHtml);
-          $('#paramCom').html(paramHtml)
-          console.log($('.panel-body'))
-          console.log($('#paramCom'))
+          $('#'+id).html(paramHtml)
           initParamInputAndSelect()
         }
       }
@@ -1045,6 +971,8 @@ function initParamInputAndSelect() {
       // 设置默认值
       var defaultVal = $(this).attr('data-defaultVal')
       if (typeof defaultVal !== 'undefined') {
+        var a = JSON.parse(defaultVal)
+        var b = JSON.parse(defaultVal).paramValue
         $(this).val(JSON.parse(defaultVal).paramValue) // 设置默认值
       }
     })
@@ -1697,7 +1625,6 @@ function matchingPcRelation(dataArr) {
  * 替换节点的参数
  */
 export function replaceNodeParam() {
-  debugger
   var returnObj = {
     'verify': true, // 校验是否通过
     'message': '', // 提示信息
@@ -1885,6 +1812,201 @@ export function replaceNodeParam() {
   }
   return returnObj
 }
+
+
+/**
+ * 替换横向节点的参数
+ */
+export function replaceCrossrangeNodeParam(modelId) {
+  var returnObj = {
+    'verify': true, // 校验是否通过
+    'message': '', // 提示信息
+    'sql': '', // 返回的SQL语句
+    'paramsArr': [] // 返回的参数数组，对象格式{"moduleParamId":xx,"paramName":xx,"paramValue":xx,"allowedNull":xx}
+  }
+  // 循环所有节点
+  var filterArr = [] // 参数条件的数组，包含参数ID和参数值
+  var paramNum = 0 // 记录参数不允许为空却未输入值的参数数量
+  var hasAllowedNullParam = false; // 本次设置是否含有可为空的参数条件
+  // 获取参数查询条件（文本框）
+  ($('#'+modelId).find('.paramOption')).each(function() {
+    var moduleParamId = $(this).attr('data-id') // 母参数ID
+    var paramName = $(this).attr('data-name') // 母参数名称
+    var allowedNull = typeof $(this).attr('data-allowedNull') !== 'undefined' ? $(this).attr('data-allowedNull') : '1' // 是否允许为空，当为undefined时默认为可为空
+    var paramValue = $(this).val()
+    var obj = {
+      'moduleParamId': moduleParamId,
+      'paramName': paramName,
+      'paramValue': $.trim(paramValue),
+      'allowedNull': '0'
+    }
+    if (allowedNull === '1') { // 允许为空
+      obj.allowedNull = '1'
+      if (paramValue === '') {
+        hasAllowedNullParam = true
+        for (var k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+          if (arr[k].moduleParamId === moduleParamId) {
+            arr[k]['value'] = ''
+          }
+        }
+      }
+      filterArr.push(obj)
+    } else { // 不允许为空
+      if (paramValue !== '') {
+        filterArr.push(obj)
+      } else {
+        paramNum++
+      }
+    }
+  });
+  // 获取参数查询条件（下拉列表）
+  ($('#'+modelId).find('.selectParam')).each(function(i, v) {
+    var moduleParamId = $(this).attr('data-id') // 母参数ID
+    var paramName = $(this).attr('data-name') // 母参数名称
+    var allowedNull = typeof $(this).attr('data-allowedNull') !== 'undefined' ? $(this).attr('data-allowedNull') : '1' // 是否允许为空，当为undefined时默认为可为空
+    var choiceType = $(this).attr('data-choiceType') // 当前参数是多选还是单选：0：多选，1、单选
+    var selectParamXs = xmSelect.get('#selectParam' + moduleParamId, true) // 获取下拉列表参数的单实例
+    var paramSelectedObj = selectParamXs.getValue() // 获取选中的参数值名称
+    var obj = {
+      'moduleParamId': moduleParamId,
+      'paramName': paramName,
+      'paramValue': '',
+      'allowedNull': '0'
+    }
+    if (allowedNull === '1') { // 允许为空
+      obj.allowedNull = '1'
+      if (paramSelectedObj.length === 0) { // 未选择值
+        hasAllowedNullParam = true
+        for (var k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+          if (arr[k].moduleParamId === moduleParamId) {
+            arr[k]['value'] = ''
+          }
+        }
+      } else {
+        if (choiceType == 1) { // 单选
+          obj.paramValue = paramSelectedObj[0].value
+        } else {
+          for (var j = 0; j < paramSelectedObj.length; j++) { // 多值，以'','',……形式展现
+            obj.paramValue += "'" + paramSelectedObj[j].value + "',"
+          }
+          obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
+        }
+      }
+      filterArr.push(obj)
+    } else { // 不允许为空
+      if (paramSelectedObj.length !== 0) {
+        if (choiceType == 1) { // 单选
+          obj.paramValue = paramSelectedObj[0].value
+        } else {
+          for (var j = 0; j < paramSelectedObj.length; j++) { // 多值，以'','',……形式展现
+            obj.paramValue += "'" + paramSelectedObj[j].value + "',"
+          }
+          obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
+        }
+        filterArr.push(obj)
+      } else {
+        paramNum++
+      }
+    }
+  });
+
+  // 获取参数查询条件（下拉树）
+  ($('#'+modelId).find('.selectTreeParam')).each(function(i, v) {
+    var moduleParamId = $(this).attr('data-id') // 母参数ID
+    var paramName = $(this).attr('data-name') // 母参数名称
+    var allowedNull = typeof $(this).attr('data-allowedNull') !== 'undefined' ? $(this).attr('data-allowedNull') : '1' // 是否允许为空，当为undefined时默认为可为空
+    var choiceType = $(this).attr('data-choiceType') // 当前参数是多选还是单选：0：多选，1、单选
+    var selectTreeParamXs = xmSelect.get('#selectTreeParam' + moduleParamId, true) // 获取下拉树参数的单实例
+    var paramSelectedObj = selectTreeParamXs.getValue() // 获取选中的参数值名称
+    var obj = {
+      'moduleParamId': moduleParamId,
+      'paramName': paramName,
+      'paramValue': '',
+      'allowedNull': '0'
+    }
+    if (allowedNull === '1') { // 允许为空
+      obj.allowedNull = '1'
+      if (paramSelectedObj.length === 0) { // 未选择值
+        hasAllowedNullParam = true
+        for (var k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+          if (arr[k].moduleParamId === moduleParamId) {
+            arr[k]['value'] = ''
+          }
+        }
+      } else {
+        if (choiceType == 1) { // 单选
+          obj.paramValue = paramSelectedObj[0].value
+        } else {
+          for (var j = 0; j < paramSelectedObj.length; j++) { // 多值，以'','',……形式展现
+            obj.paramValue += "'" + paramSelectedObj[j].value + "',"
+          }
+          obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
+        }
+      }
+      filterArr.push(obj)
+    } else { // 不允许为空
+      if (paramSelectedObj.length !== 0) {
+        if (choiceType == 1) { // 单选
+          obj.paramValue = paramSelectedObj[0].value
+        } else {
+          for (var j = 0; j < paramSelectedObj.length; j++) { // 多值，以'','',……形式展现
+            obj.paramValue += "'" + paramSelectedObj[j].value + "',"
+          }
+          obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
+        }
+        filterArr.push(obj)
+      } else {
+        paramNum++
+      }
+    }
+  })
+  if (paramNum !== 0) { // 第一步，先判断是否有必填的参数没有输入值
+    returnObj.verify = false
+    returnObj.message = '含有未输入值的参数项，请重新输入'
+  } else {
+    // 第二步，判断设置长度值文本框输入的值是否满足条件
+    $('.textParam').each(function(t, v) {
+      var dataLength = $(this).attr('data-datalength') // 获取参数值长度
+      var paramName = $(this).attr('data-name') // 获取参数名称
+      if (dataLength == 'null') {
+        dataLength = null
+      }
+      if (dataLength !== null && $(this).val().length !== parseInt(dataLength)) { // 如果该参数有长度限制且默认值不等于设置的长度值
+        returnObj.verify = false
+        returnObj.message = '参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
+        return false
+      }
+    })
+    var replaceSql1 = overallParmaobj[modelId].sql
+    if (returnObj.verify) {
+      if (hasAllowedNullParam) { // 如果存在可为空的参数并且为空值，走后台进行空参替换
+        replaceModelSqlByParams(replaceSql1, JSON.stringify(arr)).then(e => {
+          if (e.isError) { // 出错后replaceSql的值会在后台置为空
+            returnObj.verify = false
+            returnObj.message = '替换空值参数时出错'
+          }
+          replaceSql1 = e.data.sql
+        })
+      }
+      if (replaceSql1 !== '') {
+        // 替换参数SQL中的ID（多值怎么替换？）
+        for (var j = 0; j < filterArr.length; j++) { // 遍历所有母参数信息
+          var moduleParamId = filterArr[j].moduleParamId
+          var paramId = ''
+          for (var k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数
+            if (arr[k].moduleParamId === moduleParamId) {
+              replaceSql1 = replaceSql1.replace(arr[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
+            }
+          }
+        }
+        returnObj.sql = replaceSql1
+        returnObj.paramsArr = filterArr
+      }
+    }
+  }
+  return returnObj
+}
+
 
 /**
  * 获取设置的参数默认值和排序值
@@ -2227,12 +2349,11 @@ function strDecryption(str) {
   return decodeURIComponent(CryptoJS.enc.Utf8.stringify(decryptStr).toString())
 }
 
-export function findParamsAndModelRelParams(data) {
+export function findParamsAndModelRelParams() {
   return request({
     baseURL: analysisUrl,
     url: '/paramController/findParamsAndModelRelParams',
-    method: 'post',
-    data
+    method: 'post'
   })
 }
 
@@ -2270,6 +2391,10 @@ async function replaceModelSqlByParams(sql, paramArr) {
   })
 }
 
+/**
+ * 根据模型关联的参数查询对应的母参对象
+ * @param {*} data 与模型关联的参数json字符串
+ */
 export function getParentParamByParamArr(data) {
   return request({
     baseURL: analysisUrl,
@@ -2278,6 +2403,8 @@ export function getParentParamByParamArr(data) {
     data
   })
 }
+
+
 
 export function createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
   if (typeof canEditor === 'undefined') {

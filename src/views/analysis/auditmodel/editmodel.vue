@@ -1,6 +1,6 @@
 <template>
-  <div style="overflow-y: scroll;height: 1000px">
-    <el-container style="height: 500px; border: 1px solid #eee">
+  <div>
+    <el-container class="el-container">
       <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
         <el-tree ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
           <span slot-scope="{ node, data }" class="custom-tree-node">
@@ -70,18 +70,18 @@
           </el-form-item>
         </el-form>
       </div>
-      <div ref="modelDesign" style="display: none;width:100%">
+      <div ref="modelDesign" class="display div-width">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id">
             <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor"
-                       :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue"style="height: 740px;overflow-y:scroll" />
+                       :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" class="sql-editor" />
           </div>
           <el-form-item label="模型sql" prop="sqlValue" style="display: none;">
             <el-input v-model="form.sqlValue" type="textarea"/>
           </el-form-item>
         </el-form>
       </div>
-      <div ref="paramDefaultValue" style="display: none;">
+      <div ref="paramDefaultValue" class="display">
         <p style="color:red;font-size:large">拖拽改变参数展示顺序</p>
         <div id="paramList">
           <paramShow ref="apple"></paramShow>
@@ -101,7 +101,7 @@
           </el-table>-->
         </div>
       </div>
-      <div ref="modelResultOutputCol" style="display: none;">
+      <div ref="modelResultOutputCol" class="display">
         <p style="color:red;font-size:large">注意：只显示最后的结果列</p>
         <div style="height:476px;overflow:scroll">
           <el-table ref="columnData" :data="columnData" style="width: 100%">
@@ -149,7 +149,7 @@
           </el-table>
         </div>
       </div>
-      <div ref="relInfo" style="display: none;">
+      <div ref="relInfo" class="display">
         <p>在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
           用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。
           通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。</p>
@@ -160,10 +160,10 @@
           <ModelDetail ref="child" :columns="columnData" :data="modelDetail.data" :tree-id="modelDetail.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
-      <div ref="chartConfig" style="display: none;">
+      <div ref="chartConfig" class="display">
         这是图表配置
       </div>
-      <div ref="modelFilterShowParent" style="display: none;">
+      <div ref="modelFilterShowParent" class="display">
         <p>条件显示能够根据用户所设定的条件及显示样式，对模型执行结果中满足条件的敏感数据或重要数据进行着色显示，使这些数据变的一目了然，
           以便审计人员对这些数据进行审计。</p>
         <p>条件显示设计器以表格的形式列举所有由用户设定的、将被应用于模型执行结果的显示条件及显示样式，用户可通过该列表对各个条件的属性进行快速查看。
@@ -175,7 +175,6 @@
           <ModelFilterShow ref="modelFilterSHowChild" :columns="columnData" :data="filterShow.data" :tree-id="filterShow.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
-
     </el-container>
     <el-dialog v-if="auditItemTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="auditItemTree" title="请选择审计事项" width="80%">
       <AuditItemTree ref="auditItemTreeRef"></AuditItemTree>
@@ -191,7 +190,7 @@
         <el-button @click="modelFolderTreeDialog=false">取消</el-button>
       </div>
     </el-dialog>
-    <div style="margin-top: 220px;float:right">
+    <div class="div-btn">
       <el-button type="primary" @click="save">保存</el-button>
       <el-button @click="closeWinfrom">取消</el-button>
     </div>
@@ -1030,8 +1029,28 @@ export default {
 }
 </script>
 <style>
-.divCss{
-  margin-left: 20px;
-  width: 100%;
+.sql-editor{
+  height: 700px;
+  overflow-y:scroll
+}
+
+.display{
+  display: none;
+
+}
+
+.div-width{
+  width:100%;
+}
+
+.el-container{
+  height: 500px;
+  border: 1px solid #eee
+}
+
+.div-btn{
+  margin-top: 14%;
+  float:right;
+  margin-right: 1%;
 }
 </style>

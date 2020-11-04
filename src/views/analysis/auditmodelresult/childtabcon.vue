@@ -56,7 +56,7 @@
       @cellClicked="onCellClicked"
       @gridReady="onGridReady"
     />
-    <el-card v-if="!isSee" class="box-card">
+    <el-card v-if="!isSee" class="box-card" style="height:100px">
       <div>{{ errorMessage }}</div>
     </el-card>
     <pagination
@@ -118,7 +118,9 @@ import {
   selectPrimaryKeyByTableName,
   removeResultDetailProjectRel,
   selectConditionShow,
-  selectModel
+  selectModel,
+  findParamModelRelByModelUuid,
+  replaceParam
 } from '@/api/analysis/auditmodelresult'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -346,7 +348,6 @@ export default {
     // 单元格点击事件
     onCellClicked(cell) {},
     initData(sql, nextValue) {
-      debugger
       if (this.useType == 'modelRunResult') {
         this.isLoading = true
         // 当当前表是主表的时候myFlag赋值为true
@@ -361,7 +362,6 @@ export default {
           sql = 'undefined'
         }
         selectTable(this.pageQuery, sql).then((resp) => {
-          debugger
           this.total = resp.data.total
           this.dataArray = resp.data.records[0].result
           this.queryData = resp.data.records[0].columnInfo
@@ -446,7 +446,7 @@ export default {
             this.isSee = false
             this.modelResultPageIsSee = false
             this.modelResultButtonIsShow = false
-            this.errorMessage = this.nextValue.executeSQL.message
+            this.errorMessage = this.nextValue.executeSQL.msg
           } else {
             this.modelResultButtonIsShow = true
             this.modelResultPageIsSee = true
@@ -575,6 +575,9 @@ export default {
       this.page = val
       this.getList()
     },
+    /**
+     * 点击详细打开dialog效果
+     */
     openModelDetail() {
       var selRows = this.gridApi.getSelectedRows()
       if (selRows.length < 1) {
@@ -593,6 +596,9 @@ export default {
         alert('不能选中多条')
       }
     },
+    /**
+     * 点击详细dialog的确定按钮后触发
+     */
     modelDetailCetermine() {
       var selectRowData = this.gridApi.getSelectedRows()
       var detailValue = []
@@ -612,11 +618,21 @@ export default {
           }
         }
       }
-      console.log(666666666666)
-      console.log(detailValue)
-      console.log(this.value)
+      findParamModelRelByModelUuid(this.value).then(resp=>{
+          console.log(resp.data)
+          var arr = []
+          for(var i = 0;i<resp.data.length;i++){
+              arr.push(JSON.parse(resp.data[i]))
+          }
+           selectModel(this.value).then(resp=>{
+             var sql =  replaceParam(detailValue,arr,resp.data.sqlValue)
+           })
+      })
       this.modelDetailDialogIsShow = false
     },
+    /**
+     * sql编辑器模型结果点击导出后出发的方法
+     */
     modelResultExport() {
       console.log(this.nextValue)
       this.tableData = this.nextValue.result
@@ -625,6 +641,9 @@ export default {
         this.json_fields[this.nextValue.columnNames[i]] = this.nextValue.columnNames[i]
       }
       this.excelName = '模型结果导出表'
+    },
+    reSet(){
+      this.isLoading = true
     }
   }
 }
