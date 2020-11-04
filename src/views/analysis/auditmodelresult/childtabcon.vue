@@ -612,9 +612,6 @@ export default {
           }
         }
       }
-      console.log(666666666666)
-      console.log(detailValue)
-      console.log(this.value)
       findParamModelRelByModelUuid(this.value).then(resp=>{
           console.log(resp.data)
           var arr = []
@@ -623,8 +620,6 @@ export default {
           }
            selectModel(this.value).then(resp=>{
              var sql =  replaceParam(detailValue,arr,resp.data.sqlValue)
-             console.log("sqlllll")
-              console.log(sql)
            })
       })
       this.modelDetailDialogIsShow = false
