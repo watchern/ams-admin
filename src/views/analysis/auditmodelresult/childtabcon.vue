@@ -637,6 +637,9 @@ export default {
         this.json_fields[this.nextValue.columnNames[i]] = this.nextValue.columnNames[i]
       }
       this.excelName = '模型结果导出表'
+    },
+    reSet(){
+      this.isLoading = true
     }
   }
 }
