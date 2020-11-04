@@ -7,7 +7,7 @@
         @submit="getList"
       />
     </div>
-    <div>
+    <div v-if="power==1">
       <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
       <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="handleUpdate()">修改</el-button>
       <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="handleDelete()">删除</el-button>
@@ -29,6 +29,7 @@
       <el-table-column label="规则描述" prop="ruleDesc" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
+    <el-button v-if="power == 0" :disabled="selections.length !== 1" type="primary" size="mini" class="el_header_button" style="margin-right: 20px;float: right;" @click="selectTransRule()">确定</el-button>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
         ref="dataForm"
@@ -116,6 +117,8 @@ import QueryField from '@/components/Ace/query-field/index'
 import XLSX from 'xlsx'
 export default {
   components: { Pagination, QueryField },
+  // eslint-disable-next-line vue/require-prop-types
+  props: ['power'],
   data() {
     return {
       transColRelsData: [],
@@ -222,6 +225,10 @@ export default {
       }
     },
     getList(query) {
+      var getPower = this.$route.query.power
+      if (getPower !== undefined) {
+        this.power = getPower
+      }
       this.listLoading = true
       if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then(resp => {
@@ -312,6 +319,14 @@ export default {
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
+    },
+    selectTransRule() {
+      var rulObj = Object.assign({}, this.selections[0]) // copy obj
+      if (rulObj !== null) {
+        selectOne(rulObj).then(res => {
+          this.temp = res.data
+        })
+      }
     },
     updateData() {
       // 先移除输入行
