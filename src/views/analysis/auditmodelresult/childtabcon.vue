@@ -56,7 +56,7 @@
       @cellClicked="onCellClicked"
       @gridReady="onGridReady"
     />
-    <el-card v-if="!isSee" class="box-card">
+    <el-card v-if="!isSee" class="box-card" style="height:100px">
       <div>{{ errorMessage }}</div>
     </el-card>
     <pagination
@@ -575,6 +575,9 @@ export default {
       this.page = val
       this.getList()
     },
+    /**
+     * 点击详细打开dialog效果
+     */
     openModelDetail() {
       var selRows = this.gridApi.getSelectedRows()
       if (selRows.length < 1) {
@@ -593,6 +596,9 @@ export default {
         alert('不能选中多条')
       }
     },
+    /**
+     * 点击详细dialog的确定按钮后触发
+     */
     modelDetailCetermine() {
       var selectRowData = this.gridApi.getSelectedRows()
       var detailValue = []
@@ -624,6 +630,9 @@ export default {
       })
       this.modelDetailDialogIsShow = false
     },
+    /**
+     * sql编辑器模型结果点击导出后出发的方法
+     */
     modelResultExport() {
       console.log(this.nextValue)
       this.tableData = this.nextValue.result
