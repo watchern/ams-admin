@@ -7,7 +7,7 @@
         @submit="getList"
       />
     </div>
-    <div v-if="power==1">
+    <div v-if="power==undefined">
       <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
       <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="handleUpdate()">修改</el-button>
       <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="handleDelete()">删除</el-button>
@@ -321,12 +321,14 @@ export default {
       })
     },
     selectTransRule() {
+      var transObj
       var rulObj = Object.assign({}, this.selections[0]) // copy obj
       if (rulObj !== null) {
         selectOne(rulObj).then(res => {
-          this.temp = res.data
+          transObj = res.data
         })
       }
+      return transObj
     },
     updateData() {
       // 先移除输入行
@@ -409,7 +411,10 @@ export default {
       this.dialogFormVisible = false
     },
     handleSelectionChange(val) {
+      var selectObjs = val
       this.selections = val
+      console.log(selectObjs)
+      return selectObjs
     },
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
