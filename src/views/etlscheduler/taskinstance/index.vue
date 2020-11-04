@@ -291,24 +291,25 @@ export default {
   methods: {
     // 根据状态查找该状态在数据中的下标
     statusFilter(value) {
-      if (value == null || value.trim() === '') {
-        return this.statusList.length - 1
-      }
-      const index1 = (this.statusList || []).findIndex((item) => item.value === value)
-      if (!index1 || index1 === null || index1 < 1) {
-        return this.statusList.length - 1
-      }
-      return index1 - 1
+      return 1
+      // if (value == null || value.trim() === '') {
+      //   return this.statusList.length - 1
+      // }
+      // const index1 = (this.statusList || []).findIndex((item) => item.value === value)
+      // if (!index1 || index1 === null || index1 < 1) {
+      //   return this.statusList.length - 1
+      // }
+      // return index1 - 1
     },
     colorFilter(value) {
       if (value == null || value.trim() === '') {
-        return 1
+        return this.logColorList.length-1
       }
-      const index1 = (colorList || []).findIndex((item) => item.value === value)
-      if (!index1 || index1 === null || index1 < 1) {
-        return 1
+      const index2 = (this.logColorList || []).findIndex((item) => item.value === value)
+      if (!index2 || index2 === null || index2 < 1) {
+        return this.logColorList.length-1
       }
-      return index1 - 1
+      return index2 -1
     },
     getList(query) {
       this.listLoading = true
