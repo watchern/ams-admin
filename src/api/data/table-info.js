@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import request from '@/utils/request'
 
 const baseURL = '/amsdata'
@@ -33,6 +34,14 @@ export function saveTable(data) {
     data
   })
 }
+export function saveTableInfo(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/saveTableInfo`,
+    method: 'post',
+    data
+  })
+}
 export function updateTable(data) {
   return request({
     baseURL: baseURL,
@@ -53,6 +62,54 @@ export function getResELTree(rightControl, userid) {
     baseURL: baseURL,
     url: `/${controller2}/getResELTree?isRightControl=${rightControl}&dataUserId=${userid}`,
     method: 'get'
+  })
+}
+/**
+ * 获取数据表列
+ * @param data
+ * @returns {AxiosPromise}
+ */
+export function getTableCol(tableMetaUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getCols`,
+    method: 'post',
+    params: { tableMetaUuid: tableMetaUuid }
+  })
+}
+
+export function getTableInfo(tableMetaUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getTableInfo`,
+    method: 'post',
+    params: { tableMetaUuid: tableMetaUuid }
+  })
+}
+
+export function getCreateSql(tableMetaUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getCreateSql`,
+    method: 'post',
+    params: { tableMetaUuid: tableMetaUuid }
+  })
+}
+
+export function getBasicInfo(tableMetaUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getBasicInfo`,
+    method: 'post',
+    params: { tableMetaUuid: tableMetaUuid }
+  })
+}
+
+export function getSqlType() {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getSqlType`,
+    method: 'post'
   })
 }
 
