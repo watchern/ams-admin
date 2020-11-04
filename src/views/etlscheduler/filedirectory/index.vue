@@ -177,10 +177,10 @@ export default {
         }
       },
       queryFields: [
-        { label: '参数名称', name: 'name', type: 'text', value: '' },
+        { label: '目录名称', name: 'name', type: 'text', value: '' },
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
-          label: '参数状态', name: 'directoryType', type: 'select',
+          label: '目录类型', name: 'directoryType', type: 'select',
           data: [{ name: '存储目录', value: '1' }, { name: '执行目录', value: '2' },
             { name: '备份目录', value: '3' }, { name: '异常目录', value: '4' }, { name: '手动备份目录', value: '5' }],
           default: '1'
