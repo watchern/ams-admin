@@ -201,7 +201,6 @@ export default {
       this.form.modelFolderUuid = this.getGuuid()
       this.form.parentUuid = this.selectTreeNode.id
       this.form.folderSort = 0
-      debugger
       const nodePath = this.$refs.tree.getNodePath(this.selectTreeNode)
       const fullPath = []
       nodePath.forEach(path => {

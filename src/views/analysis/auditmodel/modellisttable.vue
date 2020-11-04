@@ -43,20 +43,28 @@
         :label="item.title"
         :name="item.name">
         <!--增加参数输入组件-->
-        <el-row>
-          <el-col :span="22">
-            <crossrangeParam v-if="item.isExistParam" :myId="item.name" :ref="item.name + 'param'"></crossrangeParam>
-          </el-col>
-          <el-col :span="2">
-            <el-button type="primary" @click="queryModel(item.name)">查询</el-button>
-          </el-col>
-        </el-row>
-        <!--增加结果组件-->
-         <el-row>
-           <el-col :span="24">
-              <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor"/>
-           </el-col>
-         </el-row>
+        <el-collapse v-model="activeNames" @change="">
+          <el-collapse-item name="1">
+            <template slot="title"><div class="panel-font-size">参数输入区域</div></template>
+            <el-row>
+              <el-col :span="22">
+                <crossrangeParam v-if="item.isExistParam" :myId="item.name" :ref="item.name + 'param'"></crossrangeParam>
+              </el-col>
+              <el-col :span="2">
+                <el-button type="primary" @click="queryModel(item.name)">查询</el-button>
+              </el-col>
+            </el-row>
+          </el-collapse-item>
+          <el-collapse-item name="2">
+            <template slot="title"><div class="panel-font-size">结果展示区域</div></template>
+            <!--增加结果组件-->
+            <el-row>
+              <el-col :span="24">
+                <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor"/>
+              </el-col>
+            </el-row>
+          </el-collapse-item>
+        </el-collapse>
       </el-tab-pane>
     </el-tabs>
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
@@ -114,6 +122,8 @@ export default {
       editModelTitle: '',
       //发布模型dialog
       treeSelectShow:false,
+      //折叠面板默认展开
+      activeNames:['1','2'],
       //编辑模型dialog
       editModelShow: false,
       //发布模型
@@ -750,5 +760,9 @@ export default {
 }
 .el-dropdown{
   margin-left: 10px;
+}
+
+.panel-font-size{
+  font-size: 25px;
 }
 </style>

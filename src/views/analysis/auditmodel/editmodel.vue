@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-container class="el-container">
-      <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+      <el-aside width="200px">
         <el-tree ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>
@@ -21,7 +21,7 @@
           <el-row>
             <el-form-item label="业务分类">
               <el-col :span="22">
-                <el-input v-model="form.modelFolderUuid" style="display: none" :disabled="true" />
+                <el-input v-model="form.modelFolderUuid" class="display" :disabled="true" />
                 <el-input v-model="form.modelFolderName" :disabled="true" />
               </el-col>
               <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true">选择</el-button>
@@ -30,7 +30,7 @@
           <el-row>
             <el-form-item label="审计事项" prop="auditItemUuid">
               <el-col :span="22">
-                <el-input v-model="form.auditItemUuid" style="display: none" :disabled="true" />
+                <el-input v-model="form.auditItemUuid" class="display" :disabled="true" />
                 <el-input v-model="form.auditItemName" :disabled="true" />
               </el-col>
               <el-button @click="showAuditItemTree">选择</el-button>
@@ -76,35 +76,21 @@
             <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" class="sql-editor" />
           </div>
-          <el-form-item label="模型sql" prop="sqlValue" style="display: none;">
+          <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
           </el-form-item>
         </el-form>
       </div>
       <div ref="paramDefaultValue" class="display">
-        <p style="color:red;font-size:large">拖拽改变参数展示顺序</p>
+        <p class="p-div">拖拽改变参数展示顺序</p>
         <div id="paramList">
           <paramShow ref="apple"></paramShow>
-<!--          <el-table
-            ref="paramData"
-            :data="paramData"
-            style="width: 100%"
-          >
-            <el-table-column prop="ammParamUuid" label="参数编号" width="180" />
-            <el-table-column prop="paramName" label="参数名称" width="180" />
-            <el-table-column prop="paramValue" label="参数默认值" width="180">
-              <template slot-scope="scope">
-                <v-runtime-template :template="scope.row.paramValue" />
-              </template>
-            </el-table-column>
-            <el-table-column prop="description" label="参数描述" />
-          </el-table>-->
         </div>
       </div>
       <div ref="modelResultOutputCol" class="display">
-        <p style="color:red;font-size:large">注意：只显示最后的结果列</p>
+        <p class="p-div">注意：只显示最后的结果列</p>
         <div style="height:476px;overflow:scroll">
-          <el-table ref="columnData" :data="columnData" style="width: 100%">
+          <el-table ref="columnData" :data="columnData" class="div-width">
             <el-table-column prop="outputColumnName" label="输出列名" width="180" />
             <el-table-column prop="" label="数据转码" width="80" />
             <el-table-column prop="columnName" label="是否显示" width="80">
@@ -153,10 +139,10 @@
         <p>在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
           用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。
           通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。</p>
-        <el-button style="float: right;position:sticky;top: 260px;" @click="createDetail">新建</el-button>
+        <el-button class="el-button-style" @click="createDetail">新建</el-button>
       </div>
       <div id="modelDetailDiv">
-        <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id" style="display: none">
+        <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id" class="display">
           <ModelDetail ref="child" :columns="columnData" :data="modelDetail.data" :tree-id="modelDetail.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
@@ -168,10 +154,10 @@
           以便审计人员对这些数据进行审计。</p>
         <p>条件显示设计器以表格的形式列举所有由用户设定的、将被应用于模型执行结果的显示条件及显示样式，用户可通过该列表对各个条件的属性进行快速查看。
           同时用户也可以对显示条件进行添加、修改、删除</p>
-        <el-button style="float: right;position:sticky;top: 260px;" @click="createFilterShow">新建</el-button>
+        <el-button class="el-button-style" @click="createFilterShow">新建</el-button>
       </div>
       <div ref="filterShowDiv">
-        <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id" style="display: none">
+        <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id" class="display">
           <ModelFilterShow ref="modelFilterSHowChild" :columns="columnData" :data="filterShow.data" :tree-id="filterShow.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
@@ -974,6 +960,7 @@ export default {
           id:'002003001'
         }
         this.modelTypeObj.push(obj)
+
       }
       if(vId == "002003002"){
         this.$message({ type: 'info', message: "暂时不支持图形化模型"})
@@ -1030,7 +1017,7 @@ export default {
 </script>
 <style>
 .sql-editor{
-  height: 700px;
+  height: 680px;
   overflow-y:scroll
 }
 
@@ -1049,8 +1036,23 @@ export default {
 }
 
 .div-btn{
-  margin-top: 14%;
+  margin-top: 12%;
   float:right;
   margin-right: 1%;
+
+  border: 1px solid #D4CD49;
+  left:0;
+  top:30%
+}
+
+.el-button-style{
+  float: right;
+  position:sticky;
+  top: 260px;
+}
+
+.p-div{
+  color:red;
+  font-size:large;
 }
 </style>

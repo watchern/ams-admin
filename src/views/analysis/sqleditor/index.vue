@@ -663,6 +663,7 @@ export default {
   overflow: hidden;
   background: #c0c5d4;
   cursor: w-resize;
+  display: none;
 }
 
 #horizontal {
@@ -724,8 +725,8 @@ export default {
 
 .left-part{
   overflow: auto;
-  height: 100vh;
   width: 16.66666667%;
   float: left;
+  height: 89vh;
 }
 </style>
