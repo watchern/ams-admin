@@ -235,13 +235,15 @@
             <m-list-box>
               <div slot="content">
                 <div>
+                
+                    <!-- @click="!isDetails && _addDep()" --> 
                   <a
                     :style="{
                       'pointer-events': disableUpdate === true ? 'none' : '',
                     }"
                     href="javascript:"
                     class="add-dep"
-                    @click="!isDetails && _addDep()"
+                    @click="_addDep()"
                   >
                     <div slot="text">添加依赖
                       <em
@@ -735,6 +737,9 @@
       _addDep() {
         if (!this.isLoading) {
           this.isLoading = true
+          if (this.dependTaskList == null) {
+            this.dependTaskList = []
+          }
           this.dependTaskList.push({
             dependItemList: [],
             relation: 'AND'
