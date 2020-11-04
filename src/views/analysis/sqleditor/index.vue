@@ -225,7 +225,7 @@ let isAllExecuteSuccess = false
  * 最后模型结果列类型
  * @type {*[]}
  */
-const lastResultColumnType = []
+let lastResultColumnType = []
 
 /**
  * 数据界面对象
@@ -316,8 +316,7 @@ export default {
         if (currentExecuteProgress == dataObj.executeTask.executeSQL.length) {
           isAllExecuteSuccess = true
           lastResultColumn = dataObj.columnNames
-          // todo 现在暂时还拿不到类型  后续需要改
-          // lastResultColumnType = dataObj.columnTypes
+          lastResultColumnType = dataObj.columnTypes
         }
         func1(dataObj)
       }

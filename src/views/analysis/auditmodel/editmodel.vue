@@ -89,7 +89,7 @@
       </div>
       <div ref="modelResultOutputCol" class="display">
         <p class="p-div">注意：只显示最后的结果列</p>
-        <div style="height:476px;overflow:scroll">
+        <div class="model-result-output-col">
           <el-table ref="columnData" :data="columnData" class="div-width">
             <el-table-column prop="outputColumnName" label="输出列名" width="180" />
             <el-table-column prop="" label="数据转码" width="80" />
@@ -176,7 +176,7 @@
         <el-button @click="modelFolderTreeDialog=false">取消</el-button>
       </div>
     </el-dialog>
-    <div class="div-btn">
+    <div ref="btnDivRef" class="div-btn">
       <el-button type="primary" @click="save">保存</el-button>
       <el-button @click="closeWinfrom">取消</el-button>
     </div>
@@ -364,6 +364,7 @@ export default {
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.basicInfo.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '12%'
       } else if (data.type == 'modelDesign') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.paramDefaultValue.style.display = 'none'
@@ -372,6 +373,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '3%'
       } else if (data.type == 'paramDefaultValue') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -656,7 +658,7 @@ export default {
       for (let i = 0; i < columnNames.length; i++) {
         var obj = {
           columnName: columnNames[i],
-          columnType: 'varchar'
+          columnType: columnType[i]
         }
         returnObj.push(obj)
       }
@@ -1031,7 +1033,6 @@ export default {
 }
 
 .el-container{
-  height: 500px;
   border: 1px solid #eee
 }
 
@@ -1039,8 +1040,6 @@ export default {
   margin-top: 12%;
   float:right;
   margin-right: 1%;
-
-  border: 1px solid #D4CD49;
   left:0;
   top:30%
 }
@@ -1054,5 +1053,10 @@ export default {
 .p-div{
   color:red;
   font-size:large;
+}
+
+.model-result-output-col{
+  height: 650px;
+  overflow-y: scroll;
 }
 </style>
