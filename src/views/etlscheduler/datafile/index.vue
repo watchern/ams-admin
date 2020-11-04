@@ -68,7 +68,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage } from '@/api/etlscheduler/dataFile'
+import { listByPage } from '@/api/etlscheduler/datafile'
 import QueryField from '@/components/Ace/query-field/index'
 
 export default {
