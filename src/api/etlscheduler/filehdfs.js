@@ -12,3 +12,22 @@ export function getBylist(data) {
   })
 }
 
+// 创建文件夹
+export function createDir(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/fileHdfs/createDir`,
+    method: 'put',
+    data
+  })
+}
+
+// 删除文件
+export function deleteFile(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/fileHdfs/deleteFile`,
+    method: 'put',
+    data
+  })
+}

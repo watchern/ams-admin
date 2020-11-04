@@ -10,10 +10,11 @@
       @file-progress="onFileProgress"
       @file-error="onFileError"
     >
-      <uploader-unsupport />
+      <!-- <uploader-unsupport />
       <uploader-drop>
         <uploader-btn :attrs="attrs">选择文件或者拖拽文件至此处</uploader-btn>
-      </uploader-drop>
+      </uploader-drop>-->
+      <uploader-btn :attrs="attrs">选择文件</uploader-btn>
       <uploader-list />
     </uploader>
   </div>
