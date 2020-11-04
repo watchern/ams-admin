@@ -19,6 +19,12 @@ const statusListComm = [
     color: '#f9be0a'
   },
   {
+    value: 32,
+    name: '依赖任务已完成',
+    unicode: 'el-icon-share',
+    color: '#f9be0a'
+  },
+  {
     value: 4,
     name: '执行中',
     unicode: 'el-icon-loading',
