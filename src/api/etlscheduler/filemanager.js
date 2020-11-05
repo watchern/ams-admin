@@ -6,7 +6,7 @@ const baseURL = 'etlscheduler'
 export function getBylist(data) {
   return request({
     baseURL: baseURL,
-    url: `/fileHdfs/getFileTree`,
+    url: `/fileManager/getFileTree`,
     method: 'post',
     data
   })
@@ -16,7 +16,7 @@ export function getBylist(data) {
 export function createDir(data) {
   return request({
     baseURL: baseURL,
-    url: `/fileManger/createDir`,
+    url: `/fileManager/createDir`,
     method: 'put',
     data
   })
@@ -26,7 +26,7 @@ export function createDir(data) {
 export function deleteFile(data) {
   return request({
     baseURL: baseURL,
-    url: `/fileManger/deleteFile`,
+    url: `/fileManager/deleteFile`,
     method: 'put',
     data
   })
