@@ -6,6 +6,7 @@ const dataRouter = {
   meta: {
   },
   children: [
+    /*数据资源管理*/
     {
       path: 'bizattr',
       name: '业务属性',
@@ -14,7 +15,9 @@ const dataRouter = {
       path: 'table',
       name: '表注册',
       component: () => import('@/views/data/table/index')
-    }, {
+    },
+    /*数据角色管理*/
+    {
       path: 'directory',
       name: '数据资源目录',
       component: () => import('@/views/data/directory/index')

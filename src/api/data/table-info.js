@@ -57,11 +57,13 @@ export function delTable(ids) {
     method: 'delete'
   })
 }
-export function getResELTree(rightControl, userid) {
+export function getResELTree(data) {
+  if(!data) data = {dataUserId: '', sceneCode: ''};
   return request({
     baseURL: baseURL,
-    url: `/${controller2}/getResELTree?isRightControl=${rightControl}&dataUserId=${userid}`,
-    method: 'get'
+    url: `/${controller2}/getResELTree`,
+    method: 'get',
+    params: data
   })
 }
 /**
@@ -142,4 +144,13 @@ export function saveRoleTable(roleUuid, rfolders, rtables, rcols) {
     }
   })
 }
+
+export function getAccessType() {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller3}/getAccessType`,
+    method: 'get'
+  })
+}
+
 

@@ -10,3 +10,12 @@ export function resourceStatisticsList(data) {
     data
   })
 }
+
+// 上游系统文件统计
+export function datafileStatisticsList() {
+  return request({
+    baseURL: baseURL,
+    url: `/statistics/datafileStatisticsList`,
+    method: 'post',
+  })
+}

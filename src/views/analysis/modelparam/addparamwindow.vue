@@ -1,8 +1,5 @@
 <template>
 <div>
-<iframe src="http://192.168.80.185:8080/AuditAnalysis/param/toParamManagerList?result=login&LTPAToken=d2VibWFzdGVyKjEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQqMSpTdHJpbmcqOTQ0OGIyMDM1YTdmNDIxZTAxNWE3ZjZkYzcxMzAwNTA=&maxInerval=14400">
-    IE：你们都看我干吗，我现在也是支持的
-</iframe>
 </div>
   <!-- <div>
     <el-form ref="form" :model="form" label-width="80px">
@@ -108,7 +105,6 @@
       </el-form-item>
     </el-form>
  </div> -->
-
 </template>
 <script>
 import { setSelectValue } from "@/api/analysis/auditparam";
@@ -120,21 +116,21 @@ export default {
   data() {
     return {
       form: {
-        paramName: "",
-        dataType: "",
-        inputType: "",
-        example: "",
-        allowNull: "",
-        dataLength: "",
-        shapeType: "",
-        names: [],
-        vals: [],
-        sql: "",
+        paramName: "", //参数名称
+        dataType: "", //数据类型
+        inputType: "", //输入类型
+        example: "", //示例
+        allowNull: "", //允许为空
+        dataLength: "", //长度限制
+        shapeType: "", // 形式类型
+        names: [],//备选值设置中自定义静态的key数组
+        vals: [], //备选值设置中自定义静态的value数组
+        sql: "", //备选sql
       },
       dataTypeSelect: [], //存放数据类型输入框数据
       inputTypeSelect: [], //存放输入类型输入框数据
       timeUnitSelect: [], //存放时间间隔单位输入框数据
-      map_data_input: {
+      map_data_input: {   //用于根据输入类型进行转码判断数据类型实现下拉框联动效果
         "002001003001": {
           //数字
           type: [
@@ -157,9 +153,8 @@ export default {
           ],
         },
       },
-      activeName: "first",
-      customStatic: [],
-      url:'www.baidu.com'
+      activeName: "first", //设置备选值设置页签的高亮
+      customStatic: [] // 用于自定义静态中记录key-value个数的数组
     };
   },
   methods: {
@@ -174,32 +169,39 @@ export default {
         this.dataTypeSelect = data;
       });
     },
+    /**
+     * 下拉框联动方法
+     */
     changeInputSelect() {
       this.inputTypeSelect = [];
       this.form.inputType = "";
       //根据数据类型联动输入类型
-      console.log(this.form.dataType);
       getDictSonList("002001002").then((data) => {
         var str = this.map_data_input[this.form.dataType].type;
         for (var i = 0; i < data.length; i++) {
           if (str.indexOf(data[i].codeValue) > -1) {
-            console.log(data[i].codeValue);
             this.inputTypeSelect.push(data[i]);
           }
         }
       });
     },
+    /**
+     * 点击添加自定义静态中key-value方法
+     */
     plusButton() {
       this.customStatic.push(1);
     },
+    /**
+     * 自定义静态中删除key-value方法
+     */
     remove(key) {
-      console.log(key);
       this.form.names.splice(key, 1);
       this.form.vals.splice(key, 1);
       this.customStatic.splice(key, 1);
-      console.log(this.form.names);
-      console.log(this.form.vals);
-	},
+  },
+  /**
+   * 打开sql规则
+   */
 	  openSQLRule() {
         this.$alert(`1、SQL语句的格式为：SELECT A,B FROM C
 

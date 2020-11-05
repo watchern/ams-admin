@@ -26,6 +26,11 @@ const analysisRouter = {
       path: 'editormodel',
       name: '编辑模型',
       component: () => import('@/views/analysis/auditmodel/editmodel')
+    },
+    {
+      path: 'auditWarning',
+      name: '审计预警',
+      component: () => import('@/views/analysis/auditwarning/auditwarninglist')
     }
   ]
 }
