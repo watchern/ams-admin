@@ -92,7 +92,21 @@
         <div class="model-result-output-col">
           <el-table ref="columnData" :data="columnData" class="div-width">
             <el-table-column prop="outputColumnName" label="输出列名" width="180" />
-            <el-table-column prop="" label="数据转码" width="80" />
+            <el-table-column prop="" label="数据转码" width="180">
+              <template slot-scope="scope">
+                <el-select ref="transRuleUuid" v-model="scope.row.dataCoding" style="width:90%" filterable placeholder="请选择转码规则">
+                  <el-option
+                    v-for="item in transJson"
+                    :key="item.transRuleUuid"
+                    :label="item.ruleName"
+                    :value="item.transRuleUuid"
+                  >
+                    <span v-text="item.ruleName" />
+                    <el-button style="float:right" type="primary" size="mini" @click="selectTransCode(item.transRuleUuid)">查看</el-button>
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
             <el-table-column prop="columnName" label="是否显示" width="80">
               <template slot-scope="scope">
                 <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1">
@@ -176,6 +190,60 @@
         <el-button @click="modelFolderTreeDialog=false">取消</el-button>
       </div>
     </el-dialog>
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <div class="detail-form">
+        <el-form
+          ref="dataForm"
+          :model="tempRule"
+          label-position="right"
+          style="width: 700px;"
+        >
+          <el-form-item label="规则名称" prop="ruleName">
+            <el-input v-model="tempRule.ruleName" readonly />
+          </el-form-item>
+          <el-form-item label="规则描述" prop="ruleDesc">
+            <el-input v-model="tempRule.ruleDesc" readonly />
+          </el-form-item>
+          <el-form-item label="转码方式" prop="ruleType">
+            <el-input v-model="tempRule.ruleType" readonly />
+          </el-form-item>
+          <el-form-item v-if="isSql" label="转码规则" prop="sqlContent">
+            <el-input v-model="tempRule.sqlContent" readonly />
+          </el-form-item>
+          <el-row v-if="isSql">
+            <el-col :span="12">
+              <el-form-item label="真实值" prop="sceneName" label-width="150px">
+                <el-input v-model="tempRule.sceneName" readonly class="input" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="业务属性编码" prop="sceneCode" label-width="150px">
+                <el-input v-model="tempRule.sceneCode" readonly class="input" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-table v-if="!isSql" :data="tempRule.transColRels" height="200">
+            <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>
+              <template slot-scope="scope" show-overflow-tooltip>
+                <el-tooltip :disabled="scope.row.codeValue.length < 12" effect="dark" :content="scope.row.codeValue" placement="top">
+                  <el-input v-model="scope.row.codeValue" readonly style="width:90%;" />
+                </el-tooltip>
+              </template>
+            </el-table-column>
+            <el-table-column prop="transValue" label="显示值" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <el-tooltip :disabled="scope.row.transValue.length < 10" effect="dark" :content="scope.row.transValue" placement="top">
+                  <el-input v-model="scope.row.transValue" readonly style="width:90%;" />
+                </el-tooltip>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form>
+      </div>
+      <div slot="footer">
+        <el-button type="primary" @click="dialogFormVisible = false">关闭</el-button>
+      </div>
+    </el-dialog>
     <div ref="btnDivRef" class="div-btn">
       <el-button type="primary" @click="save">保存</el-button>
       <el-button @click="closeWinfrom">取消</el-button>
@@ -191,6 +259,7 @@ import { getBusinessAttribute, saveModel, updateModel } from '@/api/analysis/aud
 import VRuntimeTemplate from 'v-runtime-template'
 import paramShow from "@/views/analysis/modelparam/paramshow";
 import { getDictList } from '@/utils/index'
+import { selectById, seleteCodeAll } from '@/api/data/transCode'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 export default {
   name: 'EditModel',
@@ -247,6 +316,16 @@ export default {
       modelFolderTreeDialog:false,
       //列数据
       columnData: [],
+      //是否是sql
+      isSql: false,
+      //模板规则
+      tempRule: [],
+      textMap: {
+        select: '查看数据转码信息'
+      },
+      //数据转码dialog名称
+      dialogStatus: '',
+      pageQuery: {},
       //实体对象
       form: {
         modelName: '',
@@ -268,22 +347,38 @@ export default {
         params: [],
         column: []
       },
+      transJson:[],
       //选择的业务列
       businessColumnSelect: [],
+      //列类型数组
       columnTypeSelect: [],
+      //模型详细对象数组
       modelDetails: [],
+      //条件显示数组
       filterShows: [],
+      dialogFormVisible:false,
+      //校验规则失败自动跳转用的对象
       newRelInfoValue: {},
       newFilterShowValue: {},
+      //sql编辑器参数对象
       sqlEditorParamObj: {},
+      //添加模型详细树时候的索引
       modelDetailIndex: 0,
+      //风险等级
       riskLeve: [],
+      //模型类型
       modelTypeData:[],
+      //添加条件显示时候树的索引
       modelFilterShowIndex: 0,
+      //模型历史表数组
       modelOriginalTable: [],
+      //模型图表配置
       modelChartSetup: {},
+      //当前选中树节点
       currentSelectTreeNode: null,
+      //模型类型数组
       modelTypeObj:[],
+      //关闭窗体时候用的窗体名
       formName:"",
       basicInfoRules: {
         modelName: [
@@ -353,7 +448,16 @@ export default {
       this.riskLeve = getDictList('002002')
       // 初始化审计事项
       this.modelTypeData = getDictList('002003')
+      //初始化数据转码
+      seleteCodeAll(this.pageQuery).then(resp => {
+        this.transJson = resp.data.records
+      })
     },
+    /**
+     * 点击之后切换页签
+     * @param data 点击的数据
+     * @param node 树节点
+     */
     handleNodeClick(data, node) {
       this.hideModelDetail()
       if (data.type == 'basicInfo') {
@@ -364,7 +468,7 @@ export default {
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.basicInfo.style.display = 'block'
-        this.$refs.btnDivRef.style.marginTop = '10%'
+        this.$refs.btnDivRef.style.marginTop = '10.5%'
       } else if (data.type == 'modelDesign') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.paramDefaultValue.style.display = 'none'
@@ -373,7 +477,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'block'
-        this.$refs.btnDivRef.style.marginTop = '3%'
+        this.$refs.btnDivRef.style.marginTop = '-1%'
       } else if (data.type == 'paramDefaultValue') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -382,7 +486,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.paramDefaultValue.style.display = 'block'
-        this.$refs.btnDivRef.style.marginTop = '34%'
+        this.$refs.btnDivRef.style.marginTop = '32.3%'
       } else if (data.type == 'modelResultOutputCol') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -391,7 +495,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.modelResultOutputCol.style.display = 'block'
-        this.$refs.btnDivRef.style.marginTop = '3%'
+        this.$refs.btnDivRef.style.marginTop = '2%'
       } else if (data.type == 'relInfo') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -400,7 +504,7 @@ export default {
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'block'
-        this.$refs.btnDivRef.style.marginTop = '34%'
+        this.$refs.btnDivRef.style.marginTop = '32.3%'
       } else if (data.type == 'chartConfig') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -409,7 +513,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.chartConfig.style.display = 'block'
-        this.$refs.btnDivRef.style.marginTop = '34%'
+        this.$refs.btnDivRef.style.marginTop = '32.3%'
       } else if (data.type == 'filterShow') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -418,7 +522,7 @@ export default {
         this.$refs.relInfo.style.display = 'none'
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'block'
-        this.$refs.btnDivRef.style.marginTop = '34%'
+        this.$refs.btnDivRef.style.marginTop = '32.3%'
       } else if (data.type == 'relDetail' || data.type == 'filterShowNode') {
         // 获取指定div
         this.$refs.basicInfo.style.display = 'none'
@@ -431,6 +535,7 @@ export default {
         if (this.$refs.[data.id][0] != undefined) {
           this.$refs.[data.id][0].style.display = 'block'
         }
+        this.$refs.btnDivRef.style.marginTop = '11.2%'
       }
       this.currentSelectTreeNode = data
     },
@@ -693,6 +798,10 @@ export default {
       }
       return resultObj
     },
+    /**
+     * 反显sql语句
+     * @param returnObj sql编辑器拿到的对象
+     */
     displaySQL(returnObj) {
       let sql = returnObj.sqlValue
       const arrPram = returnObj.params
@@ -1000,7 +1109,13 @@ export default {
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
           if (result.code === 0) {
-            this.$message({ type: 'success', message: '新增成功!' })
+            this.$notify({
+              title:'提示',
+              message:'新增成功',
+              type:'success',
+              duration:2000,
+              position:'bottom-right'
+            });
             this.closeWinfrom()
           } else {
             this.$message({ type: 'error', message: '新增模型失败!' })
@@ -1010,7 +1125,13 @@ export default {
       } else {
         updateModel(modelObj).then(result => {
           if (result.code === 0) {
-            this.$message({ type: 'success', message: '修改成功!' })
+            this.$notify({
+              title:'提示',
+              message:'修改成功',
+              type:'success',
+              duration:2000,
+              position:'bottom-right'
+            });
             this.closeWinfrom()
           } else {
             this.$message({ type: 'error', message: '修改模型失败!' })
@@ -1018,7 +1139,22 @@ export default {
           }
         })
       }
-    }
+    },
+    selectTransCode(ruleId) {
+      this.dialogStatus = 'select'
+      selectById(ruleId).then(res => {
+        this.tempRule = res.data
+        if (this.tempRule.ruleType === 1) {
+          this.dialogFormVisible = true
+          this.tempRule.ruleType = 'SQL语句'
+          this.isSql = true
+        } else {
+          this.dialogFormVisible = true
+          this.tempRule.ruleType = '手动添加'
+          this.isSql = false
+        }
+      })
+    },
   }
 }
 </script>
@@ -1042,7 +1178,7 @@ export default {
 }
 
 .div-btn{
-  margin-top: 12%;
+  margin-top: 10.5%;
   float:right;
   margin-right: 1%;
   left:0;
