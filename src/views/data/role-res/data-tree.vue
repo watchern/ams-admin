@@ -32,6 +32,10 @@ import { commonNotify } from '@/utils'
 
 export default {
   components: { MyElTree },
+  props:{
+    dataUserId: String,
+    sceneCode: String
+  },
   data() {
     return {
       filterText1: null,
@@ -57,7 +61,10 @@ export default {
     }
   },
   created() {
-    getResELTree(0, '').then(resp => {
+    getResELTree({
+      dataUserId: this.dataUserId,
+      sceneCode: this.sceneCode
+    }).then(resp => {
       this.treeData1 = resp.data
     })
   },

@@ -1,35 +1,27 @@
 <template>
-  <div>
-    <form class="form-horizontal">
-      <div class="col-sm-12">
-        <div id="accordion" class="panel-group">
-          <div class="panel-default">
-            <div />
-            <div id="collapse" class="panel-collapse collapse in">
-              <div id="paramCom" style="padding: 10px 0;display: flex;flex-wrap: wrap" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </form>
+  <div id="collapse">
+    <div :id="myId" style="padding: 10px 0; display: flex; flex-wrap: wrap" />
   </div>
 </template>
 <script>
-import { initcrossrangeParamHtml } from '@/api/analysis/auditparam'
+import { initcrossrangeParamHtml } from "@/api/analysis/auditparam";
 export default {
   data() {
-    return {
-    }
+    return {};
   },
+  props: ["myId"], //传入的动态id
   methods: {
-    initParamHtmlSS(sql, paramsArr, name, modelId) {
-      initcrossrangeParamHtml(sql, paramsArr, name, modelId)
-    }
-  }
-}
+    /**
+     * 初始化横向参数界面
+     */
+    initParamHtmlSS(sql, paramsArr, name, id) {
+      initcrossrangeParamHtml(sql, paramsArr, name, id);
+    },
+  },
+};
 </script>
 <style>
-  body {
-    margin: 0;
-  }
+body {
+  margin: 0;
+}
 </style>

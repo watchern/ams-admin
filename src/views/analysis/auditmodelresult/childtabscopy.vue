@@ -1,8 +1,8 @@
 <template>
-  <!-- childTabs是子页签组件 -->
+  <!-- childtabscopy和childtabs组件完全一致 -->
   <el-tabs type="border-card">
     <el-tab-pane v-if="useType=='modelRunResult'?true:false" :label="useType == 'modelRunResult' ? '主表' : '结果1'"
-      ><childTabCons
+      ><childtabconcopy
         :nowtable="maintable"
         :model-uuid="modelUuid"
         :useType="useType"
@@ -13,16 +13,16 @@
       :label="
         useType == 'modelRunResult' ? '辅表' + (key + 1) : '结果' + (key + 1)
       "
-      ><childTabCons ref="child" :nowtable="item" :prePersonalVal="item" :useType="useType" />
+      ><childtabconcopy ref="child" :nowtable="item" :prePersonalVal="item" :useType="useType" />
     </el-tab-pane>
   </el-tabs>
 </template>
 <script>
-import childTabCons from "@/views/analysis/auditmodelresult/childtabcon";
+import childtabconcopy from "@/views/analysis/auditmodelresult/childtabconcopy";
 import { now } from "moment";
 export default {
   components: {
-    'childTabCons':childTabCons
+    childtabconcopy
   },
   data() {
     return {
@@ -30,17 +30,11 @@ export default {
     };
   },
   methods: {
-    /**
-     * sql编辑器模型结果用来给子组件aggrid表格赋值
-     */
       loadTableData(nextValue){
         this.$refs.child[this.index].initData(null,nextValue)
         this.
           index++;
       },
-      /**
-       * sql编辑器模型结果用于给子组件aggrid表格加遮罩
-       */
       reSetTable(){
         for(var i = 0;i<this.preValue.length;i++){
           this.$refs.child[i].reSet()
