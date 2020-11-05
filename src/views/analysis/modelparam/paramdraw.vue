@@ -23,22 +23,23 @@
   </div>
 </template>
 <script>
-import { initParamHtml } from '@/api/analysis/auditparam'
+import { initParamHtml } from "@/api/analysis/auditparam";
 export default {
   data() {
-    return {
-    }
+    return {};
   },
   methods: {
+    /**
+     * 初始化参数渲染界面
+     */
     initParamHtmlSS(sql, paramsArr, name, modelId) {
-      initParamHtml(sql, paramsArr, name, modelId)
-    }
-
-  }
-}
+      initParamHtml(sql, paramsArr, name, modelId);
+    },
+  },
+};
 </script>
 <style>
-  body {
-    margin: 0;
-  }
+body {
+  margin: 0;
+}
 </style>

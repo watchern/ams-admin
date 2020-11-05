@@ -225,7 +225,7 @@ let isAllExecuteSuccess = false
  * 最后模型结果列类型
  * @type {*[]}
  */
-const lastResultColumnType = []
+let lastResultColumnType = []
 
 /**
  * 数据界面对象
@@ -316,8 +316,7 @@ export default {
         if (currentExecuteProgress == dataObj.executeTask.executeSQL.length) {
           isAllExecuteSuccess = true
           lastResultColumn = dataObj.columnNames
-          // todo 现在暂时还拿不到类型  后续需要改
-          // lastResultColumnType = dataObj.columnTypes
+          lastResultColumnType = dataObj.columnTypes
         }
         func1(dataObj)
       }
@@ -348,6 +347,9 @@ export default {
         )
       }
     },
+    /**
+     * 初始化sql编辑器基础数据
+     */
     initData() {
       initDragAndDrop()
       initIcon()
@@ -373,30 +375,60 @@ export default {
         }
       })
     },
+    /**
+     * 数据表树搜索
+     */
     tableTreeSearch() {
       tableTreeSearch()
     },
+    /**
+     * 参数树搜索
+     */
     paramTreeSearch() {
       paramTreeSearch()
     },
+    /**
+     * 函数树搜索
+     */
     functionTreeSearch() {
       functionTreeSearch()
     },
+    /**
+     * sql格式化
+     */
     sqlFormat() {
       sqlFormat()
     },
+    /**
+     * 查找和替换
+     * @param type 1替换 2查找
+     */
     findAndReplace(type) {
       findAndReplace(type)
     },
+    /**
+     * 转大小写
+     * @param type 1大写2小写
+     */
     caseTransformation(type) {
       caseTransformation(type)
     },
+    /**
+     * 注释选中行
+     */
     selectSqlNotes() {
       selectSqlNotes()
     },
+    /**
+     * 取消注释
+     */
     selectSqlCancelNotes() {
       selectSqlCancelNotes()
     },
+    /**
+     * 获取保存的对象
+     * @returns {{arr: *[], flag: (jQuery|string|undefined|*), InfoFlag: jQuery, outColumn: jQuery, flag2: (jQuery|string|undefined), sql: *}}
+     */
     getSaveInfo() {
       if (!this.isAllExecute) {
         this.$message({ type: 'info', message: '全部执行才可以保存!' })
@@ -418,22 +450,22 @@ export default {
       returnObj.modelType = 1
       return returnObj
     },
+    /**
+     * 生成select语句
+     */
     getSelectSql(menuId) {
       getSelectSql(menuId)
     },
+    /**
+     *打开sql保存草稿窗体
+     */
     openSaveSqlDialog(type) {
       if (type == 1) {
         // 如果对象是旧的对象则证明是打开的sql草稿 因此直接保存  否则直接修改
         const sqlObj = getSaveSqlDraftObj(type)
         const sql = sqlObj.draftSql
         if (sql === '') {
-          this.$notify({
-            title: '提示',
-            message: '请输入sql语句',
-            type: 'info',
-            duration: 2000,
-            position: 'bottom-right'
-          })
+          this.$message({ type: 'info', message: '请输入sql语句!' })
           return
         } else {
           if (!sqlObj.isOld) {
@@ -464,6 +496,9 @@ export default {
         this.sqlDraftDialogFormVisible = true
       }
     },
+    /**
+     *保存sql草稿
+     */
     saveSqlDialog() {
       let verResult = false
       this.$refs['sqlDraftForm'].validate((valid) => {
@@ -493,6 +528,7 @@ export default {
               paramJson: ''
             }
           } else {
+
             this.$notify({
               title: '提示',
               message: '保存失败',
@@ -504,9 +540,15 @@ export default {
         })
       }
     },
+    /**
+     *打开sql草稿列表
+     */
     openSqlDraftList() {
       this.sqlDraftDialog = true
     },
+    /**
+     * 使用sql
+     */
     useSql() {
       const returnObj = this.$refs.sqlDraftList.getSelectRow()
       if (returnObj.verify) {
@@ -522,6 +564,9 @@ export default {
         return
       }
     },
+    /**
+     * 执行sql
+     */
     executeSQL() {
       const result = getSql()
       if (result.sql === '') {
@@ -557,6 +602,9 @@ export default {
         }
       })
     },
+    /**
+     * 打开参数渲染窗体
+     */
     openParamDraw(data) {
       this.dialogFormVisible = true
       this.paramDrawLoading = true
@@ -663,6 +711,7 @@ export default {
   overflow: hidden;
   background: #c0c5d4;
   cursor: w-resize;
+  display: none;
 }
 
 #horizontal {
@@ -724,8 +773,8 @@ export default {
 
 .left-part{
   overflow: auto;
-  height: 100vh;
   width: 16.66666667%;
   float: left;
+  height: 89vh;
 }
 </style>
