@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import { getBylist, createDir, deleteFile } from '@/api/etlscheduler/filehdfs'
+import { getBylist, createDir, deleteFile } from '@/api/etlscheduler/filemanger'
 import QueryField from '@/components/Ace/query-field/index'
 
 export default {
