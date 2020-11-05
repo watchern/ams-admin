@@ -40,6 +40,14 @@ export function del(data) {
   })
 }
 
+export function getTransMap(ids) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/getTransMap/${ids}`,
+    method: 'post'
+  })
+}
+
 export function selectOne(data) {
   return request({
     baseURL: baseURL,
