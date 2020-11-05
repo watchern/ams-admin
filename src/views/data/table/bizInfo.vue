@@ -42,79 +42,18 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column prop="bizAttrUuid" label="转码规则" width="260px">
+            <el-table-column prop="transRuleUuid" label="转码规则" width="260px">
               <template slot-scope="scope">
-                <el-select ref="transRuleUuid" v-model="scope.row.transRuleUuid" style="width:90%" filterable placeholder="请选择转码规则">
-                  <el-option
-                    v-for="item in transJson"
-                    :key="item.transRuleUuid"
-                    :label="item.ruleName"
-                    :value="item.transRuleUuid"
-                  >
-                    <span v-text="item.ruleName" />
-                    <el-button style="float:right" type="primary" size="mini" @click="seleteTransCode(item.transRuleUuid)">查看</el-button>
-                  </el-option>
-                </el-select>
+                <SelectTransCode
+                  ref="SelectTransCode"
+                  :trans-uuid.sync="scope.row.transRuleUuid"
+                />
               </template>
             </el-table-column>
           </el-table>
         </el-form>
         <el-button type="primary" style="float:right;margin-top:20px" @click="saveTable()">保存</el-button>
       </div>
-      <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-        <div class="detail-form">
-          <el-form
-            ref="dataForm"
-            :model="tempRule"
-            label-position="right"
-            style="width: 700px;"
-          >
-            <el-form-item label="规则名称" prop="ruleName">
-              <el-input v-model="tempRule.ruleName" readonly />
-            </el-form-item>
-            <el-form-item label="规则描述" prop="ruleDesc">
-              <el-input v-model="tempRule.ruleDesc" readonly />
-            </el-form-item>
-            <el-form-item label="转码方式" prop="ruleType">
-              <el-input v-model="tempRule.ruleType" readonly />
-            </el-form-item>
-            <el-form-item v-if="isSql" label="转码规则" prop="sqlContent">
-              <el-input v-model="tempRule.sqlContent" readonly />
-            </el-form-item>
-            <el-row v-if="isSql">
-              <el-col :span="12">
-                <el-form-item label="真实值" prop="sceneName" label-width="150px">
-                  <el-input v-model="tempRule.sceneName" readonly class="input" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="业务属性编码" prop="sceneCode" label-width="150px">
-                  <el-input v-model="tempRule.sceneCode" readonly class="input" />
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-table v-if="!isSql" :data="tempRule.transColRels" height="200">
-              <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>
-                <template slot-scope="scope" show-overflow-tooltip>
-                  <el-tooltip :disabled="scope.row.codeValue.length < 12" effect="dark" :content="scope.row.codeValue" placement="top">
-                    <el-input v-model="scope.row.codeValue" readonly style="width:90%;" />
-                  </el-tooltip>
-                </template>
-              </el-table-column>
-              <el-table-column prop="transValue" label="显示值" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  <el-tooltip :disabled="scope.row.transValue.length < 10" effect="dark" :content="scope.row.transValue" placement="top">
-                    <el-input v-model="scope.row.transValue" readonly style="width:90%;" />
-                  </el-tooltip>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-form>
-        </div>
-        <div slot="footer">
-          <el-button type="primary" @click="dialogFormVisible = false">关闭</el-button>
-        </div>
-      </el-dialog>
     </div>
   </div>
 </template>
@@ -122,16 +61,20 @@
 <script>
 import { getTableCol, getTableInfo, saveTableInfo } from '@/api/data/table-info'
 import { listByPage } from '@/api/data/biz-attr'
-import { seleteCodeAll, selectById } from '@/api/data/transCode'
+import SelectTransCode from '@/views/data/table/transCodeSelect'
+import { selectCodeAll, selectById } from '@/api/data/transCode'
 export default {
+  components: { SelectTransCode },
   data() {
     return {
       isShow: false,
       tableKey: 'bizAttrUuid',
       isSql: false,
+      transRuleId: '',
       list: null,
       readonly: true,
       total: 0,
+      transRuleUuid: '',
       dialogStatus: '',
       textMap: {
         select: '查看数据转码信息'
@@ -161,7 +104,7 @@ export default {
       listByPage(this.pageQuery).then(resp => {
         this.bizJson = resp.data.records
       })
-      seleteCodeAll(this.pageQuery).then(resp => {
+      selectCodeAll(this.pageQuery).then(resp => {
         this.transJson = resp.data.records
       })
       this.isShow = true
@@ -190,7 +133,11 @@ export default {
         }
       })
     },
+    setTransId(childData) {
+      this.temp.colMetas.transRuleId = childData
+    },
     saveTable() {
+      console.log(this.temp)
       saveTableInfo(this.temp).then(() => {
         this.$notify({
           title: '成功',
