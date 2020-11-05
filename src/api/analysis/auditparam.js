@@ -20,6 +20,8 @@ var tabsigns = 0
 
 var overallParmaobj = {}
 
+var overallParmaobjc = {}
+
 /**
  * 初始化图标
  */
@@ -456,7 +458,12 @@ var replaceSql = '' // 待替换的SQL语句（含参数）
  *  }
  * @author 梁瑞
  */
-export function initParamHtml(sql, paramsArr, name) {
+export function initParamHtml(sql, paramsArr, name, id) {
+  var paramObj = {
+    'sql': sql,
+    'paramsArr': paramsArr
+  }
+  overallParmaobj[id] = paramObj
   replaceSql = sql
   $('#accordion').find('a').html(name)
   try {
@@ -541,7 +548,7 @@ export function initcrossrangeParamHtml(sql, paramsArr, name, id) {
     'sql': sql,
     'paramsArr': paramsArr
   }
-  overallParmaobj[id] = paramObj
+  overallParmaobjc[id] = paramObj
   replaceSql = sql
   $('#accordion').find('a').html(name)
   try {
@@ -1625,7 +1632,7 @@ function matchingPcRelation(dataArr) {
 /**
  * 替换节点的参数
  */
-export function replaceNodeParam() {
+export function replaceNodeParam(modelid) {
   var returnObj = {
     'verify': true, // 校验是否通过
     'message': '', // 提示信息
@@ -1637,7 +1644,7 @@ export function replaceNodeParam() {
   var paramNum = 0 // 记录参数不允许为空却未输入值的参数数量
   var hasAllowedNullParam = false; // 本次设置是否含有可为空的参数条件
   // 获取参数查询条件（文本框）
-  ($('#paramCom').find('.paramOption')).each(function () {
+  ($('#' + modelid).find('.paramOption')).each(function () {
     var moduleParamId = $(this).attr('data-id') // 母参数ID
     var paramName = $(this).attr('data-name') // 母参数名称
     var allowedNull = typeof $(this).attr('data-allowedNull') !== 'undefined' ? $(this).attr('data-allowedNull') : '1' // 是否允许为空，当为undefined时默认为可为空
@@ -1668,7 +1675,7 @@ export function replaceNodeParam() {
     }
   });
   // 获取参数查询条件（下拉列表）
-  ($('#paramCom').find('.selectParam')).each(function (i, v) {
+  ($('#' + modelid).find('.selectParam')).each(function (i, v) {
     var moduleParamId = $(this).attr('data-id') // 母参数ID
     var paramName = $(this).attr('data-name') // 母参数名称
     var allowedNull = typeof $(this).attr('data-allowedNull') !== 'undefined' ? $(this).attr('data-allowedNull') : '1' // 是否允许为空，当为undefined时默认为可为空
@@ -1719,7 +1726,7 @@ export function replaceNodeParam() {
   });
 
   // 获取参数查询条件（下拉树）
-  ($('#paramCom').find('.selectTreeParam')).each(function (i, v) {
+  ($('#' + modelid).find('.selectTreeParam')).each(function (i, v) {
     var moduleParamId = $(this).attr('data-id') // 母参数ID
     var paramName = $(this).attr('data-name') // 母参数名称
     var allowedNull = typeof $(this).attr('data-allowedNull') !== 'undefined' ? $(this).attr('data-allowedNull') : '1' // 是否允许为空，当为undefined时默认为可为空
@@ -1785,28 +1792,30 @@ export function replaceNodeParam() {
         return false
       }
     })
+    var replaceSql1 = overallParmaobj[modelId].sql
+    var arr1 = overallParmaobj[modelId].paramsArr
     if (returnObj.verify) {
       if (hasAllowedNullParam) { // 如果存在可为空的参数并且为空值，走后台进行空参替换
-        replaceModelSqlByParams(replaceSql, JSON.stringify(arr)).then(e => {
+        replaceModelSqlByParams(replaceSql1, JSON.stringify(arr)).then(e => {
           if (e.isError) { // 出错后replaceSql的值会在后台置为空
             returnObj.verify = false
             returnObj.message = '替换空值参数时出错'
           }
-          replaceSql = e.data.sql
+          replaceSql1 = e.data.sql
         })
       }
-      if (replaceSql !== '') {
+      if (replaceSql1 !== '') {
         // 替换参数SQL中的ID（多值怎么替换？）
         for (var j = 0; j < filterArr.length; j++) { // 遍历所有母参数信息
           var moduleParamId = filterArr[j].moduleParamId
           var paramId = ''
-          for (var k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数
-            if (arr[k].moduleParamId === moduleParamId) {
-              replaceSql = replaceSql.replace(arr[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
+          for (var k = 0; k < arr1.length; k++) { // 遍历当前节点绑定的参数
+            if (arr1[k].moduleParamId === moduleParamId) {
+              replaceSql1 = replaceSql1.replace(arr1[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
             }
           }
         }
-        returnObj.sql = replaceSql
+        returnObj.sql = replaceSql1
         returnObj.paramsArr = filterArr
       }
     }
@@ -1978,8 +1987,8 @@ export function replaceCrossrangeNodeParam(modelId) {
         return false
       }
     })
-    var replaceSql1 = overallParmaobj[modelId].sql
-    var arr1 = overallParmaobj[modelId].paramsArr
+    var replaceSql1 = overallParmaobjc[modelId].sql
+    var arr1 = overallParmaobjc[modelId].paramsArr
     if (returnObj.verify) {
       if (hasAllowedNullParam) { // 如果存在可为空的参数并且为空值，走后台进行空参替换
         replaceModelSqlByParams(replaceSql1, JSON.stringify(arr)).then(e => {
