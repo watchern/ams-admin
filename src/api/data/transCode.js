@@ -49,7 +49,7 @@ export function selectOne(data) {
   })
 }
 
-export function seleteCodeAll(data) {
+export function selectCodeAll(data) {
   return request({
     baseURL: baseURL,
     url: '/transRule/listByPage',
