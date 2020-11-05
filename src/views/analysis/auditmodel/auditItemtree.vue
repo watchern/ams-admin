@@ -1,18 +1,18 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" style="height: 500px;overflow-y: scroll">
     <el-input
       v-model="filterText1"
       placeholder="输入关键字进行过滤"
     />
     <MyElTree
       ref="tree1"
+      v-loading="treeLoading"
       :props="props"
       class="filter-tree"
       :highlight-current="true"
       :data="treeData1"
       :filter-node-method="filterNode"
       node-key="id"
-      @node-click="nodeClick"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
@@ -27,15 +27,9 @@
 
 <script>
 import MyElTree from '@/components/Ace/tree/src/tree.vue'
-import { getResELTree, getResByRole, getRoleCols, saveRoleTable } from '@/api/data/table-info'
-import { commonNotify } from '@/utils'
-
+import { getAuditItem } from '@/api/analysis/auditmodel'
 export default {
   components: { MyElTree },
-  props:{
-    dataUserId: String,
-    sceneCode: String
-  },
   data() {
     return {
       filterText1: null,
@@ -50,7 +44,8 @@ export default {
         orderNum: 0,
         fullPath: null
       },
-      treeData1: []
+      treeData1: [],
+      treeLoading: true
     }
   },
   computed: {
@@ -61,11 +56,9 @@ export default {
     }
   },
   created() {
-    getResELTree({
-      dataUserId: this.dataUserId,
-      sceneCode: this.sceneCode
-    }).then(resp => {
+    getAuditItem().then(resp => {
       this.treeData1 = resp.data
+      this.treeLoading = false
     })
   },
   methods: {
@@ -75,9 +68,6 @@ export default {
     },
     getTree() {
       return this.$refs.tree1
-    },
-    nodeClick(data, node, tree) {
-      this.$emit('node-click', data, node, tree)
     }
   } // 注册
 }
@@ -85,22 +75,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .filter-tree {
-    margin-top: 20px;
-  }
-  .dialog-bottom-btns{
+.filter-tree {
+  margin-top: 20px;
+}
+.dialog-bottom-btns{
 
-  }
-  .transfer-center-item{
-    width: 40px;
-    margin: 2px
-  }
-  .page-container .left-tree{
-    height: 80vh;
-    overflow: scroll;
-  }
-  .bottom-btn{
-    float: right;
-    padding-right: 100px
-  }
+}
+.transfer-center-item{
+  width: 40px;
+  margin: 2px
+}
+.page-container .left-tree{
+  height: 80vh;
+  overflow: scroll;
+}
+.bottom-btn{
+  float: right;
+  padding-right: 100px
+}
 </style>

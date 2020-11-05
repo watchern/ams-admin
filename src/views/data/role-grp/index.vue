@@ -1,60 +1,94 @@
 <template>
   <div class="page-container">
     <el-row :gutter="5">
-      <el-select v-model="currentScene" placeholder="请选择">
-        <el-option
-          v-for="scene in allScene"
-          :key="scene.sceneUuid"
-          :label="scene.sceneName"
-          :value="scene"
-        />
-      </el-select>
-      <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane v-for="grp in currentScene.groups" :label="grp.grpName" :name="grp.grpCode">
-          <MyElTree
-            ref="tree1"
-            v-loading="treeLoading"
-            :props="props"
-            class="filter-tree"
-            :highlight-current="true"
-            :data="treeData"
-            node-key="id"
-            :filter-node-method="filterNode"
-          >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
-              <span :title="node.name">{{ node.label }}</span>
-            </span>
-          </MyElTree>
-        </el-tab-pane>
-      </el-tabs>
-
-      <el-col :span="6" class="left-tree" />
-
       <el-col :span="8">
+        <el-select v-model="currentScene" placeholder="请选择">
+          <el-option
+            v-for="scene in allScene"
+            :key="scene.sceneUuid"
+            :label="scene.sceneName"
+            :value="scene"
+          />
+        </el-select>
+        <el-tabs v-model="grpUuid" @tab-click="tabClick">
+          <el-tab-pane v-for="grp in currentScene.groups" :key="grp.sceneGrpUuid" :label="grp.grpName" :name="grp.sceneGrpUuid">
+            <el-input
+              v-model="filterText1"
+              placeholder="输入关键字进行过滤"
+            />
+            <MyElTree
+              :ref="'A'+grp.sceneGrpUuid"
+              v-loading="treeLoading"
+              :props="props"
+              class="filter-tree left-tree"
+              :highlight-current="true"
+              :data="currentTreeData"
+              node-key="id"
+              :filter-node-method="filterNode"
+              show-checkbox
+            >
+              <span slot-scope="{ node, data }" class="custom-tree-node">
+                <span :title="node.name">{{ node.label }}</span>
+              </span>
+            </MyElTree>
+          </el-tab-pane>
+        </el-tabs>
+      </el-col>
+
+      <el-col :span="2" style="width: 45px; padding-top: 10%">
+        <div class="transfer-center">
+          <p class="transfer-center-item">
+            <el-button
+              type="primary"
+              icon="el-icon-arrow-right"
+              circle
+              @click="addGrp"
+            />
+          </p>
+        </div>
+      </el-col>
+
+      <el-col :span="15">
         <div>已选择的用户组</div>
         <el-button @click="setExpireDate">设置使用期限</el-button>
+        <el-button @click="removeGrp">删除</el-button>
         <el-table
           key="colMetaUuid"
           v-loading="listLoading"
-          :data="currentData.cols"
+          :data="tableData"
           border
           fit
           highlight-current-row
           style="width: 100%;"
+          @selection-change="handleSelectionChange"
         >
-          <el-table-column width="55">
+          <el-table-column width="55" type="selection" />
+          <el-table-column label="类型" width="150px" align="center" prop="userType">
             <template slot-scope="scope">
-              <el-checkbox v-model="scope.row.selected" />
+              {{ scope.row.userType == 1 ? '用户组':'用户' }}
             </template>
           </el-table-column>
-          <el-table-column label="列名" width="200px" align="center" prop="colName" />
-          <el-table-column label="别名" width="200px" align="center" prop="chnName" />
-          <el-table-column label="加密策略" width="150px" align="center" prop="encryptType" />
+          <el-table-column label="名称" width="200px" align="center" prop="userName" />
+          <el-table-column label="使用期限" width="200px" align="center">
+            <template slot-scope="scope">
+              <span v-if="scope.row.startTime==null && scope.row.endTime==null">无限制</span>
+              <span v-else>
+                {{ scope.row.startTime==null?' - ':scope.row.startTime }} 至
+                {{ scope.row.endTime==null?' - ':scope.row.endTime }}
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column label="授权时间" width="150px" align="center" prop="createTime" />
+          <!--<el-table-column label="操作" width="150px" align="center">
+            <template slot-scope="scope">
+              <el-button @click="removeGrp(scope)">删除</el-button>
+            </template>
+          </el-table-column>-->
         </el-table>
       </el-col>
     </el-row>
     <div class="bottom-btn">
-      <el-button @click="save">保存</el-button>
+      <el-button @click="saveRoleGrp">保存</el-button>
       <el-button @click="goBack">返回</el-button>
     </div>
   </div>
@@ -62,7 +96,8 @@
 
 <script>
 import MyElTree from '@/components/Ace/tree/src/tree.vue'
-import { getResELTree, getResByRole, getRoleCols, saveRoleTable } from '@/api/data/table-info'
+import { getAllScene, initSceneTree } from '@/api/data/scene'
+import { saveRoleGrp, getRoleGrp } from '@/api/data/role'
 import { commonNotify } from '@/utils'
 
 export default {
@@ -72,17 +107,24 @@ export default {
       roleUuid: this.$route.params.roleUuid,
       allScene: [],
       currentScene: {},
-      activeName: '',
+      treeLoading: false,
+      grpUuid: '',
+      filterText1: null,
       treeData: {},
       listLoading: false,
       props: {
         label: 'label',
         isLeaf: 'leaf'
       },
-      selectedData: []
+      userMap: {},
+      tableData: [],
+      selections: []
     }
   },
   computed: {
+    currentTreeData() {
+      return this.treeData['A' + this.grpUuid]
+    }
   },
   watch: {
     filterText1(val) {
@@ -93,10 +135,12 @@ export default {
     }
   },
   created() {
-    this.treeLoading = true
-    getResELTree(0, '').then(resp => {
-      this.treeData1 = resp.data
-      this.treeLoading = false
+    getAllScene().then(resp => {
+      this.allScene = resp.data
+      if (this.allScene.length > 0) this.currentScene = this.allScene[0]
+    })
+    getRoleGrp(this.roleUuid).then(resp => {
+      this.tableData = resp.data
     })
   },
   methods: {
@@ -104,92 +148,84 @@ export default {
       if (!value) return true
       return data.label.indexOf(value) !== -1
     },
-    addRoleTable() {
-      var ckTbs = this.$refs.tree1.getCheckedNodes(false, true)
-      ckTbs.forEach((item) => {
-        var pathArr = this.$refs.tree1.getNodePath(item)
-        var current = this.treeData2[0].children
-        for (var i = 0; i < pathArr.length; i++) {
-          var path = pathArr[i]
-          var nextNodes = current.filter((value, index) => { return value.id === path.id })
-          if (nextNodes.length === 0) {
-            var assPath = Object.assign({}, path)
-            assPath.children = []
-            current.push(assPath)
-            current = assPath.children
-          } else {
-            current = nextNodes[0].children
-          }
-        }
-      })
-    },
-    setExpireDate() {
-
-    },
-    /* 点击角色数据 展示列和wherestr */
-    onclick2(node, data) {
-      if (node.data.type === 'table') {
-        if (node.data.cols) {
-          this.currentData = node.data
-        } else {
-          this.listLoading = true
-          getRoleCols(this.roleUuid, node.data.id).then(resp => {
-            this.listLoading = false
-            node.data.cols = resp.data
-            this.currentData = node.data
-            // if(!this.currentData.extMap) this.$set(this.currentData, 'extMap', null);
-            this.currentData.cols.forEach(d => {
-              this.$set(d, 'selected', d.roleCol !== null)
-            })
+    addGrp() {
+      console.log(this.grpUuid)
+      var nodes = this.$refs['A' + this.grpUuid][0].getCheckedNodes()
+      nodes.forEach(node => {
+        console.log(node)
+        if (this.tableData.filter(data => {
+          return data.userName === node.label
+        }).length === 0) {
+          this.tableData.push({
+            dataRoleUuid: this.roleUuid,
+            sceneGrpUuid: this.grpUuid,
+            userName: node.label,
+            userType: node.type,
+            grpInstUuid: node.type == 1 ? node.id : 'null',
+            unitUuid: node.type == 2 ? node.id : 'null',
+            valid: 1,
+            startTime: null,
+            endTime: null
           })
         }
-      } else if (node.data.type === 'folder') {
-        this.currentData = node.data
+      })
+      console.log(this.tableData)
+    },
+
+    saveRoleGrp() {
+      this.listLoading = true
+      saveRoleGrp(this.roleUuid, this.tableData).then(resp => {
+        this.listLoading = false
+        this.$notify(commonNotify({ type: 'success', message: '保存成功！' }))
+      })
+    },
+
+    removeGrp() {
+      var map = {}
+      this.selections.forEach(sel => {
+        map[sel.userType + sel.grpInstUuid + sel.unitUuid] = sel
+      })
+      for (var index = 0; index < this.tableData.length;) {
+        var value = this.tableData[index]
+        if (map[value.userType + value.grpInstUuid + value.unitUuid]) {
+          this.tableData.splice(index, 1)
+        } else {
+          index++
+        }
       }
     },
 
-    save() {
-      const loading = this.$loading({
-        lock: true,
-        text: 'Loading',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-      })
-      var allNodes = this.$refs.tree2.getAllNodes()
-      var folders = []
-      var tables = []
-      var cols = []
-      console.log(this.roleUuid)
-      allNodes.forEach(node => {
-        var data = node.data
-        if (data.type === 'folder') {
-          folders.push({
-            dataRoleUuid: this.roleUuid,
-            folderUuid: data.id,
-            accessType: data.extMap.accessType
-          })
-        } else if (data.type === 'table') {
-          tables.push({
-            dataRoleUuid: this.roleUuid,
-            tableMetaUuid: data.id,
-            whereStr: data.extMap.whereStr
-          })
-          if (data.cols) {
-            data.cols.forEach(col => {
-              if (col.selected) {
-                cols.push({
-                  colMetaUuid: col.colMetaUuid,
-                  dataRoleUuid: this.roleUuid
-                })
-              }
-            })
-          }
-        }
-      })
-      saveRoleTable(this.roleUuid, folders, tables, cols).then(() => {
-        loading.close()
-      })
+    /* setUserMap(roleGrps){
+      roleGrps.forEach(sel=>{
+        this.userMap[sel.userType+sel.grpInstUuid+sel.unitUuid] = sel;
+      });
+      return map;
     },
+    getByUserMap(grp){
+      return this.userMap[grp.userType+grp.grpInstUuid+grp.unitUuid];
+    },*/
+
+    setExpireDate() {
+
+    },
+
+    tabClick(tab, event) {
+      if (!this.currentTreeData) {
+        var grpUuid = tab.paneName
+        this.treeLoading = true
+        initSceneTree(grpUuid).then(resp => {
+          this.treeLoading = false
+          console.log(resp)
+          this.$set(this.treeData, 'A' + this.grpUuid, resp.data)
+        })
+      }
+    },
+
+    handleSelectionChange(val) {
+      console.log(val)
+      this.selections = val
+    },
+
     goBack() {
       this.$router.go(-1)
     }
@@ -211,7 +247,7 @@ export default {
     margin: 2px
   }
   .page-container .left-tree{
-    height: 80vh;
+    height: 70vh;
     overflow: scroll;
   }
   .bottom-btn{
