@@ -1792,8 +1792,8 @@ export function replaceNodeParam(modelid) {
         return false
       }
     })
-    var replaceSql1 = overallParmaobj[modelId].sql
-    var arr1 = overallParmaobj[modelId].paramsArr
+    var replaceSql1 = overallParmaobj[modelid].sql
+    var arr1 = overallParmaobj[modelid].paramsArr
     if (returnObj.verify) {
       if (hasAllowedNullParam) { // 如果存在可为空的参数并且为空值，走后台进行空参替换
         replaceModelSqlByParams(replaceSql1, JSON.stringify(arr)).then(e => {

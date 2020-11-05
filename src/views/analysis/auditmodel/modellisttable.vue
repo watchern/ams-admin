@@ -76,7 +76,7 @@
       </div>
     </el-dialog>
     <el-dialog title="请输入参数" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" :append-to-body="true">
-      <paramDraw ref="paramDrawRef"/>
+      <paramDraw ref="paramDrawRef" :myId="paramDrawUuid"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
         <el-button type="primary" @click="replaceNodeParam">确定</el-button>
@@ -142,6 +142,7 @@ export default {
       editableTabs:[],
       //已经正在预览的模型
       modelPreview:[],
+      paramDrawUuid:'',
       //记录模型是否首次运行  如果非首次运行则不重复加载参数
       modelRunTaskList:{},
       //参数输入界面
@@ -197,7 +198,7 @@ export default {
     dialogFormVisible(value){
       this.$nextTick(function(){
         if(value){
-          this.$refs.paramDrawRef.initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', null)
+          this.$refs.paramDrawRef.initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', this.paramDrawUuid)
         }
       })
     },
@@ -671,6 +672,8 @@ export default {
             this.currentPreviewModelParamAndSql.paramObj = paramObj
             this.currentPreviewModelParamAndSql.modelUuid = selectObj[0].modelUuid
             //展现参数输入界面
+            let timestamp = new Date().getTime()
+            this.paramDrawUuid = timestamp
             this.dialogFormVisible = true
           }
         } else {
@@ -724,7 +727,7 @@ export default {
      */
     replaceNodeParam() {
       var selectObj = this.$refs.modelListTable.selection
-      var obj = replaceNodeParam()
+      var obj = replaceNodeParam(this.paramDrawUuid)
       if (!obj.verify) {
         this.$message({ type: 'info', message: obj.message })
         return
