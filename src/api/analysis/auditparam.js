@@ -517,7 +517,7 @@ export function initParamHtml(sql, paramsArr, name, id) {
           // alertMsg("错误", message, "info");
         } else {
           // $(".panel-body").html(paramHtml);
-          $('#paramCom').html(paramHtml)
+          $('#'+id).html(paramHtml)
           initParamInputAndSelect()
         }
       }
