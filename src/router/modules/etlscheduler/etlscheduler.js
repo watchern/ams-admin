@@ -13,12 +13,12 @@ const etlschedulerRouter = {
     // {
     //   path: 'datasource/:id',
     //   name: 'datasource',
-    //   component: resolve => require(['@/views/modules/etlscheduler/workflow/details/index'], resolve),
+    //   component: resolve => require(['@/views/etlscheduler/workflow/details/index'], resolve),
     //   meta: { title: `流程定义详情` }
     // },
     {
       path: 'datasource',
-      component: () => import('@/views/modules/etlscheduler/datasource/index'),
+      component: () => import('@/views/etlscheduler/datasource/index'),
       name: 'datasource',
       meta: { title: 'datasource' }
     },
@@ -30,104 +30,116 @@ const etlschedulerRouter = {
     {
       path: 'paramfield',
       name: 'paramfield',
-      component: () => import('@/views/modules/etlscheduler/paramfield/index'),
+      component: () => import('@/views/etlscheduler/paramfield/index'),
       meta: { title: 'paramfield' }
     },
     {
       path: 'dataresource',
       name: 'dataresource',
-      component: () => import('@/views/modules/etlscheduler/dataresource/index'),
+      component: () => import('@/views/etlscheduler/dataresource/index'),
       meta: { title: 'dataresource' }
     },
     {
       path: 'processschedule',
       name: 'processschedule',
-      component: () => import('@/views/modules/etlscheduler/processschedule/index'),
+      component: () => import('@/views/etlscheduler/processschedule/index'),
       meta: { title: 'processschedule' }
     },
     {
       path: 'taskinstance',
       name: 'taskinstance',
-      component: () => import('@/views/modules/etlscheduler/taskinstance/index'),
+      component: () => import('@/views/etlscheduler/taskinstance/index'),
       meta: { title: 'taskinstance' }
     },
     {
       path: 'workflow',
       name: 'workflow',
-      component: () => import('@/views/modules/etlscheduler/workflow/index'),
+      component: () => import('@/views/etlscheduler/workflow/index'),
       meta: { title: 'workflow' }
     },
     {
       path: 'processdefinition',
       name: 'processdefinition',
-      component: () => import('@/views/modules/etlscheduler/processdefinition/index'),
+      component: () => import('@/views/etlscheduler/processdefinition/index'),
       meta: { title: 'processdefinition' }
     },
     {
       path: 'taskmonitor',
       name: 'taskmonitor',
-      component: () => import('@/views/modules/etlscheduler/taskmonitor/index'),
+      component: () => import('@/views/etlscheduler/taskmonitor/index'),
       meta: { title: 'taskmonitor' }
     },
     {
       path: 'servermonitor',
       name: 'servermonitor',
-      component: () => import('@/views/modules/etlscheduler/servermonitor/index'),
+      component: () => import('@/views/etlscheduler/servermonitor/index'),
       meta: { title: 'servermonitor' }
     },
     {
       path: 'dbmonitor',
       name: 'dbmonitor',
-      component: () => import('@/views/modules/etlscheduler/dbmonitor/index'),
+      component: () => import('@/views/etlscheduler/dbmonitor/index'),
       meta: { title: 'dbmonitor' }
     },
     {
       path: 'processinstance',
       name: 'processinstance',
-      component: () => import('@/views/modules/etlscheduler/processinstance/index'),
+      component: () => import('@/views/etlscheduler/processinstance/index'),
       meta: { title: 'processinstance' }
     },
     {
       path: 'taskinstance',
       name: 'taskinstance',
-      component: () => import('@/views/modules/etlscheduler/taskinstance/index'),
+      component: () => import('@/views/etlscheduler/taskinstance/index'),
       meta: { title: 'taskinstance' }
     },
     {
-      path: 'resourceStatistics',
-      name: 'resourceStatistics',
-      component: () => import('@/views/modules/etlscheduler/resourceStatistics/index'),
-      meta: { title: 'resourceStatistics' }
+      path: 'statistics',
+      name: 'statistics',
+      component: () => import('@/views/etlscheduler/statistics/index'),
+      meta: { title: 'statistics' }
+    },
+    {
+      path: 'resourcestatistics',
+      name: 'resourcestatistics',
+      component: () => import('@/views/etlscheduler/statistics/resourcestatistics/index'),
+      meta: { title: 'resourcestatistics' }
     },
     {
       path: 'etlconfigure',
       name: 'etlconfigure',
-      component: () => import('@/views/modules/etlscheduler/etlconfigure/index'),
+      component: () => import('@/views/etlscheduler/etlconfigure/index'),
       meta: { title: 'etlconfigure' }
     },
     {
     // 传递状态为1为查看，0为编辑
       path: 'definition/:id/:status',
       name: 'projects-definition-details',
-      component: resolve => require(['@/views/modules/etlscheduler/workflow/details/index'], resolve),
+      component: resolve => require(['@/views/etlscheduler/workflow/details/index'], resolve),
       meta: { title: `流程定义详情` }
     },
     {
-      path: 'dataFile',
-      name: 'dataFile',
-      component: () => import('@/views/modules/etlscheduler/dataFile/index'),
-      meta: { title: 'dataFile' }
+      path: 'datafile',
+      name: 'datafile',
+      component: () => import('@/views/etlscheduler/datafile/index'),
+      meta: { title: 'datafile' }
     },
     {
-      path: 'fileResource',
-      name: 'fileResource',
-      component: () => import('@/views/modules/etlscheduler/fileResource/index'),
-      meta: { title: 'fileResource' }
+      path: 'fileresource',
+      name: 'fileresource',
+      component: () => import('@/views/etlscheduler/fileresource/index'),
+      meta: { title: 'fileresource' }
+    },
+    {
+      path: 'filedirectory',
+      name: 'filedirectory',
+      component: () => import('@/views/etlscheduler/filedirectory/index'),
+      meta: { title: 'filedirectory' }
     },
     {
       path: '/resource/file/create',
       name: 'resource-file-create',
-      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/create/index'], resolve),
+      component: resolve => require(['@/views/etlscheduler/fileresource/pages/file/pages/create/index'], resolve),
       meta: {
         title: `创建文件`
       }
@@ -135,7 +147,7 @@ const etlschedulerRouter = {
     {
       path: '/resource/file/createFolder',
       name: 'resource-file-createFolder',
-      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/createFolder/index'], resolve),
+      component: resolve => require(['@/views/etlscheduler/fileresource/pages/file/pages/createFolder/index'], resolve),
       meta: {
         title: `创建文件夹`
       }
@@ -143,7 +155,7 @@ const etlschedulerRouter = {
     {
       path: '/resource/file/subFileFolder/:id',
       name: 'resource-file-subFileFolder',
-      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/subFileFolder/index'], resolve),
+      component: resolve => require(['@/views/etlscheduler/fileresource/pages/file/pages/subFileFolder/index'], resolve),
       meta: {
         title: `创建资源`
       }
@@ -151,7 +163,7 @@ const etlschedulerRouter = {
     {
       path: '/resource/file/subFile/:id',
       name: 'resource-file-subFile',
-      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/subFile/index'], resolve),
+      component: resolve => require(['@/views/etlscheduler/fileresource/pages/file/pages/subFile/index'], resolve),
       meta: {
         title: `创建资源`
       }
@@ -159,7 +171,7 @@ const etlschedulerRouter = {
     {
       path: '/resource/file/list/:id',
       name: 'resource-file-details',
-      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/details/index'], resolve),
+      component: resolve => require(['@/views/etlscheduler/fileresource/pages/file/pages/details/index'], resolve),
       meta: {
         title: `文件详情`
       }
@@ -167,7 +179,7 @@ const etlschedulerRouter = {
     {
       path: '/resource/file/subdirectory/:id',
       name: 'resource-file-subdirectory',
-      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/subdirectory/index'], resolve),
+      component: resolve => require(['@/views/etlscheduler/fileresource/pages/file/pages/subdirectory/index'], resolve),
       meta: {
         title: `文件管理`
       }
@@ -175,10 +187,16 @@ const etlschedulerRouter = {
     {
       path: '/resource/file/edit/:id',
       name: 'resource-file-edit',
-      component: resolve => require(['@/views/modules/etlscheduler/fileResource/pages/file/pages/edit/index'], resolve),
+      component: resolve => require(['@/views/etlscheduler/fileresource/pages/file/pages/edit/index'], resolve),
       meta: {
         title: `文件编辑`
       }
+    },
+    {
+      path: 'datafilestatistics',
+      name: 'datafilestatistics',
+      component: () => import('@/views/modules/etlscheduler/statistics/datafilestatistics/index'),
+      meta: { title: '上游数据文件统计' }
     }
   ]
 }
