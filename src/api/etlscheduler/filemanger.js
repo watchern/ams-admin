@@ -16,7 +16,7 @@ export function getBylist(data) {
 export function createDir(data) {
   return request({
     baseURL: baseURL,
-    url: `/fileHdfs/createDir`,
+    url: `/fileManger/createDir`,
     method: 'put',
     data
   })
@@ -26,7 +26,7 @@ export function createDir(data) {
 export function deleteFile(data) {
   return request({
     baseURL: baseURL,
-    url: `/fileHdfs/deleteFile`,
+    url: `/fileManger/deleteFile`,
     method: 'put',
     data
   })

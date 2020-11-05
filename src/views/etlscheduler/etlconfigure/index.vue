@@ -5,9 +5,9 @@
     <el-tab-pane label="数据资源管理"><etl-data-resource /></el-tab-pane>
     <el-tab-pane label="服务器管理">服务器管理</el-tab-pane>
     <el-tab-pane label="文件上传"><etl-file-upload /></el-tab-pane>
-    <el-tab-pane label="文件管理"><etl-file-resource /></el-tab-pane>
-    <el-tab-pane label="hdfs文件管理"><etl-file-hdfs /></el-tab-pane>
-    <el-tab-pane label="上游系统文件统计"><etl-data-file-statistics/></el-tab-pane>
+    <el-tab-pane label="hdfs文件管理"><etl-file-resource /></el-tab-pane>
+    <el-tab-pane label="文件管理"><etl-file-manger /></el-tab-pane>
+    <el-tab-pane label="上游系统文件统计"><etl-data-file-statistics /></el-tab-pane>
   </el-tabs>
 </template>
 <script>
@@ -16,10 +16,10 @@ import etlDataSource from '@/views/etlscheduler/datasource'
 import etlFileDirectory from '@/views/etlscheduler/filedirectory'
 import etlFileResource from '@/views/etlscheduler/fileresource'
 import etlFileUpload from '@/views/etlscheduler/upload'
-import etlFileHdfs from '@/views/etlscheduler/filehdfs'
+import etlFileManger from '@/views/etlscheduler/filemanger'
 import etlDataFileStatistics from '@/views/etlscheduler/statistics/datafilestatistics'
 export default {
-  components: { etlDataResource, etlDataSource, etlFileDirectory, etlFileUpload, etlFileResource, etlFileHdfs, etlDataFileStatistics }
+  components: { etlDataResource, etlDataSource, etlFileDirectory, etlFileUpload, etlFileResource, etlFileManger, etlDataFileStatistics }
 }
 </script>
 <style>
