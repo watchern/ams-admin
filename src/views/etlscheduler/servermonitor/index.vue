@@ -10,13 +10,12 @@
   </div>
 </template>
 <script>
-import mSecondaryMenu from '@/components/etl/secondaryMenu/secondaryMenu'
 import mMaster from './pages/servers/master'
 import mWork from './pages/servers/worker'
 import mZookeeper from './pages/servers/zookeeper'
 export default {
   name: 'MonitorIndex',
-  components: { mSecondaryMenu, mWork, mMaster, mZookeeper },
+  components: { mWork, mMaster, mZookeeper },
   mounted() {
     this.$modal.destroy()
   }

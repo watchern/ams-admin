@@ -49,9 +49,8 @@
         prop="scheduleName"
       >
         <template slot-scope="scope">
-          <a class="buttonText" @click="findSchedule(scope.row)">{{
-            scope.row.scheduleName
-          }}</a>
+          <a class="buttonText" @click="findSchedule(scope.row)">
+            {{scope.row.scheduleName}}</a>
         </template>
       </el-table-column>
       <el-table-column
@@ -906,7 +905,13 @@ export default {
       })
       getByScheduleId(this.temp.processSchedulesUuid).then((resp) => {
         this.dependTaskList = resp.data.dependTaskInfoList
+        if (this.dependTaskList === null) {
+          this.dependTaskList = []
+        }
         this.paramList = resp.data.taskParamsList
+        if (this.paramList === null) {
+          this.paramList = []
+        }
         //  去重
         const resmap = new Map()
         this.distinctParamList = this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))

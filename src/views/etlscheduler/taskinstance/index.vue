@@ -32,15 +32,15 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p style="text-align:center" :style="{color: statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].color}"><strong>{{ statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].name }}</strong></p>
+            <p style="text-align:center" :style="{color: statusList[(scope.row.status | statusFilter)].color}"><strong>{{ statusList[(scope.row.status | statusFilter)].name }}</strong></p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色 -->
                   <i
-                    :class="statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].unicode"
-                    :style="{color: statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].color}"
+                    :class="statusList[(scope.row.status | statusFilter)].unicode"
+                    :style="{color: statusList[(scope.row.status | statusFilter)].color}"
                     style="font-size:25px;font-weight:bold"
                   />
                 </a>
@@ -142,7 +142,7 @@
             v-for="log in logs[task.taskCode]"
             :key="log.taskLogUuid"
             :label="log.taskLogUuid"
-            :style="{color: logColorList[log.status===null ? 1 : (log.status | colorFilter)-1].color}"
+            :style="{color: logColorList[(log.status | colorFilter)-1].color}"
           >
             {{ log.logTime +' '+ log.logMessage }}
           </el-col>
@@ -277,7 +277,6 @@ export default {
     //   status: JSON.stringify(this.$route.query.stateType)
     // }
     // console.log(condition)
-
     if (this.$route.params instanceof Object) {
       this.queryDefault = this.$route.params
     }
@@ -291,10 +290,20 @@ export default {
   methods: {
     // 根据状态查找该状态在数据中的下标
     statusFilter(value) {
-      return (statusListComm || []).findIndex((item) => item.value === value)
+      if (value == null || value.trim() === '') {
+        return this.statusList.length
+      }
+      return (this.statusList || []).findIndex((item) => item.value === value)
     },
     colorFilter(value) {
+      if (value == null || value.trim() === '') {
+        return colorList.length
+      }
       return (colorList || []).findIndex((item) => item.value === value)
+      // if (!index2 || index2 === null || index2 < 0) {
+      //   return colorList.length - 1
+      // }
+      // return index2 - 1
     },
     getList(query) {
       this.listLoading = true
