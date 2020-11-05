@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.3.0.RELEASE</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
+  <groupId>com.icss.ams</groupId>
+  <artifactId>ams-admin</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>${artifactId}</name>
+  <packaging>pom</packaging>
+  <description>ams-admin project for microservice</description>
+
+  <properties>
+    <ams-starflow.version>0.0.1-SNAPSHOT</ams-starflow.version>
+    <java.version>1.8</java.version>
+    <spring-cloud.version>Hoxton.SR5</spring-cloud.version>
+    <spring-cloud-config.version>2.2.3.RELEASE</spring-cloud-config.version>
+    <spring-cloud-netflix.version>2.2.3.RELEASE</spring-cloud-netflix.version>
+    <spring-cloud-security.version>2.2.2.RELEASE</spring-cloud-security.version>
+    <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <ams-r1.version>0.0.1-SNAPSHOT</ams-r1.version>
+    <hadoop.version>2.7.3</hadoop.version>
+    <commons.collections4.version>4.1</commons.collections4.version>
+    <mysql.connector.version>5.1.34</mysql.connector.version>
+    <lombok.version>1.18.12</lombok.version>
+    <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
+    <swagger-spring-boot-starter.version>1.9.1.RELEASE</swagger-spring-boot-starter.version>
+    <icss-ro.version>4.2</icss-ro.version>
+    <icss-rocore.version>4.2</icss-rocore.version>
+    <commons-io.version>2.6</commons-io.version>
+    <commons-fileupload.version>1.4</commons-fileupload.version>
+    <commons-lang3.version>3.8</commons-lang3.version>
+    <commons-lang.version>2.6</commons-lang.version>
+    <poi.version>4.0.0</poi.version>
+    <druid.version>1.0.18</druid.version>
+    <dynamic-datasource-spring-boot-starter.version>3.2.0</dynamic-datasource-spring-boot-starter.version>
+    <starflow.version>4.1.boe</starflow.version>
+    <ojdbc.version>19.3.0.0</ojdbc.version>
+    <pagehelper-spring-boot-starter.version>1.3.0</pagehelper-spring-boot-starter.version>
+    <mybatis-plus.version>3.4.0</mybatis-plus.version>
+  </properties>
+
+</project>

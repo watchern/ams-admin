@@ -1,5 +1,5 @@
 import echarts from 'echarts'
-export default function (value) {
+export default function(value) {
   return {
     series: [
       {

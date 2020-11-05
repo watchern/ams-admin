@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -31,7 +31,7 @@
       <el-table-column label="授权方式" width="200px" align="center" prop="authenType" :formatter="formatAuthenType" />
       <el-table-column label="数据筛选器状态" style="width: 200px">
         <template slot-scope="scope">
-          <a @click="openFilterPanel(scope.row.dataRoleUuid)">{{ allFilters.length }}</a>
+          <el-button type="primary" icon="el-icon-search" @click="openFilterPanel(scope.row.dataRoleUuid)">查看</el-button>
         </template>
       </el-table-column>
       <el-table-column label="数据有效期" prop="timeDuring" :formatter="formatDuring" style="width : 400px" />
@@ -98,7 +98,7 @@
       <div class="detail-form">
         <el-form>
           <el-form-item>
-            <el-checkbox v-for="(filter, index) in allFilters" v-model="filter.roleUuid" :label="filter.filterName" />
+            <el-checkbox v-for="(filter, index) in allFilters" v-model="filter.roleUuid" :key="filter.filterName" :label="filter.filterName" />
           </el-form-item>
         </el-form>
       </div>
@@ -359,12 +359,11 @@ export default {
       })
     },
     handleSaveRoleFilter() {
-      debugger
       var datas = []
       this.allFilters.forEach(f => {
         datas.push({
           sceneFilterUuid: f.sceneFilterUuid,
-          roleUuid: this.currentRoleUuid,
+          dataRoleUuid: this.currentRoleUuid,
           isSave: f.roleUuid // true or false
         })
       })
