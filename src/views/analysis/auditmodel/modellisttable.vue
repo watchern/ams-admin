@@ -5,7 +5,7 @@
         <div class="filter-container">
           <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
         </div>
-        <el-row type="flex" class="row-bg">
+        <el-row type="flex" class="row-bg" v-if="power!='warning'">
           <el-col :span="20"></el-col>
           <el-col :span="4">
             <div class="grid-content bg-purple-light">
@@ -111,6 +111,7 @@ import {replaceNodeParam,replaceCrossrangeNodeParam } from '@/api/analysis/audit
 export default {
   name: 'ModelListTable',
   components: { Pagination, QueryField, EditModel,ModelFolderTree,childTabs,crossrangeParam,paramDraw },
+  props:['power'],
   data() {
     return {
       tableKey: 'errorUuid',
@@ -781,6 +782,12 @@ export default {
           this.$message({ type: 'info', message: '执行失败' })
         }
       })
+    },
+    /**
+     * 获取模型列表选中的数据
+     */
+    getModelListCheckData(){
+      return this.$refs.modelListTable.selection
     }
   }
 }
