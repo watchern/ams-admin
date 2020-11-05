@@ -73,7 +73,7 @@ import { selectCodeAll, selectById } from '@/api/data/transCode'
 export default {
   name: 'SelectTransCode',
   // eslint-disable-next-line vue/require-prop-types
-  props: ['transUuid'],
+  props: ['transuuid'],
   data() {
     return {
       selectTransId: '',
@@ -91,7 +91,7 @@ export default {
     }
   },
   created() {
-    this.selectTransId = this.transUuid
+    this.selectTransId = this.transuuid
     selectCodeAll(this.pageQuery).then(resp => {
       this.transJson = resp.data.records
     })
@@ -113,7 +113,7 @@ export default {
       })
     },
     selectChanged(value) {
-      this.$emit('update:transUuid', value)
+      this.$emit('update:transuuid', value)
     }
   }
 }

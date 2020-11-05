@@ -46,7 +46,7 @@
               <template slot-scope="scope">
                 <SelectTransCode
                   ref="SelectTransCode"
-                  :trans-uuid.sync="scope.row.transRuleUuid"
+                  :transuuid.sync="scope.row.transRuleUuid"
                 />
               </template>
             </el-table-column>
