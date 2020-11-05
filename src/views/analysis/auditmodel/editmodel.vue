@@ -350,21 +350,35 @@ export default {
       transJson:[],
       //选择的业务列
       businessColumnSelect: [],
+      //列类型数组
       columnTypeSelect: [],
+      //模型详细对象数组
       modelDetails: [],
+      //条件显示数组
       filterShows: [],
       dialogFormVisible:false,
+      //校验规则失败自动跳转用的对象
       newRelInfoValue: {},
       newFilterShowValue: {},
+      //sql编辑器参数对象
       sqlEditorParamObj: {},
+      //添加模型详细树时候的索引
       modelDetailIndex: 0,
+      //风险等级
       riskLeve: [],
+      //模型类型
       modelTypeData:[],
+      //添加条件显示时候树的索引
       modelFilterShowIndex: 0,
+      //模型历史表数组
       modelOriginalTable: [],
+      //模型图表配置
       modelChartSetup: {},
+      //当前选中树节点
       currentSelectTreeNode: null,
+      //模型类型数组
       modelTypeObj:[],
+      //关闭窗体时候用的窗体名
       formName:"",
       basicInfoRules: {
         modelName: [
@@ -439,6 +453,11 @@ export default {
         this.transJson = resp.data.records
       })
     },
+    /**
+     * 点击之后切换页签
+     * @param data 点击的数据
+     * @param node 树节点
+     */
     handleNodeClick(data, node) {
       this.hideModelDetail()
       if (data.type == 'basicInfo') {
@@ -779,6 +798,10 @@ export default {
       }
       return resultObj
     },
+    /**
+     * 反显sql语句
+     * @param returnObj sql编辑器拿到的对象
+     */
     displaySQL(returnObj) {
       let sql = returnObj.sqlValue
       const arrPram = returnObj.params
