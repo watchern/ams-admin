@@ -225,7 +225,7 @@ let isAllExecuteSuccess = false
  * 最后模型结果列类型
  * @type {*[]}
  */
-const lastResultColumnType = []
+let lastResultColumnType = []
 
 /**
  * 数据界面对象
@@ -316,8 +316,7 @@ export default {
         if (currentExecuteProgress == dataObj.executeTask.executeSQL.length) {
           isAllExecuteSuccess = true
           lastResultColumn = dataObj.columnNames
-          // todo 现在暂时还拿不到类型  后续需要改
-          // lastResultColumnType = dataObj.columnTypes
+          lastResultColumnType = dataObj.columnTypes
         }
         func1(dataObj)
       }
@@ -427,13 +426,7 @@ export default {
         const sqlObj = getSaveSqlDraftObj(type)
         const sql = sqlObj.draftSql
         if (sql === '') {
-          this.$notify({
-            title: '提示',
-            message: '请输入sql语句',
-            type: 'info',
-            duration: 2000,
-            position: 'bottom-right'
-          })
+          this.$message({ type: 'info', message: '请输入sql语句!' })
           return
         } else {
           if (!sqlObj.isOld) {
@@ -493,6 +486,7 @@ export default {
               paramJson: ''
             }
           } else {
+
             this.$notify({
               title: '提示',
               message: '保存失败',
@@ -663,6 +657,7 @@ export default {
   overflow: hidden;
   background: #c0c5d4;
   cursor: w-resize;
+  display: none;
 }
 
 #horizontal {
@@ -724,8 +719,8 @@ export default {
 
 .left-part{
   overflow: auto;
-  height: 100vh;
   width: 16.66666667%;
   float: left;
+  height: 89vh;
 }
 </style>

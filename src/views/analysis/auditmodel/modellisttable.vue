@@ -9,15 +9,15 @@
           <el-col :span="20"></el-col>
           <el-col :span="4">
             <div class="grid-content bg-purple-light">
-              <el-button type="primary" class="oper-btn detail" @click="previewModel" />
-              <el-button type="primary" class="oper-btn add" @click="addModel" />
-              <el-button type="primary" class="oper-btn edit" @click="updateModel" />
-              <el-button type="primary" class="oper-btn delete" @click="deleteModel" />
+              <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn detail" @click="previewModel" />
+              <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />
+              <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel" />
+              <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete" @click="deleteModel" />
               <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
-                <el-button type="primary" class="oper-btn more" />
+                <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
-                  <el-dropdown-item @click.native="importData">导入</el-dropdown-item>
+<!--                  <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
+                  <el-dropdown-item @click.native="importData">导入</el-dropdown-item>-->
                   <el-dropdown-item @click.native="shareModel">共享</el-dropdown-item>
                   <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
                   <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
@@ -26,7 +26,8 @@
             </div>
           </el-col>
         </el-row>
-        <el-table :key="tableKey" ref="modelListTable" v-loading="listLoading" :data="list" border fit highlight-current-row>
+        <el-table :key="tableKey" ref="modelListTable" v-loading="listLoading"
+                  :data="list" border fit highlight-current-row @select="modelTableSelectEvent">
           <el-table-column type="selection" width="55" />
           <el-table-column label="模型名称" width="100px" align="center" prop="modelName" />
           <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
@@ -43,20 +44,28 @@
         :label="item.title"
         :name="item.name">
         <!--增加参数输入组件-->
-        <el-row>
-          <el-col :span="22">
-            <crossrangeParam v-if="item.isExistParam" :myId="item.name" :ref="item.name + 'param'"></crossrangeParam>
-          </el-col>
-          <el-col :span="2">
-            <el-button type="primary" @click="queryModel(item.name)">查询</el-button>
-          </el-col>
-        </el-row>
-        <!--增加结果组件-->
-         <el-row>
-           <el-col :span="24">
-              <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor"/>
-           </el-col>
-         </el-row>
+        <el-collapse v-model="activeNames">
+          <el-collapse-item name="1" v-if="item.isExistParam">
+            <template slot="title"><div class="panel-font-size">参数输入区域</div></template>
+            <el-row>
+              <el-col :span="22">
+                <crossrangeParam :myId="item.name" :ref="item.name + 'param'"></crossrangeParam>
+              </el-col>
+              <el-col :span="2">
+                <el-button type="primary" @click="queryModel(item.name)">查询</el-button>
+              </el-col>
+            </el-row>
+          </el-collapse-item>
+          <el-collapse-item name="2">
+            <template slot="title"><div class="panel-font-size">结果展示区域</div></template>
+            <!--增加结果组件-->
+            <el-row>
+              <el-col :span="24">
+                <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor"/>
+              </el-col>
+            </el-row>
+          </el-collapse-item>
+        </el-collapse>
       </el-tab-pane>
     </el-tabs>
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
@@ -114,6 +123,8 @@ export default {
       editModelTitle: '',
       //发布模型dialog
       treeSelectShow:false,
+      //折叠面板默认展开
+      activeNames:['1','2'],
       //编辑模型dialog
       editModelShow: false,
       //发布模型
@@ -134,6 +145,14 @@ export default {
       modelRunTaskList:{},
       //参数输入界面
       dialogFormVisible:false,
+      //按钮状态
+      btnState:{
+        addBtnState:false,
+        editBtnState:true,
+        deleteBtnState:true,
+        previewBtn:true,
+        otherBtn:true
+      },
       //当前预览模型参数和sql
       currentPreviewModelParamAndSql:{},
       queryFields: [
@@ -364,8 +383,32 @@ export default {
     /**
      * 隐藏编辑模型界面
      */
-    hideEditModal() {
-      this.editModelShow = false
+    modelTableSelectEvent(selection, row) {
+      var selectObj = this.$refs.modelListTable.selection
+      if(selectObj.length == 1){
+        //显示全部按钮
+        this.btnState.otherBtn = false
+        this.btnState.deleteBtnState = false
+        this.btnState.addBtnState = false
+        this.btnState.editBtnState = false
+        this.btnState.previewBtn = false
+      }
+      else if(selectObj.length > 1){
+        //只显示删除和添加按钮
+        this.btnState.otherBtn = false
+        this.btnState.deleteBtnState = false
+        this.btnState.addBtnState = false
+        this.btnState.editBtnState = true
+        this.btnState.previewBtn = true
+      }
+      else if(selectObj.length == 0){
+        //只显示添加按钮
+        this.btnState.otherBtn = true
+        this.btnState.deleteBtnState = true
+        this.btnState.addBtnState = false
+        this.btnState.editBtnState = true
+        this.btnState.previewBtn = true
+      }
     },
     /**
      * 添加模型
@@ -436,6 +479,13 @@ export default {
           if (result.code == 0) {
             this.getList(this.query)
             this.$emit('refreshTree')
+            this.$notify({
+              title:'提示',
+              message:'删除成功',
+              type:'success',
+              duration:2000,
+              position:'bottom-right'
+            });
           } else {
             this.$message({ type: 'error', message: '删除失败' })
           }
@@ -522,13 +572,7 @@ export default {
           //刷新树和列表
         }
         else{
-          this.$notify({
-            title:'提示',
-            message:tips + '失败',
-            type:'error',
-            duration:2000,
-            position:'bottom-right'
-          });
+          this.$message({ type: 'error', message: tips + '失败' })
         }
       })
     },
@@ -750,5 +794,9 @@ export default {
 }
 .el-dropdown{
   margin-left: 10px;
+}
+
+.panel-font-size{
+  font-size: 25px;
 }
 </style>

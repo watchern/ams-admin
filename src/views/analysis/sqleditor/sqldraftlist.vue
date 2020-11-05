@@ -162,6 +162,13 @@ export default {
         deleteSqlDraft(ids.join(',')).then(result => {
           if (result.code == 0) {
             this.getList(this.query)
+            this.$notify({
+              title:'提示',
+              message:'删除成功',
+              type:'info',
+              duration:2000,
+              position:'bottom-right'
+            });
           } else {
             this.$message({ type: 'error', message: '删除失败' })
           }
@@ -210,13 +217,8 @@ export default {
       };
       let datas = this.$refs.sqlDraftListTable.selection;
       if(datas.length == 0 || datas.length > 1){
-        this.$notify({
-          title:'提示',
-          message:'请选择一条数据',
-          type:'info',
-          duration:2000,
-          position:'bottom-right'
-        });
+        this.$message({ type: 'info', message: '请选择一条数据'})
+
       }
       else{
         let rowData = datas[0];

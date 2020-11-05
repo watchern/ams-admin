@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-container class="el-container">
-      <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+      <el-aside width="200px">
         <el-tree ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>
@@ -21,7 +21,7 @@
           <el-row>
             <el-form-item label="业务分类">
               <el-col :span="22">
-                <el-input v-model="form.modelFolderUuid" style="display: none" :disabled="true" />
+                <el-input v-model="form.modelFolderUuid" class="display" :disabled="true" />
                 <el-input v-model="form.modelFolderName" :disabled="true" />
               </el-col>
               <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true">选择</el-button>
@@ -30,7 +30,7 @@
           <el-row>
             <el-form-item label="审计事项" prop="auditItemUuid">
               <el-col :span="22">
-                <el-input v-model="form.auditItemUuid" style="display: none" :disabled="true" />
+                <el-input v-model="form.auditItemUuid" class="display" :disabled="true" />
                 <el-input v-model="form.auditItemName" :disabled="true" />
               </el-col>
               <el-button @click="showAuditItemTree">选择</el-button>
@@ -76,37 +76,37 @@
             <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" class="sql-editor" />
           </div>
-          <el-form-item label="模型sql" prop="sqlValue" style="display: none;">
+          <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
           </el-form-item>
         </el-form>
       </div>
       <div ref="paramDefaultValue" class="display">
-        <p style="color:red;font-size:large">拖拽改变参数展示顺序</p>
+        <p class="p-div">拖拽改变参数展示顺序</p>
         <div id="paramList">
           <paramShow ref="apple"></paramShow>
-<!--          <el-table
-            ref="paramData"
-            :data="paramData"
-            style="width: 100%"
-          >
-            <el-table-column prop="ammParamUuid" label="参数编号" width="180" />
-            <el-table-column prop="paramName" label="参数名称" width="180" />
-            <el-table-column prop="paramValue" label="参数默认值" width="180">
-              <template slot-scope="scope">
-                <v-runtime-template :template="scope.row.paramValue" />
-              </template>
-            </el-table-column>
-            <el-table-column prop="description" label="参数描述" />
-          </el-table>-->
         </div>
       </div>
       <div ref="modelResultOutputCol" class="display">
-        <p style="color:red;font-size:large">注意：只显示最后的结果列</p>
-        <div style="height:476px;overflow:scroll">
-          <el-table ref="columnData" :data="columnData" style="width: 100%">
+        <p class="p-div">注意：只显示最后的结果列</p>
+        <div class="model-result-output-col">
+          <el-table ref="columnData" :data="columnData" class="div-width">
             <el-table-column prop="outputColumnName" label="输出列名" width="180" />
-            <el-table-column prop="" label="数据转码" width="80" />
+            <el-table-column prop="" label="数据转码" width="180">
+              <template slot-scope="scope">
+                <el-select ref="transRuleUuid" v-model="scope.row.dataCoding" style="width:90%" filterable placeholder="请选择转码规则">
+                  <el-option
+                    v-for="item in transJson"
+                    :key="item.transRuleUuid"
+                    :label="item.ruleName"
+                    :value="item.transRuleUuid"
+                  >
+                    <span v-text="item.ruleName" />
+                    <el-button style="float:right" type="primary" size="mini" @click="selectTransCode(item.transRuleUuid)">查看</el-button>
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
             <el-table-column prop="columnName" label="是否显示" width="80">
               <template slot-scope="scope">
                 <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1">
@@ -153,10 +153,10 @@
         <p>在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
           用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。
           通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。</p>
-        <el-button style="float: right;position:sticky;top: 260px;" @click="createDetail">新建</el-button>
+        <el-button class="el-button-style" @click="createDetail">新建</el-button>
       </div>
       <div id="modelDetailDiv">
-        <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id" style="display: none">
+        <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id" class="display">
           <ModelDetail ref="child" :columns="columnData" :data="modelDetail.data" :tree-id="modelDetail.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
@@ -168,10 +168,10 @@
           以便审计人员对这些数据进行审计。</p>
         <p>条件显示设计器以表格的形式列举所有由用户设定的、将被应用于模型执行结果的显示条件及显示样式，用户可通过该列表对各个条件的属性进行快速查看。
           同时用户也可以对显示条件进行添加、修改、删除</p>
-        <el-button style="float: right;position:sticky;top: 260px;" @click="createFilterShow">新建</el-button>
+        <el-button class="el-button-style" @click="createFilterShow">新建</el-button>
       </div>
       <div ref="filterShowDiv">
-        <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id" style="display: none">
+        <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id" class="display">
           <ModelFilterShow ref="modelFilterSHowChild" :columns="columnData" :data="filterShow.data" :tree-id="filterShow.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
@@ -190,7 +190,61 @@
         <el-button @click="modelFolderTreeDialog=false">取消</el-button>
       </div>
     </el-dialog>
-    <div class="div-btn">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <div class="detail-form">
+        <el-form
+          ref="dataForm"
+          :model="tempRule"
+          label-position="right"
+          style="width: 700px;"
+        >
+          <el-form-item label="规则名称" prop="ruleName">
+            <el-input v-model="tempRule.ruleName" readonly />
+          </el-form-item>
+          <el-form-item label="规则描述" prop="ruleDesc">
+            <el-input v-model="tempRule.ruleDesc" readonly />
+          </el-form-item>
+          <el-form-item label="转码方式" prop="ruleType">
+            <el-input v-model="tempRule.ruleType" readonly />
+          </el-form-item>
+          <el-form-item v-if="isSql" label="转码规则" prop="sqlContent">
+            <el-input v-model="tempRule.sqlContent" readonly />
+          </el-form-item>
+          <el-row v-if="isSql">
+            <el-col :span="12">
+              <el-form-item label="真实值" prop="sceneName" label-width="150px">
+                <el-input v-model="tempRule.sceneName" readonly class="input" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="业务属性编码" prop="sceneCode" label-width="150px">
+                <el-input v-model="tempRule.sceneCode" readonly class="input" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-table v-if="!isSql" :data="tempRule.transColRels" height="200">
+            <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>
+              <template slot-scope="scope" show-overflow-tooltip>
+                <el-tooltip :disabled="scope.row.codeValue.length < 12" effect="dark" :content="scope.row.codeValue" placement="top">
+                  <el-input v-model="scope.row.codeValue" readonly style="width:90%;" />
+                </el-tooltip>
+              </template>
+            </el-table-column>
+            <el-table-column prop="transValue" label="显示值" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <el-tooltip :disabled="scope.row.transValue.length < 10" effect="dark" :content="scope.row.transValue" placement="top">
+                  <el-input v-model="scope.row.transValue" readonly style="width:90%;" />
+                </el-tooltip>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form>
+      </div>
+      <div slot="footer">
+        <el-button type="primary" @click="dialogFormVisible = false">关闭</el-button>
+      </div>
+    </el-dialog>
+    <div ref="btnDivRef" class="div-btn">
       <el-button type="primary" @click="save">保存</el-button>
       <el-button @click="closeWinfrom">取消</el-button>
     </div>
@@ -205,6 +259,7 @@ import { getBusinessAttribute, saveModel, updateModel } from '@/api/analysis/aud
 import VRuntimeTemplate from 'v-runtime-template'
 import paramShow from "@/views/analysis/modelparam/paramshow";
 import { getDictList } from '@/utils/index'
+import { selectById, seleteCodeAll } from '@/api/data/transCode'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 export default {
   name: 'EditModel',
@@ -261,6 +316,16 @@ export default {
       modelFolderTreeDialog:false,
       //列数据
       columnData: [],
+      //是否是sql
+      isSql: false,
+      //模板规则
+      tempRule: [],
+      textMap: {
+        select: '查看数据转码信息'
+      },
+      //数据转码dialog名称
+      dialogStatus: '',
+      pageQuery: {},
       //实体对象
       form: {
         modelName: '',
@@ -282,11 +347,13 @@ export default {
         params: [],
         column: []
       },
+      transJson:[],
       //选择的业务列
       businessColumnSelect: [],
       columnTypeSelect: [],
       modelDetails: [],
       filterShows: [],
+      dialogFormVisible:false,
       newRelInfoValue: {},
       newFilterShowValue: {},
       sqlEditorParamObj: {},
@@ -367,6 +434,10 @@ export default {
       this.riskLeve = getDictList('002002')
       // 初始化审计事项
       this.modelTypeData = getDictList('002003')
+      //初始化数据转码
+      seleteCodeAll(this.pageQuery).then(resp => {
+        this.transJson = resp.data.records
+      })
     },
     handleNodeClick(data, node) {
       this.hideModelDetail()
@@ -378,6 +449,7 @@ export default {
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.basicInfo.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '10.5%'
       } else if (data.type == 'modelDesign') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.paramDefaultValue.style.display = 'none'
@@ -386,6 +458,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '-1%'
       } else if (data.type == 'paramDefaultValue') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -394,6 +467,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.paramDefaultValue.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '32.3%'
       } else if (data.type == 'modelResultOutputCol') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -402,6 +476,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.modelResultOutputCol.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '2%'
       } else if (data.type == 'relInfo') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -410,6 +485,7 @@ export default {
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '32.3%'
       } else if (data.type == 'chartConfig') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -418,6 +494,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.chartConfig.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '32.3%'
       } else if (data.type == 'filterShow') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -426,6 +503,7 @@ export default {
         this.$refs.relInfo.style.display = 'none'
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'block'
+        this.$refs.btnDivRef.style.marginTop = '32.3%'
       } else if (data.type == 'relDetail' || data.type == 'filterShowNode') {
         // 获取指定div
         this.$refs.basicInfo.style.display = 'none'
@@ -438,6 +516,7 @@ export default {
         if (this.$refs.[data.id][0] != undefined) {
           this.$refs.[data.id][0].style.display = 'block'
         }
+        this.$refs.btnDivRef.style.marginTop = '11.2%'
       }
       this.currentSelectTreeNode = data
     },
@@ -670,7 +749,7 @@ export default {
       for (let i = 0; i < columnNames.length; i++) {
         var obj = {
           columnName: columnNames[i],
-          columnType: 'varchar'
+          columnType: columnType[i]
         }
         returnObj.push(obj)
       }
@@ -974,6 +1053,7 @@ export default {
           id:'002003001'
         }
         this.modelTypeObj.push(obj)
+
       }
       if(vId == "002003002"){
         this.$message({ type: 'info', message: "暂时不支持图形化模型"})
@@ -1006,7 +1086,13 @@ export default {
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
           if (result.code === 0) {
-            this.$message({ type: 'success', message: '新增成功!' })
+            this.$notify({
+              title:'提示',
+              message:'新增成功',
+              type:'success',
+              duration:2000,
+              position:'bottom-right'
+            });
             this.closeWinfrom()
           } else {
             this.$message({ type: 'error', message: '新增模型失败!' })
@@ -1016,7 +1102,13 @@ export default {
       } else {
         updateModel(modelObj).then(result => {
           if (result.code === 0) {
-            this.$message({ type: 'success', message: '修改成功!' })
+            this.$notify({
+              title:'提示',
+              message:'修改成功',
+              type:'success',
+              duration:2000,
+              position:'bottom-right'
+            });
             this.closeWinfrom()
           } else {
             this.$message({ type: 'error', message: '修改模型失败!' })
@@ -1024,13 +1116,28 @@ export default {
           }
         })
       }
-    }
+    },
+    selectTransCode(ruleId) {
+      this.dialogStatus = 'select'
+      selectById(ruleId).then(res => {
+        this.tempRule = res.data
+        if (this.tempRule.ruleType === 1) {
+          this.dialogFormVisible = true
+          this.tempRule.ruleType = 'SQL语句'
+          this.isSql = true
+        } else {
+          this.dialogFormVisible = true
+          this.tempRule.ruleType = '手动添加'
+          this.isSql = false
+        }
+      })
+    },
   }
 }
 </script>
 <style>
 .sql-editor{
-  height: 700px;
+  height: 680px;
   overflow-y:scroll
 }
 
@@ -1044,13 +1151,30 @@ export default {
 }
 
 .el-container{
-  height: 500px;
   border: 1px solid #eee
 }
 
 .div-btn{
-  margin-top: 14%;
+  margin-top: 10.5%;
   float:right;
   margin-right: 1%;
+  left:0;
+  top:30%
+}
+
+.el-button-style{
+  float: right;
+  position:sticky;
+  top: 260px;
+}
+
+.p-div{
+  color:red;
+  font-size:large;
+}
+
+.model-result-output-col{
+  height: 650px;
+  overflow-y: scroll;
 }
 </style>

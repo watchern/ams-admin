@@ -21,9 +21,9 @@
           <i :class="data.icon" />{{ node.label }}
         </span>
         <span v-if="data.type=='folder'">
-          <el-button type="text" size="mini" class="tree-line-btn" @click.stop="() => setSelectTreeNode(node,data,1)"><svg-icon icon-class="icon-add-1" /></el-button>
-          <el-button type="text" size="mini" class="tree-line-btn" @click.stop="() => setSelectTreeNode(node, data,2)"><svg-icon icon-class="icon-edit-1" /></el-button>
-          <el-button type="text" size="mini" class="tree-line-btn" @click.stop="() => deleteFolder(node, data)"><svg-icon icon-class="icon-delete-1" /></el-button>
+          <el-button title="添加模型分类" type="text" size="mini" class="tree-line-btn" @click.stop="() => setSelectTreeNode(node,data,1)"><svg-icon icon-class="icon-add-1" /></el-button>
+          <el-button title="修改模型分类" type="text" size="mini" class="tree-line-btn" @click.stop="() => setSelectTreeNode(node, data,2)"><svg-icon icon-class="icon-edit-1" /></el-button>
+          <el-button title="删除模型分类" type="text" size="mini" class="tree-line-btn" @click.stop="() => deleteFolder(node, data)"><svg-icon icon-class="icon-delete-1" /></el-button>
         </span>
       </span>
     </MyElTree>
@@ -201,7 +201,6 @@ export default {
       this.form.modelFolderUuid = this.getGuuid()
       this.form.parentUuid = this.selectTreeNode.id
       this.form.folderSort = 0
-      debugger
       const nodePath = this.$refs.tree.getNodePath(this.selectTreeNode)
       const fullPath = []
       nodePath.forEach(path => {
