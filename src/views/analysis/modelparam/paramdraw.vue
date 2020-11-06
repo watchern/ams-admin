@@ -14,7 +14,7 @@
               </h4>
             </div>
             <div id="collapse" class="panel-collapse collapse in">
-              <div id="paramCom" class="panel-body" style="padding: 10px 0" />
+              <div :id="myId" class="panel-body" style="padding: 10px 0" />
             </div>
           </div>
         </div>
@@ -28,12 +28,13 @@ export default {
   data() {
     return {};
   },
+  props: ["myId"],
   methods: {
     /**
      * 初始化参数渲染界面
      */
-    initParamHtmlSS(sql, paramsArr, name, modelId) {
-      initParamHtml(sql, paramsArr, name, modelId);
+    initParamHtmlSS(sql, paramsArr, name, id) {
+      initParamHtml(sql, paramsArr, name, id);
     },
   },
 };

@@ -161,7 +161,7 @@
       </div>
     </el-dialog>
     <el-dialog title="请输入参数" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" :append-to-body="true">
-      <paramDraw ref="paramDrawRef"/>
+      <paramDraw :myId="paramDrawUuid" ref="paramDrawRef"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
         <el-button type="primary" @click="replaceNodeParam">确定</el-button>
@@ -258,6 +258,7 @@ export default {
       sqlDraftDialog: false,
       dialogFormVisible: false,
       formLabelWidth: '120px',
+      paramDrawUuid:'',
       executeLoading: false,
       currentExecuteSQL: [], // 当前执行的全部sql,
       webSocket: null,
@@ -275,7 +276,7 @@ export default {
     dialogFormVisible(value) {
       this.$nextTick(function() {
         if (value) {
-          this.$refs.paramDrawRef.initParamHtmlSS(this.executeData.sql, this.executeData.arr, '请输入参数', null)
+          this.$refs.paramDrawRef.initParamHtmlSS(this.executeData.sql, this.executeData.arr, '请输入参数', this.paramDrawUuid)
         }
       })
     }
@@ -606,6 +607,8 @@ export default {
      * 打开参数渲染窗体
      */
     openParamDraw(data) {
+      let timestamp = new Date().getTime()
+      this.paramDrawUuid = timestamp
       this.dialogFormVisible = true
       this.paramDrawLoading = true
       this.executeData = data
@@ -614,7 +617,7 @@ export default {
      * 获取替换参数后的sql  直接直接
      */
     replaceNodeParam() {
-      var obj = replaceNodeParam()
+      var obj = replaceNodeParam(this.paramDrawUuid)
       if (!obj.verify) {
         this.$message({ type: 'info', message: obj.message })
         return
