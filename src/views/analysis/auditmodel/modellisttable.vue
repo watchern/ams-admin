@@ -68,6 +68,7 @@
         </el-collapse>
       </el-tab-pane>
     </el-tabs>
+    <modelshoppingcart v-show="isShowShoppingCart" ref="modelShoppingCartRef"></modelshoppingcart>
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
       <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
@@ -108,9 +109,10 @@ import { startExecuteSql } from '@/api/analysis/sqleditor/sqleditor'
 import crossrangeParam from '@/views/analysis/modelparam/crossrangeparam'
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
 import {replaceNodeParam,replaceCrossrangeNodeParam } from '@/api/analysis/auditparam'
+import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 export default {
   name: 'ModelListTable',
-  components: { Pagination, QueryField, EditModel,ModelFolderTree,childTabs,crossrangeParam,paramDraw },
+  components: { Pagination, QueryField, EditModel,ModelFolderTree,childTabs,crossrangeParam,paramDraw,modelshoppingcart },
   props:['power'],
   data() {
     return {
@@ -122,6 +124,7 @@ export default {
       listLoading: false,
       //编辑框名称
       editModelTitle: '',
+      isShowShoppingCart:false,
       //发布模型dialog
       treeSelectShow:false,
       //折叠面板默认展开
@@ -394,6 +397,8 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = false
         this.btnState.previewBtn = false
+        this.isShowShoppingCart = true
+        this.$refs.modelShoppingCartRef.setMemo(selectObj)
       }
       else if(selectObj.length > 1){
         //只显示删除和添加按钮
@@ -402,6 +407,8 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = true
         this.btnState.previewBtn = true
+        this.isShowShoppingCart = true
+        this.$refs.modelShoppingCartRef.setMemo(selectObj)
       }
       else if(selectObj.length == 0){
         //只显示添加按钮
@@ -410,6 +417,7 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = true
         this.btnState.previewBtn = true
+        this.isShowShoppingCart = false
       }
     },
     /**
@@ -749,10 +757,10 @@ export default {
     },
     /**
      * 合并参数对象
-     * @param paramsArr 替换后的参数数组
+     * @param paramsArr 替换参数值后的参数数组
      */
     mergeParamObj(paramsArr){
-      let paramObj = this.currentPreviewModelParamAndSql.paramObj
+      let paramObj = this.currentPreviewModelParamAndSql.paramObj    //模型的参数数组
       for (let i = 0;i < paramObj.length;i++){
         for (let j = 0;j < paramsArr.length;j++){
           if(paramObj[i].moduleParamId == paramsArr[j].moduleParamId){

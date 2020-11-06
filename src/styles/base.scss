@@ -91,7 +91,7 @@
 
 table tr:nth-child(odd)
 {
-    background: #e3e8ef;
+    background: #ffffff;
 }
 table th{
     color: #102033;
@@ -99,7 +99,7 @@ table th{
 }
 
 .el-table {
-  background-color: #edf1f5!important;
+  background-color: #ffffff!important;
 }
 .el-table--group, .el-table--border {
     border: 0px!important;
@@ -108,10 +108,10 @@ table th{
     height: 0px!important;
 }
 .el-table th {
-    background-color: #edf1f5
+    background-color: #ffffff
 }
 .el-table tr {
-    background-color: #edf1f5
+    background-color: #f5f7fa
 }
 .el-table--border th, .el-table--border td {
     border-right: 0px!important;
@@ -145,7 +145,7 @@ table th{
 }
 
 .query-field form {
-  background-color: #edf1f5!important;
+  background-color: #ffffff!important;
 }
 
 .el-form-item__label {
