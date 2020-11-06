@@ -26,11 +26,14 @@
                 <span>
                   <i />{{ node.label }}
                 </span>
-                <span v-if="data.type=='relInfo' || data.type=='filterShow'">
-                  <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-add" /></el-button>
+                <span v-if="data.type=='relInfo'">
+                  <el-button type="text" size="mini" @click.stop="() => createDetail()"><i class="el-icon-circle-plus-outline"/></el-button>
+                </span>
+                <span v-if="data.type=='filterShow'">
+                  <el-button type="text" size="mini" @click.stop="() => createFilterShow()"><i class="el-icon-circle-plus-outline"/></el-button>
                 </span>
                 <span v-if="data.type=='relDetail' || data.type=='filterShowNode'">
-                  <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-delete" /></el-button>
+                  <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-delete"/></el-button>
                 </span>
               </span>
             </el-tree>
