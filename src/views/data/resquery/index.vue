@@ -11,7 +11,7 @@ export default {
   components: { dataTree },
   data() {
     return {
-      dataUserId: 'cs',
+      dataUserId: 'cs1',
       sceneCode: 'auditor'
     }
   },
