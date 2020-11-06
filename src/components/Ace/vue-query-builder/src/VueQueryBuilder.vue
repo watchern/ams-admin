@@ -19,9 +19,9 @@
             {"id": "or", "label": "or"},
             {"id": "and", "label": "and"},
         ],
-        addRule: "Add Rule",
+        addRule: "添加条件",
         removeRule: "&times;",
-        addGroup: "Add Group",
+        addGroup: "添加条件组",
         removeGroup: "&times;",
         textInputPlaceholder: "value",
     };

@@ -40,11 +40,37 @@ export function del(data) {
   })
 }
 
+export function getTransMap(ids) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/getTransMap/${ids}`,
+    method: 'post'
+  })
+}
+
 export function selectOne(data) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/selectOne/`,
+    url: `/${controllerName}/selectOne`,
     method: 'post',
     data
+  })
+}
+
+export function selectCodeAll(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/transRule/listByPage',
+    method: 'post',
+    // 直接加data以json格式传递  后台用RequestBody
+    data
+  })
+}
+
+export function selectById(transId) {
+  return request({
+    baseURL: baseURL,
+    url: `/transRule/selectById/${transId}`,
+    method: 'get'
   })
 }

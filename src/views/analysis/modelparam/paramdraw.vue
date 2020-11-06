@@ -14,7 +14,7 @@
               </h4>
             </div>
             <div id="collapse" class="panel-collapse collapse in">
-              <div id="paramCom" class="panel-body" style="padding: 10px 0" />
+              <div :id="myId" class="panel-body" style="padding: 10px 0" />
             </div>
           </div>
         </div>
@@ -23,22 +23,24 @@
   </div>
 </template>
 <script>
-import { initParamHtml } from '@/api/analysis/auditparam'
+import { initParamHtml } from "@/api/analysis/auditparam";
 export default {
   data() {
-    return {
-    }
+    return {};
   },
+  props: ["myId"],
   methods: {
-    initParamHtmlSS(sql, paramsArr, name, modelId) {
-      initParamHtml(sql, paramsArr, name, modelId)
-    }
-
-  }
-}
+    /**
+     * 初始化参数渲染界面
+     */
+    initParamHtmlSS(sql, paramsArr, name, id) {
+      initParamHtml(sql, paramsArr, name, id);
+    },
+  },
+};
 </script>
 <style>
-  body {
-    margin: 0;
-  }
+body {
+  margin: 0;
+}
 </style>

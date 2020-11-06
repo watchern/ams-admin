@@ -66,12 +66,14 @@
           show-checkbox
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
-            <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
+            <i v-if="data.id==='ROOT'" class="el-icon-s-home" style="color:#409EFF" />
             <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
             <i v-if="data.type==='table'" class="el-icon-tickets" style="color:#409EFF" />
             <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
             <span :title="node.name" @click="onclick2(node)">{{ node.label }}</span>
-            <!--<span v-if="data.id!=='root'"></span>-->
+            <span v-if="data.id!=='ROOT'" style="padding-left: 10px">
+              <el-button type="text" size="mini" icon="el-icon-remove" @click="() => remove(node, data)"></el-button>
+            </span>
           </span>
         </MyElTree>
       </el-col>
@@ -100,7 +102,7 @@
             </el-table>
             <div>
               <el-input
-                v-model="currentData.extMap.whereStr"
+                v-model="currentData.whereStr"
                 type="textarea"
                 :rows="2"
                 placeholder="请输入筛选语句，如： name='张三' and age=19 "
@@ -109,12 +111,9 @@
           </div>
           <div>
             <div>访问类型</div>
-            <el-checkbox
-              v-model="currentData.extMap.accessType"
-              label="完全控制"
-              true-label="1"
-              false-label="0"
-            />
+            <el-checkbox-group v-model="currentData.accessType">
+              <el-checkbox v-for="(acc, i) in accessTypeArray" :label="acc.code">{{acc.name}}</el-checkbox>
+            </el-checkbox-group>
           </div>
         </div>
       </el-col>
@@ -128,7 +127,7 @@
 
 <script>
 import MyElTree from '@/components/Ace/tree/src/tree.vue'
-import { getResELTree, getResByRole, getRoleCols, saveRoleTable } from '@/api/data/table-info'
+import { getResELTree, getResByRole, getRoleCols, saveRoleTable, getAccessType } from '@/api/data/table-info'
 import { commonNotify } from '@/utils'
 
 export default {
@@ -151,7 +150,9 @@ export default {
         children: []
       }],
       currentData: null, // 当前选中的数据表
-      currentSelection: []
+      currentSelection: [],
+      accessTypeArray:[],
+      selectList: []
     }
   },
   computed: {
@@ -166,16 +167,19 @@ export default {
   },
   created() {
     this.tree1Loading = true
-    getResELTree(0, '').then(resp => {
+    getResELTree().then(resp => {
       this.treeData1 = resp.data
       this.tree1Loading = false
     })
     getResByRole(this.$route.params.roleUuid).then(resp => {
       resp.data.forEach(item => {
-        // 将 accessType 的 0， 1 转为 false， true 让elcheckbox认识
-        item.extMap.accessType = item.extMap.accessType === 1
+        item.accessType = item.extMap.accessType.split(',');
+        item.whereStr = item.extMap.whereStr;
         this.treeData2[0].children.push(item)
       })
+    });
+    getAccessType().then(resp => {
+      this.accessTypeArray = resp.data;
     })
   },
   methods: {
@@ -195,6 +199,9 @@ export default {
             var assPath = Object.assign({}, path)
             assPath.children = []
             current.push(assPath)
+            //对extMap进行初始化
+            this.$set(assPath, 'accessType', []);
+            this.$set(assPath, 'whereStr', '');
             current = assPath.children
           } else {
             current = nextNodes[0].children
@@ -204,9 +211,18 @@ export default {
     },
     removeTable() {
 
+
     },
+    remove(node, data) {
+      const parent = node.parent;
+      const children = parent.data.children || parent.data;
+      const index = children.findIndex(d => d.id === data.id);
+      children.splice(index, 1);
+    },
+
     /* 点击角色数据 展示列和wherestr */
     onclick2(node, data) {
+      debugger;
       if (node.data.type === 'table') {
         if (node.data.cols) {
           this.currentData = node.data
@@ -219,13 +235,18 @@ export default {
             // if(!this.currentData.extMap) this.$set(this.currentData, 'extMap', null);
             this.currentData.cols.forEach(d => {
               this.$set(d, 'selected', d.roleCol !== null)
-            })
+            });
           })
         }
       } else if (node.data.type === 'folder') {
         this.currentData = node.data
       }
     },
+
+    /*changeAccess(a, b){
+      var i = parseInt(b.target.name.substr(1));
+      this.currentData.extMap.accessType[i] = a;
+    },*/
 
     save() {
       const loading = this.$loading({
@@ -238,35 +259,39 @@ export default {
       var folders = []
       var tables = []
       var cols = []
-      console.log(this.roleUuid)
       allNodes.forEach(node => {
         var data = node.data
-        if (data.type === 'folder') {
-          folders.push({
-            dataRoleUuid: this.roleUuid,
-            folderUuid: data.id,
-            accessType: data.extMap.accessType
-          })
-        } else if (data.type === 'table') {
-          tables.push({
-            dataRoleUuid: this.roleUuid,
-            tableMetaUuid: data.id,
-            whereStr: data.extMap.whereStr
-          })
-          if (data.cols) {
-            data.cols.forEach(col => {
-              if (col.selected) {
-                cols.push({
-                  colMetaUuid: col.colMetaUuid,
-                  dataRoleUuid: this.roleUuid
-                })
-              }
+        if(data.id !== 'ROOT'){
+          var accType1 = data.accessType.join(',');
+          if (data.type === 'folder') {
+            folders.push({
+              dataRoleUuid: this.roleUuid,
+              folderUuid: data.id,
+              accessType: accType1
             })
+          } else if (data.type === 'table') {
+            tables.push({
+              dataRoleUuid: this.roleUuid,
+              tableMetaUuid: data.id,
+              accessType: accType1,
+              whereStr: data.whereStr
+            })
+            if (data.cols) {
+              data.cols.forEach(col => {
+                if (col.selected) {
+                  cols.push({
+                    colMetaUuid: col.colMetaUuid,
+                    dataRoleUuid: this.roleUuid
+                  })
+                }
+              })
+            }
           }
         }
       })
       saveRoleTable(this.roleUuid, folders, tables, cols).then(() => {
         loading.close()
+        this.$notify(commonNotify({ type: 'success', message: '保存成功！' }))
       })
     },
     goBack() {

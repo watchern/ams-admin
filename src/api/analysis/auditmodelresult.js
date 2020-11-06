@@ -171,3 +171,36 @@ export function selectModel(modelId) {
     params: { modelId: modelId }
   })
 }
+
+/**
+ * 根据模型UUid查询模型与参数关联表的PARAM_VALUE属性
+ * @param {*} data  modeluuid
+ */
+export function findParamModelRelByModelUuid(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/paramController/findParamModelRelByModelUuid',
+    method: 'post',
+    params:{modelId:data}
+  })
+}
+
+/**
+ * 模型运行结果点击关联之后获得sql方法
+ * @param {*} filterArr  选择的模型运行结果中条目Json对象
+ * @param {*} arr 替换之前sql中参数的Json对象
+ * @param {*} replaceSql 要替换的sql
+ */
+export function replaceParam(filterArr,arr,replaceSql){
+  for (var j = 0; j < filterArr.length; j++) { // 遍历所有母参数信息
+    var moduleParamId = filterArr[j].moduleParamId
+    for (var k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数
+      if (arr[k].copyParamId === moduleParamId) {
+        if(typeof filterArr[j].paramValue != undefined){
+          replaceSql = replaceSql.replace(arr[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
+        }
+      }
+    }
+  }
+   return replaceSql
+}

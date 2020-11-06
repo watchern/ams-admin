@@ -211,18 +211,48 @@ export default {
      */
     getObj() {
       var verResult = false
+      //校验表单
       this.$refs['basicInfoForm'].validate((valid) => {
         if (valid) {
           verResult = valid
         }
       })
       if (!verResult) {
-        var treeId = this.treeId
-        return { verResult: false, treeId: treeId }
+        return { verResult: false, treeId: this.treeId }
       }
+
       // 组织关联详细的对象
       if (this.$refs.relTypeSelect.value == 1) {
         // 如果为关联模型则取模型表的数据
+        //校验关联参数的个数和关联的参数是否相等
+        let modelDetailConfig = this.$refs.relModelTable.data
+        //如果个数相等则判断当前选择的参数编号与被关联模型的参数编号是否全部一致
+        if(this.relModelParam.length == modelDetailConfig.length){
+          let verResult = true
+          let oldParamId = []
+          //先将被关联模型的参数编号拿到数组
+          for(let i = 0;i < this.relModelParam.length;i++){
+            oldParamId.push(this.relModelParam[i].ammParamUuid)
+          }
+          //循环界面填写的数据判断填写的关联参数编号是否存在于模型参数的编号内，如果不存在则证明参数关联重复了
+          for(let i = 0;i < modelDetailConfig.length;i++){
+            if(oldParamId.indexOf(modelDetailConfig[i].ammParamUuid) == -1){
+              verResult = false
+            }
+          }
+          if(!verResult){
+            this.$message({ type: 'info', message: '关联模型的关联参数重复' })
+            return { verResult: false, treeId: this.treeId }
+          }
+        }
+        else if(this.relModelParam.length < modelDetailConfig.length){
+          this.$message({ type: 'info', message: '关联模型的关联参数重复' })
+          return { verResult: false, treeId: this.treeId }
+        }
+        else{
+          this.$message({ type: 'info', message: '关联配置必须包含被关联模型的所有参数'})
+          return { verResult: false, treeId: this.treeId }
+        }
         this.form.modelDetailConfig = this.$refs.relModelTable.data
       } else if (this.$refs.relTypeSelect.value == 2) {
         // 如果为关联表则取表的数据

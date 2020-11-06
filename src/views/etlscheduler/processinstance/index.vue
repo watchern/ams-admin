@@ -79,15 +79,15 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p style="text-align:center" :style="{color: statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].color}"><strong>{{ statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].name }}</strong></p>
+            <p style="text-align:center" :style="{color: statusList[(scope.row.status | statusFilter)].color}"><strong>{{ statusList[(scope.row.status | statusFilter)].name }}</strong></p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色-->
                   <i
-                    :class="statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].unicode"
-                    :style="{color: statusList[scope.row.status===null? statusList.length-1 : (scope.row.status | statusFilter)-1].color}"
+                    :class="statusList[(scope.row.status | statusFilter)].unicode"
+                    :style="{color: statusList[(scope.row.status | statusFilter)].color}"
                     style="font-size:25px;font-weight:bold"
                   />
                 </a>
@@ -234,7 +234,7 @@
                   v-for="log in logs[task.id]"
                   :key="log.taskLogUuid"
                   :label="log.taskLogUuid"
-                  :style="{color: logColorList[log.status===null ? 1 : (log.status | colorFilter)-1].color}"
+                  :style="{color: logColorList[(log.status | colorFilter)-1].color}"
                   style="margin-top:10px"
                 >
                   {{ log.logTime +' '+ log.logMessage }}
@@ -284,7 +284,7 @@ export default {
       statusList: statusListComm,
       logColorList: colorList,
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
         // 开始运行时间，倒序排序
@@ -445,9 +445,19 @@ export default {
   methods: {
     // 根据状态查找该状态在数据中的下标
     statusFilter(value) {
-      return (statusListComm || []).findIndex((item) => item.value === value)
+      if (value == null || value.trim() === '') {
+        return this.statusList.length
+      }
+      return (this.statusList || []).findIndex((item) => item.value === value)
     },
     colorFilter(value) {
+      if (value == null || value.trim() === '') {
+        return colorList.length
+      }
+      // const index1 = (colorList || []).findIndex((item) => item.value === value)
+      // if (!index1 || index1 === null || index1 < 0) {
+      //   return 1
+      // }
       return (colorList || []).findIndex((item) => item.value === value)
     },
     getList(query) {
@@ -511,11 +521,12 @@ export default {
     },
     // 跳过环节
     taskSkip() {
-      var checkedTasks = []
-      checkedTasks.push(this.checkedTask)
-      this.temp.skipInfo = JSON.stringify(checkedTasks)
-      const tempData = Object.assign({}, this.temp)
-      skipTask(tempData).then(() => {
+      this.temp.skipInfo = JSON.stringify([this.checkedTask])
+      const tempData1 = {
+        processInstanceUuid: this.temp.processInstanceUuid,
+        skipInfo: this.temp.skipInfo
+      }
+      skipTask(tempData1).then(() => {
         const index = this.list.findIndex(v => v.processInstanceUuid === this.temp.processInstanceUuid)
         this.list.splice(index, 1, this.temp)
         this.dialogFormVisible = false
@@ -526,10 +537,10 @@ export default {
           duration: 2000,
           position: 'bottom-right'
         })
+        this.tasks = null
       })
       this.checkedTask = null
       this.checkedTaskId = null
-      this.tasks = null
     },
     changeSkipInfo(a) {
       // 更改跳过的环节

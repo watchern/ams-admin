@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -29,8 +29,12 @@
       <el-table-column label="数据角色名称" width="200px" align="center" prop="dataRoleName" />
       <el-table-column label="创建时间" width="300px" align="center" :formatter="formatCreateTime" prop="createTime" />
       <el-table-column label="授权方式" width="200px" align="center" prop="authenType" :formatter="formatAuthenType" />
-      <el-table-column label="数据筛选器状态" prop="filterState" style="width = 200px" />
-      <el-table-column label="数据有效期" prop="timeDuring" :formatter="formatDuring" style="width = 400px" />
+      <el-table-column label="数据筛选器状态" style="width: 200px">
+        <template slot-scope="scope">
+          <el-button type="primary" icon="el-icon-search" @click="openFilterPanel(scope.row.dataRoleUuid)">查看</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="数据有效期" prop="timeDuring" :formatter="formatDuring" style="width : 400px" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
@@ -89,14 +93,28 @@
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="数据筛选器选择" :visible.sync="filterVisible">
+      <div class="detail-form">
+        <el-form>
+          <el-form-item>
+            <el-checkbox v-for="(filter, index) in allFilters" v-model="filter.roleUuid" :key="filter.filterName" :label="filter.filterName" />
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer">
+        <el-button @click="filterVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSaveRoleFilter">确定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, save, update, del } from '@/api/data/role'
+import { listByPage, save, update, del, getSceneFilter, changeRoleFilter } from '@/api/data/role'
 import QueryField from '@/components/Ace/query-field/index'
-import { getDictList } from '@/utils'
+import { getDictList, commonNotify } from '@/utils'
 
 export default {
   components: { Pagination, QueryField },
@@ -142,7 +160,12 @@ export default {
         startTime: [{ required: true, message: '请填写生效开始时间', trigger: 'change' }],
         endTime: [{ required: true, message: '请填写生效结束时间', trigger: 'change' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+
+      filterVisible: false,
+      currentRoleUuid: '',
+      allFilters: []
+
     }
   },
   created() {
@@ -312,14 +335,41 @@ export default {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
     },
-
     authentic() {
-
+      var roleUuid = this.selections[0].dataRoleUuid
+      this.$router.push({
+        path: '/data/roleGrp/' + roleUuid
+      })
     },
     bindRes() {
       var roleUuid = this.selections[0].dataRoleUuid
       this.$router.push({
         path: '/data/roleRes/' + roleUuid
+      })
+    },
+    openFilterPanel(roleUuid) {
+      getSceneFilter(roleUuid).then(resp => {
+        console.log(resp.data)
+        resp.data.forEach(f => {
+          f.roleUuid = (f.roleUuid != null)
+        })
+        this.allFilters = resp.data
+        this.filterVisible = true
+        this.currentRoleUuid = roleUuid
+      })
+    },
+    handleSaveRoleFilter() {
+      var datas = []
+      this.allFilters.forEach(f => {
+        datas.push({
+          sceneFilterUuid: f.sceneFilterUuid,
+          dataRoleUuid: this.currentRoleUuid,
+          isSave: f.roleUuid // true or false
+        })
+      })
+      changeRoleFilter(datas).then(resp => {
+        this.$notify(commonNotify({ type: 'success', message: '保存成功！' }))
+        this.filterVisible = false
       })
     }
   }

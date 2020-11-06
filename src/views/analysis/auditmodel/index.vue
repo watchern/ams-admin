@@ -3,9 +3,9 @@
     <!--模型分类树-->
     <el-container>
       <el-aside class="tree-side">
-        <ModelFolderTree ref="modelFolderTree" @refreshModelList="refreshModelList" />
+        <ModelFolderTree ref="modelFolderTree" :power="power" @refreshModelList="refreshModelList" />
       </el-aside>
-      <ModelListTable ref="modelListTable" @refreshTree="refreshTree" />
+      <ModelListTable ref="modelListTable" :power="power"  @refreshTree="refreshTree" />
     </el-container>
   </div>
 </template>
@@ -14,6 +14,7 @@ import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import ModelListTable from '@/views/analysis/auditmodel/modellisttable'
 export default {
   components: { ModelFolderTree, ModelListTable },
+  props:['power'],
   methods: {
     /**
      * 刷新模型列表
@@ -29,6 +30,12 @@ export default {
      */
     refreshTree() {
       this.$refs.modelFolderTree.getModelFolder()
+    },
+    /**
+     * 获取模型列表选中的数据
+     */
+    getModelListCheckData(){
+      return this.$refs.modelListTable.getModelListCheckData()
     }
   }
 }

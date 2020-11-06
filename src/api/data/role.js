@@ -37,3 +37,41 @@ export function del(ids) {
     method: 'delete'
   })
 }
+
+/* 维护角色下的filter*/
+export function getSceneFilter(roleUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/getSceneFilter?roleUuid=${roleUuid}`,
+    method: 'get'
+  })
+}
+export function changeRoleFilter(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/changeRoleFilter`,
+    data: data,
+    method: 'post'
+  })
+}
+
+const controllerName1 = 'roleGrp'
+export function saveRoleGrp(roleUuid, roleGrps) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName1}/save`,
+    method: 'post',
+    data: {
+      roleUuid: roleUuid,
+      roleGrps: roleGrps
+    }
+  })
+}
+export function getRoleGrp(roleUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName1}/list?roleUuid=${roleUuid}`,
+    method: 'get'
+  })
+}
+
