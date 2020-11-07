@@ -82,7 +82,6 @@
       />
       <el-table-column
         label="参数描述"
-        align="center"
         prop="paramDesc"
       />
       <el-table-column

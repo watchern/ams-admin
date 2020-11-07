@@ -72,7 +72,7 @@
         align="center"
         width="130px"
       >
-        <template slot-scope="scope">
+        <template v-if="scope.row.taskParamList!=null && scope.row.taskParamList.length>0" slot-scope="scope">
           <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="700">
             <el-row v-for="taskParam in scope.row.taskParamList" :key="taskParam.value">
@@ -84,7 +84,7 @@
               </div>
             </el-row>
             <div slot="reference" class="name-wrapper">
-              <el-tag><i class="el-icon-tickets" /></el-tag>
+              <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
           </el-popover>
         </template>
@@ -109,7 +109,6 @@
       />
       <el-table-column
         label="共耗时"
-        align="center"
         prop="time"
       />
     </el-table>
@@ -250,6 +249,8 @@ export default {
         params: null,
         scheduleTime: null
       },
+      statusObj: {},
+      logColorObj: {},
       selections: [],
       logDialogFromVisible: false,
       downloadLoading: false,

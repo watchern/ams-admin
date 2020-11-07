@@ -105,7 +105,6 @@
       />
       <el-table-column
         label="流程实例名称"
-        align="center"
         prop="name"
       />
       <!-- <el-table-column
@@ -119,7 +118,7 @@
         align="center"
         width="80px"
       >
-        <template slot-scope="scope">
+        <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
           <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="700">
             <el-row v-for="taskParam in scope.row.distinctParamList" :key="taskParam.value">
@@ -131,7 +130,8 @@
               </div>
             </el-row>
             <div slot="reference" class="name-wrapper">
-              <el-tag><i class="el-icon-tickets" /></el-tag>
+              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+              <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
           </el-popover>
         </template>
