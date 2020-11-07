@@ -5,7 +5,7 @@ const stateType = [
     label: '无'
   },
   {
-    value: 40,
+    value: 1,
     code: 'SUBMITTED_SUCCESS',
     label: '提交成功'
   },
@@ -58,7 +58,7 @@ const stateType = [
   //   label: '等待依赖完成'
   // }
   {
-    value: 1,
+    value: 40,
     code: 'WAITING',
     label: '等待中'
   }, {

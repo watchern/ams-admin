@@ -32,15 +32,15 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p style="text-align:center" :style="{color: statusList[(scope.row.status | statusFilter)].color}"><strong>{{ statusList[(scope.row.status | statusFilter)].name }}</strong></p>
+            <p style="text-align:center" :style="{color: statusObj[scope.row.status].color}"><strong>{{ statusObj[scope.row.status].name }}</strong></p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色 -->
                   <i
-                    :class="statusList[(scope.row.status | statusFilter)].unicode"
-                    :style="{color: statusList[(scope.row.status | statusFilter)].color}"
+                    :class="statusObj[scope.row.status].unicode"
+                    :style="{color: statusObj[scope.row.status].color}"
                     style="font-size:25px;font-weight:bold"
                   />
                 </a>
@@ -142,7 +142,7 @@
             v-for="log in logs[task.taskCode]"
             :key="log.taskLogUuid"
             :label="log.taskLogUuid"
-            :style="{color: logColorList[(log.status | colorFilter)-1].color}"
+            :style="{color: logColorObj[log.status].color}"
           >
             {{ log.logTime +' '+ log.logMessage }}
           </el-col>
@@ -201,8 +201,6 @@ export default {
         },
         { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
       ],
-      statusList: statusListComm,
-      logColorList: colorList,
       pageQuery: {
         condition: {},
         pageNo: 1,
@@ -268,6 +266,12 @@ export default {
   watch: {
   },
   created() {
+    statusListComm.forEach((r, i) => {
+      this.statusObj[r['value']] = r
+    })
+    colorList.forEach((r, i) => {
+      this.logColorObj[r['value']] = r
+    })
     // this.select.startTimeStart = this.$route.params.startTimeStart
     // this.select.startTimeEnd = this.$route.params.startTimeEnd
     // this.select.status = this.$route.params.stateType
