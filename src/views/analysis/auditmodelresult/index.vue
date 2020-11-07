@@ -40,12 +40,11 @@ export default {
   },
   data() {
     return {
-      editableTabsValue: '模型运行结果',
-      editableTabs: [],
-      tabIndex: 0,
-      mainTable: {},
-      helpTables: [],
-      itemContent: ''
+      editableTabsValue: '模型运行结果', //第一个大页签的名称
+      editableTabs: [], //存放每一个页签对象
+      tabIndex: 0, //语句记录页签个数
+      mainTable: {}, //运行结果表主表对象 
+      helpTables: [], //运行结果表附表数组
     }
   },
   methods: {

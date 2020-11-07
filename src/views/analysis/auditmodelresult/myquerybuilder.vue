@@ -14,7 +14,7 @@ export default {
   props: ['columns', 'data'], // columns是每一列的信息(列名,列数据类型，长度)   data用于返现数据
   data() {
     return {
-      queryRules: [],
+      queryRules: [], // querybuilder的规则数据
       queryJson: {} // queryBuilder上动态绑定的json数据
     }
   },
@@ -99,6 +99,7 @@ export default {
         return obj
       }
     },
+    //通过返显的Json字符串拼出返显的sql
     queryToSql(query) {
       const sql = []
       const that = this

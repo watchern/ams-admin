@@ -1,5 +1,5 @@
 <template>
-  <!-- childTabCon.vue是子页签中内容的通用组件 -->
+  <!-- childtabconcopy.vue是赋值组件和childtabcon完全一致，用于解决模型关联详细功能的子组件冲突bug -->
   <div class="itxst">
     <el-dialog title="查询条件设置" :visible.sync="dialogVisible" width="30%">
       <myQueryBuilder
@@ -22,7 +22,8 @@
         type="primary"
         @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
         class="oper-btn delete"
-      ></el-button>
+        ></el-button
+      >
       <el-button type="primary" @click="queryConditionSetting"
         >查询条件设置</el-button
       >
@@ -99,28 +100,6 @@
         >
       </span>
     </el-dialog>
-    <el-dialog
-      v-if="modelDetailModelResultDialogIsShow"
-      title="模型详细结果"
-      :visible.sync="modelDetailModelResultDialogIsShow"
-      width="80%"
-    >
-      <childtabscopy
-        ref="childTabsRef"
-        :pre-value="currentExecuteSQL"
-        use-type="sqlEditor"
-      />
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="modelDetailModelResultDialogIsShow = false"
-          >取 消</el-button
-        >
-        <el-button
-          type="primary"
-          @click="modelDetailModelResultDialogIsShow = false"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -132,7 +111,6 @@ import "ag-grid-community/dist/styles/ag-theme-balham.css";
 import { AgGridVue } from "ag-grid-vue";
 import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";
-import childtabscopy from "@/views/analysis/auditmodelresult/childtabscopy";
 import {
   selectTable,
   selectByRunResultTableUUid,
@@ -151,28 +129,27 @@ import myQueryBuilder from "@/views/analysis/auditmodelresult/myquerybuilder";
 import { string } from "jszip/lib/support";
 import { startExecuteSql } from "@/api/analysis/sqleditor/sqleditor";
 
+
 export default {
-  name: "childTabCon",
+  name:'childTabCon',
   // 注册draggable组件
   components: {
     AgGridVue,
     Pagination,
     myQueryBuilder,
-    childtabscopy,
-    downloadExcel: JsonExcel,
+    downloadExcel: JsonExcel
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
-      this.$nextTick(function () {
+      this.$nextTick(function() {
         if (value) {
           this.initWebSocket();
         }
-      });
-    },
+      })
+    }
   },
   /**
-   * 模型运行结果使用变量：nowtable：表示模型结果表对象   modelUuid：根据modelUUid进行表格渲染，只有主表用渲染  useType=modelRunResult 表示是模型运行结果所用
-   * sql编辑器模型结果使用变量：useType=sqlEditor 表示是sql编辑器模型结果所用  prePersonalVal：每一个prePersonalVal对应一个childtabcon组件，后续会触发父组件chidltabs中的loadTableData方法来根据prePersonalVal进行aggrid数据的展现
+   * 模型运行结果使用变量：nowtable：表示模型结果表对象   modelUuid：根据modelUUid进行表格渲染，只有主表用渲染
    */
   props: ["nowtable", "modelUuid", "useType", "prePersonalVal"],
   data() {
@@ -180,7 +157,7 @@ export default {
       dialogVisible: false,
       // 定义ag-grid列
       columnDefs: [],
-      // aggrid需要显示的数据
+      // 需要显示的数据
       rowData: [],
       pageQuery: {
         condition: null,
@@ -189,15 +166,15 @@ export default {
       },
       total: 0,
       myFlag: false, // 用来判断主表界面有按钮，辅表界面没有按钮，为true是主表，为false是辅表
-      selectRows: [], //用于存放多选框选中的数据
-      detailTable: [], //存放关联详细表
+      selectRows: [],//用于存放多选框选中的数据
+      detailTable: [],//存放关联详细表
       primaryKey: "", // 保存每个表中的主键，因为每个表的主键都不一样，所以得根据表明查出来
       dataArray: [], // 保存当前表格中的数据
       queryData: [], // 保存列信息，用来传给子组件(queryBuilder组件)
       queryJson: {}, // 用来储存由子组件传过来的 queryBuilder 的 Json数据
       conditionShowData: [], // 存放模型运行结果需要渲染的数据
       primaryKey: "", // 存放模型运行结果主键
-      isLoading: true, //给agrrid加遮罩
+      isLoading: true,//给agrrid加遮罩
       nextValue: [], // 存放模型结果后传进来的值
       modelResultData: [], // 用来存放模型结果数据
       modelResultColumnNames: [], // 用来存放模型结果的列名
@@ -212,14 +189,14 @@ export default {
       modelOutputColumn: [], // 存放模型结果输出列
       modelDetailButtonIsShow: false, // 模型详细关联按钮是否可见
       modelDetailDialogIsShow: false, // 点击模型详细关联按钮后弹出的Dialog是否可见
-      options: [], //存放模型详细关联dialog中下拉框的值
+      options: [],//存放模型详细关联dialog中下拉框的值
       value: "", //模型详细关联dialog中下拉框选中的值
       tableData: [], // 存放导出的数据（sql编辑器模型结果界面）
       excelName: "", // 导出后excle的名称（sql编辑器模型结果界面）
       json_fields: {}, // 导出表的列名（sql编辑器模型结果界面）
       modelDetailModelResultDialogIsShow: false, //点击模型详细dialog确定按钮后执行显示模型详细结果弹窗是否可见
-      currentExecuteSQL: [], //模型详细关联dialog中点击确定按钮后根据sql返回的预先加载值，用于判断有几个页签
-      webSocket: null, //websocket对象
+      currentExecuteSQL: [],//模型详细关联dialog中点击确定按钮后根据sql返回的预先加载值，用于判断有几个页签
+      webSocket: null,//websocket对象
     };
   },
   mounted() {
@@ -720,7 +697,7 @@ export default {
         func1(dataObj);
       };
       const func2 = function func3(val) {
-        this.$refs.childTabsRef.loadTableData(val);
+          this.$refs.childTabsRef.loadTableData(val);
       };
       const func1 = func2.bind(this);
       this.webSocket.onclose = function (event) {};

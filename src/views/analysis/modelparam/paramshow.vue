@@ -3,11 +3,19 @@
     <table id="paramTable" class="table table-bordered">
       <thead>
         <tr>
-          <th align="center" style="background-color:#dfe6ec;color:black">参数名称</th>
-          <th align="center" width="400px" style="text-align: center;background-color:#dfe6ec;color:black">
+          <th align="center" style="background-color: #dfe6ec; color: black">
+            参数名称
+          </th>
+          <th
+            align="center"
+            width="400px"
+            style="text-align: center; background-color: #dfe6ec; color: black"
+          >
             默认值设置
           </th>
-          <th align="center" style="background-color:#dfe6ec;color:black">参数说明</th>
+          <th align="center" style="background-color: #dfe6ec; color: black">
+            参数说明
+          </th>
         </tr>
       </thead>
       <tbody id="tbody">
@@ -26,16 +34,20 @@ import {
   initParam,
   initParamHtml_Common,
   createParamTableHtml,
-  getParamSettingArr
-} from '@/api/analysis/auditparam'
+  getParamSettingArr,
+} from "@/api/analysis/auditparam";
 export default {
   methods: {
+    //初始化参数显示界面
     createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
-      createParamTableHtml(sqlIsChanged, paramArr, canEditor)
+      createParamTableHtml(sqlIsChanged, paramArr, canEditor);
     },
+    /**
+     * 将数据放到初始化好的参数显示界面中去
+     */
     getParamSettingArr(paramArr) {
-      return getParamSettingArr(paramArr)
-    }
-  }
-}
+      return getParamSettingArr(paramArr);
+    },
+  },
+};
 </script>
