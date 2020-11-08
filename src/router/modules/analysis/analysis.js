@@ -31,6 +31,11 @@ const analysisRouter = {
       path: 'auditWarning',
       name: '审计预警',
       component: () => import('@/views/analysis/auditwarning/auditwarninglist')
+    },
+    {
+      path: 'modelshoppingcart',
+      name: '审计预警',
+      component: () => import('@/views/analysis/auditmodel/modelshoppingcart')
     }
   ]
 }

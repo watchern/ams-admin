@@ -112,7 +112,7 @@
           <div>
             <div>访问类型</div>
             <el-checkbox-group v-model="currentData.accessType">
-              <el-checkbox v-for="(acc, i) in accessTypeArray" :label="acc.code">{{acc.name}}</el-checkbox>
+              <el-checkbox v-for="(acc, i) in accessTypeArray" :key="acc.code" :label="acc.code">{{acc.name}}</el-checkbox>
             </el-checkbox-group>
           </div>
         </div>
@@ -173,8 +173,6 @@ export default {
     })
     getResByRole(this.$route.params.roleUuid).then(resp => {
       resp.data.forEach(item => {
-        item.accessType = item.extMap.accessType.split(',');
-        item.whereStr = item.extMap.whereStr;
         this.treeData2[0].children.push(item)
       })
     });
@@ -222,7 +220,6 @@ export default {
 
     /* 点击角色数据 展示列和wherestr */
     onclick2(node, data) {
-      debugger;
       if (node.data.type === 'table') {
         if (node.data.cols) {
           this.currentData = node.data

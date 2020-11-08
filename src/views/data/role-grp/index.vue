@@ -28,7 +28,7 @@
               show-checkbox
             >
               <span slot-scope="{ node, data }" class="custom-tree-node">
-                <span :title="node.name">{{ node.label }}</span>
+                <span >{{ node.label }}</span>
               </span>
             </MyElTree>
           </el-tab-pane>
@@ -69,6 +69,12 @@
             </template>
           </el-table-column>
           <el-table-column label="名称" width="200px" align="center" prop="userName" />
+          <el-table-column label="编码" width="200px" align="center">
+            <template slot-scope="scope">
+              <span v-if="scope.row.userType == 1">{{scope.row.grpInstUuid}}</span>
+              <span v-if="scope.row.userType == 2">{{scope.row.unitUuid}}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="使用期限" width="200px" align="center">
             <template slot-scope="scope">
               <span v-if="scope.row.startTime==null && scope.row.endTime==null">无限制</span>

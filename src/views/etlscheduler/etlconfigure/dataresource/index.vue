@@ -52,9 +52,9 @@
         align="center"
         prop="dataResourceName"
       >
-      <template slot-scope="scope">
-          <a class="buttonText" @click="findDataResour(scope.row)">
-            {{scope.row.dataResourceName}}</a>
+        <template slot-scope="scope">
+          <el-link :underline="false" type="primary" @click="findDataResour(scope.row)">
+            {{ scope.row.dataResourceName }}</el-link>
         </template>
       </el-table-column>
       <el-table-column
@@ -96,13 +96,13 @@
           label="系统名称"
           prop="dataResourceName"
         >
-          <el-input v-model="temp.dataResourceName" :disabled="disableUpdate"/>
+          <el-input v-model="temp.dataResourceName" :disabled="disableUpdate" />
         </el-form-item>
         <el-form-item
           label="系统编码"
           prop="dataResourceCode"
         >
-          <el-input v-model="temp.dataResourceCode" :disabled="disableUpdate"/>
+          <el-input v-model="temp.dataResourceCode" :disabled="disableUpdate" />
         </el-form-item>
         <el-form-item
           label="系统描述"
@@ -188,15 +188,15 @@ export default {
   },
   methods: {
     findDataResour(data) {
-        this.closeStatus = true
-        this.disableUpdate = true
-        this.temp = Object.assign({}, data) // copy obj
-        this.dialogStatus = 'show'
-        this.dialogFormVisible = true
-        this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
-        })
-      },
+      this.closeStatus = true
+      this.disableUpdate = true
+      this.temp = Object.assign({}, data) // copy obj
+      this.dialogStatus = 'show'
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
     getList(query) {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
@@ -305,8 +305,3 @@ export default {
   }
 }
 </script>
-<style>
- .buttonText {
-    color: #409eff;
-  }
-</style>

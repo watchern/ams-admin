@@ -83,7 +83,7 @@
           <el-popover trigger="hover" placement="top">
             <p>{{ scope.row.connectionParams }}</p>
             <div slot="reference" class="name-wrapper">
-              <el-tag><i class="el-icon-tickets" /></el-tag>
+              <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
           </el-popover>
         </template>
@@ -102,7 +102,6 @@
       />
       <el-table-column
         label="修改时间"
-        align="center"
         prop="updateTime"
       />
     </el-table>
@@ -333,12 +332,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-  .el-tag {
-	background-color: transparent;
-	border-color: transparent;
-	color: #409eff;
-  font-size: 22px;
-  cursor: pointer;
-  }
-</style>
