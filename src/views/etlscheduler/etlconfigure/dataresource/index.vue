@@ -51,7 +51,12 @@
         width="300px"
         align="center"
         prop="dataResourceName"
-      />
+      >
+        <template slot-scope="scope">
+          <el-link :underline="false" type="primary" @click="findDataResour(scope.row)">
+            {{ scope.row.dataResourceName }}</el-link>
+        </template>
+      </el-table-column>
       <el-table-column
         label="系统编码"
         width="300px"
@@ -86,34 +91,39 @@
         :rules="rules"
         :model="temp"
         label-position="right"
-        label-width="140px"
-        style="width: 700px; margin-left:50px;"
       >
         <el-form-item
-          label="资源名称"
+          label="系统名称"
           prop="dataResourceName"
         >
-          <el-input v-model="temp.dataResourceName" />
+          <el-input v-model="temp.dataResourceName" :disabled="disableUpdate" />
         </el-form-item>
         <el-form-item
-          label="资源编码"
+          label="系统编码"
           prop="dataResourceCode"
         >
-          <el-input v-model="temp.dataResourceCode" />
+          <el-input v-model="temp.dataResourceCode" :disabled="disableUpdate" />
         </el-form-item>
         <el-form-item
-          label="参数描述"
+          label="系统描述"
           prop="dataResourceDesc"
         >
           <el-input
             v-model="temp.dataResourceDesc"
             type="textarea"
+            :disabled="disableUpdate"
           />
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button v-if="!closeStatus" @click="dialogFormVisible = false">取消</el-button>
         <el-button
+          v-if="closeStatus"
+          type="primary"
+          @click="dialogFormVisible = false"
+        >关闭</el-button>
+        <el-button
+          v-if="!closeStatus"
           type="primary"
           @click="dialogStatus==='create'?createData():updateData()"
         >确定</el-button>
@@ -135,6 +145,8 @@ export default {
       list: null,
       total: 0,
       listLoading: false,
+      disableUpdate: false,
+      closeStatus: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '资源编码', name: 'dataResourceCode', type: 'fuzzyText', value: '' },
@@ -158,8 +170,9 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑参数',
-        create: '添加参数'
+        update: '修改数据资源',
+        create: '添加数据资源',
+        show: '查看数据资源'
       },
       dialogPvVisible: false,
       rules: {
@@ -174,6 +187,16 @@ export default {
     this.getList()
   },
   methods: {
+    findDataResour(data) {
+      this.closeStatus = true
+      this.disableUpdate = true
+      this.temp = Object.assign({}, data) // copy obj
+      this.dialogStatus = 'show'
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
     getList(query) {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
@@ -203,6 +226,8 @@ export default {
       }
     },
     handleCreate() {
+      this.closeStatus = false
+      this.disableUpdate = false
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -228,6 +253,8 @@ export default {
       })
     },
     handleUpdate() {
+      this.closeStatus = false
+      this.disableUpdate = false
       this.temp = Object.assign({}, this.selections[0]) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true

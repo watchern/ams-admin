@@ -44,7 +44,7 @@
           <i class="el-icon-s-grid" />
         </span>
         <span class="label-wang" @mouseover="isShowSettingList=true">{{ userInfo.name }}</span>
-        <i class="el-icon-s-unfold unfold-icon" @click="isShrink=false" />
+        <i class="shrink-btn icon iconfont iconright-2" @click="isShrink=false" />
       </div>
     </template>
     <template v-else>
@@ -93,7 +93,7 @@
         </div>
         <div class="footer-btns flex a-center j-between flex-row">
           <span class="label-wang" @mouseover="isShowSettingList=true">{{ userInfo.name }}</span>
-          <i class="el-icon-s-unfold unfold-icon text-white" />
+          <i class="shrink-btn icon iconfont iconleft-2" @click="isShrink=true" />
         </div>
       </div>
     </template>
@@ -557,7 +557,7 @@ export default {
   }
   .bottom {
     font-size: 20px;
-    color: white;
+    color: #ffffff;
     .label-wang {
       margin-bottom: 10px;
     }
@@ -579,6 +579,10 @@ export default {
       border: 1px solid #585e65;
       margin-bottom: 12px;
     }
+  }
+  .shrink-btn {
+    color:#ffffff;
+    cursor:pointer;
   }
 }
 </style>

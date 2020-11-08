@@ -1,36 +1,68 @@
 <template>
-  <div style="overflow-y: scroll;height: 1000px">
-    <el-container style="height: 500px; border: 1px solid #eee">
-      <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-        <el-tree ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
-          <span slot-scope="{ node, data }" class="custom-tree-node">
-            <span>
-              <i />{{ node.label }}
-            </span>
-            <span v-if="data.type=='relDetail' || data.type=='filterShowNode'">
-              <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-delete" /></el-button>
-            </span>
-          </span>
-        </el-tree>
-      </el-aside>
+  <div class="app-container">
+    <el-container class="el-container">
+      <div id="drag" class="drag">
+        <div class="title">
+          <h2>导航栏</h2>
+          <div style="display: none">
+            <a class="min" href="javascript:" title="最小化"></a>
+            <a class="max" href="javascript:" title="最大化"></a>
+            <a class="revert" href="javascript:" title="还原"></a>
+            <a class="close" href="javascript:" title="关闭"></a>
+          </div>
+        </div>
+        <div class="resizeL"></div>
+        <div class="resizeT"></div>
+        <div class="resizeR"></div>
+        <div class="resizeB"></div>
+        <div class="resizeLT"></div>
+        <div class="resizeTR"></div>
+        <div class="resizeBR"></div>
+        <div class="resizeLB"></div>
+        <div class="content">
+          <el-aside>
+            <el-tree style="background: #fff;width: 200px" ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
+              <span slot-scope="{ node, data }" class="custom-tree-node">
+                <span>
+                  <i />{{ node.label }}
+                </span>
+                <span v-if="data.type=='relInfo'">
+                  <el-button type="text" size="mini" @click.stop="() => createDetail()"><i class="el-icon-circle-plus-outline"/></el-button>
+                </span>
+                <span v-if="data.type=='filterShow'">
+                  <el-button type="text" size="mini" @click.stop="() => createFilterShow()"><i class="el-icon-circle-plus-outline"/></el-button>
+                </span>
+                <span v-if="data.type=='relDetail' || data.type=='filterShowNode'">
+                  <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-delete"/></el-button>
+                </span>
+              </span>
+            </el-tree>
+          </el-aside>
+        </div>
+      </div>
       <div ref="basicInfo" class="detail-form">
         <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules">
-          <el-form-item label="模型名称" prop="modelName">
-            <el-input v-model="form.modelName" />
-          </el-form-item>
           <el-row>
-            <el-form-item label="业务分类">
-              <el-col :span="22">
-                <el-input v-model="form.modelFolderUuid" style="display: none" :disabled="true" />
-                <el-input v-model="form.modelFolderName" :disabled="true" />
-              </el-col>
-              <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true">选择</el-button>
-            </el-form-item>
+            <el-col :span="15">
+              <el-form-item label="模型名称" prop="modelName">
+                <el-input v-model="form.modelName" />
+              </el-form-item>
+            </el-col>
           </el-row>
+            <el-row>
+              <el-form-item label="业务分类">
+                <el-col :span="15">
+                  <el-input v-model="form.modelFolderUuid" class="display" :disabled="true" />
+                  <el-input v-model="form.modelFolderName" :disabled="true" />
+                </el-col>
+                <el-col :span="2"><el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true">选择</el-button></el-col>
+                <el-col :span="2"></el-col>
+              </el-form-item>
+            </el-row>
           <el-row>
             <el-form-item label="审计事项" prop="auditItemUuid">
-              <el-col :span="22">
-                <el-input v-model="form.auditItemUuid" style="display: none" :disabled="true" />
+              <el-col :span="15">
+                <el-input v-model="form.auditItemUuid" class="display" :disabled="true" />
                 <el-input v-model="form.auditItemName" :disabled="true" />
               </el-col>
               <el-button @click="showAuditItemTree">选择</el-button>
@@ -62,51 +94,49 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-form-item label="审计思路">
-            <el-input v-model="form.auditIdeas" type="textarea" />
-          </el-form-item>
-          <el-form-item label="参数条件">
-            <el-input v-model="form.paramConditions" type="textarea" />
-          </el-form-item>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="审计思路">
+                <el-input v-model="form.auditIdeas" type="textarea" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="15">
+              <el-form-item label="参数条件">
+                <el-input v-model="form.paramConditions" type="textarea" />
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
       </div>
-      <div ref="modelDesign" style="display: none;width:100%">
+      <div ref="modelDesign" class="display div-width">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id">
             <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor"
-                       :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue"style="height: 740px;overflow-y:scroll" />
+                       :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" class="sql-editor" />
           </div>
-          <el-form-item label="模型sql" prop="sqlValue" style="display: none;">
+          <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
           </el-form-item>
         </el-form>
       </div>
-      <div ref="paramDefaultValue" style="display: none;">
-        <p style="color:red;font-size:large">拖拽改变参数展示顺序</p>
+      <div ref="paramDefaultValue" class="display default-value">
+        <p class="p-div">拖拽改变参数展示顺序</p>
         <div id="paramList">
           <paramShow ref="apple"></paramShow>
-<!--          <el-table
-            ref="paramData"
-            :data="paramData"
-            style="width: 100%"
-          >
-            <el-table-column prop="ammParamUuid" label="参数编号" width="180" />
-            <el-table-column prop="paramName" label="参数名称" width="180" />
-            <el-table-column prop="paramValue" label="参数默认值" width="180">
-              <template slot-scope="scope">
-                <v-runtime-template :template="scope.row.paramValue" />
-              </template>
-            </el-table-column>
-            <el-table-column prop="description" label="参数描述" />
-          </el-table>-->
         </div>
       </div>
-      <div ref="modelResultOutputCol" style="display: none;">
-        <p style="color:red;font-size:large">注意：只显示最后的结果列</p>
-        <div style="height:476px;overflow:scroll">
-          <el-table ref="columnData" :data="columnData" style="width: 100%">
+      <div ref="modelResultOutputCol" class="display default-value">
+        <p class="p-div">注意：只显示最后的结果列</p>
+        <div class="model-result-output-col">
+          <el-table ref="columnData" :data="columnData" class="div-width">
             <el-table-column prop="outputColumnName" label="输出列名" width="180" />
-            <el-table-column prop="" label="数据转码" width="80" />
+            <el-table-column prop="dataCoding" label="数据转码" width="180">
+              <template slot-scope="scope">
+                <SelectTransCode ref="SelectTransCode" :transuuid.sync="scope.row.dataCoding"/>
+              </template>
+            </el-table-column>
             <el-table-column prop="columnName" label="是否显示" width="80">
               <template slot-scope="scope">
                 <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1">
@@ -149,33 +179,32 @@
           </el-table>
         </div>
       </div>
-      <div ref="relInfo" style="display: none;">
+      <div ref="relInfo" class="display default-value">
         <p>在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
           用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。
           通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。</p>
-        <el-button style="float: right;position:sticky;top: 260px;" @click="createDetail">新建</el-button>
+        <el-button class="el-button-style" @click="createDetail">新建</el-button>
       </div>
       <div id="modelDetailDiv">
-        <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id" style="display: none">
+        <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id" class="display default-value">
           <ModelDetail ref="child" :columns="columnData" :data="modelDetail.data" :tree-id="modelDetail.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
-      <div ref="chartConfig" style="display: none;">
+      <div ref="chartConfig" class="display default-value">
         这是图表配置
       </div>
-      <div ref="modelFilterShowParent" style="display: none;">
+      <div ref="modelFilterShowParent" class="display default-value">
         <p>条件显示能够根据用户所设定的条件及显示样式，对模型执行结果中满足条件的敏感数据或重要数据进行着色显示，使这些数据变的一目了然，
           以便审计人员对这些数据进行审计。</p>
         <p>条件显示设计器以表格的形式列举所有由用户设定的、将被应用于模型执行结果的显示条件及显示样式，用户可通过该列表对各个条件的属性进行快速查看。
           同时用户也可以对显示条件进行添加、修改、删除</p>
-        <el-button style="float: right;position:sticky;top: 260px;" @click="createFilterShow">新建</el-button>
+        <el-button class="el-button-style" @click="createFilterShow">新建</el-button>
       </div>
       <div ref="filterShowDiv">
-        <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id" style="display: none">
+        <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id" class="display default-value">
           <ModelFilterShow ref="modelFilterSHowChild" :columns="columnData" :data="filterShow.data" :tree-id="filterShow.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
-
     </el-container>
     <el-dialog v-if="auditItemTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="auditItemTree" title="请选择审计事项" width="80%">
       <AuditItemTree ref="auditItemTreeRef"></AuditItemTree>
@@ -191,7 +220,7 @@
         <el-button @click="modelFolderTreeDialog=false">取消</el-button>
       </div>
     </el-dialog>
-    <div style="margin-top: 220px;float:right">
+    <div ref="btnDivRef" class="div-btn">
       <el-button type="primary" @click="save">保存</el-button>
       <el-button @click="closeWinfrom">取消</el-button>
     </div>
@@ -207,9 +236,11 @@ import VRuntimeTemplate from 'v-runtime-template'
 import paramShow from "@/views/analysis/modelparam/paramshow";
 import { getDictList } from '@/utils/index'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
+import SelectTransCode from '@/views/data/table/transCodeSelect'
+import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 export default {
   name: 'EditModel',
-  components: { ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree },
+  components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode },
   props: ['openValue', 'operationObj'],
   data() {
     return {
@@ -285,20 +316,36 @@ export default {
       },
       //选择的业务列
       businessColumnSelect: [],
+      //列类型数组
       columnTypeSelect: [],
+      //模型详细对象数组
       modelDetails: [],
+      dragMinWidth: 250,
+      dragMinHeight: 180,
+      //条件显示数组
       filterShows: [],
+      //校验规则失败自动跳转用的对象
       newRelInfoValue: {},
       newFilterShowValue: {},
+      //sql编辑器参数对象
       sqlEditorParamObj: {},
+      //添加模型详细树时候的索引
       modelDetailIndex: 0,
+      //风险等级
       riskLeve: [],
+      //模型类型
       modelTypeData:[],
+      //添加条件显示时候树的索引
       modelFilterShowIndex: 0,
+      //模型历史表数组
       modelOriginalTable: [],
+      //模型图表配置
       modelChartSetup: {},
+      //当前选中树节点
       currentSelectTreeNode: null,
+      //模型类型数组
       modelTypeObj:[],
+      //关闭窗体时候用的窗体名
       formName:"",
       basicInfoRules: {
         modelName: [
@@ -332,6 +379,7 @@ export default {
   created() {
   },
   mounted() {
+    this.initEvent()
     var operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
     this.initData(operationObj)
     // 如果为2则反显要修改的数据
@@ -369,6 +417,11 @@ export default {
       // 初始化审计事项
       this.modelTypeData = getDictList('002003')
     },
+    /**
+     * 点击之后切换页签
+     * @param data 点击的数据
+     * @param node 树节点
+     */
     handleNodeClick(data, node) {
       this.hideModelDetail()
       if (data.type == 'basicInfo') {
@@ -671,7 +724,7 @@ export default {
       for (let i = 0; i < columnNames.length; i++) {
         var obj = {
           columnName: columnNames[i],
-          columnType: 'varchar'
+          columnType: columnType[i]
         }
         returnObj.push(obj)
       }
@@ -701,6 +754,10 @@ export default {
       }
       return resultObj
     },
+    /**
+     * 反显sql语句
+     * @param returnObj sql编辑器拿到的对象
+     */
     displaySQL(returnObj) {
       let sql = returnObj.sqlValue
       const arrPram = returnObj.params
@@ -975,6 +1032,7 @@ export default {
           id:'002003001'
         }
         this.modelTypeObj.push(obj)
+
       }
       if(vId == "002003002"){
         this.$message({ type: 'info', message: "暂时不支持图形化模型"})
@@ -1007,7 +1065,13 @@ export default {
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
           if (result.code === 0) {
-            this.$message({ type: 'success', message: '新增成功!' })
+            this.$notify({
+              title:'提示',
+              message:'新增成功',
+              type:'success',
+              duration:2000,
+              position:'bottom-right'
+            });
             this.closeWinfrom()
           } else {
             this.$message({ type: 'error', message: '新增模型失败!' })
@@ -1017,7 +1081,13 @@ export default {
       } else {
         updateModel(modelObj).then(result => {
           if (result.code === 0) {
-            this.$message({ type: 'success', message: '修改成功!' })
+            this.$notify({
+              title:'提示',
+              message:'修改成功',
+              type:'success',
+              duration:2000,
+              position:'bottom-right'
+            });
             this.closeWinfrom()
           } else {
             this.$message({ type: 'error', message: '修改模型失败!' })
@@ -1025,13 +1095,246 @@ export default {
           }
         })
       }
+    },
+    initEvent() {
+      var oDrag = document.getElementById('drag')
+      var oTitle = this.byClass('title', oDrag)[0]
+      var oL = this.byClass('resizeL', oDrag)[0]
+      var oT = this.byClass('resizeT', oDrag)[0]
+      var oR = this.byClass('resizeR', oDrag)[0]
+      var oB = this.byClass('resizeB', oDrag)[0]
+      var oLT = this.byClass('resizeLT', oDrag)[0]
+      var oTR = this.byClass('resizeTR', oDrag)[0]
+      var oBR = this.byClass('resizeBR', oDrag)[0]
+      var oLB = this.byClass('resizeLB', oDrag)[0]
+      this.drag(oDrag, oTitle)
+      //四角
+      this.resize(oDrag, oLT, true, true, false, false)
+      this.resize(oDrag, oTR, false, true, false, false)
+      this.resize(oDrag, oBR, false, false, false, false)
+      this.resize(oDrag, oLB, true, false, false, false)
+      //四边
+      this.resize(oDrag, oL, true, false, false, true)
+      this.resize(oDrag, oT, false, true, true, false)
+      this.resize(oDrag, oR, false, false, false, true)
+      this.resize(oDrag, oB, false, false, true, false)
+      oDrag.style.left = (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
+      oDrag.style.top = (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'
+    },
+    drag(oDrag, handle) {
+      var disY = 0
+      var disX = 0
+      var oMin = this.byClass('min', oDrag)[0]
+      var oMax = this.byClass('max', oDrag)[0]
+      var oRevert = this.byClass('revert', oDrag)[0]
+      var oClose = this.byClass('close', oDrag)[0]
+      handle = handle || oDrag
+      handle.style.cursor = 'move'
+      handle.onmousedown = function(event) {
+        var event = event || window.event
+        disX = event.clientX - oDrag.offsetLeft
+        disY = event.clientY - oDrag.offsetTop
+        document.onmousemove = function(event) {
+          var event = event || window.event
+          var iL = event.clientX - disX
+          var iT = event.clientY - disY
+          var maxL = document.documentElement.clientWidth - oDrag.offsetWidth
+          var maxT = document.documentElement.clientHeight - oDrag.offsetHeight
+          iL <= 0 && (iL = 0)
+          iT <= 0 && (iT = 0)
+          iL >= maxL && (iL = maxL)
+          iT >= maxT && (iT = maxT)
+          oDrag.style.left = iL + 'px'
+          oDrag.style.top = iT + 'px'
+          return false
+        }
+        document.onmouseup = function() {
+          document.onmousemove = null
+          document.onmouseup = null
+          this.releaseCapture && this.releaseCapture()
+        }
+        this.setCapture && this.setCapture()
+        return false
+      }
+      //最大化按钮
+      oMax.onclick = function() {
+        oDrag.style.top = oDrag.style.left = 0
+        oDrag.style.width = document.documentElement.clientWidth - 2 + 'px'
+        oDrag.style.height = document.documentElement.clientHeight - 2 + 'px'
+        this.style.display = 'none'
+        oRevert.style.display = 'block'
+      }
+      //还原按钮
+      oRevert.onclick = function() {
+        oDrag.style.width = this.dragMinWidth + 'px'
+        oDrag.style.height = this.dragMinHeight + 'px'
+        oDrag.style.left = (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
+        oDrag.style.top = (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'
+        this.style.display = 'none'
+        oMax.style.display = 'block'
+      }
+      //最小化按钮
+      oMin.onclick = oClose.onclick = function() {
+        oDrag.style.display = 'none'
+        var oA = document.createElement('a')
+        oA.className = 'open'
+        oA.href = 'javascript:;'
+        oA.title = '还原'
+        document.body.appendChild(oA)
+        oA.onclick = function() {
+          oDrag.style.display = 'block'
+          document.body.removeChild(this)
+          this.onclick = null
+        }
+      }
+      //阻止冒泡
+      oMin.onmousedown = oMax.onmousedown = oClose.onmousedown = function(event) {
+        this.onfocus = function() {
+          this.blur()
+        };
+        (event || window.event).cancelBubble = true
+      }
+    },
+    resize(oParent, handle, isLeft, isTop, lockX, lockY) {
+      handle.onmousedown = function(event) {
+        var event = event || window.event
+        var disX = event.clientX - handle.offsetLeft
+        var disY = event.clientY - handle.offsetTop
+        var iParentTop = oParent.offsetTop
+        var iParentLeft = oParent.offsetLeft
+        var iParentWidth = oParent.offsetWidth
+        var iParentHeight = oParent.offsetHeight
+        document.onmousemove = function(event) {
+          var event = event || window.event
+          var iL = event.clientX - disX
+          var iT = event.clientY - disY
+          var maxW = document.documentElement.clientWidth - oParent.offsetLeft - 2
+          var maxH = document.documentElement.clientHeight - oParent.offsetTop - 2
+          var iW = isLeft ? iParentWidth - iL : handle.offsetWidth + iL
+          var iH = isTop ? iParentHeight - iT : handle.offsetHeight + iT
+          isLeft && (oParent.style.left = iParentLeft + iL + 'px')
+          isTop && (oParent.style.top = iParentTop + iT + 'px')
+          iW < this.dragMinWidth && (iW = this.dragMinWidth)
+          iW > maxW && (iW = maxW)
+          lockX || (oParent.style.width = iW + 'px')
+          iH < this.dragMinHeight && (iH = this.dragMinHeight)
+          iH > maxH && (iH = maxH)
+          lockY || (oParent.style.height = iH + 'px')
+          if ((isLeft && iW == this.dragMinWidth) || (isTop && iH == this.dragMinHeight)) document.onmousemove = null
+          return false
+        }
+        document.onmouseup = function() {
+          document.onmousemove = null
+          document.onmouseup = null
+        }
+        return false
+      }
+    },
+    byId: function(id) {
+      return typeof id === 'string' ? document.getElementById(id) : id
+    },
+    byClass: function(sClass, oParent) {
+      var aClass = []
+      var reClass = new RegExp('(^| )' + sClass + '( |$)')
+      var aElem = this.byTagName('*', oParent)
+      for (var i = 0; i < aElem.length; i++) reClass.test(aElem[i].className) && aClass.push(aElem[i])
+      return aClass
+    },
+    byTagName: function(elem, obj) {
+      return (obj || document).getElementsByTagName(elem)
     }
   }
 }
 </script>
-<style>
-.divCss{
-  margin-left: 20px;
-  width: 100%;
+<style scoped>
+.sql-editor{
+  height: 680px;
+  overflow-y:scroll
+}
+
+.display{
+  display: none;
+
+}
+
+.div-width{
+  width:100%;
+}
+
+.el-container{
+  border: 1px solid #eee
+}
+
+.div-btn{
+  margin-top: 10.5%;
+  float:right;
+  margin-right: 1%;
+  left:0;
+  top:30%
+}
+
+.el-button-style{
+  float: right;
+  position:sticky;
+  top: 260px;
+}
+
+.p-div{
+  color:red;
+  font-size:large;
+}
+
+.model-result-output-col{
+  height: 650px;
+  overflow-y: scroll;
+}
+
+.tree-css{
+  position: fixed;
+  right: 14px;
+  z-index: 10000000;
+}
+.default-value{
+  margin-left:20px;
+}
+
+.drag {
+  position: absolute;
+  z-index: 1000;
+  top: 100px;
+  left: 400px;
+  width: 200px;
+  height: 235px;
+  background: #FFFFFF;
+  border-radius: 5px;
+  box-shadow: 0px 3px 8px 7px #d4d4d4;
+}
+
+#drag .title {
+  position: relative;
+  height: 27px;
+  margin: 5px;
+}
+
+#drag .title h2 {
+  font-size: 14px;
+  height: 27px;
+  line-height: 24px;
+  border-bottom: 1px solid #A1B4B0;
+}
+
+#drag .title div {
+  position: absolute;
+  height: 19px;
+  top: 2px;
+  right: 0;
+}
+
+#drag .title a, a.open {
+  float: left;
+  width: 21px;
+  height: 19px;
+  display: block;
+  margin-left: 5px;
 }
 </style>

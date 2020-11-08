@@ -9,7 +9,8 @@ const state = {
   avatar: '',
   introduction: '',
   roles: [],
-  id: ''
+  id: '',
+  code: ''
 }
 
 const mutations = {
@@ -33,6 +34,9 @@ const mutations = {
   },
   SET_RES: (state, res) => {
     state.res = res
+  },
+  SET_CODE: (state, code) => {
+    state.code = code
   }
 }
 
@@ -47,6 +51,8 @@ const actions = {
         commit('SET_ID', data.personUuid)
         commit('SET_NAME', data.username)
         commit('SET_TOKEN', data.personUuid)
+        debugger;
+        commit('SET_CODE', data.userid)
         setToken(data.personUuid)
         resolve()
         var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))

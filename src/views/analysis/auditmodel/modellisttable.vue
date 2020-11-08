@@ -1,54 +1,71 @@
 <template>
-  <div class="page-container">
-    <el-row>
-      <el-col>
-        <el-tabs v-model="editableTabsValue" type="card" @tab-click="" closable @tab-remove="removeTab">
-          <el-tab-pane label="模型列表" name="modelList">
-            <div class="filter-container">
-              <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
-            </div>
-            <div style="float: right">
-              <el-button type="primary" class="oper-btn detail" @click="previewModel" />
-              <el-button type="primary" class="oper-btn add" @click="addModel" />
-              <el-button type="primary" class="oper-btn edit" @click="updateModel" />
-              <el-button type="primary" class="oper-btn delete" @click="deleteModel" />
-              <el-dropdown placement="bottom" trigger="click" style="margin-left: 10px;">
-                <el-button type="primary" class="oper-btn more" />
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
-                  <el-dropdown-item @click.native="importData">导入</el-dropdown-item>
-                  <el-dropdown-item @click.native="shareModel">共享</el-dropdown-item>
-                  <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
-                  <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-            <el-table :key="tableKey" ref="modelListTable" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;height: 450px;overflow-y: scroll">
-              <el-table-column type="selection" width="55" />
-              <el-table-column label="模型名称" width="100px" align="center" prop="modelName" />
-              <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
-              <el-table-column label="审计事项" prop="auditItemName" />
-              <el-table-column label="风险等级" prop="riskLevelUuid" :formatter="riskLevelFormatter" />
-              <el-table-column label="模型类型" prop="modelType" :formatter="modelTypeFormatter" />
-              <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
-            </el-table>
-            <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-          </el-tab-pane>
-          <el-tab-pane
-            v-for="(item, index) in editableTabs"
-            :key="item.name"
-            :label="item.title"
-            :name="item.name">
-            <!--增加参数输入组件-->
-            <crossrangeParam v-if="item.isExistParam" :ref="item.name + 'param'"></crossrangeParam>
+  <div class="tree-list-container">
+    <el-tabs v-model="editableTabsValue" closable @tab-remove="removeTab">
+      <el-tab-pane label="模型列表" name="modelList">
+        <div class="filter-container">
+          <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
+        </div>
+        <el-row type="flex" class="row-bg" v-if="power!='warning'">
+          <el-col align="right">
+            <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn detail" @click="previewModel" />
+            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />
+            <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel" />
+            <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete" @click="deleteModel" />
+            <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
+              <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
+              <el-dropdown-menu slot="dropdown">
+<!--                  <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
+                <el-dropdown-item @click.native="importData">导入</el-dropdown-item>-->
+                <el-dropdown-item @click.native="shareModel">共享</el-dropdown-item>
+                <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
+                <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-col>
+        </el-row>
+        <el-table :key="tableKey" ref="modelListTable" v-loading="listLoading"
+                  :data="list" border fit highlight-current-row @select="modelTableSelectEvent">
+          <el-table-column type="selection" width="55" />
+          <el-table-column label="模型名称" width="100px" align="left" prop="modelName" />
+          <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
+          <el-table-column label="审计事项" prop="auditItemName" align="center" />
+          <el-table-column label="风险等级" prop="riskLevelUuid" align="center" :formatter="riskLevelFormatter" />
+          <el-table-column label="模型类型" prop="modelType" align="center" :formatter="modelTypeFormatter" />
+          <el-table-column label="创建时间" prop="createTime" align="center" :formatter="dateFormatter" />
+        </el-table>
+        <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
+      </el-tab-pane>
+      <el-tab-pane
+        v-for="(item, index) in editableTabs"
+        :key="item.name"
+        :label="item.title"
+        :name="item.name">
+        <!--增加参数输入组件-->
+        <el-collapse v-model="activeNames">
+          <el-collapse-item name="1" v-if="item.isExistParam">
+            <template slot="title"><div class="panel-font-size">参数输入区域</div></template>
+            <el-row>
+              <el-col :span="22">
+                <crossrangeParam :myId="item.name" :ref="item.name + 'param'"></crossrangeParam>
+              </el-col>
+              <el-col :span="2">
+                <el-button type="primary" @click="queryModel(item.name)">查询</el-button>
+              </el-col>
+            </el-row>
+          </el-collapse-item>
+          <el-collapse-item name="2">
+            <template slot="title"><div class="panel-font-size">结果展示区域</div></template>
             <!--增加结果组件-->
-           <div style="margin-left: -14px">
-             <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor" style="width:1260px"/>
-           </div>
-          </el-tab-pane>
-        </el-tabs>
-      </el-col>
-    </el-row>
+            <el-row>
+              <el-col :span="24">
+                <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor"/>
+              </el-col>
+            </el-row>
+          </el-collapse-item>
+        </el-collapse>
+      </el-tab-pane>
+    </el-tabs>
+    <modelshoppingcart v-show="isShowShoppingCart" ref="modelShoppingCartRef"></modelshoppingcart>
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
       <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
@@ -57,7 +74,7 @@
       </div>
     </el-dialog>
     <el-dialog title="请输入参数" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" :append-to-body="true">
-      <paramDraw ref="paramDrawRef"/>
+      <paramDraw ref="paramDrawRef" :myId="paramDrawUuid"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
         <el-button type="primary" @click="replaceNodeParam">确定</el-button>
@@ -88,10 +105,12 @@ import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import { startExecuteSql } from '@/api/analysis/sqleditor/sqleditor'
 import crossrangeParam from '@/views/analysis/modelparam/crossrangeparam'
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
-import { initcrossrangeParamHtml, replaceNodeParam } from '@/api/analysis/auditparam'
+import {replaceNodeParam,replaceCrossrangeNodeParam } from '@/api/analysis/auditparam'
+import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 export default {
   name: 'ModelListTable',
-  components: { Pagination, QueryField, EditModel,ModelFolderTree,childTabs,crossrangeParam,paramDraw },
+  components: { Pagination, QueryField, EditModel,ModelFolderTree,childTabs,crossrangeParam,paramDraw,modelshoppingcart },
+  props:['power'],
   data() {
     return {
       tableKey: 'errorUuid',
@@ -102,8 +121,11 @@ export default {
       listLoading: false,
       //编辑框名称
       editModelTitle: '',
+      isShowShoppingCart:false,
       //发布模型dialog
       treeSelectShow:false,
+      //折叠面板默认展开
+      activeNames:['1','2'],
       //编辑模型dialog
       editModelShow: false,
       //发布模型
@@ -120,8 +142,19 @@ export default {
       editableTabs:[],
       //已经正在预览的模型
       modelPreview:[],
+      paramDrawUuid:'',
+      //记录模型是否首次运行  如果非首次运行则不重复加载参数
+      modelRunTaskList:{},
       //参数输入界面
       dialogFormVisible:false,
+      //按钮状态
+      btnState:{
+        addBtnState:false,
+        editBtnState:true,
+        deleteBtnState:true,
+        previewBtn:true,
+        otherBtn:true
+      },
       //当前预览模型参数和sql
       currentPreviewModelParamAndSql:{},
       queryFields: [
@@ -165,7 +198,16 @@ export default {
     dialogFormVisible(value){
       this.$nextTick(function(){
         if(value){
-          this.$refs.paramDrawRef.initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', null)
+          this.$refs.paramDrawRef.initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', this.paramDrawUuid)
+        }
+      })
+    },
+    editableTabs(){
+      this.$nextTick(function(){
+        //页签添加完成后初始化新界面的参数
+        if(this.currentPreviewModelParamAndSql.paramObj != undefined){
+          this.$refs.[this.currentPreviewModelParamAndSql.modelUuid + 'param'][0].
+          initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', this.currentPreviewModelParamAndSql.modelUuid)
         }
       })
     }
@@ -199,8 +241,10 @@ export default {
       }
       const func2 = function func3(val) {
         const dataObj = JSON.parse(val.data)
-        console.log(this.$refs.[dataObj.modelUuid + 'param'])
-        this.$refs.[dataObj.modelUuid + 'param'][0].initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', null)
+/*        if(this.currentPreviewModelParamAndSql.paramObj != undefined){
+          this.$refs.[dataObj.modelUuid + 'param'][0].
+          initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', dataObj.modelUuid)
+        }*/
         this.$refs.[dataObj.modelUuid][0].loadTableData(dataObj)
       }
       const func1 = func2.bind(this)
@@ -341,8 +385,37 @@ export default {
     /**
      * 隐藏编辑模型界面
      */
-    hideEditModal() {
-      this.editModelShow = false
+    modelTableSelectEvent(selection, row) {
+      var selectObj = this.$refs.modelListTable.selection
+      if(selectObj.length == 1){
+        //显示全部按钮
+        this.btnState.otherBtn = false
+        this.btnState.deleteBtnState = false
+        this.btnState.addBtnState = false
+        this.btnState.editBtnState = false
+        this.btnState.previewBtn = false
+        this.isShowShoppingCart = true
+        this.$refs.modelShoppingCartRef.setMemo(selectObj)
+      }
+      else if(selectObj.length > 1){
+        //只显示删除和添加按钮
+        this.btnState.otherBtn = false
+        this.btnState.deleteBtnState = false
+        this.btnState.addBtnState = false
+        this.btnState.editBtnState = true
+        this.btnState.previewBtn = true
+        this.isShowShoppingCart = true
+        this.$refs.modelShoppingCartRef.setMemo(selectObj)
+      }
+      else if(selectObj.length == 0){
+        //只显示添加按钮
+        this.btnState.otherBtn = true
+        this.btnState.deleteBtnState = true
+        this.btnState.addBtnState = false
+        this.btnState.editBtnState = true
+        this.btnState.previewBtn = true
+        this.isShowShoppingCart = false
+      }
     },
     /**
      * 添加模型
@@ -413,6 +486,13 @@ export default {
           if (result.code == 0) {
             this.getList(this.query)
             this.$emit('refreshTree')
+            this.$notify({
+              title:'提示',
+              message:'删除成功',
+              type:'success',
+              duration:2000,
+              position:'bottom-right'
+            });
           } else {
             this.$message({ type: 'error', message: '删除失败' })
           }
@@ -499,13 +579,7 @@ export default {
           //刷新树和列表
         }
         else{
-          this.$notify({
-            title:'提示',
-            message:tips + '失败',
-            type:'error',
-            duration:2000,
-            position:'bottom-right'
-          });
+          this.$message({ type: 'error', message: tips + '失败' })
         }
       })
     },
@@ -601,7 +675,10 @@ export default {
             }
             this.currentPreviewModelParamAndSql.sqlValue = selectObj[0].sqlValue
             this.currentPreviewModelParamAndSql.paramObj = paramObj
+            this.currentPreviewModelParamAndSql.modelUuid = selectObj[0].modelUuid
             //展现参数输入界面
+            let timestamp = new Date().getTime()
+            this.paramDrawUuid = timestamp
             this.dialogFormVisible = true
           }
         } else {
@@ -651,27 +728,86 @@ export default {
       }
     },
     /**
-     * 获取替换参数后的sql
+     * 获取替换参数后的sql并执行sql
      */
     replaceNodeParam() {
       var selectObj = this.$refs.modelListTable.selection
-      var obj = replaceNodeParam()
+      var obj = replaceNodeParam(this.paramDrawUuid)
       if (!obj.verify) {
         this.$message({ type: 'info', message: obj.message })
         return
       }
       obj.sqls = obj.sql
       obj.modelUuid = selectObj[0].modelUuid
-
+      //合并参数 将输入的值替换到当前界面
+      this.mergeParamObj(obj.paramsArr)
       startExecuteSql(obj).then((result) => {
         this.dialogFormVisible = false
         if (!result.data.isError) {
           this.addTab(selectObj[0],true,result.data.executeSQLList)
+          //记录当前模型的执行任务列表，为了在结果页再次执行时与之前的数据对应
+          this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
         } else {
           this.$message({ type: 'info', message: '执行失败' })
         }
       })
+    },
+    /**
+     * 合并参数对象
+     * @param paramsArr 替换参数值后的参数数组
+     */
+    mergeParamObj(paramsArr){
+      let paramObj = this.currentPreviewModelParamAndSql.paramObj    //模型的参数数组
+      for (let i = 0;i < paramObj.length;i++){
+        for (let j = 0;j < paramsArr.length;j++){
+          if(paramObj[i].moduleParamId == paramsArr[j].moduleParamId){
+            //如果母参相等说明是同一个参数，将输入的值替换到里面
+            paramObj[i].paramValue = paramsArr[j].paramValue
+          }
+        }
+      }
+    },
+    /**
+     * 参数界面点击查询按钮
+     * @param modelUuid 模型编号
+     */
+    queryModel(modelUuid){
+      var obj = replaceCrossrangeNodeParam(modelUuid)
+      if (!obj.verify) {
+        this.$message({ type: 'info', message: obj.message })
+        return
+      }
+      obj.sqls = obj.sql
+      obj.modelUuid = modelUuid
+      obj.executeSQLList = this.modelRunTaskList[obj.modelUuid]
+      //重置数据展现界面数据
+      this.$refs.[modelUuid][0].reSetTable()
+      startExecuteSql(obj).then((result) => {
+        this.dialogFormVisible = false
+        if (!result.data.isError) {
+
+        } else {
+          this.$message({ type: 'info', message: '执行失败' })
+        }
+      })
+    },
+    /**
+     * 获取模型列表选中的数据
+     */
+    getModelListCheckData(){
+      return this.$refs.modelListTable.selection
     }
   }
 }
 </script>
+
+<style>
+
+.el-dropdown{
+  margin-left: 10px;
+}
+
+.panel-font-size{
+  font-size: 25px;
+}
+</style>

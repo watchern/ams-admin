@@ -1,5 +1,7 @@
 <template>
-  <div><data-tree @node-click="handleClick" /></div>
+  <div><data-tree @node-click="handleClick"
+            :dataUserId="dataUserId"  :sceneCode="sceneCode"
+  /></div>
 </template>
 
 <script>
@@ -9,13 +11,15 @@ export default {
   components: { dataTree },
   data() {
     return {
-
+      dataUserId: this.$store.getters.personcode,
+      sceneCode: 'auditor'
     }
   },
   created() {
   },
   methods: {
     handleClick(data, node, tree) {
+      console.log(this.$store.getters.personcode)
       console.log(data, node, tree)
     }
   }

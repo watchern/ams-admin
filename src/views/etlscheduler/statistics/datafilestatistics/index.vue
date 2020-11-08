@@ -2,11 +2,6 @@
   <div class="page-container">
     <div class="filter-container">
       <el-form :inline="true">
-        <el-form-item label="统计粒度">
-          <el-select v-model="granularity">
-            <el-option v-for="opt in dataTypes" :key="opt.key" :label="opt.name" :value="opt" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="作业时间范围">
           <template>
             <el-date-picker v-model="StratTimeStart" :type="datepickerType" placeholder="开始时间" />-
@@ -18,11 +13,6 @@
           <el-button type="primary" @click="clearAll">清空</el-button>
         </el-form-item>
       </el-form>
-      <!-- <QueryField
-        ref="queryfield"
-        :form-data="queryFields"
-        @submit="getList"
-      /> -->
     </div>
     <div style="float: left;">
       <el-button type="primary" class="oper-btn" icon="el-icon-download" title="导出" @click="exportFile" />
@@ -41,24 +31,24 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column
-        label="调度日期"
-        align="center"
-        prop="dateString"
+        label="业务系统"
+        prop="systemName"
       />
       <el-table-column
-        label="调度任务"
+        label="数据表文件总数"
         align="center"
-        prop="scheduleName"
+        prop="totalFiles"
       />
       <el-table-column
-        label="耗时"
+        label="增量表文件数"
         align="center"
-        prop="timeConsum"
+        prop="incrementFiles"
       />
-      <!-- <template slot-scope="scope">
-          {{ scope.row.timeConsuming | timeFilter }}
-        </template> -->
-      <!-- </el-table-column> -->
+      <el-table-column
+        label="全量表文件数"
+        align="center"
+        prop="FullFiles"
+      />
     </el-table>
     <pagination
       v-show="total>0"
@@ -72,29 +62,12 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { resourceStatisticsList } from '@/api/etlscheduler/statistics'
+import { datafileStatisticsList } from '@/api/etlscheduler/statistics'
 import axios from 'axios'
 import qs from 'qs'
 
 export default {
   components: { Pagination },
-  filters: {
-    // 耗时的时间格式转换
-    timeFilter(value) {
-      const time = value
-      if (time === null || time === '' || time === 0) {
-        return 0 + '秒'
-      } else {
-        if (time / 1000 >= 0 && time / 1000 < 60) {
-          return (time / 1000).toFixed(1) + '秒'
-        } else if (time / 1000 >= 60 && time / 1000 < 3600) {
-          return (time / 60000).toFixed(1) + '分'
-        } else if (time / 1000 > 3600) {
-          return (time / 3600000).toFixed(1) + '时'
-        }
-      }
-    }
-  },
   data() {
     return {
       tableKey: 'processInstanceUuid',
@@ -102,52 +75,21 @@ export default {
       total: 0,
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
-      granularity: { name: '年', value: 'year', key: 1 },
-      // granularity:'timePeriod',
-      dataTypes: [{ name: '年', value: 'year', key: 1 },
-        { name: '月', value: 'month', key: 2 },
-        { name: '日', value: 'date', key: 3 }],
-      StratTimeStart: new Date(),
-      StratTimeEnd: new Date(),
-      datepickerType: 'year',
-      // queryFields: [
-      //   // {
-      //   //   label: '统计粒度', name: 'type', type: 'select',
-      //   //   data: [{ name: '年', value: '1' },
-      //   //     { name: '月', value: '2' },
-      //   //     { name: '日', value: '3' }],
-      //   //   default: '1'
-      //   // },
-      //   { label: '作业时间范围', name: 'dataTime', type: 'timePeriod', value: '' }
-      //   // ,
-      //   // { label: '作业时间范围', name: 'monthTime', type: 'monthPeriod', value: '' },
-      //   // { label: '作业时间范围', name: 'yearTime', type: 'yearPeriod', value: '', datatype: 1 }
-      // ],
+      StratTimeStart: null,
+      StratTimeEnd: null,
+      datepickerType: 'date',
       pageQuery: {
         condition: null,
         pageNo: 1,
         pageSize: 20
-        // ,
-        // 开始运行时间，倒序排序
-        // sortBy: 'desc',
-        // sortName: 'startTime'
       },
       selections: []
     }
   },
   watch: {
-    granularity() {
-      // this.queryFields[0].type = this.granularity.value
-
-      if (this.granularity.value !== this.datepickerType) {
-        this.datepickerType = this.granularity.value
-        this.StratTimeStart = null
-        this.StratTimeEnd = null
-      }
-    }
   },
   mounted() {
-    // this.queryFields[0].type = this.granularity.value
+   
   },
   created() {
     this.getList()
@@ -155,10 +97,15 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      resourceStatisticsList({ granularity: this.granularity.key, stratTimeStart: this.StratTimeStart, stratTimeEnd: this.StratTimeEnd }).then(resp => {
-        this.list = resp.data
-        this.listLoading = false
+      // datafileStatisticsList({stratTimeStart: this.StratTimeStart, stratTimeEnd: this.StratTimeEnd }).then(resp => {
+      //   this.list = resp.data
+      //   this.listLoading = false
+      // })
+      datafileStatisticsList().then(resp => {
+       console.log('map-map-map:' + resp)
       })
+      this.list = null
+      this.listLoading = false
     },
     onSubmit() {
       this.getList()
@@ -203,7 +150,6 @@ export default {
       return sort === `+${key}` ? 'asc' : 'desc'
     },
     clearAll() {
-      this.granularity = null
       this.StratTimeStart = null
       this.StratTimeEnd = null
     }

@@ -1,6 +1,11 @@
 .el-container{
     height:100%
 }
+.tree-list-container{
+  width:100%;
+  height: 100%;
+  padding:20px;
+}
 .detail-form{
     padding:20px;
     width:100%;
@@ -91,7 +96,7 @@
 
 table tr:nth-child(odd)
 {
-    background: #e3e8ef;
+    background: #ffffff;
 }
 table th{
     color: #102033;
@@ -99,7 +104,7 @@ table th{
 }
 
 .el-table {
-  background-color: #edf1f5!important;
+  background-color: #ffffff!important;
 }
 .el-table--group, .el-table--border {
     border: 0px!important;
@@ -108,10 +113,10 @@ table th{
     height: 0px!important;
 }
 .el-table th {
-    background-color: #edf1f5
+    background-color: #ffffff
 }
 .el-table tr {
-    background-color: #edf1f5
+    background-color: #f5f7fa
 }
 .el-table--border th, .el-table--border td {
     border-right: 0px!important;
@@ -144,8 +149,8 @@ table th{
   padding: 5px 20px!important;
 }
 
-form {
-  background-color: #edf1f5!important;
+.query-field form {
+  background-color: #ffffff!important;
 }
 
 .el-form-item__label {
@@ -175,5 +180,5 @@ form {
 }
 
 .detail-form .el-form-item--medium .el-form-item__content {
-    top: -10px!important;
+    //top: -10px!important;
 }

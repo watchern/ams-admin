@@ -53,7 +53,7 @@ export default {
   }
 }
 .home-left{
-  z-index:1999;
+  z-index:20201111;
 }
 .home-right{
   background: #eaeaea url('style/images/bg.png') no-repeat left center fixed;
@@ -70,6 +70,6 @@ export default {
   -webkit-box-shadow: 3px 0 17px 0 rgba(0,0,0,.1);
   box-shadow: 3px 0 17px 0 rgba(0,0,0,.1);
   margin: 16px 10px;
-  background: #edf1f5;
+  background: #ffffff;
 }
 </style>
