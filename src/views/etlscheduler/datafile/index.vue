@@ -44,8 +44,6 @@
       />
       <el-table-column
         label="接收时间"
-
-        align="center"
         prop="createTime"
       />
       <el-table-column

@@ -79,15 +79,15 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p style="text-align:center" :style="{color: statusList[(scope.row.status | statusFilter)].color}"><strong>{{ statusList[(scope.row.status | statusFilter)].name }}</strong></p>
+            <p style="text-align:center" :style="{color: statusObj[scope.row.status].color}"><strong>{{ statusObj[scope.row.status].name }}</strong></p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色-->
                   <i
-                    :class="statusList[(scope.row.status | statusFilter)].unicode"
-                    :style="{color: statusList[(scope.row.status | statusFilter)].color}"
+                    :class=" statusObj[scope.row.status].unicode"
+                    :style="{color: statusObj[scope.row.status].color}"
                     style="font-size:25px;font-weight:bold"
                   />
                 </a>
@@ -105,7 +105,6 @@
       />
       <el-table-column
         label="流程实例名称"
-        align="center"
         prop="name"
       />
       <!-- <el-table-column
@@ -119,7 +118,7 @@
         align="center"
         width="80px"
       >
-        <template slot-scope="scope">
+        <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
           <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="700">
             <el-row v-for="taskParam in scope.row.distinctParamList" :key="taskParam.value">
@@ -131,7 +130,8 @@
               </div>
             </el-row>
             <div slot="reference" class="name-wrapper">
-              <el-tag><i class="el-icon-tickets" /></el-tag>
+              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+              <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
           </el-popover>
         </template>
@@ -234,7 +234,7 @@
                   v-for="log in logs[task.id]"
                   :key="log.taskLogUuid"
                   :label="log.taskLogUuid"
-                  :style="{color: logColorList[(log.status | colorFilter)-1].color}"
+                  :style="{color: logColorObj[log.status].color}"
                   style="margin-top:10px"
                 >
                   {{ log.logTime +' '+ log.logMessage }}
@@ -281,8 +281,8 @@ export default {
       formatMap: {
         commandType: commandTypeObj
       },
-      statusList: statusListComm,
-      logColorList: colorList,
+      statusObj: {},
+      logColorObj: {},
       pageQuery: {
         condition: {},
         pageNo: 1,
@@ -436,6 +436,12 @@ export default {
     }
   },
   created() {
+    statusListComm.forEach((r, i) => {
+      this.statusObj[r['value']] = r
+    })
+    colorList.forEach((r, i) => {
+      this.logColorObj[r['value']] = r
+    })
     if (this.$route.params instanceof Object) {
       this.queryDefault = this.$route.params
     }
@@ -443,13 +449,6 @@ export default {
     this.getList()
   },
   methods: {
-    // 根据状态查找该状态在数据中的下标
-    statusFilter(value) {
-      if (value == null || value.trim() === '') {
-        return this.statusList.length
-      }
-      return (this.statusList || []).findIndex((item) => item.value === value)
-    },
     colorFilter(value) {
       if (value == null || value.trim() === '') {
         return colorList.length
