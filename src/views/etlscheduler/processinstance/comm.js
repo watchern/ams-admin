@@ -1,9 +1,9 @@
 // 状态显示图标颜色
 const statusListComm = [{
   value: 1,
-  name: '等待中',
-  unicode: 'el-icon-s-help',
-  color: '#f9be0a'
+  name: '提交成功',
+  unicode: 'el-icon-loading',
+  color: '#333'
 },
 {
   value: 2,
@@ -21,7 +21,7 @@ const statusListComm = [{
   value: 32,
   name: '依赖任务已完成',
   unicode: 'el-icon-share',
-  color: '#00ff00'
+  color: '#f9be0a'
 },
 {
   value: 4,
@@ -66,20 +66,26 @@ const statusListComm = [{
   color: '#f9be0a'
 },
 {
-  value: 80,
-  name: '需要容错',
-  unicode: 'el-icon-loading',
-  color: '#333'
+  value: 40,
+  name: '等待中',
+  unicode: 'el-icon-s-help',
+  color: '#f9be0a'
 },
 {
-  value: 40,
-  name: '提交成功',
-  unicode: 'el-icon-loading',
-  color: '#333'
+  value: 41,
+  name: '准备执行',
+  unicode: 'el-icon-s-help',
+  color: '#fff'
 },
 {
   value: 50,
   name: '准备暂停',
+  unicode: 'el-icon-loading',
+  color: '#333'
+},
+{
+  value: 80,
+  name: '需要容错',
   unicode: 'el-icon-loading',
   color: '#333'
 },
@@ -99,7 +105,11 @@ const statusListComm = [{
 // 查询状态的下拉框
 const statuSelect = [{
   name: '等待中',
-  value: '1'
+  value: '40'
+},
+{
+  name: '准备执行',
+  value: '41'
 },
 {
   name: '等待文件中',
@@ -143,7 +153,7 @@ const statuSelect = [{
 },
 {
   name: '提交成功',
-  value: '40'
+  value: '1'
 },
 {
   name: '准备暂停',
@@ -203,13 +213,17 @@ const colorList = [{
 /**
  * Formatting time
  */
-// const getArrayIndex = (value, list) => {
-//   return (list || []).findIndex((item) => item.value === value)
-// }
+const statusFilter = (value) => {
+  if (value == null || value.trim() === '') {
+    return statusListComm.length
+  }
+  return (statusListComm || []).find((item) => item.value === value)[0]
+}
 
 export {
   statusListComm,
   statuSelect,
   commandTypeObj,
+  statusFilter,
   colorList
 }

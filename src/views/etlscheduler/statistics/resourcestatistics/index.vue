@@ -42,17 +42,18 @@
     >
       <el-table-column
         label="调度日期"
+        width="120px"
         align="center"
         prop="dateString"
       />
       <el-table-column
         label="调度任务"
-        align="center"
         prop="scheduleName"
       />
       <el-table-column
         label="耗时"
         align="center"
+        width="200px"
         prop="timeConsum"
       />
       <!-- <template slot-scope="scope">

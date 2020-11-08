@@ -49,36 +49,31 @@
         prop="scheduleName"
       >
         <template slot-scope="scope">
-          <a class="buttonText" @click="findSchedule(scope.row)">
-            {{scope.row.scheduleName}}</a>
+          <el-link target="_blank" :underline="false" type="primary" @click="findSchedule(scope.row)">
+            {{ scope.row.scheduleName }}</el-link>
         </template>
       </el-table-column>
       <el-table-column
         v-if="false"
         label="任务流程"
-        width="150px"
-        align="center"
         prop="processDefinitionId"
       />
       <el-table-column
         label="任务流程"
-        width="100px"
-        align="center"
         prop="processDefName"
       />
       <el-table-column
         label="作业周期"
-        align="center"
         prop="crontab"
         :formatter="formatCron"
       />
       <el-table-column
         label="参数"
-        width="70px"
+        width="100px"
         align="center"
         prop="taskParamsList"
       >
-        <template slot-scope="scope">
+        <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <el-row v-for="taskParam in scope.row.distinctParamList">
               <label class="col-md-2">
@@ -89,7 +84,8 @@
               </div>
             </el-row>
             <div slot="reference" class="name-wrapper">
-              <el-tag><i class="el-icon-tickets" /></el-tag>
+              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+              <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
           </el-popover>
         </template>
@@ -100,7 +96,7 @@
         prop="dependTaskInfo"
         width="120px"
       >
-        <template slot-scope="scope">
+        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <el-row v-for="dependTask in scope.row.dependTaskInfoList">
               <label class="col-md-2">
@@ -111,7 +107,8 @@
               </div>
             </el-row>
             <div slot="reference" class="name-wrapper">
-              <el-tag><i class="el-icon-tickets" /></el-tag>
+              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+              <el-link :underline="false" type="primary">查看依赖环节</el-link>
             </div>
           </el-popover>
         </template>
@@ -125,6 +122,7 @@
       />
       <el-table-column
         label="最新修改人"
+        width="150px"
         align="center"
         prop="updateUserName"
       />
@@ -667,7 +665,7 @@ export default {
   },
   methods: {
     changeParamValue(value, name) {
-      if (value == '') {
+      if (value === '') {
         this.$message({
           message: '请为参数名称【' + name + '】赋值',
           type: 'warning'

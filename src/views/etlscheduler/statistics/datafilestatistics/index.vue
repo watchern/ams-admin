@@ -32,7 +32,6 @@
     >
       <el-table-column
         label="业务系统"
-        align="center"
         prop="systemName"
       />
       <el-table-column
