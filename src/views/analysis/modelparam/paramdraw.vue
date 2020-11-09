@@ -9,11 +9,11 @@
                 <a
                   data-toggle="collapse"
                   :data-parent="'#'+myId+'1'"
-                  href="#collapse"
+                  :href="'#'+myId+'collapse'"
                 />
               </h4>
             </div>
-            <div id="collapse" class="panel-collapse collapse in">
+            <div :id="myId+'collapse'" class="panel-collapse collapse in">
               <div :id="myId" class="panel-body" style="padding: 10px 0" />
             </div>
           </div>
