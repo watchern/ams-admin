@@ -2,13 +2,13 @@
   <div>
     <form class="form-horizontal">
       <div class="col-sm-12">
-        <div id="accordion" class="panel-group">
+        <div :id="myId+'1'" class="panel-group">
           <div class="panel panel-default">
             <div class="panel-heading">
               <h4 class="panel-title">
                 <a
                   data-toggle="collapse"
-                  data-parent="#accordion"
+                  :data-parent="'#'+myId+'1'"
                   href="#collapse"
                 />
               </h4>
