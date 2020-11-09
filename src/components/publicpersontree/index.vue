@@ -21,6 +21,7 @@
         border
         fit
         highlight-current-row
+        @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column
@@ -37,7 +38,7 @@
         />
       </el-table>
     </el-container>
-     <el-pagination
+    <el-pagination
       :current-page="page"
       :page-sizes="[10, 20, 30, 50]"
       :page-size="limit"
@@ -52,7 +53,6 @@
 <script>
 import { findOrgTree, findPeopleByOrgId } from "@/api/base/orgpeople";
 export default {
-  
   watch: {
     filterText(val) {
       // 搜索树
@@ -75,10 +75,11 @@ export default {
       filterText: null, //组织树筛选框输入数据
       list: null, //人员表格数据
       listLoading: true,
-      dataList:[], //存放后台传来的所有人员数据，用于前台分页
-      total:0, //存放分页总数据条数
+      dataList: [], //存放后台传来的所有人员数据，用于前台分页
+      total: 0, //存放分页总数据条数
       page: 1, //分页初始化显示第一页
       limit: 10, //默认显示前10条
+      selectValue: [], //存放多选框选中的数据
     };
   },
   methods: {
@@ -110,14 +111,14 @@ export default {
      */
     initData(orgId) {
       findPeopleByOrgId(orgId).then((resp) => {
-        this.dataList = resp.data
-        this.listLoading = false
-        if(this.dataList!=null){
-          this.getList()
+        this.dataList = resp.data;
+        this.listLoading = false;
+        if (this.dataList != null) {
+          this.getList();
         }
-      })
+      });
     },
-     // 处理数据
+    // 处理数据
     getList() {
       // es6过滤得到满足搜索条件的展示数据list
       this.list = this.dataList.filter(
@@ -134,8 +135,20 @@ export default {
     },
     // 当当前页改变
     handleCurrentChange(val) {
-      this.page = val
-      this.getList()
+      this.page = val;
+      this.getList();
+    },
+    /**
+     * 当多选框改变时触发
+     */
+    handleSelectionChange(val) {
+      this.selectValue = val
+    },
+    /**
+     * 返回选中的数据方法
+     */
+    getSelectValue(){
+      return this.selectValue
     }
   },
 };
