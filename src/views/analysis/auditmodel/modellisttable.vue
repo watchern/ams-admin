@@ -1,40 +1,37 @@
 <template>
-  <div class="div-width">
+  <div class="tree-list-container">
     <el-tabs v-model="editableTabsValue" closable @tab-remove="removeTab">
       <el-tab-pane label="模型列表" name="modelList">
         <div class="filter-container">
           <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
         </div>
         <el-row type="flex" class="row-bg" v-if="power!='warning'">
-          <el-col :span="20"></el-col>
-          <el-col :span="4">
-            <div class="grid-content bg-purple-light">
-              <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn detail" @click="previewModel" />
-              <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />
-              <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel" />
-              <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete" @click="deleteModel" />
-              <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
-                <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
-                <el-dropdown-menu slot="dropdown">
+          <el-col align="right">
+            <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn detail" @click="previewModel" />
+            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />
+            <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel" />
+            <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete" @click="deleteModel" />
+            <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
+              <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
+              <el-dropdown-menu slot="dropdown">
 <!--                  <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
-                  <el-dropdown-item @click.native="importData">导入</el-dropdown-item>-->
-                  <el-dropdown-item @click.native="shareModel">共享</el-dropdown-item>
-                  <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
-                  <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
+                <el-dropdown-item @click.native="importData">导入</el-dropdown-item>-->
+                <el-dropdown-item @click.native="shareModel">共享</el-dropdown-item>
+                <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
+                <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-col>
         </el-row>
         <el-table :key="tableKey" ref="modelListTable" v-loading="listLoading"
                   :data="list" border fit highlight-current-row @select="modelTableSelectEvent">
           <el-table-column type="selection" width="55" />
-          <el-table-column label="模型名称" width="100px" align="center" prop="modelName" />
+          <el-table-column label="模型名称" width="100px" align="left" prop="modelName" />
           <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
-          <el-table-column label="审计事项" prop="auditItemName" />
-          <el-table-column label="风险等级" prop="riskLevelUuid" :formatter="riskLevelFormatter" />
-          <el-table-column label="模型类型" prop="modelType" :formatter="modelTypeFormatter" />
-          <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
+          <el-table-column label="审计事项" prop="auditItemName" align="center" />
+          <el-table-column label="风险等级" prop="riskLevelUuid" align="center" :formatter="riskLevelFormatter" />
+          <el-table-column label="模型类型" prop="modelType" align="center" :formatter="modelTypeFormatter" />
+          <el-table-column label="创建时间" prop="createTime" align="center" :formatter="dateFormatter" />
         </el-table>
         <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
       </el-tab-pane>
@@ -68,6 +65,7 @@
         </el-collapse>
       </el-tab-pane>
     </el-tabs>
+    <modelshoppingcart v-show="isShowShoppingCart" ref="modelShoppingCartRef"></modelshoppingcart>
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
       <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
@@ -108,9 +106,10 @@ import { startExecuteSql } from '@/api/analysis/sqleditor/sqleditor'
 import crossrangeParam from '@/views/analysis/modelparam/crossrangeparam'
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
 import {replaceNodeParam,replaceCrossrangeNodeParam } from '@/api/analysis/auditparam'
+import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 export default {
   name: 'ModelListTable',
-  components: { Pagination, QueryField, EditModel,ModelFolderTree,childTabs,crossrangeParam,paramDraw },
+  components: { Pagination, QueryField, EditModel,ModelFolderTree,childTabs,crossrangeParam,paramDraw,modelshoppingcart },
   props:['power'],
   data() {
     return {
@@ -122,6 +121,7 @@ export default {
       listLoading: false,
       //编辑框名称
       editModelTitle: '',
+      isShowShoppingCart:false,
       //发布模型dialog
       treeSelectShow:false,
       //折叠面板默认展开
@@ -394,6 +394,8 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = false
         this.btnState.previewBtn = false
+        this.isShowShoppingCart = true
+        this.$refs.modelShoppingCartRef.setMemo(selectObj)
       }
       else if(selectObj.length > 1){
         //只显示删除和添加按钮
@@ -402,6 +404,8 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = true
         this.btnState.previewBtn = true
+        this.isShowShoppingCart = true
+        this.$refs.modelShoppingCartRef.setMemo(selectObj)
       }
       else if(selectObj.length == 0){
         //只显示添加按钮
@@ -410,6 +414,7 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = true
         this.btnState.previewBtn = true
+        this.isShowShoppingCart = false
       }
     },
     /**
@@ -749,10 +754,10 @@ export default {
     },
     /**
      * 合并参数对象
-     * @param paramsArr 替换后的参数数组
+     * @param paramsArr 替换参数值后的参数数组
      */
     mergeParamObj(paramsArr){
-      let paramObj = this.currentPreviewModelParamAndSql.paramObj
+      let paramObj = this.currentPreviewModelParamAndSql.paramObj    //模型的参数数组
       for (let i = 0;i < paramObj.length;i++){
         for (let j = 0;j < paramsArr.length;j++){
           if(paramObj[i].moduleParamId == paramsArr[j].moduleParamId){
@@ -797,11 +802,7 @@ export default {
 </script>
 
 <style>
-.div-width{
-  width:100%;
-  height: 100%;
-  padding:20px;
-}
+
 .el-dropdown{
   margin-left: 10px;
 }

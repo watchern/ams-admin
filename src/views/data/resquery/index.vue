@@ -11,7 +11,7 @@ export default {
   components: { dataTree },
   data() {
     return {
-      dataUserId: 'cs',
+      dataUserId: this.$store.getters.personcode,
       sceneCode: 'auditor'
     }
   },
@@ -19,6 +19,7 @@ export default {
   },
   methods: {
     handleClick(data, node, tree) {
+      console.log(this.$store.getters.personcode)
       console.log(data, node, tree)
     }
   }
