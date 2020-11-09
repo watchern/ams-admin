@@ -11,9 +11,9 @@
   </el-tabs>
 </template>
 <script>
-import etlDataResource from '@/views/etlscheduler/dataresource'
-import etlDataSource from '@/views/etlscheduler/datasource'
-import etlFileDirectory from '@/views/etlscheduler/filedirectory'
+import etlDataResource from '@/views/etlscheduler/etlconfigure/dataresource'
+import etlDataSource from '@/views/etlscheduler/etlconfigure/datasource'
+import etlFileDirectory from '@/views/etlscheduler/etlconfigure/filedirectory'
 import etlFileResource from '@/views/etlscheduler/fileresource'
 import etlFileUpload from '@/views/etlscheduler/upload'
 import etlFileManager from '@/views/etlscheduler/filemanager'
