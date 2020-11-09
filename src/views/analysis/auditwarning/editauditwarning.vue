@@ -7,7 +7,7 @@
         <el-button type="primary" @click="selectModel">确定</el-button>
       </div>
     </el-dialog>
-    <el-tabs v-model="tabShow" type="card">
+    <el-tabs v-model="tabShow">
       <el-tab-pane label="基本信息" name="baseInfo">
         <el-form ref="baseDataForm" :rules="rules" class="detail-form" :model="temp" :disabled="allReadOnly" >
           <el-form-item label="预警名称" prop="warningName" >
