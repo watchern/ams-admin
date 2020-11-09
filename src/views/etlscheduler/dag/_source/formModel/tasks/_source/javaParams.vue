@@ -10,7 +10,16 @@
         v-model="paramList[$index].prop"
         :disabled="true"
         type="text"
-        placeholder="prop(必填)"
+        placeholder="prop"
+        :maxlength="180"
+        style="width: 120px;display: none;"
+        @on-blur="_verifProp()"
+      />
+      <x-input
+        v-model="paramList[$index].propName"
+        :disabled="true"
+        type="text"
+        placeholder="propName"
         :maxlength="180"
         style="width: 120px;"
         @on-blur="_verifProp()"
