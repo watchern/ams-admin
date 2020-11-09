@@ -1046,7 +1046,13 @@ export default {
           id:'002003001'
         }
         this.modelTypeObj.push(obj)
-
+        //
+        let obj2= {
+          id: '2',
+          label: '模型设计',
+          type: 'modelDesign'
+        }
+        this.handleNodeClick(obj2)
       }
       if(vId == "002003002"){
         this.$message({ type: 'info', message: "暂时不支持图形化模型"})

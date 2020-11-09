@@ -205,8 +205,6 @@ export function initEvent() {
  * @returns {CodeMirror.EditorFromTextArea}
  */
 export function initSQLEditor(textarea, relTableMap) {
-  // 展示运行结果区域
-  $('#exeResultTitle').tab('show')
   // 初始化CodeMirror
   var editor = CodeMirror.fromTextArea(textarea, {
     mode: 'text/x-mssql',
@@ -293,12 +291,9 @@ export function initSQLEditor(textarea, relTableMap) {
   })
   // 设置脚本展示tab的上面编辑器高度
   editor.setSize('auto', ($(document).height() * 0.5 - 40) + 'px')
-  //修复sql编辑区多次加载界面错位情况，手动刷新codeMirror
-  setTimeout(() => {
-    editor.refresh();
-  },1);//让编辑器每次在调用的时候进行自动刷新
   editorObj = editor
-  editor.setSize('auto','250px');
+  $('.CodeMirror-scroll').focus()
+  editor.setSize('auto','280px');
 }
 
 /**
@@ -1229,11 +1224,6 @@ function replaceParam(paramObj) {
       }
     }
   }
-  console.log(editorObj)
-  //修复sql编辑区多次加载界面错位情况，手动刷新codeMirror
-  setTimeout(() => {
-    editorObj.refresh();
-  },1);//让编辑器每次在调用的时候进行自动刷新
 }
 
 /**
@@ -1606,4 +1596,12 @@ export function editorSql(sql, paramObjOne) {
   editorObj.setValue(sql)
   paramObj = paramObjOne
   replaceParam(paramObjOne)
+}
+
+export function refreshCodeMirror(){
+  //修复sql编辑区多次加载界面错位情况，手动刷新codeMirror
+  setTimeout(() => {
+    editorObj.refresh();
+  },1);//让编辑器每次在调用的时候进行自动刷新
+  $("#sql").click()
 }
