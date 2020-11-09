@@ -6,11 +6,12 @@
     <el-row>
       <el-col align="right">
         <el-button type="primary"  class="oper-btn add" @click="add" />
-        <el-button type="primary"  class="oper-btn edit" @click="update" />
-        <el-button type="primary"  class="oper-btn delete" @click="deleteWarning" />
+        <el-button type="primary"  class="oper-btn edit" @click="update" :disabled="!isShowSingleBtn" />
+        <el-button type="primary"  class="oper-btn delete" @click="deleteWarning" :disabled="!isShowManyBtn" />
       </el-col>
     </el-row>
-    <el-table :key="tableKey" ref="auditWarningList" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;">
+    <el-table :key="tableKey" ref="auditWarningList" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;"
+              @select="listSelectChange">
       <el-table-column type="selection" width="55" />
       <el-table-column label="预警名称" prop="warningName" width="100px" align="center"  >
         <template slot-scope="scope">
@@ -36,7 +37,7 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <el-dialog :title="editDialogTitle" v-if='editDialogVisible' :visible.sync="editDialogVisible" >
-      <EditAuditWarning ref="edit" :option="operationObj.option" :optionUuid="operationObj.optionUuid" :v-loading="optionLoading"/>
+      <EditAuditWarning ref="edit" :option="operationObj.option" :optionUuid="operationObj.optionUuid"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">关闭</el-button>
         <el-button type="primary" v-show="operationObj.option === 'add' || operationObj.option === 'update'" @click="save">保存</el-button>
@@ -62,8 +63,10 @@ export default {
       total: 0,
       //列表遮罩
       listLoading: false,
-      //审计预警新增修改详情等dialog loading是否显示
-      optionLoading : false,
+      //是否展示修改等单个数据操作按钮
+      isShowSingleBtn : false,
+      //是否展示删除等多个数据操作按钮
+      isShowManyBtn : false,
       //编辑审计预警dialog标题
       editDialogTitle : "添加审计预警",
       //编辑审计预警dialog是否展现
@@ -99,6 +102,28 @@ export default {
     this.getList()
   },
   methods: {
+    /**
+     * 列选择触发事件
+     * @selection selection 已选择行
+     * @returns {返回格式化后的时间字符串}
+     */
+    listSelectChange(selection){
+      if(selection && selection.length == 0){
+        this.isShowManyBtn = false
+        this.isShowSingleBtn = false
+      }
+      if(selection && selection.length > 0){
+        this.isShowManyBtn = true
+      }
+      if(selection && selection.length == 1){
+        this.isShowSingleBtn = true
+      }
+      if(selection && selection.length > 1){
+        this.isShowSingleBtn = false
+        this.isShowManyBtn = true
+      }
+
+    },
     /**
      * 格式化时间字符串
      * @param row 格式化行
