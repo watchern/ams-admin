@@ -3,8 +3,8 @@
     <p style="font-size:large;font-weight:bold">基本信息</p>
     <p style="color:silver;font-size:large">———————————————————————————</p>
     <el-container style="height: 450px;">
-      <div id="hahaha" ref="basicInfo" style="float: left">
-        <el-form ref="basicInfoForm" :model="form" label-width="90px" :rules="rules">
+      <div ref="basicInfo" style="float: left">
+        <el-form ref="basicInfoForm" :model="form" :rules="rules" class="detail-form">
           <el-form-item label="名称" prop="filterName">
             <el-input v-model="form.filterName" @input="nameValueChange" />
           </el-form-item>

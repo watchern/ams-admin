@@ -26,7 +26,11 @@
         <el-table :key="tableKey" ref="modelListTable" v-loading="listLoading"
                   :data="list" border fit highlight-current-row @select="modelTableSelectEvent">
           <el-table-column type="selection" width="55" />
-          <el-table-column label="模型名称" width="100px" align="left" prop="modelName" />
+          <el-table-column label="模型名称" width="100px" align="left" prop="modelName">
+            <template slot-scope="scope">
+              <el-link type="primary" @click="selectModelDetail(scope.row.modelUuid)">{{scope.row.modelName}}</el-link>
+            </template>
+          </el-table-column>
           <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
           <el-table-column label="审计事项" prop="auditItemName" align="center" />
           <el-table-column label="风险等级" prop="riskLevelUuid" align="center" :formatter="riskLevelFormatter" />
@@ -796,6 +800,31 @@ export default {
      */
     getModelListCheckData(){
       return this.$refs.modelListTable.selection
+    },
+    selectModelDetail(modelUuid){
+      this.isUpdate = true
+      selectModel(modelUuid).then(result => {
+        if (result.code == 0) {
+          this.editModelTitle = result.data.modelName + '详细'
+          var operationObj = {
+            operationType: 3,
+            model: result.data,
+            folderId:"",
+            folderName:"",
+            formName:result.data.modelName + '详细'
+          }
+          sessionStorage.setItem('operationObj', JSON.stringify(operationObj));
+          this.$store.commit('aceState/setRightFooterTags',{
+            type:'active',
+            val:{
+              name:result.data.modelName + '详细',
+              path:'/analysis/editorModel'
+            }
+          })
+        } else {
+          this.$message({ type: 'error', message: '查看模型详细失败' })
+        }
+      })
     }
   }
 }
