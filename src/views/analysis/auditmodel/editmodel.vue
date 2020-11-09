@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-container class="el-container">
-      <div id="drag" class="drag">
+      <div id="drag" ref="dragDiv" class="drag">
         <div class="title">
           <h2>导航栏</h2>
           <div style="display: none">
@@ -21,16 +21,16 @@
         <div class="resizeLB"></div>
         <div class="content">
           <el-aside>
-            <el-tree style="background: #fff;width: 200px" ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
+            <el-tree class="el-tree-rewrite" ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
               <span slot-scope="{ node, data }" class="custom-tree-node">
                 <span>
                   <i />{{ node.label }}
                 </span>
                 <span v-if="data.type=='relInfo'">
-                  <el-button type="text" size="mini" @click.stop="() => createDetail()"><i class="el-icon-circle-plus-outline"/></el-button>
+                  <el-button type="text" title="添加关联详细" size="mini" @click.stop="() => createDetail(node,data)"><i class="el-icon-circle-plus-outline"/></el-button>
                 </span>
                 <span v-if="data.type=='filterShow'">
-                  <el-button type="text" size="mini" @click.stop="() => createFilterShow()"><i class="el-icon-circle-plus-outline"/></el-button>
+                  <el-button type="text" title="添加条件显示" size="mini" @click.stop="() => createFilterShow(node,data)"><i class="el-icon-circle-plus-outline"/></el-button>
                 </span>
                 <span v-if="data.type=='relDetail' || data.type=='filterShowNode'">
                   <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-delete"/></el-button>
@@ -183,7 +183,7 @@
         <p>在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
           用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。
           通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。</p>
-        <el-button class="el-button-style" @click="createDetail">新建</el-button>
+        <!--<el-button @click="createDetail">新建</el-button>-->
       </div>
       <div id="modelDetailDiv">
         <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id" class="display default-value">
@@ -198,7 +198,7 @@
           以便审计人员对这些数据进行审计。</p>
         <p>条件显示设计器以表格的形式列举所有由用户设定的、将被应用于模型执行结果的显示条件及显示样式，用户可通过该列表对各个条件的属性进行快速查看。
           同时用户也可以对显示条件进行添加、修改、删除</p>
-        <el-button class="el-button-style" @click="createFilterShow">新建</el-button>
+        <!--<el-button @click="createFilterShow">新建</el-button>-->
       </div>
       <div ref="filterShowDiv">
         <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id" class="display default-value">
@@ -388,6 +388,12 @@ export default {
       var model = operationObj.model
       this.displayData(model)
       this.formName = "修改模型"
+    }
+    if (operationObj.operationType == 3) {
+      this.isUpdate = true
+      var model = operationObj.model
+      this.displayData(model)
+      this.formName = operationObj.formName
     }
     else{
       this.formName = "新增模型"
@@ -778,7 +784,7 @@ export default {
     /**
      * 创建模型详细
      */
-    createDetail() {
+    createDetail(treeNode,data) {
       if (this.columnData.length == 0) {
         this.$message({ type: 'info', message: '请先编写SQL!' })
         return
@@ -791,15 +797,20 @@ export default {
         pid: 5,
         type: 'relDetail'
       }
-      const treeNode = this.$refs.tree.getCurrentNode()
-      treeNode.children.push(newChild)
+      if(data == undefined){
+        data = this.$refs.tree.getCurrentNode()
+      }
+      data.children.push(newChild)
       this.modelDetails.push({ id: 'rel' + this.modelDetailIndex, data: [] })
       this.newRelInfoValue = newChild
+      //添加完成之后更改div高度
+      console.log(this.$refs.dragDiv)
+      this.$refs.dragDiv.style.height = this.$refs.dragDiv.style.height + 20
     },
     /**
      * 创建过滤条件显示
      */
-    createFilterShow() {
+    createFilterShow(treeNode,data) {
       if (this.columnData.length == 0) {
         this.$message({ type: 'info', message: '请先编写SQL!' })
         return
@@ -811,10 +822,13 @@ export default {
         children: [],
         type: 'filterShowNode'
       }
-      const treeNode = this.$refs.tree.getCurrentNode()
-      treeNode.children.push(newChild)
+      if(data == undefined){
+        data = this.$refs.tree.getCurrentNode()
+      }
+      data.children.push(newChild)
       this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex, data: [] })
       this.newFilterShowValue = newChild
+      this.$refs.dragDiv.style.height = this.$refs.dragDiv.style.height + 20
     },
     /**
      * 清空界面数据
@@ -1118,8 +1132,8 @@ export default {
       this.resize(oDrag, oT, false, true, true, false)
       this.resize(oDrag, oR, false, false, false, true)
       this.resize(oDrag, oB, false, false, true, false)
-      oDrag.style.left = (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
-      oDrag.style.top = (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'
+/*      oDrag.style.left = (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
+      oDrag.style.top = (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'*/
     },
     drag(oDrag, handle) {
       var disY = 0
@@ -1266,17 +1280,9 @@ export default {
 }
 
 .div-btn{
-  margin-top: 10.5%;
-  float:right;
-  margin-right: 1%;
-  left:0;
-  top:30%
-}
-
-.el-button-style{
+  margin-top: -3%;
   float: right;
-  position:sticky;
-  top: 260px;
+  position: relative;
 }
 
 .p-div{
@@ -1289,11 +1295,6 @@ export default {
   overflow-y: scroll;
 }
 
-.tree-css{
-  position: fixed;
-  right: 14px;
-  z-index: 10000000;
-}
 .default-value{
   margin-left:20px;
 }
@@ -1301,10 +1302,9 @@ export default {
 .drag {
   position: absolute;
   z-index: 1000;
-  top: 100px;
-  left: 400px;
+  top: 40px;
+  left: 85%;
   width: 200px;
-  height: 235px;
   background: #FFFFFF;
   border-radius: 5px;
   box-shadow: 0px 3px 8px 7px #d4d4d4;
@@ -1336,5 +1336,10 @@ export default {
   height: 19px;
   display: block;
   margin-left: 5px;
+}
+
+.el-tree-rewrite{
+  background: #fff;
+  width: 200px;
 }
 </style>

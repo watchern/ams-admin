@@ -293,12 +293,12 @@ export function initSQLEditor(textarea, relTableMap) {
   })
   // 设置脚本展示tab的上面编辑器高度
   editor.setSize('auto', ($(document).height() * 0.5 - 40) + 'px')
-  editorObj = editor
-  editor.setSize('auto','250px');
   //修复sql编辑区多次加载界面错位情况，手动刷新codeMirror
   setTimeout(() => {
-    editorObj.refresh();
+    editor.refresh();
   },1);//让编辑器每次在调用的时候进行自动刷新
+  editorObj = editor
+  editor.setSize('auto','250px');
 }
 
 /**
@@ -1229,6 +1229,7 @@ function replaceParam(paramObj) {
       }
     }
   }
+  console.log(editorObj)
   //修复sql编辑区多次加载界面错位情况，手动刷新codeMirror
   setTimeout(() => {
     editorObj.refresh();
