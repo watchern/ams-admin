@@ -150,6 +150,7 @@ import AV from "leancloud-storage";
 import myQueryBuilder from "@/views/analysis/auditmodelresult/myquerybuilder";
 import { string } from "jszip/lib/support";
 import { startExecuteSql } from "@/api/analysis/sqleditor/sqleditor";
+import { getTransMap } from "@/api/data/transCode.js";
 
 export default {
   name: "childTabCon",
@@ -220,6 +221,8 @@ export default {
       modelDetailModelResultDialogIsShow: false, //点击模型详细dialog确定按钮后执行显示模型详细结果弹窗是否可见
       currentExecuteSQL: [], //模型详细关联dialog中点击确定按钮后根据sql返回的预先加载值，用于判断有几个页签
       webSocket: null, //websocket对象
+      dataCoding: {}, //存储返回的数据转码对象
+      
     };
   },
   mounted() {
@@ -466,9 +469,33 @@ export default {
               col.push(rowColom);
             }
           }
-          // 生成ag-frid表格数据
-          for (var i = 0; i < resp.data.records[0].result.length; i++) {
-            da.push(resp.data.records[0].result[i]);
+          if (this.modelUuid != undefined) {
+            // 生成ag-frid表格数据
+            for (var i = 0; i < resp.data.records[0].result.length; i++) {
+              da.push(resp.data.records[0].result[i]);
+            }
+            for (var i = 0; i < da.length; i++) {
+              for (var j = 0; j < colNames.length; j++) {
+                for (var k = 0; k < this.modelOutputColumn.length; k++) {
+                  if (
+                    this.modelOutputColumn[k].outputColumnName.toLowerCase() ==
+                    colNames[j]
+                  ) {
+                    if (
+                      this.modelOutputColumn[k].dataCoding != undefined
+                    ) {
+                      var a = da[i][colNames[j]]
+                      da[i][colNames[j]] = this.dataCoding[this.modelOutputColumn[k].dataCoding][a];
+                    }
+                  }
+                }
+              }
+            }
+          } else {
+            // 生成ag-frid表格数据
+            for (var i = 0; i < resp.data.records[0].result.length; i++) {
+              da.push(resp.data.records[0].result[i]);
+            }
           }
         });
         this.columnDefs = col;
@@ -479,13 +506,10 @@ export default {
         var col = [];
         var rowData = [];
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
-          if (this.nextValue.result == undefined) {
-            this.isSee = false;
-            this.modelResultPageIsSee = false;
-            this.modelResultButtonIsShow = false;
-            this.errorMessage = this.nextValue.executeSQL.msg;
-          } else {
-            this.modelResultButtonIsShow = true;
+          if (this.nextValue.executeSQL.state == '2') {
+            //todo 增加sql类型判断
+            if(true){
+                  this.modelResultButtonIsShow = true;
             this.modelResultPageIsSee = true;
             this.modelResultData = this.nextValue.result;
             this.modelResultColumnNames = this.nextValue.columnNames;
@@ -504,7 +528,12 @@ export default {
             }
             this.columnDefs = col;
             this.getList();
-            // this.rowData = rowData
+            }
+          } else if(this.nextValue.executeSQL.state == '3'){
+            this.isSee = false;
+            this.modelResultPageIsSee = false;
+            this.modelResultButtonIsShow = false;
+            this.errorMessage = this.nextValue.executeSQL.msg;
           }
           this.isLoading = false;
         }
@@ -580,6 +609,16 @@ export default {
                 selectModel(this.modelUuid).then((resp) => {
                   this.modelDetailRelation = resp.data.modelDetailRelation;
                   this.modelOutputColumn = resp.data.modelOutputColumn;
+                  var datacodes = [];
+                  for (var i = 0; i < this.modelOutputColumn.length; i++) {
+                    if (this.modelOutputColumn[i].dataCoding != undefined) {
+                      datacodes.push(this.modelOutputColumn[i].dataCoding);
+                    }
+                  }
+                  //调用方法
+                  getTransMap(datacodes.join(",")).then((resp) => {
+                    this.dataCoding = resp.data;
+                  });
                   this.initData();
                   if (this.modelDetailRelation.length > 0) {
                     this.modelDetailButtonIsShow = true;
