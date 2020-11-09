@@ -8,7 +8,6 @@
         @submit="getLikeList"
       />
     </div>
-    <publicpersontree></publicpersontree>
     <el-row>
       <el-button type="primary" @click="relationProject('453453', '项目2')"
         >关联项目</el-button
@@ -163,9 +162,8 @@ import axios from "axios";
 import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
-import publicpersontree  from '@/components/publicpersontree';
 export default {
-  components: { Pagination, QueryField,publicpersontree },
+  components: { Pagination, QueryField },
   data() {
     return {
       tableKey: "errorUuid",

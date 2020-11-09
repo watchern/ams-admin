@@ -1,0 +1,142 @@
+<template>
+  <div>
+    <el-container class="app-container">
+      <el-aside class="tree-side">
+        <el-input
+          v-model="filterText"
+          placeholder="输入关键字进行过滤"
+          class="tree-search"
+        />
+        <el-tree
+          :data="data"
+          :props="defaultProps"
+          @node-click="handleNodeClick"
+          :filter-node-method="filterNode"
+          ref="tree"
+        ></el-tree>
+      </el-aside>
+      <el-table
+        v-loading="listLoading"
+        :data="list"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column type="selection" width="55" />
+        <el-table-column
+          label="人员名称"
+          width="100px"
+          align="center"
+          prop="cnname"
+        />
+        <el-table-column
+          label="组织名称"
+          width="150px"
+          align="center"
+          prop="org.cnname"
+        />
+      </el-table>
+    </el-container>
+     <el-pagination
+      :current-page="page"
+      :page-sizes="[10, 20, 30, 50]"
+      :page-size="limit"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
+  </div>
+</template>
+
+<script>
+import { findOrgTree, findPeopleByOrgId } from "@/api/base/orgpeople";
+export default {
+  
+  watch: {
+    filterText(val) {
+      // 搜索树
+      this.$refs.tree.filter(val);
+    },
+  },
+  components: {},
+  created() {
+    this.findOrgTree();
+    this.initData("");
+  },
+  data() {
+    return {
+      data: [], //组织人员树的数据
+      defaultProps: {
+        //组织人员树的默认属性
+        children: "children",
+        label: "name",
+      },
+      filterText: null, //组织树筛选框输入数据
+      list: null, //人员表格数据
+      listLoading: true,
+      dataList:[], //存放后台传来的所有人员数据，用于前台分页
+      total:0, //存放分页总数据条数
+      page: 1, //分页初始化显示第一页
+      limit: 10, //默认显示前10条
+    };
+  },
+  methods: {
+    /**
+     * 初始化组织树
+     */
+    findOrgTree() {
+      findOrgTree().then((resp) => {
+        this.data = resp.data;
+      });
+    },
+    /**
+     * 点击树节点时候触发
+     */
+    handleNodeClick(data) {
+      this.listLoading = true;
+      console.log(data);
+      this.initData(data.id);
+    },
+    /**
+     * 过滤树节点方法
+     */
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.name.indexOf(value) !== -1;
+    },
+    /**
+     * 初始化表格数据
+     */
+    initData(orgId) {
+      findPeopleByOrgId(orgId).then((resp) => {
+        this.dataList = resp.data
+        this.listLoading = false
+        if(this.dataList!=null){
+          this.getList()
+        }
+      })
+    },
+     // 处理数据
+    getList() {
+      // es6过滤得到满足搜索条件的展示数据list
+      this.list = this.dataList.filter(
+        (item, index) =>
+          index < this.page * this.limit &&
+          index >= this.limit * (this.page - 1)
+      );
+      this.total = this.dataList.length;
+    },
+    // 当每页数量改变
+    handleSizeChange(val) {
+      this.limit = val;
+      this.getList();
+    },
+    // 当当前页改变
+    handleCurrentChange(val) {
+      this.page = val
+      this.getList()
+    }
+  },
+};
+</script>
