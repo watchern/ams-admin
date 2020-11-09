@@ -16,14 +16,14 @@
               <el-dropdown-menu slot="dropdown">
 <!--                  <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
                 <el-dropdown-item @click.native="importData">导入</el-dropdown-item>-->
-                <el-dropdown-item @click.native="shareModel">共享</el-dropdown-item>
+                <el-dropdown-item @click.native="shareModelDialog">共享</el-dropdown-item>
                 <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
                 <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-col>
         </el-row>
-        <el-table :key="tableKey" ref="modelListTable" v-loading="listLoading"
+        <el-table :key="tableKey" style="height: 450px;overflow-y: scroll" ref="modelListTable" v-loading="listLoading"
                   :data="list" border fit highlight-current-row @select="modelTableSelectEvent">
           <el-table-column type="selection" width="55" />
           <el-table-column label="模型名称" width="100px" align="left" prop="modelName">
@@ -84,6 +84,13 @@
         <el-button type="primary" @click="replaceNodeParam">确定</el-button>
       </div>
     </el-dialog>
+    <el-dialog title="请选择共享人员" v-if="dialogFormVisiblePersonTree" :visible.sync="dialogFormVisiblePersonTree" :append-to-body="true">
+      <personTree ref="personTree"/>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisiblePersonTree = false">关闭</el-button>
+        <el-button type="primary" @click="shareModel">确定</el-button>
+      </div>
+    </el-dialog>
     <el-upload
       style="position: relative;top: -40px;left: 240px;display: none"
       :show-file-list="false"
@@ -99,7 +106,7 @@
   </div>
 </template>
 <script>
-import { findModel, saveModel, deleteModel, selectModel, updateModel,updateModelBasicInfo,exportModel,setModelSession } from '@/api/analysis/auditmodel'
+import { findModel, saveModel, deleteModel,shareModel, selectModel, updateModel,updateModelBasicInfo,exportModel,setModelSession } from '@/api/analysis/auditmodel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
@@ -111,9 +118,10 @@ import crossrangeParam from '@/views/analysis/modelparam/crossrangeparam'
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
 import {replaceNodeParam,replaceCrossrangeNodeParam } from '@/api/analysis/auditparam'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
+import personTree from '@/components/publicpersontree/index'
 export default {
   name: 'ModelListTable',
-  components: { Pagination, QueryField, EditModel,ModelFolderTree,childTabs,crossrangeParam,paramDraw,modelshoppingcart },
+  components: { Pagination, QueryField, EditModel,ModelFolderTree,childTabs,crossrangeParam,paramDraw,modelshoppingcart,personTree },
   props:['power'],
   data() {
     return {
@@ -189,7 +197,9 @@ export default {
         condition: null,
         pageNo: 1,
         pageSize: 20
-      }
+      },
+      //人员选择
+      dialogFormVisiblePersonTree:false
     }
   },
   computed: {
@@ -635,8 +645,52 @@ export default {
       file = [];
       fileList = [];
     },
-    shareModel(){
+    /**
+     *打开人员选择
+     */
+    shareModelDialog(){
+      var selectObj = this.$refs.modelListTable.selection
+      if (selectObj == undefined || selectObj.length === 0) {
+        this.$message({ type: 'info', message: '请先选择要共享的模型!' })
+        return
+      }
+      this.dialogFormVisiblePersonTree = true
       //弹出人员选择窗体
+    },
+    /**
+     *共享模型
+     */
+    shareModel(){
+      //获取选中的人员
+      //循环组织对象添加数据
+      var selectObj = this.$refs.modelListTable.selection
+      let modelShareRelList = [];
+      let persons = this.$refs.personTree.getSelectValue()
+      for(let i = 0;i < selectObj.length;i++){
+        for(let j = 0;j < persons.length;j++){
+          let obj = {
+            modelUuid:selectObj[i].modelUuid,
+            belongUuid:persons[j].personuuid,
+            belongName:persons[j].cnname
+          }
+          modelShareRelList.push(obj)
+        }
+      }
+      shareModel(modelShareRelList).then(result=>{
+        if(result.code == 0){
+          this.$notify({
+            title:'提示',
+            message:'共享成功',
+            type:'success',
+            duration:2000,
+            position:'bottom-right'
+          });
+          this.dialogFormVisiblePersonTree = false
+        }
+        else{
+          this.$message({ type: 'error', message: '共享模型失败!' })
+        }
+      })
     },
     previewModel(){
       var selectObj = this.$refs.modelListTable.selection

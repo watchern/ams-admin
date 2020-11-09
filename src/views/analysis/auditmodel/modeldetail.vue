@@ -92,7 +92,7 @@
             <div ref="relTableDiv" style="display: none">
               <el-button type="primary" size="mini" @click="addRelFilter(2)">添加</el-button>
               <el-table ref="relTable" :data="relTable" border fit highlight-current-row>
-                  <el-table-column label="关联表字段" align="center" prop="modelName">
+<!--                  <el-table-column label="关联表字段" align="center" prop="modelName">
                     <template slot-scope="scope" v-if="!scope.row.noShow">
                       <el-select v-model="scope.row.relColumn" value="-1">
                         <el-option label="请选择" value="-1" />
@@ -104,19 +104,19 @@
                         />
                       </el-select>
                     </template>
-                  </el-table-column>
-                  <el-table-column label="过滤条件" align="center" prop="">
+                  </el-table-column>-->
+                  <el-table-column label="过滤条件" align="center" prop=""  width="450px">
                     <template slot-scope="scope" v-if="!scope.row.noShow">
                       <el-row>
-                        <el-col :span="12">
-                          <el-input :ref="scope.row.modelDetailConfigUuid" :disabled="true" v-model="scope.row.relFilterValue=inputValue[scope.row.modelDetailConfigUuid]"></el-input>
-                          <el-input :ref="scope.row.modelDetailConfigUuid" :disabled="true" v-model="scope.row.relFilterValueJson=inputValueJson[scope.row.modelDetailConfigUuid]"></el-input>
+                        <el-col :span="18">
+                          <el-input :disabled="true" v-model="scope.row.relFilterValue=inputValue[scope.row.modelDetailConfigUuid]"></el-input>
+                          <el-input :disabled="true" v-show="false" v-model="scope.row.relFilterValueJson=inputValueJson[scope.row.modelDetailConfigUuid]"></el-input>
                         </el-col>
-                      <el-button @click="openQueryBuilder(scope.row.id)">设置</el-button>
+                      <el-button type="primary" size="mini" @click="openQueryBuilder(scope.row.modelDetailConfigUuid)">设置</el-button>
                       </el-row>
                     </template>
                   </el-table-column>
-                  <el-table-column label="操作" align="center" prop="runTime">
+                  <el-table-column label="操作" align="center" prop="runTime" width="100px">
                     <template slot-scope="scope" v-if="!scope.row.noShow">
                       <el-button type="primary" size="mini" @click.native.prevent="deleteRow(scope.$index, relTable)">删除</el-button>
                     </template>
@@ -226,7 +226,6 @@ export default {
   },
   mounted() {
     this.initData()
-    this.setQueryBuilderColumn()
   },
   methods: {
     /**
@@ -255,11 +254,12 @@ export default {
           //this.initTableTree()
           // 初始化关联表table
           for(let i = 0;i < this.data.modelDetailConfig.length;i++){
-            this.inputValue[this.data.modelDetailConfig.modelDetailConfigUuid] = this.data.modelDetailConfig.modelDetailConfigUuid
-            this.inputValue[this.data.modelDetailConfig.modelDetailConfigUuid] = this.data.modelDetailConfig.modelDetailConfigUuid
+            this.inputValue[this.data.modelDetailConfig[i].modelDetailConfigUuid] = this.data.modelDetailConfig[i].relFilterValue
+            this.inputValueJson[this.data.modelDetailConfig[i].modelDetailConfigUuid] = this.data.modelDetailConfig[i].relFilterValueJson
             //循环处理数据
           }
           this.relTable = this.data.modelDetailConfig
+          this.setQueryBuilderColumn()
         }
       }
     },
@@ -312,6 +312,10 @@ export default {
         }
         this.form.modelDetailConfig = this.$refs.relModelTable.data
       } else if (this.$refs.relTypeSelect.value == 2) {
+        if(this.$refs.relTable.data.length == 0){
+          this.$message({ type: 'info', message: '关联表必须设置过滤条件'})
+          return { verResult: false, treeId: this.treeId }
+        }
         // 如果为关联表则取表的数据
         this.form.modelDetailConfig = this.$refs.relTable.data
       }
@@ -338,8 +342,8 @@ export default {
         }
         this.relTableColumn = result.data
         this.$refs.relTableDiv.style.display = 'block'
+        this.setQueryBuilderColumn()
       })
-
     },
     /**
        * 关联类型下拉框改变事件
@@ -424,10 +428,10 @@ export default {
      */
     setQueryBuilderColumn() {
       const queryRules = []
-      for (let i = 0; i < this.columns.length; i++) {
+      for (let i = 0; i < this.relTableColumn.length; i++) {
         const obj = {}
-        obj.columnType = this.columns[i].columnType
-        obj.columnName = this.columns[i].outputColumnName
+        obj.columnType = this.relTableColumn[i].dataType
+        obj.columnName = this.relTableColumn[i].chnName
         queryRules.push(obj)
       }
       this.queryRules.columnList = queryRules
@@ -449,6 +453,7 @@ export default {
       this.form.relationObjectName = currentNode.label
       this.form.relationObjectUuid = currentNode.id
       this.dataTableTree = false
+
     },
     openQueryBuilder(id){
       if(this.inputValueJson[id] != undefined){
@@ -458,6 +463,7 @@ export default {
       this.currentFilterInputId = id
     },
     queryCondition(){
+      debugger
       const obj = this.$refs.myQueryBuilder.getSelectSql()
       this.queryBuilderDialogVisible = false
       this.setFilter(obj.sql,JSON.stringify(obj.queryJson))
@@ -465,7 +471,7 @@ export default {
     setFilter(sql,queryJson){
       this.inputValue[this.currentFilterInputId] = sql
       this.inputValueJson[this.currentFilterInputId] = queryJson
-      this.relTable.push({id:1,noShow:true})
+      this.relTable.push({modelDetailConfigUuid:1,noShow:true})
     }
   }
 }

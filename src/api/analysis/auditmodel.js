@@ -170,22 +170,6 @@ export function exportModel() {
 }
 
 /**
- * 共享模型
- * @param data 数据
- * @returns {AxiosPromise}
- */
-export function shareModel(data) {
-  return request({
-    baseURL: analysisUrl,
-    url: '/modelController/saveBatch',
-    method: 'post',
-    // params 以formData格式传递  后台用RequestParam
-    // 直接加data以json格式传递  后台用RequestBody
-    data
-  })
-}
-
-/**
  * 获取业务属性
  * @returns {AxiosPromise}
  */
@@ -220,5 +204,19 @@ export function getAuditItem() {
     baseURL: analysisUrl,
     url: '/modelFolderController/getAuditItemTree',
     method: 'get'
+  })
+}
+
+/**
+ * 共享模型给指定人员
+ * @param data 要共享的数据
+ * @returns {AxiosPromise}
+ */
+export function shareModel(data){
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelController/shareModel',
+    method: 'post',
+    data
   })
 }
