@@ -6,6 +6,146 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5321591",
+      "name": "Excel",
+      "font_class": "excel",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
+      "icon_id": "5321594",
+      "name": "pdf",
+      "font_class": "pdf",
+      "unicode": "e639",
+      "unicode_decimal": 58937
+    },
+    {
+      "icon_id": "5321600",
+      "name": "ppt",
+      "font_class": "ppt",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "5321601",
+      "name": "txt",
+      "font_class": "txt",
+      "unicode": "e63b",
+      "unicode_decimal": 58939
+    },
+    {
+      "icon_id": "5321634",
+      "name": "word",
+      "font_class": "word",
+      "unicode": "e63c",
+      "unicode_decimal": 58940
+    },
+    {
+      "icon_id": "5330293",
+      "name": "上传",
+      "font_class": "oper-export-2",
+      "unicode": "e775",
+      "unicode_decimal": 59253
+    },
+    {
+      "icon_id": "5330622",
+      "name": "下载",
+      "font_class": "oper-download-2",
+      "unicode": "e7a3",
+      "unicode_decimal": 59299
+    },
+    {
+      "icon_id": "7407674",
+      "name": "重新上传",
+      "font_class": "oper-again-2",
+      "unicode": "e69c",
+      "unicode_decimal": 59036
+    },
+    {
+      "icon_id": "688082",
+      "name": "链接 关联",
+      "font_class": "oper-link",
+      "unicode": "e77c",
+      "unicode_decimal": 59260
+    },
+    {
+      "icon_id": "986556",
+      "name": "关联",
+      "font_class": "oper-link-2",
+      "unicode": "e6af",
+      "unicode_decimal": 59055
+    },
+    {
+      "icon_id": "1615671",
+      "name": "拆分页面",
+      "font_class": "oper-split-2",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "1770896",
+      "name": "撤销",
+      "font_class": "oper-cancel",
+      "unicode": "e657",
+      "unicode_decimal": 58967
+    },
+    {
+      "icon_id": "2742626",
+      "name": "分类",
+      "font_class": "oper-menu",
+      "unicode": "e669",
+      "unicode_decimal": 58985
+    },
+    {
+      "icon_id": "2742630",
+      "name": "分享2",
+      "font_class": "oper-share-3",
+      "unicode": "e66a",
+      "unicode_decimal": 58986
+    },
+    {
+      "icon_id": "2742635",
+      "name": "关注",
+      "font_class": "oper-collect",
+      "unicode": "e66d",
+      "unicode_decimal": 58989
+    },
+    {
+      "icon_id": "2742637",
+      "name": "关联",
+      "font_class": "oper-refresh",
+      "unicode": "e66e",
+      "unicode_decimal": 58990
+    },
+    {
+      "icon_id": "2742670",
+      "name": "文件夹",
+      "font_class": "oper-add-folder",
+      "unicode": "e67c",
+      "unicode_decimal": 59004
+    },
+    {
+      "icon_id": "2742675",
+      "name": "文件夹2",
+      "font_class": "oper-folder",
+      "unicode": "e67d",
+      "unicode_decimal": 59005
+    },
+    {
+      "icon_id": "6537185",
+      "name": "分组",
+      "font_class": "oper-split",
+      "unicode": "e66f",
+      "unicode_decimal": 58991
+    },
+    {
+      "icon_id": "13972545",
+      "name": "发布技术",
+      "font_class": "oper-publish",
+      "unicode": "e695",
+      "unicode_decimal": 59029
+    },
+    {
       "icon_id": "12990677",
       "name": "菜单-线",
       "font_class": "menu-2",
@@ -32,20 +172,6 @@
       "font_class": "left-1",
       "unicode": "e627",
       "unicode_decimal": 58919
-    },
-    {
-      "icon_id": "970063",
-      "name": "好房拓 4.0.0 iconfont_返回",
-      "font_class": "left-2",
-      "unicode": "e67b",
-      "unicode_decimal": 59003
-    },
-    {
-      "icon_id": "1034033",
-      "name": "好房拓 4.0.0 iconfont_下一个",
-      "font_class": "right-2",
-      "unicode": "e6c6",
-      "unicode_decimal": 59078
     },
     {
       "icon_id": "351753",
