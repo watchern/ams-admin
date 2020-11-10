@@ -13,6 +13,8 @@
 <script>
 import { getCreateSql } from '@/api/data/table-info'
 export default {
+  // eslint-disable-next-line vue/require-prop-types
+  props: ['tableId'],
   data() {
     return {
       parentContent: '',
@@ -22,8 +24,7 @@ export default {
     }
   },
   created() {
-    var tableId = this.$parent.$data.tableId
-    this.initTable(tableId)
+    this.initTable(this.tableId)
   },
   methods: {
     initTable(tableId) {
