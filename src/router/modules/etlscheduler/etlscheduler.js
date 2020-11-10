@@ -2,7 +2,7 @@
 
 const etlschedulerRouter = {
   path: '/etlscheduler',
-  redirect: '/etlscheduler/datasource',
+  redirect: '/etlscheduler/etlconfi/datasource',
   component: () => import('@/portal/default/index'),
   name: 'Etlscheduler',
   meta: {
@@ -18,7 +18,7 @@ const etlschedulerRouter = {
     // },
     {
       path: 'datasource',
-      component: () => import('@/views/etlscheduler/datasource/index'),
+      component: () => import('@/views/etlscheduler/etlconfigure/datasource/index'),
       name: 'datasource',
       meta: { title: 'datasource' }
     },
@@ -36,7 +36,7 @@ const etlschedulerRouter = {
     {
       path: 'dataresource',
       name: 'dataresource',
-      component: () => import('@/views/etlscheduler/dataresource/index'),
+      component: () => import('@/views/etlscheduler/etlconfigure/dataresource/index'),
       meta: { title: 'dataresource' }
     },
     {
@@ -133,7 +133,7 @@ const etlschedulerRouter = {
     {
       path: 'filedirectory',
       name: 'filedirectory',
-      component: () => import('@/views/etlscheduler/filedirectory/index'),
+      component: () => import('@/views/etlscheduler/etlconfigure/filedirectory/index'),
       meta: { title: 'filedirectory' }
     },
     {

@@ -334,6 +334,7 @@ export default {
       }).forEach(node => {
         const tableForm = {
           tableMetaUuid: node.id,
+          displayTbName: node.label,
           dbName: node.pid,
           tbName: node.label,
           folderUuid: ckFolder.id

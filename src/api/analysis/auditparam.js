@@ -465,7 +465,7 @@ export function initParamHtml(sql, paramsArr, name, id) {
   }
   overallParmaobj[id] = paramObj
   replaceSql = sql
-  $('#accordion').find('a').html(name)
+  $('#'+id+'1').find('a').html(name)
   try {
     // 获取数据库所有母参数信息集合以及该模型用到的参数集合（可以不传模型ID）
     findParamsAndModelRelParams().then((e) => {

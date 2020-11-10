@@ -4,26 +4,34 @@
     <p style="font-size:large;font-weight:bold">基本信息</p>
     <p style="color:silver;font-size:large">———————————————————————————</p>
     <el-container style="height: 450px;">
-      <div ref="basicInfo" style="float: left">
-        <el-form ref="basicInfoForm" :model="form" label-width="90px" :rules="rules">
-          <el-form-item label="名称" prop="modelDetailName">
-            <el-input v-model="form.modelDetailName" @input="nameValueChange" />
-          </el-form-item>
-          <el-form-item label="描述">
-            <el-input v-model="form.modelDetailMemo" type="textarea" />
-          </el-form-item>
+      <div ref="basicInfo">
+        <el-form ref="basicInfoForm" :model="form" :rules="rules" class="detail-form">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="名称" prop="modelDetailName">
+                <el-input v-model="form.modelDetailName" @input="nameValueChange" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="描述">
+                <el-input v-model="form.modelDetailMemo" type="textarea" />
+              </el-form-item>
+            </el-col>
+          </el-row>
           <p style="font-size:large;font-weight:bold">关联设置</p>
           <p style="color:silver;font-size:large">———————————————————————————</p>
-          <el-form-item label="关联类型" prop="relationType">
-            <el-col>
-              <el-row :span="20">
-                <el-select ref="relTypeSelect" v-model="form.relationType" placeholder="请选择关联类型" @change="relTypeSelectChange">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="关联类型" prop="relationType">
+                <el-select ref="relTypeSelect" style="width: 100%" v-model="form.relationType" placeholder="请选择关联类型" @change="relTypeSelectChange">
                   <el-option label="关联模型" :value="1" />
                   <el-option label="关联表" :value="2" />
                 </el-select>
-              </el-row>
+              </el-form-item>
             </el-col>
-          </el-form-item>
+          </el-row>
           <div ref="relModelDivParent" style="display: none;">
             <el-row>
               <el-form-item label="被关联模型">
@@ -35,9 +43,9 @@
               </el-form-item>
             </el-row>
             <div ref="relModelTableDiv" style="display: none">
-              <el-button type="primary" size="mini" style="float: right" @click="addRelFilter(1)">添加</el-button>
-              <el-table ref="relModelTable" :data="relModelTable" border fit highlight-current-row style="width: 100%;">
-                <el-table-column label="原模型字段" width="200" align="center">
+              <el-button type="primary" size="mini" @click="addRelFilter(1)">添加</el-button>
+              <el-table ref="relModelTable" :data="relModelTable" border fit highlight-current-row>
+                <el-table-column label="原模型字段" align="center">
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.resultColumn" value="-1">
                       <el-option label="请选择" value="-1" />
@@ -50,7 +58,7 @@
                     </el-select>
                   </template>
                 </el-table-column>
-                <el-table-column label="关联模型参数" width="170px" align="center">
+                <el-table-column label="关联模型参数" align="center">
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.ammParamUuid" value="-1">
                       <el-option label="请选择" value="-1" />
@@ -63,7 +71,7 @@
                     </el-select>
                   </template>
                 </el-table-column>
-                <el-table-column label="操作" width="150px" align="center">
+                <el-table-column label="操作" align="center">
                   <template slot-scope="scope">
                     <el-button type="primary" size="mini" @click.native.prevent="deleteRow(scope.$index, relModelTable)">删除</el-button>
                   </template>
@@ -82,31 +90,37 @@
                 </el-form-item>
             </el-row>
             <div ref="relTableDiv" style="display: none">
-              <el-button type="primary" size="mini" style="float: right" @click="addRelFilter(2)">添加</el-button>
-              <el-table ref="relTable" :data="relTable" border fit highlight-current-row style="width: 100%;">
-                <el-table-column label="关联表字段" width="200" align="center" prop="modelName">
-                  <template slot-scope="scope">
-                    <el-select v-model="scope.row.relColumn" value="-1">
-                      <el-option label="请选择" value="-1" />
-                      <el-option
-                        v-for="state in relTableColumn"
-                        :key="state.colMetaUuid"
-                        :value="state.colMetaUuid"
-                        :label="state.chnName"
-                      />
-                    </el-select>
-                  </template>
-                </el-table-column>
-                <el-table-column label="过滤条件" width="170px" align="center" prop="">
-                  <template slot-scope="scope">
-                    <el-input v-model="scope.row.relFilterValue" />
-                  </template>
-                </el-table-column>
-                <el-table-column label="操作" width="150px" align="center" prop="runTime">
-                  <template slot-scope="scope">
-                    <el-button type="primary" size="mini" @click.native.prevent="deleteRow(scope.$index, relTable)">删除</el-button>
-                  </template>
-                </el-table-column>
+              <el-button type="primary" size="mini" @click="addRelFilter(2)">添加</el-button>
+              <el-table ref="relTable" :data="relTable" border fit highlight-current-row>
+<!--                  <el-table-column label="关联表字段" align="center" prop="modelName">
+                    <template slot-scope="scope" v-if="!scope.row.noShow">
+                      <el-select v-model="scope.row.relColumn" value="-1">
+                        <el-option label="请选择" value="-1" />
+                        <el-option
+                          v-for="state in relTableColumn"
+                          :key="state.colMetaUuid"
+                          :value="state.colMetaUuid"
+                          :label="state.chnName"
+                        />
+                      </el-select>
+                    </template>
+                  </el-table-column>-->
+                  <el-table-column label="过滤条件" align="center" prop=""  width="450px">
+                    <template slot-scope="scope" v-if="!scope.row.noShow">
+                      <el-row>
+                        <el-col :span="18">
+                          <el-input :disabled="true" v-model="scope.row.relFilterValue=inputValue[scope.row.modelDetailConfigUuid]"></el-input>
+                          <el-input :disabled="true" v-show="false" v-model="scope.row.relFilterValueJson=inputValueJson[scope.row.modelDetailConfigUuid]"></el-input>
+                        </el-col>
+                      <el-button type="primary" size="mini" @click="openQueryBuilder(scope.row.modelDetailConfigUuid)">设置</el-button>
+                      </el-row>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作" align="center" prop="runTime" width="100px">
+                    <template slot-scope="scope" v-if="!scope.row.noShow">
+                      <el-button type="primary" size="mini" @click.native.prevent="deleteRow(scope.$index, relTable)">删除</el-button>
+                    </template>
+                  </el-table-column>
               </el-table>
             </div>
           </div>
@@ -121,21 +135,34 @@
       </div>
     </el-dialog>
     <el-dialog v-if="dataTableTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%">
-      <data-tree ref="dataTableTree" v-loading="dataTableTreeLoading"/>
+      <data-tree :dataUserId="dataUserId" ref="dataTableTree" :sceneCode="sceneCode"></data-tree>
       <div slot="footer">
         <el-button type="primary" @click="getDataTable">确定</el-button>
         <el-button @click="dataTableTree = false">取消</el-button>
       </div>
     </el-dialog>
+    <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true">
+      <myQueryBuilder
+        v-if="queryBuilderDialogVisible"
+        ref="myQueryBuilder"
+        :columns="queryRules"
+        :data="queryBuilderJson"
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="queryBuilderDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="queryCondition">确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
 import dataTree from '@/views/data/role-res/data-tree'
+import myQueryBuilder from '@/views/analysis/auditmodelresult/myquerybuilder'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import { selectModel,getTableCol } from '@/api/analysis/auditmodel'
 export default {
   name: 'EditModel',
-  components: { ModelFolderTree,dataTree},
+  components: { ModelFolderTree,dataTree,myQueryBuilder},
   props: ['columns', 'treeId', 'data'],
   data() {
     return {
@@ -149,14 +176,36 @@ export default {
         relationObjectName:'',
         modelDetailConfig: []
       },
+      queryBuilderJson:{},
+      //关联类型为数据表时，记录当前input框的值
+      inputValue:{},
+      //关联类型为数据表时，记录当前input框的JSON值 主要用于queryBuilder反显
+      inputValueJson:{},
+      //当前用户登录名
+      dataUserId:this.$store.getters.personcode,
+      sceneCode:'auditor',
+      //模型树dialog
       ModelTreeDialog: false,
+      //模型树loading
       modelTreeLoading: false,
+      //数据表树dialog
       dataTableTree:false,
+      //数据表树loading
       dataTableTreeLoading:false,
+      //关联模型表数组
       relModelTable: [],
+      //关联模型参数数组
       relModelParam: [],
+      //queryBuilderDialog
+      queryBuilderDialogVisible:false,
+      //queryBuilder列对象
+      queryRules: {},
+      //关联表数组
       relTable: [],
+      //关联表列数组
       relTableColumn: [],
+      currentFilterInputId:'',
+      //校验
       rules: {
         modelDetailName: [
           { type: 'string', required: true, message: '请输入详细名称', trigger: 'blur' }
@@ -200,9 +249,17 @@ export default {
           // 显示界面dom
           this.$refs.relTableDivParent.style = 'block'
           this.$refs.relTableDiv.style = 'block'
-          this.initTableTree()
+          //初始化数据表列
+          this.loadTableCol(this.data.relationObjectUuid)
+          //this.initTableTree()
           // 初始化关联表table
+          for(let i = 0;i < this.data.modelDetailConfig.length;i++){
+            this.inputValue[this.data.modelDetailConfig[i].modelDetailConfigUuid] = this.data.modelDetailConfig[i].relFilterValue
+            this.inputValueJson[this.data.modelDetailConfig[i].modelDetailConfigUuid] = this.data.modelDetailConfig[i].relFilterValueJson
+            //循环处理数据
+          }
           this.relTable = this.data.modelDetailConfig
+          this.setQueryBuilderColumn()
         }
       }
     },
@@ -255,6 +312,10 @@ export default {
         }
         this.form.modelDetailConfig = this.$refs.relModelTable.data
       } else if (this.$refs.relTypeSelect.value == 2) {
+        if(this.$refs.relTable.data.length == 0){
+          this.$message({ type: 'info', message: '关联表必须设置过滤条件'})
+          return { verResult: false, treeId: this.treeId }
+        }
         // 如果为关联表则取表的数据
         this.form.modelDetailConfig = this.$refs.relTable.data
       }
@@ -268,20 +329,21 @@ export default {
       if (type == 1) {
         this.relModelTable.push({})
       } else {
-        this.relTable.push({})
+        let id = new Date().getTime()
+        this.relTable.push({modelDetailConfigUuid:id,noShow:false})
       }
     },
-    loadTableCol(data) {
+    loadTableCol(id) {
         //获取选中表的列id，列名称等信息
-      getTableCol(data.id).then(result=>{
+      getTableCol(id).then(result=>{
         if(result.data == null){
           this.$message({ type: 'info', message: '加载数据表列失败!' })
           return
         }
         this.relTableColumn = result.data
         this.$refs.relTableDiv.style.display = 'block'
+        this.setQueryBuilderColumn()
       })
-
     },
     /**
        * 关联类型下拉框改变事件
@@ -362,6 +424,19 @@ export default {
       })
     },
     /**
+     * 设置queryBuilder列
+     */
+    setQueryBuilderColumn() {
+      const queryRules = []
+      for (let i = 0; i < this.relTableColumn.length; i++) {
+        const obj = {}
+        obj.columnType = this.relTableColumn[i].dataType
+        obj.columnName = this.relTableColumn[i].chnName
+        queryRules.push(obj)
+      }
+      this.queryRules.columnList = queryRules
+    },
+    /**
      * 显示数据表树
      */
     showDataTree(){
@@ -374,10 +449,29 @@ export default {
         this.$message({ type: 'info', message: '请选择数据表!' })
         return
       }
-      this.loadTableCol(currentNode)
+      this.loadTableCol(currentNode.id)
       this.form.relationObjectName = currentNode.label
       this.form.relationObjectUuid = currentNode.id
       this.dataTableTree = false
+
+    },
+    openQueryBuilder(id){
+      if(this.inputValueJson[id] != undefined){
+        this.queryBuilderJson = JSON.parse(this.inputValueJson[id])
+      }
+      this.queryBuilderDialogVisible = true
+      this.currentFilterInputId = id
+    },
+    queryCondition(){
+      debugger
+      const obj = this.$refs.myQueryBuilder.getSelectSql()
+      this.queryBuilderDialogVisible = false
+      this.setFilter(obj.sql,JSON.stringify(obj.queryJson))
+    },
+    setFilter(sql,queryJson){
+      this.inputValue[this.currentFilterInputId] = sql
+      this.inputValueJson[this.currentFilterInputId] = queryJson
+      this.relTable.push({modelDetailConfigUuid:1,noShow:true})
     }
   }
 }

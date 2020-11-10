@@ -1,40 +1,41 @@
 <template>
-  <div class="div-width">
+  <div class="tree-list-container">
     <el-tabs v-model="editableTabsValue" closable @tab-remove="removeTab">
       <el-tab-pane label="模型列表" name="modelList">
         <div class="filter-container">
           <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
         </div>
         <el-row type="flex" class="row-bg" v-if="power!='warning'">
-          <el-col :span="20"></el-col>
-          <el-col :span="4">
-            <div class="grid-content bg-purple-light">
-              <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn detail" @click="previewModel" />
-              <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />
-              <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel" />
-              <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete" @click="deleteModel" />
-              <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
-                <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
-                <el-dropdown-menu slot="dropdown">
+          <el-col align="right">
+            <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn detail" @click="previewModel" />
+            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />
+            <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel" />
+            <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete" @click="deleteModel" />
+            <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
+              <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
+              <el-dropdown-menu slot="dropdown">
 <!--                  <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
-                  <el-dropdown-item @click.native="importData">导入</el-dropdown-item>-->
-                  <el-dropdown-item @click.native="shareModel">共享</el-dropdown-item>
-                  <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
-                  <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
+                <el-dropdown-item @click.native="importData">导入</el-dropdown-item>-->
+                <el-dropdown-item @click.native="shareModelDialog">共享</el-dropdown-item>
+                <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
+                <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-col>
         </el-row>
-        <el-table :key="tableKey" ref="modelListTable" v-loading="listLoading"
+        <el-table :key="tableKey" style="height: 450px;overflow-y: scroll" ref="modelListTable" v-loading="listLoading"
                   :data="list" border fit highlight-current-row @select="modelTableSelectEvent">
           <el-table-column type="selection" width="55" />
-          <el-table-column label="模型名称" width="100px" align="center" prop="modelName" />
+          <el-table-column label="模型名称" width="100px" align="left" prop="modelName">
+            <template slot-scope="scope">
+              <el-link type="primary" @click="selectModelDetail(scope.row.modelUuid)">{{scope.row.modelName}}</el-link>
+            </template>
+          </el-table-column>
           <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
-          <el-table-column label="审计事项" prop="auditItemName" />
-          <el-table-column label="风险等级" prop="riskLevelUuid" :formatter="riskLevelFormatter" />
-          <el-table-column label="模型类型" prop="modelType" :formatter="modelTypeFormatter" />
-          <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
+          <el-table-column label="审计事项" prop="auditItemName" align="center" />
+          <el-table-column label="风险等级" prop="riskLevelUuid" align="center" :formatter="riskLevelFormatter" />
+          <el-table-column label="模型类型" prop="modelType" align="center" :formatter="modelTypeFormatter" />
+          <el-table-column label="创建时间" prop="createTime" align="center" :formatter="dateFormatter" />
         </el-table>
         <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
       </el-tab-pane>
@@ -68,6 +69,7 @@
         </el-collapse>
       </el-tab-pane>
     </el-tabs>
+    <modelshoppingcart v-show="isShowShoppingCart" ref="modelShoppingCartRef"></modelshoppingcart>
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
       <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
@@ -80,6 +82,13 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
         <el-button type="primary" @click="replaceNodeParam">确定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="请选择共享人员" v-if="dialogFormVisiblePersonTree" :visible.sync="dialogFormVisiblePersonTree" :append-to-body="true">
+      <personTree ref="personTree"/>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisiblePersonTree = false">关闭</el-button>
+        <el-button type="primary" @click="shareModel">确定</el-button>
       </div>
     </el-dialog>
     <el-upload
@@ -97,7 +106,7 @@
   </div>
 </template>
 <script>
-import { findModel, saveModel, deleteModel, selectModel, updateModel,updateModelBasicInfo,exportModel,setModelSession } from '@/api/analysis/auditmodel'
+import { findModel, saveModel, deleteModel,shareModel, selectModel, updateModel,updateModelBasicInfo,exportModel,setModelSession } from '@/api/analysis/auditmodel'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
@@ -108,9 +117,11 @@ import { startExecuteSql } from '@/api/analysis/sqleditor/sqleditor'
 import crossrangeParam from '@/views/analysis/modelparam/crossrangeparam'
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
 import {replaceNodeParam,replaceCrossrangeNodeParam } from '@/api/analysis/auditparam'
+import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
+import personTree from '@/components/publicpersontree/index'
 export default {
   name: 'ModelListTable',
-  components: { Pagination, QueryField, EditModel,ModelFolderTree,childTabs,crossrangeParam,paramDraw },
+  components: { Pagination, QueryField, EditModel,ModelFolderTree,childTabs,crossrangeParam,paramDraw,modelshoppingcart,personTree },
   props:['power'],
   data() {
     return {
@@ -122,6 +133,7 @@ export default {
       listLoading: false,
       //编辑框名称
       editModelTitle: '',
+      isShowShoppingCart:false,
       //发布模型dialog
       treeSelectShow:false,
       //折叠面板默认展开
@@ -185,7 +197,9 @@ export default {
         condition: null,
         pageNo: 1,
         pageSize: 20
-      }
+      },
+      //人员选择
+      dialogFormVisiblePersonTree:false
     }
   },
   computed: {
@@ -394,6 +408,8 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = false
         this.btnState.previewBtn = false
+        this.isShowShoppingCart = true
+        this.$refs.modelShoppingCartRef.setMemo(selectObj)
       }
       else if(selectObj.length > 1){
         //只显示删除和添加按钮
@@ -402,6 +418,8 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = true
         this.btnState.previewBtn = true
+        this.isShowShoppingCart = true
+        this.$refs.modelShoppingCartRef.setMemo(selectObj)
       }
       else if(selectObj.length == 0){
         //只显示添加按钮
@@ -410,6 +428,7 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = true
         this.btnState.previewBtn = true
+        this.isShowShoppingCart = false
       }
     },
     /**
@@ -626,8 +645,52 @@ export default {
       file = [];
       fileList = [];
     },
-    shareModel(){
+    /**
+     *打开人员选择
+     */
+    shareModelDialog(){
+      var selectObj = this.$refs.modelListTable.selection
+      if (selectObj == undefined || selectObj.length === 0) {
+        this.$message({ type: 'info', message: '请先选择要共享的模型!' })
+        return
+      }
+      this.dialogFormVisiblePersonTree = true
       //弹出人员选择窗体
+    },
+    /**
+     *共享模型
+     */
+    shareModel(){
+      //获取选中的人员
+      //循环组织对象添加数据
+      var selectObj = this.$refs.modelListTable.selection
+      let modelShareRelList = [];
+      let persons = this.$refs.personTree.getSelectValue()
+      for(let i = 0;i < selectObj.length;i++){
+        for(let j = 0;j < persons.length;j++){
+          let obj = {
+            modelUuid:selectObj[i].modelUuid,
+            belongUuid:persons[j].personuuid,
+            belongName:persons[j].cnname
+          }
+          modelShareRelList.push(obj)
+        }
+      }
+      shareModel(modelShareRelList).then(result=>{
+        if(result.code == 0){
+          this.$notify({
+            title:'提示',
+            message:'共享成功',
+            type:'success',
+            duration:2000,
+            position:'bottom-right'
+          });
+          this.dialogFormVisiblePersonTree = false
+        }
+        else{
+          this.$message({ type: 'error', message: '共享模型失败!' })
+        }
+      })
     },
     previewModel(){
       var selectObj = this.$refs.modelListTable.selection
@@ -749,10 +812,10 @@ export default {
     },
     /**
      * 合并参数对象
-     * @param paramsArr 替换后的参数数组
+     * @param paramsArr 替换参数值后的参数数组
      */
     mergeParamObj(paramsArr){
-      let paramObj = this.currentPreviewModelParamAndSql.paramObj
+      let paramObj = this.currentPreviewModelParamAndSql.paramObj    //模型的参数数组
       for (let i = 0;i < paramObj.length;i++){
         for (let j = 0;j < paramsArr.length;j++){
           if(paramObj[i].moduleParamId == paramsArr[j].moduleParamId){
@@ -791,17 +854,38 @@ export default {
      */
     getModelListCheckData(){
       return this.$refs.modelListTable.selection
+    },
+    selectModelDetail(modelUuid){
+      this.isUpdate = true
+      selectModel(modelUuid).then(result => {
+        if (result.code == 0) {
+          this.editModelTitle = result.data.modelName + '详细'
+          var operationObj = {
+            operationType: 3,
+            model: result.data,
+            folderId:"",
+            folderName:"",
+            formName:result.data.modelName + '详细'
+          }
+          sessionStorage.setItem('operationObj', JSON.stringify(operationObj));
+          this.$store.commit('aceState/setRightFooterTags',{
+            type:'active',
+            val:{
+              name:result.data.modelName + '详细',
+              path:'/analysis/editorModel'
+            }
+          })
+        } else {
+          this.$message({ type: 'error', message: '查看模型详细失败' })
+        }
+      })
     }
   }
 }
 </script>
 
 <style>
-.div-width{
-  width:100%;
-  height: 100%;
-  padding:20px;
-}
+
 .el-dropdown{
   margin-left: 10px;
 }

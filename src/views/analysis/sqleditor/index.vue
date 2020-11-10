@@ -187,6 +187,7 @@ import {
   caseTransformation,
   selectSqlNotes,
   selectSqlCancelNotes,
+  refreshCodeMirror,
   getSaveInfo,
   getSelectSql,
   getSaveSqlDraftObj,
@@ -352,9 +353,9 @@ export default {
      * 初始化sql编辑器基础数据
      */
     initData() {
+      const userId = this.$store.getters.personuuid
       initDragAndDrop()
       initIcon()
-      const userId = this.$store.getters.personuuid
       initTableTree(userId)
       initFunctionTree()
       initVariable()
@@ -370,10 +371,12 @@ export default {
           }
         }
         initSQLEditor(document.getElementById('sql'), relTableMap)
+        //initSQLEditor(document.getElementById('sql'), relTableMap)
         if (this.sqlValue != '') {
           // 编辑模型的sql  反显数据
           editorSql(this.sqlValue, this.sqlEditorParamObj)
         }
+        refreshCodeMirror()
       })
     },
     /**
@@ -719,7 +722,7 @@ export default {
 
 #horizontal {
   position: absolute;
-  top: 36%;
+  top: 39%;
   /* width: 100vh; */
   width: 97.5%;
   height: 3px;
