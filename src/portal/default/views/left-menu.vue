@@ -43,8 +43,9 @@
         <span class="label-open" @click="isShowToolsList=!isShowToolsList">
           <i class="el-icon-s-grid" />
         </span>
-        <span class="label-wang" @mouseover="isShowSettingList=true">{{ userInfo.name }}</span>
-        <i class="shrink-btn icon iconfont iconright-2" @click="isShrink=false" />
+        <span class="label-wang">{{ userInfo.name }}</span>
+        <!-- <i class="shrink-btn icon iconfont iconright-1" @click="isShrink=false" /> -->
+        <i class="setting-btn icon iconfont iconmenu-2" @mouseover="isShowSettingList=true" />
       </div>
     </template>
     <template v-else>
@@ -81,8 +82,8 @@
       </div>
       <div class="bottom-open flex a-center j-end flex-column">
         <div class="search-box flex a-center j-start flex-row">
+          <input type="text" name="search" class="search-input" placeholder="Search">
           <i class="el-icon-search" />
-          <span>Search</span>
         </div>
         <div
           class="label-open flex a-center j-start flex-row"
@@ -92,40 +93,49 @@
           <span>More tools</span>
         </div>
         <div class="footer-btns flex a-center j-between flex-row">
-          <span class="label-wang" @mouseover="isShowSettingList=true">{{ userInfo.name }}</span>
-          <i class="shrink-btn icon iconfont iconleft-2" @click="isShrink=true" />
+          <span class="label-wang">{{ userInfo.name }}</span>
+          <!-- <i class="shrink-btn icon iconfont iconleft-1" @click="isShrink=false" /> -->
+          <i class="setting-btn icon iconfont iconmenu-2" @mouseover="isShowSettingList=true" />
         </div>
       </div>
     </template>
-    <div v-if="isShowTreeList" class="tree-list absolute">
-      <div class="tree-list-title">
-        <!-- <i class="el-icon-platform-eleme" /> -->
-        {{ nowAppName }}
-      </div>
-      <div class="tree-list-content">
-        <menu-tree :list="currentMenuGroup" @closetree="isShowTreeList=false;isShrink=true" />
-      </div>
-    </div>
-    <div v-if="isShowSettingList" class="setting-list absolute" @mouseover="isShowSettingList=true" @mouseleave="isShowSettingList=false">
-      <div
-        v-for="(item,index) in settingList"
-        :key="index"
-        class="setting-list-line flex flex-row a-center j-start"
-      >
-        <i class="el-icon-delete icon" />
-        <div class="name-box" @click="item.method">
-          <span>{{ item.name }}</span>
-          <span
-            v-if="item.count"
-            class="count"
-            :class="[index===0?'count-red':index===1?'count-green':'']"
-          >{{ item.count }}</span>
+    <transition name="slide-fade">
+      <div v-if="isShowTreeList" class="tree-list absolute">
+        <div class="tree-list-title">
+          <!-- <i class="el-icon-platform-eleme" /> -->
+          {{ nowAppName }}
+        </div>
+        <div class="tree-list-content">
+          <menu-tree :list="currentMenuGroup" @closetree="isShowTreeList=false;isShrink=true" />
         </div>
       </div>
-    </div>
-    <div v-if="isShowToolsList" class="tools-list" :style="{left:isShrink?'64px':'120px'}">
-      <tools-template />
-    </div>
+    </transition>
+    <transition name="setting-fade">
+      <div v-if="isShowSettingList" class="setting-list absolute" @mouseover="isShowSettingList=true" @mouseleave="isShowSettingList=false">
+        <div class="setting-list-content">
+          <div
+            v-for="(item,index) in settingList"
+            :key="index"
+            class="setting-list-line flex flex-row a-center j-start"
+          >
+            <i class="el-icon-delete icon" />
+            <div class="name-box" @click="item.method">
+              <span>{{ item.name }}</span>
+              <span
+                v-if="item.count"
+                class="count"
+                :class="[index===0?'count-red':index===1?'count-green':'']"
+              >{{ item.count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+    <transition name="tools-list-fade">
+      <div v-if="isShowToolsList" class="tools-list" :style="{left:isShrink?'64px':'120px'}">
+        <tools-template />
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -152,12 +162,14 @@ export default {
         {
           icon: '',
           name: '提醒事项',
-          count: 20
+          count: 20,
+          method: this.logout
         },
         {
           icon: '',
           name: '后台跑批',
-          count: 15
+          count: 15,
+          method: this.logout
         },
         {
           icon: '',
@@ -309,6 +321,10 @@ export default {
   box-shadow: -5px 0 20px 0 rgba(17, 35, 56, 0.48);
   height: 100%;
   padding: 20px 0;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
   .top-open {
     .logo {
       width: 30px;
@@ -371,20 +387,27 @@ export default {
   }
   .bottom-open {
     .search-box {
-      background: #3d424b;
-      border: 1px solid rgba(168, 172, 178, 0.3);
-      font-family: BebasNeue;
-      font-size: 11.38px;
-      color: #8691a2;
-      letter-spacing: 0;
-      width: 90px;
-      height: 28px;
-      padding-left: 4px;
-      margin-bottom: 9px;
-      position: relative;
+      .search-input{
+        background: #3d424b;
+        border: 1px solid rgba(168, 172, 178, 0.3);
+        font-family: BebasNeue;
+        font-size: 11.38px;
+        color: #8691a2;
+        letter-spacing: 0;
+        width: 90px;
+        height: 28px;
+        padding-left: 4px;
+        margin-bottom: 9px;
+        position: relative;
+      }
       > i {
         font-size: 16px;
         margin-right: 2px;
+        color: #8691a2;
+        margin-left: -20px;
+        z-index: 10;
+        margin-bottom: 9px;
+        cursor: pointer;
       }
       &::before {
         content: "";
@@ -426,16 +449,23 @@ export default {
     right: 0;
     left: 64px;
     z-index: 1000;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
   }
   .setting-list {
     bottom: 6px;
-    width: 153px;
-    background: #2a2e37;
-    box-shadow: 0 40px 80px 0 rgba(0, 0, 0, 0.25);
-    border-radius: 8px;
-    right: -153px;
+    width: 177px;
+    right: -177px;
     padding: 12px;
     z-index: 20201231;
+    .setting-list-content{
+      background: #2a2e37;
+      padding: 20px;
+      box-shadow: 0 40px 80px 0 rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+    }
     &-line {
       font-family: PingFangSC-Regular;
       font-size: 14px;
@@ -571,6 +601,7 @@ export default {
       line-height: 28px;
       margin-bottom: 61px;
       color: #525a65;
+      cursor: pointer;
     }
     .label-open {
       background: #aab5c8;
@@ -584,5 +615,41 @@ export default {
     color:#ffffff;
     cursor:pointer;
   }
+}
+.shrink-btn-div-open{
+  margin-right: -40px;
+  background: #353a43;
+  border-radius: 100%;
+  padding: 0px 3px 0px 10px;
+  float: right;
+  height: 38px;
+  line-height: 38px;
+}
+.shrink-btn-div-close{
+  margin-right: -40px;
+  background: #353a43;
+  border-radius: 100%;
+  padding: 0px 3px 0px 10px;
+  float: right;
+  height: 38px;
+  line-height: 38px;
+}
+.slide-fade-enter-active, .slide-fade-leave-active {
+  transition: all 0.6s
+}
+.slide-fade-enter,.slide-fade-leave-to {
+  transform: translateX(-30px);
+  opacity: 0;
+}
+.tools-list-fade-enter-active, .tools-list-fade-leave-active{
+  transition: all 0.6s
+}
+.tools-list-fade-enter,.tools-list-fade-leave-to {
+  transform: translateX(-100%);
+}
+.setting-btn{
+  font-size: 20px;
+  color:#ffffff;
+  cursor:pointer;
 }
 </style>
