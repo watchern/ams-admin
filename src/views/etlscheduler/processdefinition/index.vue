@@ -7,74 +7,74 @@
         @submit="getList"
       />
     </div>
-    <div style="float: left">
-      <!-- 添加 -->
-      <el-button
-        type="primary"
-        title="添加"
-        class="oper-btn add"
-        @click="handleCreate()"
-      />
-      <!-- 修改 selections.length !== 1 -->
-      <el-button
-        type="primary"
-        title="编辑已停用的流程"
-        class="oper-btn edit"
-        :disabled="updateStatus"
-        @click="handleUpdate()"
-      />
-      <!-- 启用 -->
-      <el-button
-        type="primary"
-        title="启用"
-        class="oper-btn"
-        icon="el-icon-video-play"
-        :disabled="startStatus"
-        @click="handleStart()"
-      />
-      <!-- 停用 -->
-      <el-button
-        type="primary"
-        title="停用"
-        :disabled="stopStatus"
-        class="oper-btn"
-        icon="el-icon-video-pause"
-        @click="handleStop()"
-      />
-      <!-- 删除 -->
-      <el-button
-        type="primary"
-        title="删除已停用的流程"
-        class="oper-btn delete"
-        :disabled="deleteStatus"
-        @click="handleDelete()"
-      />
-      <!-- 下载 -->
-      <el-button
-        type="primary"
-        title="下载"
-        class="oper-btn"
-        icon="el-icon-download"
-        :disabled="selections.length === 0"
-        @click="handleDownload()"
-      />
-      <!-- 上传 -->
-      <!-- multiple -->
-      <el-upload
-        class="upload-demo"
-        action=""
-        :on-remove="handleRemove"
-        :headers="headers"
-        :http-request="uploadFile"
-        :limit="3"
-        :auto-upload="true"
-        :on-change="handleFileChange"
-        :show-file-list="false"
-        style="display:inline-block;padding-left:10px"
-      >
-        <el-button type="primary" title="上传" icon="el-icon-upload" class="oper-btn" />
-      </el-upload>
-    </div>
+    <el-row>
+      <el-col align="right"> <!-- 添加 -->
+        <el-button
+          type="primary"
+          title="添加"
+          class="oper-btn add"
+          @click="handleCreate()"
+        />
+        <!-- 修改 selections.length !== 1 -->
+        <el-button
+          type="primary"
+          title="编辑已停用的流程"
+          class="oper-btn edit"
+          :disabled="updateStatus"
+          @click="handleUpdate()"
+        />
+        <!-- 启用 -->
+        <el-button
+          type="primary"
+          title="启用"
+          class="oper-btn"
+          icon="el-icon-video-play"
+          :disabled="startStatus"
+          @click="handleStart()"
+        />
+        <!-- 停用 -->
+        <el-button
+          type="primary"
+          title="停用"
+          :disabled="stopStatus"
+          class="oper-btn"
+          icon="el-icon-video-pause"
+          @click="handleStop()"
+        />
+        <!-- 删除 -->
+        <el-button
+          type="primary"
+          title="删除已停用的流程"
+          class="oper-btn delete"
+          :disabled="deleteStatus"
+          @click="handleDelete()"
+        />
+        <!-- 下载 -->
+        <el-button
+          type="primary"
+          title="下载"
+          class="oper-btn"
+          icon="el-icon-download"
+          :disabled="selections.length === 0"
+          @click="handleDownload()"
+        />
+        <!-- 上传 -->
+        <!-- multiple -->
+        <el-upload
+          class="upload-demo"
+          action=""
+          :on-remove="handleRemove"
+          :headers="headers"
+          :http-request="uploadFile"
+          :limit="3"
+          :auto-upload="true"
+          :on-change="handleFileChange"
+          :show-file-list="false"
+          style="display:inline-block;padding-left:10px"
+        >
+          <el-button type="primary" title="上传" icon="el-icon-upload" class="oper-btn" />
+        </el-upload></el-col>
+    </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"

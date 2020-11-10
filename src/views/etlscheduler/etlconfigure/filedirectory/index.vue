@@ -7,14 +7,16 @@
         @submit="getList"
       />
     </div>
-    <div style="float: left;">
-      <!-- 添加 -->
-      <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
-      <!-- 修改 -->
-      <el-button type="primary" class="oper-btn edit" title="修改" :disabled="selections.length !== 1" @click="handleUpdate()" />
-      <!-- 删除 -->
-      <el-button type="primary" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="handleDelete()" />
-    </div>
+    <el-row>
+      <el-col align="right">
+        <!-- 添加 -->
+        <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
+        <!-- 修改 -->
+        <el-button type="primary" class="oper-btn edit" title="修改" :disabled="selections.length !== 1" @click="handleUpdate()" />
+        <!-- 删除 -->
+        <el-button type="primary" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="handleDelete()" />
+      </el-col>
+    </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
