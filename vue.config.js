@@ -41,8 +41,8 @@ module.exports = {
     },
     disableHostCheck: true,
     port: port, // 端口号
-    // host: 'localhost',
-    host: '192.168.80.142',
+    host: 'localhost',
+    // host: '192.168.80.142',
     https: false, // https:{type:Boolean}
     open: true, //配置自动启动浏览器
     //proxy: 'http://172.20.10.9:8080', // 配置跨域处理,只有一个代理 //192.168.43.43
