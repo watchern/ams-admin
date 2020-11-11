@@ -16,6 +16,7 @@ export default {
     }
   },
   created() {
+    console.log(this.$store.getters.personcode);
   },
   methods: {
     handleClick(data, node, tree) {

@@ -59,7 +59,7 @@
 <script>
 import { getTableCol, getTableInfo, saveTableInfo } from '@/api/data/table-info'
 import { listByPage } from '@/api/data/biz-attr'
-import SelectTransCode from '@/views/data/table/transCodeSelect'
+import SelectTransCode from '@/views/data/table/transcodeselect'
 import { selectCodeAll, selectById } from '@/api/data/transCode'
 export default {
   components: { SelectTransCode },
