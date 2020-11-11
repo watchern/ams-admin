@@ -51,7 +51,6 @@ const actions = {
         commit('SET_ID', data.personUuid)
         commit('SET_NAME', data.username)
         commit('SET_TOKEN', data.personUuid)
-        debugger;
         commit('SET_CODE', data.userid)
         setToken(data.personUuid)
         resolve()
@@ -78,8 +77,9 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        console.log('data' + data.id)
-        const { roles, name, avatar, introduction, id } = data
+        console.log("getInfo:data")
+        console.log(data)
+        const { roles, name, avatar, introduction, id, personcode } = data
 
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
@@ -90,11 +90,18 @@ const actions = {
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         commit('SET_INTRODUCTION', introduction)
+        debugger;
+        commit('SET_CODE', personcode)
         resolve(data)
       }).catch(error => {
         reject(error)
       })
+      resolve();
     })
+
+    /*debugger;
+    console.log(111)
+    return {};*/
   },
 
   // user logout
@@ -128,14 +135,15 @@ const actions = {
   },
 
   // dynamically modify permissions
-  changeRoles({ commit, dispatch }, role) {
+  /*changeRoles({ commit, dispatch }, role) {
     return new Promise(async resolve => {
       const token = role + '-token'
 
       commit('SET_TOKEN', token)
       setToken(token)
 
-      const { roles } = await dispatch('getInfo')
+      //const { roles } = await dispatch('getInfo')
+      const roles = [];
 
       resetRouter()
 
@@ -150,7 +158,7 @@ const actions = {
 
       resolve()
     })
-  }
+  }*/
 }
 
 export default {
