@@ -52,11 +52,8 @@ const actions = {
     return new Promise(resolve => {
       var accessedRoutes = [];
       //此处通过r1菜单，过滤router
-      asyncRoutes.forEach(thisRoute => {
-        console.log(thisRoute)
-        accessedRoutes.push(thisRoute);
-      })
-      commit('SET_ROUTES', accessedRoutes)
+      asyncRoutes.forEach(route =>{accessedRoutes.push()})
+      constantRoutes.forEach(route =>{accessedRoutes.push()})
       resolve(accessedRoutes)
     })
   }

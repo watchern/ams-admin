@@ -117,7 +117,6 @@
             <el-tab-pane label="创建语句" name="createSql"><create-sql :table-id="tableId" /></el-tab-pane>
             <el-tab-pane label="业务信息" name="bizInfo"><biz-info :table-id="tableId" /></el-tab-pane>
           </el-tabs>
-          <!--:is 的作用：会将div标签转换成 currentView 变量绑定的这个组件-->
         </template>
         <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="500px">
           <el-form ref="folderForm" :model="folderForm" label-width="80px">
