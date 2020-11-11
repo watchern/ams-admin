@@ -236,7 +236,7 @@ import VRuntimeTemplate from 'v-runtime-template'
 import paramShow from "@/views/analysis/modelparam/paramshow";
 import { getDictList } from '@/utils/index'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
-import SelectTransCode from '@/views/data/table/transCodeSelect'
+import SelectTransCode from '@/views/data/table/transcodeselect'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 export default {
   name: 'EditModel',
