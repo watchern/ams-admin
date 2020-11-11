@@ -35,6 +35,8 @@
 import { getBasicInfo } from '@/api/data/table-info'
 
 export default {
+  // eslint-disable-next-line vue/require-prop-types
+  props: ['tableId'],
   data() {
     return {
       temp: {
@@ -48,8 +50,7 @@ export default {
     }
   },
   created() {
-    var tableId = this.$parent.$data.tableId
-    this.initBasicInfo(tableId)
+    this.initBasicInfo(this.tableId)
   },
   methods: {
     initBasicInfo(tableId) {

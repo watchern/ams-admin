@@ -204,10 +204,6 @@ export default {
       }
     },
     handleCreate() {
-      /* console.log(this.$store.getters.personuuid);
-      getDict('sex').then(data => {
-        console.log(data)
-      });*/
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
