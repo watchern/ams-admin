@@ -110,8 +110,10 @@ export default {
       dataTypes: [{ name: '年', value: 'year', key: 1 },
         { name: '月', value: 'month', key: 2 },
         { name: '日', value: 'date', key: 3 }],
-      StartTimeStart: new Date(),
-      StartTimeEnd: new Date(),
+      // StartTimeStart: new Date(),
+      // StartTimeEnd: new Date(),
+      StartTimeStart: null,
+      StartTimeEnd: null,
       datepickerType: 'year',
       // queryFields: [
       //   // {
