@@ -79,6 +79,8 @@ export default {
     'workflow': '流程定义管理',
     'etlconfigure': '调度配置',
     'fileresource': '文件管理',
+    'datafilestatistics': '上游数据文件统计',
+    'datafilestatisticslist': '数据表文件详细',
     'filedirectory': '文件目录管理'
   },
   navbar: {

@@ -7,12 +7,14 @@
         @submit="getList"
       />
     </div>
-    <div style="float: left;">
-      <!-- 添加文件夹 -->
-      <el-button type="primary" class="oper-btn add" title="上传文件夹" :disabled="createDirStatus" @click="handleCreateDir()" />
-      <!-- 删除 -->
-      <el-button type="primary" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="handleDelete()" />
-    </div>
+    <el-row>
+      <el-col align="right">
+        <!-- 添加文件夹 -->
+        <el-button type="primary" class="oper-btn add-folder" title="上传文件夹" :disabled="createDirStatus" @click="handleCreateDir()" />
+        <!-- 删除 -->
+        <el-button type="primary" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="handleDelete()" />
+      </el-col>
+    </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"

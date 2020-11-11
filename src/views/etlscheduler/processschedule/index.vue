@@ -4,32 +4,34 @@
       <!-- 查询条件区域 -->
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
-    <div style="float: left;">
-      <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
-      <el-button type="primary" class="oper-btn edit" :disabled="editStatus" title="修改" @click="handleUpdate()" />
-      <el-button type="primary" class="oper-btn delete" :disabled="deleteStatus" title="删除" @click="handleDelete()" />
-      <el-button type="primary" class="oper-btn" icon="el-icon-video-play" :disabled="startStatus" title="启用" @click="handleUse()" />
-      <el-button type="primary" class="oper-btn" icon="el-icon-video-pause" :disabled="stopStatus" title="停用" @click="handleBear()" />
-      <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length != 1" title="复制" @click="copyData()" />
-      <el-upload
-        multiple
-        class="upload-demo"
-        action=""
-        :on-remove="handleRemove"
-        :headers="headers"
-        :http-request="uploadFile"
-        :limit="3"
-        :auto-upload="true"
-        :on-change="handleFileChange"
-        :show-file-list="false"
-        style="display: inline-block; padding-left: 10px"
-      >
-        <el-button type="primary" class="oper-btn" icon="el-icon-upload2" title="导入" />
-      </el-upload>
-      <span style="display: inline-block; padding-left: 10px">
-        <el-button type="primary" class="oper-btn" icon="el-icon-download" title="下载流程模板" @click="dialogFormVisible1 = true" />
-      </span>
-    </div>
+    <el-row>
+      <el-col align="right">
+        <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
+        <el-button type="primary" class="oper-btn edit" :disabled="editStatus" title="修改" @click="handleUpdate()" />
+        <el-button type="primary" class="oper-btn delete" :disabled="deleteStatus" title="删除" @click="handleDelete()" />
+        <el-button type="primary" class="oper-btn start" :disabled="startStatus" title="启用" @click="handleUse()" />
+        <el-button type="primary" class="oper-btn pause" :disabled="stopStatus" title="停用" @click="handleBear()" />
+        <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length != 1" title="复制" @click="copyData()" />
+        <el-upload
+          multiple
+          class="upload-demo"
+          action=""
+          :on-remove="handleRemove"
+          :headers="headers"
+          :http-request="uploadFile"
+          :limit="3"
+          :auto-upload="true"
+          :on-change="handleFileChange"
+          :show-file-list="false"
+          style="display: inline-block; padding-left: 10px"
+        >
+          <el-button type="primary" class="oper-btn export" title="导入" />
+        </el-upload>
+        <span style="display: inline-block; padding-left: 10px">
+          <el-button type="primary" class="oper-btn import" title="下载流程模板" @click="dialogFormVisible1 = true" />
+        </span>
+      </el-col>
+    </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"

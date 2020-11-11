@@ -8,53 +8,49 @@
         @submit="getList"
       />
     </div>
-    <div>
-      <!-- 跳过指定环节 -->
-      <el-button
-        type="primary"
-        title="跳过指定环节"
-        :disabled="skipStatus"
-        class="oper-btn"
-        icon="el-icon-remove-outline"
-        @click="handleSkipTask()"
-      />
-      <!-- 暂停 -->
-      <el-button
-        type="primary"
-        title="暂停"
-        :disabled="pusStatus"
-        class="oper-btn"
-        icon="el-icon-video-pause"
-        @click="handleStop()"
-      />
-      <!-- 启动 -->
-      <el-button
-        type="primary"
-        title="启动"
-        class="oper-btn"
-        icon="el-icon-video-play"
-        :disabled="startStatus"
-        @click="handleStart()"
-      />
-      <!-- 重新运行 -->
-      <el-button
-        type="primary"
-        title="重新运行"
-        class="oper-btn"
-        icon="el-icon-refresh-left"
-        :disabled="reStartStatus"
-        @click="handleReStart()"
-      />
-      <!-- 取消 -->
-      <el-button
-        type="primary"
-        title="取消"
-        class="oper-btn"
-        icon="el-icon-circle-close"
-        :disabled="doneStatus"
-        @click="handleCancel()"
-      />
-    </div>
+    <el-row>
+      <el-col align="right"> <!-- 跳过指定环节 -->
+        <el-button
+          type="primary"
+          title="跳过指定环节"
+          :disabled="skipStatus"
+          class="oper-btn"
+          icon="el-icon-remove-outline"
+          @click="handleSkipTask()"
+        />
+        <!-- 暂停 -->
+        <el-button
+          type="primary"
+          title="暂停"
+          :disabled="pusStatus"
+          class="oper-btn pause"
+          @click="handleStop()"
+        />
+        <!-- 启动 -->
+        <el-button
+          type="primary"
+          title="启动"
+          class="oper-btn start"
+          :disabled="startStatus"
+          @click="handleStart()"
+        />
+        <!-- 重新运行 -->
+        <el-button
+          type="primary"
+          title="重新运行"
+          class="oper-btn refresh"
+          :disabled="reStartStatus"
+          @click="handleReStart()"
+        />
+        <!-- 取消 -->
+        <el-button
+          type="primary"
+          title="取消"
+          class="oper-btn cancel"
+          :disabled="doneStatus"
+          @click="handleCancel()"
+        /></el-col>
+    </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
