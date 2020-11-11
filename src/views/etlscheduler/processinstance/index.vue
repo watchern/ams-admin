@@ -23,16 +23,14 @@
           type="primary"
           title="暂停"
           :disabled="pusStatus"
-          class="oper-btn"
-          icon="el-icon-video-pause"
+          class="oper-btn pause"
           @click="handleStop()"
         />
         <!-- 启动 -->
         <el-button
           type="primary"
           title="启动"
-          class="oper-btn"
-          icon="el-icon-video-play"
+          class="oper-btn start"
           :disabled="startStatus"
           @click="handleStart()"
         />
@@ -40,8 +38,7 @@
         <el-button
           type="primary"
           title="重新运行"
-          class="oper-btn"
-          icon="el-icon-refresh-left"
+          class="oper-btn refresh"
           :disabled="reStartStatus"
           @click="handleReStart()"
         />
@@ -49,8 +46,7 @@
         <el-button
           type="primary"
           title="取消"
-          class="oper-btn"
-          icon="el-icon-circle-close"
+          class="oper-btn cancel"
           :disabled="doneStatus"
           @click="handleCancel()"
         /></el-col>

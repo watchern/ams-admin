@@ -27,8 +27,7 @@
         <el-button
           type="primary"
           title="启用"
-          class="oper-btn"
-          icon="el-icon-video-play"
+          class="oper-btn start"
           :disabled="startStatus"
           @click="handleStart()"
         />
@@ -37,8 +36,7 @@
           type="primary"
           title="停用"
           :disabled="stopStatus"
-          class="oper-btn"
-          icon="el-icon-video-pause"
+          class="oper-btn pause"
           @click="handleStop()"
         />
         <!-- 删除 -->
@@ -53,8 +51,7 @@
         <el-button
           type="primary"
           title="下载"
-          class="oper-btn"
-          icon="el-icon-download"
+          class="oper-btn import"
           :disabled="selections.length === 0"
           @click="handleDownload()"
         />
@@ -72,7 +69,7 @@
           :show-file-list="false"
           style="display:inline-block;padding-left:10px"
         >
-          <el-button type="primary" title="上传" icon="el-icon-upload" class="oper-btn" />
+          <el-button type="primary" title="上传" class="oper-btn export" />
         </el-upload></el-col>
     </el-row>
     <el-table

@@ -47,8 +47,7 @@
                     style="margin-left:10px;margin-top:-10px;"
                     type="primary"
                     title="查看详情"
-                    class="oper-btn"
-                    icon="el-icon-more"
+                    class="oper-btn more"
                     @click="handleprocess()"
                   /></span>
               </div>
@@ -62,8 +61,7 @@
                   style="margin-left:10px;margin-top:-10px;"
                   type="primary"
                   title="查看详情"
-                  class="oper-btn"
-                  icon="el-icon-more"
+                  class="oper-btn more"
                   @click="handletask()"
                 /></span>
               </div>
