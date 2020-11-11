@@ -90,7 +90,6 @@ export default {
     this.dataSortUuid = baseCode.dataSortUuid
     this.parentCodeUuid = baseCode.codeUuid
     this.editTag = this.$route.query.editTag
-    console.log(baseCode)
   },
   methods: {
     handleSelectionChange(val) {
