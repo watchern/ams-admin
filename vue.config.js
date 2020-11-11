@@ -90,6 +90,51 @@ module.exports = {
         // pathRewrite: {
         //   '^/dolphinscheduler': ''
         // }
+      },
+      '/rone': {
+        timeout: 1800000,
+        target: 'http://localhost:8088',
+        changeOrigin: true
+        // ,
+        // pathRewrite: {
+        //   '^/dolphinscheduler': ''
+        // }
+      },
+      '/psbcaudit': {
+        timeout: 1800000,
+        target: 'http://localhost:8088',
+        changeOrigin: true
+        // ,
+        // pathRewrite: {
+        //   '^/dolphinscheduler': ''
+        // }
+      },
+      '/psbcaudit_pmrs': {
+        timeout: 1800000,
+        target: 'http://localhost:8088',
+        changeOrigin: true
+        // ,
+        // pathRewrite: {
+        //   '^/dolphinscheduler': ''
+        // }
+      },
+      '/psbcaudit_kn': {
+        timeout: 1800000,
+        target: 'http://localhost:8088',
+        changeOrigin: true
+        // ,
+        // pathRewrite: {
+        //   '^/dolphinscheduler': ''
+        // }
+      },
+      '/psbcaudit_auditobj': {
+        timeout: 1800000,
+        target: 'http://localhost:8088',
+        changeOrigin: true
+        // ,
+        // pathRewrite: {
+        //   '^/dolphinscheduler': ''
+        // }
       }
     }
   },
