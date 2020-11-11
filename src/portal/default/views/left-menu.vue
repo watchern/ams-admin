@@ -131,11 +131,9 @@
         </div>
       </div>
     </transition>
-    <transition name="tools-list-fade">
-      <div v-if="isShowToolsList" class="tools-list" :style="{left:isShrink?'64px':'120px'}">
-        <tools-template />
-      </div>
-    </transition>
+    <div v-if="isShowToolsList" class="tools-list" :style="{left:isShrink?'64px':'120px'}">
+      <tools-template />
+    </div>
   </div>
 </template>
 
@@ -640,12 +638,6 @@ export default {
 .slide-fade-enter,.slide-fade-leave-to {
   transform: translateX(-30px);
   opacity: 0;
-}
-.tools-list-fade-enter-active, .tools-list-fade-leave-active{
-  transition: all 0.6s
-}
-.tools-list-fade-enter,.tools-list-fade-leave-to {
-  transform: translateX(-100%);
 }
 .setting-btn{
   font-size: 20px;
