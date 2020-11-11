@@ -1,176 +1,161 @@
 <template>
-  <div>
-    <div class="trees">
-      <el-row class="tree" :gutter="5">
-        <el-col :span="8">
-          <el-input
-            v-model="filterText1"
-            placeholder="输入关键字进行过滤"
-          />
-          <!--<el-select defaultFirstOption="true" @change="handleSelectChange" :value="selectValue">
-            <el-option label="显示所有" value="all"></el-option>
-            <el-option label="只显示未注册" value="noPart"></el-option>
-            <el-option label="只显示已注册" value="yesPart"></el-option>
-          </el-select>-->
-          <MyElTree
-            ref="tree1"
-            :props="props"
-            :load="loadNode1"
-            lazy
-            :filter-node-method="filterNode"
-            class="filter-tree"
-            show-checkbox
-          >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
-              <i v-if="data.type==='USER'" class="el-icon-menu" style="color:#409EFF" />
-              <i v-if="data.type==='TABLE'" class="el-icon-tickets" style="color:#409EFF" />
-              <i v-if="data.type==='COLUMN'" class="el-icon-s-ticket" style="color:#409EFF" />
-              <span>{{ node.label }}</span>
-            </span>
-          </MyElTree>
-        </el-col>
-        <el-col :span="2" style="width: 40px padding-top: 10%">
-          <div class="transfer-center">
-            <p class="transfer-center-item">
+  <div class="page-container">
+    <el-row class="tree" :gutter="5">
+      <el-col :span="4">
+        <el-input
+          v-model="filterText1"
+          placeholder="输入关键字进行过滤"
+        />
+        <!--<el-select defaultFirstOption="true" @change="handleSelectChange" :value="selectValue">
+          <el-option label="显示所有" value="all"></el-option>
+          <el-option label="只显示未注册" value="noPart"></el-option>
+          <el-option label="只显示已注册" value="yesPart"></el-option>
+        </el-select>-->
+        <MyElTree
+          ref="tree1"
+          :props="props"
+          :load="loadNode1"
+          lazy
+          :filter-node-method="filterNode"
+          class="filter-tree"
+          show-checkbox
+        >
+          <span slot-scope="{ node, data }" class="custom-tree-node">
+            <i v-if="data.type==='USER'" class="el-icon-menu" style="color:#409EFF" />
+            <i v-if="data.type==='TABLE'" class="el-icon-tickets" style="color:#409EFF" />
+            <i v-if="data.type==='COLUMN'" class="el-icon-s-ticket" style="color:#409EFF" />
+            <span>{{ node.label }}</span>
+          </span>
+        </MyElTree>
+      </el-col>
+      <el-col :span="1" style="width: 40px padding-top: 10%">
+        <div class="transfer-center">
+          <p class="transfer-center-item">
+            <el-button
+              type="primary"
+              :disabled="fromDisabled"
+              circle
+              icon="el-icon-arrow-right"
+              @click="asyncTable"
+            />
+          </p>
+          <p class="transfer-center-item">
+            <el-button
+              type="primary"
+              circle
+              icon="el-icon-arrow-left"
+              :disabled="toDisabled"
+              @click="removeTable"
+            />
+          </p>
+        </div>
+      </el-col>
+      <el-col :span="5">
+        <el-input
+          v-model="filterText2"
+          placeholder="输入关键字进行过滤"
+        />
+        <MyElTree
+          ref="tree2"
+          :props="props"
+          :load="loadNode2"
+          lazy
+          :filter-node-method="filterNode"
+          class="filter-tree"
+          highlight-current="true"
+          node-key="id"
+          show-checkbox
+          @node-click="nodeClick"
+        >
+          <span slot-scope="{ node, data }" class="custom-tree-node">
+            <i v-if="data.id==='ROOT'" class="el-icon-s-home" style="color:#409EFF" />
+            <i v-if="data.type==='FOLDER'" class="el-icon-folder" style="color:#409EFF" />
+            <i v-if="data.type==='TABLE'" class="el-icon-tickets" style="color:#409EFF" />
+            <i v-if="data.type==='COLUMN'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
+            <span>{{ node.label }}</span>
+            <span style="margin-left: 10px">
+              <!--添加： 根节点以及手工维护的节点-->
               <el-button
-                type="primary"
-                :disabled="fromDisabled"
-                circle
-                icon="el-icon-arrow-right"
-                @click="asyncTable"
-              />
-            </p>
-            <p class="transfer-center-item">
+                v-if="data.id === 'ROOT' || (data.extMap && data.extMap.folder_type==='maintained')"
+                type="text"
+                size="mini"
+                @click.stop="() => handleCreateFolder(node, data)"
+              ><i class="el-icon-circle-plus" /></el-button>
+              <!--修改： 手工维护的节点-->
               <el-button
-                type="primary"
-                circle
-                icon="el-icon-arrow-left"
-                :disabled="toDisabled"
-                @click="removeTable"
-              />
-            </p>
-          </div>
-        </el-col>
-        <el-col :span="10">
-          <el-input
-            v-model="filterText2"
-            placeholder="输入关键字进行过滤"
-          />
-          <MyElTree
-            ref="tree2"
-            :props="props"
-            :load="loadNode2"
-            lazy
-            :filter-node-method="filterNode"
-            class="filter-tree"
-            highlight-current="true"
-            node-key="id"
-            show-checkbox
-            @node-click="nodeClick"
-          >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
-              <i v-if="data.id==='ROOT'" class="el-icon-s-home" style="color:#409EFF" />
-              <i v-if="data.type==='FOLDER'" class="el-icon-folder" style="color:#409EFF" />
-              <i v-if="data.type==='TABLE'" class="el-icon-tickets" style="color:#409EFF" />
-              <i v-if="data.type==='COLUMN'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
-              <span>{{ node.label }}</span>
-              <span style="margin-left: 10px">
-                <!--添加： 根节点以及手工维护的节点-->
-                <el-button
-                  v-if="data.id === 'ROOT' || (data.extMap && data.extMap.folder_type==='maintained')"
-                  type="text"
-                  size="mini"
-                  @click.stop="() => handleCreateFolder(node, data)"
-                ><i class="el-icon-circle-plus" /></el-button>
-                <!--修改： 手工维护的节点-->
-                <el-button
-                  v-if="data.extMap && data.extMap.folder_type==='maintained'"
-                  type="text"
-                  size="mini"
-                  @click.stop="() => handleUpdateFolder(node, data)"
-                > <i class="el-icon-edit" /> </el-button>
-                <!--删除： 手工维护的节点-->
-                <el-button
-                  v-if="data.extMap && data.extMap.folder_type==='maintained'"
-                  type="text"
-                  size="mini"
-                  @click.stop="() => handleRemoveFolder(node, data)"
-                > <i class="el-icon-delete" /> </el-button>
-                <!--更新： 表-->
-                <el-button
-                  v-if="data.type === 'TABLE'"
-                  type="text"
-                  size="mini"
-                  @click.stop="() => handleRemoveFolder(node, data)"
-                > <i class="el-icon-delete" /> </el-button>
-              </span>
+                v-if="data.extMap && data.extMap.folder_type==='maintained'"
+                type="text"
+                size="mini"
+                @click.stop="() => handleUpdateFolder(node, data)"
+              > <i class="el-icon-edit" /> </el-button>
+              <!--删除： 手工维护的节点-->
+              <el-button
+                v-if="data.extMap && data.extMap.folder_type==='maintained'"
+                type="text"
+                size="mini"
+                @click.stop="() => handleRemoveFolder(node, data)"
+              > <i class="el-icon-delete" /> </el-button>
+              <!--更新： 表-->
+              <el-button
+                v-if="data.type === 'TABLE'"
+                type="text"
+                size="mini"
+                @click.stop="() => handleRemoveFolder(node, data)"
+              > <i class="el-icon-delete" /> </el-button>
             </span>
-          </MyElTree>
-        </el-col>
-      </el-row>
-    </div>
-    <div v-if="divInfo" class="divContent">
-      <el-tabs v-model="currentView" style="text-aling = center">
-        <el-tab-pane label="基本信息" name="basicInfo" />
-        <el-tab-pane label="列" name="column" />
-        <el-tab-pane label="约束" name="constraint" />
-        <el-tab-pane label="索引" name="indexSql" />
-        <el-tab-pane label="关联关系" name="correlation" />
-        <el-tab-pane label="创建语句" name="CreateSql" />
-        <el-tab-pane label="业务信息" name="bizInfo" />
-      </el-tabs>
-      <!--:is 的作用：会将div标签转换成 currentView 变量绑定的这个组件-->
-      <div :is="currentView" keep-alive />
-    </div>
-    <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="500px">
-      <el-form ref="folderForm" :model="folderForm" label-width="80px">
-        <el-form-item label="文件夹名称" label-width="120px">
-          <el-input v-model="folderForm.folderName" style="width: 300px" />
-        </el-form-item>
-      </el-form>
-      <span slot="footer">
-        <el-button type="primary" @click="dialogStatus==='create'?createFolder():updateFolder()">确定</el-button>
-        <el-button @click="folderFormVisible = false">取消</el-button>
-      </span>
-    </el-dialog>
+          </span>
+        </MyElTree>
+      </el-col>
+      <el-col :span="12">
+        <template v-if="divInfo" class="divContent">
+          <el-tabs v-model="tabShow" style="text-aling = center">
+            <el-tab-pane label="基本信息" name="basicinfo"><basic-info :table-id="tableId" /></el-tab-pane>
+            <el-tab-pane label="列" name="column"><column :table-id="tableId" /></el-tab-pane>
+            <el-tab-pane label="约束" name="constraint"><constraint :table-id="tableId" /></el-tab-pane>
+            <el-tab-pane label="索引" name="indexSql"><index-sql :table-id="tableId" /></el-tab-pane>
+            <el-tab-pane label="关联关系" name="correlation"><correlation :table-id="tableId" /></el-tab-pane>
+            <el-tab-pane label="创建语句" name="createSql"><create-sql :table-id="tableId" /></el-tab-pane>
+            <el-tab-pane label="业务信息" name="bizInfo"><biz-info :table-id="tableId" /></el-tab-pane>
+          </el-tabs>
+          <!--:is 的作用：会将div标签转换成 currentView 变量绑定的这个组件-->
+        </template>
+        <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="500px">
+          <el-form ref="folderForm" :model="folderForm" label-width="80px">
+            <el-form-item label="文件夹名称" label-width="120px">
+              <el-input v-model="folderForm.folderName" style="width: 300px" />
+            </el-form-item>
+          </el-form>
+          <span slot="footer">
+            <el-button type="primary" @click="dialogStatus==='create'?createFolder():updateFolder()">确定</el-button>
+            <el-button @click="folderFormVisible = false">取消</el-button>
+          </span>
+        </el-dialog>
+      </el-col>
+    </el-row>
+
   </div>
 </template>
 
 <script>
 import MyElTree from '@/components/Ace/tree/src/tree.vue'
+import basicInfo from '@/views/data/table/basicinfo'
+import column from '@/views/data/table/column'
+import constraint from '@/views/data/table/constraint'
+import indexSql from '@/views/data/table/indexsql'
+import createSql from '@/views/data/table/createsql'
+import bizInfo from '@/views/data/table/bizinfo'
+import correlation from '@/views/data/table/correlation'
 import { listUnCached, getDataTreeNode, saveTable, delTable } from '@/api/data/table-info'
 import { saveFolder, updateFolder, delFolder } from '@/api/data/folder'
 import { commonNotify } from '@/utils'
 
 export default {
-  components: { MyElTree, // 以下方式引入路由是路由的懒加载，有利于页面优化
-    basicInfo: resolve => {
-      require(['./basicInfo'], resolve)
-    },
-    column: resolve => {
-      require(['./column'], resolve)
-    },
-    constraint: resolve => {
-      require(['./constraint'], resolve)
-    },
-    indexSql: resolve => {
-      require(['./indexSql'], resolve)
-    },
-    correlation: resolve => {
-      require(['./correlation'], resolve)
-    },
-    CreateSql: resolve => {
-      require(['./CreateSql'], resolve)
-    },
-    bizInfo: resolve => {
-      require(['./bizInfo'], resolve)
-    }
-  },
+  components: { MyElTree, basicInfo, column, constraint, indexSql, createSql, bizInfo, correlation },
   data() {
     return {
       tableId: '',
       divInfo: false,
-      currentView: 'basicInfo',
+      tabShow: 'basicinfo',
       filterText1: null,
       filterText2: null,
       fromData: [],
@@ -245,6 +230,7 @@ export default {
     nodeClick(data, node, tree) {
       this.divInfo = false
       if (node.data.type === 'TABLE') {
+        debugger
         this.tableId = node.data.id
         this.$nextTick(() => {
           this.divInfo = true
@@ -279,7 +265,6 @@ export default {
       this.folderFormVisible = true
     },
     handleRemoveFolder(node, data) {
-      console.log(this.$refs.tree2.getCurrentNode())
       this.$confirm('是否删除？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

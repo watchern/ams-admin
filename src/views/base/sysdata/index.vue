@@ -130,9 +130,8 @@
 </template>
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, save, update, del, inItCode, saveSecond, updateSecond, delSecond } from '@/api/base/sysDate'
+import { listByPage, save, update, del, inItCode, saveSecond, updateSecond, delSecond } from '@/api/base/sysData'
 import QueryField from '@/components/Ace/query-field/index'
-// import BaseCodeTree from '@/view/base/sysDate/BaseCodeTreeInfo'
 export default {
   components: { Pagination, QueryField },
   data() {
@@ -237,6 +236,7 @@ export default {
     // 校验编码格式
     numberSecond() {
       var data = this.tempSecond.codeValue
+      alert(typeof data)
       const codeValue = new RegExp('^[0-9]{4,32}$').test(data)
       if (!codeValue) {
         this.$notify.error({

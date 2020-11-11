@@ -8,12 +8,10 @@
           label-position="right"
           style="width: 750px;"
         >
-          <div v-if="isTrueInput">
-            业务表信息：
-            <el-form-item label="汉化名称：" prop="chnName">
-              <el-input v-model="temp.chnName" style="width:60%;" />
-            </el-form-item>
-          </div>
+          业务表信息：
+          <el-form-item label="汉化名称：" prop="chnName">
+            <el-input v-model="temp.chnName" style="width:60%;" />
+          </el-form-item>
           列业务信息：
           <el-table :data="temp.colMetas" height="200">
             <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
@@ -65,10 +63,12 @@ import SelectTransCode from '@/views/data/table/transCodeSelect'
 import { selectCodeAll, selectById } from '@/api/data/transCode'
 export default {
   components: { SelectTransCode },
+  // eslint-disable-next-line vue/require-prop-types
+  props: ['tableId'],
   data() {
     return {
       isShow: false,
-      tableKey: 'bizAttrUuid',
+      tableKey: 'tableMetaUuid',
       isSql: false,
       transRuleId: '',
       list: null,
@@ -96,8 +96,7 @@ export default {
     }
   },
   created() {
-    var tableId = this.$parent.$data.tableId
-    this.initTable(tableId)
+    this.initTable(this.tableId)
   },
   methods: {
     initTable(tableId) {
@@ -112,10 +111,8 @@ export default {
         this.temp.colMetas = resp.data
       })
       getTableInfo(tableId).then(resp => {
-        if (resp.data.chnName != null) {
-          this.temp = resp.data
-          this.isTrueInput = true
-        }
+        this.temp = resp.data
+        this.isTrueInput = true
       })
     },
     seleteTransCode(ruleId) {
@@ -137,7 +134,6 @@ export default {
       this.temp.colMetas.transRuleId = childData
     },
     saveTable() {
-      console.log(this.temp)
       saveTableInfo(this.temp).then(() => {
         this.$notify({
           title: '成功',
