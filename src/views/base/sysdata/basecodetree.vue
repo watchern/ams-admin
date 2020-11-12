@@ -18,7 +18,7 @@
 </template>
 <script>
 // import { stringify } from "querystring";
-import { loadchildnodeOne } from '@/api/base/sysDate'
+import { loadchildnodeOne } from '@/api/base/sysData'
 export default {
   data() {
     return {

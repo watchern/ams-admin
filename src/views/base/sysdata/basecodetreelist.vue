@@ -39,8 +39,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import BaseCodeTreeOperate from '@/views/base/sysDate/BaseCodeTreeOperate'
-import { inItCode, delSecond } from '@/api/base/sysDate'
+import BaseCodeTreeOperate from '@/views/base/sysdata/basecodetreeoperate'
+import { inItCode, delSecond } from '@/api/base/sysData'
 export default {
   components: {
     BaseCodeTreeOperate
@@ -90,7 +90,6 @@ export default {
     this.dataSortUuid = baseCode.dataSortUuid
     this.parentCodeUuid = baseCode.codeUuid
     this.editTag = this.$route.query.editTag
-    console.log(baseCode)
   },
   methods: {
     handleSelectionChange(val) {
@@ -154,7 +153,7 @@ export default {
     },
     returnList() {
       this.$router.push({
-        path: `/base/sysdate`
+        path: `/base/sysData`
       })
     }
   }

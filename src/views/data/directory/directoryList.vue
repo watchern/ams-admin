@@ -21,61 +21,37 @@
     <el-table
       :key="tableKey"
       v-loading="listLoading"
-      :data="list"
+      :data="temp"
       border
-      fit
       highlight-current-row
       style="width: 100%;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="业务属性名称" width="300px" align="center" prop="attrName" />
-      <el-table-column label="业务属性编码" width="300px" align="center" prop="attrCode" />
-      <el-table-column label="创建时间" width="300px" align="center" prop="createTime" />
-      <el-table-column label="描述" prop="describe" />
+      <el-table-column label="名称" align="center" prop="label" />
+      <el-table-column label="资源类型" align="center" :formatter="formatTableType" prop="type" />
+      <el-table-column label="创建时间" align="center" :formatter="formatCreateTime" prop="createTime" />
+      <el-table-column label="大小" :formatter="formatTableSize" prop="tbSizeByte" />
     </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <div class="detail-form">
-        <el-form
-          ref="dataForm"
-          :rules="rules"
-          :model="temp"
-          label-position="right"
-          style="width: 700px; margin-left:50px;"
-        >
-          <el-form-item label="业务属性名称" prop="attrName">
-            <el-input v-model="temp.attrName" />
-          </el-form-item>
-          <el-form-item label="业务属性编码" prop="attrCode">
-            <el-input v-model="temp.attrCode" />
-          </el-form-item>
-          <el-form-item label="描述" prop="describe">
-            <el-input v-model="temp.describe" type="textarea" />
-          </el-form-item>
-        </el-form>
-      </div>
-      <div slot="footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
-      </div>
-    </el-dialog>
+    <!-- <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" /> -->
   </div>
 </template>
 
 <script>
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, save, update, del } from '@/api/data/biz-attr'
 import QueryField from '@/components/Ace/query-field/index'
-
 export default {
-  components: { Pagination, QueryField },
+  components: { QueryField },
+  filters: {
+
+  },
   data() {
     return {
       tableKey: 'bizAttrUuid',
       list: null,
+      data: null,
+      node: null,
+      tree: null,
       total: 0,
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
@@ -94,12 +70,12 @@ export default {
         sortBy: 'asc',
         sortName: 'create_time'
       },
-      temp: {
-        bizAttrUuid: undefined,
-        attrName: '',
-        attrCode: '',
-        describe: ''
-      },
+      temp: [{
+        label: '',
+        type: '',
+        createTime: '',
+        tbSizeByte: ''
+      }],
       selections: [],
       dialogFormVisible: false,
       dialogStatus: '',
@@ -117,17 +93,83 @@ export default {
     }
   },
   created() {
-    this.getList()
+    // this.getList(this.data, this.node, this.tree)
   },
   methods: {
-    getList(query) {
-      this.listLoading = true
-      if (query) this.pageQuery.condition = query
-      listByPage(this.pageQuery).then(resp => {
-        this.total = resp.data.total
-        this.list = resp.data.records
-        this.listLoading = false
-      })
+    formatTableType(row, column) {
+      return row.type === 'table' ? '数据表' : '文件夹'
+    },
+    formatTableSize(row, column) {
+      var limit = row.tbSizeByte
+      var size = ''
+      if (limit < 1 * 1024) { // 小于1KB，则转化成B
+        size = limit.toFixed(2) + 'B'
+      } else if (limit < 1 * 1024 * 1024) { // 小于1MB，则转化成KB
+        size = (limit / 1024).toFixed(2) + 'KB'
+      } else if (limit < 1 * 1024 * 1024 * 1024) { // 小于1GB，则转化成MB
+        size = (limit / (1024 * 1024)).toFixed(2) + 'MB'
+      } else { // 其他转化成GB
+        size = (limit / (1024 * 1024 * 1024)).toFixed(2) + 'GB'
+      }
+      var sizeStr = size + '' // 转成字符串
+      var index = sizeStr.indexOf('.') // 获取小数点处的索引
+      var dou = sizeStr.substr(index + 1, 2) // 获取小数点后两位的值
+      if (dou === '00') { // 判断后两位是否为00，如果是则删除00
+        return sizeStr.substring(0, index) + sizeStr.substr(index + 3, 2)
+      }
+      return size
+    },
+    formatCreateTime(row, column) {
+      // 拼接日期规格为YYYY-MM-DD hh:mm:ss
+      if (row.createTime) {
+        var date = new Date(row.createTime)
+        var Y = date.getFullYear()
+        var M = date.getMonth() + 1
+        var D = date.getDate()
+        var HH = date.getHours()
+        var MM = date.getMinutes()
+        var SS = date.getSeconds()
+        if (M < 10) {
+          M = '0' + M
+        }
+        if (D < 10) {
+          D = '0' + D
+        }
+        if (HH < 10) {
+          HH = '0' + HH
+        }
+        if (MM < 10) {
+          MM = '0' + MM
+        }
+        if (SS < 10) {
+          SS = '0' + SS
+        }
+        return Y + '-' + M + '-' + D + ' ' + HH + ':' + MM + ':' + SS
+      } else {
+        return ''
+      }
+    },
+    getList(data, node, tree) {
+      var path = ''
+      if (data.type === 'table') {
+        this.temp = []
+        var tempObj = {}
+        tempObj.label = data.label
+        tempObj.type = data.type
+        tempObj.createTime = data.extMap.createTime
+        tempObj.tbSizeByte = data.extMap.tbSizeByte
+        this.temp.push(tempObj)
+        // 父节点node
+        var newNode = node.parent
+        while (newNode.parent != null) {
+          path = newNode.data.label + '//' + path
+          if (newNode.parent != null) {
+            newNode = newNode.parent
+          }
+        }
+      } else {
+        this.temp = data.children
+      }
     },
     handleFilter() {
       this.pageQuery.pageNo = 1
@@ -157,64 +199,6 @@ export default {
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
-      })
-    },
-    createData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          save(this.temp).then(() => {
-            this.getList()
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '创建成功',
-              type: 'success',
-              duration: 2000,
-              position: 'bottom-right'
-            })
-          })
-        }
-      })
-    },
-    handleUpdate() {
-      this.temp = Object.assign({}, this.selections[0]) // copy obj
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          update(tempData).then(() => {
-            const index = this.list.findIndex(v => v.bizAttrUuid === this.temp.bizAttrUuid)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '更新成功',
-              type: 'success',
-              duration: 2000,
-              position: 'bottom-right'
-            })
-          })
-        }
-      })
-    },
-    handleDelete() {
-      var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.bizAttrUuid) })
-      del(ids.join(',')).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
-        })
       })
     },
     handleSelectionChange(val) {

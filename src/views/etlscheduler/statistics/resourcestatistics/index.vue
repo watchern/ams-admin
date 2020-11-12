@@ -9,8 +9,8 @@
         </el-form-item>
         <el-form-item label="作业时间范围">
           <template>
-            <el-date-picker v-model="StratTimeStart" :type="datepickerType" placeholder="开始时间" />-
-            <el-date-picker v-model="StratTimeEnd" :type="datepickerType" placeholder="结束时间" />
+            <el-date-picker v-model="StartTimeStart" :type="datepickerType" placeholder="开始时间" />-
+            <el-date-picker v-model="StartTimeEnd" :type="datepickerType" placeholder="结束时间" />
           </template>
         </el-form-item>
         <el-form-item>
@@ -24,9 +24,11 @@
         @submit="getList"
       /> -->
     </div>
-    <div style="float: left;">
-      <el-button type="primary" class="oper-btn" icon="el-icon-download" title="导出" @click="exportFile" />
-    </div>
+    <el-row>
+      <el-col align="right">
+        <el-button type="primary" class="oper-btn" icon="el-icon-download" title="导出" @click="exportFile" />
+      </el-col>
+    </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -108,8 +110,10 @@ export default {
       dataTypes: [{ name: '年', value: 'year', key: 1 },
         { name: '月', value: 'month', key: 2 },
         { name: '日', value: 'date', key: 3 }],
-      StratTimeStart: new Date(),
-      StratTimeEnd: new Date(),
+      // StartTimeStart: new Date(),
+      // StartTimeEnd: new Date(),
+      StartTimeStart: null,
+      StartTimeEnd: null,
       datepickerType: 'year',
       // queryFields: [
       //   // {
@@ -142,8 +146,8 @@ export default {
 
       if (this.granularity.value !== this.datepickerType) {
         this.datepickerType = this.granularity.value
-        this.StratTimeStart = null
-        this.StratTimeEnd = null
+        this.StartTimeStart = null
+        this.StartTimeEnd = null
       }
     }
   },
@@ -156,7 +160,7 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      resourceStatisticsList({ granularity: this.granularity.key, stratTimeStart: this.StratTimeStart, stratTimeEnd: this.StratTimeEnd }).then(resp => {
+      resourceStatisticsList({ granularity: this.granularity.key, startTimeStart: this.StartTimeStart, startTimeEnd: this.StartTimeEnd }).then(resp => {
         this.list = resp.data
         this.listLoading = false
       })
@@ -205,8 +209,8 @@ export default {
     },
     clearAll() {
       this.granularity = null
-      this.StratTimeStart = null
-      this.StratTimeEnd = null
+      this.StartTimeStart = null
+      this.StartTimeEnd = null
     }
   }
 }

@@ -6,7 +6,7 @@ const dataRouter = {
   meta: {
   },
   children: [
-    /*数据资源管理*/
+    /* 数据资源管理*/
     {
       path: 'bizattr',
       name: '业务属性',
@@ -16,7 +16,7 @@ const dataRouter = {
       name: '表注册',
       component: () => import('@/views/data/table/index')
     },
-    /*数据角色管理*/
+    /* 数据角色管理*/
     {
       path: 'directory',
       name: '数据资源目录',
@@ -36,7 +36,7 @@ const dataRouter = {
     }, {
       path: 'dict',
       name: '数据字典维护',
-      component: () => import('@/views/data/dict/index')
+      component: () => import('@//views/data/transCode/index')
     }, {
       path: 'tblrel',
       name: '表关联关系维护',
@@ -53,10 +53,6 @@ const dataRouter = {
       path: 'roleGrp/:roleUuid',
       name: '数据角色维护-角色用户组绑定',
       component: () => import('@/views/data/role-grp/index')
-    }, {
-      path: 'transCode',
-      name: '数据转码',
-      component: () => import('@/views/data/transCode/index')
     }
   ]
 }

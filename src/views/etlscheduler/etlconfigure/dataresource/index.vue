@@ -26,11 +26,13 @@
         @click="handleDelete()"
       >删除</el-button>
     </div> -->
-    <div style="float: left;">
-      <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
-      <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" title="编辑" @click="handleUpdate()" />
-      <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" title="删除" @click="handleDelete()" />
-    </div>
+    <el-row>
+      <el-col align="right">
+        <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
+        <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" title="编辑" @click="handleUpdate()" />
+        <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" title="删除" @click="handleDelete()" />
+      </el-col>
+    </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
