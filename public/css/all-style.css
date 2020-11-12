@@ -607,7 +607,7 @@
 
 /* .ztree.ztree-side-menu li a.level0 {
     padding: 8px 0px;
-    background-color: #DBDFE9;
+    background-color: #fff;
 } */
 
 .ztree.ztree-side-menu li span.button.switch {
@@ -752,7 +752,7 @@ a:active {
 
 .panel-body {
     padding: 0px;
-    background: #DBDFE9;
+    background: #fff;
 }
 
 .panel:last-child .panel-body {
