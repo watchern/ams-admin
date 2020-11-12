@@ -160,7 +160,9 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      resourceStatisticsList({ granularity: this.granularity.key, startTimeStart: this.StartTimeStart, startTimeEnd: this.StartTimeEnd }).then(resp => {
+      resourceStatisticsList({ granularity: this.granularity.key,
+        startTimeStart: this.StartTimeStart,
+        startTimeEnd: this.StartTimeEnd }).then(resp => {
         this.list = resp.data
         this.listLoading = false
       })
