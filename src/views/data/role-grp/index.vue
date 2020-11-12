@@ -13,7 +13,7 @@
         <el-tabs v-model="grpUuid" @tab-click="tabClick">
           <el-tab-pane v-for="grp in currentScene.groups" :key="grp.sceneGrpUuid" :label="grp.grpName" :name="grp.sceneGrpUuid">
             <el-input
-              v-model="filterText1"
+              v-model="filterText"
               placeholder="输入关键字进行过滤"
             />
             <MyElTree
@@ -115,7 +115,7 @@ export default {
       currentScene: {},
       treeLoading: false,
       grpUuid: '',
-      filterText1: null,
+      filterText: null,
       treeData: {},
       listLoading: false,
       props: {
@@ -133,12 +133,9 @@ export default {
     }
   },
   watch: {
-    filterText1(val) {
-      this.$refs.tree1.filter(val)
+    filterText(val) {
+      this.$refs['A' + this.grpUuid].filter(val)
     },
-    filterText2(val) {
-      this.$refs.tree2.filter(val)
-    }
   },
   created() {
     getAllScene().then(resp => {

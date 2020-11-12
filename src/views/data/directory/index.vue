@@ -1,8 +1,7 @@
 <template>
-  <div>
-    <div class="app-container" />
+  <div class="app-container">
     <div class="tree">
-      <DataTree @node-click="handleFilter" />
+      <dataTree ref="dataTree" :data-user-id="dataUserId" :scene-code="sceneCode" @node-click="nodeclick" />
     </div>
     <div class="divContent">
       <BaseDirectoryList ref="listData" />
@@ -11,13 +10,22 @@
 </template>
 
 <script>
-import DataTree from '@/views/data/role-res/data-tree'
+import dataTree from '@/views/data/role-res/data-tree'
+import BaseDirectoryList from '@/views/data/directory/directorylist'
 
 export default {
-  components: { DataTree, BaseDirectoryList },
-  mounted: {
-    handleFilter(data, node, tree) {
-      console.log(data, node, tree)
+  components: { dataTree, BaseDirectoryList },
+  data() {
+    return {
+      dataUserId: this.$store.getters.personcode,
+      sceneCode: 'auditor'
+    }
+  },
+  created() {
+  },
+  methods: {
+    nodeclick(data, node, tree) {
+      this.$refs.listData.getList(data, node, tree)
     }
   }
 }

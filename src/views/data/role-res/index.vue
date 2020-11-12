@@ -186,27 +186,42 @@ export default {
       return data.label.indexOf(value) !== -1
     },
     addRoleTable() {
-      var ckTbs = this.$refs.tree1.getCheckedNodes(false, true)
+      /* 先对选中节点以pid为key做hashmap */
+      var ckTbs = this.$refs.tree1.getCheckedNodes(false, true);
+      var ckTbsMap = {};
       ckTbs.forEach((item) => {
-        var pathArr = this.$refs.tree1.getNodePath(item)
-        var current = this.treeData2[0].children
-        for (var i = 0; i < pathArr.length; i++) {
-          var path = pathArr[i]
-          var nextNodes = current.filter((value, index) => { return value.id === path.id })
-          if (nextNodes.length === 0) {
-            var assPath = Object.assign({}, path)
-            assPath.children = []
-            current.push(assPath)
-            //对extMap进行初始化
-            this.$set(assPath, 'accessType', []);
-            this.$set(assPath, 'whereStr', '');
-            current = assPath.children
-          } else {
-            current = nextNodes[0].children
-          }
+        var assItem = Object.assign({}, item);
+        assItem.children = [];
+        if(!ckTbsMap[item.pid]) ckTbsMap[item.pid] = [];
+        ckTbsMap[item.pid].push(assItem);
+      });
+
+      /*遍历selected data 然后将节点插入*/
+      this.goThroughTree(this.treeData2[0], treeNode =>{
+        var children = ckTbsMap[treeNode.id];
+        var myChildren = treeNode.children;
+        if(children){
+          if(!myChildren) this.$set(treeNode, "children", []);
+          //找孩子 并且现在没有这个孩子
+          children.forEach(c => {
+            if(treeNode.children.filter(node=>{return node.id===c.id}).length===0){
+              treeNode.children.push(c);
+            }
+          })
         }
       })
     },
+
+    goThroughTree(treeNode, callback){
+      callback(treeNode);
+      var children = treeNode.children;
+      if(!children) return true;
+      for(var i=0; i<children.length; i++){
+        this.goThroughTree(children[i], callback);
+      }
+    },
+
+
     removeTable() {
 
 
