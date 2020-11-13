@@ -1,8 +1,8 @@
 <template>
   <div class="affirm-model">
     <m-popup
-      ok-text="保存"
-      name-text="是否保存DAG图"
+      ok-text="继续编辑"
+      name-text="确定退出编辑工作流吗"
       @close="_close"
       @ok="_ok"
     />

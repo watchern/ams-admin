@@ -19,7 +19,7 @@ let $isPop = true
  */
 router.beforeEach((to, from, next) => {
   // if (from.name === 'projects-definition-details' || from.name === 'projects-instance-details' || from.name === 'processinstance') {
-  if (from.name === 'projects-definition-details' || from.name === 'projects-instance-details') {
+  if (from.name === 'projects-definition-details' || from.name === 'projects-instance-details' || from.name === 'workflow') {
     if (!Affirm.paramVerification(from.name)) {
       Affirm.isPop(() => {
         next()
@@ -80,14 +80,17 @@ Affirm.isPop = (fn) => {
       return h(mAffirm, {
         on: {
           ok() {
-            // save
-            findComponentDownward($root, 'DagChart')._save('affirm').then(() => {
-              fn()
-              Vue.$modal.destroy()
-            }).catch(() => {
-              fn()
-              Vue.$modal.destroy()
-            })
+
+            // fn()
+            Vue.$modal.destroy()
+            // // save
+            // findComponentDownward($root, 'DagChart')._save('affirm').then(() => {
+            //   // fn()
+            //   Vue.$modal.destroy()
+            // }).catch(() => {
+            //   // fn()
+            //   Vue.$modal.destroy()
+            // })
           },
           close() {
             fn()
