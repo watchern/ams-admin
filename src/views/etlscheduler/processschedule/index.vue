@@ -402,7 +402,8 @@ export default {
               time.getTime() > new Date(this.temp.endTime).getTime()
             )
           } else {
-            return time.getTime() < Date.now()
+            // 86400000一天的毫秒数
+            return time.getTime() < Date.now() - 86400000
           }
         }
       },
@@ -414,7 +415,8 @@ export default {
                 time.getTime() < new Date(this.temp.startTime).getTime()
             )
           } else {
-            return time.getTime() < Date.now()
+            // 86400000一天的毫秒数
+            return time.getTime() < Date.now() - 86400000
           }
         }
       },

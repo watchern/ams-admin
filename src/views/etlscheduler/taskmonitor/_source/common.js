@@ -91,7 +91,40 @@ const stateType = [
     label: '执行成功'
   }
 ]
+const statusList = [
+  {
+    value: 0,
+    name: '执行中',
+    unicode: 'el-icon-loading',
+    color: '#333'
+  },
+  {
+    value: 1,
+    name: '执行完成',
+    unicode: 'el-icon-success',
+    color: '#95F204'
+  },
+  {
+    value: 2,
+    name: '执行失败',
+    unicode: 'el-icon-warning',
+    color: 'red'
+  },
+  {
+    value: 3,
+    name: '暂无',
+    unicode: 'el-icon-warning-outline',
+    color: '#546570'
+
+  },
+  {
+    value: null,
+    name: '--',
+    unicode: 'el-icon-remove-outline',
+    color: '#888888'
+  }
+]
 
 export {
-  stateType
+  stateType, statusList
 }
