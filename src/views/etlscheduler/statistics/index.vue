@@ -1,13 +1,14 @@
 <template>
   <el-tabs type="border-card" style="background:transparent!important;height:100%;">
-    <el-tab-pane label="上游资源统计">上游资源统计</el-tab-pane>
+    <el-tab-pane label="上游资源统计"><etl-data-file-statistics /></el-tab-pane>
     <el-tab-pane label="消耗资源统计"><etl-resource-statistics /></el-tab-pane>
   </el-tabs>
 </template>
 <script>
+import etlDataFileStatistics from '@/views/etlscheduler/statistics/datafilestatistics'
 import etlResourceStatistics from '@/views/etlscheduler/statistics/resourcestatistics'
 export default {
-  components: { etlResourceStatistics }
+  components: { etlResourceStatistics, etlDataFileStatistics }
 }
 </script>
 <style>
