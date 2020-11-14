@@ -1,21 +1,21 @@
 <template>
   <div>
-    <form class="form-horizontal">
-      <div class="col-sm-12">
+    <form class="form-horizontal" >
+      <div class="col-sm-12" id="zzzzz-zy">
         <div :id="myId+'1'" class="panel-group">
           <div class="panel panel-default">
-            <div class="panel-heading">
-              <h4 class="panel-title">
+            <el-collapse v-model="activeName" accordion>
+              <el-collapse-item title="请输入参数" name="1">
                 <a
                   data-toggle="collapse"
                   :data-parent="'#'+myId+'1'"
                   :href="'#'+myId+'collapse'"
-                />
-              </h4>
-            </div>
-            <div :id="myId+'collapse'" class="panel-collapse collapse in">
-              <div :id="myId" class="panel-body" style="padding: 10px 0" />
-            </div>
+                ></a>
+                <div :id="myId+'collapse'" class="panel-collapse collapse in">
+                  <div :id="myId" class="panel-body" style="padding: 10px 0" />
+                </div>
+              </el-collapse-item>
+            </el-collapse>
           </div>
         </div>
       </div>
@@ -26,7 +26,9 @@
 import { initParamHtml } from "@/api/analysis/auditparam";
 export default {
   data() {
-    return {};
+    return {
+      activeName:'1'
+    };
   },
   props: ["myId"],
   methods: {
@@ -43,4 +45,5 @@ export default {
 body {
   margin: 0;
 }
+#zzzzz-zy .el-collapse-item__wrap{overflow: visible}
 </style>
