@@ -277,7 +277,7 @@ export default {
     dialogFormVisible(value) {
       this.$nextTick(function() {
         if (value) {
-          this.$refs.paramDrawRef.initParamHtmlSS(this.executeData.sql, this.executeData.arr, '请输入参数', this.paramDrawUuid)
+          this.$refs.paramDrawRef.initParamHtmlSS(this.executeData.sql, this.executeData.arr, '     ', this.paramDrawUuid)
         }
       })
     }
