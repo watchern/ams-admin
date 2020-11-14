@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import BaseCodeTree from '@/views/base/sysDate/BaseCodeTree'
-import BaseCodeTreeList from '@/views/base/sysDate/BaseCodeTreeList'
+import BaseCodeTree from '@/views/base/sysdata/basecodetree'
+import BaseCodeTreeList from '@/views/base/sysdata/basecodetreelist'
 export default {
   components: {
     BaseCodeTree,

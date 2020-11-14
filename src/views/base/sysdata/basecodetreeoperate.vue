@@ -45,7 +45,7 @@
   </div>
 </template>
 <script>
-import { saveSecond, updateSecond } from '@/api/base/sysDate'
+import { saveSecond, updateSecond } from '@/api/base/sysData'
 export default {
   props: ['codeOperate'],
   data() {

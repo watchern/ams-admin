@@ -134,7 +134,7 @@ export default {
   table {
     width: 100%;
     tr{
-      background: #edf1f5;
+      // background: #edf1f5;
       th,td {
         padding-left: 8px;
       }

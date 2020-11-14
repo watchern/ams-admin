@@ -7,8 +7,7 @@
         @submit="getList"
       />
     </div>
-    <div>
-      <!-- <m-list-construction>
+    <!-- <m-list-construction>
         <template slot="conditions">
           <m-conditions>
             <template slot="button-group">
@@ -21,27 +20,30 @@
           </m-conditions>
         </template>
       </m-list-construction> -->
-      <el-button
-        type="primary"
-        title="添加"
-        class="oper-btn add"
-        @click="hadleCreate"
-      />
-      <el-button
-        type="primary"
-        title="编辑"
-        class="oper-btn edit"
-        :disabled="selections.length !== 1"
-        @click="_edit"
-      />
-      <el-button
-        type="primary"
-        title="删除"
-        class="oper-btn delete"
-        :disabled="selections.length === 0"
-        @click="handleDelete()"
-      />
-    </div>
+    <el-row>
+      <el-col align="right">
+        <el-button
+          type="primary"
+          title="添加"
+          class="oper-btn add"
+          @click="hadleCreate"
+        />
+        <el-button
+          type="primary"
+          title="编辑"
+          class="oper-btn edit"
+          :disabled="selections.length !== 1"
+          @click="_edit"
+        />
+        <el-button
+          type="primary"
+          title="删除"
+          class="oper-btn delete"
+          :disabled="selections.length === 0"
+          @click="handleDelete()"
+        /></el-col>
+    </el-row>
+
     <el-table
       :key="tableKey"
       v-loading="listLoading"
