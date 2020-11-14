@@ -7,12 +7,13 @@
         @submit="getList"
       />
     </div>
-    <div v-if="power==undefined">
+    <div>
       <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
       <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="handleUpdate()">修改</el-button>
       <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="handleDelete()">删除</el-button>
     </div>
     <el-table
+      ref="tb"
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
@@ -29,7 +30,7 @@
       <el-table-column label="规则描述" prop="ruleDesc" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-button v-if="power == 0" :disabled="selections.length !== 1" type="primary" size="mini" class="el_header_button" style="margin-right: 20px;float: right;" @click="selectTransRule()">确定</el-button>
+    <el-button :disabled="selections.length !== 1" type="primary" size="mini" class="el_header_button" style="margin-right: 20px;float: right;" @click="selectTransRule()">确定</el-button>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
         ref="dataForm"
@@ -118,9 +119,9 @@ import XLSX from 'xlsx'
 export default {
   components: { Pagination, QueryField },
   // eslint-disable-next-line vue/require-prop-types
-  props: ['power'],
   data() {
     return {
+      selectType: 'handleSelectionChangeOne',
       transColRelsData: [],
       // table下动态绑定的值
       tableInput: {
@@ -199,11 +200,11 @@ export default {
     lineAdd(index, ipTable) {
       switch (ipTable) {
         case 'transColRels':
-          if (this.tableInput.transColRels.codeValue == null || this.tableInput.transColRels.codeValue.trim() <= 0) {
+          if (this.tableInput.transColRels.codeValue == null) {
             this.$message.error('请填写真实值')
             return
           }
-          if (this.tableInput.transColRels.transValue == null || this.tableInput.transColRels.transValue.trim() <= 0) {
+          if (this.tableInput.transColRels.transValue == null) {
             this.$message.error('请填转码值')
             return
           }
@@ -225,14 +226,9 @@ export default {
       }
     },
     getList(query) {
-      var getPower = this.$route.query.power
-      if (getPower !== undefined) {
-        this.power = getPower
-      }
       this.listLoading = true
       if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then(resp => {
-        console.log(resp)
         this.total = resp.data.total
         this.list = resp.data.records
         this.listLoading = false
@@ -285,7 +281,6 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.transColRels = this.transColRelsData
-          console.log(this.temp)
           save(this.temp).then(() => {
             this.getList()
             this.dialogFormVisible = false
@@ -340,7 +335,6 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           var tempData = Object.assign({}, this.temp)
-          console.log(tempData)
           update(tempData).then(() => {
             const index = this.list.findIndex(v => v.transRuleUuid === this.temp.transRuleUuid)
             this.list.splice(index, 1, this.temp)
@@ -388,7 +382,6 @@ export default {
           const workbook = XLSX.read(data, {
             type: 'binary' // 以字符编码的方式解析
           })
-          console.log(workbook)
           const exlname = workbook.SheetNames[0] // 取第一张表
           const exl = XLSX.utils.sheet_to_json(workbook.Sheets[exlname]) // 生成json表格内容
           // 将 JSON 数据挂到 data 里
@@ -410,11 +403,9 @@ export default {
     closeDialog() {
       this.dialogFormVisible = false
     },
+    // 多选数据库
     handleSelectionChange(val) {
-      var selectObjs = val
       this.selections = val
-      console.log(selectObjs)
-      return selectObjs
     },
     getSortClass: function(key) {
       const sort = this.pageQuery.sort

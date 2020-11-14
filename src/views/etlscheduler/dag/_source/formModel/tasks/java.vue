@@ -65,7 +65,7 @@
             v-for="model in classList"
             :key="model.name"
             :value="model.name"
-            :label="model.simpleName"
+            :label="model.className"
           />
         </x-select>
       </div>

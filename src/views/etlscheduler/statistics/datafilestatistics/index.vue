@@ -1,22 +1,18 @@
 <template>
   <div class="page-container">
     <div class="filter-container">
-      <el-form :inline="true">
-        <el-form-item label="作业时间范围">
-          <template>
-            <el-date-picker v-model="StratTimeStart" :type="datepickerType" placeholder="开始时间" />-
-            <el-date-picker v-model="StratTimeEnd" :type="datepickerType" placeholder="结束时间" />
-          </template>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSubmit">查询</el-button>
-          <el-button type="primary" @click="clearAll">清空</el-button>
-        </el-form-item>
-      </el-form>
+      <!-- :query-default="queryDefault" -->
+      <QueryField
+        ref="queryfield"
+        :form-data="queryFields"
+        @submit="getList"
+      />
     </div>
-    <div style="float: left;">
-      <el-button type="primary" class="oper-btn" icon="el-icon-download" title="导出" @click="exportFile" />
-    </div>
+    <el-row>
+      <el-col align="right">
+        <el-button type="primary" class="oper-btn excel" title="导出" @click="exportFile" />
+      </el-col>
+    </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -32,64 +28,81 @@
     >
       <el-table-column
         label="业务系统"
-        prop="systemName"
+        align="center"
+        prop="sysName"
       />
       <el-table-column
         label="数据表文件总数"
         align="center"
-        prop="totalFiles"
-      />
+        prop="allFileSize"
+      >
+        <template slot-scope="scope">
+          <el-link target="_blank" :underline="false" type="primary" @click="datafileStatisticsList(scope.row,null)">{{ scope.row.allFileSize }}</el-link>
+        </template>
+      </el-table-column>
       <el-table-column
         label="增量表文件数"
         align="center"
-        prop="incrementFiles"
-      />
+        prop="incrementSize"
+      >
+        <template slot-scope="scope">
+          <el-link target="_blank" :underline="false" type="primary" @click="datafileStatisticsList(scope.row,1)">{{ scope.row.incrementSize }}</el-link>
+        </template>
+      </el-table-column>
       <el-table-column
         label="全量表文件数"
         align="center"
-        prop="FullFiles"
-      />
-    </el-table>
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="pageQuery.pageNo"
-      :limit.sync="pageQuery.pageSize"
-      @pagination="getList"
-    />
-  </div>
+        prop="fullSize"
+      >
+        <template slot-scope="scope">
+          <el-link target="_blank" :underline="false" type="primary" @click="datafileStatisticsList(scope.row,2)">{{ scope.row.fullSize }}</el-link>
+        </template>
+      </el-table-column>
+
+      <!-- <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="pageQuery.pageNo"
+        :limit.sync="pageQuery.pageSize"
+        @pagination="getList"
+      /> -->
+    </el-table></div>
 </template>
 
 <script>
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+// import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { datafileStatisticsList } from '@/api/etlscheduler/statistics'
 import axios from 'axios'
+import QueryField from '@/components/Ace/query-field/index'
 import qs from 'qs'
 
 export default {
-  components: { Pagination },
+  // Pagination,
+  components: { QueryField },
   data() {
     return {
       tableKey: 'processInstanceUuid',
       list: null,
       total: 0,
       listLoading: false,
-      // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
-      StratTimeStart: null,
-      StratTimeEnd: null,
-      datepickerType: 'date',
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
-        pageSize: 20
+        pageSize: 20,
+        // 开始运行时间，倒序排序
+        sortBy: 'desc',
+        sortName: 'startTime'
       },
+      queryFields: [
+        { label: '接收时间范围', name: 'startTime', type: 'timePeriod', value: '' }
+      ],
       selections: []
     }
   },
   watch: {
   },
   mounted() {
-   
+
   },
   created() {
     this.getList()
@@ -97,15 +110,19 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      // datafileStatisticsList({stratTimeStart: this.StratTimeStart, stratTimeEnd: this.StratTimeEnd }).then(resp => {
-      //   this.list = resp.data
-      //   this.listLoading = false
-      // })
-      datafileStatisticsList().then(resp => {
-       console.log('map-map-map:' + resp)
+      if (query) this.pageQuery.condition = query
+      datafileStatisticsList(this.pageQuery).then(resp => {
+        this.list = resp.data
       })
-      this.list = null
       this.listLoading = false
+    },
+    datafileStatisticsList(dataFile, type) {
+      this.$router.push({ path: '/etlscheduler/datafilestatisticslist', name: 'datafilestatisticslist', params: {
+        dataFile: dataFile,
+        type: type,
+        startTimeStart: this.pageQuery.condition.startTimeStart,
+        startTimeEnd: this.pageQuery.condition.startTimeEnd
+      }})
     },
     onSubmit() {
       this.getList()
@@ -115,7 +132,7 @@ export default {
       this.getList()
     },
     exportFile() {
-      axios.post(`/etlscheduler/statistics/exportFile`, qs.stringify({ resourceStatistics: JSON.stringify(this.list) }),
+      axios.post(`/etlscheduler/statistics/exportDatafileStatistics`, qs.stringify({ datafileStatistics: JSON.stringify(this.list) }),
         { responseType: 'blob', headers: {
           'Content-Type': 'application/x-www-form-urlencoded' // 请求的数据类型为form data格式
         }}
@@ -148,10 +165,6 @@ export default {
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
-    },
-    clearAll() {
-      this.StratTimeStart = null
-      this.StratTimeEnd = null
     }
   }
 }

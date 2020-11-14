@@ -58,7 +58,7 @@ export function delTable(ids) {
   })
 }
 export function getResELTree(data) {
-  if(!data) data = {dataUserId: '', sceneCode: ''};
+  if (!data) data = { dataUserId: '', sceneCode: '' }
   return request({
     baseURL: baseURL,
     url: `/${controller2}/getResELTree`,
@@ -102,6 +102,24 @@ export function getBasicInfo(tableMetaUuid) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/getBasicInfo`,
+    method: 'post',
+    params: { tableMetaUuid: tableMetaUuid }
+  })
+}
+
+export function getColsInfo(tableMetaUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getColsInfo`,
+    method: 'post',
+    params: { tableMetaUuid: tableMetaUuid }
+  })
+}
+
+export function selectIndexInfo(tableMetaUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/selectIndexInfo`,
     method: 'post',
     params: { tableMetaUuid: tableMetaUuid }
   })
@@ -152,5 +170,4 @@ export function getAccessType() {
     method: 'get'
   })
 }
-
 
