@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseURL = '/base'
+const baseURL = '/amsbase'
 
 /**
  * 获取系统异常日志
