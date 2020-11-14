@@ -100,29 +100,28 @@
         <el-form-item
           label="选择目标位置"
         >
-<!--          lazy-->
+          <!--          lazy-->
           <el-tree
+            ref="treeFrom"
             :data="dirList"
             :props="{label: 'path', children: 'children' }"
             default-expand-all
             node-key="id"
-            ref="treeFrom"
             show-checkbox
             check-strictly
-            @check-change="handleCheckChange"
             class="treeStyle"
-          >
-          </el-tree>
+            @check-change="handleCheckChange"
+          />
         </el-form-item>
-<!--        <el-form-item-->
-<!--          label="目录名称"-->
-<!--          prop="newDirName"-->
-<!--        >-->
-<!--          <el-input-->
-<!--            v-model="newDirName"-->
-<!--            placeholder="data.path"-->
-<!--          />-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item-->
+        <!--          label="目录名称"-->
+        <!--          prop="newDirName"-->
+        <!--        >-->
+        <!--          <el-input-->
+        <!--            v-model="newDirName"-->
+        <!--            placeholder="data.path"-->
+        <!--          />-->
+        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer">
         <el-button @click="moveFileVisible = false">取消</el-button>
@@ -132,7 +131,7 @@
         >确定</el-button>
       </div>
     </el-dialog>
-<!--    上传文件-->
+    <!--    上传文件-->
     <el-dialog
       title="上传文件"
       :visible.sync="uploadFileVisible"
@@ -148,17 +147,16 @@
         >
           <!--          lazy-->
           <el-tree
+            ref="treeFrom"
             :data="dirList"
             :props="{label: 'path', children: 'children' }"
             default-expand-all
             node-key="id"
-            ref="treeFrom"
             show-checkbox
             check-strictly
-            @check-change="handleCheckChange"
             class="treeStyle"
-          >
-          </el-tree>
+            @check-change="handleCheckChange"
+          />
         </el-form-item>
       </el-form>
       <div>
@@ -249,7 +247,7 @@ export default {
       createFileDirStatus: true,
       dirName: null,
       newDirName: null,
-      moveDirPath: null,
+      moveDirPath: null
     }
   },
   watch: {
@@ -290,13 +288,13 @@ export default {
       this.options.query.path = data.path
     },
     handleNodeClick(data, checked, node) {
-      console.log( "多选框设为单选框", checked, data)
+      console.log('多选框设为单选框', checked, data)
       if (checked) {
         this.$refs.treeForm.setCheckedKeys([data.id])
       }
     },
     menuCheck(data, lst) {
-      if (lst.checkedKeys.length==0) {
+      if (lst.checkedKeys.length === 0) {
         this.$refs.treeForm.setCheckedKeys([data.id])
       }
     },
@@ -432,9 +430,10 @@ export default {
     },
     onFileSuccess: function(rootFile, file, response, chunk) {
       if (JSON.parse(response).code !== 0) {
-        this.$message.error(this.$t('上传失败'))
+        this.$message.error(this.$t(JSON.parse(response).msg))
+        file.cancel()
       } else {
-        console.log(JSON.parse(response).data + '上传成功')
+        this.$message.success(this.$t(JSON.parse(response).data + '上传成功'))
         this.getList()
       }
     },
@@ -442,7 +441,7 @@ export default {
       console.log(`上传中 ${file.name}，chunk：${chunk.startByte / 1024 / 1024} ~ ${chunk.endByte / 1024 / 1024}`)
     },
     onFileError(rootFile, file, response, chunk) {
-      this.$message.error(this.$t('上传失败'))
+      this.$message.error(this.$t(JSON.parse(response).msg))
       file.error()
     },
     computeMD5(file) {
