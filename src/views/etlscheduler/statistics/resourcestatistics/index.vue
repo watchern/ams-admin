@@ -26,7 +26,7 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" class="oper-btn" icon="el-icon-download" title="导出" @click="exportFile" />
+        <el-button type="primary" class="oper-btn excel" title="导出" @click="exportFile" />
       </el-col>
     </el-row>
     <el-table
@@ -160,7 +160,9 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      resourceStatisticsList({ granularity: this.granularity.key, startTimeStart: this.StartTimeStart, startTimeEnd: this.StartTimeEnd }).then(resp => {
+      resourceStatisticsList({ granularity: this.granularity.key,
+        startTimeStart: this.StartTimeStart,
+        startTimeEnd: this.StartTimeEnd }).then(resp => {
         this.list = resp.data
         this.listLoading = false
       })

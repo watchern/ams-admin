@@ -50,65 +50,65 @@
 </template>
 
 <script>
-import { getColsInfo, selectIndexInfo } from '@/api/data/table-info'
-export default {
-  // eslint-disable-next-line vue/require-prop-types
-  props: ['tableId'],
-  data() {
-    return {
-      options: [{
-        value: 'NORMAL',
-        label: 'NORMAL'
+  import { getColsInfo, selectIndexInfo } from '@/api/data/table-info'
+  export default {
+    // eslint-disable-next-line vue/require-prop-types
+    props: ['tableId'],
+    data() {
+      return {
+        options: [{
+          value: 'NORMAL',
+          label: 'NORMAL'
 
+        },
+          {
+            value: 'BITMAP',
+            label: 'BITMAP'
+          }
+        ],
+        copyColObj: {},
+        selections: [],
+        sqlType: {},
+        temp: []
+      }
+    },
+    created() {
+      this.initTable(this.tableId)
+    },
+    methods: {
+      initTable(tableId) {
+        selectIndexInfo(tableId).then(resp => {
+          this.temp = resp.data
+        })
+        getColsInfo(tableId).then(resp => {
+          this.sqlType = resp.data
+        })
       },
-      {
-        value: 'BITMAP',
-        label: 'BITMAP'
+      handleSelectionChange(val) {
+        this.selections = val
+      },
+      addCol() {
+        var newObj = {} // copy obj
+        newObj.indexName = ''
+        newObj.indexType = 'NORMAL'
+        newObj.columnName = ''
+        newObj.onlyIndex = '0'
+        this.temp.splice(this.temp.length, 0, newObj)
+      },
+      delCol() {
+        this.selections.forEach((r, i) => {
+          var index = this.temp.findIndex(v => JSON.stringify(v) === JSON.stringify(r))
+          this.temp.splice(index, 1)
+        })
+      },
+      clickitem(row, e) {
+        // 当点击已经选中的把 onlyIndex 置0，就是取消选中，并返回
+        if (this.temp[row].onlyIndex === e) {
+          this.temp[row].onlyIndex = '0'
+          return
+        }
+        // 不是选中，选中当前点击 Radio
+        this.temp[row].onlyIndex = e
       }
-      ],
-      copyColObj: {},
-      selections: [],
-      sqlType: {},
-      temp: []
-    }
-  },
-  created() {
-    this.initTable(this.tableId)
-  },
-  methods: {
-    initTable(tableId) {
-      selectIndexInfo(tableId).then(resp => {
-        this.temp = resp.data
-      })
-      getColsInfo(tableId).then(resp => {
-        this.sqlType = resp.data
-      })
-    },
-    handleSelectionChange(val) {
-      this.selections = val
-    },
-    addCol() {
-      var newObj = {} // copy obj
-      newObj.indexName = ''
-      newObj.indexType = 'NORMAL'
-      newObj.columnName = ''
-      newObj.onlyIndex = '0'
-      this.temp.splice(this.temp.length, 0, newObj)
-    },
-    delCol() {
-      this.selections.forEach((r, i) => {
-        var index = this.temp.findIndex(v => JSON.stringify(v) === JSON.stringify(r))
-        this.temp.splice(index, 1)
-      })
-    },
-    clickitem(row, e) {
-      // 当点击已经选中的把 onlyIndex 置0，就是取消选中，并返回
-      if (this.temp[row].onlyIndex === e) {
-        this.temp[row].onlyIndex = '0'
-        return
-      }
-      // 不是选中，选中当前点击 Radio
-      this.temp[row].onlyIndex = e
-    }
-  }}
+    }}
 </script>

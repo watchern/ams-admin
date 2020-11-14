@@ -9,8 +9,8 @@
         <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
         <el-button type="primary" class="oper-btn edit" :disabled="editStatus" title="修改" @click="handleUpdate()" />
         <el-button type="primary" class="oper-btn delete" :disabled="deleteStatus" title="删除" @click="handleDelete()" />
-        <el-button type="primary" class="oper-btn" icon="el-icon-video-play" :disabled="startStatus" title="启用" @click="handleUse()" />
-        <el-button type="primary" class="oper-btn" icon="el-icon-video-pause" :disabled="stopStatus" title="停用" @click="handleBear()" />
+        <el-button type="primary" class="oper-btn start" :disabled="startStatus" title="启用" @click="handleUse()" />
+        <el-button type="primary" class="oper-btn pause" :disabled="stopStatus" title="停用" @click="handleBear()" />
         <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length != 1" title="复制" @click="copyData()" />
         <el-upload
           multiple
@@ -25,10 +25,10 @@
           :show-file-list="false"
           style="display: inline-block; padding-left: 10px"
         >
-          <el-button type="primary" class="oper-btn" icon="el-icon-upload2" title="导入" />
+          <el-button type="primary" class="oper-btn export" title="导入" />
         </el-upload>
         <span style="display: inline-block; padding-left: 10px">
-          <el-button type="primary" class="oper-btn" icon="el-icon-download" title="下载流程模板" @click="dialogFormVisible1 = true" />
+          <el-button type="primary" class="oper-btn import" title="下载流程模板" @click="dialogFormVisible1 = true" />
         </span>
       </el-col>
     </el-row>
@@ -402,7 +402,8 @@ export default {
               time.getTime() > new Date(this.temp.endTime).getTime()
             )
           } else {
-            return time.getTime() < Date.now()
+            // 86400000一天的毫秒数
+            return time.getTime() < Date.now() - 86400000
           }
         }
       },
@@ -414,7 +415,8 @@ export default {
                 time.getTime() < new Date(this.temp.startTime).getTime()
             )
           } else {
-            return time.getTime() < Date.now()
+            // 86400000一天的毫秒数
+            return time.getTime() < Date.now() - 86400000
           }
         }
       },
