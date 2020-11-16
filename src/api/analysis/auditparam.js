@@ -465,7 +465,7 @@ export function initParamHtml(sql, paramsArr, name, id) {
   }
   overallParmaobj[id] = paramObj
   replaceSql = sql
-  $('#'+id+'1').find('a').html(name)
+  // $('#' + id + '1').find('a').html(name)
   try {
     // 获取数据库所有母参数信息集合以及该模型用到的参数集合（可以不传模型ID）
     findParamsAndModelRelParams().then((e) => {
@@ -517,7 +517,7 @@ export function initParamHtml(sql, paramsArr, name, id) {
           // alertMsg("错误", message, "info");
         } else {
           // $(".panel-body").html(paramHtml);
-          $('#'+id).html(paramHtml)
+          $('#' + id).html(paramHtml)
           initParamInputAndSelect()
         }
       }
@@ -1814,6 +1814,9 @@ export function replaceNodeParam(modelid) {
               replaceSql1 = replaceSql1.replace(arr1[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
             }
           }
+        }
+        for (var j = 0; j < arr1.length; j++) {
+          filterArr[j].copyParamId = arr1[j].copyParamId
         }
         returnObj.sql = replaceSql1
         returnObj.paramsArr = filterArr
