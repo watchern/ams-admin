@@ -88,7 +88,7 @@ export default {
     replaceParams() {
       var replaceInfo = [];
       for (var i = 0; i < this.detailModels.length; i++) {
-        replaceInfo.push(replaceNodeParam(this.detailModels[i].modelUuid));
+        replaceInfo.push(replaceNodeParam(this.detailModels[i].modelUuid + '2'));
       }
       var obj = {
         models: this.detailModels,
@@ -104,7 +104,7 @@ export default {
           let dicObj = getOneDict(this.detailModels[i].riskLevelUuid)
           this.afterTranscod.push(dicObj[0].codeName)
       }
-         
+
     }
   },
 };
