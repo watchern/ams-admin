@@ -48,4 +48,5 @@ body {
   margin: 0;
 }
 #zzzzz-zy .el-collapse-item__wrap{overflow: visible}
+#zzzzz-zy .el-collapse-item__header,.is-active{border-bottom: 1px solid #e6ebf5;}
 </style>
