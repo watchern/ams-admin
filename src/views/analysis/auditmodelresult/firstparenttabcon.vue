@@ -9,22 +9,43 @@
       />
     </div>
     <el-row>
-      <el-button type="primary" @click="relationProject('453453', '项目2')"
-        >关联项目</el-button
+      <el-button
+        type="primary"
+        @click="relationProject('453453', '项目2')"
+        :disabled="buttonIson.AssociatedBtn"
+        class="oper-btn refresh"
+        ></el-button
       >
-      <el-button type="danger" @click="RemoverelationProject('asdasdasdas')"
+      <el-button
+        type="danger"
+        @click="RemoverelationProject('asdasdasdas')"
+        :disabled="buttonIson.DisassociateBtn"
         >移除项目关联</el-button
       >
       <el-button
+        :disabled="buttonIson.deleteBtn"
         type="danger"
         @click="deleteRunTaskRel"
         class="oper-btn delete"
       ></el-button>
-      <el-button type="primary">结果拆分</el-button>
-      <el-button type="primary" @click="modelResultShare('99999', '888888')"
-        >结果共享</el-button
+      <el-button type="primary" :disabled="buttonIson.resultSplitBtn"
+      class="oper-btn split-2"
+        ></el-button
       >
-      <el-button type="primary" @click="exportExcel">导出</el-button>
+      <el-button
+        type="primary"
+        @click="modelResultShare('99999', '888888')"
+        :disabled="buttonIson.resultShareBtn"
+        class="oper-btn share"
+        ></el-button
+      >
+      <el-button
+        type="primary"
+        @click="exportExcel"
+        :disabled="buttonIson.exportBtn"
+        class="oper-btn export-2"
+        ></el-button
+      >
     </el-row>
     <el-table
       id="table"
@@ -36,6 +57,8 @@
       highlight-current-row
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
+      height="450px"
+      style="overflow-x: scroll;width: 80%"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column
@@ -61,7 +84,7 @@
       <el-table-column
         label="运行状态"
         width="100px"
-        align="left"
+        align="center"
         prop="runStatus"
         :formatter="readStatusFormatter"
       />
@@ -93,15 +116,17 @@
       />
       <el-table-column
         label="运行SQL"
-        prop="settingInfo.sql"
+        prop="settingInfo"
         align="center"
         width="200px"
+        :formatter="settingInfoSqlFormatter"
       />
       <el-table-column
         label="运行参数"
-        prop="settingInfo.param"
+        prop="settingInfo"
         align="center"
         width="200px"
+        :formatter="settingInfoParamsArrFormatter"
       />
 
       <el-table-column
@@ -130,7 +155,7 @@
         align="center"
         width="200px"
       />
-      <el-table-column fixed="right" label="操作" width="120">
+      <el-table-column fixed="right" label="操作" width="150px">
         <template>
           <el-button type="primary">重新运行</el-button>
         </template>
@@ -192,6 +217,14 @@ export default {
       success: false, // 用来测试open2方法里的batchDeleteRunTaskRel方法返回值是否为true，如果为true则success为true
       success1: false, // 用来测试open2方法里的deleteRunResultShare方法返回值是否为true，如果为true则success为true
       selected1: [], // 存储表格中选中的数据
+      buttonIson: {
+        AssociatedBtn: true,
+        DisassociateBtn: false,
+        deleteBtn: true,
+        resultSplitBtn: true,
+        resultShareBtn: true,
+        exportBtn: false,
+      },
     };
   },
   created() {
@@ -271,6 +304,28 @@ export default {
       return "";
     },
     /**
+     * 格式化执行信息，取出执行信息中的sql
+     */
+    settingInfoSqlFormatter(row, column) {
+      if (row.settingInfo == null) {
+        return "";
+      } else {
+        var sql = JSON.parse(row.settingInfo).sql;
+        return sql;
+      }
+    },
+    /**
+     * 格式化执行信息，取出执行信息中的paramArr
+     */
+    settingInfoParamsArrFormatter(row, column) {
+      if (row.settingInfo == null) {
+        return "";
+      } else {
+        var paramsArr = JSON.stringify(JSON.parse(row.settingInfo).paramsArr);
+        return paramsArr;
+      }
+    },
+    /**
      * 格式化已阅状态
      * @param row 行数据
      * @param column 列数据
@@ -319,7 +374,30 @@ export default {
     /**
      * 当多选框改变时触发
      */
+    //      buttonIson:{AssociatedBtn:true,DisassociateBtn:true,deleteBtn:true,resultSplitBtn:true,resultShareBtn:true,exportBtn:false}
     handleSelectionChange(val) {
+      if (val.length <= 0) {
+        this.buttonIson.AssociatedBtn = true;
+        this.buttonIson.DisassociateBtn = false;
+        this.buttonIson.deleteBtn = true;
+        this.buttonIson.resultSplitBtn = true;
+        this.buttonIson.resultShareBtn = true;
+        this.buttonIson.exportBtn = false;
+      } else if (val.length == 1) {
+        this.buttonIson.AssociatedBtn = false;
+        this.buttonIson.DisassociateBtn = false;
+        this.buttonIson.deleteBtn = false;
+        this.buttonIson.resultSplitBtn = false;
+        this.buttonIson.resultShareBtn = false;
+        this.buttonIson.exportBtn = false;
+      } else if (val.length > 1) {
+        this.buttonIson.AssociatedBtn = false;
+        this.buttonIson.DisassociateBtn = false;
+        this.buttonIson.deleteBtn = false;
+        this.buttonIson.resultSplitBtn = false;
+        this.buttonIson.resultShareBtn = false;
+        this.buttonIson.exportBtn = false;
+      }
       this.share.splice(0, this.share.length);
       this.notShare.splice(0, this.notShare.length);
       // 把共享过来的运行结果放进share数组，自己的运行结果放进notShare数组

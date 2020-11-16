@@ -43,7 +43,7 @@ export default {
        */
       reSetTable(){
         for(var i = 0;i<this.preValue.length;i++){
-          this.$refs.child[i].reSet()
+          this.$refs.child[i].reSet1()
         }
         this.index = 0
       }
