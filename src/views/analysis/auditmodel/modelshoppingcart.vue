@@ -23,7 +23,7 @@
       }}</el-link>
       <div class="btn-div">
         <el-button type="primary" @click="runImmediately" plain>立即运行</el-button>
-        <el-button type="primary" plain>定时执行</el-button>
+        <el-button type="primary" plain @click="timingExecution">定时执行</el-button>
       </div>
     </div>
     <el-dialog
@@ -72,14 +72,28 @@
       </el-table>
     </el-dialog>
     <el-dialog
-      title="模型运行设置"
+      title="模型运行设置-立即"
       :visible.sync="runimmediatelyIsSee"
-      width="70%"
+      width="50%"
       :append-to-body="true"
     >
-      <runimmediatelycon ref="modelsetting" v-if="runimmediatelyIsSee" :models = this.currentData></runimmediatelycon>
+      <runimmediatelycon ref="modelsetting" :immediately="false" v-if="runimmediatelyIsSee" :models = this.currentData></runimmediatelycon>
       <span slot="footer" class="dialog-footer">
         <el-button @click="runimmediatelyIsSee = false">取 消</el-button>
+        <el-button type="primary" @click="modelRunSetting"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="模型运行设置-定时"
+      :visible.sync="timingExecutionIsSee"
+      width="50%"
+      :append-to-body="true"
+    >
+      <runimmediatelycon ref="modelsetting" :immediately="true" v-if="timingExecutionIsSee" :models = this.currentData></runimmediatelycon>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="timingExecutionIsSee = false">取 消</el-button>
         <el-button type="primary" @click="modelRunSetting"
           >确 定</el-button
         >
@@ -107,7 +121,8 @@ export default {
       addRunTaskRelBatchResult:null,
       addRunTaskResult:null,
       models:[],
-      replacedInfo:[]
+      replacedInfo:[],
+      timingExecutionIsSee:false
 
     };
   },
@@ -340,6 +355,9 @@ export default {
     runImmediately(){
       this.runimmediatelyIsSee = true
     },
+    timingExecution(){
+      this.timingExecutionIsSee = true
+    },
     modelRunSetting(){
         var results = this.$refs.modelsetting.replaceParams()
         this.models = results.models
@@ -348,7 +366,7 @@ export default {
         var batchUuid =  uuid2()
         console.log(this.models)
         console.log(this.replacedInfo)
-        var runTask = {runTaskUuid:runTaskUuid,batchUuid:batchUuid,runTaskName:'系统添加',runType:3}
+        var runTask = {runTaskUuid:runTaskUuid,batchUuid:batchUuid,runTaskName:'系统添加',runType:1}
         var runTaskRels = []
         for(var i = 0;i<this.models.length;i++){ 
           var runTaskRelUuid = uuid2()
