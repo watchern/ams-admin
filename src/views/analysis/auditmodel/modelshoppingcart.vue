@@ -18,17 +18,12 @@
     <div class="resizeBR"></div>
     <div class="resizeLB"></div>
     <div class="content">
-      <el-link class="label-tip" @click="selectData" type="primary">{{
-        memoValue
-      }}</el-link>
+      <el-link class="label-tip" @click="selectData" type="primary">{{memoValue }}</el-link>
       <div class="btn-div">
-        <el-button type="primary" @click="runImmediately" plain
-          >立即运行</el-button
-        >
-        <el-button type="primary" plain @click="timingExecution"
-          >定时执行</el-button
-        >
+        <el-button type="primary" @click="runImmediately" plain>立即运行</el-button>
+        <el-button type="primary" plain @click="timingExecution">定时执行</el-button>
       </div>
+      <el-button class="select-btn" type="primary" plain @click="selectData">查看已选模型</el-button>
     </div>
     <el-dialog
       title="当前已选模型"
@@ -439,7 +434,7 @@ body {
   top: 100px;
   left: 400px;
   width: 300px;
-  height: 160px;
+  height: 200px;
   background: #ffffff;
   border-radius: 5px;
   box-shadow: 0px 3px 8px 7px #d4d4d4;
@@ -602,11 +597,16 @@ a.open:hover {
 }
 
 .btn-div {
-  padding-top: 25px;
-  padding-left: 31px;
+  padding-top: 20px;
+  padding-left: 43px;
 }
 .label-tip {
-  margin-left: 120px;
+  margin-left: 130px;
   margin-top: 20px;
+}
+.select-btn{
+  margin-top: 8px;
+  margin-left: 42px;
+  width: 208px;
 }
 </style>
