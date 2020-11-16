@@ -11,6 +11,15 @@ export function getBylist(data) {
     data
   })
 }
+// 查询所有
+export function getDirTree(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/fileManager/getDirTree`,
+    method: 'post',
+    data
+  })
+}
 
 // 创建文件夹
 export function createDir(data) {
@@ -31,3 +40,14 @@ export function deleteFile(data) {
     data
   })
 }
+
+// 移动文件 2020.11.12xbai
+export function moveFile(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/fileManager/moveFile`,
+    method: 'put',
+    data
+  })
+}
+

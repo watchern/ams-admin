@@ -47,8 +47,7 @@
                     style="margin-left:10px;margin-top:-10px;"
                     type="primary"
                     title="查看详情"
-                    class="oper-btn"
-                    icon="el-icon-more"
+                    class="oper-btn more"
                     @click="handleprocess()"
                   /></span>
               </div>
@@ -62,8 +61,7 @@
                   style="margin-left:10px;margin-top:-10px;"
                   type="primary"
                   title="查看详情"
-                  class="oper-btn"
-                  icon="el-icon-more"
+                  class="oper-btn more"
                   @click="handletask()"
                 /></span>
               </div>
@@ -90,11 +88,11 @@
                     <td><span>{{ item.dataResourceName }}</span></td>
                     <td><span>{{ item.executions+'/'+item.pushes }}</span></td>
                     <td>
-                      <a target="_blank" class="buttonText" :title="statusList[item.status===null? statusList.length-1 : item.status].name">
+                      <a target="_blank" class="buttonText" :title="statusObj[item.status].name">
                         <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色 -->
                         <i
-                          :class="statusList[item.status===null? statusList.length-1 : item.status].unicode"
-                          :style="{color: statusList[item.status===null? statusList.length-1 : item.status].color}"
+                          :class="statusObj[item.status].unicode"
+                          :style="{color: statusObj[item.status].color}"
                         />
                       </a></td>
                   </tr>
@@ -109,6 +107,7 @@
 </template>
 <script>
 import dayjs from 'dayjs'
+import { statusList } from './_source/common.js'
 import mTaskCtatusCount from './_source/taskCtatusCount'
 import mProcessStateCount from './_source/processStateCount'
 import mListConstruction from './_source/listConstruction'
@@ -148,35 +147,13 @@ export default {
       taketime: 0,
       processtime: 0,
       dataResourceStatistics: null,
-      statusList: [
-        {
-          value: 0,
-          name: '执行中',
-          unicode: 'el-icon-loading',
-          color: '#333'
-        },
-        {
-          value: 1,
-          name: '执行完成',
-          unicode: 'el-icon-success',
-          color: '#95F204'
-        },
-        {
-          value: 2,
-          name: '执行失败',
-          unicode: 'el-icon-warning',
-          color: 'red'
-        },
-        {
-          value: null,
-          name: '--',
-          unicode: 'el-icon-remove-outline',
-          color: '#888888'
-        }
-      ]
+      statusObj: {}
     }
   },
   created() {
+    statusList.forEach((r, i) => {
+      this.statusObj[r['value']] = r
+    })
     this.searchParams.startTimeStart = dayjs().format('YYYY-MM-DD')
     this.searchParams.startTimeEnd = dayjs().format('YYYY-MM-DD')
     // console.log('开始' + this.searchParams.startTimeStart + typeof (this.searchParams.startTimeStart))

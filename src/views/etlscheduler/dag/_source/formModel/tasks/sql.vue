@@ -50,7 +50,12 @@
       </div>
     </m-list-box>
     <m-list-box>
-      <div slot="text"><span style="color: red;">*</span>sql语句</div>
+      <div slot="text">
+
+        <span style="color: red;">*
+        </span>sql语句<el-tooltip class="item" effect="dark" content="多条sql语句使用/进行分隔" placement="top-start">
+          <i class="el-icon-info" />
+        </el-tooltip></div>
       <div slot="content">
         <div class="from-mirror">
           <textarea
