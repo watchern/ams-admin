@@ -234,27 +234,15 @@ export function findModelList(data){
   })
 }
 
-/**
- * 批量添加运行任务关联对象
- * @param {*} data 运行任务关联对象数组
- */
-export function addRunTaskRelBatch(data){
-  return request({
-    baseURL: analysisUrl,
-    url: '/RunTaskRelController/addRunTaskRelBatch',
-    method: 'post',
-    data
-  })
-}
 
 /**
- * 添加运行任务
- * @param {*} data  运行任务对象
+ * 添加运行任务和运行关联表
+ * @param {*} data 运行任务对象
  */
-export function addRunTask(data){
+export function addRunTaskAndRunTaskRel(data){
   return request({
     baseURL: analysisUrl,
-    url: '/RunTaskController/addRunTask',
+    url: '/RunTaskController/addRunTaskAndRunTaskRel',
     method: 'post',
     data
   })

@@ -22,8 +22,12 @@
         memoValue
       }}</el-link>
       <div class="btn-div">
-        <el-button type="primary" @click="runImmediately" plain>立即运行</el-button>
-        <el-button type="primary" plain @click="timingExecution">定时执行</el-button>
+        <el-button type="primary" @click="runImmediately" plain
+          >立即运行</el-button
+        >
+        <el-button type="primary" plain @click="timingExecution"
+          >定时执行</el-button
+        >
       </div>
     </div>
     <el-dialog
@@ -77,12 +81,15 @@
       width="50%"
       :append-to-body="true"
     >
-      <runimmediatelycon ref="modelsetting" :immediately="false" v-if="runimmediatelyIsSee" :models = this.currentData></runimmediatelycon>
+      <runimmediatelycon
+        ref="modelsetting"
+        :immediately="false"
+        v-if="runimmediatelyIsSee"
+        :models="this.currentData"
+      ></runimmediatelycon>
       <span slot="footer" class="dialog-footer">
         <el-button @click="runimmediatelyIsSee = false">取 消</el-button>
-        <el-button type="primary" @click="modelRunSetting"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="modelRunSetting">确 定</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -91,23 +98,29 @@
       width="50%"
       :append-to-body="true"
     >
-      <runimmediatelycon ref="modelsetting" :immediately="true" v-if="timingExecutionIsSee" :models = this.currentData></runimmediatelycon>
+      <runimmediatelycon
+        ref="modelsetting"
+        :immediately="true"
+        v-if="timingExecutionIsSee"
+        :models="this.currentData"
+      ></runimmediatelycon>
       <span slot="footer" class="dialog-footer">
         <el-button @click="timingExecutionIsSee = false">取 消</el-button>
-        <el-button type="primary" @click="modelRunSetting"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="modelRunSetting">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
 import { getOneDict } from "@/utils";
-import runimmediatelycon from '@/views/analysis/auditmodel/runimmediatelycon'
-import { addRunTaskRelBatch,addRunTask,uuid2 } from '@/api/analysis/auditmodel'
+import runimmediatelycon from "@/views/analysis/auditmodel/runimmediatelycon";
+import {
+  uuid2,
+  addRunTaskAndRunTaskRel,
+} from "@/api/analysis/auditmodel";
 export default {
-  components:{
-    runimmediatelycon
+  components: {
+    runimmediatelycon,
   },
   data() {
     return {
@@ -117,13 +130,12 @@ export default {
       currentData: [],
       dialogFormVisible: false,
       list: [],
-      runimmediatelyIsSee:false,
-      addRunTaskRelBatchResult:null,
-      addRunTaskResult:null,
-      models:[],
-      replacedInfo:[],
-      timingExecutionIsSee:false
-
+      runimmediatelyIsSee: false,
+      addRunTaskRelBatchResult: null,
+      addRunTaskResult: null,
+      models: [],
+      replacedInfo: [],
+      timingExecutionIsSee: false,
     };
   },
   mounted() {
@@ -352,40 +364,59 @@ export default {
     byTagName: function (elem, obj) {
       return (obj || document).getElementsByTagName(elem);
     },
-    runImmediately(){
-      this.runimmediatelyIsSee = true
+    runImmediately() {
+      this.runimmediatelyIsSee = true;
     },
-    timingExecution(){
-      this.timingExecutionIsSee = true
+    timingExecution() {
+      this.timingExecutionIsSee = true;
     },
-    modelRunSetting(){
-        var results = this.$refs.modelsetting.replaceParams()
-        this.models = results.models
-         this.replacedInfo = results.replaceInfo
-        var runTaskUuid =  uuid2()
-        var batchUuid =  uuid2()
-        console.log(this.models)
-        console.log(this.replacedInfo)
-        var runTask = {runTaskUuid:runTaskUuid,batchUuid:batchUuid,runTaskName:'系统添加',runType:1}
-        var runTaskRels = []
-        for(var i = 0;i<this.models.length;i++){ 
-          var runTaskRelUuid = uuid2()
-          var settingInfo = {sql:this.replacedInfo[i].sql,paramsArr:this.replacedInfo[i].paramsArr}
-          var runTaskRel = {runTaskRelUuid:runTaskRelUuid,runTaskUuid:runTaskUuid,sourceUuid:this.models[i].modelUuid,settingInfo:JSON.stringify(settingInfo),modelVersion:this.models[i].modelVersion,runRecourceType:1,isDeleted:0}
-          runTaskRels.push(runTaskRel)
+    modelRunSetting() {
+      var results = this.$refs.modelsetting.replaceParams();
+      this.models = results.models;
+      this.replacedInfo = results.replaceInfo;
+      var runTaskUuid = uuid2();
+      var batchUuid = uuid2();
+      var runTaskRels = [];
+      for (var i = 0; i < this.models.length; i++) {
+        var runTaskRelUuid = uuid2();
+        var settingInfo = {
+          sql: this.replacedInfo[i].sql,
+          paramsArr: this.replacedInfo[i].paramsArr,
+        };
+        var runTaskRel = {
+          runTaskRelUuid: runTaskRelUuid,
+          runTaskUuid: runTaskUuid,
+          sourceUuid: this.models[i].modelUuid,
+          settingInfo: JSON.stringify(settingInfo),
+          modelVersion: this.models[i].modelVersion,
+          runRecourceType: 1,
+          isDeleted: 0,
+          runStatus: 1,
+        };
+        runTaskRels.push(runTaskRel);
+      }
+      var runTask = {
+        runTaskUuid: runTaskUuid,
+        batchUuid: batchUuid,
+        runTaskName: "系统添加",
+        runType: 3,
+        runTaskRels: runTaskRels,
+      };
+      addRunTaskAndRunTaskRel(runTask).then((resp) => {
+        if (resp.data == true) {
+          this.$notify({
+            title: "提示",
+            message: "",
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }else{
+          this.$message({ type: 'info', message: '执行运行任务失败' })
         }
-        addRunTask(runTask).then(resp=>{
-          this.addRunTaskResult =  resp.data
-          addRunTaskRelBatch(runTaskRels).then(resp=>{
-              this.addRunTaskRelBatchResult = resp.data
-              if(this.addRunTaskResult==true&&this.addRunTaskRelBatchResult==true){
-                  alert("成功")
-              }
-          })
-        })
-
-        this.runimmediatelyIsSee = false
-    }
+      });
+      this.runimmediatelyIsSee = false;
+    },
   },
 };
 </script>

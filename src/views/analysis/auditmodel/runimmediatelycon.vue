@@ -47,7 +47,7 @@ export default {
       afterTranscod:[]  //按顺序存储转码后的风险等级
     };
   },
-  props: ["models"],
+  props: ["models","immediately"],
   methods: {
     /**
      * 初始化dialog
