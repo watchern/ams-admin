@@ -14,7 +14,7 @@
         <!-- 添加文件夹 -->
         <el-button type="primary" class="oper-btn add-folder" title="上传文件夹" :disabled="createDirStatus" @click="handleCreateDir()" />
         <!-- 删除 -->
-        <el-button type="primary" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="handleDelete()" />
+        <el-button type="primary" class="oper-btn delete" title="删除文件" :disabled="selections.length === 0" @click="handleDelete()" />
         <!-- 移动 -->
         <el-button type="primary" class="oper-btn delete" title="文件移动" :disabled="createFileDirStatus" @click="handleMove()" />
       </el-col>
