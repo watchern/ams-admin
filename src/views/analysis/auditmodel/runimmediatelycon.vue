@@ -15,7 +15,7 @@
       </el-aside>
       <el-main>
         <div v-for="(item, key) in this.detailModels" :key="key">
-          <paramDraw :myId="item.modelUuid" ref="paramassembly"></paramDraw>
+          <paramDraw :myId="item.modelUuid+'2'" ref="paramassembly"></paramDraw>
         </div>
       </el-main>
     </el-container>
@@ -78,7 +78,7 @@ export default {
           this.detailModels[i].sqlValue,
           paramArr,
           this.detailModels[i].modelName + "参数",
-          this.detailModels[i].modelUuid
+          this.detailModels[i].modelUuid+'2'
         );
       }
     },

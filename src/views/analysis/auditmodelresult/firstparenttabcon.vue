@@ -321,8 +321,13 @@ export default {
       if (row.settingInfo == null) {
         return "";
       } else {
-        var paramsArr = JSON.stringify(JSON.parse(row.settingInfo).paramsArr);
-        return paramsArr;
+        var paramShowStr = ''
+        var  params = JSON.parse(row.settingInfo).paramsArr
+        for(var i = 0;i<params.length;i++){
+            paramShowStr+=params[i].paramName+' : '+params[i].paramValue+'\r\n'
+        }
+        // var paramsArr = JSON.stringify(JSON.parse(row.settingInfo).paramsArr);
+        return paramShowStr;
       }
     },
     /**
