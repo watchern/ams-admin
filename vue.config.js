@@ -61,6 +61,9 @@ module.exports = {
       '/analysis':{
         target:'http://localhost:8086'
       },
+      '/graphtool':{
+        target:'http://localhost:8087'
+      },
       // etl调度模块调用的地址
       '/etlscheduler': {
         // target: 'http://192.168.80.155:8080'
