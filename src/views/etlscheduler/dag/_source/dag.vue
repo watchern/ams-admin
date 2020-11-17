@@ -398,17 +398,24 @@ export default {
                * @param saveEditDAGChart => Process definition editing
                */
               this[this.type === 'instance' ? 'updateInstance' : 'updateDefinition'](this.urlParam.id).then(res => {
-                // this.$message.success(res.msg)
+                this.$message.success(res.msg)
                 this.spinnerLoading = false
-                // this.$router.push('/etlscheduler/processdefinition')
+                this.$router.push('/etlscheduler/processdefinition')
                 resolve()
               }).catch(e => {
-                // this.$message.error(e.msg || '')
+                this.$message.error(e.msg || '')
                 this.spinnerLoading = false
-                // reject(e)
-                // this.$router.push('/etlscheduler/processdefinition')
+                reject(e)
+                this.$router.push('/etlscheduler/processdefinition')
               })
             } else {
+              // if (sourceType === 'else') {
+              // // this.$router.push('/etlscheduler/processdefinition')
+              //   this.spinnerLoading = false
+              //   resolve()
+              // reject()
+              //   return
+              // }
               // New
               this.saveDAGchart().then(res => {
                 this.$message.success(res.msg)
@@ -418,7 +425,7 @@ export default {
                 }
                 resolve()
               }).catch(e => {
-                this.$message.error(e.msg || '')
+                // this.$message.error(e.msg || '')
                 this.setName('')
                 this.spinnerLoading = false
                 reject(e)

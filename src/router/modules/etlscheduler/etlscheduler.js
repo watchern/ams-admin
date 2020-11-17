@@ -119,7 +119,7 @@ const etlschedulerRouter = {
       meta: { title: `流程定义详情` }
     },
     {
-      path: 'datafile',
+      path: 'resourcemonitor',
       name: 'datafile',
       component: () => import('@/views/etlscheduler/datafile/index'),
       meta: { title: 'datafile' }

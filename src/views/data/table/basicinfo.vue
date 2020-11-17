@@ -1,6 +1,6 @@
 <template>
-  <div class="page-container">
-    <div class="detail-form">
+  <div class="app-container">
+    <template class="detail-form">
       <el-form
         ref="dataForm"
         :model="temp"
@@ -23,7 +23,7 @@
           <el-input v-model="temp.tableSize" readonly />
         </el-form-item>
       </el-form>
-    </div>
+    </template>
     <!-- <div slot="footer">
       <el-button @click="dialogFormVisible = false">取消</el-button>
       <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
