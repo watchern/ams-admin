@@ -82,9 +82,9 @@ export function deleteRunResultShare(data) {
 export function selectTable(data, filterSql) {
   return request({
     baseURL: analysisUrl,
-    url: '/RunResultTableController/selectTable/' + filterSql,
+    url: '/RunResultTableController/selectTable',
     method: 'post',
-    data
+    data:{basePageParam:data,filterSql:filterSql}
   })
 }
 
@@ -96,6 +96,18 @@ export function exportRunTaskRel() {
     baseURL: analysisUrl,
     url: '/RunTaskRelController/exportRunTaskRelTable',
     method: 'get'
+  })
+}
+
+/**
+ * 运行任务重新运行
+ */
+export function reRunRunTask(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/RunTaskController/reRunRunTask',
+    method: 'post',
+    data
   })
 }
 
@@ -154,8 +166,9 @@ export function removeResultDetailProjectRel(data) {
 export function selectConditionShow(modelUuid, tableName) {
   return request({
     baseURL: analysisUrl,
-    url: '/RunResultTableController/getConditionShow/' + modelUuid + '/' + tableName,
-    method: 'post'
+    url: '/RunResultTableController/getConditionShow',
+    method: 'post',
+    data:{modelUuid:modelUuid,tableName:tableName}
   })
 }
 

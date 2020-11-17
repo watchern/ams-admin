@@ -73,7 +73,7 @@
     <el-dialog
       title="模型运行设置-立即"
       :visible.sync="runimmediatelyIsSee"
-      width="50%"
+      width="60%"
       :append-to-body="true"
     >
       <runimmediatelycon
@@ -90,7 +90,7 @@
     <el-dialog
       title="模型运行设置-定时"
       :visible.sync="timingExecutionIsSee"
-      width="50%"
+      width="60%"
       :append-to-body="true"
     >
       <runimmediatelycon
@@ -109,10 +109,7 @@
 <script>
 import { getOneDict } from "@/utils";
 import runimmediatelycon from "@/views/analysis/auditmodel/runimmediatelycon";
-import {
-  uuid2,
-  addRunTaskAndRunTaskRel,
-} from "@/api/analysis/auditmodel";
+import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 export default {
   components: {
     runimmediatelycon,
@@ -365,52 +362,68 @@ export default {
     timingExecution() {
       this.timingExecutionIsSee = true;
     },
+    /**
+     * 添加运行任务和运行任务关联表
+     */
     modelRunSetting() {
       var results = this.$refs.modelsetting.replaceParams();
       this.models = results.models;
       this.replacedInfo = results.replaceInfo;
-      var runTaskUuid = uuid2();
-      var batchUuid = uuid2();
-      var runTaskRels = [];
-      for (var i = 0; i < this.models.length; i++) {
-        var runTaskRelUuid = uuid2();
-        var settingInfo = {
-          sql: this.replacedInfo[i].sql,
-          paramsArr: this.replacedInfo[i].paramsArr,
-        };
-        var runTaskRel = {
-          runTaskRelUuid: runTaskRelUuid,
-          runTaskUuid: runTaskUuid,
-          sourceUuid: this.models[i].modelUuid,
-          settingInfo: JSON.stringify(settingInfo),
-          modelVersion: this.models[i].modelVersion,
-          runRecourceType: 1,
-          isDeleted: 0,
-          runStatus: 1,
-        };
-        runTaskRels.push(runTaskRel);
-      }
-      var runTask = {
-        runTaskUuid: runTaskUuid,
-        batchUuid: batchUuid,
-        runTaskName: "系统添加",
-        runType: 3,
-        runTaskRels: runTaskRels,
-      };
-      addRunTaskAndRunTaskRel(runTask).then((resp) => {
-        if (resp.data == true) {
-          this.$notify({
-            title: "提示",
-            message: "",
-            type: "success",
-            duration: 2000,
-            position: "bottom-right",
-          });
-        }else{
-          this.$message({ type: 'info', message: '执行运行任务失败' })
+      var dateTime = results.dateTime;
+      var time1 = Date.parse(dateTime.toString());
+      var time2 = Date.parse(new Date().toString());
+      var differTime = (time1 - time2) / (1000 * 60);
+      if (differTime < 5) {
+        this.$message({
+          type: "info",
+          message: "定时运行时间距当前时间要大于5分钟",
+        });
+      } else {
+        var runTaskUuid = uuid2();
+        var batchUuid = uuid2();
+        var runTaskRels = [];
+        for (var i = 0; i < this.models.length; i++) {
+          var runTaskRelUuid = uuid2();
+          var settingInfo = {
+            sql: this.replacedInfo[i].sql,
+            paramsArr: this.replacedInfo[i].paramsArr,
+          };
+          var runTaskRel = {
+            runTaskRelUuid: runTaskRelUuid,
+            runTaskUuid: runTaskUuid,
+            sourceUuid: this.models[i].modelUuid,
+            settingInfo: JSON.stringify(settingInfo),
+            modelVersion: this.models[i].modelVersion,
+            runRecourceType: 1,
+            isDeleted: 0,
+            runStatus: 1
+          };
+          runTaskRels.push(runTaskRel);
         }
-      });
+          var runTask = {
+            runTaskUuid: runTaskUuid,
+            batchUuid: batchUuid,
+            runTaskName: "系统添加",
+            runType: 3,
+            timingExecute:dateTime,
+            runTaskRels: runTaskRels,
+          };
+        addRunTaskAndRunTaskRel(runTask).then((resp) => {
+          if (resp.data == true) {
+            this.$notify({
+              title: "提示",
+              message: "运行成功",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          } else {
+            this.$message({ type: "info", message: "执行运行任务失败" });
+          }
+        });
+      }
       this.runimmediatelyIsSee = false;
+      this.timingExecutionIsSee = false
     },
   },
 };

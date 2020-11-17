@@ -8,14 +8,14 @@
         @submit="getLikeList"
       />
     </div>
+    <div align='right' style="width: 80%">
     <el-row>
       <el-button
         type="primary"
         @click="relationProject('453453', '项目2')"
         :disabled="buttonIson.AssociatedBtn"
         class="oper-btn refresh"
-        ></el-button
-      >
+      ></el-button>
       <el-button
         type="danger"
         @click="RemoverelationProject('asdasdasdas')"
@@ -28,25 +28,25 @@
         @click="deleteRunTaskRel"
         class="oper-btn delete"
       ></el-button>
-      <el-button type="primary" :disabled="buttonIson.resultSplitBtn"
-      class="oper-btn split-2"
-        ></el-button
-      >
+      <el-button
+        type="primary"
+        :disabled="buttonIson.resultSplitBtn"
+        class="oper-btn split-2"
+      ></el-button>
       <el-button
         type="primary"
         @click="modelResultShare('99999', '888888')"
         :disabled="buttonIson.resultShareBtn"
         class="oper-btn share"
-        ></el-button
-      >
+      ></el-button>
       <el-button
         type="primary"
         @click="exportExcel"
         :disabled="buttonIson.exportBtn"
         class="oper-btn export-2"
-        ></el-button
-      >
+      ></el-button>
     </el-row>
+    </div>
     <el-table
       id="table"
       :key="tableKey"
@@ -58,7 +58,7 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       height="450px"
-      style="overflow-x: scroll;width: 80%"
+      style="overflow-x: scroll; width: 80%"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column
@@ -74,7 +74,8 @@
               getResultTables(
                 scope.row.runResultTables,
                 scope.row.model.modelName,
-                scope.row.model.modelUuid
+                scope.row.model.modelUuid,
+                scope.row.runStatus
               )
             "
             >{{ scope.row.model.modelName }}</el-button
@@ -87,7 +88,9 @@
         align="center"
         prop="runStatus"
         :formatter="readStatusFormatter"
-      />
+      ><template slot-scope="scope">
+         <i :class="runStatusIconFormatter(scope.row.runStatus)" :style="runStatusStyleFormatter(scope.row.runStatus)"></i>
+        </template></el-table-column>
       <el-table-column
         label="运行人"
         width="100px"
@@ -95,11 +98,18 @@
         prop="runTask.runUserName"
       />
       <el-table-column
-        label="运行信息"
-        prop="runMessage"
+        label="执行进度"
+        prop="executeProgress"
         align="center"
         width="200px"
-      />
+      >
+        <template slot-scope="scope">
+          <el-progress
+            :percentage="parseInt(scope.row.executeProgress)"
+            :color="customColorMethod(scope.row.executeProgress)"
+          />
+        </template>
+      </el-table-column>
       <el-table-column
         label="运行开始时间"
         width="200px"
@@ -128,20 +138,12 @@
         width="200px"
         :formatter="settingInfoParamsArrFormatter"
       />
-
       <el-table-column
-        label="执行进度"
-        prop="executeProgress"
+        label="运行信息"
+        prop="runMessage"
         align="center"
         width="200px"
-      >
-        <template slot-scope="scope">
-          <el-progress
-            :percentage="parseInt(scope.row.executeProgress)"
-            :color="customColorMethod(scope.row.executeProgress)"
-          />
-        </template>
-      </el-table-column>
+      />
       <el-table-column
         label="关联项目"
         prop="projectName"
@@ -156,8 +158,8 @@
         width="200px"
       />
       <el-table-column fixed="right" label="操作" width="150px">
-        <template>
-          <el-button type="primary">重新运行</el-button>
+        <template slot-scope="scope">
+          <el-button type="primary" @click="reRun(scope.row)">重新运行</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -179,6 +181,7 @@ import {
   insertRunResultShare,
   deleteRunResultShare,
   exportRunTaskRel,
+  reRunRunTask
 } from "@/api/analysis/auditmodelresult";
 import QueryField from "@/components/Ace/query-field/index";
 import Pagination from "@/components/Pagination/index";
@@ -321,10 +324,11 @@ export default {
       if (row.settingInfo == null) {
         return "";
       } else {
-        var paramShowStr = ''
-        var  params = JSON.parse(row.settingInfo).paramsArr
-        for(var i = 0;i<params.length;i++){
-            paramShowStr+=params[i].paramName+' : '+params[i].paramValue+'\r\n'
+        var paramShowStr = "";
+        var params = JSON.parse(row.settingInfo).paramsArr;
+        for (var i = 0; i < params.length; i++) {
+          paramShowStr +=
+            params[i].paramName + " : " + params[i].paramValue + "\r\n";
         }
         // var paramsArr = JSON.stringify(JSON.parse(row.settingInfo).paramsArr);
         return paramShowStr;
@@ -346,6 +350,34 @@ export default {
         return "运行成功";
       } else {
         return "运行失败";
+      }
+    },
+    /**
+     * 运行状态图标展示
+     */
+    runStatusIconFormatter(status){
+        if (status == 1) {
+        return "el-icon-video-play";
+      } else if (status == 2) {
+        return "el-icon-loading";
+      } else if (status == 3) {
+        return "el-icon-success";
+      } else {
+        return "el-icon-error";
+      }
+    },
+    /**
+     * 运行状态图标颜色
+     */
+    runStatusStyleFormatter(status){
+         if (status == 1) {
+        return "color:blue";
+      } else if (status == 2) {
+        return "el-icon-loading";
+      } else if (status == 3) {
+        return "color:green";
+      } else {
+        return "color:red";
       }
     },
     /**
@@ -649,6 +681,7 @@ export default {
      * 移除项目关联
      */
     RemoverelationProject(resultRelProjectUuid) {
+      console.log(this.selected1)
       rmResultRelProjectlr(resultRelProjectUuid).then((resp) => {
         if (resp.data == true) {
           this.getLikeList();
@@ -690,20 +723,32 @@ export default {
      * val是运行结果中的resultTables
      * modelName是选中的模型的名字
      */
-    getResultTables(val, modelName, modelUuid) {
-      var assistTables = [];
-      var mainTable = null;
-      for (var i = 0; i < val.length; i++) {
-        if (val[i].tableType == 1) {
-          mainTable = val[i];
-        } else {
-          assistTables.push(val[i]);
+    getResultTables(val, modelName, modelUuid, runStatus) {
+      if (runStatus == 3) {
+        var assistTables = [];
+        var mainTable = null;
+        for (var i = 0; i < val.length; i++) {
+          if (val[i].tableType == 1) {
+            mainTable = val[i];
+          } else {
+            assistTables.push(val[i]);
+          }
         }
+        // 触发父类方法addTab在index.vue界面，同时穿过三个参数assistTables：辅表（运行结果表）数组  mainTable：主表（运行结果表对象）
+        // modelName：模型的名称，用来给新页签赋值title属性用
+        this.$emit("addtab", assistTables, mainTable, modelName, modelUuid);
+      } else {
+        this.$message({
+          type: "info",
+          message: "该运行结果不是成功状态",
+        });
       }
-      // 触发父类方法addTab在index.vue界面，同时穿过三个参数assistTables：辅表（运行结果表）数组  mainTable：主表（运行结果表对象）
-      // modelName：模型的名称，用来给新页签赋值title属性用
-      this.$emit("addtab", assistTables, mainTable, modelName, modelUuid);
     },
+    reRun(runTaskRel){
+      reRunRunTask(runTaskRel).then(resp=>{
+          alert(resp.data)
+      })
+    }
   },
 };
 </script>
