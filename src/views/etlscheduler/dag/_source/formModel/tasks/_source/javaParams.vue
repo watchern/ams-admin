@@ -21,13 +21,13 @@
         type="text"
         placeholder="propName"
         :maxlength="180"
-        style="width: 120px;"
+        style="width: 170px;"
         @on-blur="_verifProp()"
       />
       <template v-if="hide">
         <x-input
           v-model="paramList[$index].propType"
-          style="width: 120px;"
+          style="width: 170px;"
           :disabled="true"
           @change="_handleTypeChanged"
         />

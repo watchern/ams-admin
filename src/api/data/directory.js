@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 const baseURL = '/amsdata'
-const controllerName = 'bizAttr'
+const controllerName = 'directory'
 
 export function listByPage(data) {
   return request({
@@ -31,10 +31,11 @@ export function update(data) {
   })
 }
 
-export function del(ids) {
+export function del(data) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/delete/${ids}`,
-    method: 'delete'
+    url: `/${controllerName}/deleteDirectory/`,
+    method: 'delete',
+    data
   })
 }

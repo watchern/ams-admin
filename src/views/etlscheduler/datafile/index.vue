@@ -26,25 +26,29 @@
       />
       <el-table-column
         label="所属系统"
-        width="300px"
+        width="230px"
         align="center"
         prop="dataResourceCode"
       />
       <el-table-column
         label="文件名称"
-        width="300px"
+        width="230px"
         align="center"
         prop="fullPath"
       />
       <el-table-column
         label="对应表"
-        width="300px"
+        width="230px"
         align="center"
         prop="odsTableName"
       />
       <el-table-column
         label="接收时间"
-        prop="createTime"
+        prop="dataDate"
+      />
+      <el-table-column
+        label="更新时间"
+        prop="updateTime"
       />
       <el-table-column
         label="状态"
@@ -80,8 +84,8 @@ export default {
       // 格式化状态
       formatMap: {
         status: {
-          1: '已接收',
-          0: '未接收'
+          0: '未接收',
+          1: '已接收'
         }
       },
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
@@ -99,8 +103,8 @@ export default {
         condition: null,
         pageNo: 1,
         pageSize: 20,
-        sortBy: 'asc',
-        sortName: 'createTime'
+        sortBy: 'desc',
+        sortName: 'updateTime'
       },
       temp: {
         dataResourceCode: null,
@@ -115,7 +119,7 @@ export default {
     this.getList()
   },
   methods: {
-    getList(query) { 
+    getList(query) {
       this.listLoading = true
       console.log('query:' + JSON.stringify(query))
       if (query) this.pageQuery.condition = query
