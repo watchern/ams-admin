@@ -8,6 +8,7 @@ export function listByPage(data) {
     baseURL: baseURL,
     url: '/bizAttr/listByPage',
     method: 'post',
+    //params 以formData格式传递  后台用RequestParam
     // 直接加data以json格式传递  后台用RequestBody
     data
   })

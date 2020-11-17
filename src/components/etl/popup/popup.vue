@@ -12,7 +12,7 @@
         shape="circle"
         :disabled="disabled"
         @click="close()"
-      > 退出 </x-button>
+      > 取消 </x-button>
       <x-button
         type="primary"
         shape="circle"

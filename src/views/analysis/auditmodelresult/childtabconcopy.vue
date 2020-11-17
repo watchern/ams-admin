@@ -39,7 +39,7 @@
     <el-row v-if="modelResultButtonIsShow" style="display: flex">
       <!-- 2.1前台导出，双向绑定数据 -->
       <downloadExcel :data="tableData" :fields="json_fields" :name="excelName">
-        <el-button type="primary" @click="modelResultExport" class="oper-btn export-2"></el-button>
+        <el-button type="primary" @click="modelResultExport">导出</el-button>
       </downloadExcel>
       <el-button type="primary">图标展示</el-button>
     </el-row>

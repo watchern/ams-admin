@@ -147,7 +147,6 @@
         ref="myQueryBuilder"
         :columns="queryRules"
         :data="queryBuilderJson"
-        :inputselectvalue = columns
       />
       <span slot="footer" class="dialog-footer">
         <el-button @click="queryBuilderDialogVisible = false">取消</el-button>

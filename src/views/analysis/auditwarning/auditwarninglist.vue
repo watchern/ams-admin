@@ -11,7 +11,7 @@
       </el-col>
     </el-row>
     <el-table :key="tableKey" ref="auditWarningList" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;"
-              @select="listSelectChange" @select-all="listSelectChange">
+              @select="listSelectChange">
       <el-table-column type="selection" width="55" />
       <el-table-column label="预警名称" prop="warningName" width="100px" align="center"  >
         <template slot-scope="scope">
@@ -26,15 +26,11 @@
       <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
       <el-table-column label="关联类型" prop="warningType" :formatter="warningTypeFormat" />
       <el-table-column label="关联模型/指标数量" prop="sourceCount"  />
-      <el-table-column label="操作" prop="isStart"  >
+      <el-table-column label="操作" prop="isDeleted"  >
         <template slot-scope="scope">
           <el-link
-            type="primary" v-if="scope.row.isStart == 0">
+            type="primary">
             启动
-          </el-link>
-          <el-link
-            type="primary" v-if="scope.row.isStart == 1">
-            停止
           </el-link>
         </template>
       </el-table-column>
