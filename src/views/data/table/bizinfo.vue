@@ -60,7 +60,7 @@
 import { getTableCol, getTableInfo, saveTableInfo } from '@/api/data/table-info'
 import { listByPage } from '@/api/data/biz-attr'
 import SelectTransCode from '@/views/data/table/transcodeselect'
-import { selectCodeAll, selectById } from '@/api/data/transCode'
+import { selectById } from '@/api/data/transCode'
 export default {
   components: { SelectTransCode },
   // eslint-disable-next-line vue/require-prop-types
@@ -102,9 +102,6 @@ export default {
     initTable(tableId) {
       listByPage(this.pageQuery).then(resp => {
         this.bizJson = resp.data.records
-      })
-      selectCodeAll(this.pageQuery).then(resp => {
-        this.transJson = resp.data.records
       })
       this.isShow = true
       getTableCol(tableId).then(resp => {

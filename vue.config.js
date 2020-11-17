@@ -60,6 +60,9 @@ module.exports = {
       '/analysis': {
         target: process.env.AMSANALYSIS_API
       },
+      '/graphtool':{
+        target:'http://localhost:8087'
+      },
       // etl调度模块调用的地址
       '/etlscheduler': {
         timeout: 1800000,

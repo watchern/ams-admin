@@ -181,6 +181,9 @@ export default {
       this.pageQuery.sortName = prop
       this.handleFilter()
     },
+    add() {
+      alert(1)
+    },
     resetTemp() {
       this.temp = {
         bizAttrUuid: undefined,
