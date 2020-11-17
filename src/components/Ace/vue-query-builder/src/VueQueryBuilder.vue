@@ -97,6 +97,12 @@
                         inputType: "select",
                         id: "multi-select-field"
                     },
+                    "inputselect":{
+                        operators: [],
+                        choices: [],
+                        inputType: "inputselect",
+                        id: "inputselect-field"
+                    }
                 },
                 sql: ''
             }

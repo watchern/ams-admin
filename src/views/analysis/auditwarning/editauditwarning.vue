@@ -150,7 +150,8 @@
                 placeholder="请输入执行时间">
               </el-time-picker>
             </el-form-item>
-            <el-form-item label="开始结束日期"  >
+            <!--暂时去掉开始和结束时间-->
+            <el-form-item label="开始结束日期" v-show="false" >
               <el-date-picker
                 :picker-options="executeTimeOptions"
                 v-model="temp.intervalExecuteTime.rangeTime"
@@ -229,7 +230,7 @@ export default {
           //周期执行的执行时间
           executeTime : '',
           //周期的起始时间，用于绑定日期选择
-          rangeTime:'',
+          rangeTime:[new Date(),new Date()],
           //周期执行的开始时间
           startTime : '',
           //周期执行的结束时间
@@ -381,6 +382,7 @@ export default {
         //组织模型列表
         for(let taskRef of this.auditWarningSave.warningTaskRel){
           if(!taskRef.settingInfo){
+            this.temp.modelList.push(taskRef)
             continue
           }
           //有参数配置信息则转换为json对象

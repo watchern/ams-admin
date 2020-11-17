@@ -220,3 +220,47 @@ export function shareModel(data){
     data
   })
 }
+
+/**
+ * 根据model的id数组查询对应的model集合
+ * @param {*} data modelid数组
+ */
+export function findModelList(data){
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelController/findModelList',
+    method: 'post',
+    data
+  })
+}
+
+
+/**
+ * 添加运行任务和运行关联表
+ * @param {*} data 运行任务对象
+ */
+export function addRunTaskAndRunTaskRel(data){
+  return request({
+    baseURL: analysisUrl,
+    url: '/RunTaskController/addRunTaskAndRunTaskRel',
+    method: 'post',
+    data
+  })
+}
+
+export function uuid2() {
+  var s = []
+  var hexDigits = '0123456789abcdef'
+  for (var i = 0; i < 32; i++) {
+    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
+  }
+  s[14] = '4' // bits 12-15 of the time_hi_and_version field to 0010
+  s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1) // bits 6-7 of the clock_seq_hi_and_reserved to 01
+  s[8] = s[13] = s[18] = s[23]
+  var uuid = s.join('')
+  return uuid
+}
+
+
+
+

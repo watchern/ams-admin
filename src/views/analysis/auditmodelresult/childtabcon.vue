@@ -15,21 +15,41 @@
       </span>
     </el-dialog>
     <el-row v-if="myFlag">
-      <el-button type="primary" @click="exportExcel">导出</el-button>
-      <el-button type="primary">图标显示</el-button>
-      <el-button type="primary" @click="getValues">关联项目</el-button>
       <el-button
+        :disabled="modelRunResultBtnIson.exportBtn"
+        type="primary"
+        @click="exportExcel"
+        class="oper-btn export-2"
+        ></el-button
+      >
+      <el-button
+        :disabled="modelRunResultBtnIson.chartDisplayBtn"
+        type="primary"
+        >图标显示</el-button
+      >
+      <el-button
+        :disabled="modelRunResultBtnIson.associatedBtn"
+        type="primary"
+        @click="getValues"
+        class="oper-btn refresh"
+        ></el-button
+      >
+      <el-button
+        :disabled="modelRunResultBtnIson.disassociateBtn"
         type="primary"
         @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
-        class="oper-btn delete"
-      ></el-button>
-      <el-button type="primary" @click="queryConditionSetting"
+        >移除关联</el-button
+      >
+      <el-button :disabled="false" type="primary" @click="queryConditionSetting"
         >查询条件设置</el-button
       >
       <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
         >重置</el-button -->
-      <el-button type="primary" @click="reSet">重置</el-button>
+      <el-button :disabled="false" type="primary" @click="reSet"
+        >重置</el-button
+      >
       <el-button
+        :disabled="modelRunResultBtnIson.modelDetailAssBtn"
         v-if="modelDetailButtonIsShow"
         type="primary"
         @click="openModelDetail"
@@ -39,7 +59,7 @@
     <el-row v-if="modelResultButtonIsShow" style="display: flex">
       <!-- 2.1前台导出，双向绑定数据 -->
       <downloadExcel :data="tableData" :fields="json_fields" :name="excelName">
-        <el-button type="primary" @click="modelResultExport">导出</el-button>
+        <el-button type="primary" @click="modelResultExport" class="oper-btn export-2"></el-button>
       </downloadExcel>
       <el-button type="primary">图标展示</el-button>
     </el-row>
@@ -56,6 +76,7 @@
       :get-row-style="this.renderTable"
       @cellClicked="onCellClicked"
       @gridReady="onGridReady"
+      @rowSelected="rowChange"
     />
     <el-card v-if="!isSee" class="box-card" style="height: 100px">
       <div>{{ errorMessage }}</div>
@@ -65,7 +86,7 @@
       :total="total"
       :page.sync="pageQuery.pageNo"
       :limit.sync="pageQuery.pageSize"
-      @pagination="initData"
+      @pagination="initData(nowSql)"
     />
     <el-pagination
       v-if="modelResultPageIsSee"
@@ -222,13 +243,43 @@ export default {
       currentExecuteSQL: [], //模型详细关联dialog中点击确定按钮后根据sql返回的预先加载值，用于判断有几个页签
       webSocket: null, //websocket对象
       dataCoding: {}, //存储返回的数据转码对象
-      
+      nowSql: "undefined", //存储当前querybuilder中的sql
+      modelRunResultBtnIson: {
+        exportBtn: false,
+        chartDisplayBtn: false,
+        associatedBtn: true,
+        disassociateBtn: false,
+        modelDetailAssBtn: true,
+      },
+      dynamicSelect: [], //实时存储多选框勾选中的数据
     };
   },
   mounted() {
     this.getRenderTableData();
   },
   methods: {
+    rowChange() {
+      var selectData = this.gridApi.getSelectedRows();
+      if (selectData.length == 0) {
+        this.modelRunResultBtnIson.exportBtn = false;
+        this.modelRunResultBtnIson.chartDisplayBtn = false;
+        this.modelRunResultBtnIson.associatedBtn = true;
+        this.modelRunResultBtnIson.disassociateBtn = false;
+        this.modelRunResultBtnIson.modelDetailAssBtn = true;
+      } else if (selectData.length == 1) {
+        this.modelRunResultBtnIson.exportBtn = false;
+        this.modelRunResultBtnIson.chartDisplayBtn = false;
+        this.modelRunResultBtnIson.associatedBtn = false;
+        this.modelRunResultBtnIson.disassociateBtn = false;
+        this.modelRunResultBtnIson.modelDetailAssBtn = false;
+      } else if (selectData.length > 1) {
+        this.modelRunResultBtnIson.exportBtn = false;
+        this.modelRunResultBtnIson.chartDisplayBtn = false;
+        this.modelRunResultBtnIson.associatedBtn = false;
+        this.modelRunResultBtnIson.disassociateBtn = false;
+        this.modelRunResultBtnIson.modelDetailAssBtn = false;
+      }
+    },
     /**
      * 导出方法
      */
@@ -404,6 +455,9 @@ export default {
           sql = "undefined";
         }
         selectTable(this.pageQuery, sql).then((resp) => {
+          if (resp.data.records[0].result.length == 0) {
+            this.isLoading = false;
+          }
           this.total = resp.data.total;
           this.dataArray = resp.data.records[0].result;
           this.queryData = resp.data.records[0].columnInfo;
@@ -481,11 +535,11 @@ export default {
                     this.modelOutputColumn[k].outputColumnName.toLowerCase() ==
                     colNames[j]
                   ) {
-                    if (
-                      this.modelOutputColumn[k].dataCoding != undefined
-                    ) {
-                      var a = da[i][colNames[j]]
-                      da[i][colNames[j]] = this.dataCoding[this.modelOutputColumn[k].dataCoding][a];
+                    if (this.modelOutputColumn[k].dataCoding != undefined) {
+                      var a = da[i][colNames[j]];
+                      da[i][colNames[j]] = this.dataCoding[
+                        this.modelOutputColumn[k].dataCoding
+                      ][a];
                     }
                   }
                 }
@@ -506,30 +560,30 @@ export default {
         var col = [];
         var rowData = [];
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
-          if (this.nextValue.executeSQL.state == '2') {
+          if (this.nextValue.executeSQL.state == "2") {
             //todo 增加sql类型判断
-            if(true){
-                  this.modelResultButtonIsShow = true;
-            this.modelResultPageIsSee = true;
-            this.modelResultData = this.nextValue.result;
-            this.modelResultColumnNames = this.nextValue.columnNames;
-            for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
-              var rowColom = {
-                headerName: this.nextValue.columnNames[j],
-                field: this.nextValue.columnNames[j],
-                width: "180",
-              };
-              var key = this.nextValue.columnNames[j];
-              var value = this.nextValue.result[j];
-              col.push(rowColom);
+            if (true) {
+              this.modelResultButtonIsShow = true;
+              this.modelResultPageIsSee = true;
+              this.modelResultData = this.nextValue.result;
+              this.modelResultColumnNames = this.nextValue.columnNames;
+              for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
+                var rowColom = {
+                  headerName: this.nextValue.columnNames[j],
+                  field: this.nextValue.columnNames[j],
+                  width: "180",
+                };
+                var key = this.nextValue.columnNames[j];
+                var value = this.nextValue.result[j];
+                col.push(rowColom);
+              }
+              for (var k = 0; k < this.nextValue.result.length; k++) {
+                rowData.push(this.nextValue.result[k]);
+              }
+              this.columnDefs = col;
+              this.getList();
             }
-            for (var k = 0; k < this.nextValue.result.length; k++) {
-              rowData.push(this.nextValue.result[k]);
-            }
-            this.columnDefs = col;
-            this.getList();
-            }
-          } else if(this.nextValue.executeSQL.state == '3'){
+          } else if (this.nextValue.executeSQL.state == "3") {
             this.isSee = false;
             this.modelResultPageIsSee = false;
             this.modelResultButtonIsShow = false;
@@ -546,10 +600,12 @@ export default {
     },
     // 查询完以后，子组件触发父组件的事件
     queryConditionChangeTable(sql, queryJson) {
+      this.pageQuery.pageNo = 1
       this.queryJson = queryJson;
       if (sql == "") {
         sql = "undefined";
       }
+      this.nowSql = sql;
       this.initData(sql);
     },
     /**
@@ -562,6 +618,7 @@ export default {
      * 重置按钮，将数据还原为最初
      */
     reSet() {
+      this.nowSql = "undefined";
       this.initData("undefined");
     },
     /**
@@ -596,6 +653,7 @@ export default {
      * 在渲染表格之前拿到渲染表格时需要的数据
      */
     getRenderTableData() {
+      debugger
       if (this.useType == "modelRunResult") {
         if (this.modelUuid != undefined) {
           selectConditionShow(
@@ -730,7 +788,7 @@ export default {
       }
       this.excelName = "模型结果导出表";
     },
-    reSet() {
+    reSet1() {
       this.isLoading = true;
     },
     /**
