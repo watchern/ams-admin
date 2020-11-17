@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div v-if="isShow">
-      <template class="detail-form">
+      <template>
         <el-form
           ref="dataForm"
           :model="temp"
