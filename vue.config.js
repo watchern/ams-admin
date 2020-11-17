@@ -15,7 +15,8 @@ const name = defaultSettings.title || 'Audit Manage System' // page title
 // port = 9527 npm run dev OR npm run dev --port = 9527
 // const port = process.env.port || process.env.npm_config_port || 9527 // dev port
 
-const port = process.env.port || 9527 // dev port
+// const port = process.env.port || 9527 // dev port
+const port = process.env.port || 8070 // dev port
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
@@ -26,7 +27,7 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-  publicPath: '/',
+  publicPath: './',
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: false,
@@ -45,26 +46,23 @@ module.exports = {
     // host: '192.168.80.142',
     https: false, // https:{type:Boolean}
     open: true, //配置自动启动浏览器
-    //proxy: 'http://172.20.10.9:8080', // 配置跨域处理,只有一个代理 //192.168.43.43
-    //before: require('./mock/mock-server.js'),
     proxy: {
       '/r1': {
         target: process.env.R1_LOCATION
       },
       '/amsdata': {
-        target: 'http://localhost:8081'
-        //target: 'http://139.159.246.94:1064'  远程测试环境
+        target:  process.env.AMSDATA_API
       },
       '/base': {
-        target: 'http://localhost:8085'
+        target:  process.env.AMSBASE_API
       },
-      '/analysis':{
-        target:'http://localhost:8086'
+      '/analysis': {
+        target: process.env.AMSANALYSIS_API
       },
       // etl调度模块调用的地址
       '/etlscheduler': {
-        target: 'http://localhost:8082/amsetlscheduler',
-        // target: process.env.ETL_API_LOCATION,
+        timeout: 1800000,
+        target: process.env.AMSETLSCHEDULER_API,
         changeOrigin: true,
         pathRewrite: {
           '^/etlscheduler': ''
@@ -73,17 +71,12 @@ module.exports = {
       },
       '/dolphinscheduler': {
         timeout: 1800000,
-        // target: 'http://192.168.80.183:12345',
-        target: 'http://localhost:8082/amsetlscheduler',
+        target: process.env.AMSETLSCHEDULER_API,
         changeOrigin: true
-        // ,
-        // pathRewrite: {
-        //   '^/dolphinscheduler': ''
-        // }
       },
       '/AuditAnalysis': {
         timeout: 1800000,
-        target: 'http://localhost:8080',
+        target: process.env.AMSANALYSIS_API,
         changeOrigin: true
         // ,
         // pathRewrite: {
@@ -92,7 +85,7 @@ module.exports = {
       },
       '/rone': {
         timeout: 1800000,
-        target: 'http://localhost:8088',
+        target: process.env.EXTENDAPP_API,
         changeOrigin: true
         // ,
         // pathRewrite: {
@@ -101,7 +94,7 @@ module.exports = {
       },
       '/psbcaudit': {
         timeout: 1800000,
-        target: 'http://localhost:8088',
+        target: process.env.EXTENDAPP_API,
         changeOrigin: true
         // ,
         // pathRewrite: {
@@ -110,7 +103,7 @@ module.exports = {
       },
       '/psbcaudit_pmrs': {
         timeout: 1800000,
-        target: 'http://localhost:8088',
+        target: process.env.EXTENDAPP_API,
         changeOrigin: true
         // ,
         // pathRewrite: {
@@ -119,7 +112,7 @@ module.exports = {
       },
       '/psbcaudit_kn': {
         timeout: 1800000,
-        target: 'http://localhost:8088',
+        target: process.env.EXTENDAPP_API,
         changeOrigin: true
         // ,
         // pathRewrite: {
@@ -128,7 +121,7 @@ module.exports = {
       },
       '/psbcaudit_auditobj': {
         timeout: 1800000,
-        target: 'http://localhost:8088',
+        target: process.env.EXTENDAPP_API,
         changeOrigin: true
         // ,
         // pathRewrite: {
