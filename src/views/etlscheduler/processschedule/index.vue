@@ -378,6 +378,7 @@ import {
 import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
 import { crontabExpression } from './common.js'
+import { getDictList } from '@/utils'
 // import _ from lodash
 
 export default {
@@ -642,6 +643,9 @@ export default {
     }
   },
   created() {
+    // const obj r = {}
+    var obj = getDictList('001001')
+    console.log(obj)
     queryProcessLike().then((resp) => {
       this.queryFields[2].data = resp.data
     })
