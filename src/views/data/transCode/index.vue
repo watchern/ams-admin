@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -7,11 +7,13 @@
         @submit="getList"
       />
     </div>
-    <div>
-      <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
-      <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="handleUpdate()">修改</el-button>
-      <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="handleDelete()">删除</el-button>
-    </div>
+    <el-row>
+      <el-col align="right">
+        <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
+        <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
+        <el-button type="danger" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
+      </el-col>
+    </el-row>
     <el-table
       ref="tb"
       :key="tableKey"
@@ -25,8 +27,8 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="规则名称" width="300px" align="center" prop="ruleName" />
-      <el-table-column label="转码方式" width="300px" align="center" prop="ruleType" :formatter="formatTag" />
+      <el-table-column label="规则名称" prop="ruleName" />
+      <el-table-column label="转码方式" align="center" prop="ruleType" :formatter="formatTag" />
       <el-table-column label="规则描述" prop="ruleDesc" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
@@ -38,7 +40,7 @@
         :model="temp"
         label-position="right"
         label-width="120px"
-        style="width: 700px; "
+        style="width: 700px;"
       >
         <el-form-item label="规则名称" prop="ruleName">
           <el-input v-model="temp.ruleName" />

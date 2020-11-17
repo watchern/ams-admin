@@ -7,11 +7,13 @@
         @submit="getList"
       />
     </div>
-    <div>
-      <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
-      <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="toEdit()">维护</el-button>
-      <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="handleDelete()">删除</el-button>
-    </div>
+    <el-row>
+      <el-col align="right">
+        <el-button type="primary" size="mini" class="oper-btn add" title="新增" @click="handleCreate()" />
+        <el-button type="primary" size="mini" class="oper-btn edit" title="维护" :disabled="selections.length !== 1" @click="toEdit()" />
+        <el-button type="danger" size="mini" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="handleDelete()" />
+      </el-col>
+    </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -24,14 +26,13 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="业务场景名称" width="300px" align="center" prop="sceneName" />
-      <el-table-column label="业务场景编码" width="300px" align="center" prop="sceneCode" />
-      <el-table-column label="创建时间" width="300px" align="center" prop="createTime" :formatter="formatCreateTime" />
+      <el-table-column label="业务场景名称" prop="sceneName" />
+      <el-table-column label="业务场景编码" prop="sceneCode" />
+      <el-table-column label="创建时间" prop="createTime" :formatter="formatCreateTime" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <div class="detail-form">
+      <template class="detail-form">
         <el-form
           ref="dataForm"
           :rules="rules"
@@ -46,7 +47,7 @@
             <el-input v-model="temp.sceneCode" />
           </el-form-item>
         </el-form>
-      </div>
+      </template>
       <div slot="footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div v-if="isShow">
-      <div class="detail-form">
+      <template class="detail-form">
         <el-form
           ref="dataForm"
           :model="temp"
@@ -10,7 +10,7 @@
         >
           业务表信息：
           <el-form-item label="汉化名称：" prop="chnName">
-            <el-input v-model="temp.chnName" style="width:60%;" />
+            <el-input v-model="temp.chnName" />
           </el-form-item>
           列业务信息：
           <el-table :data="temp.colMetas" height="200">
@@ -51,7 +51,7 @@
           </el-table>
         </el-form>
         <el-button type="primary" style="float:right;margin-top:20px" @click="saveTable()">保存</el-button>
-      </div>
+      </template>
     </div>
   </div>
 </template>
