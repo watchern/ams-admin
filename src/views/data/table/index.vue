@@ -106,12 +106,12 @@
           </span>
         </MyElTree>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="11">
         <template v-if="divInfo" class="divContent">
           <el-tabs v-model="tabShow" style="text-aling = center">
             <el-tab-pane label="基本信息" name="basicinfo"><basic-info :table-id="tableId" /></el-tab-pane>
             <el-tab-pane label="列" name="column"><column :table-id="tableId" /></el-tab-pane>
-            <el-tab-pane label="约束" name="constraint"><constraint :table-id="tableId" /></el-tab-pane>
+            <!-- <el-tab-pane label="约束" name="constraint"><constraint :table-id="tableId" /></el-tab-pane> -->
             <el-tab-pane label="索引" name="indexSql"><index-sql :table-id="tableId" /></el-tab-pane>
             <el-tab-pane label="关联关系" name="correlation"><correlation :table-id="tableId" /></el-tab-pane>
             <el-tab-pane label="创建语句" name="createSql"><create-sql :table-id="tableId" /></el-tab-pane>
