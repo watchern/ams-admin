@@ -26,11 +26,15 @@
       <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
       <el-table-column label="关联类型" prop="warningType" :formatter="warningTypeFormat" />
       <el-table-column label="关联模型/指标数量" prop="sourceCount"  />
-      <el-table-column label="操作" prop="isDeleted"  >
+      <el-table-column label="操作" prop="isStart"  >
         <template slot-scope="scope">
           <el-link
-            type="primary">
+            type="primary" v-if="scope.row.isStart == 0">
             启动
+          </el-link>
+          <el-link
+            type="primary" v-if="scope.row.isStart == 1">
+            停止
           </el-link>
         </template>
       </el-table-column>
