@@ -378,8 +378,7 @@ import {
 import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
 import { crontabExpression } from './common.js'
-import { getDictList } from '@/utils'
-
+import { getDictList, getTransMap } from '@/utils'
 // import _ from lodash
 
 export default {
@@ -623,11 +622,6 @@ export default {
     }
   },
   created() {
-<<<<<<< HEAD
-    // const obj r = {}
-    var obj = getDictList('001001')
-    console.log(obj)
-=======
     // getDictList('001001')
     // const ids = []
     // ids[0] = '001001'
@@ -639,7 +633,6 @@ export default {
     // getTransMap(ids.join(',')).then((resp) => {
     //   console.log('22222222222222222222222' + resp.data)
     // })
->>>>>>> dev-etl
     queryProcessLike().then((resp) => {
       this.queryFields[2].data = resp.data
     })
