@@ -8,14 +8,14 @@
     </div>
     <div class="bottom-p">
       <x-button
-        type="text"
-        shape="circle"
+        type="primary"
+        class="btnclass"
         :disabled="disabled"
         @click="close()"
       > 退出 </x-button>
       <x-button
         type="primary"
-        shape="circle"
+        class="btnclass"
         :loading="spinnerLoading"
         :disabled="disabled || apDisabled"
         @click="ok()"
@@ -71,6 +71,18 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
+.btnclass{
+  background: #353a43;
+  border-color: #353a43;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.btnclass:hover{
+  background: #353a43;
+  border-color: #353a43;
+  color: #c8ff8c;
+  font-weight: bold;
+}
 .popup-model {
   background: #fff;
   border-radius: 3px;
