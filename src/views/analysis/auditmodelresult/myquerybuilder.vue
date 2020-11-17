@@ -141,7 +141,7 @@ export default {
             ) {
               sql.push(child.query.rule);
               sql.push(child.query.operator);
-              sql.push("'%25" + child.query.value + "%25'");
+              sql.push("'%" + child.query.value + "%'");
             } else {
               sql.push(child.query.rule);
               sql.push(child.query.operator);

@@ -8,44 +8,44 @@
         @submit="getLikeList"
       />
     </div>
-    <div align='right' style="width: 80%">
-    <el-row>
-      <el-button
-        type="primary"
-        @click="relationProject('453453', '项目2')"
-        :disabled="buttonIson.AssociatedBtn"
-        class="oper-btn refresh"
-      ></el-button>
-      <el-button
-        type="danger"
-        @click="RemoverelationProject('asdasdasdas')"
-        :disabled="buttonIson.DisassociateBtn"
-        >移除项目关联</el-button
-      >
-      <el-button
-        :disabled="buttonIson.deleteBtn"
-        type="danger"
-        @click="deleteRunTaskRel"
-        class="oper-btn delete"
-      ></el-button>
-      <el-button
-        type="primary"
-        :disabled="buttonIson.resultSplitBtn"
-        class="oper-btn split-2"
-      ></el-button>
-      <el-button
-        type="primary"
-        @click="modelResultShare('99999', '888888')"
-        :disabled="buttonIson.resultShareBtn"
-        class="oper-btn share"
-      ></el-button>
-      <el-button
-        type="primary"
-        @click="exportExcel"
-        :disabled="buttonIson.exportBtn"
-        class="oper-btn export-2"
-      ></el-button>
-    </el-row>
+    <div align="right" style="width: 70%">
+      <el-row>
+        <el-button
+          type="primary"
+          @click="relationProject('453453', '项目2')"
+          :disabled="buttonIson.AssociatedBtn"
+          class="oper-btn refresh"
+        ></el-button>
+        <el-button
+          type="danger"
+          @click="RemoverelationProject('asdasdasdas')"
+          :disabled="buttonIson.DisassociateBtn"
+          >移除项目关联</el-button
+        >
+        <el-button
+          :disabled="buttonIson.deleteBtn"
+          type="danger"
+          @click="deleteRunTaskRel"
+          class="oper-btn delete"
+        ></el-button>
+        <el-button
+          type="primary"
+          :disabled="buttonIson.resultSplitBtn"
+          class="oper-btn split-2"
+        ></el-button>
+        <el-button
+          type="primary"
+          @click="modelResultShare('99999', '888888')"
+          :disabled="buttonIson.resultShareBtn"
+          class="oper-btn share"
+        ></el-button>
+        <el-button
+          type="primary"
+          @click="exportExcel"
+          :disabled="buttonIson.exportBtn"
+          class="oper-btn export-2"
+        ></el-button>
+      </el-row>
     </div>
     <el-table
       id="table"
@@ -58,7 +58,7 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       height="450px"
-      style="overflow-x: scroll; width: 80%"
+      style="overflow-x: scroll; width: 70%"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column
@@ -88,14 +88,24 @@
         align="center"
         prop="runStatus"
         :formatter="readStatusFormatter"
-      ><template slot-scope="scope">
-         <i :class="runStatusIconFormatter(scope.row.runStatus)" :style="runStatusStyleFormatter(scope.row.runStatus)"></i>
-        </template></el-table-column>
+        ><template slot-scope="scope">
+          <i
+            :class="runStatusIconFormatter(scope.row.runStatus)"
+            :style="runStatusStyleFormatter(scope.row.runStatus)"
+          ></i> </template
+      ></el-table-column>
       <el-table-column
         label="运行人"
         width="100px"
         align="center"
         prop="runTask.runUserName"
+      />
+      <el-table-column
+        label="运行类型"
+        width="100px"
+        align="center"
+        prop="runTask.runType"
+        :formatter="runTypeFormate"
       />
       <el-table-column
         label="执行进度"
@@ -105,23 +115,30 @@
       >
         <template slot-scope="scope">
           <el-progress
-            :percentage="parseInt(scope.row.executeProgress)"
+            :percentage="executeProgressFormate(scope.row.executeProgress)"
             :color="customColorMethod(scope.row.executeProgress)"
           />
         </template>
       </el-table-column>
       <el-table-column
+        label="定时运行时间"
+        width="200px"
+        align="center"
+        prop="runEndTime"
+        :formatter="dateFormatter2"
+      />
+      <el-table-column
         label="运行开始时间"
         width="200px"
         align="center"
-        prop="runTask.runStartTime"
+        prop="runStartTime"
         :formatter="dateFormatter"
       />
       <el-table-column
         label="运行结束时间"
         width="200px"
         align="center"
-        prop="runTask.runEndTime"
+        prop="runEndTime"
         :formatter="dateFormatter1"
       />
       <el-table-column
@@ -159,10 +176,30 @@
       />
       <el-table-column fixed="right" label="操作" width="150px">
         <template slot-scope="scope">
-          <el-button type="primary" @click="reRun(scope.row)">重新运行</el-button>
+          <el-button type="primary" @click="reRun(scope.row)"
+            >重新运行</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog
+      title="设置定时时间"
+      :visible.sync="settingTimingIsSee"
+      width="30%"
+    >
+      <el-date-picker
+        v-model="setDateTime"
+        type="datetime"
+        placeholder="选择日期时间"
+      >
+      </el-date-picker>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="settingTimingIsSee = false">取 消</el-button>
+        <el-button type="primary" @click="afterSettingTime"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
     <pagination
       v-show="total > 0"
       :total="total"
@@ -181,7 +218,7 @@ import {
   insertRunResultShare,
   deleteRunResultShare,
   exportRunTaskRel,
-  reRunRunTask
+  reRunRunTask,
 } from "@/api/analysis/auditmodelresult";
 import QueryField from "@/components/Ace/query-field/index";
 import Pagination from "@/components/Pagination/index";
@@ -228,6 +265,9 @@ export default {
         resultShareBtn: true,
         exportBtn: false,
       },
+      settingTimingIsSee: false,
+      setDateTime:'',
+      nowRunTaskRel:null
     };
   },
   created() {
@@ -269,7 +309,7 @@ export default {
      * @returns {string} 返回格式化后的字符串
      */
     dateFormatter(row, column) {
-      const datetime = row.runTask.runStartTime;
+      const datetime = row.runStartTime;
       if (datetime) {
         var dateMat = new Date(datetime);
         var year = dateMat.getFullYear();
@@ -291,7 +331,7 @@ export default {
      * @returns {string} 返回格式化后的字符串
      */
     dateFormatter1(row, column) {
-      const datetime = row.runTask.runEndTime;
+      const datetime = row.runEndTime;
       if (datetime) {
         var dateMat = new Date(datetime);
         var year = dateMat.getFullYear();
@@ -305,6 +345,23 @@ export default {
         return timeFormat;
       }
       return "";
+    },
+    dateFormatter2(row) {
+      const datetime = row.timingExecute;
+      if (datetime) {
+        var dateMat = new Date(datetime);
+        var year = dateMat.getFullYear();
+        var month = dateMat.getMonth() + 1;
+        var day = dateMat.getDate();
+        var hh = dateMat.getHours();
+        var mm = dateMat.getMinutes();
+        var ss = dateMat.getSeconds();
+        var timeFormat =
+          year + "-" + month + "-" + day + " " + hh + ":" + mm + ":" + ss;
+        return timeFormat;
+      } else {
+        return "无";
+      }
     },
     /**
      * 格式化执行信息，取出执行信息中的sql
@@ -355,8 +412,8 @@ export default {
     /**
      * 运行状态图标展示
      */
-    runStatusIconFormatter(status){
-        if (status == 1) {
+    runStatusIconFormatter(status) {
+      if (status == 1) {
         return "el-icon-video-play";
       } else if (status == 2) {
         return "el-icon-loading";
@@ -369,8 +426,8 @@ export default {
     /**
      * 运行状态图标颜色
      */
-    runStatusStyleFormatter(status){
-         if (status == 1) {
+    runStatusStyleFormatter(status) {
+      if (status == 1) {
         return "color:blue";
       } else if (status == 2) {
         return "el-icon-loading";
@@ -681,7 +738,7 @@ export default {
      * 移除项目关联
      */
     RemoverelationProject(resultRelProjectUuid) {
-      console.log(this.selected1)
+      console.log(this.selected1);
       rmResultRelProjectlr(resultRelProjectUuid).then((resp) => {
         if (resp.data == true) {
           this.getLikeList();
@@ -744,10 +801,46 @@ export default {
         });
       }
     },
-    reRun(runTaskRel){
-      reRunRunTask(runTaskRel).then(resp=>{
-          alert(resp.data)
-      })
+    reRun(runTaskRel) {
+      var runType = runTaskRel.runTask.runType;
+      this.nowRunTaskRel = runTaskRel
+      if (runType == 3) {
+        reRunRunTask(runTaskRel).then((resp) => {
+          if (resp.data == true) {
+            this.getLikeList();
+          } else {
+            this.$message({ type: "info", message: "重新执行失败!" });
+          }
+        });
+      } else if (runType == 2) {
+        this.settingTimingIsSee = true;
+      }
+    },
+    runTypeFormate(row) {
+      var runType = row.runTask.runType;
+      if (runType == 2) {
+        return "定时运行";
+      } else if (runType == 3) {
+        return "立即运行";
+      }
+    },
+    executeProgressFormate(executeProgress) {
+      if (executeProgress == null) {
+        return 0;
+      } else {
+        var executeProgress1 = parseInt(executeProgress);
+        return executeProgress1;
+      }
+    },
+    afterSettingTime(){
+       reRunRunTask(this.nowRunTaskRel,this.setDateTime).then((resp) => {
+          if (resp.data == true) {
+            this.getLikeList();
+          } else {
+            this.$message({ type: "info", message: "重新执行失败!" });
+          }
+        });
+      this.settingTimingIsSee = false
     }
   },
 };
