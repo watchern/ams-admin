@@ -195,9 +195,7 @@
       </el-date-picker>
       <span slot="footer" class="dialog-footer">
         <el-button @click="settingTimingIsSee = false">取 消</el-button>
-        <el-button type="primary" @click="afterSettingTime"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="afterSettingTime">确 定</el-button>
       </span>
     </el-dialog>
     <pagination
@@ -266,8 +264,8 @@ export default {
         exportBtn: false,
       },
       settingTimingIsSee: false,
-      setDateTime:'',
-      nowRunTaskRel:null
+      setDateTime: "",
+      nowRunTaskRel: null,
     };
   },
   created() {
@@ -383,12 +381,16 @@ export default {
       } else {
         var paramShowStr = "";
         var params = JSON.parse(row.settingInfo).paramsArr;
-        for (var i = 0; i < params.length; i++) {
-          paramShowStr +=
-            params[i].paramName + " : " + params[i].paramValue + "\r\n";
+        if (params == undefined) {
+          return "";
+        } else {
+          for (var i = 0; i < params.length; i++) {
+            paramShowStr +=
+              params[i].name + " : " + params[i].paramValue + "\r\n";
+          }
+          // var paramsArr = JSON.stringify(JSON.parse(row.settingInfo).paramsArr);
+          return paramShowStr;
         }
-        // var paramsArr = JSON.stringify(JSON.parse(row.settingInfo).paramsArr);
-        return paramShowStr;
       }
     },
     /**
@@ -803,7 +805,7 @@ export default {
     },
     reRun(runTaskRel) {
       var runType = runTaskRel.runTask.runType;
-      this.nowRunTaskRel = runTaskRel
+      this.nowRunTaskRel = runTaskRel;
       if (runType == 3) {
         reRunRunTask(runTaskRel).then((resp) => {
           if (resp.data == true) {
@@ -832,16 +834,16 @@ export default {
         return executeProgress1;
       }
     },
-    afterSettingTime(){
-       reRunRunTask(this.nowRunTaskRel,this.setDateTime).then((resp) => {
-          if (resp.data == true) {
-            this.getLikeList();
-          } else {
-            this.$message({ type: "info", message: "重新执行失败!" });
-          }
-        });
-      this.settingTimingIsSee = false
-    }
+    afterSettingTime() {
+      reRunRunTask(this.nowRunTaskRel, this.setDateTime).then((resp) => {
+        if (resp.data == true) {
+          this.getLikeList();
+        } else {
+          this.$message({ type: "info", message: "重新执行失败!" });
+        }
+      });
+      this.settingTimingIsSee = false;
+    },
   },
 };
 </script>
