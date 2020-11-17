@@ -119,12 +119,13 @@
           >
             返回上一节点
           </x-button>
+          <!-- icon="ans-icon-save" -->
           <x-button
             style="vertical-align: middle;"
             type="primary"
+            class="btnclass"
             size="xsmall"
             :loading="spinnerLoading"
-            icon="ans-icon-save"
             @click="_saveChart"
           >
             {{ spinnerLoading ? 'Loading...' : '保存' }}
@@ -398,17 +399,24 @@ export default {
                * @param saveEditDAGChart => Process definition editing
                */
               this[this.type === 'instance' ? 'updateInstance' : 'updateDefinition'](this.urlParam.id).then(res => {
-                // this.$message.success(res.msg)
+                this.$message.success(res.msg)
                 this.spinnerLoading = false
-                // this.$router.push('/etlscheduler/processdefinition')
+                this.$router.push('/etlscheduler/processdefinition')
                 resolve()
               }).catch(e => {
-                // this.$message.error(e.msg || '')
+                this.$message.error(e.msg || '')
                 this.spinnerLoading = false
-                // reject(e)
-                // this.$router.push('/etlscheduler/processdefinition')
+                reject(e)
+                this.$router.push('/etlscheduler/processdefinition')
               })
             } else {
+              // if (sourceType === 'else') {
+              // // this.$router.push('/etlscheduler/processdefinition')
+              //   this.spinnerLoading = false
+              //   resolve()
+              // reject()
+              //   return
+              // }
               // New
               this.saveDAGchart().then(res => {
                 this.$message.success(res.msg)
@@ -418,7 +426,7 @@ export default {
                 }
                 resolve()
               }).catch(e => {
-                this.$message.error(e.msg || '')
+                // this.$message.error(e.msg || '')
                 this.setName('')
                 this.spinnerLoading = false
                 reject(e)
@@ -727,4 +735,16 @@ export default {
 
 <style lang="scss" rel="stylesheet/scss">
 @import "./dag";
+.btnclass{
+  background: #353a43;
+  border-color: #353a43;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.btnclass:hover{
+  background: #353a43;
+  border-color: #353a43;
+  color: #c8ff8c;
+  font-weight: bold;
+}
 </style>
