@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { selectCodeAll, selectById } from '@/api/data/transCode'
+import { listByPage, selectById } from '@/api/data/transCode'
 export default {
   name: 'SelectTransCode',
   // eslint-disable-next-line vue/require-prop-types
@@ -92,7 +92,7 @@ export default {
   },
   created() {
     this.selectTransId = this.transuuid
-    selectCodeAll(this.pageQuery).then(resp => {
+    listByPage(this.pageQuery).then(resp => {
       this.transJson = resp.data.records
     })
   },
