@@ -381,13 +381,19 @@ export default {
       if(this.auditWarningSave.warningType == "1"){
         //组织模型列表
         for(let taskRef of this.auditWarningSave.warningTaskRel){
+
           if(!taskRef.settingInfo){
+            continue
+          }
+          let settingInfo = JSON.parse(taskRef.settingInfo)
+          taskRef.sqlValue = settingInfo.sql
+          taskRef.modelUuid = taskRef.sourceUuid
+          if(!settingInfo.paramsArr){
             this.temp.modelList.push(taskRef)
             continue
           }
           //有参数配置信息则转换为json对象
-          taskRef.paramObj = JSON.parse(taskRef.settingInfo)
-          taskRef.modelUuid = taskRef.sourceUuid
+          taskRef.paramObj = settingInfo.paramsArr
           this.temp.modelList.push(taskRef)
         }
 
@@ -498,7 +504,8 @@ export default {
             auditWarningUuid : this.auditWarningSave.auditWarningUuid,
             sourceUuid : model.modelUuid,
             //模型版本号
-            modelVersion : model.modelVersion
+            modelVersion : model.modelVersion,
+            settingInfo : JSON.stringify({sql:model.sqlValue})
           }
           //没参数直接添加
           if(!model.paramObj || model.paramObj.length == 0){
@@ -528,7 +535,7 @@ export default {
           }
         }
       }
-      return model.paramObj
+      return {sql:param.sql,paramsArr:model.paramObj}
     },
 
     //删除模型

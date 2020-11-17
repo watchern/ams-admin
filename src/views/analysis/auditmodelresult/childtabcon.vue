@@ -20,8 +20,7 @@
         type="primary"
         @click="exportExcel"
         class="oper-btn export-2"
-        ></el-button
-      >
+      ></el-button>
       <el-button
         :disabled="modelRunResultBtnIson.chartDisplayBtn"
         type="primary"
@@ -32,8 +31,7 @@
         type="primary"
         @click="getValues"
         class="oper-btn refresh"
-        ></el-button
-      >
+      ></el-button>
       <el-button
         :disabled="modelRunResultBtnIson.disassociateBtn"
         type="primary"
@@ -59,7 +57,11 @@
     <el-row v-if="modelResultButtonIsShow" style="display: flex">
       <!-- 2.1前台导出，双向绑定数据 -->
       <downloadExcel :data="tableData" :fields="json_fields" :name="excelName">
-        <el-button type="primary" @click="modelResultExport" class="oper-btn export-2"></el-button>
+        <el-button
+          type="primary"
+          @click="modelResultExport"
+          class="oper-btn export-2"
+        ></el-button>
       </downloadExcel>
       <el-button type="primary">图标展示</el-button>
     </el-row>
@@ -600,7 +602,7 @@ export default {
     },
     // 查询完以后，子组件触发父组件的事件
     queryConditionChangeTable(sql, queryJson) {
-      this.pageQuery.pageNo = 1
+      this.pageQuery.pageNo = 1;
       this.queryJson = queryJson;
       if (sql == "") {
         sql = "undefined";
@@ -646,6 +648,7 @@ export default {
               }
             }
           }
+          this.isLoading = false;
         }
       }
     },
@@ -653,7 +656,6 @@ export default {
      * 在渲染表格之前拿到渲染表格时需要的数据
      */
     getRenderTableData() {
-      debugger
       if (this.useType == "modelRunResult") {
         if (this.modelUuid != undefined) {
           selectConditionShow(
@@ -673,10 +675,12 @@ export default {
                       datacodes.push(this.modelOutputColumn[i].dataCoding);
                     }
                   }
+                  if (datacodes.length > 0) {
+                    getTransMap(datacodes.join(",")).then((resp) => {
+                      this.dataCoding = resp.data;
+                    });
+                  }
                   //调用方法
-                  getTransMap(datacodes.join(",")).then((resp) => {
-                    this.dataCoding = resp.data;
-                  });
                   this.initData();
                   if (this.modelDetailRelation.length > 0) {
                     this.modelDetailButtonIsShow = true;

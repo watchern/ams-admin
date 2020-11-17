@@ -8,6 +8,7 @@ import dataRouter from './modules/data'
 import baseRouter from './modules/base/base'
 import etlschedulerRouter from './modules/etlscheduler/etlscheduler'
 import analysisRouter from './modules/analysis/analysis'
+import graphRouter from './modules/graphtool/graphtool'
 const AmsRoutes = [
   {
     path: '/',
@@ -45,10 +46,31 @@ const AmsRoutes = [
     name: 'frameto',
     component: () => import('@/views/base/frameto')
   },
+  {
+    path: '/graphtool/tooldic',
+    name: '图形化工具',
+    component: () => import('@/views/graphtool/tooldic/index')
+  },
+  {
+    path: '/graphtool/tooldic/nodeSetting',
+    name: '图形化工具节点配置',
+    component: () => import('@/views/graphtool/tooldic/page/nodeSetting/nodeSetting')
+  },
+  {
+    path: '/graphtool/tooldic/groupCount',
+    name: '图形化工具分组汇总节点配置',
+    component: () => import('@/views/graphtool/tooldic/page/nodeSetting/conditionSet/groupCount/groupCount')
+  },
+  {
+    path: '/graphtool/tooldic/relation',
+    name: '图形化工具数据关联节点配置',
+    component: () => import('@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/relation')
+  },
   dataRouter,
   baseRouter,
   analysisRouter,
-  etlschedulerRouter
+  etlschedulerRouter,
+  graphRouter
 ]
 
 export const constantRoutes = [

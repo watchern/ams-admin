@@ -11,7 +11,7 @@
       </el-col>
     </el-row>
     <el-table :key="tableKey" ref="auditWarningList" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;"
-              @select="listSelectChange">
+              @select="listSelectChange" @select-all="listSelectChange">
       <el-table-column type="selection" width="55" />
       <el-table-column label="预警名称" prop="warningName" width="100px" align="center"  >
         <template slot-scope="scope">
