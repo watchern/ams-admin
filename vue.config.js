@@ -52,19 +52,19 @@ module.exports = {
         target: process.env.R1_LOCATION
       },
       '/amsdata': {
-        target: 'http://localhost:8081'
+        target: process.env.AMSDATA_API
         //target: 'http://139.159.246.94:1064'  远程测试环境
       },
       '/base': {
-        target: 'http://localhost:8085'
+        target: process.env.AMSBASE_API
       },
       '/analysis':{
-        target:'http://localhost:8086'
+        target: process.env.AMSANALYSIS_API
       },
       // etl调度模块调用的地址
       '/etlscheduler': {
         // target: 'http://192.168.80.155:8080'
-        target: 'http://localhost:8082/amsetlscheduler',
+        target: process.env.AMSETLSCHEDULER_API,
         // target: process.env.ETL_API_LOCATION,
         changeOrigin: true,
         pathRewrite: {
@@ -75,7 +75,7 @@ module.exports = {
       '/dolphinscheduler': {
         timeout: 1800000,
         // target: 'http://192.168.80.183:12345',
-        target: 'http://localhost:8082/amsetlscheduler',
+        target: process.env.R1_LOCATION,
         changeOrigin: true
         // ,
         // pathRewrite: {
@@ -84,7 +84,7 @@ module.exports = {
       },
       '/AuditAnalysis': {
         timeout: 1800000,
-        target: 'http://localhost:8080',
+        target: process.env.EXTENDAPP_API,
         changeOrigin: true
         // ,
         // pathRewrite: {
@@ -93,7 +93,7 @@ module.exports = {
       },
       '/rone': {
         timeout: 1800000,
-        target: 'http://localhost:8088',
+        target: process.env.EXTENDAPP_API,
         changeOrigin: true
         // ,
         // pathRewrite: {
@@ -102,7 +102,7 @@ module.exports = {
       },
       '/psbcaudit': {
         timeout: 1800000,
-        target: 'http://localhost:8088',
+        target: process.env.EXTENDAPP_API,
         changeOrigin: true
         // ,
         // pathRewrite: {
@@ -111,7 +111,7 @@ module.exports = {
       },
       '/psbcaudit_pmrs': {
         timeout: 1800000,
-        target: 'http://localhost:8088',
+        target: process.env.EXTENDAPP_API,
         changeOrigin: true
         // ,
         // pathRewrite: {
@@ -120,7 +120,7 @@ module.exports = {
       },
       '/psbcaudit_kn': {
         timeout: 1800000,
-        target: 'http://localhost:8088',
+        target: process.env.EXTENDAPP_API,
         changeOrigin: true
         // ,
         // pathRewrite: {
@@ -129,7 +129,7 @@ module.exports = {
       },
       '/psbcaudit_auditobj': {
         timeout: 1800000,
-        target: 'http://localhost:8088',
+        target: process.env.EXTENDAPP_API,
         changeOrigin: true
         // ,
         // pathRewrite: {
