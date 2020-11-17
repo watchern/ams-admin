@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="renderer" content="webkit">
@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/lib/icheck/skins/square/blue.css">
     <link rel="stylesheet" href="/lib/Ztree/css/zTreeStyle/zTreeStyle.css">
     <link rel="stylesheet" href="/css/all-style.min.css">
-    <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap-n.css">
+    <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.css">
     <link rel="stylesheet" href="/lib/datetimepicker/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="/lib/bootstrap-select/css/bootstrap-select.css">
     <link rel="stylesheet" href="/lib/switch/bootstrap-switch.css">
@@ -26,9 +26,9 @@
     <script type="text/javascript" src="/lib/datetimepicker/bootstrap-datetimepicker.cn.min.js"></script>
     <script type="text/javascript" src="/lib/datetimepicker/locales/bootstrap-datetimepicker.zh-CN.js"></script>
     <script type="text/javascript" src="/lib/bootstrap-select/js/bootstrap-select.cn.min.js"></script>
+    <script type="text/javascript" src="/lib/switch/bootstrap-switch.js"></script>
     <script type="text/javascript" src="/lib/icheck/icheck.js"></script>
     <script type="text/javascript" src="/lib/Ztree/js/jquery.ztree.all.min.js"></script>
-    <script type="text/javascript" src="/lib/switch/bootstrap-switch.js"></script>
     <script type="text/javascript"  src="/lib/Ztree/js/jquery.ztree_new.all.min.js"></script>
     <script type="text/javascript"  src="/lib/Ztree/js/jquery.ztree.excheck.js"></script>
     <script type="text/javascript"  src="/lib/Ztree/js/jquery.ztree.exhide.js"></script>
@@ -43,9 +43,59 @@
     <script type="text/javascript" src="/lib/codemirror/addon/wrap/hardwrap.js"></script>
     <script type="text/javascript"  src="/lib/Encryption/encryption.js"></script>
     <script type="text/javascript"  src="/lib/layui/xm-select.js"></script>
-  </head>
-  <body>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+    <!--图形化工具专用，start-->
+    <link rel="stylesheet" href="/lib/jqgrid/css/jquery-ui.css"/>
+    <link rel="stylesheet" href="/lib/layui/css/layui.css"/>
+    <link rel="stylesheet" href="/lib/jqgrid/css/ui.jqgrid.css">
+    <style type="text/css">
+        /**
+         * 2019-03-16 张瑞卿
+         * 统一bootstrap-select样式与bootstrap表单样式
+         */
+        .selectpicker + button:not(.btn-primary):not(.btn-info):not(.btn-success):not(.btn-warning):not(.btn-danger) {
+            background-color: #FBFBFB;
+            border : 1px solid #DEE1E5;
+        }
+    </style>
+    <link rel="stylesheet" href="/lib/icheck/skins/square/purple.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/ztreeSide.css">
+    <link rel="stylesheet" href="/css/accordion.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/auditWorkbench.css">
+    <link rel="stylesheet" href="/css/form.css">
+    <link rel="stylesheet" href="/lib/loading/loading.css"/>
+    <!--<link rel="stylesheet" href="/lib/icheck/skins/square/purple.css"/>-->
+    <link rel="stylesheet" type="text/css" href="/graphtool/styles/grapheditor.css"/>
+    <!--<link rel="stylesheet" type="text/css" href="/lib/layui/css/modules/layer/default/layer.css">-->
+    <link rel="stylesheet" type="text/css" href="/graphtool/HandSonTable/style/css/handsontable.full.css">
+    <script type="text/javascript" src="/lib/layui/layui.js"></script>
+    <script type="text/javascript"  src="/graphtool/inc/toolCommon.js"></script>
+    <script type="text/javascript" src="/lib/jqgrid/js/jquery.jqGrid.min.js"></script>
+    <script type="text/javascript" src="/lib/jqgrid/js/i18n/grid.locale-cn.js"></script>
+    <script type="text/javascript" src="/graphtool/framework/deflate/base64.js"></script>
+    <script type="text/javascript" src="/graphtool/framework/jscolor/jscolor.js"></script>
+    <script type="text/javascript" src="/graphtool/framework/sanitizer/sanitizer.min.js"></script>
+    <script type="text/javascript" src="/graphtool/js/Init.js"></script>
+    <script type="text/javascript" src="/graphtool/mxClient.js"></script>
+    <!-- 界面 -->
+    <script type="text/javascript" src="/graphtool/js/EditorUi.js"></script>
+    <script type="text/javascript" src="/graphtool/js/Editor.js"></script>
+    <!-- 左侧树（图形） -->
+    <script type="text/javascript" src="/graphtool/js/Graph.js"></script>
+    <!-- 事件 -->
+    <script type="text/javascript" src="/graphtool/js/Actions.js"></script>
+    <!-- 头部菜单栏 -->
+    <script type="text/javascript" src="/graphtool/js/Menus.js"></script>
+    <!--<script type="text/javascript" src="/graphtool/js/Dialogs.js"></script>-->
+    <script type="text/javascript" src="/graphtool/js/draw.js"></script>
+    <script type="text/javascript" src="/graphtool/HandSonTable/style/js/handsontable.full.js"></script>
+    <!-- commons.js在最后, 做各种组件初始化与公共方法 -->
+    <script type="text/javascript"  src="/lib/loading/loading.js"></script>
+    <!--图形化工具专用，end-->
+</head>
+<body>
+<div id="app"></div>
+<!-- built files will be auto injected -->
+</body>
 </html>
