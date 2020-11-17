@@ -91,18 +91,34 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button
+            <el-link
               v-if="scope.row.start !='0' || scope.row.start == undefined"
               size="mini"
               type="danger"
               @click="lineDelete(scope.$index,'transColRels')"
+            >
+              删除
+            </el-link>
+            <el-link
+              v-if="scope.row.start =='0'"
+              size="mini"
+              type="primary"
+              @click="lineAdd(scope.$index,'transColRels')"
+            >
+              添加
+            </el-link>
+            <!-- <el-button
+              v-if="scope.row.start =='0'"
+              size="mini"
+              type="primary"
+              @click="lineAdd(scope.$index,'transColRels')"
             ><i class="iconfont icon-delete" /></el-button>
             <el-button
               v-if="scope.row.start =='0'"
               size="mini"
               type="primary"
               @click="lineAdd(scope.$index,'transColRels')"
-            ><i class="iconfont icon-add" /></el-button>
+            ><i class="iconfont icon-add" /></el-button> -->
           </template>
         </el-table-column>
       </el-table>

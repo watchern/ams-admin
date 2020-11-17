@@ -1,9 +1,11 @@
 <template>
   <div class="app-container">
-    <div style="float:right; margin-right:60px">
-      <el-button type="primary" size="mini" @click="addCol()">添加</el-button>
-      <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="delCol()">删除</el-button>
-    </div>
+    <el-row>
+      <el-col align="right">
+        <el-button type="primary" size="mini" class="oper-btn add" title="添加" @click="addCol()" />
+        <el-button type="danger" size="mini" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="delCol()" />
+      </el-col>
+    </el-row>
     <el-table :data="temp" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" />
       <el-table-column prop="indexName" label="名称" show-overflow-tooltip>

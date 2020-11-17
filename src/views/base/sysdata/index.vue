@@ -7,12 +7,14 @@
         @submit="getList"
       />
     </div>
-    <div>
-      <el-button type="primary" size="mini" icon="el-icon-zoom-in" :disabled="selections.length !== 1" @click="setBaseCode()">设置</el-button>
-      <el-button type="primary" size="mini" icon="el-icon-add-location" @click="addCode()">添加</el-button>
-      <el-button type="primary" size="mini" icon="el-icon-edit" :disabled="selections.length !== 1" @click="updateCode()">修改</el-button>
-      <el-button type="danger" size="mini" icon="el-icon-delete" :disabled="selections.length === 0" @click="deleteCode()">删除</el-button>
-    </div>
+    <el-row>
+      <el-col align="right">
+        <el-button type="primary" class="oper-btn  setting" :disabled="selections.length !== 1" title="设置" @click="setBaseCode" />
+        <el-button type="primary" class="oper-btn add" title="添加" @click="addCode" />
+        <el-button type="primary" size="mini" :disabled="selections.length === 0" title="删除" class="oper-btn delete" @click="deleteCode()" />
+        <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" title="修改" @click="updateCode()" />
+      </el-col>
+    </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -25,22 +27,20 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column label="选择" type="selection" width="55" />
-      <el-table-column label="代码类别名称" width="300px" align="center" prop="dataSortName" />
+      <el-table-column label="代码类别名称" width="300px" prop="dataSortName" />
       <el-table-column label="代码类别编码" width="300px" align="center" prop="dataSortValue" />
-      <el-table-column label="代码类别描述" width="300px" align="center" prop="dataSortDesc" />
+      <el-table-column label="代码类别描述" width="300px" prop="dataSortDesc" />
       <!-- <el-table-column label="创建时间" width="300px" align="center" prop="createTime" /> -->
       <el-table-column label="展现形式" prop="extendTag" :formatter="formatTag" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <!-- 这是第一个弹窗，用来添加基础数据类别 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" height="70vh">
       <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
         label-position="right"
-        label-width="140px"
-        style="width: 700px; margin-left:50px;"
       >
         <el-form-item label="代码类别名称" prop="dataSortName">
           <el-input v-model="temp.dataSortName" />
@@ -236,7 +236,6 @@ export default {
     // 校验编码格式
     numberSecond() {
       var data = this.tempSecond.codeValue
-      alert(typeof data)
       const codeValue = new RegExp('^[0-9]{4,32}$').test(data)
       if (!codeValue) {
         this.$notify.error({

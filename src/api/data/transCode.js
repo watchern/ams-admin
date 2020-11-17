@@ -58,13 +58,11 @@ export function selectOne(data) {
   })
 }
 
-export function selectCodeAll(data) {
+export function getTransCodeList() {
   return request({
     baseURL: baseURL,
-    url: '/transRule/listByPage',
-    method: 'post',
-    // 直接加data以json格式传递  后台用RequestBody
-    data
+    url: '/transRule/getTransCodeList',
+    method: 'post'
   })
 }
 

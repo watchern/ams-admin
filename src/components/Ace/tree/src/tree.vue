@@ -105,7 +105,7 @@ export default {
       type: Boolean,
       default: false
     },
-    highlightCurrent: Boolean,
+    highlightCurrent: true,
     load: Function,
     filterNodeMethod: Function,
     accordion: Boolean,
