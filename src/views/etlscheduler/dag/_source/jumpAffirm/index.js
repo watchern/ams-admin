@@ -8,6 +8,8 @@ import {
   uuid,
   findComponentDownward
 } from '@/components/etl/util/'
+import { last } from 'lodash'
+import { error } from 'jquery'
 
 const Affirm = {}
 let $root = {}
@@ -80,11 +82,10 @@ Affirm.isPop = (fn) => {
       return h(mAffirm, {
         on: {
           ok() {
-
             // fn()
             Vue.$modal.destroy()
             // // save
-            // findComponentDownward($root, 'DagChart')._save('affirm').then(() => {
+            // findComponentDownward($root, 'DagChart')._save('else').then(() => {
             //   // fn()
             //   Vue.$modal.destroy()
             // }).catch(() => {

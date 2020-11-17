@@ -148,11 +148,11 @@
       </div>
       <div class="bottom">
         <div class="submit">
-          <template>
+          <!-- <template>
             <div class="lint-pt">
               <x-checkbox v-model="syncDefine">是否更新流程定义</x-checkbox>
             </div>
-          </template>
+          </template> -->
           <x-button
             type="text"
             @click="close()"
