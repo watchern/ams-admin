@@ -46,16 +46,17 @@ export default {
   methods: {
     onFileSuccess: function(rootFile, file, response, chunk) {
       if (JSON.parse(response).code !== 0) {
-        this.$message.error(this.$t('上传失败'))
+        this.$message.error(this.$t(JSON.parse(response).msg))
+        file.cancel()
       } else {
-        console.log(JSON.parse(response).data + '上传成功')
+        this.$message.success(this.$t(JSON.parse(response).data + '上传成功'))
       }
     },
     onFileProgress(rootFile, file, chunk) {
       console.log(`上传中 ${file.name}，chunk：${chunk.startByte / 1024 / 1024} ~ ${chunk.endByte / 1024 / 1024}`)
     },
     onFileError(rootFile, file, response, chunk) {
-      this.$message.error(this.$t('上传失败'))
+      this.$message.error(this.$t(JSON.parse(response).msg))
       file.error()
     },
     computeMD5(file) {

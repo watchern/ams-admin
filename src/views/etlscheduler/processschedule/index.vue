@@ -9,8 +9,8 @@
         <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
         <el-button type="primary" class="oper-btn edit" :disabled="editStatus" title="修改" @click="handleUpdate()" />
         <el-button type="primary" class="oper-btn delete" :disabled="deleteStatus" title="删除" @click="handleDelete()" />
-        <el-button type="primary" class="oper-btn" icon="el-icon-video-play" :disabled="startStatus" title="启用" @click="handleUse()" />
-        <el-button type="primary" class="oper-btn" icon="el-icon-video-pause" :disabled="stopStatus" title="停用" @click="handleBear()" />
+        <el-button type="primary" class="oper-btn start" :disabled="startStatus" title="启用" @click="handleUse()" />
+        <el-button type="primary" class="oper-btn pause" :disabled="stopStatus" title="停用" @click="handleBear()" />
         <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length != 1" title="复制" @click="copyData()" />
         <el-upload
           multiple
@@ -25,10 +25,10 @@
           :show-file-list="false"
           style="display: inline-block; padding-left: 10px"
         >
-          <el-button type="primary" class="oper-btn" icon="el-icon-upload2" title="导入" />
+          <el-button type="primary" class="oper-btn export" title="导入" />
         </el-upload>
         <span style="display: inline-block; padding-left: 10px">
-          <el-button type="primary" class="oper-btn" icon="el-icon-download" title="下载流程模板" @click="dialogFormVisible1 = true" />
+          <el-button type="primary" class="oper-btn import" title="下载流程模板" @click="dialogFormVisible1 = true" />
         </span>
       </el-col>
     </el-row>
@@ -378,6 +378,7 @@ import {
 import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
 import { crontabExpression } from './common.js'
+import { getDictList, getTransMap } from '@/utils'
 // import _ from lodash
 
 export default {
@@ -402,7 +403,8 @@ export default {
               time.getTime() > new Date(this.temp.endTime).getTime()
             )
           } else {
-            return time.getTime() < Date.now()
+            // 86400000一天的毫秒数
+            return time.getTime() < Date.now() - 86400000
           }
         }
       },
@@ -414,7 +416,8 @@ export default {
                 time.getTime() < new Date(this.temp.startTime).getTime()
             )
           } else {
-            return time.getTime() < Date.now()
+            // 86400000一天的毫秒数
+            return time.getTime() < Date.now() - 86400000
           }
         }
       },
@@ -452,37 +455,16 @@ export default {
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
-        {
-          label: '任务名称',
-          name: 'scheduleName',
-          type: 'text',
-          value: ''
-        },
-        {
-          label: '状态',
-          name: 'status',
-          type: 'select',
-          data: [
-            {
-              name: '启用',
-              value: '1'
-            },
-            {
-              name: '停用',
-              value: '0'
-            }
-          ],
-          default: '0'
-        },
+        { label: '任务名称', name: 'scheduleName', type: 'text', value: '' },
+        { label: '状态', name: 'status', type: 'select',
+          data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }], default: '0' },
         {
           label: '流程名称',
           name: 'processDefinitionId',
           type: 'select',
           data: []
         },
-        {
-          label: '模糊查询',
-          name: 'keyword',
+        { label: '模糊查询', name: 'keyword',
           type: 'fuzzyText'
         }
       ],
@@ -640,6 +622,17 @@ export default {
     }
   },
   created() {
+    // getDictList('001001')
+    // const ids = []
+    // ids[0] = '001001'
+    // console.log('1111111111111111111' + JSON.stringify(getDictList(ids.join(','))))
+    // console.log('1111111111111111111' + JSON.stringify(getTransMap(ids.join(','))))
+    // getDictList(ids.join(',')).then((resp) => {
+    //   console.log('22222222222222222222222' + resp.data)
+    // })
+    // getTransMap(ids.join(',')).then((resp) => {
+    //   console.log('22222222222222222222222' + resp.data)
+    // })
     queryProcessLike().then((resp) => {
       this.queryFields[2].data = resp.data
     })
@@ -713,6 +706,7 @@ export default {
         link.setAttribute('download', filename)
         document.body.appendChild(link)
         link.click()
+        this.resetTemp()
       })
       this.dialogFormVisible1 = false
     },
@@ -859,7 +853,7 @@ export default {
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
-        if (this.flag == false) {
+        if (this.flag === false) {
           this.$notify({
             title: '失败',
             message: '请输入参数值',
@@ -1040,7 +1034,7 @@ export default {
         method: 'post',
         data: formData
       }).then((res) => {
-        if (res.data.code == 2501) {
+        if (res.data.code === 2501) {
           this.getList()
           this.$notify({
             title: '失败',
@@ -1073,7 +1067,7 @@ export default {
       var stopTime = stopJsonDate.toLocaleDateString()
       var message = ''
       this.crontabFormat.forEach((r, i) => {
-        if (date == r.code) {
+        if (date === r.code) {
           message = r.msg
         }
       })
