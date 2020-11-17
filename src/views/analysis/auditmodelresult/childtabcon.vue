@@ -653,6 +653,7 @@ export default {
      * 在渲染表格之前拿到渲染表格时需要的数据
      */
     getRenderTableData() {
+      debugger
       if (this.useType == "modelRunResult") {
         if (this.modelUuid != undefined) {
           selectConditionShow(
