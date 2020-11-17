@@ -10,13 +10,13 @@
     <el-row>
       <el-col align="right">
         <!-- 上传文件 -->
-        <el-button type="primary" class="oper-btn delete" title="上传文件" @click="handUploadFile()" />
+        <el-button type="primary" class="oper-btn add-folder" title="上传文件" @click="handUploadFile()" />
         <!-- 添加文件夹 -->
-        <el-button type="primary" class="oper-btn add-folder" title="上传文件夹" :disabled="createDirStatus" @click="handleCreateDir()" />
+        <el-button type="primary" class="oper-btn folder" title="上传文件夹" :disabled="createDirStatus" @click="handleCreateDir()" />
         <!-- 删除 -->
         <el-button type="primary" class="oper-btn delete" title="删除文件" :disabled="selections.length === 0" @click="handleDelete()" />
         <!-- 移动 -->
-        <el-button type="primary" class="oper-btn delete" title="文件移动" :disabled="createFileDirStatus" @click="handleMove()" />
+        <el-button type="primary" class="oper-btn share" title="文件移动" :disabled="createFileDirStatus" @click="handleMove()" />
       </el-col>
 
     </el-row>
