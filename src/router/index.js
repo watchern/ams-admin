@@ -81,29 +81,29 @@ export const constantRoutes = [
       {
         path: '/redirect/:path(.*)',
         component: () => import('@/views/redirect/index')
-      }
-    ]
-  },
-  {
-    path: '/login',
-    component: () => import('@/views/login/index'),
-    hidden: true
-  },
-  {
-    path: '/auth-redirect',
-    component: () => import('@/views/login/auth-redirect'),
-    hidden: true
-  },
-  {
-    path: '/404',
-    component: () => import('@/views/error-page/404'),
-    hidden: true
-  },
-  {
-    path: '/401',
-    component: () => import('@/views/error-page/401'),
-    hidden: true
   }
+]
+},
+{
+  path: '/login',
+    component: () => import('@/views/login/index'),
+  hidden: true
+},
+{
+  path: '/auth-redirect',
+    component: () => import('@/views/login/auth-redirect'),
+  hidden: true
+},
+{
+  path: '/404',
+    component: () => import('@/views/error-page/404'),
+  hidden: true
+},
+{
+  path: '/401',
+    component: () => import('@/views/error-page/401'),
+  hidden: true
+}
 ]
 
 /**
@@ -125,33 +125,33 @@ export const asyncRoutes = [
       {
         path: 'page',
         component: () => import('@/views/permission/page'),
-        name: 'PagePermission',
-        meta: {
-          title: 'pagePermission',
-          roles: ['admin'] // or you can only set roles in sub nav
-        }
-      },
-      {
-        path: 'directive',
-        component: () => import('@/views/permission/directive'),
-        name: 'DirectivePermission',
-        meta: {
-          title: 'directivePermission'
-          // if do not set roles, means: this page does not require permission
-        }
-      },
-      {
-        path: 'role',
-        component: () => import('@/views/permission/role'),
-        name: 'RolePermission',
-        meta: {
-          title: 'rolePermission',
-          roles: ['admin']
-        }
-      }
-    ]
-  },
-  { path: '*', redirect: '/404', hidden: true }
+      name: 'PagePermission',
+  meta: {
+  title: 'pagePermission',
+    roles: ['admin'] // or you can only set roles in sub nav
+}
+},
+{
+  path: 'directive',
+    component: () => import('@/views/permission/directive'),
+  name: 'DirectivePermission',
+  meta: {
+  title: 'directivePermission'
+  // if do not set roles, means: this page does not require permission
+}
+},
+{
+  path: 'role',
+    component: () => import('@/views/permission/role'),
+  name: 'RolePermission',
+  meta: {
+  title: 'rolePermission',
+    roles: ['admin']
+}
+}
+]
+},
+{ path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({
