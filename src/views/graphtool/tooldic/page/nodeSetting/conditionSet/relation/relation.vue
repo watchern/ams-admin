@@ -18,8 +18,8 @@
       <div id="filter_jsp" class="tab-pane fade in active">
         <div id="col10" class="col-sm-12" style="position: relative;background-color: #fff">
           <div id="myDiagramDiv" class="col-sm-9" style="border: solid 1px #F3F3F3;height:100%;" />
-          <img id="fd" width="15" height="15" title="画布放大" src="../../../../../../images/fangda.png" style="z-index:9999;position: absolute;top: 12px;" onclick="relation.hb()">
-          <img id="sx" width="15" height="15" title="画布缩小" src="../../../../../../images/fangda.png" style="z-index:9999;position: absolute;right: 10px;top: 12px;" onclick="relation.hbsx()">
+          <img id="fd" width="15" height="15" title="画布放大" src="../images/fangda.png" style="z-index:9999;position: absolute;top: 12px;" onclick="relation.hb()">
+          <img id="sx" width="15" height="15" title="画布缩小" src="../images/fangda.png" style="z-index:9999;position: absolute;right: 10px;top: 12px;" onclick="relation.hbsx()">
           <div id="joins" class="col-sm-3" style="padding: 0px 4px; height: 35%;">
             <div class="tstext"><span style="font-weight: 800">表连接</span>（显示多个表间的关联关系）</div>
             <div id="form" style="background: #F7F7F7;border: 1px solid #F3F3F3;height:90%;overflow-y:auto" />
