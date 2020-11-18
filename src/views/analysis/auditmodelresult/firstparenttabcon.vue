@@ -343,7 +343,6 @@
           return timeFormat;
         }
         return "";
-<<<<<<< HEAD
       },
       dateFormatter2(row) {
         const datetime = row.timingExecute;
@@ -382,37 +381,15 @@
         } else {
           var paramShowStr = "";
           var params = JSON.parse(row.settingInfo).paramsArr;
-          if (params == undefined || params.length == 0) {
+          if (params == undefined) {
             return "无";
           } else {
             for (var i = 0; i < params.length; i++) {
               paramShowStr +=
-                params[i].paramName + " : " + params[i].paramValue + "\r\n";
+                params[i].name + " : " + params[i].paramValue + "\r\n";
             }
             // var paramsArr = JSON.stringify(JSON.parse(row.settingInfo).paramsArr);
             return paramShowStr;
-=======
-      } else {
-        var sql = JSON.parse(row.settingInfo).sql;
-        return sql;
-      }
-    },
-    /**
-     * 格式化执行信息，取出执行信息中的paramArr
-     */
-    settingInfoParamsArrFormatter(row, column) {
-      if (row.settingInfo == null) {
-        return "无";
-      } else {
-        var paramShowStr = "";
-        var params = JSON.parse(row.settingInfo).paramsArr;
-        if (params == undefined) {
-          return "无";
-        } else {
-          for (var i = 0; i < params.length; i++) {
-            paramShowStr +=
-              params[i].name + " : " + params[i].paramValue + "\r\n";
->>>>>>> 2182c3332809a11a2d866b0543cc85a5b086549e
           }
         }
       },
