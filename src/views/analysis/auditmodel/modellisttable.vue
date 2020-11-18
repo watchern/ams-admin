@@ -438,6 +438,10 @@ export default {
       this.isUpdate = false
       let operationObj = { operationType:1,folderId:"",folderName:""}
       if(this.selectTreeNode != null){
+        if(this.selectTreeNode.pid == 0 ||this.selectTreeNode.pid == null){
+          this.$message({ type: 'info', message: '不允许建立在根目录' })
+          return
+        }
         operationObj = { operationType:1,folderId:this.selectTreeNode.id,folderName:this.selectTreeNode.label}
       }
       sessionStorage.setItem('operationObj', JSON.stringify(operationObj));
@@ -798,7 +802,8 @@ export default {
       obj.sqls = obj.sql
       obj.modelUuid = selectObj[0].modelUuid
       //合并参数 将输入的值替换到当前界面
-      this.mergeParamObj(obj.paramsArr)
+      this.currentPreviewModelParamAndSql.paramObj = obj.paramsArr
+      //this.mergeParamObj(obj.paramsArr)
       startExecuteSql(obj).then((result) => {
         this.dialogFormVisible = false
         if (!result.data.isError) {
