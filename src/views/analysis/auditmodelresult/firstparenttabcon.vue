@@ -377,16 +377,16 @@ export default {
      */
     settingInfoParamsArrFormatter(row, column) {
       if (row.settingInfo == null) {
-        return "";
+        return "无";
       } else {
         var paramShowStr = "";
         var params = JSON.parse(row.settingInfo).paramsArr;
-        if (params == undefined) {
-          return "";
+        if (params == undefined || params.length == 0) {
+          return "无";
         } else {
           for (var i = 0; i < params.length; i++) {
             paramShowStr +=
-              params[i].name + " : " + params[i].paramValue + "\r\n";
+              params[i].paramName + " : " + params[i].paramValue + "\r\n";
           }
           // var paramsArr = JSON.stringify(JSON.parse(row.settingInfo).paramsArr);
           return paramShowStr;
