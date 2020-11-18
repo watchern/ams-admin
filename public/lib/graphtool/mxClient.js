@@ -17940,10 +17940,10 @@ mxSvgCanvas2D.prototype.mark = function(x, y, w, h, cell, aspect, flipH, flipV) 
 		var resultTableStatus = graph.nodeData[cell.id].nodeInfo.resultTableStatus;
 		var midTableStatus = graph.nodeData[cell.id].nodeInfo.midTableStatus;
 		if(resultTableStatus == 2) {		//模型最终结果表
-            src = "../graphtool/images/graphicon/finaloutmark@2x.png";
+            src = "../../lib/graphtool/images/graphicon/finaloutmark@2x.png";
         }
         if(midTableStatus == 2) {		//模型辅助结果表
-            src = "../graphtool/images/graphicon/centeroutmark@2x.png";
+            src = "../../lib/graphtool/images/graphicon/centeroutmark@2x.png";
         }
 	}
 
@@ -18018,16 +18018,16 @@ mxSvgCanvas2D.prototype.exeState = function(x, y, w, h, cell, aspect, flipH, fli
 		var nodeExcuteStatus = graph.nodeData[cell.id].nodeInfo.nodeExcuteStatus;
 		switch(nodeExcuteStatus){			//执行状态
 			case 1:		//未执行
-				src = "../graphtool/images/icon/point_gray.png";
+				src = "../../lib/graphtool/images/icon/point_gray.png";
 				break;
 			case 2:	//执行中
-				src = "../graphtool/images/icon/point_yellow.png";
+				src = "../../lib/graphtool/images/icon/point_yellow.png";
 				break;
 			case 3:	//执行成功
-				src = "../graphtool/images/icon/point_green.png";
+				src = "../../lib/graphtool/images/icon/point_green.png";
 				break;
 			case 4:	//执行失败
-				src = "../graphtool/images/icon/point_red.png";
+				src = "../../lib/graphtool/images/icon/point_red.png";
 				break;
 		}
 	}
@@ -18103,9 +18103,9 @@ mxSvgCanvas2D.prototype.setting = function(x, y, w, h, cell, aspect, flipH, flip
 	if(graph.nodeData[cell.id]) {
 		var isSet = graph.nodeData[cell.id].isSet;			//配置状态
 		if(isSet){			//已配置
-			src = "../graphtool/images/icon/point_green.png";
+			src = "../../lib/graphtool/images/icon/point_green.png";
 		}else{
-			src = "../graphtool/images/icon/point_gray.png";
+			src = "../../lib/graphtool/images/icon/point_gray.png";
 		}
 	}
 	// LATER: Add option for embedding images as base64.
@@ -18180,7 +18180,7 @@ mxSvgCanvas2D.prototype.copyIcon = function(x, y, w, h, cell, aspect, flipH, fli
 	if(graph.nodeData[cell.id]) {
 		var isCopy = graph.nodeData[cell.id].isCopy;			//是否为复制表
 		if(isCopy){	
-			src = "../graphtool/images/icon/copyIcon.png";
+			src = "../../lib/graphtool/images/icon/copyIcon.png";
 		}
 	}
 	// LATER: Add option for embedding images as base64.
