@@ -222,7 +222,7 @@ export default {
       currentExecuteSQL: [], //模型详细关联dialog中点击确定按钮后根据sql返回的预先加载值，用于判断有几个页签
       webSocket: null, //websocket对象
       dataCoding: {}, //存储返回的数据转码对象
-      
+
     };
   },
   mounted() {
@@ -362,7 +362,7 @@ export default {
                       str += related[i];
                     }
                   }
-                  alert("关联失败，因为其中" + str + "已经关联");
+                  this.$message({ type: 'info', message: "关联失败，因为其中" + str + "已经关联" })
                 }
               }
             );
@@ -375,7 +375,7 @@ export default {
       // 获取选中的数据
       var selRows = this.gridApi.getSelectedRows();
       if (selRows.length == 0) {
-        alert("请选择后再进行关联");
+        this.$message({ type: 'info', message: "请选择后再进行关联" })
       }
       this.selectRows = selRows;
     },
@@ -658,7 +658,7 @@ export default {
     openModelDetail() {
       var selRows = this.gridApi.getSelectedRows();
       if (selRows.length < 1) {
-        alert("请选择后再进行关联");
+        this.$message({ type: 'info', message: "请选择后再进行关联" })
       } else if (selRows.length == 1) {
         this.options = [];
         for (var i = 0; i < this.modelDetailRelation.length; i++) {
@@ -670,7 +670,7 @@ export default {
         }
         this.modelDetailDialogIsShow = true;
       } else {
-        alert("不能选中多条");
+        this.$message({ type: 'info', message: "不能选中多条" })
       }
     },
     /**
