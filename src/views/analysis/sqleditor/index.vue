@@ -1,32 +1,19 @@
-<template>
+<template> 
   <div class="app-container">
     <div id="container" v-loading="executeLoading">
-      <el-collapse v-model="DefaultExpansion">
-        <div id="leftPart" class="left-part">
-          <el-collapse-item title="数据表" name="1">
-            <el-input id="dataSearch" v-model="tableSearchInput" name="dataSearch" type="text" autocomplete="off"
-                      placeholder="查询">
-              <el-button slot="append" icon="el-icon-search" @click="tableTreeSearch"></el-button>
-            </el-input>
-            <ul id="dataTree" class="ztree" style="overflow: auto"/>
-          </el-collapse-item>
-          <el-collapse-item title="参数" name="2">
-            <el-input id="paramSearch" name="paramSearch" type="text" v-model="paramSearchInput" autocomplete="off"
-                      placeholder="查询">
-              <el-button slot="append" icon="el-icon-search" @click="paramTreeSearch"></el-button>
-            </el-input>
-            <ul id="paramTree" class="ztree" style="max-height: 400px"/>
-          </el-collapse-item>
-          <el-collapse-item title="SQL函数" name="3">
-            <el-input id="sqlSearch" name="sqlSearch" type="text" v-model="functionInput" autocomplete="off"
-                      placeholder="查询">
-              <el-button slot="append" icon="el-icon-search" @click="functionTreeSearch"></el-button>
-            </el-input>
-            <ul id="sqlFunTree" class="ztree"/>
-          </el-collapse-item>
-        </div>
-      </el-collapse>
-      <div id="rightPart" class="col-sm-10" style="height: 100vh">
+      <div id="sidebar">
+        <div class="unfold-shuju demo-flex"><span class="">数据表</span></div>
+        <div class="unfold-canshu demo-flex"><span class="">参数</span></div>
+        <div class="unfold-sql demo-flex"><span class="">S</br>Q</br>L</br>函数</span></div>
+      </div>
+      <div id="leftPart" class="left-part">
+        <ul id="dataTree" class="ztree" style="overflow: auto"/>
+        <span class="leftpart-fenge"></span>
+        <ul id="paramTree" class="ztree" style="max-height: 400px"/>
+        <span class="leftpart-fenge"></span>
+        <ul id="sqlFunTree" class="ztree"/>
+      </div>
+      <div id="rightPart" class="col-sm-10" style="height: 90vh">
         <div id="sqlEditorDiv" class="sql-editor-div">
           <div class="row table-view-caption" style="margin-left: 30px; height: 40px; padding-top: 8px">
             <el-button type="primary" size="small" @click="sqlFormat">格式化</el-button>
@@ -655,6 +642,31 @@ export default {
   float: right;
   cursor: pointer;
 }
+#rightPart{
+  width:81.3333%;
+}
+
+.app-container{
+  /* height: 100%!important; */
+  position: relative;
+}
+
+#container{
+  width: 100%;
+  height: 101%;
+}
+
+#sidebar{
+  width: 1.9%;
+  height: 690px;
+  margin: 0;
+  display: inline-block;
+  position: absolute;
+  top: 0px;left: 0px;
+  border-radius: 50px 0 0 50px;
+  overflow: hidden;
+  z-index: 20;
+}
 
 .CodeMirror-hint-table {
   color: #af0000 !important;
@@ -710,19 +722,23 @@ export default {
 
 #vertical {
   position: absolute;
-  top: 20;
-  left: 31.8%;
-  height: 94vh;
+  top: 20px;
+  left: 17%;
+  height: 100%;
   width: 3px;
   overflow: hidden;
   background: #c0c5d4;
   cursor: w-resize;
-  display: none;
+
+}
+.el-aside{
+  margin-bottom: 10px;
 }
 
 #horizontal {
   position: absolute;
-  top: 39%;
+  top: 49.2%;
+  right: 0;
   /* width: 100vh; */
   width: 97.5%;
   height: 3px;
@@ -762,7 +778,7 @@ export default {
   width: 80px;
   position: relative;
   right: 0;
-  top: 2%;
+  top: 15%;
   float: right;
 }
 
@@ -779,8 +795,13 @@ export default {
 
 .left-part{
   overflow: auto;
-  width: 16.66666667%;
+  width: 14.66666667%;
   float: left;
-  height: 89vh;
+  height: 100%;
+  margin-left: 2.5%;
 }
+
+
 </style>
+
+
