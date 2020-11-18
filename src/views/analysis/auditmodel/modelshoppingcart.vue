@@ -400,14 +400,21 @@ export default {
           };
           runTaskRels.push(runTaskRel);
         }
-          var runTask = {
-            runTaskUuid: runTaskUuid,
-            batchUuid: batchUuid,
-            runTaskName: "系统添加",
-            runType: 3,
-            timingExecute:dateTime,
-            runTaskRels: runTaskRels,
-          };
+        let runType = 3
+        if(this.timingExecutionIsSee){
+          runType = 2
+        }
+        if(this.runimmediatelyIsSee){
+          runType = 3
+        }
+        var runTask = {
+          runTaskUuid: runTaskUuid,
+          batchUuid: batchUuid,
+          runTaskName: "系统添加",
+          runType: runType,
+          timingExecute:dateTime,
+          runTaskRels: runTaskRels,
+        };
         addRunTaskAndRunTaskRel(runTask).then((resp) => {
           if (resp.data == true) {
             this.$notify({
