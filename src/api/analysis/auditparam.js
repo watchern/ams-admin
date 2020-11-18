@@ -1820,6 +1820,9 @@ export function replaceNodeParam(modelid) {
           filterArr[j].id = arr1[j].id
           filterArr[j].sort = arr1[j].sort
         }
+        for(var k = 0;k<filterArr.length;k++){
+          filterArr[i]= JSON.parse(JSON.stringify(filterArr[i]).replace(/paramName/g,"name"));
+        }
         returnObj.sql = replaceSql1
         returnObj.paramsArr = filterArr
       }
