@@ -11,6 +11,8 @@
 	height: 100%;
 }
 
+#bottomPart{margin-top: 6%;}
+
 .ztree * {
 	padding: 0;
 	margin: 0;
@@ -27,18 +29,19 @@
 
 .el-dropdown{margin-left: 10px;}
 
-.ztree .add-hover{
+ .ztree .add-hover{
 	background:#f5f7fa
 }
-.add-hover-1{
-	background:#f5f7fa!important
-}
+
 
 .ztree .ztree-hover{ 
 	width: 100%;
 	height: 27px;
 	/* border-radius: 15.5px; */
 	z-index: 1;
+}
+.ztree-hover:hover{
+	background:#f5f7fa
 }
 
 .ztree {

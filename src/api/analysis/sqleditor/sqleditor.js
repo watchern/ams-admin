@@ -609,18 +609,11 @@ export function initTableTree(userId) {
   })
 }
 function zy_hover() {
-  $(".ztree-hover").on("mouseover",function () {
+  $(".ztree-hover").on("click",function () {
     $(".ztree-hover").removeClass("add-hover")
     $(this).addClass("add-hover")
   })
-  $(".ztree-hover").on("click",function () {
-    $(".ztree-hover").removeClass("add-hover-1")
-    $(this).addClass("add-hover-1")
-  })
   $("#rightPart").on("click",function () {
-    $(".ztree-hover").removeClass("add-hover-1")
-  })
-  $(".ztree").on("mouseout",function () {
     $(".ztree-hover").removeClass("add-hover")
   })
 }

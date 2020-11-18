@@ -644,6 +644,7 @@ export default {
 }
 #rightPart{
   width:81.3333%;
+  position:relative;
 }
 
 .app-container{
@@ -778,18 +779,18 @@ export default {
   width: 80px;
   position: relative;
   right: 0;
-  top: 15%;
+  top: 3%;
   float: right;
 }
 
 .sql-editor-div{
   padding: 0px;
   width: 100%;
-  height: 37%;
+  height: 49.5%;
 }
 
 .data-show{
-  margin-top: 4%;
+  margin-top: 45px;
   width: 98.7%;
 }
 
