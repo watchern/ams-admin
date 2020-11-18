@@ -1,0 +1,89 @@
+<template>
+  <div ref="basicInfo" class="detail-form">
+    <el-form ref="basicInfoForm" :model="formData">
+      <el-form-item label="图形名称" prop="graphName">
+        <el-input v-model="formData.graphName" :disabled="true" />
+      </el-form-item>
+      <el-row>
+        <el-col :span="22">
+          <el-form-item label="图形类型" prop="graphType">
+            <el-select v-model="formData.graphType" :disabled="true">
+              <el-option label="个人图形" :value="1" />
+              <el-option label="他人分享图形" :value="2" />
+              <el-option label="场景查询图形" :value="3" />
+              <el-option label="个人场景查询图形" :value="5" />
+              <el-option label="模型图形" :value="4" />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="22">
+          <el-form-item label="执行状态" prop="executeStatus">
+            <el-select v-model="formData.executeStatus" :disabled="true">
+              <el-option label="全部执行" :value="1" />
+              <el-option label="部分执行" :value="2" />
+              <el-option label="未执行" :value="3" />
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="22">
+          <el-form-item label="创建人" prop="createUserName">
+            <el-input v-model="formData.createUserName" :disabled="true" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="22">
+          <el-form-item label="创建时间" prop="createTime">
+            <el-input v-model="formData.createTime" :disabled="true" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="22">
+          <el-form-item label="修改人" prop="updateUserName">
+            <el-input v-model="formData.updateUserName" :disabled="true" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="22">
+          <el-form-item label="修改时间" prop="updateTime">
+            <el-input v-model="formData.updateTime" :disabled="true" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-form-item label="图形描述" prop="description">
+        <el-input v-model="formData.description" type="textarea" :disabled="true" />
+      </el-form-item>
+    </el-form>
+  </div>
+</template>
+
+<script>
+import { getGraphInfoById } from '@/api/graphtool/graphList'
+export default {
+  name: 'PreviewGraph',
+  props: ['graphUuid'],
+  data() {
+    return {
+      formData: {
+        graphName: '',
+        graphType: '',
+        executeStatus: '',
+        createUserName: '',
+        createTime: '',
+        updateUserName: '',
+        updateTime: '',
+        description: ''
+      }
+    }
+  },
+  created() {
+    getGraphInfoById(this.graphUuid).then(response => {
+      if (response.data) {
+        this.formData = { ...this.formData, ...response.data }// 覆盖赋值
+      } else {
+        this.$message.error('加载图形详情信息失败')
+      }
+    })
+  }
+}
+</script>
