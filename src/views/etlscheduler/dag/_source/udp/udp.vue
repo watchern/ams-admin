@@ -338,6 +338,11 @@ export default {
   color: #c8ff8c;
   font-weight: bold;
 }
+.ans-btn-primary[disabled],.ans-btn-primary[disabled]:hover {
+	color: #fff;
+	background-color: #c6cfd6;
+	border-color: #c6cfd6;
+}
 .titleText{
   width:13%;
   display:inline-block;
