@@ -21,21 +21,21 @@
         @click="exportExcel"
         class="oper-btn export-2"
       ></el-button>
-      <el-button
-        :disabled="modelRunResultBtnIson.chartDisplayBtn"
-        type="primary"
+      <el-button style="display: none"
+                 :disabled="modelRunResultBtnIson.chartDisplayBtn"
+                 type="primary"
       >图表展示</el-button
       >
-      <el-button
-        :disabled="modelRunResultBtnIson.associatedBtn"
-        type="primary"
-        @click="getValues"
-        class="oper-btn refresh"
+      <el-button style="display: none"
+                 :disabled="modelRunResultBtnIson.associatedBtn"
+                 type="primary"
+                 @click="getValues"
+                 class="oper-btn refresh"
       ></el-button>
-      <el-button
-        :disabled="modelRunResultBtnIson.disassociateBtn"
-        type="primary"
-        @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
+      <el-button style="display: none"
+                 :disabled="modelRunResultBtnIson.disassociateBtn"
+                 type="primary"
+                 @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
       >移除关联</el-button
       >
       <el-button :disabled="false" type="primary" @click="queryConditionSetting"
@@ -415,7 +415,7 @@
                         str += related[i];
                       }
                     }
-                    alert("关联失败，因为其中" + str + "已经关联");
+                    this.$message({ type: 'info', message:"关联失败，因为其中" + str + "已经关联" })
                   }
                 }
               );
@@ -428,7 +428,7 @@
         // 获取选中的数据
         var selRows = this.gridApi.getSelectedRows();
         if (selRows.length == 0) {
-          alert("请选择后再进行关联");
+          this.$message({ type: 'info', message: '请选择后再进行关联!' })
         }
         this.selectRows = selRows;
       },
@@ -720,7 +720,7 @@
       openModelDetail() {
         var selRows = this.gridApi.getSelectedRows();
         if (selRows.length < 1) {
-          alert("请选择后再进行关联");
+          this.$message({ type: 'info', message: '请选择后再进行关联!' })
         } else if (selRows.length == 1) {
           this.options = [];
           for (var i = 0; i < this.modelDetailRelation.length; i++) {
@@ -732,7 +732,7 @@
           }
           this.modelDetailDialogIsShow = true;
         } else {
-          alert("不能选中多条");
+          this.$message({ type: 'info', message: '不能选中多条!' })
         }
       },
       /**
