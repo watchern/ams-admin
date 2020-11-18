@@ -16,7 +16,7 @@
     </el-dialog>
     <el-row v-if="myFlag">
       <el-button type="primary" @click="exportExcel">导出</el-button>
-      <el-button type="primary">图标显示</el-button>
+      <el-button type="primary">图表展示</el-button>
       <el-button type="primary" @click="getValues">关联项目</el-button>
       <el-button
         type="primary"
@@ -41,7 +41,7 @@
       <downloadExcel :data="tableData" :fields="json_fields" :name="excelName">
         <el-button type="primary" @click="modelResultExport" class="oper-btn export-2"></el-button>
       </downloadExcel>
-      <el-button type="primary">图标展示</el-button>
+      <el-button type="primary" title="图表展示">图表展示</el-button>
     </el-row>
     <!-- 使用ag-grid-vue组件 其中columnDefs为列，rowData为表格数据 -->
     <ag-grid-vue
@@ -222,7 +222,7 @@ export default {
       currentExecuteSQL: [], //模型详细关联dialog中点击确定按钮后根据sql返回的预先加载值，用于判断有几个页签
       webSocket: null, //websocket对象
       dataCoding: {}, //存储返回的数据转码对象
-
+      
     };
   },
   mounted() {
@@ -746,7 +746,9 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid;
+      const webSocketPath =
+        "ws://localhost:8086/analysis/websocket?" +
+        this.$store.getters.personuuid;
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接
