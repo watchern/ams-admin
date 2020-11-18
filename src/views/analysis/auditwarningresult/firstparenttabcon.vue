@@ -4,7 +4,7 @@
     <el-container>
       <el-aside class="tree-side">
         <div class="tree-container" style = "height:700px;overflow:auto;">
-    <warningresulttree></warningresulttree>
+    <warningresulttree @clickChangeTable="clickChangeTable"></warningresulttree>
     </div>
      </el-aside>
      <el-container>
@@ -16,7 +16,7 @@
       />
     </el-header>
     <el-main>
-    <div align="right" style="width: 55%">
+    <div align="right" style="width: 60%">
       <el-row>
         <el-button
           type="primary"
@@ -66,7 +66,7 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       height="450px"
-      style="overflow-x: scroll; width: 55%"
+      style="overflow-x: scroll; width: 60%"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column
@@ -182,13 +182,6 @@
         align="center"
         width="200px"
       />
-      <el-table-column fixed="right" label="操作" width="150px">
-        <template slot-scope="scope">
-          <el-button type="primary" @click="reRun(scope.row)"
-            >重新运行</el-button
-          >
-        </template>
-      </el-table-column>
     </el-table>
    </el-main>
     <el-dialog
@@ -460,6 +453,16 @@ export default {
       this.listLoading = true;
       var model = {};
       var runTask = {};
+      if(query==undefined){
+          var query1 = {runTaskUuid:null}
+          query1.runTaskUuid = '1'
+          this.pageQuery.condition = query1;
+        getRunTaskRelByPage(this.pageQuery).then((resp) => {
+        this.total = resp.data.total;
+        this.list = resp.data.records;
+        this.listLoading = false;
+      });
+      }
       if (query) {
         if (query.modelName == null || query.modelName == "") {
           model = null;
@@ -471,15 +474,18 @@ export default {
         } else {
           var runTask = { runUserName: query.runUserName };
         }
+        if(query.runTaskUuid == null || query.runTaskUuid == ""){
+          var runTask = { runTaskUuid: query.runTaskUuid }
+        }
         query.model = model;
         query.runTask = runTask;
         this.pageQuery.condition = query;
-      }
-      getRunTaskRelByPage(this.pageQuery).then((resp) => {
+        getRunTaskRelByPage(this.pageQuery).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
         this.listLoading = false;
       });
+      }
     },
     /**
      * 当多选框改变时触发
@@ -817,21 +823,6 @@ export default {
         });
       }
     },
-    reRun(runTaskRel) {
-      var runType = runTaskRel.runTask.runType;
-      this.nowRunTaskRel = runTaskRel;
-      if (runType == 3) {
-        reRunRunTask(runTaskRel).then((resp) => {
-          if (resp.data == true) {
-            this.getLikeList();
-          } else {
-            this.$message({ type: "info", message: "重新执行失败!" });
-          }
-        });
-      } else if (runType == 2) {
-        this.settingTimingIsSee = true;
-      }
-    },
     runTypeFormate(row) {
       var runType = row.runTask.runType;
       if (runType == 2) {
@@ -858,6 +849,12 @@ export default {
       });
       this.settingTimingIsSee = false;
     },
+    clickChangeTable(runTaskRelUuid){
+      console.log(99999999999999999999999)
+      console.log(typeof runTaskRelUuid)
+        var query = {runTaskUuid:runTaskRelUuid}
+        this.getLikeList(query)
+    }
   },
 };
 </script>
