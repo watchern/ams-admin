@@ -1821,7 +1821,7 @@ export function replaceNodeParam(modelid) {
           filterArr[j].sort = arr1[j].sort
         }
         for(var k = 0;k<filterArr.length;k++){
-          filterArr[i]= JSON.parse(JSON.stringify(filterArr[i]).replace(/paramName/g,"name"));
+          filterArr[k]= JSON.parse(JSON.stringify(filterArr[k]).replace(/paramName/g,"name"));
         }
         returnObj.sql = replaceSql1
         returnObj.paramsArr = filterArr
@@ -2017,6 +2017,14 @@ export function replaceCrossrangeNodeParam(modelId) {
               replaceSql1 = replaceSql1.replace(arr1[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
             }
           }
+        }
+        for (var j = 0; j < arr1.length; j++) {
+          filterArr[j].copyParamId = arr1[j].copyParamId
+          filterArr[j].id = arr1[j].id
+          filterArr[j].sort = arr1[j].sort
+        }
+        for(var k = 0;k<filterArr.length;k++){
+          filterArr[k]= JSON.parse(JSON.stringify(filterArr[k]).replace(/paramName/g,"name"));
         }
         returnObj.sql = replaceSql1
         returnObj.paramsArr = filterArr
