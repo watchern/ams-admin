@@ -2,11 +2,11 @@
   <div id="drag">
     <div class="title">
       <h2>已选择模型</h2>
-      <div>
-        <a style="display:none;" class="min el-icon-minus" href="javascript:" title="最小化"></a>
-        <a style="display:none;" class="max" href="javascript:" title="最大化"></a>
-        <a style="display:none;" class="revert" href="javascript:" title="还原"></a>
-        <a class="close el-icon-close" href="javascript:" title="关闭"></a>
+      <div style="display: none">
+        <a class="min" href="javascript:" title="最小化"></a>
+        <a class="max" href="javascript:" title="最大化"></a>
+        <a class="revert" href="javascript:" title="还原"></a>
+        <a class="close" href="javascript:" title="关闭"></a>
       </div>
     </div>
     <div class="resizeL"></div>
@@ -18,12 +18,12 @@
     <div class="resizeBR"></div>
     <div class="resizeLB"></div>
     <div class="content">
-      <el-link class="label-tip" @click="selectData" type="primary">{{memoValue}}</el-link>
+      <el-link class="label-tip" @click="selectData" type="primary">{{memoValue }}</el-link>
       <div class="btn-div">
-        <el-button @click="runImmediately" plain>立即运行</el-button>
-        <el-button plain @click="timingExecution">定时执行</el-button>
+        <el-button type="primary" @click="runImmediately" plain>立即运行</el-button>
+        <el-button type="primary" plain @click="timingExecution">定时执行</el-button>
       </div>
-      <el-button class="select-btn" plain @click="selectData">查看已选模型</el-button>
+      <el-button class="select-btn" type="primary" plain @click="selectData">查看已选模型</el-button>
     </div>
     <el-dialog
       title="当前已选模型"
@@ -400,21 +400,14 @@ export default {
           };
           runTaskRels.push(runTaskRel);
         }
-        let runType = 3
-        if(this.timingExecutionIsSee){
-          runType = 2
-        }
-        if(this.runimmediatelyIsSee){
-          runType = 3
-        }
-        var runTask = {
-          runTaskUuid: runTaskUuid,
-          batchUuid: batchUuid,
-          runTaskName: "系统添加",
-          runType: runType,
-          timingExecute:dateTime,
-          runTaskRels: runTaskRels,
-        };
+          var runTask = {
+            runTaskUuid: runTaskUuid,
+            batchUuid: batchUuid,
+            runTaskName: "系统添加",
+            runType: 3,
+            timingExecute:dateTime,
+            runTaskRels: runTaskRels,
+          };
         addRunTaskAndRunTaskRel(runTask).then((resp) => {
           if (resp.data == true) {
             this.$notify({
