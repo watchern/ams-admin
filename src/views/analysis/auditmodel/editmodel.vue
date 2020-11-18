@@ -1269,7 +1269,7 @@ export default {
 <style scoped>
 .sql-editor{
   height: 680px;
-  overflow-y:scroll
+  /* overflow-y:scroll */
 }
 
 .display{
