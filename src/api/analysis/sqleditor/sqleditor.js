@@ -442,7 +442,12 @@ export function initTableTree(userId) {
                 // 处理拿回来的数据 处理成列表
                 const columns = []
                 for (let i = 0; i < result.data.length; i++) {
-                  columns.push(result.data[i].colName)
+                  if(result.data[i].chnName === "" || result.data[i].chnName == null || result.data[i].chnName == undefined){
+                    columns.push(result.data[i].colName)
+                  }
+                  else{
+                    columns.push(result.data[i].chnName)
+                  }
                 }
                 if (columns.length > 0) {
                   CodeMirror.tableColMapping[tableName] = columns
@@ -1360,22 +1365,33 @@ export function getSelectSql(menuId) {
   var nodes = zTreeObj.getSelectedNodes()
   if (nodes.length > 0) {
     var tableName = nodes[0].name
+    var tableMetaUuid = nodes[0].id
     var columns = CodeMirror.tableColMapping[tableName]
     var oldSql = editorObj.getValue()
     if (!columns || (columns && columns.length === 0)) {
       request({
-        baseURL: analysisUrl,
-        url: '/SQLEditorController/getTableColsByName',
-        method: 'get',
-        params: { tableName: tableName }
+        baseURL: dataUrl,
+        url: '/tableMeta/getCols',
+        method: 'post',
+        params: { tableMetaUuid: tableMetaUuid }
       }).then(result => {
-        if (result.data.isError) {
-          alert('错误')
+        if (result.data == undefined || result.data == null) {
+          return;
         } else {
-          if (result.data.columns && result.data.columns.length > 0) {
-            CodeMirror.tableColMapping[tableName] = result.data.columns
-            editorObj.options.hintOptions.tables[tableName] = result.data.columns
-            getSelectSQLByColumns(result.data.columns, tableName, oldSql, null)
+          console.log(result.data)
+          if (result.data && result.data.length > 0) {
+            var columns = [];
+            for(var i = 0;i < result.data.length;i++){
+              if(result.data[i].chnName == "" || result.data[i].chnName == null || result.data[i].chnName == undefined){
+                columns.push(result.data[i].colName)
+              }
+              else{
+                columns.push(result.data[i].chnName)
+              }
+            }
+            CodeMirror.tableColMapping[tableName] = columns
+            editorObj.options.hintOptions.tables[tableName] = columns
+            getSelectSQLByColumns(columns, tableName, oldSql, null)
           } else {
           }
         }
