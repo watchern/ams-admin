@@ -16,7 +16,7 @@
     </el-dialog>
     <el-row v-if="myFlag">
       <el-button type="primary" @click="exportExcel">导出</el-button>
-      <el-button type="primary">图标显示</el-button>
+      <el-button type="primary">图表展示</el-button>
       <el-button type="primary" @click="getValues">关联项目</el-button>
       <el-button
         type="primary"
@@ -41,7 +41,7 @@
       <downloadExcel :data="tableData" :fields="json_fields" :name="excelName">
         <el-button type="primary" @click="modelResultExport" class="oper-btn export-2"></el-button>
       </downloadExcel>
-      <el-button type="primary">图标展示</el-button>
+      <el-button type="primary" title="图表展示">图表展示</el-button>
     </el-row>
     <!-- 使用ag-grid-vue组件 其中columnDefs为列，rowData为表格数据 -->
     <ag-grid-vue
