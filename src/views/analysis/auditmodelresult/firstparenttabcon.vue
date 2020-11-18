@@ -381,12 +381,12 @@ export default {
       } else {
         var paramShowStr = "";
         var params = JSON.parse(row.settingInfo).paramsArr;
-        if (params == undefined || params.length == 0) {
+        if (params == undefined) {
           return "无";
         } else {
           for (var i = 0; i < params.length; i++) {
             paramShowStr +=
-              params[i].paramName + " : " + params[i].paramValue + "\r\n";
+              params[i].name + " : " + params[i].paramValue + "\r\n";
           }
           // var paramsArr = JSON.stringify(JSON.parse(row.settingInfo).paramsArr);
           return paramShowStr;

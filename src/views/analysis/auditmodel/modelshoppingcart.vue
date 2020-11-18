@@ -2,11 +2,11 @@
   <div id="drag">
     <div class="title">
       <h2>已选择模型</h2>
-      <div style="display: none">
-        <a class="min" href="javascript:" title="最小化"></a>
-        <a class="max" href="javascript:" title="最大化"></a>
-        <a class="revert" href="javascript:" title="还原"></a>
-        <a class="close" href="javascript:" title="关闭"></a>
+      <div>
+        <a style="display:none;" class="min el-icon-minus" href="javascript:" title="最小化"></a>
+        <a style="display:none;" class="max" href="javascript:" title="最大化"></a>
+        <a style="display:none;" class="revert" href="javascript:" title="还原"></a>
+        <a class="close el-icon-close" href="javascript:" title="关闭"></a>
       </div>
     </div>
     <div class="resizeL"></div>
@@ -400,11 +400,18 @@ export default {
           };
           runTaskRels.push(runTaskRel);
         }
+        let runType = 3;
+          if(this.timingExecutionIsSee){
+            runType = 2
+          }
+          if(this.runimmediatelyIsSee){
+            runType = 3
+          }
           var runTask = {
             runTaskUuid: runTaskUuid,
             batchUuid: batchUuid,
             runTaskName: "系统添加",
-            runType: 3,
+            runType: runType,
             timingExecute:dateTime,
             runTaskRels: runTaskRels,
           };
@@ -412,7 +419,7 @@ export default {
           if (resp.data == true) {
             this.$notify({
               title: "提示",
-              message: "运行成功",
+              message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
               type: "success",
               duration: 2000,
               position: "bottom-right",
