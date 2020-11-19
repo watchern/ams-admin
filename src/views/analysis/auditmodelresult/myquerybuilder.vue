@@ -40,6 +40,7 @@ export default {
      */
     setQueryBuilderColumn() {
       const queryRules = [];
+      console.log(this.columns.columnList)
       for (let i = 0; i < this.columns.columnList.length; i++) {
         const operators = this.getQueryBuilderOperators(
           this.columns.columnList[i]
@@ -70,7 +71,7 @@ export default {
      */
     getQueryBuilderOperators(columnObj) {
       let operators = [];
-      if (columnObj.columnType.toUpperCase().indexOf("TIMESTAMP") != -1) {
+      if (columnObj.columnType.toUpperCase().indexOf("TIMESTAMP") != -1 || columnObj.columnType.toUpperCase().indexOf("RAW") != -1) {
         columnObj.columnType = "VARCHAR";
       }
       if (

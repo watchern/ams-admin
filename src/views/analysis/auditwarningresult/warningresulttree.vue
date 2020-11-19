@@ -6,6 +6,7 @@
       class="tree-search"
     />
     <el-tree
+      icon-class='el-icon-edit'
       :data="data"
       :props="defaultProps"
       @node-click="handleNodeClick"
