@@ -6,13 +6,18 @@
       class="tree-search"
     />
     <el-tree
-      icon-class='el-icon-edit'
       :data="data"
       :props="defaultProps"
       @node-click="handleNodeClick"
       :filter-node-method="filterNode"
       ref="tree"
-    ></el-tree>
+    >
+        <span class="custom-tree-node" slot-scope="{ data }">
+            <span>
+                <i :class="data.icon"></i>{{data.name}}
+            </span>              
+        </span>
+    </el-tree>
   </div>
 </template>
 <script>
@@ -56,7 +61,16 @@ export default {
     },
     initTreeData() {
       findWarningTree().then((resp) => {
-        this.data = resp.data;
+        var jsonTreeNode = resp.data
+        for(var i=0;i<jsonTreeNode.length;i++){
+            jsonTreeNode[i].icon = 'el-icon-bell'
+            if(jsonTreeNode[i].children.length>0){
+              for(var j = 0;j<jsonTreeNode[i].children.length;j++){
+                  jsonTreeNode[i].children[j].icon = 'el-icon-s-order'
+              }
+            }
+        }
+        this.data = jsonTreeNode
       });
     },
   },
