@@ -11,12 +11,14 @@
     <div align="right" style="width: 70%">
       <el-row>
         <el-button
+        v-if="false"
           type="primary"
           @click="relationProject('453453', '项目2')"
           :disabled="buttonIson.AssociatedBtn"
           class="oper-btn refresh"
         ></el-button>
         <el-button
+        v-if="false"
           type="danger"
           @click="RemoverelationProject('asdasdasdas')"
           :disabled="buttonIson.DisassociateBtn"
@@ -176,7 +178,7 @@
       />
       <el-table-column fixed="right" label="操作" width="150px">
         <template slot-scope="scope">
-          <el-button type="primary" @click="reRun(scope.row)"
+          <el-button type="primary" @click="reRun(scope.row)" size="mini"
             >重新运行</el-button
           >
         </template>

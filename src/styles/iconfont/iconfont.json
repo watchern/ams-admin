@@ -6,6 +6,146 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1115024",
+      "name": "查询",
+      "font_class": "oper-search",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "16895650",
+      "name": "bxs-rename",
+      "font_class": "oper-rename",
+      "unicode": "e83e",
+      "unicode_decimal": 59454
+    },
+    {
+      "icon_id": "1262483",
+      "name": "公众号授权",
+      "font_class": "oper-auth",
+      "unicode": "e714",
+      "unicode_decimal": 59156
+    },
+    {
+      "icon_id": "1413445",
+      "name": "维护",
+      "font_class": "oper-setting-2",
+      "unicode": "e69f",
+      "unicode_decimal": 59039
+    },
+    {
+      "icon_id": "8897314",
+      "name": "授权",
+      "font_class": "oper-auth-2",
+      "unicode": "e670",
+      "unicode_decimal": 58992
+    },
+    {
+      "icon_id": "17412198",
+      "name": "Document Copy-1",
+      "font_class": "oper-copy",
+      "unicode": "e66c",
+      "unicode_decimal": 58988
+    },
+    {
+      "icon_id": "17412231",
+      "name": "Copy Move-1",
+      "font_class": "oper-move",
+      "unicode": "e672",
+      "unicode_decimal": 58994
+    },
+    {
+      "icon_id": "5686568",
+      "name": "上移（面）",
+      "font_class": "oper-up",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "5686678",
+      "name": "下移（面）",
+      "font_class": "oper-down",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "5687606",
+      "name": "置底（面）",
+      "font_class": "oper-down-2",
+      "unicode": "e61a",
+      "unicode_decimal": 58906
+    },
+    {
+      "icon_id": "5687802",
+      "name": "置顶（面）",
+      "font_class": "oper-up-2",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    },
+    {
+      "icon_id": "7255939",
+      "name": "表格设置",
+      "font_class": "oper-table",
+      "unicode": "e720",
+      "unicode_decimal": 59168
+    },
+    {
+      "icon_id": "7313848",
+      "name": "显示",
+      "font_class": "oper-right",
+      "unicode": "e742",
+      "unicode_decimal": 59202
+    },
+    {
+      "icon_id": "7313849",
+      "name": "隐藏",
+      "font_class": "oper-left",
+      "unicode": "e743",
+      "unicode_decimal": 59203
+    },
+    {
+      "icon_id": "7314852",
+      "name": "删除列",
+      "font_class": "oper-delete-col",
+      "unicode": "e746",
+      "unicode_decimal": 59206
+    },
+    {
+      "icon_id": "7315049",
+      "name": "插入列",
+      "font_class": "oper-insert-col",
+      "unicode": "e747",
+      "unicode_decimal": 59207
+    },
+    {
+      "icon_id": "7317353",
+      "name": "下移",
+      "font_class": "oper-down-3",
+      "unicode": "e74b",
+      "unicode_decimal": 59211
+    },
+    {
+      "icon_id": "7317458",
+      "name": "上移",
+      "font_class": "oper-up-3",
+      "unicode": "e74d",
+      "unicode_decimal": 59213
+    },
+    {
+      "icon_id": "657266",
+      "name": "右对齐",
+      "font_class": "oper-sort",
+      "unicode": "e652",
+      "unicode_decimal": 58962
+    },
+    {
+      "icon_id": "9664591",
+      "name": "保存",
+      "font_class": "oper-save",
+      "unicode": "e67e",
+      "unicode_decimal": 59006
+    },
+    {
       "icon_id": "5321591",
       "name": "Excel",
       "font_class": "excel",

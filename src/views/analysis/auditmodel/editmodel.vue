@@ -41,7 +41,7 @@
         </div>
       </div>
       <div ref="basicInfo" class="detail-form">
-        <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules">
+        <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules" :disabled="isBanEdit">
           <el-row>
             <el-col :span="15">
               <el-form-item label="模型名称" prop="modelName">
@@ -111,7 +111,7 @@
         </el-form>
       </div>
       <div ref="modelDesign" class="display div-width">
-        <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules">
+        <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id">
             <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" class="sql-editor" />
@@ -130,16 +130,16 @@
       <div ref="modelResultOutputCol" class="display default-value">
         <p class="p-div">注意：只显示最后的结果列</p>
         <div class="model-result-output-col">
-          <el-table ref="columnData" :data="columnData" class="div-width">
+          <el-table ref="columnData" :data="columnData" class="div-width" >
             <el-table-column prop="outputColumnName" label="输出列名" width="180" />
             <el-table-column prop="dataCoding" label="数据转码" width="180">
               <template slot-scope="scope">
-                <SelectTransCode ref="SelectTransCode" :transuuid.sync="scope.row.dataCoding"/>
+                <SelectTransCode ref="SelectTransCode" :transuuid.sync="scope.row.dataCoding" />
               </template>
             </el-table-column>
             <el-table-column prop="columnName" label="是否显示" width="80">
               <template slot-scope="scope">
-                <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1">
+                <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1" :disabled="isBanEdit">
                   <el-option label="是" :value="1" />
                   <el-option label="否" :value="0" />
                 </el-select>
@@ -147,7 +147,7 @@
             </el-table-column>
             <el-table-column prop="columnName" label="对应业务字段" width="180">
               <template slot-scope="scope">
-                <el-select v-model="scope.row.businessFieldUuid" value="-1">
+                <el-select v-model="scope.row.businessFieldUuid" value="-1" :disabled="isBanEdit">
                   <el-option
                     v-for="state in businessColumnSelect"
                     :key="state.attrCode"
@@ -159,7 +159,7 @@
             </el-table-column>
             <el-table-column prop="columnName" label="别名" width="180">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" />
+                <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" :disabled="isBanEdit" />
               </template>
             </el-table-column>
             <!--          <el-table-column prop="columnType" label="字段类型标记" width="180">
@@ -187,7 +187,7 @@
       </div>
       <div id="modelDetailDiv">
         <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id" class="display default-value">
-          <ModelDetail ref="child" :columns="columnData" :data="modelDetail.data" :tree-id="modelDetail.id" @updateTreeNode="updateTreeNode" />
+          <ModelDetail ref="child" :operationtype="operationObj.operationType" :columns="columnData" :data="modelDetail.data" :tree-id="modelDetail.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
       <div ref="chartConfig" class="display default-value">
@@ -202,7 +202,7 @@
       </div>
       <div ref="filterShowDiv">
         <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id" class="display default-value">
-          <ModelFilterShow ref="modelFilterSHowChild" :columns="columnData" :data="filterShow.data" :tree-id="filterShow.id" @updateTreeNode="updateTreeNode" />
+          <ModelFilterShow ref="modelFilterSHowChild" :operationtype="operationObj.operationType" :columns="columnData" :data="filterShow.data" :tree-id="filterShow.id" @updateTreeNode="updateTreeNode" />
         </div>
       </div>
     </el-container>
@@ -220,7 +220,7 @@
         <el-button @click="modelFolderTreeDialog=false">取消</el-button>
       </div>
     </el-dialog>
-    <div ref="btnDivRef" class="div-btn">
+    <div ref="btnDivRef" class="div-btn" v-show="isShowBtn">
       <el-button type="primary" @click="save">保存</el-button>
       <el-button @click="closeWinfrom">取消</el-button>
     </div>
@@ -241,7 +241,7 @@ import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 export default {
   name: 'EditModel',
   components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode },
-  props: ['openValue', 'operationObj'],
+  props: ['openValue'],
   data() {
     return {
       treeNodeData: [
@@ -289,6 +289,10 @@ export default {
       },
       //是否显示审计事项树
       auditItemTree:false,
+      //是否显示保存取消按钮
+      isShowBtn:true,
+      //是否禁止编辑
+      isBanEdit:false,
       //是否显示模型分类树
       modelFolderTreeDialog:false,
       //列数据
@@ -347,6 +351,8 @@ export default {
       modelTypeObj:[],
       //关闭窗体时候用的窗体名
       formName:"",
+      //操作对象
+      operationObj:{},
       basicInfoRules: {
         modelName: [
           { type: 'string', required: true, message: '请输入模型名称', trigger: 'blur' }
@@ -377,23 +383,28 @@ export default {
     }
   },
   created() {
+    this.operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
   },
   mounted() {
     this.initEvent()
-    var operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
-    this.initData(operationObj)
+    this.initData(this.operationObj)
     // 如果为2则反显要修改的数据
-    if (operationObj.operationType == 2) {
+    if (this.operationObj.operationType == 2) {
       this.isUpdate = true
-      var model = operationObj.model
+      var model = this.operationObj.model
       this.displayData(model)
       this.formName = "修改模型"
     }
-    if (operationObj.operationType == 3) {
+    // 如果为2则反显要显示的数据
+    if (this.operationObj.operationType == 3) {
       this.isUpdate = true
-      var model = operationObj.model
+      var model = this.operationObj.model
       this.displayData(model)
-      this.formName = operationObj.formName
+      this.formName = this.operationObj.formName
+      //隐藏按钮
+      this.isShowBtn = false
+      //禁用所有界面可编辑元素
+      this.isBanEdit = true
     }
     else{
       this.formName = "新增模型"
@@ -1065,6 +1076,10 @@ export default {
       let selectNode = this.$refs.modelFolderTree.getSelectNode()
       if(selectNode.id == undefined){
         this.$message({ type: 'info', message: "请选择业务分类"})
+        return
+      }
+      if(selectNode.pid == 0 || selectNode.pid == null || selectNode.pid == undefined){
+        this.$message({ type: 'info', message: '不允许建立在根目录' })
         return
       }
       else{
