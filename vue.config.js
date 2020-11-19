@@ -56,7 +56,7 @@ module.exports = {
         //target: 'http://139.159.246.94:1064'  远程测试环境
       },
       '/base': {
-        target: 'http://localhost:8085'
+        target: 'http://139.159.246.94:1091'
       },
       '/analysis':{
         target:'http://localhost:8086'
