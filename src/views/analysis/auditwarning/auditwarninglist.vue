@@ -235,9 +235,12 @@ export default {
             })
             return
           }
-          this.$message({
-            type: 'success',
-            message: '删除成功'
+          this.$notify({
+            title:'提示',
+            message:'删除成功',
+            type:'info',
+            duration:2000,
+            position:'bottom-right'
           })
           this.getList()
         })
@@ -262,11 +265,14 @@ export default {
               type: 'error',
               message: '保存预警信息失败!'
             })
-            return;
+            return
           }
-          this.$message({
-            type: 'success',
-            message: '保存预警信息成功!'
+          this.$notify({
+            title:'提示',
+            message:'保存预警信息成功!',
+            type:'info',
+            duration:2000,
+            position:'bottom-right'
           })
           this.editDialogVisible = false
           this.getList()
@@ -278,11 +284,14 @@ export default {
               type: 'error',
               message: '保存预警信息失败!'
             })
-            return;
+            return
           }
-          this.$message({
-            type: 'success',
-            message: '保存预警信息成功!'
+          this.$notify({
+            title:'提示',
+            message:'保存预警信息成功!',
+            type:'info',
+            duration:2000,
+            position:'bottom-right'
           })
           this.editDialogVisible = false
           this.getList()
