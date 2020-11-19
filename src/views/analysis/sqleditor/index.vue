@@ -794,7 +794,7 @@ export default {
 }
 
 .data-show{
-  margin-top: 45px;
+  /* margin-top: 45px; */
   width: 98.7%;
   height: 100%;
 }
