@@ -477,7 +477,7 @@ export default {
           var runTask = { runUserName: query.runUserName };
         }
         if(query.runTaskUuid == null || query.runTaskUuid == ""){
-          var runTask = { runTaskUuid: query.runTaskUuid }
+          query.runTaskUuid = '1'
         }
         query.model = model;
         query.runTask = runTask;
