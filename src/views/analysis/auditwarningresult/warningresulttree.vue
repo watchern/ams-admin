@@ -42,8 +42,9 @@ export default {
      * 点击树节点时候触发
      */
     handleNodeClick(data) {
-      this.listLoading = true;
-      this.initData(data.id);
+        if(data.pid!='NULL'){
+            this.$emit("clickChangeTable",data.id);
+        }
     },
     /**
      * 过滤树节点方法
@@ -54,7 +55,7 @@ export default {
     },
     initTreeData() {
       findWarningTree().then((resp) => {
-        this.data = resp.data
+        this.data = resp.data;
       });
     },
   },
