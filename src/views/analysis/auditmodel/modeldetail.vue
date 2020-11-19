@@ -5,7 +5,7 @@
     <p style="color:silver;font-size:large">———————————————————————————</p>
     <el-container style="height: 450px;">
       <div ref="basicInfo">
-        <el-form ref="basicInfoForm" :model="form" :rules="rules" class="detail-form">
+        <el-form ref="basicInfoForm" :model="form" :rules="rules" class="detail-form" :disabled="isBanEdit">
           <el-row>
             <el-col :span="24">
               <el-form-item label="名称" prop="modelDetailName">
@@ -81,7 +81,7 @@
           </div>
           <div ref="relTableDivParent" style="display: none;">
             <el-row>
-                <el-form-item label="被关联表" prop="relationObjectUuidTable">
+                <el-form-item label="被关联表" prop="relationObjectUuidTable" >
                   <el-col :span="20">
                     <el-input v-model="form.relationObjectUuid" style="display: none" :disabled="true"></el-input>
                     <el-input v-model="form.relationObjectName" :disabled="true"></el-input>
@@ -137,7 +137,7 @@
     <el-dialog v-if="dataTableTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%">
       <data-tree :dataUserId="dataUserId" ref="dataTableTree" :sceneCode="sceneCode"></data-tree>
       <div slot="footer">
-        <el-button type="primary" @click="getDataTable">确定</el-button>
+        <el-button tvype="primary" @click="getDataTable">确定</el-button>
         <el-button @click="dataTableTree = false">取消</el-button>
       </div>
     </el-dialog>
@@ -164,7 +164,7 @@ import { selectModel,getTableCol } from '@/api/analysis/auditmodel'
 export default {
   name: 'EditModel',
   components: { ModelFolderTree,dataTree,myQueryBuilder},
-  props: ['columns', 'treeId', 'data'],
+  props: ['columns', 'treeId', 'data','operationtype'],
   data() {
     return {
       form: {
@@ -203,6 +203,8 @@ export default {
       queryRules: {},
       //关联表数组
       relTable: [],
+      //是否禁止编辑
+      isBanEdit:false,
       //关联表列数组
       relTableColumn: [],
       currentFilterInputId:'',
@@ -261,6 +263,10 @@ export default {
           }
           this.relTable = this.data.modelDetailConfig
           this.setQueryBuilderColumn()
+        }
+        //判断是查看还是编辑
+        if(this.operationtype == 3){
+          this.isBanEdit = true
         }
       }
     },
