@@ -580,7 +580,7 @@ export default {
         return
       }
       this.$message({
-        type: 'info',
+        type: 'error',
         message: '请最少选择一个模型!'
       })
     },
@@ -629,18 +629,10 @@ export default {
       let isSubmit = false;
       this.$refs["baseDataForm"].validate((valid) => {
         if(!valid){
-          this.$message({
-            type: 'error',
-            message: '基本信息校验失败!'
-          })
           this.tabShow = "baseInfo"
         } else {
           this.$refs["executeDataForm"].validate((valide) => {
               if(!valide){
-                this.$message({
-                  type: 'error',
-                  message: '执行信息校验失败!'
-                })
                 this.tabShow = "executeInfo"
               }else{
                 //将前端表单组织成要存储的对象
@@ -648,21 +640,26 @@ export default {
                 isSubmit = this.auditWarningSave
                 if(this.auditWarningSave.warningTaskRel.length == 0){
                   this.$message({
-                    type: 'error',
+                    type: 'info',
                     message: '请选择要执行的模型或指标'
                   })
+                  his.tabShow = "baseInfo"
                   isSubmit = false;
                 }
                 //非周期执行需要校验执行时间 执行时间必须大于当前时间
                 if(this.auditWarningSave.executeMode != "3"){
                   let cuurDate = new Date()
                   for(let exeTime of this.auditWarningSave.warningExecuteTime){
+                    if(typeof exeTime.executeTime == "string"){
+                      exeTime.executeTime = new Date(exeTime.executeTime);
+                    }
                     if(exeTime.executeTime <= cuurDate){
                       this.$message({
                         type: 'error',
                         message: '该执行时间小于当前时间' + exeTime.executeTime.toLocaleString()
                       })
                       isSubmit = false;
+                      this.tabShow = "executeInfo"
                       break
                     }
                   }
