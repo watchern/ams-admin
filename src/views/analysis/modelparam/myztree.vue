@@ -112,7 +112,7 @@ export default {
 }
 #horizontal {
   position: absolute;
-  top: 50%;
+ top: 40.5%;
   /* width: 100vh; */
   width: 100%;
   height: 3px;
