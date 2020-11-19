@@ -119,11 +119,11 @@
                 <div class="menuLi" style="">
                     <div id="help" class="icon" data-type="help" style="width:80px !important;height: 60px !important;line-height: 60px !important;">
                         <img class="iconImg" src="../tooldic/images/icon/help.png" alt="帮助">
-                        <a class="iconText" onclick="help()">帮助</a>
+                        <a class="iconText" @click="help">帮助</a>
                     </div>
                 </div>
             </div>
-            <span id="toolBarSpan" onclick="hideAndShow();" style="position: absolute;right: 20px;bottom: 0px;font-weight: 800;">【折叠/展开】</span>
+            <span id="toolBarSpan" @click="hideAndShow" style="position: absolute;right: 20px;bottom: 0px;font-weight: 800;">【折叠/展开】</span>
         </div>
         <div id="accordion" class="panel-group">
             <ul class="nav nav-tabs" role="tablist">
@@ -137,7 +137,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a id="dataTableList" data-toggle="collapse" href="#collapse2" />
+                                <a id="dataTableList" data-toggle="collapse" href="#collapse2"></a>
                             </h4>
                         </div>
                         <div id="collapse2" class="panel-collapse collapse in">
@@ -146,7 +146,7 @@
                                     <input id="searchZtree" type="search" class="form-control" placeHolder="搜索关键字" autocomplete="off" style="padding-right: 35px;">
                                     <img id="searchImg" src="../tooldic/images/icon/search.png" @click="searchZtree">
                                 </div>
-                                <ul id="ztree_datasource" class="ztree" style="overflow: auto;height: 100%;" />
+                                <ul id="ztree_datasource" class="ztree" style="width: 100%;"></ul>
                             </div>
                         </div>
                     </div>
@@ -155,7 +155,7 @@
         </div>
         <div id="graphContainer" class="graphContainer">
             <div id="geDiagramContainer" class="geDiagramContainer">
-                <div id="geBackgroundPage" class="geBackgroundPage" />
+                <div id="geBackgroundPage" class="geBackgroundPage"></div>
             </div>
             <div id="geResultContainer" class="geResultContainer">
                 <div class="layui-tab">
@@ -172,9 +172,9 @@
                         <span class="iconText">最大化</span>
                     </div>
                     <div class="layui-tab-content">
-                        <div class="layui-tab-item"><div id="tableArea" /></div>
-                        <div class="layui-tab-item"><div id="sysInfoArea" /></div>
-                        <div class="layui-tab-item layui-show"><div id="outLineArea" /></div>
+                        <div class="layui-tab-item"><div id="tableArea"></div></div>
+                        <div class="layui-tab-item"><div id="sysInfoArea"></div></div>
+                        <div class="layui-tab-item layui-show"><div id="outLineArea"></div></div>
                     </div>
                 </div>
             </div>
@@ -205,21 +205,22 @@
                     <div class="form-group">
                         <label for="description_show" class="col-sm-2 control-label" style="text-align: right;">描述</label>
                         <div class="col-sm-10">
-                            <textarea id="description_show" class="form-control" placeholder="描述" style="resize:none;min-height:100px;max-height:300px;" readonly />
+                            <textarea id="description_show" class="form-control" placeholder="描述" style="resize:none;min-height:100px;max-height:300px;" readonly></textarea>
                         </div>
                     </div>
                 </div>
                 <div id="nodeRemark" role="tabpanel" class="tab-pane">点击操作节点，可查看节点说明信息</div>
                 <div id="usedResourceTree" role="tabpanel" class="tab-pane">
-                    <ul id="resourceZtree" class="ztree" />
+                    <ul id="resourceZtree" class="ztree"></ul>
                 </div>
                 <div id="historyTree" role="tabpanel" class="tab-pane">
-                    <ul id="historyZtree" class="ztree" />
+                    <ul id="historyZtree" class="ztree"></ul>
                 </div>
             </div>
         </div>
-        <input id="loginUserId" type="hidden" value="<%=LoginUserInfo.getLoginUserId()%>">
-        <input id="loginUserUuid" type="hidden" value="<%=LoginUserInfo.getLoginUserUUID()%>">
+        <el-dialog :visible.sync="helpDialogVisible" title="帮助">
+            <Help/>
+        </el-dialog>
         <!-- 右 -->
         <div id="rootMenu" class="rightMenu">
             <ul>
@@ -230,8 +231,8 @@
             <ul>
                 <li @click="viewData">预览数据</li>
                 <li @click="relationTableQuery">关联表查询</li>
-                <li @click="editTable_li">修改表结构</li>
-                <li @click="dropTable_li">删除表</li>
+                <!--<li @click="editTable_li">修改表结构</li>-->
+                <!--<li @click="dropTable_li">删除表</li>-->
             </ul>
         </div>
         <div id="folderMenu_dev" class="rightMenu">
@@ -254,9 +255,9 @@
         </div>
         <div id="H_S_Menu" class="rightMenu">
             <ul>
-                <li @click="hideAndShowToolBar()">折叠上方区域</li>
-                <li @click="hideAndShowLeftArea()">折叠左侧区域</li>
-                <li @click="hideAndShowRightArea()">折叠右侧区域</li>
+                <li @click="hideAndShowToolBar">折叠上方区域</li>
+                <li @click="hideAndShowLeftArea">折叠左侧区域</li>
+                <li @click="hideAndShowRightArea">折叠右侧区域</li>
             </ul>
         </div>
         <form id="saveGraph" class="form-horizontal" style="display:none;overflow-x:hidden">
@@ -273,7 +274,7 @@
             <div class="form-group">
                 <label for="description" class="col-sm-2 control-label" style="text-align: right;">图形描述</label>
                 <div class="col-sm-9">
-                    <textarea id="description" name="description" class="form-control" placeholder="描述" style="resize:none;min-height:150px;max-height:300px;" />
+                    <textarea id="description" name="description" class="form-control" placeholder="描述" style="resize:none;min-height:150px;max-height:300px;"></textarea>
                 </div>
             </div>
         </form>
@@ -298,6 +299,8 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
+    import Help from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/help.vue'
     // 引入后端接口的相关方法
     import { getGraphInfoById, getTableCol } from '@/api/graphtool/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
@@ -339,9 +342,20 @@
             return {
                 zTreeObj: null,
                 resourceZtree: null,
-                historyZtree: null
+                historyZtree: null,
+                resourceRootNode:null,
+                historyRootNode:null,
+                helpDialogVisible:false
             }
         },
+        // computed:{
+        //     ...mapState({
+        //         personcode: state => state.user.code,
+        //         personuuid: state => state.user.personuuid,
+        //         roles: state => state.user.roles
+        //     })
+        // },
+        components:{Help},
         created() {
             this.init()
         },
@@ -359,9 +373,11 @@
         },
         methods: {
             init() {
-                loginUserUuid = this.$store.getters.personuuid
-                const roleArr = this.$store.getters.roles
-                const screenManager = 'screenManager'// 场景查询管理员角色
+                // console.log(this.$store.getters.personcode)
+                // loginUserUuid = this.$store.getters.personuuid
+                loginUserUuid = '2c91808573e740e001744d54e2800006'
+                let roleArr = this.$store.getters.roles
+                let screenManager = 'screenManager'// 场景查询管理员角色
                 if (roleArr.includes(screenManager)) {
                     hasManagerRole = true
                 }
@@ -471,8 +487,7 @@
             },
             initJsp() {
                 var $this = this
-                // var initTree = this.initTree();
-                const initGraphInterval = setInterval(function() {
+                let initGraphInterval = setInterval(function() {
                     if (graph != null) {
                         clearInterval(initGraphInterval)
                         if (typeof openType !== 'undefined') {
@@ -518,34 +533,6 @@
                             openCallBack(oldGraphData)
                         }
                         $this.initTree($this)
-                        /* 左侧数据表树，end*/
-                        // $(".detail-toggle").each(function(index) {
-                        //     $(".detail-toggle").eq(index).click(function() {
-                        //         if(undefined === $(this).prop("show") || $(this).prop("show")) {
-                        //             $(this).parent().next().slideUp();
-                        //             $(this).prop("show", false);
-                        //             $(this).removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
-                        //         } else {
-                        //             $(this).parent().next().slideDown();
-                        //             $(this).prop("show", true);
-                        //             $(this).removeClass("glyphicon-chevron-ups").addClass("glyphicon-chevron-down");
-                        //         }
-                        //
-                        //     });
-                        // });
-
-                        // $("ul.layui-tab-title li").click(function(){
-                        //     var index = $(this).index();
-                        //     if(index === 0){
-                        //         $("#exportAllData").show();
-                        //         $("#viewAllData").show();
-                        //         $("#maxOpen").show();
-                        //     }else{
-                        //         $("#maxOpen").hide();
-                        //         $("#exportAllData").hide();
-                        //         $("#viewAllData").hide();
-                        //     }
-                        // });
                     }
                 }, 1000)
             },
@@ -619,8 +606,7 @@
                             }
                         }, 'json')
                     } else {						// 业务权限环境
-                        const params = { isRightControl: '1', dataUserId: loginUserUuid }
-                        initTableTip(params).then(response => {
+                        initTableTip(loginUserUuid).then(response => {
                             if (response.data == null) {
                                 loading.destroy()
                                 alertMsg('提示', '资源树列表加载出错', 'error')
@@ -634,13 +620,13 @@
                     }
                 }
                 /* 右侧所使用资源树,start*/
-                var resourceRootNode = { 'name': '所用资源', 'displayName': '所用资源', 'level': 0, 'isParent': true, 'open': true, 'type': 'rootNode', 'id': 'resourceRoot', 'pid': null, 'children': [] }
-                obj.resourceZtree = $.fn.zTree.init($('#resourceZtree'), indexJs.resourceSetting, resourceRootNode)
+                this.resourceRootNode = { 'name': '所用资源', 'displayName': '所用资源', 'level': 0, 'isParent': true, 'open': true, 'type': 'rootNode', 'id': 'resourceRoot', 'pid': null, 'children': [] }
+                obj.resourceZtree = $.fn.zTree.init($('#resourceZtree'), indexJs.resourceSetting, this.resourceRootNode)
                 /* 右侧所使用资源树,end*/
 
                 /* 右侧操作痕迹树,start*/
-                var historyRootNode = { 'name': '操作痕迹', 'displayName': '操作痕迹', 'level': 0, 'isParent': true, 'open': true, 'type': 'rootNode', 'id': 'historyRoot', 'pid': null, 'children': [] }
-                obj.historyZtree = $.fn.zTree.init($('#historyZtree'), indexJs.historySetting, historyRootNode)
+                this.historyRootNode = { 'name': '操作痕迹', 'displayName': '操作痕迹', 'level': 0, 'isParent': true, 'open': true, 'type': 'rootNode', 'id': 'historyRoot', 'pid': null, 'children': [] }
+                obj.historyZtree = $.fn.zTree.init($('#historyZtree'), indexJs.historySetting, this.historyRootNode)
                 /* 右侧操作痕迹树,end*/
                 /* 左侧数据表树，start*/
                 loadZtree()
@@ -772,272 +758,6 @@
                     })
                 }
             },
-            editTable_li() {
-                hideRMenu('rMenu')
-                var nodes = this.zTreeObj.getSelectedNodes()
-                if (nodes && nodes.length > 0) {
-                    var loading = $('body').mLoading({ 'text': '正在初始化数据，请稍后……', 'hasCancel': false })
-                    $.post(contextPathAuditAnalysis + '/sqlEditor/getTableColumsInfo', { 'tableName': nodes[0].name }, function(e) {
-                        if (e.success) {
-                            var realTableName = e.data.realTableName
-                            var tableInfo = e.data.tableInfo
-                            var html = '<div id="editTableDiv" style="padding: 10px;">' +
-                                '<div class="row"><div class="col-sm-12"><div class="form-group"><label class="col-sm-4 control-label" style="text-align: right;width:100px;">数据表名称</label>' +
-                                '<div class="col-sm-8"><input type="text" id="importTableName" class="form-control" value="' + nodes[0].name + '"/></div></div></div></div>' +
-                                '<table class="table table-striped" id="editTable"></table></div>'
-                            layer.open({
-                                id: 'editTable_layer',
-                                type: 1,
-                                title: '修改表结构',
-                                content: html,
-                                area: ['1000px', '90%'],
-                                skin: 'layui-layer-lan',
-                                resize: false,
-                                scrollbar: false,
-                                btn: ['保存', '关闭'],
-                                success: function(layero, index) {
-                                    var setting = {
-                                        tableId: 'editTable',
-                                        rownumbers: true, // 序号
-                                        multiselect: false, // 多选框
-                                        divId: 'editTableDiv',
-                                        width: $('#editTableDiv').width() - 20,
-                                        height: 'auto',
-                                        colNames: ['字段名称（隐藏）', '字段类型（隐藏）', '字段长度（隐藏）', '字段名称', '字段类型', '字段长度'],
-                                        colModel: [
-                                            { label: '字段名称（隐藏）', name: 'COLUMN_NAME', hidden: true },
-                                            { label: '字段类型（隐藏）', name: 'DATA_TYPE', hidden: true },
-                                            { label: '字段长度（隐藏）', name: 'DATA_LENGTH', hidden: true },
-                                            { label: '字段名称', name: 'EDIT_COLUMN_NAME', align: 'center',
-                                                formatter: function(cellvalue, options, rowObject) {
-                                                    return "<input class='form-control dataName' type='text' value='" + rowObject.EDIT_COLUMN_NAME + "'/>"
-                                                }
-                                            },
-                                            { label: '字段类型', name: 'EDIT_DATA_TYPE', align: 'center',
-                                                formatter: function(cellvalue, options, rowObject) {
-                                                    var html = ''
-                                                    var type = rowObject.EDIT_DATA_TYPE.toUpperCase()
-                                                    switch (type) {
-                                                        case 'VARCHAR2':
-                                                            html = "<option value='VARCHAR2' selected='selected'>文本</option>" +
-                                                                "<option value='DATE'>日期</option><option value='NUMBER'>数值</option>"
-                                                            break
-                                                        case 'DATE':
-                                                            html = "<option value='VARCHAR2'>文本</option>" +
-                                                                "<option value='DATE' selected='selected'>日期</option><option value='NUMBER'>数值</option>"
-                                                            break
-                                                        case 'NUMBER':
-                                                            html = "<option value='VARCHAR2'>文本</option>" +
-                                                                "<option value='DATE'>日期</option><option value='NUMBER' selected='selected'>数值</option>"
-                                                            break
-                                                    }
-                                                    return "<select class='form-control dataType' data-rowId='" + options.rowId + "'>" + html + '</select>'
-                                                }
-                                            },
-                                            { label: '字段长度', name: 'EDIT_DATA_LENGTH', align: 'left',
-                                                formatter: function(cellvalue, options, rowObject) {
-                                                    var type = rowObject.EDIT_DATA_TYPE.toUpperCase()
-                                                    var html = ''
-                                                    if (type === 'VARCHAR2') {
-                                                        html = "<input class='form-control dataLength' type='number' value='" + rowObject.EDIT_DATA_LENGTH + "'/>"
-                                                    } else {
-                                                        html = "<input class='form-control dataLength' type='number' value='" + rowObject.EDIT_DATA_LENGTH + "' readonly='readonly'/>"
-                                                    }
-                                                    return html
-                                                }
-                                            }
-                                        ]
-                                    }
-                                    $('#editTable').jqGrid(setting)
-                                    for (var i = 0; i < tableInfo.length; i++) {
-                                        tableInfo[i]['EDIT_COLUMN_NAME'] = tableInfo[i].COLUMN_NAME
-                                        tableInfo[i]['EDIT_DATA_TYPE'] = tableInfo[i].DATA_TYPE
-                                        tableInfo[i]['EDIT_DATA_LENGTH'] = tableInfo[i].DATA_LENGTH
-                                        $('#editTable').jqGrid('addRowData', i + 1, tableInfo[i])
-                                    }
-                                    $('.dataType').change(function() {
-                                        var value = $(this).val()
-                                        $(this).find("option[value!='" + value + "']").removeAttr('selected')
-                                        $(this).find("option[value='" + value + "']").attr('selected', 'selected')
-                                        var rowId = parseInt($(this).attr('data-rowId'))
-                                        var rowData = $('#editTable').getRowData(rowId)
-                                        if (value === 'VARCHAR2') {
-                                            $('.dataLength:eq(' + parseInt(rowId - 1) + ')').removeAttr('readonly')
-                                        } else {
-                                            $('.dataLength:eq(' + parseInt(rowId - 1) + ')').attr('readonly', 'readonly')
-                                        }
-                                        if (value === rowData.DATA_TYPE) {
-                                            $('.dataLength:eq(' + parseInt(rowId - 1) + ')').val(rowData.DATA_LENGTH)
-                                        } else {
-                                            if (value === 'VARCHAR2') {
-                                                $('.dataLength:eq(' + parseInt(rowId - 1) + ')').val(1000)
-                                            } else {
-                                                $('.dataLength:eq(' + parseInt(rowId - 1) + ')').val(rowData.DATA_LENGTH)
-                                            }
-                                        }
-                                    })
-                                    loading.destroy()
-                                },
-                                btn1: function(index, layero) {
-                                    var paramData = {
-                                        'realTableName': realTableName,
-                                        'tableId': nodes[0].id
-                                    }
-                                    var hasEditor = false// 是否对表信息做了修改
-                                    var importTableName = $.trim($('#importTableName').val())
-                                    if (importTableName === '') {
-                                        alertMsg('提示', '数据表名称不可为空', 'info')
-                                        return
-                                    }
-                                    if (!verifyReg(importTableName)) {
-                                        alertMsg('提示', '数据表【' + nodes[0].name + '】名称含有特殊字符，请将特殊字符替换为下划线“_”', 'info')
-                                        return
-                                    }
-                                    if (importTableName !== nodes[0].name) {
-                                        paramData.curTableName = importTableName
-                                        hasEditor = true
-                                    }
-                                    // 获取所有行数据
-                                    var rowIds = $('#editTable').getDataIDs()
-                                    if (rowIds.length > 0) {
-                                        var toEditObj = {}// 创建待修改数据表信息的对象
-                                        var verify = true; var message = ''
-                                        for (var i = 0; i < rowIds.length; i++) {
-                                            var rowId = parseInt(rowIds[i])
-                                            var curRowData = $('#editTable').getRowData(rowId)// 获取当前行数据
-                                            var obj = {}
-                                            // 判断字段名称是否被修改过
-                                            var oldColumnName = curRowData.COLUMN_NAME
-                                            var newColumnName = $.trim($('.dataName:eq(' + parseInt(rowId - 1) + ')').val())
-                                            if (newColumnName === '') {
-                                                verify = false
-                                                message = '第' + parseInt(i + 1) + '行的字段名称不能为空'
-                                                break
-                                            }
-                                            if (!verifyReg(newColumnName)) {
-                                                verify = false
-                                                message = '字段【' + newColumnName + '】含有特殊字符，请将特殊字符替换为下划线“_”'
-                                                break
-                                            }
-                                            if (oldColumnName !== newColumnName) {
-                                                obj.newColumnName = newColumnName
-                                                hasEditor = true
-                                            }
-                                            // 判断字段类型是否被修改过
-                                            var oldDataType = curRowData.DATA_TYPE.toUpperCase()
-                                            var newDataType = $.trim($('.dataType:eq(' + parseInt(rowId - 1) + ')').val())
-                                            obj.oldDataType = curRowData.DATA_TYPE
-                                            if (oldDataType !== newDataType) {
-                                                obj.newDataType = newDataType
-                                                hasEditor = true
-                                            }
-                                            // 如果当前字段是文本类型时获取字段长度
-                                            var oldDataLength = curRowData.DATA_LENGTH
-                                            var newDataLength = $.trim($('.dataLength:eq(' + parseInt(rowId - 1) + ')').val())
-                                            if (newDataType === 'VARCHAR2') {
-                                                if (newDataLength === '' || Number(newDataLength) === 0) {
-                                                    verify = false
-                                                    message = '第' + parseInt(i + 1) + '行的字段长度不能为空或0'
-                                                    break
-                                                }
-                                                if (oldDataType === newDataType) {
-                                                    if (Number(newDataLength) < Number(oldDataLength)) {
-                                                        verify = false
-                                                        message = '【' + newColumnName + '】字段的长度不能小于原长度'
-                                                        break
-                                                    }
-                                                    if (Number(newDataLength) > 4000) {
-                                                        verify = false
-                                                        message = '【' + newColumnName + '】字段的长度不能大于4000'
-                                                        break
-                                                    }
-                                                }
-                                                if (oldDataLength !== newDataLength) { // 只有文本类型才需要字段长度属性
-                                                    obj.newDataLength = newDataLength
-                                                    hasEditor = true
-                                                }
-                                            }
-                                            toEditObj[oldColumnName] = obj
-                                        }
-                                        if (verify) {
-                                            paramData.tableInfo = JSON.stringify(toEditObj)
-                                        } else {
-                                            alertMsg('提示', message, 'info')
-                                            return
-                                        }
-                                    }
-                                    if (hasEditor) {
-                                        loading = $('#editTable_layer').parent().mLoading({ 'text': '正在修改数据表信息，请稍后……', 'hasCancel': false })
-                                        $.post(contextPathAuditAnalysis + '/sqlEditor/editTable', paramData, function(e) {
-                                            loading.destroy()
-                                            if (e.success) { // 全部修改成功
-                                                layer.close(index)
-                                                alertMsg('提示', e.msg, 'info')
-                                                refreshMySpaceNode()
-                                            } else {
-                                                if (e.data === true) { // 为true，说明有部分信息修改成功，此时需刷新数据表信息
-                                                    layer.close(index)
-                                                    refreshMySpaceNode()
-                                                    if (paramData.curTableName) {
-                                                        nodes[0].name = importTableName
-                                                        nodes[0].displayName = importTableName
-                                                        this.zTreeObj.updateNode(nodes[0])
-                                                    }
-                                                    this.zTreeObj.selectNode(nodes[0], false, true)
-                                                    editTable()
-                                                    alertMsg('提示', e.msg, 'info')
-                                                } else {
-                                                    alertMsg('提示', e.msg, 'info')
-                                                }
-                                            }
-                                        }, 'json')
-                                    } else {
-                                        alertMsg('提示', '未对数据表结构信息做任何修改操作', 'info')
-                                    }
-                                },
-                                btn2: function(index) {
-                                    layer.close(index)
-                                }
-                            })
-                        } else {
-                            loading.destroy()
-                            alertMsg('提示', '获取表信息失败', 'info')
-                        }
-                    }, 'json')
-                } else {
-                    alertMsg('提示', '请选择数据表', 'info')
-                }
-            },
-            dropTable_li() {
-                hideRMenu('rMenu')
-                var nodes = this.zTreeObj.getSelectedNodes()
-                if (nodes && nodes.length > 0) {
-                    confirmMsg('询问', '确定删除选择的数据表吗?', 'warning', function() {
-                        var loading = $('body').mLoading({ 'text': '正在删除数据表，请稍后……', 'hasCancel': false })
-                        $.ajax({
-                            type: 'post',
-                            url: contextPathAuditAnalysis + '/personSpaceDirectory/deletePersonSpaceDirectoryByTableId',
-                            data: { 'tableIds': [nodes[0].id] },
-                            dataType: 'json',
-                            success: function(data) {
-                                loading.destroy()
-                                if (data.isSuccess) {
-                                    alertMsg('提示', '删除数据表成功', 'success')
-                                    this.zTreeObj.removeNode(nodes[0])
-                                } else {
-                                    alertMsg('提示', '删除数据表失败', 'error')
-                                }
-                            },
-                            error: function(e) {
-                                loading.destroy()
-                                alertMsg('提示', '删除数据表请求失败', 'error')
-                            }
-                        })
-                    }, function() {})
-                } else {
-                    alertMsg('提示', '请选择要删除的数据表', 'warning')
-                }
-            },
             layuiTabClickLi(index) {
                 if (index === 0) {
                     $('#exportAllData').show()
@@ -1051,7 +771,7 @@
             },
             showMoreMenu() { // 处理文件更多菜单
                 var event = event || window.event
-                showRMenu('moreMenu', 'node', event.clientX, event.clientY)
+                indexJs.showRMenu('moreMenu', 'node', event.clientX, event.clientY)
             },
             /**
              * 刷新【个人数据】节点
@@ -1065,12 +785,25 @@
                 if (refreshNodes && refreshNodes.length > 0) {
                     rootDataRefresh(refreshNodes[0])
                 }
+            },
+            hideAndShow(){
+                indexJs.hideAndShow();
+            },
+            hideAndShowToolBar(){
+                indexJs.hideAndShowToolBar();
+            },
+            hideAndShowLeftArea(){
+                indexJs.hideAndShowLeftArea();
+            },
+            hideAndShowRightArea(){
+                indexJs.hideAndShowRightArea();
+            },
+            help(){
+                this.helpDialogVisible = true
             }
         }
     }
 
 </script>
 
-<style scoped type="text/css">
-    /*@import "css/index.css";*/
-</style>
+<style scoped src="@/views/graphtool/tooldic/css/index.css"></style>
