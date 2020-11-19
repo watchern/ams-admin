@@ -56,7 +56,7 @@ module.exports = {
         target: 'http://139.159.246.94:1093'  //远程测试环境
       },
       '/base': {
-        target: 'http://localhost:8085'
+        target: 'http://139.159.246.94:1091'
       },
       '/analysis':{
         target:'http://localhost:8086'
@@ -67,7 +67,7 @@ module.exports = {
       // etl调度模块调用的地址
       '/etlscheduler': {
         // target: 'http://192.168.80.155:8080'
-        target: 'http://localhost:8082/amsetlscheduler',
+        target: 'http://localhost:1092/amsetlscheduler',
         // target: process.env.ETL_API_LOCATION,
         changeOrigin: true,
         pathRewrite: {
