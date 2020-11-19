@@ -1,24 +1,32 @@
 <template>
   <!-- firstParentTabCon.vue界面是父页签第一个页签中的内容 -->
   <div class="app-container">
-    <div class="filter-container">
+    <el-container>
+      <el-aside class="tree-side">
+        <div class="tree-container" style = "height:700px;overflow:auto;">
+    <warningresulttree @clickChangeTable="clickChangeTable"></warningresulttree>
+    </div>
+     </el-aside>
+     <el-container>
+     <el-header style="width: 60%">
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
         @submit="getLikeList"
       />
-    </div>
-    <div align="right" style="width: 70%">
+    </el-header>
+    <el-main>
+    <div align="right" style="width: 60%">
       <el-row>
         <el-button
-        v-if="false"
+          v-if="false"
           type="primary"
           @click="relationProject('453453', '项目2')"
           :disabled="buttonIson.AssociatedBtn"
           class="oper-btn refresh"
         ></el-button>
         <el-button
-        v-if="false"
+         v-if="false"
           type="danger"
           @click="RemoverelationProject('asdasdasdas')"
           :disabled="buttonIson.DisassociateBtn"
@@ -60,7 +68,7 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       height="450px"
-      style="overflow-x: scroll; width: 70%"
+      style="overflow-x: scroll; width: 60%"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column
@@ -176,14 +184,8 @@
         align="center"
         width="200px"
       />
-      <el-table-column fixed="right" label="操作" width="150px">
-        <template slot-scope="scope">
-          <el-button type="primary" @click="reRun(scope.row)" size="mini"
-            >重新运行</el-button
-          >
-        </template>
-      </el-table-column>
     </el-table>
+   </el-main>
     <el-dialog
       title="设置定时时间"
       :visible.sync="settingTimingIsSee"
@@ -200,6 +202,7 @@
         <el-button type="primary" @click="afterSettingTime">确 定</el-button>
       </span>
     </el-dialog>
+    <el-footer>
     <pagination
       v-show="total > 0"
       :total="total"
@@ -207,6 +210,9 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getLikeList"
     />
+    </el-footer>
+    </el-container>
+     </el-container>
   </div>
 </template>
 <script>
@@ -227,8 +233,9 @@ import axios from "axios";
 import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
+import warningresulttree from "@/views/analysis/auditwarningresult/warningresulttree";
 export default {
-  components: { Pagination, QueryField },
+  components: { Pagination, QueryField, warningresulttree },
   data() {
     return {
       tableKey: "errorUuid",
@@ -379,12 +386,12 @@ export default {
      */
     settingInfoParamsArrFormatter(row, column) {
       if (row.settingInfo == null) {
-        return "无";
+        return "";
       } else {
         var paramShowStr = "";
         var params = JSON.parse(row.settingInfo).paramsArr;
         if (params == undefined) {
-          return "无";
+          return "";
         } else {
           for (var i = 0; i < params.length; i++) {
             paramShowStr +=
@@ -448,6 +455,16 @@ export default {
       this.listLoading = true;
       var model = {};
       var runTask = {};
+      if(query==undefined){
+          var query1 = {runTaskUuid:null}
+          query1.runTaskUuid = '1'
+          this.pageQuery.condition = query1;
+        getRunTaskRelByPage(this.pageQuery).then((resp) => {
+        this.total = resp.data.total;
+        this.list = resp.data.records;
+        this.listLoading = false;
+      });
+      }
       if (query) {
         if (query.modelName == null || query.modelName == "") {
           model = null;
@@ -459,15 +476,18 @@ export default {
         } else {
           var runTask = { runUserName: query.runUserName };
         }
+        if(query.runTaskUuid == null || query.runTaskUuid == ""){
+          var runTask = { runTaskUuid: query.runTaskUuid }
+        }
         query.model = model;
         query.runTask = runTask;
         this.pageQuery.condition = query;
-      }
-      getRunTaskRelByPage(this.pageQuery).then((resp) => {
+        getRunTaskRelByPage(this.pageQuery).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
         this.listLoading = false;
       });
+      }
     },
     /**
      * 当多选框改变时触发
@@ -805,21 +825,6 @@ export default {
         });
       }
     },
-    reRun(runTaskRel) {
-      var runType = runTaskRel.runTask.runType;
-      this.nowRunTaskRel = runTaskRel;
-      if (runType == 3) {
-        reRunRunTask(runTaskRel).then((resp) => {
-          if (resp.data == true) {
-            this.getLikeList();
-          } else {
-            this.$message({ type: "info", message: "重新执行失败!" });
-          }
-        });
-      } else if (runType == 2) {
-        this.settingTimingIsSee = true;
-      }
-    },
     runTypeFormate(row) {
       var runType = row.runTask.runType;
       if (runType == 2) {
@@ -846,6 +851,12 @@ export default {
       });
       this.settingTimingIsSee = false;
     },
+    clickChangeTable(runTaskRelUuid){
+      console.log(99999999999999999999999)
+      console.log(typeof runTaskRelUuid)
+        var query = {runTaskUuid:runTaskRelUuid}
+        this.getLikeList(query)
+    }
   },
 };
 </script>
