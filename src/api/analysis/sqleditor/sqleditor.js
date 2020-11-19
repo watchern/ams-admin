@@ -608,15 +608,29 @@ export function initTableTree(userId) {
     zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
   })
 }
-// function zy_hover() {
-//   $(".ztree-hover").on("click",function () {
-//     $(".ztree-hover").removeClass("add-hover")
-//     $(this).addClass("add-hover")
-//   })
-//   $("#rightPart").on("click",function () {
-//     $(".ztree-hover").removeClass("add-hover")
-//   })
-// }
+//表单最大化 
+var maxormin = true 
+export function maxOpenOne() {
+  if(maxormin == true){
+    $("#drag").hide(100)
+    $("#maxOpen").addClass("add-max-size")
+    $("#iconImg").css("display","none")
+    $("#iconImg-huifu").css("display","block")
+    $("#bottomPart").css({"position":"fixed","z-index":"200","top":-20+"%","left":8+"%"})
+    $("#bottomPart").addClass("bottompart-max")
+    maxormin = false
+  }else if(maxormin == false){
+    $("#drag").show(100)
+    $("#maxOpen").removeClass("add-max-size")
+    $("#iconImg").css("display","block")
+    $("#iconImg-huifu").css("display","none")
+    $("#bottomPart").css({"position":"static","z-index":"200","top":0,"left":0})
+    $("#bottomPart").removeClass("bottompart-max")
+    maxormin = true
+  }
+  
+
+}
 /**
  * 初始化参数树
  */
@@ -1709,7 +1723,6 @@ export function refreshCodeMirror(){
   $("#sql").click()
 }
 
-//表单最大化 
 
 
 
