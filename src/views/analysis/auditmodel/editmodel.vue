@@ -1078,6 +1078,10 @@ export default {
         this.$message({ type: 'info', message: "请选择业务分类"})
         return
       }
+      if(selectNode.pid == 0 || selectNode.pid == null || selectNode.pid == undefined){
+        this.$message({ type: 'info', message: '不允许建立在根目录' })
+        return
+      }
       else{
         this.form.modelFolderUuid = selectNode.id
         this.form.modelFolderName = selectNode.label
