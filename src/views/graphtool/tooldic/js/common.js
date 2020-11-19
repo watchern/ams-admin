@@ -840,7 +840,7 @@ function executeAllNode() {
   var key = Object.keys(cells)
   if (key && key.length > 0) {
     for (var i = 0; i < key.length; i++) {
-      if (cells[key[i]].vertex && graph.nodeData[key[i]]) {
+      if (cells[key[i]].vertex === 1 && graph.nodeData[key[i]]) {
         // 如果是节点且节点类型是结果表(无下级节点)
         var parentIds = []; var preNodeData = {}
         if (graph.nodeData[key[i]].nodeInfo.optType === 'newNullNode' && graph.nodeData[key[i]].childrenIds.length === 0) {
@@ -887,7 +887,7 @@ function executeAllNode() {
   confirmMsg('提示', '运行全部的节点耗时较长，是否继续？', 'info', function() {
     for (var i = 0; i < key.length; i++) {
       // 如果是节点且不是原表，则先变更节点的执行状态为未执行
-      if (cells[key[i]].vertex && graph.nodeData[key[i]] && graph.nodeData[key[i]].nodeInfo &&
+      if (cells[key[i]].vertex === 1 && graph.nodeData[key[i]] && graph.nodeData[key[i]].nodeInfo &&
                 graph.nodeData[key[i]].nodeInfo.optType !== 'datasource' && graph.nodeData[key[i]].nodeInfo.nodeExcuteStatus !== 1) {
         graph.nodeData[key[i]].nodeInfo.nodeExcuteStatus = 1
         changeNodeIcon(1, null, key[i])
@@ -1256,7 +1256,7 @@ export function lightHeight(curCellId) {
   var cells = graph.highLight
   if (cells && cells.length > 0) {
     for (var k = 0; k < cells.length; k++) {
-      if (cells[k].edge) {
+      if (cells[k].edge === 1) {
         var h = new mxCellHighlight(graph, '#3e6f96', 2)
         h.highlight(graph.view.getState(cells[k]))
       }
@@ -1273,11 +1273,11 @@ export function lightHeight(curCellId) {
   var parent = graph.getDefaultParent()
   var parentChildren = parent.children
   for (var i = 0; i < parentChildren.length; i++) {
-    if (parentChildren[i].edge && parentChildren[i].target && parentChildren[i].target.id === curCellId) {
+    if (parentChildren[i].edge === 1 && parentChildren[i].target && parentChildren[i].target.id === curCellId) {
       graph.highLight.push(parentChildren[i])// 获取线
       graph.highLight.push(parentChildren[i].source)// 获取节点
     }
-    if (!parentChildren[i].edge && !parentChildren[i].source && parentChildren[i].id === curCellId) {
+    if (parentChildren[i].vertex === 1 && !parentChildren[i].source && parentChildren[i].id === curCellId) {
       graph.highLight.push(parentChildren[i])// 获取当前节点（无父节点时高亮）
     }
   }
@@ -1587,7 +1587,7 @@ function reName() {
       }
       var oldName = graph.curCell.value
       graph.cellLabelChanged(graph.curCell, newVal, null)
-      if (graph.curCell.vertex) {
+      if (graph.curCell.vertex === 1) {
         updateResourceZtreeNodeName(graph.curCell.id, newVal)
         // 更新操作痕迹树
         refrashHistoryZtree('重命名节点【' + newVal + '】')
@@ -1770,7 +1770,7 @@ export function getDataSourceTable() {
   if (parent.children) {
     var parentChildren = parent.children
     for (var i = 0; i < parentChildren.length; i++) {
-      if (!parentChildren[i].edge && graph.nodeData[parentChildren[i].id] && graph.nodeData[parentChildren[i].id].nodeInfo.optType === 'datasource') {
+      if (parentChildren[i].vertex === 1 && graph.nodeData[parentChildren[i].id] && graph.nodeData[parentChildren[i].id].nodeInfo.optType === 'datasource') {
         dataSourceNodeValArr.push(parentChildren[i].value)
       }
     }
@@ -1949,7 +1949,7 @@ function hadNode(edit) {
   var hadNode = false
   for (var i = 0; i < edit.changes.length; i++) {
     var cell = edit.changes[i].cell ? edit.changes[i].cell : edit.changes[i].child
-    if (!cell.edge) {
+    if (cell.vertex === 1) {
       hadNode = true
       break
     }
@@ -2173,7 +2173,7 @@ export function deleteCells(includeEdges) {
     }
     var arr = []			// 将操作的节点信息存根
     for (var i = 0; i < cells.length; i++) {
-      if (!cells[i].edge) {
+      if (cells[i].vertex === 1) {
         nodeIdArr.push(cells[i].id)
         // 找出要删除的节点中的末级节点，更改该末级节点及后续节点的信息，start
         var lastNodeIdArr = []
