@@ -194,7 +194,7 @@ function basicInfoVerify() {
 }
 </script>
 
-<style type="text/css">
+<style scoped type="text/css">
     .label1{
         padding: 12px 5px 0 10px !important;
     }
