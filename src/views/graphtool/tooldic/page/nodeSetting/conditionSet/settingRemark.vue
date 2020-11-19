@@ -182,7 +182,7 @@ export default {
 }
 </script>
 
-<style type="text/css">
+<style scoped type="text/css">
     p{
         line-height: 1.8em;
         word-wrap: break-word;

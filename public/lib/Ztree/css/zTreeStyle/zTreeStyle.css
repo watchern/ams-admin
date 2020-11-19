@@ -8,7 +8,7 @@
 
 #leftPart{
 	box-shadow: 5px 5px 10px #f5f7fa;
-	height: 100%;
+	height: 112%;
 }
 
 #bottomPart{margin-top: 6%;}
@@ -29,35 +29,20 @@
 
 .el-dropdown{margin-left: 10px;}
 
- .ztree .add-hover{
-	background:#f5f7fa
-}
-
-
-.ztree .ztree-hover{ 
-	width: 100%;
-	height: 27px;
-	/* border-radius: 15.5px; */
-	z-index: 1;
-}
-.ztree-hover:hover{
-	background:#f5f7fa
-}
-
 .ztree {
 	margin: 0;
 	margin-top: 20px;
 	margin-bottom: 20px;
 	color: #333;
-	border-radius: 15.5px;
+	overflow: auto;
 }
-
+.ztree::-webkit-scrollbar{height: 0;}
 .ztree ul{
 	padding: 0;
 	margin: 0;
 }
 .ztree li {
-	padding: 0; 
+	padding: 0 0 0 20px; 
 	margin: 0;
 	list-style: none;
 	line-height: 14px;
@@ -65,7 +50,7 @@
 	white-space: nowrap;
 	outline: 0;
 	position: relative;
-	overflow: hidden;
+	width: 100%;
 }
 
 #sidebar div{
@@ -93,21 +78,27 @@
 
 .ztree li ul li{
 	margin: 0;
-	padding: 0 0 0 18px
+	/* padding: 0 0 0 18px */
 }
 .ztree li a {
-	padding: 1px 3px 0 0;
-	margin: 5px 0 5px 0;
+	left: 0;
 	cursor: pointer;
-	height: 17px;
+	width: 229px;
+	height: 23px;
 	color: #333;
 	background-color: transparent;
 	text-decoration: none;
 	vertical-align: top;
 	display: inline-block;
-	position: relative;
+	position: absolute;
+	padding:5px 0 0 40px;
 	z-index: 5;
 }
+
+.ztree li a:hover{
+	background-color: #f5f7fa;
+}
+
 .ztree li a.tmpTargetNode_inner {
 	padding-top: 0px;
 	background-color: #316AC5;
@@ -143,13 +134,12 @@
 	cursor: pointer;
 	outline: none;
 	position: relative;
-	z-index: 5;
+	z-index: 10;
 	background-color: transparent;
 	background-repeat: no-repeat;
 	background-attachment: scroll;
 	background-size: 50%;
 	background-image: url("./img/zTreezy.png");
-	/* background-image: url("./img/zTreeStandard.png"); */
 	*background-image: url("./img/zTreeStandard.gif")
 }
 

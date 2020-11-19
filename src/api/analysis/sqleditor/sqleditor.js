@@ -129,8 +129,8 @@ export function initDragAndDrop() {
       if(iT < left_min){iT = left_min}
       else if(iT > container.clientWidth*.7){iT = container.clientWidth*.7}
       vertical.style.left = iT - 134 +'px' 
-      leftPart.style.width = iT - 134 - 35 + 'px'
-      rightContent.style.width = parseInt(container.clientWidth - iT + 134 -35) + 'px'
+      leftPart.style.width = iT - 126 - 35 + 'px'
+      rightContent.style.width = parseInt(container.clientWidth - iT + 134 -43) + 'px'
       console.log(container.offsetLeft)
       return false
 
@@ -272,7 +272,7 @@ export function initEvent() {
     var scroolY = document.documentElement.scrollTop || document.body.scrollTop
     mouseX = e.pageX || e.clientX + scroolX
     mouseY = e.pageY || e.clientY + scroolY
-    zy_hover()
+    // zy_hover()
   })
 }
 /**
@@ -608,15 +608,15 @@ export function initTableTree(userId) {
     zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
   })
 }
-function zy_hover() {
-  $(".ztree-hover").on("click",function () {
-    $(".ztree-hover").removeClass("add-hover")
-    $(this).addClass("add-hover")
-  })
-  $("#rightPart").on("click",function () {
-    $(".ztree-hover").removeClass("add-hover")
-  })
-}
+// function zy_hover() {
+//   $(".ztree-hover").on("click",function () {
+//     $(".ztree-hover").removeClass("add-hover")
+//     $(this).addClass("add-hover")
+//   })
+//   $("#rightPart").on("click",function () {
+//     $(".ztree-hover").removeClass("add-hover")
+//   })
+// }
 /**
  * 初始化参数树
  */
@@ -1708,3 +1708,10 @@ export function refreshCodeMirror(){
   },1);//让编辑器每次在调用的时候进行自动刷新
   $("#sql").click()
 }
+
+//表单最大化 
+
+
+
+
+
