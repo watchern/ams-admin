@@ -1,4 +1,4 @@
-<template> 
+<template>
   <div class="app-container">
     <div id="container" v-loading="executeLoading">
       <div id="sidebar">
@@ -15,36 +15,38 @@
       </div>
       <div id="rightPart" class="col-sm-10" style="height: 90vh">
         <div id="sqlEditorDiv" class="sql-editor-div">
-          <div class="row table-view-caption" style="margin-left: 30px; height: 40px; padding-top: 8px">
-            <el-button type="primary" size="small" @click="sqlFormat">格式化</el-button>
-            <el-button type="primary" size="small" @click="executeSQL">执行</el-button>
-            <el-button type="primary" size="small" @click="openSqlDraftList">打开SQL</el-button>
-            <el-dropdown>
-              <el-button type="primary" size="small">保存<i class="el-icon-arrow-down el-icon--right"></i></el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="openSaveSqlDialog(1)">保存</el-dropdown-item>
-                <el-dropdown-item @click.native="openSaveSqlDialog(2)">另存为</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-            <el-dropdown type="primary">
-              <el-button type="primary" size="small">工具箱<i class="el-icon-arrow-down el-icon--right"></i></el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="findAndReplace(2)">查找</el-dropdown-item>
-                <el-dropdown-item @click.native="findAndReplace(1)">替换</el-dropdown-item>
-                <el-dropdown-item @click.native="caseTransformation(1)">转大写</el-dropdown-item>
-                <el-dropdown-item @click.native="caseTransformation(2)">转小写</el-dropdown-item>
-                <el-dropdown-item @click.native="selectSqlNotes()">注释选中行</el-dropdown-item>
-                <el-dropdown-item @click.native="selectSqlCancelNotes()">取消注释</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-            <label
-              id="InfoFlag"
-              style="display: none"
-            >SQL必须全部执行后才可保存</label>
-            <input id="flag" type="hidden" value="false">
-            <input id="flag2" type="hidden" value="false">
-            <input id="outColumn" type="hidden" value="">
-          </div>
+          <el-row type="flex" class="row-bg" v-if="power!='warning'">
+            <el-col>
+              <el-button type="primary" size="small" @click="sqlFormat" class="oper-btn show-detail" title="格式化sql"></el-button>
+              <el-button type="primary" size="small" @click="executeSQL" class="oper-btn start" title="执行"></el-button>
+              <el-button type="primary" size="small" @click="openSqlDraftList" class="oper-btn folder" title="打开sql"></el-button>
+              <el-dropdown>
+                <el-button type="primary" size="small" class="oper-btn save" title="保存"></el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item @click.native="openSaveSqlDialog(1)">保存</el-dropdown-item>
+                  <el-dropdown-item @click.native="openSaveSqlDialog(2)">另存为</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+              <el-dropdown type="primary">
+                <el-button type="primary" size="small" class="oper-btn maintain" title="工具箱"></el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item @click.native="findAndReplace(2)">查找</el-dropdown-item>
+                  <el-dropdown-item @click.native="findAndReplace(1)">替换</el-dropdown-item>
+                  <el-dropdown-item @click.native="caseTransformation(1)">转大写</el-dropdown-item>
+                  <el-dropdown-item @click.native="caseTransformation(2)">转小写</el-dropdown-item>
+                  <el-dropdown-item @click.native="selectSqlNotes()">注释选中行</el-dropdown-item>
+                  <el-dropdown-item @click.native="selectSqlCancelNotes()">取消注释</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+              <label
+                id="InfoFlag"
+                style="display: none"
+              >SQL必须全部执行后才可保存</label>
+              <input id="flag" type="hidden" value="false">
+              <input id="flag2" type="hidden" value="false">
+              <input id="outColumn" type="hidden" value="">
+            </el-col>
+          </el-row>
           <div
             id="sqlDraft"
             class="row"
@@ -626,7 +628,7 @@ export default {
       })
     },
     maxOpen(){
-      maxOpenOne()  
+      maxOpenOne()
     }
   }
 }
@@ -794,7 +796,7 @@ export default {
 }
 
 .data-show{
-  margin-top: 45px;
+  /* margin-top: 45px; */
   width: 98.7%;
   height: 100%;
 }
