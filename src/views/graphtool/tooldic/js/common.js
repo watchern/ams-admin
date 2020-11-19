@@ -244,7 +244,7 @@ function autoCreateNode(y, index, name) {
  * @param curNodeId	开始变更的节点ID
  * */
 function getAllChildrenIds(curNodeId) {
-  var idArr = []			// 存放需要变更的节点的ID
+  var idArr = []		// 存放需要变更的节点的ID
   idArr = getIdArr(idArr, curNodeId)
   return idArr
 }
@@ -397,12 +397,12 @@ function verifyExsist(nodeData, arr, curNodeId, filterNodeOptType, filterNodeExe
  * */
 function getExecutingNodeIdArr(curCellId, executingNodeIdArr) {
   var nodeExcuteStatus = graph.nodeData[curCellId].nodeInfo.nodeExcuteStatus
-  if (nodeExcuteStatus == 2) {
+  if (nodeExcuteStatus === 2) {
     executingNodeIdArr.push(curCellId)
     var parentIds = graph.nodeData[curCellId].parentIds
     for (var i = 0; i < parentIds.length; i++) {
       var pre_nodeExcuteStatus = graph.nodeData[parentIds[i]].nodeInfo.nodeExcuteStatus
-      if (pre_nodeExcuteStatus == 2) {
+      if (pre_nodeExcuteStatus === 2) {
         executingNodeIdArr = getExecutingNodeIdArr(parentIds[i], executingNodeIdArr)
       }
     }
@@ -414,7 +414,7 @@ function getExecutingNodeIdArr(curCellId, executingNodeIdArr) {
  * 节点取消执行方法
  * */
 function cancelExecute() {
-  if (graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus != 2) {
+  if (graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus !== 2) {
     alertMsg('错误', '该节点不是正在执行的节点', 'error')
     return
   }
@@ -544,7 +544,7 @@ function createParamNodeHtml(nodeIdArr) {
         for (var j = 0; j < arr.length; j++) { // 循环节点上绑定的参数（复制参数）
           for (var k = 0; k < paramsArr.length; k++) { // 循环所有母版参数
             var moduleParamId = paramsArr[k].ammParamUuid
-            if (moduleParamId === arr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) == -1) { // 匹配复制参数的母版参数ID
+            if (moduleParamId === arr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
               if (arr[j].defaultVal) {
                 paramsArr[k].defaultVal = arr[j].defaultVal
               }
@@ -615,7 +615,7 @@ function createParamNodeHtml(nodeIdArr) {
  */
 function autoExcute() {
   var childrenIds = graph.nodeData[ graph.curCell.id].childrenIds
-  if (childrenIds.length > 0 && childrenIds.length == 1) {
+  if (childrenIds.length > 0 && childrenIds.length === 1) {
     confirmMsg('提示', '节点配置成功，是否立即执行？', 'info', function() {
       var cell = graph.getModel().getCell(childrenIds[0])
       if (cell) {
@@ -793,7 +793,7 @@ function executeNode_callback(notExecuteNodeIdArr) {
           historyNodeName = graph.curCell.value
         }
         // 如果当前节点执行成功，则直接显示结果集
-        if (graph.nodeData[executeCellId] && graph.nodeData[executeCellId].nodeInfo && graph.nodeData[executeCellId].nodeInfo.nodeExcuteStatus == 3) {
+        if (graph.nodeData[executeCellId] && graph.nodeData[executeCellId].nodeInfo && graph.nodeData[executeCellId].nodeInfo.nodeExcuteStatus === 3) {
           var optType = graph.nodeData[executeCellId].nodeInfo.optType
           var type = ''
           if (graph.openType === 2) {
@@ -888,7 +888,7 @@ function executeAllNode() {
     for (var i = 0; i < key.length; i++) {
       // 如果是节点且不是原表，则先变更节点的执行状态为未执行
       if (cells[key[i]].vertex && graph.nodeData[key[i]] && graph.nodeData[key[i]].nodeInfo &&
-                graph.nodeData[key[i]].nodeInfo.optType !== 'datasource' && graph.nodeData[key[i]].nodeInfo.nodeExcuteStatus != 1) {
+                graph.nodeData[key[i]].nodeInfo.optType !== 'datasource' && graph.nodeData[key[i]].nodeInfo.nodeExcuteStatus !== 1) {
         graph.nodeData[key[i]].nodeInfo.nodeExcuteStatus = 1
         changeNodeIcon(1, null, key[i])
       }
@@ -995,7 +995,7 @@ function executeAllNode() {
 function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
   // 更改执行状态图标为执行中
   for (var i = 0; i < nodeIdArr.length; i++) {
-    if (graph.nodeData[nodeIdArr[i]].nodeInfo.nodeExcuteStatus != 2) {
+    if (graph.nodeData[nodeIdArr[i]].nodeInfo.nodeExcuteStatus !== 2) {
       graph.nodeData[nodeIdArr[i]].nodeInfo.nodeExcuteStatus = 2
       changeNodeIcon(2, null, nodeIdArr[i])
     }
@@ -1017,7 +1017,7 @@ function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
     timeout: limitTime, // 超时时间设置，单位毫秒,此处设置20分钟超时
     complete: function(xhr) {
       load.hide()
-      if (xhr.statusText == 'timeout') {				// 如果出现超时，每隔一分钟从缓冲表中查询与当前图形化有关的执行中节点的执行结果信息
+      if (xhr.statusText === 'timeout') {				// 如果出现超时，每隔一分钟从缓冲表中查询与当前图形化有关的执行中节点的执行结果信息
         alertMsg('提示', '执行时间较长，已提交至后台执行，可刷新页面重新查看图形的执行结果', 'info')
       } else {
         if (xhr.responseJSON.isError) {
@@ -1052,10 +1052,10 @@ function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
     if (!graph.nodeData[executeNodeArr[k]]) {		// 若没有当前节点，直接跳过
       continue
     }
-    if (graph.nodeData[executeNodeArr[k]].nodeInfo.nodeExcuteStatus != 2 && stopNodeId == executeNodeArr[k]) {			// 若当前节点是停止节点（只针对于结果表）
+    if (graph.nodeData[executeNodeArr[k]].nodeInfo.nodeExcuteStatus !== 2 && stopNodeId === executeNodeArr[k]) {			// 若当前节点是停止节点（只针对于结果表）
       continue
     }
-    if (graph.nodeData[executeNodeArr[k]].nodeInfo.nodeExcuteStatus == 1) {			// 若当前节点是因取消执行操作变为未执行，直接跳过
+    if (graph.nodeData[executeNodeArr[k]].nodeInfo.nodeExcuteStatus === 1) {			// 若当前节点是因取消执行操作变为未执行，直接跳过
       continue
     }
     // 循环赋值
@@ -1067,26 +1067,26 @@ function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
     var cIdArr = getAllChildrenIds(executeNodeArr[k])
     // 获取当前节点的所有子集合
     var childrenIds = graph.nodeData[executeNodeArr[k]].childrenIds
-    if (nodeExcuteStatus == 3) {
-      if (optType == 'sql') {					// SQL查询器单独处理SQL语句
+    if (nodeExcuteStatus === 3) {
+      if (optType === 'sql') {					// SQL查询器单独处理SQL语句
         var sql = strEncryption(graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql)
         graph.nodeData[executeNodeArr[k]].setting.sql = sql
         graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql = sql
         graph.nodeData[executeNodeArr[k]].nodeInfo.resultSql = strEncryption(graph.nodeData[executeNodeArr[k]].nodeInfo.resultSql)
       }
-      if (optType != 'newNullNode') {					// 如果当前节点是操作节点
-        if (optType == 'layering') {					// 如果节点是数据分层，则需特殊处理
+      if (optType !== 'newNullNode') {					// 如果当前节点是操作节点
+        if (optType === 'layering') {					// 如果节点是数据分层，则需特殊处理
           // 获取当前节点的所有下一级节点
           var childrenIds = graph.nodeData[executeNodeArr[k]].childrenIds
           if (childrenIds.length > 0) {
             var childCount = 0
             for (var j = 0; j < childrenIds.length; j++) {
               var child_nodeExcuteStatus = graph.nodeData[childrenIds[j]].nodeInfo.nodeExcuteStatus
-              if (child_nodeExcuteStatus == 3 || child_nodeExcuteStatus == 2) {
+              if (child_nodeExcuteStatus === 3 || child_nodeExcuteStatus === 2) {
                 childCount++
               }
             }
-            if (childCount == childrenIds.length) {
+            if (childCount === childrenIds.length) {
               changeNodeIcon(3, null, executeNodeArr[k])
             } else {
               changeNodeIcon(1, null, executeNodeArr[k])
@@ -1097,23 +1097,23 @@ function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
           changeNodeIcon(3, null, executeNodeArr[k])
         }
       } else {
-        if (stopNodeId != executeNodeArr[k]) {				// 如果当前结果表不是停止节点
+        if (stopNodeId !== executeNodeArr[k]) {				// 如果当前结果表不是停止节点
           changeNodeIcon(3, null, executeNodeArr[k])
         }
       }
     }
-    if (nodeExcuteStatus == 4) {				// 如果当前节点执行出错，则后置子孙节点状态置为未执行
+    if (nodeExcuteStatus === 4) {				// 如果当前节点执行出错，则后置子孙节点状态置为未执行
       changeNodeIcon(4, null, executeNodeArr[k])
       graph.nodeData[executeNodeArr[k]].nodeInfo.nodeExcuteStatus = 4
-      if (optType != 'newNullNode') {						// 如果当前节点为操作节点
-        if (optType == 'sql') {					// SQL查询器单独处理SQL语句
+      if (optType !== 'newNullNode') {						// 如果当前节点为操作节点
+        if (optType === 'sql') {					// SQL查询器单独处理SQL语句
           var sql = strEncryption(graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql)
           graph.nodeData[executeNodeArr[k]].setting.sql = sql
           graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql = sql
           graph.nodeData[executeNodeArr[k]].nodeInfo.resultSql = strEncryption(graph.nodeData[executeNodeArr[k]].nodeInfo.resultSql)
         }
         for (var t = 0; t < childrenIds.length; t++) {						// 遍历当前节点的所有子集合
-          if ($.inArray(childrenIds[t], executeNodeArr) != -1) {		// 如果子节点ID包含在执行节点队列中，节点状态与当前节点状态保持一致，为执行出错状态
+          if ($.inArray(childrenIds[t], executeNodeArr) > -1) {		// 如果子节点ID包含在执行节点队列中，节点状态与当前节点状态保持一致，为执行出错状态
             if (graph.nodeData[childrenIds[t]].isSet) {
               stopNodeId = executeNodeArr[k]
             } else {
@@ -1124,7 +1124,7 @@ function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
           }
         }
         for (var j = 0; j < cIdArr.length; j++) {						// 遍历当前节点的所有子孙节点集合
-          if ($.inArray(cIdArr[j], executeNodeArr) != -1 && $.inArray(cIdArr[j], childrenIds) == -1) { // 如果子孙节点ID包含在执行节点队列中且不包含在子节点ID集合中（即当前节点的所有孙子节点）
+          if ($.inArray(cIdArr[j], executeNodeArr) > -1 && $.inArray(cIdArr[j], childrenIds) < 0) { // 如果子孙节点ID包含在执行节点队列中且不包含在子节点ID集合中（即当前节点的所有孙子节点）
             graph.nodeData[cIdArr[j]].nodeInfo.nodeExcuteStatus = 1
             changeNodeIcon(1, null, cIdArr[j])
           }
@@ -1136,7 +1136,7 @@ function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
       }
     }
   }
-  if (executeId && executeId != '') {
+  if (executeId && executeId !== '') {
     // 删除缓冲表中的执行节点信息
     $.post(contextPath + '/graphEditor/deleteExecuteNodeInfo', { 'executeId': executeId }, function(e) {})
   }
@@ -1209,7 +1209,7 @@ export function setNodeOutputTypeIcon(status, type) {
 export function changeNodeIcon(nodeExcuteStatus, isSet, id) {
   var curCellId = id || graph.curCell.id
   $('.exestate-mark').each(function(i, v) {
-    if ($(this)[0].getAttribute('nodeId') == curCellId) { // 有两个
+    if ($(this)[0].getAttribute('nodeId') === curCellId) { // 有两个
       if (nodeExcuteStatus && nodeExcuteStatus != null) {
         switch (nodeExcuteStatus) {
           case 1:		// 未执行
@@ -1242,7 +1242,7 @@ export function changeNodeIcon(nodeExcuteStatus, isSet, id) {
  * */
 export function setDataSourceCopyIcon(curCellId) {
   $('.copyIcon-mark').each(function(i, v) {
-    if ($(this)[0].getAttribute('nodeId') == curCellId) {
+    if ($(this)[0].getAttribute('nodeId') === curCellId) {
       $(this).attr('xlink:href', '../../lib/graphtool/images/icon/copyIcon.png')
     }
   })
@@ -1273,7 +1273,7 @@ export function lightHeight(curCellId) {
   var parent = graph.getDefaultParent()
   var parentChildren = parent.children
   for (var i = 0; i < parentChildren.length; i++) {
-    if (parentChildren[i].edge && parentChildren[i].target && parentChildren[i].target.id == curCellId) {
+    if (parentChildren[i].edge && parentChildren[i].target && parentChildren[i].target.id === curCellId) {
       graph.highLight.push(parentChildren[i])// 获取线
       graph.highLight.push(parentChildren[i].source)// 获取节点
     }
@@ -1293,10 +1293,10 @@ export function lightHeight(curCellId) {
 function curNodeSQL() {
   var nodeSql = ''
   var nodeExcuteStatus = graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus
-  if (nodeExcuteStatus == 1) {			// 未执行
+  if (nodeExcuteStatus === 1) {			// 未执行
     alertMsg('提示', '该节点尚未执行，请执行后再查看！', 'info')
     return
-  } else if (nodeExcuteStatus == 2) {			// 执行中
+  } else if (nodeExcuteStatus === 2) {			// 执行中
     alertMsg('提示', '该节点尚未执行完成，请等待执行完成后再查看！', 'info')
     return
   } else {
@@ -1555,14 +1555,14 @@ function showTableDetail(dataTableName, cVal) {
  * */
 function reName() {
   var value = graph.curCell.value
-  var name = graph.curCell.edge == 1 ? '连接线序号' : '节点名称'
+  var name = graph.curCell.edge === 1 ? '连接线序号' : '节点名称'
   var html = '<div class="form-group">' +
         '<label for="databaseName" class="col-sm-3 control-label" style="text-align:right;padding:40px 5px 0 0;">' + name + '</label>' +
         '<div class="col-sm-8" style="padding:35px 5px 0 0;">'
-  if (graph.curCell.edge == 1) {
-    html += '<input type="number" class="form-control" id="nodeName" autocomplete="off" placeholder="重命名" step="1"></input>'
+  if (graph.curCell.edge === 1) {
+    html += '<input type="number" class="form-control" id="nodeName" autocomplete="off" placeholder="重命名" step="1"/>'
   } else {
-    html += '<input type="text" class="form-control" id="nodeName" autocomplete="off" placeholder="重命名"></input>'
+    html += '<input type="text" class="form-control" id="nodeName" autocomplete="off" placeholder="重命名"/>'
   }
   html += '</div></div>'
   layer.open({
@@ -1770,7 +1770,7 @@ export function getDataSourceTable() {
   if (parent.children) {
     var parentChildren = parent.children
     for (var i = 0; i < parentChildren.length; i++) {
-      if (!parentChildren[i].edge && graph.nodeData[parentChildren[i].id] && graph.nodeData[parentChildren[i].id].nodeInfo.optType == 'datasource') {
+      if (!parentChildren[i].edge && graph.nodeData[parentChildren[i].id] && graph.nodeData[parentChildren[i].id].nodeInfo.optType === 'datasource') {
         dataSourceNodeValArr.push(parentChildren[i].value)
       }
     }
@@ -2280,7 +2280,7 @@ export function initPlugIn() {
   $('.checkbox, .radio').css('padding-right', '60px')
 
   $('.selectpicker').change(function() {
-    if (($(this).val()) != null || ($(this).val()) != '') {
+    if (($(this).val()) != null || ($(this).val()) !== '') {
       $(this).parents('.form-group').find('i').remove()
       $(this).parents('.form-group').removeClass('has-error')
       $(this).selectpicker('setStyle', 'btn-danger', 'remove')

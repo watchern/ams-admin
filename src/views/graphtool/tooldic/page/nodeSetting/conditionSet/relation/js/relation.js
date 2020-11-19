@@ -2,13 +2,13 @@ var models = []
 var linkData = []
 var join = []// 储存node对象
 var myDiagram
-// let relationVue = null
+let relationVue = null
 let nodeData = null
 let graph = null
 let layeX = -1
 let layeY = -1
 export var sendVueObj = (_this) => {
-    // relationVue = _this;
+    relationVue = _this;
     graph = _this.graph;
     nodeData = graph.nodeData[graph.curCell.id];
     layeX = _this.layeX
@@ -157,7 +157,7 @@ export function init() {
                     var compare = ''
                     for (var i = 0; i < join[idx].on.length; i++) {
                         var on = join[idx].on[i]
-                        if ((data.fromPort == on.fromPort && data.toPort == on.toPort) || (data.fromPort == on.toPort && data.toPort == on.fromPort)) {
+                        if ((data.fromPort === on.fromPort && data.toPort === on.toPort) || (data.fromPort === on.toPort && data.toPort === on.fromPort)) {
                             compare = on.compare
                         }
                     }
@@ -383,7 +383,7 @@ export function init() {
                 var html = "<tr class='colTr' rtn='" + columnsInfo[k].resourceTableName + "' columnInfo='" + JSON.stringify(columnsInfo[k]) + "'><td>" + columnsInfo[k].rtn + '</td>'
                 html += '<td>' + columnsInfo[k].columnName + '</td>'
                 html += "<td><input type='text' class='newColumn form-control sea_text' value='" + columnsInfo[k].newColumnName + "'/></td>"
-                if (columnsInfo[k].isOutputColumn == 1) {
+                if (columnsInfo[k].isOutputColumn === 1) {
                     html += "<td class='text-center'><div class='ck_" + k + " ckbox icheckbox_square-purple icheck-item icheck[3xrz1] checked'>"
                     html += "<input type='checkbox'  name='" + columnsInfo[k].newColumnName + "' class='form-control  icheck-input icheck[3xrz1]'/></div></td>"
                 } else {
@@ -536,14 +536,13 @@ function addLine(obj, isAdd) {
 
 function addNode(obj) {
     join.push(obj)
-    // toSql();
     document.getElementById('join2').style.display = 'none'
     document.getElementById('select').style.display = 'none'
     document.getElementById('join1').style.display = 'none'
 }
 
 // 查询join里对象的idx
-function indexOfJoin(tableName) {
+export function indexOfJoin(tableName) {
     var idx = -1
     for (var i = 0; i < join.length; i++) {
         if (join[i].key === tableName || join[i].chineseName === tableName) {
@@ -556,42 +555,22 @@ function indexOfJoin(tableName) {
 // 显示表连接关系
 function showJoin(curLine) {
     try {
-        $('#form').html('')
         if (join.length > 0) {
             for (var i = 0; i < join.length; i++) {
                 var joinData = join[i]
                 if ((typeof curLine !== 'undefined' && (curLine.from === joinData.key || curLine.to === joinData.key)) || typeof curLine === 'undefined') {
-                    if ($('#MainTable').length === 0) {
-                        var mainHtml = '<div class="form-group" id="join">' +
-                            '<div class="col-sm-12">' +
-                            '<input name="MainTable" type="text" class="form-control" id="MainTable" disabled="disabled"></input>' +
-                            '</div>' +
-                            '</div>'
-                        $('#form').html(mainHtml)
-                        $('#MainTable').val(joinData.chineseName)
+                    if (!relationVue.joinShow) {
+                        relationVue.mainTableName = joinData.chineseName
+                        relationVue.joinShow = true
                         continue
                     }
-                    var joinHtml = '<div class="form-group">' +
-                        '<label for="" class="col-sm-6 control-label">关联关系：</label>' +
-                        '<div class="col-sm-6">' +
-                        '<select id="type' + i + '" style="width:100%" onchange="changeType(' + i + ')">' +
-                        '<option value="LEFT JOIN">左连接</option>' +
-                        '<option value="RIGHT JOIN">右连接</option>' +
-                        '<option value="INNER JOIN">内连接</option>' +
-                        '<option value="FULL JOIN">外连接</option>' +
-                        '</select>' +
-                        '</div>' +
-                        '</div>' +
-                        '<div class="form-group">' +
-                        '<div class="col-sm-12">' +
-                        '<input name="slaverTable' + i + '" type="text" class="form-control" id="slaverTable' + i + '" disabled="disabled"></input>' +
-                        '</div>' +
-                        '</div>'
-                    $('#join').append(joinHtml)
-                    $('#type' + i).val(joinData.type)
-                    $('#slaverTable' + i).val(joinData.chineseName)
+                    relationVue.joinType = joinData.type
+                    relationVue.slaverTableName = joinData.chineseName
+                    changeType();
+                    relationVue.joinShow = false;
                 }
             }
+            $("#join").show()
         }
     } catch (e) {}
 }
@@ -617,7 +596,6 @@ function addNodeData(node) {
     keyNames.push(node.key)
     for (var i = 0; i < node.fields.length; i++) {
         node.fields[i].id = node.key + 'id' + node.fields[i].name
-        node.fields[i].alias = node.fields[i].alias
         node.fields[i].fun = 'jh'
         node.fields[i].screen = ''
         node.fields[i].condition = ''
@@ -682,7 +660,7 @@ function toSql() {
     return sql
 }
 // 改变右上角表关联字段的选项
-function changeCopare() {
+export function changeCopare() {
     var fromtab = $('#from').val()
     var totab = $('#to').val()
     var fromPort = $('#MainPort').val()
@@ -698,19 +676,15 @@ function changeCopare() {
         }
     }
     showJoin()
-    // toSql();
 }
 // 改变join的类型
-function changeType(i) {
-    var slaverTable = $('#slaverTable' + i).val()
-    var type = $('#type' + i).val()
-    var idx = indexOfJoin(slaverTable)
-    join[idx].type = type
-    // toSql();
+export function changeType() {
+    var idx = indexOfJoin(relationVue.slaverTableName)
+    join[idx].type = relationVue.joinType
     $('#description').show()
     $('#description>p').hide()
     var index = 0
-    switch (type) {
+    switch (relationVue.joinType) {
         case 'LEFT JOIN':
             index = 0
             break
@@ -728,7 +702,7 @@ function changeType(i) {
 }
 
 // 提交方法
-function hb() {
+export function amplify() {
     $('#tjHidden').hide()
     $('#joins').hide()
     $('#fd').hide()
@@ -738,7 +712,7 @@ function hb() {
     document.getElementById('myDiagramDiv').className = 'col-sm-12'
     myDiagram.makeSvg()
 }
-function hbsx() {
+export function reduce() {
     $('#dateTree').outerHeight($(document).height() * 0.585)
     $('#tjHidden').show()
     $('#joins').show()
@@ -749,7 +723,7 @@ function hbsx() {
     myDiagram.makeSvg()
 }
 
-function saveNodeInfo() {
+export function saveNodeInfo() {
     var newColumnArr = []; var columnsInfo = []; var isExsist = false
     var diaGramJson = JSON.parse(myDiagram.model.toJson())				// 获取图表的json串
     var nodeDataArray = diaGramJson.nodeDataArray		// 获取节点（图）的数组数据
@@ -807,8 +781,6 @@ function saveNodeInfo() {
         return false
     }
     // 开始保存节点所有数据信息
-    var sql = toSql()
-    // nodeData.nodeInfo.relationSql = strEncryption(sql);
     nodeData.setting.sqlEdit = myDiagram.model.toJson()
     nodeData.setting.join = join
     nodeData.columnsInfo = columnsInfo
