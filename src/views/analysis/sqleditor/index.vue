@@ -59,9 +59,9 @@
           <textarea id="sql"/>
         </div>
         <div id="horizontal"/>
-        <div id="maxOpen" class="max-size" @click="maxOpenBtn">
+        <div id="maxOpen" class="max-size" @click="maxOpen">
           <img id="iconImg" class="iconImg" alt="最大化">
-          <span class="iconText">最大化</span>
+          <div id="iconImg-huifu" />
         </div>
         <!-- 结果展示和参数输入区域 -->
         <div id="bottomPart" lay-filter="result-data">
@@ -185,7 +185,8 @@ import {
   executeSQL,
   verifySql,
   editorSql,
-  startExecuteSql
+  startExecuteSql,
+  maxOpenOne
 } from '@/api/analysis/sqleditor/sqleditor'
 import sqlDraftList from '@/views/analysis/sqleditor/sqldraftlist'
 import { updateDraft } from '@/api/analysis/sqleditor/sqldraft'
@@ -624,8 +625,8 @@ export default {
         }
       })
     },
-    maxOpenBtn(){
-      alert(123)//zzzz
+    maxOpen(){
+      maxOpenOne()  
     }
   }
 }
@@ -705,11 +706,7 @@ export default {
   width: 20px;
   height: 20px;
   margin-bottom: 4px;
-}
-
-.iconText {
-  font-size: 14px;
-  cursor: pointer;
+  display: inline-block;
 }
 
 #sql {
@@ -781,6 +778,13 @@ export default {
   right: 0;
   top: 3%;
   float: right;
+  z-index: 201;
+}
+
+#rightPart .add-max-size{
+  position: fixed;
+  top: 8%;
+  right: 2%;
 }
 
 .sql-editor-div{
@@ -792,6 +796,7 @@ export default {
 .data-show{
   margin-top: 45px;
   width: 98.7%;
+  height: 100%;
 }
 
 .left-part{

@@ -50,6 +50,7 @@
         >重置</el-button
       >
       <el-button
+        class="oper-btn show"
         :disabled="modelRunResultBtnIson.modelDetailAssBtn"
         v-if="modelDetailButtonIsShow"
         type="primary"

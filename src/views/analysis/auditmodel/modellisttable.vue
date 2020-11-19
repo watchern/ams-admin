@@ -860,6 +860,10 @@ export default {
     getModelListCheckData(){
       return this.$refs.modelListTable.selection
     },
+    /**
+     * 查看模型
+     * @param modelUuid 模型编号
+     */
     selectModelDetail(modelUuid){
       this.isUpdate = true
       selectModel(modelUuid).then(result => {

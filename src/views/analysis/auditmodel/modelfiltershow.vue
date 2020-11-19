@@ -4,7 +4,7 @@
     <p style="color:silver;font-size:large">———————————————————————————</p>
     <el-container style="height: 450px;">
       <div ref="basicInfo" style="float: left">
-        <el-form ref="basicInfoForm" :model="form" :rules="rules" class="detail-form">
+        <el-form ref="basicInfoForm" :model="form" :rules="rules" class="detail-form" :disabled="isBanEdit">
           <el-form-item label="名称" prop="filterName">
             <el-input v-model="form.filterName" @input="nameValueChange" />
           </el-form-item>
@@ -56,7 +56,7 @@ import myQueryBuilder from '@/views/analysis/auditmodelresult/myquerybuilder'
 export default {
   name: 'ModelFilterShow',
   components: { Colorpicker, myQueryBuilder },
-  props: ['columns', 'treeId', 'data'],
+  props: ['columns', 'treeId', 'data','operationtype'],
   data() {
     return {
       form: {
@@ -69,6 +69,7 @@ export default {
         backGroundColor: '',
         queryBuilderJson: {}
       },
+      isBanEdit:false,
       queryRules: {},
       queryBuilderDialogVisible: false,
       rules: {
@@ -100,6 +101,10 @@ export default {
         const colorJson = JSON.parse(this.data.colorJson)
         this.form.fontColor = colorJson.fontColor
         this.form.backGroundColor = colorJson.backGroundColor
+        //判断是查看还是编辑
+        if(this.operationtype == 3){
+          this.isBanEdit = true
+        }
       }
     },
     getForm() {

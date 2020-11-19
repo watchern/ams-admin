@@ -282,7 +282,7 @@ function vilidata_simple() {
 
 </script>
 
-<style type="text/css">
+<style scoped type="text/css">
     td>.form-group{
         margin-bottom: 0;
     }
