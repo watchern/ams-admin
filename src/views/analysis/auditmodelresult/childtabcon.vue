@@ -21,18 +21,21 @@
         @click="exportExcel"
         class="oper-btn export-2"
       ></el-button>
-      <el-button style="display: none"
+      <el-button
+        style="display: none"
         :disabled="modelRunResultBtnIson.chartDisplayBtn"
         type="primary"
         >图表展示</el-button
       >
-      <el-button style="display: none"
+      <el-button
+        style="display: none"
         :disabled="modelRunResultBtnIson.associatedBtn"
         type="primary"
         @click="getValues"
         class="oper-btn refresh"
       ></el-button>
-      <el-button style="display: none"
+      <el-button
+        style="display: none"
         :disabled="modelRunResultBtnIson.disassociateBtn"
         type="primary"
         @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
@@ -415,7 +418,10 @@ export default {
                       str += related[i];
                     }
                   }
-                  this.$message({ type: 'info', message:"关联失败，因为其中" + str + "已经关联" })
+                  this.$message({
+                    type: "info",
+                    message: "关联失败，因为其中" + str + "已经关联",
+                  });
                 }
               }
             );
@@ -428,7 +434,7 @@ export default {
       // 获取选中的数据
       var selRows = this.gridApi.getSelectedRows();
       if (selRows.length == 0) {
-        this.$message({ type: 'info', message: '请选择后再进行关联!' })
+        this.$message({ type: "info", message: "请选择后再进行关联!" });
       }
       this.selectRows = selRows;
     },
@@ -720,7 +726,7 @@ export default {
     openModelDetail() {
       var selRows = this.gridApi.getSelectedRows();
       if (selRows.length < 1) {
-        this.$message({ type: 'info', message: '请选择后再进行关联!' })
+        this.$message({ type: "info", message: "请选择后再进行关联!" });
       } else if (selRows.length == 1) {
         this.options = [];
         for (var i = 0; i < this.modelDetailRelation.length; i++) {
@@ -732,7 +738,7 @@ export default {
         }
         this.modelDetailDialogIsShow = true;
       } else {
-        this.$message({ type: 'info', message: '不能选中多条!' })
+        this.$message({ type: "info", message: "不能选中多条!" });
       }
     },
     /**
@@ -740,42 +746,86 @@ export default {
      */
     modelDetailCetermine() {
       var selectRowData = this.gridApi.getSelectedRows();
-      var detailValue = [];
+      var relationType = null;
+      var objectName = "";
+      var detailConfig = null;
       for (var i = 0; i < this.modelDetailRelation.length; i++) {
-        if (this.modelDetailRelation[i].relationObjectUuid == this.value) {
-          for (
-            var j = 0;
-            j < this.modelDetailRelation[i].modelDetailConfig.length;
-            j++
-          ) {
-            var key = this.modelDetailRelation[i].modelDetailConfig[j]
-              .resultColumn;
-            var obj = { moduleParamId: "", paramValue: "" };
-            obj.moduleParamId = this.modelDetailRelation[i].modelDetailConfig[
-              j
-            ].ammParamUuid;
-            obj.paramValue = selectRowData[0][key.toLowerCase()];
-            detailValue.push(obj);
-          }
+        if ((this.value = this.modelDetailRelation[i].relationObjectUuid)) {
+          relationType = this.modelDetailRelation[i].relationType;
+          objectName = this.modelDetailRelation[i].relationObjectName;
+          detailConfig = this.modelDetailRelation[i].modelDetailConfig;
+          break;
         }
       }
-      findParamModelRelByModelUuid(this.value).then((resp) => {
-        var arr = [];
-        for (var i = 0; i < resp.data.length; i++) {
-          arr.push(JSON.parse(resp.data[i]));
-        }
-        selectModel(this.value).then((resp) => {
-          var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-          const obj = { sqls: sql };
-          startExecuteSql(obj).then((resp) => {
-            if (!resp.data.isError) {
-              this.currentExecuteSQL = resp.data.executeSQLList;
-            } else {
-              this.$message({ type: "info", message: "执行失败" });
+      if (relationType == 1) {
+        debugger
+        var detailValue = [];
+        for (var i = 0; i < this.modelDetailRelation.length; i++) {
+          if (this.modelDetailRelation[i].relationObjectUuid == this.value) {
+            for (
+              var j = 0;
+              j < this.modelDetailRelation[i].modelDetailConfig.length;
+              j++
+            ) {
+              var key = this.modelDetailRelation[i].modelDetailConfig[j]
+                .resultColumn;
+              var obj = { moduleParamId: "", paramValue: "" };
+              obj.moduleParamId = this.modelDetailRelation[i].modelDetailConfig[
+                j
+              ].ammParamUuid;
+              obj.paramValue = selectRowData[0][key.toLowerCase()];
+              detailValue.push(obj);
             }
+          }
+        }
+        findParamModelRelByModelUuid(this.value).then((resp) => {
+          var arr = [];
+          for (var i = 0; i < resp.data.length; i++) {
+            arr.push(JSON.parse(resp.data[i]));
+          }
+          selectModel(this.value).then((resp) => {
+            var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
+            const obj = { sqls: sql };
+            startExecuteSql(obj).then((resp) => {
+              if (!resp.data.isError) {
+                this.currentExecuteSQL = resp.data.executeSQLList;
+              } else {
+                this.$message({ type: "info", message: "执行失败" });
+              }
+            });
           });
         });
-      });
+      } else if (relationType == 2) {
+        //modelOutputColumn
+        var sql = "SELECT * FROM " + objectName + " WHERE ";
+        var filterSql = "";
+        for (var i = 0; i < detailConfig.length; i++) {
+          var eachFilter = detailConfig[i].relFilterValue;
+          loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
+            if (eachFilter.indexOf(this.modelOutputColumn[j]) > -1) {
+              eachFilter = eachFilter.replace(
+                eachFilter,
+                selectRowData[0][this.modelOutputColumn[j].toLowerCase()]
+              );
+              break loop;
+            }
+          }
+          if (i == detailConfig.length - 1) {
+            filterSql += eachFilter;
+          } else {
+            filterSql += eachFilter + " or ";
+          }
+        }
+        sql = sql + filterSql;
+        const obj = { sqls: sql };
+        startExecuteSql(obj).then((resp) => {
+          if (!resp.data.isError) {
+            this.currentExecuteSQL = resp.data.executeSQLList;
+          } else {
+            this.$message({ type: "info", message: "执行失败" });
+          }
+        });
+      }
       this.modelDetailDialogIsShow = false;
       this.modelDetailModelResultDialogIsShow = true;
     },
