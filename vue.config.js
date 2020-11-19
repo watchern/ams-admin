@@ -53,7 +53,7 @@ module.exports = {
       },
       '/amsdata': {
         target: 'http://localhost:8081'
-        //target: 'http://139.159.246.94:1064'  远程测试环境
+        // target: 'http://139.159.246.94:1093'  //远程测试环境
       },
       '/base': {
         target: 'http://localhost:8085'

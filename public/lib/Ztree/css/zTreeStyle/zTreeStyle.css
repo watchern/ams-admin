@@ -11,8 +11,29 @@
 	height: 112%;
 }
 
+.el-tabs--border-card{height: 100%;}
+
+#rightPart .bottompart-max{
+	height: 100%;
+	width: 91%;
+	z-index: 201;
+	top: 0;
+	left: 125px;
+}
+
 #bottomPart{margin-top: 6%;}
 
+#iconImg-huifu{
+	width: 18px;
+	height: 18px;
+	float: left;
+	margin-top: 1px;
+	background: url(./img/minmize.png) 0 0 no-repeat;
+	border: none;
+	display: inline-block;
+	background-size: 100%;
+	display: none;
+}
 .ztree * {
 	padding: 0;
 	margin: 0;
