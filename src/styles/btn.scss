@@ -150,7 +150,7 @@
 .oper-btn.start:after{
   content:'\e608'!important;
 }
-.oper-btn.show:after{
+.oper-btn.show-detail:after{
   content:'\e609'!important;
 }
 .oper-btn.share:after{
@@ -163,5 +163,20 @@
   content:'\e83e'!important;
 }
 .oper-btn.search:after{
-  content:'\e60f'!important;
-}
+   content:'\e60f'!important;
+ }
+ .oper-btn.copy:after{
+   content:'\e66c'!important;
+ }
+  .oper-btn.maintain:after{
+   content:'\e69f'!important;
+ }
+   .oper-btn.auth:after{
+   content:'\e670'!important;
+ }
+   .oper-btn.move:after{
+   content:'\e672'!important;
+ }
+    .oper-btn.save:after{
+   content:'\e67e'!important;
+ }
