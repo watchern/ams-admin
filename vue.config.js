@@ -51,11 +51,19 @@ module.exports = {
         target: process.env.R1_LOCATION
       },
       '/amsdata': {
+<<<<<<< HEAD
         target: process.env.AMSDATA_API
         //target: 'http://139.159.246.94:1064'  远程测试环境
       },
       '/base': {
         target: process.env.AMSBASE_API
+=======
+        // target: 'http://localhost:8081'
+        target: 'http://139.159.246.94:1093'  //远程测试环境
+      },
+      '/base': {
+        target: 'http://139.159.246.94:1091'
+>>>>>>> 25925bad005a0cdf8e737a542ae3165a5c9142de
       },
       '/analysis': {
         target: process.env.AMSANALYSIS_API
@@ -65,8 +73,14 @@ module.exports = {
       },
       // etl调度模块调用的地址
       '/etlscheduler': {
+<<<<<<< HEAD
         timeout: 1800000,
         target: process.env.AMSETLSCHEDULER_API,
+=======
+        // target: 'http://192.168.80.155:8080'
+        target: 'http://localhost:1092/amsetlscheduler',
+        // target: process.env.ETL_API_LOCATION,
+>>>>>>> 25925bad005a0cdf8e737a542ae3165a5c9142de
         changeOrigin: true,
         pathRewrite: {
           '^/etlscheduler': ''

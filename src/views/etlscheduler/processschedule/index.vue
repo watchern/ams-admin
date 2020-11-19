@@ -222,9 +222,9 @@
           >
             <el-option
               v-for="item in crontabFormat"
-              :key="item.code"
-              :label="item.msg"
-              :value="item.code"
+              :key="item.codeDesc"
+              :label="item.codeName"
+              :value="item.codeDesc"
             />
           </el-select>
         </el-form-item>
@@ -377,8 +377,8 @@ import {
 } from '@/api/etlscheduler/processschedule'
 import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
-import { crontabExpression } from './common.js'
-import { getDictList, getTransMap } from '@/utils'
+// import { crontabExpression } from './common.js'
+import { getDictList } from '@/utils'
 // import _ from lodash
 
 export default {
@@ -447,7 +447,7 @@ export default {
         }
       },
       // 作业周期格式化
-      crontabFormat: crontabExpression,
+      crontabFormat: null,
       loading: false,
       tableKey: 'processSchedulesUuid',
       list: null,
@@ -622,17 +622,7 @@ export default {
     }
   },
   created() {
-    // getDictList('001001')
-    // const ids = []
-    // ids[0] = '001001'
-    // console.log('1111111111111111111' + JSON.stringify(getDictList(ids.join(','))))
-    // console.log('1111111111111111111' + JSON.stringify(getTransMap(ids.join(','))))
-    // getDictList(ids.join(',')).then((resp) => {
-    //   console.log('22222222222222222222222' + resp.data)
-    // })
-    // getTransMap(ids.join(',')).then((resp) => {
-    //   console.log('22222222222222222222222' + resp.data)
-    // })
+    this.crontabFormat = getDictList('001001')
     queryProcessLike().then((resp) => {
       this.queryFields[2].data = resp.data
     })
@@ -1067,8 +1057,8 @@ export default {
       var stopTime = stopJsonDate.toLocaleDateString()
       var message = ''
       this.crontabFormat.forEach((r, i) => {
-        if (date === r.code) {
-          message = r.msg
+        if (date === r.codeDesc) {
+          message = r.codeName
         }
       })
       return onTime + '-' + stopTime + ' ' + message

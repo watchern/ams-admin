@@ -1181,17 +1181,17 @@ function hasCreateTableNode(nodeIdArr) {
  * @param status 是否标记：1、移除标记，2、打标记
  * @param type 标记类型：0、中间结果表标记，1、最终结果表标记
  * */
-function setNodeOutputTypeIcon(status, type) {
+export function setNodeOutputTypeIcon(status, type) {
   var curCellId = graph.curCell.id
   var url = ''
-  if (type == 0) { // 中间结果表标记的图片路径
-    url = '../graphtool/images/graphicon/centeroutmark@2x.png'
+  if (type === 0) { // 中间结果表标记的图片路径
+    url = '../../lib/graphtool/images/graphicon/centeroutmark@2x.png'
   } else { // 最终结果表标记的图片路径
-    url = '../graphtool/images/graphicon/finaloutmark@2x.png'
+    url = '../../lib/graphtool/images/graphicon/finaloutmark@2x.png'
   }
   $('.output-mark').each(function(i, v) {
-    if ($(this)[0].getAttribute('nodeId') == curCellId) {
-      if (status == 2) {
+    if ($(this)[0].getAttribute('nodeId') === curCellId) {
+      if (status === 2) {
         $(this).attr('xlink:href', url)
       } else {
         $(this).attr('xlink:href', '')
@@ -1213,24 +1213,24 @@ export function changeNodeIcon(nodeExcuteStatus, isSet, id) {
       if (nodeExcuteStatus && nodeExcuteStatus != null) {
         switch (nodeExcuteStatus) {
           case 1:		// 未执行
-            $(this).attr('xlink:href', '../graphtool/images/icon/point_gray.png')
+            $(this).attr('xlink:href', '../../lib/graphtool/images/icon/point_gray.png')
             break
           case 2:	// 执行中
-            $(this).attr('xlink:href', '../graphtool/images/icon/point_yellow.png')
+            $(this).attr('xlink:href', '../../lib/graphtool/images/icon/point_yellow.png')
             break
           case 3:	// 执行成功
-            $(this).attr('xlink:href', '../graphtool/images/icon/point_green.png')
+            $(this).attr('xlink:href', '../../lib/graphtool/images/icon/point_green.png')
             break
           case 4:	// 执行失败
-            $(this).attr('xlink:href', '../graphtool/images/icon/point_red.png')
+            $(this).attr('xlink:href', '../../lib/graphtool/images/icon/point_red.png')
             break
         }
       }
       if (isSet != null && typeof (isSet) !== 'undefined') {
         if (isSet) {
-          $('.setting-mark:eq(' + i + ')').attr('xlink:href', '../graphtool/images/icon/point_green.png')
+          $('.setting-mark:eq(' + i + ')').attr('xlink:href', '../../lib/graphtool/images/icon/point_green.png')
         } else {
-          $('.setting-mark:eq(' + i + ')').attr('xlink:href', '../graphtool/images/icon/point_gray.png')
+          $('.setting-mark:eq(' + i + ')').attr('xlink:href', '../../lib/graphtool/images/icon/point_gray.png')
         }
       }
     }
@@ -1240,10 +1240,10 @@ export function changeNodeIcon(nodeExcuteStatus, isSet, id) {
 /**
  * 设置原表的复制图标
  * */
-function setDataSourceCopyIcon(curCellId) {
+export function setDataSourceCopyIcon(curCellId) {
   $('.copyIcon-mark').each(function(i, v) {
     if ($(this)[0].getAttribute('nodeId') == curCellId) {
-      $(this).attr('xlink:href', '../graphtool/images/icon/copyIcon.png')
+      $(this).attr('xlink:href', '../../lib/graphtool/images/icon/copyIcon.png')
     }
   })
 }

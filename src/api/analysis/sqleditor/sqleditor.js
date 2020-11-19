@@ -102,8 +102,8 @@ var sqlDraftObj
  */
 export function initDragAndDrop() {
   // 实现左右拖拽改变大小
-  var container = document.getElementById('container')
-  var pathname = window.location.pathname
+  var container = document.getElementById('container') //整个窗口
+  var pathname = window.location.pathname 
   var img = document.getElementById('iconImg')
   if (pathname.match('page')) {
     img.src = '../../images/ico/maximize.png'
@@ -114,19 +114,26 @@ export function initDragAndDrop() {
   var leftPart = document.getElementById('leftPart')
   var rightContent = document.getElementById('rightPart')
   var vertical = document.getElementById('vertical')
+  var left_min = container.clientWidth*0.2
+  var right_max = rightContent.offsetWidth*0.5
+  var iT = 0
   vertical.onmousedown = function(e) {
     var disX = (e || event).clientX
     vertical.left = vertical.offsetLeft
+    console.log(leftPart.offsetWidth)
     document.onmousemove = function(e) {
-      var iT = vertical.left + ((e || event).clientX - disX)
-      var e = e || window.event; var tarnameb = e.target || e.srcElement
-      var maxT = container.clientWight - vertical.offsetWidth
+      var e = e || window.event; 
+      var tarnameb = e.target || e.srcElement
       vertical.style.margin = 0
-      iT < 0 && (iT = 0)
-      iT > maxT && (iT = maxT)
-      vertical.style.left = leftPart.style.width = iT + 'px'
-      rightContent.style.width = parseInt(container.clientWidth - iT - offset - 20) + 'px'
+      iT = (e || event).clientX 
+      if(iT < left_min){iT = left_min}
+      else if(iT > container.clientWidth*.7){iT = container.clientWidth*.7}
+      vertical.style.left = iT - 134 +'px' 
+      leftPart.style.width = iT - 126 - 35 + 'px'
+      rightContent.style.width = parseInt(container.clientWidth - iT + 134 -43) + 'px'
+      console.log(container.offsetLeft)
       return false
+
     }
     document.onmouseup = function() {
       document.onmousemove = null
@@ -136,6 +143,75 @@ export function initDragAndDrop() {
     vertical.setCapture && vertical.setCapture()
     return false
   }
+
+  //单击侧边按钮收起左边栏
+  function tree_zy_zhan() {
+    if(tree_shuju == false && tree_canshu == false && tree_sql == false){
+      $("#leftPart").stop(true).animate({"width":203},300)
+      $("#vertical").delay(300).fadeIn(100).css("left",17+"%")
+      $("#rightPart").stop(true).animate({"width":1150},300)
+    }
+  }
+
+  function tree_zy_zhanhe() {
+    if(tree_shuju == false && tree_canshu == false && tree_sql == false){
+      $("#vertical").fadeOut(100)
+      $("#leftPart").delay(100).stop(true).animate({"width":0},300)
+      $("#rightPart").delay(100).stop(true).animate({"width":1350},300)
+    }
+  }
+
+  //分别显示隐藏三个表
+  var tree_shuju = true
+  var tree_canshu = true 
+  var tree_sql = true
+  $(".unfold-shuju").on("click",function(){
+    if(tree_shuju == true){
+      $("#dataTree").fadeOut(300)
+      $(this).css("background","#f5f7fa")
+      $(".leftpart-fenge:eq(0)").fadeOut(300)
+      tree_shuju = false
+      tree_zy_zhanhe()
+    }else if(tree_shuju == false){
+      $("#dataTree").fadeIn(300)
+      $(this).css("background","#fff")
+      $(".leftpart-fenge:eq(0)").fadeIn(300)
+      tree_zy_zhan()
+      tree_shuju = true
+    }
+  })
+  $(".unfold-canshu").on("click",function(){
+    if(tree_canshu == true){
+      $("#paramTree").fadeOut(300)
+      $(this).css("background","#f5f7fa")
+      $(".leftpart-fenge:eq(0)").fadeOut(300)
+      tree_canshu = false
+      tree_zy_zhanhe()
+    }else if(tree_canshu == false){
+      $("#paramTree").fadeIn(300)
+      $(this).css("background","#fff")
+      $(".leftpart-fenge:eq(0)").fadeIn(300)
+      tree_zy_zhan()
+      tree_canshu = true
+    }
+  })
+  $(".unfold-sql").on("click",function(){
+    if(tree_sql == true){
+      $("#sqlFunTree").fadeOut(300)
+      $(this).css("background","#f5f7fa")
+      $(".leftpart-fenge:eq(1)").fadeOut(300)
+      tree_sql = false
+      tree_zy_zhanhe()
+    }else if(tree_sql == false){
+      $("#sqlFunTree").fadeIn(300)
+      $(this).css("background","#fff")
+      $(".leftpart-fenge:eq(1)").fadeIn(300)
+      tree_zy_zhan()
+      tree_sql = true
+    }
+  })
+
+
 
   // 实现上下拖拽改变大小
   var rightPart = document.getElementById('rightPart')
@@ -196,6 +272,7 @@ export function initEvent() {
     var scroolY = document.documentElement.scrollTop || document.body.scrollTop
     mouseX = e.pageX || e.clientX + scroolX
     mouseY = e.pageY || e.clientY + scroolY
+    // zy_hover()
   })
 }
 /**
@@ -442,7 +519,12 @@ export function initTableTree(userId) {
                 // 处理拿回来的数据 处理成列表
                 const columns = []
                 for (let i = 0; i < result.data.length; i++) {
-                  columns.push(result.data[i].colName)
+                  if(result.data[i].chnName === "" || result.data[i].chnName == null || result.data[i].chnName == undefined){
+                    columns.push(result.data[i].colName)
+                  }
+                  else{
+                    columns.push(result.data[i].chnName)
+                  }
                 }
                 if (columns.length > 0) {
                   CodeMirror.tableColMapping[tableName] = columns
@@ -526,7 +608,29 @@ export function initTableTree(userId) {
     zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
   })
 }
+//表单最大化 
+var maxormin = true 
+export function maxOpenOne() {
+  if(maxormin == true){
+    $("#drag").hide(100)
+    $("#maxOpen").addClass("add-max-size")
+    $("#iconImg").css("display","none")
+    $("#iconImg-huifu").css("display","block")
+    $("#bottomPart").css({"position":"fixed","z-index":"200","top":-20+"%","left":8+"%"})
+    $("#bottomPart").addClass("bottompart-max")
+    maxormin = false
+  }else if(maxormin == false){
+    $("#drag").show(100)
+    $("#maxOpen").removeClass("add-max-size")
+    $("#iconImg").css("display","block")
+    $("#iconImg-huifu").css("display","none")
+    $("#bottomPart").css({"position":"static","z-index":"200","top":0,"left":0})
+    $("#bottomPart").removeClass("bottompart-max")
+    maxormin = true
+  }
+  
 
+}
 /**
  * 初始化参数树
  */
@@ -658,6 +762,8 @@ export function initParamTree() {
     }
   })
 }
+
+    
 /**
  * 数据表树拖拽事件
  * @param event
@@ -1360,22 +1466,33 @@ export function getSelectSql(menuId) {
   var nodes = zTreeObj.getSelectedNodes()
   if (nodes.length > 0) {
     var tableName = nodes[0].name
+    var tableMetaUuid = nodes[0].id
     var columns = CodeMirror.tableColMapping[tableName]
     var oldSql = editorObj.getValue()
     if (!columns || (columns && columns.length === 0)) {
       request({
-        baseURL: analysisUrl,
-        url: '/SQLEditorController/getTableColsByName',
-        method: 'get',
-        params: { tableName: tableName }
+        baseURL: dataUrl,
+        url: '/tableMeta/getCols',
+        method: 'post',
+        params: { tableMetaUuid: tableMetaUuid }
       }).then(result => {
-        if (result.data.isError) {
-          alert('错误')
+        if (result.data == undefined || result.data == null) {
+          return;
         } else {
-          if (result.data.columns && result.data.columns.length > 0) {
-            CodeMirror.tableColMapping[tableName] = result.data.columns
-            editorObj.options.hintOptions.tables[tableName] = result.data.columns
-            getSelectSQLByColumns(result.data.columns, tableName, oldSql, null)
+          console.log(result.data)
+          if (result.data && result.data.length > 0) {
+            var columns = [];
+            for(var i = 0;i < result.data.length;i++){
+              if(result.data[i].chnName == "" || result.data[i].chnName == null || result.data[i].chnName == undefined){
+                columns.push(result.data[i].colName)
+              }
+              else{
+                columns.push(result.data[i].chnName)
+              }
+            }
+            CodeMirror.tableColMapping[tableName] = columns
+            editorObj.options.hintOptions.tables[tableName] = columns
+            getSelectSQLByColumns(columns, tableName, oldSql, null)
           } else {
           }
         }
@@ -1605,3 +1722,9 @@ export function refreshCodeMirror(){
   },1);//让编辑器每次在调用的时候进行自动刷新
   $("#sql").click()
 }
+
+
+
+
+
+

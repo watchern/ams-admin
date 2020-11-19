@@ -15,6 +15,7 @@
       </span>
     </el-dialog>
     <el-row v-if="myFlag">
+       <div align="right">
       <el-button
         :disabled="modelRunResultBtnIson.exportBtn"
         type="primary"
@@ -22,22 +23,26 @@
         class="oper-btn export-2"
       ></el-button>
       <el-button
+        style="display: none"
         :disabled="modelRunResultBtnIson.chartDisplayBtn"
         type="primary"
       >图表展示</el-button
       >
       <el-button
+        style="display: none"
         :disabled="modelRunResultBtnIson.associatedBtn"
         type="primary"
         @click="getValues"
         class="oper-btn refresh"
       ></el-button>
       <el-button
+        style="display: none"
         :disabled="modelRunResultBtnIson.disassociateBtn"
         type="primary"
         @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
       >移除关联</el-button
       >
+<<<<<<< HEAD
       <el-button :disabled="false" type="primary" @click="queryConditionSetting"
       >查询条件设置</el-button
       >
@@ -45,14 +50,29 @@
         >重置</el-button -->
       <el-button :disabled="false" type="primary" @click="reSet"
       >重置</el-button
+=======
+      <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn search"
+        ></el-button
+      >
+      <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
+        >重置</el-button -->
+      <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn again-2"
+        ></el-button
+>>>>>>> 25925bad005a0cdf8e737a542ae3165a5c9142de
       >
       <el-button
+        class="oper-btn link"
         :disabled="modelRunResultBtnIson.modelDetailAssBtn"
         v-if="modelDetailButtonIsShow"
         type="primary"
         @click="openModelDetail"
+<<<<<<< HEAD
       >模型详细关联</el-button
+=======
+        ></el-button
+>>>>>>> 25925bad005a0cdf8e737a542ae3165a5c9142de
       >
+       </div>
     </el-row>
     <el-row v-if="modelResultButtonIsShow" style="display: flex">
       <!-- 2.1前台导出，双向绑定数据 -->
@@ -379,6 +399,7 @@
                       }
                     }
                   }
+<<<<<<< HEAD
                   if (related.length == 0) {
                     for (var i = 0; i < this.selectRows.length; i++) {
                       var resultDetailProjectRel = {
@@ -388,6 +409,82 @@
                         projectId: projectId,
                         resultDetailId: this.selectRows[i][this.primaryKey],
                         projectName: projctName,
+=======
+                  this.$message({
+                    type: "info",
+                    message: "关联失败，因为其中" + str + "已经关联",
+                  });
+                }
+              }
+            );
+          }
+        }
+      );
+    },
+    // 获取选中的数据数组
+    getValues() {
+      // 获取选中的数据
+      var selRows = this.gridApi.getSelectedRows();
+      if (selRows.length == 0) {
+        this.$message({ type: "info", message: "请选择后再进行关联!" });
+      }
+      this.selectRows = selRows;
+    },
+    // ag-grid创建完成后执行的事件
+    onGridReady(params) {
+      // 获取gridApi
+      this.gridApi = params.api;
+      this.columnApi = params.columnApi;
+      // 这时就可以通过gridApi调用ag-grid的传统方法了
+      this.gridApi.sizeColumnsToFit();
+    },
+    // 单元格点击事件
+    onCellClicked(cell) {},
+    initData(sql, nextValue) {
+      if (this.useType == "modelRunResult") {
+        this.isLoading = true;
+        // 当当前表是主表的时候myFlag赋值为true
+        if (this.nowtable.tableType == 1) {
+          this.myFlag = true;
+        }
+        var colNames = [];
+        var col = [];
+        var da = [];
+        this.pageQuery.condition = this.nowtable;
+        if (typeof sql !== "string") {
+          sql = "undefined";
+        }
+        selectTable(this.pageQuery, sql).then((resp) => {
+          if (resp.data.records[0].result.length == 0) {
+            this.isLoading = false;
+          }
+          this.total = resp.data.total;
+          this.dataArray = resp.data.records[0].result;
+          this.queryData = resp.data.records[0].columnInfo;
+          // 将返回对象的所有属性，按顺序提取出来，用于后续生成ag-grid列信息
+          for (const key in resp.data.records[0].result[0]) {
+            colNames.push(key);
+          }
+          // 生成ag-grid列信息
+          if (this.modelUuid != undefined) {
+            for (var i = 0; i < colNames.length; i++) {
+              loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
+                if (
+                  this.modelOutputColumn[j].outputColumnName.toLowerCase() ==
+                  colNames[i]
+                ) {
+                  if (this.modelOutputColumn[j].isShow == 1) {
+                    if (i == 0) {
+                      var rowColom = {
+                        headerName: this.modelOutputColumn[j].columnAlias,
+                        field: colNames[i],
+                        checkboxSelection: true,
+                      };
+                    } else {
+                      var rowColom = {
+                        headerName: this.modelOutputColumn[j].columnAlias,
+                        field: colNames[i],
+>>>>>>> 25925bad005a0cdf8e737a542ae3165a5c9142de
                       };
                       resultDetailProjectRels.push(resultDetailProjectRel);
                     }
@@ -734,6 +831,7 @@
         } else {
           alert("不能选中多条");
         }
+<<<<<<< HEAD
       },
       /**
        * 点击详细dialog的确定按钮后触发
@@ -759,6 +857,88 @@
             }
           }
         }
+=======
+      }
+    },
+    // 处理数据
+    getList() {
+      // es6过滤得到满足搜索条件的展示数据list
+      this.rowData = this.modelResultData.filter(
+        (item, index) =>
+          index < this.page * this.limit &&
+          index >= this.limit * (this.page - 1)
+      );
+      this.total1 = this.modelResultData.length;
+    },
+    // 当每页数量改变
+    handleSizeChange(val) {
+      this.limit = val;
+      this.getList();
+    },
+    // 当当前页改变
+    handleCurrentChange(val) {
+      this.page = val;
+      this.getList();
+    },
+    /**
+     * 点击详细打开dialog效果
+     */
+    openModelDetail() {
+      var selRows = this.gridApi.getSelectedRows();
+      if (selRows.length < 1) {
+        this.$message({ type: "info", message: "请选择后再进行关联!" });
+      } else if (selRows.length == 1) {
+        this.options = [];
+        for (var i = 0; i < this.modelDetailRelation.length; i++) {
+          var eachOption = {
+            value: this.modelDetailRelation[i].relationObjectUuid,
+            label: this.modelDetailRelation[i].modelDetailName,
+          };
+          this.options.push(eachOption);
+        }
+        this.modelDetailDialogIsShow = true;
+      } else {
+        this.$message({ type: "info", message: "不能选中多条!" });
+      }
+    },
+    /**
+     * 点击详细dialog的确定按钮后触发
+     */
+    modelDetailCetermine() {
+      var selectRowData = this.gridApi.getSelectedRows();
+      var relationType = null;
+      var objectName = "";
+      var detailConfig = null;
+      for (var i = 0; i < this.modelDetailRelation.length; i++) {
+        if ((this.value = this.modelDetailRelation[i].relationObjectUuid)) {
+          relationType = this.modelDetailRelation[i].relationType;
+          objectName = this.modelDetailRelation[i].relationObjectName;
+          detailConfig = this.modelDetailRelation[i].modelDetailConfig;
+          break;
+        }
+      }
+      if (relationType == 1) {
+        debugger
+        var detailValue = [];
+        for (var i = 0; i < this.modelDetailRelation.length; i++) {
+          if (this.modelDetailRelation[i].relationObjectUuid == this.value) {
+            for (
+              var j = 0;
+              j < this.modelDetailRelation[i].modelDetailConfig.length;
+              j++
+            ) {
+              var key = this.modelDetailRelation[i].modelDetailConfig[j]
+                .resultColumn;
+              var obj = { moduleParamId: "", paramValue: "" };
+              obj.moduleParamId = this.modelDetailRelation[i].modelDetailConfig[
+                j
+              ].ammParamUuid;
+              obj.paramValue = selectRowData[0][key.toLowerCase()];
+              detailValue.push(obj);
+            }
+          }
+        }
+>>>>>>> 25925bad005a0cdf8e737a542ae3165a5c9142de
         findParamModelRelByModelUuid(this.value).then((resp) => {
           var arr = [];
           for (var i = 0; i < resp.data.length; i++) {
@@ -776,6 +956,7 @@
             });
           });
         });
+<<<<<<< HEAD
         this.modelDetailDialogIsShow = false;
         this.modelDetailModelResultDialogIsShow = true;
       },
@@ -825,6 +1006,88 @@
         };
         const func1 = func2.bind(this);
         this.webSocket.onclose = function (event) {};
+=======
+      } else if (relationType == 2) {
+        //modelOutputColumn
+        var sql = "SELECT * FROM " + objectName + " WHERE ";
+        var filterSql = "";
+        for (var i = 0; i < detailConfig.length; i++) {
+          var eachFilter = detailConfig[i].relFilterValue;
+          loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
+            if (eachFilter.indexOf(this.modelOutputColumn[j]) > -1) {
+              eachFilter = eachFilter.replace(
+                eachFilter,
+                selectRowData[0][this.modelOutputColumn[j].toLowerCase()]
+              );
+              break loop;
+            }
+          }
+          if (i == detailConfig.length - 1) {
+            filterSql += eachFilter;
+          } else {
+            filterSql += eachFilter + " or ";
+          }
+        }
+        sql = sql + filterSql;
+        const obj = { sqls: sql };
+        startExecuteSql(obj).then((resp) => {
+          if (!resp.data.isError) {
+            this.currentExecuteSQL = resp.data.executeSQLList;
+          } else {
+            this.$message({ type: "info", message: "执行失败" });
+          }
+        });
+      }
+      this.modelDetailDialogIsShow = false;
+      this.modelDetailModelResultDialogIsShow = true;
+    },
+    /**
+     * sql编辑器模型结果点击导出后出发的方法
+     */
+    modelResultExport() {
+      this.tableData = this.nextValue.result;
+      this.json_fields = {};
+      for (var i = 0; i < this.nextValue.columnNames.length; i++) {
+        this.json_fields[
+          this.nextValue.columnNames[i]
+        ] = this.nextValue.columnNames[i];
+      }
+      this.excelName = "模型结果导出表";
+    },
+    reSet1() {
+      this.isLoading = true;
+    },
+    /**
+     *初始化webSocket
+     */
+    initWebSocket() {
+      this.webSocket = this.getWebSocket();
+    },
+    /**
+     *
+     * 使用说明：
+     * 1、WebSocket客户端通过回调函数来接收服务端消息。例如：webSocket.onmessage
+     * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
+     */
+    getWebSocket() {
+      const webSocketPath =
+        "ws://localhost:8086/analysis/websocket?" +
+        this.$store.getters.personuuid;
+      // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
+      this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
+      // 当服务端打开连接
+      this.webSocket.onopen = function (event) {};
+      // 发送消息
+      this.webSocket.onmessage = function (event) {
+        const dataObj = JSON.parse(event.data);
+        func1(dataObj);
+      };
+      const func2 = function func3(val) {
+        this.$refs.childTabsRef.loadTableData(val);
+      };
+      const func1 = func2.bind(this);
+      this.webSocket.onclose = function (event) {};
+>>>>>>> 25925bad005a0cdf8e737a542ae3165a5c9142de
 
         // 通信失败
         this.webSocket.onerror = function (event) {};
