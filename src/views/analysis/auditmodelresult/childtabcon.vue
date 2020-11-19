@@ -285,7 +285,7 @@ export default {
         this.modelRunResultBtnIson.chartDisplayBtn = false;
         this.modelRunResultBtnIson.associatedBtn = false;
         this.modelRunResultBtnIson.disassociateBtn = false;
-        this.modelRunResultBtnIson.modelDetailAssBtn = false;
+        this.modelRunResultBtnIson.modelDetailAssBtn = true;
       }
     },
     /**
@@ -753,7 +753,7 @@ export default {
       var objectName = "";
       var detailConfig = null;
       for (var i = 0; i < this.modelDetailRelation.length; i++) {
-        if ((this.value = this.modelDetailRelation[i].relationObjectUuid)) {
+        if ((this.value == this.modelDetailRelation[i].relationObjectUuid)) {
           relationType = this.modelDetailRelation[i].relationType;
           objectName = this.modelDetailRelation[i].relationObjectName;
           detailConfig = this.modelDetailRelation[i].modelDetailConfig;
@@ -761,7 +761,6 @@ export default {
         }
       }
       if (relationType == 1) {
-        debugger
         var detailValue = [];
         for (var i = 0; i < this.modelDetailRelation.length; i++) {
           if (this.modelDetailRelation[i].relationObjectUuid == this.value) {
@@ -787,6 +786,7 @@ export default {
             arr.push(JSON.parse(resp.data[i]));
           }
           selectModel(this.value).then((resp) => {
+            debugger
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
             const obj = { sqls: sql };
             startExecuteSql(obj).then((resp) => {
@@ -805,10 +805,10 @@ export default {
         for (var i = 0; i < detailConfig.length; i++) {
           var eachFilter = detailConfig[i].relFilterValue;
           loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
-            if (eachFilter.indexOf(this.modelOutputColumn[j]) > -1) {
+            if (eachFilter.indexOf(this.modelOutputColumn[j].outputColumnName) > -1) {
               eachFilter = eachFilter.replace(
-                eachFilter,
-                selectRowData[0][this.modelOutputColumn[j].toLowerCase()]
+                this.modelOutputColumn[j].outputColumnName,
+                selectRowData[0][this.modelOutputColumn[j].outputColumnName.toLowerCase()]
               );
               break loop;
             }
