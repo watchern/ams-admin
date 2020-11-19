@@ -15,6 +15,7 @@
       </span>
     </el-dialog>
     <el-row v-if="myFlag">
+       <div align="right">
       <el-button
         :disabled="modelRunResultBtnIson.exportBtn"
         type="primary"
@@ -41,22 +42,23 @@
         @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
         >移除关联</el-button
       >
-      <el-button :disabled="false" type="primary" @click="queryConditionSetting"
-        >查询条件设置</el-button
+      <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn search"
+        ></el-button
       >
       <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
         >重置</el-button -->
-      <el-button :disabled="false" type="primary" @click="reSet"
-        >重置</el-button
+      <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn again-2"
+        ></el-button
       >
       <el-button
-        class="oper-btn show"
+        class="oper-btn link"
         :disabled="modelRunResultBtnIson.modelDetailAssBtn"
         v-if="modelDetailButtonIsShow"
         type="primary"
         @click="openModelDetail"
-        >模型详细关联</el-button
+        ></el-button
       >
+       </div>
     </el-row>
     <el-row v-if="modelResultButtonIsShow" style="display: flex">
       <!-- 2.1前台导出，双向绑定数据 -->
