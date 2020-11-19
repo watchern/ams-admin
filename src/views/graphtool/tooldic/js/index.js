@@ -1,4 +1,4 @@
-import { saveGraphInterface,getExecuteNodeInfo } from '@/api/graphtool/graphList'
+import { saveGraphInterface,getExecuteNodeInfoPost } from '@/api/graphtool/graphList'
 let indexVue = null// index.vue实例
 let curModelSql = ''// 用来临时存储打开模型图形时的模型SQL语句
 let nodeParamRelArr = []// 用来存储每个节点设置的参数信息
@@ -882,7 +882,7 @@ export function openCallBack(obj) {
 
 export function getExecuteNodeInfo(graphUuid, executeId, executeIdArr, refreshHistory) {
     console.log(graph.getModel().cells);
-    let obj = {}
+    let obj = {graphUuid:'',executeId:''}
     let len = executeIdArr.length
     if (graphUuid && graphUuid !== '') {
         obj.graphUuid = graphUuid
@@ -892,7 +892,7 @@ export function getExecuteNodeInfo(graphUuid, executeId, executeIdArr, refreshHi
     }
     var inerval = null
     var executeNodeInfo = function() {
-        getExecuteNodeInfo(obj).then( response => {
+        getExecuteNodeInfoPost(obj).then( response => {
             var e = response.data
             if(e && e.length > 0){
                 $('ul.layui-tab-title li:eq(1)').click()
@@ -1223,7 +1223,7 @@ export function undoResourceZtreeNode(idArr, status) {
         var parent = graph.getDefaultParent()
         var parentChildren = parent.children
         for (var k = 0; k < parentChildren.length; k++) {
-            if (!parentChildren[k].edge) {
+            if (parentChildren[k].vertex === 1) {
                 idArr.push(parentChildren[k].id)
             }
         }
@@ -1256,7 +1256,7 @@ export function redoResourceZtreeNode(idArr, status) {
         var parent = graph.getDefaultParent()
         var parentChildren = parent.children
         for (var k = 0; k < parentChildren.length; k++) {
-            if (!parentChildren[k].edge) {
+            if (parentChildren[k].vertex === 1) {
                 idArr.push(parentChildren[k].id)
             }
         }
