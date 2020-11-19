@@ -16,7 +16,7 @@
         <!-- 删除 -->
         <el-button type="primary" class="oper-btn delete" title="删除文件" :disabled="selections.length === 0" @click="handleDelete()" />
         <!-- 移动 -->
-        <el-button type="primary" class="oper-btn share" title="文件移动" :disabled="createFileDirStatus" @click="handleMove()" />
+        <el-button type="primary" class="oper-btn move" title="文件移动" :disabled="createFileDirStatus" @click="handleMove()" />
       </el-col>
 
     </el-row>
