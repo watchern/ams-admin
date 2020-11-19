@@ -4,7 +4,7 @@
       <div id="sidebar">
         <div class="unfold-shuju demo-flex"><span class="">数据表</span></div>
         <div class="unfold-canshu demo-flex"><span class="">参数</span></div>
-        <div class="unfold-sql demo-flex"><span class="">S</br>Q</br>L</br>函数</span></div>
+        <div class="unfold-sql demo-flex"><span class=""><p>S</p><p>Q</p><p>L</p>函数</span></div>
       </div>
       <div id="leftPart" class="left-part">
         <ul id="dataTree" class="ztree" style="overflow: auto"/>
@@ -625,7 +625,7 @@ export default {
       })
     },
     maxOpenBtn(){
-      alert(123)
+      alert(123)//zzzz
     }
   }
 }
@@ -659,7 +659,7 @@ export default {
 
 #sidebar{
   width: 1.9%;
-  height: 690px;
+  height: 100%;
   margin: 0;
   display: inline-block;
   position: absolute;
@@ -724,13 +724,13 @@ export default {
 #vertical {
   position: absolute;
   top: 20px;
-  left: 17%;
+  left: 16.6%;
   height: 100%;
   width: 3px;
   overflow: hidden;
   background: #c0c5d4;
   cursor: w-resize;
-
+  z-index: 20;
 }
 .el-aside{
   margin-bottom: 10px;
@@ -738,7 +738,7 @@ export default {
 
 #horizontal {
   position: absolute;
-  top: 49.2%;
+  top: 40.5%;
   right: 0;
   /* width: 100vh; */
   width: 97.5%;
@@ -786,7 +786,7 @@ export default {
 .sql-editor-div{
   padding: 0px;
   width: 100%;
-  height: 49.5%;
+  height: 40%;
 }
 
 .data-show{
@@ -799,7 +799,7 @@ export default {
   width: 14.66666667%;
   float: left;
   height: 100%;
-  margin-left: 2.5%;
+  margin-left: 2%;
 }
 
 
