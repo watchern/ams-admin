@@ -76,7 +76,7 @@ export default {
 }
 </script>
 
-<style type="text/css">
+<style scoped type="text/css">
     #remarkContent{
         width:100%;
         height:100%;

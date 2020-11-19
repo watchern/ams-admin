@@ -630,7 +630,7 @@ function switch_cz_f(select_cz, select_colms, conn_value, filter_conn_type, show
 
 </script>
 
-<style type="text/css">
+<style scoped type="text/css">
     .filter_cell_header{
         float: left;
         margin-left: 20px;

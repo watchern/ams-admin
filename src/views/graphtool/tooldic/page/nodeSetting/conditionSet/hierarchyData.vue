@@ -223,7 +223,7 @@ function inputVerify() {
 }
 </script>
 
-<style type="text/css">
+<style scoped type="text/css">
     form {
         background: #0000;
     }

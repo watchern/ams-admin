@@ -111,7 +111,7 @@ function inputVerify() {
 }
 </script>
 
-<style type="text/css">
+<style scoped type="text/css">
     .layui-input{
         display: inline;
         width: 300px;

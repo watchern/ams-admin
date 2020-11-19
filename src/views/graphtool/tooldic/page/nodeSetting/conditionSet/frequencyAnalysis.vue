@@ -215,7 +215,7 @@ function inputVerify() {
 }
 </script>
 
-<style type="text/css">
+<style scoped type="text/css">
     .main_table {
         width: 70%;
         border: 1px solid #ADAEB0;
