@@ -254,7 +254,7 @@
                 </div>
                 <div class="dep-box">
                   <span
-                    v-if="dependTaskList.length"
+                    v-if="dependTaskList!=null && dependTaskList.length>0"
                     :style="{
                       'pointer-events': disableUpdate === true ? 'none' : '',
                     }"
@@ -661,6 +661,7 @@ export default {
       }
     },
     findSchedule(data) {
+      this.distinctParamList = null
       this.iconDisable = false
       this.closeStatus = true
       this.disableUpdate = true
