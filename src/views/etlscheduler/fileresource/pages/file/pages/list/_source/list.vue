@@ -96,7 +96,7 @@
               </div>
               <template slot="reference">
                 <x-button
-                  icon="ans-icon-trash"
+                  icon="oper-btn delete"
                   type="error"
                   shape="circle"
                   size="xsmall"

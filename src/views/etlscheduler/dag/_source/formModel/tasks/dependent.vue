@@ -9,8 +9,8 @@
             class="add-dep"
             @click="!isDetails && _addDep()"
           >
-            <em v-if="!isLoading" class="ans-icon-increase" :class="_isDetails" data-toggle="tooltip" title="添加" />
-            <em v-if="isLoading" class="ans-icon-spinner2 as as-spin" data-toggle="tooltip" title="添加" />
+            <em v-if="!isLoading" class="ans-icon-increase" :class="_isDetails" data-toggle="tooltip" title="Add" />
+            <em v-if="isLoading" class="ans-icon-spinner2 as as-spin" data-toggle="tooltip" title="Add" />
           </a>
         </div>
         <div class="dep-box">
@@ -30,7 +30,7 @@
               {{ el.relation === 'AND' ? '且' : '或' }}
             </span>
             <em
-              class="ans-icon-trash dep-delete"
+              class="oper-btn delete dep-delete"
               data-toggle="tooltip"
               data-container="body"
               :class="_isDetails"

@@ -247,17 +247,18 @@
                         v-if="!isLoading"
                         :class="{'oper-btn add': iconDisable}"
                         data-toggle="tooltip"
+                        :disable="disableAddStatus"
                         title="添加"
                       />
                     </div>
                   </a>
                 </div>
                 <div class="dep-box">
+                  <!-- :style="{
+                      'pointer-events': disableUpdate === true ? 'none' : '',
+                    }" -->
                   <span
                     v-if="dependTaskList!=null && dependTaskList.length>0"
-                    :style="{
-                      'pointer-events': disableUpdate === true ? 'none' : '',
-                    }"
                     @click="!isDetails && _setGlobalRelation()"
                   >
                     <!-- {{ relation === "AND" ? "且" : "或" }} -->
@@ -276,10 +277,11 @@
                       <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
                     </span>
 
+                    <!-- :depend-item-list="dependTaskList[0].dependItemList" -->
                     <m-depend-item-list
                       v-model="el.dependItemList"
-                      :depend-item-list="dependTaskList"
                       :index="$index"
+                      :depend-task-list="dependTaskList"
                       @on-delete-all="_onDeleteAll"
                       @getDependTaskList="getDependTaskList"
                     />
@@ -395,6 +397,7 @@ export default {
   },
   data() {
     return {
+      disableAddStatus: false,
       // 开始时间大于今天
       startTime: {
         disabledDate: time => {
@@ -661,7 +664,7 @@ export default {
       }
     },
     findSchedule(data) {
-      this.distinctParamList = null
+      this.distinctParamList = {}
       this.iconDisable = false
       this.closeStatus = true
       this.disableUpdate = true
@@ -719,13 +722,15 @@ export default {
     _addDep() {
       if (!this.isLoading) {
         this.isLoading = true
-        if (this.dependTaskList == null) {
-          this.dependTaskList = []
+        if (this.dependTaskList == null || this.dependTaskList.length === 0) {
+          this.disableAddStatus = false
+          this.dependTaskList = [{
+            dependItemList: [],
+            relation: 'AND'
+          }]
+        } else {
+          this.disableAddStatus = true
         }
-        this.dependTaskList.push({
-          dependItemList: [],
-          relation: 'AND'
-        })
       }
     },
     _deleteDep(i) {
@@ -1155,9 +1160,9 @@ export default {
     }
 
     .dep-box {
-      border-left: 4px solid #eee;
-      margin-left: -46px;
-      padding-left: 42px;
+      // border-left: 4px solid #eee;
+      // margin-left: -46px;
+      // padding-left: 42px;
       position: relative;
 
       .dep-relation {
@@ -1201,8 +1206,8 @@ export default {
 
   }
   .deleteIcon{
-    position: relative;
-    left: 460px;
-    bottom: 115px;
+    // position: relative;
+    // left: 460px;
+    // bottom: 115px;
   }
 </style>
