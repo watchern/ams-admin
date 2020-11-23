@@ -140,13 +140,11 @@ export function batchSaveResultDetailProjectRel(data) {
  * 根据表名查询该表中的主键名称
  * @param {*} data
  */
-export function selectPrimaryKeyByTableName(data) {
-  var map = {tableName:data}
+export function selectPrimaryKeyByTableName() {
   return request({
     baseURL: analysisUrl,
     url: '/ResultDetailProjectRelController/getPrimaryKeyByTableName',
-    method: 'post',
-    data:map
+    method: 'post'
   })
 }
 
@@ -159,6 +157,19 @@ export function removeResultDetailProjectRel(data) {
     baseURL: analysisUrl,
     url: '/ResultDetailProjectRelController/deleteResultDetailProjectRel/' + data,
     method: 'delete'
+  })
+}
+
+/**
+ * 运行结果详细界面移除关联
+ * @param {*} data 运行结果详细与项目关联表主键
+ */
+export function deleteRunTaskFalse(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/RunTaskController/deleteRunTaskFalse',
+    method: 'delete',
+    params:{runTaskUuid:data}
   })
 }
 

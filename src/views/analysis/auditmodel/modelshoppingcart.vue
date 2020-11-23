@@ -3,9 +3,24 @@
     <div class="title">
       <h2>已选择模型</h2>
       <div>
-        <a style="display:none;" class="min el-icon-minus" href="javascript:" title="最小化"></a>
-        <a style="display:none;" class="max" href="javascript:" title="最大化"></a>
-        <a style="display:none;" class="revert" href="javascript:" title="还原"></a>
+        <a
+          style="display: none"
+          class="min el-icon-minus"
+          href="javascript:"
+          title="最小化"
+        ></a>
+        <a
+          style="display: none"
+          class="max"
+          href="javascript:"
+          title="最大化"
+        ></a>
+        <a
+          style="display: none"
+          class="revert"
+          href="javascript:"
+          title="还原"
+        ></a>
         <a class="close el-icon-close" href="javascript:" title="关闭"></a>
       </div>
     </div>
@@ -18,12 +33,20 @@
     <div class="resizeBR"></div>
     <div class="resizeLB"></div>
     <div class="content">
-      <el-link class="label-tip" @click="selectData" type="primary">{{memoValue }}</el-link>
+      <el-link class="label-tip" @click="selectData" type="primary">{{
+        memoValue
+      }}</el-link>
       <div class="btn-div">
-        <el-button type="primary" @click="runImmediately" plain>立即运行</el-button>
-        <el-button type="primary" plain @click="timingExecution">定时执行</el-button>
+        <el-button type="primary" @click="runImmediately" plain
+          >立即运行</el-button
+        >
+        <el-button type="primary" plain @click="timingExecution"
+          >定时执行</el-button
+        >
       </div>
-      <el-button class="select-btn" type="primary" plain @click="selectData">查看已选模型</el-button>
+      <el-button class="select-btn" type="primary" plain @click="selectData"
+        >查看已选模型</el-button
+      >
     </div>
     <el-dialog
       title="当前已选模型"
@@ -77,8 +100,9 @@
       :append-to-body="true"
     >
       <runimmediatelycon
+        @changeFlag="changeFlag"
         ref="modelsetting"
-        :immediately="false"
+        :timing="false"
         v-if="runimmediatelyIsSee"
         :models="this.currentData"
       ></runimmediatelycon>
@@ -95,7 +119,7 @@
     >
       <runimmediatelycon
         ref="modelsetting"
-        :immediately="true"
+        :timing="true"
         v-if="timingExecutionIsSee"
         :models="this.currentData"
       ></runimmediatelycon>
@@ -128,10 +152,21 @@ export default {
       models: [],
       replacedInfo: [],
       timingExecutionIsSee: false,
+      flag: "",
     };
   },
   mounted() {
     this.initEvent();
+  },
+  watch: {
+    flag(value) {
+      this.$nextTick(function () {
+        if (value == true) {
+          this.modelRunSetting()
+          this.flag = ''
+        }
+      });
+    },
   },
   methods: {
     initEvent() {
@@ -396,25 +431,25 @@ export default {
             modelVersion: this.models[i].modelVersion,
             runRecourceType: 1,
             isDeleted: 0,
-            runStatus: 1
+            runStatus: 1,
           };
           runTaskRels.push(runTaskRel);
         }
         let runType = 3;
-          if(this.timingExecutionIsSee){
-            runType = 2
-          }
-          if(this.runimmediatelyIsSee){
-            runType = 3
-          }
-          var runTask = {
-            runTaskUuid: runTaskUuid,
-            batchUuid: batchUuid,
-            runTaskName: "系统添加",
-            runType: runType,
-            timingExecute:dateTime,
-            runTaskRels: runTaskRels,
-          };
+        if (this.timingExecutionIsSee) {
+          runType = 2;
+        }
+        if (this.runimmediatelyIsSee) {
+          runType = 3;
+        }
+        var runTask = {
+          runTaskUuid: runTaskUuid,
+          batchUuid: batchUuid,
+          runTaskName: "系统添加",
+          runType: runType,
+          timingExecute: dateTime,
+          runTaskRels: runTaskRels,
+        };
         addRunTaskAndRunTaskRel(runTask).then((resp) => {
           if (resp.data == true) {
             this.$notify({
@@ -430,8 +465,11 @@ export default {
         });
       }
       this.runimmediatelyIsSee = false;
-      this.timingExecutionIsSee = false
+      this.timingExecutionIsSee = false;
     },
+    changeFlag(flag){
+        this.flag = flag
+    }
   },
 };
 </script>
@@ -624,7 +662,7 @@ a.open:hover {
   margin-left: 130px;
   margin-top: 20px;
 }
-.select-btn{
+.select-btn {
   margin-top: 8px;
   margin-left: 42px;
   width: 208px;

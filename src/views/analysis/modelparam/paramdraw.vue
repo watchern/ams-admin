@@ -12,7 +12,7 @@
                   :href="'#'+myId+'collapse'"
                 ></a> -->
                 <div :id="myId+'collapse'" class="panel-collapse collapse in">
-                  <div :id="myId" class="panel-body" style="padding: 10px 0" />
+                  <div :id="myId" class="panel-body" style="padding: 10px 0"></div>
                 </div>
               </el-collapse-item>
             </el-collapse>
@@ -28,7 +28,9 @@ export default {
   data() {
     return {
       activeName:'1',
-      accordionName:''
+      accordionName:'',
+      paramsArr:[],
+      message:'该模型暂无参数'
     };
   },
   props: ["myId"],
@@ -38,6 +40,7 @@ export default {
      */
     initParamHtmlSS(sql, paramsArr, name, id) {
       this.accordionName = name
+      this.paramsArr = paramsArr
       initParamHtml(sql, paramsArr, name, id);
     },
   },
