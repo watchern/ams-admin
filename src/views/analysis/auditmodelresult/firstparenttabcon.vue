@@ -11,14 +11,14 @@
     <div align="right" style="width: 70%">
       <el-row>
         <el-button
-        v-if="false"
+          v-if="false"
           type="primary"
           @click="relationProject('453453', '项目2')"
           :disabled="buttonIson.AssociatedBtn"
           class="oper-btn refresh"
         ></el-button>
         <el-button
-        v-if="false"
+          v-if="false"
           type="danger"
           @click="RemoverelationProject('asdasdasdas')"
           :disabled="buttonIson.DisassociateBtn"
@@ -178,13 +178,8 @@
       />
       <el-table-column fixed="right" label="操作" width="150px">
         <template slot-scope="scope">
-<<<<<<< HEAD
-          <el-button type="primary" @click="reRun(scope.row)"
-          >重新运行</el-button
-=======
           <el-button type="primary" @click="reRun(scope.row)" size="mini"
-            >重新运行</el-button
->>>>>>> 25925bad005a0cdf8e737a542ae3165a5c9142de
+          >重新运行</el-button
           >
         </template>
       </el-table-column>
@@ -350,7 +345,6 @@
           return timeFormat;
         }
         return "";
-<<<<<<< HEAD
       },
       dateFormatter2(row) {
         const datetime = row.timingExecute;
@@ -389,37 +383,15 @@
         } else {
           var paramShowStr = "";
           var params = JSON.parse(row.settingInfo).paramsArr;
-          if (params == undefined || params.length == 0) {
+          if (params == undefined) {
             return "无";
           } else {
             for (var i = 0; i < params.length; i++) {
               paramShowStr +=
-                params[i].paramName + " : " + params[i].paramValue + "\r\n";
+                params[i].name + " : " + params[i].paramValue + "\r\n";
             }
             // var paramsArr = JSON.stringify(JSON.parse(row.settingInfo).paramsArr);
             return paramShowStr;
-=======
-      } else {
-        var sql = JSON.parse(row.settingInfo).sql;
-        return sql;
-      }
-    },
-    /**
-     * 格式化执行信息，取出执行信息中的paramArr
-     */
-    settingInfoParamsArrFormatter(row, column) {
-      if (row.settingInfo == null) {
-        return "无";
-      } else {
-        var paramShowStr = "";
-        var params = JSON.parse(row.settingInfo).paramsArr;
-        if (params == undefined) {
-          return "无";
-        } else {
-          for (var i = 0; i < params.length; i++) {
-            paramShowStr +=
-              params[i].name + " : " + params[i].paramValue + "\r\n";
->>>>>>> 25925bad005a0cdf8e737a542ae3165a5c9142de
           }
         }
       },

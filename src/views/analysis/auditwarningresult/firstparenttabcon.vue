@@ -476,9 +476,11 @@ export default {
         } else {
           var runTask = { runUserName: query.runUserName };
         }
-        if(query.runTaskUuid == null || query.runTaskUuid == ""){
-          var runTask = { runTaskUuid: query.runTaskUuid }
+        console.log(query.runTaskUuid)
+        if(query.runTaskUuid == undefined){
+          query.runTaskUuid = '1'
         }
+        console.log(query.runTaskUuid)
         query.model = model;
         query.runTask = runTask;
         this.pageQuery.condition = query;
@@ -762,7 +764,6 @@ export default {
      * 移除项目关联
      */
     RemoverelationProject(resultRelProjectUuid) {
-      console.log(this.selected1);
       rmResultRelProjectlr(resultRelProjectUuid).then((resp) => {
         if (resp.data == true) {
           this.getLikeList();
@@ -852,8 +853,6 @@ export default {
       this.settingTimingIsSee = false;
     },
     clickChangeTable(runTaskRelUuid){
-      console.log(99999999999999999999999)
-      console.log(typeof runTaskRelUuid)
         var query = {runTaskUuid:runTaskRelUuid}
         this.getLikeList(query)
     }
