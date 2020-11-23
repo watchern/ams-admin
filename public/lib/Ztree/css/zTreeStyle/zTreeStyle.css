@@ -16,7 +16,9 @@
 #rightPart .bottompart-max{
 	height: 100%;
 	width: 91%;
-	z-index: 200;
+	z-index: 201;
+	top: 0;
+	left: 125px;
 }
 
 #bottomPart{margin-top: 6%;}

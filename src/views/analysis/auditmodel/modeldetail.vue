@@ -147,7 +147,6 @@
         ref="myQueryBuilder"
         :columns="queryRules"
         :data="queryBuilderJson"
-        :inputselectvalue = columns
       />
       <span slot="footer" class="dialog-footer">
         <el-button @click="queryBuilderDialogVisible = false">取消</el-button>
@@ -470,7 +469,6 @@ export default {
       this.currentFilterInputId = id
     },
     queryCondition(){
-      debugger
       const obj = this.$refs.myQueryBuilder.getSelectSql()
       this.queryBuilderDialogVisible = false
       this.setFilter(obj.sql,JSON.stringify(obj.queryJson))

@@ -28,7 +28,7 @@
               show-checkbox
             >
               <span slot-scope="{ node, data }" class="custom-tree-node">
-                <span>{{ node.label }}</span>
+                <span >{{ node.label }}</span>
               </span>
             </MyElTree>
           </el-tab-pane>
@@ -71,8 +71,8 @@
           <el-table-column label="名称" width="200px" align="center" prop="userName" />
           <el-table-column label="编码" width="200px" align="center">
             <template slot-scope="scope">
-              <span v-if="scope.row.userType == 1">{{ scope.row.grpInstUuid }}</span>
-              <span v-if="scope.row.userType == 2">{{ scope.row.unitUuid }}</span>
+              <span v-if="scope.row.userType == 1">{{scope.row.grpInstUuid}}</span>
+              <span v-if="scope.row.userType == 2">{{scope.row.unitUuid}}</span>
             </template>
           </el-table-column>
           <el-table-column label="使用期限" width="200px" align="center">
@@ -135,7 +135,7 @@ export default {
   watch: {
     filterText(val) {
       this.$refs['A' + this.grpUuid].filter(val)
-    }
+    },
   },
   created() {
     getAllScene().then(resp => {
@@ -241,6 +241,9 @@ export default {
 <style lang="scss" scoped>
   .filter-tree {
     margin-top: 20px;
+  }
+  .dialog-bottom-btns{
+
   }
   .transfer-center-item{
     width: 40px;

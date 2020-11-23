@@ -1096,6 +1096,7 @@ export default {
       if (modelObj == null) {
         return
       }
+      console.log(modelObj)
       this.editorModelLoading = true
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {

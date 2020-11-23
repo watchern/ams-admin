@@ -210,18 +210,7 @@ export default {
     loadNode1(node, resolve) {
       if (node.level <= 3) {
         var pid = node.data ? node.data.id : 'ROOT'
-        var schemaName = "";
-        var tableName = "";
-        if(node.level == 1){
-          schemaName = node.data.id;
-        }else if(node.level == 2){
-          var nodePath = this.$refs.tree2.getNodePath(node);
-          debugger;
-          schemaName = nodePath[1].id;
-          tableName = node.data.label;
-        }
-        console.log(schemaName + ' '+  tableName)
-        listUnCached(node.level, schemaName, tableName).then(resp => {
+        listUnCached(node.level, pid).then(resp => {
           resolve(resp.data)
         })
       } else {

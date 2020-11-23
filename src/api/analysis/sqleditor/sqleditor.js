@@ -616,7 +616,7 @@ export function maxOpenOne() {
     $("#maxOpen").addClass("add-max-size")
     $("#iconImg").css("display","none")
     $("#iconImg-huifu").css("display","block")
-    $("#bottomPart").css({"position":"fixed","z-index":"200","top":-20+"%","left":8+"%"})
+    $("#bottomPart").css({"position":"fixed","z-index":"200","margin-top":0})
     $("#bottomPart").addClass("bottompart-max")
     maxormin = false
   }else if(maxormin == false){
@@ -624,12 +624,10 @@ export function maxOpenOne() {
     $("#maxOpen").removeClass("add-max-size")
     $("#iconImg").css("display","block")
     $("#iconImg-huifu").css("display","none")
-    $("#bottomPart").css({"position":"static","z-index":"200","top":0,"left":0})
+    $("#bottomPart").css({"position":"static","z-index":"200","margin-top":6+"%"})
     $("#bottomPart").removeClass("bottompart-max")
     maxormin = true
   }
-  
-
 }
 /**
  * 初始化参数树

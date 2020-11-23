@@ -10,7 +10,7 @@ const dataRouter = {
     {
       path: 'bizattr',
       name: '业务属性',
-      component: () => import('@/views/data/bizattr/index')
+      component: () => import('@/views/data/bizattr/index1')
     }, {
       path: 'table',
       name: '表注册',
@@ -36,7 +36,11 @@ const dataRouter = {
     }, {
       path: 'dict',
       name: '数据字典维护',
+<<<<<<< HEAD
+      component: () => import('@//views/data/transCode/index')
+=======
       component: () => import('@/views/data/transcode/index')
+>>>>>>> 25925bad005a0cdf8e737a542ae3165a5c9142de
     }, {
       path: 'tblrel',
       name: '表关联关系维护',

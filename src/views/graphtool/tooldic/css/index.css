@@ -1,13 +1,3 @@
-* {
-	margin: 0;
-	padding: 0;
-}
-li {
-	list-style: none;
-}
-hr {
-	margin: 0px !important;
-}
 .graphContainer {
 	height:88%;
 	background: url('../images/grid.gif');
@@ -23,14 +13,6 @@ hr {
 .geDiagramContainer {
 	left: 0;
 	top: 0;
-	right: 0;
-}
-.geHsplit {
-	top: 112px;
-	bottom: 0;
-}
-.geVsplit {
-	left: 0;
 	right: 0;
 }
 #accordion{
@@ -119,15 +101,6 @@ div.rightMenu ul li:hover {
 }
 #tableArea,#sysInfoArea,#outLineArea{
     overflow: auto;
-}
-.iconImg{
-    width: 20px;
-    height: 20px;
-    margin-bottom: 4px;
-}
-.iconText{
-    font-size: 14px;
-    cursor: pointer;
 }
 #ztree_datasource{
 	overflow: auto;

@@ -80,12 +80,11 @@ export function deleteRunResultShare(data) {
  * @param {*} data pageQuery对象
  */
 export function selectTable(data, filterSql) {
-  var map = {basePageParam:data,filterSql:filterSql}
   return request({
     baseURL: analysisUrl,
-    url: '/RunResultTableController/selectTable',
+    url: '/RunResultTableController/selectTable/' + filterSql,
     method: 'post',
-    data:map
+    data
   })
 }
 
@@ -97,19 +96,6 @@ export function exportRunTaskRel() {
     baseURL: analysisUrl,
     url: '/RunTaskRelController/exportRunTaskRelTable',
     method: 'get'
-  })
-}
-
-/**
- * 运行任务重新运行
- */
-export function reRunRunTask(data,setDateTime) {
- var map = {runTaskRel:data,timingExecute:setDateTime}
-  return request({
-    baseURL: analysisUrl,
-    url: '/RunTaskController/reRunRunTask',
-    method: 'post',
-    data:map
   })
 }
 
@@ -141,12 +127,10 @@ export function batchSaveResultDetailProjectRel(data) {
  * @param {*} data
  */
 export function selectPrimaryKeyByTableName(data) {
-  var map = {tableName:data}
   return request({
     baseURL: analysisUrl,
-    url: '/ResultDetailProjectRelController/getPrimaryKeyByTableName',
-    method: 'post',
-    data:map
+    url: '/ResultDetailProjectRelController/getPrimaryKeyByTableName/' + data,
+    method: 'post'
   })
 }
 
@@ -168,12 +152,10 @@ export function removeResultDetailProjectRel(data) {
  * @param {*} tableName  渲染主表的名字
  */
 export function selectConditionShow(modelUuid, tableName) {
-  var map = {modelUuid:modelUuid,tableName:tableName}
   return request({
     baseURL: analysisUrl,
-    url: '/RunResultTableController/getConditionShow',
-    method: 'post',
-    data:map
+    url: '/RunResultTableController/getConditionShow/' + modelUuid + '/' + tableName,
+    method: 'post'
   })
 }
 

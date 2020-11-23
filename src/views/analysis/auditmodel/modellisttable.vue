@@ -24,7 +24,7 @@
           </el-col>
         </el-row>
         <el-table :key="tableKey" style="height: 450px;overflow-y: scroll" ref="modelListTable" v-loading="listLoading"
-                  :data="list" border fit highlight-current-row @select="modelTableSelectEvent" @select-all="modelTableSelectEvent">
+                  :data="list" border fit highlight-current-row @select="modelTableSelectEvent">
           <el-table-column type="selection" width="55" />
           <el-table-column label="模型名称" width="100px" align="left" prop="modelName">
             <template slot-scope="scope">
@@ -173,7 +173,7 @@ export default {
         { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
         { label: '审计事项', name: 'auditItemName', type: 'fuzzyText' },
         { label: '风险等级', name: 'riskLevelUuid', type: 'select',
-          data: [{ name: '请选择', value: '-1' }, { name: '高', value: '1' }, { name: '中', value: '2' }, { name: '低', value: '3' }],
+          data: [{ name: '请选择', value: '-1' }, { name: '高', value: '002002001' }, { name: '中', value: '002002002' }, { name: '低', value: '002002003' }],
           default: '-1' }
       ],
       //是否编辑模型对象
@@ -243,7 +243,8 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-      const webSocketPath = 'ws://localhost:8086/analysis/websocket?' + this.$store.getters.personuuid
+      /*const webSocketPath = 'ws://localhost:8086/analysis/websocket?' + this.$store.getters.personuuid*/
+      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid;
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
       // 当服务端打开连接
@@ -716,7 +717,7 @@ export default {
         if (result.code == 0) {
           if(result.data.parammModelRel.length == 0){
             let obj = {
-              sqls:result.data.sqlValue,
+              sqls:selectObj[0].sqlValue,
               modelUuid:selectObj[0].modelUuid
             }
             startExecuteSql(obj).then((result) => {
@@ -735,7 +736,7 @@ export default {
               }
               paramObj.push(JSON.parse(result.data.parammModelRel[i].paramValue))
             }
-            this.currentPreviewModelParamAndSql.sqlValue = result.data.sqlValue
+            this.currentPreviewModelParamAndSql.sqlValue = selectObj[0].sqlValue
             this.currentPreviewModelParamAndSql.paramObj = paramObj
             this.currentPreviewModelParamAndSql.modelUuid = selectObj[0].modelUuid
             //展现参数输入界面

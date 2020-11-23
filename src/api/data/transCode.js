@@ -41,7 +41,6 @@ export function del(data) {
 }
 
 export function getTransMap(ids) {
-  debugger
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/getTransMap/${ids}`,
