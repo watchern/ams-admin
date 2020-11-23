@@ -173,7 +173,7 @@ export default {
         { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
         { label: '审计事项', name: 'auditItemName', type: 'fuzzyText' },
         { label: '风险等级', name: 'riskLevelUuid', type: 'select',
-          data: [{ name: '请选择', value: '-1' }, { name: '高', value: '1' }, { name: '中', value: '2' }, { name: '低', value: '3' }],
+          data: [{ name: '请选择', value: '-1' }, { name: '高', value: '002002001' }, { name: '中', value: '002002002' }, { name: '低', value: '002002003' }],
           default: '-1' }
       ],
       //是否编辑模型对象
