@@ -98,15 +98,16 @@
         prop="dependTaskInfo"
         width="120px"
       >
-        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0" slot-scope="scope">
+        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <el-row v-for="dependTask in scope.row.dependTaskInfoList">
+            <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
+
               <label class="col-md-2">
-                依赖:
+                [{{ dependTask.dateValueName }}]
               </label>
-              <div class="col-md-10">
-                {{ dependTask.dependItemList }}
-              </div>
+              <label class="col-md-10" align="right">
+                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+              </label>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -282,6 +283,7 @@
                       v-model="el.dependItemList"
                       :index="$index"
                       :depend-task-list="dependTaskList"
+                      :process-schedules-uuid="temp.processSchedulesUuid"
                       @on-delete-all="_onDeleteAll"
                       @getDependTaskList="getDependTaskList"
                     />
@@ -480,10 +482,10 @@ export default {
         }
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 10,
-        sortBy: 'asc',
+        sortBy: 'desc',
         sortName: 'updateTime'
       },
       temp: {
@@ -645,7 +647,7 @@ export default {
           (v1) =>
             (v1.state =
                 dependentResult[
-                  `${v1.processSchedulesUuid}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}`
+                  `${v1.processSchedulesUuid}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}-${v1.scheduleName}`
                 ] || defaultState)
         )
       )

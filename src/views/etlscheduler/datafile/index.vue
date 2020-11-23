@@ -100,7 +100,7 @@ export default {
         { label: '时间', name: 'createTime', type: 'timePeriod', value: '' }
       ],
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
         sortBy: 'desc',
@@ -152,6 +152,3 @@ export default {
   }
 }
 </script>
-<style>
-
-</style>

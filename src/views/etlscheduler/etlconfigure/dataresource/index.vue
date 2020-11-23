@@ -157,11 +157,11 @@ export default {
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
       ],
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 10,
-        sortBy: 'asc',
-        sortName: 'update_time'
+        sortBy: 'desc',
+        sortName: 'updateTime'
       },
       temp: {
         dataResourceCode: null,
