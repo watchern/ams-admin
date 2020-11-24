@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 const baseURL = '/graphtool'
-const dataUrl = '/amsdata'
+const dataUrl = '/data'
 
 /**
  * 获取图形树

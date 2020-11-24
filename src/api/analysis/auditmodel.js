@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 const analysisUrl = '/analysis'
-const dataUrl = '/amsdata'
+const dataUrl = '/data'
 
 /**
  * 获取当前登录人模型分类树

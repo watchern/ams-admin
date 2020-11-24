@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const baseURL = '/amsdata'
+const baseURL = '/data'
 const controllerName = 'sceneGrp'
 
 export function listByPageGrp(data) {

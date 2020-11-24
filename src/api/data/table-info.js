@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import request from '@/utils/request'
 
-const baseURL = '/amsdata'
+const baseURL = '/data'
 
 const controller2 = 'tableMeta'
 

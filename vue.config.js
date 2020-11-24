@@ -51,7 +51,7 @@ module.exports = {
       '/r1': {
         target: process.env.R1_LOCATION
       },
-      '/amsdata': {
+      '/data': {
         target: 'http://localhost:8081'
         // target: 'http://139.159.246.94:1093'  //远程测试环境
       },
