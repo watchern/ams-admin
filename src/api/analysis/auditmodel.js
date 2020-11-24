@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 const analysisUrl = '/analysis'
-const dataUrl = '/amsdata'
+const dataUrl = '/data'
 
 /**
  * 获取当前登录人模型分类树
@@ -212,7 +212,7 @@ export function getAuditItem() {
  * @param data 要共享的数据
  * @returns {AxiosPromise}
  */
-export function shareModel(data){
+export function shareModel(data) {
   return request({
     baseURL: analysisUrl,
     url: '/modelController/shareModel',
