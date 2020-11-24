@@ -134,7 +134,7 @@ export default {
       saveTableInfo(this.temp).then(() => {
         this.$notify({
           title: '成功',
-          message: '创建成功',
+          message: '保存成功',
           type: 'success',
           duration: 2000,
           position: 'bottom-right'
