@@ -29,11 +29,15 @@
       <el-table-column label="操作" prop="isStart"  >
         <template slot-scope="scope">
           <el-link
-            type="primary" v-if="scope.row.isStart == 0">
+            type="primary"
+            v-if="scope.row.isStart == 0"
+          >
             启动
           </el-link>
           <el-link
-            type="primary" v-if="scope.row.isStart == 1">
+            type="primary"
+            @click="stopWarning(scope.row.auditWarningUuid)"
+            v-if="scope.row.isStart == 1">
             停止
           </el-link>
         </template>
@@ -50,7 +54,7 @@
   </div>
 </template>
 <script>
-import { findAuditWarningList, addWarning, deleteAuditWarning, updateWarning} from '@/api/analysis/auditwarning'
+import { findAuditWarningList, addWarning, deleteAuditWarning, updateWarning, startById, stopById} from '@/api/analysis/auditwarning'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import EditAuditWarning from '@/views/analysis/auditwarning/editauditwarning'
@@ -106,10 +110,71 @@ export default {
     this.getList()
   },
   methods: {
+
+    /**
+     * 启动预警
+     * @param id 审计预警主键
+     */
+    startWarning(id){
+      if(!id){
+        this.$message({
+          type: 'info',
+          message: '请先选择要启动的预警!'
+        })
+        return
+      }
+      startById(id).then(resp => {
+        if(resp.code !== 0){
+          this.$message({
+            type: 'error',
+            message: '启动预警失败'
+          })
+          return
+        }
+        this.$notify({
+          title:'提示',
+          message:'启动成功',
+          type:'success',
+          duration:2000,
+          position:'bottom-right'
+        });
+        this.getList()
+      })
+    },
+    /**
+     * 停止预警
+     * @param id 审计预警主键
+     */
+    stopWarning(id){
+      if(!id){
+        this.$message({
+          type: 'info',
+          message: '请先选择要停止的预警!'
+        })
+        return
+      }
+      stopById(id).then(resp => {
+        if(resp.code !== 0){
+          this.$message({
+            type: 'error',
+            message: '停止预警失败'
+          })
+          return
+        }
+        this.$notify({
+          title:'提示',
+          message:'停止成功',
+          type:'success',
+          duration:2000,
+          position:'bottom-right'
+        });
+        this.getList()
+      })
+    },
+
     /**
      * 列选择触发事件
-     * @selection selection 已选择行
-     * @returns {返回格式化后的时间字符串}
+     * @param selection 已选择行
      */
     listSelectChange(selection){
       if(selection && selection.length == 0){
@@ -238,7 +303,7 @@ export default {
           this.$notify({
             title:'提示',
             message:'删除成功',
-            type:'info',
+            type:'success',
             duration:2000,
             position:'bottom-right'
           })
@@ -270,7 +335,7 @@ export default {
           this.$notify({
             title:'提示',
             message:'保存预警信息成功!',
-            type:'info',
+            type:'success',
             duration:2000,
             position:'bottom-right'
           })
@@ -289,7 +354,7 @@ export default {
           this.$notify({
             title:'提示',
             message:'保存预警信息成功!',
-            type:'info',
+            type:'success',
             duration:2000,
             position:'bottom-right'
           })
