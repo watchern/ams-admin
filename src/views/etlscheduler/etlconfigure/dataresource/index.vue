@@ -152,8 +152,8 @@ export default {
       closeStatus: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
-        { label: '资源编码', name: 'dataResourceCode', type: 'fuzzyText', value: '' },
-        { label: '资源名称', name: 'dataResourceName', type: 'fuzzyText', value: '' },
+        { label: '资源编码', name: 'dataResourceCode', type: 'text', value: '' },
+        { label: '资源名称', name: 'dataResourceName', type: 'text', value: '' },
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
       ],
       pageQuery: {

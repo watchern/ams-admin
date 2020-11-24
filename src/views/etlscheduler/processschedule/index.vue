@@ -77,7 +77,7 @@
       >
         <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <el-row v-for="taskParam in scope.row.distinctParamList">
+            <el-row v-for="(taskParam,$index) in scope.row.distinctParamList" :key="$index">
               <label class="col-md-2">
                 {{ taskParam.name }}:
               </label>
@@ -101,7 +101,6 @@
         <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
-
               <label class="col-md-2">
                 [{{ dependTask.dateValueName }}]
               </label>
@@ -151,7 +150,6 @@
           <el-input
             v-model="temp.scheduleName"
             class="propwidth"
-            placeholder=""
             :disabled="disableUpdate"
             placeholder="请输入任务名称"
           />
@@ -179,8 +177,8 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          v-for="(item, index) in distinctParamList"
-          :key="item.paramUuid"
+          v-for="(item, $index) in distinctParamList"
+          :key="$index"
           :label="item.param.paramName"
           :rules="{required: true, message: '', trigger: 'change'}"
         >
@@ -627,7 +625,11 @@ export default {
     }
   },
   created() {
-    this.crontabFormat = getDictList('001001')
+    try {
+      this.crontabFormat = getDictList('001001')
+    } catch (e) {
+      console.error(e)
+    }
     queryProcessLike().then((resp) => {
       this.queryFields[2].data = resp.data
     })

@@ -52,7 +52,7 @@
           type="primary"
           title="下载"
           class="oper-btn import"
-          :disabled="selections.length === 0"
+          :disabled="selections.length !== 1"
           @click="handleDownload()"
         />
         <!-- 上传 -->
