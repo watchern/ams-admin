@@ -641,7 +641,7 @@ EditorUi = function(editor, container, lightbox) {
       var isCreateTableNodeError = false;
       $.ajax({
           type: "post",
-          url: "/amsdata/tableMeta/getCols",
+          url: "/data/tableMeta/getCols",
           dataType:"json",
           async:false,
           data: {

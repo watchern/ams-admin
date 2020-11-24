@@ -1,18 +1,19 @@
 import request from '@/utils/request'
 
 const baseURL = '/data'
-const controllerName = 'sceneGrp'
+const controllerName = 'directory'
 
-export function listByPageGrp(data) {
+export function listByPage(data) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/listByPage`,
+    url: '/bizAttr/listByPage',
     method: 'post',
+    // 直接加data以json格式传递  后台用RequestBody
     data
   })
 }
 
-export function saveGrp(data) {
+export function save(data) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/save`,
@@ -21,7 +22,7 @@ export function saveGrp(data) {
   })
 }
 
-export function updateGrp(data) {
+export function update(data) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/update`,
@@ -30,18 +31,11 @@ export function updateGrp(data) {
   })
 }
 
-export function delGrp(ids) {
+export function del(data) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/delete/${ids}`,
-    method: 'delete'
-  })
-}
-
-export function getById(id) {
-  return request({
-    baseURL: baseURL,
-    url: `/${controllerName}/getById/${id}`,
-    method: 'get'
+    url: `/${controllerName}/deleteDirectory/`,
+    method: 'delete',
+    data
   })
 }

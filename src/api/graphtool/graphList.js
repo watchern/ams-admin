@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 const baseURL = '/graphtool'
-const dataUrl = '/amsdata'
+const dataUrl = '/data'
 
 /**
  * 获取图形树
@@ -114,11 +114,11 @@ export function saveGraphInterface(data) {
  * 根据图形ID查询执行节点集合
  */
 export function getExecuteNodeInfoPost(data) {
-    return request({
-        baseURL: baseURL,
-        url: '/graphExecuteNode/getExecuteNodeInfo',
-        method: 'post',
-        params:data
-    })
+  return request({
+    baseURL: baseURL,
+    url: '/graphExecuteNode/getExecuteNodeInfo',
+    method: 'post',
+    params: data
+  })
 }
 

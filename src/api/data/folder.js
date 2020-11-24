@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const baseURL = '/amsdata'
+const baseURL = '/data'
 const controller = 'folder'
 
 export function saveFolder(data) {
