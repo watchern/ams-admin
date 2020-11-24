@@ -168,11 +168,11 @@ export default {
         }
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
         sortBy: 'asc',
-        sortName: 'create_time'
+        sortName: 'updateTime'
       },
       temp: {
         processDefinitionUuid: null

@@ -78,9 +78,8 @@ export default {
         condition: {},
         pageNo: 1,
         pageSize: 20,
-        // 开始运行时间，倒序排序
         sortBy: 'desc',
-        sortName: 'startTime'
+        sortName: 'updateTime'
       },
       titleMsg: {},
       type: null,

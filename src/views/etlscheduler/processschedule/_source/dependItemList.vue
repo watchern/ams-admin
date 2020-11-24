@@ -6,10 +6,6 @@
       class="list"
       @click="itemIndex = $index"
     >
-      <!-- <x-select filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails" v-model="el.projectId" @on-change="_onChangeProjectId">
-        <x-option v-for="item in projectList" :key="item.value" :value="item.value" :label="item.label">
-        </x-option>
-      </x-select> -->
       <x-select
         v-model="el.processSchedulesUuid"
         filterable
@@ -22,6 +18,7 @@
           :key="item.processSchedulesUuid"
           :value="item.processSchedulesUuid"
           :label="item.scheduleName"
+          :disabled="item.processSchedulesUuid === processSchedulesUuid"
         />
       </x-select>
       <x-select
@@ -29,13 +26,13 @@
         filterable
         :style="{ width: isInstance ? '450px' : '450px' }"
         :disabled="isDetails"
+        @on-change="_onChangeDepTasksName"
       >
         <x-option
           v-for="item in el.depTasksList || []"
           :key="item.id"
           :value="item.id"
           :label="item.name"
-          @
         />
       </x-select>
       <x-select
@@ -51,10 +48,16 @@
           :label="item.label"
         />
       </x-select>
+      <x-input
+        v-model="el.cycleValue"
+        style="display:none"
+      >{{ cycleValue }}
+      </x-input>
       <x-select
         v-model="el.dateValue"
         style="width: 116px"
         :disabled="isDetails"
+        @on-change="_onChangeDateValue"
       >
         <x-option
           v-for="item in el.dateValueList || []"
@@ -63,6 +66,11 @@
           :label="item.label"
         />
       </x-select>
+      <x-input
+        v-model="el.dateValueName"
+        style="display:none"
+      >{{ dateValueName }}
+      </x-input>
       <template v-if="isInstance">
         <span class="instance-state">
           <em
@@ -113,7 +121,7 @@ import {
   getScheduleList,
   getTaskLink
 } from '@/api/etlscheduler/processschedule'
-import { debug } from 'leancloud-storage'
+// import { debug } from 'leancloud-storage'
 import $ from 'jquery'
 export default {
   name: 'DepList',
@@ -126,7 +134,8 @@ export default {
   props: {
     dependItemList: Array,
     index: Number,
-    dependTaskList: Array
+    dependTaskList: Array,
+    processSchedulesUuid: String
   },
   data() {
     return {
@@ -137,7 +146,11 @@ export default {
       cycleList: cycleList,
       isInstance: false,
       itemIndex: null,
-      scheduleList: []
+      scheduleList: [],
+      cycleValue: '',
+      dateValueName: '',
+      cycle: { value: 'day' },
+      depTasksList: {}
     }
   },
   watch: {
@@ -201,7 +214,11 @@ export default {
       if (this.dependItemList === null || !this.dependItemList.length || this.dependItemList[0] === {}) {
         if (this.dependItemList == null) this.dependItemList = []
         getScheduleList().then((resp) => {
-          this.scheduleList = resp.data
+          // this.scheduleList = resp.data
+          // { 'processSchedulesUuid': this.processSchedulesUuid }
+          // 找到所有不符合条件的
+          this.scheduleList = _.reject(resp.data,
+            { 'processSchedulesUuid': this.processSchedulesUuid })
           // if (this.scheduleList == null || this.scheduleList.length === 0) return
           // 判断 dependItemList 是否有值（无值的时候）
           const value = this.scheduleList[0].processSchedulesUuid
@@ -221,7 +238,10 @@ export default {
         this._getDependItemList(ids, false).then(res => {
           _.map(this.dependItemList, (v, i) => {
             getScheduleList().then((resp) => {
-              this.scheduleList = resp.data
+              // this.scheduleList = resp.data
+              // 找到所有不符合条件的
+              this.scheduleList = _.reject(resp.data,
+                { 'processSchedulesUuid': this.processSchedulesUuid })
               // if (this.scheduleList == null || this.scheduleList.length === 0) return
               // 判断 dependItemList 是否有值（无值的时候）
               // const value = this.scheduleList[0].processSchedulesUuid
@@ -252,7 +272,10 @@ export default {
       this.isLoading = true
 
       getScheduleList().then((resp) => {
-        this.scheduleList = resp.data
+        // 找到所有不符合条件的
+        this.scheduleList = _.reject(resp.data,
+          { 'processSchedulesUuid': this.processSchedulesUuid })
+        // this.scheduleList = resp.data
         if (this.scheduleList == null || this.scheduleList.length === 0) {
           return
         }
@@ -282,44 +305,6 @@ export default {
         })
       }
     },
-    // _getProjectList() {
-    //   return new Promise((resolve, reject) => {
-    //     this.projectList = _.map(_.cloneDeep(this.store.state.dag.projectListS), v => {
-    //       return {
-    //         value: v.id,
-    //         label: v.name
-    //       }
-    //     })
-    //     resolve()
-    //   })
-    // },
-    // /**
-    //    * get processlist
-    //    */
-    // _getProcessList() {
-    //   return new Promise((resolve, reject) => {
-    //     const definitionList = _.map(_.cloneDeep(this.store.state.dag.processListS), v => {
-    //       return {
-    //         value: v.id,
-    //         label: v.name
-    //       }
-    //     })
-    //     resolve(definitionList)
-    //   })
-    // },
-    // _getProcessByProjectId() {
-    //   return new Promise((resolve, reject) => {
-    //     this.store.dispatch('dag/getProcessByProjectId').then(res => {
-    //       const definitionList = _.map(_.cloneDeep(res), v => {
-    //         return {
-    //           value: v.id,
-    //           label: v.name
-    //         }
-    //       })
-    //       resolve(definitionList)
-    //     })
-    //   })
-    // },
     /**
      * get dependItemList
      */
@@ -337,26 +322,11 @@ export default {
         // }
       })
     },
-    /**
-     * change process get dependItemList
-     */
-    // _onChangeProjectId() {
-    //   this._getProcessByProjectId().then(definitionList => {
-    //     /* this.$set(this.dependItemList, this.itemIndex, this._dlOldParams(value, definitionList, item))*/
-    //     const id = definitionList[0].value
-    //     this._getDependItemList(id).then(depTasksList => {
-    //       const item = this.dependItemList[this.itemIndex]
-    //       // init set depTasks All
-    //       item.depTasks = 'ALL'
-    //       // set dependItemList item data
-    //       this.$set(this.dependItemList, this.itemIndex, this._cpOldParams(id, definitionList, depTasksList, item))
-    //     })
-    //   })
-    // },
     _onChangeDefinitionId({ value }) {
       // get depItem list data
       // 根据流程调度ID 查
       getTaskLink(value).then((resp) => {
+        this.depTasksList[value] = resp.data[value]
         // const depTasksList = resp.data
         const item = this.dependItemList[this.itemIndex]
         // init set depTasks All
@@ -376,15 +346,59 @@ export default {
       // })
     },
     _onChangeCycle({ value }) {
+      this.cycle = _.find(cycleList, ['value', value])
+      this.cycleValue = this.cycle.label
+      this.$set(
+        this.dependItemList[this.itemIndex],
+        'cycleValue',
+        this.cycleValue
+      )
       const list = _.cloneDeep(dateValueList[value])
       this.$set(
         this.dependItemList[this.itemIndex],
         'dateValue',
         list[0].value
       )
+      this.$set(
+        this.dependItemList[this.itemIndex],
+        'dateValueName',
+        list[0].label
+      )
       this.$set(this.dependItemList[this.itemIndex], 'dateValueList', list)
     },
+    _onChangeDateValue({ value }) {
+      const list = _.cloneDeep(dateValueList[this.cycle.value])
+      this.dateValueName = _.find(list, ['value', value])
+      this.$set(
+        this.dependItemList[this.itemIndex],
+        'dateValueName',
+        this.dateValueName.label
+      )
+    },
+    _onChangeDepTasksName({ value }) {
+      const item = this.dependItemList[this.itemIndex]
+      var depTasks = {}
+      if (typeof item.depTasksList !== 'undefined') {
+        if (typeof item.depTasks !== 'undefined') {
+          depTasks = _.find(item.depTasksList, ['id', value])
+        }
+        if (value === 'ALL') {
+          depTasks = { name: 'ALL' }
+        }
+      }
+      if ($.isEmptyObject(depTasks)) {
+        depTasks = { name: '' }
+      }
+      // const i = _.findIndex(this.dependItemList, v => v.processSchedulesUuid === value)
+      // this.$set(this.dependItemList, i, this._rtOldParams(value, scheduleList, depTasksList, item))
+      this.$set(
+        this.dependItemList[this.itemIndex],
+        'depTasksName',
+        depTasks.name
+      )
+    },
     _rtNewParams(value, scheduleList, depTasksList) {
+      const o = _.find(this.scheduleList, ['processSchedulesUuid', value])
       return {
         processSchedulesUuid: value,
         // dependItem need private definitionList
@@ -393,19 +407,28 @@ export default {
         depTasks: 'ALL',
         depTasksList: depTasksList,
         cycle: 'day',
+        cycleValue: '日',
+        scheduleName: o.scheduleName || '',
+        depTasksName: 'ALL',
         dateValue: 'today',
+        dateValueName: '今天',
         dateValueList: _.cloneDeep(dateValueList['day']),
         state: ''
       }
     },
     _rtOldParams(value, scheduleList, depTasksList, item) {
+      const o = _.find(this.scheduleList, ['processSchedulesUuid', value])
       return {
         processSchedulesUuid: value,
         scheduleList: scheduleList,
         depTasks: item.depTasks || 'ALL',
+        depTasksName: item.depTasksName,
         depTasksList: depTasksList,
         cycle: item.cycle,
+        cycleValue: item.cycleValue,
+        scheduleName: o.scheduleName,
         dateValue: item.dateValue,
+        dateValueName: item.dateValueName,
         dateValueList: _.cloneDeep(dateValueList[item.cycle]),
         state: item.state
       }
