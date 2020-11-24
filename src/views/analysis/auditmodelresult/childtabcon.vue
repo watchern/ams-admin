@@ -337,7 +337,7 @@
             var resultDetailProjectRels = [];
             if (resp.data.length == 0) {
               // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果没有值则直接关联
-              selectPrimaryKeyByTableName(this.nowtable.resultTableName).then(
+              selectPrimaryKeyByTableName().then(
                 (resp) => {
                   this.primaryKey = resp.data;
                   for (var i = 0; i < this.selectRows.length; i++) {
@@ -372,7 +372,7 @@
               // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果有值则要判断是否关联过该主键，如果添加过就不能重复关联
               var resultDetailProjectRels = [];
               var related = [];
-              selectPrimaryKeyByTableName(this.nowtable.resultTableName).then(
+              selectPrimaryKeyByTableName().then(
                 (resp) => {
                   this.primaryKey = resp.data;
                   for (var i = 0; i < this.selectRows.length; i++) {
@@ -672,7 +672,7 @@
               this.nowtable.resultTableName
             ).then((resp) => {
               this.conditionShowData = resp.data;
-              selectPrimaryKeyByTableName(this.nowtable.resultTableName).then(
+              selectPrimaryKeyByTableName().then(
                 (resp) => {
                   this.primaryKey = resp.data;
                   selectModel(this.modelUuid).then((resp) => {

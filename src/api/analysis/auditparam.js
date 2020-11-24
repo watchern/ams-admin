@@ -518,6 +518,10 @@ export function initParamHtml(sql, paramsArr, name, id) {
         } else {
           // $(".panel-body").html(paramHtml);
           $('#' + id).html(paramHtml)
+          if(paramsArr.length==0){
+            var paramHtml = "<div align='center' style='font-weight:lighter ;font-size:15px' >该模型没有参数</div>"
+            $('#' + id).html(paramHtml)
+          }
           initParamInputAndSelect()
         }
       }
@@ -2613,3 +2617,4 @@ export function createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
     initParam(canEditor)
   })
 }
+

@@ -61,12 +61,7 @@ export default {
     }
   },
   created() {
-    getResELTree({
-      dataUserId: this.dataUserId,
-      sceneCode: this.sceneCode
-    }).then(resp => {
-      this.treeData1 = resp.data
-    })
+    this.refresh()
   },
   methods: {
     filterNode(value, data) {
@@ -78,6 +73,19 @@ export default {
     },
     nodeClick(data, node, tree) {
       this.$emit('node-click', data, node, tree)
+    },
+    appendnode(childData, parentNode) {
+      this.$refs.tree1.append(childData, parentNode)
+      parentNode.loaded = false
+      parentNode.expand()
+    },
+    refresh() {
+      getResELTree({
+        dataUserId: this.dataUserId,
+        sceneCode: this.sceneCode
+      }).then(resp => {
+        this.treeData1 = resp.data
+      })
     }
   } // 注册
 }
