@@ -23,8 +23,8 @@ export default {
     refreshGraphList(node) { // 根据点击的图形树节点刷新列表数据
       // 处理列表界面的删除按钮是否显示
       if (node.type === 'screenGraphType') { // 场景查询图形
-        const curRoles = this.$store.getters.roles
-        const screenManager = 'screenManager'// 模拟场景查询管理员角色
+        let curRoles = this.$store.getters.roles
+        let screenManager = 'screenManager'// 模拟场景查询管理员角色
         if (curRoles.includes(screenManager)) {
           this.$refs.graphListTable.showDelBtn = true
         } else {
