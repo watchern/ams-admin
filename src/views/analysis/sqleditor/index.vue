@@ -15,7 +15,7 @@
       </div>
       <div id="rightPart" class="col-sm-10" style="height: 90vh">
         <div id="sqlEditorDiv" class="sql-editor-div">
-          <el-row type="flex" class="row-bg" v-if="power!='warning'">
+          <el-row type="flex" class="row-bg">
             <el-col>
               <el-button type="primary" size="small" @click="sqlFormat" class="oper-btn show-detail" title="格式化sql"></el-button>
               <el-button type="primary" size="small" @click="executeSQL" class="oper-btn start" title="执行"></el-button>
@@ -584,6 +584,7 @@ export default {
           this.executeLoading = true
           startExecuteSql(obj).then((result) => {
             this.executeLoading = false
+            console.log(result)
             if (!result.data.isError) {
               this.currentExecuteSQL = result.data.executeSQLList
               this.modelOriginalTable = result.data.tables
@@ -591,6 +592,8 @@ export default {
             } else {
               this.$message({ type: 'info', message: '执行失败' })
             }
+          }).catch(result=>{
+            this.executeLoading = false
           })
         } else {
           this.openParamDraw(obj)
