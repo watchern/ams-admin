@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import request from '@/utils/request'
 
-const baseURL = '/amsdata'
+const baseURL = '/data'
 
 /* 元数据操作*/
 const controller1 = 'warehouse'

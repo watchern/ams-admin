@@ -50,9 +50,8 @@ module.exports = {
       '/r1': {
         target: process.env.R1_LOCATION
       },
-      '/amsdata': {
+      '/data': {
         target: process.env.AMSDATA_API
-        //target: 'http://139.159.246.94:1064'  远程测试环境
       },
       '/base': {
         target: process.env.AMSBASE_API
