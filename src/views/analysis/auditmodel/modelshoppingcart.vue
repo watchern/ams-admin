@@ -408,12 +408,12 @@ export default {
       var time1 = Date.parse(dateTime.toString());
       var time2 = Date.parse(new Date().toString());
       var differTime = (time1 - time2) / (1000 * 60);
-      if (differTime < 5) {
-        this.$message({
-          type: "info",
-          message: "定时运行时间距当前时间要大于5分钟",
-        });
-      } else {
+      // if (differTime < 5) {
+      //   this.$message({
+      //     type: "info",
+      //     message: "定时运行时间距当前时间要大于5分钟",
+      //   });
+      // } else {
         var runTaskUuid = uuid2();
         var batchUuid = uuid2();
         var runTaskRels = [];
@@ -463,7 +463,7 @@ export default {
             this.$message({ type: "info", message: "执行运行任务失败" });
           }
         });
-      }
+      // }
       this.runimmediatelyIsSee = false;
       this.timingExecutionIsSee = false;
     },
