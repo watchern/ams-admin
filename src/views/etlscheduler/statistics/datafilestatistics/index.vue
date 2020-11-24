@@ -93,7 +93,7 @@ export default {
         sortName: 'updateTime'
       },
       queryFields: [
-        { label: '接收时间范围', name: 'startTime', type: 'timePeriod', value: '' }
+        { label: '数据时间范围', name: 'startTime', type: 'timePeriod', value: '' }
       ],
       selections: []
     }
