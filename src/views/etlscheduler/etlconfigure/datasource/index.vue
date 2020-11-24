@@ -82,8 +82,25 @@
         prop="connectionParams"
       >
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>{{ scope.row.connectionParams }}</p>
+          <el-popover trigger="hover" placement="top" width="600">
+            <!-- <p>{{ scope.row.connectionParams }}</p> -->
+            <el-row>
+              <label class="col-md-4">
+                jdbc url:
+              </label>
+              <div class="col-md-8">
+                {{ JSON.parse(scope.row.connectionParams).jdbcUrl }}
+              </div>
+            </el-row>
+            <el-row>
+              <label class="col-md-4">
+                用户名:
+              </label>
+              <div class="col-md-8">
+                {{ JSON.parse(scope.row.connectionParams).user }}
+              </div>
+            </el-row>
+
             <div slot="reference" class="name-wrapper">
               <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
