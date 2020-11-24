@@ -4,7 +4,7 @@
       <dataTree ref="dataTree" :data-user-id="dataUserId" :scene-code="sceneCode" @node-click="nodeclick" />
     </div>
     <div class="divContent">
-      <BaseDirectoryList ref="listData" />
+      <BaseDirectoryList ref="listData" @append-node="appendnode" @refresh="refresh" />
     </div>
   </div>
 </template>
@@ -26,6 +26,12 @@ export default {
   methods: {
     nodeclick(data, node, tree) {
       this.$refs.listData.getList(data, node, tree)
+    },
+    appendnode(childData, parentNode) {
+      this.$refs.dataTree.appendnode(childData, parentNode)
+    },
+    refresh() {
+      this.$refs.dataTree.refresh()
     }
   }
 }

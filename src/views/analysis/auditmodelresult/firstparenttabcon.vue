@@ -126,7 +126,7 @@
         label="定时运行时间"
         width="200px"
         align="center"
-        prop="runEndTime"
+        prop="runTask.timingExecute"
         :formatter="dateFormatter2"
       />
       <el-table-column
@@ -347,7 +347,7 @@
         return "";
       },
       dateFormatter2(row) {
-        const datetime = row.timingExecute;
+        const datetime = row.runTask.timingExecute;
         if (datetime) {
           var dateMat = new Date(datetime);
           var year = dateMat.getFullYear();
@@ -742,7 +742,6 @@
        * 移除项目关联
        */
       RemoverelationProject(resultRelProjectUuid) {
-        console.log(this.selected1);
         rmResultRelProjectlr(resultRelProjectUuid).then((resp) => {
           if (resp.data == true) {
             this.getLikeList();

@@ -66,8 +66,8 @@ export function insertRunResultShare(data) {
   })
 }
 /**
-   * 删除结果共享表
-   */
+ * 删除结果共享表
+ */
 export function deleteRunResultShare(data) {
   return request({
     baseURL: analysisUrl,
@@ -80,11 +80,12 @@ export function deleteRunResultShare(data) {
  * @param {*} data pageQuery对象
  */
 export function selectTable(data, filterSql) {
+  var map = {basePageParam:data,filterSql:filterSql}
   return request({
     baseURL: analysisUrl,
-    url: '/RunResultTableController/selectTable/' + filterSql,
+    url: '/RunResultTableController/selectTable',
     method: 'post',
-    data
+    data:map
   })
 }
 
@@ -96,6 +97,19 @@ export function exportRunTaskRel() {
     baseURL: analysisUrl,
     url: '/RunTaskRelController/exportRunTaskRelTable',
     method: 'get'
+  })
+}
+
+/**
+ * 运行任务重新运行
+ */
+export function reRunRunTask(data,setDateTime) {
+  var map = {runTaskRel:data,timingExecute:setDateTime}
+  return request({
+    baseURL: analysisUrl,
+    url: '/RunTaskController/reRunRunTask',
+    method: 'post',
+    data:map
   })
 }
 
@@ -126,10 +140,10 @@ export function batchSaveResultDetailProjectRel(data) {
  * 根据表名查询该表中的主键名称
  * @param {*} data
  */
-export function selectPrimaryKeyByTableName(data) {
+export function selectPrimaryKeyByTableName() {
   return request({
     baseURL: analysisUrl,
-    url: '/ResultDetailProjectRelController/getPrimaryKeyByTableName/' + data,
+    url: '/ResultDetailProjectRelController/getPrimaryKeyByTableName',
     method: 'post'
   })
 }
@@ -147,15 +161,30 @@ export function removeResultDetailProjectRel(data) {
 }
 
 /**
+ * 删除运行任务（假删除）,同时删除该运行任务下的所有运行任务关联
+ * @param {*} data 运行任务主键
+ */
+export function deleteRunTaskFalse(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/RunTaskController/deleteRunTaskFalse',
+    method: 'delete',
+    params:{runTaskUuid:data}
+  })
+}
+
+/**
  * 查询条件展示集合
  * @param {*} modelUuid  模型的uuid
  * @param {*} tableName  渲染主表的名字
  */
 export function selectConditionShow(modelUuid, tableName) {
+  var map = {modelUuid:modelUuid,tableName:tableName}
   return request({
     baseURL: analysisUrl,
-    url: '/RunResultTableController/getConditionShow/' + modelUuid + '/' + tableName,
-    method: 'post'
+    url: '/RunResultTableController/getConditionShow',
+    method: 'post',
+    data:map
   })
 }
 
@@ -202,5 +231,5 @@ export function replaceParam(filterArr,arr,replaceSql){
       }
     }
   }
-   return replaceSql
+  return replaceSql
 }

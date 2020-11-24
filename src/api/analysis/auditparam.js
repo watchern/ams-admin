@@ -518,6 +518,10 @@ export function initParamHtml(sql, paramsArr, name, id) {
         } else {
           // $(".panel-body").html(paramHtml);
           $('#' + id).html(paramHtml)
+          if(paramsArr.length==0){
+            var paramHtml = "<div align='center' style='font-weight:lighter ;font-size:15px' >该模型没有参数</div>"
+            $('#' + id).html(paramHtml)
+          }
           initParamInputAndSelect()
         }
       }
@@ -616,7 +620,7 @@ export function initcrossrangeParamHtml(sql, paramsArr, name, id) {
  * 根据参数类型组织参数的HTML元素
  * createParamNodeHtml()方法内部调用的方法
  * @param paramObj 参数对象
- * @param selectNum 下拉列表参数的个数
+ * @param selectNum 下拉列表参数的个数 
  * @param selectTreeNum 下拉树参数的个数
  * @author JL
  */
@@ -2613,3 +2617,4 @@ export function createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
     initParam(canEditor)
   })
 }
+
