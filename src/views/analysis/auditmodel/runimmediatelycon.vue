@@ -19,6 +19,7 @@
             v-model="dateTime"
             type="datetime"
             placeholder="选择日期时间"
+            :picker-options="executeTimeOptions"
           >
           </el-date-picker>
         </el-header>
@@ -59,6 +60,13 @@ export default {
       detailModels: [], //查出来详细的model数组
       afterTranscod: [], //按顺序存储转码后的风险等级
       dateTime: "",
+       //单次/多次/周期执行的周期开始结束时间 执行时间选择配置
+      executeTimeOptions:{
+        disabledDate(time){
+          //不能选择小于当前日志的事件
+          return new Date(time.toLocaleDateString()) < new Date(new Date().toLocaleDateString())
+        }
+      },
     };
   },
   props: ["models", "timing"],

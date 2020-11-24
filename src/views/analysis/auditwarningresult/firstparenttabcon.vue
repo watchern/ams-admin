@@ -4,7 +4,7 @@
     <el-container>
       <el-aside class="tree-side">
         <div class="tree-container" style = "height:700px;overflow:auto;">
-    <warningresulttree @clickChangeTable="clickChangeTable"></warningresulttree>
+    <warningresulttree @getLikeList="getLikeList" @clickChangeTable="clickChangeTable"></warningresulttree>
     </div>
      </el-aside>
      <el-container>
