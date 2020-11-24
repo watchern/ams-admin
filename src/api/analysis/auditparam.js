@@ -620,7 +620,7 @@ export function initcrossrangeParamHtml(sql, paramsArr, name, id) {
  * 根据参数类型组织参数的HTML元素
  * createParamNodeHtml()方法内部调用的方法
  * @param paramObj 参数对象
- * @param selectNum 下拉列表参数的个数
+ * @param selectNum 下拉列表参数的个数 
  * @param selectTreeNum 下拉树参数的个数
  * @author JL
  */

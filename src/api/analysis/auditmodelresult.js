@@ -161,8 +161,8 @@ export function removeResultDetailProjectRel(data) {
 }
 
 /**
- * 运行结果详细界面移除关联
- * @param {*} data 运行结果详细与项目关联表主键
+ * 删除运行任务（假删除）,同时删除该运行任务下的所有运行任务关联
+ * @param {*} data 运行任务主键
  */
 export function deleteRunTaskFalse(data) {
   return request({
