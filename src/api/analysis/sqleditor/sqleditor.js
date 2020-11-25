@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 import { deleteModel } from '@/api/analysis/auditmodel'
 const analysisUrl = '/analysis'
-const dataUrl = '/amsdata'
+const dataUrl = '/data'
 /**
  *
  * @type {boolean}
@@ -580,7 +580,7 @@ export function initTableTree(userId) {
       }
     }
   }
-  const params = { isRightControl: '1', dataUserId: userId }
+  const params = { sceneCode: 'auditor', dataUserId: userId }
   // 调用后台获取数据表数据
   request({
     baseURL: dataUrl,
@@ -785,7 +785,7 @@ function onDrop(event, treeId, treeNodes) {
  * @returns {AxiosPromise}
  */
 export function initTableTip(userId) {
-  const params = { isRightControl: '1', dataUserId: userId }
+  const params = { sceneCode: 'auditor', dataUserId: userId }
   // 调用后台获取数据表数据
   return request({
     baseURL: dataUrl,
