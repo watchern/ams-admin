@@ -26,7 +26,7 @@
         >
         <el-button
           :disabled="buttonIson.deleteBtn"
-          type="danger"
+          type="primary"
           @click="deleteRunTaskRel"
           class="oper-btn delete"
         ></el-button>

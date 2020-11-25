@@ -48,24 +48,40 @@ module.exports = {
     open: true, // 配置自动启动浏览器
     proxy: {
       '/r1': {
-        target: process.env.R1_LOCATION
+        target: process.env.R1_LOCATION,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/r1': ''
+        }
       },
       '/data': {
-        target: process.env.AMSDATA_API
+        target: process.env.AMSDATA_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/data': ''
+        }
       },
       '/base': {
         timeout: 1800000,
         target: process.env.AMSBASE_API,
         changeOrigin: true,
         pathRewrite: {
-          '^/base': '/ams'
+          '^/base': ''
         }
       },
       '/analysis': {
-        target: process.env.AMSANALYSIS_API
+        target: process.env.AMSANALYSIS_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/analysis': ''
+        }
       },
       '/graphtool': {
-        target: 'http://localhost:8087'
+        target: process.env.AMSANALYSIS_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/graphtool': ''
+        }
       },
       // etl调度模块调用的地址
       '/etlscheduler': {
@@ -73,68 +89,64 @@ module.exports = {
         target: process.env.AMSETLSCHEDULER_API,
         changeOrigin: true,
         pathRewrite: {
-          '^/etlscheduler': '/amsetlscheduler'
+          '^/etlscheduler': ''
         }
-        // target: process.env.ETL_API_TEST_LOCATION
       },
       '/dolphinscheduler': {
         timeout: 1800000,
         target: process.env.AMSETLSCHEDULER_API,
-        changeOrigin: true
+        changeOrigin: true,
+        pathRewrite: {
+          '^/dolphinscheduler': ''
+        }
       },
       '/AuditAnalysis': {
         timeout: 1800000,
-        target: process.env.AMSANALYSIS_API,
-        changeOrigin: true
-        // ,
-        // pathRewrite: {
-        //   '^/dolphinscheduler': ''
-        // }
+        target: process.env.EXTENDAPP_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/AuditAnalysis': '/AuditAnalysis'
+        }
       },
       '/rone': {
         timeout: 1800000,
         target: process.env.EXTENDAPP_API,
-        changeOrigin: true
-        // ,
-        // pathRewrite: {
-        //   '^/dolphinscheduler': ''
-        // }
+        changeOrigin: true,
+        pathRewrite: {
+          '^/rone': '/rone'
+        }
       },
       '/psbcaudit': {
         timeout: 1800000,
         target: process.env.EXTENDAPP_API,
-        changeOrigin: true
-        // ,
-        // pathRewrite: {
-        //   '^/dolphinscheduler': ''
-        // }
+        changeOrigin: true,
+        pathRewrite: {
+          '^/psbcaudit': '/psbcaudit'
+        }
       },
       '/psbcaudit_pmrs': {
         timeout: 1800000,
         target: process.env.EXTENDAPP_API,
-        changeOrigin: true
-        // ,
-        // pathRewrite: {
-        //   '^/dolphinscheduler': ''
-        // }
+        changeOrigin: true,
+        pathRewrite: {
+          '^/psbcaudit_pmrs': '/psbcaudit_pmrs'
+        }
       },
       '/psbcaudit_kn': {
         timeout: 1800000,
         target: process.env.EXTENDAPP_API,
-        changeOrigin: true
-        // ,
-        // pathRewrite: {
-        //   '^/dolphinscheduler': ''
-        // }
+        changeOrigin: true,
+        pathRewrite: {
+          '^/psbcaudit_kn': '/psbcaudit_kn'
+        }
       },
       '/psbcaudit_auditobj': {
         timeout: 1800000,
         target: process.env.EXTENDAPP_API,
-        changeOrigin: true
-        // ,
-        // pathRewrite: {
-        //   '^/dolphinscheduler': ''
-        // }
+        changeOrigin: true,
+        pathRewrite: {
+          '^/psbcaudit_auditobj': '/psbcaudit_auditobj'
+        }
       }
     }
   },

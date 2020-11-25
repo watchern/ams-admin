@@ -2826,7 +2826,7 @@ var getEdgeCount = function(){
 };
 
 var toolCellInitSql = function(curSelCell) {
-	if(curSelCell != undefined && curSelCell.edge){
+	if(typeof curSelCell !== "undefined" && curSelCell.edge === 1){
 		var isChange = false;
         if(!edgeVerify(curSelCell)){
             return;
