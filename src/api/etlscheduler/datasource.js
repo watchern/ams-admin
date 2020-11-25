@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const baseURL = '/etlscheduler'
+const baseURL = '/etlscheduler/'
 // 分页
 export function pageList(data) {
   return request({
