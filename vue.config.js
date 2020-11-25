@@ -54,13 +54,17 @@ module.exports = {
         target: process.env.AMSDATA_API
       },
       '/base': {
-        target: process.env.AMSBASE_API
+        target: process.env.AMSBASE_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/base': '/ams'
+        }
       },
       '/analysis': {
         target: process.env.AMSANALYSIS_API
       },
-      '/graphtool':{
-        target:'http://localhost:8087'
+      '/graphtool': {
+        target: 'http://localhost:8087'
       },
       // etl调度模块调用的地址
       '/etlscheduler': {
@@ -68,7 +72,7 @@ module.exports = {
         target: process.env.AMSETLSCHEDULER_API,
         changeOrigin: true,
         pathRewrite: {
-          '^/etlscheduler': ''
+          '^/etlscheduler': '/amsetlscheduler'
         }
         // target: process.env.ETL_API_TEST_LOCATION
       },
