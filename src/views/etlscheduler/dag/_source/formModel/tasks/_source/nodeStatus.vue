@@ -65,7 +65,7 @@
           @click="!isDetails && _remove($index)"
         >
           <em
-            class="iconfont ans-icon-trash"
+            class="oper-btn delete"
             :class="_isDetails"
             data-toggle="tooltip"
             data-container="body"
@@ -79,7 +79,7 @@
           @click="!isDetails && _add()"
         >
           <em
-            class="iconfont ans-icon-increase"
+            class="oper-btn add"
             :class="_isDetails"
             data-toggle="tooltip"
             data-container="body"

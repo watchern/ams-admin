@@ -24,7 +24,7 @@
           </el-col>
         </el-row>
         <el-table :key="tableKey" style="height: 450px;overflow-y: scroll" ref="modelListTable" v-loading="listLoading"
-                  :data="list" border fit highlight-current-row @select="modelTableSelectEvent" @select-all="modelTableSelectEvent">
+                  :data="list" border fit highlight-current-row @select="modelTableSelectEvent">
           <el-table-column type="selection" width="55" />
           <el-table-column label="模型名称" width="100px" align="left" prop="modelName">
             <template slot-scope="scope">
@@ -717,7 +717,7 @@ export default {
         if (result.code == 0) {
           if(result.data.parammModelRel.length == 0){
             let obj = {
-              sqls:result.data.sqlValue,
+              sqls:selectObj[0].sqlValue,
               modelUuid:selectObj[0].modelUuid
             }
             startExecuteSql(obj).then((result) => {
@@ -736,7 +736,7 @@ export default {
               }
               paramObj.push(JSON.parse(result.data.parammModelRel[i].paramValue))
             }
-            this.currentPreviewModelParamAndSql.sqlValue = result.data.sqlValue
+            this.currentPreviewModelParamAndSql.sqlValue = selectObj[0].sqlValue
             this.currentPreviewModelParamAndSql.paramObj = paramObj
             this.currentPreviewModelParamAndSql.modelUuid = selectObj[0].modelUuid
             //展现参数输入界面

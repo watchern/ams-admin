@@ -1,5 +1,6 @@
 import { deleteExecuteNodes, checkTableName,executeNodeSql } from '@/api/graphtool/graphList'
 import * as validateJs from '@/views/graphtool/tooldic/js/validate'
+import {updateResourceZtreeNodeName} from '@/views/graphtool/tooldic/js/index'
 let hL = null
 let graphIndexVue = null
 export var sendGraphIndexVue = (_this) => {
@@ -681,6 +682,7 @@ export function executeNode(notExecuteNodeIdArr) {
         return
     }
     graphIndexVue.executeType = 1
+    graphIndexVue.websocketBatchId = new UUIDGenerator().id
     // 获取组织参数的html代码
     var returnObj = createParamNodeHtml(notExecuteNodeIdArr)
     if (returnObj.htmlContent && returnObj.htmlContent !== '') { // 如果有组织的参数html
@@ -766,6 +768,7 @@ function executeNode_callback(notExecuteNodeIdArr) {
         'graphName': $('#graphName').val(),
         'nodeIdList': notExecuteNodeIdArr.join(","),
         'nodeData': JSON.stringify(graph.nodeData),
+        'websocketBatchId':graphIndexVue.websocketBatchId
         // 'executeType':1//执行本节点
     }
     graphIndexVue.executeNodeIdArr = notExecuteNodeIdArr
@@ -1263,7 +1266,7 @@ export function lightHeight(curCellId) {
 /**
  * SQL详情（查询执行语句）
  */
-function curNodeSQL() {
+export function curNodeSQL() {
     var nodeSql = ''
     var nodeExcuteStatus = graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus
     if (nodeExcuteStatus === 1) {			// 未执行
@@ -1324,40 +1327,45 @@ function curNodeSQL() {
 /**
  * 双击预览数据 / 右键查看数据
  * */
-function previewNodeData() {
-    var nodeExcuteStatus = graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus
+export function previewNodeData() {
+    let curNodeInfo = graph.nodeData[graph.curCell.id].nodeInfo;
+    let nodeExcuteStatus = curNodeInfo.nodeExcuteStatus
     if (nodeExcuteStatus !== 3) {
-        alertMsg('提示', '当前节点未执行成功，不能预览数据', 'info')
+        graphIndexVue.$message({ type: 'warning', message: '当前节点未执行成功，不能预览数据' })
         return
     }
-    var tableName = ''
-    var optType = graph.nodeData[graph.curCell.id].nodeInfo.optType
-    switch (optType) {
+    let nodeId = ''
+    let nodeName = ''
+    let resultTableName = ''
+    switch (curNodeInfo.optType) {
         case 'datasource':				// 如果是原表，直接拿其临时表名称
-            tableName = graph.nodeData[graph.curCell.id].nodeInfo.resultTableName
+            resultTableName = curNodeInfo.resultTableName
+            nodeId = curNodeInfo.nodeId
+            nodeName = curNodeInfo.nodeName
             break
-        case 'newNullNode':			// 如果是结果表
-            if (!graph.nodeData[graph.curCell.id].nodeInfo.isSet) {						// 如果是空结果表，拿其前置节点的临时表名称
+        case 'newNullNode':// 如果是结果表
+            if (!curNodeInfo.isSet) {// 如果是未配置的结果表，拿其前置节点的临时表名称
                 var parentIds = graph.nodeData[graph.curCell.id].parentIds
                 if (graph.nodeData[parentIds[0]].nodeInfo.optType === 'layering') {
-                    tableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableNameArr[graph.nodeData[graph.curCell.id].nodeInfo.index]
+                    resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableNameArr[curNodeInfo.index]
                 } else {
-                    tableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName
+                    resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName
                 }
-                optType = graph.nodeData[parentIds[0]].nodeInfo.optType
+                nodeId = graph.nodeData[parentIds[0]].nodeInfo.nodeId
+                nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName
             } else {																										// 如果是非空结果表，直接拿其临时表名称
-                tableName = graph.nodeData[graph.curCell.id].nodeInfo.resultTableName
+                resultTableName = curNodeInfo.resultTableName
+                nodeId = curNodeInfo.nodeId
+                nodeName = curNodeInfo.nodeName
             }
             break
     }
-    if (tableName === '') {
-        alertMsg('提示', '预览数据的表名称为空，预览失败', 'info')
+    if (resultTableName === '') {
+        graphIndexVue.$message.error('预览数据的表名称为空，预览失败')
         return
     }
-    viewData(tableName, optType, true)
-    graph.curCellId = graph.curCell.id
-    graph.viewDataType = 2
-    graph.isCurDataSource = type
+    graphIndexVue.resultTableArr = [{nodeId, nodeName, resultTableName}]
+    graphIndexVue.viewData()
 }
 
 /**
@@ -1526,12 +1534,12 @@ function showTableDetail(dataTableName, cVal) {
 /**
  * 节点重命名
  * */
-function reName() {
+export function reName() {
     var value = graph.curCell.value
     var name = graph.curCell.edge === 1 ? '连接线序号' : '节点名称'
-    var html = '<div class="form-group">' +
-        '<label for="databaseName" class="col-sm-3 control-label" style="text-align:right;padding:40px 5px 0 0;">' + name + '</label>' +
-        '<div class="col-sm-8" style="padding:35px 5px 0 0;">'
+    var html = '<div class="form-group" style="padding-top:35px;">' +
+        '<label for="nodeName" class="col-sm-3 control-label" style="text-align:right;">' + name + '</label>' +
+        '<div class="col-sm-8">'
     if (graph.curCell.edge === 1) {
         html += '<input type="number" class="form-control" id="nodeName" autocomplete="off" placeholder="重命名" step="1"/>'
     } else {

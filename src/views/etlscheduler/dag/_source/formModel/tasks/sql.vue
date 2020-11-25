@@ -53,7 +53,7 @@
       <div slot="text">
 
         <span style="color: red;">*
-        </span>sql语句<el-tooltip class="item" effect="dark" content="多条sql语句使用/进行分隔" placement="top-start">
+        </span>sql语句<el-tooltip class="item" effect="dark" content="多条sql语句使用/进行分隔，自定义参数占位格式${参数名},日期类型参数的格式为$[yyyyMMdd-N]" placement="top-start">
           <i class="el-icon-info" />
         </el-tooltip></div>
       <div slot="content">
@@ -471,6 +471,9 @@ export default {
 }
 </script>
 <style lang="scss" rel="stylesheet/scss">
+
+.cm-s-mdn-like .CodeMirror-gutters { background: #f8f8f8; border-left: 6px solid #353a43; color: #333; }
+
 .requiredIcon {
   color: #ff0000;
   padding-right: 4px;
