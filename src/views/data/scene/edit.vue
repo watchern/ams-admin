@@ -1,6 +1,7 @@
 <template>
-  <div class="page-container" style="overflow: auto;">
-    <template class="detail-form">
+  <div class="app-container" style="overflow: auto;">
+
+    <div class="detail-form">
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -21,28 +22,26 @@
             </el-form-item>
           </el-col>
         </el-row></el-form>
-      <template style="height :160px">
-        <span class="midText">用户组定义：</span>
-        <el-row>
-          <el-col align="right">
-            <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
-          </el-col>
-        </el-row>
+      <div style="height :160px">
+        <div class="tableTitle"><span class="midText">用户组定义：</span></div>
+        <div style="float:right">
+          <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
+        </div>
         <el-table
           :key="tableKey"
           v-loading="listLoading"
           :data="list"
           border
           highlight-current-row
-          style="width: 100%;"
+          style="width: 100%;max-height :150px;overflow: auto;"
           @sort-change="sortChange"
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="index" label="序号" width="50" align="center" />
-          <el-table-column label="组名称" prop="grpName" />
-          <el-table-column label="组代码" prop="grpCode" />
-          <el-table-column label="组用户来源SQL" prop="grpSql" show-overflow-tooltip />
-          <el-table-column label="创建时间" prop="createTime" :formatter="formatCreateTime" />
+          <el-table-column label="组名称" width="200px" align="center" prop="grpName" />
+          <el-table-column label="组代码" width="200px" align="center" prop="grpCode" />
+          <el-table-column label="组用户来源SQL" width="300px" align="center" prop="grpSql" show-overflow-tooltip />
+          <el-table-column label="创建时间" width="300px" align="center" prop="createTime" :formatter="formatCreateTime" />
           <el-table-column label="操作" align="center" min-width="100">
             <template slot-scope="scope">
               <el-button type="primary" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.sceneGrpUuid)" />
@@ -52,14 +51,15 @@
           </el-table-column>
         </el-table>
         <!-- <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" /> -->
+
         <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-          <template class="detail-form">
+          <div class="detail-form">
             <el-form
               ref="dataFormGrp"
               :rules="rulesGrp"
               :model="tempGrp"
               label-position="right"
-              style="width: 100%;"
+              style="width: 600px;hieght:400px;margin-left:50px;"
             >
               <el-form-item label="组名称" prop="grpName">
                 <el-input v-model="tempGrp.grpName" style="width:500px" />
@@ -71,105 +71,101 @@
                 <el-input v-model="tempGrp.grpSql" :rows="6" type="textarea" style="width:500px" />
               </el-form-item>
             </el-form>
-          </template>
+          </div>
           <div slot="footer">
             <el-button @click="dialogFormVisible = false">取消</el-button>
             <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
           </div>
         </el-dialog>
-      </template>
-      <el-row>
-        <el-col style="height :260px;margin-top:150px">
-          <span>维护业务场景下数据筛选器：</span>
-          <el-row>
-            <el-col align="right">
-              <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreateFilter()" />
-            </el-col>
-          </el-row>
-          <el-table
-            :key="tableKeyFilter"
-            v-loading="listLoadingFilter"
-            :data="listFilter"
-            border
-            highlight-current-row
-            style="width: 100%;max-height :150px;overflow: auto;"
-            @sort-change="sortChangeFilter"
-            @selection-change="handleSelectionChangeFilter"
-          >
-            <el-table-column type="index" label="序号" width="50" align="center" />
-            <el-table-column label="筛选器名称" prop="filterName" />
-            <el-table-column label="IN值SQL" prop="inValueSql" show-overflow-tooltip />
-            <el-table-column label="描述" prop="describe" show-overflow-tooltip />
-            <el-table-column label="操作" align="center" min-width="100">
-              <template slot-scope="scope">
-                <el-button type="primary" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.inValueSql)" />
-                <el-button type="primary" class="oper-btn edit" size="mini" @click="updateFilter(scope.row.sceneFilterUuid)" />
-                <el-button type="danger" class="oper-btn delete" size="mini" @click="deleteFilter(scope.row.sceneFilterUuid)" />
-              </template>
-            </el-table-column>
-          </el-table>
-          <!-- <pagination v-show="totalFilter>0" :total="totalFilter" :page.sync="pageQueryFilter.pageNo" :limit.sync="pageQueryFilter.pageSize" @pagination="getListFilter" /> -->
+      </div>
 
-          <el-dialog :title="textMapFilter[dialogStatusFilter]" :visible.sync="dialogFormVisibleFilter">
-            <div class="detail-form">
-              <el-form
-                ref="dataFormFilter"
-                :rules="rulesFilter"
-                :model="tempFilter"
-                label-position="right"
-                style="width: 600px;hieght:400px;margin-left:50px;"
-              >
-                <el-form-item label="筛选器名称" prop="filterName">
-                  <el-input v-model="tempFilter.filterName" style="width:500px" />
-                </el-form-item>
-                <el-form-item label="IN值SQL" prop="inValueSql">
-                  <el-input v-model="tempFilter.inValueSql" type="textarea" :rows="5" style="width:500px" />
-                </el-form-item>
-                <el-form-item label="描述" prop="describe">
-                  <el-input v-model="tempFilter.describe" type="textarea" :rows="4" style="width:500px" />
-                </el-form-item>
-                <el-form-item label="关联业务属性" prop="bizAttrUuid">
-                  <el-select ref="bizAttrUuid" v-model="tempFilter.bizAttrUuid" style="width:500px" placeholder="请选择业务属性">
-                    <el-option
-                      v-for="item in bizJson"
-                      :key="item.bizAttrUuid"
-                      :label="item.attrName"
-                      :value="item.bizAttrUuid"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-form>
-            </div>
-            <div slot="footer">
-              <el-button @click="dialogFormVisibleFilter = false">取消</el-button>
-              <el-button type="primary" @click="dialogStatusFilter==='create'?createDataFilter():updateDataFilter()">确定</el-button>
-            </div>
-          </el-dialog>
+      <div style="height :260px;margin-top:150px">
+        <div class="tableTitleFilter"><span>维护业务场景下数据筛选器：</span></div>
+        <div style="float:right">
+          <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreateFilter()" /></div>
+        <el-table
+          :key="tableKeyFilter"
+          v-loading="listLoadingFilter"
+          :data="listFilter"
+          border
+          highlight-current-row
+          style="width: 100%;max-height :150px;overflow: auto;"
+          @sort-change="sortChangeFilter"
+          @selection-change="handleSelectionChangeFilter"
+        >
+          <el-table-column type="index" label="序号" width="50" align="center" />
+          <el-table-column label="筛选器名称" width="200px" align="center" prop="filterName" />
+          <el-table-column label="IN值SQL" width="300px" align="center" prop="inValueSql" show-overflow-tooltip />
+          <el-table-column label="描述" width="100px" align="center" prop="describe" />
+          <el-table-column label="操作" align="center" min-width="100">
+            <template slot-scope="scope">
+              <el-button type="primary" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.inValueSql)" />
+              <el-button type="primary" class="oper-btn edit" size="mini" @click="updateFilter(scope.row.sceneFilterUuid)" />
+              <el-button type="danger" class="oper-btn delete" size="mini" @click="deleteFilter(scope.row.sceneFilterUuid)" />
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- <pagination v-show="totalFilter>0" :total="totalFilter" :page.sync="pageQueryFilter.pageNo" :limit.sync="pageQueryFilter.pageSize" @pagination="getListFilter" /> -->
 
-          <el-dialog :title="预览" :visible.sync="dialogFormVisibleTree">
-            <MyElTree
-              ref="tree1"
-              v-loading="tree1Loading"
-              :props="props"
-              class="filter-tree"
-              :highlight-current="true"
-              :data="treeData1"
-              node-key="id"
-              :filter-node-method="filterNode"
-              show-checkbox
+        <el-dialog :title="textMapFilter[dialogStatusFilter]" :visible.sync="dialogFormVisibleFilter">
+          <div class="detail-form">
+            <el-form
+              ref="dataFormFilter"
+              :rules="rulesFilter"
+              :model="tempFilter"
+              label-position="right"
+              style="width: 600px;hieght:400px;margin-left:50px;"
             >
-              <span slot-scope="{ node, data }" class="custom-tree-node">
-                <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
-                <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
-                <i v-if="data.type==='table'" class="el-icon-tickets" style="color:#409EFF" />
-                <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
-                <span :title="node.name">{{ node.label }}</span>
-              </span>
-            </MyElTree>
-          </el-dialog>
-        </el-col>
-      </el-row>
-    </template>
+              <el-form-item label="筛选器名称" prop="filterName">
+                <el-input v-model="tempFilter.filterName" style="width:500px" />
+              </el-form-item>
+              <el-form-item label="IN值SQL" prop="inValueSql">
+                <el-input v-model="tempFilter.inValueSql" type="textarea" :rows="5" style="width:500px" />
+              </el-form-item>
+              <el-form-item label="描述" prop="describe">
+                <el-input v-model="tempFilter.describe" type="textarea" :rows="4" style="width:500px" />
+              </el-form-item>
+              <el-form-item label="关联业务属性" prop="bizAttrUuid">
+                <el-select ref="bizAttrUuid" v-model="tempFilter.bizAttrUuid" style="width:500px" placeholder="请选择业务属性">
+                  <el-option
+                    v-for="item in bizJson"
+                    :key="item.bizAttrUuid"
+                    :label="item.attrName"
+                    :value="item.bizAttrUuid"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </div>
+          <div slot="footer">
+            <el-button @click="dialogFormVisibleFilter = false">取消</el-button>
+            <el-button type="primary" @click="dialogStatusFilter==='create'?createDataFilter():updateDataFilter()">确定</el-button>
+          </div>
+        </el-dialog>
+
+        <el-dialog :title="预览" :visible.sync="dialogFormVisibleTree">
+          <MyElTree
+            ref="tree1"
+            v-loading="tree1Loading"
+            :props="props"
+            class="filter-tree"
+            :highlight-current="true"
+            :data="treeData1"
+            node-key="id"
+            :filter-node-method="filterNode"
+            show-checkbox
+          >
+            <span slot-scope="{ node, data }" class="custom-tree-node">
+              <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
+              <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
+              <i v-if="data.type==='table'" class="el-icon-tickets" style="color:#409EFF" />
+              <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
+              <span :title="node.name">{{ node.label }}</span>
+            </span>
+          </MyElTree>
+        </el-dialog>
+      </div>
+    </div>
     <div slot="footer" style="float:right; margin-right:100px">
       <el-button @click="closeEdit()">返回</el-button>
       <el-button type="primary" @click="saveScene()">确定</el-button>

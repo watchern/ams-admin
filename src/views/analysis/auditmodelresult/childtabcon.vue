@@ -478,6 +478,12 @@ export default {
           }
           // 生成ag-grid列信息
           if (this.modelUuid != undefined) {
+              var rowColom = {
+                        headerName: 'onlyuuid',
+                        field: 'onlyuuid',
+                        checkboxSelection: true
+                      }
+           col.push(rowColom)
             for (var i = 0; i < colNames.length; i++) {
               loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
                 if (
@@ -488,8 +494,7 @@ export default {
                     if (i == 0) {
                       var rowColom = {
                         headerName: this.modelOutputColumn[j].columnAlias,
-                        field: colNames[i],
-                        checkboxSelection: true,
+                        field: colNames[i]
                       };
                     } else {
                       var rowColom = {
@@ -646,7 +651,7 @@ export default {
           for (var i = 0; i < this.conditionShowData[0].length; i++) {
             for (var j = 0; j < this.conditionShowData[0][i].length; j++) {
               if (
-                params.data[this.primaryKey] == this.conditionShowData[0][i][j]
+                params.data[this.primaryKey.toLowerCase()] == this.conditionShowData[0][i][j]
               ) {
                 this.isLoading = false;
                 return {

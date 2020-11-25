@@ -89,12 +89,11 @@ export default {
         condition: {},
         pageNo: 1,
         pageSize: 20,
-        // 开始运行时间，倒序排序
         sortBy: 'desc',
-        sortName: 'startTime'
+        sortName: 'updateTime'
       },
       queryFields: [
-        { label: '接收时间范围', name: 'startTime', type: 'timePeriod', value: '' }
+        { label: '数据时间范围', name: 'startTime', type: 'timePeriod', value: '' }
       ],
       selections: []
     }

@@ -9,15 +9,15 @@
       />
     </div>
     <el-row>
-      <el-col align="right"> <!-- 跳过指定环节 -->
-        <el-button
+      <el-col align="right">
+        <!-- 跳过指定环节 -->
+        <!-- <el-button
           type="primary"
           title="跳过指定环节"
           :disabled="skipStatus"
-          class="oper-btn"
-          icon="el-icon-remove-outline"
+          class="oper-btn share-3"
           @click="handleSkipTask()"
-        />
+        /> -->
         <!-- 暂停 -->
         <el-button
           type="primary"

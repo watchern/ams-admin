@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="app-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -9,7 +9,7 @@
     </div>
     <div>
       <el-button type="primary" size="mini" @click="handleCreate()">添加</el-button>
-      <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="toEdit()">维护</el-button>
+      <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="handleUpdate()">修改</el-button>
       <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="handleDelete()">删除</el-button>
     </div>
     <el-table
@@ -24,9 +24,10 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="业务场景名称" width="300px" align="center" prop="sceneName" />
-      <el-table-column label="业务场景编码" width="300px" align="center" prop="sceneCode" />
-      <el-table-column label="创建时间" width="300px" align="center" prop="createTime" :formatter="formatCreateTime" />
+      <el-table-column label="业务属性名称" width="300px" align="center" prop="attrName" />
+      <el-table-column label="业务属性编码" width="300px" align="center" prop="attrCode" />
+      <el-table-column label="创建时间" width="300px" align="center" prop="createTime" />
+      <el-table-column label="描述" prop="describe" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
@@ -37,13 +38,16 @@
           :rules="rules"
           :model="temp"
           label-position="right"
-          style="width: 600px; margin-left:50px;"
+          style="width: 700px; margin-left:50px;"
         >
-          <el-form-item label="业务场景名称" prop="sceneName">
-            <el-input v-model="temp.sceneName" />
+          <el-form-item label="业务属性名称" prop="attrName">
+            <el-input v-model="temp.attrName" />
           </el-form-item>
-          <el-form-item label="业务场景编码" prop="sceneCode">
-            <el-input v-model="temp.sceneCode" />
+          <el-form-item label="业务属性编码" prop="attrCode">
+            <el-input v-model="temp.attrCode" />
+          </el-form-item>
+          <el-form-item label="描述" prop="describe">
+            <el-input v-model="temp.describe" type="textarea" />
           </el-form-item>
         </el-form>
       </div>
@@ -57,21 +61,22 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, save, update, del } from '@/api/data/scene'
+import { listByPage, save, update, del } from '@/api/data/biz-attr'
 import QueryField from '@/components/Ace/query-field/index'
+import { parseTime, getDict } from '@/utils'
 
 export default {
   components: { Pagination, QueryField },
   data() {
     return {
-      tableKey: 'sceneUuid',
+      tableKey: 'bizAttrUuid',
       list: null,
       total: 0,
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
-        { label: '业务属性编码', name: 'sceneCode', type: 'text', value: '' },
-        { label: '业务场景名称', name: 'sceneName', type: 'fuzzyText' },
+        { label: '业务属性编码', name: 'attrCode', type: 'text', value: '' },
+        { label: '业务属性名称', name: 'attrName', type: 'fuzzyText' },
         // {label: '性别', name:'sex', type: 'select',
         //   data: [{name: '男', value: '1'}, {name: '女', value: '0'}],
         //   default: '1'},
@@ -85,21 +90,23 @@ export default {
         sortName: 'create_time'
       },
       temp: {
-        sceneUuid: undefined,
-        sceneName: '',
-        sceneCode: ''
+        bizAttrUuid: undefined,
+        attrName: '',
+        attrCode: '',
+        describe: ''
       },
       selections: [],
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑业务场景',
-        create: '添加业务场景'
+        update: '编辑业务属性',
+        create: '添加业务属性'
       },
       dialogPvVisible: false,
       rules: {
-        sceneName: [{ required: true, message: '请填写业务场景名称', trigger: 'change' }],
-        sceneCode: [{ required: true, message: '请填写业务场景编码', trigger: 'change' }]
+        attrName: [{ required: true, message: '请填写业务属性名称', trigger: 'change' }],
+        attrCode: [{ required: true, message: '请填写业务属性编码', trigger: 'change' }],
+        describe: [{ max: 100, message: '长度不得超过100', trigger: 'change' }]
       },
       downloadLoading: false
     }
@@ -117,12 +124,6 @@ export default {
         this.listLoading = false
       })
     },
-    formatCreateTime(row, column) {
-      // 拼接日期规格为YYYY-MM-DD hh:mm:ss
-      var createTime = new Date(row.createTime)
-      var createTimeRow = createTime.getFullYear() + '-' + (createTime.getMonth() + 1) + '-' + createTime.getDate() + ' ' + createTime.getHours() + ':' + createTime.getMinutes() + ':' + createTime.getSeconds()
-      return createTimeRow
-    },
     handleFilter() {
       this.pageQuery.pageNo = 1
       this.getList()
@@ -135,19 +136,17 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        sceneUuid: undefined,
-        sceneName: '',
-        sceneCode: ''
+        bizAttrUuid: undefined,
+        attrName: '',
+        attrCode: '',
+        describe: ''
       }
     },
-    toEdit() {
-      this.temp = Object.assign({}, this.selections[0]) // copy obj
-      this.$router.push({
-        path: '/data/sceneEdit',
-        query: { sceneUuid: this.temp.sceneUuid, sceneName: this.temp.sceneName, sceneCode: this.temp.sceneCode }
-      })
-    },
     handleCreate() {
+      /* console.log(this.$store.getters.personuuid);
+      getDict('sex').then(data => {
+        console.log(data)
+      });*/
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -185,7 +184,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
-            const index = this.list.findIndex(v => v.sceneUuid === this.temp.sceneUuid)
+            const index = this.list.findIndex(v => v.bizAttrUuid === this.temp.bizAttrUuid)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -201,7 +200,7 @@ export default {
     },
     handleDelete() {
       var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.sceneUuid) })
+      this.selections.forEach((r, i) => { ids.push(r.bizAttrUuid) })
       del(ids.join(',')).then(() => {
         this.getList()
         this.$notify({

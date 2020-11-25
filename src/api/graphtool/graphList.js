@@ -114,12 +114,12 @@ export function saveGraphInterface(data) {
  * 根据图形ID查询执行节点集合
  */
 export function getExecuteNodeInfoPost(data) {
-    return request({
-        baseURL: baseURL,
-        url: '/graphExecuteNode/getExecuteNodeInfo',
-        method: 'post',
-        params:data
-    })
+  return request({
+    baseURL: baseURL,
+    url: '/graphExecuteNode/getExecuteNodeInfo',
+    method: 'post',
+    params: data
+  })
 }
 
 /**
