@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const baseURL = '/amsbase'
+const baseURL = '/base'
 
 export function cacheDict() {
   return request({
@@ -9,4 +9,3 @@ export function cacheDict() {
     method: 'get'
   })
 }
-

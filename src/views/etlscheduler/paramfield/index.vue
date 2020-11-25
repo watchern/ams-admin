@@ -158,7 +158,7 @@
             placeholder="请选择参数类型"
           >
             <el-option
-              label="text"
+              label="文本"
               :value="1"
             />
             <el-option
@@ -303,7 +303,7 @@ export default {
         paramCode: null,
         paramDesc: null,
         paramName: null,
-        paramType: null,
+        paramType: 1,
         paramUuid: null,
         selectValue: null,
         status: null
