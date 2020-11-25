@@ -26,25 +26,29 @@
       />
       <el-table-column
         label="所属系统"
-        width="230px"
+        width="150px"
         align="center"
         prop="dataResourceCode"
       />
       <el-table-column
         label="文件名称"
-        width="230px"
+        width="200px"
         align="center"
         prop="fullPath"
       />
       <el-table-column
         label="对应表"
-        width="230px"
+        width="140px"
         align="center"
         prop="odsTableName"
       />
       <el-table-column
-        label="接收时间"
+        label="数据时间"
         prop="dataDate"
+      />
+      <el-table-column
+        label="接收时间"
+        prop="recieveTime"
       />
       <el-table-column
         label="更新时间"
@@ -97,7 +101,7 @@ export default {
           label: '接收状态', name: 'status', type: 'select',
           data: [{ name: '已接收', value: '1' }, { name: '未接收', value: '0' }]
         },
-        { label: '时间', name: 'createTime', type: 'timePeriod', value: '' }
+        { label: '接收时间', name: 'startTime', type: 'timePeriod', value: '' }
       ],
       pageQuery: {
         condition: {},

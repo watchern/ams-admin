@@ -45,7 +45,7 @@ module.exports = {
     host: 'localhost',
     // host: '192.168.80.142',
     https: false, // https:{type:Boolean}
-    open: true, //配置自动启动浏览器
+    open: true, // 配置自动启动浏览器
     proxy: {
       '/r1': {
         target: process.env.R1_LOCATION
@@ -54,6 +54,7 @@ module.exports = {
         target: process.env.AMSDATA_API
       },
       '/base': {
+        timeout: 1800000,
         target: process.env.AMSBASE_API,
         changeOrigin: true,
         pathRewrite: {
@@ -150,15 +151,13 @@ module.exports = {
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload
     // it can improve the speed of the first screen, it is recommended to turn on preload
-    config.plugin('preload').tap(() => [
-      {
-        rel: 'preload',
-        // to ignore runtime.js
-        // https://github.com/vuejs/vue-cli/blob/dev/packages/@vue/cli-service/lib/config/app.js#L171
-        fileBlacklist: [/\.map$/, /hot-update\.js$/, /runtime\..*\.js$/],
-        include: 'initial'
-      }
-    ])
+    config.plugin('preload').tap(() => [{
+      rel: 'preload',
+      // to ignore runtime.js
+      // https://github.com/vuejs/vue-cli/blob/dev/packages/@vue/cli-service/lib/config/app.js#L171
+      fileBlacklist: [/\.map$/, /hot-update\.js$/, /runtime\..*\.js$/],
+      include: 'initial'
+    }])
 
     // when there are many pages, it will cause too many meaningless requests
     config.plugins.delete('prefetch')
@@ -187,7 +186,7 @@ module.exports = {
             .plugin('ScriptExtHtmlWebpackPlugin')
             .after('html')
             .use('script-ext-html-webpack-plugin', [{
-            // `runtime` must same as runtimeChunk name. default is `runtime`
+              // `runtime` must same as runtimeChunk name. default is `runtime`
               inline: /runtime\..*\.js$/
             }])
             .end()
