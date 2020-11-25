@@ -8,7 +8,7 @@
                 <div class="menuLi">
                     <div class="icon" style="width:70px !important;">
                         <img class="iconImg" style="width: 16px;height: 16px;" src="../tooldic/images/icon/new.png" alt="新建">
-                        <a class="iconText" @click="newGraph()">&nbsp;新建</a>
+                        <a class="iconText" @click="newGraph">&nbsp;新建</a>
                     </div>
                     <div class="icon" style="width:60px !important;">
                         <img class="iconImg" src="../tooldic/images/icon/save.png" alt="保存">
@@ -20,7 +20,7 @@
                     </div>
                     <div class="icon" style="width:70px !important;">
                         <img class="iconImg" src="../tooldic/images/icon/open.png" alt="打开">
-                        <a class="iconText" @click="openGraph()">打开</a>
+                        <a class="iconText" @click="openGraph">打开</a>
                     </div>
                     <div class="icon" style="width:70px !important;padding-left:6px;">
                         <img class="iconImg" style="width: 16px;height: 16px;" src="../tooldic/images/icon/saveAs.png" alt="另存为">
@@ -28,7 +28,7 @@
                     </div>
                     <div class="icon" style="width:70px !important;">
                         <img class="iconImg" src="../tooldic/images/icon/back.png" alt="后撤">
-                        <a class="iconText" @click="back()">撤销</a>
+                        <a class="iconText" @click="back">撤销</a>
                     </div>
                 </div>
             </div>
@@ -234,6 +234,28 @@
                 <el-button type="primary" @click="graphListDialogVisible = false">关闭</el-button>
             </div>
         </el-dialog>
+        <el-dialog :visible.sync="graphFormVisible" :title="graphFormTitle" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
+            <el-form>
+                <el-row>
+                    <el-col>
+                        <el-form-item label="图形名称" prop="graphName">
+                            <el-input v-model="graphName" />
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col>
+                        <el-form-item label="图形描述" prop="description">
+                            <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 5}" placeholder="请输入内容" v-model="description"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <div slot="footer">
+                <el-button type="primary" @click="getGraphFormInfo">确定</el-button>
+                <el-button type="primary" @click="graphFormVisible = false">关闭</el-button>
+            </div>
+        </el-dialog>
         <!-- 右键事件 -->
         <div id="rootMenu" class="rightMenu">
             <ul>
@@ -274,24 +296,7 @@
             </ul>
         </div>
         <input id="importGraphInp" @change="importGraphSubmit" type="file" name="file" style="display: none;"/>
-        <form id="saveGraph" class="form-horizontal" style="display:none;overflow-x:hidden">
-            <input id="graphUuid" name="graphUuid" type="hidden">
-            <div class="form-group">
-                <label for="graphName" class="col-sm-2 control-label" style="text-align: right;">图形名称</label>
-                <div class="col-sm-9">
-                    <input id="graphName" name="graphName" type="text" class="form-control" autocomplete="off" placeholder="名称">
-                </div>
-                <div class="col-sm-1">
-                    <span class="badge" style="color: red;">*</span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="description" class="col-sm-2 control-label" style="text-align: right;">图形描述</label>
-                <div class="col-sm-9">
-                    <textarea id="description" name="description" class="form-control" placeholder="描述" style="resize:none;min-height:150px;max-height:300px;"></textarea>
-                </div>
-            </div>
-        </form>
+
         <form id="chooseFileTypeForm" class="form-horizontal" style="display:none;">
             <label class="col-sm-4 control-label" style="padding: 13px 20px 0 0;">文件格式</label>
             <div class="col-sm-8">
@@ -318,7 +323,7 @@
     import GraphListExport from '@/views/graphtool/tooldic/page/funEventVue/graphListExport.vue'
     import ChildTabs from '@/views/analysis/auditmodelresult/childtabs'
     // 引入后端接口的相关方法
-    import { getGraphInfoById, getTableCol,viewNodeData } from '@/api/graphtool/graphList'
+    import { getGraphInfoById, getTableCol,viewNodeData,saveGraphInterface } from '@/api/graphtool/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
     // 引入前段JS的相关方法
     import * as commonJs from '@/views/graphtool/tooldic/js/common'
@@ -353,6 +358,8 @@
                 canEditor: true,// 当前图形化是否可编辑
                 hasManagerRole: false,// 是否觉有管理员权限（只在开发环境下会用到，用以对左侧资源树的表进行分类）
                 graphUuid:getParams().graphUuid,// 打开图形的ID
+                graphName:'',
+                description:'',
                 openGraphType: Number(getParams().openGraphType),// 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
                 openType: Number(getParams().openType),// 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
                 loading:null,//遮罩层对象
@@ -360,7 +367,12 @@
                 executeType:1,//节点执行的类型（1、执行本节点、2、执行到本节点、3、全部执行）
                 resultTableArr:[],//节点结果集集合
                 executeId:'',//当前执行批次ID
-                executeNodeIdArr:[]//当前执行批次的节点ID集合
+                executeNodeIdArr:[],//当前执行批次的节点ID集合
+                graphFormVisible:false,
+                graphFormTitle:'',
+                saveGraphType:'saveGraph',//保存、另存为图形
+                websocketBatchId:'',
+                showGraphListType:''
             }
         },
         // computed:{
@@ -391,9 +403,9 @@
         },
         methods: {
             init() {
-                // console.log(this.$store.getters.personcode)
-                // loginUserUuid = this.$store.getters.personuuid
-                this.loginUserUuid = '2c91808573e740e001744d54e2800006'
+                // console.log(this.$store.getters)
+                this.loginUserUuid = this.$store.getters.personuuid
+                // this.loginUserUuid = '2c91808573e740e001744d54e2800006'
                 let roleArr = this.$store.getters.roles
                 let screenManager = 'screenManager'// 场景查询管理员角色
                 if (roleArr.includes(screenManager)) {
@@ -409,6 +421,8 @@
                 window.setNodeOutputTypeIcon = commonJs.setNodeOutputTypeIcon
                 window.executeNode = commonJs.executeNode
                 window.cancelExecute = commonJs.cancelExecute
+                window.reName = commonJs.reName
+                window.curNodeSQL = commonJs.curNodeSQL
             },
             initIndex() {
                 window.refrashResourceZtree = indexJs.refrashResourceZtree
@@ -421,7 +435,7 @@
             },
             initGraph() {
                 if (!mxClient.isBrowserSupported()) {
-                    alertMsg('提示', '您的浏览器不支持图形设计。请更换浏览器', 'info')
+                    this.$message({ type: 'info', message: '您的浏览器不支持图形设计。请更换浏览器' })
                     return
                 }
                 mxResources.loadDefaultBundle = false
@@ -483,7 +497,7 @@
                 getGraphInfoById(graphUuid).then(response => {
                     if (response.data == null) {
                         this.loading.destroy()
-                        alertMsg('提示', '加载图形失败', 'error')
+                        this.$message.error('加载图形失败')
                     } else {
                         try {
                             this.openType_graph = response.data.createType// 打开图形化的方式：1、开发环境（开发库）；2、权限环境（生产库）
@@ -492,9 +506,9 @@
                             this.loading.destroy()
                             this.initJsp()
                         } catch (e) {
-                            alertMsg('提示', '加载图形失败', 'error')
-                            console.info(e)
                             this.loading.destroy()
+                            this.$message.error('加载图形失败')
+                            console.info(e)
                         }
                     }
                 })
@@ -620,7 +634,7 @@
                         $.post(contextPath + '/graphEditor/getDevelopTable', {}, function(e) {
                             if (e.isError) {
                                 obj.loading.destroy()
-                                alertMsg('提示', '资源树列表加载出错', 'error')
+                                this.$message.error('资源树列表加载出错')
                             } else {
                                 // 统一表和试图的类型为datasource，不需要替换的就执行空方法
                                 indexJs.replaceNodeType(e.nodeList)
@@ -632,7 +646,7 @@
                         initTableTip(obj.loginUserUuid).then(response => {
                             if (response.data == null) {
                                 obj.loading.destroy()
-                                alertMsg('提示', '资源树列表加载出错', 'error')
+                                this.$message.error('资源树列表加载出错')
                             } else {
                                 // 统一表和试图的类型为datasource，不需要替换的就执行空方法
                                 indexJs.replaceNodeType(response.data)
@@ -674,24 +688,24 @@
                 this.webSocket.onmessage = function(event) {
                     let dataObj = JSON.parse(event.data)//接收到返回结果
                     let executeTaskObj = dataObj.executeTask
+                    let executeSQLObj = dataObj.executeSQL
                     if(executeTaskObj.resultType === 'NotSelect'){//只执行组装的SQL
-                        let executeSQLObj = dataObj.executeSQL
                         let cueNodeId = executeSQLObj.id;
-                        let nodeInfo = executeSQLObj.param[0]
-                        let isEnd = executeSQLObj.param[0]
+                        let nodeInfo = executeSQLObj.param[1]
+                        let isEnd = executeSQLObj.param[2]
                         switch (executeSQLObj.state) {
                             case "2"://执行成功
                                 nodeInfo.nodeExcuteStatus = 3
                                 delete nodeInfo.createSql;
                                 delete nodeInfo.dropTableViewSql;
-                                $('#sysInfoArea').html("<p style='color:#0DD140'>节点【"+executeSQLObj.name+"】执行成功！</p>")
+                                $('#sysInfoArea').append("<p style='color:#0DD140'>节点【"+executeSQLObj.name+"】执行成功！</p>")
                                 break
                             case "3"://执行失败
                                 nodeInfo.nodeExcuteStatus = 4
                                 delete nodeInfo.resultTableName;
                                 delete nodeInfo.createSql;
                                 delete nodeInfo.dropTableViewSql;
-                                message.append("<p style='color:red'>节点【"+executeSQLObj.name+"】执行失败！\n错误信息："+ executeSQLObj.msg +"</p>");
+                                $('#sysInfoArea').append("<p style='color:red'>节点【"+executeSQLObj.name+"】执行失败！\n错误信息："+ executeSQLObj.msg +"</p>");
                                 break
                         }
                         let curNodeInfo = graph.nodeData[cueNodeId].nodeInfo
@@ -722,7 +736,9 @@
                     }
                     if(executeTaskObj.resultType === 'select'){//展示节点结果集数据
                         $this.loading.destroy()
-                        $this.$refs.childTabsRef[0].loadTableData(dataObj)
+                        if(executeSQLObj.param[0] === this.websocketBatchId){//展示当前操作的结果集
+                            $this.$refs.childTabsRef[0].loadTableData(dataObj)
+                        }
                     }
                 }
 
@@ -732,11 +748,77 @@
 
                 // 通信失败
                 this.webSocket.onerror = function(event) {
-                    $this.$message({ type: 'error', message: '数据请求失败' })
+                    $this.$message.error('数据请求失败')
                 }
             },
-            initResultTable(data){
-                this.$refs.childTabsRef[0].loadTableData(data)
+            newGraph(){
+                // this.$confirm('新建图形将在当前页打开，是否继续?', '提示', {
+                //     confirmButtonText: '确定',
+                //     cancelButtonText: '取消',
+                //     type: 'info',
+                //     center: true
+                // }).then(() => {
+                    // let url = `/graphtool/tooldic?openGraphType=1&openType=${this.openType}`
+                    // this.$router.replace({path: url});
+                    window.open(`/#/graphtool/tooldic?openGraphType=1&openType=${this.openType}`, '_blank')
+                    // const {href} = this.$router.resolve({
+                    //     path: url,
+                    // });
+                    // window.open(href,'_blank');
+                // }).catch(() => {
+                //     this.$message({ type: 'info', message: '已取消' })
+                // })
+            },
+            openGraph(){
+                indexJs.openGraph()
+            },
+            saveGraph(type){
+                this.saveGraphType = type
+                var str = type === 'saveGraph' ? '保存' : '另存为'
+                if (this.canEditor === false) {
+                    this.$message({ type: 'info', message: '当前图形您没有【' + str + '】操作的权限' })
+                }else{
+                    if (Object.keys(graph.nodeData).length === 0) {
+                        this.$message({ type: 'info', message: '当前图形无节点数据，不可保存' })
+                    }else{
+                        this.graphFormVisible = true
+                        this.graphFormTitle = `图形${str}`
+                    }
+                }
+            },
+            getGraphFormInfo(){
+                if($.trim(this.graphName) === ''){
+                    this.$message({ type: 'info', message: '请输入图形名称' })
+                    return
+                }
+                let encoder = new mxCodec()
+                let node = encoder.encode(graph.getModel())
+                let xml = mxUtils.getPrettyXml(node)
+                var data = {
+                    'createType': this.openType,
+                    'executeStatus': indexJs.getExecuteDetail(),
+                    'graphName': this.graphName,
+                    'description': this.description,
+                    'graphXml': xml,
+                    'graphType': 1, // 个人图形
+                    'nodeData': JSON.stringify(graph.nodeData) // 各个节点的配置信息
+                }
+                if (this.saveGraphType === 'saveGraph') {
+                    data.graphUuid = this.graphUuid
+                }
+                saveGraphInterface(data).then(response => {
+                    this.graphFormVisible = false
+                    if (response.data == null) {
+                        this.$message({ type: 'info', message: '图形保存失败' })
+                    } else {
+                        this.graphUuid = response.data
+                        if (this.saveGraphType === 'saveGraph') {
+                            $('#graphName_show').val(this.graphName)
+                            $('#description_show').val(this.description)
+                        }
+                        this.$message({ type: 'info', message: '图形保存成功' })
+                    }
+                })
             },
             searchZtree() {
                 indexJs.searchZtree()
@@ -745,53 +827,7 @@
                 viewNodeData({nodeObjs:JSON.stringify(this.resultTableArr),openType:this.openType}).then()
             },
             relationTableQuery() {
-                hideRMenu('rMenu')
-                var nodes = this.zTreeObj.getSelectedNodes()
-                if (nodes.length > 0) {
-                    var tableName = strEncryption(nodes[0].name)
-                    layer.open({
-                        id: 'relationTableQueryDialog',
-                        type: 1,
-                        title: '关联表查询',
-                        content: '<div id="tableArea" class="table-view" style="width:100%;"><table class="table table-striped" id="resultTable"></table></div>',
-                        area: ['800px', '400px'],
-                        skin: 'layui-layer-lan',
-                        resize: false,
-                        scrollbar: false,
-                        success: function(layero) {
-                            var tableGridObj = new TableGrid()
-                            var setting = {
-                                tableId: 'resultTable',
-                                tableUrl: contextPath + '/graphEditor/getRightMenuRelationTable',
-                                params: { 'tableName': tableName },
-                                rownumbers: true,
-                                colModel: [
-                                    {
-                                        'label': '原表名',
-                                        'name': 'SOURCE_TABLE',
-                                        'align': 'center'
-                                    }, {
-                                        'label': '关联表名',
-                                        'name': 'TARGET_TABLE',
-                                        'align': 'center'
-                                    }, {
-                                        'label': '原表字段',
-                                        'name': 'SOURCE_COLUMN',
-                                        'align': 'center'
-                                    }, {
-                                        'label': '关联表字段',
-                                        'name': 'TARGET_COLUMN',
-                                        'align': 'center'
-                                    }
-                                ],
-                                scroll: false,
-                                height: '100%',
-                                width: '100%'
-                            }
-                            tableGridObj.initGridData(setting)
-                        }
-                    })
-                }
+
             },
             layuiTabClickLi(index) {
                 if (index === 0) {
@@ -853,13 +889,43 @@
                 indexJs.exportGraph()
             },
             getGraphObject(){
-                let returnObj = this.$refs.graphListExport.getChooseGraphs();
-                console.log(returnObj);
-                if(returnObj.isError){
-                    this.$message({ type: 'info', message: returnObj.message })
-                }else{
-                    this.graphListDialogVisible = false
-                    indexJs.exportGraphBack(returnObj.graphObj);
+                if(this.showGraphListType === 'open'){//打开方法
+                    let returnObj = this.$refs.graphListExport.getChooseGraph();
+                    if(returnObj.isError){
+                        this.$message({ type: 'info', message: returnObj.message })
+                    }else{
+                        this.graphListDialogVisible = false
+                        this.$nextTick( () => {
+                            // this.$confirm('图形将在当前页打开，是否继续?', '提示', {
+                            //     confirmButtonText: '确定',
+                            //     cancelButtonText: '取消',
+                            //     type: 'info',
+                            //     center: true
+                            // }).then(() => {
+                            var urlParamStr = ''
+                            if (returnObj.graphType === 3) {
+                                if (returnObj.publicType === 1) { // 场景查询
+                                    urlParamStr = '?graphUuid=' + returnObj.graphUuid + '&openGraphType=3'
+                                } else { // 个人场景查询
+                                    urlParamStr = '?graphUuid=' + returnObj.graphUuid + '&openGraphType=2'
+                                }
+                            } else { // 个人图形
+                                urlParamStr = '?graphUuid=' + returnObj.graphUuid + '&openGraphType=1'
+                            }
+                            window.open(`/#/graphtool/tooldic${urlParamStr}&openType=${this.openType}`, '_blank')
+                            // }).catch(() => {
+                            //     this.$message({ type: 'info', message: '已取消' })
+                            // })
+                        })
+                    }
+                }else{//this.showGraphListType === 'export'，图形导出方法
+                    let returnObj = this.$refs.graphListExport.getChooseGraphs();
+                    if(returnObj.isError){
+                        this.$message({ type: 'info', message: returnObj.message })
+                    }else{
+                        this.graphListDialogVisible = false
+                        indexJs.exportGraphBack(returnObj);
+                    }
                 }
             }
         }
