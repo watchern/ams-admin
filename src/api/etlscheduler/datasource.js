@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const baseURL = 'etlscheduler'
+const baseURL = '/etlscheduler'
 // 分页
 export function pageList(data) {
   return request({
@@ -20,10 +20,10 @@ export function getById(uuid) {
   })
 }
 // 添加对象
-export function create(data) {
+export function save(data) {
   return request({
     baseURL: baseURL,
-    url: '/datasource/insert',
+    url: '/datasource/save',
     method: 'post',
     data
   })

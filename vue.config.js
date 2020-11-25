@@ -77,7 +77,7 @@ module.exports = {
         }
       },
       '/graphtool': {
-        target: process.env.AMSANALYSIS_API,
+        target: process.env.AMSGRAPHTOOL_API,
         changeOrigin: true,
         pathRewrite: {
           '^/graphtool': ''
@@ -90,14 +90,6 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/etlscheduler': ''
-        }
-      },
-      '/dolphinscheduler': {
-        timeout: 1800000,
-        target: process.env.AMSETLSCHEDULER_API,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/dolphinscheduler': ''
         }
       },
       '/AuditAnalysis': {
