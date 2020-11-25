@@ -640,64 +640,14 @@ export function exportAllData() {
     }
 }
 
-// 新建
-export function newGraph() {
-    window.open('index.jsp?openGraphType=1&openType=' + openType, '_blank')
-}
-
 // 打开
 export function openGraph() {
-    var urlParamStr = ''
-    var queryType = openType === 1 ? '-1' : '0'
-    layer.open({
-        id: 'openGraphList',
-        type: 2,
-        title: '图形化列表',
-        content: 'page/openGraph/GraphInfoList.jsp?queryType=' + queryType,
-        area: ['90%', '90%'],
-        skin: 'layui-layer-lan',
-        resize: false,
-        scrollbar: false,
-        btn: ['本窗口打开', '新窗口打开', '取消'],
-        btn1: function(index, layero) {
-            var obj = window['layui-layer-iframe' + index].graphList.returnRowObj()
-            if (obj != null) {
-                urlParamStr = openGraphCallBack(obj)
-                layer.close(index)
-                window.open('index.jsp' + urlParamStr, '_self')
-            }
-        },
-        btn2: function(index, layero) {
-            var obj = window['layui-layer-iframe' + index].graphList.returnRowObj()
-            if (obj != null) {
-                urlParamStr = openGraphCallBack(obj)
-                layer.close(index)
-                window.open('index.jsp' + urlParamStr, '_blank')
-            }
-        },
-        btn3: function(index, layero) {
-            layer.close(index)
-        }
-    })
-}
-
-/**
- * 打开方法的内部回调
- * @param obj 图形对象
- * @return urlParamStr 请求地址的参数
- */
-function openGraphCallBack(obj) {
-    var urlParamStr = ''
-    if (obj.graphType === '3') { // 场景查询
-        if (obj.publicType === '1') { // 公共场景查询
-            urlParamStr = '?graphUuid=' + obj.graphUuid + '&openGraphType=3'
-        } else { // 个人场景查询
-            urlParamStr = '?graphUuid=' + obj.graphUuid + '&openGraphType=2'
-        }
-    } else { // 普通图形
-        urlParamStr = '?graphUuid=' + obj.graphUuid + '&openGraphType=1'
+    hideRMenu('moreMenu')
+    indexVue.graphListDialogVisible = true
+    indexVue.showGraphListType = 'open'
+    if (typeof indexVue.$refs.graphListExport !== "undefined") {//非首次加载需刷新列表
+        indexVue.$refs.graphListExport.getGraphList();
     }
-    return urlParamStr + '&openType=' + openType
 }
 
 /**
@@ -710,18 +660,18 @@ export function autoSaveGraph() {
     var encoder = new mxCodec()
     var node = encoder.encode(graph.getModel())
     var xml = mxUtils.getPrettyXml(node)
-    if ($('#graphUuid').val() === '' && $('#graphUuid').val() != null) {
-        $('#graphName').val('自动保存的副本_' + getCurTime())
-        $('#description').val('系统自动保存的副本')
+    if (indexVue.graphUuid === '' && indexVue.graphUuid != null) {
+        indexVue.graphName = '自动保存的副本_' + getCurTime()
+        indexVue.description = '系统自动保存的副本'
         $('#graphName_show').val('自动保存的副本_' + getCurTime())
         $('#description_show').val('系统自动保存的副本')
     }
     var newNodeData = $.extend(true, {}, graph.nodeData)
     var data = {
-        'graphName': $('#graphName').val(),
-        'description': $('#description').val(),
+        'graphName': indexVue.graphName,
+        'description': indexVue.description,
         'graphXml': xml,
-        'graphUuid': $('#graphUuid').val(),
+        'graphUuid': indexVue.graphUuid,
         'createType': graph.openType,
         'graphType': graph.graphType,
         'nodeData': JSON.stringify(newNodeData) // 各个节点的配置信息
@@ -747,9 +697,9 @@ export function autoSaveGraph() {
     }
     saveGraphInterface(data).then(response => {
         if (!response.data) {
-            alertMsg('提示', '自动保存图形失败', 'info')
+            indexVue.$message({ type: 'info', message: '自动保存图形失败' })
         } else {
-            $('#graphUuid').val(response.data)
+            indexVue.graphUuid = response.data
         }
     })
 }
@@ -777,7 +727,7 @@ function getCurTime() {
  * 判断当前图形中结果表节点的执行情况
  * status：1、全部执行，2、部分执行，3、全部未执行
  * */
-function getExecuteDetail() {
+export function getExecuteDetail() {
     var status = 3// 默认为全部未执行
     // 选中所有节点
     graph.selectVertices()
@@ -816,9 +766,9 @@ function getExecuteDetail() {
 // 打开图形化后的回调
 export function openCallBack(obj) {
     var executeIdArr = []
-    $('#graphUuid').val(obj.graphUuid)
-    $('#graphName').val(obj.graphName)
-    $('#description').val(obj.description)
+    indexVue.graphUuid = obj.graphUuid
+    indexVue.graphName = obj.graphName
+    indexVue.description = obj.description
     $('#graphName_show').val(obj.graphName)
     $('#description_show').val(obj.description)
     graph.nodeData = JSON.parse(obj.nodeData)
@@ -949,11 +899,11 @@ export function saveGraph(type) {
         alertMsg('提示', '当前图形您没有【' + str + '】操作的权限', 'info')
         return
     }
-    if (graph.openGraphType === 2 || graph.openGraphType === 3) { // 保存场景查询图形
-        createScreenQuery(type)
-    } else if (graph.openGraphType === 4) { // 保存模型图形
-        createDegreeModel(type)
-    } else {
+    // if (graph.openGraphType === 2 || graph.openGraphType === 3) { // 保存场景查询图形
+    //     createScreenQuery(type)
+    // } else if (graph.openGraphType === 4) { // 保存模型图形
+    //     createDegreeModel(type)
+    // } else {
         if (Object.keys(graph.nodeData).length === 0) {
             alertMsg('提示', '当前图形无节点数据，不可保存', 'info')
             return
@@ -961,6 +911,7 @@ export function saveGraph(type) {
         var encoder = new mxCodec()
         var node = encoder.encode(graph.getModel())
         var xml = mxUtils.getPrettyXml(node)
+
         layer.open({
             id: 'saveGraph1',
             type: 1,
@@ -1006,7 +957,7 @@ export function saveGraph(type) {
                 layer.close(index)
             }
         })
-    }
+    // }
 }
 
 // 帮助
@@ -1375,14 +1326,14 @@ export function importGraph(data) {
             indexVue.$message({ type: 'info', message: '导入的文件仅支持xml格式' })
         }else{
             let graphType = (graph.openGraphType === 2 || graph.openGraphType === 3) ? 3 : 1
-            let formData = new window.FormData()
+            let formData = new FormData()
             formData.append("file",data.target.files[0])
             formData.append("graphType",graphType)
             var loading = $('body').mLoading({ 'text': '正在导入文件，请稍后……', 'hasCancel': false })
             importGraphXml(formData).then( response => {
                 loading.destroy()
                 if(response.data){
-                    indexVue.$message({ type: 'info', message: '文件导入成功,请到列表页面打开' })
+                    indexVue.$message({ type: 'info', message: '文件导入成功' })
                 }else{
                     indexVue.$message({ type: 'info', message: '导入时解析文件出错' })
                 }
@@ -1397,6 +1348,7 @@ export function importGraph(data) {
 export function exportGraph() {
     hideRMenu('moreMenu')
     indexVue.graphListDialogVisible = true
+    indexVue.showGraphListType = 'export'
     if (typeof indexVue.$refs.graphListExport !== "undefined") {//非首次加载需刷新列表
         indexVue.$refs.graphListExport.getGraphList();
     }
