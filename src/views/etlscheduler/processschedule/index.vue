@@ -77,7 +77,7 @@
       >
         <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <el-row v-for="taskParam in scope.row.distinctParamList">
+            <el-row v-for="(taskParam,$index) in scope.row.distinctParamList" :key="$index">
               <label class="col-md-2">
                 {{ taskParam.name }}:
               </label>
@@ -98,15 +98,15 @@
         prop="dependTaskInfo"
         width="120px"
       >
-        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0" slot-scope="scope">
+        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <el-row v-for="dependTask in scope.row.dependTaskInfoList">
+            <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
               <label class="col-md-2">
-                依赖:
+                [{{ dependTask.dateValueName }}]
               </label>
-              <div class="col-md-10">
-                {{ dependTask.dependItemList }}
-              </div>
+              <label class="col-md-10" align="right">
+                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+              </label>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -150,7 +150,6 @@
           <el-input
             v-model="temp.scheduleName"
             class="propwidth"
-            placeholder=""
             :disabled="disableUpdate"
             placeholder="请输入任务名称"
           />
@@ -178,8 +177,8 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          v-for="(item, index) in distinctParamList"
-          :key="item.paramUuid"
+          v-for="(item, $index) in distinctParamList"
+          :key="$index"
           :label="item.param.paramName"
           :rules="{required: true, message: '', trigger: 'change'}"
         >
@@ -247,17 +246,18 @@
                         v-if="!isLoading"
                         :class="{'oper-btn add': iconDisable}"
                         data-toggle="tooltip"
+                        :disable="disableAddStatus"
                         title="添加"
                       />
                     </div>
                   </a>
                 </div>
                 <div class="dep-box">
-                  <span
-                    v-if="dependTaskList.length"
-                    :style="{
+                  <!-- :style="{
                       'pointer-events': disableUpdate === true ? 'none' : '',
-                    }"
+                    }" -->
+                  <span
+                    v-if="dependTaskList!=null && dependTaskList.length>0"
                     @click="!isDetails && _setGlobalRelation()"
                   >
                     <!-- {{ relation === "AND" ? "且" : "或" }} -->
@@ -276,10 +276,12 @@
                       <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
                     </span>
 
+                    <!-- :depend-item-list="dependTaskList[0].dependItemList" -->
                     <m-depend-item-list
                       v-model="el.dependItemList"
-                      :depend-item-list="dependTaskList"
                       :index="$index"
+                      :depend-task-list="dependTaskList"
+                      :process-schedules-uuid="temp.processSchedulesUuid"
                       @on-delete-all="_onDeleteAll"
                       @getDependTaskList="getDependTaskList"
                     />
@@ -395,6 +397,7 @@ export default {
   },
   data() {
     return {
+      disableAddStatus: false,
       // 开始时间大于今天
       startTime: {
         disabledDate: time => {
@@ -477,10 +480,10 @@ export default {
         }
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 10,
-        sortBy: 'asc',
+        sortBy: 'desc',
         sortName: 'updateTime'
       },
       temp: {
@@ -622,7 +625,11 @@ export default {
     }
   },
   created() {
-    this.crontabFormat = getDictList('001001')
+    try {
+      this.crontabFormat = getDictList('001001')
+    } catch (e) {
+      console.error(e)
+    }
     queryProcessLike().then((resp) => {
       this.queryFields[2].data = resp.data
     })
@@ -642,7 +649,7 @@ export default {
           (v1) =>
             (v1.state =
                 dependentResult[
-                  `${v1.processSchedulesUuid}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}`
+                  `${v1.processSchedulesUuid}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}-${v1.scheduleName}`
                 ] || defaultState)
         )
       )
@@ -661,6 +668,7 @@ export default {
       }
     },
     findSchedule(data) {
+      this.distinctParamList = {}
       this.iconDisable = false
       this.closeStatus = true
       this.disableUpdate = true
@@ -718,13 +726,15 @@ export default {
     _addDep() {
       if (!this.isLoading) {
         this.isLoading = true
-        if (this.dependTaskList == null) {
-          this.dependTaskList = []
+        if (this.dependTaskList == null || this.dependTaskList.length === 0) {
+          this.disableAddStatus = false
+          this.dependTaskList = [{
+            dependItemList: [],
+            relation: 'AND'
+          }]
+        } else {
+          this.disableAddStatus = true
         }
-        this.dependTaskList.push({
-          dependItemList: [],
-          relation: 'AND'
-        })
       }
     },
     _deleteDep(i) {
@@ -1154,9 +1164,9 @@ export default {
     }
 
     .dep-box {
-      border-left: 4px solid #eee;
-      margin-left: -46px;
-      padding-left: 42px;
+      // border-left: 4px solid #eee;
+      // margin-left: -46px;
+      // padding-left: 42px;
       position: relative;
 
       .dep-relation {
@@ -1200,8 +1210,8 @@ export default {
 
   }
   .deleteIcon{
-    position: relative;
-    left: 460px;
-    bottom: 115px;
+    // position: relative;
+    // left: 460px;
+    // bottom: 115px;
   }
 </style>

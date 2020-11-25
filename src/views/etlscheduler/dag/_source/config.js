@@ -25,19 +25,19 @@ const toolOper = (dagThis) => {
     disable: disabled,
     desc: '删除选中的线或节点'
   }
-  //   ,
-  // {
-  //   code: 'download',
-  //   icon: 'ans-icon-download',
-  //   disable: !dagThis.type,
-  //   desc: '下载'
-  // },
-  // {
-  //   code: 'screen',
-  //   icon: 'ans-icon-max',
-  //   disable: false,
-  //   desc: '全屏'
-  // }
+    //   ,
+    // {
+    //   code: 'download',
+    //   icon: 'ans-icon-download',
+    //   disable: !dagThis.type,
+    //   desc: '下载'
+    // },
+    // {
+    //   code: 'screen',
+    //   icon: 'ans-icon-max',
+    //   disable: false,
+    //   desc: '全屏'
+    // }
   ]
 }
 

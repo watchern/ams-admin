@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div v-if="isShow">
-      <template>
+      <div class="detail-form">
         <el-form
           ref="dataForm"
           :model="temp"
@@ -10,7 +10,7 @@
         >
           业务表信息：
           <el-form-item label="汉化名称：" prop="chnName">
-            <el-input v-model="temp.chnName" />
+            <el-input v-model="temp.chnName" style="width:60%;" />
           </el-form-item>
           列业务信息：
           <el-table :data="temp.colMetas" height="200">
@@ -51,7 +51,7 @@
           </el-table>
         </el-form>
         <el-button type="primary" style="float:right;margin-top:20px" @click="saveTable()">保存</el-button>
-      </template>
+      </div>
     </div>
   </div>
 </template>
@@ -134,7 +134,7 @@ export default {
       saveTableInfo(this.temp).then(() => {
         this.$notify({
           title: '成功',
-          message: '创建成功',
+          message: '保存成功',
           type: 'success',
           duration: 2000,
           position: 'bottom-right'

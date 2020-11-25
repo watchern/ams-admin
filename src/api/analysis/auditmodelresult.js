@@ -66,8 +66,8 @@ export function insertRunResultShare(data) {
   })
 }
 /**
-   * 删除结果共享表
-   */
+ * 删除结果共享表
+ */
 export function deleteRunResultShare(data) {
   return request({
     baseURL: analysisUrl,
@@ -104,7 +104,7 @@ export function exportRunTaskRel() {
  * 运行任务重新运行
  */
 export function reRunRunTask(data,setDateTime) {
- var map = {runTaskRel:data,timingExecute:setDateTime}
+  var map = {runTaskRel:data,timingExecute:setDateTime}
   return request({
     baseURL: analysisUrl,
     url: '/RunTaskController/reRunRunTask',
@@ -140,13 +140,11 @@ export function batchSaveResultDetailProjectRel(data) {
  * 根据表名查询该表中的主键名称
  * @param {*} data
  */
-export function selectPrimaryKeyByTableName(data) {
-  var map = {tableName:data}
+export function selectPrimaryKeyByTableName() {
   return request({
     baseURL: analysisUrl,
     url: '/ResultDetailProjectRelController/getPrimaryKeyByTableName',
-    method: 'post',
-    data:map
+    method: 'post'
   })
 }
 
@@ -159,6 +157,19 @@ export function removeResultDetailProjectRel(data) {
     baseURL: analysisUrl,
     url: '/ResultDetailProjectRelController/deleteResultDetailProjectRel/' + data,
     method: 'delete'
+  })
+}
+
+/**
+ * 删除运行任务（假删除）,同时删除该运行任务下的所有运行任务关联
+ * @param {*} data 运行任务主键
+ */
+export function deleteRunTaskFalse(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/RunTaskController/deleteRunTaskFalse',
+    method: 'delete',
+    params:{runTaskUuid:data}
   })
 }
 
@@ -220,5 +231,5 @@ export function replaceParam(filterArr,arr,replaceSql){
       }
     }
   }
-   return replaceSql
+  return replaceSql
 }

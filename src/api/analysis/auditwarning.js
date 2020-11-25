@@ -1,7 +1,6 @@
 import request from '@/utils/request'
 const analysisUrl = '/analysis'
-const dataUrl = '/amsdata'
-
+const dataUrl = '/data'
 
 /**
 * 查询审计预警列表
@@ -100,5 +99,35 @@ export function updateWarning(data) {
     // params 以formData格式传递  后台用RequestParam
     // 直接加data以json格式传递  后台用RequestBody
     data
+  })
+}
+
+/**
+ * 停止审计预警
+ * @param id 审计预警主键
+ * @return {AxiosPromise}
+ * @author lvhe
+ * @date 2020/11/19 16:27
+ */
+export function stopById(id) {
+  return request({
+    baseURL: analysisUrl,
+    url: `/auditWarning/stopById/${id}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 启动审计预警
+ * @param id 审计预警主键
+ * @return {AxiosPromise}
+ * @author lvhe
+ * @date 2020/11/19 16:27
+ */
+export function startById(id) {
+  return request({
+    baseURL: analysisUrl,
+    url: `/auditWarning/startById/${id}`,
+    method: 'get'
   })
 }

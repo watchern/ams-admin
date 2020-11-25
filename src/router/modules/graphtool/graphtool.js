@@ -8,7 +8,7 @@ const graphRouter = {
   },
   children: [
     {
-      path: 'graphList',
+      path: 'graphlist/index',
       name: '图形列表',
       component: () => import('@/views/graphtool/index')
     }

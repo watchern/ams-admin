@@ -428,6 +428,7 @@ div.mxWindow .geButton {
 	background-position:center center;
 }
 .geVsplit {
+    width: 100%;
 	font-size:1pt;
 	cursor:row-resize;
 	background-color:#e5e5e5;

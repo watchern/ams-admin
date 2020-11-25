@@ -337,7 +337,7 @@ export default {
           var resultDetailProjectRels = [];
           if (resp.data.length == 0) {
             // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果没有值则直接关联
-            selectPrimaryKeyByTableName(this.nowtable.resultTableName).then(
+            selectPrimaryKeyByTableName().then(
               (resp) => {
                 this.primaryKey = resp.data;
                 for (var i = 0; i < this.selectRows.length; i++) {
@@ -372,7 +372,7 @@ export default {
             // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果有值则要判断是否关联过该主键，如果添加过就不能重复关联
             var resultDetailProjectRels = [];
             var related = [];
-            selectPrimaryKeyByTableName(this.nowtable.resultTableName).then(
+            selectPrimaryKeyByTableName().then(
               (resp) => {
                 this.primaryKey = resp.data;
                 for (var i = 0; i < this.selectRows.length; i++) {
@@ -478,6 +478,12 @@ export default {
           }
           // 生成ag-grid列信息
           if (this.modelUuid != undefined) {
+              var rowColom = {
+                        headerName: 'onlyuuid',
+                        field: 'onlyuuid',
+                        checkboxSelection: true
+                      }
+           col.push(rowColom)
             for (var i = 0; i < colNames.length; i++) {
               loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
                 if (
@@ -488,8 +494,7 @@ export default {
                     if (i == 0) {
                       var rowColom = {
                         headerName: this.modelOutputColumn[j].columnAlias,
-                        field: colNames[i],
-                        checkboxSelection: true,
+                        field: colNames[i]
                       };
                     } else {
                       var rowColom = {
@@ -646,7 +651,7 @@ export default {
           for (var i = 0; i < this.conditionShowData[0].length; i++) {
             for (var j = 0; j < this.conditionShowData[0][i].length; j++) {
               if (
-                params.data[this.primaryKey] == this.conditionShowData[0][i][j]
+                params.data[this.primaryKey.toLowerCase()] == this.conditionShowData[0][i][j]
               ) {
                 this.isLoading = false;
                 return {
@@ -672,7 +677,7 @@ export default {
             this.nowtable.resultTableName
           ).then((resp) => {
             this.conditionShowData = resp.data;
-            selectPrimaryKeyByTableName(this.nowtable.resultTableName).then(
+            selectPrimaryKeyByTableName().then(
               (resp) => {
                 this.primaryKey = resp.data;
                 selectModel(this.modelUuid).then((resp) => {
@@ -861,9 +866,10 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-      const webSocketPath =
+/*      const webSocketPath =
         "ws://localhost:8086/analysis/websocket?" +
-        this.$store.getters.personuuid;
+        this.$store.getters.personuuid;*/
+      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid;
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接

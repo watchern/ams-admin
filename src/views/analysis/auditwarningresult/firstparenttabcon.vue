@@ -4,7 +4,7 @@
     <el-container>
       <el-aside class="tree-side">
         <div class="tree-container" style = "height:700px;overflow:auto;">
-    <warningresulttree @clickChangeTable="clickChangeTable"></warningresulttree>
+    <warningresulttree @getLikeList="getLikeList" @clickChangeTable="clickChangeTable"></warningresulttree>
     </div>
      </el-aside>
      <el-container>
@@ -34,7 +34,7 @@
         >
         <el-button
           :disabled="buttonIson.deleteBtn"
-          type="danger"
+          type="primary"
           @click="deleteRunTaskRel"
           class="oper-btn delete"
         ></el-button>
@@ -452,6 +452,7 @@ export default {
      * 查询列表方法
      */
     getLikeList(query) {
+      debugger
       this.listLoading = true;
       var model = {};
       var runTask = {};
@@ -476,9 +477,11 @@ export default {
         } else {
           var runTask = { runUserName: query.runUserName };
         }
-        if(query.runTaskUuid == null || query.runTaskUuid == ""){
+        console.log(query.runTaskUuid)
+        if(query.runTaskUuid == undefined){
           query.runTaskUuid = '1'
         }
+        console.log(query.runTaskUuid)
         query.model = model;
         query.runTask = runTask;
         this.pageQuery.condition = query;
@@ -762,7 +765,6 @@ export default {
      * 移除项目关联
      */
     RemoverelationProject(resultRelProjectUuid) {
-      console.log(this.selected1);
       rmResultRelProjectlr(resultRelProjectUuid).then((resp) => {
         if (resp.data == true) {
           this.getLikeList();
@@ -852,8 +854,6 @@ export default {
       this.settingTimingIsSee = false;
     },
     clickChangeTable(runTaskRelUuid){
-      console.log(99999999999999999999999)
-      console.log(typeof runTaskRelUuid)
         var query = {runTaskUuid:runTaskRelUuid}
         this.getLikeList(query)
     }

@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <el-row class="tree" :gutter="5">
+    <el-row class="tree">
       <el-col :span="4">
         <el-input
           v-model="filterText1"
@@ -106,7 +106,7 @@
           </span>
         </MyElTree>
       </el-col>
-      <el-col :span="11">
+      <el-col :span="14">
         <template v-if="divInfo" class="divContent">
           <el-tabs v-model="tabShow" style="text-aling = center">
             <el-tab-pane label="基本信息" name="basicinfo"><basic-info :table-id="tableId" /></el-tab-pane>
@@ -118,7 +118,7 @@
             <el-tab-pane label="业务信息" name="bizInfo"><biz-info :table-id="tableId" /></el-tab-pane>
           </el-tabs>
         </template>
-        <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="500px">
+        <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="600px">
           <el-form ref="folderForm" :model="folderForm" label-width="80px">
             <el-form-item label="文件夹名称" label-width="120px">
               <el-input v-model="folderForm.folderName" style="width: 300px" />
@@ -210,18 +210,7 @@ export default {
     loadNode1(node, resolve) {
       if (node.level <= 3) {
         var pid = node.data ? node.data.id : 'ROOT'
-        var schemaName = "";
-        var tableName = "";
-        if(node.level == 1){
-          schemaName = node.data.id;
-        }else if(node.level == 2){
-          var nodePath = this.$refs.tree2.getNodePath(node);
-          debugger;
-          schemaName = nodePath[1].id;
-          tableName = node.data.label;
-        }
-        console.log(schemaName + ' '+  tableName)
-        listUnCached(node.level, schemaName, tableName).then(resp => {
+        listUnCached(node.level, pid).then(resp => {
           resolve(resp.data)
         })
       } else {

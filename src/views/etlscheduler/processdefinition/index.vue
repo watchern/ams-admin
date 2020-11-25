@@ -52,7 +52,7 @@
           type="primary"
           title="下载"
           class="oper-btn import"
-          :disabled="selections.length === 0"
+          :disabled="selections.length !== 1"
           @click="handleDownload()"
         />
         <!-- 上传 -->
@@ -168,11 +168,11 @@ export default {
         }
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
         sortBy: 'asc',
-        sortName: 'create_time'
+        sortName: 'updateTime'
       },
       temp: {
         processDefinitionUuid: null

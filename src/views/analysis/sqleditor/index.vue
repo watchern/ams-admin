@@ -15,7 +15,7 @@
       </div>
       <div id="rightPart" class="col-sm-10" style="height: 90vh">
         <div id="sqlEditorDiv" class="sql-editor-div">
-          <el-row type="flex" class="row-bg" v-if="power!='warning'">
+          <el-row type="flex" class="row-bg">
             <el-col>
               <el-button type="primary" size="small" @click="sqlFormat" class="oper-btn show-detail" title="格式化sql"></el-button>
               <el-button type="primary" size="small" @click="executeSQL" class="oper-btn start" title="执行"></el-button>
@@ -290,9 +290,10 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-      const webSocketPath =
+/*      const webSocketPath =
         'ws://localhost:8086/analysis/websocket?' +
-        this.$store.getters.personuuid
+        this.$store.getters.personuuid*/
+      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid;
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
       // 当服务端打开连接
@@ -583,6 +584,7 @@ export default {
           this.executeLoading = true
           startExecuteSql(obj).then((result) => {
             this.executeLoading = false
+            console.log(result)
             if (!result.data.isError) {
               this.currentExecuteSQL = result.data.executeSQLList
               this.modelOriginalTable = result.data.tables
@@ -590,6 +592,8 @@ export default {
             } else {
               this.$message({ type: 'info', message: '执行失败' })
             }
+          }).catch(result=>{
+            this.executeLoading = false
           })
         } else {
           this.openParamDraw(obj)

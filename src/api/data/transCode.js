@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const baseURL = '/amsdata'
+const baseURL = '/data'
 const controllerName = 'transRule'
 
 export function listByPage(data) {
@@ -41,7 +41,6 @@ export function del(data) {
 }
 
 export function getTransMap(ids) {
-  debugger
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/getTransMap/${ids}`,

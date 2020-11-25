@@ -96,7 +96,7 @@
               </div>
               <template slot="reference">
                 <x-button
-                  icon="ans-icon-trash"
+                  icon="oper-btn delete"
                   type="error"
                   shape="circle"
                   size="xsmall"
@@ -147,7 +147,7 @@ export default {
       }
     },
     _downloadFile(item) {
-      downloadFile('/dolphinscheduler/resources/download', {
+      downloadFile('/etlscheduler/resources/download', {
         id: item.id
       })
     },

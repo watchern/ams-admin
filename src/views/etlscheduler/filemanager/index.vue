@@ -42,7 +42,6 @@
       />
       <el-table-column
         label="目录名称"
-        align="center"
         prop="name"
       />
       <el-table-column

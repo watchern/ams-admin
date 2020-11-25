@@ -641,7 +641,7 @@ EditorUi = function(editor, container, lightbox) {
       var isCreateTableNodeError = false;
       $.ajax({
           type: "post",
-          url: "/amsdata/tableMeta/getCols",
+          url: "/data/tableMeta/getCols",
           dataType:"json",
           async:false,
           data: {
@@ -1785,10 +1785,10 @@ EditorUi.prototype.createDivs = function() {
 	this.hsplit = this.createDiv('geHsplit');
 	this.vsplit = this.createDiv('geVsplit');
 	
-	if(typeof this.sidebarContainer != "undefined") {
+	if(typeof this.sidebarContainer !== "undefined") {
 		this.sidebarContainer.style.width = this.sidebarWidth + "px";
 	}
-	if(typeof this.resultContainer != "undefined") {
+	if(typeof this.resultContainer !== "undefined") {
 		this.resultContainer.style.height = this.resultHeight + "px";
 	} else {
 		this.resultHeight = 0;
@@ -1802,10 +1802,11 @@ EditorUi.prototype.createDivs = function() {
 // 	this.hsplit.setAttribute('title', mxResources.get('collapseExpand'));
 	this.hsplit.style.width = this.splitSize + "px";
 	this.hsplit.style.left = this.sidebarWidth + "px";
+    this.hsplit.style.top = (this.toolbarHeight - 10) + "px";
+    this.hsplit.style.height = (h + 18) + "px";
 	// this.vsplit.setAttribute('title', mxResources.get('collapseExpand'));
 	this.vsplit.style.height = this.splitSize + "px";
 	this.vsplit.style.bottom = this.resultHeight + "px";
-	
 	this.tableArea.style.height = this.resultContentHeight + "px";
 	this.sysInfoArea.style.height = this.resultContentHeight + "px";
 	this.outLineArea.style.height = this.resultContentHeight + "px";
@@ -2825,7 +2826,7 @@ var getEdgeCount = function(){
 };
 
 var toolCellInitSql = function(curSelCell) {
-	if(curSelCell != undefined && curSelCell.edge){
+	if(typeof curSelCell !== "undefined" && curSelCell.edge === 1){
 		var isChange = false;
         if(!edgeVerify(curSelCell)){
             return;

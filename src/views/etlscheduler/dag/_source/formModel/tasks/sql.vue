@@ -471,6 +471,9 @@ export default {
 }
 </script>
 <style lang="scss" rel="stylesheet/scss">
+
+.cm-s-mdn-like .CodeMirror-gutters { background: #f8f8f8; border-left: 6px solid #353a43; color: #333; }
+
 .requiredIcon {
   color: #ff0000;
   padding-right: 4px;

@@ -18,18 +18,40 @@
             <div id="filter_jsp" class="tab-pane fade in active">
                 <div id="col10" class="col-sm-12" style="position: relative;background-color: #fff">
                     <div id="myDiagramDiv" class="col-sm-9" style="border: solid 1px #F3F3F3;height:100%;"></div>
-                    <img id="fd" width="15" height="15" title="画布放大" src="../images/fangda.png" style="z-index:9999;position: absolute;top: 12px;" onclick="relation.hb()">
-                    <img id="sx" width="15" height="15" title="画布缩小" src="../images/fangda.png" style="z-index:9999;position: absolute;right: 10px;top: 12px;display: none;" onclick="relation.hbsx()">
+                    <img id="fd" width="15" height="15" title="画布放大" src="../images/fangda.png" style="z-index:9999;position: absolute;top: 12px;" @click="amplify">
+                    <img id="sx" width="15" height="15" title="画布缩小" src="../images/fangda.png" style="z-index:9999;position: absolute;right: 10px;top: 12px;display: none;" @click="reduce">
                     <div id="joins" class="col-sm-3" style="padding: 0px 4px; height: 35%;">
                         <div class="tstext"><span style="font-weight: 800">表连接</span>（显示多个表间的关联关系）</div>
-                        <div id="form" style="background: #F7F7F7;border: 1px solid #F3F3F3;height:90%;overflow-y:auto"></div>
+                        <div id="form" style="background: #F7F7F7;border: 1px solid #F3F3F3;height:90%;overflow-y:auto">
+                            <div class="form-group" id="join" style="display: none;">
+                                <div class="col-sm-12">
+                                    <input name="MainTable" type="text" class="form-control" v-model="mainTableName" id="MainTable" disabled="disabled"/>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-6 control-label">关联关系：</label>
+                                    <div class="col-sm-6">
+                                        <select v-model="joinType" style="width:100%" @change="changeType">
+                                            <option value="LEFT JOIN">左连接</option>
+                                            <option value="RIGHT JOIN">右连接</option>
+                                            <option value="INNER JOIN">内连接</option>
+                                            <option value="FULL JOIN">外连接</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control" v-model="slaverTableName" disabled="disabled"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div id="tips" class="col-sm-3" style="margin:15px 0;">
                         <div class="tstext"><span style="font-weight: 800">名词解释</span></div>
                         <div id="description" style="background: #F7F7F7;overflow-y:auto;height:90%;padding:5px;">
                             <p style="display:none;text-indent: 2em;">左连接：选取关联字段将两张表进行关联，左表的所有数据均显示，右表的数据只显示关联字段值相等的数据，若右表关联结果无数据则补空显示（例：详见右上角【帮助】）</p>
                             <p style="display:none;text-indent: 2em;">右连接：选取关联字段将两张表进行关联，右表的所有数据均显示，左表的数据只显示关联字段值相等的数据，若左表关联结果无数据则补空显示（例：详见右上角【帮助】）</p>
-                            <p style="text-indent: 2em;">内连接：选取关联字段将两张表进行关联，仅显示两张表中关联字段值相等的数据（例：详见右上角【帮助】）</p>
+                            <p style="display:none;text-indent: 2em;">内连接：选取关联字段将两张表进行关联，仅显示两张表中关联字段值相等的数据（例：详见右上角【帮助】）</p>
                             <p style="display:none;text-indent: 2em;">外连接：选取关联字段将两张表进行关联，显示出左表和右表关联后的所有数据，但去除重复数据，两表中若无关联数据则补空显示（例：详见右上角【帮助】）</p>
                         </div>
                     </div>
@@ -43,7 +65,7 @@
                             </div>
                             <div id="select" class="form-group" style="display:none;">
                                 <div class="col-sm-8">
-                                    <select id="comper" onchange="relation.changeCopare()">
+                                    <select id="comper" @change="changeCopare">
                                         <option value="=">等于</option>
                                         <option value="!=">不等于</option>
                                         <option value="&gt;">大于</option>
@@ -103,7 +125,11 @@
                 graph: parent.graph,
                 columnsInfoPre: [], // 前置节点的输出列信息集合（只用于有且只有一个前置节点的节点）
                 layeX: -1,
-                layeY: -1
+                layeY: -1,
+                joinShow:false,
+                mainTableName:'',
+                joinType:'INNER JOIN',
+                slaverTableName:''
             }
         },
         mounted(){
@@ -128,11 +154,23 @@
                 relationJs.sendVueObj(this);
                 relationJs.init();
             },
+            changeType() {
+                relationJs.changeType()
+            },
+            amplify(){
+                relationJs.amplify()
+            },
+            reduce(){
+                relationJs.reduce()
+            },
+            changeCopare(){
+                relationJs.changeCopare()
+            }
         }
     }
 
     function saveNodeInfo() {
-        return relation.saveNodeInfo()
+        return relationJs.saveNodeInfo()
     }
 
     // 页面输入项的校验(或空配置校验)
