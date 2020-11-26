@@ -15,8 +15,8 @@
       </span>
     </el-dialog>
     <el-row v-if="myFlag">
-      <el-button type="primary" @click="exportExcel">导出</el-button>
-      <el-button type="primary">图表展示</el-button>
+      <el-button type="primary" @click="exportExcel" class="oper-btn export-2"></el-button>
+      <el-button type="primary" class="oper-btn chart"></el-button>
       <el-button type="primary" @click="getValues">关联项目</el-button>
       <el-button
         type="primary"
@@ -39,9 +39,9 @@
     <el-row v-if="modelResultButtonIsShow" style="display: flex">
       <!-- 2.1前台导出，双向绑定数据 -->
       <downloadExcel :data="tableData" :fields="json_fields" :name="excelName">
-        <el-button type="primary" @click="modelResultExport">导出</el-button>
+        <el-button type="primary" @click="modelResultExport" class="oper-btn export-2"></el-button>
       </downloadExcel>
-      <el-button type="primary" title="图表展示">图表展示</el-button>
+      <el-button type="primary" title="图表展示" class="oper-btn chart"></el-button>
     </el-row>
     <!-- 使用ag-grid-vue组件 其中columnDefs为列，rowData为表格数据 -->
     <ag-grid-vue

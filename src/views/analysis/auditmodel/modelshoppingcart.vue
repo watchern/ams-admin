@@ -39,7 +39,7 @@
       <div class="btn-div">
         <!-- <el-button type="primary" @click="runImmediately" plain>立</el-button>
         <el-button type="primary" plain @click="timingExecution">定</el-button> -->
-        <span class="select-btn" />
+        <span class="select-btn iconfont iconoper-drag" />
         <span class="iconYY iconfont iconoper-start" @click="runImmediately" />
         <span class="iconYY iconfont iconoper-timing" @click="timingExecution" />
         <span class="iconYY1 iconfont iconmenu-2" @click="selectData" />
@@ -204,29 +204,29 @@ export default {
       var oDrag = document.getElementById('drag')
       var oBtn = this.byClass('select-btn', oDrag)[0]
       var oTitle = this.byClass('title', oDrag)[0]
-      var oL = this.byClass('resizeL', oDrag)[0]
-      var oT = this.byClass('resizeT', oDrag)[0]
-      var oR = this.byClass('resizeR', oDrag)[0]
-      var oB = this.byClass('resizeB', oDrag)[0]
-      var oLT = this.byClass('resizeLT', oDrag)[0]
-      var oTR = this.byClass('resizeTR', oDrag)[0]
-      var oBR = this.byClass('resizeBR', oDrag)[0]
-      var oLB = this.byClass('resizeLB', oDrag)[0]
+      // var oL = this.byClass('resizeL', oDrag)[0]
+      // var oT = this.byClass('resizeT', oDrag)[0]
+      // var oR = this.byClass('resizeR', oDrag)[0]
+      // var oB = this.byClass('resizeB', oDrag)[0]
+      // var oLT = this.byClass('resizeLT', oDrag)[0]
+      // var oTR = this.byClass('resizeTR', oDrag)[0]
+      // var oBR = this.byClass('resizeBR', oDrag)[0]
+      // var oLB = this.byClass('resizeLB', oDrag)[0]
       this.drag(oDrag, oBtn)
       // 四角
-      this.resize(oDrag, oLT, true, true, false, false)
-      this.resize(oDrag, oTR, false, true, false, false)
-      this.resize(oDrag, oBR, false, false, false, false)
-      this.resize(oDrag, oLB, true, false, false, false)
+      // this.resize(oDrag, oLT, true, true, false, false)
+      // this.resize(oDrag, oTR, false, true, false, false)
+      // this.resize(oDrag, oBR, false, false, false, false)
+      // this.resize(oDrag, oLB, true, false, false, false)
       // 四边
-      this.resize(oDrag, oL, true, false, false, true)
-      this.resize(oDrag, oT, false, true, true, false)
-      this.resize(oDrag, oR, false, false, false, true)
-      this.resize(oDrag, oB, false, false, true, false)
-      oDrag.style.left =
-        (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
-      oDrag.style.top =
-        (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'
+      // this.resize(oDrag, oL, true, false, false, true)
+      // this.resize(oDrag, oT, false, true, true, false)
+      // this.resize(oDrag, oR, false, false, false, true)
+      // this.resize(oDrag, oB, false, false, true, false)
+      // oDrag.style.left =
+      //   (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
+      // oDrag.style.top =
+      //   (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'
     },
     drag(oBtn, handle) {
       var disY = 0
@@ -298,55 +298,55 @@ export default {
       //   };
       // };
       // 阻止冒泡
-      oMin.onmousedown = oMax.onmousedown = oClose.onmousedown = function(
-        event
-      ) {
-        this.onfocus = function() {
-          this.blur()
-        };
-        (event || window.event).cancelBubble = true
-      }
+      // oMin.onmousedown = oMax.onmousedown = oClose.onmousedown = function(
+      //   event
+      // ) {
+      //   this.onfocus = function() {
+      //     this.blur()
+      //   };
+      //   (event || window.event).cancelBubble = true
+      // }
     },
-    resize(oParent, handle, isLeft, isTop, lockX, lockY) {
-      handle.onmousedown = function(event) {
-        var event = event || window.event
-        var disX = event.clientX - handle.offsetLeft
-        var disY = event.clientY - handle.offsetTop
-        var iParentTop = oParent.offsetTop
-        var iParentLeft = oParent.offsetLeft
-        var iParentWidth = oParent.offsetWidth
-        var iParentHeight = oParent.offsetHeight
-        document.onmousemove = function(event) {
-          var event = event || window.event
-          var iL = event.clientX - disX
-          var iT = event.clientY - disY
-          var maxW =
-            document.documentElement.clientWidth - oParent.offsetLeft - 2
-          var maxH =
-            document.documentElement.clientHeight - oParent.offsetTop - 2
-          var iW = isLeft ? iParentWidth - iL : handle.offsetWidth + iL
-          var iH = isTop ? iParentHeight - iT : handle.offsetHeight + iT
-          isLeft && (oParent.style.left = iParentLeft + iL + 'px')
-          isTop && (oParent.style.top = iParentTop + iT + 'px')
-          iW < this.dragMinWidth && (iW = this.dragMinWidth)
-          iW > maxW && (iW = maxW)
-          lockX || (oParent.style.width = iW + 'px')
-          iH < this.dragMinHeight && (iH = this.dragMinHeight)
-          iH > maxH && (iH = maxH)
-          lockY || (oParent.style.height = iH + 'px')
-          if (
-            (isLeft && iW == this.dragMinWidth) ||
-            (isTop && iH == this.dragMinHeight)
-          ) { document.onmousemove = null }
-          return false
-        }
-        document.onmouseup = function() {
-          document.onmousemove = null
-          document.onmouseup = null
-        }
-        return false
-      }
-    },
+    // resize(oParent, handle, isLeft, isTop, lockX, lockY) {
+    //   handle.onmousedown = function(event) {
+    //     var event = event || window.event
+    //     var disX = event.clientX - handle.offsetLeft
+    //     var disY = event.clientY - handle.offsetTop
+    //     var iParentTop = oParent.offsetTop
+    //     var iParentLeft = oParent.offsetLeft
+    //     var iParentWidth = oParent.offsetWidth
+    //     var iParentHeight = oParent.offsetHeight
+    //     document.onmousemove = function(event) {
+    //       var event = event || window.event
+    //       var iL = event.clientX - disX
+    //       var iT = event.clientY - disY
+    //       var maxW =
+    //         document.documentElement.clientWidth - oParent.offsetLeft - 2
+    //       var maxH =
+    //         document.documentElement.clientHeight - oParent.offsetTop - 2
+    //       var iW = isLeft ? iParentWidth - iL : handle.offsetWidth + iL
+    //       var iH = isTop ? iParentHeight - iT : handle.offsetHeight + iT
+    //       isLeft && (oParent.style.left = iParentLeft + iL + 'px')
+    //       isTop && (oParent.style.top = iParentTop + iT + 'px')
+    //       iW < this.dragMinWidth && (iW = this.dragMinWidth)
+    //       iW > maxW && (iW = maxW)
+    //       lockX || (oParent.style.width = iW + 'px')
+    //       iH < this.dragMinHeight && (iH = this.dragMinHeight)
+    //       iH > maxH && (iH = maxH)
+    //       lockY || (oParent.style.height = iH + 'px')
+    //       if (
+    //         (isLeft && iW == this.dragMinWidth) ||
+    //         (isTop && iH == this.dragMinHeight)
+    //       ) { document.onmousemove = null }
+    //       return false
+    //     }
+    //     document.onmouseup = function() {
+    //       document.onmousemove = null
+    //       document.onmouseup = null
+    //     }
+    //     return false
+    //   }
+    // },
     setMemo(obj) {
       this.memoValue = obj.length
       this.currentData = obj
@@ -520,9 +520,9 @@ body {
 #drag {
   position: absolute;
   z-index: 1000;
-  top: 100px;
-  left: 400px;
-  width: 148px;
+  bottom: 100px;
+  right: 100px;
+  width: 155px;
   height: 34px;
   background: #353A43;
   border-radius: 17px 0 0 17px;
@@ -721,16 +721,17 @@ a.open:hover {
 .select-btn {
   width: 20px;
   height: 20px;
-  background-color: red;
   position: absolute;
-  top: 8px;
-  left: -44px;
+  top: 6px;
+  left: -46px;
+  font-size: 22px;
+  color: #BABCE5;
 }
 
 .none-box{
   float: left;
   margin: -244px 0 0 0;
-  width: 148px;
+  width: 155px;
   height: 278px;
   background-color: #282C35;
   display: none;

@@ -26,7 +26,8 @@
         style="display: none"
         :disabled="modelRunResultBtnIson.chartDisplayBtn"
         type="primary"
-        >图表展示</el-button
+        class="oper-btn chart"
+        ></el-button
       >
       <el-button
         style="display: none"
@@ -69,7 +70,7 @@
           class="oper-btn export-2"
         ></el-button>
       </downloadExcel>
-      <el-button type="primary" title="图表展示">图表展示</el-button>
+      <el-button type="primary" title="图表展示" class="oper-btn chart"></el-button>
     </el-row>
     <!-- 使用ag-grid-vue组件 其中columnDefs为列，rowData为表格数据 -->
     <ag-grid-vue
@@ -580,6 +581,78 @@ export default {
             //todo 增加sql类型判断
             if (true) {
               this.modelResultButtonIsShow = true;
+              this.modelResultPageIsSee = true;
+              this.modelResultData = this.nextValue.result;
+              this.modelResultColumnNames = this.nextValue.columnNames;
+              for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
+                var rowColom = {
+                  headerName: this.nextValue.columnNames[j],
+                  field: this.nextValue.columnNames[j],
+                  width: "180",
+                };
+                var key = this.nextValue.columnNames[j];
+                var value = this.nextValue.result[j];
+                col.push(rowColom);
+              }
+              for (var k = 0; k < this.nextValue.result.length; k++) {
+                rowData.push(this.nextValue.result[k]);
+              }
+              this.columnDefs = col;
+              this.getList();
+            }
+          } else if (this.nextValue.executeSQL.state == "3") {
+            this.isSee = false;
+            this.modelResultPageIsSee = false;
+            this.modelResultButtonIsShow = false;
+            this.errorMessage = this.nextValue.executeSQL.msg;
+          }
+          this.isLoading = false;
+        }
+      }else if (this.useType == "previewTable"){
+        this.loading = true;
+        this.nextValue = nextValue;
+        var col = [];
+        var rowData = [];
+        if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
+          if (this.nextValue.executeSQL.state == "2") {
+            //todo 增加sql类型判断
+            if (true) {
+              this.modelResultPageIsSee = true;
+              this.modelResultData = this.nextValue.result;
+              this.modelResultColumnNames = this.nextValue.columnNames;
+              for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
+                var rowColom = {
+                  headerName: this.nextValue.columnNames[j],
+                  field: this.nextValue.columnNames[j],
+                  width: "180",
+                };
+                var key = this.nextValue.columnNames[j];
+                var value = this.nextValue.result[j];
+                col.push(rowColom);
+              }
+              for (var k = 0; k < this.nextValue.result.length; k++) {
+                rowData.push(this.nextValue.result[k]);
+              }
+              this.columnDefs = col;
+              this.getList();
+            }
+          } else if (this.nextValue.executeSQL.state == "3") {
+            this.isSee = false;
+            this.modelResultPageIsSee = false;
+            this.modelResultButtonIsShow = false;
+            this.errorMessage = this.nextValue.executeSQL.msg;
+          }
+          this.isLoading = false;
+        }
+      }else if (this.useType == "graph"){
+        this.loading = true;
+        this.nextValue = nextValue;
+        var col = [];
+        var rowData = [];
+        if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
+          if (this.nextValue.executeSQL.state == "2") {
+            //todo 增加sql类型判断
+            if (true) {
               this.modelResultPageIsSee = true;
               this.modelResultData = this.nextValue.result;
               this.modelResultColumnNames = this.nextValue.columnNames;
