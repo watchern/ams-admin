@@ -26,7 +26,8 @@
         style="display: none"
         :disabled="modelRunResultBtnIson.chartDisplayBtn"
         type="primary"
-        >图表展示</el-button
+        class="oper-btn chart"
+        ></el-button
       >
       <el-button
         style="display: none"
