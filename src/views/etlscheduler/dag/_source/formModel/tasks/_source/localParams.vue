@@ -196,6 +196,12 @@ export default {
       })
     },
     /**
+       * blur verification
+       */
+    // _handleValue() {
+    //   // this._verifValue('value')
+    // },
+    /**
      * delete item
      */
     _removeUdp(index) {
@@ -215,27 +221,53 @@ export default {
         param: {}
       })
     },
-    /**
-     * blur verification
-     */
+    // /**
+    //  * blur verification
+    //  */
     _handleValue() {
       this._verifProp('value')
     },
+    // _verifValue(type) {
+    //   const arr = []
+    //   let flag = true
+    //   _.map(this.httpParamsList, v => {
+    //     arr.push(v.value)
+    //     if (!v.value) {
+    //       flag = false
+    //     }
+    //   })
+    //   if (!flag) {
+    //     this.$message.warning(`value不能为空`)
+    //     return false
+    //   }
+    //   this.$emit('on-local-params', _.cloneDeep(this.localParamsList))
+    //   return true
+    // },
     /**
      * Verify that the value exists or is empty
      */
     _verifProp(type) {
       const arr = []
       let flag = true
+      let paramFlag = true
       _.map(this.localParamsList, v => {
         arr.push(v.prop)
         if (!v.prop) {
           flag = false
         }
+        if (v.paramUuid === '' || v.paramUuid === null) {
+          paramFlag = false
+        }
       })
       if (!flag) {
         if (!type) {
           this.$message.warning(`prop不能为空`)
+        }
+        return false
+      }
+      if (!paramFlag) {
+        if (!type) {
+          this.$message.warning(`关联参数不能为空`)
         }
         return false
       }
