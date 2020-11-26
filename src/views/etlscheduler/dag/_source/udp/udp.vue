@@ -154,13 +154,12 @@
             </div>
           </template> -->
           <x-button
-            type="primary"
-            class="btnclass"
+            type="text"
             @click="close()"
           > 取消 </x-button>
           <x-button
             type="primary"
-            class="btnclass"
+            shape="circle"
             :disabled="isDetails"
             @click="ok()"
           >保存</x-button>
@@ -326,23 +325,6 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
-.btnclass{
-  background: #353a43;
-  border-color: #353a43;
-  font-weight: bold;
-  margin-right: 10px;
-}
-.btnclass:hover{
-  background: #353a43;
-  border-color: #353a43;
-  color: #c8ff8c;
-  font-weight: bold;
-}
-.ans-btn-primary[disabled],.ans-btn-primary[disabled]:hover {
-	color: #fff;
-	background-color: #c6cfd6;
-	border-color: #c6cfd6;
-}
 .titleText{
   width:13%;
   display:inline-block;

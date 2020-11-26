@@ -1,24 +1,29 @@
 <template>
   <div><data-tree @node-click="handleClick" v-if="personcode!==''"
-            :dataUserId="personCode"  :sceneCode="sceneCode"
+            :dataUserId="personcode"  :sceneCode="sceneCode"
   /></div>
 </template>
 
 <script>
 import dataTree from '@/views/data/role-res/data-tree'
-import Cookies from 'js-cookie'
+import { mapState } from 'vuex'
 
 export default {
   computed:{
+    //因为时序问题，store中没有personcode时组件可能被加载 导致dataUserId==''  所以要加personcode!=='' 控制
+    ...mapState({
+      personcode: state => state.user.code
+    })
+
   },
   components: { dataTree },
   data() {
     return {
-      sceneCode: 'auditor',
-      personCode: Cookies.get("personcode")
+      sceneCode: 'auditor'
     }
   },
   created() {
+    console.log(this.$store.getters.personcode);
   },
   methods: {
     handleClick(data, node, tree) {

@@ -9,7 +9,7 @@
         <el-button type="danger" size="mini" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="delCol()" />
       </el-col>
     </el-row>
-    <el-table :data="temp" height="800px" @selection-change="handleSelectionChange">
+    <el-table :data="temp" height="600px" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" />
       <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
         <template slot-scope="scope" show-overflow-tooltip>

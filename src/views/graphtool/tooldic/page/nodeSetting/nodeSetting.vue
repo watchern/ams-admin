@@ -13,7 +13,7 @@
         </ul>
         <div id="myTabContent" class="tab-content">
             <div id="basic" class="tab-pane fade">
-                <Basic ref="basicVueRef"/>
+                <Basic ref="basicVue" />
             </div>
             <div id="conditionSet" class="tab-pane fade in active">
                 <FilterSet v-if="jspType === 'filter'" />
@@ -26,7 +26,7 @@
                 <UnionDataSet v-if="jspType === 'union'" />
             </div>
             <div id="column" class="tab-pane fade">
-                <OutputColumn ref="outputColumnVueRef" v-if="jspType !== 'barChart' && jspType !== 'comparison'" :graph="graph" :is_filter_column="is_filter_column" />
+                <OutputColumn v-if="jspType !== 'barChart' && jspType !== 'comparison'" ref="outputColumn" :graph="graph" :is_filter_column="is_filter_column" />
             </div>
         </div>
     </div>
@@ -43,6 +43,7 @@
     import FrequencyAnalysisSet from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/frequencyAnalysis.vue'
     import TranscodeSet from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/transcode/transcode.vue'
     import UnionDataSet from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/unionData.vue';
+
     var jspType = getParams().jspType
     export default {
         name: 'NodeSettingIndex',
@@ -53,17 +54,6 @@
                 graph: parent.graph,
                 is_filter_column: [],
                 columnsInfoPre: []// 前置节点的输出列信息集合（只用于有且只有一个前置节点的节点）
-            }
-        },
-        mounted(){
-            window.saveGraphNodeSetting = this.saveGraphNodeSetting
-        },
-        methods:{
-            saveGraphNodeSetting(){//保存节点配置
-                this.$refs.outputColumnVueRef.get_column()
-                this.$refs.basicVueRef.save_base()
-                saveSetting()
-                this.graph.nodeData[this.graph.curCell.id].isSet = true
             }
         }
     }

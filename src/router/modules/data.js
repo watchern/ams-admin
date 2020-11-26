@@ -36,7 +36,7 @@ const dataRouter = {
     }, {
       path: 'dict',
       name: '数据字典维护',
-      component: () => import('@/views/data/transcode/index')
+      component: () => import('@//views/data/transcode/index')
     }, {
       path: 'tblrel',
       name: '表关联关系维护',

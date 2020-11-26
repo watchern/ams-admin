@@ -66,8 +66,8 @@ export function insertRunResultShare(data) {
   })
 }
 /**
- * 删除结果共享表
- */
+   * 删除结果共享表
+   */
 export function deleteRunResultShare(data) {
   return request({
     baseURL: analysisUrl,
@@ -104,7 +104,7 @@ export function exportRunTaskRel() {
  * 运行任务重新运行
  */
 export function reRunRunTask(data,setDateTime) {
-  var map = {runTaskRel:data,timingExecute:setDateTime}
+ var map = {runTaskRel:data,timingExecute:setDateTime}
   return request({
     baseURL: analysisUrl,
     url: '/RunTaskController/reRunRunTask',
@@ -231,5 +231,5 @@ export function replaceParam(filterArr,arr,replaceSql){
       }
     }
   }
-  return replaceSql
+   return replaceSql
 }

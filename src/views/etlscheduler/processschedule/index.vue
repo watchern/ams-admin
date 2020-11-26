@@ -77,7 +77,7 @@
       >
         <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <el-row v-for="(taskParam,$index) in scope.row.distinctParamList" :key="$index">
+            <el-row v-for="taskParam in scope.row.distinctParamList">
               <label class="col-md-2">
                 {{ taskParam.name }}:
               </label>
@@ -98,15 +98,15 @@
         prop="dependTaskInfo"
         width="120px"
       >
-        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
+        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
+            <el-row v-for="dependTask in scope.row.dependTaskInfoList">
               <label class="col-md-2">
-                [{{ dependTask.dateValueName }}]
+                依赖:
               </label>
-              <label class="col-md-10" align="right">
-                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
-              </label>
+              <div class="col-md-10">
+                {{ dependTask.dependItemList }}
+              </div>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -150,6 +150,7 @@
           <el-input
             v-model="temp.scheduleName"
             class="propwidth"
+            placeholder=""
             :disabled="disableUpdate"
             placeholder="请输入任务名称"
           />
@@ -177,8 +178,8 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          v-for="(item, $index) in distinctParamList"
-          :key="$index"
+          v-for="(item, index) in distinctParamList"
+          :key="item.paramUuid"
           :label="item.param.paramName"
           :rules="{required: true, message: '', trigger: 'change'}"
         >
@@ -221,9 +222,9 @@
           >
             <el-option
               v-for="item in crontabFormat"
-              :key="item.codeDesc"
-              :label="item.codeName"
-              :value="item.codeDesc"
+              :key="item.code"
+              :label="item.msg"
+              :value="item.code"
             />
           </el-select>
         </el-form-item>
@@ -246,18 +247,17 @@
                         v-if="!isLoading"
                         :class="{'oper-btn add': iconDisable}"
                         data-toggle="tooltip"
-                        :disable="disableAddStatus"
                         title="添加"
                       />
                     </div>
                   </a>
                 </div>
                 <div class="dep-box">
-                  <!-- :style="{
-                      'pointer-events': disableUpdate === true ? 'none' : '',
-                    }" -->
                   <span
-                    v-if="dependTaskList!=null && dependTaskList.length>0"
+                    v-if="dependTaskList.length"
+                    :style="{
+                      'pointer-events': disableUpdate === true ? 'none' : '',
+                    }"
                     @click="!isDetails && _setGlobalRelation()"
                   >
                     <!-- {{ relation === "AND" ? "且" : "或" }} -->
@@ -276,12 +276,10 @@
                       <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
                     </span>
 
-                    <!-- :depend-item-list="dependTaskList[0].dependItemList" -->
                     <m-depend-item-list
                       v-model="el.dependItemList"
+                      :depend-item-list="dependTaskList"
                       :index="$index"
-                      :depend-task-list="dependTaskList"
-                      :process-schedules-uuid="temp.processSchedulesUuid"
                       @on-delete-all="_onDeleteAll"
                       @getDependTaskList="getDependTaskList"
                     />
@@ -379,8 +377,8 @@ import {
 } from '@/api/etlscheduler/processschedule'
 import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
-// import { crontabExpression } from './common.js'
-import { getDictList } from '@/utils'
+import { crontabExpression } from './common.js'
+import { getDictList, getTransMap } from '@/utils'
 // import _ from lodash
 
 export default {
@@ -397,7 +395,6 @@ export default {
   },
   data() {
     return {
-      disableAddStatus: false,
       // 开始时间大于今天
       startTime: {
         disabledDate: time => {
@@ -450,7 +447,7 @@ export default {
         }
       },
       // 作业周期格式化
-      crontabFormat: null,
+      crontabFormat: crontabExpression,
       loading: false,
       tableKey: 'processSchedulesUuid',
       list: null,
@@ -480,10 +477,10 @@ export default {
         }
       },
       pageQuery: {
-        condition: {},
+        condition: null,
         pageNo: 1,
         pageSize: 10,
-        sortBy: 'desc',
+        sortBy: 'asc',
         sortName: 'updateTime'
       },
       temp: {
@@ -625,11 +622,17 @@ export default {
     }
   },
   created() {
-    try {
-      this.crontabFormat = getDictList('001001')
-    } catch (e) {
-      console.error(e)
-    }
+    // getDictList('001001')
+    // const ids = []
+    // ids[0] = '001001'
+    // console.log('1111111111111111111' + JSON.stringify(getDictList(ids.join(','))))
+    // console.log('1111111111111111111' + JSON.stringify(getTransMap(ids.join(','))))
+    // getDictList(ids.join(',')).then((resp) => {
+    //   console.log('22222222222222222222222' + resp.data)
+    // })
+    // getTransMap(ids.join(',')).then((resp) => {
+    //   console.log('22222222222222222222222' + resp.data)
+    // })
     queryProcessLike().then((resp) => {
       this.queryFields[2].data = resp.data
     })
@@ -649,7 +652,7 @@ export default {
           (v1) =>
             (v1.state =
                 dependentResult[
-                  `${v1.processSchedulesUuid}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}-${v1.scheduleName}`
+                  `${v1.processSchedulesUuid}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}`
                 ] || defaultState)
         )
       )
@@ -668,7 +671,6 @@ export default {
       }
     },
     findSchedule(data) {
-      this.distinctParamList = {}
       this.iconDisable = false
       this.closeStatus = true
       this.disableUpdate = true
@@ -726,15 +728,13 @@ export default {
     _addDep() {
       if (!this.isLoading) {
         this.isLoading = true
-        if (this.dependTaskList == null || this.dependTaskList.length === 0) {
-          this.disableAddStatus = false
-          this.dependTaskList = [{
-            dependItemList: [],
-            relation: 'AND'
-          }]
-        } else {
-          this.disableAddStatus = true
+        if (this.dependTaskList == null) {
+          this.dependTaskList = []
         }
+        this.dependTaskList.push({
+          dependItemList: [],
+          relation: 'AND'
+        })
       }
     },
     _deleteDep(i) {
@@ -1067,8 +1067,8 @@ export default {
       var stopTime = stopJsonDate.toLocaleDateString()
       var message = ''
       this.crontabFormat.forEach((r, i) => {
-        if (date === r.codeDesc) {
-          message = r.codeName
+        if (date === r.code) {
+          message = r.msg
         }
       })
       return onTime + '-' + stopTime + ' ' + message
@@ -1164,9 +1164,9 @@ export default {
     }
 
     .dep-box {
-      // border-left: 4px solid #eee;
-      // margin-left: -46px;
-      // padding-left: 42px;
+      border-left: 4px solid #eee;
+      margin-left: -46px;
+      padding-left: 42px;
       position: relative;
 
       .dep-relation {
@@ -1210,8 +1210,8 @@ export default {
 
   }
   .deleteIcon{
-    // position: relative;
-    // left: 460px;
-    // bottom: 115px;
+    position: relative;
+    left: 460px;
+    bottom: 115px;
   }
 </style>

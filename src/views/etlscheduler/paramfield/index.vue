@@ -158,7 +158,7 @@
             placeholder="请选择参数类型"
           >
             <el-option
-              label="文本"
+              label="text"
               :value="1"
             />
             <el-option
@@ -239,11 +239,11 @@ export default {
         }
       },
       pageQuery: {
-        condition: {},
+        condition: null,
         pageNo: 1,
         pageSize: 20,
-        sortBy: 'desc',
-        sortName: 'updateTime'
+        sortBy: 'asc',
+        sortName: 'create_time'
       },
       temp: {
         defaultValue: null,
@@ -303,7 +303,7 @@ export default {
         paramCode: null,
         paramDesc: null,
         paramName: null,
-        paramType: 1,
+        paramType: null,
         paramUuid: null,
         selectValue: null,
         status: null

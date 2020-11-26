@@ -168,7 +168,7 @@ export function settingVerify(type) {
  * 验证当前节点的前置节点是否执行
  * @param curNodeId 当前节点ID
  * */
-function verifyPreNode(curNodeId) {
+export function verifyPreNode(curNodeId) {
   var verify = true
   var parentIds = graph.nodeData[curNodeId].parentIds
   for (var i = 0; i < parentIds.length; i++) {
@@ -239,7 +239,7 @@ export function executeVerify() {
  * @param curCellId	当前执行的节点ID
  * @param isCurCell	是否为当前执行节点
  * */
-function verifyExecuting(curCellId, isCurCell) {
+export function verifyExecuting(curCellId, isCurCell) {
   var verify = true
   if (isCurCell) {				// 如果是当前执行节点
     var nodeExcuteStatus = graph.nodeData[curCellId].nodeInfo.nodeExcuteStatus

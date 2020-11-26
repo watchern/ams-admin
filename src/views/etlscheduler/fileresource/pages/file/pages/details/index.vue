@@ -65,7 +65,7 @@ export default {
       this.$router.push({ name: 'file' })
     },
     _downloadFile() {
-      downloadFile('/etlscheduler/resources/download', {
+      downloadFile('/dolphinscheduler/resources/download', {
         id: this.$route.params.id
       })
     },

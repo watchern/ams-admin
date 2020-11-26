@@ -40,7 +40,7 @@
 <script>
 import { mapState } from 'vuex'
 import BaseCodeTreeOperate from '@/views/base/sysdata/basecodetreeoperate'
-import { inItCode, delSecond } from '@/api/base/sysData'
+import { inItCode, delSecond } from '@/api/base/sysdata'
 export default {
   components: {
     BaseCodeTreeOperate

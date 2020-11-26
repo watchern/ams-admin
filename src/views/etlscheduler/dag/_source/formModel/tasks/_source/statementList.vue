@@ -23,7 +23,7 @@
           @click="!isDetails && _removeStatement($index)"
         >
           <em
-            class="oper-btn delete"
+            class="ans-icon-trash"
             :class="_isDetails"
             data-toggle="tooltip"
             title="删除"
@@ -39,7 +39,7 @@
           @click="!isDetails && _addStatement()"
         >
           <em
-            class="oper-btn add"
+            class="iconfont ans-icon-increase"
             :class="_isDetails"
             data-toggle="tooltip"
             title="添加"
@@ -56,7 +56,7 @@
         @click="!isDetails && _addStatement()"
       >
         <em
-          class="oper-btn add"
+          class="iconfont ans-icon-increase"
           :class="_isDetails"
           data-toggle="tooltip"
           title="添加"
@@ -151,7 +151,6 @@ export default {
   .select-listpp {
     margin-bottom: 6px;
     .lt-add {
-      margin: 2px;
       padding-left: 4px;
       a {
         .iconfont {
