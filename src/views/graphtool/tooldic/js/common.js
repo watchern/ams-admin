@@ -779,8 +779,16 @@ function executeNode_callback(notExecuteNodeIdArr) {
         if(response.data != null){
             // $('#sysInfoArea').html(response.data.message)
             if(response.data.isError){
+                $('#sysInfoArea').append("<p style='color:red'>节点执行失败！\n错误信息："+ response.data.message +"</p>");
+                graphIndexVue.layuiTabClickLi(1)
+                // 更改执行状态图标为未执行
+                for (var j = 0; j < notExecuteNodeIdArr.length; j++) {
+                    graph.nodeData[notExecuteNodeIdArr[j]].nodeInfo.nodeExcuteStatus = 2
+                    changeNodeIcon(1, null, notExecuteNodeIdArr[j])
+                }
                 // 循环所有节点变更执行状态有变化的节点执行状态信息
-                nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
+                // nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
+                autoSaveGraph()
             }
         }else{
             $('#sysInfoArea').html("请求失败！")
@@ -1419,7 +1427,7 @@ function viewData(tableName, optType, connGraph, viewAllData) {
                     switch (optType) {
                         case 'comparison':							// 频次分析
                             if (res.columnInfo && res.columnInfo.columnList) {
-                                columnInfo = res.columnInfo.columnList
+                                let columnInfo = res.columnInfo.columnList
                                 for (var i = 0; i < columnInfo.length; i++) {
                                     var obj = {
                                         'data': columnInfo[i].columnName,

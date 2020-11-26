@@ -174,7 +174,7 @@
                         <div class="layui-tab-item">
                             <div id="tableArea">
                                 <div v-for="result in resultTableArr" id="dataShow" class="data-show">
-                                    <ChildTabs ref="childTabsRef" :key="result.nodeId"/>
+                                    <ChildTabs ref="childTabsRef" :key="result.nodeId" use-type="graph" :pre-value="preValue" />
                                 </div>
                             </div>
                         </div>
@@ -334,6 +334,7 @@
 </template>
 
 <script>
+    import Cookies from 'js-cookie'
     import Help from '@/views/graphtool/tooldic/page/funEventVue/help.vue'
     import GraphListExport from '@/views/graphtool/tooldic/page/funEventVue/graphListExport.vue'
     import ChildTabs from '@/views/analysis/auditmodelresult/childtabs'
@@ -388,7 +389,8 @@
                 saveGraphType:'saveGraph',//保存、另存为图形
                 websocketBatchId:'',
                 showGraphListType:'',
-                activeTabName:'outLineArea'
+                activeTabName:'outLineArea',
+                preValue:[]//结果集页签数组
             }
         },
         components:{ Help, GraphListExport,ChildTabs },
@@ -409,11 +411,13 @@
             commonJs.sendGraphIndexVue(this)
             //初始化websocket
             this.initWebSocKet()
+
         },
         methods: {
             init() {
-                // this.loginUserUuid = this.$store.getters.personuuid
-                this.loginUserUuid = '2c91808573e740e001744d54e2800006'
+                // console.log(Cookies.get("personuuid"))
+                this.loginUserUuid = Cookies.get("personuuid")
+                // this.loginUserUuid = '2c948a86757909950175790b10b60002'
                 let roleArr = this.$store.getters.roles
                 let screenManager = 'screenManager'// 场景查询管理员角色
                 if (roleArr.includes(screenManager)) {
@@ -685,7 +689,9 @@
             },
             initWebSocKet(){
                 let $this = this
-                const webSocketPath = process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET + this.$store.getters.personuuid;
+                // const webSocketPath = process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET + this.$store.getters.personuuid;
+                const webSocketPath = process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET + this.loginUserUuid + 'GRAPH'
+                console.log('webSocketPath'+webSocketPath)
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
                 // 当服务端打开连接
@@ -706,6 +712,15 @@
                             delete nodeInfo.createSql;
                             delete nodeInfo.dropTableViewSql;
                             $('#sysInfoArea').append("<p style='color:#0DD140'>节点【"+executeSQLObj.name+"】执行成功！</p>")
+                            for(let k=0; k<$this.executeNodeIdArr.length; k++){//找出当前节点的下一个节点即结果表节点
+                                if($this.executeNodeIdArr[k] === cueNodeId){
+                                    let nextNodeId = $this.executeNodeIdArr[k+1]
+                                    if(typeof nextNodeId !== "undefined"){
+                                        graph.nodeData[nextNodeId].nodeInfo.nodeExcuteStatus = 3
+                                        break
+                                    }
+                                }
+                            }
                         }
                         if(executeSQLObj.state === "3"){//执行失败
                             $this.loading.destroy()
@@ -720,25 +735,24 @@
                         graph.nodeData[cueNodeId].nodeInfo = {...curNodeInfo, ...nodeInfo}
                         // 循环所有节点变更执行状态有变化的节点执行状态信息
                         commonJs.nodeCallBack($this.executeNodeIdArr, null, $this.executeId)
-                        // 记录执行操作
-                        indexJs.refrashHistoryZtree('【' + executeSQLObj.name + '】节点执行完毕')
-                        // 自动保存图形化
-                        indexJs.autoSaveGraph()
                         if($this.executeType === 3){//全部执行，显示标记为中间结果表或最终结果表的结果集
 
                         }else{//执行本节点和执行到本节点，只显示当前节点的结果集
                             if(isEnd){
-                                let nodeObj = {
-                                    nodeId:cueNodeId,
-                                    nodeName:executeSQLObj.name,
-                                    resultTableName:nodeInfo.resultTableName
-                                }
-                                $this.resultTableArr.push(nodeObj)
+                                let nodeId = cueNodeId
+                                let nodeName = executeSQLObj.name
+                                let resultTableName = nodeInfo.resultTableName
+                                $this.resultTableArr.push({nodeId,nodeName,resultTableName})
+                                $this.preValue.push({id:nodeId,name:nodeName})
                             }
                         }
                         console.log($this.resultTableArr)
                         if(isEnd && executeSQLObj.state === "2"){
                             console.log('viewData')
+                            // 记录执行操作
+                            indexJs.refrashHistoryZtree('【' + executeSQLObj.name + '】节点执行完毕')
+                            // 自动保存图形化
+                            indexJs.autoSaveGraph()
                             $this.layuiTabClickLi(0)
                             $this.loading.destroy()
                             $this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false,'hasTime':true })
@@ -749,8 +763,11 @@
                     if(executeTaskObj.resultType === 'select'){//展示节点结果集数据
                         $this.loading.destroy()
                         if(executeSQLObj.customParam[0] === $this.websocketBatchId){//展示当前操作的结果集
-                            console.log($this)
-                            $this.$refs.childTabsRef[0].loadTableData(dataObj)
+                            console.log($this.$refs.childTabsRef)
+                            console.log($this.$refs.childTabsRef.length)
+                            $this.$nextTick( () => {
+                                $this.$refs.childTabsRef[0].loadTableData(dataObj)
+                            })
                         }
                     }
                 }
@@ -837,7 +854,7 @@
                 indexJs.searchZtree()
             },
             viewData() {
-                viewNodeData({nodeObjs:JSON.stringify(this.resultTableArr),openType:this.openType}).then()
+                viewNodeData({nodeObjs:JSON.stringify(this.resultTableArr),openType:this.openType,websocketBatchId:this.websocketBatchId}).then()
             },
             relationTableQuery() {
 
