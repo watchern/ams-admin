@@ -791,10 +791,10 @@ export default {
             arr.push(JSON.parse(resp.data[i]));
           }
           selectModel(this.value).then((resp) => {
-            debugger
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-            const obj = { sqls: sql };
+            const obj = { sqls: sql,businessField:'modelresultdetail' };
             startExecuteSql(obj).then((resp) => {
+              debugger
               if (!resp.data.isError) {
                 this.currentExecuteSQL = resp.data.executeSQLList;
               } else {
@@ -825,8 +825,9 @@ export default {
           }
         }
         sql = sql + filterSql;
-        const obj = { sqls: sql };
+        const obj = { sqls: sql,businessField:'modelresultdetail' };
         startExecuteSql(obj).then((resp) => {
+           debugger
           if (!resp.data.isError) {
             this.currentExecuteSQL = resp.data.executeSQLList;
           } else {
@@ -869,7 +870,7 @@ export default {
 /*      const webSocketPath =
         "ws://localhost:8086/analysis/websocket?" +
         this.$store.getters.personuuid;*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid;
+      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid+'modelresultdetail';
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接

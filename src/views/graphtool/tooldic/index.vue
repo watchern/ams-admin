@@ -404,8 +404,8 @@
         methods: {
             init() {
                 // console.log(this.$store.getters)
-                this.loginUserUuid = this.$store.getters.personuuid
-                // this.loginUserUuid = '2c91808573e740e001744d54e2800006'
+              //this.loginUserUuid = this.$store.getters.personuuid
+                 this.loginUserUuid = '2c91808573e740e001744d54e2800006'
                 let roleArr = this.$store.getters.roles
                 let screenManager = 'screenManager'// 场景查询管理员角色
                 if (roleArr.includes(screenManager)) {
