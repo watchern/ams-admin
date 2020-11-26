@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const baseURL = '/amsbase'
+const baseURL = '/base'
 const controllerName = 'zhBaseDataSortInfo'
 
 export function listByPage(data) {

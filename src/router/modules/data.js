@@ -10,7 +10,7 @@ const dataRouter = {
     {
       path: 'bizattr',
       name: '业务属性',
-      component: () => import('@/views/data/bizattr/index1')
+      component: () => import('@/views/data/bizattr/index')
     }, {
       path: 'table',
       name: '表注册',

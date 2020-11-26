@@ -167,7 +167,7 @@ export default {
   },
   created() {
     this.tree1Loading = true
-    getResELTree().then(resp => {
+    getResELTree({ dataUserId: 'master', sceneCode: '' }).then(resp => {
       this.treeData1 = resp.data
       this.tree1Loading = false
     })

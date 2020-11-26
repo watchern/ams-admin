@@ -21,11 +21,6 @@ export default {
       }).catch(e => {
         reject(e)
       })
-      // io.post('datasources/create', payload, res => {
-      //   resolve(res)
-      // }).catch(e => {
-      //   reject(e)
-      // })
     })
   },
   /**
@@ -39,11 +34,6 @@ export default {
       }).catch(e => {
         reject(e)
       })
-      // io.post('datasources/connect', payload, res => {
-      //   resolve(res)
-      // }).catch(e => {
-      //   reject(e)
-      // })
     })
   },
   /**

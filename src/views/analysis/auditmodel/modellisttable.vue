@@ -24,7 +24,7 @@
           </el-col>
         </el-row>
         <el-table :key="tableKey" style="height: 450px;overflow-y: scroll" ref="modelListTable" v-loading="listLoading"
-                  :data="list" border fit highlight-current-row @select="modelTableSelectEvent">
+                  :data="list" border fit highlight-current-row @select="modelTableSelectEvent" @select-all="modelTableSelectEvent">
           <el-table-column type="selection" width="55" />
           <el-table-column label="模型名称" width="100px" align="left" prop="modelName">
             <template slot-scope="scope">
@@ -244,7 +244,7 @@ export default {
      */
     getWebSocket() {
       /*const webSocketPath = 'ws://localhost:8086/analysis/websocket?' + this.$store.getters.personuuid*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid;
+      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid+"modellisttable";
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
       // 当服务端打开连接
@@ -717,8 +717,9 @@ export default {
         if (result.code == 0) {
           if(result.data.parammModelRel.length == 0){
             let obj = {
-              sqls:selectObj[0].sqlValue,
-              modelUuid:selectObj[0].modelUuid
+              sqls:result.data.sqlValue,
+              modelUuid:selectObj[0].modelUuid,
+              businessField:'modellisttable'
             }
             startExecuteSql(obj).then((result) => {
               if (!result.data.isError) {
@@ -736,7 +737,7 @@ export default {
               }
               paramObj.push(JSON.parse(result.data.parammModelRel[i].paramValue))
             }
-            this.currentPreviewModelParamAndSql.sqlValue = selectObj[0].sqlValue
+            this.currentPreviewModelParamAndSql.sqlValue = result.data.sqlValue
             this.currentPreviewModelParamAndSql.paramObj = paramObj
             this.currentPreviewModelParamAndSql.modelUuid = selectObj[0].modelUuid
             //展现参数输入界面
@@ -802,6 +803,7 @@ export default {
       }
       obj.sqls = obj.sql
       obj.modelUuid = selectObj[0].modelUuid
+      obj.businessField = 'modellisttable'
       //合并参数 将输入的值替换到当前界面
       this.currentPreviewModelParamAndSql.paramObj = obj.paramsArr
       //this.mergeParamObj(obj.paramsArr)
@@ -844,6 +846,7 @@ export default {
       obj.sqls = obj.sql
       obj.modelUuid = modelUuid
       obj.executeSQLList = this.modelRunTaskList[obj.modelUuid]
+      obj.businessField = 'modellisttable'
       //重置数据展现界面数据
       this.$refs.[modelUuid][0].reSetTable()
       startExecuteSql(obj).then((result) => {

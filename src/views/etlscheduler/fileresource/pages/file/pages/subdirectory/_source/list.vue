@@ -149,7 +149,7 @@ export default {
       }
     },
     _downloadFile(item) {
-      downloadFile('/dolphinscheduler/resources/download', {
+      downloadFile('/etlscheduler/resources/download', {
         id: item.id
       })
     },

@@ -1,7 +1,7 @@
 import io from '@/components/etl/axios/index'
 import cookies from 'js-cookie'
 
-const apiPrefix = '/dolphinscheduler'
+const apiPrefix = '/etlscheduler'
 const reSlashPrefix = /^\/+/
 
 const resolveURL = (url) => {
