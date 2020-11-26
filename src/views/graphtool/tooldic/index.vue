@@ -166,10 +166,10 @@
                     </ul>
                     <!--<button id="viewAllData" class="btn btn-primary" onclick="viewAllData()" style="position: absolute;right: 200px;top: 10px;display:none;">预览全部数据</button>-->
                     <!--<button id="exportAllData" class="btn btn-primary" onclick="exportAllData()" style="position: absolute;right: 100px;top: 10px;display:none;">全部导出</button>-->
-                    <div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;display:none;" onclick="maxOpen()">
-                        <img class="iconImg" src="../tooldic/images/icon/maximize.png" alt="最大化">
-                        <span class="iconText">最大化</span>
-                    </div>
+                    <!--<div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;display:none;" onclick="maxOpen()">-->
+                        <!--<img class="iconImg" src="../tooldic/images/icon/maximize.png" alt="最大化">-->
+                        <!--<span class="iconText">最大化</span>-->
+                    <!--</div>-->
                     <div class="layui-tab-content">
                         <div class="layui-tab-item">
                             <div id="tableArea">

@@ -63,7 +63,7 @@
             <el-col :span="22">
               <paramDraw :ref="item.name + 'param'" :my-id="item.name" />
               <span class="iconfont iconoper-search-2 icon-search" />
-              <el-button type="primary" class="btn-show1" @click="queryModel(item.name)" @click="Toggle1()">查询结果</el-button>
+              <el-button type="primary" class="btn-show1" @click="queryModel(item.name);Toggle1()">查询结果</el-button>
             </el-col>
             <!-- <el-col :span="2">
                 <el-button type="primary" @click="queryModel(item.name)">查询</el-button>
