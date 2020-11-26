@@ -70,7 +70,7 @@
           class="oper-btn export-2"
         ></el-button>
       </downloadExcel>
-      <el-button type="primary" title="图表展示">图表展示</el-button>
+      <el-button type="primary" title="图表展示" class="oper-btn chart"></el-button>
     </el-row>
     <!-- 使用ag-grid-vue组件 其中columnDefs为列，rowData为表格数据 -->
     <ag-grid-vue
