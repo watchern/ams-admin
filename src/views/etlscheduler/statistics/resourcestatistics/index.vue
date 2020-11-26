@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <div class="filter-container query-field">
+    <div class="filter-container">
       <el-form :inline="true">
         <el-form-item label="统计粒度">
           <el-select v-model="granularity">

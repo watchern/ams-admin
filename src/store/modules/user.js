@@ -2,8 +2,6 @@ import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 import { cacheDict } from '@/api/base/sys-dict'
-import Cookies from 'js-cookie'
-
 
 const state = {
   token: getToken(),
@@ -93,8 +91,6 @@ const actions = {
         commit('SET_AVATAR', avatar)
         commit('SET_INTRODUCTION', introduction)
         commit('SET_CODE', personcode)
-        Cookies.set("personuuid", id);
-        Cookies.set("personcode", personcode);
         resolve(data)
       }).catch(error => {
         reject(error)

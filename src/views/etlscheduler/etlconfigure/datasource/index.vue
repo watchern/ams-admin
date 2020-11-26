@@ -82,25 +82,8 @@
         prop="connectionParams"
       >
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top" width="600">
-            <!-- <p>{{ scope.row.connectionParams }}</p> -->
-            <el-row>
-              <label class="col-md-4">
-                jdbc url:
-              </label>
-              <div class="col-md-8">
-                {{ JSON.parse(scope.row.connectionParams).jdbcUrl }}
-              </div>
-            </el-row>
-            <el-row>
-              <label class="col-md-4">
-                用户名:
-              </label>
-              <div class="col-md-8">
-                {{ JSON.parse(scope.row.connectionParams).user }}
-              </div>
-            </el-row>
-
+          <el-popover trigger="hover" placement="top">
+            <p>{{ scope.row.connectionParams }}</p>
             <div slot="reference" class="name-wrapper">
               <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
@@ -137,7 +120,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { pageList, deleteByIds } from '@/api/etlscheduler/datasource'
+import { pageList, save, update, deleteByIds } from '@/api/etlscheduler/datasource'
 import QueryField from '@/components/Ace/query-field/index'
 
 import { mapActions } from 'vuex'
@@ -189,11 +172,11 @@ export default {
         }
       },
       pageQuery: {
-        condition: {},
+        condition: null,
         pageNo: 1,
         pageSize: 20,
-        sortBy: 'desc',
-        sortName: 'updateTime'
+        sortBy: 'asc',
+        sortName: 'create_time'
       },
       temp: {
         name: null,

@@ -656,7 +656,6 @@ export function initParamHtml_Common(paramObj, selectNum, selectTreeNum) {
         if (paramSql !== '') {
           hasSql = true // 下拉列表是SQL方式
           if (typeof paramObj.defaultVal !== 'undefined') { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据  当时写的时候有sql和没sql是分开的
-            debugger
             executeParamSql(paramObj.paramChoice.optionsSql).then(e => {
               if (e.data.isError) {
                 obj.isError = true
@@ -708,7 +707,7 @@ export function initParamHtml_Common(paramObj, selectNum, selectTreeNum) {
       }
       var divId = 'selectParam' + (typeof selectNum !== 'undefined' ? selectNum : paramObj.ammParamUuid)
       obj.htmlContent += "<div id='" + divId + "' title='" + title + "'  data-id='" + paramObj.ammParamUuid + "' data-name='" + paramObj.paramName + "' data-choiceType='" + paramObj.paramChoice.choiceType + "'" +
-        (hasSql ? " data-sql='" + paramSql + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
+        (hasSql ? " data-sql='" + strEncryption(paramSql) + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
         (typeof paramObj.defaultVal !== 'undefined' ? " data-defaultVal='" + JSON.stringify(paramObj.defaultVal) + "' " : '') +
         (dataArr.length > 0 ? " data='" + JSON.stringify(dataArr) + "' " : '') +
         (typeof paramObj.paramChoice.allowedNull !== 'undefined' ? " data-allowedNull='" + paramObj.paramChoice.allowedNull + "' " : '') +
@@ -785,7 +784,7 @@ export function initParamHtml_Common(paramObj, selectNum, selectTreeNum) {
       var divId = 'selectTreeParam' + (typeof selectTreeNum !== 'undefined' ? selectTreeNum : paramObj.ammParamUuid)
       obj.htmlContent += "<div id='" + divId + "' title='" + title + "'  data-id='" + paramObj.ammParamUuid + "' data-name='" + paramObj.paramName + "' data-choiceType='" + paramObj.paramChoice.choiceType + "' " +
         (typeof paramObj.paramChoice.allowedNull !== 'undefined' ? " data-allowedNull='" + paramObj.paramChoice.allowedNull + "' " : '') +
-        (paramSql !== '' ? " data-sql='" + paramSql + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
+        (paramSql !== '' ? " data-sql='" + strEncryption(paramSql) + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
         (typeof paramObj.defaultVal !== 'undefined' ? " data-defaultVal='" + JSON.stringify(paramObj.defaultVal) + "' data='" + JSON.stringify(dataArr) + "' " : '') +
         " class='xm-select-demo selectTreeParam paramTr' style='" + divWidth + "display: inline-block;'></div>"
       if (typeof selectTreeNum !== 'undefined') {
@@ -887,7 +886,7 @@ export function initCrossrangeParamHtml_Common(paramObj, selectNum, selectTreeNu
       }
       var divId = 'selectParam' + (typeof selectNum !== 'undefined' ? selectNum : paramObj.ammParamUuid)
       obj.htmlContent += "<div id='" + divId + "' title='" + title + "'  data-id='" + paramObj.ammParamUuid + "' data-name='" + paramObj.paramName + "' data-choiceType='" + paramObj.paramChoice.choiceType + "'" +
-        (hasSql ? " data-sql='" + paramSql + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
+        (hasSql ? " data-sql='" + strEncryption(paramSql) + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
         (typeof paramObj.defaultVal !== 'undefined' ? " data-defaultVal='" + JSON.stringify(paramObj.defaultVal) + "' " : '') +
         (dataArr.length > 0 ? " data='" + JSON.stringify(dataArr) + "' " : '') +
         (typeof paramObj.paramChoice.allowedNull !== 'undefined' ? " data-allowedNull='" + paramObj.paramChoice.allowedNull + "' " : '') +
@@ -964,7 +963,7 @@ export function initCrossrangeParamHtml_Common(paramObj, selectNum, selectTreeNu
       var divId = 'selectTreeParam' + (typeof selectTreeNum !== 'undefined' ? selectTreeNum : paramObj.ammParamUuid)
       obj.htmlContent += "<div id='" + divId + "' title='" + title + "'  data-id='" + paramObj.ammParamUuid + "' data-name='" + paramObj.paramName + "' data-choiceType='" + paramObj.paramChoice.choiceType + "' " +
         (typeof paramObj.paramChoice.allowedNull !== 'undefined' ? " data-allowedNull='" + paramObj.paramChoice.allowedNull + "' " : '') +
-        (paramSql !== '' ? " data-sql='" + paramSql + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
+        (paramSql !== '' ? " data-sql='" + strEncryption(paramSql) + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
         (typeof paramObj.defaultVal !== 'undefined' ? " data-defaultVal='" + JSON.stringify(paramObj.defaultVal) + "' data='" + JSON.stringify(dataArr) + "' " : '') +
         " class='xm-select-demo selectTreeParam paramTr' style='" + divWidth + "display: inline-block;'></div>"
       if (typeof selectTreeNum !== 'undefined') {
@@ -1021,7 +1020,7 @@ function initParamInputAndSelect() {
       var choiceType = $(this).attr('data-choiceType') // 下拉列表的数据是单选还是多选
       var moduleParamId = $(this).attr('data-id') // 母参数ID
       var paramName = $(this).attr('data-name') // 母参数名称
-      var sql = typeof $(this).attr('data-sql') !== 'undefined' ? $(this).attr('data-sql') : '' // 该参数是否有SQL语句（0否1是）
+      var sql = typeof $(this).attr('data-sql') !== 'undefined' ? strDecryption($(this).attr('data-sql')) : '' // 该参数是否有SQL语句（0否1是）
       var dataArr = typeof $(this).attr('data') !== 'undefined' ? JSON.parse($(this).attr('data')) : [] // 下拉列表数据
       var initDataArr = false // 是否初始化数据
       var selectSetting = {
@@ -1071,7 +1070,7 @@ function initParamInputAndSelect() {
       var choiceType = $(this).attr('data-choiceType') // 下拉树的数据是单选还是多选
       var moduleParamId = $(this).attr('data-id') // 母参数ID
       var paramName = $(this).attr('data-name') // 母参数名称
-      var sql = typeof $(this).attr('data-sql') !== 'undefined' ? $(this).attr('data-sql') : '' // 该参数是否有SQL语句（0否1是）
+      var sql = typeof $(this).attr('data-sql') !== 'undefined' ? strDecryption($(this).attr('data-sql')) : '' // 该参数是否有SQL语句（0否1是）
       var dataArr = typeof $(this).attr('data') !== 'undefined' ? JSON.parse($(this).attr('data')) : [] // 下拉树数据
       var initDataArr = false // 是否初始化数据
       var selectSetting = {
@@ -1246,7 +1245,7 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
       }
     })
     var selectXs = xmSelect.get(idStr + paramId, true) // 获取当前下拉框的实体对象
-    var oldSqlWhereStr = typeof $(idStr + paramId).attr('data-sqlWhereStr') !== 'undefined' ? $(idStr + paramId).attr('data-sqlWhereStr') : ''
+    var oldSqlWhereStr = typeof $(idStr + paramId).attr('data-sqlWhereStr') !== 'undefined' ? strDecryption($(idStr + paramId).attr('data-sqlWhereStr')) : ''
     var url = ''
     if (idStr === '#selectParam') { // 下拉列表
       if (sqlWhereStr !== '') {
@@ -1277,7 +1276,7 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
                 data: newDataArr
                 // autoRow: true,
               })
-              $(idStr + paramId).attr('data-sqlWhereStr', sqlWhereStr)
+              $(idStr + paramId).attr('data-sqlWhereStr', strEncryption(sqlWhereStr))
             }
           })
         } else {
@@ -1344,7 +1343,7 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
                 data: newDataArr
                 // autoRow: true,
               })
-              $(idStr + paramId).attr('data-sqlWhereStr', sqlWhereStr)
+              $(idStr + paramId).attr('data-sqlWhereStr', strEncryption(sqlWhereStr))
             }
           })
         } else {
@@ -2199,7 +2198,7 @@ export function initParam(canEditor) {
       var choiceType = $(this).attr('data-choiceType') // 下拉列表的数据是单选还是多选
       var moduleParamId = $(this).attr('data-id') // 母参ID
       var paramName = $(this).attr('data-name') // 母参数名称
-      var sql = typeof $(this).attr('data-sql') !== 'undefined' ? $(this).attr('data-sql') : '' // 该参数是否有SQL语句（0否1是）
+      var sql = typeof $(this).attr('data-sql') !== 'undefined' ? strDecryption($(this).attr('data-sql')) : '' // 该参数是否有SQL语句（0否1是）
       var dataArr = typeof $(this).attr('data') !== 'undefined' ? JSON.parse($(this).attr('data')) : [] // 下拉列表数据
       var initDataArr = false // 是否初始化数据
       var selectSetting = {
@@ -2256,7 +2255,7 @@ export function initParam(canEditor) {
       var choiceType = $(this).attr('data-choiceType') // 下拉树的数据是单选还是多选
       var moduleParamId = $(this).attr('data-id') // 母参ID
       var paramName = $(this).attr('data-name') // 母参数名称
-      var sql = typeof $(this).attr('data-sql') !== 'undefined' ? $(this).attr('data-sql') : '' // 该参数是否有SQL语句（0否1是）
+      var sql = typeof $(this).attr('data-sql') !== 'undefined' ? strDecryption($(this).attr('data-sql')) : '' // 该参数是否有SQL语句（0否1是）
       var dataArr = typeof $(this).attr('data') !== 'undefined' ? JSON.parse($(this).attr('data')) : [] // 下拉树数据
       var initDataArr = false // 是否初始化数据
       var selectSetting = {
@@ -2357,7 +2356,29 @@ export function initParam(canEditor) {
   }
 }
 
+// 加密的key
+var enctyptionKey = 'icsshxyhprojects'
+// 加密字符串
+function strEncryption(str) {
+  str = encodeURIComponent(str)
+  var key = CryptoJS.enc.Utf8.parse(enctyptionKey)
+  var srcs = CryptoJS.enc.Utf8.parse(str)
+  var encryptStr = CryptoJS.AES.encrypt(srcs, key, {
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.Pkcs7
+  })
+  return encryptStr.toString()
+}
 
+// 解密字符串
+function strDecryption(str) {
+  var key = CryptoJS.enc.Utf8.parse(enctyptionKey)
+  var decryptStr = CryptoJS.AES.decrypt(str, key, {
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.Pkcs7
+  })
+  return decodeURIComponent(CryptoJS.enc.Utf8.stringify(decryptStr).toString())
+}
 
 /**
  * 获取所有母版参数集合以及模型用到的参数集合
@@ -2379,7 +2400,7 @@ async function executeParamSql(data) {
     baseURL: analysisUrl,
     url: '/paramController/executeParamSql',
     method: 'post',
-    params:{sql:data}
+    data
   })
 }
 

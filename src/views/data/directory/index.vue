@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="tree">
-      <dataTree ref="dataTree" :data-user-id="dataUserId" :scene-code="sceneCode" @node-click="nodeclick" />
+      <dataTree v-if="personcode!==''" ref="dataTree" :data-user-id="personcode" :scene-code="sceneCode" @node-click="nodeclick" />
     </div>
     <div class="divContent">
       <BaseDirectoryList ref="listData" @append-node="appendnode" @refresh="refresh" />
@@ -12,12 +12,21 @@
 <script>
 import dataTree from '@/views/data/role-res/data-tree'
 import BaseDirectoryList from '@/views/data/directory/directorylist'
+import { mapState } from 'vuex'
 
 export default {
+  computed: {
+    // 因为时序问题，store中没有personcode时组件可能被加载 导致dataUserId==''  所以要加personcode!=='' 控制
+    // eslint-disable-next-line no-undef
+    ...mapState({
+      personcode: state => state.user.code
+    })
+  },
+  // eslint-disable-next-line vue/order-in-components
   components: { dataTree, BaseDirectoryList },
+  // eslint-disable-next-line vue/order-in-components
   data() {
     return {
-      dataUserId: this.$store.getters.personcode,
       sceneCode: 'auditor'
     }
   },

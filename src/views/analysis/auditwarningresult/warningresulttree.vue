@@ -59,7 +59,6 @@ export default {
      */
     handleNodeClick(data) {
       if (data.pid != "NULL") {
-        console.log(data.id)
         this.$emit("clickChangeTable", data.id);
       }
     },
@@ -87,6 +86,7 @@ export default {
     },
     remove(data) {
       this.openIsDelete(data)
+      this.$emit('getLikeList')
     },
     openIsDelete(data) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
@@ -102,7 +102,6 @@ export default {
                 type: "success",
                 message: "删除成功!",
               });
-              this.$emit('getLikeList')
             }else{
               this.$message({ type: 'info', message: '删除失败!' })
             }

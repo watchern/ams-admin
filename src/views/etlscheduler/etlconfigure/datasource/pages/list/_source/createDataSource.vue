@@ -145,19 +145,18 @@
     </div>
     <div class="bottom-p">
       <x-button
-        type="primary"
-        class="btnclass"
+        type="text"
         @click="_close()"
       > 取消</x-button>
       <x-button
         type="success"
-        class="btnclass"
+        shape="circle"
         :loading="testLoading"
         @click="_testConnect()"
       >测试连接</x-button>
       <x-button
         type="primary"
-        class="btnclass"
+        shape="circle"
         :loading="spinnerLoading"
         @click="_ok()"
       >保存</x-button>
@@ -411,6 +410,7 @@ export default {
         this.host = res.data.host
 
         // When in Editpage, Prevent default value overwrite backfill value  在编辑页中，防止默认值覆盖回填值
+        const that = this
         setTimeout(() => {
           this.port = res.data.port
         }, 0)
@@ -502,23 +502,6 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
-.btnclass{
-  background: #353a43;
-  border-color: #353a43;
-  font-weight: bold;
-  margin-right: 10px;
-}
-.btnclass:hover{
-  background: #353a43;
-  border-color: #353a43;
-  color: #c8ff8c;
-  font-weight: bold;
-}
-.ans-btn-primary[disabled],.ans-btn-primary[disabled]:hover {
-	color: #fff;
-	background-color: #c6cfd6;
-	border-color: #c6cfd6;
-}
 .datasource-popup-model {
   background: #fff;
   border-radius: 3px;

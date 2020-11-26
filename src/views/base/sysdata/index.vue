@@ -130,7 +130,7 @@
 </template>
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, save, update, del, inItCode, saveSecond, updateSecond, delSecond } from '@/api/base/sysData'
+import { listByPage, save, update, del, inItCode, saveSecond, updateSecond, delSecond } from '@/api/base/sysdata'
 import QueryField from '@/components/Ace/query-field/index'
 export default {
   components: { Pagination, QueryField },
