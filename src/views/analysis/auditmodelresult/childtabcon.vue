@@ -26,7 +26,8 @@
         style="display: none"
         :disabled="modelRunResultBtnIson.chartDisplayBtn"
         type="primary"
-        >图表展示</el-button
+        class="oper-btn chart"
+        ></el-button
       >
       <el-button
         style="display: none"
@@ -69,7 +70,7 @@
           class="oper-btn export-2"
         ></el-button>
       </downloadExcel>
-      <el-button type="primary" title="图表展示">图表展示</el-button>
+      <el-button type="primary" title="图表展示" class="oper-btn chart"></el-button>
     </el-row>
     <!-- 使用ag-grid-vue组件 其中columnDefs为列，rowData为表格数据 -->
     <ag-grid-vue
@@ -478,12 +479,6 @@ export default {
           }
           // 生成ag-grid列信息
           if (this.modelUuid != undefined) {
-              var rowColom = {
-                        headerName: 'onlyuuid',
-                        field: 'onlyuuid',
-                        checkboxSelection: true
-                      }
-           col.push(rowColom)
             for (var i = 0; i < colNames.length; i++) {
               loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
                 if (
@@ -494,7 +489,8 @@ export default {
                     if (i == 0) {
                       var rowColom = {
                         headerName: this.modelOutputColumn[j].columnAlias,
-                        field: colNames[i]
+                        field: colNames[i],
+                        checkboxSelection: true,
                       };
                     } else {
                       var rowColom = {
@@ -651,7 +647,7 @@ export default {
           for (var i = 0; i < this.conditionShowData[0].length; i++) {
             for (var j = 0; j < this.conditionShowData[0][i].length; j++) {
               if (
-                params.data[this.primaryKey.toLowerCase()] == this.conditionShowData[0][i][j]
+                params.data[this.primaryKey] == this.conditionShowData[0][i][j]
               ) {
                 this.isLoading = false;
                 return {
@@ -791,8 +787,9 @@ export default {
             arr.push(JSON.parse(resp.data[i]));
           }
           selectModel(this.value).then((resp) => {
+            debugger
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-            const obj = { sqls: sql,businessField:'modelresultdetail' };
+            const obj = { sqls: sql };
             startExecuteSql(obj).then((resp) => {
               if (!resp.data.isError) {
                 this.currentExecuteSQL = resp.data.executeSQLList;
@@ -824,7 +821,7 @@ export default {
           }
         }
         sql = sql + filterSql;
-        const obj = { sqls: sql,businessField:'modelresultdetail' };
+        const obj = { sqls: sql };
         startExecuteSql(obj).then((resp) => {
           if (!resp.data.isError) {
             this.currentExecuteSQL = resp.data.executeSQLList;
@@ -868,7 +865,7 @@ export default {
 /*      const webSocketPath =
         "ws://localhost:8086/analysis/websocket?" +
         this.$store.getters.personuuid;*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid+'modelresultdetail';
+      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid;
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接

@@ -64,7 +64,7 @@ export default {
     i18n: '国际化',
     externalLink: '外链',
     profile: '个人中心',
-    'etlscheduler': 'ETL调度',
+    etlscheduler: 'ETL调度',
     'datasource': '数据源管理',
     'paramfield': '参数管理',
     'dataresource': '数据资源管理',

@@ -16,14 +16,14 @@
           <el-table :data="temp.colMetas" height="200">
             <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
               <template slot-scope="scope" show-overflow-tooltip>
-                <el-tooltip :disabled="scope.row.colName.length < 12" effect="dark" :content="scope.row.colName" placement="top">
+                <el-tooltip effect="dark" :content="scope.row.colName" placement="top">
                   <el-input v-model="scope.row.colName" style="width:90%;" />
                 </el-tooltip>
               </template>
             </el-table-column>
             <el-table-column prop="chnName" label="汉化名称" show-overflow-tooltip>
               <template slot-scope="scope">
-                <el-tooltip :disabled="scope.row.chnName.length < 10" effect="dark" :content="scope.row.chnName" placement="top">
+                <el-tooltip effect="dark" :content="scope.row.chnName" placement="top">
                   <el-input v-model="scope.row.chnName" style="width:90%;" />
                 </el-tooltip>
               </template>
@@ -101,10 +101,12 @@ export default {
   methods: {
     initTable(tableId) {
       listByPage(this.pageQuery).then(resp => {
+        console.log(resp.data)
         this.bizJson = resp.data.records
       })
       this.isShow = true
       getTableCol(tableId).then(resp => {
+        console.log(resp.data)
         this.temp.colMetas = resp.data
       })
       getTableInfo(tableId).then(resp => {

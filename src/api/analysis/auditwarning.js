@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 const analysisUrl = '/analysis'
-const dataUrl = '/data'
+const dataUrl = '/amsdata'
+
 
 /**
 * 查询审计预警列表

@@ -189,11 +189,11 @@ export default {
         }
       ],
       pageQuery: {
-        condition: {},
+        condition: null,
         pageNo: 1,
         pageSize: 20,
-        sortBy: 'desc',
-        sortName: 'updateTime'
+        sortBy: 'asc',
+        sortName: 'create_time'
       },
       temp: {
         directoryType: null,

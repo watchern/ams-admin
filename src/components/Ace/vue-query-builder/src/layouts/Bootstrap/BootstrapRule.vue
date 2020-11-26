@@ -159,6 +159,22 @@
         </optgroup>
       </select>
 
+      <!-- 添加输入框加下拉框 -->
+      <el-autocomplete
+        v-if="rule.inputType === 'inputselect'"
+        ref="input"
+        class="inline-input"
+        v-model="query.value"
+        :fetch-suggestions="querySearch"
+        placeholder="请输入内容"
+      >
+        <i
+          class="el-icon-arrow-down el-input__icon"
+          slot="suffix"
+          @click="handleIconClick"
+        ></i>
+      </el-autocomplete>
+
       <!-- Remove rule button -->
       <button
         type="button"

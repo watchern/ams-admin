@@ -150,7 +150,8 @@
                 placeholder="请输入执行时间">
               </el-time-picker>
             </el-form-item>
-            <el-form-item label="开始结束日期"  >
+            <!--暂时去掉开始和结束时间-->
+            <el-form-item label="开始结束日期" v-show="false" >
               <el-date-picker
                 :picker-options="executeTimeOptions"
                 v-model="temp.intervalExecuteTime.rangeTime"
@@ -229,7 +230,7 @@ export default {
           //周期执行的执行时间
           executeTime : '',
           //周期的起始时间，用于绑定日期选择
-          rangeTime:'',
+          rangeTime:[new Date(),new Date()],
           //周期执行的开始时间
           startTime : '',
           //周期执行的结束时间
@@ -380,12 +381,19 @@ export default {
       if(this.auditWarningSave.warningType == "1"){
         //组织模型列表
         for(let taskRef of this.auditWarningSave.warningTaskRel){
+
           if(!taskRef.settingInfo){
             continue
           }
-          //有参数配置信息则转换为json对象
-          taskRef.paramObj = JSON.parse(taskRef.settingInfo)
+          let settingInfo = JSON.parse(taskRef.settingInfo)
+          taskRef.sqlValue = settingInfo.sql
           taskRef.modelUuid = taskRef.sourceUuid
+          if(!settingInfo.paramsArr){
+            this.temp.modelList.push(taskRef)
+            continue
+          }
+          //有参数配置信息则转换为json对象
+          taskRef.paramObj = settingInfo.paramsArr
           this.temp.modelList.push(taskRef)
         }
 
@@ -496,7 +504,8 @@ export default {
             auditWarningUuid : this.auditWarningSave.auditWarningUuid,
             sourceUuid : model.modelUuid,
             //模型版本号
-            modelVersion : model.modelVersion
+            modelVersion : model.modelVersion,
+            settingInfo : JSON.stringify({sql:model.sqlValue})
           }
           //没参数直接添加
           if(!model.paramObj || model.paramObj.length == 0){
@@ -526,7 +535,7 @@ export default {
           }
         }
       }
-      return model.paramObj
+      return {sql:param.sql,paramsArr:model.paramObj}
     },
 
     //删除模型

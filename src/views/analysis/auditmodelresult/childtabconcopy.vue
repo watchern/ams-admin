@@ -15,8 +15,8 @@
       </span>
     </el-dialog>
     <el-row v-if="myFlag">
-      <el-button type="primary" @click="exportExcel">导出</el-button>
-      <el-button type="primary">图表展示</el-button>
+      <el-button type="primary" @click="exportExcel" class="oper-btn export-2"></el-button>
+      <el-button type="primary" class="oper-btn chart"></el-button>
       <el-button type="primary" @click="getValues">关联项目</el-button>
       <el-button
         type="primary"
@@ -39,9 +39,9 @@
     <el-row v-if="modelResultButtonIsShow" style="display: flex">
       <!-- 2.1前台导出，双向绑定数据 -->
       <downloadExcel :data="tableData" :fields="json_fields" :name="excelName">
-        <el-button type="primary" @click="modelResultExport">导出</el-button>
+        <el-button type="primary" @click="modelResultExport" class="oper-btn export-2"></el-button>
       </downloadExcel>
-      <el-button type="primary" title="图表展示">图表展示</el-button>
+      <el-button type="primary" title="图表展示" class="oper-btn chart"></el-button>
     </el-row>
     <!-- 使用ag-grid-vue组件 其中columnDefs为列，rowData为表格数据 -->
     <ag-grid-vue
@@ -161,6 +161,15 @@ export default {
     myQueryBuilder,
     childtabscopy,
     downloadExcel: JsonExcel,
+  },
+  watch: {
+    modelDetailModelResultDialogIsShow(value) {
+      this.$nextTick(function () {
+        if (value) {
+          this.initWebSocket();
+        }
+      });
+    },
   },
   /**
    * 模型运行结果使用变量：nowtable：表示模型结果表对象   modelUuid：根据modelUUid进行表格渲染，只有主表用渲染  useType=modelRunResult 表示是模型运行结果所用
@@ -723,7 +732,42 @@ export default {
     },
     reSet() {
       this.isLoading = true;
-    }
+    },
+    /**
+     *初始化webSocket
+     */
+    initWebSocket() {
+      this.webSocket = this.getWebSocket();
+    },
+    /**
+     *
+     * 使用说明：
+     * 1、WebSocket客户端通过回调函数来接收服务端消息。例如：webSocket.onmessage
+     * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
+     */
+    getWebSocket() {
+/*      const webSocketPath =
+        "ws://localhost:8086/analysis/websocket?" +
+        this.$store.getters.personuuid;*/
+      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid;
+      // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
+      this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
+      // 当服务端打开连接
+      this.webSocket.onopen = function (event) {};
+      // 发送消息
+      this.webSocket.onmessage = function (event) {
+        const dataObj = JSON.parse(event.data);
+        func1(dataObj);
+      };
+      const func2 = function func3(val) {
+        this.$refs.childTabsRef.loadTableData(val);
+      };
+      const func1 = func2.bind(this);
+      this.webSocket.onclose = function (event) {};
+
+      // 通信失败
+      this.webSocket.onerror = function (event) {};
+    },
   },
 };
 </script>

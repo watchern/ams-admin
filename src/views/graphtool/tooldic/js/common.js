@@ -779,8 +779,16 @@ function executeNode_callback(notExecuteNodeIdArr) {
         if(response.data != null){
             // $('#sysInfoArea').html(response.data.message)
             if(response.data.isError){
+                $('#sysInfoArea').append("<p style='color:red'>节点执行失败！\n错误信息："+ response.data.message +"</p>");
+                graphIndexVue.layuiTabClickLi(1)
+                // 更改执行状态图标为未执行
+                for (var j = 0; j < notExecuteNodeIdArr.length; j++) {
+                    graph.nodeData[notExecuteNodeIdArr[j]].nodeInfo.nodeExcuteStatus = 2
+                    changeNodeIcon(1, null, notExecuteNodeIdArr[j])
+                }
                 // 循环所有节点变更执行状态有变化的节点执行状态信息
-                nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
+                // nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
+                autoSaveGraph()
             }
         }else{
             $('#sysInfoArea').html("请求失败！")
@@ -1230,7 +1238,7 @@ export function lightHeight(curCellId) {
     var cells = graph.highLight
     if (cells && cells.length > 0) {
         for (var k = 0; k < cells.length; k++) {
-            if (cells[k].edge === 1) {
+            if (cells[k].edge) {
                 var h = new mxCellHighlight(graph, '#3e6f96', 2)
                 h.highlight(graph.view.getState(cells[k]))
             }
@@ -1247,7 +1255,7 @@ export function lightHeight(curCellId) {
     var parent = graph.getDefaultParent()
     var parentChildren = parent.children
     for (var i = 0; i < parentChildren.length; i++) {
-        if (parentChildren[i].edge === 1 && parentChildren[i].target && parentChildren[i].target.id === curCellId) {
+        if (parentChildren[i].edge && parentChildren[i].target && parentChildren[i].target.id === curCellId) {
             graph.highLight.push(parentChildren[i])// 获取线
             graph.highLight.push(parentChildren[i].source)// 获取节点
         }
@@ -1419,7 +1427,7 @@ function viewData(tableName, optType, connGraph, viewAllData) {
                     switch (optType) {
                         case 'comparison':							// 频次分析
                             if (res.columnInfo && res.columnInfo.columnList) {
-                                columnInfo = res.columnInfo.columnList
+                                let columnInfo = res.columnInfo.columnList
                                 for (var i = 0; i < columnInfo.length; i++) {
                                     var obj = {
                                         'data': columnInfo[i].columnName,
@@ -1534,11 +1542,11 @@ function showTableDetail(dataTableName, cVal) {
  * */
 export function reName() {
     var value = graph.curCell.value
-    var name = graph.curCell.edge === 1 ? '连接线序号' : '节点名称'
+    var name = graph.curCell.edge ? '连接线序号' : '节点名称'
     var html = '<div class="form-group" style="padding-top:35px;">' +
         '<label for="nodeName" class="col-sm-3 control-label" style="text-align:right;">' + name + '</label>' +
         '<div class="col-sm-8">'
-    if (graph.curCell.edge === 1) {
+    if (graph.curCell.edge) {
         html += '<input type="number" class="form-control" id="nodeName" autocomplete="off" placeholder="重命名" step="1"/>'
     } else {
         html += '<input type="text" class="form-control" id="nodeName" autocomplete="off" placeholder="重命名"/>'

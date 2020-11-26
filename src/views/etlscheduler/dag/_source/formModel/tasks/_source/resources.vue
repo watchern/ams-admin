@@ -84,7 +84,6 @@ export default {
   .select-listpp {
     margin-bottom: 6px;
     .lt-add {
-      margin: 2px;
       padding-left: 4px;
       a {
         .iconfont {

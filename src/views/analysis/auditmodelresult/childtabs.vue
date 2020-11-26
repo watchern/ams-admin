@@ -10,7 +10,9 @@
     <el-tab-pane
       v-for="(item, key) in useType=='modelRunResult'?helptables:preValue"
       :key="key"
-      :label="tabsName(key)"
+      :label="
+        useType == 'modelRunResult' ? '辅表' + (key + 1) : '结果' + (key + 1)
+      "
       ><childTabCons ref="child" :nowtable="item" :prePersonalVal="item" :useType="useType" />
     </el-tab-pane>
   </el-tabs>
@@ -41,18 +43,9 @@ export default {
        */
       reSetTable(){
         for(var i = 0;i<this.preValue.length;i++){
-          this.$refs.child[i].reSet()
+          this.$refs.child[i].reSet1()
         }
         this.index = 0
-      },
-      tabsName(key){
-        if(this.useType=='modelRunResult'){
-          return '辅表' + (key + 1)
-        }else if(this.useType=='sqlEditor'){
-            return '结果' + (key + 1)
-        }else if(this.useType=='previewTable'){
-            return '数据详情'
-        }
       }
   },
   /**
