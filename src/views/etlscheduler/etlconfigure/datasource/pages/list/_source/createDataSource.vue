@@ -411,7 +411,6 @@ export default {
         this.host = res.data.host
 
         // When in Editpage, Prevent default value overwrite backfill value  在编辑页中，防止默认值覆盖回填值
-        const that = this
         setTimeout(() => {
           this.port = res.data.port
         }, 0)
