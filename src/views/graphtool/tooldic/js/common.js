@@ -771,18 +771,16 @@ function executeNode_callback(notExecuteNodeIdArr) {
         'websocketBatchId':graphIndexVue.websocketBatchId
         // 'executeType':1//执行本节点
     }
+    $('#sysInfoArea').html('')
     graphIndexVue.executeNodeIdArr = notExecuteNodeIdArr
     graphIndexVue.executeId = executeId
+    graphIndexVue.resultTableArr = []
     executeNodeSql(dataParam).then(response => {
-        $('ul.layui-tab-title li:eq(0)').click()
         if(response.data != null){
             // $('#sysInfoArea').html(response.data.message)
             if(response.data.isError){
                 // 循环所有节点变更执行状态有变化的节点执行状态信息
                 nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
-            }else{
-                graphIndexVue.resultTableArr = []
-                graphIndexVue.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false,'hasTime':true })
             }
         }else{
             $('#sysInfoArea').html("请求失败！")
