@@ -158,7 +158,10 @@ export function importGraphXml(formData) {
         baseURL: baseURL,
         url: '/graphCt/importGraphXml',
         method: 'post',
-        params:formData
+        data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
     })
 }
 

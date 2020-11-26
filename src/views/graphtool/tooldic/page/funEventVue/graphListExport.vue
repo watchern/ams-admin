@@ -5,16 +5,22 @@
         </div>
         <el-table :key="tableKey" ref="graphListTable" v-loading="listLoading" height="500" :data="dataList" border fit highlight-current-row>
             <el-table-column type="selection" width="55" />
-            <el-table-column label="图形名称" align="center" prop="graphName" />
+            <el-table-column label="图形名称" align="left" prop="graphName" >
+                <template slot-scope="scope">
+                    <el-link @click.native.prevent="detail(scope.row.graphUuid)" type="primary">
+                        {{scope.row.graphName}}
+                    </el-link>
+                </template>
+            </el-table-column>
             <el-table-column label="图形类型" align="center" prop="graphType" :formatter="graphTypeFormatter" />
-            <el-table-column label="创建人" prop="createUserName" />
-            <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
-            <el-table-column label="修改人" prop="updateUserName" />
-            <el-table-column label="修改时间" prop="updateTime" :formatter="dateFormatter" />
-            <el-table-column label="执行状态" prop="executeStatus" :formatter="stasusFormatter" />
+            <el-table-column label="创建人" align="center" prop="createUserName" />
+            <el-table-column label="创建时间" align="center" prop="createTime" :formatter="dateFormatter" />
+            <el-table-column label="修改人" align="center" prop="updateUserName" />
+            <el-table-column label="修改时间" align="center" prop="updateTime" :formatter="dateFormatter" />
+            <el-table-column label="执行状态" align="center" prop="executeStatus" :formatter="stasusFormatter" />
         </el-table>
         <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getGraphList" />
-        <el-dialog v-if="initPreviewGraph" :destroy-on-close="true" :append-to-body="true" :visible.sync="initPreviewGraph" title="图形详情信息" width="80%">
+        <el-dialog v-if="initPreviewGraph" :destroy-on-close="true" :append-to-body="true" :visible.sync="initPreviewGraph" title="图形详情信息" width="600px">
             <PreviewGraph :graph-uuid="graphUuid" />
             <div slot="footer">
                 <el-button @click="initPreviewGraph=false">关闭</el-button>
@@ -67,14 +73,9 @@
                     this.listLoading = false
                 })
             },
-            detail() {
-                let selectObj = this.$refs.graphListTable.selection
-                if (selectObj.length !== 1) {
-                    this.$message({ type: 'info', message: '请选择一个图形!' })
-                } else {
-                    this.graphUuid = selectObj[0].graphUuid
-                    this.initPreviewGraph = true
-                }
+            detail(graphUuid) {
+                this.graphUuid = graphUuid
+                this.initPreviewGraph = true
             },
             getChooseGraphs(){
                 let isError = false
@@ -87,6 +88,18 @@
                 } else {
                     let graphObj = this.getUuidsANdNames(selectObj)
                     return {isError,message,graphObj}
+                }
+            },
+            getChooseGraph(){
+                let isError = false
+                let message = ''
+                let selectObj = this.$refs.graphListTable.selection
+                if (selectObj.length !== 1) {
+                    isError = true;
+                    message = '请至少选择一个图形'
+                    return {isError,message}
+                } else {
+                    return {isError,message, ...selectObj[0]}
                 }
             },
             /**
@@ -111,22 +124,14 @@
             },
             graphTypeFormatter(row, column) {
                 let str = ''
-                switch (row.graphType) {
-                    case 'screenGraphType':
+                if(row.graphType === 1){
+                    str = '个人图形'
+                }else if(row.graphType === 3){
+                    if(row.publicType === 1){
                         str = '场景查询图形'
-                        break
-                    case 'personScreenGraphType':
+                    }else{
                         str = '个人场景查询图形'
-                        break
-                    case 'privateGraphType':
-                        str = '个人图形'
-                        break
-                    case 'sharedGraphType':
-                        str = '他人分享图形'
-                        break
-                    case 'shareToGraphType':
-                        str = '我的分享图形'
-                        break
+                    }
                 }
                 return str
             },
@@ -152,14 +157,20 @@
                 if (datetime && datetime.trim().length > 0) {
                     let dateMat = new Date(datetime)
                     let year = dateMat.getFullYear()
-                    let month = dateMat.getMonth() + 1
-                    let day = dateMat.getDate()
-                    let hh = dateMat.getHours()
-                    let mm = dateMat.getMinutes()
-                    let ss = dateMat.getSeconds()
+                    let month = this.convertData(dateMat.getMonth() + 1)
+                    let day = this.convertData(dateMat.getDate())
+                    let hh = this.convertData(dateMat.getHours())
+                    let mm = this.convertData(dateMat.getMinutes())
+                    let ss = this.convertData(dateMat.getSeconds())
                     timeStr = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
                 }
                 return timeStr
+            },
+            convertData(str){
+                if(str < 10){
+                    str = `0${str}`
+                }
+                return str
             }
         }
     }
