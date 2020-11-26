@@ -903,11 +903,13 @@ export default {
       })
     },
     changeParamList() {
-      var map = _.groupby(this.distinctParamList, 'paramCode')
+      var map = _.groupBy(this.distinctParamList, 'paramCode')
       this.paramList.forEach(function(property) {
         property.value = map[property.paramCode].value
         property.param.defaultValue = map[property.paramCode].value
       })
+
+      // 20e6cf4b6420e1b122d946b888056d6e7f756b72
     },
     // 修改
     handleUpdate() {
