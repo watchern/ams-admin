@@ -169,7 +169,7 @@ export default {
     cacheParams() {
       return {
         type: this.type,
-        datasource: this.rtDatasource,
+        datasource: this.datasource,
         udfs: this.udfs,
         sqlType: this.sqlType,
         title: this.title,
@@ -287,7 +287,7 @@ export default {
      */
     _onDsData(o) {
       this.type = o.type
-      this.rtDatasource = o.datasource
+      this.datasource = o.datasource
     },
     /**
      * return pre statements
@@ -358,7 +358,7 @@ export default {
       // storage
       this.$emit('on-params', {
         type: this.type,
-        datasource: this.rtDatasource,
+        datasource: this.datasource,
         sql: editor.getValue(),
         udfs: this.udfs,
         sqlType: this.sqlType,
@@ -438,7 +438,7 @@ export default {
     _cacheParams() {
       this.$emit('on-cache-params', {
         type: this.type,
-        datasource: this.rtDatasource,
+        datasource: this.datasource,
         sql: editor ? editor.getValue() : '',
         udfs: this.udfs,
         sqlType: this.sqlType,
