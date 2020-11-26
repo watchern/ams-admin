@@ -26,7 +26,7 @@
                         <input v-model="item.disColumnName" type="text" class="newColumn form-control sea_text"/>
                     </td>
                     <td class="text-center">
-                        <el-checkbox type="checkbox" v-model="item.checked" :name="item.attrColumnName" :key="item.id" class="outputColumn" @blur="vilidata_simple(index)" @change="checkBoxChange(index)"></el-checkbox>
+                        <el-checkbox v-model="item.checked" :name="item.attrColumnName" :key="item.id" class="outputColumn" @blur="vilidata_simple(index)" @change="checkBoxChange(index)"></el-checkbox>
                         <!--<el-checkbox v-if="item.checked" type="checkbox" v-model="checkOp_ck" :name="item.attrColumnName" class="outputColumn" @blur="vilidata_simple" @change="allchk" style="width: 20px;height: 20px;"></el-checkbox>-->
                         <!--<el-checkbox v-if="!item.checked" type="checkbox" v-model="checkOp" :name="item.attrColumnName" class="outputColumn" @blur="vilidata_simple" @change="allchk" style="width: 20px;height: 20px;"></el-checkbox>-->
                     </td>
