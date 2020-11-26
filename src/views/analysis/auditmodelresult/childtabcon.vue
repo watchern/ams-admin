@@ -181,6 +181,7 @@ import myQueryBuilder from "@/views/analysis/auditmodelresult/myquerybuilder";
 import { string } from "jszip/lib/support";
 import { startExecuteSql } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
+import Cookies from 'js-cookie'
 
 export default {
   name: "childTabCon",
@@ -479,6 +480,12 @@ export default {
           }
           // 生成ag-grid列信息
           if (this.modelUuid != undefined) {
+              var rowColom = {
+                        headerName: 'onlyuuid',
+                        field: 'onlyuuid',
+                        checkboxSelection: true
+                      }
+           col.push(rowColom)
             for (var i = 0; i < colNames.length; i++) {
               loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
                 if (
@@ -489,8 +496,7 @@ export default {
                     if (i == 0) {
                       var rowColom = {
                         headerName: this.modelOutputColumn[j].columnAlias,
-                        field: colNames[i],
-                        checkboxSelection: true,
+                        field: colNames[i]
                       };
                     } else {
                       var rowColom = {
@@ -603,6 +609,78 @@ export default {
           }
           this.isLoading = false;
         }
+      }else if (this.useType == "previewTable"){
+        this.loading = true;
+        this.nextValue = nextValue;
+        var col = [];
+        var rowData = [];
+        if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
+          if (this.nextValue.executeSQL.state == "2") {
+            //todo 增加sql类型判断
+            if (true) {
+              this.modelResultPageIsSee = true;
+              this.modelResultData = this.nextValue.result;
+              this.modelResultColumnNames = this.nextValue.columnNames;
+              for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
+                var rowColom = {
+                  headerName: this.nextValue.columnNames[j],
+                  field: this.nextValue.columnNames[j],
+                  width: "180",
+                };
+                var key = this.nextValue.columnNames[j];
+                var value = this.nextValue.result[j];
+                col.push(rowColom);
+              }
+              for (var k = 0; k < this.nextValue.result.length; k++) {
+                rowData.push(this.nextValue.result[k]);
+              }
+              this.columnDefs = col;
+              this.getList();
+            }
+          } else if (this.nextValue.executeSQL.state == "3") {
+            this.isSee = false;
+            this.modelResultPageIsSee = false;
+            this.modelResultButtonIsShow = false;
+            this.errorMessage = this.nextValue.executeSQL.msg;
+          }
+          this.isLoading = false;
+        }
+      }else if (this.useType == "graph"){
+        this.loading = true;
+        this.nextValue = nextValue;
+        var col = [];
+        var rowData = [];
+        if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
+          if (this.nextValue.executeSQL.state == "2") {
+            //todo 增加sql类型判断
+            if (true) {
+              this.modelResultPageIsSee = true;
+              this.modelResultData = this.nextValue.result;
+              this.modelResultColumnNames = this.nextValue.columnNames;
+              for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
+                var rowColom = {
+                  headerName: this.nextValue.columnNames[j],
+                  field: this.nextValue.columnNames[j],
+                  width: "180",
+                };
+                var key = this.nextValue.columnNames[j];
+                var value = this.nextValue.result[j];
+                col.push(rowColom);
+              }
+              for (var k = 0; k < this.nextValue.result.length; k++) {
+                rowData.push(this.nextValue.result[k]);
+              }
+              this.columnDefs = col;
+              this.getList();
+            }
+          } else if (this.nextValue.executeSQL.state == "3") {
+            this.isSee = false;
+            this.modelResultPageIsSee = false;
+            this.modelResultButtonIsShow = false;
+            this.errorMessage = this.nextValue.executeSQL.msg;
+          }
+          this.isLoading = false;
+        }
       }
     },
     // 点击查询按钮触发事件
@@ -647,7 +725,7 @@ export default {
           for (var i = 0; i < this.conditionShowData[0].length; i++) {
             for (var j = 0; j < this.conditionShowData[0][i].length; j++) {
               if (
-                params.data[this.primaryKey] == this.conditionShowData[0][i][j]
+                params.data[this.primaryKey.toLowerCase()] == this.conditionShowData[0][i][j]
               ) {
                 this.isLoading = false;
                 return {
@@ -787,9 +865,8 @@ export default {
             arr.push(JSON.parse(resp.data[i]));
           }
           selectModel(this.value).then((resp) => {
-            debugger
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-            const obj = { sqls: sql };
+            const obj = { sqls: sql,businessField:'modelresultdetail' };
             startExecuteSql(obj).then((resp) => {
               if (!resp.data.isError) {
                 this.currentExecuteSQL = resp.data.executeSQLList;
@@ -821,7 +898,7 @@ export default {
           }
         }
         sql = sql + filterSql;
-        const obj = { sqls: sql };
+        const obj = { sqls: sql,businessField:'modelresultdetail' };
         startExecuteSql(obj).then((resp) => {
           if (!resp.data.isError) {
             this.currentExecuteSQL = resp.data.executeSQLList;
@@ -865,7 +942,7 @@ export default {
 /*      const webSocketPath =
         "ws://localhost:8086/analysis/websocket?" +
         this.$store.getters.personuuid;*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid;
+      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + Cookies.get("personuuid")+'modelresultdetail';
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接

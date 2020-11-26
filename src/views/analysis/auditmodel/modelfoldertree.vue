@@ -44,6 +44,7 @@
 <script>
 import MyElTree from '@/components/Ace/tree/src/tree.vue'
 import { findModelFolderTree, deleteModelFolder, addModelFolder, updateModelFolder } from '@/api/analysis/auditmodel'
+import Cookies from 'js-cookie'
 export default {
   name: 'ModelFolderTree',
   components: { MyElTree },
@@ -96,7 +97,7 @@ export default {
           } else if (this.publicModel === 'editorModel') {
             // todo 揉入权限信息
             for (let i = 0; i < result.data.length; i++) {
-              if (result.data[i].id == 'gonggong' || result.data[i].id == this.$store.getters.personuuid) {
+              if (result.data[i].id == 'gonggong' || result.data[i].id == Cookies.get("personuuid")) {
                 newData.push(result.data[i])
               }
             }
