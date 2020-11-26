@@ -923,7 +923,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 .el-dropdown{
   margin-left: 10px;
