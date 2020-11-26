@@ -58,7 +58,7 @@ export default {
     return {
       copyColObj: {},
       selections: [],
-      sqlType: [],
+      sqlType: {},
       temp: []
     }
   },

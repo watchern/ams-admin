@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const baseURL = '/amsdata'
+const baseURL = '/data'
 const controllerName = 'directory'
 
 export function copyTable(data) {
