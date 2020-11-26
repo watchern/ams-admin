@@ -210,6 +210,6 @@ export function viewNodeData(data) {
         baseURL: baseURL,
         url: '/graphCt/viewNodeData',
         method: 'post',
-        params:data,
+        data,
     })
 }
