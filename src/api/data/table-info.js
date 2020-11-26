@@ -3,29 +3,29 @@ import request from '@/utils/request'
 
 const baseURL = '/data'
 
+const controller2 = 'tableMeta'
+
 /* 元数据操作*/
-const controller1 = 'warehouse'
-export function listUnCached(level, pid) {
+export function listUnCached(level, schemaName, tableName) {
   return request({
     baseURL: baseURL,
-    url: `/${controller1}/listUnCached`,
+    url: `/${controller2}/listUnCached`,
     method: 'get',
     params: {
       level: level,
-      pid: pid
+      schemaName: schemaName,
+      tableName: tableName
     }
   })
 }
 export function getDataTreeNode(pid) {
   return request({
     baseURL: baseURL,
-    url: `/${controller1}/getDataTreeNode/${pid}`,
+    url: `/${controller2}/getDataTreeNode/${pid}`,
     method: 'get'
   })
 }
-
 /* 缓存数据操作*/
-const controller2 = 'tableMeta'
 export function saveTable(data) {
   return request({
     baseURL: baseURL,

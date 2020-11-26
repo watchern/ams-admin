@@ -164,7 +164,6 @@
                         <li @click="layuiTabClickLi(1)">执行信息</li>
                         <li class="layui-this" @click="layuiTabClickLi(2)">缩略图</li>
                     </ul>
-                    <input id="hideSql" type="hidden">
                     <!--<button id="viewAllData" class="btn btn-primary" onclick="viewAllData()" style="position: absolute;right: 200px;top: 10px;display:none;">预览全部数据</button>-->
                     <!--<button id="exportAllData" class="btn btn-primary" onclick="exportAllData()" style="position: absolute;right: 100px;top: 10px;display:none;">全部导出</button>-->
                     <div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;display:none;" onclick="maxOpen()">
@@ -183,6 +182,23 @@
                         <div class="layui-tab-item layui-show"><div id="outLineArea"></div></div>
                     </div>
                 </div>
+                <!--<el-tabs v-model="activeTabName" @tab-click="layuiTabClickLi">-->
+                    <!--<el-tab-pane label="数据结果集" name="tableArea">-->
+                        <!--<div id="tableArea">-->
+                            <!--<div v-for="result in resultTableArr" id="dataShow" class="data-show">-->
+                                <!--<ChildTabs ref="childTabsRef" :key="result.nodeId"/>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</el-tab-pane>-->
+                    <!--<el-tab-pane label="执行信息" name="sysInfoArea">-->
+                        <!--<div id="sysInfoArea"></div>-->
+                    <!--</el-tab-pane>-->
+                    <!--<el-tab-pane label="缩略图" name="outLineArea">-->
+                        <!--<template>-->
+                            <!--<div id="outLineArea"></div>-->
+                        <!--</template>-->
+                    <!--</el-tab-pane>-->
+                <!--</el-tabs>-->
             </div>
         </div>
         <div id="detailContainer" class="panel-group">
@@ -318,7 +334,6 @@
 </template>
 
 <script>
-    // import { mapState } from 'vuex'
     import Help from '@/views/graphtool/tooldic/page/funEventVue/help.vue'
     import GraphListExport from '@/views/graphtool/tooldic/page/funEventVue/graphListExport.vue'
     import ChildTabs from '@/views/analysis/auditmodelresult/childtabs'
@@ -372,16 +387,10 @@
                 graphFormTitle:'',
                 saveGraphType:'saveGraph',//保存、另存为图形
                 websocketBatchId:'',
-                showGraphListType:''
+                showGraphListType:'',
+                activeTabName:'outLineArea'
             }
         },
-        // computed:{
-        //     ...mapState({
-        //         personcode: state => state.user.code,
-        //         personuuid: state => state.user.personuuid,
-        //         roles: state => state.user.roles
-        //     })
-        // },
         components:{ Help, GraphListExport,ChildTabs },
         created() {
             this.init()
@@ -403,9 +412,8 @@
         },
         methods: {
             init() {
-                // console.log(this.$store.getters)
-                this.loginUserUuid = this.$store.getters.personuuid
-                // this.loginUserUuid = '2c91808573e740e001744d54e2800006'
+                // this.loginUserUuid = this.$store.getters.personuuid
+                this.loginUserUuid = '2c91808573e740e001744d54e2800006'
                 let roleArr = this.$store.getters.roles
                 let screenManager = 'screenManager'// 场景查询管理员角色
                 if (roleArr.includes(screenManager)) {
@@ -687,30 +695,36 @@
                 // 发送消息
                 this.webSocket.onmessage = function(event) {
                     let dataObj = JSON.parse(event.data)//接收到返回结果
-                    let executeTaskObj = dataObj.executeTask
-                    let executeSQLObj = dataObj.executeSQL
+                    var executeTaskObj = dataObj.executeTask
+                    var executeSQLObj = dataObj.executeSQL
                     if(executeTaskObj.resultType === 'NotSelect'){//只执行组装的SQL
                         let cueNodeId = executeSQLObj.id;
-                        let nodeInfo = executeSQLObj.param[1]
-                        let isEnd = executeSQLObj.param[2]
-                        switch (executeSQLObj.state) {
-                            case "2"://执行成功
-                                nodeInfo.nodeExcuteStatus = 3
-                                delete nodeInfo.createSql;
-                                delete nodeInfo.dropTableViewSql;
-                                $('#sysInfoArea').append("<p style='color:#0DD140'>节点【"+executeSQLObj.name+"】执行成功！</p>")
-                                break
-                            case "3"://执行失败
-                                nodeInfo.nodeExcuteStatus = 4
-                                delete nodeInfo.resultTableName;
-                                delete nodeInfo.createSql;
-                                delete nodeInfo.dropTableViewSql;
-                                $('#sysInfoArea').append("<p style='color:red'>节点【"+executeSQLObj.name+"】执行失败！\n错误信息："+ executeSQLObj.msg +"</p>");
-                                break
+                        let nodeInfo = JSON.parse(executeSQLObj.customParam[1])
+                        let isEnd = executeSQLObj.customParam[2]
+                        if(executeSQLObj.state === "2"){//执行成功
+                            nodeInfo.nodeExcuteStatus = 3
+                            delete nodeInfo.createSql;
+                            delete nodeInfo.dropTableViewSql;
+                            $('#sysInfoArea').append("<p style='color:#0DD140'>节点【"+executeSQLObj.name+"】执行成功！</p>")
+                        }
+                        if(executeSQLObj.state === "3"){//执行失败
+                            $this.loading.destroy()
+                            nodeInfo.nodeExcuteStatus = 4
+                            delete nodeInfo.resultTableName;
+                            delete nodeInfo.createSql;
+                            delete nodeInfo.dropTableViewSql;
+                            $('#sysInfoArea').append("<p style='color:red'>节点【"+executeSQLObj.name+"】执行失败！\n错误信息："+ executeSQLObj.msg +"</p>");
+                            $this.layuiTabClickLi(1)
                         }
                         let curNodeInfo = graph.nodeData[cueNodeId].nodeInfo
                         graph.nodeData[cueNodeId].nodeInfo = {...curNodeInfo, ...nodeInfo}
-                        if(this.executeType === 3){//全部执行，显示标记为中间结果表或最终结果表的结果集
+                        // 循环所有节点变更执行状态有变化的节点执行状态信息
+                        commonJs.nodeCallBack($this.executeNodeIdArr, null, $this.executeId)
+                        // 记录执行操作
+                        indexJs.refrashHistoryZtree('【' + executeSQLObj.name + '】节点执行完毕')
+                        // 自动保存图形化
+                        indexJs.autoSaveGraph()
+                        if($this.executeType === 3){//全部执行，显示标记为中间结果表或最终结果表的结果集
 
                         }else{//执行本节点和执行到本节点，只显示当前节点的结果集
                             if(isEnd){
@@ -719,24 +733,23 @@
                                     nodeName:executeSQLObj.name,
                                     resultTableName:nodeInfo.resultTableName
                                 }
-                                this.resresultTableArr.push(nodeObj)
+                                $this.resultTableArr.push(nodeObj)
                             }
                         }
-
-                        if(isEnd){
-                            // 循环所有节点变更执行状态有变化的节点执行状态信息
-                            commonJs.nodeCallBack($this.executeNodeIdArr, null, $this.executeId)
-                            // 记录执行操作
-                            indexJs.refrashHistoryZtree('【' + executeSQLObj.name + '】节点执行完毕')
-                            // 自动保存图形化
-                            indexJs.autoSaveGraph()
+                        console.log($this.resultTableArr)
+                        if(isEnd && executeSQLObj.state === "2"){
+                            console.log('viewData')
+                            $this.layuiTabClickLi(0)
+                            $this.loading.destroy()
+                            $this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false,'hasTime':true })
                             //预览数据
-                            this.viewData()
+                            $this.viewData()
                         }
                     }
                     if(executeTaskObj.resultType === 'select'){//展示节点结果集数据
                         $this.loading.destroy()
-                        if(executeSQLObj.param[0] === this.websocketBatchId){//展示当前操作的结果集
+                        if(executeSQLObj.customParam[0] === $this.websocketBatchId){//展示当前操作的结果集
+                            console.log($this)
                             $this.$refs.childTabsRef[0].loadTableData(dataObj)
                         }
                     }
@@ -839,6 +852,10 @@
                     $('#exportAllData').hide()
                     $('#viewAllData').hide()
                 }
+                $("ul.layui-tab-title>li").removeClass("layui-this")
+                $("div.layui-tab-item").removeClass("layui-show")
+                $("ul.layui-tab-title>li:eq("+index+")").addClass("layui-this")
+                $("div.layui-tab-item:eq("+index+")").addClass("layui-show")
             },
             showMoreMenu() { // 处理文件更多菜单
                 var event = event || window.event

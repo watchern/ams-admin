@@ -40,8 +40,6 @@
        */
       setQueryBuilderColumn() {
         const queryRules = [];
-        console.log(888888888888888888888888888)
-        console.log(this.columns.columnList)
         for (let i = 0; i < this.columns.columnList.length; i++) {
           const operators = this.getQueryBuilderOperators(
             this.columns.columnList[i]
@@ -131,7 +129,6 @@
                 break;
               }
             }
-            console.log(dataTypeObj);
             if (
               dataTypeObj.columnType.toUpperCase() == "TIMESTAMP" ||
               dataTypeObj.columnType.toUpperCase().indexOf("VARCHAR") > -1 ||

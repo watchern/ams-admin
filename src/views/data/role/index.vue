@@ -7,13 +7,15 @@
         @submit="getList"
       />
     </div>
-    <div>
-      <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
-      <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
-      <el-button type="danger" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
-      <el-button type="primary" size="mini" :disabled="selections.length !== 1" @click="bindRes()">绑定资源</el-button>
-      <el-button type="danger" size="mini" :disabled="selections.length === 0" @click="authentic()">授权</el-button>
-    </div>
+    <el-row>
+      <el-col align="right">
+        <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
+        <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
+        <el-button type="danger" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
+        <el-button type="primary" size="mini" title="绑定资源" class="oper-btn iconoper-refresh" :disabled="selections.length !== 1" @click="bindRes()" />
+        <el-button type="primary" size="mini" title="授权" class="oper-btn  iconoper-collect" :disabled="selections.length === 0" @click="authentic()" />
+      </el-col>
+    </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -31,7 +33,7 @@
       <el-table-column label="授权方式" width="200px" align="center" prop="authenType" :formatter="formatAuthenType" />
       <el-table-column label="数据筛选器状态" style="width: 200px">
         <template slot-scope="scope">
-          <el-button type="primary" icon="el-icon-search" @click="openFilterPanel(scope.row.dataRoleUuid)">查看</el-button>
+          <el-button type="primary" title="查看详情" class="oper-btn show" @click="openFilterPanel(scope.row.dataRoleUuid)" />
         </template>
       </el-table-column>
       <el-table-column label="数据有效期" prop="timeDuring" :formatter="formatDuring" style="width : 400px" />
@@ -39,7 +41,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <div class="detail-form">
+      <template class="detail-form">
         <el-form
           ref="dataForm"
           :rules="rules"
@@ -87,7 +89,7 @@
             />
           </el-form-item>
         </el-form>
-      </div>
+      </template>
       <div slot="footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
@@ -95,13 +97,13 @@
     </el-dialog>
 
     <el-dialog title="数据筛选器选择" :visible.sync="filterVisible">
-      <div class="detail-form">
+      <template class="detail-form">
         <el-form>
           <el-form-item>
-            <el-checkbox v-for="(filter, index) in allFilters" v-model="filter.roleUuid" :key="filter.filterName" :label="filter.filterName" />
+            <el-checkbox v-for="filter in allFilters" :key="filter.filterName" v-model="filter.roleUuid" :label="filter.filterName" />
           </el-form-item>
         </el-form>
-      </div>
+      </template>
       <div slot="footer">
         <el-button @click="filterVisible = false">取消</el-button>
         <el-button type="primary" @click="handleSaveRoleFilter">确定</el-button>
