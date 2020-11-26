@@ -435,12 +435,14 @@
                 window.cancelExecute = commonJs.cancelExecute
                 window.reName = commonJs.reName
                 window.curNodeSQL = commonJs.curNodeSQL
+                window.deleteCells = commonJs.deleteCells
             },
             initIndex() {
                 window.refrashResourceZtree = indexJs.refrashResourceZtree
                 window.refrashHistoryZtree = indexJs.refrashHistoryZtree
                 window.autoSaveGraph = indexJs.autoSaveGraph
                 window.nodeRemark = indexJs.nodeRemark
+                window.deleteResourceZtreeNode = indexJs.deleteResourceZtreeNode
             },
             initValidateFun() {
                 window.edgeVerify = validateJs.edgeVerify
