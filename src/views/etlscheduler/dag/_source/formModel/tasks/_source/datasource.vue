@@ -1,19 +1,6 @@
 <template>
   <div class="datasource-model">
     <div class="select-listpp">
-      <!-- <x-select
-        v-model="type"
-        style="width: 160px;"
-        :disabled="isDetails"
-        @on-change="_handleTypeChanged"
-      >
-        <x-option
-          v-for="city in typeList"
-          :key="city.code"
-          :value="city.code"
-          :label="city.code"
-        />
-      </x-select> -->
       <x-select
         v-model="datasource"
         placeholder="请选择数据源"
@@ -49,7 +36,7 @@ export default {
       // Data source type(List)
       typeList: [],
       // data source
-      datasource: {},
+      datasource: '',
       // data source(List)
       datasourceList: []
     }
@@ -74,34 +61,13 @@ export default {
     }
   },
   created() {
-    const supportType = this.supportType || []
-    this.typeList = _.cloneDeep(this.store.state.dag.dsTypeListS)
-    // Have a specified data source
-    if (supportType.length) {
-      const is = (type) => {
-        return !!_.filter(supportType, v => v === type).length
-      }
-      this.typeList = _.filter(this.typeList, v => is(v.code))
-    }
-    // this.type = _.cloneDeep(this.data.type) || this.typeList[0].code
-    this.type = _.cloneDeep(this.data.dbType) || this.typeList[0].code
-
     // init data
     this._getDatasourceData().then(res => {
-      if (_.isEmpty(this.data)) {
-        this.$nextTick(() => {
+      this.datasource = this.data.datasource
+      if (this.datasource === null || this.datasource === '') {
+        if (this.datasourceList.length === 1) {
           this.datasource = this.datasourceList[0].id
-          this.type = this.datasourceList[0].dbType
-          //  this.type = this.datasourceList[0].type
-        })
-      } else {
-        this.$nextTick(() => {
-          this.datasource = this.data.datasource
-          // 只有一个选项的时候默认第一个
-          if (this.datasourceList.length === 1) {
-            this.datasource = this.datasourceList[0]
-          }
-        })
+        }
       }
       this.$emit('on-dsData', {
         // type: this.type,
@@ -144,20 +110,6 @@ export default {
             }
           })
           resolve()
-        })
-      })
-    },
-    /**
-       * Brush type
-       */
-    _handleTypeChanged({ value }) {
-      this.type = value
-      this._getDatasourceData().then(res => {
-        this.datasource = this.datasourceList.length && this.datasourceList[0].id || ''
-        this.$emit('on-dsData', {
-          // type: this.type,
-          type: this.datasource.dbType,
-          datasource: this.datasource
         })
       })
     }
