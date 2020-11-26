@@ -79,7 +79,7 @@
           <el-popover trigger="hover" placement="top">
             <el-row v-for="(taskParam,$index) in scope.row.distinctParamList" :key="$index">
               <label class="col-md-2">
-                {{ taskParam.propName }}:
+                {{ taskParam.name }}:
               </label>
               <div class="col-md-10">
                 {{ taskParam.value }}
@@ -181,14 +181,14 @@
         <el-form-item
           v-for="(item, $index) in distinctParamList"
           :key="$index"
-          :label="item.propName"
+          :label="item.name"
           :rules="{required: true, message: '', trigger: 'change'}"
         >
           <el-input
             v-model="item.value"
             class="propwidth"
             :disabled="disableUpdate"
-            @blur="changeParamValue(item.value, item.propName)"
+            @blur="changeParamValue(item.value, item.name)"
           />
         </el-form-item>
         <el-form-item label="作业周期范围" prop="startTime">
