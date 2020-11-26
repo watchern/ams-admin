@@ -39,10 +39,10 @@
       <div class="btn-div">
         <!-- <el-button type="primary" @click="runImmediately" plain>立</el-button>
         <el-button type="primary" plain @click="timingExecution">定</el-button> -->
-        <span class="select-btn" />
+        <span class="select-btn iconfont iconoper-drag" />
         <span class="iconYY iconfont iconoper-start" @click="runImmediately" />
         <span class="iconYY iconfont iconoper-timing" @click="timingExecution" />
-        <span class="iconYY1 iconfont iconmenu-2" @click="selectData"/>
+        <span class="iconYY1 iconfont iconmenu-2" @click="selectData" />
       </div>
       <!-- <el-button class="select-btn" type="primary" @click="selectData" plain>三</el-button> -->
     </div>
@@ -223,10 +223,10 @@ export default {
       // this.resize(oDrag, oT, false, true, true, false)
       // this.resize(oDrag, oR, false, false, false, true)
       // this.resize(oDrag, oB, false, false, true, false)
-      oDrag.style.left =
-        (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
-      oDrag.style.top =
-        (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'
+      // oDrag.style.left =
+      //   (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
+      // oDrag.style.top =
+      //   (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'
     },
     drag(oBtn, handle) {
       var disY = 0
@@ -298,14 +298,14 @@ export default {
       //   };
       // };
       // 阻止冒泡
-      oMin.onmousedown = oMax.onmousedown = oClose.onmousedown = function(
-        event
-      ) {
-        this.onfocus = function() {
-          this.blur()
-        };
-        (event || window.event).cancelBubble = true
-      }
+      // oMin.onmousedown = oMax.onmousedown = oClose.onmousedown = function(
+      //   event
+      // ) {
+      //   this.onfocus = function() {
+      //     this.blur()
+      //   };
+      //   (event || window.event).cancelBubble = true
+      // }
     },
     // resize(oParent, handle, isLeft, isTop, lockX, lockY) {
     //   handle.onmousedown = function(event) {
@@ -721,11 +721,11 @@ a.open:hover {
 .select-btn {
   width: 20px;
   height: 20px;
-  background-color: red;
   position: absolute;
-  top: 8px;
-  left: -44px;
-  cursor: move;
+  top: 6px;
+  left: -46px;
+  font-size: 22px;
+  color: #BABCE5;
 }
 
 .none-box{
