@@ -289,9 +289,6 @@ export default {
         if (!this.$refs.refLocalParams._verifProp()) {
           return
         }
-        if (!this.$refs.refLocalParams._verifValue()) {
-          return
-        }
         // verification timeout
         if (this.checkedTimeout && !this._verifTimeout()) {
           return

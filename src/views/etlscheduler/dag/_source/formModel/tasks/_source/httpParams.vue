@@ -34,7 +34,7 @@
         type="text"
         placeholder="value(必填)"
         :style="inputStyle"
-        @on-blur="_verifValue()"
+        @on-blur="_handleValue()"
       />
       <span class="lt-add">
         <a
@@ -205,10 +205,8 @@ export default {
         }
       })
       if (!flag) {
-        if (!type) {
-          this.$message.warning(`value不能为空`)
-          return false
-        }
+        this.$message.warning(`value不能为空`)
+        return false
       }
       this.$emit('on-http-params', _.cloneDeep(this.httpParamsList))
       return true

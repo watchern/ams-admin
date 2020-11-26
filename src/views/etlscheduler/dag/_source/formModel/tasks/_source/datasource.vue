@@ -49,7 +49,7 @@ export default {
       // Data source type(List)
       typeList: [],
       // data source
-      datasource: '',
+      datasource: {},
       // data source(List)
       datasourceList: []
     }
@@ -97,6 +97,10 @@ export default {
       } else {
         this.$nextTick(() => {
           this.datasource = this.data.datasource
+          // 只有一个选项的时候默认第一个
+          if (this.datasourceList.length === 1) {
+            this.datasource = this.datasourceList[0]
+          }
         })
       }
       this.$emit('on-dsData', {
