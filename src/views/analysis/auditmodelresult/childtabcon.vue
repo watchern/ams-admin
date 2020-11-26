@@ -794,7 +794,6 @@ export default {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
             const obj = { sqls: sql,businessField:'modelresultdetail' };
             startExecuteSql(obj).then((resp) => {
-              debugger
               if (!resp.data.isError) {
                 this.currentExecuteSQL = resp.data.executeSQLList;
               } else {
@@ -827,7 +826,6 @@ export default {
         sql = sql + filterSql;
         const obj = { sqls: sql,businessField:'modelresultdetail' };
         startExecuteSql(obj).then((resp) => {
-           debugger
           if (!resp.data.isError) {
             this.currentExecuteSQL = resp.data.executeSQLList;
           } else {
