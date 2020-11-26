@@ -314,8 +314,6 @@ export default {
         func1(dataObj)
       }
       const func2 = function func3(val) {
-        console.log(5555555555555)
-        console.log(val)
         this.$refs.childTabsRef[0].loadTableData(val)
         //已经全部执行完成，调用父组件方法初始化参数列等信息
         if(isAllExecuteSuccess){
@@ -587,7 +585,6 @@ export default {
           this.executeLoading = true
           startExecuteSql(obj).then((result) => {
             this.executeLoading = false
-            console.log(result)
             if (!result.data.isError) {
               this.currentExecuteSQL = result.data.executeSQLList
               this.modelOriginalTable = result.data.tables

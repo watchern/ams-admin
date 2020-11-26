@@ -815,7 +815,6 @@ export default {
       this.modelDetails.push({ id: 'rel' + this.modelDetailIndex, data: [] })
       this.newRelInfoValue = newChild
       //添加完成之后更改div高度
-      console.log(this.$refs.dragDiv)
       this.$refs.dragDiv.style.height = this.$refs.dragDiv.style.height + 20
     },
     /**
@@ -1096,7 +1095,6 @@ export default {
       if (modelObj == null) {
         return
       }
-      console.log(modelObj)
       this.editorModelLoading = true
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
