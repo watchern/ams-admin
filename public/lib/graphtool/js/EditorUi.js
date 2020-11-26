@@ -641,7 +641,7 @@ EditorUi = function(editor, container, lightbox) {
       var isCreateTableNodeError = false;
       $.ajax({
           type: "post",
-          url: "/amsdata/tableMeta/getCols",
+          url: "/data/tableMeta/getCols",
           dataType:"json",
           async:false,
           data: {
@@ -1803,7 +1803,7 @@ EditorUi.prototype.createDivs = function() {
 	this.hsplit.style.width = this.splitSize + "px";
 	this.hsplit.style.left = this.sidebarWidth + "px";
     this.hsplit.style.top = (this.toolbarHeight - 10) + "px";
-    this.hsplit.style.height = (h + 18) + "px";
+    this.hsplit.style.height = h + "px";
 	// this.vsplit.setAttribute('title', mxResources.get('collapseExpand'));
 	this.vsplit.style.height = this.splitSize + "px";
 	this.vsplit.style.bottom = this.resultHeight + "px";
@@ -2826,7 +2826,7 @@ var getEdgeCount = function(){
 };
 
 var toolCellInitSql = function(curSelCell) {
-	if(curSelCell != undefined && curSelCell.edge){
+	if(typeof curSelCell !== "undefined" && curSelCell.edge){
 		var isChange = false;
         if(!edgeVerify(curSelCell)){
             return;

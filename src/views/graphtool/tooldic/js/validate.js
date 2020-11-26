@@ -15,51 +15,51 @@ export function edgeVerify(curSelCell) {
   }
   var preNode = curSelCell.target.getSourceNodes()
   var nextNode = curSelCell.source.getTargetNodes()
-  if (preNode.length == 0) {				// 节点自连接（闭环）
+  if (preNode.length === 0) {				// 节点自连接（闭环）
     alertMsg('警告', '不允许的连接', 'warning')
     removeCellsHistory(curSelCell)
     return false
   }
   var optArr = ['filter', 'sort', 'sample', 'layering', 'groupCount', 'delRepeat', 'change', 'comparison', 'barChart', 'intersect', 'exclude', 'union', 'relation', 'sql']
-  if ('datasource,sql'.indexOf(curSelCell.target.nodeType) != -1 && preNode.length > 0) { // 原表与SQL查询器入0出n
+  if ('datasource,sql'.indexOf(curSelCell.target.nodeType) > -1 && preNode.length > 0) { // 原表与SQL查询器入0出n
     alertMsg('提示', '数据表与SQL查询器只能作为根节点', 'info')
     removeCellsHistory(curSelCell)
     return false
   }
-  if ($.inArray(curSelCell.target.nodeType, optArr) != -1 && 'datasource,newNullNode'.indexOf(curSelCell.source.nodeType) == -1) { // 所有操作节点的来源只能是原表、和结果表
+  if ($.inArray(curSelCell.target.nodeType, optArr) > -1 && 'datasource,newNullNode'.indexOf(curSelCell.source.nodeType) < 0) { // 所有操作节点的来源只能是原表、和结果表
     alertMsg('警告', '不允许的连接', 'warning')
     removeCellsHistory(curSelCell)
     return false
   }
-  if ($.inArray(curSelCell.source.nodeType, optArr) != -1) {
-    if (curSelCell.target.nodeType != 'newNullNode') { // 所有操作节点出的节点只能是结果表
+  if ($.inArray(curSelCell.source.nodeType, optArr) > -1) {
+    if (curSelCell.target.nodeType !== 'newNullNode') { // 所有操作节点出的节点只能是结果表
       alertMsg('警告', '不允许的连接', 'warning')
       removeCellsHistory(curSelCell)
       return false
-    } else if (nextNode.length > 1 && curSelCell.source.nodeType != 'layering') { // 除了数据分层，其他的节点有且只有一个出去的线
+    } else if (nextNode.length > 1 && curSelCell.source.nodeType !== 'layering') { // 除了数据分层，其他的节点有且只有一个出去的线
       alertMsg('提示', '最多连接一个结果表', 'info')
       removeCellsHistory(curSelCell)
       return false
     }
   }
-  if ('filter,sort,sample,layering,groupCount,delRepeat,change,customizeChart'.indexOf(curSelCell.target.nodeType) != -1 && preNode.length > 1) {
+  if ('filter,sort,sample,layering,groupCount,delRepeat,change,customizeChart'.indexOf(curSelCell.target.nodeType) > -1 && preNode.length > 1) {
     // 数据筛选、数据排序、数据抽样、数据分层、分组汇总、数据去重、数据转码入1出1
     alertMsg('提示', '最多连接 1 个节点', 'info')
     removeCellsHistory(curSelCell)
     return false
   }
-  if ('intersect,exclude,union'.indexOf(curSelCell.target.nodeType) != -1 && preNode.length > 2) { // 数据合并、数据交集与数据补集入2出1
+  if ('intersect,exclude,union'.indexOf(curSelCell.target.nodeType) > -1 && preNode.length > 2) { // 数据合并、数据交集与数据补集入2出1
     alertMsg('提示', '最多连接 2 个节点', 'info')
     removeCellsHistory(curSelCell)
     return false
   }
-  if ('barChart'.indexOf(curSelCell.source.nodeType) != -1 && preNode.length > 0) { // 自定义图形入1出0
+  if ('barChart'.indexOf(curSelCell.source.nodeType) > -1 && preNode.length > 0) { // 自定义图形入1出0
     alertMsg('提示', '自定义图形只能作为末级节点', 'info')
     removeCellsHistory(curSelCell)
     return false
   }
-  if (curSelCell.target.nodeType == 'newNullNode') {				// 结果表
-    if ('datasource,newNullNode'.indexOf(curSelCell.source.nodeType) != -1) { // 入的节点只能是操作节点，不能是原表、结果表
+  if (curSelCell.target.nodeType === 'newNullNode') {				// 结果表
+    if ('datasource,newNullNode'.indexOf(curSelCell.source.nodeType) > -1) { // 入的节点只能是操作节点，不能是原表、结果表
       alertMsg('警告', '不允许的连接', 'warning')
       removeCellsHistory(curSelCell)
       return false
@@ -69,9 +69,9 @@ export function edgeVerify(curSelCell) {
       return false
     }
   }
-  if (curSelCell.source.nodeType == 'newNullNode') {
+  if (curSelCell.source.nodeType === 'newNullNode') {
     var resultPreNodes = curSelCell.source.getSourceNodes()
-    if (resultPreNodes.length > 0 && resultPreNodes[0].nodeType == 'comparison' && preNode.length > 0) { // 数据频次分析产生的结果表不能有出去的线
+    if (resultPreNodes.length > 0 && resultPreNodes[0].nodeType === 'comparison' && preNode.length > 0) { // 数据频次分析产生的结果表不能有出去的线
       alertMsg('提示', '数据频次分析产生的结果表只能作为末级节点', 'info')
       removeCellsHistory(curSelCell)
       return false
@@ -100,13 +100,13 @@ export function verifyPreNodes(type, curNodeId) {
     'isError': false,
     'message': ''
   }
-  if (parentIds.length == 0) {
+  if (parentIds.length === 0) {
     obj.isError = true
     obj.message = '未连接上级节点'
   } else {
     switch (type) {
       case 'union':// 数据合并
-        if (parentIds.length != 2) {
+        if (parentIds.length !== 2) {
           obj.isError = true
           obj.message = '请连接两个上级节点'
         }
@@ -133,14 +133,14 @@ export function settingVerify(type) {
     var nodeExcuteStatus
     if (type === 'barChart') {
       nodeExcuteStatus = graph.nodeData[preNodeIds[0]].nodeInfo.nodeExcuteStatus
-      if (nodeExcuteStatus != 3) {
+      if (nodeExcuteStatus !== 3) {
         isExecute = false
       }
     }
     if (type === 'relation') {
       for (var i = 0; i < preNodeIds.length; i++) {
         nodeExcuteStatus = graph.nodeData[preNodeIds[i]].nodeInfo.nodeExcuteStatus
-        if (nodeExcuteStatus != 3) {
+        if (nodeExcuteStatus !== 3) {
           isExecute = false
           break
         }
@@ -148,7 +148,7 @@ export function settingVerify(type) {
     }
     if (type === 'layering') {
       nodeExcuteStatus = graph.nodeData[preNodeIds[0]].nodeInfo.nodeExcuteStatus
-      if (nodeExcuteStatus != 3) {
+      if (nodeExcuteStatus !== 3) {
         isExecute = false
       }
     }
@@ -173,10 +173,9 @@ export function verifyPreNode(curNodeId) {
   var parentIds = graph.nodeData[curNodeId].parentIds
   for (var i = 0; i < parentIds.length; i++) {
     var parentNodeData = graph.nodeData[parentIds[i]]
-    var optType = parentNodeData.nodeInfo.optType
-    if (optType == 'sql') {					// 如果前置节点是SQL查询器节点
+    if (parentNodeData.nodeInfo.optType === 'sql') {					// 如果前置节点是SQL查询器节点
       // 判断SQL查询器节点是否已执行
-      if (parentNodeData.nodeInfo.nodeExcuteStatus != 3) {				// 未执行
+      if (parentNodeData.nodeInfo.nodeExcuteStatus !== 3) {				// 未执行
         alertMsg('错误', '前置节点“SQL查询器”生成的SQL语句未执行', 'error')
         verify = false
         break
@@ -186,7 +185,7 @@ export function verifyPreNode(curNodeId) {
       var columnsInfo = parentNodeData.columnsInfo
       var optType = parentNodeData.nodeInfo.optType
       var nodeExcuteStatus = parentNodeData.nodeInfo.nodeExcuteStatus
-      if (parentNodeData.nodeInfo.optType == 'newNullNode' && !parentNodeData.isSet) {
+      if (parentNodeData.nodeInfo.optType === 'newNullNode' && !parentNodeData.isSet) {
         if (parentNodeData.parentIds.length > 0 && graph.nodeData[parentNodeData.parentIds[0]]) {
           columnsInfo = graph.nodeData[parentNodeData.parentIds[0]].columnsInfo
           optType = graph.nodeData[parentNodeData.parentIds[0]].nodeInfo.optType
@@ -196,16 +195,16 @@ export function verifyPreNode(curNodeId) {
       var count = 0
       for (var j = 0; j < columnsInfo.length; j++) {
         var isOutputColumn = columnsInfo[j].isOutputColumn				// 是否为输出列
-        if (isOutputColumn == 0) {				// 否
+        if (isOutputColumn === 0) {				// 否
           count++
         }
       }
-      if (columnsInfo.length == count && columnsInfo.length != 0) {
+      if (columnsInfo.length === count && columnsInfo.length !== 0) {
         alertMsg('提示', '前置节点未配置输出列', 'error')
         verify = false
         break
       }
-      if (columnsInfo.length == 0) {
+      if (columnsInfo.length === 0) {
         alertMsg('提示', '前置节点无输出列，需执行前置节点', 'error')
         verify = false
         break
@@ -223,7 +222,7 @@ export function executeVerify() {
   var nodeExcuteStatus = curNodeData.nodeInfo.nodeExcuteStatus
   // 校验当前节点是否关联前置节点
   var parentNodes = graph.curCell.getSourceNodes()
-  if (parentNodes.length == 0) {
+  if (parentNodes.length === 0) {
     alertMsg('提示', '请关联一个前置节点', 'info')
     return false
   }
@@ -244,7 +243,7 @@ export function verifyExecuting(curCellId, isCurCell) {
   var verify = true
   if (isCurCell) {				// 如果是当前执行节点
     var nodeExcuteStatus = graph.nodeData[curCellId].nodeInfo.nodeExcuteStatus
-    if (nodeExcuteStatus == 2) {				// 执行状态为执行中，直接返回验证不通过
+    if (nodeExcuteStatus === 2) {				// 执行状态为执行中，直接返回验证不通过
       return false
     }
   }
@@ -252,7 +251,7 @@ export function verifyExecuting(curCellId, isCurCell) {
   if (parentIds.length > 0) {
     for (var i = 0; i < parentIds.length; i++) {				// 遍历前置节点集合
       var nodeExecuteStatus = graph.nodeData[parentIds[i]].nodeInfo.nodeExcuteStatus
-      if (nodeExecuteStatus == 2) {				// 执行状态为执行中，验证不通过
+      if (nodeExecuteStatus === 2) {				// 执行状态为执行中，验证不通过
         verify = false
         break
       } else {								// 否则继续向上级节点递归
@@ -273,7 +272,7 @@ export function verifyUnionOutputColumn(layero) {
   window[layero.find('iframe')[0]['name']].$('.newColumn').css('border', 'none')
   var count = 0
   window[layero.find('iframe')[0]['name']].$('.colTr').each(function(i, v) {
-    if ($(this).css('display') == 'none') {				// 不能用is(":hidden)
+    if ($(this).css('display') === 'none') {				// 不能用is(":hidden)
       return true
     }
     var newColumn = $(this).find('.newColumn').val()
@@ -281,7 +280,7 @@ export function verifyUnionOutputColumn(layero) {
     if (ifCk) {
       count++
     }
-    if ($.inArray(newColumn, newColumnArr) == -1) {
+    if ($.inArray(newColumn, newColumnArr) === -1) {
       newColumnArr.push(newColumn)
     } else {
       var index = $.inArray(newColumn, newColumnArr)
@@ -293,7 +292,7 @@ export function verifyUnionOutputColumn(layero) {
       }
     }
   })
-  if (count == 0) {
+  if (count === 0) {
     alertMsg('错误', '请选择输出字段', 'warning')
     return false
   }
