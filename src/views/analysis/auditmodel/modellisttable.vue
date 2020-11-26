@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-list-container">
+  <div class="tree-list-container all" v-on:click='Toggle1()'>
     <el-tabs v-model="editableTabsValue" closable @tab-remove="removeTab">
       <el-tab-pane label="模型列表" name="modelList">
         <div class="filter-container">
@@ -46,23 +46,27 @@
         :name="item.name">
         <!--增加参数输入组件-->
         <el-collapse v-model="activeNames">
-          <el-collapse-item name="1" v-if="item.isExistParam">
-            <template slot="title"><div class="panel-font-size">参数输入区域</div></template>
-            <el-row>
+          <!-- <el-collapse-item name="1" v-if="item.isExistParam" class="item-y" v-show="isShow"> -->
+            <!-- <template slot="title"><div class="panel-font-size">参数输入区域</div></template> -->
+            <el-row name="1" v-if="item.isExistParam" class="item-y" v-show="isShow">
               <el-col :span="22">
-                <crossrangeParam :myId="item.name" :ref="item.name + 'param'"></crossrangeParam>
+                <paramDraw :myId="item.name" :ref="item.name + 'param'"></paramDraw>
+                <el-button type="primary" @click="queryModel(item.name)" class="btn-show1" >查询结果</el-button>
               </el-col>
-              <el-col :span="2">
+              <!-- <el-col :span="2">
                 <el-button type="primary" @click="queryModel(item.name)">查询</el-button>
-              </el-col>
+              </el-col> -->
             </el-row>
-          </el-collapse-item>
-          <el-collapse-item name="2">
-            <template slot="title"><div class="panel-font-size">结果展示区域</div></template>
+          <!-- </el-collapse-item> -->
+          <el-collapse-item name="2" class="content-y">
+            <!-- <template slot="title"><div class="panel-font-size">结果展示区域</div></template> -->
             <!--增加结果组件-->
             <el-row>
               <el-col :span="24">
                 <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor"/>
+              </el-col>
+              <el-col :span="2">
+                <el-button type="primary" class="btn-show" v-on:click='Toggle()'>查询</el-button>
               </el-col>
             </el-row>
           </el-collapse-item>
@@ -125,6 +129,7 @@ export default {
   props:['power'],
   data() {
     return {
+      isShow:false,
       tableKey: 'errorUuid',
       //list列表
       list: null,
@@ -230,6 +235,9 @@ export default {
     this.initWebSocket()
   },
   methods: {
+    Toggle:function(){
+      this.isShow=!this.isShow;
+    },
     /**
      *初始化webSocket
      */
@@ -902,5 +910,36 @@ export default {
 
 .panel-font-size{
   font-size: 25px;
+}
+
+.item-y{
+  position: fixed;
+  top: 15%;
+  left: 45%;
+  background: #FFFFFF;
+  box-shadow: 0 0 9px 0 rgba(0,0,0,0.15);
+  border-radius: 13.5px;
+  border-radius: 13px;
+  width: 800px;
+  /* height: 130px; */
+  z-index: 3;
+}
+.content-y{
+  margin: -52px 0 0 0;
+}
+.btn-show{
+  position: absolute;
+  top: 3px;
+  right: 32px;
+  z-index: 3;
+}
+.btn-show1{
+  position: absolute;
+  top: 100px;
+  right: 330px;
+  z-index: 3;
+  width: 203px;
+  height: 44px;
+  border-radius: 21.6px;
 }
 </style>
