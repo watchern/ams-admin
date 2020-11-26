@@ -7,6 +7,7 @@
 <script>
 import dataTree from '@/views/data/role-res/data-tree'
 import { mapState } from 'vuex'
+import Cookies from 'js-cookie'
 
 export default {
   computed:{
@@ -23,7 +24,7 @@ export default {
     }
   },
   created() {
-    console.log(this.$store.getters.personcode);
+    console.log(Cookies.get("personcode"));
   },
   methods: {
     handleClick(data, node, tree) {
