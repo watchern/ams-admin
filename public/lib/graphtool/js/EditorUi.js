@@ -1803,7 +1803,7 @@ EditorUi.prototype.createDivs = function() {
 	this.hsplit.style.width = this.splitSize + "px";
 	this.hsplit.style.left = this.sidebarWidth + "px";
     this.hsplit.style.top = (this.toolbarHeight - 10) + "px";
-    this.hsplit.style.height = (h + 18) + "px";
+    this.hsplit.style.height = h + "px";
 	// this.vsplit.setAttribute('title', mxResources.get('collapseExpand'));
 	this.vsplit.style.height = this.splitSize + "px";
 	this.vsplit.style.bottom = this.resultHeight + "px";
