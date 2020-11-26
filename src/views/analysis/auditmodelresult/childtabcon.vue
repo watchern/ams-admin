@@ -163,7 +163,6 @@ import { AgGridVue } from "ag-grid-vue";
 import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";
 import childtabscopy from "@/views/analysis/auditmodelresult/childtabscopy";
-import Cookies from 'js-cookie'
 import {
   selectTable,
   selectByRunResultTableUUid,
