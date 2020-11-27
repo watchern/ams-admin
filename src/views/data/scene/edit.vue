@@ -9,18 +9,13 @@
         style="width: 700px;"
       >
         <span class="midText">业务场景维护：</span>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="业务场景名称" prop="sceneName" label-width="150px">
-              <el-input v-model="temp.sceneName" class="input" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="业务属性编码" prop="sceneCode" label-width="150px">
-              <el-input v-model="temp.sceneCode" class="input" />
-            </el-form-item>
-          </el-col>
-        </el-row></el-form>
+        <el-form-item label="业务场景名称" prop="sceneName" label-width="150px">
+          <el-input v-model="temp.sceneName" class="input" />
+        </el-form-item>
+        <el-form-item label="业务属性编码" prop="sceneCode" label-width="150px">
+          <el-input v-model="temp.sceneCode" class="input" />
+        </el-form-item>
+      </el-form>
       <template style="height :160px">
         <span class="midText">用户组定义：</span>
         <el-row>
@@ -62,19 +57,19 @@
               style="width: 100%;"
             >
               <el-form-item label="组名称" prop="grpName">
-                <el-input v-model="tempGrp.grpName" style="width:500px" />
+                <el-input v-model="tempGrp.grpName" />
               </el-form-item>
               <el-form-item label="组代码" prop="grpCode">
-                <el-input v-model="tempGrp.grpCode" style="width:500px" />
+                <el-input v-model="tempGrp.grpCode" />
               </el-form-item>
               <el-form-item label="组用户来源SQL(所写SQL中必须有id,name,pid 三列才可预览查看)" prop="grpSql">
-                <el-input v-model="tempGrp.grpSql" :rows="6" type="textarea" style="width:500px" />
+                <el-input v-model="tempGrp.grpSql" :rows="6" type="textarea" />
               </el-form-item>
             </el-form>
           </template>
           <div slot="footer">
-            <el-button @click="dialogFormVisible = false">取消</el-button>
-            <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
+            <el-button @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
+            <el-button @click="dialogFormVisible = false">关闭</el-button>
           </div>
         </el-dialog>
       </template>
@@ -117,19 +112,18 @@
                 :rules="rulesFilter"
                 :model="tempFilter"
                 label-position="right"
-                style="width: 600px;hieght:400px;margin-left:50px;"
               >
                 <el-form-item label="筛选器名称" prop="filterName">
-                  <el-input v-model="tempFilter.filterName" style="width:500px" />
+                  <el-input v-model="tempFilter.filterName" />
                 </el-form-item>
                 <el-form-item label="IN值SQL" prop="inValueSql">
-                  <el-input v-model="tempFilter.inValueSql" type="textarea" :rows="5" style="width:500px" />
+                  <el-input v-model="tempFilter.inValueSql" type="textarea" :rows="5" />
                 </el-form-item>
                 <el-form-item label="描述" prop="describe">
-                  <el-input v-model="tempFilter.describe" type="textarea" :rows="4" style="width:500px" />
+                  <el-input v-model="tempFilter.describe" type="textarea" :rows="4" />
                 </el-form-item>
                 <el-form-item label="关联业务属性" prop="bizAttrUuid">
-                  <el-select ref="bizAttrUuid" v-model="tempFilter.bizAttrUuid" style="width:500px" placeholder="请选择业务属性">
+                  <el-select ref="bizAttrUuid" v-model="tempFilter.bizAttrUuid" placeholder="请选择业务属性">
                     <el-option
                       v-for="item in bizJson"
                       :key="item.bizAttrUuid"
@@ -141,8 +135,8 @@
               </el-form>
             </div>
             <div slot="footer">
-              <el-button @click="dialogFormVisibleFilter = false">取消</el-button>
-              <el-button type="primary" @click="dialogStatusFilter==='create'?createDataFilter():updateDataFilter()">确定</el-button>
+              <el-button @click="dialogStatusFilter==='create'?createDataFilter():updateDataFilter()">保存</el-button>
+              <el-button @click="dialogFormVisibleFilter = false">关闭</el-button>
             </div>
           </el-dialog>
 
@@ -242,12 +236,12 @@ export default {
       dialogStatus: '',
       dialogStatusFilter: '',
       textMap: {
-        update: '修改用户组定义',
-        create: '新增用户组定义'
+        update: '用户组定义修改',
+        create: '用户组定义新增'
       },
       textMapFilter: {
-        update: '修改数据筛选器',
-        create: '新增数据筛选器'
+        update: '数据筛选器修改',
+        create: '数据筛选器新增'
       },
       rules: {
         sceneName: [{ required: true, message: '请填写场景名称', trigger: 'change' }],
