@@ -171,8 +171,8 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '转码规则修改',
-        create: '转码规则新增'
+        update: '修改转码规则',
+        create: '新增转码规则'
       },
       dialogPvVisible: false,
       rules: {

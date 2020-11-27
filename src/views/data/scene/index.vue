@@ -94,8 +94,8 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '业务场景修改',
-        create: '业务场景新增'
+        update: '修改业务场景',
+        create: '新增业务场景'
       },
       dialogPvVisible: false,
       rules: {
