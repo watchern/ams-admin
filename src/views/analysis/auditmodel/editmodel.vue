@@ -1041,7 +1041,7 @@ export default {
      */
     getAuditItem(){
       let tree = this.$refs.auditItemTreeRef.getTree()
-      let currentNode = tree.getCurrentNode()
+      let currentNode = tree.getCheckedNodes()[0]
       this.form.auditItemUuid = currentNode.id
       this.form.auditItemName = currentNode.label
       this.auditItemTree = false
@@ -1058,12 +1058,12 @@ export default {
         }
         this.modelTypeObj.push(obj)
         //
-        let obj2= {
-          id: '2',
-          label: '模型设计',
-          type: 'modelDesign'
-        }
-        this.handleNodeClick(obj2)
+        // let obj2= {
+        //   id: '2',
+        //   label: '模型设计',
+        //   type: 'modelDesign'
+        // }
+        // this.handleNodeClick(obj2)
       }
       if(vId == "002003002"){
         this.$message({ type: 'info', message: "暂时不支持图形化模型"})
