@@ -6,6 +6,41 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "695192",
+      "name": "搜索",
+      "font_class": "oper-search-2",
+      "unicode": "e63f",
+      "unicode_decimal": 58943
+    },
+    {
+      "icon_id": "5953258",
+      "name": "拖拽",
+      "font_class": "oper-drag",
+      "unicode": "e680",
+      "unicode_decimal": 59008
+    },
+    {
+      "icon_id": "150095",
+      "name": "定时",
+      "font_class": "oper-timing",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "2325930",
+      "name": "取消分享",
+      "font_class": "oper-cancelshare",
+      "unicode": "e63d",
+      "unicode_decimal": 58941
+    },
+    {
+      "icon_id": "6851550",
+      "name": "图表",
+      "font_class": "oper-chart",
+      "unicode": "e6d8",
+      "unicode_decimal": 59096
+    },
+    {
       "icon_id": "1115024",
       "name": "查询",
       "font_class": "oper-search",
