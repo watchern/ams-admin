@@ -12,21 +12,21 @@
                 <th width="30%" style="text-align: center">上一节点名称</th>
                 <th width="25%" style="text-align: center">字段名称</th>
                 <th width="30%" style="text-align: center">输出字段名称</th>
-                <th id="sel_all_th" width="15%" style="text-align: center">是否为输出字段
+                <th width="15%" style="text-align: center">是否为输出字段
                     <el-checkbox v-model="checkAll" @change="handleCheckAllChange" :disabled="isAllDisabled"></el-checkbox>
                     <!--<input id="sel_all" type="checkbox" @click="selAll" style="width: 20px;height: 20px;"/>-->
                 </th>
             </tr>
             </thead>
             <tbody>
-                <tr v-for="(item,index) in items" class="colTr" :nodeId="item.nodeId" :nullNodeId="item.nullNodeId" :newColumnName="item.curColumnName" :columnInfo="item.columnInfo">
+                <tr v-for="(item,index) in items">
                     <td>{{ item.rtn }}</td>
                     <td>{{ item.curColumnName }}</td>
                     <td>
-                        <input v-model="item.disColumnName" type="text" class="newColumn form-control sea_text"/>
+                        <input v-model="item.disColumnName" type="text" class="form-control newColumn" @blur="vilidata_simple(index)"/>
                     </td>
                     <td class="text-center">
-                        <el-checkbox v-model="item.checked" :name="item.attrColumnName" :key="item.id" class="outputColumn" @blur="vilidata_simple(index)" @change="checkBoxChange(index)"></el-checkbox>
+                        <el-checkbox v-model="item.checked" :name="item.attrColumnName" :key="item.id" @change="checkBoxChange(index)"></el-checkbox>
                         <!--<el-checkbox v-if="item.checked" type="checkbox" v-model="checkOp_ck" :name="item.attrColumnName" class="outputColumn" @blur="vilidata_simple" @change="allchk" style="width: 20px;height: 20px;"></el-checkbox>-->
                         <!--<el-checkbox v-if="!item.checked" type="checkbox" v-model="checkOp" :name="item.attrColumnName" class="outputColumn" @blur="vilidata_simple" @change="allchk" style="width: 20px;height: 20px;"></el-checkbox>-->
                     </td>
@@ -211,9 +211,7 @@
                 return obj
             },
             handleCheckAllChange(checked){
-                for(let i=0; i<this.items.length; i++){
-                    this.items[i].checked = checked
-                }
+                Array.from(this.items, (n) => n.checked = checked)
             },
             checkBoxChange(index) {
                 var chk = 0
@@ -253,7 +251,7 @@
                     }
                 }
                 if (!verify) {
-                    alertMsg('提示', '输出字段重复！请返回修改！', 'info')
+                    this.$message({ type: 'info', message: '输出字段重复！请修改' })
                 }
                 return verify
             },
@@ -277,17 +275,6 @@
             }
         }
     }
-
-    /**
-     * 总体保存
-     */
-    function save() {
-        vueObj.get_column()
-        basicObj.save_base()
-        saveSetting()
-        nodeData.isSet = true
-    }
-
 </script>
 
 <style scoped type="text/css">

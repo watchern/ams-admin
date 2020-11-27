@@ -13,11 +13,11 @@
         </ul>
         <div id="myTabContent" class="tab-content">
             <div id="basic" class="tab-pane fade">
-                <Basic />
+                <Basic ref="basic"/>
             </div>
             <div id="filter_jsp" class="tab-pane fade in active">
                 <div id="col10" class="col-sm-12" style="position: relative;background-color: #fff">
-                    <div id="myDiagramDiv" class="col-sm-9" style="border: solid 1px #F3F3F3;height:100%;"></div>
+                    <div id="myDiagramDiv" class="col-sm-9" style="border: solid 1px #F3F3F3;height:100%;" @mouseover="myDiagramMousemove"></div>
                     <img id="fd" width="15" height="15" title="画布放大" src="../images/fangda.png" style="z-index:9999;position: absolute;top: 12px;" @click="amplify">
                     <img id="sx" width="15" height="15" title="画布缩小" src="../images/fangda.png" style="z-index:9999;position: absolute;right: 10px;top: 12px;display: none;" @click="reduce">
                     <div id="joins" class="col-sm-3" style="padding: 0px 4px; height: 35%;">
@@ -98,15 +98,29 @@
                     <table id="column_config" class="table table-bordered">
                         <thead>
                         <tr>
-                            <th width="30%">上一节点名称</th>
-                            <th width="25%">字段名称</th>
-                            <th width="30%">输出字段名称</th>
-                            <th width="15%">是否为输出字段
-                                <input id="sel_all" type="checkbox" class="form-control"/>
+                            <th width="5%" style="text-align: center">序号</th>
+                            <th width="30%" style="text-align: center">上一节点名称</th>
+                            <th width="25%" style="text-align: center">字段名称</th>
+                            <th width="25%" style="text-align: center">输出字段名称</th>
+                            <th width="15%" style="text-align: center">是否为输出字段
+                                <!--<input id="sel_all" type="checkbox" class="form-control"/>-->
+                                <el-checkbox v-model="checkAll" @change="handleCheckAllChange"></el-checkbox>
                             </th>
                         </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                            <tr v-for="(item,index) in items">
+                                <td align="center">{{index+1}}</td>
+                                <td>{{item.rtn}}</td>
+                                <td>{{item.columnName}}</td>
+                                <td>
+                                    <input v-model="item.disColumnName" type="text"  class="form-control newColumn" @blur="vilidata_simple(index)"/>
+                                </td>
+                                <td class="text-center">
+                                    <el-checkbox v-model="item.checked" :name="item.attrColumnName" :key="item.id" @change="checkBoxChange(index)"></el-checkbox>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -129,22 +143,21 @@
                 joinShow:false,
                 mainTableName:'',
                 joinType:'INNER JOIN',
-                slaverTableName:''
+                slaverTableName:'',
+                items:[],
+                checkAll:false
             }
         },
         mounted(){
             this.init();
+            window.inputVerify = this.inputVerify
+            window.saveNodeInfo = this.saveNodeInfo
         },
         methods:{
             init(){
                 $('#myTabContent').css({ 'overflow-y': 'auto', 'height': function() {
                     return ($(document).height() - 50) + 'px'
                 } })
-                let diagramDiv = document.getElementById('myDiagramDiv')
-                diagramDiv.onmousemove = function(event) {
-                    this.layeX = event.layerX
-                    this.layeY = event.layerY
-                }
                 $('#col10').height($(document).height() - $('#myTab').height() - 15)
                 $('#linkDiv').height($(document).height() * 0.25)
                 $('#tips').height($(document).height() * 0.15)
@@ -153,6 +166,14 @@
                 } })
                 relationJs.sendVueObj(this);
                 relationJs.init();
+                $('#column_config>tbody').sortable().disableSelection()
+            },
+            myDiagramMousemove(event){
+                this.layeX = event.layerX
+                this.layeY = event.layerY
+            },
+            saveNodeInfo(){
+                return relationJs.saveNodeInfo()
             },
             changeType() {
                 relationJs.changeType()
@@ -165,28 +186,76 @@
             },
             changeCopare(){
                 relationJs.changeCopare()
+            },
+            handleCheckAllChange(checked){
+                Array.from(this.items, (n) => n.checked = checked)
+            },
+            checkBoxChange(index){
+                var chk = 0
+                for(let i=0; i<this.items.length; i++){
+                    if(this.items[i].checked){
+                        chk++
+                    }
+                }
+                if (this.items.length === chk) { // 全选
+                    this.checkAll = true
+                } else { // 不全选
+                    this.checkAll = false
+                }
+            },
+            vilidata_simple(index){
+                let vili_column = []
+                let verify = true
+                let message = ''
+                let checkedNum = 0
+                if(typeof index !== "undefined"){//失焦时校验输出列是否重复
+                    let curDisColumnName = this.items[index].disColumnName
+                    for(let i=0; i<this.items.length; i++){
+                        if(this.items[i].checked){
+                            if(index !== i){
+                                if(curDisColumnName === this.items[i].disColumnName){
+                                    verify = false
+                                    message = `第${index+1}行与第${i+1}行的输出字段重复！请修改`
+                                    break
+                                }
+                            }
+                            checkedNum++
+                        }
+                    }
+                }else{//保存配置时校验输出列是否重复
+                    for(let i=0; i<this.items.length; i++){
+                        if(this.items[i].checked){
+                            let disColumnName = this.items[i].disColumnName
+                            let curIndex = vili_column.findIndex(item => item === disColumnName)
+                            if(curIndex > 0){
+                                verify = false
+                                message = `第${curIndex+1}行与第${i+1}行的输出字段重复！请修改`
+                            }
+                            checkedNum++
+                        }
+                        vili_column.push(this.items[i].disColumnName)
+                    }
+                }
+                if(checkedNum === 0){
+                    this.$message({ type: 'info', message: '请选择输出字段' })
+                    verify = false
+                }else{
+                    if (!verify) {
+                        this.$message({ type: 'info', message: message })
+                    }
+                }
+                return verify
+            },
+            inputVerify() {
+                return true		// 只是为了全局校验，此节点配置不用单独校验
             }
         }
     }
-
-    function saveNodeInfo() {
-        return relationJs.saveNodeInfo()
-    }
-
-    // 页面输入项的校验(或空配置校验)
-    function inputVerify() {
-        return true		// 只是为了全局校验，此节点配置不用单独校验
-    }
-
-    $('#sel_all').click(function() {
-        if ($(this).prop('checked')) {
-            $('.ckbox').addClass('checked')
-        } else {
-            $('.ckbox').removeClass('checked')
-        }
-    })
 </script>
 
-<style scoped>
+<style scoped type="text/css">
+    .column-has-error{
+        border: 1px solid red;
+    }
 
 </style>

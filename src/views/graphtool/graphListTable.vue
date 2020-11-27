@@ -9,7 +9,7 @@
                 <el-button v-if="type !== 'shareToGraphType'" type="primary" class="oper-btn edit" @click="edit" :disabled="editGraphBtn"/>
                 <el-button v-if="showDelBtn" type="primary" class="oper-btn delete" @click="deleteGraph" :disabled="deleteGraphBtn"/>
                 <el-button v-if="type === 'privateGraphType'" type="primary" class="oper-btn share" @click="share" :disabled="shareGraphBtn"/>
-                <el-button v-if="type === 'shareToGraphType'" type="primary" class="oper-btn share" @click="cancelShare" :disabled="cancelShareGraphBtn"/>
+                <el-button v-if="type === 'shareToGraphType'" type="primary" class="oper-btn cancelshare" @click="cancelShare" :disabled="cancelShareGraphBtn"/>
                 <el-button v-if="type.toLowerCase().indexOf('screengraphtype') > -1" type="primary" class="oper-btn start" @click="run" :disabled="runGraphBtn"/>
             <!--<el-dropdown v-if="type !== 'sharedGraphType'" placement="bottom" trigger="click" style="margin-left: 10px;">-->
                 <!--<el-button type="primary" class="oper-btn more" />-->
@@ -160,8 +160,6 @@
                         // 刷新图形树
                         this.$emit('refreshGraphTree')
                     })
-                }).catch(() => {
-                    this.$message({ type: 'info', message: '已取消删除' })
                 })
             },
             share() {

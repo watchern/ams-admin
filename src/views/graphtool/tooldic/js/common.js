@@ -36,7 +36,6 @@ export function data_filter(type, name, nodeName) {
         success: function() {
             if (type !== 'barChart') {
                 var link = "<a style='color:#fff;position:absolute;top:13px;right:80px;font-size:15px;' class='open_" + type + "' href='javascript:void(0);' onclick='showSettingRemark(this,\"" + type + "\")' title='点击查看详细的配置说明'>"
-                // link += "<img src='../../../images/icon/open_help.png' width='16px' height='16px' style='background-size:100%;vertical-align:inherit;'/>";
                 link += "<span style='position: relative;left: 5px;bottom: 2px;'>帮助</span></a>"
                 $('.layui-layer-title').after(link)
             }
@@ -775,31 +774,33 @@ function executeNode_callback(notExecuteNodeIdArr) {
     graphIndexVue.executeNodeIdArr = notExecuteNodeIdArr
     graphIndexVue.executeId = executeId
     graphIndexVue.resultTableArr = []
-    executeNodeSql(dataParam).then(response => {
-        if(response.data != null){
-            // $('#sysInfoArea').html(response.data.message)
-            if(response.data.isError){
-                $('#sysInfoArea').append("<p style='color:red'>节点执行失败！\n错误信息："+ response.data.message +"</p>");
-                graphIndexVue.layuiTabClickLi(1)
-                // 更改执行状态图标为未执行
-                for (var j = 0; j < notExecuteNodeIdArr.length; j++) {
-                    graph.nodeData[notExecuteNodeIdArr[j]].nodeInfo.nodeExcuteStatus = 2
-                    changeNodeIcon(1, null, notExecuteNodeIdArr[j])
+    graphIndexVue.$nextTick( () => {
+        executeNodeSql(dataParam).then(response => {
+            if(response.data != null){
+                // $('#sysInfoArea').html(response.data.message)
+                if(response.data.isError){
+                    $('#sysInfoArea').append("<p style='color:red'>节点执行失败！\n错误信息："+ response.data.message +"</p>");
+                    graphIndexVue.layuiTabClickLi(1)
+                    // 更改执行状态图标为未执行
+                    for (var j = 0; j < notExecuteNodeIdArr.length; j++) {
+                        graph.nodeData[notExecuteNodeIdArr[j]].nodeInfo.nodeExcuteStatus = 1
+                        changeNodeIcon(1, null, notExecuteNodeIdArr[j])
+                    }
+                    // 循环所有节点变更执行状态有变化的节点执行状态信息
+                    // nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
+                    autoSaveGraph()
                 }
-                // 循环所有节点变更执行状态有变化的节点执行状态信息
-                // nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
-                autoSaveGraph()
+            }else{
+                $('#sysInfoArea').html("请求失败！")
             }
-        }else{
-            $('#sysInfoArea').html("请求失败！")
-        }
+        })
     })
 }
 
 /**
  * 执行到本节点（执行当前节点这条线上所有节点，包括已执行过的）
  * */
-function executeToNode() {
+export function executeToNode() {
     if (!validateJs.executeVerify()) {
         return
     }
@@ -813,7 +814,7 @@ function executeToNode() {
 /**
  * 全部执行
  * */
-function executeAllNode() {
+export function executeAllNode() {
     // 获取当前图形化中所有末级结果表节点集合
     var nodeDataArr = []
     var cells = graph.getModel().cells
@@ -861,10 +862,15 @@ function executeAllNode() {
         }
     }
     if (nodeDataArr.length === 0) {
-        alertMsg('提示', '暂无可执行的节点', 'info')
+        graphIndexVue.$message({ type: 'warning', message: '暂无可执行的节点' })
         return
     }
-    confirmMsg('提示', '运行全部的节点耗时较长，是否继续？', 'info', function() {
+    graphIndexVue.$confirm('运行全部的节点耗时较长，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+    }).then(() => {
         for (var i = 0; i < key.length; i++) {
             // 如果是节点且不是原表，则先变更节点的执行状态为未执行
             if (cells[key[i]].vertex === 1 && graph.nodeData[key[i]] && graph.nodeData[key[i]].nodeInfo &&
@@ -909,62 +915,43 @@ function executeAllNode() {
             }
         }
         if (!returnObj.verify) {
-            alertMsg('提示', returnObj.message, 'info')
+            graphIndexVue.$message({ type: 'warning', message: returnObj.message })
             return
         }
-        var hasRunningTaskTable_callBack = function() {
-            if (graph.openType === 2) { // 权限环境才会检测表空间大小
-                // 判断执行节点中是否有创建表的节点（保存数据的节点）
-                var flag = hasCreateTableNode(notExecuteNodeIdArr)
-                if (flag) { // 如果有，则判断表空间是否足够
-                    returnObj = getSpaceSize()
-                    if (!returnObj.verify) {
-                        alertMsg('提示', returnObj.message, 'info')
-                        return
-                    }
-                }
-            }
-            // 获取组织参数的html代码
-            returnObj = createParamNodeHtml(allNodeIdArr)
-            if (returnObj.htmlContent && returnObj.htmlContent !== '') { // 如果有组织的参数html
-                graph.htmlContent = returnObj.htmlContent// 将html串绑定在graph上
-                layer.open({
-                    id: 'nodeParamSetting',
-                    type: 2,
-                    title: '节点参数设置',
-                    content: 'page/inputParams/inputParams.jsp',
-                    area: ['1000px', '600px'],
-                    skin: 'layui-layer-lan',
-                    btn: ['确定', '取消'],
-                    btn1: function(index, layero) {
-                        // 替换节点的参数
-                        var returnVal = $(layero).find('iframe')[0].contentWindow.replaceNodeParam()
-                        if (returnVal.verify) {
-                            layer.close(index)
-                            // 节点的核心执行方法
-                            executeAllNode_callback(allNodeIdArr, notExecuteNodeObject)
-                        } else {
-                            alertMsg('提示', returnVal.message, 'info')
-                        }
-                    },
-                    btn2: function(index, layero) {
+        // 获取组织参数的html代码
+        returnObj = createParamNodeHtml(allNodeIdArr)
+        if (returnObj.htmlContent && returnObj.htmlContent !== '') { // 如果有组织的参数html
+            graph.htmlContent = returnObj.htmlContent// 将html串绑定在graph上
+            layer.open({
+                id: 'nodeParamSetting',
+                type: 2,
+                title: '节点参数设置',
+                content: 'page/inputParams/inputParams.jsp',
+                area: ['1000px', '600px'],
+                skin: 'layui-layer-lan',
+                btn: ['确定', '取消'],
+                btn1: function(index, layero) {
+                    // 替换节点的参数
+                    var returnVal = $(layero).find('iframe')[0].contentWindow.replaceNodeParam()
+                    if (returnVal.verify) {
                         layer.close(index)
+                        // 节点的核心执行方法
+                        executeAllNode_callback(allNodeIdArr, notExecuteNodeObject)
+                    } else {
+                        graphIndexVue.$message({ type: 'info', message: returnVal.message })
                     }
-                })
-            } else {
-                // 节点的核心执行方法
-                executeAllNode_callback(allNodeIdArr, notExecuteNodeObject)
-            }
-            // 记录执行操作
-            refrashHistoryZtree('节点全部执行完毕')
-        }
-        if (graph.openType === 2) { // 权限环境才会检测跑批数据表
-            // 判断当前队列中是否含有执行数据跑批的数据表节点
-            hasRunningTaskTable(allNodeIdArr, hasRunningTaskTable_callBack, true)
+                },
+                btn2: function(index, layero) {
+                    layer.close(index)
+                }
+            })
         } else {
-            hasRunningTaskTable_CallBack()
+            // 节点的核心执行方法
+            executeAllNode_callback(allNodeIdArr, notExecuteNodeObject)
         }
-    }, function() {})
+        // 记录执行操作
+        refrashHistoryZtree('节点全部执行完毕')
+    })
 }
 
 /**
@@ -1358,7 +1345,7 @@ export function previewNodeData() {
                     resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName
                 }
                 nodeId = graph.nodeData[parentIds[0]].nodeInfo.nodeId
-                nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName
+                nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName+"_"+graph.nodeData[graph.curCell.id].nodeInfo.nodeName
             } else {																										// 如果是非空结果表，直接拿其临时表名称
                 resultTableName = curNodeInfo.resultTableName
                 nodeId = curNodeInfo.nodeId
@@ -1370,8 +1357,14 @@ export function previewNodeData() {
         graphIndexVue.$message.error('预览数据的表名称为空，预览失败')
         return
     }
-    graphIndexVue.resultTableArr = [{nodeId, nodeName, resultTableName}]
-    graphIndexVue.viewData()
+    graphIndexVue.resultTableArr = []
+    graphIndexVue.$nextTick( () => {
+        graphIndexVue.websocketBatchId = new UUIDGenerator().id
+        graphIndexVue.resultTableArr = [{nodeId, nodeName, resultTableName}]
+        graphIndexVue.preValue = [{id:nodeId,name:nodeName}]
+        graphIndexVue.layuiTabClickLi(0)
+        graphIndexVue.viewData()
+    })
 }
 
 /**
@@ -1616,12 +1609,17 @@ function reSetProperty() {
 /**
  * 清除配置（只有操作节点才有该事件）
  * */
-function reSetOptProperty() {
-    confirmMsg('提示', '确定清除当前节点的配置信息？', 'info', function() {
+export function reSetOptProperty() {
+    graphIndexVue.$confirm('确定清除当前节点的配置信息?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+    }).then(() => {
         var curNodeId = graph.curCell.id
         var nodeExcuteStatus = graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus
         if (nodeExcuteStatus === 2) {
-            alertMsg('提示', '当前节点正在执行，不可清除', 'info')
+            graphIndexVue.$message({ type: 'warning', message: '当前节点正在执行，不可清除' })
             return
         }
         graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 1	// 置节点执行状态为未执行
@@ -1640,7 +1638,8 @@ function reSetOptProperty() {
             }
         }
         autoSaveGraph()
-    }, function() {})
+        graphIndexVue.$message({ type: 'success', message: '节点配置已清除' })
+    })
 }
 
 /**

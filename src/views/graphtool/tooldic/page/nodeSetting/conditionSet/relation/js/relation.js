@@ -363,76 +363,66 @@ export function init() {
     var curIsSet = nodeData.isSet			// 判断当前节点是否配置过
     if (curIsSet) {
         if (nodeData.setting.sqlEdit) {
-            var columnsInfo = nodeData.columnsInfo
-            var obj = JSON.parse(nodeData.setting.sqlEdit)
+            let columnsInfo = nodeData.columnsInfo
+            let obj = JSON.parse(nodeData.setting.sqlEdit)
             myDiagram.model = go.Model.fromJson(nodeData.setting.sqlEdit)
             // 获取节点数据
-            var nodeDataArray = obj.nodeDataArray
+            let nodeDataArray = obj.nodeDataArray
             // 获取连线数据
-            var linkDataArray = obj.linkDataArray
+            let linkDataArray = obj.linkDataArray
             // 动态增加关联关系,start
-            for (var i = 0; i < nodeDataArray.length; i++) {
+            for (let i = 0; i < nodeDataArray.length; i++) {
                 addNode(nodeDataArray[i])
             }
-            for (var j = 0; j < linkDataArray.length; j++) {
+            for (let j = 0; j < linkDataArray.length; j++) {
                 addLine(linkDataArray[j], false)
             }
             // 动态增加关联关系,end
             // 组装输出列的表格,start
-            for (var k = 0; k < columnsInfo.length; k++) {
-                var html = "<tr class='colTr' rtn='" + columnsInfo[k].resourceTableName + "' columnInfo='" + JSON.stringify(columnsInfo[k]) + "'><td>" + columnsInfo[k].rtn + '</td>'
-                html += '<td>' + columnsInfo[k].columnName + '</td>'
-                html += "<td><input type='text' class='newColumn form-control sea_text' value='" + columnsInfo[k].newColumnName + "'/></td>"
-                if (columnsInfo[k].isOutputColumn === 1) {
-                    html += "<td class='text-center'><div class='ck_" + k + " ckbox icheckbox_square-purple icheck-item icheck[3xrz1] checked'>"
-                    html += "<input type='checkbox'  name='" + columnsInfo[k].newColumnName + "' class='form-control  icheck-input icheck[3xrz1]'/></div></td>"
-                } else {
-                    html += "<td class='text-center'><div class='ck_" + k + " ckbox icheckbox_square-purple icheck-item icheck[3xrz1]'>"
-                    html += "<input type='checkbox'  name='" + columnsInfo[k].newColumnName + "' class='form-control  icheck-input icheck[3xrz1]'/></div></td>"
+            for (let k = 0; k < columnsInfo.length; k++) {
+                let id = k
+                let resourceTableName = columnsInfo[k].resourceTableName
+                let rtn = columnsInfo[k].rtn
+                let columnInfo = JSON.stringify(columnsInfo[k])
+                let columnName = columnsInfo[k].columnName
+                let disColumnName = columnsInfo[k].newColumnName
+                let checked = true
+                if(columnsInfo[k].isOutputColumn === 0){
+                    checked = false
+                    if(relationVue.checkAll){
+                        relationVue.checkAll = false
+                    }
                 }
-                html += '</tr>'
-                $('#column_config>tbody').append(html).sortable().disableSelection()
-                register('ck_' + k)
-            }
-            var num = 0
-            $('.colTr').each(function() {
-                if (!$(this).find('.ckbox').hasClass('checked')) {
-                    $('#sel_all').removeAttr('checked')
-                    num++
-                    return false
-                }
-            })
-            if (num === 0) {
-                $('#sel_all').parent().addClass('checked')
+                relationVue.items.push({id,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
             }
             // 组装输出列的表格,end
         }
     } else {
-        var cells = graph.curCell.getSourceNodes()
-        var dom = document.getElementById('myDiagramDiv')
-        var height = dom.getBoundingClientRect().height
-        var offsetY = 0 - height / 2
-        var cordinateY = layeY + offsetY
-        var combineColumnsInfo = []
-        for (var i = 0; i < cells.length; i++) {
-            var curNodeId = cells[i].id
+        let cells = graph.curCell.getSourceNodes()
+        let dom = document.getElementById('myDiagramDiv')
+        let height = dom.getBoundingClientRect().height
+        let offsetY = 0 - height / 2
+        let cordinateY = layeY + offsetY
+        let combineColumnsInfo = []
+        for (let i = 0; i < cells.length; i++) {
+            let curNodeId = cells[i].id
             // 判断前置节点是否为未配置的结果表
-            var optType = graph.nodeData[curNodeId].nodeInfo.optType
-            var isSet = graph.nodeData[curNodeId].isSet
-            var rtn = '"' + graph.nodeData[curNodeId].nodeInfo.nodeName + '"'
-            var resourceTableName = graph.nodeData[curNodeId].nodeInfo.resultTableName
-            var columnsInfo = graph.nodeData[curNodeId].columnsInfo
+            let optType = graph.nodeData[curNodeId].nodeInfo.optType
+            let isSet = graph.nodeData[curNodeId].isSet
+            let rtn = '"' + graph.nodeData[curNodeId].nodeInfo.nodeName + '"'
+            let resourceTableName = graph.nodeData[curNodeId].nodeInfo.resultTableName
+            let columnsInfo = graph.nodeData[curNodeId].columnsInfo
             if (optType === 'newNullNode' && !isSet) {
-                var parentIds = graph.nodeData[curNodeId].parentIds
-                var preNodeData = graph.nodeData[parentIds[0]]
+                let parentIds = graph.nodeData[curNodeId].parentIds
+                let preNodeData = graph.nodeData[parentIds[0]]
                 resourceTableName = preNodeData.nodeInfo.resultTableName
                 rtn = '"' + preNodeData.nodeInfo.nodeName + '"_' + rtn
                 columnsInfo = preNodeData.columnsInfo
             }
             // 组装图表和输出列的表格,start
-            var cordinateX = i * 100
-            var local = cordinateX + ' ' + cordinateY
-            var table = {
+            let cordinateX = i * 100
+            let local = cordinateX + ' ' + cordinateY
+            let table = {
                 'key': resourceTableName, // 表名
                 'tableName': resourceTableName,
                 'nodeId': curNodeId,
@@ -440,10 +430,10 @@ export function init() {
                 'type': 'INNER JOIN',
                 'loc': local// 在画布上的位置
             }
-            var fieldArr = []
-            for (var j = 0; j < columnsInfo.length; j++) {
+            let fieldArr = []
+            for (let j = 0; j < columnsInfo.length; j++) {
                 if (columnsInfo[j].isOutputColumn === 1) {
-                    var field = {}
+                    let field = {}
                     field.name = columnsInfo[j].newColumnName
                     field.color = '#FFFFFF'
                     field.hidden = true
@@ -455,18 +445,16 @@ export function init() {
             addNodeData(table)
             // 组装图表,end
             // 组装输出列的表格,start
-            var html = ''
-            for (var k = 0; k < columnsInfo.length; k++) {
+            let html = ''
+            for (let k = 0; k < columnsInfo.length; k++) {
                 if (columnsInfo[k].isOutputColumn === 1) {
                     combineColumnsInfo.push(columnsInfo[k])
-                    html = "<tr class='colTr' rtn='" + resourceTableName + "' columnInfo='" + JSON.stringify(columnsInfo[k]) + "'><td>" + rtn + '</td>'
-                    html += '<td>' + columnsInfo[k].newColumnName + '</td>'
-                    html += "<td><input  type='text' class='newColumn form-control sea_text' value='" + columnsInfo[k].newColumnName + "'/></td>"
-                    html += "<td class='text-center'><div class='ck_" + i + '_' + k + " ckbox icheckbox_square-purple icheck-item icheck[3xrz1]'>"
-                    html +=	"<input type='checkbox'  name='" + columnsInfo[k].newColumnName + "' class='form-control  icheck-input icheck[3xrz1]'/></div></td>"
-                    html += '</tr>'
-                    $('#column_config>tbody').append(html).sortable().disableSelection()
-                    register('ck_' + i + '_' + k)
+                    let id = k
+                    let columnInfo = JSON.stringify(columnsInfo[k])
+                    let columnName = columnsInfo[k].newColumnName
+                    let disColumnName = columnsInfo[k].newColumnName
+                    let checked = false
+                    relationVue.items.push({id,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
                 }
             }
             // 组装输出列的表格,end
@@ -474,28 +462,6 @@ export function init() {
         nodeData.columnsInfo = JSON.parse(JSON.stringify(combineColumnsInfo))
     }
     // 加载图表,end
-}
-
-function register(className) {
-    $('.' + className).click(function() {
-        if ($(this).hasClass('checked')) {
-            if ($('#sel_all').parent().hasClass('checked')) {
-                $('#sel_all').parent().removeClass('checked')
-            }
-            $(this).removeClass('checked')
-        } else {
-            $(this).addClass('checked')
-            var trNum = $('.ckbox').length; var ckNum = 0
-            $('.ckbox').each(function(i, v) {
-                if ($(this).hasClass('checked')) {
-                    ckNum++
-                }
-            })
-            if (trNum === ckNum) {
-                $('#sel_all').parent().addClass('checked')
-            }
-        }
-    })
 }
 
 /**
@@ -530,7 +496,6 @@ function addLine(obj, isAdd) {
     document.getElementById('join2').style.display = ''
     document.getElementById('select').style.display = ''
     document.getElementById('join1').style.display = ''
-    // toSql();
     showJoin(obj)
 }
 
@@ -724,67 +689,45 @@ export function reduce() {
 }
 
 export function saveNodeInfo() {
-    var newColumnArr = []; var columnsInfo = []; var isExsist = false
-    var diaGramJson = JSON.parse(myDiagram.model.toJson())				// 获取图表的json串
-    var nodeDataArray = diaGramJson.nodeDataArray		// 获取节点（图）的数组数据
-    var linkDataArray = diaGramJson.linkDataArray
+    let columnsInfo = []
+    let diaGramJson = JSON.parse(myDiagram.model.toJson())				// 获取图表的json串
+    let nodeDataArray = diaGramJson.nodeDataArray		// 获取节点（图）的数组数据
+    let linkDataArray = diaGramJson.linkDataArray
     if (linkDataArray.length === 0) {
-        alertMsg('提示', '未设置表间的连接条件', 'warning')
+        relationVue.$message({ type: 'warning', message: '未设置表间的连接条件' })
         return false
     }
-    $('.newColumn').parent().removeClass('has-error')
-    var count = 0
-    $('.colTr').each(function(i, v) {
-        var columnInfo = JSON.parse($(this).attr('columnInfo'))
-        var newColumn = $(this).find('.newColumn').val()// 输出字段名称（别名）
-        if ($(this).find('.ckbox').hasClass('checked')) {
-            count++
-        }
-        if ($.inArray(newColumn, newColumnArr) < 0) {
-            newColumnArr.push(newColumn)
-        } else {
-            var index = $.inArray(newColumn, newColumnArr)
-            if ($(this).find('.ckbox').hasClass('checked') && $('.colTr:eq(' + index + ')').find('.ckbox').hasClass('checked')) {
-                isExsist = true						// 有相同的字段别名
-                $('.newColumn:eq(' + index + ')').parent().addClass('has-error')
-                $(this).find('.newColumn').parent().addClass('has-error')
-                return false
-            }
-        }
-        var tableAlias = ''
-        var resourceTableName = $(this).attr('rtn')
-        var rtn = $(this).find('td:eq(0)').html()
-        for (var j = 0; j < nodeDataArray.length; j++) {
+    if (!relationVue.vilidata_simple()) {
+        return false
+    }
+    for(let i=0; i<relationVue.items.length; i++){
+        let columnInfo = JSON.parse(relationVue.items[i].columnInfo)
+        let tableAlias = ''
+        let resourceTableName = relationVue.items[i].resourceTableName
+        let rtn = relationVue.items[i].rtn
+        for (let j = 0; j < nodeDataArray.length; j++) {
             if (nodeDataArray[j].tableName === resourceTableName) {
                 tableAlias = nodeDataArray[j].key					// 获取来源表名称的别名
                 break
             }
         }
-        if ($(this).find('.ckbox').hasClass('checked')) {
+        if (relationVue.items[i].checked) {
             columnInfo.tableAlias = tableAlias
             columnInfo.isOutputColumn = 1
         } else {
             columnInfo.isOutputColumn = 0
         }
-        columnInfo.columnName = $(this).find('td:eq(1)').html()
-        columnInfo.newColumnName = newColumn
+        columnInfo.columnName = relationVue.items[i].columnName
+        columnInfo.newColumnName = relationVue.items[i].disColumnName
         columnInfo.resourceTableName = resourceTableName
         columnInfo.rtn = rtn
         columnsInfo.push(columnInfo)
-    })
-    if (count === 0) {
-        alertMsg('提示', '请选择输出字段', 'warning')
-        return false
-    }
-    if (isExsist) {
-        alertMsg('提示', '输出字段名称有重复，请修改', 'warning')
-        return false
     }
     // 开始保存节点所有数据信息
     nodeData.setting.sqlEdit = myDiagram.model.toJson()
     nodeData.setting.join = join
     nodeData.columnsInfo = columnsInfo
-    basicObj.save_base()						// 保存基础信息
+    relationVue.$refs.basic.save_base()						// 保存基础信息
     nodeData.isSet = true
     return true
 }

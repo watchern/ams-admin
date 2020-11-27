@@ -37,7 +37,7 @@
                 <div class="menuLi">
                     <div class="icon" style="width:100px !important;height: 60px !important;line-height: 60px !important;">
                         <img class="iconImg" src="../tooldic/images/icon/run.png" alt="全部运行">
-                        <a class="iconText" onclick="executeAllNode()">全部运行</a>
+                        <a class="iconText" @click="executeAllNode">全部运行</a>
                     </div>
                 </div>
             </div>
@@ -143,8 +143,11 @@
                         <div id="collapse2" class="panel-collapse collapse in">
                             <div class="panel-body">
                                 <div class="col-sm-12" style="height: 45px;">
-                                    <input id="searchZtree" type="search" class="form-control" placeHolder="搜索关键字" autocomplete="off" style="padding-right: 35px;">
-                                    <img id="searchImg" src="../tooldic/images/icon/search.png" @click="searchZtree">
+                                    <!--<input id="searchZtree" type="search" class="form-control" placeHolder="搜索关键字" autocomplete="off" style="padding-right: 35px;">-->
+                                    <!--<img id="searchImg" src="../tooldic/images/icon/search.png" @click="searchZtree">-->
+                                    <el-input placeholder="搜索关键字" v-model="searchZtreeContent" class="input-with-select">
+                                        <el-button slot="append" icon="el-icon-search" @click="searchZtree"></el-button>
+                                    </el-input>
                                 </div>
                                 <ul id="ztree_datasource" class="ztree" style="width: 100%;"></ul>
                             </div>
@@ -173,8 +176,8 @@
                     <div class="layui-tab-content">
                         <div class="layui-tab-item">
                             <div id="tableArea">
-                                <div v-for="result in resultTableArr" id="dataShow" class="data-show">
-                                    <ChildTabs ref="childTabsRef" :key="result.nodeId" use-type="graph" :pre-value="preValue" />
+                                <div v-for="result in resultTableArr" class="data-show">
+                                    <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="preValue" />
                                 </div>
                             </div>
                         </div>
@@ -379,6 +382,7 @@
                 openGraphType: Number(getParams().openGraphType),// 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
                 openType: Number(getParams().openType),// 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
                 loading:null,//遮罩层对象
+                searchZtreeContent:'',
                 webSocket:null,
                 executeType:1,//节点执行的类型（1、执行本节点、2、执行到本节点、3、全部执行）
                 resultTableArr:[],//节点结果集集合
@@ -417,6 +421,7 @@
             init() {
                 // console.log(Cookies.get("personuuid"))
                 this.loginUserUuid = Cookies.get("personuuid")
+                console.log(this.loginUserUuid)
                 // this.loginUserUuid = '2c948a86757909950175790b10b60002'
                 let roleArr = this.$store.getters.roles
                 let screenManager = 'screenManager'// 场景查询管理员角色
@@ -432,10 +437,13 @@
                 window.setDataSourceCopyIcon = commonJs.setDataSourceCopyIcon
                 window.setNodeOutputTypeIcon = commonJs.setNodeOutputTypeIcon
                 window.executeNode = commonJs.executeNode
+                window.executeToNode = commonJs.executeToNode
                 window.cancelExecute = commonJs.cancelExecute
                 window.reName = commonJs.reName
                 window.curNodeSQL = commonJs.curNodeSQL
                 window.deleteCells = commonJs.deleteCells
+                window.previewNodeData = commonJs.previewNodeData
+                window.reSetOptProperty = commonJs.reSetOptProperty
             },
             initIndex() {
                 window.refrashResourceZtree = indexJs.refrashResourceZtree
@@ -750,7 +758,6 @@
                         }
                         console.log($this.resultTableArr)
                         if(isEnd && executeSQLObj.state === "2"){
-                            console.log('viewData')
                             // 记录执行操作
                             indexJs.refrashHistoryZtree('【' + executeSQLObj.name + '】节点执行完毕')
                             // 自动保存图形化
@@ -765,8 +772,6 @@
                     if(executeTaskObj.resultType === 'select'){//展示节点结果集数据
                         $this.loading.destroy()
                         if(executeSQLObj.customParam[0] === $this.websocketBatchId){//展示当前操作的结果集
-                            console.log($this.$refs.childTabsRef)
-                            console.log($this.$refs.childTabsRef.length)
                             $this.$nextTick( () => {
                                 $this.$refs.childTabsRef[0].loadTableData(dataObj)
                             })
@@ -782,6 +787,10 @@
                 this.webSocket.onerror = function(event) {
                     $this.$message.error('数据请求失败')
                 }
+            },
+            executeAllNode(){
+                // commonJs.executeAllNode()
+                this.$message({ type: 'info', message: '待集成' })
             },
             newGraph(){
                 // this.$confirm('新建图形将在当前页打开，是否继续?', '提示', {

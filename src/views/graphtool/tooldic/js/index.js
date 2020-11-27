@@ -2120,15 +2120,11 @@ function clearSettingParam(obj, nodeId) {
  * 左侧资源树的搜素
  */
 export function searchZtree() {
-    var searchText = $.trim($('#searchZtree').val())
+    var searchText = $.trim(indexVue.searchZtreeContent)
     if (searchText === '') {
         if (isSearchExpand) {
             showNodes()
             indexVue.zTreeObj.expandAll(false)
-            // var rootNodes = indexVue.zTreeObj.getNodesByParam("pid", null, null);
-            // for (var i = 0; i < rootNodes.length; i++) {
-            //     indexVue.zTreeObj.expandNode(rootNodes[i], false);
-            // }
             isSearchExpand = false
         }
     } else {
@@ -2154,7 +2150,7 @@ export function searchZtree() {
 }
 
 function getFilter(node) {
-    var searchText = $.trim($('#searchZtree').val())
+    var searchText = $.trim(indexVue.searchZtreeContent)
     return (node.name.indexOf(searchText) > -1 || node.name.indexOf(searchText.toUpperCase()) > -1 || node.name.indexOf(searchText.toLowerCase()) > -1)
 }
 
