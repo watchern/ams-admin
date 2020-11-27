@@ -74,7 +74,7 @@
         width="80px"
       >
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
+          <el-popover trigger="hover" placement="top" width="500">
             <p style="text-align:center" :style="{color: statusObj[scope.row.status].color}"><strong>{{ statusObj[scope.row.status].name }}</strong></p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
@@ -116,7 +116,7 @@
       >
         <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
           <!-- 任务参数使用图标进行显示 -->
-          <el-popover trigger="hover" placement="top" width="700">
+          <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="taskParam in scope.row.distinctParamList" :key="taskParam.value">
               <label class="col-md-2">
                 {{ taskParam.name }}:

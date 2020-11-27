@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 const baseURL = '/graphtool'
-const dataUrl = '/amsdata'
+const dataUrl = '/data'
 
 /**
  * 获取图形树
@@ -17,13 +17,13 @@ export function getGraphTrees() {
  * 点击图形树节点获取图形列表
  */
 export function getGrapgListByType(data, param) {
-  const obj = {
+  let obj = {
     baseURL: baseURL,
     url: '/graphCt/pageList',
     method: 'post',
     data// RequestBody类型参数
   }
-  if (param) {
+  if (typeof param !== "undefined") {
     obj.params = param// RequestParam类型参数
   }
   return request(obj)
@@ -114,11 +114,102 @@ export function saveGraphInterface(data) {
  * 根据图形ID查询执行节点集合
  */
 export function getExecuteNodeInfoPost(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/graphExecuteNode/getExecuteNodeInfo',
+    method: 'post',
+    params: data
+  })
+}
+
+/**
+ * 获取可导出的图形列表
+ */
+export function getExportGrapgListByType(data, param) {
+    let obj = {
+        baseURL: baseURL,
+        url: '/graphCt/exportPageList',
+        method: 'post',
+        data// RequestBody类型参数
+    }
+    if (typeof param !== "undefined") {
+        obj.params = param// RequestParam类型参数
+    }
+    return request(obj)
+}
+
+/**
+ * 导出图形文件
+ */
+export function exportGraphXml(data){
     return request({
         baseURL: baseURL,
-        url: '/graphExecuteNode/getExecuteNodeInfo',
+        url: '/graphCt/exportGraphXml',
         method: 'post',
         params:data
     })
 }
 
+/**
+ * 导入图形XML文件
+ */
+export function importGraphXml(formData) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/importGraphXml',
+        method: 'post',
+        data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+}
+
+/**
+ * 删除执行节点信息
+ */
+export function deleteExecuteNodes(ids) {
+    return request({
+        baseURL: baseURL,
+        url: `/graphExecuteNode/delete/${ids}`,
+        method: 'get',
+    })
+}
+
+
+/**
+ * 检测当前节点中结果表之前是否被创建过，若创建过则给删除标志为true
+ */
+export function checkTableName(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/checkTableName',
+        method: 'post',
+        params:data,
+        async: false
+    })
+}
+
+/**
+ * 执行节点
+ */
+export function executeNodeSql(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/executeNodeSql',
+        method: 'post',
+        data,
+    })
+}
+
+/**
+ * 预览节点结果
+ */
+export function viewNodeData(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/viewNodeData',
+        method: 'post',
+        data,
+    })
+}

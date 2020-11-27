@@ -76,7 +76,7 @@
         prop="taskParamsList"
       >
         <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
+          <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(taskParam,$index) in scope.row.distinctParamList" :key="$index">
               <label class="col-md-2">
                 {{ taskParam.name }}:
@@ -99,7 +99,7 @@
         width="120px"
       >
         <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
+          <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
               <label class="col-md-2">
                 [{{ dependTask.dateValueName }}]
