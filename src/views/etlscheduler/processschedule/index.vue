@@ -587,8 +587,13 @@ export default {
     }
   },
   watch: {
-    distinctParamList() {
-      this.changeParamList()
+    distinctParamList: {
+      handler(val) {
+        this.changeParamList(val)
+      },
+      // 这里是关键，代表递归监听 demo 的变化
+      deep: true
+
     },
     // 监听selections集合
     selections() {
@@ -902,11 +907,11 @@ export default {
         }
       })
     },
-    changeParamList() {
-      var map = _.groupBy(this.distinctParamList, 'paramCode')
+    changeParamList(val) {
+      var map = _.groupBy(val, 'paramCode')
       this.paramList.forEach(function(property) {
-        property.value = map[property.paramCode].value
-        property.param.defaultValue = map[property.paramCode].value
+        property.value = map[property.paramCode][0].value
+        property.param.defaultValue = map[property.paramCode][0].value
       })
     },
     // 修改
