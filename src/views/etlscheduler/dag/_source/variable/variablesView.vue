@@ -98,7 +98,13 @@ export default {
     _copy(className) {
       const clipboard = new Clipboard(`.${className}`)
       clipboard.on('success', e => {
-        this.$message.success(`复制成功`)
+        this.$notify({
+          title: '提示',
+          message: `复制成功`,
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
         // Free memory
         clipboard.destroy()
       })

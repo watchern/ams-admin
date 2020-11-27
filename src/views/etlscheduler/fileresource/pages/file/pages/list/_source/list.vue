@@ -163,7 +163,13 @@ export default {
       }).then(res => {
         this.$refs[`poptip-${i}`][0].doClose()
         this.$emit('on-update')
-        this.$message.success(res.msg)
+        this.$notify({
+          title: '提示',
+          message: res.msg,
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
       }).catch(e => {
         this.$refs[`poptip-${i}`][0].doClose()
         this.$message.error(e.msg || '')

@@ -8,8 +8,7 @@
     </div>
     <div class="bottom-p">
       <x-button
-        type="primary"
-        class="btnclass"
+        type="text"
         :disabled="disabled"
         @click="close()"
       > 退出 </x-button>
@@ -82,6 +81,9 @@ export default {
   border-color: #353a43;
   color: #c8ff8c;
   font-weight: bold;
+}
+.ans-btn-text:hover {
+	color: #252d39;
 }
 .popup-model {
   background: #fff;

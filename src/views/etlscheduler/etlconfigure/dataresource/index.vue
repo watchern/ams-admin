@@ -12,7 +12,7 @@
         type="primary"
         size="mini"
         @click="handleCreate()"
-      >添加</el-button>
+      >新增</el-button>
       <el-button
         type="primary"
         size="mini"
@@ -28,7 +28,7 @@
     </div> -->
     <el-row>
       <el-col align="right">
-        <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
+        <el-button type="primary" class="oper-btn add" title="新增" @click="handleCreate()" />
         <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" title="编辑" @click="handleUpdate()" />
         <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" title="删除" @click="handleDelete()" />
       </el-col>
@@ -118,7 +118,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button v-if="!closeStatus" @click="dialogFormVisible = false">取消</el-button>
+        <el-button v-if="!closeStatus" @click="dialogFormVisible = false">返回</el-button>
         <el-button
           v-if="closeStatus"
           type="primary"
@@ -173,7 +173,7 @@ export default {
       dialogStatus: '',
       textMap: {
         update: '修改数据资源',
-        create: '添加数据资源',
+        create: '新增数据资源',
         show: '查看数据资源'
       },
       dialogPvVisible: false,

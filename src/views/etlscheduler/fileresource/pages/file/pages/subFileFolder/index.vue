@@ -84,7 +84,13 @@ export default {
           pid: this.$route.params.id,
           description: this.description
         }).then(res => {
-          this.$message.success(res.msg)
+          this.$notify({
+            title: '提示',
+            message: res.msg,
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
           setTimeout(() => {
             this.spinnerLoading = false
             this.$router.push({ path: `/resource/file/subdirectory/${this.$route.params.id}` })

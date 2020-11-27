@@ -236,12 +236,12 @@ export default {
       dialogStatus: '',
       dialogStatusFilter: '',
       textMap: {
-        update: '用户组定义修改',
-        create: '用户组定义新增'
+        update: '修改用户组定义',
+        create: '新增用户组定义'
       },
       textMapFilter: {
-        update: '数据筛选器修改',
-        create: '数据筛选器新增'
+        update: '修改数据筛选器',
+        create: '新增数据筛选器'
       },
       rules: {
         sceneName: [{ required: true, message: '请填写场景名称', trigger: 'change' }],

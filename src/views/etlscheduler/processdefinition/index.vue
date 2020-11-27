@@ -8,10 +8,10 @@
       />
     </div>
     <el-row>
-      <el-col align="right"> <!-- 添加 -->
+      <el-col align="right"> <!-- 新增 -->
         <el-button
           type="primary"
-          title="添加"
+          title="新增"
           class="oper-btn add"
           @click="handleCreate()"
         />
@@ -248,7 +248,7 @@ export default {
       this.handleFilter()
     },
     handleCreate() {
-      // 流程定义添加
+      // 流程定义新增
       this.$router.push('/etlscheduler/workflow')
     },
     handleUpdate() {
