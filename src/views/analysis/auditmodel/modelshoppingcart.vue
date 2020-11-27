@@ -1,6 +1,6 @@
 <template>
   <div id="drag">
-    <div class="title">
+    <!-- <div class="title">
       <h2>已选择模型</h2>
       <div>
         <a
@@ -23,34 +23,32 @@
         ></a>
         <a class="close el-icon-close" href="javascript:" title="关闭"></a>
       </div>
-    </div>
-    <div class="resizeL"></div>
+    </div> -->
+    <!-- <div class="resizeL"></div>
     <div class="resizeT"></div>
     <div class="resizeR"></div>
     <div class="resizeB"></div>
     <div class="resizeLT"></div>
     <div class="resizeTR"></div>
     <div class="resizeBR"></div>
-    <div class="resizeLB"></div>
+    <div class="resizeLB"></div> -->
     <div class="content">
-      <el-link class="label-tip" @click="selectData" type="primary">{{
-        memoValue
-      }}</el-link>
+      <el-link class="label-tip" type="primary" @click="selectData">{{
+          memoValue
+        }}</el-link>
       <div class="btn-div">
-        <el-button type="primary" @click="runImmediately" plain
-          >立即运行</el-button
-        >
-        <el-button type="primary" plain @click="timingExecution"
-          >定时执行</el-button
-        >
+        <!-- <el-button type="primary" @click="runImmediately" plain>立</el-button>
+        <el-button type="primary" plain @click="timingExecution">定</el-button> -->
+        <span class="select-btn iconfont iconoper-drag" />
+        <span class="iconYY iconfont iconoper-start" @click="runImmediately" />
+        <span class="iconYY iconfont iconoper-timing" @click="timingExecution" />
+        <span class="iconYY1 iconfont iconmenu-2" @click="selectData" />
       </div>
-      <el-button class="select-btn" type="primary" plain @click="selectData"
-        >查看已选模型</el-button
-      >
+      <!-- <el-button class="select-btn" type="primary" @click="selectData" plain>三</el-button> -->
     </div>
     <el-dialog
-      title="当前已选模型"
       v-if="dialogFormVisible"
+      title="当前已选模型"
       :visible.sync="dialogFormVisible"
       :append-to-body="true"
     >
@@ -100,12 +98,12 @@
       :append-to-body="true"
     >
       <runimmediatelycon
-        @changeFlag="changeFlag"
+        v-if="runimmediatelyIsSee"
         ref="modelsetting"
         :timing="false"
-        v-if="runimmediatelyIsSee"
         :models="this.currentData"
-      ></runimmediatelycon>
+        @changeFlag="changeFlag"
+      />
       <span slot="footer" class="dialog-footer">
         <el-button @click="runimmediatelyIsSee = false">取 消</el-button>
         <el-button type="primary" @click="modelRunSetting">确 定</el-button>
@@ -118,31 +116,40 @@
       :append-to-body="true"
     >
       <runimmediatelycon
+        v-if="timingExecutionIsSee"
         ref="modelsetting"
         :timing="true"
-        v-if="timingExecutionIsSee"
         :models="this.currentData"
-      ></runimmediatelycon>
+      />
       <span slot="footer" class="dialog-footer">
         <el-button @click="timingExecutionIsSee = false">取 消</el-button>
         <el-button type="primary" @click="modelRunSetting">确 定</el-button>
       </span>
     </el-dialog>
+
+    <div class="none-box">
+      <ul class="none-box-ul">
+        <li v-for="(item,index) in currentData">
+          <p class="none-box-txt">{{ item.modelName }}</p>
+        </li>
+      </ul>
+    </div>
+
   </div>
 </template>
 <script>
-import { getOneDict } from "@/utils";
-import runimmediatelycon from "@/views/analysis/auditmodel/runimmediatelycon";
-import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
+import { getOneDict } from '@/utils'
+import runimmediatelycon from '@/views/analysis/auditmodel/runimmediatelycon'
+import { uuid2, addRunTaskAndRunTaskRel } from '@/api/analysis/auditmodel'
 export default {
   components: {
-    runimmediatelycon,
+    runimmediatelycon
   },
   data() {
     return {
       dragMinWidth: 250,
       dragMinHeight: 124,
-      memoValue: "",
+      memoValue: '',
       currentData: [],
       dialogFormVisible: false,
       list: [],
@@ -152,176 +159,201 @@ export default {
       models: [],
       replacedInfo: [],
       timingExecutionIsSee: false,
-      flag: "",
-    };
-  },
-  mounted() {
-    this.initEvent();
+      flag: ''
+    }
   },
   watch: {
     flag(value) {
-      this.$nextTick(function () {
+      this.$nextTick(function() {
         if (value == true) {
           this.modelRunSetting()
           this.flag = ''
         }
-      });
-    },
+      })
+    }
+  },
+  mounted() {
+    this.initEvent()
   },
   methods: {
     initEvent() {
-      var oDrag = document.getElementById("drag");
-      var oTitle = this.byClass("title", oDrag)[0];
-      var oL = this.byClass("resizeL", oDrag)[0];
-      var oT = this.byClass("resizeT", oDrag)[0];
-      var oR = this.byClass("resizeR", oDrag)[0];
-      var oB = this.byClass("resizeB", oDrag)[0];
-      var oLT = this.byClass("resizeLT", oDrag)[0];
-      var oTR = this.byClass("resizeTR", oDrag)[0];
-      var oBR = this.byClass("resizeBR", oDrag)[0];
-      var oLB = this.byClass("resizeLB", oDrag)[0];
-      this.drag(oDrag, oTitle);
-      //四角
-      this.resize(oDrag, oLT, true, true, false, false);
-      this.resize(oDrag, oTR, false, true, false, false);
-      this.resize(oDrag, oBR, false, false, false, false);
-      this.resize(oDrag, oLB, true, false, false, false);
-      //四边
-      this.resize(oDrag, oL, true, false, false, true);
-      this.resize(oDrag, oT, false, true, true, false);
-      this.resize(oDrag, oR, false, false, false, true);
-      this.resize(oDrag, oB, false, false, true, false);
-      oDrag.style.left =
-        (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + "px";
-      oDrag.style.top =
-        (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + "px";
+      // 鼠标移入显示隐藏的盒子
+      var oNoneBox = document.getElementsByClassName('none-box')[0]
+      var oLabeTip = document.getElementsByClassName('label-tip')[0]
+      var oIconYY = document.getElementsByClassName('iconYY')
+      var oIconYY1 = document.getElementsByClassName('iconYY1')[0]
+      var timer = 'null'
+      oLabeTip.onmouseover = function() {
+        clearInterval(timer)
+        oNoneBox.style.display = 'block'
+      }
+      oLabeTip.onmouseout = function() {
+        timer = setInterval(function() {
+          oNoneBox.style.display = 'none'
+        }, 200)
+      }
+      oNoneBox.onmouseover = function() {
+        clearInterval(timer)
+        oNoneBox.style.display = 'block'
+      }
+
+      oNoneBox.onmouseout = function() {
+        oNoneBox.style.display = 'none'
+      }
+
+      var oDrag = document.getElementById('drag')
+      var oBtn = this.byClass('select-btn', oDrag)[0]
+      var oTitle = this.byClass('title', oDrag)[0]
+      // var oL = this.byClass('resizeL', oDrag)[0]
+      // var oT = this.byClass('resizeT', oDrag)[0]
+      // var oR = this.byClass('resizeR', oDrag)[0]
+      // var oB = this.byClass('resizeB', oDrag)[0]
+      // var oLT = this.byClass('resizeLT', oDrag)[0]
+      // var oTR = this.byClass('resizeTR', oDrag)[0]
+      // var oBR = this.byClass('resizeBR', oDrag)[0]
+      // var oLB = this.byClass('resizeLB', oDrag)[0]
+      this.drag(oDrag, oBtn)
+      // 四角
+      // this.resize(oDrag, oLT, true, true, false, false)
+      // this.resize(oDrag, oTR, false, true, false, false)
+      // this.resize(oDrag, oBR, false, false, false, false)
+      // this.resize(oDrag, oLB, true, false, false, false)
+      // 四边
+      // this.resize(oDrag, oL, true, false, false, true)
+      // this.resize(oDrag, oT, false, true, true, false)
+      // this.resize(oDrag, oR, false, false, false, true)
+      // this.resize(oDrag, oB, false, false, true, false)
+      // oDrag.style.left =
+      //   (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
+      // oDrag.style.top =
+      //   (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'
     },
-    drag(oDrag, handle) {
-      var disY = 0;
-      var disX = 0;
-      var oMin = this.byClass("min", oDrag)[0];
-      var oMax = this.byClass("max", oDrag)[0];
-      var oRevert = this.byClass("revert", oDrag)[0];
-      var oClose = this.byClass("close", oDrag)[0];
-      handle = handle || oDrag;
-      handle.style.cursor = "move";
-      handle.onmousedown = function (event) {
-        var event = event || window.event;
-        disX = event.clientX - oDrag.offsetLeft;
-        disY = event.clientY - oDrag.offsetTop;
-        document.onmousemove = function (event) {
-          var event = event || window.event;
-          var iL = event.clientX - disX;
-          var iT = event.clientY - disY;
-          var maxL = document.documentElement.clientWidth - oDrag.offsetWidth;
-          var maxT = document.documentElement.clientHeight - oDrag.offsetHeight;
-          iL <= 0 && (iL = 0);
-          iT <= 0 && (iT = 0);
-          iL >= maxL && (iL = maxL);
-          iT >= maxT && (iT = maxT);
-          oDrag.style.left = iL + "px";
-          oDrag.style.top = iT + "px";
-          return false;
-        };
-        document.onmouseup = function () {
-          document.onmousemove = null;
-          document.onmouseup = null;
-          this.releaseCapture && this.releaseCapture();
-        };
-        this.setCapture && this.setCapture();
-        return false;
-      };
-      //最大化按钮
-      oMax.onclick = function () {
-        oDrag.style.top = oDrag.style.left = 0;
-        oDrag.style.width = document.documentElement.clientWidth - 2 + "px";
-        oDrag.style.height = document.documentElement.clientHeight - 2 + "px";
-        this.style.display = "none";
-        oRevert.style.display = "block";
-      };
-      //还原按钮
-      oRevert.onclick = function () {
-        oDrag.style.width = this.dragMinWidth + "px";
-        oDrag.style.height = this.dragMinHeight + "px";
-        oDrag.style.left =
-          (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + "px";
-        oDrag.style.top =
-          (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 +
-          "px";
-        this.style.display = "none";
-        oMax.style.display = "block";
-      };
-      //最小化按钮
-      oMin.onclick = oClose.onclick = function () {
-        oDrag.style.display = "none";
-        var oA = document.createElement("a");
-        oA.className = "open";
-        oA.href = "javascript:;";
-        oA.title = "还原";
-        document.body.appendChild(oA);
-        oA.onclick = function () {
-          oDrag.style.display = "block";
-          document.body.removeChild(this);
-          this.onclick = null;
-        };
-      };
-      //阻止冒泡
-      oMin.onmousedown = oMax.onmousedown = oClose.onmousedown = function (
-        event
-      ) {
-        this.onfocus = function () {
-          this.blur();
-        };
-        (event || window.event).cancelBubble = true;
-      };
+    drag(oBtn, handle) {
+      var disY = 0
+      var disX = 0
+      var oMin = this.byClass('min', oBtn)[0]
+      var oMax = this.byClass('max', oBtn)[0]
+      var oRevert = this.byClass('revert', oBtn)[0]
+      var oClose = this.byClass('close', oBtn)[0]
+      handle = handle || oBtn
+      handle.style.cursor = 'move'
+      handle.onmousedown = function(event) {
+        var event = event || window.event
+        disX = event.clientX - oBtn.offsetLeft
+        disY = event.clientY - oBtn.offsetTop
+        document.onmousemove = function(event) {
+          var event = event || window.event
+          var iL = event.clientX - disX
+          var iT = event.clientY - disY
+          var maxL = document.documentElement.clientWidth - oBtn.offsetWidth
+          var maxT = document.documentElement.clientHeight - oBtn.offsetHeight
+          iL <= 0 && (iL = 0)
+          iT <= 0 && (iT = 0)
+          iL >= maxL && (iL = maxL)
+          iT >= maxT && (iT = maxT)
+          oBtn.style.left = iL + 'px'
+          oBtn.style.top = iT + 'px'
+          return false
+        }
+        document.onmouseup = function() {
+          document.onmousemove = null
+          document.onmouseup = null
+          this.releaseCapture && this.releaseCapture()
+        }
+        this.setCapture && this.setCapture()
+        return false
+      }
+      // 最大化按钮
+      // oMax.onclick = function () {
+      //   oDrag.style.top = oDrag.style.left = 0;
+      //   oDrag.style.width = document.documentElement.clientWidth - 2 + "px";
+      //   oDrag.style.height = document.documentElement.clientHeight - 2 + "px";
+      //   this.style.display = "none";
+      //   oRevert.style.display = "block";
+      // };
+      // 还原按钮
+      // oRevert.onclick = function () {
+      //   oDrag.style.width = this.dragMinWidth + "px";
+      //   oDrag.style.height = this.dragMinHeight + "px";
+      //   oDrag.style.left =
+      //     (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + "px";
+      //   oDrag.style.top =
+      //     (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 +
+      //     "px";
+      //   this.style.display = "none";
+      //   oMax.style.display = "block";
+      // };
+      // 最小化按钮
+      // oMin.onclick = oClose.onclick = function () {
+      //   oDrag.style.display = "none";
+      //   var oA = document.createElement("a");
+      //   oA.className = "open";
+      //   oA.href = "javascript:;";
+      //   oA.title = "还原";
+      //   document.body.appendChild(oA);
+      //   oA.onclick = function () {
+      //     oDrag.style.display = "block";
+      //     document.body.removeChild(this);
+      //     this.onclick = null;
+      //   };
+      // };
+      // 阻止冒泡
+      // oMin.onmousedown = oMax.onmousedown = oClose.onmousedown = function(
+      //   event
+      // ) {
+      //   this.onfocus = function() {
+      //     this.blur()
+      //   };
+      //   (event || window.event).cancelBubble = true
+      // }
     },
-    resize(oParent, handle, isLeft, isTop, lockX, lockY) {
-      handle.onmousedown = function (event) {
-        var event = event || window.event;
-        var disX = event.clientX - handle.offsetLeft;
-        var disY = event.clientY - handle.offsetTop;
-        var iParentTop = oParent.offsetTop;
-        var iParentLeft = oParent.offsetLeft;
-        var iParentWidth = oParent.offsetWidth;
-        var iParentHeight = oParent.offsetHeight;
-        document.onmousemove = function (event) {
-          var event = event || window.event;
-          var iL = event.clientX - disX;
-          var iT = event.clientY - disY;
-          var maxW =
-            document.documentElement.clientWidth - oParent.offsetLeft - 2;
-          var maxH =
-            document.documentElement.clientHeight - oParent.offsetTop - 2;
-          var iW = isLeft ? iParentWidth - iL : handle.offsetWidth + iL;
-          var iH = isTop ? iParentHeight - iT : handle.offsetHeight + iT;
-          isLeft && (oParent.style.left = iParentLeft + iL + "px");
-          isTop && (oParent.style.top = iParentTop + iT + "px");
-          iW < this.dragMinWidth && (iW = this.dragMinWidth);
-          iW > maxW && (iW = maxW);
-          lockX || (oParent.style.width = iW + "px");
-          iH < this.dragMinHeight && (iH = this.dragMinHeight);
-          iH > maxH && (iH = maxH);
-          lockY || (oParent.style.height = iH + "px");
-          if (
-            (isLeft && iW == this.dragMinWidth) ||
-            (isTop && iH == this.dragMinHeight)
-          )
-            document.onmousemove = null;
-          return false;
-        };
-        document.onmouseup = function () {
-          document.onmousemove = null;
-          document.onmouseup = null;
-        };
-        return false;
-      };
-    },
+    // resize(oParent, handle, isLeft, isTop, lockX, lockY) {
+    //   handle.onmousedown = function(event) {
+    //     var event = event || window.event
+    //     var disX = event.clientX - handle.offsetLeft
+    //     var disY = event.clientY - handle.offsetTop
+    //     var iParentTop = oParent.offsetTop
+    //     var iParentLeft = oParent.offsetLeft
+    //     var iParentWidth = oParent.offsetWidth
+    //     var iParentHeight = oParent.offsetHeight
+    //     document.onmousemove = function(event) {
+    //       var event = event || window.event
+    //       var iL = event.clientX - disX
+    //       var iT = event.clientY - disY
+    //       var maxW =
+    //         document.documentElement.clientWidth - oParent.offsetLeft - 2
+    //       var maxH =
+    //         document.documentElement.clientHeight - oParent.offsetTop - 2
+    //       var iW = isLeft ? iParentWidth - iL : handle.offsetWidth + iL
+    //       var iH = isTop ? iParentHeight - iT : handle.offsetHeight + iT
+    //       isLeft && (oParent.style.left = iParentLeft + iL + 'px')
+    //       isTop && (oParent.style.top = iParentTop + iT + 'px')
+    //       iW < this.dragMinWidth && (iW = this.dragMinWidth)
+    //       iW > maxW && (iW = maxW)
+    //       lockX || (oParent.style.width = iW + 'px')
+    //       iH < this.dragMinHeight && (iH = this.dragMinHeight)
+    //       iH > maxH && (iH = maxH)
+    //       lockY || (oParent.style.height = iH + 'px')
+    //       if (
+    //         (isLeft && iW == this.dragMinWidth) ||
+    //         (isTop && iH == this.dragMinHeight)
+    //       ) { document.onmousemove = null }
+    //       return false
+    //     }
+    //     document.onmouseup = function() {
+    //       document.onmousemove = null
+    //       document.onmouseup = null
+    //     }
+    //     return false
+    //   }
+    // },
     setMemo(obj) {
-      this.memoValue = obj.length + "个";
-      this.currentData = obj;
+      this.memoValue = obj.length
+      this.currentData = obj
+      // console.log(this.currentData)
     },
     selectData() {
-      this.dialogFormVisible = true;
+      this.dialogFormVisible = true
     },
     /**
      * 格式化时间字符串
@@ -330,20 +362,20 @@ export default {
      * @returns {返回格式化后的时间字符串}
      */
     dateFormatter(row, column) {
-      const datetime = row.createTime;
+      const datetime = row.createTime
       if (datetime) {
-        var dateMat = new Date(datetime);
-        var year = dateMat.getFullYear();
-        var month = dateMat.getMonth() + 1;
-        var day = dateMat.getDate();
-        var hh = dateMat.getHours();
-        var mm = dateMat.getMinutes();
-        var ss = dateMat.getSeconds();
+        var dateMat = new Date(datetime)
+        var year = dateMat.getFullYear()
+        var month = dateMat.getMonth() + 1
+        var day = dateMat.getDate()
+        var hh = dateMat.getHours()
+        var mm = dateMat.getMinutes()
+        var ss = dateMat.getSeconds()
         var timeFormat =
-          year + "-" + month + "-" + day + " " + hh + ":" + mm + ":" + ss;
-        return timeFormat;
+          year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
+        return timeFormat
       }
-      return "";
+      return ''
     },
     /**
      * 格式化模型类型
@@ -352,14 +384,14 @@ export default {
      * @returns {返回格式化后的字符串}
      */
     modelTypeFormatter(row, column) {
-      const modelType = row.modelType;
-      let dicObj = getOneDict(modelType);
-      let value = "";
+      const modelType = row.modelType
+      const dicObj = getOneDict(modelType)
+      let value = ''
       if (dicObj.length == 0) {
-        return "";
+        return ''
       }
-      value = dicObj[0].codeName;
-      return value;
+      value = dicObj[0].codeName
+      return value
     },
     /**
      * 格式化风险等级
@@ -368,110 +400,109 @@ export default {
      * @returns {返回格式化后的字符串}
      */
     riskLevelFormatter(row, column) {
-      let riskLevel = row.riskLevelUuid;
-      let value = "";
-      let dicObj = getOneDict(riskLevel);
+      const riskLevel = row.riskLevelUuid
+      let value = ''
+      const dicObj = getOneDict(riskLevel)
       if (dicObj.length == 0) {
-        return "";
+        return ''
       }
-      value = dicObj[0].codeName;
-      return value;
+      value = dicObj[0].codeName
+      return value
     },
-    byId: function (id) {
-      return typeof id === "string" ? document.getElementById(id) : id;
+    byId: function(id) {
+      return typeof id === 'string' ? document.getElementById(id) : id
     },
-    byClass: function (sClass, oParent) {
-      var aClass = [];
-      var reClass = new RegExp("(^| )" + sClass + "( |$)");
-      var aElem = this.byTagName("*", oParent);
-      for (var i = 0; i < aElem.length; i++)
-        reClass.test(aElem[i].className) && aClass.push(aElem[i]);
-      return aClass;
+    byClass: function(sClass, oParent) {
+      var aClass = []
+      var reClass = new RegExp('(^| )' + sClass + '( |$)')
+      var aElem = this.byTagName('*', oParent)
+      for (var i = 0; i < aElem.length; i++) { reClass.test(aElem[i].className) && aClass.push(aElem[i]) }
+      return aClass
     },
-    byTagName: function (elem, obj) {
-      return (obj || document).getElementsByTagName(elem);
+    byTagName: function(elem, obj) {
+      return (obj || document).getElementsByTagName(elem)
     },
     runImmediately() {
-      this.runimmediatelyIsSee = true;
+      this.runimmediatelyIsSee = true
     },
     timingExecution() {
-      this.timingExecutionIsSee = true;
+      this.timingExecutionIsSee = true
     },
     /**
      * 添加运行任务和运行任务关联表
      */
     modelRunSetting() {
-      var results = this.$refs.modelsetting.replaceParams();
-      this.models = results.models;
-      this.replacedInfo = results.replaceInfo;
-      var dateTime = results.dateTime;
-      var time1 = Date.parse(dateTime.toString());
-      var time2 = Date.parse(new Date().toString());
-      var differTime = (time1 - time2) / (1000 * 60);
+      var results = this.$refs.modelsetting.replaceParams()
+      this.models = results.models
+      this.replacedInfo = results.replaceInfo
+      var dateTime = results.dateTime
+      var time1 = Date.parse(dateTime.toString())
+      var time2 = Date.parse(new Date().toString())
+      var differTime = (time1 - time2) / (1000 * 60)
       // if (differTime < 5) {
       //   this.$message({
       //     type: "info",
       //     message: "定时运行时间距当前时间要大于5分钟",
       //   });
       // } else {
-        var runTaskUuid = uuid2();
-        var batchUuid = uuid2();
-        var runTaskRels = [];
-        for (var i = 0; i < this.models.length; i++) {
-          var runTaskRelUuid = uuid2();
-          var settingInfo = {
-            sql: this.replacedInfo[i].sql,
-            paramsArr: this.replacedInfo[i].paramsArr,
-          };
-          var runTaskRel = {
-            runTaskRelUuid: runTaskRelUuid,
-            runTaskUuid: runTaskUuid,
-            sourceUuid: this.models[i].modelUuid,
-            settingInfo: JSON.stringify(settingInfo),
-            modelVersion: this.models[i].modelVersion,
-            runRecourceType: 1,
-            isDeleted: 0,
-            runStatus: 1,
-          };
-          runTaskRels.push(runTaskRel);
+      var runTaskUuid = uuid2()
+      var batchUuid = uuid2()
+      var runTaskRels = []
+      for (var i = 0; i < this.models.length; i++) {
+        var runTaskRelUuid = uuid2()
+        var settingInfo = {
+          sql: this.replacedInfo[i].sql,
+          paramsArr: this.replacedInfo[i].paramsArr
         }
-        let runType = 3;
-        if (this.timingExecutionIsSee) {
-          runType = 2;
-        }
-        if (this.runimmediatelyIsSee) {
-          runType = 3;
-        }
-        var runTask = {
+        var runTaskRel = {
+          runTaskRelUuid: runTaskRelUuid,
           runTaskUuid: runTaskUuid,
-          batchUuid: batchUuid,
-          runTaskName: "系统添加",
-          runType: runType,
-          timingExecute: dateTime,
-          runTaskRels: runTaskRels,
-        };
-        addRunTaskAndRunTaskRel(runTask).then((resp) => {
-          if (resp.data == true) {
-            this.$notify({
-              title: "提示",
-              message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
-              type: "success",
-              duration: 2000,
-              position: "bottom-right",
-            });
-          } else {
-            this.$message({ type: "info", message: "执行运行任务失败" });
-          }
-        });
+          sourceUuid: this.models[i].modelUuid,
+          settingInfo: JSON.stringify(settingInfo),
+          modelVersion: this.models[i].modelVersion,
+          runRecourceType: 1,
+          isDeleted: 0,
+          runStatus: 1
+        }
+        runTaskRels.push(runTaskRel)
+      }
+      let runType = 3
+      if (this.timingExecutionIsSee) {
+        runType = 2
+      }
+      if (this.runimmediatelyIsSee) {
+        runType = 3
+      }
+      var runTask = {
+        runTaskUuid: runTaskUuid,
+        batchUuid: batchUuid,
+        runTaskName: '系统添加',
+        runType: runType,
+        timingExecute: dateTime,
+        runTaskRels: runTaskRels
+      }
+      addRunTaskAndRunTaskRel(runTask).then((resp) => {
+        if (resp.data == true) {
+          this.$notify({
+            title: '提示',
+            message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        } else {
+          this.$message({ type: 'info', message: '执行运行任务失败' })
+        }
+      })
       // }
-      this.runimmediatelyIsSee = false;
-      this.timingExecutionIsSee = false;
+      this.runimmediatelyIsSee = false
+      this.timingExecutionIsSee = false
     },
-    changeFlag(flag){
-        this.flag = flag
+    changeFlag(flag) {
+      this.flag = flag
     }
-  },
-};
+  }
+}
 </script>
 <style type="text/css" scoped>
 body,
@@ -489,19 +520,21 @@ body {
 #drag {
   position: absolute;
   z-index: 1000;
-  top: 100px;
-  left: 400px;
-  width: 300px;
-  height: 200px;
-  background: #ffffff;
-  border-radius: 5px;
+  bottom: 100px;
+  right: 100px;
+  width: 155px;
+  height: 34px;
+  background: #353A43;
+  border-radius: 17px 0 0 17px;
   box-shadow: 0px 3px 8px 7px #d4d4d4;
 }
 
 #drag .title {
   position: relative;
-  height: 27px;
-  margin: 5px;
+  height: 34px;
+  margin: 0px;
+  background-color: #353A43;
+  border-radius: 0 0 17px 17px;
 }
 
 #drag .title h2 {
@@ -595,10 +628,16 @@ a.open:hover {
 #drag .resizeTR,
 #drag .resizeLB {
   position: absolute;
-  background: #000;
+  background: #353A43 !important;
   overflow: hidden;
-  opacity: 0;
+  opacity: 1;
   filter: alpha(opacity=0);
+}
+#drag .resizeL,
+#drag .resizeT,
+#drag .resizeR,
+#drag .resizeB{
+  border-radius: 17px;
 }
 
 #drag .resizeL,
@@ -655,16 +694,90 @@ a.open:hover {
 }
 
 .btn-div {
-  padding-top: 20px;
-  padding-left: 43px;
+  padding-top: 0px;
+  padding-left: 0px;
+  position: absolute;
+  top: 0px;
+  left: 58px;
+
 }
+/* .btn-div el-button{
+    display: block;
+    width: 16px;
+    height: 16px;
+} */
 .label-tip {
-  margin-left: 130px;
-  margin-top: 20px;
+  position: absolute;
+  top: 0px;
+  left: 38px;
+  z-index: 1001;
+  width: 19px;
+  height: 34px;
+  font-family: DINCondensed-Bold !important;
+  font-size: 24px !important;
+  color: #BABCE5 !important;
+  letter-spacing: 0.55px !important;
 }
 .select-btn {
-  margin-top: 8px;
-  margin-left: 42px;
-  width: 208px;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 6px;
+  left: -46px;
+  font-size: 22px;
+  color: #BABCE5;
+}
+
+.none-box{
+  float: left;
+  margin: -244px 0 0 0;
+  width: 155px;
+  height: 278px;
+  background-color: #282C35;
+  display: none;
+  border-radius: 17px;
+  overflow: hidden;
+}
+.none-box-ul{
+  float: left;
+}
+.none-box-ul li{
+  float: left;
+  width: 148px;
+  height: 30px;
+  line-height: 15px;
+}
+.none-box-txt{
+  font-family: PingFangSC-Regular;
+  font-size: 12px;
+  color: #BABCE5;
+  letter-spacing: 0;
+  line-height: 30px;
+  width: 148px;
+  height: 30px;
+  text-align: center;
+  width: 100%;
+  height: 30px;
+}
+.none-box-ul li:nth-child(odd){
+  background-color: rgba(230,235,241,.04)
+}
+.btn-div .iconYY{
+  width: 10px;
+  height: 16px;
+  color:#ffffff;;
+  font-size: 22px;
+  float: left;
+  margin: 5px 20px 0 0px;
+  cursor: pointer;
+}
+.btn-div .iconYY1{
+  width: 10px;
+  height: 16px;
+  color: #BABCE5;
+  font-size: 15px;
+  float: left;
+  margin: 9px 20px 0 0px;
+  cursor: pointer;
 }
 </style>

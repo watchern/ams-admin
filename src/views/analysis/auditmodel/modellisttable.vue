@@ -142,6 +142,7 @@ import paramDraw from '@/views/analysis/modelparam/paramdraw'
 import { replaceNodeParam, replaceCrossrangeNodeParam } from '@/api/analysis/auditparam'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 import personTree from '@/components/publicpersontree/index'
+import Cookies from 'js-cookie'
 export default {
   name: 'ModelListTable',
   components: { Pagination, QueryField, EditModel, ModelFolderTree, childTabs, crossrangeParam, paramDraw, modelshoppingcart, personTree },
