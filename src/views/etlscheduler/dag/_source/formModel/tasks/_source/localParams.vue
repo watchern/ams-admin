@@ -75,7 +75,6 @@
           style="color:red;"
           @click="!isDetails && _removeUdp($index)"
         >
-          <!-- class="oper-btn delete" -->
           <em
             class="oper-btn delete"
             :class="_isDetails"
@@ -227,15 +226,25 @@ export default {
     _verifProp(type) {
       const arr = []
       let flag = true
+      let paramFlag = true
       _.map(this.localParamsList, v => {
         arr.push(v.prop)
         if (!v.prop) {
           flag = false
         }
+        if (v.paramUuid === '' || v.paramUuid === null) {
+          paramFlag = false
+        }
       })
       if (!flag) {
         if (!type) {
           this.$message.warning(`prop不能为空`)
+        }
+        return false
+      }
+      if (!paramFlag) {
+        if (!type) {
+          this.$message.warning(`关联参数不能为空`)
         }
         return false
       }
