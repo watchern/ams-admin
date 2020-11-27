@@ -49,8 +49,8 @@
         </el-form>
       </template>
       <div slot="footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
+        <el-button @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
+        <el-button @click="dialogFormVisible = false">关闭</el-button>
       </div>
     </el-dialog>
   </div>
@@ -94,8 +94,8 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑业务场景',
-        create: '添加业务场景'
+        update: '业务场景修改',
+        create: '业务场景新增'
       },
       dialogPvVisible: false,
       rules: {

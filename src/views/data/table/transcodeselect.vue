@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-select ref="transRuleUuid" v-model="selectTransId" style="width:90%" filterable placeholder="请选择转码规则" @change="selectChanged">
+    <el-select ref="transRuleUuid" v-model="selectTransId" :disabled="openType === 'showTable'" style="width:90%" filterable placeholder="请选择转码规则" @change="selectChanged">
       <el-option
         v-for="item in transJson"
         :key="item.transRuleUuid"
@@ -73,7 +73,7 @@ import { listByPage, selectById } from '@/api/data/transCode'
 export default {
   name: 'SelectTransCode',
   // eslint-disable-next-line vue/require-prop-types
-  props: ['transuuid'],
+  props: ['transuuid', 'openType'],
   data() {
     return {
       selectTransId: '',

@@ -68,7 +68,7 @@
     <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="800px">
       <el-row>
         <el-col>
-          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :tab-show.sync="tabShow" />
+          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :open-type="openType" :tab-show.sync="tabShow" />
         </el-col>
       </el-row>
       <span slot="footer">
@@ -105,6 +105,7 @@ export default {
   data() {
     return {
       dataUserId: this.$store.getters.personcode,
+      openType: '',
       sceneCode: 'auditor',
       tableKey: 'bizAttrUuid',
       tableId: '',
@@ -186,16 +187,38 @@ export default {
     formatTableType(row, column) {
       return row.type === 'table' ? '数据表' : '文件夹'
     },
-    // 复制资源(只允许复制数据表，不允许复制文件夹)
-    copyResource() {
-      if (this.selections[0].type === 'folder') {
+    // 删除资源
+    delData() {
+      var ids = []
+      this.selections.forEach((r, i) => {
+        if (r.type === 'folder') {
+          if (r.extMap.folderType === 'virtual') {
+            this.$message({ type: 'info', message: '该文件为系统文件夹不允许重命名!' })
+            return
+          }
+          var foldObj = this.allList.filter(obj => { return obj.label === r.label })
+          var objTotal = getArrLength(foldObj[0].children)
+          if (objTotal > 0) {
+            this.$message({ type: 'info', message: '删除失败！文件夹：' + foldObj[0].label + '不为空无法删除' })
+            return
+          }
+        }
+        ids.push(r)
+      })
+      deleteDirectory(ids).then(() => {
         this.$notify({
-          title: '复制失败',
-          message: '所选资源为文件夹而非数据表',
-          type: 'error',
+          title: '成功',
+          message: '删除成功',
+          type: 'success',
           duration: 5000,
           position: 'bottom-right'
         })
+      })
+    },
+    // 复制资源(只允许复制数据表，不允许复制文件夹)
+    copyResource() {
+      if (this.selections[0].type === 'folder') {
+        this.$message({ type: 'info', message: '所选资源为文件夹而非数据表!' })
         return
       } else {
         this.dialogStatus = 'copyTable'
@@ -219,13 +242,7 @@ export default {
           })
           this.$emit('refresh')
         } else {
-          this.$notify({
-            title: '失败',
-            message: '复制表名称已由现有对象使用',
-            type: 'error',
-            duration: 5000,
-            position: 'bottom-right'
-          })
+          this.$message({ type: 'info', message: '复制失败!复制表名称已由现有对象使用' })
         }
       })
       this.resourceForm.resourceName = ''
@@ -236,13 +253,7 @@ export default {
       this.resourceForm.resourceName = ''
       if (this.selections[0].type === 'folder') {
         if (this.selections[0].extMap.folderType === 'virtual') {
-          this.$notify({
-            title: '重命名失败',
-            message: '该文件为系统文件夹不允许重命名',
-            type: 'error',
-            duration: 3000,
-            position: 'bottom-right'
-          })
+          this.$message({ type: 'info', message: '重命名失败!该文件为系统文件夹不允许重命名' })
           return
         }
         this.dialogStatus = 'updateFolder'
@@ -271,13 +282,7 @@ export default {
       var moveObj = this.selections.filter(obj => { return obj.type === 'folder' })
       var objTotal = getArrLength(moveObj)
       if (objTotal > 0) {
-        this.$notify({
-          title: '移动失败',
-          message: '移动文件夹操作不允许',
-          type: 'error',
-          duration: 5000,
-          position: 'bottom-right'
-        })
+        this.$message({ type: 'info', message: '移动失败!移动文件夹操作不允许' })
         return
       }
       this.moveTreeVisible = true
@@ -315,13 +320,7 @@ export default {
             position: 'bottom-right'
           })
         } else {
-          this.$notify({
-            title: '失败',
-            message: '重命名资源名称已由现有对象使用',
-            type: 'error',
-            duration: 5000,
-            position: 'bottom-right'
-          })
+          this.$message({ type: 'info', message: '重命名失败!重命名资源名称已由现有对象使用' })
         }
       })
       this.resourceForm.resourceName = ''
@@ -369,44 +368,9 @@ export default {
         this.getListSelect()
       }
     },
-    delData() {
-      var ids = []
-      this.selections.forEach((r, i) => {
-        if (r.type === 'folder') {
-          var foldObj = this.allList.filter(obj => { return obj.label === r.label })
-          var objTotal = getArrLength(foldObj[0].children)
-          if (objTotal > 0) {
-            this.$notify({
-              title: '删除失败',
-              message: '文件夹' + foldObj[0].label + '不为空无法删除',
-              type: 'error',
-              duration: 2000,
-              position: 'bottom-right'
-            })
-            return
-          }
-        }
-        ids.push(r)
-      })
-      deleteDirectory(ids).then(() => {
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 5000,
-          position: 'bottom-right'
-        })
-      })
-    },
     createFolder() {
       if (this.clickData.extMap.folderType === 'virtual') {
-        this.$notify({
-          title: '创建失败',
-          message: '该文件为系统文件夹不允许创建',
-          type: 'error',
-          duration: 3000,
-          position: 'bottom-right'
-        })
+        this.$message({ type: 'info', message: '创建失败!该文件为系统文件夹不允许创建' })
         return
       }
       this.dialogStatus = 'createFolder'
@@ -446,6 +410,7 @@ export default {
       if (this.selections[0].type === 'folder') {
         this.$message({ type: 'info', message: '请选择数据表进行查看!' })
       } else {
+        this.openType = 'showTable'
         this.tableShowVisible = true
         this.tabShow = 'basicinfo'
         this.tableId = this.selections[0].id
