@@ -75,8 +75,9 @@
           style="color:red;"
           @click="!isDetails && _removeUdp($index)"
         >
+          <!-- class="oper-btn delete" -->
           <em
-            class="ans-icon-trash"
+            class="oper-btn delete"
             :class="_isDetails"
             data-toggle="tooltip"
             title="删除"
@@ -91,8 +92,9 @@
           href="javascript:"
           @click="!isDetails && _addUdp()"
         >
+          <!-- class="oper-btn add" -->
           <em
-            class="iconfont ans-icon-increase"
+            class="oper-btn add"
             :class="_isDetails"
             data-toggle="tooltip"
             title="添加"
@@ -109,7 +111,7 @@
         @click="!isDetails && _addUdp()"
       >
         <em
-          class="iconfont ans-icon-increase"
+          class="oper-btn add"
           :class="_isDetails"
           data-toggle="tooltip"
           title="添加"
@@ -194,12 +196,6 @@ export default {
       })
     },
     /**
-       * blur verification
-       */
-    // _handleValue() {
-    //   // this._verifValue('value')
-    // },
-    /**
      * delete item
      */
     _removeUdp(index) {
@@ -219,28 +215,12 @@ export default {
         param: {}
       })
     },
-    // /**
-    //  * blur verification
-    //  */
+    /**
+     * blur verification
+     */
     _handleValue() {
       this._verifProp('value')
     },
-    // _verifValue(type) {
-    //   const arr = []
-    //   let flag = true
-    //   _.map(this.httpParamsList, v => {
-    //     arr.push(v.value)
-    //     if (!v.value) {
-    //       flag = false
-    //     }
-    //   })
-    //   if (!flag) {
-    //     this.$message.warning(`value不能为空`)
-    //     return false
-    //   }
-    //   this.$emit('on-local-params', _.cloneDeep(this.localParamsList))
-    //   return true
-    // },
     /**
      * Verify that the value exists or is empty
      */
@@ -288,6 +268,7 @@ export default {
   .select-listpp {
     margin-bottom: 6px;
     .lt-add {
+      margin: 2px;
       padding-left: 4px;
       a {
         .iconfont {

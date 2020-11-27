@@ -43,7 +43,7 @@
           @click="!isDetails && _removeUdp($index)"
         >
           <em
-            class="ans-icon-trash"
+            class="oper-btn delete"
             :class="_isDetails"
             data-toggle="tooltip"
             title="删除"
@@ -76,7 +76,7 @@
         @click="!isDetails && _addUdp()"
       >
         <em
-          class="iconfont ans-icon-increase"
+          class="oper-btn add"
           :class="_isDetails"
           data-toggle="tooltip"
           title="添加"
@@ -220,6 +220,7 @@ export default {
   .select-listpp {
     margin-bottom: 6px;
     .lt-add {
+      margin: 2px;
       padding-left: 4px;
       a {
         .iconfont {

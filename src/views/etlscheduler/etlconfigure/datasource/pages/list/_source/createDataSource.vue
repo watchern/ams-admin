@@ -145,18 +145,19 @@
     </div>
     <div class="bottom-p">
       <x-button
-        type="text"
+        type="primary"
+        class="btnclass"
         @click="_close()"
       > 取消</x-button>
       <x-button
         type="success"
-        shape="circle"
+        class="btnclass"
         :loading="testLoading"
         @click="_testConnect()"
       >测试连接</x-button>
       <x-button
         type="primary"
-        shape="circle"
+        class="btnclass"
         :loading="spinnerLoading"
         @click="_ok()"
       >保存</x-button>
@@ -502,6 +503,18 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
+.btnclass{
+  background: #353a43;
+  border-color: #353a43;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.btnclass:hover{
+  background: #353a43;
+  border-color: #353a43;
+  color: #c8ff8c;
+  font-weight: bold;
+}
 .datasource-popup-model {
   background: #fff;
   border-radius: 3px;
