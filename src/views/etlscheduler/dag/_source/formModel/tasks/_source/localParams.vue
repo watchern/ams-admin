@@ -75,6 +75,7 @@
           style="color:red;"
           @click="!isDetails && _removeUdp($index)"
         >
+          <!-- class="oper-btn delete" -->
           <em
             class="oper-btn delete"
             :class="_isDetails"
