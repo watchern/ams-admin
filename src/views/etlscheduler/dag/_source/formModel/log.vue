@@ -133,7 +133,13 @@ export default {
         setTimeout(() => {
           this.loading = false
           if (res.data) {
-            this.$message.success(`更新日志成功`)
+            this.$notify({
+              title: '提示',
+              message: `更新日志成功`,
+              type: 'success',
+              duration: 2000,
+              position: 'bottom-right'
+            })
           } else {
             this.$message.warning(`暂无更多日志`)
           }

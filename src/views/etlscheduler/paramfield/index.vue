@@ -9,8 +9,8 @@
     </div>
     <el-row>
       <el-col align="right">
-        <!-- 添加 -->
-        <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
+        <!-- 新增 -->
+        <el-button type="primary" class="oper-btn add" title="新增" @click="handleCreate()" />
         <!-- 修改 -->
         <el-button type="primary" class="oper-btn edit" title="修改" :disabled="selections.length !== 1" @click="handleUpdate()" />
         <!-- 删除 -->
@@ -100,7 +100,7 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getList"
     />
-    <!-- 添加和编辑的弹框 -->
+    <!-- 新增和编辑的弹框 -->
     <el-dialog
       :title="textMap[dialogStatus]"
       :visible.sync="dialogFormVisible"
@@ -192,7 +192,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button @click="dialogFormVisible = false">返回</el-button>
         <el-button
           type="primary"
           @click="dialogStatus==='create'?createData():updateData()"
@@ -260,10 +260,10 @@ export default {
       dialogStatus: '',
       textMap: {
         update: '编辑参数',
-        create: '添加参数'
+        create: '新增参数'
       },
       dialogPvVisible: false,
-      // 添加的表单验证
+      // 新增的表单验证
       rules: {
         paramName: [{ required: true, message: '请填写参数名', trigger: 'change' }],
         paramDesc: [{ max: 100, message: '请填写参数的描述', trigger: 'change' }],

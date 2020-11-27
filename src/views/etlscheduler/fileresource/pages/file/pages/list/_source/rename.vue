@@ -76,7 +76,13 @@ export default {
           type: 'FILE'
         })
       }).then(res => {
-        this.$message.success(res.msg)
+        this.$notify({
+          title: '提示',
+          message: res.msg,
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
         this.$emit('onUpDate', res.data)
         fn()
       }).catch(e => {

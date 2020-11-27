@@ -9,8 +9,8 @@
     </div>
     <el-row>
       <el-col align="right">
-        <!-- 添加 -->
-        <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
+        <!-- 新增 -->
+        <el-button type="primary" class="oper-btn add" title="新增" @click="handleCreate()" />
         <!-- 修改 -->
         <el-button type="primary" class="oper-btn edit" title="修改" :disabled="selections.length !== 1" @click="handleUpdate()" />
         <!-- 删除 -->
@@ -144,7 +144,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button @click="dialogFormVisible = false">返回</el-button>
         <el-button
           type="primary"
           @click="dialogStatus==='create'?createData():updateData()"
@@ -205,7 +205,7 @@ export default {
       dialogStatus: '',
       textMap: {
         update: '编辑文件目录',
-        create: '添加文件目录'
+        create: '新增文件目录'
       },
       dialogPvVisible: false,
       // 添加的表单验证

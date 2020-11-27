@@ -6,7 +6,7 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
+        <el-button type="primary" class="oper-btn add" title="新增" @click="handleCreate()" />
         <el-button type="primary" class="oper-btn edit" :disabled="editStatus" title="修改" @click="handleUpdate()" />
         <el-button type="primary" class="oper-btn delete" :disabled="deleteStatus" title="删除" @click="handleDelete()" />
         <el-button type="primary" class="oper-btn start" :disabled="startStatus" title="启用" @click="handleUse()" />
@@ -518,8 +518,8 @@ export default {
       dialogStatus: '',
       textMap: {
         update: '编辑调度任务',
-        create: '添加调度任务',
-        show: '查看调度任务详情'
+        create: '新增调度任务',
+        show: '查看调度任务'
       },
       dialogPvVisible: false,
       headers: { 'Content-Type': 'multipart/form-data' },

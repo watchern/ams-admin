@@ -49,7 +49,13 @@ export default {
         this.$message.error(this.$t(JSON.parse(response).msg))
         file.cancel()
       } else {
-        this.$message.success(this.$t(JSON.parse(response).data + '上传成功'))
+        this.$notify({
+          title: '提示',
+          message: this.$t(JSON.parse(response).data + '上传成功'),
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
       }
     },
     onFileProgress(rootFile, file, chunk) {

@@ -305,7 +305,13 @@ export default {
         param.taskDependType = this.taskDependType
       }
       this.store.dispatch('dag/processStart', param).then(res => {
-        this.$message.success(res.msg)
+        this.$notify({
+          title: '提示',
+          message: res.msg,
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
         this.$emit('onUpdate')
         setTimeout(() => {
           this.spinnerLoading = false
