@@ -9,9 +9,9 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
-        <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
-        <el-button type="danger" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
+        <el-button type="primary" title="新增" size="mini" class="oper-btn add" @click="handleCreate()" />
+        <el-button type="primary" title="修改" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
+        <el-button type="primary" title="删除" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
       </el-col>
     </el-row>
     <el-table
@@ -55,12 +55,18 @@
           <el-button v-if="temp.ruleType === 1" type="primary" size="mini" class="el_header_button" style="margin-right: 20px;float: left;" @click="exSql()">执行SQL</el-button>
           <el-input v-model="temp.sqlContent" type="textarea" style="width:500px" />
         </el-form-item>
-        <el-form-item v-if="temp.ruleType === 1" label="真实值" prop="codeValue" style="width:200px">
-          <el-input v-model="temp.codeValue" />
-        </el-form-item>
-        <el-form-item v-if="temp.ruleType === 1" label="显示值" prop="transValue" style="width:200px">
-          <el-input v-model="temp.transValue" />
-        </el-form-item>
+        <el-row>
+          <el-col span="12">
+            <el-form-item v-if="temp.ruleType === 1" label="真实值" prop="codeValue" style="width:200px">
+              <el-input v-model="temp.codeValue" />
+            </el-form-item>
+          </el-col>
+          <el-col span="12">
+            <el-form-item v-if="temp.ruleType === 1" label="显示值" prop="transValue" style="width:200px">
+              <el-input v-model="temp.transValue" />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <el-upload
         v-if="temp.ruleType === 2"
@@ -74,7 +80,6 @@
       >
         <el-button size="small" type="primary">上传</el-button>
       </el-upload>
-
       <el-table v-if="temp.ruleType === 2" :data="transColRelsData" height="200">
         <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>
           <template slot-scope="scope">
@@ -106,24 +111,13 @@
             >
               添加
             </el-link>
-            <!-- <el-button
-              v-if="scope.row.start =='0'"
-              size="mini"
-              type="primary"
-              @click="lineAdd(scope.$index,'transColRels')"
-            ><i class="iconfont icon-delete" /></el-button>
-            <el-button
-              v-if="scope.row.start =='0'"
-              size="mini"
-              type="primary"
-              @click="lineAdd(scope.$index,'transColRels')"
-            ><i class="iconfont icon-add" /></el-button> -->
           </template>
         </el-table-column>
       </el-table>
-      <el-button v-if="dialogStatus ==='update'" type="primary" size="mini" class="el_header_button" style="margin-right: 20px;float: right;" @click="updateData()">保存</el-button>
-      <el-button v-if="dialogStatus ==='create'" type="primary" size="mini" class="el_header_button" style="margin-right: 20px;float: right;" @click="createData()">保存</el-button>
-      <el-button type="primary" size="mini" class="el_header_button" style="margin-right: 20px;float: right;" @click="closeDialog()">取消</el-button>
+      <div slot="footer">
+        <el-button @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
+        <el-button @click="dialogFormVisible = false">关闭</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -177,8 +171,8 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑转码规则',
-        create: '添加转码规则'
+        update: '转码规则修改',
+        create: '转码规则新增'
       },
       dialogPvVisible: false,
       rules: {
@@ -406,9 +400,6 @@ export default {
         }
       }
       fileReader.readAsBinaryString(file)
-    },
-    closeDialog() {
-      this.dialogFormVisible = false
     },
     // 多选数据库
     handleSelectionChange(val) {
