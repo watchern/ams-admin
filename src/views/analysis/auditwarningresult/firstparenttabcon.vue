@@ -34,7 +34,7 @@
         >
         <el-button
           :disabled="buttonIson.deleteBtn"
-          type="primary"
+          type="danger"
           @click="deleteRunTaskRel"
           class="oper-btn delete"
         ></el-button>
@@ -452,7 +452,6 @@ export default {
      * 查询列表方法
      */
     getLikeList(query) {
-      debugger
       this.listLoading = true;
       var model = {};
       var runTask = {};

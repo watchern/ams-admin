@@ -181,6 +181,7 @@ import myQueryBuilder from "@/views/analysis/auditmodelresult/myquerybuilder";
 import { string } from "jszip/lib/support";
 import { startExecuteSql } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
+import Cookies from 'js-cookie'
 
 export default {
   name: "childTabCon",
@@ -941,7 +942,7 @@ export default {
 /*      const webSocketPath =
         "ws://localhost:8086/analysis/websocket?" +
         this.$store.getters.personuuid;*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid+'modelresultdetail';
+      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + Cookies.get("personuuid")+'modelresultdetail';
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接

@@ -11,7 +11,7 @@
         <el-button type="primary" class="oper-btn delete" :disabled="deleteStatus" title="删除" @click="handleDelete()" />
         <el-button type="primary" class="oper-btn start" :disabled="startStatus" title="启用" @click="handleUse()" />
         <el-button type="primary" class="oper-btn pause" :disabled="stopStatus" title="停用" @click="handleBear()" />
-        <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length != 1" title="复制" @click="copyData()" />
+        <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length !== 1" title="复制" @click="copyData()" />
         <el-upload
           multiple
           class="upload-demo"
@@ -51,7 +51,7 @@
         prop="scheduleName"
       >
         <template slot-scope="scope">
-          <el-link target="_blank" :underline="false" type="primary" @click="findSchedule(scope.row)">
+          <el-link target="_blank" :underline="false" type="primary" @click="getScheduleDetail(scope.row)">
             {{ scope.row.scheduleName }}</el-link>
         </template>
       </el-table-column>
@@ -137,6 +137,8 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getList"
     />
+
+    <!-- 表单弹框 -->
     <!-- style="width: 700px; margin-left: 50px" -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
@@ -166,7 +168,7 @@
             :remote-method="remoteMethod"
             :loading="loading"
             class="propwidth"
-            @change="paramMsg(temp.processDefinitionId)"
+            @change="changeProcess(temp.processDefinitionId)"
           >
             <el-option
               v-for="item in options"
@@ -179,14 +181,14 @@
         <el-form-item
           v-for="(item, $index) in distinctParamList"
           :key="$index"
-          :label="item.param.paramName"
+          :label="item.name"
           :rules="{required: true, message: '', trigger: 'change'}"
         >
           <el-input
-            v-model="item.param.defaultValue"
+            v-model="item.value"
             class="propwidth"
             :disabled="disableUpdate"
-            @blur="changeParamValue(item.param.defaultValue,item.param.paramName )"
+            @blur="changeParamValue(item.value, item.name)"
           />
         </el-form-item>
         <el-form-item label="作业周期范围" prop="startTime">
@@ -320,6 +322,8 @@
         >确定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 下载流程模板弹框 -->
     <el-dialog title="下载流程模板" :visible.sync="dialogFormVisible1">
       <el-form
         :rules="rules"
@@ -337,7 +341,7 @@
             :remote-method="remoteMethod"
             :loading="loading"
             class="propwidth"
-            @change="paramMsg(temp.processDefinitionId)"
+            @change="changeTempProcess(temp.processDefinitionId)"
           >
             <el-option
               v-for="item in options"
@@ -372,7 +376,6 @@ import {
   findByprocessDef,
   startScheduleStatus,
   stopScheduleStatus,
-  getParamsByProcessId,
   getByScheduleId,
   copy,
   queryProcessLike
@@ -584,6 +587,14 @@ export default {
     }
   },
   watch: {
+    distinctParamList: {
+      handler(val) {
+        this.changeParamList(val)
+      },
+      // 这里是关键，代表递归监听 demo 的变化
+      deep: true
+
+    },
     // 监听selections集合
     selections() {
       if (this.selections.length > 0) {
@@ -656,6 +667,7 @@ export default {
     }
   },
   methods: {
+    // 修改参数
     changeParamValue(value, name) {
       if (value === '') {
         this.$message({
@@ -667,20 +679,23 @@ export default {
         this.flag = true
       }
     },
-    findSchedule(data) {
-      this.distinctParamList = {}
+    // 调度详情
+    getScheduleDetail(rowdata) {
+      this.distinctParamList = []
       this.iconDisable = false
       this.closeStatus = true
       this.disableUpdate = true
-      this.temp = Object.assign({}, data) // copy obj
+      this.temp = Object.assign({}, rowdata) // copy obj
       this.dialogStatus = 'show'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
       getByScheduleId(this.temp.processSchedulesUuid).then((resp) => {
-        this.dependTaskList = resp.data.dependTaskInfoList
-        this.distinctParamList = resp.data.taskParamsList
+        this.temp = resp.data
+        this.dependTaskList = resp.data.dependTaskInfoList === null ? [] : resp.data.dependTaskInfoList
+        this.paramList = resp.data.taskParamsList === null ? [] : resp.data.taskParamsList
+        this.distinctParamList = resp.data.distinctParamList === null ? [] : resp.data.distinctParamList
       })
     },
     // 导出 excel 格式
@@ -775,19 +790,23 @@ export default {
       })
       return true
     },
-    // 参数详情
-    paramMsg(data) {
-      getById(data).then((res) => {
+    // 选择流程，改变参数
+    changeProcess(processId) {
+      // 查询单个流程
+      getById(processId).then((res) => {
         this.temp.processDefName = res.data.name
-      })
-      getParamsByProcessId(data).then((res) => {
-        this.paramList = res.data
+        this.paramList = res.data.globalParamList
         // 去重
-        const resmap = new Map()
-        this.distinctParamList = this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))
+        this.distinctParamList = res.data.distinctParamList
       })
     },
-    // 查询任务流程
+    // 选择下载模板的流程
+    changeTempProcess(data) {
+      // getById(data).then((res) => {
+      //   this.temp.processDefName = res.data.name
+      // })
+    },
+    // 搜索任务流程
     remoteMethod(query) {
       this.loading = true
       setTimeout(() => {
@@ -864,7 +883,8 @@ export default {
         } else {
           this.flag = true
           if (valid) {
-            this.temp.taskParamsList = this.distinctParamList
+            // this.temp.distinctParamList = this.distinctParamList
+            this.temp.taskParamsList = this.paramList
             if (!this.dependTaskList.length) {
               this.temp.dependTaskInfo = null
               this.temp.dependTaskInfoList = []
@@ -887,6 +907,14 @@ export default {
         }
       })
     },
+    changeParamList(val) {
+      var map = _.groupBy(val, 'paramCode')
+      this.paramList.forEach(function(property) {
+        property.value = map[property.paramCode][0].value
+        property.param.defaultValue = map[property.paramCode][0].value
+      })
+    },
+    // 修改
     handleUpdate() {
       this.iconDisable = true
       this.disableUpdate = false
@@ -898,21 +926,14 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
       getByScheduleId(this.temp.processSchedulesUuid).then((resp) => {
-        this.dependTaskList = resp.data.dependTaskInfoList
-        if (this.dependTaskList === null) {
-          this.dependTaskList = []
-        }
-        this.paramList = resp.data.taskParamsList
-        if (this.paramList === null) {
-          this.paramList = []
-        }
-        //  去重
-        const resmap = new Map()
-        this.distinctParamList = this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))
+        this.temp = resp.data
+        this.dependTaskList = resp.data.dependTaskInfoList === null ? [] : resp.data.dependTaskInfoList
+        this.paramList = resp.data.taskParamsList === null ? [] : resp.data.taskParamsList
+        this.distinctParamList = resp.data.distinctParamList === null ? [] : resp.data.distinctParamList
       })
     },
     updateData() {
-      if (this.flag == false) {
+      if (this.flag === false) {
         this.$notify({
           title: '失败',
           message: '请输入参数值',
@@ -923,7 +944,7 @@ export default {
       } else {
         this.flag = true
         this.temp.dependTaskInfoList = this.dependTaskList
-        this.temp.taskParamsList = this.distinctParamList
+        this.temp.taskParamsList = this.paramList
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             const tempData = Object.assign({}, this.temp)

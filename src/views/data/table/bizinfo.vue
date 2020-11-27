@@ -10,27 +10,27 @@
         >
           业务表信息：
           <el-form-item label="汉化名称：" prop="chnName">
-            <el-input v-model="temp.chnName" style="width:60%;" />
+            <el-input v-model="temp.chnName" style="width:60%;" :disabled="openType === 'showTable'" />
           </el-form-item>
           列业务信息：
           <el-table :data="temp.colMetas" height="200">
             <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
               <template slot-scope="scope" show-overflow-tooltip>
-                <el-tooltip :disabled="scope.row.colName.length < 12" effect="dark" :content="scope.row.colName" placement="top">
-                  <el-input v-model="scope.row.colName" style="width:90%;" />
+                <el-tooltip effect="dark" :content="scope.row.colName" placement="top">
+                  <el-input v-model="scope.row.colName" style="width:90%;" :disabled="openType === 'showTable'" />
                 </el-tooltip>
               </template>
             </el-table-column>
             <el-table-column prop="chnName" label="汉化名称" show-overflow-tooltip>
               <template slot-scope="scope">
-                <el-tooltip :disabled="scope.row.chnName.length < 10" effect="dark" :content="scope.row.chnName" placement="top">
-                  <el-input v-model="scope.row.chnName" style="width:90%;" />
+                <el-tooltip effect="dark" :content="scope.row.chnName" placement="top">
+                  <el-input v-model="scope.row.chnName" style="width:90%;" :disabled="openType === 'showTable'" />
                 </el-tooltip>
               </template>
             </el-table-column>
             <el-table-column prop="bizAttrUuid" label="业务标签">
               <template slot-scope="scope">
-                <el-select ref="bizAttrUuid" v-model="scope.row.bizAttrUuid" style="width:90%" placeholder="请选择业务属性">
+                <el-select ref="bizAttrUuid" v-model="scope.row.bizAttrUuid" style="width:90%" placeholder="请选择业务属性" :disabled="openType === 'showTable'">
                   <el-option
                     v-for="item in bizJson"
                     :key="item.bizAttrUuid"
@@ -40,17 +40,18 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column prop="transRuleUuid" label="转码规则" width="260px">
+            <el-table-column prop="transRuleUuid" label="转码规则" width="260px" :disabled="openType === 'showTable'">
               <template slot-scope="scope">
                 <SelectTransCode
                   ref="SelectTransCode"
                   :transuuid.sync="scope.row.transRuleUuid"
+                  :open-type="openType"
                 />
               </template>
             </el-table-column>
           </el-table>
         </el-form>
-        <el-button type="primary" style="float:right;margin-top:20px" @click="saveTable()">保存</el-button>
+        <el-button v-if="openType !== 'showTable'" style="float:right;margin-top:20px" @click="saveTable()">保存</el-button>
       </div>
     </div>
   </div>
@@ -64,7 +65,7 @@ import { selectById } from '@/api/data/transCode'
 export default {
   components: { SelectTransCode },
   // eslint-disable-next-line vue/require-prop-types
-  props: ['tableId'],
+  props: ['tableId', 'openType'],
   data() {
     return {
       isShow: false,
@@ -72,7 +73,7 @@ export default {
       isSql: false,
       transRuleId: '',
       list: null,
-      readonly: true,
+      disabled: true,
       total: 0,
       transRuleUuid: '',
       dialogStatus: '',

@@ -9,11 +9,11 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
-        <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
-        <el-button type="danger" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
-        <el-button type="primary" size="mini" title="绑定资源" class="oper-btn iconoper-refresh" :disabled="selections.length !== 1" @click="bindRes()" />
-        <el-button type="primary" size="mini" title="授权" class="oper-btn  iconoper-collect" :disabled="selections.length === 0" @click="authentic()" />
+        <el-button type="primary" size="mini" title="新增" class="oper-btn add" @click="handleCreate()" />
+        <el-button type="primary" size="mini" title="修改" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
+        <el-button type="primary" size="mini" title="删除" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
+        <el-button type="primary" size="mini" title="绑定资源" class="oper-btn link-2" :disabled="selections.length !== 1" @click="bindRes()" />
+        <el-button type="primary" size="mini" title="授权" class="oper-btn auth" :disabled="selections.length === 0" @click="authentic()" />
       </el-col>
     </el-row>
     <el-table
@@ -30,10 +30,10 @@
       <el-table-column type="selection" width="55" />
       <el-table-column label="数据角色名称" width="200px" align="center" prop="dataRoleName" />
       <el-table-column label="创建时间" width="300px" align="center" :formatter="formatCreateTime" prop="createTime" />
-      <el-table-column label="授权方式" width="200px" align="center" prop="authenType" :formatter="formatAuthenType" />
-      <el-table-column label="数据筛选器状态" style="width: 200px">
+      <el-table-column label="授权方式" width="100px" align="center" prop="authenType" :formatter="formatAuthenType" />
+      <el-table-column label="数据筛选器状态" style="width: 50px" align="center">
         <template slot-scope="scope">
-          <el-button type="primary" title="查看详情" class="oper-btn show" @click="openFilterPanel(scope.row.dataRoleUuid)" />
+          <el-button type="primary" title="预览" class="oper-btn detail" size="mini" @click="openFilterPanel(scope.row.dataRoleUuid)" />
         </template>
       </el-table-column>
       <el-table-column label="数据有效期" prop="timeDuring" :formatter="formatDuring" style="width : 400px" />
@@ -47,7 +47,6 @@
           :rules="rules"
           :model="temp"
           label-position="right"
-          style="width: 700px; margin-left:50px;"
         >
           <el-form-item label="数据角色名称" prop="dataRoleName">
             <el-input v-model="temp.dataRoleName" />
@@ -91,8 +90,8 @@
         </el-form>
       </template>
       <div slot="footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
+        <el-button @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
+        <el-button @click="dialogFormVisible = false">关闭</el-button>
       </div>
     </el-dialog>
 
@@ -105,8 +104,7 @@
         </el-form>
       </template>
       <div slot="footer">
-        <el-button @click="filterVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSaveRoleFilter">确定</el-button>
+        <el-button @click="filterVisible = false">关闭</el-button>
       </div>
     </el-dialog>
   </div>
@@ -152,8 +150,8 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑数据角色',
-        create: '添加数据角色'
+        update: '数据角色修改',
+        create: '数据角色新增'
       },
       dialogPvVisible: false,
       rules: {
@@ -163,7 +161,6 @@ export default {
         endTime: [{ required: true, message: '请填写生效结束时间', trigger: 'change' }]
       },
       downloadLoading: false,
-
       filterVisible: false,
       currentRoleUuid: '',
       allFilters: []

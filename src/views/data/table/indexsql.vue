@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-col align="right">
+      <el-col v-if="openType!== 'showTable'" align="right">
         <el-button type="primary" size="mini" class="oper-btn add" title="添加" @click="addCol()" />
         <el-button type="danger" size="mini" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="delCol()" />
       </el-col>
@@ -55,7 +55,7 @@
 import { getColsInfo, selectIndexInfo } from '@/api/data/table-info'
 export default {
   // eslint-disable-next-line vue/require-prop-types
-  props: ['tableId'],
+  props: ['tableId', 'openType'],
   data() {
     return {
       options: [{

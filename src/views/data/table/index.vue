@@ -107,54 +107,37 @@
         </MyElTree>
       </el-col>
       <el-col :span="14">
-        <template v-if="divInfo" class="divContent">
-          <el-tabs v-model="tabShow" style="text-aling = center">
-            <el-tab-pane label="基本信息" name="basicinfo"><basic-info :table-id="tableId" /></el-tab-pane>
-            <el-tab-pane label="列" name="column"><column :table-id="tableId" /></el-tab-pane>
-            <!-- <el-tab-pane label="约束" name="constraint"><constraint :table-id="tableId" /></el-tab-pane> -->
-            <el-tab-pane label="索引" name="indexSql"><index-sql :table-id="tableId" /></el-tab-pane>
-            <el-tab-pane label="关联关系" name="correlation"><correlation :table-id="tableId" /></el-tab-pane>
-            <el-tab-pane label="创建语句" name="createSql"><create-sql :table-id="tableId" /></el-tab-pane>
-            <el-tab-pane label="业务信息" name="bizInfo"><biz-info :table-id="tableId" /></el-tab-pane>
-          </el-tabs>
-        </template>
-        <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="600px">
-          <el-form ref="folderForm" :model="folderForm" label-width="80px">
-            <el-form-item label="文件夹名称" label-width="120px">
-              <el-input v-model="folderForm.folderName" style="width: 300px" />
-            </el-form-item>
-          </el-form>
-          <span slot="footer">
-            <el-button type="primary" @click="dialogStatus==='create'?createFolder():updateFolder()">确定</el-button>
-            <el-button @click="folderFormVisible = false">取消</el-button>
-          </span>
-        </el-dialog>
+        <tabledatatabs v-if="divInfo" ref="tabledatatabs" :table-id="tableId" :tab-show.sync="tabShow" />
       </el-col>
     </el-row>
-
+    <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="600px">
+      <el-form ref="folderForm" :model="folderForm" label-width="80px">
+        <el-form-item label="文件夹名称" label-width="120px">
+          <el-input v-model="folderForm.folderName" style="width: 300px" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button type="primary" @click="dialogStatus==='create'?createFolder():updateFolder()">确定</el-button>
+        <el-button @click="folderFormVisible = false">取消</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import tabledatatabs from '@/views/data/table/tabledatatabs'
 import MyElTree from '@/components/Ace/tree/src/tree.vue'
-import basicInfo from '@/views/data/table/basicinfo'
-import column from '@/views/data/table/column'
-import constraint from '@/views/data/table/constraint'
-import indexSql from '@/views/data/table/indexsql'
-import createSql from '@/views/data/table/createsql'
-import bizInfo from '@/views/data/table/bizinfo'
-import correlation from '@/views/data/table/correlation'
 import { listUnCached, getDataTreeNode, saveTable, delTable } from '@/api/data/table-info'
 import { saveFolder, updateFolder, delFolder } from '@/api/data/folder'
 import { commonNotify } from '@/utils'
 
 export default {
-  components: { MyElTree, basicInfo, column, constraint, indexSql, createSql, bizInfo, correlation },
+  components: { MyElTree, tabledatatabs },
   data() {
     return {
+      tabShow: 'basicinfo',
       tableId: '',
       divInfo: false,
-      tabShow: 'basicinfo',
       filterText1: null,
       filterText2: null,
       fromData: [],
@@ -210,17 +193,17 @@ export default {
     loadNode1(node, resolve) {
       if (node.level <= 3) {
         var pid = node.data ? node.data.id : 'ROOT'
-        var schemaName = "";
-        var tableName = "";
-        if(node.level == 1){
-          schemaName = node.data.id;
-        }else if(node.level == 2){
-          var nodePath = this.$refs.tree2.getNodePath(node);
-          debugger;
-          schemaName = nodePath[1].id;
-          tableName = node.data.label;
+        var schemaName = ''
+        var tableName = ''
+        if (node.level == 1) {
+          schemaName = node.data.id
+        } else if (node.level == 2) {
+          var nodePath = this.$refs.tree2.getNodePath(node)
+          debugger
+          schemaName = nodePath[1].id
+          tableName = node.data.label
         }
-        console.log(schemaName + ' '+  tableName)
+        console.log(schemaName + ' ' + tableName)
         listUnCached(node.level, schemaName, tableName).then(resp => {
           resolve(resp.data)
         })
@@ -240,10 +223,9 @@ export default {
     nodeClick(data, node, tree) {
       this.divInfo = false
       if (node.data.type === 'TABLE') {
-        debugger
-        this.tableId = node.data.id
         this.$nextTick(() => {
           this.divInfo = true
+          this.tableId = node.data.id
         })
       }
     },

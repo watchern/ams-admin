@@ -9,18 +9,13 @@
         style="width: 700px;"
       >
         <span class="midText">业务场景维护：</span>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="业务场景名称" prop="sceneName" label-width="150px">
-              <el-input v-model="temp.sceneName" class="input" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="业务属性编码" prop="sceneCode" label-width="150px">
-              <el-input v-model="temp.sceneCode" class="input" />
-            </el-form-item>
-          </el-col>
-        </el-row></el-form>
+        <el-form-item label="业务场景名称" prop="sceneName" label-width="150px">
+          <el-input v-model="temp.sceneName" class="input" />
+        </el-form-item>
+        <el-form-item label="业务属性编码" prop="sceneCode" label-width="150px">
+          <el-input v-model="temp.sceneCode" class="input" />
+        </el-form-item>
+      </el-form>
       <template style="height :160px">
         <span class="midText">用户组定义：</span>
         <el-row>
@@ -45,9 +40,9 @@
           <el-table-column label="创建时间" prop="createTime" :formatter="formatCreateTime" />
           <el-table-column label="操作" align="center" min-width="100">
             <template slot-scope="scope">
-              <el-button type="primary" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.sceneGrpUuid)" />
-              <el-button type="primary" class="oper-btn edit" size="mini" @click="updateGrp(scope.row.sceneGrpUuid)" />
-              <el-button type="danger" class="oper-btn delete" size="mini" @click="deleteGrp(scope.row.sceneGrpUuid)" />
+              <el-button type="primary" class="oper-btn detail" title="预览" size="mini" @click="selectFilterOne(scope.row.sceneGrpUuid)" />
+              <el-button type="primary" class="oper-btn edit" title="修改" size="mini" @click="updateGrp(scope.row.sceneGrpUuid)" />
+              <el-button type="primary" class="oper-btn delete" title="删除" size="mini" @click="deleteGrp(scope.row.sceneGrpUuid)" />
             </template>
           </el-table-column>
         </el-table>
@@ -62,19 +57,19 @@
               style="width: 100%;"
             >
               <el-form-item label="组名称" prop="grpName">
-                <el-input v-model="tempGrp.grpName" style="width:500px" />
+                <el-input v-model="tempGrp.grpName" />
               </el-form-item>
               <el-form-item label="组代码" prop="grpCode">
-                <el-input v-model="tempGrp.grpCode" style="width:500px" />
+                <el-input v-model="tempGrp.grpCode" />
               </el-form-item>
               <el-form-item label="组用户来源SQL(所写SQL中必须有id,name,pid 三列才可预览查看)" prop="grpSql">
-                <el-input v-model="tempGrp.grpSql" :rows="6" type="textarea" style="width:500px" />
+                <el-input v-model="tempGrp.grpSql" :rows="6" type="textarea" />
               </el-form-item>
             </el-form>
           </template>
           <div slot="footer">
-            <el-button @click="dialogFormVisible = false">取消</el-button>
-            <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
+            <el-button @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
+            <el-button @click="dialogFormVisible = false">关闭</el-button>
           </div>
         </el-dialog>
       </template>
@@ -83,7 +78,7 @@
           <span>维护业务场景下数据筛选器：</span>
           <el-row>
             <el-col align="right">
-              <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreateFilter()" />
+              <el-button type="primary" title="新增" size="mini" class="oper-btn add" @click="handleCreateFilter()" />
             </el-col>
           </el-row>
           <el-table
@@ -102,9 +97,9 @@
             <el-table-column label="描述" prop="describe" show-overflow-tooltip />
             <el-table-column label="操作" align="center" min-width="100">
               <template slot-scope="scope">
-                <el-button type="primary" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.inValueSql)" />
-                <el-button type="primary" class="oper-btn edit" size="mini" @click="updateFilter(scope.row.sceneFilterUuid)" />
-                <el-button type="danger" class="oper-btn delete" size="mini" @click="deleteFilter(scope.row.sceneFilterUuid)" />
+                <el-button type="primary" title="预览" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.inValueSql)" />
+                <el-button type="primary" title="修改" class="oper-btn edit" size="mini" @click="updateFilter(scope.row.sceneFilterUuid)" />
+                <el-button type="primary" title="删除" class="oper-btn delete" size="mini" @click="deleteFilter(scope.row.sceneFilterUuid)" />
               </template>
             </el-table-column>
           </el-table>
@@ -117,19 +112,18 @@
                 :rules="rulesFilter"
                 :model="tempFilter"
                 label-position="right"
-                style="width: 600px;hieght:400px;margin-left:50px;"
               >
                 <el-form-item label="筛选器名称" prop="filterName">
-                  <el-input v-model="tempFilter.filterName" style="width:500px" />
+                  <el-input v-model="tempFilter.filterName" />
                 </el-form-item>
                 <el-form-item label="IN值SQL" prop="inValueSql">
-                  <el-input v-model="tempFilter.inValueSql" type="textarea" :rows="5" style="width:500px" />
+                  <el-input v-model="tempFilter.inValueSql" type="textarea" :rows="5" />
                 </el-form-item>
                 <el-form-item label="描述" prop="describe">
-                  <el-input v-model="tempFilter.describe" type="textarea" :rows="4" style="width:500px" />
+                  <el-input v-model="tempFilter.describe" type="textarea" :rows="4" />
                 </el-form-item>
                 <el-form-item label="关联业务属性" prop="bizAttrUuid">
-                  <el-select ref="bizAttrUuid" v-model="tempFilter.bizAttrUuid" style="width:500px" placeholder="请选择业务属性">
+                  <el-select ref="bizAttrUuid" v-model="tempFilter.bizAttrUuid" placeholder="请选择业务属性">
                     <el-option
                       v-for="item in bizJson"
                       :key="item.bizAttrUuid"
@@ -141,8 +135,8 @@
               </el-form>
             </div>
             <div slot="footer">
-              <el-button @click="dialogFormVisibleFilter = false">取消</el-button>
-              <el-button type="primary" @click="dialogStatusFilter==='create'?createDataFilter():updateDataFilter()">确定</el-button>
+              <el-button @click="dialogStatusFilter==='create'?createDataFilter():updateDataFilter()">保存</el-button>
+              <el-button @click="dialogFormVisibleFilter = false">关闭</el-button>
             </div>
           </el-dialog>
 
@@ -171,8 +165,8 @@
       </el-row>
     </template>
     <div slot="footer" style="float:right; margin-right:100px">
+      <el-button @click="saveScene()">保存</el-button>
       <el-button @click="closeEdit()">返回</el-button>
-      <el-button type="primary" @click="saveScene()">确定</el-button>
     </div>
   </div>
 </template>
@@ -242,12 +236,12 @@ export default {
       dialogStatus: '',
       dialogStatusFilter: '',
       textMap: {
-        update: '修改用户组定义',
-        create: '新增用户组定义'
+        update: '用户组定义修改',
+        create: '用户组定义新增'
       },
       textMapFilter: {
-        update: '修改数据筛选器',
-        create: '新增数据筛选器'
+        update: '数据筛选器修改',
+        create: '数据筛选器新增'
       },
       rules: {
         sceneName: [{ required: true, message: '请填写场景名称', trigger: 'change' }],

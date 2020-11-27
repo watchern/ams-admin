@@ -411,6 +411,7 @@ export default {
         this.host = res.data.host
 
         // When in Editpage, Prevent default value overwrite backfill value  在编辑页中，防止默认值覆盖回填值
+        const that = this
         setTimeout(() => {
           this.port = res.data.port
         }, 0)
@@ -513,11 +514,6 @@ export default {
   border-color: #353a43;
   color: #c8ff8c;
   font-weight: bold;
-}
-.ans-btn-primary[disabled],.ans-btn-primary[disabled]:hover {
-	color: #fff;
-	background-color: #c6cfd6;
-	border-color: #c6cfd6;
 }
 .datasource-popup-model {
   background: #fff;
