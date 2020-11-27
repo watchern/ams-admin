@@ -166,7 +166,7 @@
             :remote-method="remoteMethod"
             :loading="loading"
             class="propwidth"
-            @change="paramMsg(temp.processDefinitionId)"
+            @change="changeProcess(temp.processDefinitionId)"
           >
             <el-option
               v-for="item in options"
@@ -337,7 +337,7 @@
             :remote-method="remoteMethod"
             :loading="loading"
             class="propwidth"
-            @change="paramMsg(temp.processDefinitionId)"
+            @change="changeDownProcess(temp.processDefinitionId)"
           >
             <el-option
               v-for="item in options"
@@ -775,16 +775,20 @@ export default {
       })
       return true
     },
-    // 参数详情
-    paramMsg(data) {
+    // 选择修改流程
+    changeProcess(data) {
       getById(data).then((res) => {
         this.temp.processDefName = res.data.name
+        this.paramList = res.data.taskParamsList
+        this.distinctParamList = res.data.distinctParamList
       })
-      getParamsByProcessId(data).then((res) => {
-        this.paramList = res.data
-        // 去重
-        const resmap = new Map()
-        this.distinctParamList = this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))
+    },
+    // 选择下载模板流程
+    changeDownProcess(data) {
+      getById(data).then((res) => {
+        this.temp.processDefName = res.data.name
+        this.paramList = res.data.taskParamsList
+        this.distinctParamList = res.data.distinctParamList
       })
     },
     // 查询任务流程
