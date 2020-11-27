@@ -412,3 +412,11 @@ export function getOneDict(code) {
   var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
   return sysDict.filter(obj => { return obj.codeValue === code })
 }
+
+export function getArrLength(arr) {
+  if (arr === undefined || arr <= 0) {
+    return 0
+  } else {
+    return arr.length
+  }
+}
