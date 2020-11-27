@@ -1,10 +1,10 @@
 <template>
-  <div class="app-container">
+  <div class="tree-list-container">
     <div class="tree">
       <dataTree v-if="personcode!==''" ref="dataTree" :data-user-id="personcode" :scene-code="sceneCode" @node-click="nodeclick" />
     </div>
     <div class="divContent">
-      <BaseDirectoryList ref="listData" @append-node="appendnode" @refresh="refresh" />
+      <BaseDirectoryList ref="listData" @append-node="appendnode" @remove="remove" @refresh="refresh" />
     </div>
   </div>
 </template>
@@ -38,6 +38,9 @@ export default {
     },
     appendnode(childData, parentNode) {
       this.$refs.dataTree.appendnode(childData, parentNode)
+    },
+    remove(data, parentNode) {
+      this.$refs.dataTree.remove(data, parentNode)
     },
     refresh() {
       this.$refs.dataTree.refresh()

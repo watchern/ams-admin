@@ -58,7 +58,7 @@
     </el-dialog>
     <!-- 弹窗2 -->
     <el-dialog :visible.sync="moveTreeVisible" width="600px">
-      <dataTree ref="dataTree" :data-user-id="dataUserId" :scene-code="sceneCode" @node-click="nodeclick" />
+      <dataTree v-if="personcode!==''" ref="dataTree" :data-user-id="personcode" :scene-code="sceneCode" @node-click="nodeclick" />
       <span slot="footer">
         <el-button type="primary" @click="movePathSave()">确定</el-button>
         <el-button @click="moveTreeVisible = false">取消</el-button>
@@ -97,7 +97,15 @@ import { getArrLength } from '@/utils'
 import { deleteDirectory, copyTable, renameResource, movePath, preview } from '@/api/data/directory'
 import { saveFolder } from '@/api/data/folder'
 import dataTree from '@/views/data/role-res/data-tree'
+import { mapState } from 'vuex'
 export default {
+  computed: {
+    // 因为时序问题，store中没有personcode时组件可能被加载 导致dataUserId==''  所以要加personcode!=='' 控制
+    // eslint-disable-next-line no-undef
+    ...mapState({
+      personcode: state => state.user.code
+    })
+  },
   components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs },
   filters: {
 
@@ -214,6 +222,7 @@ export default {
           position: 'bottom-right'
         })
       })
+      this.$emit('remove', this.selections, this.clickNode)
     },
     // 复制资源(只允许复制数据表，不允许复制文件夹)
     copyResource() {

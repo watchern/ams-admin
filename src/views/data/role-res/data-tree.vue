@@ -79,6 +79,13 @@ export default {
       parentNode.loaded = false
       parentNode.expand()
     },
+    remove(data, parentNode) {
+      data.forEach((r, i) => {
+        this.$refs.tree1.remove(r)
+      })
+      parentNode.loaded = false
+      parentNode.expand()
+    },
     refresh() {
       getResELTree({
         dataUserId: this.dataUserId,
