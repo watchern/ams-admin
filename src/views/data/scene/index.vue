@@ -11,7 +11,7 @@
       <el-col align="right">
         <el-button type="primary" size="mini" class="oper-btn add" title="新增" @click="handleCreate()" />
         <el-button type="primary" size="mini" class="oper-btn edit" title="维护" :disabled="selections.length !== 1" @click="toEdit()" />
-        <el-button type="danger" size="mini" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="handleDelete()" />
+        <el-button type="primary" size="mini" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="handleDelete()" />
       </el-col>
     </el-row>
     <el-table

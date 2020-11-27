@@ -32,7 +32,6 @@
       <el-table-column label="规则描述" prop="ruleDesc" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-button :disabled="selections.length !== 1" type="primary" size="mini" class="el_header_button" style="margin-right: 20px;float: right;" @click="selectTransRule()">确定</el-button>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
         ref="dataForm"
@@ -332,16 +331,6 @@ export default {
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
-    },
-    selectTransRule() {
-      var transObj
-      var rulObj = Object.assign({}, this.selections[0]) // copy obj
-      if (rulObj !== null) {
-        selectOne(rulObj).then(res => {
-          transObj = res.data
-        })
-      }
-      return transObj
     },
     updateData() {
       // 先移除输入行

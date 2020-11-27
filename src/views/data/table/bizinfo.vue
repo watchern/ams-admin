@@ -51,7 +51,7 @@
             </el-table-column>
           </el-table>
         </el-form>
-        <el-button v-if="openType !== 'showTable'" type="primary" style="float:right;margin-top:20px" @click="saveTable()">保存</el-button>
+        <el-button v-if="openType !== 'showTable'" style="float:right;margin-top:20px" @click="saveTable()">保存</el-button>
       </div>
     </div>
   </div>

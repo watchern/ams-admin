@@ -40,9 +40,9 @@
           <el-table-column label="创建时间" prop="createTime" :formatter="formatCreateTime" />
           <el-table-column label="操作" align="center" min-width="100">
             <template slot-scope="scope">
-              <el-button type="primary" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.sceneGrpUuid)" />
-              <el-button type="primary" class="oper-btn edit" size="mini" @click="updateGrp(scope.row.sceneGrpUuid)" />
-              <el-button type="danger" class="oper-btn delete" size="mini" @click="deleteGrp(scope.row.sceneGrpUuid)" />
+              <el-button type="primary" class="oper-btn detail" title="预览" size="mini" @click="selectFilterOne(scope.row.sceneGrpUuid)" />
+              <el-button type="primary" class="oper-btn edit" title="修改" size="mini" @click="updateGrp(scope.row.sceneGrpUuid)" />
+              <el-button type="primary" class="oper-btn delete" title="删除" size="mini" @click="deleteGrp(scope.row.sceneGrpUuid)" />
             </template>
           </el-table-column>
         </el-table>
@@ -78,7 +78,7 @@
           <span>维护业务场景下数据筛选器：</span>
           <el-row>
             <el-col align="right">
-              <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreateFilter()" />
+              <el-button type="primary" title="新增" size="mini" class="oper-btn add" @click="handleCreateFilter()" />
             </el-col>
           </el-row>
           <el-table
@@ -97,9 +97,9 @@
             <el-table-column label="描述" prop="describe" show-overflow-tooltip />
             <el-table-column label="操作" align="center" min-width="100">
               <template slot-scope="scope">
-                <el-button type="primary" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.inValueSql)" />
-                <el-button type="primary" class="oper-btn edit" size="mini" @click="updateFilter(scope.row.sceneFilterUuid)" />
-                <el-button type="danger" class="oper-btn delete" size="mini" @click="deleteFilter(scope.row.sceneFilterUuid)" />
+                <el-button type="primary" title="预览" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.inValueSql)" />
+                <el-button type="primary" title="修改" class="oper-btn edit" size="mini" @click="updateFilter(scope.row.sceneFilterUuid)" />
+                <el-button type="primary" title="删除" class="oper-btn delete" size="mini" @click="deleteFilter(scope.row.sceneFilterUuid)" />
               </template>
             </el-table-column>
           </el-table>
@@ -165,8 +165,8 @@
       </el-row>
     </template>
     <div slot="footer" style="float:right; margin-right:100px">
+      <el-button @click="saveScene()">保存</el-button>
       <el-button @click="closeEdit()">返回</el-button>
-      <el-button type="primary" @click="saveScene()">确定</el-button>
     </div>
   </div>
 </template>

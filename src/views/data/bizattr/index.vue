@@ -9,9 +9,9 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" class="oper-btn add" @click="add" />
-        <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="update" />
-        <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="deleteBiz" />
+        <el-button type="primary" title="新增" class="oper-btn add" @click="add" />
+        <el-button type="primary" title="修改" class="oper-btn edit" :disabled="selections.length !== 1" @click="update" />
+        <el-button type="primary" title="删除" class="oper-btn delete" :disabled="selections.length === 0" @click="deleteBiz" />
       </el-col>
     </el-row>
     <el-table
@@ -54,8 +54,8 @@
         </el-form>
       </template>
       <div slot="footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
+        <el-button @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
+        <el-button @click="dialogFormVisible = false">关闭</el-button>
       </div>
     </el-dialog>
   </div>
@@ -100,8 +100,8 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑业务属性',
-        create: '添加业务属性'
+        update: '业务属性修改',
+        create: '业务属性新增'
       },
       dialogPvVisible: false,
       rules: {
