@@ -1,4 +1,5 @@
-import { saveGraphInterface,getExecuteNodeInfoPost } from '@/api/graphtool/graphList'
+import { saveGraphInterface,getExecuteNodeInfoPost,importGraphXml,exportGraphXml } from '@/api/graphtool/graphList'
+import { progressDownLoad } from '@/views/graphtool/tooldic/js/common'
 let indexVue = null// index.vue实例
 let curModelSql = ''// 用来临时存储打开模型图形时的模型SQL语句
 let nodeParamRelArr = []// 用来存储每个节点设置的参数信息
@@ -639,64 +640,14 @@ export function exportAllData() {
     }
 }
 
-// 新建
-export function newGraph() {
-    window.open('index.jsp?openGraphType=1&openType=' + openType, '_blank')
-}
-
 // 打开
 export function openGraph() {
-    var urlParamStr = ''
-    var queryType = openType === 1 ? '-1' : '0'
-    layer.open({
-        id: 'openGraphList',
-        type: 2,
-        title: '图形化列表',
-        content: 'page/openGraph/GraphInfoList.jsp?queryType=' + queryType,
-        area: ['90%', '90%'],
-        skin: 'layui-layer-lan',
-        resize: false,
-        scrollbar: false,
-        btn: ['本窗口打开', '新窗口打开', '取消'],
-        btn1: function(index, layero) {
-            var obj = window['layui-layer-iframe' + index].graphList.returnRowObj()
-            if (obj != null) {
-                urlParamStr = openGraphCallBack(obj)
-                layer.close(index)
-                window.open('index.jsp' + urlParamStr, '_self')
-            }
-        },
-        btn2: function(index, layero) {
-            var obj = window['layui-layer-iframe' + index].graphList.returnRowObj()
-            if (obj != null) {
-                urlParamStr = openGraphCallBack(obj)
-                layer.close(index)
-                window.open('index.jsp' + urlParamStr, '_blank')
-            }
-        },
-        btn3: function(index, layero) {
-            layer.close(index)
-        }
-    })
-}
-
-/**
- * 打开方法的内部回调
- * @param obj 图形对象
- * @return urlParamStr 请求地址的参数
- */
-function openGraphCallBack(obj) {
-    var urlParamStr = ''
-    if (obj.graphType === '3') { // 场景查询
-        if (obj.publicType === '1') { // 公共场景查询
-            urlParamStr = '?graphUuid=' + obj.graphUuid + '&openGraphType=3'
-        } else { // 个人场景查询
-            urlParamStr = '?graphUuid=' + obj.graphUuid + '&openGraphType=2'
-        }
-    } else { // 普通图形
-        urlParamStr = '?graphUuid=' + obj.graphUuid + '&openGraphType=1'
+    hideRMenu('moreMenu')
+    indexVue.graphListDialogVisible = true
+    indexVue.showGraphListType = 'open'
+    if (typeof indexVue.$refs.graphListExport !== "undefined") {//非首次加载需刷新列表
+        indexVue.$refs.graphListExport.getGraphList();
     }
-    return urlParamStr + '&openType=' + openType
 }
 
 /**
@@ -709,18 +660,18 @@ export function autoSaveGraph() {
     var encoder = new mxCodec()
     var node = encoder.encode(graph.getModel())
     var xml = mxUtils.getPrettyXml(node)
-    if ($('#graphUuid').val() === '' && $('#graphUuid').val() != null) {
-        $('#graphName').val('自动保存的副本_' + getCurTime())
-        $('#description').val('系统自动保存的副本')
+    if (indexVue.graphUuid === '' && indexVue.graphUuid != null) {
+        indexVue.graphName = '自动保存的副本_' + getCurTime()
+        indexVue.description = '系统自动保存的副本'
         $('#graphName_show').val('自动保存的副本_' + getCurTime())
         $('#description_show').val('系统自动保存的副本')
     }
     var newNodeData = $.extend(true, {}, graph.nodeData)
     var data = {
-        'graphName': $('#graphName').val(),
-        'description': $('#description').val(),
+        'graphName': indexVue.graphName,
+        'description': indexVue.description,
         'graphXml': xml,
-        'graphUuid': $('#graphUuid').val(),
+        'graphUuid': indexVue.graphUuid,
         'createType': graph.openType,
         'graphType': graph.graphType,
         'nodeData': JSON.stringify(newNodeData) // 各个节点的配置信息
@@ -746,9 +697,9 @@ export function autoSaveGraph() {
     }
     saveGraphInterface(data).then(response => {
         if (!response.data) {
-            alertMsg('提示', '自动保存图形失败', 'info')
+            indexVue.$message({ type: 'info', message: '自动保存图形失败' })
         } else {
-            $('#graphUuid').val(response.data)
+            indexVue.graphUuid = response.data
         }
     })
 }
@@ -776,7 +727,7 @@ function getCurTime() {
  * 判断当前图形中结果表节点的执行情况
  * status：1、全部执行，2、部分执行，3、全部未执行
  * */
-function getExecuteDetail() {
+export function getExecuteDetail() {
     var status = 3// 默认为全部未执行
     // 选中所有节点
     graph.selectVertices()
@@ -815,14 +766,14 @@ function getExecuteDetail() {
 // 打开图形化后的回调
 export function openCallBack(obj) {
     var executeIdArr = []
-    $('#graphUuid').val(obj.graphUuid)
-    $('#graphName').val(obj.graphName)
-    $('#description').val(obj.description)
+    indexVue.graphUuid = obj.graphUuid
+    indexVue.graphName = obj.graphName
+    indexVue.description = obj.description
     $('#graphName_show').val(obj.graphName)
     $('#description_show').val(obj.description)
     graph.nodeData = JSON.parse(obj.nodeData)
     mxUtils.setPrettyXmlLayout(obj.graphXml)
-    if (openGraphType === '4' && typeof obj.modelSql !== 'undefined') { // 如果加载的是模型图形
+    if (graph.openGraphType === 4 && typeof obj.modelSql !== 'undefined') { // 如果加载的是模型图形
         curModelSql = obj.modelSql
     }
     var arr = Object.keys(graph.nodeData)
@@ -838,8 +789,8 @@ export function openCallBack(obj) {
                 nodeParamRelArr[arr[i]] = $.extend(true, {}, paramsSetting)
             }
             refrashResourceZtree(id, '加载' + name, type)
-            if (openGraphType === 3 || (openGraphType === 1 && createUserId !== '' && createUserId !== $('#loginUserUuid').val()) ||
-                parseInt(openType_graph) !== parseInt(openType)) { // 如果加载的是公共场景查询图形或者他人分享的图形或者当前打开的图形的数据源环境与当前使用的数据源环境不相符时
+            if (graph.openGraphType === 3 || (graph.openGraphType === 1 && indexVue.createUserId !== '' && indexVue.createUserId !== indexVue.loginUserUuid) ||
+                parseInt(indexVue.openType_graph) !== parseInt(graph.openType)) { // 如果加载的是公共场景查询图形或者他人分享的图形或者当前打开的图形的数据源环境与当前使用的数据源环境不相符时
                 if (type !== 'datasource' && nodeExcuteStatus !== 1) { // 改变非原表节点的执行状态为未执行
                     graph.nodeData[arr[i]].nodeInfo.nodeExcuteStatus = 1
                     // 改变节点执行状态的图标
@@ -859,7 +810,7 @@ export function openCallBack(obj) {
     // 记录打开操作的操作痕迹
     refrashHistoryZtree('打开图形化')
     // 判断非公共场景查询的图形化的节点中是否有正在执行状态的节点
-    if (openGraphType !== '3' && executeIdArr.length !== 0) { // 如果有，则每隔一分钟请求一次数据
+    if (graph.openGraphType !== '3' && executeIdArr.length !== 0) { // 如果有，则每隔一分钟请求一次数据
         // 从缓冲表中查询与当前图形化有关的执行中节点的执行结果信息
         getExecuteNodeInfo(obj.graphUuid, null, executeIdArr, true)
     }
@@ -881,7 +832,6 @@ export function openCallBack(obj) {
 }
 
 export function getExecuteNodeInfo(graphUuid, executeId, executeIdArr, refreshHistory) {
-    console.log(graph.getModel().cells);
     let obj = {graphUuid:'',executeId:''}
     let len = executeIdArr.length
     if (graphUuid && graphUuid !== '') {
@@ -949,11 +899,11 @@ export function saveGraph(type) {
         alertMsg('提示', '当前图形您没有【' + str + '】操作的权限', 'info')
         return
     }
-    if (graph.openGraphType === 2 || graph.openGraphType === 3) { // 保存场景查询图形
-        createScreenQuery(type)
-    } else if (graph.openGraphType === 4) { // 保存模型图形
-        createDegreeModel(type)
-    } else {
+    // if (graph.openGraphType === 2 || graph.openGraphType === 3) { // 保存场景查询图形
+    //     createScreenQuery(type)
+    // } else if (graph.openGraphType === 4) { // 保存模型图形
+    //     createDegreeModel(type)
+    // } else {
         if (Object.keys(graph.nodeData).length === 0) {
             alertMsg('提示', '当前图形无节点数据，不可保存', 'info')
             return
@@ -961,6 +911,7 @@ export function saveGraph(type) {
         var encoder = new mxCodec()
         var node = encoder.encode(graph.getModel())
         var xml = mxUtils.getPrettyXml(node)
+
         layer.open({
             id: 'saveGraph1',
             type: 1,
@@ -1006,7 +957,7 @@ export function saveGraph(type) {
                 layer.close(index)
             }
         })
-    }
+    // }
 }
 
 // 帮助
@@ -1368,104 +1319,64 @@ function onBodyMouseDown(event) {
 // end
 
 // 导入
-export function importGraph() {
-    hideRMenu('moreMenu')
-    var form = document.createElement('form')
-    form.setAttribute('enctype', 'multipart/form-data')
-    form.setAttribute('style', 'display:none')
-    var input = document.createElement('input')
-    input.setAttribute('type', 'file')
-    input.setAttribute('name', 'file')
-    input.setAttribute('id', 'importGraphXml')
-    form.appendChild(input)
-    $('body').append(form)
-    $('#importGraphXml').on('input', function() {
-        var val = $(this).val()
-        if (val !== '') {
-            if (val.split('.')[1] !== 'xml') {
-                alertMsg('提示', '导入的文件仅支持xml格式', 'info')
-                return
-            }
+export function importGraph(data) {
+    var val = $('#importGraphInp').val()
+    if (val !== '') {
+        if (val.split('.')[1] !== 'xml') {
+            indexVue.$message({ type: 'info', message: '导入的文件仅支持xml格式' })
+        }else{
+            let graphType = (graph.openGraphType === 2 || graph.openGraphType === 3) ? 3 : 1
+            let formData = new FormData()
+            formData.append("file",data.target.files[0])
+            formData.append("graphType",graphType)
             var loading = $('body').mLoading({ 'text': '正在导入文件，请稍后……', 'hasCancel': false })
-            var graphType = (openGraphType === '2' || openGraphType === '3') ? '3' : '1'
-            $(form).ajaxSubmit({
-                type: 'post',
-                url: contextPath + '/graphEditor/importGraphXml',
-                clearForm: true,
-                dataType: 'json',
-                data: { 'graphType': graphType },
-                success: function(e) {
-                    loading.destroy()
-                    if (!e.isError) {
-                        e.message += ',请到列表页面打开'
-                    }
-                    alertMsg('提示', e.message, 'info')
+            importGraphXml(formData).then( response => {
+                loading.destroy()
+                if(response.data){
+                    indexVue.$message({ type: 'info', message: '文件导入成功' })
+                }else{
+                    indexVue.$message({ type: 'info', message: '导入时解析文件出错' })
                 }
             })
-            $(form).remove()
-            return false
         }
-    })
-    $('#importGraphXml').click()
+    }else{
+        indexVue.$message({ type: 'info', message: '未选择待上传的文件' })
+    }
 }
 
 // 导出
 export function exportGraph() {
     hideRMenu('moreMenu')
-    var queryType = openType === 1 ? '-1' : '0'
-    layer.open({
-        id: 'exportGraph',
-        type: 2,
-        title: '图形化列表',
-        content: 'page/openGraph/GraphInfoList.jsp?queryType=' + queryType,
-        area: ['90%', '90%'],
-        skin: 'layui-layer-lan',
-        resize: false,
-        scrollbar: false,
-        btn: ['确定', '取消'],
-        btn1: function(index, layero) {
-            var ids = window['layui-layer-iframe' + index].returnGraphIds()
-            var names = window['layui-layer-iframe' + index].returnGraphNames()
-            if (ids.length > 0) {
-                layer.close(index)
-                var loading = $('body').mLoading({ 'text': '正在导出图形，请稍后……', 'hasCancel': false })
-                var fileName = $('#loginUserId').val() + '_exportGraph_' + new Date().Format('yyyyMMddHHmmssS') + '.xml'
-                $.ajax({
-                    url: contextPath + '/graphEditor/exportGraphXml',
-                    data: { 'graphUuids': ids, 'graphNames': names, 'fileName': fileName },
-                    dataType: 'json',
-                    type: 'post',
-                    traditional: true,
-                    success: function(e) {
-                        if (e.isError) {
-                            loading.destroy()
-                            alertMsg('错误', '图形导出失败', 'error')
-                        } else {
-                            var params = { 'fileName': fileName }
-                            progressDownLoad(contextPath + '/graphEditor/downLoadXml', fileName, params, function() {
-                                loading.destroy()
-                                alertMsg('提示', '文件已下载至虚拟平台【我的文档】网络磁盘中', 'info')
-                            }, function() {
-                                loading.destroy()
-                                alertMsg('提示', '文件下载失败', 'info')
-                            }, function() {})
-                        }
-                    }
-                })
-            } else {
-                alertMsg('提示', '请选择待导出图形记录', 'success')
-            }
-        },
-        btn2: function(index, layero) {
-            layer.close(index)
+    indexVue.graphListDialogVisible = true
+    indexVue.showGraphListType = 'export'
+    if (typeof indexVue.$refs.graphListExport !== "undefined") {//非首次加载需刷新列表
+        indexVue.$refs.graphListExport.getGraphList();
+    }
+}
+
+export function exportGraphBack(param) {
+    let loading = $('body').mLoading({ 'text': '正在导出图形，请稍后……', 'hasCancel': false })
+    let fileName = indexVue.$store.getters.personcode + '_exportGraph_' + new Date().Format('yyyyMMddHHmmssS') + '.xml'
+    exportGraphXml({fileName,...param}).then( response => {
+        if(response.data){
+            progressDownLoad('/graphtool/graphCt/downLoadXml', fileName, {fileName: fileName}, function() {
+                loading.destroy()
+                indexVue.$message({ type: 'info', message: '图形文件下载成功' })
+            }, function() {
+                loading.destroy()
+                indexVue.$message({ type: 'info', message: '图形文件下载失败' })
+            }, function() {})
+        }else{
+            loading.destroy()
+            indexVue.$message({ type: 'info', message: '图形导出失败' })
         }
     })
 }
 
 // 前进
 export function next() {
-    if (canEditor === false) {
-        alertMsg('提示', '当前图形您没有【恢复】操作的权限', 'info')
+    if (graph.canEditor === false) {
+        indexVue.$message({ type: 'info', message: '当前图形您没有【恢复】操作的权限' })
         return
     }
     ownerEditor.redo()
@@ -1473,8 +1384,8 @@ export function next() {
 
 // 后退
 export function back() {
-    if (canEditor === false) {
-        alertMsg('提示', '当前图形您没有【撤销】操作的权限', 'info')
+    if (graph.canEditor === false) {
+        indexVue.$message({ type: 'info', message: '当前图形您没有【撤销】操作的权限' })
         return
     }
     ownerEditor.undo()

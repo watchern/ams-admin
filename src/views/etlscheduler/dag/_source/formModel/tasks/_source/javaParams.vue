@@ -167,14 +167,22 @@ export default {
      * Verify that the value exists or is empty
      */
     _verifProp(type) {
-      const arr = []
+      // const arr = []
       // let flag = true
+      let paramFlag = true
       _.map(this.paramList, v => {
-        arr.push(v.prop)
+        // arr.push(v.prop)
         // if (!v.prop) {
         //   flag = false
         // }
+        if (v.paramUuid === '' || v.paramUuid === null) {
+          paramFlag = false
+        }
       })
+      if (!paramFlag) {
+        this.$message.warning(`关联参数不能为空`)
+        return false
+      }
       // if (!flag) {
       //   if (!type) {
       //     this.$message.warning(`prop不能为空`)

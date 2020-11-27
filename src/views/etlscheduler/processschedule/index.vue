@@ -11,7 +11,7 @@
         <el-button type="primary" class="oper-btn delete" :disabled="deleteStatus" title="删除" @click="handleDelete()" />
         <el-button type="primary" class="oper-btn start" :disabled="startStatus" title="启用" @click="handleUse()" />
         <el-button type="primary" class="oper-btn pause" :disabled="stopStatus" title="停用" @click="handleBear()" />
-        <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length != 1" title="复制" @click="copyData()" />
+        <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length !== 1" title="复制" @click="copyData()" />
         <el-upload
           multiple
           class="upload-demo"
@@ -51,7 +51,7 @@
         prop="scheduleName"
       >
         <template slot-scope="scope">
-          <el-link target="_blank" :underline="false" type="primary" @click="findSchedule(scope.row)">
+          <el-link target="_blank" :underline="false" type="primary" @click="getScheduleDetail(scope.row)">
             {{ scope.row.scheduleName }}</el-link>
         </template>
       </el-table-column>
@@ -77,7 +77,7 @@
       >
         <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <el-row v-for="taskParam in scope.row.distinctParamList">
+            <el-row v-for="(taskParam,$index) in scope.row.distinctParamList" :key="$index">
               <label class="col-md-2">
                 {{ taskParam.name }}:
               </label>
@@ -98,15 +98,15 @@
         prop="dependTaskInfo"
         width="120px"
       >
-        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0" slot-scope="scope">
+        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <el-row v-for="dependTask in scope.row.dependTaskInfoList">
+            <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
               <label class="col-md-2">
-                依赖:
+                [{{ dependTask.dateValueName }}]
               </label>
-              <div class="col-md-10">
-                {{ dependTask.dependItemList }}
-              </div>
+              <label class="col-md-10" align="right">
+                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+              </label>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -137,6 +137,8 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getList"
     />
+
+    <!-- 表单弹框 -->
     <!-- style="width: 700px; margin-left: 50px" -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
@@ -150,7 +152,6 @@
           <el-input
             v-model="temp.scheduleName"
             class="propwidth"
-            placeholder=""
             :disabled="disableUpdate"
             placeholder="请输入任务名称"
           />
@@ -167,7 +168,7 @@
             :remote-method="remoteMethod"
             :loading="loading"
             class="propwidth"
-            @change="paramMsg(temp.processDefinitionId)"
+            @change="changeProcess(temp.processDefinitionId)"
           >
             <el-option
               v-for="item in options"
@@ -178,16 +179,16 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          v-for="(item, index) in distinctParamList"
-          :key="item.paramUuid"
-          :label="item.param.paramName"
+          v-for="(item, $index) in distinctParamList"
+          :key="$index"
+          :label="item.name"
           :rules="{required: true, message: '', trigger: 'change'}"
         >
           <el-input
-            v-model="item.param.defaultValue"
+            v-model="item.value"
             class="propwidth"
             :disabled="disableUpdate"
-            @blur="changeParamValue(item.param.defaultValue,item.param.paramName )"
+            @blur="changeParamValue(item.value, item.name)"
           />
         </el-form-item>
         <el-form-item label="作业周期范围" prop="startTime">
@@ -222,9 +223,9 @@
           >
             <el-option
               v-for="item in crontabFormat"
-              :key="item.code"
-              :label="item.msg"
-              :value="item.code"
+              :key="item.codeDesc"
+              :label="item.codeName"
+              :value="item.codeDesc"
             />
           </el-select>
         </el-form-item>
@@ -247,17 +248,18 @@
                         v-if="!isLoading"
                         :class="{'oper-btn add': iconDisable}"
                         data-toggle="tooltip"
+                        :disable="disableAddStatus"
                         title="添加"
                       />
                     </div>
                   </a>
                 </div>
                 <div class="dep-box">
-                  <span
-                    v-if="dependTaskList.length"
-                    :style="{
+                  <!-- :style="{
                       'pointer-events': disableUpdate === true ? 'none' : '',
-                    }"
+                    }" -->
+                  <span
+                    v-if="dependTaskList!=null && dependTaskList.length>0"
                     @click="!isDetails && _setGlobalRelation()"
                   >
                     <!-- {{ relation === "AND" ? "且" : "或" }} -->
@@ -276,10 +278,12 @@
                       <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
                     </span>
 
+                    <!-- :depend-item-list="dependTaskList[0].dependItemList" -->
                     <m-depend-item-list
                       v-model="el.dependItemList"
-                      :depend-item-list="dependTaskList"
                       :index="$index"
+                      :depend-task-list="dependTaskList"
+                      :process-schedules-uuid="temp.processSchedulesUuid"
                       @on-delete-all="_onDeleteAll"
                       @getDependTaskList="getDependTaskList"
                     />
@@ -318,6 +322,8 @@
         >确定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 下载流程模板弹框 -->
     <el-dialog title="下载流程模板" :visible.sync="dialogFormVisible1">
       <el-form
         :rules="rules"
@@ -335,7 +341,7 @@
             :remote-method="remoteMethod"
             :loading="loading"
             class="propwidth"
-            @change="paramMsg(temp.processDefinitionId)"
+            @change="changeTempProcess(temp.processDefinitionId)"
           >
             <el-option
               v-for="item in options"
@@ -370,15 +376,14 @@ import {
   findByprocessDef,
   startScheduleStatus,
   stopScheduleStatus,
-  getParamsByProcessId,
   getByScheduleId,
   copy,
   queryProcessLike
 } from '@/api/etlscheduler/processschedule'
 import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
-import { crontabExpression } from './common.js'
-import { getDictList, getTransMap } from '@/utils'
+// import { crontabExpression } from './common.js'
+import { getDictList } from '@/utils'
 // import _ from lodash
 
 export default {
@@ -395,6 +400,7 @@ export default {
   },
   data() {
     return {
+      disableAddStatus: false,
       // 开始时间大于今天
       startTime: {
         disabledDate: time => {
@@ -447,7 +453,7 @@ export default {
         }
       },
       // 作业周期格式化
-      crontabFormat: crontabExpression,
+      crontabFormat: null,
       loading: false,
       tableKey: 'processSchedulesUuid',
       list: null,
@@ -477,10 +483,10 @@ export default {
         }
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 10,
-        sortBy: 'asc',
+        sortBy: 'desc',
         sortName: 'updateTime'
       },
       temp: {
@@ -581,6 +587,9 @@ export default {
     }
   },
   watch: {
+    distinctParamList() {
+      this.changeParamList()
+    },
     // 监听selections集合
     selections() {
       if (this.selections.length > 0) {
@@ -622,17 +631,11 @@ export default {
     }
   },
   created() {
-    // getDictList('001001')
-    // const ids = []
-    // ids[0] = '001001'
-    // console.log('1111111111111111111' + JSON.stringify(getDictList(ids.join(','))))
-    // console.log('1111111111111111111' + JSON.stringify(getTransMap(ids.join(','))))
-    // getDictList(ids.join(',')).then((resp) => {
-    //   console.log('22222222222222222222222' + resp.data)
-    // })
-    // getTransMap(ids.join(',')).then((resp) => {
-    //   console.log('22222222222222222222222' + resp.data)
-    // })
+    try {
+      this.crontabFormat = getDictList('001001')
+    } catch (e) {
+      console.error(e)
+    }
     queryProcessLike().then((resp) => {
       this.queryFields[2].data = resp.data
     })
@@ -652,13 +655,14 @@ export default {
           (v1) =>
             (v1.state =
                 dependentResult[
-                  `${v1.processSchedulesUuid}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}`
+                  `${v1.processSchedulesUuid}-${v1.depTasks}-${v1.cycle}-${v1.dateValue}-${v1.scheduleName}`
                 ] || defaultState)
         )
       )
     }
   },
   methods: {
+    // 修改参数
     changeParamValue(value, name) {
       if (value === '') {
         this.$message({
@@ -670,19 +674,23 @@ export default {
         this.flag = true
       }
     },
-    findSchedule(data) {
+    // 调度详情
+    getScheduleDetail(rowdata) {
+      this.distinctParamList = []
       this.iconDisable = false
       this.closeStatus = true
       this.disableUpdate = true
-      this.temp = Object.assign({}, data) // copy obj
+      this.temp = Object.assign({}, rowdata) // copy obj
       this.dialogStatus = 'show'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
       getByScheduleId(this.temp.processSchedulesUuid).then((resp) => {
-        this.dependTaskList = resp.data.dependTaskInfoList
-        this.distinctParamList = resp.data.taskParamsList
+        this.temp = resp.data
+        this.dependTaskList = resp.data.dependTaskInfoList === null ? [] : resp.data.dependTaskInfoList
+        this.paramList = resp.data.taskParamsList === null ? [] : resp.data.taskParamsList
+        this.distinctParamList = resp.data.distinctParamList === null ? [] : resp.data.distinctParamList
       })
     },
     // 导出 excel 格式
@@ -728,13 +736,15 @@ export default {
     _addDep() {
       if (!this.isLoading) {
         this.isLoading = true
-        if (this.dependTaskList == null) {
-          this.dependTaskList = []
+        if (this.dependTaskList == null || this.dependTaskList.length === 0) {
+          this.disableAddStatus = false
+          this.dependTaskList = [{
+            dependItemList: [],
+            relation: 'AND'
+          }]
+        } else {
+          this.disableAddStatus = true
         }
-        this.dependTaskList.push({
-          dependItemList: [],
-          relation: 'AND'
-        })
       }
     },
     _deleteDep(i) {
@@ -775,19 +785,23 @@ export default {
       })
       return true
     },
-    // 参数详情
-    paramMsg(data) {
-      getById(data).then((res) => {
+    // 选择流程，改变参数
+    changeProcess(processId) {
+      // 查询单个流程
+      getById(processId).then((res) => {
         this.temp.processDefName = res.data.name
-      })
-      getParamsByProcessId(data).then((res) => {
-        this.paramList = res.data
+        this.paramList = res.data.globalParamList
         // 去重
-        const resmap = new Map()
-        this.distinctParamList = this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))
+        this.distinctParamList = res.data.distinctParamList
       })
     },
-    // 查询任务流程
+    // 选择下载模板的流程
+    changeTempProcess(data) {
+      // getById(data).then((res) => {
+      //   this.temp.processDefName = res.data.name
+      // })
+    },
+    // 搜索任务流程
     remoteMethod(query) {
       this.loading = true
       setTimeout(() => {
@@ -864,7 +878,8 @@ export default {
         } else {
           this.flag = true
           if (valid) {
-            this.temp.taskParamsList = this.distinctParamList
+            // this.temp.distinctParamList = this.distinctParamList
+            this.temp.taskParamsList = this.paramList
             if (!this.dependTaskList.length) {
               this.temp.dependTaskInfo = null
               this.temp.dependTaskInfoList = []
@@ -887,6 +902,14 @@ export default {
         }
       })
     },
+    changeParamList() {
+      var map = _.groupBy(this.distinctParamList, 'paramCode')
+      this.paramList.forEach(function(property) {
+        property.value = map[property.paramCode].value
+        property.param.defaultValue = map[property.paramCode].value
+      })
+    },
+    // 修改
     handleUpdate() {
       this.iconDisable = true
       this.disableUpdate = false
@@ -898,21 +921,14 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
       getByScheduleId(this.temp.processSchedulesUuid).then((resp) => {
-        this.dependTaskList = resp.data.dependTaskInfoList
-        if (this.dependTaskList === null) {
-          this.dependTaskList = []
-        }
-        this.paramList = resp.data.taskParamsList
-        if (this.paramList === null) {
-          this.paramList = []
-        }
-        //  去重
-        const resmap = new Map()
-        this.distinctParamList = this.paramList.filter((a) => !resmap.has(a.paramUuid) && resmap.set(a.paramUuid, 1))
+        this.temp = resp.data
+        this.dependTaskList = resp.data.dependTaskInfoList === null ? [] : resp.data.dependTaskInfoList
+        this.paramList = resp.data.taskParamsList === null ? [] : resp.data.taskParamsList
+        this.distinctParamList = resp.data.distinctParamList === null ? [] : resp.data.distinctParamList
       })
     },
     updateData() {
-      if (this.flag == false) {
+      if (this.flag === false) {
         this.$notify({
           title: '失败',
           message: '请输入参数值',
@@ -923,7 +939,7 @@ export default {
       } else {
         this.flag = true
         this.temp.dependTaskInfoList = this.dependTaskList
-        this.temp.taskParamsList = this.distinctParamList
+        this.temp.taskParamsList = this.paramList
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             const tempData = Object.assign({}, this.temp)
@@ -1067,8 +1083,8 @@ export default {
       var stopTime = stopJsonDate.toLocaleDateString()
       var message = ''
       this.crontabFormat.forEach((r, i) => {
-        if (date === r.code) {
-          message = r.msg
+        if (date === r.codeDesc) {
+          message = r.codeName
         }
       })
       return onTime + '-' + stopTime + ' ' + message
@@ -1164,9 +1180,9 @@ export default {
     }
 
     .dep-box {
-      border-left: 4px solid #eee;
-      margin-left: -46px;
-      padding-left: 42px;
+      // border-left: 4px solid #eee;
+      // margin-left: -46px;
+      // padding-left: 42px;
       position: relative;
 
       .dep-relation {
@@ -1210,8 +1226,8 @@ export default {
 
   }
   .deleteIcon{
-    position: relative;
-    left: 460px;
-    bottom: 115px;
+    // position: relative;
+    // left: 460px;
+    // bottom: 115px;
   }
 </style>
