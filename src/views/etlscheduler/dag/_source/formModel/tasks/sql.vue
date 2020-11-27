@@ -309,10 +309,11 @@ export default {
         this.$message.warning(`请输入sql语句(必填)`)
         return false
       }
+
       // datasource Subcomponent verification
-      if (!this.$refs.refDs._verifDatasource()) {
-        return false
-      }
+      // if (!this.$refs.refDs._verifDatasource()) {
+      //   return false
+      // }
       // if (this.sqlType === 0 && !this.showType.length) {
       //   this.$message.warning(`表格、附件必须勾选一个`)
       //   return false

@@ -293,9 +293,6 @@ export default {
      * verification
      */
     _verification() {
-      if (!this.$refs.refjavaParams._verifProp()) {
-        return false
-      }
       // if (!_.trim(this.taskCode)) {
       //   this.$message.warning(`请输入节点编码（必填）`)
       //   return false
