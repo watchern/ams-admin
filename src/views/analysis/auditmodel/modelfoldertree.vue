@@ -111,6 +111,7 @@ handleNodeClick1(data, checked, node) {
             // todo 揉入权限信息
             for (let i = 0; i < result.data.length; i++) {
               if (result.data[i].id == 'gonggong' || result.data[i].id == this.$store.getters.personuuid) {
+                result.data[i].disabled =  true
                 newData.push(result.data[i])
               }
             }
