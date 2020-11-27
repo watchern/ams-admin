@@ -903,7 +903,7 @@ export default {
       })
     },
     changeParamList() {
-      var map = _.groupby(this.distinctParamList, 'paramCode')
+      var map = _.groupBy(this.distinctParamList, 'paramCode')
       this.paramList.forEach(function(property) {
         property.value = map[property.paramCode].value
         property.param.defaultValue = map[property.paramCode].value
