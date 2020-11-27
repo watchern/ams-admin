@@ -14,7 +14,7 @@
 import { getCreateSql } from '@/api/data/table-info'
 export default {
   // eslint-disable-next-line vue/require-prop-types
-  props: ['tableId'],
+  props: ['tableId', 'openType'],
   data() {
     return {
       parentContent: '',
