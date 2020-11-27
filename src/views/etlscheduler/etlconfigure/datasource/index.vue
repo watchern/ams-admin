@@ -82,7 +82,7 @@
         prop="connectionParams"
       >
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top" width="600">
+          <el-popover trigger="hover" placement="top" width="500">
             <!-- <p>{{ scope.row.connectionParams }}</p> -->
             <el-row>
               <label class="col-md-4">
