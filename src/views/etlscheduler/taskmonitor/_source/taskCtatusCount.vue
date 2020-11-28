@@ -3,7 +3,7 @@
     <div v-show="!msg">
       <div v-spin="isSpin" class="data-area" style="height: 430px;">
         <div class="col-md-7">
-          <div id="task-status-pie" style="height:260px;margin-top: 130px;" />
+          <div id="task-status-pie" style="height:260px;margin-top: 20px;" />
         </div>
         <div class="col-md-5">
           <div class="table-small-model">
@@ -38,7 +38,8 @@ import { mapActions } from 'vuex'
 import { pie } from './chartConfig'
 import Chart from '@/components/etl/ana-charts'
 import mNoData from '@/components/etl/noData/noData'
-import { stateType } from './common'
+// stateType,
+import { statusType } from './common'
 
 export default {
   name: 'TaskCtatusCount',
@@ -58,7 +59,8 @@ export default {
       this.$router.push({
         name: 'task-instance',
         query: {
-          stateType: _.find(stateType, ['label', name])['code'],
+          // stateType: _.find(stateType, ['label', name])['code'],
+          stateType: _.find(statusType, ['label', name])['code'],
           startTimeStart: this.searchParams.startTimeStart,
           startTimeEnd: this.searchParams.startTimeEnd
         }
@@ -67,7 +69,8 @@ export default {
     // 带着状态和开始结束时间进行页面的跳转，跳转到任务实例页面
     handleSchedule(name) {
       this.$router.push({ path: '/etlscheduler/taskinstance', name: 'taskinstance', params: {
-        status: JSON.stringify(_.find(stateType, ['label', name]).value),
+        // status: JSON.stringify(_.find(stateType, ['label', name]).value),
+        status: JSON.stringify(_.find(statusType, ['label', name]).value),
         startTimeStart: this.searchParams.startTimeStart,
         startTimeEnd: this.searchParams.startTimeEnd
       }})
@@ -76,7 +79,8 @@ export default {
       const data = res.data.taskCountDtos
       this.taskCtatusList = _.map(data, v => {
         return {
-          key: _.find(stateType, ['code', v.taskStateType])['label'],
+          // key: _.find(stateType, ['code', v.taskStateType])['label'],
+          key: _.find(statusType, ['code', v.taskStateType])['label'],
           value: v.count,
           type: 'type'
         }

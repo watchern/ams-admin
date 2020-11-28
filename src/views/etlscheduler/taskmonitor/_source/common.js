@@ -91,6 +91,58 @@ const stateType = [
     label: '执行成功'
   }
 ]
+
+const statusType = [
+  {
+    value: 0,
+    code: '',
+    label: '无'
+  },
+  {
+    value: 'G_WATTING',
+    code: 'G_WATTING',
+    label: '等待中'
+  },
+  {
+    value: 'G_WAITTING_FILE',
+    code: 'G_WAITTING_FILE',
+    label: '等待文件'
+  },
+  {
+    value: 'G_WAITTING_DEPEND',
+    code: 'G_WAITTING_DEPEND',
+    label: '等待依赖'
+  },
+  {
+    value: 'G_RUNNING_EXEUTION',
+    code: 'G_RUNNING_EXEUTION',
+    label: '执行中'
+  },
+  {
+    value: 'G_PAUSE',
+    code: 'G_PAUSE',
+    label: '暂停'
+  },
+  {
+    value: 'G_CANCEL',
+    code: 'G_CANCEL',
+    label: '已取消'
+  },
+  {
+    value: 'G_SUCCESS',
+    code: 'G_SUCCESS',
+    label: '执行完成'
+  }, {
+    value: 'G_FAILURE',
+    code: 'G_FAILURE',
+    label: '执行失败'
+  }, {
+    value: 'G_OTHER',
+    code: 'G_OTHER',
+    label: '其它'
+  }
+]
+
 const statusList = [
   {
     value: 0,
@@ -126,5 +178,5 @@ const statusList = [
 ]
 
 export {
-  stateType, statusList
+  stateType, statusList, statusType
 }
