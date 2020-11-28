@@ -1,6 +1,8 @@
 <template>
   <!-- firstParentTabCon.vue界面是父页签第一个页签中的内容 -->
   <div class="app-container">
+    <el-container>
+      <el-header>
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -8,7 +10,9 @@
         @submit="getLikeList"
       />
     </div>
-    <div align="right" style="width: 70%">
+    </el-header>
+    <el-main>
+    <div align="right" style="width: 72%">
       <el-row>
         <el-button
         v-if="false"
@@ -60,7 +64,7 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       height="450px"
-      style="overflow-x: scroll; width: 70%"
+      style="overflow-x: scroll; width: 72%"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column
@@ -176,11 +180,19 @@
         align="center"
         width="200px"
       />
-      <el-table-column fixed="right" label="操作" width="150px">
+      <el-table-column fixed="right" label="操作" width="150px" align="center">
         <template slot-scope="scope">
+          <div>
           <el-button type="primary" @click="reRun(scope.row)" size="mini"
-            >重新运行</el-button
+            >直接重新运行</el-button
           >
+          </div>
+          <br/>
+          <div>
+          <el-button type="primary" @click="reRunReParam(scope.row)" size="mini"
+            >输入参数重新运行</el-button
+          >
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -193,6 +205,7 @@
         v-model="setDateTime"
         type="datetime"
         placeholder="选择日期时间"
+        :picker-options="executeTimeOptions"
       >
       </el-date-picker>
       <span slot="footer" class="dialog-footer">
@@ -207,6 +220,8 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getLikeList"
     />
+    </el-main>
+    </el-container>
   </div>
 </template>
 <script>
@@ -223,6 +238,7 @@ import {
 import QueryField from "@/components/Ace/query-field/index";
 import Pagination from "@/components/Pagination/index";
 import { elementInside } from "dropzone";
+import runimmediatelycon from '@/views/analysis/auditmodel/runimmediatelycon'
 import axios from "axios";
 import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
@@ -268,6 +284,13 @@ export default {
       settingTimingIsSee: false,
       setDateTime: "",
       nowRunTaskRel: null,
+             //单次/多次/周期执行的周期开始结束时间 执行时间选择配置
+      executeTimeOptions:{
+        disabledDate(time){
+          //不能选择小于当前日志的事件
+          return new Date(time.toLocaleDateString()) < new Date(new Date().toLocaleDateString())
+        }
+      },
     };
   },
   created() {
@@ -845,6 +868,21 @@ export default {
       });
       this.settingTimingIsSee = false;
     },
+    reRunReParam(runTaskRel){
+       var runType = runTaskRel.runTask.runType;
+      this.nowRunTaskRel = runTaskRel;
+      if (runType == 3) {
+        reRunRunTask(runTaskRel).then((resp) => {
+          if (resp.data == true) {
+            this.getLikeList();
+          } else {
+            this.$message({ type: "info", message: "重新执行失败!" });
+          }
+        });
+      } else if (runType == 2) {
+        this.settingTimingIsSee = true;
+      }
+    }
   },
 };
 </script>

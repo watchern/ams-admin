@@ -1,7 +1,7 @@
 <template>
   <div class="process-state-count-model">
     <div v-show="!msg">
-      <div v-spin="isSpin" class="data-area" style="height: 430px;">
+      <div v-spin="isSpin" class="data-area">
         <div class="col-md-7">
           <div id="process-state-pie" style="height:260px;margin-top: 20px;" />
         </div>

@@ -15,6 +15,7 @@
           :highlight-current="true"
           :data="treeData1"
           node-key="id"
+          :expand-on-click-node="false"
           :filter-node-method="filterNode"
           show-checkbox
         >
@@ -167,7 +168,7 @@ export default {
   },
   created() {
     this.tree1Loading = true
-    getResELTree().then(resp => {
+    getResELTree({ dataUserId: 'master', sceneCode: '' }).then(resp => {
       this.treeData1 = resp.data
       this.tree1Loading = false
     })
@@ -188,6 +189,9 @@ export default {
     addRoleTable() {
       /* 先对选中节点以pid为key做hashmap */
       var ckTbs = this.$refs.tree1.getCheckedNodes(false, true);
+      if(ckTbs.length == 0){
+        ckTbs.push(this.$refs.tree1.getCurrentNode());
+      }
       var ckTbsMap = {};
       ckTbs.forEach((item) => {
         var assItem = Object.assign({}, item);
@@ -238,6 +242,7 @@ export default {
       if (node.data.type === 'table') {
         if (node.data.cols) {
           this.currentData = node.data
+          if(!this.currentData.accessType) this.$set(this.currentData, 'accessType', []);
         } else {
           this.listLoading = true
           getRoleCols(this.roleUuid, node.data.id).then(resp => {
@@ -248,10 +253,12 @@ export default {
             this.currentData.cols.forEach(d => {
               this.$set(d, 'selected', d.roleCol !== null)
             });
+            if(!this.currentData.accessType) this.$set(this.currentData, 'accessType', []);
           })
         }
       } else if (node.data.type === 'folder') {
-        this.currentData = node.data
+        this.currentData = node.data;
+        if(!this.currentData.accessType) this.$set(this.currentData, 'accessType', []);
       }
     },
 
@@ -274,6 +281,7 @@ export default {
       allNodes.forEach(node => {
         var data = node.data
         if(data.id !== 'ROOT'){
+          if(!data.accessType) data.accessType = [];
           var accType1 = data.accessType.join(',');
           if (data.type === 'folder') {
             folders.push({
