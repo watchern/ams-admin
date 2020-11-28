@@ -50,8 +50,6 @@
       />
       <el-table-column
         label="系统名称"
-        width="300px"
-        align="center"
         prop="dataResourceName"
       >
         <template slot-scope="scope">
@@ -93,18 +91,27 @@
         :rules="rules"
         :model="temp"
         label-position="right"
+        class="detail-form"
       >
         <el-form-item
           label="系统名称"
           prop="dataResourceName"
         >
-          <el-input v-model="temp.dataResourceName" :disabled="disableUpdate" />
+          <el-input
+            v-model="temp.dataResourceName"
+            :disabled="disableUpdate"
+            :placeholder="disableUpdate === true ? '' : '请输入系统名称'"
+          />
         </el-form-item>
         <el-form-item
           label="系统编码"
           prop="dataResourceCode"
         >
-          <el-input v-model="temp.dataResourceCode" :disabled="disableUpdate" />
+          <el-input
+            v-model="temp.dataResourceCode"
+            :disabled="disableUpdate"
+            :placeholder="disableUpdate === true ? '' : '请输入系统编码'"
+          />
         </el-form-item>
         <el-form-item
           label="系统描述"
@@ -114,6 +121,7 @@
             v-model="temp.dataResourceDesc"
             type="textarea"
             :disabled="disableUpdate"
+            :placeholder="disableUpdate === true ? '' : '请输入系统描述'"
           />
         </el-form-item>
       </el-form>

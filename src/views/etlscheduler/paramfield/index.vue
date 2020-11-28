@@ -34,15 +34,24 @@
         type="selection"
         align="center"
       />
-      <el-table-column
+      <!-- <el-table-column
         label="参数名称"
         width="150px"
         align="center"
         prop="paramName"
-      />
+      /> -->
+      <el-table-column
+        label="参数名称"
+        prop="paramName"
+      >
+        <template slot-scope="scope">
+          <el-link :underline="false" type="primary" @click="findParam(scope.row)">
+            {{ scope.row.paramName }}</el-link>
+        </template>
+      </el-table-column>
       <el-table-column
         label="参数编码"
-        width="150px"
+        width="200px"
         align="center"
         prop="paramCode"
       />
@@ -55,8 +64,6 @@
       />
       <el-table-column
         label="默认值"
-        width="150px"
-        align="center"
         prop="defaultValue"
       />
       <!--
@@ -119,15 +126,16 @@
         >
           <el-input
             v-model="temp.paramName"
-            placeholder="请输入参数名称"
+            :placeholder="disableUpdate === true ? '' : '请输入参数名称'"
             class="propwidth"
+            :disabled="disableUpdate"
           />
         </el-form-item>
         <el-form-item
           label="参数编码"
           prop="paramCode"
         >
-          <el-input v-model="temp.paramCode" placeholder="请输入参数编码" class="propwidth" />
+          <el-input v-model="temp.paramCode" :placeholder="disableUpdate === true ? '' : '请输入参数编码'" class="propwidth" :disabled="disableUpdate" />
         </el-form-item>
         <el-form-item
           label="参数状态"
@@ -136,7 +144,8 @@
           <el-select
             v-model="temp.status"
             class="propwidth"
-            placeholder="请选择参数状态"
+            :placeholder="disableUpdate === true ? '' : '请选择参数状态'"
+            :disabled="disableUpdate"
           >
             <el-option
               label="启用"
@@ -155,7 +164,8 @@
           <el-select
             v-model="temp.paramType"
             class="propwidth"
-            placeholder="请选择参数类型"
+            :placeholder="disableUpdate === true ? '' : '请选择参数类型'"
+            :disabled="disableUpdate"
           >
             <el-option
               label="文本"
@@ -171,13 +181,18 @@
           label="默认值"
           prop="defaultValue"
         >
-          <el-input v-model="temp.defaultValue" placeholder="请输入参数默认值" class="propwidth" />
+          <el-input v-model="temp.defaultValue" :placeholder="disableUpdate === true ? '' : '请输入参数默认值'" class="propwidth" :disabled="disableUpdate" />
         </el-form-item>
         <el-form-item
           label="可选值"
           prop="selectValue"
         >
-          <el-input v-model="temp.selectValue" placeholder="请输入参数可选值" class="propwidth" />
+          <el-input
+            v-model="temp.selectValue"
+            :placeholder="disableUpdate === true ? '' : '请输入参数可选值'"
+            class="propwidth"
+            :disabled="disableUpdate"
+          />
         </el-form-item>
         <el-form-item
           label="参数描述"
@@ -185,15 +200,22 @@
         >
           <el-input
             v-model="temp.paramDesc"
-            placeholder="请输入参数描述"
+            :placeholder="disableUpdate === true ? '' : '请输入参数描述'"
             type="textarea"
             class="propwidth"
+            :disabled="disableUpdate"
           />
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button @click="dialogFormVisible = false">返回</el-button>
+        <el-button v-if="!closeStatus" @click="dialogFormVisible = false">返回</el-button>
         <el-button
+          v-if="closeStatus"
+          type="primary"
+          @click="dialogFormVisible = false"
+        >关闭</el-button>
+        <el-button
+          v-if="!closeStatus"
           type="primary"
           @click="dialogStatus==='create'?createData():updateData()"
         >确定</el-button>
@@ -260,7 +282,8 @@ export default {
       dialogStatus: '',
       textMap: {
         update: '编辑参数',
-        create: '新增参数'
+        create: '新增参数',
+        show: '查看参数'
       },
       dialogPvVisible: false,
       // 新增的表单验证
@@ -271,6 +294,8 @@ export default {
         paramType: [{ required: true, message: '请选择参数的类型', trigger: 'change' }],
         status: [{ required: true, message: '请选择参数状态', trigger: 'change' }]
       },
+      disableUpdate: false,
+      closeStatus: false,
       downloadLoading: false
     }
   },
@@ -278,6 +303,16 @@ export default {
     this.getList()
   },
   methods: {
+    findParam(data) {
+      this.closeStatus = true
+      this.disableUpdate = true
+      this.temp = Object.assign({}, data) // copy obj
+      this.dialogStatus = 'show'
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
     getList(query) {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
@@ -310,6 +345,8 @@ export default {
       }
     },
     handleCreate() {
+      this.closeStatus = false
+      this.disableUpdate = false
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -335,6 +372,8 @@ export default {
       })
     },
     handleUpdate() {
+      this.closeStatus = false
+      this.disableUpdate = false
       this.temp = Object.assign({}, this.selections[0]) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
