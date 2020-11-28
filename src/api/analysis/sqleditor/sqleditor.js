@@ -120,7 +120,6 @@ export function initDragAndDrop() {
   vertical.onmousedown = function(e) {
     var disX = (e || event).clientX
     vertical.left = vertical.offsetLeft
-    console.log(leftPart.offsetWidth)
     document.onmousemove = function(e) {
       var e = e || window.event; 
       var tarnameb = e.target || e.srcElement
@@ -131,7 +130,6 @@ export function initDragAndDrop() {
       vertical.style.left = iT - 134 +'px' 
       leftPart.style.width = iT - 126 - 35 + 'px'
       rightContent.style.width = parseInt(container.clientWidth - iT + 134 -43) + 'px'
-      console.log(container.offsetLeft)
       return false
 
     }
@@ -1477,7 +1475,6 @@ export function getSelectSql(menuId) {
         if (result.data == undefined || result.data == null) {
           return;
         } else {
-          console.log(result.data)
           if (result.data && result.data.length > 0) {
             var columns = [];
             for(var i = 0;i < result.data.length;i++){

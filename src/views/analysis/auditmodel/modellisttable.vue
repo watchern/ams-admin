@@ -242,7 +242,6 @@ export default {
       this.$nextTick(function() {
         // 页签添加完成后初始化新界面的参数
         if (this.currentPreviewModelParamAndSql.paramObj != undefined) {
-          console.log(this.currentPreviewModelParamAndSql.paramObj)
           this.$refs.[this.currentPreviewModelParamAndSql.modelUuid + 'param'][0]
             .initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', this.currentPreviewModelParamAndSql.modelUuid)
         }

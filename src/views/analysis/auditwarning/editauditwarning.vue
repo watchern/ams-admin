@@ -418,7 +418,6 @@ export default {
     },
     'temp.modelList':function(newValue, oldValue){
       this.$nextTick(function(){
-        console.log(this.initedParamModel)
         //页签添加完成后初始化新界面的参数
         for(let model of this.temp.modelList){
           //是否已经创建
@@ -512,7 +511,6 @@ export default {
             this.auditWarningSave.warningTaskRel.push(taskRel)
             continue
           }
-          debugger
           taskRel.settingInfo = JSON.stringify(this.getModelParamById(model))
           this.auditWarningSave.warningTaskRel.push(taskRel)
         }
