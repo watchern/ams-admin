@@ -158,7 +158,8 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, findTaskLogs } from '@/api/etlscheduler/taskinstance'
 import QueryField from '@/components/Ace/query-field/index'
-import { statusListComm, statuSelect, colorList } from '@/views/etlscheduler/processinstance/comm.js'
+// statuSelectList, statusComm
+import { colorList, statusListComm, statuSelect } from '@/views/etlscheduler/processinstance/comm.js'
 
 export default {
   components: { Pagination, QueryField },
@@ -195,9 +196,12 @@ export default {
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '任务实例状态', name: 'status', type: 'select',
-          data: statuSelect,
-          default: '1'
+          data: statuSelect
         },
+        // {
+        //   label: '任务实例状态', name: 'groupExecutionStatus', type: 'select',
+        //   data: statuSelectList
+        // },
         { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
       ],
       pageQuery: {
@@ -270,6 +274,9 @@ export default {
     statusListComm.forEach((r, i) => {
       this.statusObj[r['value']] = r
     })
+    // statusComm.forEach((r, i) => {
+    //   this.statusObj[r['value']] = r
+    // })
     colorList.forEach((r, i) => {
       this.logColorObj[r['value']] = r
     })
