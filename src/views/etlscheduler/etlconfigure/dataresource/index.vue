@@ -7,25 +7,6 @@
         @submit="getList"
       />
     </div>
-    <!-- <div>
-      <el-button
-        type="primary"
-        size="mini"
-        @click="handleCreate()"
-      >新增</el-button>
-      <el-button
-        type="primary"
-        size="mini"
-        :disabled="selections.length !== 1"
-        @click="handleUpdate()"
-      >修改</el-button>
-      <el-button
-        type="danger"
-        size="mini"
-        :disabled="selections.length === 0"
-        @click="handleDelete()"
-      >删除</el-button>
-    </div> -->
     <el-row>
       <el-col align="right">
         <el-button type="primary" class="oper-btn add" title="新增" @click="handleCreate()" />
@@ -38,6 +19,7 @@
       v-loading="listLoading"
       :data="list"
       border
+      stripe
       fit
       highlight-current-row
       style="width: 100%;"
@@ -50,8 +32,6 @@
       />
       <el-table-column
         label="系统名称"
-        width="300px"
-        align="center"
         prop="dataResourceName"
       >
         <template slot-scope="scope">
@@ -93,18 +73,27 @@
         :rules="rules"
         :model="temp"
         label-position="right"
+        class="detail-form"
       >
         <el-form-item
           label="系统名称"
           prop="dataResourceName"
         >
-          <el-input v-model="temp.dataResourceName" :disabled="disableUpdate" />
+          <el-input
+            v-model="temp.dataResourceName"
+            :disabled="disableUpdate"
+            :placeholder="disableUpdate === true ? '' : '请输入系统名称'"
+          />
         </el-form-item>
         <el-form-item
           label="系统编码"
           prop="dataResourceCode"
         >
-          <el-input v-model="temp.dataResourceCode" :disabled="disableUpdate" />
+          <el-input
+            v-model="temp.dataResourceCode"
+            :disabled="disableUpdate"
+            :placeholder="disableUpdate === true ? '' : '请输入系统编码'"
+          />
         </el-form-item>
         <el-form-item
           label="系统描述"
@@ -114,6 +103,7 @@
             v-model="temp.dataResourceDesc"
             type="textarea"
             :disabled="disableUpdate"
+            :placeholder="disableUpdate === true ? '' : '请输入系统描述'"
           />
         </el-form-item>
       </el-form>
@@ -151,16 +141,16 @@ export default {
       closeStatus: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
-        { label: '资源编码', name: 'dataResourceCode', type: 'fuzzyText', value: '' },
-        { label: '资源名称', name: 'dataResourceName', type: 'fuzzyText', value: '' },
+        { label: '资源编码', name: 'dataResourceCode', type: 'text', value: '' },
+        { label: '资源名称', name: 'dataResourceName', type: 'text', value: '' },
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
       ],
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 10,
-        sortBy: 'asc',
-        sortName: 'update_time'
+        sortBy: 'desc',
+        sortName: 'updateTime'
       },
       temp: {
         dataResourceCode: null,

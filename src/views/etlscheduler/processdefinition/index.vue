@@ -89,7 +89,7 @@
         type="selection"
         width="55"
       />
-      <el-table-column label="流程名称" width="300" align="center" show-overflow-tooltip>
+      <el-table-column label="流程名称" show-overflow-tooltip>
         <template slot-scope="scope">
           <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processDefinitionUuid)">{{ scope.row.name }}</el-link>
         </template>
