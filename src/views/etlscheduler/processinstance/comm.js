@@ -75,7 +75,7 @@ const statusListComm = [{
   value: 41,
   name: '准备执行',
   unicode: 'el-icon-s-help',
-  color: '#fff'
+  color: '#f9be0a'
 },
 {
   value: 50,
