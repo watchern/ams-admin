@@ -80,7 +80,8 @@ export default {
           // key: _.find(stateType, ['code', v.taskStateType])['label'],
           key: _.find(statusType, ['code', v.taskStateType])['label'],
 
-          value: v.count
+          value: v.count,
+          itemStyle: { color: _.find(statusType, ['code', v.taskStateType])['color'] }
         }
       })
       const myChart = Chart.pie('#process-state-pie', this.processStateList, { title: '' })
