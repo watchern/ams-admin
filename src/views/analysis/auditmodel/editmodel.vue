@@ -1282,7 +1282,7 @@ export default {
 </script>
 <style scoped>
 .sql-editor{
-  height: 680px;
+  height: 842px;
   /* overflow-y:scroll */
 }
 

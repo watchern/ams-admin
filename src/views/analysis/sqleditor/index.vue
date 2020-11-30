@@ -663,7 +663,7 @@ export default {
 
 #container{
   width: 100%;
-  height: 101%;
+  height: 100%;
 }
 
 #sidebar{
@@ -672,7 +672,7 @@ export default {
   margin: 0;
   display: inline-block;
   position: absolute;
-  top: 0px;left: 0px;
+  top: 0px;left: -1px;
   border-radius: 50px 0 0 50px;
   overflow: hidden;
   z-index: 20;
@@ -728,8 +728,7 @@ export default {
 
 #vertical {
   position: absolute;
-  top: 20px;
-  left: 16.6%;
+  left: 15.2%;
   height: 100%;
   width: 3px;
   overflow: hidden;
@@ -808,11 +807,12 @@ export default {
 }
 
 .left-part{
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   width: 14.66666667%;
   float: left;
   height: 100%;
-  margin-left: 2%;
+  margin-left: .5%;
 }
 
 

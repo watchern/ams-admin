@@ -7,8 +7,7 @@
 }
 
 #leftPart{
-	box-shadow: 5px 5px 10px #f5f7fa;
-	height: 112%;
+	height: 100%;
 }
 
 .el-tabs--border-card{height: 100%;}
@@ -99,24 +98,23 @@
 
 .ztree li ul li{
 	margin: 0;
-	/* padding: 0 0 0 18px */
+	padding: 0 0 0 18px
 }
 .ztree li a {
-	left: 0;
 	cursor: pointer;
-	width: 229px;
-	height: 23px;
 	color: #333;
 	background-color: transparent;
 	text-decoration: none;
 	vertical-align: top;
 	display: inline-block;
-	position: absolute;
-	padding:5px 0 0 40px;
 	z-index: 5;
+	padding: 5px 5px 5px 7px;
 }
 
 .ztree li a:hover{
+	background-color: #f5f7fa;
+}
+.ztree li span:hover + a{
 	background-color: #f5f7fa;
 }
 
@@ -141,7 +139,6 @@
 
 .ztree li span {
 	line-height: 16px;
-	margin-right: 2px
 }
 
 .ztree li span.button {

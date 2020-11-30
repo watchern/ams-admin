@@ -128,8 +128,8 @@ export function initDragAndDrop() {
       if(iT < left_min){iT = left_min}
       else if(iT > container.clientWidth*.7){iT = container.clientWidth*.7}
       vertical.style.left = iT - 134 +'px'
-      leftPart.style.width = iT - 126 - 35 + 'px'
-      rightContent.style.width = parseInt(container.clientWidth - iT + 134 -43) + 'px'
+      leftPart.style.width = iT - 126 - 15 + 'px'
+      rightContent.style.width = parseInt(container.clientWidth - iT + 134 -63) + 'px'
       return false
 
     }
@@ -146,16 +146,16 @@ export function initDragAndDrop() {
   function tree_zy_zhan() {
     if(tree_shuju == false && tree_canshu == false && tree_sql == false){
       $("#leftPart").stop(true).animate({"width":203},300)
-      $("#vertical").delay(300).fadeIn(100).css("left",17+"%")
-      $("#rightPart").stop(true).animate({"width":1150},300)
-    }
+      $("#vertical").delay(300).fadeIn(100).css("left",11.9+"%")
+      $("#rightPart").stop(true).animate({"width":1150,"left":0},300)
+    } 
   }
 
   function tree_zy_zhanhe() {
     if(tree_shuju == false && tree_canshu == false && tree_sql == false){
       $("#vertical").fadeOut(100)
       $("#leftPart").delay(100).stop(true).animate({"width":0},300)
-      $("#rightPart").delay(100).stop(true).animate({"width":1350},300)
+      $("#rightPart").delay(100).stop(true).animate({"width":1350,"left":15},300)
     }
   }
 
