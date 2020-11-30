@@ -680,7 +680,7 @@ export function initParamTree() {
         var copyParamId = new UUIDGenerator().id
         var id = '{#' + copyParamId + '#}'
         editorObj.replaceRange(id, cursor, cursor)
-        var dom = $("<button onclick='javascript' class='divEditorBtn' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
+        var dom = $("<button οnclick='javascript' class='divEditorBtn' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
         var endCursor = { ch: cursor.ch + id.length, line: cursor.line, sticky: null }
         editorObj.markText(cursor, endCursor, {
           replacedWith: dom,

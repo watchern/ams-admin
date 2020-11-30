@@ -1,23 +1,22 @@
 import _ from 'lodash'
-import { tasksState } from './config'
+import {
+  tasksState
+} from './config'
 
 const pie = {
-  series: [
-    {
-      type: 'pie',
-      clickable: true, // Whether to open clicks
-      minAngle: 5, // The smallest sector angle (0 ~ 360), used to prevent a value from being too small, causing the sector to be too small to affect the interaction
-      avoidLabelOverlap: true, // Whether to prevent the label overlap policy
-      hoverAnimation: true, // Whether to enable hover to enlarge the animation on the sector.
-      radius: ['30%', '60%'],
-      center: ['53%', '60%'],
-      label: {
-        align: 'left',
-        normal: {
-        }
-      }
+  series: [{
+    type: 'pie',
+    clickable: true, // Whether to open clicks
+    minAngle: 5, // The smallest sector angle (0 ~ 360), used to prevent a value from being too small, causing the sector to be too small to affect the interaction
+    avoidLabelOverlap: true, // Whether to prevent the label overlap policy
+    hoverAnimation: true, // Whether to enable hover to enlarge the animation on the sector.
+    radius: ['30%', '60%'],
+    center: ['53%', '60%'],
+    label: {
+      align: 'left',
+      normal: {}
     }
-  ]
+  }]
 }
 
 const bar = {
@@ -78,4 +77,8 @@ const simple = {
 
 }
 
-export { pie, bar, simple }
+export {
+  pie,
+  bar,
+  simple
+}
