@@ -555,7 +555,7 @@ export default {
     handleStop() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
-      execute(ids.join(','), 'TIME_OUT').then(() => {
+      execute(ids.join(','), 'PAUSE').then(() => {
         this.getList()
         this.$notify({
           title: '成功',
@@ -585,7 +585,7 @@ export default {
     handleReStart() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
-      execute(ids.join(','), 'RE_START').then(() => {
+      execute(ids.join(','), 'REPEAT_RUNNING').then(() => {
         this.getList()
         this.$notify({
           title: '成功',
