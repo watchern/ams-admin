@@ -167,6 +167,12 @@ export default {
 
     }
   },
+  computed: {
+    /* ...mapState({
+      personcode: state => state.user.code
+    })*/
+
+  },
   created() {
     this.getList()
   },

@@ -213,6 +213,41 @@
         <el-button type="primary" @click="afterSettingTime">确 定</el-button>
       </span>
     </el-dialog>
+       <el-dialog
+      title="模型运行设置-立即"
+      :visible.sync="runimmediatelyIsSee"
+      width="60%"
+      :append-to-body="true"
+    >
+      <runimmediatelycon
+        v-if="runimmediatelyIsSee"
+        ref="modelsetting"
+        :timing="false"
+        :models="this.currentData"
+        @changeFlag="changeFlag"
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="runimmediatelyIsSee = false">取 消</el-button>
+        <el-button type="primary" @click="modelRunSetting">确 定</el-button>
+      </span>
+    </el-dialog>
+        <el-dialog
+      title="模型运行设置-定时"
+      :visible.sync="timingExecutionIsSee"
+      width="60%"
+      :append-to-body="true"
+    >
+      <runimmediatelycon
+        v-if="timingExecutionIsSee"
+        ref="modelsetting"
+        :timing="true"
+        :models="this.currentData"
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="timingExecutionIsSee = false">取 消</el-button>
+        <el-button type="primary" @click="modelRunSetting">确 定</el-button>
+      </span>
+    </el-dialog>
     <pagination
       v-show="total > 0"
       :total="total"
@@ -235,6 +270,7 @@ import {
   exportRunTaskRel,
   reRunRunTask,
 } from "@/api/analysis/auditmodelresult";
+import { uuid2, addRunTaskAndRunTaskRel } from '@/api/analysis/auditmodel'
 import QueryField from "@/components/Ace/query-field/index";
 import Pagination from "@/components/Pagination/index";
 import { elementInside } from "dropzone";
@@ -244,7 +280,17 @@ import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 export default {
-  components: { Pagination, QueryField },
+  components: { Pagination, QueryField,runimmediatelycon },
+    watch: {
+    flag(value) {
+      this.$nextTick(function() {
+        if (value == true) {
+          this.modelRunSetting()
+          this.flag = ''
+        }
+      })
+    }
+  },
   data() {
     return {
       tableKey: "errorUuid",
@@ -291,6 +337,10 @@ export default {
           return new Date(time.toLocaleDateString()) < new Date(new Date().toLocaleDateString())
         }
       },
+      runimmediatelyIsSee: false,
+      timingExecutionIsSee: false,
+      flag: '',
+      currentData: []
     };
   },
   created() {
@@ -869,19 +919,54 @@ export default {
       this.settingTimingIsSee = false;
     },
     reRunReParam(runTaskRel){
-       var runType = runTaskRel.runTask.runType;
-      this.nowRunTaskRel = runTaskRel;
+       var runType = runTaskRel.runTask.runType
+      this.nowRunTaskRel = runTaskRel
+      this.currentData = []
+      this.currentData.push(runTaskRel.model)
       if (runType == 3) {
-        reRunRunTask(runTaskRel).then((resp) => {
+        this.runimmediatelyIsSee = true
+      } else if (runType == 2) {
+        this.timingExecutionIsSee = true
+      }
+    },
+     /**
+     * 添加运行任务和运行任务关联表
+     */
+    modelRunSetting() {
+      debugger
+      var runType = this.nowRunTaskRel.runTask.runType
+      var results = this.$refs.modelsetting.replaceParams()
+      this.replacedInfo = results.replaceInfo
+      var dateTime = results.dateTime
+         var settingInfo = {
+          sql: this.replacedInfo[0].sql,
+          paramsArr: this.replacedInfo[0].paramsArr
+        }
+      this.nowRunTaskRel.model = results.models[0]
+      this.nowRunTaskRel.settingInfo = settingInfo
+      if(runType==3){
+        reRunRunTask(this.nowRunTaskRel).then((resp) => {
           if (resp.data == true) {
             this.getLikeList();
           } else {
             this.$message({ type: "info", message: "重新执行失败!" });
           }
         });
-      } else if (runType == 2) {
-        this.settingTimingIsSee = true;
+      }else if(runType==2){
+        reRunRunTask(this.nowRunTaskRel,dateTime).then((resp) => {
+          if (resp.data == true) {
+            this.getLikeList();
+          } else {
+            this.$message({ type: "info", message: "重新执行失败!" });
+          }
+        });
       }
+         
+      this.runimmediatelyIsSee = false
+      this.timingExecutionIsSee = false
+    },
+    changeFlag(flag) {
+      this.flag = flag
     }
   },
 };
