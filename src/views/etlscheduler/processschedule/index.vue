@@ -46,8 +46,6 @@
       <el-table-column type="selection" width="55" />
       <el-table-column
         label="调度任务名称"
-        width="200px"
-        align="center"
         prop="scheduleName"
       >
         <template slot-scope="scope">
@@ -153,7 +151,7 @@
             v-model="temp.scheduleName"
             class="propwidth"
             :disabled="disableUpdate"
-            placeholder="请输入任务名称"
+            :placeholder="disableUpdate === true ? '' : '请输入任务名称'"
           />
         </el-form-item>
         <!-- 查询任务流程 -->
@@ -164,7 +162,7 @@
             :filterable="true"
             :remote="true"
             reserve-keyword
-            placeholder="请选择任务流程"
+            :placeholder="disableUpdate === true ? '' : '请选择任务流程'"
             :remote-method="remoteMethod"
             :loading="loading"
             class="propwidth"
@@ -198,7 +196,7 @@
               :picker-options="startTime"
               type="date"
               prop="startTime"
-              placeholder=""
+              :placeholder="disableUpdate === true ? '' : '请选择开始时间'"
               :disabled="disableUpdate"
             />
           </el-col>
@@ -208,7 +206,7 @@
               v-model="temp.endTime"
               :picker-options="endTime"
               type="date"
-              placeholder=""
+              :placeholder="disableUpdate === true ? '' : '请选择结束时间'"
               :disabled="disableUpdate"
             />
           </el-col>
@@ -217,7 +215,7 @@
         <el-form-item label="作业周期" prop="crontab">
           <el-select
             v-model="temp.crontab"
-            placeholder="请选择作业周期"
+            :placeholder="disableUpdate === true ? '' : '请选择作业周期'"
             class="propwidth"
             :disabled="disableUpdate"
           >
@@ -337,7 +335,7 @@
             :filterable="true"
             :remote="true"
             reserve-keyword
-            placeholder="请选择任务流程"
+            :placeholder="disableUpdate === true ? '' : '请选择任务流程'"
             :remote-method="remoteMethod"
             :loading="loading"
             class="propwidth"

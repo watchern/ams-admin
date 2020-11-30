@@ -82,7 +82,8 @@ export default {
           // key: _.find(stateType, ['code', v.taskStateType])['label'],
           key: _.find(statusType, ['code', v.taskStateType])['label'],
           value: v.count,
-          type: 'type'
+          type: 'type',
+          itemStyle: { color: _.find(statusType, ['code', v.taskStateType])['color'] }
         }
       })
       const myChart = Chart.pie('#task-status-pie', this.taskCtatusList, { title: '' })
