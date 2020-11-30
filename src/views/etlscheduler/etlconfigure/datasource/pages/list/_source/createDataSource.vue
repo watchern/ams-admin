@@ -145,8 +145,7 @@
     </div>
     <div class="bottom-p">
       <x-button
-        type="primary"
-        class="btnclass"
+        type="text"
         @click="_close()"
       > 取消</x-button>
       <x-button
@@ -521,6 +520,9 @@ export default {
   border-color: #353a43;
   color: #c8ff8c;
   font-weight: bold;
+}
+.ans-btn-text:hover {
+	color: #252d39;
 }
 .datasource-popup-model {
   background: #fff;

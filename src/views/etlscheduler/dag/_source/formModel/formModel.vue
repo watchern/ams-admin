@@ -210,8 +210,7 @@
         style="background: #fff;"
       >
         <x-button
-          type="primary"
-          class="btnclass"
+          type="text"
           @click="close()"
         > 取消 </x-button>
         <x-button
@@ -738,6 +737,9 @@ export default {
   .ans-radio-inner:after {
     background-color: #6f8391;
   }
+}
+.ans-btn-text:hover {
+	color: #252d39;
 }
 .propwidth{
   width:500px
