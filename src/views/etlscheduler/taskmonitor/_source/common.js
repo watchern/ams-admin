@@ -112,7 +112,7 @@ const statusType = [{
   value: 'G_WAITTING_DEPEND',
   code: 'G_WAITTING_DEPEND',
   label: '等待依赖',
-  color: 'rgb(110,112,116)'
+  color: 'rgb(189,162,154)'
 },
 {
   value: 'G_RUNNING_EXEUTION',
@@ -130,13 +130,13 @@ const statusType = [{
   value: 'G_CANCEL',
   code: 'G_CANCEL',
   label: '已取消',
-  color: 'rgb(47,69,84)'
+  color: 'rgb(110,112,116)'
 },
 {
   value: 'G_SUCCESS',
   code: 'G_SUCCESS',
   label: '执行完成',
-  color: 'rgb(145,199,174)'
+  color: 'rgb(145,220,174)'
 }, {
   value: 'G_FAILURE',
   code: 'G_FAILURE',
