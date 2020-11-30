@@ -136,7 +136,7 @@ const statusType = [{
   value: 'G_SUCCESS',
   code: 'G_SUCCESS',
   label: '执行完成',
-  color: 'rgb(145,220,174)'
+  color: 'rgb(145,202,140)'
 }, {
   value: 'G_FAILURE',
   code: 'G_FAILURE',
