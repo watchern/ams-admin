@@ -193,15 +193,15 @@ table th{
 .el-checkbox__inner{
     border: 0px!important;
     background: #BDC3C9!important;
-    width: 16px!important;
-    height: 16px!important;
+    // width: 16px!important;
+    // height: 16px!important;
 }
 .el-checkbox__inner::after {
-    left: 6px!important;
-    top: 3px!important;
+    left: 5px!important;
+    top: 2px!important;
 }
 .el-checkbox__input.is-indeterminate .el-checkbox__inner::before {
-    top: 7px!important;
+    top: 6px!important;
 }
 .el-checkbox__input.is-checked .el-checkbox__inner {
     background-color: #2a2e37!important;
