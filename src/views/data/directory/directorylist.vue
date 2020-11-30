@@ -392,6 +392,7 @@ export default {
       this.resourceForm.parentFolderUuid = this.clickData.id
       this.resourceForm.fullPath = this.clickFullPath.reverse().join('/')
       this.resourceForm.folderName = this.resourceForm.resourceName
+      this.resourceForm.createUserUuid = this.$store.state.user.code
       saveFolder(this.resourceForm).then(resp => {
         var childData = {
           id: resp.data,
