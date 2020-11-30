@@ -345,7 +345,7 @@ export default {
      * 初始化sql编辑器基础数据
      */
     initData() {
-      const userId = this.$store.getters.personuuid
+      const userId = this.$store.state.user.code
       initDragAndDrop()
       initIcon()
       initTableTree(userId)

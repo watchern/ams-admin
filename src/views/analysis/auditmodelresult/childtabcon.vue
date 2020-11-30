@@ -181,7 +181,6 @@ import myQueryBuilder from "@/views/analysis/auditmodelresult/myquerybuilder";
 import { string } from "jszip/lib/support";
 import { startExecuteSql } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
-import Cookies from 'js-cookie'
 
 export default {
   name: "childTabCon",
