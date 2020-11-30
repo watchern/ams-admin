@@ -73,7 +73,15 @@
           <div class="row">
             <div class="col-md-12">
               <div class="chart-title">
-                <span>上游推送文件情况</span>
+                <span>上游推送文件情况
+                  <el-button
+                    style="margin-left:10px;margin-top:-10px;"
+                    type="primary"
+                    title="查看详情"
+                    class="oper-btn more"
+                    @click="handleFile()"
+                  />
+                </span>
               </div>
               <div class="table-small-model">
                 <table>
@@ -188,6 +196,9 @@ export default {
         startTimeStart: this.searchParams.startTimeStart,
         startTimeEnd: this.searchParams.startTimeEnd
       }})
+    },
+    handleFile() {
+      this.$router.push({ path: '/etlscheduler/resourcemonitor' })
     },
     // 根据时间范围获取任务历时
     _datepicker(val) {
