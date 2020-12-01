@@ -328,7 +328,7 @@
         <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="processDefinitionId">
           <el-select
-            v-model="temp.processDefinitionId"
+            v-model="downProcessDefinitionId"
             :filterable="true"
             :remote="true"
             reserve-keyword
