@@ -87,8 +87,6 @@ export default {
     // 加载根节点的子节点集合
     loadchildnode(node, resolve) {
       if (node.level === 1) {
-        console.log(node)
-        console.log(resolve)
         this.resetobjCode()
         this.objCode.dataSortUuid = node.data.codeUuid
         this.objCode.parentCodeUuid = node.data.codeUuid
@@ -103,7 +101,6 @@ export default {
       } else {
         this.resetobjCode()
         this.objCode.parentCodeUuid = node.data.codeUuid
-        console.log(this.objCode)
         this.pageQueryTree.condition = Object.assign({}, this.objCode)
         loadchildnodeOne(this.pageQueryTree).then(resp => {
           var jsonStr = JSON.stringify(resp.data.records)

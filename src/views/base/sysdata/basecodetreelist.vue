@@ -153,7 +153,7 @@ export default {
     },
     returnList() {
       this.$router.push({
-        path: `/base/sysData`
+        path: `/base/sysdata`
       })
     }
   }

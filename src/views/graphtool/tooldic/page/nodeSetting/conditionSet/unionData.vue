@@ -5,21 +5,24 @@
             <div class="_table">
                 <div class="_table_th">
                     <div id="table_name_left"></div>
-                    <div class="mtDiv"><input id="mainTable_left" type="checkbox" @click="mainTableClick('left','right')"/>&nbsp;主表</div>
+                    <div class="mtDiv">
+                        <el-checkbox v-model="leftMainTableChecked" @change="leftMainTableChange">主表</el-checkbox>
+                    </div>
                 </div>
                 <div style="height: 400px;width: 400px;overflow-y: auto;">
                     <table id="col_table_col_left_data" class="table table-striped">
                         <thead>
                         <tr class="tr_th">
-                            <th width="100px"><input id="sel_all_left" @click="selectAll('left')" type="checkbox" class="form-control"/></th>
+                            <th width="50px" style="text-align: center;">
+                                <el-checkbox v-model="leftSelectAll" @change="leftSelectAllChange"></el-checkbox>
+                            </th>
                             <th>融合字段</th>
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="leftObj in leftTableColArr" :nodeId="leftObj.nodeId">
+                            <tr v-for="(leftObj,index) in leftTableColArr" :key="leftObj.id" :data-index="index">
                                 <td>
-                                    <input type="checkbox" class="form-control columnCk" @click="columnClick('left')" v-if="leftObj.checked" checked="checked"/>
-                                    <input type="checkbox" class="form-control columnCk" @click="columnClick('left')" v-if="!leftObj.checked"/>
+                                    <el-checkbox v-model="leftObj.checked" @change="leftColumnChange"></el-checkbox>
                                 </td>
                                 <td align="left">{{leftObj.colName}}</td>
                             </tr>
@@ -39,21 +42,24 @@
             <div class="_table">
                 <div class="_table_th">
                     <div id="table_name_right"></div>
-                    <div class="mtDiv"><input id="mainTable_right" type="checkbox" @click="mainTableClick('right','left')"/>&nbsp;主表</div>
+                    <div class="mtDiv">
+                        <el-checkbox v-model="rightMainTableChecked" @change="rightMainTableChange">主表</el-checkbox>
+                    </div>
                 </div>
                 <div style="height: 400px;width: 400px;overflow-y: auto;">
                     <table id="col_table_col_right_data" class="table table-striped">
                         <thead>
                         <tr>
-                            <th width="100px"><input id="sel_all_right" @click="selectAll('right')" type="checkbox" class="form-control"/></th>
+                            <th width="50px" style="text-align: center;">
+                                <el-checkbox v-model="rightSelectAll" @change="rightSelectAllChange"></el-checkbox>
+                            </th>
                             <th>融合字段</th>
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="rightObj in rightTableColArr" :nodeId="rightObj.nodeId">
+                            <tr v-for="(rightObj,index) in rightTableColArr" :key="rightObj.id" :data-index="index">
                                 <td>
-                                    <input type="checkbox" class="form-control columnCk" @click="columnClick('right')" v-if="rightObj.checked" checked="checked"/>
-                                    <input type="checkbox" class="form-control columnCk" @click="columnClick('right')" v-if="!rightObj.checked"/>
+                                    <el-checkbox v-model="rightObj.checked" @change="rightColumnChange"></el-checkbox>
                                 </td>
                                 <td align="left">{{rightObj.colName}}</td>
                             </tr>
@@ -71,12 +77,22 @@
         name: 'unionDataSet',
         data(){
             return{
-                leftTableColArr:[],
-                rightTableColArr:[]
+                leftMainTableChecked: true,
+                rightMainTableChecked: false,
+                leftSelectAll: false,
+                rightSelectAll: false,
+                leftTableColArr: [],
+                rightTableColArr: [],
+                leftTableNodeId: '',
+                rightTableNodeId: '',
+                leftTablePreNodeId: '',
+                rightTablePreNodeId: ''
             }
         },
         mounted(){
             this.init();
+            window.saveSetting = this.saveSetting
+            window.inputVerify = this.inputVerify
         },
         methods:{
             init(){
@@ -92,280 +108,353 @@
                     var left_data = setting.left_data
                     var right_data = setting.right_data
                     var mainType = ''// 默认主表
-                    $('#table_name_left').attr('nodeId', left_data.nodeId)
+                    this.leftTableNodeId = left_data.nodeId
+                    this.leftTablePreNodeId = left_data.preNodeId
                     $('#table_name_left').html(left_data.nodeName)
-                    $('#table_name_right').attr('nodeId', right_data.nodeId)
+                    this.rightTableNodeId = right_data.nodeId
+                    this.rightTablePreNodeId = right_data.preNodeId
                     $('#table_name_right').html(right_data.nodeName)
                     if (left_data.mainTable) {
                         mainType = 'left'
-                        $('#mainTable_left').attr('checked', 'checked')
+                        this.leftMainTableChecked = true
+                        this.rightMainTableChecked = false
                     }
                     if (right_data.mainTable) {
                         mainType = 'right'
-                        $('#mainTable_right').attr('checked', 'checked')
+                        this.leftMainTableChecked = false
+                        this.rightMainTableChecked = true
                     }
                     if (left_data.selectAll) {
-                        $('#sel_all_left').attr('checked', 'checked')
+                        this.leftSelectAll = true
                     }
                     if (right_data.selectAll) {
-                        $('#sel_all_right').attr('checked', 'checked')
+                        this.rightSelectAll = true
                     }
                     let colArr = [];
-                    // var html = ''; var indexArr = []
                     $(left_data.columnSetArr).each(function(i, v) {
-                        let nodeId = left_data.preNodeId
+                        let id = v.id
                         let colName = v.name
-                        let checked = false
-                        if (v.checked) {
-                            checked = true
-                        }
-                        colArr.push({nodeId,colName,checked})
+                        let checked = v.checked
+                        colArr.push({id,colName,checked})
                     })
                     if (colArr.length !== 0) {
-                        $('#col_table_col_left_data>tbody').html(html).sortable().disableSelection()
                         this.leftTableColArr = [...colArr];
                     }
                     colArr = [];
                     $(right_data.columnSetArr).each(function(i, v) {
-                        let nodeId = right_data.preNodeId
+                        let id = v.id
                         let colName = v.name
-                        let checked = false
-                        if (v.checked) {
-                            checked = true
-                        }
-                        colArr.push({nodeId,colName,checked})
+                        let checked = v.checked
+                        colArr.push({id,colName,checked})
                     })
                     if (colArr.length !== 0) {
-                        $('#col_table_col_right_data>tbody').html(html).sortable().disableSelection()
                         this.rightTableColArr = [...colArr];
                     }
                     // 反显输出列
-                    var data = []
-                    $('#col_table_col_' + mainType + '_data>tbody>tr').each(function(i, v) {
-                        if ($(this).find('.columnCk').prop('checked')) {
-                            var obj = {
-                                'nodeId': $(this).attr('nodeId'),
-                                'value': $(this).find('td:eq(1)').html(),
-                                'nullNodeId': $('#table_name_' + mainType).attr('nodeId')
+                    let data = []
+                    if(mainType === "left"){
+                        for(let i=0;i <this.leftTableColArr.length; i++){
+                            if(this.leftTableColArr[i].checked){
+                                data.push({
+                                    'nodeId': this.leftTablePreNodeId,
+                                    'value': this.leftTableColArr[i].colName,
+                                    'nullNodeId': this.leftTableNodeId
+                                })
                             }
-                            data.push(obj)
                         }
+                    }else{
+                        for(let i=0;i <this.rightTableColArr.length; i++){
+                            if(this.rightTableColArr[i].checked){
+                                data.push({
+                                    'nodeId': this.rightTablePreNodeId,
+                                    'value': this.rightTableColArr[i].colName,
+                                    'nullNodeId': this.rightTableNodeId
+                                })
+                            }
+                        }
+                    }
+                    this.$parent.$refs.outputColumnVueRef.$nextTick( () => {
+                        this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
                     })
-                    this.$parent.$refs.outputColumn.re_checkbox(data, true)
                 } else {
-                    let this_vue = this;
                     if (parentIds && parentIds.length > 0) {
-                        $(parentIds).each(function(i, v) {
-                            var per_node = graph.nodeData[v]
-                            var columnsInfo = per_node.columnsInfo
-                            var nodeName = per_node.nodeInfo.nodeName
-                            var nodeId = per_node.nodeInfo.nodeId
-                            var preNodeId = per_node.nodeInfo.nodeId
+                        for(let i=0; i<parentIds.length; i++){
+                            let per_node = graph.nodeData[parentIds[i]]
+                            let columnsInfo = per_node.columnsInfo
+                            let tableName = per_node.nodeInfo.nodeName
+                            let nodeId = per_node.nodeInfo.nodeId
+                            let preNodeId = per_node.nodeInfo.nodeId
                             // 如果前置节点为结果表且该结果表未配置
                             if (per_node && per_node.nodeInfo.optType === 'newNullNode' && !per_node.isSet) {
                                 let per_node_parentIds = per_node.parentIds
                                 if (per_node_parentIds && per_node_parentIds.length > 0) {
                                     columnsInfo = graph.nodeData[per_node_parentIds[0]].columnsInfo
                                     preNodeId = graph.nodeData[per_node_parentIds[0]].nodeInfo.nodeId
+                                    tableName = graph.nodeData[per_node_parentIds[0]].nodeInfo.nodeName + "_" + tableName
                                 }
                             }
                             let colArr = [];
                             $(columnsInfo).each(function(ind, val) {
                                 if (val.isOutputColumn) {
-                                    let nodeId = preNodeId;
+                                    let id = ind;
                                     let colName = val.newColumnName;
-                                    colArr.push({nodeId,colName});
+                                    let checked = false
+                                    colArr.push({id,colName,checked});
                                 }
                             })
                             if (colArr.length !== 0) {
                                 if (i === 0) {
-                                    $('#table_name_left').attr('nodeId', nodeId)
-                                    $('#table_name_left').html(nodeName)
-                                    // $('#col_table_col_left_data>tbody').html(html)
-                                    this_vue.leftTableColArr = [...colArr]
-                                    // register('left')
-                                    // 拖动排序使用，如果不需要就注释或删除
-                                    $('#col_table_col_left_data>tbody').sortable().disableSelection()
+                                    this.leftTableNodeId = nodeId
+                                    this.leftTablePreNodeId = preNodeId
+                                    $('#table_name_left').html(tableName)
+                                    this.leftTableColArr = [...colArr]
                                 } else {
-
-                                    $('#table_name_right').attr('nodeId', nodeId)
-                                    $('#table_name_right').html(nodeName)
-                                    // $('#col_table_col_right_data>tbody').html(html)
-                                    // register('right')
-                                    this_vue.rightTableColArr = [...colArr]
-                                    // 拖动排序使用，如果不需要就注释或删除
-                                    $('#col_table_col_right_data>tbody').sortable().disableSelection()
+                                    this.rightTableNodeId = nodeId
+                                    this.rightTablePreNodeId = preNodeId
+                                    $('#table_name_right').html(tableName)
+                                    this.rightTableColArr = [...colArr]
                                 }
                             }
-                        })
-                    }
-                }
-            },
-            columnClick(type){//选择列的点击事件
-                let chknum = $("#col_table_col_" + type + "_data>tbody>tr").length// 选项总个数
-                let chk = $('#col_table_col_' + type + '_data>tbody>tr .checked').length
-                let $_this = $('#sel_all_' + type)
-                if (!$(this).prop('checked')) {			// 取消选中
-                    if ($_this.prop('checked')) {
-                        $('#sel_all_' + type).icheck('unchecked')
-                    }
-                } else {				// 选中
-                    if (!$_this.prop('checked') && chknum === (chk + 1)) {
-                        $('#sel_all_' + type).icheck('checked')
-                    }
-                }
-                // 刷新输出字段信息
-                if ($('#mainTable_' + type).prop('checked')) {
-                    var data = []
-                    $('#col_table_col_' + type + '_data>tbody>tr').each(function(i, v) {
-                        if ($(this).find('.columnCk').prop('checked')) {
-                            var obj = {
-                                'nodeId': $(this).attr('nodeId'),
-                                'value': $(this).find('td:eq(1)').html(),
-                                'nullNodeId': $('#table_name_' + type).attr('nodeId')
-                            }
-                            data.push(obj)
                         }
-                    })
-                    this.$parent.$refs.outputColumn.re_checkbox(data, true)
+                    }
                 }
+                $('#col_table_col_left_data>tbody').sortable().disableSelection()
+                $('#col_table_col_right_data>tbody').sortable().disableSelection()
             },
-            mainTableClick(type,otherType){//选择主表的点击事件
-                let data = []
-                if ($('#mainTable_' + type).prop('checked')) {
-                    $('#mainTable_' + otherType).icheck('unchecked')
+            leftColumnChange(checked){
+                let chk = 0
+                for(let i=0; i<this.leftTableColArr.length; i++){
+                    if(this.leftTableColArr[i].checked){
+                        chk++
+                    }
+                }
+                if(chk === this.leftTableColArr.length){
+                    this.leftSelectAll = true
+                }else{
+                    if(this.leftSelectAll = true){
+                        this.leftSelectAll = false
+                    }
+                }
+                if(this.leftMainTableChecked){
                     // 刷新输出字段信息
-                    $('#col_table_col_'+type+'_data>tbody>tr').each(function(i, v) {
-                        if ($(this).find('.columnCk').prop('checked')) {
-                            var obj = {
-                                'nodeId': $(this).attr('nodeId'),
-                                'value': $(this).find('td:eq(1)').html(),
-                                'nullNodeId': $('#table_name_'+type).attr('nodeId')
-                            }
-                            data.push(obj)
+                    let data = []
+                    for(let i=0;i <this.leftTableColArr.length; i++){
+                        if(this.leftTableColArr[i].checked){
+                            data.push({
+                                'nodeId': this.leftTablePreNodeId,
+                                'value': this.leftTableColArr[i].colName,
+                                'nullNodeId': this.leftTableNodeId
+                            })
                         }
-                    })
-                } else {
-                    $('#mainTable_'+otherType).icheck('checked')
-                    $('#col_table_col_'+otherType+'_data>tbody>tr').each(function(i, v) {
-                        if ($(this).find('.columnCk').prop('checked')) {
-                            var obj = {
-                                'nodeId': $(this).attr('nodeId'),
-                                'value': $(this).find('td:eq(1)').html(),
-                                'nullNodeId': $('#table_name_'+otherType).attr('nodeId')
-                            }
-                            data.push(obj)
-                        }
-                    })
+                    }
+                    this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
                 }
-                this.$parent.$refs.outputColumn.re_checkbox(data, true)
             },
-            selectAll(type){
-                if ($('#sel_all_'+type).prop('checked')) {
-                    $('#col_table_col_'+type+'_data>tbody>tr>td .columnCk').each(function () {
-                        $(this).attr('checked','checked')
-                    })
-                    // $('#col_table_col_'+type+'_data>tbody>tr>td .columnCk').attr('checked','checked')
-                    // 同时如果左侧表被选为主表
-                    if ($('#mainTable_'+type).prop('checked')) {
-                        var data = []
-                        $('#col_table_col_'+type+'_data>tbody>tr').each(function(i, v) {
-                            var obj = {
-                                'value': $(this).find('td:eq(1)').html(),
-                                'nodeId': $(this).attr('nodeId'),
-                                'nullNodeId': $('#table_name_'+type).attr('nodeId')
-                            }
-                            data.push(obj)
-                        })
-                        this.$parent.$refs.outputColumn.re_checkbox(data, true)
-                    }
-                } else {
-                    $('#col_table_col_'+type+'_data>tbody>tr>td .columnCk').each(function () {
-                        $(this).removeAttr('checked')
-                    })
-                    // $('#col_table_col_'+type+'_data>tbody>tr>td .columnCk').attr('checked',false)
-                    // 同时如果左侧表被选为主表
-                    if ($('#mainTable_'+type).prop('checked')) {
-                        this.$parent.$refs.outputColumn.re_checkbox(null, true)
+            rightColumnChange(checked){
+                let chk = 0
+                for(let i=0; i<this.rightTableColArr.length; i++){
+                    if(this.rightTableColArr[i].checked){
+                        chk++
                     }
                 }
-            }
-        }
-    }
-
-    /**
-     * 保存设置
-     */
-    function saveSetting() {
-        var left_data = {
-            'nodeId': $('#table_name_left').attr('nodeId'),
-            'nodeName': $('#table_name_left').html(),
-            'columnSetArr': [],
-            'mainTable': false,
-            'selectAll': $('#sel_all_left').prop('checked'),
-            'preNodeId': $('#col_table_col_left_data>tbody>tr:eq(0)').attr('nodeId')
-        }
-        var right_data = {
-            'nodeId': $('#table_name_right').attr('nodeId'),
-            'nodeName': $('#table_name_right').html(),
-            'columnSetArr': [],
-            'mainTable': false,
-            'selectAll': $('#sel_all_right').prop('checked'),
-            'preNodeId': $('#col_table_col_right_data>tbody>tr:eq(0)').attr('nodeId')
-        }
-        if ($('#mainTable_left').prop('checked')) {
-            left_data.mainTable = true
-        } else {
-            right_data.mainTable = true
-        }
-        $('#col_table_col_left_data>tbody>tr').each(function(i, v) {
-            var obj = { 'name': $(this).find('td:eq(1)').html() }
-            if ($(this).find('.columnCk').prop('checked')) {
-                obj.checked = true
-            }
-            left_data.columnSetArr.push(obj)
-        })
-        $('#col_table_col_right_data>tbody>tr').each(function(i, v) {
-            var obj = { 'name': $(this).find('td:eq(1)').html() }
-            if ($(this).find('.columnCk').prop('checked')) {
-                obj.checked = true
-            }
-            right_data.columnSetArr.push(obj)
-        })
-        nodeData.setting.left_data = left_data// 选择的数据（带顺序）
-        nodeData.setting.right_data = right_data// 选择的数据（带顺序）
-        nodeData.setting.conn_type = $('#conn_type').val()
-    }
-
-    // 页面输入项的校验(或空配置校验)
-    function inputVerify() {
-        if (!$('#mainTable_left').prop('checked') && !$('#mainTable_right').prop('checked')) {
-            alertMsg('提示', '尚未勾选设置主表', 'info')
-            return false
-        }
-        var type = 'left'
-        if ($('#mainTable_right').prop('checked')) {
-            type = 'right'
-        }
-        if ($('#col_table_col_' + type + '_data>tbody>tr .checked').length === 0) {
-            alertMsg('提示', '请勾选主表的输出字段', 'info')
-            return false
-        }
-        var verify = true
-        $('#col_table_col_' + type + '_data>tbody>tr').each(function(i, v) {
-            if ($(this).find('.columnCk').prop('checked')) {
-                var anotherType = type === 'left' ? 'right' : 'left'
-                if (!$('#col_table_col_' + anotherType + '_data>tbody>tr:eq(' + i + ') .columnCk').prop('checked')) {
-                    alertMsg('提示', '左右表所选择的字段勾选状态不一致，请修改', 'info')
-                    verify = false
+                if(chk === this.rightTableColArr.length){
+                    this.rightSelectAll = true
+                }else{
+                    if(this.rightSelectAll = true){
+                        this.rightSelectAll = false
+                    }
+                }
+                if(this.rightMainTableChecked){
+                    // 刷新输出字段信息
+                    let data = []
+                    for(let i=0;i <this.rightTableColArr.length; i++){
+                        if(this.rightTableColArr[i].checked){
+                            data.push({
+                                'nodeId': this.rightTablePreNodeId,
+                                'value': this.rightTableColArr[i].colName,
+                                'nullNodeId': this.rightTableNodeId
+                            })
+                        }
+                    }
+                    this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
+                }
+            },
+            leftMainTableChange(checked){
+                let data = []
+                if(checked){
+                    this.rightMainTableChecked = false
+                    for(let i=0;i <this.leftTableColArr.length; i++){
+                        if(this.leftTableColArr[i].checked){
+                            data.push({
+                                'nodeId': this.leftTablePreNodeId,
+                                'value': this.leftTableColArr[i].colName,
+                                'nullNodeId': this.leftTableNodeId
+                            })
+                        }
+                    }
+                }else{
+                    this.rightMainTableChecked = true
+                    for(let i=0;i <this.rightTableColArr.length; i++){
+                        if(this.rightTableColArr[i].checked){
+                            data.push({
+                                'nodeId': this.rightTablePreNodeId,
+                                'value': this.rightTableColArr[i].colName,
+                                'nullNodeId': this.rightTableNodeId
+                            })
+                        }
+                    }
+                }
+                this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
+            },
+            rightMainTableChange(checked){
+                let data = []
+                if(checked){
+                    this.leftMainTableChecked = false
+                    for(let i=0;i <this.rightTableColArr.length; i++){
+                        if(this.rightTableColArr[i].checked){
+                            data.push({
+                                'nodeId': this.rightTablePreNodeId,
+                                'value': this.rightTableColArr[i].colName,
+                                'nullNodeId': this.rightTableNodeId
+                            })
+                        }
+                    }
+                }else{
+                    this.leftMainTableChecked = true
+                    for(let i=0;i <this.leftTableColArr.length; i++){
+                        if(this.leftTableColArr[i].checked){
+                            data.push({
+                                'nodeId': this.leftTablePreNodeId,
+                                'value': this.leftTableColArr[i].colName,
+                                'nullNodeId': this.leftTableNodeId
+                            })
+                        }
+                    }
+                }
+                this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
+            },
+            leftSelectAllChange(checked){
+                Array.from(this.leftTableColArr, (n) => n.checked = checked)
+                if(this.leftMainTableChecked){
+                    if(checked){
+                        let data = []
+                        for(let i=0;i <this.leftTableColArr.length; i++){
+                            if(this.leftTableColArr[i].checked){
+                                data.push({
+                                    'nodeId': this.leftTablePreNodeId,
+                                    'value': this.leftTableColArr[i].colName,
+                                    'nullNodeId': this.leftTableNodeId
+                                })
+                            }
+                        }
+                        this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
+                    }else{
+                        this.$parent.$refs.outputColumnVueRef.re_checkbox(null, true)
+                    }
+                }
+            },
+            rightSelectAllChange(checked){
+                Array.from(this.rightTableColArr, (n) => n.checked = checked)
+                if(this.rightMainTableChecked){
+                    if(checked){
+                        let data = []
+                        for(let i=0;i <this.rightTableColArr.length; i++){
+                            if(this.rightTableColArr[i].checked){
+                                data.push({
+                                    'nodeId': this.rightTablePreNodeId,
+                                    'value': this.rightTableColArr[i].colName,
+                                    'nullNodeId': this.rightTableNodeId
+                                })
+                            }
+                        }
+                        this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
+                    }else{
+                        this.$parent.$refs.outputColumnVueRef.re_checkbox(null, true)
+                    }
+                }
+            },
+            saveSetting() {
+                let left_data = {
+                    'nodeId': this.leftTableNodeId,
+                    'nodeName': $('#table_name_left').html(),
+                    'columnSetArr': [],
+                    'mainTable': false,
+                    'selectAll': this.leftSelectAll,
+                    'preNodeId': this.leftTablePreNodeId
+                }
+                let right_data = {
+                    'nodeId': this.rightTableNodeId,
+                    'nodeName': $('#table_name_right').html(),
+                    'columnSetArr': [],
+                    'mainTable': false,
+                    'selectAll': this.rightSelectAll,
+                    'preNodeId': this.rightTablePreNodeId
+                }
+                if (this.leftMainTableChecked) {
+                    left_data.mainTable = true
+                } else {
+                    right_data.mainTable = true
+                }
+                let $this = this
+                $("#col_table_col_left_data>tbody>tr").each(function(i,v){
+                    let leftIndex = Number($(this).attr("data-index"))
+                    let id = i
+                    let name = $this.leftTableColArr[leftIndex].colName
+                    let checked = $this.leftTableColArr[leftIndex].checked
+                    left_data.columnSetArr.push({id, name, checked})
+                });
+                $("#col_table_col_right_data>tbody>tr").each(function(i,v){
+                    let rightIndex = Number($(this).attr("data-index"))
+                    let id = i
+                    let name = $this.rightTableColArr[rightIndex].colName
+                    let checked = $this.rightTableColArr[rightIndex].checked
+                    right_data.columnSetArr.push({id, name, checked})
+                });
+                nodeData.setting.left_data = left_data// 选择的数据（带顺序）
+                nodeData.setting.right_data = right_data// 选择的数据（带顺序）
+                nodeData.setting.conn_type = $('#conn_type').val()
+            },
+            inputVerify() {
+                let checkedIndex = 0
+                let verify = true
+                let $this = this
+                if($this.leftMainTableChecked){//左表为主表
+                    checkedIndex = $this.leftTableColArr.findIndex( n => n.checked === true)
+                    $("#col_table_col_left_data>tbody>tr").each(function(i,v){
+                        let leftIndex = Number($(this).attr("data-index"))
+                        if($this.leftTableColArr[leftIndex].checked){
+                            let rightIndex = Number($("#col_table_col_right_data>tbody>tr:eq("+i+")").attr("data-index"))
+                            let curRightCol = $this.rightTableColArr[rightIndex]
+                            if(typeof curRightCol === 'undefined' || !$this.rightTableColArr[rightIndex].checked){
+                                verify = false
+                                return false
+                            }
+                        }
+                    });
+                }else{//右表为主表
+                    checkedIndex = this.rightTableColArr.findIndex( n => n.checked === true)
+                    $("#col_table_col_right_data>tbody>tr").each(function(i,v){
+                        let rightIndex = Number($(this).attr("data-index"))
+                        if($this.rightTableColArr[rightIndex].checked){
+                            let leftIndex = Number($("#col_table_col_left_data>tbody>tr:eq("+i+")").attr("data-index"))
+                            let curLeftCol = $this.rightTableColArr[leftIndex]
+                            if(typeof curLeftCol === 'undefined' || !$this.leftTableColArr[leftIndex].checked){
+                                verify = false
+                                return false
+                            }
+                        }
+                    });
+                }
+                if(checkedIndex < 0){
+                    this.$message({ type: 'info', message: '请勾选主表的输出字段' })
                     return false
                 }
+                if(!verify){
+                    this.$message({ type: 'info', message: '字段顺序或勾选状态不一致，请修改' })
+                }
+                return verify
             }
-        })
-        if (!verify) {
-            return false
         }
-        return true
     }
 </script>
 
@@ -386,10 +475,6 @@
     #col_table_col_left_data>tbody>tr>td,#col_table_col_right_data>tbody>tr>td{
         border:1px solid #ddd;
     }
-    img {
-        cursor:pointer;
-        width: 24px;
-    }
     ._table {
         float: left;
         width: 400px;
@@ -397,7 +482,6 @@
         margin-top:20px;
         background-color: #fff;
         border:1px solid #E6E6E6;
-        /*overflow-y: auto;*/
     }
     ._table_th {
         height: 40px;
