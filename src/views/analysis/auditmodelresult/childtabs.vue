@@ -1,14 +1,14 @@
 <template>
   <!-- childTabs是子页签组件 -->
   <el-tabs type="border-card">
-    <el-tab-pane v-if="useType=='modelRunResult'?true:false" :label="useType == 'modelRunResult' ? '主表' : '结果1'"
+    <el-tab-pane v-if="useType==='modelRunResult'?true:false" :label="useType === 'modelRunResult' ? '主表' : '结果1'"
       ><childTabCons
         :nowtable="maintable"
         :model-uuid="modelUuid"
         :useType="useType"
     /></el-tab-pane>
     <el-tab-pane
-      v-for="(item, key) in useType=='modelRunResult'?helptables:preValue"
+      v-for="(item, key) in useType==='modelRunResult'?helptables:preValue"
       :key="key"
       :label="tabsName(key)"
       ><childTabCons ref="child" :nowtable="item" :prePersonalVal="item" :useType="useType" />
@@ -46,14 +46,14 @@ export default {
         this.index = 0
       },
       tabsName(key){
-        if(this.useType=='modelRunResult'){
+        if(this.useType==='modelRunResult'){
           return '辅表' + (key + 1)
-        }else if(this.useType=='sqlEditor'){
+        }else if(this.useType==='sqlEditor'){
             return '结果' + (key + 1)
-        }else if(this.useType=='previewTable'){
+        }else if(this.useType==='previewTable'){
             return '数据详情'
-        }else if(this.useType=='graph'){
-          return preValue[key].name
+        }else if(this.useType==='graph'){
+          return this.preValue[key].name
         }
       }
   },
