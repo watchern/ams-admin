@@ -108,7 +108,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button v-if="!closeStatus" @click="dialogFormVisible = false">返回</el-button>
+        <el-button v-if="!closeStatus" @click="dialogFormVisible = false">取消</el-button>
         <el-button
           v-if="closeStatus"
           type="primary"
@@ -118,7 +118,7 @@
           v-if="!closeStatus"
           type="primary"
           @click="dialogStatus==='create'?createData():updateData()"
-        >确定</el-button>
+        >保存</el-button>
       </div>
     </el-dialog>
   </div>

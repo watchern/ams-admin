@@ -69,6 +69,7 @@
         </div>
         <div class="save-btn">
           <div
+            v-if="!isDetails"
             class="operation"
             style="vertical-align: middle;"
           >
@@ -121,6 +122,7 @@
           </x-button>
           <!-- icon="ans-icon-save" -->
           <x-button
+            v-if="!isDetails"
             style="vertical-align: middle;"
             type="primary"
             class="btnclass"

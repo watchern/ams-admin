@@ -294,7 +294,7 @@ export default {
 /*      const webSocketPath =
         'ws://localhost:8086/analysis/websocket?' +
         this.$store.getters.personuuid*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + Cookies.get("personuuid")+"sqleditor";
+      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid+"sqleditor";
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
       // 当服务端打开连接
@@ -345,7 +345,7 @@ export default {
      * 初始化sql编辑器基础数据
      */
     initData() {
-      const userId = Cookies.get("personuuid")
+      const userId = this.$store.state.user.code
       initDragAndDrop()
       initIcon()
       initTableTree(userId)
