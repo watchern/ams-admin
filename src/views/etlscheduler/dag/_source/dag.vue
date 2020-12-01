@@ -122,6 +122,11 @@
           </x-button>
           <!-- icon="ans-icon-save" -->
           <x-button
+            type="text"
+            class="ans-btn-text"
+            @click="returnDefinition"
+          > 返回 </x-button>
+          <x-button
             v-if="!isDetails"
             style="vertical-align: middle;"
             type="primary"
@@ -456,6 +461,9 @@ export default {
         })
       })
     },
+    returnDefinition() {
+      this.$router.push('/etlscheduler/processdefinition')
+    },
     _verifConditions(value) {
       const tasks = value
       let bool = true
@@ -772,6 +780,12 @@ export default {
   border-color: #353a43;
   color: #c8ff8c;
   font-weight: bold;
+}
+.dag-model .dag-contect .dag-toolbar .ans-btn-text {
+	color: #252d39;
+}
+.dag-model .dag-contect .dag-toolbar .ans-btn-text:hover {
+	color: #252d39;
 }
 .ans-btn-primary[disabled],.ans-btn-primary[disabled]:hover {
 	color: #fff;

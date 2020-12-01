@@ -156,7 +156,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item
+        <!-- <el-form-item
           label="参数类型"
           prop="paramType"
         >
@@ -174,7 +174,7 @@
               :value="0"
             />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item
           label="默认值"
           prop="defaultValue"
@@ -277,7 +277,7 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑参数',
+        update: '修改参数',
         create: '新增参数',
         show: '查看参数'
       },
@@ -334,7 +334,7 @@ export default {
         paramCode: null,
         paramDesc: null,
         paramName: null,
-        paramType: 1,
+        paramType: null,
         paramUuid: null,
         selectValue: null,
         status: null
@@ -353,6 +353,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.temp.paramType = 1
           save(this.temp).then(() => {
             this.getList()
             this.dialogFormVisible = false
@@ -380,11 +381,13 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.temp.paramType = 1
           const tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
             const index = this.list.findIndex(v => v.paramUuid === this.temp.paramUuid)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
+            this.getList()
             this.$notify({
               title: '成功',
               message: '更新成功',

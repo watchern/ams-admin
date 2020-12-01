@@ -14,7 +14,7 @@ const statusListComm = [{
 {
   value: 3,
   name: '等待依赖任务',
-  unicode: 'el-icon-share',
+  unicode: 'iconfont iconjiaohu',
   color: '#f9be0a'
 },
 {

@@ -2,7 +2,8 @@
   <div class="udp-model" style="margin-bottom: 60px;">
     <div class="scrollbar contpi-boxt">
       <div class="title">
-        <span>添加流程</span>
+        <span v-if="isCreate">新增流程</span>
+        <span v-if="!isCreate">修改流程</span>
       </div>
 
       <div>
@@ -209,7 +210,8 @@ export default {
       checkedTimeout: true,
       statusList: [{ label: '停用', value: `0` }, { label: '启用', value: `1` }],
       orderNo: '',
-      status: null
+      status: null,
+      isCreate: true
     }
   },
   watch: {
@@ -222,6 +224,7 @@ export default {
   },
   created() {
     const dag = _.cloneDeep(this.store.state.dag)
+    this.isCreate = _.isEmpty(dag.name)
     this.udpList = dag.globalParams
     this.udpListCache = dag.globalParams
     this.name = dag.name

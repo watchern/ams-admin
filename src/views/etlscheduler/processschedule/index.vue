@@ -229,7 +229,8 @@
         </el-form-item>
         <!-- 添加任务依赖 -->
         <!-- temp.dependTaskInfoList!=null && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList -->
-        <el-form-item v-if="dialogStatus === 'create' || (dialogStatus !== 'create' && temp.dependTaskInfoList)">
+        <!-- <el-form-item v-if="dialogStatus === 'create' || dialogStatus === 'update' || (dialogStatus === 'show' && temp.dependTaskInfoList && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList )"> -->
+        <el-form-item v-if="dialogStatus !== 'show' || (temp.dependTaskInfoList && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList )">
           <div class="dependence-model">
             <m-list-box>
               <div slot="content">
@@ -516,7 +517,7 @@ export default {
       dialogVisible2: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑调度任务',
+        update: '修改调度任务',
         create: '新增调度任务',
         show: '查看调度任务'
       },

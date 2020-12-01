@@ -82,7 +82,7 @@
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色-->
                   <i
-                    :class=" statusObj[scope.row.status].unicode"
+                    :class="statusObj[scope.row.status].unicode"
                     :style="{color: statusObj[scope.row.status].color}"
                     style="font-size:25px;font-weight:bold"
                   />
