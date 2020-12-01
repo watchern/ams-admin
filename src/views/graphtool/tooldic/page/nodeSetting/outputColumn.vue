@@ -9,26 +9,25 @@
         <table id="column_config" class="table table-bordered">
             <thead>
             <tr>
+                <th width="5%" style="text-align: center">序号</th>
                 <th width="30%" style="text-align: center">上一节点名称</th>
                 <th width="25%" style="text-align: center">字段名称</th>
-                <th width="30%" style="text-align: center">输出字段名称</th>
+                <th width="25%" style="text-align: center">输出字段名称</th>
                 <th width="15%" style="text-align: center">是否为输出字段
                     <el-checkbox v-model="checkAll" @change="handleCheckAllChange" :disabled="isAllDisabled"></el-checkbox>
-                    <!--<input id="sel_all" type="checkbox" @click="selAll" style="width: 20px;height: 20px;"/>-->
                 </th>
             </tr>
             </thead>
             <tbody>
                 <tr v-for="(item,index) in items">
+                    <td align="center">{{ index+1 }}</td>
                     <td>{{ item.rtn }}</td>
                     <td>{{ item.curColumnName }}</td>
                     <td>
                         <input v-model="item.disColumnName" type="text" class="form-control newColumn" @blur="vilidata_simple(index)"/>
                     </td>
                     <td class="text-center">
-                        <el-checkbox v-model="item.checked" :name="item.attrColumnName" :key="item.id" @change="checkBoxChange(index)"></el-checkbox>
-                        <!--<el-checkbox v-if="item.checked" type="checkbox" v-model="checkOp_ck" :name="item.attrColumnName" class="outputColumn" @blur="vilidata_simple" @change="allchk" style="width: 20px;height: 20px;"></el-checkbox>-->
-                        <!--<el-checkbox v-if="!item.checked" type="checkbox" v-model="checkOp" :name="item.attrColumnName" class="outputColumn" @blur="vilidata_simple" @change="allchk" style="width: 20px;height: 20px;"></el-checkbox>-->
+                        <el-checkbox v-model="item.checked" :name="item.attrColumnName" :key="item.id" @change="checkBoxChange(index)" :disabled="isDisabled"></el-checkbox>
                     </td>
                 </tr>
             </tbody>
@@ -56,7 +55,6 @@
         },
         methods: {
             init() {
-                // vueObj = this
                 let graph = this.$parent.graph
                 nodeData = graph.nodeData[graph.curCell.id]
                 nodeInfo = nodeData.nodeInfo
@@ -64,7 +62,7 @@
                 this.initConfig()
             },
             check_old_column() { // 重构字段组，优化查询
-                var object = {}
+                let object = {}
                 $(nodeData.columnsInfo).each(function(index) {
                     object[this.columnName] = this
                 })
@@ -87,7 +85,6 @@
                 if (nodeInfo.optType === 'groupCount' || nodeInfo.optType === 'delRepeat' || nodeInfo.optType === 'union') {				// 分组汇总和数据去重节点的输出字段单独处理，置为不可编辑
                     this.isAllDisabled = true
                     this.isDisabled = true
-
                 }
             },
             re_checkbox(data, hasMoreTable) {
@@ -142,8 +139,8 @@
                             isHide = true
                         }
                     }
-                    let oldSetColumn = this.find_self_column(curColumnName, columnsInfoPre[column].nodeId)
                     let curColumnName = isSet ? columnsInfoArray[column].columnName : columnsInfoArray[column].newColumnName
+                    let oldSetColumn = this.find_self_column(curColumnName, columnsInfoPre[column].nodeId)
                     let nodeId = columnsInfoPre[column].nodeId
                     let nullNodeId = columnsInfoPre[column].nullNodeId
                     let columnInfo = JSON.stringify(columnsInfoPre[column])
@@ -227,51 +224,49 @@
                 }
             },
             vilidata_simple(index) {
+                let checkedIndex = this.items.findIndex(n => n.checked === true)
+                if(checkedIndex < 0){
+                    this.$message({ type: 'info', message: '请选择输出字段' })
+                    return false
+                }
                 let vili_column = []
                 let verify = true
+                let message = ''
                 if(typeof index !== "undefined"){//失焦时校验输出列是否重复
                     let curDisColumnName = this.items[index].disColumnName
-                    for(let i=0; i<this.items.length; i++){
-                        if(index !== i && this.items[i].checked){
-                            if(curDisColumnName === this.items[i].disColumnName){
-                                verify = false
-                                break
+                    if(this.items[index].checked){
+                        for(let i=0; i<this.items.length; i++){
+                            if(this.items[i].checked){
+                                if(index !== i){
+                                    if(curDisColumnName === this.items[i].disColumnName){
+                                        verify = false
+                                        message = `第${index+1}行与第${i+1}行的输出字段重复！请修改`
+                                        break
+                                    }
+                                }
                             }
                         }
                     }
                 }else{//保存配置时校验输出列是否重复
                     for(let i=0; i<this.items.length; i++){
                         if(this.items[i].checked){
-                            if($.inArray(this.items[i].disColumnName, vili_column) > -1){
+                            let disColumnName = this.items[i].disColumnName
+                            let curIndex = vili_column.findIndex(item => item === disColumnName)
+                            if(curIndex > 0){
                                 verify = false
-                            }else{
-                                vili_column.push(this.items[i].disColumnName)
+                                message = `第${curIndex+1}行与第${i+1}行的输出字段重复！请修改`
                             }
                         }
+                        vili_column.push(this.items[i].disColumnName)
                     }
                 }
                 if (!verify) {
-                    this.$message({ type: 'info', message: '输出字段重复！请修改' })
+                    this.$message({ type: 'info', message: message })
                 }
                 return verify
             },
             outputVerify() {
-                var verify = this.vilidata_simple()
-                if (verify) {
-                    var num = 0
-                    for(let i=0; i<this.items.length; i++){
-                        if(this.items[i].checked){
-                            num++
-                        }
-                    }
-                    if (num !== 0) {
-                        verify = true
-                    } else {
-                        verify = false
-                        alertMsg('提示', '请选择输出字段', 'info')
-                    }
-                }
-                return verify
+                return this.vilidata_simple()
             }
         }
     }

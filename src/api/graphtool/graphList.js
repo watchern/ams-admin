@@ -213,3 +213,31 @@ export function viewNodeData(data) {
         data,
     })
 }
+
+/**
+ * 检测当前数据表的数据量是否大于预设阈值
+ */
+export function verifyLargeData(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/verifyLargeData',
+        method: 'post',
+        params:data,
+    })
+}
+
+/**
+ * 获取数据表字段的最大值和最小值
+ */
+export function getMaxMinColumn(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/getMaxMinColumn',
+        method: 'post',
+        params:data,
+    })
+}
+
+
+
+

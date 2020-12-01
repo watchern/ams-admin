@@ -81,10 +81,6 @@ function settingCallBack(curNodeId, type, layero) {
         window[layero.find('iframe')[0]['name']].$('#myTab>li:eq(1)>a').click()
         return false
     }
-    // 验证数据融合节点输出列信息
-    if (type === 'union' && !validateJs.verifyUnionOutputColumn(layero)) {
-        return false
-    }
     var childrenIds = graph.nodeData[curNodeId].childrenIds.slice()
     if (childrenIds.length > 0) {
         if (!confirm('该操作会影响本节点及后续节点的执行信息，是否继续？')) {
