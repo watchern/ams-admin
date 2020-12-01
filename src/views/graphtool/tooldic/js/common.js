@@ -334,7 +334,7 @@ function getPreNodesNotDatasource(nodeData, curCellId, arr) {
  * @param curCellId 当前节点的ID
  * @param arr 前置所有节点的ID集合
  * */
-function getPreNodes(curCellId, arr) {
+export function getPreNodes(curCellId, arr) {
     var parentIds = graph.nodeData[curCellId].parentIds
     if (parentIds.length > 0) {
         for (var i = 0; i < parentIds.length; i++) {
