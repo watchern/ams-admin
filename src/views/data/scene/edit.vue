@@ -68,8 +68,8 @@
             </el-form>
           </template>
           <div slot="footer">
-            <el-button @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
-            <el-button @click="dialogFormVisible = false">关闭</el-button>
+            <el-button @click="dialogFormVisible = false">取消</el-button>
+            <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
           </div>
         </el-dialog>
       </template>
@@ -135,8 +135,8 @@
               </el-form>
             </div>
             <div slot="footer">
-              <el-button @click="dialogStatusFilter==='create'?createDataFilter():updateDataFilter()">保存</el-button>
-              <el-button @click="dialogFormVisibleFilter = false">关闭</el-button>
+              <el-button @click="dialogFormVisibleFilter = false">取消</el-button>
+              <el-button type="primary" @click="dialogStatusFilter==='create'?createDataFilter():updateDataFilter()">保存</el-button>
             </div>
           </el-dialog>
 
@@ -160,13 +160,16 @@
                 <span :title="node.name">{{ node.label }}</span>
               </span>
             </MyElTree>
+            <div slot="footer">
+              <el-button type="primary" @click="dialogFormVisibleTree = false">关闭</el-button>
+            </div>
           </el-dialog>
         </el-col>
       </el-row>
     </template>
-    <div slot="footer" style="float:right; margin-right:100px">
-      <el-button @click="saveScene()">保存</el-button>
-      <el-button @click="closeEdit()">返回</el-button>
+    <div slot="footer">
+      <el-button @click="closeEdit">返回</el-button>
+      <el-button type="primary" @click="saveScene">保存</el-button>
     </div>
   </div>
 </template>

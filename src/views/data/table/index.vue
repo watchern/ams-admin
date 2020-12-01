@@ -117,8 +117,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer">
-        <el-button type="primary" @click="dialogStatus==='create'?createFolder():updateFolder()">确定</el-button>
         <el-button @click="folderFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createFolder():updateFolder()">保存</el-button>
       </span>
     </el-dialog>
   </div>
