@@ -337,7 +337,6 @@
 </template>
 
 <script>
-    import Cookies from 'js-cookie'
     import Help from '@/views/graphtool/tooldic/page/funEventVue/help.vue'
     import GraphListExport from '@/views/graphtool/tooldic/page/funEventVue/graphListExport.vue'
     import ChildTabs from '@/views/analysis/auditmodelresult/childtabs'
@@ -412,11 +411,11 @@
         },
         methods: {
             init() {
-                // console.log(Cookies.get("personuuid"))
+                // console.log(this.$store.state.user)
                 // this.loginUserUuid = Cookies.get("personuuid")
-                this.loginUserUuid = '2c948a86757909950175790b10b60002'
-                console.log(this.loginUserUuid)
-                let roleArr = this.$store.getters.roles
+                this.loginUserUuid = this.$store.state.user.id
+                // console.log(this.loginUserUuid)
+                let roleArr = this.$store.state.user.roles
                 let screenManager = 'screenManager'// 场景查询管理员角色
                 if (roleArr.includes(screenManager)) {
                     this.hasManagerRole = true
