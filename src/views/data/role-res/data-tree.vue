@@ -6,6 +6,7 @@
     />
     <MyElTree
       ref="tree1"
+      v-loading="treeLoading"
       :props="props"
       class="filter-tree"
       :highlight-current="true"
@@ -32,9 +33,13 @@ import { commonNotify } from '@/utils'
 
 export default {
   components: { MyElTree },
-  props:{
+  props: {
     dataUserId: String,
-    sceneCode: String
+    sceneCode: String,
+    treeType: {
+      type: String,
+      default: 'common' // common:正常的权限树   save:用于保存数据的文件夹树
+    }
   },
   data() {
     return {
@@ -50,7 +55,8 @@ export default {
         orderNum: 0,
         fullPath: null
       },
-      treeData1: []
+      treeData1: [],
+      treeLoading: false
     }
   },
   computed: {
@@ -87,10 +93,13 @@ export default {
       parentNode.expand()
     },
     refresh() {
+      this.treeLoading = true
       getResELTree({
         dataUserId: this.dataUserId,
-        sceneCode: this.sceneCode
+        sceneCode: this.sceneCode,
+        type: this.treeType
       }).then(resp => {
+        this.treeLoading = false
         this.treeData1 = resp.data
       })
     }

@@ -45,6 +45,9 @@
               <input id="flag" type="hidden" value="false">
               <input id="flag2" type="hidden" value="false">
               <input id="outColumn" type="hidden" value="">
+              {{path}}
+              <a @click="modelResultSavePathDialog = true" style="color: #409eff;margin-left:50px">编辑</a>
+              <a @click="getColumnSqlInfo" style="color: #409eff;margin-left:50px">张闯测试</a>
             </el-col>
           </el-row>
           <div
@@ -156,6 +159,27 @@
         <el-button type="primary" @click="replaceNodeParam">确定</el-button>
       </div>
     </el-dialog>
+      <el-dialog
+            title="选择模型结果保存路径"
+            :visible.sync="modelResultSavePathDialog"
+            width="30%"
+            :append-to-body="true"
+          >
+            <data-tree
+              :data-user-id="personCode"
+              :scene-code="sceneCode"
+              :tree-type="treeType"
+              @node-click="handleClick"
+            />
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="modelResultSavePathDialog = false"
+                >取 消</el-button
+              >
+              <el-button type="primary" @click="modelResultSavePathDetermine"
+                >确 定</el-button
+              >
+            </span>
+          </el-dialog>
   </div>
 </template>
 <script>
@@ -188,7 +212,8 @@ import {
   verifySql,
   editorSql,
   startExecuteSql,
-  maxOpenOne
+  maxOpenOne,
+  getColumnSqlInfo
 } from '@/api/analysis/sqleditor/sqleditor'
 import sqlDraftList from '@/views/analysis/sqleditor/sqldraftlist'
 import { updateDraft } from '@/api/analysis/sqleditor/sqldraft'
@@ -196,6 +221,7 @@ import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
 import { replaceNodeParam } from '@/api/analysis/auditparam'
 import Cookies from 'js-cookie'
+import dataTree from "@/views/data/role-res/data-tree"
 
 /**
  * 当前执行进度
@@ -225,7 +251,7 @@ let lastResultColumnType = []
 let childTabsRef
 export default {
   name: 'SQLEditor',
-  components: { sqlDraftList, childTabs, paramDraw },
+  components: { sqlDraftList, childTabs, paramDraw,dataTree },
   props: ['sqlEditorParamObj', 'sqlValue'],
   data() {
     return {
@@ -261,7 +287,16 @@ export default {
       paramDrawLoading: false,
       tableSearchInput: '',
       paramSearchInput: '',
-      functionInput: ''
+      functionInput: '',
+      modelResultSavePathDialog: false,
+      tempPath:'',
+      tempId:'',
+      nodeType:'',
+      path:'',
+      modelResultSavePathId:'',
+      personCode: this.$store.state.user.code,
+      sceneCode: "auditor",
+      treeType: "save",
     }
   },
   watch: {
@@ -294,7 +329,7 @@ export default {
 /*      const webSocketPath =
         'ws://localhost:8086/analysis/websocket?' +
         this.$store.getters.personuuid*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + Cookies.get("personuuid")+"sqleditor";
+      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid+"sqleditor";
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
       // 当服务端打开连接
@@ -345,7 +380,7 @@ export default {
      * 初始化sql编辑器基础数据
      */
     initData() {
-      const userId = Cookies.get("personuuid")
+      const userId = this.$store.state.user.code
       initDragAndDrop()
       initIcon()
       initTableTree(userId)
@@ -581,6 +616,7 @@ export default {
         this.currentExecuteSQL = []
         lastResultColumn = []
         const obj = executeSQL()
+        console.log(obj)
         obj.businessField = 'sqleditor'
         if (!obj.isExistParam) {
           this.executeLoading = true
@@ -635,6 +671,35 @@ export default {
     },
     maxOpen(){
       maxOpenOne()
+    },
+     handleClick(data, node, tree) {
+      this.tempPath = data.label;
+      this.tempId = data.id;
+      this.nodeType = data.type;
+      console.log(data, node, tree);
+    },
+      modelResultSavePathDetermine() {
+      if (this.nodeType == "folder") {
+        this.path = this.tempPath;
+        this.modelResultSavePathId = this.tempId;
+        this.modelResultSavePathDialog = false;
+      } else if(this.nodeType == ""){
+        this.$message({
+          message: "请选择路径",
+          type: "warning",
+        });
+      }else{
+         this.$message({
+          message: "只能选择文件夹",
+          type: "warning",
+        });
+      }
+    },
+    getColumnSqlInfo(){
+      const obj = executeSQL()
+      getColumnSqlInfo(obj.sqls).then(resp=>{
+        console.log(resp.data)
+      })
     }
   }
 }

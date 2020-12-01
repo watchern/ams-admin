@@ -137,7 +137,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { pageList, save, update, deleteByIds } from '@/api/etlscheduler/datasource'
+import { pageList, deleteByIds } from '@/api/etlscheduler/datasource'
 import QueryField from '@/components/Ace/query-field/index'
 
 import { mapActions } from 'vuex'

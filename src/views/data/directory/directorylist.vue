@@ -9,15 +9,15 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" :disabled="selections.length === 0" title="删除" class="oper-btn delete" @click="delData()" />
-        <el-button type="primary" class="oper-btn iconoper-cancel" :disabled="selections.length !== 1" title="复制" @click="copyResource()" />
-        <el-button type="primary" class="oper-btn iconoper-publish" title="移动" :disabled="clickData===null" @click="movePath()" />
-        <el-button type="primary" class="oper-btn edit" title="重命名" :disabled="selections.length !== 1" @click="renameResource()" />
+        <el-button type="primary" :disabled="selections.length === 0" title="删除" class="oper-btn delete" @click="delData" />
+        <el-button type="primary" class="oper-btn iconoper-cancel" :disabled="saveFlag " title="复制" @click="copyResource" />
+        <el-button type="primary" class="oper-btn iconoper-publish" title="移动" :disabled="clickData===null" @click="movePath" />
+        <el-button type="primary" class="oper-btn edit" title="重命名" :disabled="selections.length !== 1" @click="renameResource" />
         <el-button type="primary" class="oper-btn add" title="新增表" :disabled="selections.length !== 1" @click="add" />
-        <el-button type="primary" class="oper-btn add-folder" title="新增文件夹" :disabled="clickData.type == 'table'" @click="createFolder()" />
+        <el-button type="primary" class="oper-btn add-folder" title="新增文件夹" :disabled="clickData.type == 'table'" @click="createFolder" />
         <el-button type="primary" class="oper-btn  iconmenu-2" title="表结构维护" :disabled="selections.length !== 1" @click="add" />
-        <el-button type="primary" class="oper-btn  iconmenu-1" title="表结构展示" :disabled="selections.length !== 1" @click="showTable()" />
-        <el-button type="primary" class="oper-btn iconoper-show" title="预览" :disabled="selections.length !== 1 || selections[0].type =='folder'" @click="preview()" />
+        <el-button type="primary" class="oper-btn  iconmenu-1" title="表结构展示" :disabled="selections.length !== 1" @click="showTable" />
+        <el-button type="primary" class="oper-btn iconoper-show" title="预览" :disabled="infoFlag" @click="preview()" />
       </el-col>
     </el-row>
     <el-table
@@ -58,7 +58,7 @@
     </el-dialog>
     <!-- 弹窗2 -->
     <el-dialog :visible.sync="moveTreeVisible" width="600px">
-      <dataTree v-if="personcode!==''" ref="dataTree" :data-user-id="personcode" :scene-code="sceneCode" @node-click="nodeclick" />
+      <dataTree v-if="personcode!==''" ref="dataTree" :data-user-id="personcode" :scene-code="sceneCode" :tree-type="treeType" @node-click="nodeclick" />
       <span slot="footer">
         <el-button type="primary" @click="movePathSave()">确定</el-button>
         <el-button @click="moveTreeVisible = false">取消</el-button>
@@ -112,10 +112,14 @@ export default {
   },
   data() {
     return {
+      saveFlag: true,
+      infoFlag: true,
       dataUserId: this.$store.getters.personcode,
       openType: '',
+      // 移动树节点展示
+      tableKey: 'id',
       sceneCode: 'auditor',
-      tableKey: 'bizAttrUuid',
+      treeType: 'save', // common:正常的权限树   save:用于保存数据的文件夹树
       tableId: '',
       typeLabel: '',
       list: null,
@@ -392,6 +396,7 @@ export default {
       this.resourceForm.parentFolderUuid = this.clickData.id
       this.resourceForm.fullPath = this.clickFullPath.reverse().join('/')
       this.resourceForm.folderName = this.resourceForm.resourceName
+      this.resourceForm.createUserUuid = this.$store.state.user.code
       saveFolder(this.resourceForm).then(resp => {
         var childData = {
           id: resp.data,
@@ -455,6 +460,22 @@ export default {
     },
     handleSelectionChange(val) {
       this.selections = val
+      var objTotal = getArrLength(this.selections)
+      if (objTotal === 1) {
+        if (this.selections[0].extMap.accessType.indexOf('SAVE_TO_FOLDER') > -1) {
+          this.saveFlag = false
+        } else {
+          this.saveFlag = true
+        }
+        if (this.selections[0].extMap.accessType.indexOf('FETCH_TABLE_DATA') > -1) {
+          this.infoFlag = false
+        } else {
+          this.infoFlag = true
+        }
+      } else {
+        this.saveFlag = true
+        this.infoFlag = true
+      }
     },
     getSortClass: function(key) {
       const sort = this.pageQuery.sort

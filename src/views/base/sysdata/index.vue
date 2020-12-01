@@ -388,7 +388,7 @@ export default {
       this.$store.dispatch('dataSort/setDataSortUuid', this.selections[0].dataSortUuid)
       this.$store.dispatch('dataSort/setDataSortName', this.selections[0].dataSortName)
       this.$router.push({
-        path: `/base/baseCodeTree/`
+        path: `/base/basecodetree`
       })
     },
     addSecondCode() {

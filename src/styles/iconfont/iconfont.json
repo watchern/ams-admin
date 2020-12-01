@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1881570",
+      "name": "交互",
+      "font_class": "jiaohu",
+      "unicode": "e668",
+      "unicode_decimal": 58984
+    },
+    {
+      "icon_id": "12676318",
+      "name": "交互-01-01",
+      "font_class": "oper-interactive",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
       "icon_id": "695192",
       "name": "搜索",
       "font_class": "oper-search-2",

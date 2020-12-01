@@ -28,13 +28,13 @@
             </div>
             <div class="col-md-4" style="padding:10px; ">
               <el-tag effect="dark" type="success" style="width:100%;height: 80px;">
-                <div style="font-size: 20px;padding:10px;">任务总耗时</div>
+                <div style="font-size: 20px;padding:10px;">调度任务总耗时</div>
                 <div style="font-size: 15px;padding-left:10px;">{{ taketime | timeFilter }}</div>
               </el-tag>
             </div>
             <div class="col-md-4" style="padding:10px;">
               <el-tag effect="dark" type="warning" style="width:100%;height: 80px;">
-                <div style="font-size: 20px;padding:10px;">任务历时</div>
+                <div style="font-size: 20px;padding:10px;">调度任务历时</div>
                 <div style="font-size: 15px;padding-left:10px;">{{ processtime | timeFilter }}</div>
               </el-tag>
             </div>
@@ -42,7 +42,7 @@
           <div class="row">
             <div class="col-md-6">
               <div class="chart-title">
-                <span>流程状态统计
+                <span>调度流程状态统计
                   <el-button
                     style="margin-left:10px;margin-top:-10px;"
                     type="primary"
@@ -57,7 +57,7 @@
             </div>
             <div class="col-md-6">
               <div class="chart-title">
-                <span>任务状态统计<el-button
+                <span>调度环节状态统计<el-button
                   style="margin-left:10px;margin-top:-10px;"
                   type="primary"
                   title="查看详情"
@@ -73,7 +73,15 @@
           <div class="row">
             <div class="col-md-12">
               <div class="chart-title">
-                <span>上游推送文件情况</span>
+                <span>上游推送文件情况
+                  <el-button
+                    style="margin-left:10px;margin-top:-10px;"
+                    type="primary"
+                    title="查看详情"
+                    class="oper-btn more"
+                    @click="handleFile()"
+                  />
+                </span>
               </div>
               <div class="table-small-model">
                 <table>
@@ -188,6 +196,9 @@ export default {
         startTimeStart: this.searchParams.startTimeStart,
         startTimeEnd: this.searchParams.startTimeEnd
       }})
+    },
+    handleFile() {
+      this.$router.push({ path: '/etlscheduler/resourcemonitor' })
     },
     // 根据时间范围获取任务历时
     _datepicker(val) {

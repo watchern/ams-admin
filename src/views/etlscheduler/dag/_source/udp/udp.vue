@@ -154,8 +154,7 @@
             </div>
           </template> -->
           <x-button
-            type="primary"
-            class="btnclass"
+            type="text"
             @click="close()"
           > 取消 </x-button>
           <x-button
@@ -326,6 +325,9 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
+.ans-btn-text:hover {
+	color: #252d39;
+}
 .btnclass{
   background: #353a43;
   border-color: #353a43;

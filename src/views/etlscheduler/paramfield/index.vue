@@ -127,7 +127,6 @@
           <el-input
             v-model="temp.paramName"
             :placeholder="disableUpdate === true ? '' : '请输入参数名称'"
-            class="propwidth"
             :disabled="disableUpdate"
           />
         </el-form-item>
@@ -135,7 +134,7 @@
           label="参数编码"
           prop="paramCode"
         >
-          <el-input v-model="temp.paramCode" :placeholder="disableUpdate === true ? '' : '请输入参数编码'" class="propwidth" :disabled="disableUpdate" />
+          <el-input v-model="temp.paramCode" :placeholder="disableUpdate === true ? '' : '请输入参数编码'" :disabled="disableUpdate" />
         </el-form-item>
         <el-form-item
           label="参数状态"
@@ -143,7 +142,6 @@
         >
           <el-select
             v-model="temp.status"
-            class="propwidth"
             :placeholder="disableUpdate === true ? '' : '请选择参数状态'"
             :disabled="disableUpdate"
           >
@@ -163,7 +161,6 @@
         >
           <el-select
             v-model="temp.paramType"
-            class="propwidth"
             :placeholder="disableUpdate === true ? '' : '请选择参数类型'"
             :disabled="disableUpdate"
           >
@@ -181,7 +178,7 @@
           label="默认值"
           prop="defaultValue"
         >
-          <el-input v-model="temp.defaultValue" :placeholder="disableUpdate === true ? '' : '请输入参数默认值'" class="propwidth" :disabled="disableUpdate" />
+          <el-input v-model="temp.defaultValue" :placeholder="disableUpdate === true ? '' : '请输入参数默认值'" :disabled="disableUpdate" />
         </el-form-item>
         <el-form-item
           label="可选值"
@@ -190,7 +187,6 @@
           <el-input
             v-model="temp.selectValue"
             :placeholder="disableUpdate === true ? '' : '请输入参数可选值'"
-            class="propwidth"
             :disabled="disableUpdate"
           />
         </el-form-item>
@@ -202,13 +198,12 @@
             v-model="temp.paramDesc"
             :placeholder="disableUpdate === true ? '' : '请输入参数描述'"
             type="textarea"
-            class="propwidth"
             :disabled="disableUpdate"
           />
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button v-if="!closeStatus" @click="dialogFormVisible = false">返回</el-button>
+        <el-button v-if="!closeStatus" @click="dialogFormVisible = false">取消</el-button>
         <el-button
           v-if="closeStatus"
           type="primary"
@@ -218,7 +213,7 @@
           v-if="!closeStatus"
           type="primary"
           @click="dialogStatus==='create'?createData():updateData()"
-        >确定</el-button>
+        >保存</el-button>
       </div>
     </el-dialog>
   </div>
@@ -431,11 +426,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-  .propwidth{
-    /* width: 400px; */
-  }
-  .el-select .el-input {
-    /* width: 380px; */
-}
-</style>

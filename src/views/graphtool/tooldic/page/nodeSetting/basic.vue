@@ -47,14 +47,6 @@
     var nodeData, nodeInfo
     export default {
         name: 'BasicSetting',
-        // data(){
-        //     return{
-        //         node_name: '', // 节点名称
-        //         nodeExcuteStatus: '', // 节点执行状态：1未执行2执行中3已执行4执行失败
-        //         isCreateTable: 0, // 是否保存数据
-        //         nodeDescription: '', // 节点描述
-        //     }
-        // },
         mounted() {
             this.init()
             window.basicInfoVerify = this.basicInfoVerify

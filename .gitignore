@@ -12,6 +12,7 @@ selenium-debug.log
 
 # Editor directories and files
 .idea
+.env.development
 .vscode
 *.suo
 *.ntvs*
@@ -22,6 +23,3 @@ selenium-debug.log
 
 package-lock.json
 yarn.lock
-.env.development
-.env.production
-.env.staging
