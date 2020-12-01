@@ -618,6 +618,7 @@ export default {
         const obj = executeSQL()
         console.log(obj)
         obj.businessField = 'sqleditor'
+        obj.modelResultSavePathId = this.modelResultSavePathId
         if (!obj.isExistParam) {
           this.executeLoading = true
           startExecuteSql(obj).then((result) => {
