@@ -730,8 +730,11 @@
                                 if($this.executeNodeIdArr[k] === cueNodeId){
                                     let nextNodeId = $this.executeNodeIdArr[k+1]
                                     if(typeof nextNodeId !== "undefined"){
-                                        graph.nodeData[nextNodeId].nodeInfo.nodeExcuteStatus = 3
-                                        break
+                                        let optType = graph.nodeData[nextNodeId].nodeInfo.optType
+                                        if(optType === 'newNullNode'){
+                                            graph.nodeData[nextNodeId].nodeInfo.nodeExcuteStatus = 3
+                                            break
+                                        }
                                     }
                                 }
                             }
@@ -757,10 +760,22 @@
                                 let nodeName = executeSQLObj.name
                                 let resultTableName = nodeInfo.resultTableName
                                 $this.resultTableArr.push({nodeId,nodeName,resultTableName})
+                                for(let k=0; k<$this.executeNodeIdArr.length; k++){//找出当前节点的下一个节点即结果表节点
+                                    if($this.executeNodeIdArr[k] === cueNodeId){
+                                        let nextNodeId = $this.executeNodeIdArr[k+1]
+                                        if(typeof nextNodeId !== "undefined"){
+                                            let optType = graph.nodeData[nextNodeId].nodeInfo.optType
+                                            if(optType === 'newNullNode'){
+                                                nodeName = nodeName + "_" + graph.nodeData[nextNodeId].nodeInfo.nodeName
+                                                break
+                                            }
+                                        }
+                                    }
+                                }
                                 $this.preValue.push({id:nodeId,name:nodeName})
                             }
                         }
-                        console.log($this.resultTableArr)
+                        // console.log($this.resultTableArr)
                         if(isEnd && executeSQLObj.state === "2"){
                             // 记录执行操作
                             indexJs.refrashHistoryZtree('【' + executeSQLObj.name + '】节点执行完毕')

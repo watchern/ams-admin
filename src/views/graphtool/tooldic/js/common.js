@@ -770,6 +770,7 @@ function executeNode_callback(notExecuteNodeIdArr) {
     graphIndexVue.executeNodeIdArr = notExecuteNodeIdArr
     graphIndexVue.executeId = executeId
     graphIndexVue.resultTableArr = []
+    graphIndexVue.preValue = []
     graphIndexVue.$nextTick( () => {
         executeNodeSql(dataParam).then(response => {
             if(response.data != null){
@@ -1354,6 +1355,7 @@ export function previewNodeData() {
         return
     }
     graphIndexVue.resultTableArr = []
+    graphIndexVue.preValue = []
     graphIndexVue.$nextTick( () => {
         graphIndexVue.websocketBatchId = new UUIDGenerator().id
         graphIndexVue.resultTableArr = [{nodeId, nodeName, resultTableName}]
