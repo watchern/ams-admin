@@ -52,6 +52,8 @@ export default {
             return '结果' + (key + 1)
         }else if(this.useType=='previewTable'){
             return '数据详情'
+        }else if(this.useType=='graph'){
+          return preValue[key].name
         }
       }
   },

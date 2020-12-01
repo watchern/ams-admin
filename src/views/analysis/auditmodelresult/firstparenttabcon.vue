@@ -3,259 +3,243 @@
   <div class="app-container">
     <el-container>
       <el-header>
-    <div class="filter-container">
-      <QueryField
-        ref="queryfield"
-        :form-data="queryFields"
-        @submit="getLikeList"
-      />
-    </div>
-    </el-header>
-    <el-main>
-    <div align="right" style="width: 72%">
-      <el-row>
-        <el-button
-        v-if="false"
-          type="primary"
-          @click="relationProject('453453', '项目2')"
-          :disabled="buttonIson.AssociatedBtn"
-          class="oper-btn refresh"
-        ></el-button>
-        <el-button
-        v-if="false"
-          type="danger"
-          @click="RemoverelationProject('asdasdasdas')"
-          :disabled="buttonIson.DisassociateBtn"
-          >移除项目关联</el-button
-        >
-        <el-button
-          :disabled="buttonIson.deleteBtn"
-          type="danger"
-          @click="deleteRunTaskRel"
-          class="oper-btn delete"
-        ></el-button>
-        <el-button
-          type="primary"
-          :disabled="buttonIson.resultSplitBtn"
-          class="oper-btn split-2"
-        ></el-button>
-        <el-button
-          type="primary"
-          @click="modelResultShare('99999', '888888')"
-          :disabled="buttonIson.resultShareBtn"
-          class="oper-btn share"
-        ></el-button>
-        <el-button
-          type="primary"
-          @click="exportExcel"
-          :disabled="buttonIson.exportBtn"
-          class="oper-btn export-2"
-        ></el-button>
-      </el-row>
-    </div>
-    <el-table
-      id="table"
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
-      height="450px"
-      style="overflow-x: scroll; width: 72%"
-    >
-      <el-table-column type="selection" width="55" />
-      <el-table-column
-        label="模型名称"
-        width="100px"
-        align="center"
-        prop="model.modelName"
-      >
-        <template slot-scope="scope">
-          <el-button
-            type="text"
-            @click="
-              getResultTables(
-                scope.row.runResultTables,
-                scope.row.model.modelName,
-                scope.row.model.modelUuid,
-                scope.row.runStatus
-              )
-            "
-            >{{ scope.row.model.modelName }}</el-button
-          >
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="运行状态"
-        width="100px"
-        align="center"
-        prop="runStatus"
-        :formatter="readStatusFormatter"
-        ><template slot-scope="scope">
-          <i
-            :class="runStatusIconFormatter(scope.row.runStatus)"
-            :style="runStatusStyleFormatter(scope.row.runStatus)"
-          ></i> </template
-      ></el-table-column>
-      <el-table-column
-        label="运行人"
-        width="100px"
-        align="center"
-        prop="runTask.runUserName"
-      />
-      <el-table-column
-        label="运行类型"
-        width="100px"
-        align="center"
-        prop="runTask.runType"
-        :formatter="runTypeFormate"
-      />
-      <el-table-column
-        label="执行进度"
-        prop="executeProgress"
-        align="center"
-        width="200px"
-      >
-        <template slot-scope="scope">
-          <el-progress
-            :percentage="executeProgressFormate(scope.row.executeProgress)"
-            :color="customColorMethod(scope.row.executeProgress)"
+        <div class="filter-container">
+          <QueryField
+            ref="queryfield"
+            :form-data="queryFields"
+            @submit="getLikeList"
           />
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="定时运行时间"
-        width="200px"
-        align="center"
-        prop="runTask.timingExecute"
-        :formatter="dateFormatter2"
-      />
-      <el-table-column
-        label="运行开始时间"
-        width="200px"
-        align="center"
-        prop="runStartTime"
-        :formatter="dateFormatter"
-      />
-      <el-table-column
-        label="运行结束时间"
-        width="200px"
-        align="center"
-        prop="runEndTime"
-        :formatter="dateFormatter1"
-      />
-      <el-table-column
-        label="运行SQL"
-        prop="settingInfo"
-        align="center"
-        width="200px"
-        :formatter="settingInfoSqlFormatter"
-      />
-      <el-table-column
-        label="运行参数"
-        prop="settingInfo"
-        align="center"
-        width="200px"
-        :formatter="settingInfoParamsArrFormatter"
-      />
-      <el-table-column
-        label="运行信息"
-        prop="runMessage"
-        align="center"
-        width="200px"
-      />
-      <el-table-column
-        label="关联项目"
-        prop="projectName"
-        align="center"
-        width="200px"
-      />
-      <el-table-column
-        v-if="false"
-        label="运行结果共享表主键"
-        prop="runResultShare.runResultShareUuid"
-        align="center"
-        width="200px"
-      />
-      <el-table-column fixed="right" label="操作" width="150px" align="center">
-        <template slot-scope="scope">
-          <div>
-          <el-button type="primary" @click="reRun(scope.row)" size="mini"
-            >直接重新运行</el-button
+        </div>
+      </el-header>
+      <el-main>
+        <div align="right" style="width: 72%">
+          <el-row>
+            <el-button
+              v-if="false"
+              type="primary"
+              @click="relationProject('453453', '项目2')"
+              :disabled="buttonIson.AssociatedBtn"
+              class="oper-btn refresh"
+            ></el-button>
+            <el-button
+              v-if="false"
+              type="danger"
+              @click="RemoverelationProject('asdasdasdas')"
+              :disabled="buttonIson.DisassociateBtn"
+              >移除项目关联</el-button
+            >
+            <el-button
+              :disabled="buttonIson.deleteBtn"
+              type="danger"
+              @click="deleteRunTaskRel"
+              class="oper-btn delete"
+            ></el-button>
+            <el-button
+              type="primary"
+              :disabled="buttonIson.resultSplitBtn"
+              class="oper-btn split-2"
+            ></el-button>
+            <el-button
+              type="primary"
+              @click="modelResultShare('99999', '888888')"
+              :disabled="buttonIson.resultShareBtn"
+              class="oper-btn share"
+            ></el-button>
+            <el-button
+              type="primary"
+              @click="exportExcel"
+              :disabled="buttonIson.exportBtn"
+              class="oper-btn export-2"
+            ></el-button>
+          </el-row>
+        </div>
+        <el-table
+          id="table"
+          :key="tableKey"
+          v-loading="listLoading"
+          :data="list"
+          border
+          fit
+          highlight-current-row
+          @sort-change="sortChange"
+          @selection-change="handleSelectionChange"
+          height="450px"
+          style="overflow-x: scroll; width: 72%"
+        >
+          <el-table-column type="selection" width="55" />
+          <el-table-column
+            label="模型名称"
+            width="100px"
+            align="center"
+            prop="model.modelName"
           >
-          </div>
-          <br/>
-          <div>
-          <el-button type="primary" @click="reRunReParam(scope.row)" size="mini"
-            >输入参数重新运行</el-button
+            <template slot-scope="scope">
+              <el-button
+                type="text"
+                @click="
+                  getResultTables(
+                    scope.row.runResultTables,
+                    scope.row.model.modelName,
+                    scope.row.model.modelUuid,
+                    scope.row.runStatus
+                  )
+                "
+                >{{ scope.row.model.modelName }}</el-button
+              >
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="运行状态"
+            width="100px"
+            align="center"
+            prop="runStatus"
+            :formatter="readStatusFormatter"
+            ><template slot-scope="scope">
+              <i
+                :class="runStatusIconFormatter(scope.row.runStatus)"
+                :style="runStatusStyleFormatter(scope.row.runStatus)"
+              ></i> </template
+          ></el-table-column>
+          <el-table-column
+            label="运行人"
+            width="100px"
+            align="center"
+            prop="runTask.runUserName"
+          />
+          <el-table-column
+            label="运行类型"
+            width="100px"
+            align="center"
+            prop="runTask.runType"
+            :formatter="runTypeFormate"
+          />
+          <el-table-column
+            label="执行进度"
+            prop="executeProgress"
+            align="center"
+            width="200px"
           >
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-dialog
-      title="设置定时时间"
-      :visible.sync="settingTimingIsSee"
-      width="30%"
-    >
-      <el-date-picker
-        v-model="setDateTime"
-        type="datetime"
-        placeholder="选择日期时间"
-        :picker-options="executeTimeOptions"
-      >
-      </el-date-picker>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="settingTimingIsSee = false">取 消</el-button>
-        <el-button type="primary" @click="afterSettingTime">确 定</el-button>
-      </span>
-    </el-dialog>
-       <el-dialog
-      title="模型运行设置-立即"
-      :visible.sync="runimmediatelyIsSee"
-      width="60%"
-      :append-to-body="true"
-    >
-      <runimmediatelycon
-        v-if="runimmediatelyIsSee"
-        ref="modelsetting"
-        :timing="false"
-        :models="this.currentData"
-        @changeFlag="changeFlag"
-      />
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="runimmediatelyIsSee = false">取 消</el-button>
-        <el-button type="primary" @click="modelRunSetting">确 定</el-button>
-      </span>
-    </el-dialog>
+            <template slot-scope="scope">
+              <el-progress
+                :percentage="executeProgressFormate(scope.row.executeProgress)"
+                :color="customColorMethod(scope.row.executeProgress)"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="定时运行时间"
+            width="200px"
+            align="center"
+            prop="runTask.timingExecute"
+            :formatter="dateFormatter2"
+          />
+          <el-table-column
+            label="运行开始时间"
+            width="200px"
+            align="center"
+            prop="runStartTime"
+            :formatter="dateFormatter"
+          />
+          <el-table-column
+            label="运行结束时间"
+            width="200px"
+            align="center"
+            prop="runEndTime"
+            :formatter="dateFormatter1"
+          />
+          <el-table-column
+            label="运行SQL"
+            prop="settingInfo"
+            align="center"
+            width="200px"
+            :formatter="settingInfoSqlFormatter"
+          />
+          <el-table-column
+            label="运行参数"
+            prop="settingInfo"
+            align="center"
+            width="200px"
+            :formatter="settingInfoParamsArrFormatter"
+          />
+          <el-table-column
+            label="运行信息"
+            prop="runMessage"
+            align="center"
+            width="200px"
+          />
+          <el-table-column
+            label="关联项目"
+            prop="projectName"
+            align="center"
+            width="200px"
+          />
+          <el-table-column
+            v-if="false"
+            label="运行结果共享表主键"
+            prop="runResultShare.runResultShareUuid"
+            align="center"
+            width="200px"
+          />
+          <el-table-column
+            fixed="right"
+            label="操作"
+            width="150px"
+            align="center"
+          >
+            <template slot-scope="scope">
+              <div>
+                <a
+                  v-if="scope.row.runStatus == 4"
+                  @click="reRunReParam(scope.row)"
+                  style="color: #409eff"
+                  >重新运行</a
+                >
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
         <el-dialog
-      title="模型运行设置-定时"
-      :visible.sync="timingExecutionIsSee"
-      width="60%"
-      :append-to-body="true"
-    >
-      <runimmediatelycon
-        v-if="timingExecutionIsSee"
-        ref="modelsetting"
-        :timing="true"
-        :models="this.currentData"
-      />
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="timingExecutionIsSee = false">取 消</el-button>
-        <el-button type="primary" @click="modelRunSetting">确 定</el-button>
-      </span>
-    </el-dialog>
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="pageQuery.pageNo"
-      :limit.sync="pageQuery.pageSize"
-      @pagination="getLikeList"
-    />
-    </el-main>
+          title="模型运行设置-立即"
+          :visible.sync="runimmediatelyIsSee"
+          width="60%"
+          :append-to-body="true"
+        >
+          <runimmediatelycon
+            v-if="runimmediatelyIsSee"
+            ref="modelsetting"
+            :timing="false"
+            :models="this.currentData"
+          />
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="runimmediatelyIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="modelRunSetting">确 定</el-button>
+          </span>
+        </el-dialog>
+        <el-dialog
+          title="模型运行设置-定时"
+          :visible.sync="timingExecutionIsSee"
+          width="60%"
+          :append-to-body="true"
+        >
+          <runimmediatelycon
+            v-if="timingExecutionIsSee"
+            ref="modelsetting"
+            :timing="true"
+            :models="this.currentData"
+          />
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="timingExecutionIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="modelRunSetting">确 定</el-button>
+          </span>
+        </el-dialog>
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          :page.sync="pageQuery.pageNo"
+          :limit.sync="pageQuery.pageSize"
+          @pagination="getLikeList"
+        />
+      </el-main>
     </el-container>
   </div>
 </template>
@@ -270,27 +254,17 @@ import {
   exportRunTaskRel,
   reRunRunTask,
 } from "@/api/analysis/auditmodelresult";
-import { uuid2, addRunTaskAndRunTaskRel } from '@/api/analysis/auditmodel'
+import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 import QueryField from "@/components/Ace/query-field/index";
 import Pagination from "@/components/Pagination/index";
 import { elementInside } from "dropzone";
-import runimmediatelycon from '@/views/analysis/auditmodel/runimmediatelycon'
+import runimmediatelycon from "@/views/analysis/auditmodel/runimmediatelycon";
 import axios from "axios";
 import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 export default {
-  components: { Pagination, QueryField,runimmediatelycon },
-    watch: {
-    flag(value) {
-      this.$nextTick(function() {
-        if (value == true) {
-          this.modelRunSetting()
-          this.flag = ''
-        }
-      })
-    }
-  },
+  components: { Pagination, QueryField, runimmediatelycon },
   data() {
     return {
       tableKey: "errorUuid",
@@ -327,20 +301,21 @@ export default {
         resultShareBtn: true,
         exportBtn: false,
       },
-      settingTimingIsSee: false,
       setDateTime: "",
       nowRunTaskRel: null,
-             //单次/多次/周期执行的周期开始结束时间 执行时间选择配置
-      executeTimeOptions:{
-        disabledDate(time){
+      //单次/多次/周期执行的周期开始结束时间 执行时间选择配置
+      executeTimeOptions: {
+        disabledDate(time) {
           //不能选择小于当前日志的事件
-          return new Date(time.toLocaleDateString()) < new Date(new Date().toLocaleDateString())
-        }
+          return (
+            new Date(time.toLocaleDateString()) <
+            new Date(new Date().toLocaleDateString())
+          );
+        },
       },
       runimmediatelyIsSee: false,
       timingExecutionIsSee: false,
-      flag: '',
-      currentData: []
+      currentData: [],
     };
   },
   created() {
@@ -877,21 +852,6 @@ export default {
         });
       }
     },
-    reRun(runTaskRel) {
-      var runType = runTaskRel.runTask.runType;
-      this.nowRunTaskRel = runTaskRel;
-      if (runType == 3) {
-        reRunRunTask(runTaskRel).then((resp) => {
-          if (resp.data == true) {
-            this.getLikeList();
-          } else {
-            this.$message({ type: "info", message: "重新执行失败!" });
-          }
-        });
-      } else if (runType == 2) {
-        this.settingTimingIsSee = true;
-      }
-    },
     runTypeFormate(row) {
       var runType = row.runTask.runType;
       if (runType == 2) {
@@ -908,43 +868,35 @@ export default {
         return executeProgress1;
       }
     },
-    afterSettingTime() {
-      reRunRunTask(this.nowRunTaskRel, this.setDateTime).then((resp) => {
-        if (resp.data == true) {
-          this.getLikeList();
-        } else {
-          this.$message({ type: "info", message: "重新执行失败!" });
-        }
-      });
-      this.settingTimingIsSee = false;
-    },
-    reRunReParam(runTaskRel){
-       var runType = runTaskRel.runTask.runType
-      this.nowRunTaskRel = runTaskRel
-      this.currentData = []
-      this.currentData.push(runTaskRel.model)
+    reRunReParam(runTaskRel) {
+      var runType = runTaskRel.runTask.runType;
+      this.nowRunTaskRel = runTaskRel;
+      this.currentData = [];
+      this.currentData.push(runTaskRel.model);
       if (runType == 3) {
-        this.runimmediatelyIsSee = true
+        this.runimmediatelyIsSee = true;
       } else if (runType == 2) {
-        this.timingExecutionIsSee = true
+        this.timingExecutionIsSee = true;
       }
     },
-     /**
+    /**
      * 添加运行任务和运行任务关联表
      */
     modelRunSetting() {
-      debugger
-      var runType = this.nowRunTaskRel.runTask.runType
-      var results = this.$refs.modelsetting.replaceParams()
-      this.replacedInfo = results.replaceInfo
-      var dateTime = results.dateTime
-         var settingInfo = {
-          sql: this.replacedInfo[0].sql,
-          paramsArr: this.replacedInfo[0].paramsArr
-        }
-      this.nowRunTaskRel.model = results.models[0]
-      this.nowRunTaskRel.settingInfo = settingInfo
-      if(runType==3){
+      var runType = this.nowRunTaskRel.runTask.runType;
+      var results = this.$refs.modelsetting.replaceParams();
+      this.replacedInfo = results.replaceInfo;
+      var modelResultSavePathId = results.modelResultSavePathId;
+      var dateTime = results.dateTime;
+      console.log('qqqqqqqqqqqqqqqqq')
+      console.log(replacedInfo[0].sql == "")
+      var settingInfo = {
+        sql: this.replacedInfo[0].sql,
+        paramsArr: this.replacedInfo[0].paramsArr,
+      };
+      this.nowRunTaskRel.model = results.models[0];
+      this.nowRunTaskRel.settingInfo = settingInfo;
+      if (runType == 3) {
         reRunRunTask(this.nowRunTaskRel).then((resp) => {
           if (resp.data == true) {
             this.getLikeList();
@@ -952,8 +904,8 @@ export default {
             this.$message({ type: "info", message: "重新执行失败!" });
           }
         });
-      }else if(runType==2){
-        reRunRunTask(this.nowRunTaskRel,dateTime).then((resp) => {
+      } else if (runType == 2) {
+        reRunRunTask(this.nowRunTaskRel, dateTime).then((resp) => {
           if (resp.data == true) {
             this.getLikeList();
           } else {
@@ -961,13 +913,9 @@ export default {
           }
         });
       }
-         
-      this.runimmediatelyIsSee = false
-      this.timingExecutionIsSee = false
+      this.runimmediatelyIsSee = false;
+      this.timingExecutionIsSee = false;
     },
-    changeFlag(flag) {
-      this.flag = flag
-    }
   },
 };
 </script>
