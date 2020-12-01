@@ -333,7 +333,7 @@
         <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="processDefinitionId">
           <el-select
-            v-model="temp.processDefinitionId"
+            v-model="downProcessDefinitionId"
             :filterable="true"
             :remote="true"
             reserve-keyword
@@ -400,6 +400,7 @@ export default {
   },
   data() {
     return {
+      downProcessDefinitionId: null,
       disableAddStatus: false,
       // 开始时间大于今天
       startTime: {
@@ -700,7 +701,7 @@ export default {
     },
     // 导出 excel 格式
     exportFile() {
-      var id = this.temp.processDefinitionId
+      var id = this.downProcessDefinitionId
       axios({
         method: 'get',
         url: `/etlscheduler/schedules/exportFile/${id}`,
@@ -802,6 +803,7 @@ export default {
     },
     // 选择下载模板的流程
     changeTempProcess(data) {
+      this.downProcessDefinitionId = data
       // getById(data).then((res) => {
       //   this.temp.processDefName = res.data.name
       // })

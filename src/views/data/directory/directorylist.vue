@@ -50,18 +50,18 @@
         </el-form-item>
       </el-form>
       <span slot="footer">
-        <el-button v-if="dialogStatus==='copyTable'" type="primary" @click="copyResourceSave()">确定</el-button>
-        <el-button v-if="dialogStatus==='createFolder'" type="primary" @click="createFolderSave()">确定</el-button>
-        <el-button v-if="dialogStatus==='updateFolder'||dialogStatus==='updateTable'" type="primary" @click="renameResourceSave()">确定</el-button>
-        <el-button @click="folderFormVisible = false">取消</el-button>
+        <el-button size="mini" @click="folderFormVisible = false">取消</el-button>
+        <el-button v-if="dialogStatus==='copyTable'" type="primary" @click="copyResourceSave()">保存</el-button>
+        <el-button v-if="dialogStatus==='createFolder'" type="primary" @click="createFolderSave()">保存</el-button>
+        <el-button v-if="dialogStatus==='updateFolder'||dialogStatus==='updateTable'" type="primary" @click="renameResourceSave()">保存</el-button>
       </span>
     </el-dialog>
     <!-- 弹窗2 -->
     <el-dialog :visible.sync="moveTreeVisible" width="600px">
       <dataTree v-if="personcode!==''" ref="dataTree" :data-user-id="personcode" :scene-code="sceneCode" :tree-type="treeType" @node-click="nodeclick" />
       <span slot="footer">
-        <el-button type="primary" @click="movePathSave()">确定</el-button>
         <el-button @click="moveTreeVisible = false">取消</el-button>
+        <el-button type="primary" @click="movePathSave()">保存</el-button>
       </span>
     </el-dialog>
     <!-- 弹窗3 -->
@@ -72,7 +72,7 @@
         </el-col>
       </el-row>
       <span slot="footer">
-        <el-button @click="tableShowVisible = false">取消</el-button>
+        <el-button type="primary" @click="tableShowVisible = false">关闭</el-button>
       </span>
     </el-dialog>
     <!-- 弹窗4 -->
@@ -83,7 +83,7 @@
         </el-col>
       </el-row>
       <span slot="footer">
-        <el-button @click="previewVisible = false">取消</el-button>
+        <el-button type="primary" @click="previewVisible = false">关闭</el-button>
       </span>
     </el-dialog>
   </div>
@@ -106,10 +106,9 @@ export default {
       personcode: state => state.user.code
     })
   },
+  // eslint-disable-next-line vue/order-in-components
   components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs },
-  filters: {
-
-  },
+  // eslint-disable-next-line vue/order-in-components
   data() {
     return {
       saveFlag: true,
