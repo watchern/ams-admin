@@ -1,13 +1,11 @@
 <template>
     <div id="transcode">
-        <form class="layui-form">
-            <div class="layui-form-item">
-                <label class="layui-form-label">上一节点名称：<span></span></label>
-                <div class="layui-input-block">
-                    <button type="button" style="float:right;" class="layui-btn" @click="addTranscode">添加</button>
-                </div>
+        <div class="layui-form-item" style="padding-top:20px;">
+            <label class="layui-form-label">上一节点名称：<span></span></label>
+            <div class="layui-input-block">
+                <button type="button" style="float:right;" class="layui-btn" @click="addTranscode">添加</button>
             </div>
-        </form>
+        </div>
         <table id="main_table" class="table table-striped">
             <thead>
             <tr>
@@ -24,8 +22,8 @@
                     </el-select>
                 </td>
                 <td>
-                    <el-select v-model="item.transRuleUuid" filterable>
-                        <el-option v-for="ruleObj in ruleArr" :key="ruleObj.transRuleUuid" :value="ruleObj.ruleName">{{ ruleObj.ruleName }}
+                    <el-select v-model="item.transRuleUuid" filterable @change="getRuleName(item.transRuleUuid,index)">
+                        <el-option v-for="ruleObj in ruleArr" :key="ruleObj.transRuleUuid" :label="ruleObj.ruleName" :value="ruleObj.transRuleUuid">{{ ruleObj.ruleName }}
                             <button class="chooseRule layui-btn" @click="previewTransCode(ruleObj.transRuleUuid)" style="float: right;height: 30px;line-height: 30px;">查看</button>
                         </el-option>
                     </el-select>
@@ -53,17 +51,19 @@
             }
         },
         mounted() {
-            let loading = $('#transcode').mLoading({ 'text': '正在加载转码数据，请稍后……', 'hasCancel': false })
+            let loading = $('#transcode').mLoading({ 'text': '正在加载转码规则数据，请稍后……', 'hasCancel': false })
             getTransCodeList().then(response => {
                 loading.destroy();
                 if (response.data == null) {
-                    alertMsg('提示', '转码数据获取失败', 'error')
+                    this.$message.error({ message: '转码规则数据获取失败' })
                 } else {
                     this.ruleArr = response.data
                 }
             })
             this.$nextTick(() => {
                 this.init()
+                window.inputVerify = this.inputVerify
+                window.saveSetting = this.saveSetting
             })
         },
         methods: {
@@ -101,6 +101,12 @@
                     }
                 }
             },
+            getRuleName(transRuleUuid,index){
+                let ruleObj = this.ruleArr.find(n => n.transRuleUuid === transRuleUuid)
+                if(typeof ruleObj !== "undefined"){
+                    this.items[index].ruleName = ruleObj.ruleName
+                }
+            },
             addTranscode(selectVal, transRuleUuid, ruleName) {
                 let selectColumnName = ''
                 let colArr = []
@@ -133,56 +139,47 @@
                         top.layer.close(index)
                     }
                 })
-            }
-        }
-    }
-
-    function saveSetting() {
-        var curSelectVal = []; var verify = true; var arr = {}
-        $.each($('.selectCol'), function(i, v) {
-            var val = $(this).val()
-            val = val == null ? '' : val
-            if ($.inArray(val, curSelectVal) > -1) {
-                verify = false
-                return false
-            } else {
-                curSelectVal.push(val)
-                var transRuleUuid = $('.transRuleUuid:eq(' + i + ')').val()
-                var ruleName = $('.ruleName:eq(' + i + ')').val()
-                if (transRuleUuid !== '' && transRuleUuid != null) {
-                    arr[val] = {
-                        'transRuleUuid': transRuleUuid,
-                        'ruleName': ruleName
+            },
+            saveSetting() {
+                let arr = {}
+                Array.from(this.items, (n) => arr[n.selectColumnName] = {
+                    'transRuleUuid': n.transRuleUuid,
+                    'ruleName': n.ruleName
+                })
+                nodeData.setting.columns = this.columns
+                nodeData.setting.tableData = arr
+            },
+            inputVerify() {
+                if(this.items.length === 0){
+                    this.$message({ type: 'warning', message: '未添加转码规则' })
+                    return false
+                }
+                let index = this.items.findIndex( n => n.selectColumnName === '' || typeof n.selectColumnName === 'undefined')
+                if(index > -1){
+                    this.$message({ type: 'warning', message: '存在未选择转码字段的行' })
+                    return false
+                }
+                index = this.items.findIndex( n => n.transRuleUuid === '' || typeof n.transRuleUuid === 'undefined')
+                if(index > -1){
+                    this.$message({ type: 'warning', message: '存在未选择转码规则的字段' })
+                    return false
+                }
+                let verify = true
+                let transRuleUuidArr = []
+                for(let i=0; i<this.items.length; i++){
+                    if(transRuleUuidArr.includes(this.items[i].transRuleUuid)){
+                        verify = false
+                        break
+                    }else{
+                        transRuleUuidArr.push(this.items[i].transRuleUuid)
                     }
                 }
+                if (!verify) {
+                    this.$message.error({ message: '同一个字段不能选择多个转码规则' })
+                }
+                return verify
             }
-        })
-        if (!verify) {
-            alertMsg('错误', '同一个字段不能选择多个转码规则', 'error')
-            return
         }
-        nodeData.setting.columns = columns
-        nodeData.setting.tableData = arr
-    }
-
-    // 页面输入项的校验(或空配置校验)
-    function inputVerify() {
-        var verify = true
-        if ($('.transRuleUuid').length === 0) {
-            alertMsg('提示', '未添加转码规则！', 'info')
-            verify = false
-        } else {
-            $('.ruleName').css('border', '1px solid #e6e6e6')
-        }
-        $('.transRuleUuid').each(function(i, v) {
-            if ($(this).val() === '') {
-                alertMsg('提示', '未对所选字段匹配转码规则', 'info')
-                $('.ruleName:eq(' + i + ')').css('border', '1px solid red')
-                verify = false
-                return false
-            }
-        })
-        return verify
     }
 </script>
 
