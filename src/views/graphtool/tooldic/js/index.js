@@ -1,5 +1,5 @@
 import { saveGraphInterface,getExecuteNodeInfoPost,importGraphXml,exportGraphXml } from '@/api/graphtool/graphList'
-import { progressDownLoad } from '@/views/graphtool/tooldic/js/common'
+import { progressDownLoad,getPreNodes } from '@/views/graphtool/tooldic/js/common'
 let indexVue = null// index.vue实例
 let curModelSql = ''// 用来临时存储打开模型图形时的模型SQL语句
 let nodeParamRelArr = []// 用来存储每个节点设置的参数信息
@@ -1406,6 +1406,83 @@ function importData() {
             layer.close()
         }
     })
+}
+
+//获取中间、最终结果表的输出列信息
+export function getResultColumnInfo(){
+    let middleTableArr = []
+    let finalTable = {}
+    let isError = false
+    let message = ''
+    let resultTableNodeId = ''// 最终结果表的节点ID（仅有一个）
+    // 先判断在整个图形中是否存在打了标记的最终结果表，默认为未标记（false）
+    let hasResultSign = false
+    let nodeIdArr = Object.keys(graph.nodeData)
+    for (let i = 0; i < nodeIdArr.length; i++) {
+        let resultTableStatus = graph.nodeData[nodeIdArr[i]].nodeInfo.resultTableStatus
+        if (resultTableStatus === 2) {
+            hasResultSign = true
+            resultTableNodeId = nodeIdArr[i]
+            break
+        }
+    }
+    if (!hasResultSign) {
+        isError = true
+        message = '未将结果表标记为最终结果表'
+    }else {
+        // 判断模型最终结果表的节点是否执行成功
+        if (graph.nodeData[resultTableNodeId].nodeInfo.nodeExcuteStatus !== 3) {
+            isError = true
+            message = '您标记的最终结果表尚未执行成功'
+        }else{
+            // 以模型最终结果表节点为最末级节点，向上寻找所有的节点
+            let lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
+            for (let i = 0; i < lineNodeIdArr.length; i++) {
+                let curNodeInfo = graph.nodeData[lineNodeIdArr[i]].nodeInfo
+                if (curNodeInfo.nodeExcuteStatus !== 3) {
+                    isError = true
+                    message = '节点【' + curNodeInfo.nodeName + '】尚未执行成功'
+                    break
+                } else {
+                    if(curNodeInfo.optType === 'datasource' || curNodeInfo.optType === 'newNullNode'){//如果是源表或结果表
+                        if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果是被标记为辅助结果表或最终结果表
+                            let columnsInfo = null
+                            if(curNodeInfo.optType === 'datasource'){
+                                columnsInfo = graph.nodeData[lineNodeIdArr[i]].columnsInfo
+                            }else if(curNodeInfo.optType === 'newNullNode'){
+                                // 先获取该结果表的前置节点ID集合
+                                let parentIds = graph.nodeData[lineNodeIdArr[i]].parentIds
+                                // 如果该节点的前置节点ID在当前的节点ID集合批次中（因结果表的前置节点有且只有一个，所以可直接使用parentIds[0]）
+                                if (parentIds.length > 0 && $.inArray(parentIds[0], lineNodeIdArr) > -1) {
+                                    columnsInfo = graph.nodeData[parentIds[0]].columnsInfo
+                                }
+                            }else{
+                                continue
+                            }
+                            let columnNameArr = []//输出列名称数组
+                            let columnTypeArr = []//输出列类型数组
+                            for (let k = 0; k < columnsInfo.length; k++) {
+                                // 判断是否为输出列
+                                let isOutputColumn = columnsInfo[k].isOutputColumn
+                                if (isOutputColumn === 1) { // 如果是输出列，则拼接输出列的字符串
+                                    columnNameArr.push(columnsInfo[k].newColumnName)
+                                    columnTypeArr.push(columnsInfo[k].columnType)
+                                }
+                            }
+                            if (curNodeInfo.midTableStatus === 2) { // 如果是被标记为辅助结果表
+                                middleTableArr.push({columnNameArr,columnTypeArr})
+                            }
+                            if (curNodeInfo.resultTableStatus === 2) { // 如果是被标记为最终结果表，则说明此节点将作最后一个结果表节点
+                                finalTable = {columnNameArr,columnTypeArr}
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return {isError,message,middleTableArr,finalTable}
 }
 
 // 生成风险查证模型
