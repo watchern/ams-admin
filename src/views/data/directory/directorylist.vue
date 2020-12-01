@@ -51,9 +51,9 @@
       </el-form>
       <span slot="footer">
         <el-button size="mini" @click="folderFormVisible = false">取消</el-button>
-        <el-button v-if="dialogStatus==='copyTable'" type="primary" @click="copyResourceSave()">确定</el-button>
-        <el-button v-if="dialogStatus==='createFolder'" type="primary" @click="createFolderSave()">确定</el-button>
-        <el-button v-if="dialogStatus==='updateFolder'||dialogStatus==='updateTable'" type="primary" @click="renameResourceSave()">确定</el-button>
+        <el-button v-if="dialogStatus==='copyTable'" type="primary" @click="copyResourceSave()">保存</el-button>
+        <el-button v-if="dialogStatus==='createFolder'" type="primary" @click="createFolderSave()">保存</el-button>
+        <el-button v-if="dialogStatus==='updateFolder'||dialogStatus==='updateTable'" type="primary" @click="renameResourceSave()">保存</el-button>
       </span>
     </el-dialog>
     <!-- 弹窗2 -->
