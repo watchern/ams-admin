@@ -111,6 +111,7 @@
     <el-dialog
       :title="textMap[dialogStatus]"
       :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
     >
       <!-- label-width="140px" -->
       <el-form

@@ -133,6 +133,29 @@
         </template>
       </el-table-column>
       <el-table-column
+        label="依赖任务环节"
+        align="center"
+        prop="dependTaskInfo"
+        width="120px"
+      >
+        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
+          <el-popover trigger="hover" placement="top" width="500">
+            <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
+              <label class="col-md-2">
+                [{{ dependTask.dateValueName }}]
+              </label>
+              <label class="col-md-10" align="right">
+                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+              </label>
+            </el-row>
+            <div slot="reference" class="name-wrapper">
+              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+              <el-link :underline="false" type="primary">查看依赖环节</el-link>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
         label="调度时间"
         width="160px"
         align="center"
@@ -179,6 +202,7 @@
     <!-- 跳过环节的dialog -->
     <el-dialog
       :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
     >
       <el-form
         ref="dataForm"
@@ -207,6 +231,7 @@
     <!-- 显示任务日志的dialog -->
     <el-dialog
       :visible.sync="logDialogFromVisible"
+      :close-on-click-modal="false"
     >
       <el-timeline style="margin-left:7%;margin-top:7%">
         <!-- 使用时间线任务实例的环节和运行的状态 -->

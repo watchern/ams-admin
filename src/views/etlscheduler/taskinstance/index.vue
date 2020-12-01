@@ -122,6 +122,7 @@
     <!-- 显示任务日志的dialog -->
     <el-dialog
       :visible.sync="logDialogFromVisible"
+      :close-on-click-modal="false"
     >
       <el-col class="logtype">
         {{ task!=null ? task.name : null }}

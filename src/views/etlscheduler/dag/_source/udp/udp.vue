@@ -42,6 +42,14 @@
             <span>流程状态</span>
           </div>
           <label class="label-box">
+            <!-- <el-select v-model="status" placeholder="请选择状态">
+              <el-option
+                v-for="(model,$index) in statusList"
+                :key="$index"
+                :value="model.value"
+                :label="model.label"
+              />
+            </el-select> -->
             <x-select
               v-model="status"
               placeholder="请选择状态"
@@ -49,16 +57,16 @@
               :disabled="isDetails"
             >
               <!-- <x-option
-            label="启用"
-            :value="1"
-          />
-          <x-option
-            label="停用"
-            :value="0"
-          /> -->
+                label="启用"
+                value="1"
+              />
               <x-option
-                v-for="model in statusList"
-                :key="model.value"
+                label="停用"
+                value="0"
+              /> -->
+              <x-option
+                v-for="(model,$index) in statusList"
+                :key="$index"
                 :value="model.value"
                 :label="model.label"
               />
