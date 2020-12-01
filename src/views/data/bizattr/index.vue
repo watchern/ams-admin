@@ -100,8 +100,8 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '业务属性修改',
-        create: '业务属性新增'
+        update: '修改业务属性',
+        create: '新增业务属性'
       },
       dialogPvVisible: false,
       rules: {

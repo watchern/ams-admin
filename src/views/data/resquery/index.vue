@@ -1,29 +1,25 @@
 <template>
-  <div><data-tree @node-click="handleClick" v-if="personcode!==''"
-            :dataUserId="personcode"  :sceneCode="sceneCode"
+  <div><data-tree
+    :data-user-id="personCode"
+    :scene-code="sceneCode"
+    :tree-type="treeType"
+    @node-click="handleClick"
   /></div>
 </template>
 
 <script>
 import dataTree from '@/views/data/role-res/data-tree'
-import { mapState } from 'vuex'
 
 export default {
-  computed:{
-    //因为时序问题，store中没有personcode时组件可能被加载 导致dataUserId==''  所以要加personcode!=='' 控制
-    ...mapState({
-      personcode: state => state.user.code
-    })
-
-  },
   components: { dataTree },
   data() {
     return {
-      sceneCode: 'auditor'
+      sceneCode: 'auditor',
+      personCode: this.$store.state.user.code,
+      treeType: 'save' // common:正常的权限树   save:用于保存数据的文件夹树
     }
   },
   created() {
-    console.log(this.$store.getters.personcode);
   },
   methods: {
     handleClick(data, node, tree) {

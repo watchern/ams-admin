@@ -13,6 +13,9 @@
       :data="treeData1"
       :filter-node-method="filterNode"
       node-key="id"
+      show-checkbox
+      check-strictly
+      @check-change="handleNodeClick1"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
@@ -45,7 +48,8 @@ export default {
         fullPath: null
       },
       treeData1: [],
-      treeLoading: true
+      treeLoading: true,
+      checkedId: ''
     }
   },
   computed: {
@@ -62,6 +66,16 @@ export default {
     })
   },
   methods: {
+    handleNodeClick1(data, checked, node) {
+    if(checked === true) {
+        this.checkedId = data.id;
+        this.$refs.tree1.setCheckedKeys([data.id]);
+    } else {
+        if (this.checkedId == data.id) {
+            this.$refs.tree1.setCheckedKeys([data.id]);
+        }
+    }
+},
     filterNode(value, data) {
       if (!value) return true
       return data.label.indexOf(value) !== -1

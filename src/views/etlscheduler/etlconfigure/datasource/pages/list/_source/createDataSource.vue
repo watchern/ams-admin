@@ -1,7 +1,7 @@
 <template>
   <div class="datasource-popup-model">
     <div class="top-p">
-      <span>{{ item ? `修改` : `创建` }}数据源</span>
+      <span>{{ item ? `修改` : `新增` }}数据源</span>
     </div>
     <div class="content-p">
       <div class="create-datasource-model">
@@ -145,8 +145,7 @@
     </div>
     <div class="bottom-p">
       <x-button
-        type="primary"
-        class="btnclass"
+        type="text"
         @click="_close()"
       > 取消</x-button>
       <x-button
@@ -316,14 +315,15 @@ export default {
         this.testLoading = true
         this.store.dispatch('datasource/connectDatasources', { connectionParams: JSON.stringify(this._rtParam()) }).then(res => {
           setTimeout(() => {
-            this.$message.success(res.msg)
+            this.$notify({
+              title: '提示',
+              message: res.msg,
+              type: 'success',
+              duration: 2000,
+              position: 'bottom-right'
+            })
             this.testLoading = false
           }, 0)
-          // console.log(res)
-          // if (res.code === 0) {
-          //   this.$message.success(res.msg)
-          //   this.testLoading = false
-          // }
         }).catch(e => {
           // this.$message.error(e.msg || '')
           this.testLoading = false
@@ -352,29 +352,29 @@ export default {
      */
     _verification() {
       if (!this.name) {
-        this.$message.warning(`Please enter resource name`)
+        this.$message.warning(`请输入数据源名称`)
         return false
       }
       if (!this.host) {
-        this.$message.warning(`Please enter IP/hostname`)
+        this.$message.warning(`请输入IP/主机名`)
         return false
       }
       if (!this.port) {
-        this.$message.warning(`Please enter port`)
+        this.$message.warning(`请输入端口`)
         return false
       }
       if (!this.userName) {
-        this.$message.warning(`Please enter user name`)
+        this.$message.warning(`请输入用户名`)
         return false
       }
 
       if (!this.database && this.showdDatabase === false) {
-        this.$message.warning(`Please enter database name`)
+        this.$message.warning(`请输入数据库名`)
         return false
       }
       if (this.other) {
         if (!isJson(this.other)) {
-          this.$message.warning(`jdbc connection parameters is not a correct JSON format`)
+          this.$message.warning(`jdbc连接参数不是一个正确的JSON格式`)
           return false
         }
       }
@@ -392,7 +392,13 @@ export default {
         param.datasourceUuid = this.item.datasourceUuid
       }
       this.store.dispatch(`datasource/${this.item ? 'updateDatasource' : 'createDatasources'}`, param).then(res => {
-        this.$message.success(res.msg)
+        this.$notify({
+          title: '提示',
+          message: res.msg,
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
         this.spinnerLoading = false
         this.$emit('onUpdate')
       }).catch(e => {
@@ -514,6 +520,9 @@ export default {
   border-color: #353a43;
   color: #c8ff8c;
   font-weight: bold;
+}
+.ans-btn-text:hover {
+	color: #252d39;
 }
 .datasource-popup-model {
   background: #fff;

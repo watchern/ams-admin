@@ -14,7 +14,10 @@
       default-expand-all
       :expand-on-click-node="false"
       node-key="id"
+      check-strictly
       @node-click="handleNodeClick"
+      @check-change="handleNodeClick1"
+      :show-checkbox="this.publicModel==='editorModel'?true:false"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <span>
@@ -44,7 +47,6 @@
 <script>
 import MyElTree from '@/components/Ace/tree/src/tree.vue'
 import { findModelFolderTree, deleteModelFolder, addModelFolder, updateModelFolder } from '@/api/analysis/auditmodel'
-import Cookies from 'js-cookie'
 export default {
   name: 'ModelFolderTree',
   components: { MyElTree },
@@ -67,7 +69,8 @@ export default {
         folderSort: '',
         folderPath: '',
         pbScope: ''
-      }
+      },
+      checkedId: ''
     }
   },
   watch: {
@@ -80,6 +83,16 @@ export default {
     this.getModelFolder()
   },
   methods: {
+handleNodeClick1(data, checked, node) {
+    if(checked === true) {
+        this.checkedId = data.id;
+        this.$refs.tree.setCheckedKeys([data.id]);
+    } else {
+        if (this.checkedId == data.id) {
+            this.$refs.tree.setCheckedKeys([data.id]);
+        }
+    }
+},
     /**
      *获取模型分类
      */
@@ -97,7 +110,8 @@ export default {
           } else if (this.publicModel === 'editorModel') {
             // todo 揉入权限信息
             for (let i = 0; i < result.data.length; i++) {
-              if (result.data[i].id == 'gonggong' || result.data[i].id == Cookies.get("personuuid")) {
+              if (result.data[i].id == 'gonggong' || result.data[i].id == this.$store.getters.personuuid) {
+                result.data[i].disabled =  true
                 newData.push(result.data[i])
               }
             }
@@ -289,7 +303,7 @@ export default {
       }
     },
     getSelectNode() {
-      return this.selectTreeNode
+      return this.$refs.tree.getCheckedNodes()[0]
     }
   }
 }

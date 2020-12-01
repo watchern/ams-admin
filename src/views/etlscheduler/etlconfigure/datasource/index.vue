@@ -24,7 +24,7 @@
       <el-col align="right">
         <el-button
           type="primary"
-          title="添加"
+          title="新增"
           class="oper-btn add"
           @click="hadleCreate"
         />
@@ -137,7 +137,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { pageList, save, update, deleteByIds } from '@/api/etlscheduler/datasource'
+import { pageList, deleteByIds } from '@/api/etlscheduler/datasource'
 import QueryField from '@/components/Ace/query-field/index'
 
 import { mapActions } from 'vuex'
@@ -208,7 +208,7 @@ export default {
       dialogStatus: '',
       textMap: {
         update: '修改数据源',
-        create: '添加数据源'
+        create: '新增数据源'
       },
       dialogPvVisible: false,
       rules: {

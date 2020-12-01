@@ -138,7 +138,13 @@ export default {
         formData.append('file', this.file)
         formData.append('projectName', this.store.state.dag.projectName)
         io.post(`projects/import-definition`, res => {
-          this.$message.success(res.msg)
+          this.$notify({
+            title: '提示',
+            message: res.msg,
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
           resolve()
           self.$emit('onUpdate')
         }, e => {

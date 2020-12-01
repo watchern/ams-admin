@@ -75,7 +75,7 @@ const statusListComm = [{
   value: 41,
   name: '准备执行',
   unicode: 'el-icon-s-help',
-  color: '#fff'
+  color: '#f9be0a'
 },
 {
   value: 50,
@@ -102,6 +102,68 @@ const statusListComm = [{
   color: '#888888'
 }
 ]
+
+const statusComm = [
+  {
+    value: 'G_WATTING',
+    label: '等待中',
+    unicode: 'el-icon-s-help',
+    color: '#f9be0a'
+  },
+  {
+    value: 'G_WAITTING_FILE',
+    label: '等待文件中',
+    unicode: 'el-icon-document',
+    color: '#f9be0a'
+  },
+  {
+    value: 'G_WAITTING_DEPEND',
+    label: '等待依赖中',
+    unicode: 'el-icon-share',
+    color: '#f9be0a'
+  },
+  {
+    value: 'G_RUNNING_EXEUTION',
+    label: '执行中',
+    unicode: 'el-icon-loading',
+    color: '#333'
+  },
+  {
+    value: 'G_PAUSE',
+    label: '暂停',
+    unicode: 'el-icon-video-pause',
+    color: '#409eff'
+  },
+  {
+    value: 'G_CANCEL',
+    label: '已取消',
+    unicode: 'el-icon-circle-close',
+    color: '#ff0000'
+  },
+  {
+    value: 'G_SUCCESS',
+    label: '执行完成',
+    unicode: 'el-icon-success',
+    color: '#00bb00'
+  }, {
+    value: 'G_FAILURE',
+    label: '执行失败',
+    unicode: 'el-icon-error',
+    color: 'red'
+  }, {
+    value: 'G_OTHER',
+    label: '其它',
+    unicode: 'el-icon-loading',
+    color: '#333'
+  },
+  {
+    value: null,
+    name: '--',
+    unicode: 'el-icon-remove-outline',
+    color: '#888888'
+  }
+]
+
 // 查询状态的下拉框
 const statuSelect = [{
   name: '等待中',
@@ -168,6 +230,43 @@ const statuSelect = [{
   value: '90'
 }
 ]
+// 查询状态的下拉框
+const statuSelectList = [
+  {
+    value: 'G_WATTING',
+    name: '等待中'
+  },
+  {
+    value: 'G_WAITTING_FILE',
+    name: '等待文件'
+  },
+  {
+    value: 'G_WAITTING_DEPEND',
+    name: '等待依赖'
+  },
+  {
+    value: 'G_RUNNING_EXEUTION',
+    name: '执行中'
+  },
+  {
+    value: 'G_PAUSE',
+    name: '暂停'
+  },
+  {
+    value: 'G_CANCEL',
+    name: '已取消'
+  },
+  {
+    value: 'G_SUCCESS',
+    name: '执行完成'
+  }, {
+    value: 'G_FAILURE',
+    name: '执行失败'
+  }, {
+    value: 'G_OTHER',
+    name: '其它'
+  }
+]
 // 命令的类型
 const commandTypeObj = {
   0: '开启新流程',
@@ -177,14 +276,11 @@ const commandTypeObj = {
   4: '从失败任务节点启动流程',
   5: '补数',
   6: '启动调度任务',
-  7: '重复运行流程',
+  7: '重复运行',
   8: '暂停流程',
-  9: '停止流程',
+  9: '取消',
   10: '重新运行等待线程流程',
-  11: '超时',
   12: '启动',
-  13: '重新运行',
-  14: '取消',
   null: '其它'
 }
 // 日志颜色
@@ -225,5 +321,7 @@ export {
   statuSelect,
   commandTypeObj,
   statusFilter,
-  colorList
+  colorList,
+  statuSelectList,
+  statusComm
 }

@@ -8,10 +8,10 @@
       />
     </div>
     <el-row>
-      <el-col align="right"> <!-- 添加 -->
+      <el-col align="right"> <!-- 新增 -->
         <el-button
           type="primary"
-          title="添加"
+          title="新增"
           class="oper-btn add"
           @click="handleCreate()"
         />
@@ -89,7 +89,7 @@
         type="selection"
         width="55"
       />
-      <el-table-column label="流程名称" width="300" align="center" show-overflow-tooltip>
+      <el-table-column label="流程名称" show-overflow-tooltip>
         <template slot-scope="scope">
           <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processDefinitionUuid)">{{ scope.row.name }}</el-link>
         </template>
@@ -248,7 +248,7 @@ export default {
       this.handleFilter()
     },
     handleCreate() {
-      // 流程定义添加
+      // 流程定义新增
       this.$router.push('/etlscheduler/workflow')
     },
     handleUpdate() {

@@ -815,7 +815,6 @@ export default {
       this.modelDetails.push({ id: 'rel' + this.modelDetailIndex, data: [] })
       this.newRelInfoValue = newChild
       //添加完成之后更改div高度
-      console.log(this.$refs.dragDiv)
       this.$refs.dragDiv.style.height = this.$refs.dragDiv.style.height + 20
     },
     /**
@@ -1041,7 +1040,7 @@ export default {
      */
     getAuditItem(){
       let tree = this.$refs.auditItemTreeRef.getTree()
-      let currentNode = tree.getCurrentNode()
+      let currentNode = tree.getCheckedNodes()[0]
       this.form.auditItemUuid = currentNode.id
       this.form.auditItemName = currentNode.label
       this.auditItemTree = false
@@ -1058,12 +1057,12 @@ export default {
         }
         this.modelTypeObj.push(obj)
         //
-        let obj2= {
-          id: '2',
-          label: '模型设计',
-          type: 'modelDesign'
-        }
-        this.handleNodeClick(obj2)
+        // let obj2= {
+        //   id: '2',
+        //   label: '模型设计',
+        //   type: 'modelDesign'
+        // }
+        // this.handleNodeClick(obj2)
       }
       if(vId == "002003002"){
         this.$message({ type: 'info', message: "暂时不支持图形化模型"})
@@ -1096,7 +1095,6 @@ export default {
       if (modelObj == null) {
         return
       }
-      console.log(modelObj)
       this.editorModelLoading = true
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {

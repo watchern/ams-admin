@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 import { deleteModel } from '@/api/analysis/auditmodel'
 const analysisUrl = '/analysis'
-const dataUrl = '/amsdata'
+const dataUrl = '/data'
 /**
  *
  * @type {boolean}
@@ -103,7 +103,7 @@ var sqlDraftObj
 export function initDragAndDrop() {
   // 实现左右拖拽改变大小
   var container = document.getElementById('container') //整个窗口
-  var pathname = window.location.pathname 
+  var pathname = window.location.pathname
   var img = document.getElementById('iconImg')
   if (pathname.match('page')) {
     img.src = '../../images/ico/maximize.png'
@@ -120,18 +120,16 @@ export function initDragAndDrop() {
   vertical.onmousedown = function(e) {
     var disX = (e || event).clientX
     vertical.left = vertical.offsetLeft
-    console.log(leftPart.offsetWidth)
     document.onmousemove = function(e) {
-      var e = e || window.event; 
+      var e = e || window.event;
       var tarnameb = e.target || e.srcElement
       vertical.style.margin = 0
-      iT = (e || event).clientX 
+      iT = (e || event).clientX
       if(iT < left_min){iT = left_min}
       else if(iT > container.clientWidth*.7){iT = container.clientWidth*.7}
-      vertical.style.left = iT - 134 +'px' 
+      vertical.style.left = iT - 134 +'px'
       leftPart.style.width = iT - 126 - 35 + 'px'
       rightContent.style.width = parseInt(container.clientWidth - iT + 134 -43) + 'px'
-      console.log(container.offsetLeft)
       return false
 
     }
@@ -163,7 +161,7 @@ export function initDragAndDrop() {
 
   //分别显示隐藏三个表
   var tree_shuju = true
-  var tree_canshu = true 
+  var tree_canshu = true
   var tree_sql = true
   $(".unfold-shuju").on("click",function(){
     if(tree_shuju == true){
@@ -580,7 +578,7 @@ export function initTableTree(userId) {
       }
     }
   }
-  const params = { isRightControl: '1', dataUserId: userId }
+  const params = { sceneCode: 'auditor', dataUserId: userId }
   // 调用后台获取数据表数据
   request({
     baseURL: dataUrl,
@@ -596,11 +594,11 @@ export function initTableTree(userId) {
       }
     }
     result.data.push({
-      'id': 'ALL_DATA',
+      'id': 'ROOT',
       'pid': null,
       'name': '所有数据',
       'displayName': '所有数据',
-      'type': 'ALL_DATA',
+      'type': 'ROOT',
       'isParent': true,
       'open': true,
       'level': 0
@@ -608,8 +606,8 @@ export function initTableTree(userId) {
     zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
   })
 }
-//表单最大化 
-var maxormin = true 
+//表单最大化
+var maxormin = true
 export function maxOpenOne() {
   if(maxormin == true){
     $("#drag").hide(100)
@@ -682,7 +680,7 @@ export function initParamTree() {
         var copyParamId = new UUIDGenerator().id
         var id = '{#' + copyParamId + '#}'
         editorObj.replaceRange(id, cursor, cursor)
-        var dom = $("<button class='divEditorBtn' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
+        var dom = $("<button disabled class='divEditorBtn' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
         var endCursor = { ch: cursor.ch + id.length, line: cursor.line, sticky: null }
         editorObj.markText(cursor, endCursor, {
           replacedWith: dom,
@@ -761,7 +759,7 @@ export function initParamTree() {
   })
 }
 
-    
+
 /**
  * 数据表树拖拽事件
  * @param event
@@ -785,7 +783,7 @@ function onDrop(event, treeId, treeNodes) {
  * @returns {AxiosPromise}
  */
 export function initTableTip(userId) {
-  const params = { isRightControl: '1', dataUserId: userId }
+  const params = { sceneCode: 'auditor', dataUserId: userId }
   // 调用后台获取数据表数据
   return request({
     baseURL: dataUrl,
@@ -1477,7 +1475,6 @@ export function getSelectSql(menuId) {
         if (result.data == undefined || result.data == null) {
           return;
         } else {
-          console.log(result.data)
           if (result.data && result.data.length > 0) {
             var columns = [];
             for(var i = 0;i < result.data.length;i++){

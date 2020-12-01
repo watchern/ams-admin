@@ -109,6 +109,9 @@ table th{
 .el-table--group, .el-table--border {
     border: 0px!important;
 }
+.el-table--group::after, .el-table--border::after{
+    width:0px;
+}
 .el-table::before {
     height: 0px!important;
 }
@@ -181,4 +184,26 @@ table th{
 
 .detail-form .el-form-item--medium .el-form-item__content {
     //top: -10px!important;
+}
+.el-table__header{
+    border-top: 2px solid #ededed!important;
+    margin-top: 10px!important;
+}
+
+.el-checkbox__inner{
+    border: 0px!important;
+    background: #BDC3C9!important;
+    width: 16px!important;
+    height: 16px!important;
+}
+.el-checkbox__inner::after {
+    left: 6px!important;
+    top: 3px!important;
+}
+.el-checkbox__input.is-indeterminate .el-checkbox__inner::before {
+    top: 7px!important;
+}
+.el-checkbox__input.is-checked .el-checkbox__inner {
+    background-color: #2a2e37!important;
+    border-color: #2a2e37!important;
 }

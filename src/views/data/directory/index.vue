@@ -1,10 +1,10 @@
 <template>
-  <div class="app-container">
+  <div class="tree-list-container">
     <div class="tree">
-      <dataTree v-if="personcode!==''" ref="dataTree" :data-user-id="personcode" :scene-code="sceneCode" @node-click="nodeclick" />
+      <dataTree ref="dataTree" :data-user-id="personcode" :scene-code="sceneCode" @node-click="nodeclick" />
     </div>
     <div class="divContent">
-      <BaseDirectoryList ref="listData" @append-node="appendnode" @refresh="refresh" />
+      <BaseDirectoryList ref="listData" @append-node="appendnode" @remove="remove" @refresh="refresh" />
     </div>
   </div>
 </template>
@@ -15,19 +15,13 @@ import BaseDirectoryList from '@/views/data/directory/directorylist'
 import { mapState } from 'vuex'
 
 export default {
-  computed: {
-    // 因为时序问题，store中没有personcode时组件可能被加载 导致dataUserId==''  所以要加personcode!=='' 控制
-    // eslint-disable-next-line no-undef
-    ...mapState({
-      personcode: state => state.user.code
-    })
-  },
   // eslint-disable-next-line vue/order-in-components
   components: { dataTree, BaseDirectoryList },
   // eslint-disable-next-line vue/order-in-components
   data() {
     return {
-      sceneCode: 'auditor'
+      sceneCode: 'auditor',
+      personcode: this.$store.state.user.code
     }
   },
   created() {
@@ -38,6 +32,9 @@ export default {
     },
     appendnode(childData, parentNode) {
       this.$refs.dataTree.appendnode(childData, parentNode)
+    },
+    remove(data, parentNode) {
+      this.$refs.dataTree.remove(data, parentNode)
     },
     refresh() {
       this.$refs.dataTree.refresh()

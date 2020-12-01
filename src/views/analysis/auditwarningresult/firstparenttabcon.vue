@@ -476,11 +476,9 @@ export default {
         } else {
           var runTask = { runUserName: query.runUserName };
         }
-        console.log(query.runTaskUuid)
         if(query.runTaskUuid == undefined){
           query.runTaskUuid = '1'
         }
-        console.log(query.runTaskUuid)
         query.model = model;
         query.runTask = runTask;
         this.pageQuery.condition = query;

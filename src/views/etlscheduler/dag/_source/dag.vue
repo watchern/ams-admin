@@ -69,6 +69,7 @@
         </div>
         <div class="save-btn">
           <div
+            v-if="!isDetails"
             class="operation"
             style="vertical-align: middle;"
           >
@@ -121,6 +122,7 @@
           </x-button>
           <!-- icon="ans-icon-save" -->
           <x-button
+            v-if="!isDetails"
             style="vertical-align: middle;"
             type="primary"
             class="btnclass"
@@ -274,7 +276,13 @@ export default {
     _copyName() {
       const clipboard = new Clipboard(`.copy-name`)
       clipboard.on('success', e => {
-        this.$message.success(`复制成功`)
+        this.$notify({
+          title: '提示',
+          message: `复制成功`,
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
         // Free memory
         clipboard.destroy()
       })
@@ -399,7 +407,13 @@ export default {
                * @param saveEditDAGChart => Process definition editing
                */
               this[this.type === 'instance' ? 'updateInstance' : 'updateDefinition'](this.urlParam.id).then(res => {
-                this.$message.success(res.msg)
+                this.$notify({
+                  title: '提示',
+                  message: res.msg,
+                  type: 'success',
+                  duration: 2000,
+                  position: 'bottom-right'
+                })
                 this.spinnerLoading = false
                 this.$router.push('/etlscheduler/processdefinition')
                 resolve()
@@ -419,7 +433,13 @@ export default {
               // }
               // New
               this.saveDAGchart().then(res => {
-                this.$message.success(res.msg)
+                this.$notify({
+                  title: '提示',
+                  message: res.msg,
+                  type: 'success',
+                  duration: 2000,
+                  position: 'bottom-right'
+                })
                 this.spinnerLoading = false
                 if (sourceType !== 'affirm') {
                   this.$router.push('/etlscheduler/processdefinition')
@@ -536,7 +556,13 @@ export default {
       this._getTaskState(false).then(res => {
         setTimeout(() => {
           this.isRefresh = false
-          this.$message.success(`刷新状态成功`)
+          this.$notify({
+            title: '提示',
+            message: `刷新状态成功`,
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         }, 2200)
       })
     },

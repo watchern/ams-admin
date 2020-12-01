@@ -6,7 +6,7 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" class="oper-btn add" title="添加" @click="handleCreate()" />
+        <el-button type="primary" class="oper-btn add" title="新增" @click="handleCreate()" />
         <el-button type="primary" class="oper-btn edit" :disabled="editStatus" title="修改" @click="handleUpdate()" />
         <el-button type="primary" class="oper-btn delete" :disabled="deleteStatus" title="删除" @click="handleDelete()" />
         <el-button type="primary" class="oper-btn start" :disabled="startStatus" title="启用" @click="handleUse()" />
@@ -46,8 +46,6 @@
       <el-table-column type="selection" width="55" />
       <el-table-column
         label="调度任务名称"
-        width="200px"
-        align="center"
         prop="scheduleName"
       >
         <template slot-scope="scope">
@@ -78,10 +76,10 @@
         <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(taskParam,$index) in scope.row.distinctParamList" :key="$index">
-              <label class="col-md-2">
+              <label class="col-md-4">
                 {{ taskParam.name }}:
               </label>
-              <div class="col-md-10">
+              <div class="col-md-8">
                 {{ taskParam.value }}
               </div>
             </el-row>
@@ -151,9 +149,8 @@
         <el-form-item label="任务名称" prop="scheduleName">
           <el-input
             v-model="temp.scheduleName"
-            class="propwidth"
             :disabled="disableUpdate"
-            placeholder="请输入任务名称"
+            :placeholder="disableUpdate === true ? '' : '请输入任务名称'"
           />
         </el-form-item>
         <!-- 查询任务流程 -->
@@ -164,10 +161,9 @@
             :filterable="true"
             :remote="true"
             reserve-keyword
-            placeholder="请选择任务流程"
+            :placeholder="disableUpdate === true ? '' : '请选择任务流程'"
             :remote-method="remoteMethod"
             :loading="loading"
-            class="propwidth"
             @change="changeProcess(temp.processDefinitionId)"
           >
             <el-option
@@ -186,29 +182,28 @@
         >
           <el-input
             v-model="item.value"
-            class="propwidth"
             :disabled="disableUpdate"
             @blur="changeParamValue(item.value, item.name)"
           />
         </el-form-item>
         <el-form-item label="作业周期范围" prop="startTime">
-          <el-col :span="11">
+          <el-col :span="8">
             <el-date-picker
               v-model="temp.startTime"
               :picker-options="startTime"
               type="date"
               prop="startTime"
-              placeholder=""
+              :placeholder="disableUpdate === true ? '' : '请选择开始时间'"
               :disabled="disableUpdate"
             />
           </el-col>
           <el-col class="line" :span="1">-</el-col>
-          <el-col :span="11">
+          <el-col :span="8">
             <el-date-picker
               v-model="temp.endTime"
               :picker-options="endTime"
               type="date"
-              placeholder=""
+              :placeholder="disableUpdate === true ? '' : '请选择结束时间'"
               :disabled="disableUpdate"
             />
           </el-col>
@@ -217,8 +212,7 @@
         <el-form-item label="作业周期" prop="crontab">
           <el-select
             v-model="temp.crontab"
-            placeholder="请选择作业周期"
-            class="propwidth"
+            :placeholder="disableUpdate === true ? '' : '请选择作业周期'"
             :disabled="disableUpdate"
           >
             <el-option
@@ -230,20 +224,21 @@
           </el-select>
         </el-form-item>
         <!-- 添加任务依赖 -->
-        <el-form-item>
+        <!-- temp.dependTaskInfoList!=null && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList -->
+        <el-form-item v-if="dialogStatus === 'create' || (dialogStatus !== 'create' && temp.dependTaskInfoList)">
           <div class="dependence-model">
             <m-list-box>
               <div slot="content">
                 <div>
-                  <a
-                    :style="{
-                      'pointer-events': disableUpdate === true ? 'none' : '',
-                    }"
-                    href="javascript:"
-                    class="add-dep"
-                    @click="!isDetails && _addDep()"
-                  >
-                    <div slot="text">添加依赖
+                  <div slot="text">调度任务依赖
+                    <a
+                      :style="{
+                        'pointer-events': disableUpdate === true ? 'none' : '',
+                      }"
+                      href="javascript:"
+                      class="add-dep"
+                      @click="!isDetails && _addDep()"
+                    >
                       <em
                         v-if="!isLoading"
                         :class="{'oper-btn add': iconDisable}"
@@ -251,8 +246,8 @@
                         :disable="disableAddStatus"
                         title="添加"
                       />
-                    </div>
-                  </a>
+                    </a>
+                  </div>
                 </div>
                 <div class="dep-box">
                   <!-- :style="{
@@ -319,7 +314,7 @@
           v-if="!closeStatus"
           type="primary"
           @click="dialogStatus === 'create' ? createData() : updateData()"
-        >确定</el-button>
+        >保存</el-button>
       </div>
     </el-dialog>
 
@@ -337,7 +332,7 @@
             :filterable="true"
             :remote="true"
             reserve-keyword
-            placeholder="请选择任务流程"
+            :placeholder="disableUpdate === true ? '' : '请选择任务流程'"
             :remote-method="remoteMethod"
             :loading="loading"
             class="propwidth"
@@ -518,8 +513,8 @@ export default {
       dialogStatus: '',
       textMap: {
         update: '编辑调度任务',
-        create: '添加调度任务',
-        show: '查看调度任务详情'
+        create: '新增调度任务',
+        show: '查看调度任务'
       },
       dialogPvVisible: false,
       headers: { 'Content-Type': 'multipart/form-data' },

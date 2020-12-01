@@ -150,8 +150,8 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '数据角色修改',
-        create: '数据角色新增'
+        update: '修改数据角色',
+        create: '新增数据角色'
       },
       dialogPvVisible: false,
       rules: {
@@ -166,6 +166,12 @@ export default {
       allFilters: []
 
     }
+  },
+  computed: {
+    /* ...mapState({
+      personcode: state => state.user.code
+    })*/
+
   },
   created() {
     this.getList()

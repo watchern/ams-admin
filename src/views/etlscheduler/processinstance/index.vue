@@ -251,7 +251,8 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
-import { statusListComm, statuSelect, commandTypeObj, colorList } from './comm.js'
+// statuSelectList, statusComm
+import { commandTypeObj, colorList, statusListComm, statuSelect } from './comm.js'
 
 export default {
   components: { Pagination, QueryField },
@@ -268,9 +269,12 @@ export default {
         { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '流程状态', name: 'status', type: 'select',
-          data: statuSelect,
-          default: '1'
+          data: statuSelect
         },
+        // {
+        //   label: '流程状态', name: 'groupExecutionStatus', type: 'select',
+        //   data: statuSelectList
+        // },
         { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
       ],
       // 格式化参数列表
@@ -435,6 +439,9 @@ export default {
     statusListComm.forEach((r, i) => {
       this.statusObj[r['value']] = r
     })
+    // statusComm.forEach((r, i) => {
+    //   this.statusObj[r['value']] = r
+    // })
     colorList.forEach((r, i) => {
       this.logColorObj[r['value']] = r
     })
@@ -548,7 +555,7 @@ export default {
     handleStop() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
-      execute(ids.join(','), 'TIME_OUT').then(() => {
+      execute(ids.join(','), 'PAUSE').then(() => {
         this.getList()
         this.$notify({
           title: '成功',
@@ -578,7 +585,7 @@ export default {
     handleReStart() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
-      execute(ids.join(','), 'RE_START').then(() => {
+      execute(ids.join(','), 'REPEAT_RUNNING').then(() => {
         this.getList()
         this.$notify({
           title: '成功',
