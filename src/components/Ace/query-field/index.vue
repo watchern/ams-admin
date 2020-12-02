@@ -5,6 +5,7 @@
         <el-input v-if="fd.type==='text'" v-model="query[fd.name]" />
         <el-input v-if="fd.type==='fuzzyText'" v-model="query[fd.name]" placeholder="模糊查询" />
         <el-select v-if="fd.type==='select'" v-model="query[fd.name]">
+          <el-option label="全部" value="" />
           <el-option v-for="opt in fd.data" :label="opt.name" :value="opt.value" />
         </el-select>
         <template v-if="fd.type==='timePeriod'">
