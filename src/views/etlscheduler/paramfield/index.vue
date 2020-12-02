@@ -281,7 +281,6 @@ export default {
         create: '新增参数',
         show: '查看参数'
       },
-      dialogPvVisible: false,
       // 新增的表单验证
       rules: {
         paramName: [{ required: true, message: '请填写参数名', trigger: 'change' }],

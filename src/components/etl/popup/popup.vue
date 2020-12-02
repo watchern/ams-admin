@@ -70,17 +70,12 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
-.btnclass{
+.btnclass ,.btnclass:hover{
   background: #353a43;
-  border-color: #353a43;
+  border-color: hsl(219, 12%, 24%);
   font-weight: bold;
-  margin-right: 10px;
-}
-.btnclass:hover{
-  background: #353a43;
-  border-color: #353a43;
   color: #c8ff8c;
-  font-weight: bold;
+  margin-right: 10px;
 }
 .ans-btn-text:hover {
 	color: #252d39;

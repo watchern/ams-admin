@@ -233,6 +233,24 @@
       :visible.sync="logDialogFromVisible"
       :close-on-click-modal="false"
     >
+      <el-card style="padding-bottom: 3%;margin-top:10px">
+        <!-- <el-col class="logtype">
+          日志详情：
+        </el-col> -->
+        <el-col
+          v-if="prepLogs!=null"
+          style="margin-top:10px"
+        >
+          <el-col
+            v-for="(log,$index) in prepLogs"
+            :key="$index"
+            :label="log.taskLogUuid"
+            :style="{color: logColorObj[log.status].color}"
+          >
+            {{ log.logTime +' '+ log.logMessage }}
+          </el-col>
+        </el-col>
+      </el-card>
       <el-timeline style="margin-left:7%;margin-top:7%">
         <!-- 使用时间线任务实例的环节和运行的状态 -->
         <!-- 已运行的环节，改变颜色和图标 -->
@@ -274,7 +292,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
+import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findPrepLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
 // statuSelectList, statusComm
 import { commandTypeObj, colorList, statusListComm, statuSelect } from './comm.js'
@@ -386,7 +404,8 @@ export default {
       logs: null,
       taskslogsList: null,
       schedule: null,
-      nowTask: null
+      nowTask: null,
+      prepLogs: null
     }
   },
   watch: {
@@ -519,6 +538,10 @@ export default {
       // 获取任务日志
       findTaskLogs(data.processInstanceUuid).then(resp => {
         this.logs = resp.data
+      })
+      // 获取非环节执行任务日志
+      findPrepLogs(data.processInstanceUuid).then(resp => {
+        this.prepLogs = resp.data
       })
       // 获取调度实例已运行的环节
       findTaskInstanceById(data.processInstanceUuid).then(resp => {
