@@ -4,7 +4,7 @@
       <x-select
         v-model="datasource"
         placeholder="请选择数据源"
-        style="width: 500px;"
+        class="propwidth"
         :disabled="isDetails"
       >
         <x-option
@@ -116,3 +116,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.propwidth{
+  width:500px
+}
+</style>

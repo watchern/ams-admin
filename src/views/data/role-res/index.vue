@@ -153,13 +153,12 @@
         </el-form>
       </el-col>
     </el-row>
-    <div class="bottom-btn">
-      <el-button @click="save">保存</el-button>
+    <div slot="footer">
       <el-button @click="goBack">返回</el-button>
+      <el-button type="primary" @click="save">保存</el-button>
     </div>
   </div>
 </template>
-
 <script>
 import MyElTree from '@/components/Ace/tree/src/tree.vue'
 import { getResELTree, getResByRole, getRoleCols, saveRoleTable, getAccessType } from '@/api/data/table-info'

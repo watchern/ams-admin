@@ -90,8 +90,8 @@
         </el-form>
       </template>
       <div slot="footer">
-        <el-button @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
-        <el-button @click="dialogFormVisible = false">关闭</el-button>
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
       </div>
     </el-dialog>
 

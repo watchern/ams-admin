@@ -45,7 +45,7 @@
                 queryFields: [
                     { label: '图形名称', name: 'graphName', type: 'fuzzyText', value: '' },
                     { label: '执行状态', name: 'executeStatus', type: 'select', default: '-1',
-                        data: [{ name: '请选择', value: -1 }, { name: '全部执行', value: 1 }, { name: '部分执行', value: 2 }, { name: '未执行', value: 3 }] }
+                        data: [{ name: '全部执行', value: 1 }, { name: '部分执行', value: 2 }, { name: '未执行', value: 3 }] }
                 ],
                 pageQuery: {
                     condition: null,
