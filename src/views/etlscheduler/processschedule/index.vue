@@ -32,6 +32,7 @@
         </span>
       </el-col>
     </el-row>
+    <div class="etl-pro-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -128,6 +129,7 @@
       />
       <el-table-column label="修改时间" align="center" prop="updateTime" />
     </el-table>
+    </div>
     <pagination
       v-show="total > 0"
       :total="total"
@@ -1236,5 +1238,10 @@ export default {
     // position: relative;
     // left: 460px;
     // bottom: 115px;
+  }
+
+  .etl-pro-list{
+    height: 71.5%;
+    overflow: auto;
   }
 </style>
