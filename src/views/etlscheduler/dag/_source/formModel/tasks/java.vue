@@ -368,7 +368,7 @@ export default {
     // _getReceiver() {
     // const param = {}
     // const current = this.router.history.current
-    // if (current.name === 'projects-definition-details') {
+    // if (current.name === 'projectsdefinitiondetails') {
     // param.processDefinitionId = current.params.id
     // } else {
     // param.processInstanceId = current.params.id\

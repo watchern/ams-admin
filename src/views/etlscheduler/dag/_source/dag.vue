@@ -151,8 +151,10 @@
         </div>
       </div>
     </div>
+
+    <m-udp :dialog-form-visible="dialogFormVisible" @onUdp="onUdp" @onClose="onClose" />
   </div>
-</template>
+</template>d
 <script>
 import _ from 'lodash'
 import dag0 from './dag'
@@ -172,6 +174,9 @@ let eventModel
 
 export default {
   name: 'DagChart',
+  components: {
+    mUdp
+  },
   mixins: [disabledState],
   props: {
     type: String,
@@ -179,6 +184,8 @@ export default {
   },
   data() {
     return {
+      flag: false,
+      dialogFormVisible: false,
       tasksTypeList: tasksType,
       toolOperList: toolOper(this),
       dagBarId: null,
@@ -421,12 +428,12 @@ export default {
                 })
                 this.spinnerLoading = false
                 this.$router.push('/etlscheduler/processdefinition')
-                resolve()
+                // resolve()
               }).catch(e => {
                 this.$message.error(e.msg || '')
                 this.spinnerLoading = false
+                // this.$router.push('/etlscheduler/processdefinition')
                 reject(e)
-                this.$router.push('/etlscheduler/processdefinition')
               })
             } else {
               // if (sourceType === 'else') {
@@ -446,10 +453,10 @@ export default {
                   position: 'bottom-right'
                 })
                 this.spinnerLoading = false
-                if (sourceType !== 'affirm') {
-                  this.$router.push('/etlscheduler/processdefinition')
-                }
-                resolve()
+                // if (sourceType !== 'affirm') {
+                this.$router.push('/etlscheduler/processdefinition')
+                // }
+                // resolve()
               }).catch(e => {
                 // this.$message.error(e.msg || '')
                 this.setName('')
@@ -480,33 +487,12 @@ export default {
       }
       return true
     },
-    /**
-     * Global parameter
-     * @param Promise
-     */
-    _udpTopFloorPop() {
-      return new Promise((resolve, reject) => {
-        const modal = this.$modal.dialog({
-          closable: false,
-          showMask: true,
-          escClose: true,
-          className: 'v-modal-custom',
-          transitionName: 'opacityp',
-          render(h) {
-            return h(mUdp, {
-              on: {
-                onUdp() {
-                  modal.remove()
-                  resolve()
-                },
-                close() {
-                  modal.remove()
-                }
-              }
-            })
-          }
-        })
-      })
+    onUdp() {
+      this.dialogFormVisible = false
+      this._save()
+    },
+    onClose() {
+      this.dialogFormVisible = false
     },
     /**
      * Save chart
@@ -518,10 +504,7 @@ export default {
         return
       }
 
-      // Global parameters (optional)
-      this._udpTopFloorPop().then(() => {
-        return this._save()
-      })
+      this.dialogFormVisible = true
     },
     /**
      * Return to the previous child node
@@ -761,25 +744,18 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   computed: {
     ...mapState('dag', ['tasks', 'locations', 'connects', 'isEditDag', 'name'])
-  },
-  // eslint-disable-next-line vue/order-in-components
-  components: {}
+  }
 }
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
 @import "./dag";
-.btnclass{
+.btnclass ,.btnclass:hover{
   background: #353a43;
-  border-color: #353a43;
+  border-color: hsl(219, 12%, 24%);
   font-weight: bold;
-  margin-right: 10px;
-}
-.btnclass:hover{
-  background: #353a43;
-  border-color: #353a43;
   color: #c8ff8c;
-  font-weight: bold;
+  margin-right: 10px;
 }
 .dag-model .dag-contect .dag-toolbar .ans-btn-text {
 	color: #252d39;

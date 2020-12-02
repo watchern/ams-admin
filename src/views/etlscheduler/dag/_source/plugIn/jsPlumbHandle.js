@@ -269,7 +269,7 @@ JSP.prototype.tasksContextmenu = function (event) {
   if (this.config.isContextmenu) {
     const routerName = router.history.current.name
     // state
-    const isOne = routerName === 'projects-definition-details' && this.dag.releaseState !== 'NOT_RELEASE'
+    const isOne = routerName === 'projectsdefinitiondetails' && this.dag.releaseState !== 'NOT_RELEASE'
     // hide
     const isTwo = store.state.dag.isDetails
 

@@ -744,17 +744,12 @@ export default {
 .propwidth{
   width:500px
 }
-.btnclass{
+.btnclass ,.btnclass:hover{
   background: #353a43;
   border-color: #353a43;
   font-weight: bold;
-  margin-right: 10px;
-}
-.btnclass:hover{
-  background: #353a43;
-  border-color: #353a43;
   color: #c8ff8c;
-  font-weight: bold;
+  margin-right: 10px;
 }
 .ans-btn-primary[disabled],.ans-btn-primary[disabled]:hover {
 	color: #fff;

@@ -114,7 +114,7 @@ const etlschedulerRouter = {
     {
     // 传递状态为1为查看，0为编辑
       path: 'definition/:id/:status',
-      name: 'projects-definition-details',
+      name: 'projectsdefinitiondetails',
       component: resolve => require(['@/views/etlscheduler/workflow/details/index'], resolve),
       meta: { title: `流程定义详情` }
     },
