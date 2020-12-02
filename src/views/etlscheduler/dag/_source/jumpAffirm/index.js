@@ -24,7 +24,6 @@ let $isPop = true
  * Listen for route changes
  */
 router.beforeEach((to, from, next) => {
-  console.log(from)
   // if (from.name === 'projectsdefinitiondetails' || from.name === 'projects-instance-details' || from.name === 'processinstance') {
   if (from.name === 'projectsdefinitiondetails' || from.name === 'projects-instance-details' || from.name === 'workflow') {
     if (!Affirm.paramVerification(from.name)) {
