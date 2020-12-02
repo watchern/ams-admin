@@ -62,6 +62,7 @@
 <script>
 import _ from 'lodash'
 import disabledState from '@/components/etl/mixin/disabledState'
+import Affirm from '../jumpAffirm'
 export default {
   name: 'Udp',
   mixins: [disabledState],
@@ -123,7 +124,7 @@ export default {
       const _verif = () => {
         this.dialogFormVisible = false
         this._accuStore()
-        // Affirm.setIsPop(false)
+        Affirm.setIsPop(false)
         this.$emit('onUdp')
       }
 
