@@ -8,8 +8,12 @@ import {
   uuid,
   findComponentDownward
 } from '@/components/etl/util/'
-import { last } from 'lodash'
-import { error } from 'jquery'
+import {
+  last
+} from 'lodash'
+import {
+  error
+} from 'jquery'
 
 const Affirm = {}
 let $root = {}
@@ -20,8 +24,9 @@ let $isPop = true
  * Listen for route changes
  */
 router.beforeEach((to, from, next) => {
-  // if (from.name === 'projects-definition-details' || from.name === 'projects-instance-details' || from.name === 'processinstance') {
-  if (from.name === 'projects-definition-details' || from.name === 'projects-instance-details' || from.name === 'workflow') {
+  console.log(from)
+  // if (from.name === 'projectsdefinitiondetails' || from.name === 'projects-instance-details' || from.name === 'processinstance') {
+  if (from.name === 'projectsdefinitiondetails' || from.name === 'projects-instance-details' || from.name === 'workflow') {
     if (!Affirm.paramVerification(from.name)) {
       Affirm.isPop(() => {
         next()
@@ -52,7 +57,7 @@ Affirm.paramVerification = (name) => {
   }
   const dagStore = store.state.dag
   let flag = false
-  if ($routerType === 'processdefinition') {
+  if ($routerType === 'workflow') {
     // No nodes jump out directly
     if (dagStore.tasks.length) {
       if (!dagStore.name) {
