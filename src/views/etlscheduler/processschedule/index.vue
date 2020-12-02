@@ -32,6 +32,7 @@
         </span>
       </el-col>
     </el-row>
+    <div class="etl-pro-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -128,6 +129,7 @@
       />
       <el-table-column label="修改时间" align="center" prop="updateTime" />
     </el-table>
+    </div>
     <pagination
       v-show="total > 0"
       :total="total"
@@ -149,6 +151,7 @@
         :model="temp"
         class="detail-form"
         label-position="right"
+        style="height:62vh; overflow:auto;"
       >
         <el-form-item label="任务名称" prop="scheduleName">
           <el-input
@@ -230,12 +233,15 @@
         <!-- 添加任务依赖 -->
         <!-- temp.dependTaskInfoList!=null && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList -->
         <!-- <el-form-item v-if="dialogStatus === 'create' || dialogStatus === 'update' || (dialogStatus === 'show' && temp.dependTaskInfoList && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList )"> -->
-        <el-form-item v-if="dialogStatus !== 'show' || (temp.dependTaskInfoList && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList )">
+        <el-form-item
+          v-if="dialogStatus !== 'show' || (temp.dependTaskInfoList && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList )"
+        >
           <div class="dependence-model">
             <m-list-box>
               <div slot="content">
                 <div>
-                  <div slot="text">调度任务依赖
+                  <div slot="text">
+                    <span class="el-form-item__label">调度任务依赖&nbsp;</span>
                     <a
                       :style="{
                         'pointer-events': disableUpdate === true ? 'none' : '',
@@ -1233,5 +1239,10 @@ export default {
     // position: relative;
     // left: 460px;
     // bottom: 115px;
+  }
+
+  .etl-pro-list{
+    height: 71.5%;
+    overflow: auto;
   }
 </style>
