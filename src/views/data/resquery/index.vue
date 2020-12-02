@@ -16,7 +16,7 @@ export default {
     return {
       sceneCode: 'auditor',
       personCode: this.$store.state.user.code,
-      treeType: 'save' // common:正常的权限树   save:用于保存数据的文件夹树
+      treeType: 'common' // common:正常的权限树   save:用于保存数据的文件夹树
     }
   },
   created() {
