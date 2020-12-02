@@ -233,10 +233,10 @@
       :visible.sync="logDialogFromVisible"
       :close-on-click-modal="false"
     >
-      <el-card style="padding-bottom: 3%;margin-top:10px">
-        <!-- <el-col class="logtype">
+      <!-- <el-card style="padding-bottom: 3%;margin-top:10px">
+        <el-col class="logtype">
           日志详情：
-        </el-col> -->
+        </el-col>
         <el-col
           v-if="prepLogs!=null"
           style="margin-top:10px"
@@ -250,7 +250,7 @@
             {{ log.logTime +' '+ log.logMessage }}
           </el-col>
         </el-col>
-      </el-card>
+      </el-card> -->
       <el-timeline style="margin-left:7%;margin-top:7%">
         <!-- 使用时间线任务实例的环节和运行的状态 -->
         <!-- 已运行的环节，改变颜色和图标 -->
@@ -540,9 +540,9 @@ export default {
         this.logs = resp.data
       })
       // 获取非环节执行任务日志
-      findPrepLogs(data.processInstanceUuid).then(resp => {
-        this.prepLogs = resp.data
-      })
+      // findPrepLogs(data.processInstanceUuid).then(resp => {
+      //   this.prepLogs = resp.data
+      // })
       // 获取调度实例已运行的环节
       findTaskInstanceById(data.processInstanceUuid).then(resp => {
         this.taskslogsList = resp.data
