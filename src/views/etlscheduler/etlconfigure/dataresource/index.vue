@@ -14,7 +14,7 @@
         <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" title="删除" @click="handleDelete()" />
       </el-col>
     </el-row>
-   
+
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -26,8 +26,8 @@
       style="width: 100%;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
-      height="calc(100vh - 300px)"
-      max-height="calc(100vh - 300px)"
+      height="calc(100vh - 320px)"
+      max-height="calc(100vh - 320px)"
     >
       <el-table-column
         type="selection"
