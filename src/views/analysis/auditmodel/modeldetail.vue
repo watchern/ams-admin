@@ -346,6 +346,7 @@ export default {
           return
         }
         this.relTableColumn = result.data
+        console.log(this.relTableColumn)
         this.$refs.relTableDiv.style.display = 'block'
         this.setQueryBuilderColumn()
       })
@@ -436,7 +437,12 @@ export default {
       for (let i = 0; i < this.relTableColumn.length; i++) {
         const obj = {}
         obj.columnType = this.relTableColumn[i].dataType
-        obj.columnName = this.relTableColumn[i].chnName
+        if(this.relTableColumn[i].chnName == null || this.relTableColumn[i].chnName === ""){
+          obj.columnName = this.relTableColumn[i].colName
+        }
+        else{
+          obj.columnName = this.relTableColumn[i].chnName
+        }
         queryRules.push(obj)
       }
       this.queryRules.columnList = queryRules

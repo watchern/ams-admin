@@ -93,12 +93,12 @@ const etlschedulerRouter = {
       component: () => import('@/views/etlscheduler/taskinstance/index'),
       meta: { title: 'taskinstance' }
     },
-    {
+/*    {
       path: 'statistics',
       name: 'statistics',
       component: () => import('@/views/etlscheduler/statistics/index'),
       meta: { title: 'statistics' }
-    },
+    },*/
     {
       path: 'resourcestatistics',
       name: 'resourcestatistics',
@@ -191,7 +191,7 @@ const etlschedulerRouter = {
       meta: {
         title: `文件编辑`
       }
-    },
+    }/*,
     {
       path: 'datafilestatisticslist',
       name: 'datafilestatisticslist',
@@ -203,7 +203,7 @@ const etlschedulerRouter = {
       name: 'datafilestatistics',
       component: () => import('@/views/etlscheduler/statistics/datafilestatistics/index'),
       meta: { title: 'datafilestatistics' }
-    }
+    }*/
   ]
 }
 
