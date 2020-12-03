@@ -17,6 +17,7 @@
         <el-button type="primary" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="handleDelete()" />
       </el-col>
     </el-row>
+    <div class="etl-filedirectory-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -74,6 +75,7 @@
         prop="createUserName"
       />
     </el-table>
+    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -327,3 +329,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+   .etl-filedirectory-list{
+    height: 71.5%;
+    overflow: auto;
+  }
+</style>

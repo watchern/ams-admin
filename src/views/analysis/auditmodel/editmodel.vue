@@ -3,8 +3,8 @@
     <el-container class="el-container">
       <div id="drag" ref="dragDiv" class="drag">
         <div class="title">
-          <h2>导航栏</h2>
-          <div style="display: none">
+          <h2>···</h2>
+          <div style="display:none">
             <a class="min" href="javascript:" title="最小化"></a>
             <a class="max" href="javascript:" title="最大化"></a>
             <a class="revert" href="javascript:" title="还原"></a>
@@ -24,7 +24,7 @@
             <el-tree class="el-tree-rewrite" ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
               <span slot-scope="{ node, data }" class="custom-tree-node">
                 <span>
-                  <i />{{ node.label }}
+                  {{ node.label }}
                 </span>
                 <span v-if="data.type=='relInfo'">
                   <el-button type="text" title="添加关联详细" size="mini" @click.stop="() => createDetail(node,data)"><i class="el-icon-circle-plus-outline"/></el-button>
@@ -36,7 +36,16 @@
                   <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-delete"/></el-button>
                 </span>
               </span>
+              
             </el-tree>
+              <div class="custom-tree-caidan">
+                <img class="custom-save" :src="imgCus2" @click="save"/>
+                <img class="custom-close" :src="imgCus1" @click="closeWinfrom" /> 
+              </div>
+              <div class="custom-tree-shangla">
+                <img class="custom-shouqi"  :src="imgCus3" @click="customup"/>
+                <img class="custom-xiala" :src="imgCus3" @click="customdown" />
+              </div>
           </el-aside>
         </div>
       </div>
@@ -180,7 +189,7 @@
         </div>
       </div>
       <div ref="relInfo" class="display default-value">
-        <p>在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
+        <p class="words">在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
           用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。
           通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。</p>
         <!--<el-button @click="createDetail">新建</el-button>-->
@@ -194,9 +203,9 @@
         这是图表配置
       </div>
       <div ref="modelFilterShowParent" class="display default-value">
-        <p>条件显示能够根据用户所设定的条件及显示样式，对模型执行结果中满足条件的敏感数据或重要数据进行着色显示，使这些数据变的一目了然，
+        <p class="words">条件显示能够根据用户所设定的条件及显示样式，对模型执行结果中满足条件的敏感数据或重要数据进行着色显示，使这些数据变的一目了然，
           以便审计人员对这些数据进行审计。</p>
-        <p>条件显示设计器以表格的形式列举所有由用户设定的、将被应用于模型执行结果的显示条件及显示样式，用户可通过该列表对各个条件的属性进行快速查看。
+        <p class="words">条件显示设计器以表格的形式列举所有由用户设定的、将被应用于模型执行结果的显示条件及显示样式，用户可通过该列表对各个条件的属性进行快速查看。
           同时用户也可以对显示条件进行添加、修改、删除</p>
         <!--<el-button @click="createFilterShow">新建</el-button>-->
       </div>
@@ -220,10 +229,10 @@
         <el-button @click="modelFolderTreeDialog=false">取消</el-button>
       </div>
     </el-dialog>
-    <div ref="btnDivRef" class="div-btn" v-show="isShowBtn">
+    <!-- <div ref="btnDivRef" class="div-btn" v-show="isShowBtn">
       <el-button type="primary" @click="save">保存</el-button>
       <el-button @click="closeWinfrom">取消</el-button>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -238,6 +247,7 @@ import { getDictList } from '@/utils/index'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import SelectTransCode from '@/views/data/table/transcodeselect'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
+// import func from 'vue-temp/vue-editor-bridge'
 export default {
   name: 'EditModel',
   components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode },
@@ -257,28 +267,28 @@ export default {
         },
         {
           id: '3',
-          label: '参数默认值',
+          label: '模型参数',
           type: 'paramDefaultValue'
         },
         {
           id: '4',
-          label: '模型结果输出列',
+          label: '模型结果',
           type: 'modelResultOutputCol'
         },
         {
           id: '5',
-          label: '关联详细',
+          label: '模型详细',
           type: 'relInfo',
           children: []
         },
         {
           id: '6',
-          label: '图表配置',
+          label: '模型图表',
           type: 'chartConfig'
         },
         {
           id: '7',
-          label: '条件展示',
+          label: '模型条件',
           type: 'filterShow',
           children: []
         }
@@ -367,7 +377,11 @@ export default {
         ]
       },
       modelDesignRules: {
-        sqlValue: [{ type: 'string', required: true, message: '请选择输入模型SQL', trigger: 'blur' }] }
+        sqlValue: [{ type: 'string', required: true, message: '请选择输入模型SQL', trigger: 'blur' }] 
+      },
+      imgCus1:require("@/views/analysis/auditmodel/imgs/close.png"),
+      imgCus2:require("@/views/analysis/auditmodel/imgs/save.png"),
+      imgCus3:require("@/views/analysis/auditmodel/imgs/opentop.png")
     }
   },
   watch: {
@@ -1276,13 +1290,33 @@ export default {
     },
     byTagName: function(elem, obj) {
       return (obj || document).getElementsByTagName(elem)
+    },
+    customclose: function(){
+      var oDrag = document.getElementById('drag')
+      oDrag.style.display = 'none'
+    },
+    customup:function(){
+      var oSpan = document.getElementsByClassName('el-tree')[0]
+      var oDown = document.getElementsByClassName('custom-xiala')[0]
+      var oUp = document.getElementsByClassName('custom-shouqi')[0]
+      oSpan.style.display = 'none'
+      oUp.style.display = 'none'
+      oDown.style.display = 'inline-block'
+    },
+    customdown:function(){
+      var oSpan = document.getElementsByClassName('el-tree')[0]
+      var oDown = document.getElementsByClassName('custom-xiala')[0]
+      var oUp = document.getElementsByClassName('custom-shouqi')[0]
+      oSpan.style.display = 'block'
+      oUp.style.display = 'inline-block'
+      oDown.style.display = 'none'
     }
   }
 }
 </script>
 <style scoped>
 .sql-editor{
-  height: 680px;
+  height: 842px;
   /* overflow-y:scroll */
 }
 
@@ -1324,23 +1358,23 @@ export default {
   z-index: 1000;
   top: 40px;
   left: 85%;
-  width: 200px;
+  width: 127px;
   background: #FFFFFF;
   border-radius: 5px;
-  box-shadow: 0px 3px 8px 7px #d4d4d4;
+  box-shadow: 0px 3px 8px 7px #00000015;
 }
 
 #drag .title {
   position: relative;
-  height: 27px;
-  margin: 5px;
+  height: 12px;
 }
 
 #drag .title h2 {
-  font-size: 14px;
-  height: 27px;
-  line-height: 24px;
-  border-bottom: 1px solid #A1B4B0;
+  font-size: 24px;
+  height: 12px;
+  line-height: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: center;
 }
 
 #drag .title div {
@@ -1357,9 +1391,71 @@ export default {
   display: block;
   margin-left: 5px;
 }
+ 
 
 .el-tree-rewrite{
   background: #fff;
-  width: 200px;
+  width: 127px;
+}
+
+.custom-tree-node{
+  position: relative;
+  left: 14px;
+  font-size: 13px;
+  color: #353A43;
+}
+
+.custom-tree-caidan{
+  border-top: 1px solid #f0f0f0;
+  width: 127px;
+  margin-top: 5px;
+  padding-left: 19px;
+}
+
+.custom-tree-caidan img{
+  width: 20px;
+  height: 20px;
+  margin-left: 15px;
+  margin-top: 10px;
+}
+.custom-tree-shangla{
+  border-top: 1px solid #f0f0f0;
+  margin-top: 5px;
+  width: 127px;
+  height: 10px;
+  text-align: center;
+}
+.custom-tree-shangla img{
+  position: relative;
+  top: -6px;
+}
+.custom-xiala{
+  transform: rotate(180deg);
+  display: none;
+}
+
+#drag .custom-tree-node span:first-child{
+  width:56px;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  overflow:hidden;
+  display: inline-block;
+}
+
+#drag span{
+  float: left;
+}
+
+.words{
+  width: 1000px;
+  /* height: 200px; */
+  margin: 50px 0 0 50px;
+  box-shadow: 0 0 9px 5px rgba(0,0,0,.15);
+  border-radius: 8px;
+  font-size: 20px;
+  color: #70747a;
+  text-align: justify;
+  line-height: 36px;
+  padding: 10px;
 }
 </style>

@@ -29,6 +29,7 @@
         <el-button type="primary" class="oper-btn excel" title="导出" @click="exportFile" />
       </el-col>
     </el-row>
+    <div class="etl-resourcestatistics-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -63,6 +64,7 @@
         </template> -->
       <!-- </el-table-column> -->
     </el-table>
+    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -250,5 +252,9 @@ export default {
   /* color: #343942; */
   letter-spacing: 0;
   line-height: 12px;
+ }
+ .etl-resourcestatistics-list{
+    height: 71.5%;
+    overflow: auto;
  }
 </style>
