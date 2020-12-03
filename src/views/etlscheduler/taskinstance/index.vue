@@ -17,7 +17,8 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -122,6 +123,7 @@
     <!-- 显示任务日志的dialog -->
     <el-dialog
       :visible.sync="logDialogFromVisible"
+      :close-on-click-modal="false"
     >
       <el-col class="logtype">
         {{ task!=null ? task.name : null }}

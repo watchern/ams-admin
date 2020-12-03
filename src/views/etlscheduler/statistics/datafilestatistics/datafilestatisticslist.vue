@@ -5,6 +5,7 @@
       <el-col v-if="startTimeStart!=null && startTimeEnd != null" :span="12">作业时间范围{{ startTimeStart | formatDate }} 到  {{ startTimeEnd | formatDate }}</el-col>
       <el-col :span="12">业务系统: {{ titleMsg.sysName }}</el-col>
     </el-row>
+
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -17,6 +18,7 @@
       max-height="800"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
+      
     >
       <el-table-column
         label="文件名称"
@@ -50,7 +52,8 @@
         :limit.sync="pageQuery.pageSize"
         @pagination="getList"
       />
-    </el-table></div>
+    </el-table>
+    </div>
 </template>
 
 <script>

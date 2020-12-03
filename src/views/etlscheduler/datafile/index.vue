@@ -7,6 +7,7 @@
         @submit="getList"
       />
     </div>
+    
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -62,6 +63,7 @@
         :formatter="formatStatus"
       />
     </el-table>
+  
     <pagination
       v-show="total>0"
       :total="total"

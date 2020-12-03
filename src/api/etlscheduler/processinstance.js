@@ -83,6 +83,15 @@ export function findTaskLogs(id) {
   })
 }
 
+// 根据流程实例查询非任务环节日志
+export function findPrepLogs(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/processInstance/findPreLogs/${id}`,
+    method: 'get'
+  })
+}
+
 // 查询任务实例
 export function findTaskInstanceById(id) {
   return request({

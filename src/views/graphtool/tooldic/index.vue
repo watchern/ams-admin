@@ -365,6 +365,7 @@
                 openType_graph:2,// 默认打开的当前图形的数据源环境是权限环境
                 createUserId:'',// 当前图形的创建人ID（只使用于验证普通图形）
                 loginUserUuid:'',// 当前登录人UUID
+                loginUserCode:'',//当前登录人ID
                 canEditor: true,// 当前图形化是否可编辑
                 hasManagerRole: false,// 是否觉有管理员权限（只在开发环境下会用到，用以对左侧资源树的表进行分类）
                 graphUuid:getParams().graphUuid,// 打开图形的ID
@@ -412,8 +413,11 @@
         methods: {
             init() {
                 // console.log(this.$store.state.user)
+                // console.log(this.$store.state.user.id)
                 // this.loginUserUuid = Cookies.get("personuuid")
-                this.loginUserUuid = this.$store.state.user.id
+                // this.loginUserUuid = this.$store.state.user.id
+                this.loginUserCode = 'csi'
+                this.loginUserUuid = '2c948a86757909950175790b10b60002'
                 // console.log(this.loginUserUuid)
                 let roleArr = this.$store.state.user.roles
                 let screenManager = 'screenManager'// 场景查询管理员角色
@@ -665,7 +669,7 @@
                             }
                         }, 'json')
                     } else {						// 业务权限环境
-                        initTableTip(obj.loginUserUuid).then(response => {
+                        initTableTip(obj.loginUserCode).then(response => {
                             if (response.data == null) {
                                 obj.loading.destroy()
                                 this.$message.error('资源树列表加载出错')
@@ -726,8 +730,11 @@
                                 if($this.executeNodeIdArr[k] === cueNodeId){
                                     let nextNodeId = $this.executeNodeIdArr[k+1]
                                     if(typeof nextNodeId !== "undefined"){
-                                        graph.nodeData[nextNodeId].nodeInfo.nodeExcuteStatus = 3
-                                        break
+                                        let optType = graph.nodeData[nextNodeId].nodeInfo.optType
+                                        if(optType === 'newNullNode'){
+                                            graph.nodeData[nextNodeId].nodeInfo.nodeExcuteStatus = 3
+                                            break
+                                        }
                                     }
                                 }
                             }
@@ -753,10 +760,22 @@
                                 let nodeName = executeSQLObj.name
                                 let resultTableName = nodeInfo.resultTableName
                                 $this.resultTableArr.push({nodeId,nodeName,resultTableName})
+                                for(let k=0; k<$this.executeNodeIdArr.length; k++){//找出当前节点的下一个节点即结果表节点
+                                    if($this.executeNodeIdArr[k] === cueNodeId){
+                                        let nextNodeId = $this.executeNodeIdArr[k+1]
+                                        if(typeof nextNodeId !== "undefined"){
+                                            let optType = graph.nodeData[nextNodeId].nodeInfo.optType
+                                            if(optType === 'newNullNode'){
+                                                nodeName = nodeName + "_" + graph.nodeData[nextNodeId].nodeInfo.nodeName
+                                                break
+                                            }
+                                        }
+                                    }
+                                }
                                 $this.preValue.push({id:nodeId,name:nodeName})
                             }
                         }
-                        console.log($this.resultTableArr)
+                        // console.log($this.resultTableArr)
                         if(isEnd && executeSQLObj.state === "2"){
                             // 记录执行操作
                             indexJs.refrashHistoryZtree('【' + executeSQLObj.name + '】节点执行完毕')
@@ -972,6 +991,13 @@
                         indexJs.exportGraphBack(returnObj);
                     }
                 }
+            },
+            /**
+             * 接口：获取中间、最终结果表的输出列信息
+             */
+            getResultColumnInfo(){
+                // console.log(indexJs.getResultColumnInfo())
+                return indexJs.getResultColumnInfo()
             }
         }
     }

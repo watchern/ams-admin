@@ -23,6 +23,8 @@
       fit
       highlight-current-row
       style="width: 100%;"
+      height="calc(100vh - 320px)"
+      max-height="calc(100vh - 320px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -67,6 +69,7 @@
     <el-dialog
       :title="textMap[dialogStatus]"
       :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
     >
       <el-form
         ref="dataForm"
@@ -261,6 +264,7 @@ export default {
           update(tempData).then(() => {
             const index = this.list.findIndex(v => v.dataResourceUuid === this.temp.dataResourceUuid)
             this.list.splice(index, 1, this.temp)
+            this.getList()
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',

@@ -10,6 +10,10 @@ import {
   update,
   findClassesByPackage
 } from '@/api/etlscheduler/processdefinition'
+import {
+  resourcesList,
+  resourceId
+} from '@/api/etlscheduler/resources'
 
 export default {
 
@@ -413,20 +417,18 @@ export default {
     state
   }) {
     return new Promise((resolve, reject) => {
-      if (state.resourcesListS.length) {
-        resolve()
-        return
-      }
-      state.resourcesListS = {}
-      resolve({})
-      // io.get('resources/list', {
-      //   type: 'FILE'
-      // }, res => {
-      //   state.resourcesListS = res.data
-      //   resolve(res.data)
-      // }).catch(res => {
-      //   reject(res)
-      // })
+      // if (state.resourcesListS.length) {
+      //   resolve()
+      //   return
+      // }
+      resourcesList({
+        type: '0'
+      }).then(res => {
+        state.resourcesListS = res.data
+        resolve(res.data)
+      }).catch(res => {
+        reject(res)
+      })
     })
   },
   /**
@@ -900,10 +902,10 @@ export default {
     state
   }, payload) {
     return new Promise((resolve, reject) => {
-      io.get('resources/queryResource', payload, res => {
+      resourceId({ payload }).then(res => {
         resolve(res.data)
-      }).catch(e => {
-        reject(e)
+      }).catch(res => {
+        reject(res)
       })
     })
   }

@@ -9,7 +9,8 @@
       />
     </div>
     <el-row>
-      <el-col align="right"> <!-- 跳过指定环节 -->
+      <el-col align="right">
+        <!-- 跳过指定环节 -->
         <el-button
           type="primary"
           title="跳过指定环节"
@@ -60,7 +61,8 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -82,7 +84,7 @@
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色-->
                   <i
-                    :class=" statusObj[scope.row.status].unicode"
+                    :class="statusObj[scope.row.status].unicode"
                     :style="{color: statusObj[scope.row.status].color}"
                     style="font-size:25px;font-weight:bold"
                   />
@@ -128,6 +130,29 @@
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
               <el-link :underline="false" type="primary">查看参数</el-link>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="依赖任务环节"
+        align="center"
+        prop="dependTaskInfo"
+        width="120px"
+      >
+        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
+          <el-popover trigger="hover" placement="top" width="500">
+            <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
+              <label class="col-md-2">
+                [{{ dependTask.dateValueName }}]
+              </label>
+              <label class="col-md-10" align="right">
+                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+              </label>
+            </el-row>
+            <div slot="reference" class="name-wrapper">
+              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+              <el-link :underline="false" type="primary">查看依赖环节</el-link>
             </div>
           </el-popover>
         </template>
@@ -179,6 +204,7 @@
     <!-- 跳过环节的dialog -->
     <el-dialog
       :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
     >
       <el-form
         ref="dataForm"
@@ -207,39 +233,65 @@
     <!-- 显示任务日志的dialog -->
     <el-dialog
       :visible.sync="logDialogFromVisible"
+      :close-on-click-modal="false"
     >
-      <el-timeline style="margin-left:7%;margin-top:7%">
-        <!-- 使用时间线任务实例的环节和运行的状态 -->
-        <!-- 已运行的环节，改变颜色和图标 -->
-        <el-timeline-item
-          v-for="(task,$index) in logTasks"
-          :key="task.id"
-          :icon="taskslogsList[task.id] != null ? 'el-icon-more': null"
-          :color="taskslogsList[task.id] != null ? '#0bbd87' : null"
-          size="large"
-        >
-          <!-- value和name一致，默认展开 -->
-          <el-collapse :value="task.id" style="width:85%;border:0;">
-            <!-- title环节名称 -->
-            <el-collapse-item :title="($index+1)+'/'+logTasks.length+'  '+task.name" :name="task.id">
-              <el-card style="padding-bottom: 3%">
-                <el-col v-if="taskslogsList[task.id] != null" class="logtype">
-                  耗时： {{ taskslogsList[task.id] != null ? taskslogsList[task.id].time : 0+'秒' }}
-                </el-col>
+      <div style="max-height:60vh; overflow:auto;margin-top:3%;">
+        <!-- value和name一致，默认展开 -->
+        <el-collapse v-if="prepLogs!==null" value="pre" style="width:80%;border:0;margin-left:10%;">
+          <!-- title环节名称 -->
+          <el-collapse-item title="准备执行" name="pre">
+            <el-card style="padding-bottom: 3%;">
+              <!-- <el-col class="logtype">
+          日志详情：
+        </el-col> -->
+              <el-col
+                style="margin-top:10px"
+              >
                 <el-col
-                  v-for="log in logs[task.id]"
-                  :key="log.taskLogUuid"
+                  v-for="(log,$index) in prepLogs"
+                  :key="$index"
                   :label="log.taskLogUuid"
                   :style="{color: logColorObj[log.status].color}"
-                  style="margin-top:10px"
                 >
                   {{ log.logTime +' '+ log.logMessage }}
                 </el-col>
-              </el-card>
-            </el-collapse-item>
-          </el-collapse>
-        </el-timeline-item>
-      </el-timeline>
+              </el-col>
+            </el-card>
+          </el-collapse-item>
+        </el-collapse>
+        <el-timeline style="margin-left:10%;margin-top:7%">
+          <!-- 使用时间线任务实例的环节和运行的状态 -->
+          <!-- 已运行的环节，改变颜色和图标 -->
+          <el-timeline-item
+            v-for="(task,$index) in logTasks"
+            :key="task.id"
+            :icon="taskslogsList[task.id] != null ? 'el-icon-more': null"
+            :color="taskslogsList[task.id] != null ? '#0bbd87' : null"
+            size="large"
+          >
+            <!-- value和name一致，默认展开 -->
+            <el-collapse :value="task.id" style="width:85%;border:0;">
+              <!-- title环节名称 -->
+              <el-collapse-item :title="($index+1)+'/'+logTasks.length+'  '+task.name" :name="task.id">
+                <el-card style="padding-bottom: 3%">
+                  <el-col v-if="taskslogsList[task.id] != null" class="logtype">
+                    耗时： {{ taskslogsList[task.id] != null ? taskslogsList[task.id].time : 0+'秒' }}
+                  </el-col>
+                  <el-col
+                    v-for="log in logs[task.id]"
+                    :key="log.taskLogUuid"
+                    :label="log.taskLogUuid"
+                    :style="{color: logColorObj[log.status].color}"
+                    style="margin-top:10px"
+                  >
+                    {{ log.logTime +' '+ log.logMessage }}
+                  </el-col>
+                </el-card>
+              </el-collapse-item>
+            </el-collapse>
+          </el-timeline-item>
+        </el-timeline>
+      </div>
       <div slot="footer">
         <el-button type="primary" @click="logDialogFromVisible = false">关闭</el-button>
       </div>
@@ -249,7 +301,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
+import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findPrepLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
 // statuSelectList, statusComm
 import { commandTypeObj, colorList, statusListComm, statuSelect } from './comm.js'
@@ -361,7 +413,8 @@ export default {
       logs: null,
       taskslogsList: null,
       schedule: null,
-      nowTask: null
+      nowTask: null,
+      prepLogs: null
     }
   },
   watch: {
@@ -494,6 +547,10 @@ export default {
       // 获取任务日志
       findTaskLogs(data.processInstanceUuid).then(resp => {
         this.logs = resp.data
+      })
+      // 获取非环节执行任务日志
+      findPrepLogs(data.processInstanceUuid).then(resp => {
+        this.prepLogs = resp.data
       })
       // 获取调度实例已运行的环节
       findTaskInstanceById(data.processInstanceUuid).then(resp => {
@@ -673,5 +730,4 @@ export default {
 	font-style: normal;
 	color: #888888;
   }
-
 </style>

@@ -10,7 +10,7 @@
         <el-button type="primary" class="oper-btn edit" :disabled="editStatus" title="修改" @click="handleUpdate()" />
         <el-button type="primary" class="oper-btn delete" :disabled="deleteStatus" title="删除" @click="handleDelete()" />
         <el-button type="primary" class="oper-btn start" :disabled="startStatus" title="启用" @click="handleUse()" />
-        <el-button type="primary" class="oper-btn pause" :disabled="stopStatus" title="停用" @click="handleBear()" />
+        <el-button type="primary" class="oper-btn pause" :disabled="stopStatus" title="停用" @click="handleStop()" />
         <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length !== 1" title="复制" @click="copyData()" />
         <el-upload
           multiple
@@ -28,7 +28,7 @@
           <el-button type="primary" class="oper-btn export" title="导入" />
         </el-upload>
         <span style="display: inline-block; padding-left: 10px">
-          <el-button type="primary" class="oper-btn import" title="下载流程模板" @click="dialogFormVisible1 = true" />
+          <el-button type="primary" class="oper-btn import" title="下载流程模板" @click="handleDown()" />
         </span>
       </el-col>
     </el-row>
@@ -40,6 +40,8 @@
       fit
       highlight-current-row
       style="width: 100%"
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -87,6 +89,7 @@
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
               <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
+
           </el-popover>
         </template>
       </el-table-column>
@@ -138,13 +141,18 @@
 
     <!-- 表单弹框 -->
     <!-- style="width: 700px; margin-left: 50px" -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog
+      :title="textMap[dialogStatus]"
+      :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
+    >
       <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
         class="detail-form"
         label-position="right"
+        style="max-height:60vh; overflow:auto;"
       >
         <el-form-item label="任务名称" prop="scheduleName">
           <el-input
@@ -225,12 +233,16 @@
         </el-form-item>
         <!-- 添加任务依赖 -->
         <!-- temp.dependTaskInfoList!=null && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList -->
-        <el-form-item v-if="dialogStatus === 'create' || (dialogStatus !== 'create' && temp.dependTaskInfoList)">
+        <!-- <el-form-item v-if="dialogStatus === 'create' || dialogStatus === 'update' || (dialogStatus === 'show' && temp.dependTaskInfoList && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList )"> -->
+        <el-form-item
+          v-if="dialogStatus !== 'show' || (temp.dependTaskInfoList && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList )"
+        >
           <div class="dependence-model">
             <m-list-box>
               <div slot="content">
                 <div>
-                  <div slot="text">调度任务依赖
+                  <div slot="text">
+                    <span class="el-form-item__label">调度任务依赖&nbsp;</span>
                     <a
                       :style="{
                         'pointer-events': disableUpdate === true ? 'none' : '',
@@ -257,7 +269,7 @@
                     v-if="dependTaskList!=null && dependTaskList.length>0"
                     @click="!isDetails && _setGlobalRelation()"
                   >
-                    <!-- {{ relation === "AND" ? "且" : "或" }} -->
+                  <!-- {{ relation === "AND" ? "且" : "或" }} -->
                   </span>
                   <div
                     v-for="(el, $index) in dependTaskList"
@@ -270,7 +282,7 @@
                       v-if="el.dependItemList.length"
                       @click="!isDetails && _setRelation($index)"
                     >
-                      <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
+                    <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
                     </span>
 
                     <!-- :depend-item-list="dependTaskList[0].dependItemList" -->
@@ -320,23 +332,18 @@
 
     <!-- 下载流程模板弹框 -->
     <el-dialog title="下载流程模板" :visible.sync="dialogFormVisible1">
-      <el-form
-        :rules="rules"
-        :model="temp"
-        label-position="right"
-      >
+      <el-form label-position="right">
         <!-- 查询任务流程 -->
-        <el-form-item label="任务流程" prop="processDefinitionId">
+        <el-form-item label="任务流程" prop="downProcessDefinitionId">
           <el-select
-            v-model="temp.processDefinitionId"
+            v-model="downProcessDefinitionId"
             :filterable="true"
             :remote="true"
             reserve-keyword
-            :placeholder="disableUpdate === true ? '' : '请选择任务流程'"
+            placeholder="请选择任务流程"
             :remote-method="remoteMethod"
             :loading="loading"
             class="propwidth"
-            @change="changeTempProcess(temp.processDefinitionId)"
           >
             <el-option
               v-for="item in options"
@@ -395,6 +402,7 @@ export default {
   },
   data() {
     return {
+      downProcessDefinitionId: null,
       disableAddStatus: false,
       // 开始时间大于今天
       startTime: {
@@ -512,7 +520,7 @@ export default {
       dialogVisible2: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑调度任务',
+        update: '修改调度任务',
         create: '新增调度任务',
         show: '查看调度任务'
       },
@@ -695,7 +703,10 @@ export default {
     },
     // 导出 excel 格式
     exportFile() {
-      var id = this.temp.processDefinitionId
+      if (this.downProcessDefinitionId === null || this.downProcessDefinitionId.trim().length === 0) {
+        return
+      }
+      var id = this.downProcessDefinitionId
       axios({
         method: 'get',
         url: `/etlscheduler/schedules/exportFile/${id}`,
@@ -794,12 +805,6 @@ export default {
         // 去重
         this.distinctParamList = res.data.distinctParamList
       })
-    },
-    // 选择下载模板的流程
-    changeTempProcess(data) {
-      // getById(data).then((res) => {
-      //   this.temp.processDefName = res.data.name
-      // })
     },
     // 搜索任务流程
     remoteMethod(query) {
@@ -992,7 +997,8 @@ export default {
         })
       })
     },
-    handleBear() {
+    // 停用
+    handleStop() {
       var ids = []
       this.selections.forEach((r, i) => {
         ids.push(r.processSchedulesUuid)
@@ -1007,6 +1013,11 @@ export default {
           position: 'bottom-right'
         })
       })
+    },
+    // 下载模板
+    handleDown() {
+      this.dialogFormVisible1 = true
+      this.downProcessDefinitionId = null
     },
     handleSelectionChange(val) {
       this.selections = val

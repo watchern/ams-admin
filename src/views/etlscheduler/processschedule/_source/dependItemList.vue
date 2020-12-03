@@ -223,7 +223,7 @@ export default {
           // 判断 dependItemList 是否有值（无值的时候）
           const value = this.scheduleList[0].processSchedulesUuid
           getTaskLink(value).then((taskRes) => {
-            const depTasksList = taskRes.data[value]
+            const depTasksList =  [{ id: 'ALL', name: 'ALL' }].concat(_.map(taskRes.data[value], (v) => v))
             this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(value, this.scheduleList, depTasksList)))
           })
 
@@ -245,7 +245,7 @@ export default {
               // if (this.scheduleList == null || this.scheduleList.length === 0) return
               // 判断 dependItemList 是否有值（无值的时候）
               // const value = this.scheduleList[0].processSchedulesUuid
-              this.$set(this.dependItemList, i, this._rtOldParams(v.processSchedulesUuid, this.scheduleList, ['ALL'].concat(_.map(res.data[v.processSchedulesUuid] || [], v => v.name)), v))
+              this.$set(this.dependItemList, i, this._rtOldParams(v.processSchedulesUuid, this.scheduleList, [{ id: 'ALL', name: 'ALL' }].concat(_.map(res.data[v.processSchedulesUuid] || [], v => v.name)), v))
               getTaskLink(v.processSchedulesUuid).then((respon) => {
                 // const depTasksList = resp.data
                 const item = this.dependItemList[i]
@@ -255,7 +255,7 @@ export default {
                 this.$set(
                   this.dependItemList,
                   i,
-                  this._rtOldParams(v.processSchedulesUuid, item.scheduleList, respon.data[v.processSchedulesUuid], item)
+                  this._rtOldParams(v.processSchedulesUuid, item.scheduleList, [{ id: 'ALL', name: 'ALL' }].concat(_.map(respon.data[v.processSchedulesUuid], (v) => v)), item)
                 )
               })
             })
@@ -286,7 +286,7 @@ export default {
         const value = noArr[0] && noArr[0].processSchedulesUuid || null
         const val = value || this.scheduleList[0].processSchedulesUuid
         getTaskLink(val).then((resp) => {
-          const depTasksList = resp.data[val]
+          const depTasksList = [{ id: 'ALL', name: 'ALL' }].concat(_.map(resp.data[val], (v) => v))
           this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(val, this.scheduleList, depTasksList)))
         })
       })
@@ -334,7 +334,7 @@ export default {
         this.$set(
           this.dependItemList,
           this.itemIndex,
-          this._rtOldParams(value, item.scheduleList, resp.data[value], item)
+          this._rtOldParams(value, item.scheduleList, [{ id: 'ALL', name: 'ALL' }].concat(_.map(resp.data[value], (v) => v)), item)
         )
       })
       // this._getDependItemList(value).then(depTasksList => {
@@ -456,6 +456,11 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
+.ans-select .inner-input .input-element {
+	color: #606266;
+	cursor: pointer;
+	text-overflow: ellipsis;
+}
 .dep-list-model {
   position: relative;
   min-height: 32px;
