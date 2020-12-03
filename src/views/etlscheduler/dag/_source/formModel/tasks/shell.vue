@@ -144,19 +144,19 @@ export default {
       const resourceList = o.params.resourceList || []
       if (resourceList.length) {
         _.map(resourceList, v => {
-          if (!v.id) {
+          if (!v.resourcesUuid) {
             this.store.dispatch('dag/getResourceId', {
-              type: 'FILE',
+              typeValue: 'FILE',
               fullName: '/' + v.res
             }).then(res => {
-              this.resourceList.push(res.id)
+              this.resourceList.push(res.resourcesUuid)
               this.dataProcess(backResource)
             }).catch(e => {
               this.resourceList.push(v.res)
               this.dataProcess(backResource)
             })
           } else {
-            this.resourceList.push(v.id)
+            this.resourceList.push(v.resourcesUuid)
             this.dataProcess(backResource)
           }
         })
@@ -260,8 +260,6 @@ export default {
         localParams: this.localParams,
         rawScript: editor.getValue()
       })
-      console.log('localParams===' + JSON.stringify(this.localParams))
-      console.log('rawScript===' + JSON.stringify(editor.getValue()))
 
       return true
     },

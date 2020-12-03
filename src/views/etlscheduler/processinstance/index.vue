@@ -52,147 +52,147 @@
         /></el-col>
     </el-row>
     <div class="etl-processinstance-list">
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      stripe
-      fit
-      style="width: 100%;"
-      :data="list"
-      border
-      highlight-current-row
-      max-height="800"
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column
-        type="selection"
-        align="center"
-      />
-      <el-table-column
-        label="运行状态"
-        align="center"
-        width="80px"
+      <el-table
+        :key="tableKey"
+        v-loading="listLoading"
+        stripe
+        fit
+        style="width: 100%;"
+        :data="list"
+        border
+        highlight-current-row
+        max-height="800"
+        @sort-change="sortChange"
+        @selection-change="handleSelectionChange"
       >
-        <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top" width="500">
-            <p style="text-align:center" :style="{color: statusObj[scope.row.status].color}"><strong>{{ statusObj[scope.row.status].name }}</strong></p>
-            <p style="text-align:center">点击查看日志</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag>
-                <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
-                  <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色-->
-                  <i
-                    :class="statusObj[scope.row.status].unicode"
-                    :style="{color: statusObj[scope.row.status].color}"
-                    style="font-size:25px;font-weight:bold"
-                  />
-                </a>
-              </el-tag>
-            </div>
-          </el-popover>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="运行类型"
-        width="120px"
-        align="center"
-        prop="commandType"
-        :formatter="formatType"
-      />
-      <el-table-column
-        label="流程实例名称"
-        prop="name"
-      />
-      <!-- <el-table-column
+        <el-table-column
+          type="selection"
+          align="center"
+        />
+        <el-table-column
+          label="运行状态"
+          align="center"
+          width="80px"
+        >
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top" width="500">
+              <p style="text-align:center" :style="{color: statusObj[scope.row.status].color}"><strong>{{ statusObj[scope.row.status].name }}</strong></p>
+              <p style="text-align:center">点击查看日志</p>
+              <div slot="reference" class="name-wrapper">
+                <el-tag>
+                  <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
+                    <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色-->
+                    <i
+                      :class="statusObj[scope.row.status].unicode"
+                      :style="{color: statusObj[scope.row.status].color}"
+                      style="font-size:25px;font-weight:bold"
+                    />
+                  </a>
+                </el-tag>
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="运行类型"
+          width="120px"
+          align="center"
+          prop="commandType"
+          :formatter="formatType"
+        />
+        <el-table-column
+          label="流程实例名称"
+          prop="name"
+        />
+        <!-- <el-table-column
         label="流程名称"
         width="130px"
         align="center"
         prop="processDefinitionName"
       /> -->
-      <el-table-column
-        label="任务参数"
-        align="center"
-        width="80px"
-      >
-        <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
-          <!-- 任务参数使用图标进行显示 -->
-          <el-popover trigger="hover" placement="top" width="500">
-            <el-row v-for="taskParam in scope.row.distinctParamList" :key="taskParam.value">
-              <label class="col-md-2">
-                {{ taskParam.name }}:
-              </label>
-              <div class="col-md-10">
-                {{ taskParam.value }}
+        <el-table-column
+          label="任务参数"
+          align="center"
+          width="80px"
+        >
+          <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
+            <!-- 任务参数使用图标进行显示 -->
+            <el-popover trigger="hover" placement="top" width="500">
+              <el-row v-for="taskParam in scope.row.distinctParamList" :key="taskParam.value">
+                <label class="col-md-2">
+                  {{ taskParam.name }}:
+                </label>
+                <div class="col-md-10">
+                  {{ taskParam.value }}
+                </div>
+              </el-row>
+              <div slot="reference" class="name-wrapper">
+                <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+                <el-link :underline="false" type="primary">查看参数</el-link>
               </div>
-            </el-row>
-            <div slot="reference" class="name-wrapper">
-              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
-              <el-link :underline="false" type="primary">查看参数</el-link>
-            </div>
-          </el-popover>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="依赖任务环节"
-        align="center"
-        prop="dependTaskInfo"
-        width="120px"
-      >
-        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
-          <el-popover trigger="hover" placement="top" width="500">
-            <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
-              <label class="col-md-2">
-                [{{ dependTask.dateValueName }}]
-              </label>
-              <label class="col-md-10" align="right">
-                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
-              </label>
-            </el-row>
-            <div slot="reference" class="name-wrapper">
-              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
-              <el-link :underline="false" type="primary">查看依赖环节</el-link>
-            </div>
-          </el-popover>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="调度时间"
-        width="160px"
-        align="center"
-        prop="scheduleTime"
-      />
-      <el-table-column
-        label="开始运行时间"
-        width="160px"
-        align="center"
-        prop="startTime"
-      />
-      <el-table-column
-        label="结束运行时间"
-        width="160px"
-        align="center"
-        prop="endTime"
-      />
-      <el-table-column
-        label="共耗时"
-        width="100px"
-        align="center"
-        prop="timeConsum"
-      />
-      <el-table-column
-        label="环节进度"
-        width="100px"
-        align="center"
-        prop="schedule"
-      />
-      <el-table-column
-        label="当前环节"
-        width="120px"
-        align="center"
-        prop="nowTask"
-      />
-    </el-table>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="依赖任务环节"
+          align="center"
+          prop="dependTaskInfo"
+          width="120px"
+        >
+          <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
+            <el-popover trigger="hover" placement="top" width="500">
+              <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
+                <label class="col-md-2">
+                  [{{ dependTask.dateValueName }}]
+                </label>
+                <label class="col-md-10" align="right">
+                  {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+                </label>
+              </el-row>
+              <div slot="reference" class="name-wrapper">
+                <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+                <el-link :underline="false" type="primary">查看依赖环节</el-link>
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="调度时间"
+          width="160px"
+          align="center"
+          prop="scheduleTime"
+        />
+        <el-table-column
+          label="开始运行时间"
+          width="160px"
+          align="center"
+          prop="startTime"
+        />
+        <el-table-column
+          label="结束运行时间"
+          width="160px"
+          align="center"
+          prop="endTime"
+        />
+        <el-table-column
+          label="共耗时"
+          width="100px"
+          align="center"
+          prop="timeConsum"
+        />
+        <el-table-column
+          label="环节进度"
+          width="100px"
+          align="center"
+          prop="schedule"
+        />
+        <el-table-column
+          label="当前环节"
+          width="120px"
+          align="center"
+          prop="nowTask"
+        />
+      </el-table>
     </div>
     <pagination
       v-show="total>0"
@@ -235,24 +235,30 @@
       :visible.sync="logDialogFromVisible"
       :close-on-click-modal="false"
     >
-      <el-card style="padding-bottom: 3%;margin-top:10px">
-        <!-- <el-col class="logtype">
+      <!-- value和name一致，默认展开 -->
+      <el-collapse :value="task.id" style="width:85%;border:0;">
+        <!-- title环节名称 -->
+        <el-collapse-item :title="($index+1)+'/'+logTasks.length+'  '+task.name" :name="task.id">
+          <el-card style="padding-bottom: 3%;width:80%;border:0;margin-top:30px;margin-left:7%;">
+            <!-- <el-col class="logtype">
           日志详情：
         </el-col> -->
-        <el-col
-          v-if="prepLogs!=null"
-          style="margin-top:10px"
-        >
-          <el-col
-            v-for="(log,$index) in prepLogs"
-            :key="$index"
-            :label="log.taskLogUuid"
-            :style="{color: logColorObj[log.status].color}"
-          >
-            {{ log.logTime +' '+ log.logMessage }}
-          </el-col>
-        </el-col>
-      </el-card>
+            <el-col
+              v-if="prepLogs!=null"
+              style="margin-top:10px"
+            >
+              <el-col
+                v-for="(log,$index) in prepLogs"
+                :key="$index"
+                :label="log.taskLogUuid"
+                :style="{color: logColorObj[log.status].color}"
+              >
+                {{ log.logTime +' '+ log.logMessage }}
+              </el-col>
+            </el-col>
+          </el-card>
+        </el-collapse-item>
+      </el-collapse>
       <el-timeline style="margin-left:7%;margin-top:7%">
         <!-- 使用时间线任务实例的环节和运行的状态 -->
         <!-- 已运行的环节，改变颜色和图标 -->
