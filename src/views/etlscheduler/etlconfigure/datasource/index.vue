@@ -38,7 +38,6 @@
       style="width: 100%;"
       :data="list"
       border
-      highlight-current-row
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       @on-update="_onUpdate"
