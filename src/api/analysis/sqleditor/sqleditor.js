@@ -98,6 +98,10 @@ var modelChartSetup = {}
  */
 var sqlDraftObj
 /**
+ * 存储数据表
+ */
+var tableTreeData = []
+/**
  * 初始化界面托拉拽事件
  */
 export function initDragAndDrop() {
@@ -612,8 +616,162 @@ export function initTableTree(userId) {
       'open': true,
       'level': 0
     })
+    tableTreeData = result.data
     zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
   })
+}
+/**
+ * 执行create语句后刷新左侧树
+ */
+export function refushTableTree(treeNodes){
+  var setting = {
+    // 异步加载
+    data: {
+      key: {
+        checked: 'isChecked',
+        name: 'name',
+        title: 'displayName'
+      },
+      // 设置数据格式
+      simpleData: {
+        enable: true,
+        idKey: 'id',
+        pIdKey: 'pid'
+      }
+    },
+    check: {
+      enable: false,
+      chkStyle: 'radio',
+      radioType: 'all'
+    },
+    view: {
+      selectedMulti: false
+    },
+    callback: {
+      onDrop: onDrop,
+      beforeDrag: function(treeId, treeNodes) {
+        // 如果是表，视图或者列则允许拖动 否则不可以
+        if (treeNodes[0] && (treeNodes[0].type === 'table' || treeNodes[0].type === 'view' || treeNodes[0].type === 'datasource' || treeNodes[0].type === 'column')) {
+          return true
+        } else {
+          return false
+        }
+      },
+      onRightClick: function(event, treeId, treeNode) {
+        if (!treeNode) {
+          return false
+        }
+        zTreeObj.selectNode(treeNode)
+        var menuId = ''
+        var numm = $(document).height() - event.clientY
+        if (treeNode.type === 'table' || treeNode.type === 'view' || treeNode.type === 'datasource') {
+          menuId = 'tableMenu'
+          history.scrollRestoration = 'manual'
+          // 判断是不是导入数据节点、和分享节点，右键可便捷表结构
+          if (treeNode.pid === 'importDataTable') {
+            menuId = 'importTableMenu'
+          }
+        } else {
+          // 外部导入数据节点加导入功能
+          if (treeNode.id === 'importDataTable') {
+            menuId = 'importDataMenu'
+          }
+
+          if (treeNode.id === 'bussDataRoot' || treeNode.id === 'bussRootNode' || treeNode.id === 'my_space' ||
+            treeNode.id === 'bussRootNode_dev' || treeNode.id === 'my_space_dev' || treeNode.id === 'other_space_dev') {
+            menuId = 'rootMenu'
+          }
+        }
+        if (menuId !== '') {
+          showRMenu('node', 'dataTree', menuId, event.clientX, numm < $('#' + menuId).height() ? (event.clientY - $('#' + menuId).height()) : event.clientY)
+        } else {
+          return false
+        }
+      },
+      onExpand: function(event, treeId, treeNode) {
+        if ((!treeNode.children || treeNode.children.length === 0) && treeNode.type === 'table' || treeNode.type === 'view' || treeNode.type === 'datasource') {
+          zTreeObj.removeChildNodes(treeNode)
+          var tableName = treeNode.name
+          var tableMetaUuid = treeNode.id
+          // 先从codeMirror里面找 如果能找到则不找数据库  找不到则找数据库
+          var columns = CodeMirror.tableColMapping[tableName]
+          if (!columns || (columns && columns.length === 0)) {
+            request({
+              baseURL: dataUrl,
+              url: '/tableMeta/getCols',
+              method: 'post',
+              params: { tableMetaUuid: tableMetaUuid }
+            }).then(result => {
+              if (result.data == null) {
+                alert('错误' + e.message + 'error')
+              } else {
+                // 处理拿回来的数据 处理成列表
+                const columns = []
+                for (let i = 0; i < result.data.length; i++) {
+                  if(result.data[i].chnName === "" || result.data[i].chnName == null || result.data[i].chnName == undefined){
+                    columns.push(result.data[i].colName)
+                  }
+                  else{
+                    columns.push(result.data[i].chnName)
+                  }
+                }
+                if (columns.length > 0) {
+                  CodeMirror.tableColMapping[tableName] = columns
+                  editorObj.options.hintOptions.tables[tableName] = columns
+                  var nodeList = []
+                  $(columns).each(function() {
+                    var node = {
+                      'id': tableName + '_' + this,
+                      'name': this.toString(),
+                      'displayName': this.toString(),
+                      'pid': treeNode.id,
+                      'isParent': false,
+                      'open': false,
+                      'type': 'column',
+                      'icon': columnIconPath
+                    }
+                    nodeList.push(node)
+                  })
+                  zTreeObj.addNodes(treeNode, nodeList)
+                }
+              }
+            })
+          } else {
+            var nodeList = []
+            $(columns).each(function() {
+              var node = {
+                'id': tableName + '_' + this,
+                'name': this.toString(),
+                'displayName': this.toString(),
+                'pid': treeNode.id,
+                'isParent': false,
+                'open': false,
+                'type': 'column',
+                'icon': columnIconPath
+              }
+              nodeList.push(node)
+            })
+            zTreeObj.addNodes(treeNode, nodeList)
+          }
+        }
+      }
+    },
+    edit: {
+      enable: true,
+      showRenameBtn: false,
+      showRemoveBtn: false,
+      // 不允许ztree内部互相拖拽
+      drag: {
+        autoExpandTrigger: false, // 拖拽时父节点自动展开是否触发 onExpand
+        prev: false,
+        next: false,
+        inner: false
+      }
+    }
+  }
+  console.log(tableTreeData.concat(treeNodes))
+  zTreeObj = $.fn.zTree.init($('#dataTree'), setting, tableTreeData.concat(treeNodes))
+  tableTreeData = tableTreeData.concat(treeNodes)
 }
 //表单最大化
 var maxormin = true
@@ -689,7 +847,7 @@ export function initParamTree() {
         var copyParamId = new UUIDGenerator().id
         var id = '{#' + copyParamId + '#}'
         editorObj.replaceRange(id, cursor, cursor)
-        var dom = $("<button disabled class='divEditorBtn' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
+        var dom = $("<button disabled class='divEditorBtn' style='color: white;background-color:#409eff' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
         var endCursor = { ch: cursor.ch + id.length, line: cursor.line, sticky: null }
         editorObj.markText(cursor, endCursor, {
           replacedWith: dom,
@@ -1727,6 +1885,19 @@ export function refreshCodeMirror(){
     editorObj.refresh();
   },1);//让编辑器每次在调用的时候进行自动刷新
   $("#sql").click()
+}
+
+/**
+ * 将编写好的替换参数前的sql传入后台
+ * @param {*} data 
+ */
+export function getColumnSqlInfo(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/SQLEditorController/getcolumnsqlinfo',
+    method: 'post',
+    params:{sql:data}
+  })
 }
 
 

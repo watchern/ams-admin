@@ -4,7 +4,8 @@
       <div id="sidebar">
         <div class="unfold-shuju add-sidiv"><img :src="shuju"></div>
         <div class="unfold-canshu"><img :src="canshu"></div>
-        <div class="unfold-sql"><img :src="sql"></div>
+        <div class="unfold-sql"><img :src="sql">
+        </div>
       </div>
       <div id="leftPart" class="left-part">
         <ul id="dataTree" class="ztree" />
@@ -15,37 +16,88 @@
         <div id="sqlEditorDiv" class="sql-editor-div">
           <el-row type="flex" class="row-bg">
             <el-col>
-              <el-button type="primary" size="small" @click="sqlFormat" class="oper-btn show-detail" title="格式化sql"></el-button>
-              <el-button type="primary" size="small" @click="executeSQL" class="oper-btn start" title="执行"></el-button>
-              <el-button type="primary" size="small" @click="openSqlDraftList" class="oper-btn folder" title="打开sql"></el-button>
+              <el-button
+                type="primary"
+                size="small"
+                @click="sqlFormat"
+                class="oper-btn show-detail"
+                title="格式化sql"
+              ></el-button>
+              <el-button
+                type="primary"
+                size="small"
+                @click="executeSQL"
+                class="oper-btn start"
+                title="执行"
+              ></el-button>
+              <el-button
+                type="primary"
+                size="small"
+                @click="openSqlDraftList"
+                class="oper-btn folder"
+                title="打开sql"
+              ></el-button>
               <el-dropdown>
-                <el-button type="primary" size="small" class="oper-btn save" title="保存"></el-button>
+                <el-button
+                  type="primary"
+                  size="small"
+                  class="oper-btn save"
+                  title="保存"
+                ></el-button>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item @click.native="openSaveSqlDialog(1)">保存</el-dropdown-item>
-                  <el-dropdown-item @click.native="openSaveSqlDialog(2)">另存为</el-dropdown-item>
+                  <el-dropdown-item @click.native="openSaveSqlDialog(1)"
+                    >保存</el-dropdown-item
+                  >
+                  <el-dropdown-item @click.native="openSaveSqlDialog(2)"
+                    >另存为</el-dropdown-item
+                  >
                 </el-dropdown-menu>
               </el-dropdown>
               <el-dropdown type="primary">
-                <el-button type="primary" size="small" class="oper-btn maintain" title="工具箱"></el-button>
+                <el-button
+                  type="primary"
+                  size="small"
+                  class="oper-btn maintain"
+                  title="工具箱"
+                ></el-button>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item @click.native="findAndReplace(2)">查找</el-dropdown-item>
-                  <el-dropdown-item @click.native="findAndReplace(1)">替换</el-dropdown-item>
-                  <el-dropdown-item @click.native="caseTransformation(1)">转大写</el-dropdown-item>
-                  <el-dropdown-item @click.native="caseTransformation(2)">转小写</el-dropdown-item>
-                  <el-dropdown-item @click.native="selectSqlNotes()">注释选中行</el-dropdown-item>
-                  <el-dropdown-item @click.native="selectSqlCancelNotes()">取消注释</el-dropdown-item>
+                  <el-dropdown-item @click.native="findAndReplace(2)"
+                    >查找</el-dropdown-item
+                  >
+                  <el-dropdown-item @click.native="findAndReplace(1)"
+                    >替换</el-dropdown-item
+                  >
+                  <el-dropdown-item @click.native="caseTransformation(1)"
+                    >转大写</el-dropdown-item
+                  >
+                  <el-dropdown-item @click.native="caseTransformation(2)"
+                    >转小写</el-dropdown-item
+                  >
+                  <el-dropdown-item @click.native="selectSqlNotes()"
+                    >注释选中行</el-dropdown-item
+                  >
+                  <el-dropdown-item @click.native="selectSqlCancelNotes()"
+                    >取消注释</el-dropdown-item
+                  >
                 </el-dropdown-menu>
               </el-dropdown>
-              <label
-                id="InfoFlag"
-                style="display: none"
-              >SQL必须全部执行后才可保存</label>
-              <input id="flag" type="hidden" value="false">
-              <input id="flag2" type="hidden" value="false">
-              <input id="outColumn" type="hidden" value="">
-              {{path}}
-              <a @click="modelResultSavePathDialog = true" style="color: #409eff;margin-left:50px">编辑</a>
-              <a @click="getColumnSqlInfo" style="color: #409eff;margin-left:50px">张闯测试</a>
+              <label id="InfoFlag" style="display: none"
+                >SQL必须全部执行后才可保存</label
+              >
+              <input id="flag" type="hidden" value="false" />
+              <input id="flag2" type="hidden" value="false" />
+              <input id="outColumn" type="hidden" value="" />
+              {{ path }}
+              <a
+                @click="modelResultSavePathDialog = true"
+                style="color: #409eff; margin-left: 50px"
+                >编辑</a
+              >
+              <a
+                @click="getColumnSqlInfo"
+                style="color: #409eff; margin-left: 50px"
+                >张闯测试</a
+              >
             </el-col>
           </el-row>
           <div
@@ -59,7 +111,7 @@
               font-weight: bold;
             "
           />
-          <textarea id="sql"/>
+          <textarea id="sql" />
         </div>
         <div id="horizontal"/>
 
@@ -70,12 +122,22 @@
             <div id="iconImg-huifu" />
           </div>
           <div v-for="result in resultShow" id="dataShow" class="data-show">
-            <childTabs ref="childTabsRef" :key="result.id" :pre-value="currentExecuteSQL" use-type="sqlEditor" style="width: 101.5%"/>
+            <childTabs
+              ref="childTabsRef"
+              :key="result.id"
+              :pre-value="currentExecuteSQL"
+              use-type="sqlEditor"
+              style="width: 101.5%"
+            />
           </div>
         </div>
       </div>
-      <div id="vertical"/>
-      <input id="personId" type="hidden" value="<%=LoginUserInfo.getLoginUserId()%>">
+      <div id="vertical" />
+      <input
+        id="personId"
+        type="hidden"
+        value="<%=LoginUserInfo.getLoginUserId()%>"
+      />
       <div id="tableMenu" class="rightMenu">
         <ul>
           <li @click="getSelectSql('tableMenu')">生成SELECT语句</li>
@@ -111,7 +173,7 @@
           name="tableName"
           type="text"
           class="form-control"
-        >
+        />
       </div>
     </div>
     <el-dialog
@@ -130,7 +192,7 @@
           :label-width="formLabelWidth"
           prop="draftTitle"
         >
-          <el-input v-model="sqlDraftForm.draftTitle" autocomplete="off"/>
+          <el-input v-model="sqlDraftForm.draftTitle" autocomplete="off" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -145,40 +207,43 @@
       :append-to-body="true"
       width="50%"
     >
-      <sqlDraftList ref="sqlDraftList"/>
+      <sqlDraftList ref="sqlDraftList" />
       <div slot="footer" class="dialog-footer">
         <el-button @click="sqlDraftDialog = false">关闭</el-button>
         <el-button type="primary" @click="useSql">使用SQL</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="请输入参数" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" :append-to-body="true">
-      <paramDraw :myId="paramDrawUuid" ref="paramDrawRef"/>
+    <el-dialog
+      title="请输入参数"
+      v-if="dialogFormVisible"
+      :visible.sync="dialogFormVisible"
+      :append-to-body="true"
+    >
+      <paramDraw :myId="paramDrawUuid" ref="paramDrawRef" />
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
         <el-button type="primary" @click="replaceNodeParam">确定</el-button>
       </div>
     </el-dialog>
-      <el-dialog
-            title="选择模型结果保存路径"
-            :visible.sync="modelResultSavePathDialog"
-            width="30%"
-            :append-to-body="true"
-          >
-            <data-tree
-              :data-user-id="personCode"
-              :scene-code="sceneCode"
-              :tree-type="treeType"
-              @node-click="handleClick"
-            />
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="modelResultSavePathDialog = false"
-                >取 消</el-button
-              >
-              <el-button type="primary" @click="modelResultSavePathDetermine"
-                >确 定</el-button
-              >
-            </span>
-          </el-dialog>
+    <el-dialog
+      title="选择模型结果保存路径"
+      :visible.sync="modelResultSavePathDialog"
+      width="30%"
+      :append-to-body="true"
+    >
+      <data-tree
+        :data-user-id="personCode"
+        :scene-code="sceneCode"
+        :tree-type="treeType"
+        @node-click="handleClick"
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="modelResultSavePathDialog = false">取 消</el-button>
+        <el-button type="primary" @click="modelResultSavePathDetermine"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -212,76 +277,78 @@ import {
   editorSql,
   startExecuteSql,
   maxOpenOne,
-  getColumnSqlInfo
-} from '@/api/analysis/sqleditor/sqleditor'
-import sqlDraftList from '@/views/analysis/sqleditor/sqldraftlist'
-import { updateDraft } from '@/api/analysis/sqleditor/sqldraft'
-import childTabs from '@/views/analysis/auditmodelresult/childtabs'
-import paramDraw from '@/views/analysis/modelparam/paramdraw'
-import { replaceNodeParam } from '@/api/analysis/auditparam'
-import Cookies from 'js-cookie'
-import dataTree from "@/views/data/role-res/data-tree"
+  getColumnSqlInfo,
+  refushTableTree,
+} from "@/api/analysis/sqleditor/sqleditor";
+import sqlDraftList from "@/views/analysis/sqleditor/sqldraftlist";
+import { updateDraft } from "@/api/analysis/sqleditor/sqldraft";
+import childTabs from "@/views/analysis/auditmodelresult/childtabs";
+import paramDraw from "@/views/analysis/modelparam/paramdraw";
+import { replaceNodeParam } from "@/api/analysis/auditparam";
+import Cookies from "js-cookie";
+import dataTree from "@/views/data/role-res/data-tree";
 
 /**
  * 当前执行进度
  * @type {number}
  */
-let currentExecuteProgress = 0
+let currentExecuteProgress = 0;
 /**
  * 最后一个结果集的列
  * @type {*[]}
  */
-let lastResultColumn = []
+let lastResultColumn = [];
 /**
  * 是否全部执行成功
  * @type {boolean}
  */
-let isAllExecuteSuccess = false
+let isAllExecuteSuccess = false;
 
 /**
  * 最后模型结果列类型
  * @type {*[]}
  */
-let lastResultColumnType = []
+let lastResultColumnType = [];
 
 /**
  * 数据界面对象
  */
-let childTabsRef
+let childTabsRef;
 export default {
-  name: 'SQLEditor',
-  components: { sqlDraftList, childTabs, paramDraw,dataTree },
-  props: ['sqlEditorParamObj', 'sqlValue'],
+  name: "SQLEditor",
+  components: { sqlDraftList, childTabs, paramDraw, dataTree },
+  props: ["sqlEditorParamObj", "sqlValue"],
   data() {
     return {
       sqlDraftForm: {
-        sqlDraftUuid: '',
-        draftTitle: '',
-        draftSql: '',
-        paramJson: ''
+        sqlDraftUuid: "",
+        draftTitle: "",
+        draftSql: "",
+        paramJson: "",
       },
       sqlDraftFormRules: {
         draftTitle: [
           {
-            type: 'string',
+            type: "string",
             required: true,
-            message: '请输入草稿名称',
-            trigger: 'blur'
-          }
-        ]
+            message: "请输入草稿名称",
+            trigger: "blur",
+          },
+        ],
       },
-      DefaultExpansion: ['1', '2', '3'],
+      DefaultExpansion: ["1", "2", "3"],
       sqlDraftDialogFormVisible: false,
       sqlDraftDialog: false,
       dialogFormVisible: false,
-      formLabelWidth: '120px',
-      paramDrawUuid:'',
+      formLabelWidth: "120px",
+      paramDrawUuid: "",
       executeLoading: false,
       currentExecuteSQL: [], // 当前执行的全部sql,
       webSocket: null,
       resultShow: [],
       isAllExecute: false, // 是否全部执行
       modelOriginalTable: [],
+      createTreeNode: [], //sql编辑器执行完create类型的sql后返回的树节点信息，用于拼一个假节点
       executeData: {},
       paramDrawLoading: false,
       tableSearchInput: '',
@@ -290,7 +357,6 @@ export default {
       shuju:require("@/views/analysis/auditmodel/imgs/shuju.png"),
       canshu:require("@/views/analysis/auditmodel/imgs/canshu.png"),
       sql:require("@/views/analysis/auditmodel/imgs/sql.png")
-      functionInput: '',
       modelResultSavePathDialog: false,
       tempPath:'',
       tempId:'',
@@ -300,28 +366,32 @@ export default {
       personCode: this.$store.state.user.code,
       sceneCode: "auditor",
       treeType: "save",
-    }
-
+    };
   },
   watch: {
     dialogFormVisible(value) {
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         if (value) {
-          this.$refs.paramDrawRef.initParamHtmlSS(this.executeData.sql, this.executeData.arr, '     ', this.paramDrawUuid)
+          this.$refs.paramDrawRef.initParamHtmlSS(
+            this.executeData.sql,
+            this.executeData.arr,
+            "     ",
+            this.paramDrawUuid
+          );
         }
-      })
-    }
+      });
+    },
   },
   mounted() {
-    this.initData()
-    this.initWebSocket()
+    this.initData();
+    this.initWebSocket();
   },
   methods: {
     /**
      *初始化webSocket
      */
     initWebSocket() {
-      this.webSocket = this.getWebSocket()
+      this.webSocket = this.getWebSocket();
     },
     /**
      *
@@ -330,135 +400,160 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-/*      const webSocketPath =
+      /*      const webSocketPath =
         'ws://localhost:8086/analysis/websocket?' +
         this.$store.getters.personuuid*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid+"sqleditor";
+      const webSocketPath =
+        process.env.VUE_APP_ANALYSIS_WEB_SOCKET +
+        this.$store.getters.personuuid +
+        "sqleditor";
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
-      this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
+      this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接
-      this.webSocket.onopen = function(event) {
-      }
+      this.webSocket.onopen = function (event) {};
       // 发送消息
-      this.webSocket.onmessage = function(event) {
-        const dataObj = JSON.parse(event.data)
-        if(dataObj.result != null){
-          currentExecuteProgress++
+      this.webSocket.onmessage = function (event) {
+        var treeNodeInfo = JSON.parse(event.data).treeNodeInfo
+        console.log(555555555)
+        console.log(treeNodeInfo)
+        if (treeNodeInfo.length > 0) {
+          var treeNodes = []
+          for (var i = 0; i < treeNodeInfo.length; i++) {
+            var treeNode = {
+              chkDisabled: false,
+              deptColNum: 0,
+              hidden: false,
+              icon: "../../images/ico/table_1.png",
+              id: treeNodeInfo[i].tableMetaUuid,
+              isExist: 0,
+              isParent: true,
+              name: treeNodeInfo[i].displayTbName,
+              personNode: false,
+              pid: treeNodeInfo[i].folderUuid,
+              timeColNum: 0,
+              type: "table",
+            };
+            treeNodes.push(treeNode);
+          }
+          refushTableTree(treeNodes);
+        }
+
+        const dataObj = JSON.parse(event.data);
+        if (dataObj.result != null) {
+          currentExecuteProgress++;
         }
         // 如果当前执行等于总的执行进度  说明最后的结果集已经拿到 取出最后一个结果集的列做为模型结果列
         if (currentExecuteProgress == dataObj.executeTask.executeSQL.length) {
-          isAllExecuteSuccess = true
-          lastResultColumn = dataObj.columnNames
-          lastResultColumnType = dataObj.columnTypes
+          isAllExecuteSuccess = true;
+          lastResultColumn = dataObj.columnNames;
+          lastResultColumnType = dataObj.columnTypes;
         }
-        func1(dataObj)
-      }
+        func1(dataObj);
+      };
       const func2 = function func3(val) {
-        this.$refs.childTabsRef[0].loadTableData(val)
+        this.$refs.childTabsRef[0].loadTableData(val);
         //已经全部执行完成，调用父组件方法初始化参数列等信息
-        if(isAllExecuteSuccess){
-          this.$emit('getSqlObj');
+        if (isAllExecuteSuccess) {
+          this.$emit("getSqlObj");
         }
-      }
-      const func1 = func2.bind(this)
-      this.webSocket.onclose = function(event) {
-      }
+      };
+      const func1 = func2.bind(this);
+      this.webSocket.onclose = function (event) {};
 
       // 通信失败
-      this.webSocket.onerror = function(event) {
-      }
+      this.webSocket.onerror = function (event) {};
     },
     /**
      * 通过WebSocket对象发送消息给服务端
      * 此处没有主动发消息给服务端，如果调用此方法，则会发送消息至socket服务端onMessage()方法上
      */
     sendMsgToServer() {
-      const message = '123'
+      const message = "123";
       if (message) {
         this.webSocket.send(
-          JSON.stringify({ username: $('#username').text(), msg: message })
-        )
+          JSON.stringify({ username: $("#username").text(), msg: message })
+        );
       }
     },
     /**
      * 初始化sql编辑器基础数据
      */
     initData() {
-      const userId = this.$store.state.user.code
-      initDragAndDrop()
-      initIcon()
-      initTableTree(userId)
-      initFunctionTree()
-      initVariable()
-      initEvent()
-      initParamTree()
+      const userId = this.$store.state.user.code;
+      initDragAndDrop();
+      initIcon();
+      initTableTree(userId);
+      initFunctionTree();
+      initVariable();
+      initEvent();
+      initParamTree();
       initTableTip(userId).then((result) => {
-        var relTableMap = {}
+        var relTableMap = {};
         if (result.data != null) {
           for (let i = 0; i < result.data.length; i++) {
-            if (result.data[i].type === 'table') {
-              relTableMap[result.data[i].name] = []
+            if (result.data[i].type === "table") {
+              relTableMap[result.data[i].name] = [];
             }
           }
         }
         initSQLEditor(document.getElementById('sql'), relTableMap)  //初始化SQL编辑器
         //initSQLEditor(document.getElementById('sql'), relTableMap)
-        if (this.sqlValue != '') {
+        if (this.sqlValue != "") {
           // 编辑模型的sql  反显数据
-          editorSql(this.sqlValue, this.sqlEditorParamObj)
+          editorSql(this.sqlValue, this.sqlEditorParamObj);
         }
-        refreshCodeMirror()
-      })
+        refreshCodeMirror();
+      });
     },
     /**
      * 数据表树搜索
      */
     tableTreeSearch() {
-      tableTreeSearch()
+      tableTreeSearch();
     },
     /**
      * 参数树搜索
      */
     paramTreeSearch() {
-      paramTreeSearch()
+      paramTreeSearch();
     },
     /**
      * 函数树搜索
      */
     functionTreeSearch() {
-      functionTreeSearch()
+      functionTreeSearch();
     },
     /**
      * sql格式化
      */
     sqlFormat() {
-      sqlFormat()
+      sqlFormat();
     },
     /**
      * 查找和替换
      * @param type 1替换 2查找
      */
     findAndReplace(type) {
-      findAndReplace(type)
+      findAndReplace(type);
     },
     /**
      * 转大小写
      * @param type 1大写2小写
      */
     caseTransformation(type) {
-      caseTransformation(type)
+      caseTransformation(type);
     },
     /**
      * 注释选中行
      */
     selectSqlNotes() {
-      selectSqlNotes()
+      selectSqlNotes();
     },
     /**
      * 取消注释
      */
     selectSqlCancelNotes() {
-      selectSqlCancelNotes()
+      selectSqlCancelNotes();
     },
     /**
      * 获取保存的对象
@@ -466,30 +561,30 @@ export default {
      */
     getSaveInfo() {
       if (!this.isAllExecute) {
-        this.$message({ type: 'info', message: '全部执行才可以保存!' })
-        return
+        this.$message({ type: "info", message: "全部执行才可以保存!" });
+        return;
       }
       // 如果当前执行进度与要执行的sql数量相等 则证明数据已经全部拿到，允许保存
       if (currentExecuteProgress != this.currentExecuteSQL.length) {
-        this.$message({ type: 'info', message: '全部执行成功才可以保存!' })
-        return
+        this.$message({ type: "info", message: "全部执行成功才可以保存!" });
+        return;
       }
       /*      console.log("当前执行总进度:" + currentExecuteProgress);
       console.log("是否全部执行成功:" + isAllExecuteSuccess);
       console.log(this.currentExecuteSQL);
       console.log(lastResultColumn);*/
-      const returnObj = getSaveInfo()
-      returnObj.columnNames = lastResultColumn
-      returnObj.columnTypes = lastResultColumnType
-      returnObj.modelOriginalTable = this.modelOriginalTable
-      returnObj.modelType = 1
-      return returnObj
+      const returnObj = getSaveInfo();
+      returnObj.columnNames = lastResultColumn;
+      returnObj.columnTypes = lastResultColumnType;
+      returnObj.modelOriginalTable = this.modelOriginalTable;
+      returnObj.modelType = 1;
+      return returnObj;
     },
     /**
      * 生成select语句
      */
     getSelectSql(menuId) {
-      getSelectSql(menuId)
+      getSelectSql(menuId);
     },
     /**
      *打开sql保存草稿窗体
@@ -497,217 +592,215 @@ export default {
     openSaveSqlDialog(type) {
       if (type == 1) {
         // 如果对象是旧的对象则证明是打开的sql草稿 因此直接保存  否则直接修改
-        const sqlObj = getSaveSqlDraftObj(type)
-        const sql = sqlObj.draftSql
-        if (sql === '') {
-          this.$message({ type: 'info', message: '请输入sql语句!' })
-          return
+        const sqlObj = getSaveSqlDraftObj(type);
+        const sql = sqlObj.draftSql;
+        if (sql === "") {
+          this.$message({ type: "info", message: "请输入sql语句!" });
+          return;
         } else {
           if (!sqlObj.isOld) {
-            this.sqlDraftDialogFormVisible = true
+            this.sqlDraftDialogFormVisible = true;
           } else {
             updateDraft(sqlObj).then((result) => {
               if (result.code == 0) {
                 this.$notify({
-                  title: '提示',
-                  message: '保存成功',
-                  type: 'success',
+                  title: "提示",
+                  message: "保存成功",
+                  type: "success",
                   duration: 2000,
-                  position: 'bottom-right'
-                })
+                  position: "bottom-right",
+                });
               } else {
                 this.$notify({
-                  title: '提示',
-                  message: '保存失败',
-                  type: 'error',
+                  title: "提示",
+                  message: "保存失败",
+                  type: "error",
                   duration: 2000,
-                  position: 'bottom-right'
-                })
+                  position: "bottom-right",
+                });
               }
-            })
+            });
           }
         }
       } else {
-        this.sqlDraftDialogFormVisible = true
+        this.sqlDraftDialogFormVisible = true;
       }
     },
     /**
      *保存sql草稿
      */
     saveSqlDialog() {
-      let verResult = false
-      this.$refs['sqlDraftForm'].validate((valid) => {
+      let verResult = false;
+      this.$refs["sqlDraftForm"].validate((valid) => {
         if (valid) {
-          verResult = valid
+          verResult = valid;
         }
-      })
+      });
       if (verResult) {
-        const sqlObj = getSaveSqlDraftObj(1)
-        this.sqlDraftForm.draftSql = sqlObj.draftSql
-        this.sqlDraftForm.paramJson = sqlObj.paramJson
+        const sqlObj = getSaveSqlDraftObj(1);
+        this.sqlDraftForm.draftSql = sqlObj.draftSql;
+        this.sqlDraftForm.paramJson = sqlObj.paramJson;
         saveSqlDraft(this.sqlDraftForm).then((result) => {
           if (result.code == 0) {
             this.$notify({
-              title: '提示',
-              message: '保存成功',
-              type: 'success',
+              title: "提示",
+              message: "保存成功",
+              type: "success",
               duration: 2000,
-              position: 'bottom-right'
-            })
-            this.sqlDraftDialogFormVisible = false
+              position: "bottom-right",
+            });
+            this.sqlDraftDialogFormVisible = false;
             // 手动销毁数据  多层dialog v-if失效 不知道为啥 没找到解决办法
             this.sqlDraftForm = {
-              sqlDraftUuid: '',
-              draftTitle: '',
-              draftSql: '',
-              paramJson: ''
-            }
+              sqlDraftUuid: "",
+              draftTitle: "",
+              draftSql: "",
+              paramJson: "",
+            };
           } else {
-
             this.$notify({
-              title: '提示',
-              message: '保存失败',
-              type: 'error',
+              title: "提示",
+              message: "保存失败",
+              type: "error",
               duration: 2000,
-              position: 'bottom-right'
-            })
+              position: "bottom-right",
+            });
           }
-        })
+        });
       }
     },
     /**
      *打开sql草稿列表
      */
     openSqlDraftList() {
-      this.sqlDraftDialog = true
+      this.sqlDraftDialog = true;
     },
     /**
      * 使用sql
      */
     useSql() {
-      const returnObj = this.$refs.sqlDraftList.getSelectRow()
+      const returnObj = this.$refs.sqlDraftList.getSelectRow();
       if (returnObj.verify) {
-        this.$confirm('该操作会清空当前SQL编辑器中的语句,是否继续？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
+        this.$confirm("该操作会清空当前SQL编辑器中的语句,是否继续？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
         }).then(() => {
-          this.sqlDraftDialog = false
-          useSql(returnObj)
-        })
+          this.sqlDraftDialog = false;
+          useSql(returnObj);
+        });
       } else {
-        return
+        return;
       }
     },
     /**
      * 执行sql
      */
     executeSQL() {
-      const result = getSql()
-      if (result.sql === '') {
-        this.$message({ type: 'info', message: '请输入sql!' })
-        return
+      const result = getSql();
+      if (result.sql === "") {
+        this.$message({ type: "info", message: "请输入sql!" });
+        return;
       }
-      this.isAllExecute = result.isAllExecute
+      this.isAllExecute = result.isAllExecute;
       verifySql().then((result) => {
         if (!result.data.verify) {
-          this.$message({ type: 'info', message: 'SQL不合法，请重新输入' })
-          return
+          this.$message({ type: "info", message: "SQL不合法，请重新输入" });
+          return;
         }
-        this.resultShow = [] // 清空数据展示对象
-        isAllExecuteSuccess = false
-        currentExecuteProgress = 0
-        this.currentExecuteSQL = []
-        lastResultColumn = []
-        const obj = executeSQL()
-        console.log(obj)
-        obj.businessField = 'sqleditor'
-        obj.modelResultSavePathId = this.modelResultSavePathId
+        this.resultShow = []; // 清空数据展示对象
+        isAllExecuteSuccess = false;
+        currentExecuteProgress = 0;
+        this.currentExecuteSQL = [];
+        lastResultColumn = [];
+        const obj = executeSQL();
+        obj.businessField = "sqleditor";
+        obj.modelResultSavePathId = this.modelResultSavePathId;
         if (!obj.isExistParam) {
-          this.executeLoading = true
-          startExecuteSql(obj).then((result) => {
-            this.executeLoading = false
-            if (!result.data.isError) {
-              this.currentExecuteSQL = result.data.executeSQLList
-              this.modelOriginalTable = result.data.tables
-              this.resultShow.push({ id: 1 })
-            } else {
-              this.$message({ type: 'info', message: '执行失败' })
-            }
-          }).catch(result=>{
-            this.executeLoading = false
-          })
+          this.executeLoading = true;
+          startExecuteSql(obj)
+            .then((result) => {
+              this.executeLoading = false;
+              if (!result.data.isError) {
+                this.currentExecuteSQL = result.data.executeSQLList;
+                this.modelOriginalTable = result.data.tables;
+                this.createTreeNode = result.data.treeNodeInfo;
+                this.resultShow.push({ id: 1 });
+              } else {
+                this.$message({ type: "info", message: "执行失败" });
+              }
+            })
+            .catch((result) => {
+              this.executeLoading = false;
+            });
         } else {
-          this.openParamDraw(obj)
+          this.openParamDraw(obj);
         }
-      })
+      });
     },
     /**
      * 打开参数渲染窗体
      */
     openParamDraw(data) {
-      let timestamp = new Date().getTime()
-      this.paramDrawUuid = timestamp
-      this.dialogFormVisible = true
-      this.paramDrawLoading = true
-      this.executeData = data
+      let timestamp = new Date().getTime();
+      this.paramDrawUuid = timestamp;
+      this.dialogFormVisible = true;
+      this.paramDrawLoading = true;
+      this.executeData = data;
     },
     /**
      * 获取替换参数后的sql  直接直接
      */
     replaceNodeParam() {
-      var obj = replaceNodeParam(this.paramDrawUuid)
+      var obj = replaceNodeParam(this.paramDrawUuid);
       if (!obj.verify) {
-        this.$message({ type: 'info', message: obj.message })
-        return
+        this.$message({ type: "info", message: obj.message });
+        return;
       }
-      obj.sqls = obj.sql
-      obj.businessField = 'sqleditor'
+      obj.sqls = obj.sql;
+      obj.businessField = "sqleditor";
       startExecuteSql(obj).then((result) => {
         if (!result.data.isError) {
-          this.currentExecuteSQL = result.data.executeSQLList
-          this.modelOriginalTable = result.data.tables
-          this.resultShow.push({ id: 1 })
-          this.dialogFormVisible = false
+          this.currentExecuteSQL = result.data.executeSQLList;
+          this.modelOriginalTable = result.data.tables;
+          this.resultShow.push({ id: 1 });
+          this.dialogFormVisible = false;
         } else {
-          this.$message({ type: 'info', message: '执行失败' })
+          this.$message({ type: "info", message: "执行失败" });
         }
-      })
+      });
     },
-    maxOpen(){
-      maxOpenOne()
+    maxOpen() {
+      maxOpenOne();
     },
-     handleClick(data, node, tree) {
+    handleClick(data, node, tree) {
       this.tempPath = data.label;
       this.tempId = data.id;
       this.nodeType = data.type;
-      console.log(data, node, tree);
     },
-      modelResultSavePathDetermine() {
+    modelResultSavePathDetermine() {
       if (this.nodeType == "folder") {
         this.path = this.tempPath;
         this.modelResultSavePathId = this.tempId;
         this.modelResultSavePathDialog = false;
-      } else if(this.nodeType == ""){
+      } else if (this.nodeType == "") {
         this.$message({
           message: "请选择路径",
           type: "warning",
         });
-      }else{
-         this.$message({
+      } else {
+        this.$message({
           message: "只能选择文件夹",
           type: "warning",
         });
       }
     },
-    getColumnSqlInfo(){
-      const obj = executeSQL()
-      getColumnSqlInfo(obj.sqls).then(resp=>{
-        console.log(resp.data)
-      })
-    }
-  }
-}
+    getColumnSqlInfo() {
+      const obj = executeSQL();
+      getColumnSqlInfo(obj.sqls).then((resp) => {});
+    },
+  },
+};
 </script>
 <style>
 #tableSearchImg,
@@ -721,17 +814,17 @@ export default {
   float: right;
   cursor: pointer;
 }
-#rightPart{
-  width:81.3333%;
-  position:relative;
+#rightPart {
+  width: 81.3333%;
+  position: relative;
 }
 
-.app-container{
+.app-container {
   /* height: 100%!important; */
   position: relative;
 }
 
-#container{
+#container {
   width: 100%;
   height: 100%;
 }
@@ -841,13 +934,13 @@ export default {
   border: none;
 }
 
-.layui-tab{
-  margin:10px 0;
-  text-align:left!important;
-  width:100%;
+.layui-tab {
+  margin: 10px 0;
+  text-align: left !important;
+  width: 100%;
 }
 
-.max-size{
+.max-size {
   width: 80px;
   position: relative;
   right: 0;
@@ -877,8 +970,6 @@ export default {
   height: 100%;
   margin-left: .5%;
 }
-
-
 </style>
 
 
