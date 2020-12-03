@@ -14,7 +14,7 @@ const statusListComm = [{
 {
   value: 3,
   name: '等待依赖任务',
-  unicode: 'el-icon-share',
+  unicode: 'iconfont iconoper-interactive',
   color: '#f9be0a'
 },
 {
@@ -276,7 +276,7 @@ const commandTypeObj = {
   4: '从失败任务节点启动流程',
   5: '补数',
   6: '启动调度任务',
-  7: '重复运行流程',
+  7: '重复运行',
   8: '暂停流程',
   9: '取消',
   10: '重新运行等待线程流程',

@@ -81,10 +81,6 @@ function settingCallBack(curNodeId, type, layero) {
         window[layero.find('iframe')[0]['name']].$('#myTab>li:eq(1)>a').click()
         return false
     }
-    // 验证数据融合节点输出列信息
-    if (type === 'union' && !validateJs.verifyUnionOutputColumn(layero)) {
-        return false
-    }
     var childrenIds = graph.nodeData[curNodeId].childrenIds.slice()
     if (childrenIds.length > 0) {
         if (!confirm('该操作会影响本节点及后续节点的执行信息，是否继续？')) {
@@ -338,7 +334,7 @@ function getPreNodesNotDatasource(nodeData, curCellId, arr) {
  * @param curCellId 当前节点的ID
  * @param arr 前置所有节点的ID集合
  * */
-function getPreNodes(curCellId, arr) {
+export function getPreNodes(curCellId, arr) {
     var parentIds = graph.nodeData[curCellId].parentIds
     if (parentIds.length > 0) {
         for (var i = 0; i < parentIds.length; i++) {
@@ -774,6 +770,7 @@ function executeNode_callback(notExecuteNodeIdArr) {
     graphIndexVue.executeNodeIdArr = notExecuteNodeIdArr
     graphIndexVue.executeId = executeId
     graphIndexVue.resultTableArr = []
+    graphIndexVue.preValue = []
     graphIndexVue.$nextTick( () => {
         executeNodeSql(dataParam).then(response => {
             if(response.data != null){
@@ -1358,6 +1355,7 @@ export function previewNodeData() {
         return
     }
     graphIndexVue.resultTableArr = []
+    graphIndexVue.preValue = []
     graphIndexVue.$nextTick( () => {
         graphIndexVue.websocketBatchId = new UUIDGenerator().id
         graphIndexVue.resultTableArr = [{nodeId, nodeName, resultTableName}]

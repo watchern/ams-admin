@@ -13,15 +13,23 @@
         </div>
       </el-aside>
       <el-container>
-        <el-header v-if="timing">
-          <span class="demonstration">运行日期时间 ：</span>
-          <el-date-picker
-            v-model="dateTime"
-            type="datetime"
-            placeholder="选择日期时间"
-            :picker-options="executeTimeOptions"
-          >
-          </el-date-picker>
+        <el-header>
+          <div>
+            <div v-if="timing">
+              <span class="demonstration">运行日期时间 ：</span>
+              <el-date-picker
+                v-model="dateTime"
+                type="datetime"
+                placeholder="选择日期时间"
+                :picker-options="executeTimeOptions"
+              >
+              </el-date-picker>
+            </div>
+            模型结果保存在 : {{ path }}
+            <a @click="modelResultSavePathDialog = true" style="color: #409eff"
+              >编辑</a
+            >
+          </div>
         </el-header>
         <el-main>
           <div v-for="(item, key) in this.detailModels" :key="key">
@@ -30,6 +38,27 @@
               ref="paramassembly"
             ></paramDraw>
           </div>
+          <el-dialog
+            title="选择模型结果保存路径"
+            :visible.sync="modelResultSavePathDialog"
+            width="30%"
+            :append-to-body="true"
+          >
+            <data-tree
+              :data-user-id="personCode"
+              :scene-code="sceneCode"
+              :tree-type="treeType"
+              @node-click="handleClick"
+            />
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="modelResultSavePathDialog = false"
+                >取 消</el-button
+              >
+              <el-button type="primary" @click="modelResultSavePathDetermine"
+                >确 定</el-button
+              >
+            </span>
+          </el-dialog>
         </el-main>
       </el-container>
     </el-container>
@@ -40,6 +69,7 @@ import paramDraw from "@/views/analysis/modelparam/paramdraw";
 import { findModelList } from "@/api/analysis/auditmodel";
 import { replaceNodeParam } from "@/api/analysis/auditparam";
 import { getOneDict } from "@/utils/index";
+import dataTree from "@/views/data/role-res/data-tree";
 export default {
   watch: {
     detailModels(value) {
@@ -53,6 +83,7 @@ export default {
   },
   components: {
     paramDraw,
+    dataTree,
   },
   data() {
     return {
@@ -60,13 +91,25 @@ export default {
       detailModels: [], //查出来详细的model数组
       afterTranscod: [], //按顺序存储转码后的风险等级
       dateTime: "",
-       //单次/多次/周期执行的周期开始结束时间 执行时间选择配置
-      executeTimeOptions:{
-        disabledDate(time){
+      //单次/多次/周期执行的周期开始结束时间 执行时间选择配置
+      executeTimeOptions: {
+        disabledDate(time) {
           //不能选择小于当前日志的事件
-          return new Date(time.toLocaleDateString()) < new Date(new Date().toLocaleDateString())
-        }
+          return (
+            new Date(time.toLocaleDateString()) <
+            new Date(new Date().toLocaleDateString())
+          );
+        },
       },
+      modelResultSavePathDialog: false,
+      personCode: this.$store.state.user.code,
+      sceneCode: "auditor",
+      treeType: "save",
+      path: "",
+      modelResultSavePathId: "",
+      tempPath: "",
+      nodeType: "",
+      tempId: "",
     };
   },
   props: ["models", "timing"],
@@ -87,36 +130,22 @@ export default {
      * 渲染参数界面
      */
     creatParamWindow() {
-      var flag = true;
       for (var i = 0; i < this.detailModels.length; i++) {
+        var paramArr = [];
         if (this.detailModels[i].parammModelRel.length > 0) {
-          flag = false;
-          break;
-        }
-      }
-        for (var i = 0; i < this.detailModels.length; i++) {
-          var paramArr = [];
-          if (this.detailModels[i].parammModelRel.length > 0) {
-            for (
-              var j = 0;
-              j < this.detailModels[i].parammModelRel.length;
-              j++
-            ) {
-              paramArr.push(
-                JSON.parse(this.detailModels[i].parammModelRel[j].paramValue)
-              );
-            }
+          for (var j = 0; j < this.detailModels[i].parammModelRel.length; j++) {
+            paramArr.push(
+              JSON.parse(this.detailModels[i].parammModelRel[j].paramValue)
+            );
           }
-          this.$refs.paramassembly[i].initParamHtmlSS(
-            this.detailModels[i].sqlValue,
-            paramArr,
-            this.detailModels[i].modelName + "参数",
-            this.detailModels[i].modelUuid + "2"
-          );
         }
-        if(this.timing!=true){
-           this.$emit('changeFlag',flag)
-        }
+        this.$refs.paramassembly[i].initParamHtmlSS(
+          this.detailModels[i].sqlValue,
+          paramArr,
+          this.detailModels[i].modelName + "参数",
+          this.detailModels[i].modelUuid + "2"
+        );
+      }
     },
     /**
      * 点击dialog确定按钮返回的替换好的sql和paramArr
@@ -132,6 +161,7 @@ export default {
         dateTime: this.dateTime,
         models: this.detailModels,
         replaceInfo: replaceInfo,
+        modelResultSavePathId: this.modelResultSavePathId
       };
       return obj;
     },
@@ -143,7 +173,30 @@ export default {
         let dicObj = getOneDict(this.detailModels[i].riskLevelUuid);
         this.afterTranscod.push(dicObj[0].codeName);
       }
-    }
+    },
+    handleClick(data, node, tree) {
+      this.tempPath = data.label;
+      this.tempId = data.id;
+      this.nodeType = data.type;
+      console.log(data, node, tree);
+    },
+    modelResultSavePathDetermine() {
+      if (this.nodeType == "folder") {
+        this.path = this.tempPath;
+        this.modelResultSavePathId = this.tempId;
+        this.modelResultSavePathDialog = false;
+      } else if(this.nodeType == ""){
+        this.$message({
+          message: "请选择路径",
+          type: "warning",
+        });
+      }else{
+         this.$message({
+          message: "只能选择文件夹",
+          type: "warning",
+        });
+      }
+    },
   },
 };
 </script>

@@ -58,9 +58,10 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <el-button v-if="dialogStatus ==='update'" type="primary" size="mini" class="el_header_button" style="margin-right: 20px;float: right;" @click="updateData()">保存</el-button>
-      <el-button v-if="dialogStatus ==='create'" type="primary" size="mini" class="el_header_button" style="margin-right: 20px;float: right;" @click="createData()">保存</el-button>
-      <el-button type="primary" size="mini" class="el_header_button" style="margin-right: 20px;float: right;" @click="closeDialog()">取消</el-button>
+      <div slot="footer">
+        <el-button type="primary" size="mini" @click="closeDialog()">取消</el-button>
+        <el-button @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
+      </div>
     </el-dialog>
     <!-- 这是第二个弹窗，用来操作类别下具体的基础数据 -->
     <el-dialog :title="textMap[dialogSecondStatus]" :visible.sync="dialogFormSecond">
@@ -388,7 +389,7 @@ export default {
       this.$store.dispatch('dataSort/setDataSortUuid', this.selections[0].dataSortUuid)
       this.$store.dispatch('dataSort/setDataSortName', this.selections[0].dataSortName)
       this.$router.push({
-        path: `/base/baseCodeTree/`
+        path: `/base/basecodetree`
       })
     },
     addSecondCode() {

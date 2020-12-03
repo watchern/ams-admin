@@ -32,6 +32,7 @@
         </span>
       </el-col>
     </el-row>
+    <div class="etl-pro-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -128,6 +129,7 @@
       />
       <el-table-column label="修改时间" align="center" prop="updateTime" />
     </el-table>
+    </div>
     <pagination
       v-show="total > 0"
       :total="total"
@@ -138,13 +140,18 @@
 
     <!-- 表单弹框 -->
     <!-- style="width: 700px; margin-left: 50px" -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog
+      :title="textMap[dialogStatus]"
+      :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
+    >
       <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
         class="detail-form"
         label-position="right"
+        style="height:62vh; overflow:auto;"
       >
         <el-form-item label="任务名称" prop="scheduleName">
           <el-input
@@ -225,12 +232,16 @@
         </el-form-item>
         <!-- 添加任务依赖 -->
         <!-- temp.dependTaskInfoList!=null && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList -->
-        <el-form-item v-if="dialogStatus === 'create' || (dialogStatus !== 'create' && temp.dependTaskInfoList)">
+        <!-- <el-form-item v-if="dialogStatus === 'create' || dialogStatus === 'update' || (dialogStatus === 'show' && temp.dependTaskInfoList && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList )"> -->
+        <el-form-item
+          v-if="dialogStatus !== 'show' || (temp.dependTaskInfoList && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList )"
+        >
           <div class="dependence-model">
             <m-list-box>
               <div slot="content">
                 <div>
-                  <div slot="text">调度任务依赖
+                  <div slot="text">
+                    <span class="el-form-item__label">调度任务依赖&nbsp;</span>
                     <a
                       :style="{
                         'pointer-events': disableUpdate === true ? 'none' : '',
@@ -328,7 +339,7 @@
         <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="processDefinitionId">
           <el-select
-            v-model="temp.processDefinitionId"
+            v-model="downProcessDefinitionId"
             :filterable="true"
             :remote="true"
             reserve-keyword
@@ -395,6 +406,7 @@ export default {
   },
   data() {
     return {
+      downProcessDefinitionId: null,
       disableAddStatus: false,
       // 开始时间大于今天
       startTime: {
@@ -512,7 +524,7 @@ export default {
       dialogVisible2: false,
       dialogStatus: '',
       textMap: {
-        update: '编辑调度任务',
+        update: '修改调度任务',
         create: '新增调度任务',
         show: '查看调度任务'
       },
@@ -695,7 +707,7 @@ export default {
     },
     // 导出 excel 格式
     exportFile() {
-      var id = this.temp.processDefinitionId
+      var id = this.downProcessDefinitionId
       axios({
         method: 'get',
         url: `/etlscheduler/schedules/exportFile/${id}`,
@@ -797,6 +809,7 @@ export default {
     },
     // 选择下载模板的流程
     changeTempProcess(data) {
+      this.downProcessDefinitionId = data
       // getById(data).then((res) => {
       //   this.temp.processDefName = res.data.name
       // })
@@ -1229,5 +1242,10 @@ export default {
     // position: relative;
     // left: 460px;
     // bottom: 115px;
+  }
+
+  .etl-pro-list{
+    height: 71.5%;
+    overflow: auto;
   }
 </style>
