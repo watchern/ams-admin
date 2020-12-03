@@ -8,7 +8,6 @@
         @submit="getList"
       />
     </div>
-    <div class="etl-taskinstance-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -18,7 +17,8 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -113,7 +113,6 @@
         prop="time"
       />
     </el-table>
-    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -381,10 +380,6 @@ export default {
 	font-style: normal;
   color: #3f3a3a;
   padding: 5px 0px;
-  }
-  .etl-taskinstance-list{
-     height: 71.5%;
-     overflow: auto;
   }
 
 </style>

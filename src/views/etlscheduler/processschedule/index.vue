@@ -32,104 +32,105 @@
         </span>
       </el-col>
     </el-row>
-    <div class="etl-pro-list">
-      <el-table
-        :key="tableKey"
-        v-loading="listLoading"
-        :data="list"
-        border
-        fit
-        highlight-current-row
-        style="width: 100%"
-        @sort-change="sortChange"
-        @selection-change="handleSelectionChange"
+    <el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
+      @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="55" />
+      <el-table-column
+        label="调度任务名称"
+        prop="scheduleName"
       >
-        <el-table-column type="selection" width="55" />
-        <el-table-column
-          label="调度任务名称"
-          prop="scheduleName"
-        >
-          <template slot-scope="scope">
-            <el-link target="_blank" :underline="false" type="primary" @click="getScheduleDetail(scope.row)">
-              {{ scope.row.scheduleName }}</el-link>
-          </template>
-        </el-table-column>
-        <el-table-column
-          v-if="false"
-          label="任务流程"
-          prop="processDefinitionId"
-        />
-        <el-table-column
-          label="任务流程"
-          prop="processDefName"
-        />
-        <el-table-column
-          label="作业周期"
-          prop="crontab"
-          :formatter="formatCron"
-        />
-        <el-table-column
-          label="参数"
-          width="100px"
-          align="center"
-          prop="taskParamsList"
-        >
-          <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
-            <el-popover trigger="hover" placement="top" width="500">
-              <el-row v-for="(taskParam,$index) in scope.row.distinctParamList" :key="$index">
-                <label class="col-md-4">
-                  {{ taskParam.name }}:
-                </label>
-                <div class="col-md-8">
-                  {{ taskParam.value }}
-                </div>
-              </el-row>
-              <div slot="reference" class="name-wrapper">
-                <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
-                <el-link :underline="false" type="primary">查看参数</el-link>
+        <template slot-scope="scope">
+          <el-link target="_blank" :underline="false" type="primary" @click="getScheduleDetail(scope.row)">
+            {{ scope.row.scheduleName }}</el-link>
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-if="false"
+        label="任务流程"
+        prop="processDefinitionId"
+      />
+      <el-table-column
+        label="任务流程"
+        prop="processDefName"
+      />
+      <el-table-column
+        label="作业周期"
+        prop="crontab"
+        :formatter="formatCron"
+      />
+      <el-table-column
+        label="参数"
+        width="100px"
+        align="center"
+        prop="taskParamsList"
+      >
+        <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
+          <el-popover trigger="hover" placement="top" width="500">
+            <el-row v-for="(taskParam,$index) in scope.row.distinctParamList" :key="$index">
+              <label class="col-md-4">
+                {{ taskParam.name }}:
+              </label>
+              <div class="col-md-8">
+                {{ taskParam.value }}
               </div>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="依赖任务环节"
-          align="center"
-          prop="dependTaskInfo"
-          width="120px"
-        >
-          <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
-            <el-popover trigger="hover" placement="top" width="500">
-              <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
-                <label class="col-md-2">
-                  [{{ dependTask.dateValueName }}]
-                </label>
-                <label class="col-md-10" align="right">
-                  {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
-                </label>
-              </el-row>
-              <div slot="reference" class="name-wrapper">
-                <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
-                <el-link :underline="false" type="primary">查看依赖环节</el-link>
-              </div>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="状态"
-          width="100px"
-          align="center"
-          prop="status"
-          :formatter="formatStatus"
-        />
-        <el-table-column
-          label="最新修改人"
-          width="150px"
-          align="center"
-          prop="updateUserName"
-        />
-        <el-table-column label="修改时间" align="center" prop="updateTime" />
-      </el-table>
-    </div>
+            </el-row>
+            <div slot="reference" class="name-wrapper">
+              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+              <el-link :underline="false" type="primary">查看参数</el-link>
+            </div>
+
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="依赖任务环节"
+        align="center"
+        prop="dependTaskInfo"
+        width="120px"
+      >
+        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
+          <el-popover trigger="hover" placement="top" width="500">
+            <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
+              <label class="col-md-2">
+                [{{ dependTask.dateValueName }}]
+              </label>
+              <label class="col-md-10" align="right">
+                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+              </label>
+            </el-row>
+            <div slot="reference" class="name-wrapper">
+              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+              <el-link :underline="false" type="primary">查看依赖环节</el-link>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="状态"
+        width="100px"
+        align="center"
+        prop="status"
+        :formatter="formatStatus"
+      />
+      <el-table-column
+        label="最新修改人"
+        width="150px"
+        align="center"
+        prop="updateUserName"
+      />
+      <el-table-column label="修改时间" align="center" prop="updateTime" />
+    </el-table>
     <pagination
       v-show="total > 0"
       :total="total"
@@ -268,7 +269,7 @@
                     v-if="dependTaskList!=null && dependTaskList.length>0"
                     @click="!isDetails && _setGlobalRelation()"
                   >
-                    <!-- {{ relation === "AND" ? "且" : "或" }} -->
+                  <!-- {{ relation === "AND" ? "且" : "或" }} -->
                   </span>
                   <div
                     v-for="(el, $index) in dependTaskList"
@@ -281,7 +282,7 @@
                       v-if="el.dependItemList.length"
                       @click="!isDetails && _setRelation($index)"
                     >
-                      <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
+                    <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
                     </span>
 
                     <!-- :depend-item-list="dependTaskList[0].dependItemList" -->
@@ -1239,10 +1240,5 @@ export default {
     // position: relative;
     // left: 460px;
     // bottom: 115px;
-  }
-
-  .etl-pro-list{
-    height: 71.5%;
-    overflow: auto;
   }
 </style>

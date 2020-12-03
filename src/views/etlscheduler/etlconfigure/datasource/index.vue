@@ -7,19 +7,6 @@
         @submit="getList"
       />
     </div>
-    <!-- <m-list-construction>
-        <template slot="conditions">
-          <m-conditions>
-            <template slot="button-group">
-              <x-button
-                type="primary"
-                size="mini"
-                @click="_create('')"
-              >添加</x-button>
-            </template>
-          </m-conditions>
-        </template>
-      </m-list-construction> -->
     <el-row>
       <el-col align="right">
         <el-button
@@ -43,88 +30,86 @@
           @click="handleDelete()"
         /></el-col>
     </el-row>
-    <div class="etl-datasource-list">
-      <el-table
-        :key="tableKey"
-        v-loading="listLoading"
-        stripe
-        fit
-        style="width: 100%;"
-        :data="list"
-        border
-        highlight-current-row
-        max-height="800"
-        @sort-change="sortChange"
-        @selection-change="handleSelectionChange"
-        @on-update="_onUpdate"
+    <el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      stripe
+      fit
+      style="width: 100%;"
+      :data="list"
+      border
+      highlight-current-row
+      height="calc(100vh - 320px)"
+      max-height="calc(100vh - 320px)"
+      @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
+      @on-update="_onUpdate"
+    >
+      <el-table-column
+        type="selection"
+        align="center"
+      />
+      <el-table-column
+        label="数据源名称"
+        width="250px"
+        align="center"
+        prop="name"
+      />
+      <el-table-column
+        label="数据源类型"
+        width="250px"
+        align="center"
+        prop="type"
+        :formatter="formatType"
+      />
+      <el-table-column
+        label="数据源参数"
+        width="200px"
+        align="center"
+        prop="connectionParams"
       >
-        <el-table-column
-          type="selection"
-          align="center"
-        />
-        <el-table-column
-          label="数据源名称"
-          width="250px"
-          align="center"
-          prop="name"
-        />
-        <el-table-column
-          label="数据源类型"
-          width="250px"
-          align="center"
-          prop="type"
-          :formatter="formatType"
-        />
-        <el-table-column
-          label="数据源参数"
-          width="200px"
-          align="center"
-          prop="connectionParams"
-        >
-          <template slot-scope="scope">
-            <el-popover trigger="hover" placement="top" width="500">
-              <!-- <p>{{ scope.row.connectionParams }}</p> -->
-              <el-row>
-                <label class="col-md-4">
-                  jdbc url:
-                </label>
-                <div class="col-md-8">
-                  {{ JSON.parse(scope.row.connectionParams).jdbcUrl }}
-                </div>
-              </el-row>
-              <el-row>
-                <label class="col-md-4">
-                  用户名:
-                </label>
-                <div class="col-md-8">
-                  {{ JSON.parse(scope.row.connectionParams).user }}
-                </div>
-              </el-row>
-
-              <div slot="reference" class="name-wrapper">
-                <el-link :underline="false" type="primary">查看参数</el-link>
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="top" width="500">
+            <!-- <p>{{ scope.row.connectionParams }}</p> -->
+            <el-row>
+              <label class="col-md-4">
+                jdbc url:
+              </label>
+              <div class="col-md-8">
+                {{ JSON.parse(scope.row.connectionParams).jdbcUrl }}
               </div>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="描述"
-          width="200px"
-          align="center"
-          prop="note"
-        />
-        <el-table-column
-          label="创建时间"
-          width="250px"
-          align="center"
-          prop="createTime"
-        />
-        <el-table-column
-          label="修改时间"
-          prop="updateTime"
-        />
-      </el-table>
-    </div>
+            </el-row>
+            <el-row>
+              <label class="col-md-4">
+                用户名:
+              </label>
+              <div class="col-md-8">
+                {{ JSON.parse(scope.row.connectionParams).user }}
+              </div>
+            </el-row>
+            <div slot="reference" class="name-wrapper">
+              <el-link :underline="false" type="primary">查看参数</el-link>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="描述"
+        prop="note"
+      />
+      <el-table-column
+        label="创建时间"
+        width="250px"
+        align="center"
+        prop="createTime"
+      />
+      <el-table-column
+        label="修改时间"
+        width="250px"
+        align="center"
+        prop="updateTime"
+      />
+    </el-table>
     <pagination
       v-show="total>0"
       :total="total"
@@ -351,10 +336,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-   .etl-datasource-list{
-    height: 71.5%;
-    overflow: auto;
-  }
-</style>
