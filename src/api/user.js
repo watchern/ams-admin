@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const baseURL = '/r1'
+const baseURL = '/base'
 export function login(data) {
   return request({
     baseURL: baseURL,
