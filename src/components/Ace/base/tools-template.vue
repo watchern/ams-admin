@@ -34,7 +34,7 @@
           </div>
         </div>
       </div>
-      <!-- <div class="newest-item">
+      <div class="newest-item">
         <div class="title-label">最新项目</div>
         <div class="newest-item-box">
           <div class="newest-item-box-title">我的项目</div>
@@ -49,23 +49,14 @@
             </div>
           </div>
         </div>
-      </div> -->
-      <div class="newest-item">
-        <div class="title-label">执行任务</div>
-        <div class="newest-item-box">
-          <div>
-            <ul>
-              <li v-for="(item , index) in list" :key="index">
-                <span style="color:#eaeaea" class="tools-box-name" v-text="item.taskName" />
-                <div style="float:right;margin-right:60px">
-                  <span v-if="item.taskStatus == 1" style="color:#eaeaea" class="el-icon-success" />
-                  <span v-if="item.taskStatus == 2" style="color:#eaeaea" class="el-icon-loading" />
-                  <span v-if="item.taskStatus == 3" style="color:#eaeaea" class="el-icon-error" />
-                </div>
-              </li>
-            </ul>
-            <span type="primary" style="color:#eaeaea;float:right;bottom:15px" @click="moreTask">更多</span>
-          </div>
+      </div>
+      <div class="btns-wrap absolute">
+        <div class="btn-box flex a-center j-center">
+          <i class="el-icon-close" />
+        </div>
+        <div class="btn-box1 flex a-center  flex-column">
+          <i class="el-icon-close" />
+          <i class="el-icon-close" />
         </div>
       </div>
     </div>
@@ -81,12 +72,9 @@
 </template>
 
 <script>
-import { querySystemTask } from '@/api/base/systemtask'
 export default {
   data() {
     return {
-      websocket: null,
-      list: {},
       isShowInfoBox: true,
       otherToolsList: [
         {
@@ -132,53 +120,6 @@ export default {
           bg: '#455659'
         }
       ]
-    }
-  },
-  created() {
-    // 页面刚进入时开启长连接
-    this.init()
-    this.initWebSocket()
-  },
-  methods: {
-    init() {
-      querySystemTask().then(resp => {
-      })
-    },
-    initWebSocket() {
-      this.webSocket = this.getWebSocket()
-    },
-    moreTask() {
-      this.$router.push({
-        path: '/base/querytask'
-      })
-    },
-    /**
-     *
-     * 使用说明：
-     * 1、WebSocket客户端通过回调函数来接收服务端消息。例如：webSocket.onmessage
-     * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
-     */
-    getWebSocket() {
-      var userId = this.$store.getters.personuuid
-      const wsuri = process.env.VUE_APP_BASE_WEB_SOCKET + userId // 连接地址，可加参数
-      // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
-      this.webSocket = new WebSocket(wsuri) // 建立与服务端的连接
-      // 当服务端打开连接
-      this.webSocket.onopen = function(event) {
-      }
-      // 发送消息
-      this.webSocket.onmessage = function(event) {
-        func1(event)
-      }
-      const func2 = function func3(val) {
-        this.list = JSON.parse(val.data)
-      }
-      const func1 = func2.bind(this)
-      this.webSocket.onclose = function(event) {
-      }
-      // 通信失败
-      this.webSocket.onerror = function(event) {
-      }
     }
   }
 }
