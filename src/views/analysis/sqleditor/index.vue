@@ -2,16 +2,14 @@
   <div class="app-container">
     <div id="container" v-loading="executeLoading">
       <div id="sidebar">
-        <div class="unfold-shuju demo-flex"><span class="">数据表</span></div>
-        <div class="unfold-canshu demo-flex"><span class="">参数</span></div>
-        <div class="unfold-sql demo-flex"><span class=""><p>S</p><p>Q</p><p>L</p>函数</span></div>
+        <div class="unfold-shuju add-sidiv"><img :src="shuju"></div>
+        <div class="unfold-canshu"><img :src="canshu"></div>
+        <div class="unfold-sql"><img :src="sql"></div>
       </div>
       <div id="leftPart" class="left-part">
-        <ul id="dataTree" class="ztree" style="overflow: auto"/>
-        <span class="leftpart-fenge"></span>
-        <ul id="paramTree" class="ztree" style="max-height: 400px"/>
-        <span class="leftpart-fenge"></span>
-        <ul id="sqlFunTree" class="ztree"/>
+        <ul id="dataTree" class="ztree" />
+        <ul id="paramTree" class="ztree" />
+        <ul id="sqlFunTree" class="ztree" />
       </div>
       <div id="rightPart" class="col-sm-10" style="height: 90vh">
         <div id="sqlEditorDiv" class="sql-editor-div">
@@ -58,15 +56,16 @@
               font-weight: bold;
             "
           />
-          <textarea id="sql"/>
+          <textarea id="sql"/>   
         </div>
         <div id="horizontal"/>
-        <div id="maxOpen" class="max-size" @click="maxOpen">
-          <img id="iconImg" class="iconImg" alt="最大化">
-          <div id="iconImg-huifu" />
-        </div>
+        
         <!-- 结果展示和参数输入区域 -->
         <div id="bottomPart" lay-filter="result-data">
+          <div id="maxOpen" class="max-size" @click="maxOpen" >
+            <div id="iconImg" class="iconImg" alt="最大化" />
+            <div id="iconImg-huifu" />
+          </div>
           <div v-for="result in resultShow" id="dataShow" class="data-show">
             <childTabs ref="childTabsRef" :key="result.id" :pre-value="currentExecuteSQL" use-type="sqlEditor" style="width: 101.5%"/>
           </div>
@@ -261,8 +260,12 @@ export default {
       paramDrawLoading: false,
       tableSearchInput: '',
       paramSearchInput: '',
-      functionInput: ''
+      functionInput: '',
+      shuju:require("@/views/analysis/auditmodel/imgs/shuju.png"),
+      canshu:require("@/views/analysis/auditmodel/imgs/canshu.png"),
+      sql:require("@/views/analysis/auditmodel/imgs/sql.png")
     }
+    
   },
   watch: {
     dialogFormVisible(value) {
@@ -362,7 +365,7 @@ export default {
             }
           }
         }
-        initSQLEditor(document.getElementById('sql'), relTableMap)
+        initSQLEditor(document.getElementById('sql'), relTableMap)  //初始化SQL编辑器
         //initSQLEditor(document.getElementById('sql'), relTableMap)
         if (this.sqlValue != '') {
           // 编辑模型的sql  反显数据
@@ -667,15 +670,17 @@ export default {
 }
 
 #sidebar{
-  width: 1.9%;
+  width: 30px;
   height: 100%;
   margin: 0;
   display: inline-block;
   position: absolute;
-  top: 0px;left: -1px;
+  top: -2px;left: -1px;
   border-radius: 50px 0 0 50px;
-  overflow: hidden;
+  text-align: center;
   z-index: 20;
+  background: #f7f7f7;
+  border-right: 1px solid #5E6572;
 }
 
 .CodeMirror-hint-table {
@@ -710,12 +715,7 @@ export default {
   list-style: none outside none;
 }
 
-.iconImg {
-  width: 20px;
-  height: 20px;
-  margin-bottom: 4px;
-  display: inline-block;
-}
+
 
 #sql {
   width: 100%;
@@ -737,12 +737,12 @@ export default {
   z-index: 20;
 }
 .el-aside{
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
 }
 
 #horizontal {
   position: absolute;
-  top: 40.5%;
+  top: 37%;
   right: 0;
   /* width: 100vh; */
   width: 97.5%;
@@ -750,6 +750,7 @@ export default {
   overflow: hidden;
   background: #c0c5d4;
   cursor: s-resize;
+  z-index: 50;
 }
 
 .errorHighlight {
@@ -783,15 +784,10 @@ export default {
   width: 80px;
   position: relative;
   right: 0;
-  top: 3%;
+  top: 1%;
   float: right;
+  display: none;
   z-index: 201;
-}
-
-#rightPart .add-max-size{
-  position: fixed;
-  top: 8%;
-  right: 2%;
 }
 
 .sql-editor-div{
@@ -801,7 +797,7 @@ export default {
 }
 
 .data-show{
-  /* margin-top: 45px; */
+  margin-top: 45px;
   width: 98.7%;
   height: 100%;
 }

@@ -126,7 +126,7 @@ export function initDragAndDrop() {
       vertical.style.margin = 0
       iT = (e || event).clientX
       if(iT < left_min){iT = left_min}
-      else if(iT > container.clientWidth*.7){iT = container.clientWidth*.7}
+      else if(iT > container.clientWidth*.85){iT = container.clientWidth*.85}
       vertical.style.left = iT - 134 +'px'
       leftPart.style.width = iT - 126 - 15 + 'px'
       rightContent.style.width = parseInt(container.clientWidth - iT + 134 -63) + 'px'
@@ -148,6 +148,7 @@ export function initDragAndDrop() {
       $("#leftPart").stop(true).animate({"width":203},300)
       $("#vertical").delay(300).fadeIn(100).css("left",11.9+"%")
       $("#rightPart").stop(true).animate({"width":1150,"left":0},300)
+      $("#sidebar").css("border-right",1+"px"+" solid"+" #5E6572")
     } 
   }
 
@@ -156,55 +157,64 @@ export function initDragAndDrop() {
       $("#vertical").fadeOut(100)
       $("#leftPart").delay(100).stop(true).animate({"width":0},300)
       $("#rightPart").delay(100).stop(true).animate({"width":1350,"left":15},300)
+      $("#sidebar").css("border","none")
     }
   }
 
+  function tree_zy_all(){
+    $("#sidebar div").removeClass("add-sidiv")
+    $("#dataTree").fadeOut(0)
+    $("#paramTree").fadeOut(0)
+    $("#sqlFunTree").fadeOut(0)
+    tree_shuju = false
+    tree_canshu = false
+    tree_sql = false
+  }
   //分别显示隐藏三个表
   var tree_shuju = true
-  var tree_canshu = true
-  var tree_sql = true
+  var tree_canshu = false
+  var tree_sql = false
+  $("#paramTree").fadeOut(300)
+  $("#sqlFunTree").fadeOut(300)
   $(".unfold-shuju").on("click",function(){
     if(tree_shuju == true){
       $("#dataTree").fadeOut(300)
-      $(this).css("background","#f5f7fa")
-      $(".leftpart-fenge:eq(0)").fadeOut(300)
+      $(this).removeClass("add-sidiv")
       tree_shuju = false
       tree_zy_zhanhe()
     }else if(tree_shuju == false){
-      $("#dataTree").fadeIn(300)
-      $(this).css("background","#fff")
-      $(".leftpart-fenge:eq(0)").fadeIn(300)
       tree_zy_zhan()
+      tree_zy_all()
+      $("#dataTree").fadeIn(300)
+      $(this).addClass("add-sidiv")
       tree_shuju = true
     }
   })
   $(".unfold-canshu").on("click",function(){
     if(tree_canshu == true){
       $("#paramTree").fadeOut(300)
-      $(this).css("background","#f5f7fa")
-      $(".leftpart-fenge:eq(0)").fadeOut(300)
+      $(this).removeClass("add-sidiv")
       tree_canshu = false
       tree_zy_zhanhe()
     }else if(tree_canshu == false){
-      $("#paramTree").fadeIn(300)
-      $(this).css("background","#fff")
-      $(".leftpart-fenge:eq(0)").fadeIn(300)
       tree_zy_zhan()
+      tree_zy_all()
+      $("#paramTree").fadeIn(300)
+      $(this).addClass("add-sidiv")
       tree_canshu = true
     }
   })
   $(".unfold-sql").on("click",function(){
     if(tree_sql == true){
       $("#sqlFunTree").fadeOut(300)
-      $(this).css("background","#f5f7fa")
-      $(".leftpart-fenge:eq(1)").fadeOut(300)
+      $(this).removeClass("add-sidiv")
       tree_sql = false
       tree_zy_zhanhe()
     }else if(tree_sql == false){
-      $("#sqlFunTree").fadeIn(300)
-      $(this).css("background","#fff")
-      $(".leftpart-fenge:eq(1)").fadeIn(300)
       tree_zy_zhan()
+      tree_zy_all()
+      $("#sqlFunTree").fadeIn(300)
+      $(this).addClass("add-sidiv")
       tree_sql = true
     }
   })
@@ -229,8 +239,8 @@ export function initDragAndDrop() {
       iT > maxT && (iT = maxT)
       var cmWrap = $('.CodeMirror-wrap')[0]
       horizontal.style.top = topPart.style.height = iT + 'px'
-      cmWrap.style.height = iT - 38 + 'px'
-      bottomPart.style.height = rightPart.clientHeight - iT + 'px'
+      cmWrap.style.height = iT - 21 + 'px'
+      bottomPart.style.height = rightPart.clientHeight - iT -20 + 'px'
       if (grids) {
         grids.style.height = rightPart.clientHeight - iT - 197 + 'px'
       }
@@ -270,13 +280,12 @@ export function initEvent() {
     var scroolY = document.documentElement.scrollTop || document.body.scrollTop
     mouseX = e.pageX || e.clientX + scroolX
     mouseY = e.pageY || e.clientY + scroolY
-    // zy_hover()
   })
 }
 /**
  * 初始化SQL编辑器
  * @param textarea 编辑器id
- * @param relTableMap 只能提示的表对象
+ * @param relTableMap 智能提示的表对象
  * @returns {CodeMirror.EditorFromTextArea}
  */
 export function initSQLEditor(textarea, relTableMap) {
@@ -284,28 +293,28 @@ export function initSQLEditor(textarea, relTableMap) {
   var editor = CodeMirror.fromTextArea(textarea, {
     mode: 'text/x-mssql',
     theme: 'idea',
-    indentWithTabs: true,
-    lineNumbers: true,
-    lineWrapping: true,
-    smartIndent: true,
-    autofocus: true,
-    matchBrackets: true,
-    styleActiveLine: false,
-    hintOptions: {
+    indentWithTabs: true,   //带字符表得缩进
+    lineNumbers: true,      //线条数量
+    lineWrapping: true,     //线条包装
+    smartIndent: true,      //智能缩进
+    autofocus: true,        //自动对齐
+    matchBrackets: true,    //开启括号匹配
+    styleActiveLine: false, //样式激活线
+    hintOptions: {          //选项
       tables: relTableMap
     }
   })
   // 输入时事件cursorActivity
-  editor.on('cursorActivity', function(cm) {
+  editor.on('cursorActivity', function(cm) { //光标活动
     if (cm.curOp.focus === false) {
       initHint(editor)
     }
     $('span').removeClass('errorHighlight')
   })
-  editor.on('beforeChange', function(instance, changeObj) {
-    if (changeObj.origin === 'paste' && isFirstPaste) {
-      cursor = editor.getCursor()
-      checkSqlText = editor.getRange({ ch: 0, line: cursor.line }, { ch: cursor.ch, line: cursor.line })
+  editor.on('beforeChange', function(instance, changeObj) { //改变之前
+    if (changeObj.origin === 'paste' && isFirstPaste) { //第一次粘贴？？？
+      cursor = editor.getCursor()   //获取光标
+      checkSqlText = editor.getRange({ ch: 0, line: cursor.line }, { ch: cursor.ch, line: cursor.line })//光标范围
       isFirstPaste = false
     }
   })
@@ -611,19 +620,19 @@ var maxormin = true
 export function maxOpenOne() {
   if(maxormin == true){
     $("#drag").hide(100)
-    $("#maxOpen").addClass("add-max-size")
     $("#iconImg").css("display","none")
     $("#iconImg-huifu").css("display","block")
-    $("#bottomPart").css({"position":"fixed","z-index":"200","margin-top":0})
-    $("#bottomPart").addClass("bottompart-max")
+    $("#bottomPart").css({"position":"fixed","width":93+"%","left":125,"top":0,"height":100+"%"})
+    $(".data-show").css("margin-top",0)
+    $(".ag-theme-balham").css("height",650)
     maxormin = false
   }else if(maxormin == false){
     $("#drag").show(100)
-    $("#maxOpen").removeClass("add-max-size")
     $("#iconImg").css("display","block")
     $("#iconImg-huifu").css("display","none")
-    $("#bottomPart").css({"position":"static","z-index":"200","margin-top":6+"%"})
-    $("#bottomPart").removeClass("bottompart-max")
+    $(".data-show").css("margin-top",45)
+    $("#bottomPart").css({"position":"static","left":0,"width":100+"%","height":100+"%"})
+    $(".ag-theme-balham").css("height",200)
     maxormin = true
   }
 }
@@ -1644,6 +1653,8 @@ export function verifySql() {
  * 执行SQL
  */
 export function executeSQL() {
+  //显示最大化按钮
+  $(".max-size").show()
   // 这是存放参数的数组
   var arr = new Array()
   var selText = editorObj.getSelection()
