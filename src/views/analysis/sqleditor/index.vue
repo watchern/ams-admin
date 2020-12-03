@@ -356,7 +356,7 @@ export default {
       functionInput: '',
       shuju:require("@/views/analysis/auditmodel/imgs/shuju.png"),
       canshu:require("@/views/analysis/auditmodel/imgs/canshu.png"),
-      sql:require("@/views/analysis/auditmodel/imgs/sql.png")
+      sql:require("@/views/analysis/auditmodel/imgs/sql.png"),
       modelResultSavePathDialog: false,
       tempPath:'',
       tempId:'',
