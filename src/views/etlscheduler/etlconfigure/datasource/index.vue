@@ -39,11 +39,11 @@
       :data="list"
       border
       highlight-current-row
+      height="calc(100vh - 320px)"
+      max-height="calc(100vh - 320px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       @on-update="_onUpdate"
-      height="calc(100vh - 320px)"
-      max-height="calc(100vh - 320px)"
     >
       <el-table-column
         type="selection"
@@ -87,7 +87,6 @@
                 {{ JSON.parse(scope.row.connectionParams).user }}
               </div>
             </el-row>
-
             <div slot="reference" class="name-wrapper">
               <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
