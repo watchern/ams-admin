@@ -5,6 +5,7 @@
       <el-col v-if="startTimeStart!=null && startTimeEnd != null" :span="12">作业时间范围{{ startTimeStart | formatDate }} 到  {{ startTimeEnd | formatDate }}</el-col>
       <el-col :span="12">业务系统: {{ titleMsg.sysName }}</el-col>
     </el-row>
+    <div class="etl-datafilestatistics-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -50,7 +51,9 @@
         :limit.sync="pageQuery.pageSize"
         @pagination="getList"
       />
-    </el-table></div>
+    </el-table>
+    </div>
+    </div>
 </template>
 
 <script>
@@ -166,5 +169,9 @@ export default {
   /* color: #343942; */
   letter-spacing: 0;
   line-height: 12px;
+ }
+ .etl-datafilestatistics-list{
+    height: 71.5%;
+    overflow: auto;
  }
 </style>

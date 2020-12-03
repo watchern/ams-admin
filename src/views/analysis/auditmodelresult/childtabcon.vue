@@ -72,7 +72,6 @@
       </downloadExcel>
       <el-button type="primary" title="图表展示" class="oper-btn chart"></el-button>
     </el-row>
-    <!-- 使用ag-grid-vue组件 其中columnDefs为列，rowData为表格数据 -->
     <ag-grid-vue
       v-if="isSee"
       v-loading="isLoading"
@@ -113,7 +112,7 @@
       width="30%"
     >
       <div align="center">
-        <el-select v-model="value" placeholder="请选择">
+        <el-select v-model="value">
           <el-option
             v-for="(item, key) in options"
             :key="key"
@@ -172,7 +171,7 @@ import {
   selectConditionShow,
   selectModel,
   findParamModelRelByModelUuid,
-  replaceParam,
+  replaceParam
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";

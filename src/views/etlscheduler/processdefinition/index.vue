@@ -72,6 +72,7 @@
           <el-button type="primary" title="上传" class="oper-btn export" />
         </el-upload></el-col>
     </el-row>
+    <div class="etl-processsdefinition-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -125,6 +126,7 @@
         prop="updateTime"
       />
     </el-table>
+    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -420,5 +422,9 @@ export default {
 <style scoped>
 .buttonText{
   color: #409eff;
+}
+.etl-processsdefinition-list{
+  height: 71.5%;
+  overflow: auto;
 }
 </style>
