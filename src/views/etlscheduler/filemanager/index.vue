@@ -20,7 +20,6 @@
       </el-col>
 
     </el-row>
-    <div class="etl-filemanager-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -57,7 +56,6 @@
         prop="sizeString"
       />
     </el-table>
-    </div>
     <!-- 创建文件夹 -->
     <el-dialog
       title="创建文件夹"
@@ -540,9 +538,5 @@ export default {
     overflow: auto;
     overflow-x: hidden;
     overflow-y: auto;
-  }
-  .etl-filemanager-list{
-    height: 71.5%;
-    overflow: auto;
   }
 </style>

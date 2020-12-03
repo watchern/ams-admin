@@ -14,7 +14,7 @@
         <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" title="删除" @click="handleDelete()" />
       </el-col>
     </el-row>
-    <div class="etl-dataresource-list">
+   
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -26,6 +26,8 @@
       style="width: 100%;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
     >
       <el-table-column
         type="selection"
@@ -57,7 +59,7 @@
         prop="updateTime"
       />
     </el-table>
-    </div>
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -301,10 +303,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-   .etl-dataresource-list{
-    height: 71.5%;
-    overflow: auto;
-  }
-</style>

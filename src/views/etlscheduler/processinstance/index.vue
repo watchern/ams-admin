@@ -51,7 +51,7 @@
           @click="handleCancel()"
         /></el-col>
     </el-row>
-    <div class="etl-processinstance-list">
+  
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -64,6 +64,7 @@
       max-height="800"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
+      
     >
       <el-table-column
         type="selection"
@@ -193,7 +194,6 @@
         prop="nowTask"
       />
     </el-table>
-    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -722,9 +722,5 @@ export default {
 	font-weight: 700;
 	font-style: normal;
 	color: #888888;
-  }
-  .etl-processinstance-list{
-    height: 71.5%;
-    overflow: auto;
   }
 </style>
