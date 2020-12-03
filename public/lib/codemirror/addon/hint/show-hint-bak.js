@@ -218,27 +218,27 @@
     }
   }
 
-  function Widget(completion, data) {
-    this.completion = completion;
+  function Widget(completion, data) {  //小装置 完成
+    this.completion = completion; 
     this.data = data;
     this.picked = false;
     var widget = this, cm = completion.cm;
-    var ownerDocument = cm.getInputField().ownerDocument;
-    var parentWindow = ownerDocument.defaultView || ownerDocument.parentWindow;
+    var ownerDocument = cm.getInputField().ownerDocument; //cm.输入字段的id 所有者文件
+    var parentWindow = ownerDocument.defaultView || ownerDocument.parentWindow; //所有者文件的默认视图或者父窗口
 
-    var hints = this.hints = ownerDocument.createElement("ul");
-    var theme = completion.cm.options.theme;
+    var hints = this.hints = ownerDocument.createElement("ul"); //创建一个ul
+    var theme = completion.cm.options.theme;  //完成 选项 主题（主题应该是idea
     hints.className = "CodeMirror-hints " + theme;
-    this.selectedHint = data.selectedHint || 0;
+    this.selectedHint = data.selectedHint || 0;  //选择提示
 
-    var completions = data.list;
+    var completions = data.list;  //获取到的列表 
     for (var i = 0; i < completions.length; ++i) {
       var elt = hints.appendChild(ownerDocument.createElement("li")), cur = completions[i];
-      var className = HINT_ELEMENT_CLASS + (i != this.selectedHint ? "" : " " + ACTIVE_HINT_ELEMENT_CLASS);
+      var className = HINT_ELEMENT_CLASS + (i != this.selectedHint ? "" : " " + ACTIVE_HINT_ELEMENT_CLASS); //规定类名为CodeMirror-hint
       if (cur.className != null) className = cur.className + " " + className;
       elt.className = className;
       if (cur.render) cur.render(elt, data, cur);
-      else elt.appendChild(ownerDocument.createTextNode(cur.displayText || getText(cur)));
+      else elt.appendChild(ownerDocument.createTextNode(cur.displayText || getText(cur))); //创建文本节点（显示文本 或 获取文本）
       elt.hintId = i;
     }
 
@@ -246,7 +246,8 @@
     var left = pos.left, top = pos.bottom, below = true;
     hints.style.left = left + "px";
     hints.style.top = top + "px";
-    // If we're at the edge of the screen, then we want the menu to appear on the left of the cursor.
+    // If we're at the edge of the screen, then we want the menu to appear on the left of the cursor. 
+    // 如果我们在屏幕的边缘，那么我们希望菜单出现在光标的左侧。
     var winW = parentWindow.innerWidth || Math.max(ownerDocument.body.offsetWidth, ownerDocument.documentElement.offsetWidth);
     var winH = parentWindow.innerHeight || Math.max(ownerDocument.body.offsetHeight, ownerDocument.documentElement.offsetHeight);
     (completion.options.container || ownerDocument.body).appendChild(hints);

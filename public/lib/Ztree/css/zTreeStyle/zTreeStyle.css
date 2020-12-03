@@ -7,25 +7,22 @@
 }
 
 #leftPart{
-	box-shadow: 5px 5px 10px #f5f7fa;
-	height: 112%;
+	height: 100%;
 }
 
 .el-tabs--border-card{height: 100%;}
 
-#rightPart .bottompart-max{
-	height: 100%;
-	width: 91%;
-	z-index: 201;
-	top: 0;
-	left: 125px;
+#bottomPart{
+	height: 96%;
+	width: 100%;
+	z-index: 200;
+	position: relative;
+	margin-top: 8px;
 }
 
-#bottomPart{margin-top: 6%;}
-
 #iconImg-huifu{
-	width: 18px;
-	height: 18px;
+	width: 24px;
+	height: 24px;
 	float: left;
 	margin-top: 1px;
 	background: url(./img/minmize.png) 0 0 no-repeat;
@@ -34,6 +31,18 @@
 	background-size: 100%;
 	display: none;
 }
+
+.iconImg {
+	width: 24px;
+	  height: 24px;
+	  float: left;
+	  margin-top: 1px;
+	  background: url(./img/maxmize.png) 0 0 no-repeat;
+	  border: none;
+	  display: inline-block;
+	  background-size: 100%;
+  }
+
 .ztree * {
 	padding: 0;
 	margin: 0;
@@ -75,48 +84,39 @@
 }
 
 #sidebar div{
-	height: 33.3333%;
-	width: 26px;
-	background: #fff;
-	border:1px solid #ddd;
+	/* height: 54px; */
+	width: 100%;
 	cursor:pointer;
-}
-
-#sidebar span{
-	width: 26px;
-	font-size: 14px;
-	padding: 3px 5px;
-	display: inline-block;
 	text-align: center;
+	position: relative;
+	left: 1px;
 }
 
-.demo-flex{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+#sidebar .add-sidiv{
+	border-top:1px solid #5E6572;
+	border-bottom:1px solid #5E6572;
+	background: #fff;
 }
 
 .ztree li ul li{
 	margin: 0;
-	/* padding: 0 0 0 18px */
+	padding: 0 0 0 18px
 }
 .ztree li a {
-	left: 0;
 	cursor: pointer;
-	width: 229px;
-	height: 23px;
 	color: #333;
 	background-color: transparent;
 	text-decoration: none;
 	vertical-align: top;
 	display: inline-block;
-	position: absolute;
-	padding:5px 0 0 40px;
 	z-index: 5;
+	padding: 5px 5px 5px 3px;
 }
 
 .ztree li a:hover{
+	background-color: #f5f7fa;
+}
+.ztree li span:hover + a{
 	background-color: #f5f7fa;
 }
 
@@ -141,7 +141,6 @@
 
 .ztree li span {
 	line-height: 16px;
-	margin-right: 2px
 }
 
 .ztree li span.button {
@@ -164,6 +163,13 @@
 	*background-image: url("./img/zTreeStandard.gif")
 }
 
+#sidebar img{
+	margin-top: 25px;
+	margin-bottom: 25px;
+	width: 18px;
+	height: 18px;
+}
+
 .ztree li span.button.chk {
 	width: 13px;
 	height: 13px;
@@ -172,83 +178,123 @@
 }
 
 .ztree li span.button.chk.checkbox_false_full {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: 0 0
 }
 
 .ztree li span.button.chk.checkbox_false_full_focus {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: 0 -14px
 }
 
 .ztree li span.button.chk.checkbox_false_part {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: 0 -28px
 }
 
 .ztree li span.button.chk.checkbox_false_part_focus {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: 0 -42px
 }
 
 .ztree li span.button.chk.checkbox_false_disable {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: 0 -56px
 }
 
 .ztree li span.button.chk.checkbox_true_full {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -14px 0
 }
 
 .ztree li span.button.chk.checkbox_true_full_focus {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -14px -14px
 }
 
 .ztree li span.button.chk.checkbox_true_part {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -14px -28px
 }
 
 .ztree li span.button.chk.checkbox_true_part_focus {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -14px -42px
 }
 
 .ztree li span.button.chk.checkbox_true_disable {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -14px -56px
 }
 
 .ztree li span.button.chk.radio_false_full {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -28px 0
 }
 
 .ztree li span.button.chk.radio_false_full_focus {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -28px -14px
 }
 
 .ztree li span.button.chk.radio_false_part {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -28px -28px
 }
 
 .ztree li span.button.chk.radio_false_part_focus {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -28px -42px
 }
 
 .ztree li span.button.chk.radio_false_disable {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -28px -56px
 }
 
 .ztree li span.button.chk.radio_true_full {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -42px 0
 }
 
 .ztree li span.button.chk.radio_true_full_focus {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -42px -14px
 }
 
 .ztree li span.button.chk.radio_true_part {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -42px -28px
 }
 
 .ztree li span.button.chk.radio_true_part_focus {
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	background-position: -42px -42px
 }
 
 .ztree li span.button.chk.radio_true_disable {
-	background-position: -42px -56px
+	background-position: -42px -56px;
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 }
 
 .ztree li span.button.switch {
@@ -311,16 +357,21 @@
 }
 
 .ztree li span.button.roots_docu {
-	background-position: -56px 0
+	background-position: -56px 0;
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 }
 
 .ztree li span.button.center_docu {
-	background-position: -56px -18px
+	background-position: -56px -18px;
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 }
 
 .ztree li span.button.bottom_docu {
 	background-position: -56px -36px;
-
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 }
 
 .ztree li span.button.noline_docu {
@@ -348,6 +399,8 @@
 .ztree li span.button.ico_docu {
 	margin-right: 2px;
 	background-position: -110px -32px;
+	background-image: url(../zTreeStyle/img/zTreeStandard.png);
+	background-size: 160px 97px;
 	vertical-align: top;
 	*vertical-align: middle;
 	margin: 0;
@@ -356,6 +409,8 @@
 .ztree li span.button.edit {
 	margin-right: 2px;
 	background-position: -110px -48px;
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	vertical-align: top;
 	*vertical-align: middle
 }
@@ -363,6 +418,8 @@
 .ztree li span.button.remove {
 	margin-right: 2px;
 	background-position: -110px -64px;
+	background-image: url(../zTreeStyle/img/zTreeStandard.gif);
+	background-size: 160px 97px;
 	vertical-align: top;
 	*vertical-align: middle
 }
