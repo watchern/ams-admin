@@ -32,7 +32,6 @@
         </span>
       </el-col>
     </el-row>
-    <div class="etl-pro-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -41,6 +40,8 @@
       fit
       highlight-current-row
       style="width: 100%"
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -88,6 +89,7 @@
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
               <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
+
           </el-popover>
         </template>
       </el-table-column>
@@ -129,7 +131,6 @@
       />
       <el-table-column label="修改时间" align="center" prop="updateTime" />
     </el-table>
-    </div>
     <pagination
       v-show="total > 0"
       :total="total"
@@ -151,7 +152,7 @@
         :model="temp"
         class="detail-form"
         label-position="right"
-        style="height:62vh; overflow:auto;"
+        style="max-height:60vh; overflow:auto;"
       >
         <el-form-item label="任务名称" prop="scheduleName">
           <el-input
@@ -268,7 +269,7 @@
                     v-if="dependTaskList!=null && dependTaskList.length>0"
                     @click="!isDetails && _setGlobalRelation()"
                   >
-                    <!-- {{ relation === "AND" ? "且" : "或" }} -->
+                  <!-- {{ relation === "AND" ? "且" : "或" }} -->
                   </span>
                   <div
                     v-for="(el, $index) in dependTaskList"
@@ -281,7 +282,7 @@
                       v-if="el.dependItemList.length"
                       @click="!isDetails && _setRelation($index)"
                     >
-                      <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
+                    <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
                     </span>
 
                     <!-- :depend-item-list="dependTaskList[0].dependItemList" -->
@@ -1239,10 +1240,5 @@ export default {
     // position: relative;
     // left: 460px;
     // bottom: 115px;
-  }
-
-  .etl-pro-list{
-    height: 71.5%;
-    overflow: auto;
   }
 </style>

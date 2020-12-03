@@ -91,9 +91,9 @@ export default {
 </script>
 
 <style scoped>
-.pagination-container {
-  padding: 32px 16px;
-}
+/*.pagination-container {*/
+/*  padding: 32px 16px;*/
+/*}*/
 .pagination-container.hidden {
   display: none;
 }

@@ -9,7 +9,8 @@
       />
     </div>
     <el-row>
-      <el-col align="right"> <!-- 跳过指定环节 -->
+      <el-col align="right">
+        <!-- 跳过指定环节 -->
         <el-button
           type="primary"
           title="跳过指定环节"
@@ -51,7 +52,6 @@
           @click="handleCancel()"
         /></el-col>
     </el-row>
-    <div class="etl-processinstance-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -61,7 +61,8 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -193,7 +194,6 @@
         prop="nowTask"
       />
     </el-table>
-    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -235,56 +235,63 @@
       :visible.sync="logDialogFromVisible"
       :close-on-click-modal="false"
     >
-      <!-- <el-card style="padding-bottom: 3%;margin-top:10px">
-        <el-col class="logtype">
+      <div style="max-height:60vh; overflow:auto;margin-top:3%;">
+        <!-- value和name一致，默认展开 -->
+        <el-collapse v-if="prepLogs!==null" value="pre" style="width:80%;border:0;margin-left:10%;">
+          <!-- title环节名称 -->
+          <el-collapse-item title="准备执行" name="pre">
+            <el-card style="padding-bottom: 3%;">
+              <!-- <el-col class="logtype">
           日志详情：
-        </el-col>
-        <el-col
-          v-if="prepLogs!=null"
-          style="margin-top:10px"
-        >
-          <el-col
-            v-for="(log,$index) in prepLogs"
-            :key="$index"
-            :label="log.taskLogUuid"
-            :style="{color: logColorObj[log.status].color}"
-          >
-            {{ log.logTime +' '+ log.logMessage }}
-          </el-col>
-        </el-col>
-      </el-card> -->
-      <el-timeline style="margin-left:7%;margin-top:7%">
-        <!-- 使用时间线任务实例的环节和运行的状态 -->
-        <!-- 已运行的环节，改变颜色和图标 -->
-        <el-timeline-item
-          v-for="(task,$index) in logTasks"
-          :key="task.id"
-          :icon="taskslogsList[task.id] != null ? 'el-icon-more': null"
-          :color="taskslogsList[task.id] != null ? '#0bbd87' : null"
-          size="large"
-        >
-          <!-- value和name一致，默认展开 -->
-          <el-collapse :value="task.id" style="width:85%;border:0;">
-            <!-- title环节名称 -->
-            <el-collapse-item :title="($index+1)+'/'+logTasks.length+'  '+task.name" :name="task.id">
-              <el-card style="padding-bottom: 3%">
-                <el-col v-if="taskslogsList[task.id] != null" class="logtype">
-                  耗时： {{ taskslogsList[task.id] != null ? taskslogsList[task.id].time : 0+'秒' }}
-                </el-col>
+        </el-col> -->
+              <el-col
+                style="margin-top:10px"
+              >
                 <el-col
-                  v-for="log in logs[task.id]"
-                  :key="log.taskLogUuid"
+                  v-for="(log,$index) in prepLogs"
+                  :key="$index"
                   :label="log.taskLogUuid"
                   :style="{color: logColorObj[log.status].color}"
-                  style="margin-top:10px"
                 >
                   {{ log.logTime +' '+ log.logMessage }}
                 </el-col>
-              </el-card>
-            </el-collapse-item>
-          </el-collapse>
-        </el-timeline-item>
-      </el-timeline>
+              </el-col>
+            </el-card>
+          </el-collapse-item>
+        </el-collapse>
+        <el-timeline style="margin-left:10%;margin-top:7%">
+          <!-- 使用时间线任务实例的环节和运行的状态 -->
+          <!-- 已运行的环节，改变颜色和图标 -->
+          <el-timeline-item
+            v-for="(task,$index) in logTasks"
+            :key="task.id"
+            :icon="taskslogsList[task.id] != null ? 'el-icon-more': null"
+            :color="taskslogsList[task.id] != null ? '#0bbd87' : null"
+            size="large"
+          >
+            <!-- value和name一致，默认展开 -->
+            <el-collapse :value="task.id" style="width:85%;border:0;">
+              <!-- title环节名称 -->
+              <el-collapse-item :title="($index+1)+'/'+logTasks.length+'  '+task.name" :name="task.id">
+                <el-card style="padding-bottom: 3%">
+                  <el-col v-if="taskslogsList[task.id] != null" class="logtype">
+                    耗时： {{ taskslogsList[task.id] != null ? taskslogsList[task.id].time : 0+'秒' }}
+                  </el-col>
+                  <el-col
+                    v-for="log in logs[task.id]"
+                    :key="log.taskLogUuid"
+                    :label="log.taskLogUuid"
+                    :style="{color: logColorObj[log.status].color}"
+                    style="margin-top:10px"
+                  >
+                    {{ log.logTime +' '+ log.logMessage }}
+                  </el-col>
+                </el-card>
+              </el-collapse-item>
+            </el-collapse>
+          </el-timeline-item>
+        </el-timeline>
+      </div>
       <div slot="footer">
         <el-button type="primary" @click="logDialogFromVisible = false">关闭</el-button>
       </div>
@@ -542,9 +549,9 @@ export default {
         this.logs = resp.data
       })
       // 获取非环节执行任务日志
-      // findPrepLogs(data.processInstanceUuid).then(resp => {
-      //   this.prepLogs = resp.data
-      // })
+      findPrepLogs(data.processInstanceUuid).then(resp => {
+        this.prepLogs = resp.data
+      })
       // 获取调度实例已运行的环节
       findTaskInstanceById(data.processInstanceUuid).then(resp => {
         this.taskslogsList = resp.data
@@ -722,9 +729,5 @@ export default {
 	font-weight: 700;
 	font-style: normal;
 	color: #888888;
-  }
-  .etl-processinstance-list{
-    height: 71.5%;
-    overflow: auto;
   }
 </style>

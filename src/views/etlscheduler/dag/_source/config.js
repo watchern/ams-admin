@@ -225,6 +225,10 @@ const tasksType = {
   JAVA: {
     desc: 'JAVA',
     color: '#646464'
+  },
+  SHELL: {
+    desc: 'SHELL',
+    color: '#646464'
   }
 }
 

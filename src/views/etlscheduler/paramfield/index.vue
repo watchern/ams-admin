@@ -17,7 +17,6 @@
         <el-button type="primary" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="handleDelete()" />
       </el-col>
     </el-row>
-    <div class="etl-paramfield-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -27,7 +26,8 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="calc(100vh - 320px)"
+      max-height="calc(100vh - 320px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -74,8 +74,6 @@
         align="center"
         prop="selectValue"
       />
-      -->
-      <!--
       <el-table-column
         label="排序号"
         width="120px"
@@ -101,7 +99,6 @@
         prop="updateTime"
       />
     </el-table>
-    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -431,6 +428,7 @@ export default {
   }
 }
 </script>
+<<<<<<< HEAD
 
 <style scoped>
     .etl-paramfield-list{
@@ -438,3 +436,5 @@ export default {
       overflow: auto;
     }
 </style>
+=======
+>>>>>>> 901d49c882d2b01feac22ec3bb35e1ab98f6c5ca
