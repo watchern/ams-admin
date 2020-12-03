@@ -23,6 +23,8 @@
       fit
       highlight-current-row
       style="width: 100%;"
+      height="calc(100vh - 320px)"
+      max-height="calc(100vh - 320px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >

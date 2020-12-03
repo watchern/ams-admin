@@ -88,16 +88,7 @@
               <input id="flag2" type="hidden" value="false" />
               <input id="outColumn" type="hidden" value="" />
               {{ path }}
-              <a
-                @click="modelResultSavePathDialog = true"
-                style="color: #409eff; margin-left: 50px"
-                >编辑</a
-              >
-              <a
-                @click="getColumnSqlInfo"
-                style="color: #409eff; margin-left: 50px"
-                >张闯测试</a
-              >
+              <a @click="modelResultSavePathDialog = true" style="color: #409eff; margin-left: 50px">编辑</a>
             </el-col>
           </el-row>
           <div
@@ -279,13 +270,13 @@ import {
   maxOpenOne,
   getColumnSqlInfo,
   refushTableTree,
+  dropTable
 } from "@/api/analysis/sqleditor/sqleditor";
 import sqlDraftList from "@/views/analysis/sqleditor/sqldraftlist";
 import { updateDraft } from "@/api/analysis/sqleditor/sqldraft";
 import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import paramDraw from "@/views/analysis/modelparam/paramdraw";
 import { replaceNodeParam } from "@/api/analysis/auditparam";
-import Cookies from "js-cookie";
 import dataTree from "@/views/data/role-res/data-tree";
 
 /**
@@ -314,6 +305,12 @@ let lastResultColumnType = [];
  * 数据界面对象
  */
 let childTabsRef;
+
+/**
+ * 最后一个select索引
+ * @type {number}
+ */
+let lastSqlIndex = -1
 export default {
   name: "SQLEditor",
   components: { sqlDraftList, childTabs, paramDraw, dataTree },
@@ -360,8 +357,8 @@ export default {
       modelResultSavePathDialog: false,
       tempPath:'',
       tempId:'',
-      nodeType:'', 
-      path:'',
+      nodeType:'',
+      path:'选择模型结果保存路径',
       modelResultSavePathId:'',
       personCode: this.$store.state.user.code,
       sceneCode: "auditor",
@@ -413,42 +410,49 @@ export default {
       this.webSocket.onopen = function (event) {};
       // 发送消息
       this.webSocket.onmessage = function (event) {
-        var treeNodeInfo = JSON.parse(event.data).treeNodeInfo
-        console.log(555555555)
-        console.log(treeNodeInfo)
-        if (treeNodeInfo.length > 0) {
-          var treeNodes = []
-          for (var i = 0; i < treeNodeInfo.length; i++) {
-            var treeNode = {
-              chkDisabled: false,
-              deptColNum: 0,
-              hidden: false,
-              icon: "../../images/ico/table_1.png",
-              id: treeNodeInfo[i].tableMetaUuid,
-              isExist: 0,
-              isParent: true,
-              name: treeNodeInfo[i].displayTbName,
-              personNode: false,
-              pid: treeNodeInfo[i].folderUuid,
-              timeColNum: 0,
-              type: "table",
-            };
-            treeNodes.push(treeNode);
+        const dataObj = JSON.parse(event.data)
+        if(dataObj.listenerType === "afterTaskChangeTable" || dataObj.listenerType === "afterTaskCreateView"){
+          let treeNodeInfo = dataObj.addTableMetaList
+          if (treeNodeInfo.length > 0) {
+            var treeNodes = []
+            for (var i = 0; i < treeNodeInfo.length; i++) {
+              var treeNode = {
+                chkDisabled: false,
+                deptColNum: 0,
+                hidden: false,
+                icon: "../../images/ico/table_1.png",
+                id: treeNodeInfo[i].tableMetaUuid,
+                isExist: 0,
+                isParent: true,
+                name: treeNodeInfo[i].displayTbName,
+                personNode: false,
+                pid: treeNodeInfo[i].folderUuid,
+                timeColNum: 0,
+                type: "table",
+              };
+              treeNodes.push(treeNode)
+            }
+            refushTableTree(treeNodes)
           }
-          refushTableTree(treeNodes);
         }
-
-        const dataObj = JSON.parse(event.data);
-        if (dataObj.result != null) {
-          currentExecuteProgress++;
+        if(dataObj.listenerType === "onSQLResult"){
+          if (dataObj.executeSQL.state == 2) {
+            //如果最后的列索引与当前执行进度一直，说明最后的结果集已经拿到 取出最后一个结果集的列做为模型结果列
+            if(lastSqlIndex == currentExecuteProgress){
+              lastResultColumn = dataObj.columnNames
+              lastResultColumnType = dataObj.columnTypes
+            }
+            currentExecuteProgress++
+          }
+          // 如果当前执行等于总的执行进度  说明sql已经全部执行成功
+          if (currentExecuteProgress == dataObj.executeTask.executeSQL.length) {
+            isAllExecuteSuccess = true
+          }
+          func1(dataObj)
         }
-        // 如果当前执行等于总的执行进度  说明最后的结果集已经拿到 取出最后一个结果集的列做为模型结果列
-        if (currentExecuteProgress == dataObj.executeTask.executeSQL.length) {
-          isAllExecuteSuccess = true;
-          lastResultColumn = dataObj.columnNames;
-          lastResultColumnType = dataObj.columnTypes;
+        if(dataObj.listenerType === "afterTaskDropTable" || dataObj.listenerType === "afterTaskDropView"){
+          dropTable(dataObj.dropTableNameList)
         }
-        func1(dataObj);
       };
       const func2 = function func3(val) {
         this.$refs.childTabsRef[0].loadTableData(val);
@@ -468,7 +472,7 @@ export default {
      * 此处没有主动发消息给服务端，如果调用此方法，则会发送消息至socket服务端onMessage()方法上
      */
     sendMsgToServer() {
-      const message = "123";
+      const message = "";
       if (message) {
         this.webSocket.send(
           JSON.stringify({ username: $("#username").text(), msg: message })
@@ -479,16 +483,16 @@ export default {
      * 初始化sql编辑器基础数据
      */
     initData() {
-      const userId = this.$store.state.user.code;
-      initDragAndDrop();
-      initIcon();
-      initTableTree(userId);
-      initFunctionTree();
-      initVariable();
-      initEvent();
-      initParamTree();
+      const userId = this.$store.state.user.code
+      initDragAndDrop()
+      initIcon()
+      initTableTree(userId)
+      initFunctionTree()
+      initVariable()
+      initEvent()
+      initParamTree()
       initTableTip(userId).then((result) => {
-        var relTableMap = {};
+        var relTableMap = {}
         if (result.data != null) {
           for (let i = 0; i < result.data.length; i++) {
             if (result.data[i].type === "table") {
@@ -502,58 +506,58 @@ export default {
           // 编辑模型的sql  反显数据
           editorSql(this.sqlValue, this.sqlEditorParamObj);
         }
-        refreshCodeMirror();
-      });
+        refreshCodeMirror()
+      })
     },
     /**
      * 数据表树搜索
      */
     tableTreeSearch() {
-      tableTreeSearch();
+      tableTreeSearch()
     },
     /**
      * 参数树搜索
      */
     paramTreeSearch() {
-      paramTreeSearch();
+      paramTreeSearch()
     },
     /**
      * 函数树搜索
      */
     functionTreeSearch() {
-      functionTreeSearch();
+      functionTreeSearch()
     },
     /**
      * sql格式化
      */
     sqlFormat() {
-      sqlFormat();
+      sqlFormat()
     },
     /**
      * 查找和替换
      * @param type 1替换 2查找
      */
     findAndReplace(type) {
-      findAndReplace(type);
+      findAndReplace(type)
     },
     /**
      * 转大小写
      * @param type 1大写2小写
      */
     caseTransformation(type) {
-      caseTransformation(type);
+      caseTransformation(type)
     },
     /**
      * 注释选中行
      */
     selectSqlNotes() {
-      selectSqlNotes();
+      selectSqlNotes()
     },
     /**
      * 取消注释
      */
     selectSqlCancelNotes() {
-      selectSqlCancelNotes();
+      selectSqlCancelNotes()
     },
     /**
      * 获取保存的对象
@@ -720,6 +724,7 @@ export default {
           this.executeLoading = true;
           startExecuteSql(obj)
             .then((result) => {
+              lastSqlIndex = result.data.lastSqlIndex
               this.executeLoading = false;
               if (!result.data.isError) {
                 this.currentExecuteSQL = result.data.executeSQLList;
@@ -727,7 +732,7 @@ export default {
                 this.createTreeNode = result.data.treeNodeInfo;
                 this.resultShow.push({ id: 1 });
               } else {
-                this.$message({ type: "info", message: "执行失败" });
+                this.$message({ type: "info", message: "执行失败:" +result.data.message});
               }
             })
             .catch((result) => {
@@ -780,7 +785,7 @@ export default {
     },
     modelResultSavePathDetermine() {
       if (this.nodeType == "folder") {
-        this.path = this.tempPath;
+        this.path = "当前执行sql保存路径:" + this.tempPath;
         this.modelResultSavePathId = this.tempId;
         this.modelResultSavePathDialog = false;
       } else if (this.nodeType == "") {

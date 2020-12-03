@@ -25,6 +25,7 @@
       max-height="800"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
+      
     >
       <el-table-column
         label="业务系统"
@@ -66,7 +67,8 @@
         :limit.sync="pageQuery.pageSize"
         @pagination="getList"
       /> -->
-    </el-table></div>
+    </el-table>
+    </div>
 </template>
 
 <script>
@@ -203,4 +205,5 @@ export default {
   letter-spacing: 0;
   line-height: 12px;
  }
+ 
 </style>

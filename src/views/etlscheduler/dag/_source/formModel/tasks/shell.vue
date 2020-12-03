@@ -1,24 +1,8 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 <template>
   <div class="shell-model">
     <m-list-box>
-      <div slot="text">{{ $t('Script') }}</div>
-      <div slot="content">
+      <div slot="text">脚本</div>
+      <div slot="content" class="propwidth">
         <div class="from-mirror">
           <textarea
             id="code-shell-mirror"
@@ -32,9 +16,9 @@
       </div>
     </m-list-box>
     <m-list-box>
-      <div slot="text">{{ $t('Resources') }}</div>
-      <div slot="content">
-        <treeselect v-model="resourceList" :multiple="true" :options="options" :normalizer="normalizer" :disabled="isDetails" :value-consists-of="valueConsistsOf" :placeholder="$t('Please select resources')">
+      <div slot="text">资源</div>
+      <div slot="content" class="propwidth">
+        <treeselect v-model="resourceList" :multiple="true" :options="options" :normalizer="normalizer" :disabled="isDetails" :value-consists-of="valueConsistsOf" placeholder="请选择资源">
           <div slot="value-label" slot-scope="{ node }">{{ node.raw.fullName }}</div>
         </treeselect>
       </div>
@@ -51,12 +35,11 @@
       </div>
     </m-list-box> -->
     <m-list-box>
-      <div slot="text">{{ $t('Custom Parameters') }}</div>
+      <div slot="text">自定义参数</div>
       <div slot="content">
         <m-local-params
           ref="refLocalParams"
           :udp-list="localParams"
-          :hide="false"
           @on-local-params="_onLocalParams"
         />
       </div>
@@ -65,21 +48,22 @@
 </template>
 <script>
 import _ from 'lodash'
-import i18n from '@/module/i18n'
 import mListBox from './_source/listBox'
 import mScriptBox from './_source/scriptBox'
-import mResources from './_source/resources'
+// import mResources from './_source/resources'
 import mLocalParams from './_source/localParams'
-import disabledState from '@/module/mixin/disabledState'
+import disabledState from '@/components/etl/mixin/disabledState'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import codemirror from '@/components/etl/file/codemirror'
+import $ from 'jquery'
 
 let editor
 
 export default {
   name: 'Shell',
-  components: { mLocalParams, mListBox, mResources, mScriptBox, Treeselect },
+  // components: { mLocalParams, mListBox, mResources, mScriptBox, Treeselect },
+  components: { mLocalParams, mListBox, Treeselect },
   mixins: [disabledState],
   props: {
     backfillItem: Object
@@ -125,7 +109,7 @@ export default {
       const result = []
       resourceIdArr.forEach(item => {
         this.allNoResources.forEach(item1 => {
-          if (item.id == item1.id) {
+          if (item.id === item1.id) {
             // resultBool = true
             result.push(item1)
           }
@@ -146,6 +130,7 @@ export default {
   },
   created() {
     const item = this.store.state.dag.resourcesListS
+    console.log('o.params.resourceList' + JSON.stringify(this.store.state.dag.resourcesListS))
     this.diGuiTree(item)
     this.options = item
     const o = this.backfillItem
@@ -161,10 +146,10 @@ export default {
         _.map(resourceList, v => {
           if (!v.id) {
             this.store.dispatch('dag/getResourceId', {
-              type: 'FILE',
+              type: '0',
               fullName: '/' + v.res
             }).then(res => {
-              this.resourceList.push(res.id)
+              this.resourceList.push(res.data.resourcesUuid)
               this.dataProcess(backResource)
             }).catch(e => {
               this.resourceList.push(v.res)
@@ -250,7 +235,7 @@ export default {
     _verification() {
       // rawScript verification
       if (!editor.getValue()) {
-        this.$message.warning(`${i18n.$t('Please enter script(required)')}`)
+        this.$message.warning(`请输入脚本(必填)`)
         return false
       }
 
@@ -260,7 +245,7 @@ export default {
       }
       // noRes
       if (this.noRes.length > 0) {
-        this.$message.warning(`${i18n.$t('Please delete all non-existent resources')}`)
+        this.$message.warning(`请删除所有未授权或已删除资源`)
         return false
       }
       // Process resourcelist
@@ -275,6 +260,7 @@ export default {
         localParams: this.localParams,
         rawScript: editor.getValue()
       })
+
       return true
     },
     /**
@@ -302,10 +288,14 @@ export default {
       return editor
     },
     diGuiTree(item) { // Recursive convenience tree structure
-      item.forEach(item => {
-        item.children === '' || item.children === undefined || item.children === null || item.children.length === 0
-          ? this.operationTree(item) : this.diGuiTree(item.children)
-      })
+      try {
+        item.forEach(item => {
+          item.children === '' || item.children === undefined || item.children === null || item.children.length === 0
+            ? this.operationTree(item) : this.diGuiTree(item.children)
+        })
+      } catch (e) {
+        console.log(e)
+      }
     },
     operationTree(item) {
       if (item.dirctory) {
@@ -315,7 +305,7 @@ export default {
     },
     searchTree(element, id) {
       // 根据id查找节点
-      if (element.id == id) {
+      if (element.id === id) {
         return element
       } else if (element.children != null) {
         var i
@@ -349,7 +339,7 @@ export default {
         if (diffSet.length > 0) {
           diffSet.forEach(item => {
             backResource.forEach(item1 => {
-              if (item == item1.id || item == item1.res) {
+              if (item === item1.id || item === item1.res) {
                 optionsCmp.push(item1)
               }
             })
@@ -357,8 +347,8 @@ export default {
         }
         const noResources = [{
           id: -1,
-          name: $t('Unauthorized or deleted resources'),
-          fullName: '/' + $t('Unauthorized or deleted resources'),
+          name: '未授权或已删除资源',
+          fullName: '/' + '未授权或已删除资源',
           children: []
         }]
         if (optionsCmp.length > 0) {
@@ -378,6 +368,9 @@ export default {
 }
 </script>
 <style lang="scss" rel="stylesheet/scss" scope>
+.propwidth{
+  width:500px
+}
   .scriptModal {
     .ans-modal-box-content-wrapper {
       width: 90%;

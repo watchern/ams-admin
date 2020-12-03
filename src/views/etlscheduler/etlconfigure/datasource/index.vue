@@ -7,19 +7,6 @@
         @submit="getList"
       />
     </div>
-    <!-- <m-list-construction>
-        <template slot="conditions">
-          <m-conditions>
-            <template slot="button-group">
-              <x-button
-                type="primary"
-                size="mini"
-                @click="_create('')"
-              >添加</x-button>
-            </template>
-          </m-conditions>
-        </template>
-      </m-list-construction> -->
     <el-row>
       <el-col align="right">
         <el-button
@@ -43,7 +30,6 @@
           @click="handleDelete()"
         /></el-col>
     </el-row>
-
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -53,7 +39,8 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="calc(100vh - 320px)"
+      max-height="calc(100vh - 320px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       @on-update="_onUpdate"
@@ -100,7 +87,6 @@
                 {{ JSON.parse(scope.row.connectionParams).user }}
               </div>
             </el-row>
-
             <div slot="reference" class="name-wrapper">
               <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
@@ -109,8 +95,6 @@
       </el-table-column>
       <el-table-column
         label="描述"
-        width="200px"
-        align="center"
         prop="note"
       />
       <el-table-column
@@ -121,10 +105,11 @@
       />
       <el-table-column
         label="修改时间"
+        width="250px"
+        align="center"
         prop="updateTime"
       />
     </el-table>
-
     <pagination
       v-show="total>0"
       :total="total"

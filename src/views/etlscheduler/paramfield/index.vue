@@ -26,7 +26,8 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="calc(100vh - 320px)"
+      max-height="calc(100vh - 320px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -73,8 +74,6 @@
         align="center"
         prop="selectValue"
       />
-      -->
-      <!--
       <el-table-column
         label="排序号"
         width="120px"
@@ -429,3 +428,13 @@ export default {
   }
 }
 </script>
+<<<<<<< HEAD
+
+<style scoped>
+    .etl-paramfield-list{
+      height: 71.5%;
+      overflow: auto;
+    }
+</style>
+=======
+>>>>>>> 901d49c882d2b01feac22ec3bb35e1ab98f6c5ca

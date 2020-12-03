@@ -153,7 +153,7 @@ export function initDragAndDrop() {
       $("#vertical").delay(300).fadeIn(100).css("left",11.9+"%")
       $("#rightPart").stop(true).animate({"width":1150,"left":0},300)
       $("#sidebar").css("border-right",1+"px"+" solid"+" #5E6572")
-    } 
+    }
   }
 
   function tree_zy_zhanhe() {
@@ -772,9 +772,34 @@ export function refushTableTree(treeNodes){
       }
     }
   }
-  console.log(tableTreeData.concat(treeNodes))
-  zTreeObj = $.fn.zTree.init($('#dataTree'), setting, tableTreeData.concat(treeNodes))
-  tableTreeData = tableTreeData.concat(treeNodes)
+  if(treeNodes!= undefined && treeNodes.length > 0){
+    tableTreeData = tableTreeData.concat(treeNodes)
+    zTreeObj = $.fn.zTree.init($('#dataTree'), setting, tableTreeData)
+    for(var i = 0; i < treeNodes.length;i++){
+      //添加sql编辑器智能提示
+      CodeMirror.tableColMapping[treeNodes[i].name] = [];
+      //重新加载表与列的关系
+      editorObj.options.hintOptions.tables[treeNodes[i].name] = [];
+    }
+  }
+
+}
+
+/**
+ * 删除表或试图后删除左侧树
+ * @param dropTableArr 删除的表
+ */
+export function dropTable(dropTableArr){
+  if(dropTableArr != undefined && dropTableArr.length > 0){
+    for(var k = 0; k<dropTableArr.length; k++){
+      var dropedNode = zTreeObj.getNodesByParam("name", dropTableArr[k], null)[0];
+      zTreeObj.removeNode(dropedNode);
+      //删除智能提示
+      delete CodeMirror.tableColMapping[dropTableArr[k]];
+      //清除表与列的关系
+      delete editorObj.options.hintOptions.tables[dropTableArr[k]];
+    }
+  }
 }
 //表单最大化
 var maxormin = true
@@ -1892,7 +1917,7 @@ export function refreshCodeMirror(){
 
 /**
  * 将编写好的替换参数前的sql传入后台
- * @param {*} data 
+ * @param {*} data
  */
 export function getColumnSqlInfo(data) {
   return request({

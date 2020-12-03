@@ -84,6 +84,7 @@
       max-height="800"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
+      
     >
       <el-table-column
         type="selection"
