@@ -83,7 +83,7 @@
       width="30%"
     >
       <div align="center">
-        <el-select v-model="value" placeholder="请选择">
+        <el-select v-model="value">
           <el-option
             v-for="(item, key) in options"
             :key="key"

@@ -13,6 +13,7 @@
         <el-button type="primary" class="oper-btn excel" title="导出" @click="exportFile" />
       </el-col>
     </el-row>
+    <div class="etl-datafilestatistics2-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -66,7 +67,9 @@
         :limit.sync="pageQuery.pageSize"
         @pagination="getList"
       /> -->
-    </el-table></div>
+    </el-table>
+    </div>
+    </div>
 </template>
 
 <script>
@@ -202,5 +205,9 @@ export default {
   /* color: #343942; */
   letter-spacing: 0;
   line-height: 12px;
+ }
+ .etl-datafilestatistics2-list{
+    height: 71.5%;
+    overflow: auto;
  }
 </style>

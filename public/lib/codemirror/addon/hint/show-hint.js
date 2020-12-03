@@ -233,9 +233,11 @@
       var className = HINT_ELEMENT_CLASS + (i != this.selectedHint ? "" : " " + ACTIVE_HINT_ELEMENT_CLASS);
       if (cur.className != null) className = cur.className + " " + className;
       elt.className = className;
-      if (cur.render) cur.render(elt, data, cur);
+      if (cur.render) cur.render(elt, data, cur);// cur>>data.list   elt>>li  data>>???
       else elt.appendChild(ownerDocument.createTextNode(cur.displayText || getText(cur)));
       elt.hintId = i;
+      // var nnt = elt.appendChild(ownerDocument.createElement("span"));
+      // nnt.className = "CodeMirror-nnt"
     }
 
     var pos = cm.cursorCoords(completion.options.alignWithWord ? data.from : null);

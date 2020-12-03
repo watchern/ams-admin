@@ -48,7 +48,6 @@
                 <el-table-column label="原模型字段" align="center">
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.resultColumn" value="-1">
-                      <el-option label="请选择" value="-1" />
                       <el-option
                         v-for="state in columns"
                         :key="state.outputColumnName"
@@ -61,7 +60,6 @@
                 <el-table-column label="关联模型参数" align="center">
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.ammParamUuid" value="-1">
-                      <el-option label="请选择" value="-1" />
                       <el-option
                         v-for="state in relModelParam"
                         :key="state.ammParamUuid"

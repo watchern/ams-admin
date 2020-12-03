@@ -7,6 +7,7 @@
         @submit="getList"
       />
     </div>
+    <div class="etl-datafile-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -62,6 +63,7 @@
         :formatter="formatStatus"
       />
     </el-table>
+    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -156,3 +158,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+   .etl-datafile-list{
+    height: 71.5%;
+    overflow: auto;
+  }
+</style>
