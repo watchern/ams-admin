@@ -7,16 +7,16 @@
         </div>
         <div class="col-md-5">
           <div class="table-small-model">
-            <table>
-              <tr>
+            <table border="0">
+              <!-- <tr>
                 <th width="40">编号</th>
                 <th width="40">数量</th>
                 <th width="40">状态</th>
-              </tr>
+              </tr> -->
               <tr v-for="(item,$index) in processStateList" :key="$index">
-                <td><span>{{ $index+1 }}</span></td>
-                <td><span><a href="javascript:" :class="searchParams.projectId ?'links':''" @click="handleProcess(item.key)">{{ item.value }}</a></span></td>
+                <!-- <td><span>{{ $index+1 }}</span></td> -->
                 <td><span class="ellipsis" style="width: 98%;" :title="item.key">{{ item.key }}</span></td>
+                <td><span><a href="javascript:" :class="searchParams.projectId ?'links':''" @click="handleProcess(item.key)">{{ item.value }}</a></span></td>
               </tr>
             </table>
           </div>
@@ -156,7 +156,8 @@ export default {
       td {
         height: 32px;
         line-height: 32px;
-        border-bottom: 1px solid #ECEDEC;
+        border-bottom: 0px solid #ECEDEC;
+        text-align: left;
         span {
           font-size: 12px;
           color: #333;

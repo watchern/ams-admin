@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="page-container all">
     <!-- <div >
       <el-button
         type="primary"
@@ -13,63 +13,79 @@
     <m-list-construction>
       <template slot="content">
         <div class="perject-home-content" style="height:90vh;overflow-y:scroll;">
+          <div class="content-top">
 
-          <div class="row">
-            <div class="time-model col-md-3">
-              <x-datepicker
-                :panel-num="2"
-                placement="bottom-end"
-                :value="[searchParams.startTimeStart,searchParams.startTimeEnd]"
-                type="daterange"
-                placeholder="选择日期区间"
-                format="YYYY-MM-DD"
-                @on-change="_datepicker"
-              />
+            <div class="row">
+              <div class="time-model col-md-3">
+                <x-datepicker
+                  :panel-num="2"
+                  placement="bottom-end"
+                  :value="[searchParams.startTimeStart,searchParams.startTimeEnd]"
+                  type="daterange"
+                  placeholder="选择日期区间"
+                  format="YYYY-MM-DD"
+                  @on-change="_datepicker"
+                />
+              </div>
+
+              <div class="col-md-4 content-left">
+                <!-- <el-tag effect="dark" style="width:119%;height: 80px;"> -->
+                  <div class="el-icon-document-copy icon-all"></div>
+                  <div style="font-size: 30px;padding:10px; font-weight:bolder">调度任务总数</div>
+                  <div style="font-size: 20px;padding-left:10px;">999999999</div>
+                <!-- </el-tag> -->
+              </div>
+              <div class="col-md-4 content-left1">
+                <!-- <el-tag effect="dark" type="success" style="width:55%;height: 80px;"> -->
+                  <div class="el-icon-time icon-time1"></div>
+                  <div style="font-size: 20px;padding:10px; font-weight:bolder">调度任务总耗时</div>
+                  <div style="font-size: 15px;padding-left:10px;">{{ taketime | timeFilter }}</div>
+                <!-- </el-tag> -->
+              </div>
+              <div class="col-md-4 content-left2">
+                <!-- <el-tag effect="dark" type="warning" style="width:55%;height: 80px;"> -->
+                  <div class="el-icon-time icon-time2"></div>
+                  <div style="font-size: 20px;padding:10px; font-weight:bolder">调度任务历时</div>
+                  <div style="font-size: 15px;padding-left:10px;">{{ processtime | timeFilter }}</div>
+                <!-- </el-tag> -->
+              </div>
+
             </div>
-            <div class="col-md-4" style="padding:10px; ">
-              <el-tag effect="dark" type="success" style="width:100%;height: 80px;">
-                <div style="font-size: 20px;padding:10px;">调度任务总耗时</div>
-                <div style="font-size: 15px;padding-left:10px;">{{ taketime | timeFilter }}</div>
-              </el-tag>
-            </div>
-            <div class="col-md-4" style="padding:10px;">
-              <el-tag effect="dark" type="warning" style="width:100%;height: 80px;">
-                <div style="font-size: 20px;padding:10px;">调度任务历时</div>
-                <div style="font-size: 15px;padding-left:10px;">{{ processtime | timeFilter }}</div>
-              </el-tag>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="chart-title">
-                <span>调度流程状态统计
-                  <el-button
+
+            <div class="row">
+              <div class="col-md-6 content-right">
+                <div class="chart-title">
+                  <span>调度流程状态统计
+                    <el-button
+                      style="margin-left:10px;margin-top:-10px;"
+                      type="primary"
+                      title="查看详情"
+                      class="oper-btn more"
+                      @click="handleprocess()"
+                    /></span>
+                </div>
+                <div class="row">
+                  <m-process-state-count :search-params="searchParams" />
+                </div>
+              </div>
+              <!-- <div class="col-md-6">
+                <div class="chart-title">
+                  <span>调度环节状态统计<el-button
                     style="margin-left:10px;margin-top:-10px;"
                     type="primary"
                     title="查看详情"
                     class="oper-btn more"
-                    @click="handleprocess()"
+                    @click="handletask()"
                   /></span>
-              </div>
-              <div class="row">
-                <m-process-state-count :search-params="searchParams" />
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="chart-title">
-                <span>调度环节状态统计<el-button
-                  style="margin-left:10px;margin-top:-10px;"
-                  type="primary"
-                  title="查看详情"
-                  class="oper-btn more"
-                  @click="handletask()"
-                /></span>
-              </div>
-              <div class="row">
-                <m-task-ctatus-count :search-params="searchParams" />
-              </div>
+                </div>
+                <div class="row">
+                  <m-task-ctatus-count :search-params="searchParams" />
+                </div>
+              </div> -->
             </div>
           </div>
+
+<!-- 
           <div class="row">
             <div class="col-md-12">
               <div class="chart-title">
@@ -96,9 +112,9 @@
                     <td><span>{{ item.dataResourceName }}</span></td>
                     <td><span>{{ item.executions+'/'+item.pushes }}</span></td>
                     <td>
-                      <a target="_blank" class="buttonText" :title="statusObj[item.status].name">
+                      <a target="_blank" class="buttonText" :title="statusObj[item.status].name"> -->
                         <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色 -->
-                        <i
+                        <!-- <i
                           :class="statusObj[item.status].unicode"
                           :style="{color: statusObj[item.status].color}"
                         />
@@ -107,7 +123,8 @@
                 </table>
               </div>
             </div>
-          </div>
+          </div> -->
+
         </div>
       </template>
     </m-list-construction>
@@ -119,6 +136,7 @@ import { statusList } from './_source/common.js'
 import mTaskCtatusCount from './_source/taskCtatusCount'
 import mProcessStateCount from './_source/processStateCount'
 import mListConstruction from './_source/listConstruction'
+import mIndexTab from './_source/indexTab'
 import { getDataFileList, takeTime, processTakeTime } from '@/api/etlscheduler/taskmonitor'
 
 export default {
@@ -126,7 +144,8 @@ export default {
   components: {
     mListConstruction,
     mTaskCtatusCount,
-    mProcessStateCount
+    mProcessStateCount,
+    mIndexTab
   },
   filters: {
     timeFilter(value) {
@@ -220,8 +239,9 @@ export default {
     position: relative;
     .time-model {
       // position: absolute;
-      right: 8px;
-      float: right;
+      left: 860px;
+      top: 47px;
+      // float: right;
       // top: -40px;
       .ans-input {
         >input {
@@ -257,4 +277,56 @@ export default {
   td i{
     font-size: 20px;
   }
+  .content-top{
+    width: 95%;
+    border: 0px solid red;
+    position: absolute;
+    top: 0;
+    left: 50px;
+    box-shadow: 3px 17px 17px 3px rgba(0,0,0,.1);
+    border-radius: 20px;
+  }
+  .content-right{
+    float: right;
+    box-shadow: 3px 0px 17px 17px rgba(0,0,0,.1);
+    border-radius: 20px;
+  }
+
+  .content-left{
+    position: absolute;
+    top: 20px;
+    left: 105px;
+  }
+  .content-left1{
+    position: absolute;
+    top: 180px;
+    left: 105px;
+  }
+  .content-left2{
+    position: absolute;
+    top: 180px;
+    right: 700px;
+  }
+  .el-icon-time{
+    font-size: 30px;
+  }
+  .icon-all{
+    position: absolute;
+    top: 14px;
+    left:-27px;
+    font-size: 33px;
+  }
+  .icon-time1{
+    position: absolute;
+    top: 8px;
+    left:-22px;
+  }
+   .icon-time2{
+    position: absolute;
+    top: 8px;
+    left:-22px;
+  }
+  // .all{
+  //   background-color: #F2F8FF;
+  // }
 </style>
