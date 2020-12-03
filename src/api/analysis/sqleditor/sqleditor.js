@@ -293,6 +293,8 @@ export function initEvent() {
  * @returns {CodeMirror.EditorFromTextArea}
  */
 export function initSQLEditor(textarea, relTableMap) {
+  var expTableMap = {};
+  expTableMap = {"OBJ_PERSON_1":"这是人员表","AND":"这是a阿德杀杀杀杀杀杀杀杀杀杀阿三顶顶顶顶顶顶顶顶顶顶顶顶顶杀杀杀杀杀大撒大nd","AS":"这是as"}
   // 初始化CodeMirror
   var editor = CodeMirror.fromTextArea(textarea, {
     mode: 'text/x-mssql',
@@ -305,7 +307,8 @@ export function initSQLEditor(textarea, relTableMap) {
     matchBrackets: true,    //开启括号匹配
     styleActiveLine: false, //样式激活线
     hintOptions: {          //选项
-      tables: relTableMap
+      tables: relTableMap,
+      tablesTitle: expTableMap
     }
   })
   // 输入时事件cursorActivity
@@ -381,7 +384,7 @@ export function initSQLEditor(textarea, relTableMap) {
   editor.setSize('auto', ($(document).height() * 0.5 - 40) + 'px')
   editorObj = editor
   $('.CodeMirror-scroll').focus()
-  editor.setSize('auto','280px');
+  editor.setSize('auto','84.5%');
 }
 
 /**
