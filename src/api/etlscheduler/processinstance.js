@@ -87,7 +87,7 @@ export function findTaskLogs(id) {
 export function findPrepLogs(id) {
   return request({
     baseURL: baseURL,
-    url: `/processInstance/findPrepLogs/${id}`,
+    url: `/processInstance/findPreLogs/${id}`,
     method: 'get'
   })
 }

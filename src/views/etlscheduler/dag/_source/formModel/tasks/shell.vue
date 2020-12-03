@@ -64,7 +64,6 @@ export default {
   name: 'Shell',
   // components: { mLocalParams, mListBox, mResources, mScriptBox, Treeselect },
   components: { mLocalParams, mListBox, Treeselect },
-
   mixins: [disabledState],
   props: {
     backfillItem: Object
@@ -131,6 +130,7 @@ export default {
   },
   created() {
     const item = this.store.state.dag.resourcesListS
+    console.log('o.params.resourceList' + JSON.stringify(this.store.state.dag.resourcesListS))
     this.diGuiTree(item)
     this.options = item
     const o = this.backfillItem
@@ -144,19 +144,19 @@ export default {
       const resourceList = o.params.resourceList || []
       if (resourceList.length) {
         _.map(resourceList, v => {
-          if (!v.resourcesUuid) {
+          if (!v.id) {
             this.store.dispatch('dag/getResourceId', {
-              typeValue: 'FILE',
+              type: '0',
               fullName: '/' + v.res
             }).then(res => {
-              this.resourceList.push(res.resourcesUuid)
+              this.resourceList.push(res.data.resourcesUuid)
               this.dataProcess(backResource)
             }).catch(e => {
               this.resourceList.push(v.res)
               this.dataProcess(backResource)
             })
           } else {
-            this.resourceList.push(v.resourcesUuid)
+            this.resourceList.push(v.id)
             this.dataProcess(backResource)
           }
         })
