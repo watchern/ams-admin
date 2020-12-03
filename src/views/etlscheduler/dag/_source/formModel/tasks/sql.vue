@@ -56,7 +56,7 @@
         </span>sql语句<el-tooltip class="item" effect="dark" content="多条sql语句使用/进行分隔，自定义参数占位格式${参数名},日期类型参数的格式为$[yyyyMMdd-N]" placement="top-start">
           <i class="el-icon-info" />
         </el-tooltip></div>
-      <div slot="content">
+      <div slot="content" class="propwidth">
         <div class="from-mirror">
           <textarea
             id="code-sql-mirror"
@@ -425,7 +425,7 @@ export default {
     _getReceiver() {
       // const param = {}
       // const current = this.router.history.current
-      // if (current.name === 'projects-definition-details') {
+      // if (current.name === 'projectsdefinitiondetails') {
       //   param.processDefinitionId = current.params.id
       // } else {
       //   param.processInstanceId = current.params.id
@@ -476,6 +476,9 @@ export default {
 .requiredIcon {
   color: #ff0000;
   padding-right: 4px;
+}
+.propwidth{
+  width:500px
 }
 </style>
 

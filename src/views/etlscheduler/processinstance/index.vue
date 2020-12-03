@@ -82,7 +82,7 @@
                 <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色-->
                   <i
-                    :class=" statusObj[scope.row.status].unicode"
+                    :class="statusObj[scope.row.status].unicode"
                     :style="{color: statusObj[scope.row.status].color}"
                     style="font-size:25px;font-weight:bold"
                   />
@@ -128,6 +128,29 @@
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
               <el-link :underline="false" type="primary">查看参数</el-link>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="依赖任务环节"
+        align="center"
+        prop="dependTaskInfo"
+        width="120px"
+      >
+        <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
+          <el-popover trigger="hover" placement="top" width="500">
+            <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
+              <label class="col-md-2">
+                [{{ dependTask.dateValueName }}]
+              </label>
+              <label class="col-md-10" align="right">
+                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+              </label>
+            </el-row>
+            <div slot="reference" class="name-wrapper">
+              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+              <el-link :underline="false" type="primary">查看依赖环节</el-link>
             </div>
           </el-popover>
         </template>
@@ -179,6 +202,7 @@
     <!-- 跳过环节的dialog -->
     <el-dialog
       :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
     >
       <el-form
         ref="dataForm"
@@ -207,7 +231,26 @@
     <!-- 显示任务日志的dialog -->
     <el-dialog
       :visible.sync="logDialogFromVisible"
+      :close-on-click-modal="false"
     >
+      <!-- <el-card style="padding-bottom: 3%;margin-top:10px">
+        <el-col class="logtype">
+          日志详情：
+        </el-col>
+        <el-col
+          v-if="prepLogs!=null"
+          style="margin-top:10px"
+        >
+          <el-col
+            v-for="(log,$index) in prepLogs"
+            :key="$index"
+            :label="log.taskLogUuid"
+            :style="{color: logColorObj[log.status].color}"
+          >
+            {{ log.logTime +' '+ log.logMessage }}
+          </el-col>
+        </el-col>
+      </el-card> -->
       <el-timeline style="margin-left:7%;margin-top:7%">
         <!-- 使用时间线任务实例的环节和运行的状态 -->
         <!-- 已运行的环节，改变颜色和图标 -->
@@ -249,7 +292,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
+import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findPrepLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
 // statuSelectList, statusComm
 import { commandTypeObj, colorList, statusListComm, statuSelect } from './comm.js'
@@ -361,7 +404,8 @@ export default {
       logs: null,
       taskslogsList: null,
       schedule: null,
-      nowTask: null
+      nowTask: null,
+      prepLogs: null
     }
   },
   watch: {
@@ -495,6 +539,10 @@ export default {
       findTaskLogs(data.processInstanceUuid).then(resp => {
         this.logs = resp.data
       })
+      // 获取非环节执行任务日志
+      // findPrepLogs(data.processInstanceUuid).then(resp => {
+      //   this.prepLogs = resp.data
+      // })
       // 获取调度实例已运行的环节
       findTaskInstanceById(data.processInstanceUuid).then(resp => {
         this.taskslogsList = resp.data
