@@ -7,27 +7,27 @@
                 </div>
                 <div class="menuLi">
                     <div class="icon" style="width:70px !important;">
-                        <img class="iconImg" style="width: 16px;height: 16px;" src="../tooldic/images/icon/new.png" alt="新建">
+                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../tooldic/images/icon/new.png" alt="新建">
                         <a class="iconText" @click="newGraph">&nbsp;新建</a>
                     </div>
                     <div class="icon" style="width:60px !important;">
-                        <img class="iconImg" src="../tooldic/images/icon/save.png" alt="保存">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/save.png" alt="保存">
                         <a class="iconText" @click="saveGraph('saveGraph')">保存</a>
                     </div>
                     <div class="icon" style="width:70px !important;margin-left: 10px;">
-                        <img class="iconImg" src="../tooldic/images/icon/next.png" alt="前进">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/next.png" alt="前进">
                         <a class="iconText" @click="next">恢复</a>
                     </div>
                     <div class="icon" style="width:70px !important;">
-                        <img class="iconImg" src="../tooldic/images/icon/open.png" alt="打开">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/open.png" alt="打开">
                         <a class="iconText" @click="openGraph">打开</a>
                     </div>
                     <div class="icon" style="width:70px !important;padding-left:6px;">
-                        <img class="iconImg" style="width: 16px;height: 16px;" src="../tooldic/images/icon/saveAs.png" alt="另存为">
+                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../tooldic/images/icon/saveAs.png" alt="另存为">
                         <a class="iconText" @click="saveGraph('saveAsGraph')">另存为</a>
                     </div>
                     <div class="icon" style="width:70px !important;">
-                        <img class="iconImg" src="../tooldic/images/icon/back.png" alt="后撤">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/back.png" alt="后撤">
                         <a class="iconText" @click="back">撤销</a>
                     </div>
                 </div>
@@ -36,7 +36,7 @@
                 <div class="menuTit">运行</div>
                 <div class="menuLi">
                     <div class="icon" style="width:100px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImg" src="../tooldic/images/icon/run.png" alt="全部运行">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/run.png" alt="全部运行">
                         <a class="iconText" @click="executeAllNode">全部运行</a>
                     </div>
                 </div>
@@ -45,27 +45,27 @@
                 <div class="menuTit">行数据处理</div>
                 <div class="menuLi">
                     <div id="filter" class="icon" data-type="filter">
-                        <img class="iconImg" src="../tooldic/images/icon/filter.png" alt="数据筛选">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/filter.png" alt="数据筛选">
                         <a class="iconText">数据筛选</a>
                     </div>
                     <div id="sort" class="icon" data-type="sort">
-                        <img class="iconImg" src="../tooldic/images/icon/sort.png" alt="数据排序">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/sort.png" alt="数据排序">
                         <a class="iconText">数据排序</a>
                     </div>
                     <div id="sample" class="icon" data-type="sample">
-                        <img class="iconImg" src="../tooldic/images/icon/sample.png" alt="数据抽样">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/sample.png" alt="数据抽样">
                         <a class="iconText">数据抽样</a>
                     </div>
                     <div id="layering" class="icon" data-type="layering">
-                        <img class="iconImg" src="../tooldic/images/icon/layering.png" alt="数据分层">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/layering.png" alt="数据分层">
                         <a class="iconText">数据分层</a>
                     </div>
                     <div id="groupCount" class="icon" data-type="groupCount">
-                        <img class="iconImg" src="../tooldic/images/icon/groupCount.png" alt="分组汇总">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/groupCount.png" alt="分组汇总">
                         <a class="iconText">分组汇总</a>
                     </div>
                     <div id="delRepeat" class="icon" data-type="delRepeat">
-                        <img class="iconImg" src="../tooldic/images/icon/delRepeat.png" alt="数据去重">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/delRepeat.png" alt="数据去重">
                         <a class="iconText">数据去重</a>
                     </div>
                 </div>
@@ -74,11 +74,11 @@
                 <div class="menuTit">列数据处理</div>
                 <div class="menuLi">
                     <div id="comparison" class="icon" data-type="comparison" style="width:130px !important;">
-                        <img class="iconImg" src="../tooldic/images/icon/comparison.png" alt="数据频次分析">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/comparison.png" alt="数据频次分析">
                         <a class="iconText" style="padding-left: 5px;">数据频次分析</a>
                     </div>
                     <div id="change" class="icon" data-type="change">
-                        <img class="iconImg" src="../tooldic/images/icon/change.png" alt="数据转码">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/change.png" alt="数据转码">
                         <a class="iconText" style="padding-left: 5px;">数据转码</a>
                     </div>
                 </div>
@@ -87,11 +87,11 @@
                 <div class="menuTit">表间数据处理</div>
                 <div class="menuLi">
                     <div id="union" class="icon" data-type="union">
-                        <img class="iconImg" src="../tooldic/images/icon/combineSet.png" alt="数据合并">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/combineSet.png" alt="数据合并">
                         <a class="iconText">数据融合</a>
                     </div>
                     <div id="relation" class="icon" data-type="relation">
-                        <img class="iconImg" src="../tooldic/images/icon/relation.png" alt="数据关联">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/relation.png" alt="数据关联">
                         <a class="iconText">数据关联</a>
                     </div>
                 </div>
@@ -100,7 +100,7 @@
             <!--<div class="menuTit">SQL</div>-->
             <!--<div class="menuLi">-->
             <!--<div class="icon" id="sql" data-type="sql" style="width:110px !important;height: 60px !important;line-height: 60px !important;">-->
-            <!--<img class="iconImg" src="../tooldic/images/icon/sql.png" alt="SQL查询器"/>-->
+            <!--<img class="iconImgGraph" src="../tooldic/images/icon/sql.png" alt="SQL查询器"/>-->
             <!--<a class="iconText">SQL查询器</a>-->
             <!--</div>-->
             <!--</div>-->
@@ -109,7 +109,7 @@
             <!--<div class="menuTit">图形</div>-->
             <!--<div class="menuLi">-->
             <!--<div class="icon" style="width:110px !important;height: 60px !important;line-height: 60px !important;" id="barChart" data-type="barChart">-->
-            <!--<img class="iconImg" src="images/icon/customize.png" alt="自定义"/>-->
+            <!--<img class="iconImgGraph" src="images/icon/customize.png" alt="自定义"/>-->
             <!--<a class="iconText">自定义图形</a>-->
             <!--</div>-->
             <!--</div>-->
@@ -118,7 +118,7 @@
                 <div class="menuTit">帮助</div>
                 <div class="menuLi" style="">
                     <div id="help" class="icon" data-type="help" style="width:80px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImg" src="../tooldic/images/icon/help.png" alt="帮助">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/help.png" alt="帮助">
                         <a class="iconText" @click="help">帮助</a>
                     </div>
                 </div>
@@ -170,7 +170,7 @@
                     <!--<button id="viewAllData" class="btn btn-primary" onclick="viewAllData()" style="position: absolute;right: 200px;top: 10px;display:none;">预览全部数据</button>-->
                     <!--<button id="exportAllData" class="btn btn-primary" onclick="exportAllData()" style="position: absolute;right: 100px;top: 10px;display:none;">全部导出</button>-->
                     <!--<div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;display:none;" onclick="maxOpen()">-->
-                        <!--<img class="iconImg" src="../tooldic/images/icon/maximize.png" alt="最大化">-->
+                        <!--<img class="iconImgGraph" src="../tooldic/images/icon/maximize.png" alt="最大化">-->
                         <!--<span class="iconText">最大化</span>-->
                     <!--</div>-->
                     <div class="layui-tab-content">
@@ -281,14 +281,14 @@
                 <li onclick="rootDataRefresh">刷新</li>
             </ul>
         </div>
-        <!--<div id="rMenu" class="rightMenu">-->
-            <!--<ul>-->
-                <!--<li @click="viewData">预览数据</li>-->
+        <div id="rMenu" class="rightMenu">
+            <ul>
+                <li @click="viewData(true)">预览数据</li>
                 <!--<li @click="relationTableQuery">关联表查询</li>-->
                 <!--<li @click="editTable_li">修改表结构</li>-->
                 <!--<li @click="dropTable_li">删除表</li>-->
-            <!--</ul>-->
-        <!--</div>-->
+            </ul>
+        </div>
         <div id="folderMenu_dev" class="rightMenu">
             <ul>
                 <li id="addFolder" @click="addFolder()">新建文件夹</li>
@@ -759,19 +759,27 @@
                                 let nodeId = cueNodeId
                                 let nodeName = executeSQLObj.name
                                 let resultTableName = nodeInfo.resultTableName
-                                $this.resultTableArr.push({nodeId,nodeName,resultTableName})
-                                for(let k=0; k<$this.executeNodeIdArr.length; k++){//找出当前节点的下一个节点即结果表节点
+                                let isRoleTable = false
+                                let resultTableObj = {nodeId,nodeName,resultTableName}
+                                //在执行队列的ID集合中找出当前节点的下一个节点即结果表节点
+                                for(let k=0; k<$this.executeNodeIdArr.length; k++){
                                     if($this.executeNodeIdArr[k] === cueNodeId){
                                         let nextNodeId = $this.executeNodeIdArr[k+1]
                                         if(typeof nextNodeId !== "undefined"){
                                             let optType = graph.nodeData[nextNodeId].nodeInfo.optType
                                             if(optType === 'newNullNode'){
+                                                let midTableStatus = graph.nodeData[nextNodeId].nodeInfo.midTableStatus
+                                                let resultTableStatus = graph.nodeData[nextNodeId].nodeInfo.resultTableStatus
+                                                if(midTableStatus === 2 || resultTableStatus === 2){
+                                                    resultTableObj["isRoleTable"] = true
+                                                }
                                                 nodeName = nodeName + "_" + graph.nodeData[nextNodeId].nodeInfo.nodeName
                                                 break
                                             }
                                         }
                                     }
                                 }
+                                $this.resultTableArr.push(resultTableObj)
                                 $this.preValue.push({id:nodeId,name:nodeName})
                             }
                         }
@@ -789,6 +797,7 @@
                         }
                     }
                     if(executeTaskObj.resultType === 'select'){//展示节点结果集数据
+                        debugger
                         $this.loading.destroy()
                         if(executeSQLObj.customParam[0] === $this.websocketBatchId){//展示当前操作的结果集
                             $this.$nextTick( () => {
@@ -883,7 +892,27 @@
             searchZtree() {
                 indexJs.searchZtree()
             },
-            viewData() {
+            viewData(isZtree) {
+                if(isZtree){
+                    indexJs.hideRMenu("rMenu")
+                    let nodes = this.zTreeObj.getSelectedNodes()
+                    if(nodes.length > 0) {
+                        let $this = this
+                        let nodeId = nodes[0].id
+                        let nodeName = nodes[0].name
+                        let resultTableName = nodes[0].name
+                        let isRoleTable = true
+                        $this.resultTableArr = []
+                        $this.preValue = []
+                        $this.$nextTick( () => {
+                            $this.websocketBatchId = new UUIDGenerator().id
+                            $this.resultTableArr = [{nodeId, nodeName, resultTableName,isRoleTable}]
+                            $this.preValue = [{id:nodeId,name:nodeName}]
+                            $this.layuiTabClickLi(0)
+                            $this.viewData()
+                        })
+                    }
+                }
                 viewNodeData({nodeObjs:JSON.stringify(this.resultTableArr),openType:this.openType,websocketBatchId:this.websocketBatchId}).then()
             },
             relationTableQuery() {
