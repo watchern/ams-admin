@@ -140,7 +140,7 @@
             </div>
           </el-dialog>
 
-          <el-dialog :title="预览" :visible.sync="dialogFormVisibleTree">
+          <el-dialog title="预览" :visible.sync="dialogFormVisibleTree">
             <MyElTree
               ref="tree1"
               v-loading="tree1Loading"

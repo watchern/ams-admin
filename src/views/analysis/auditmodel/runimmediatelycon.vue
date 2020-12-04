@@ -186,15 +186,9 @@ export default {
         this.modelResultSavePathId = this.tempId;
         this.modelResultSavePathDialog = false;
       } else if(this.nodeType == ""){
-        this.$message({
-          message: "请选择路径",
-          type: "warning",
-        });
+        this.$message('请选择路径');
       }else{
-         this.$message({
-          message: "只能选择文件夹",
-          type: "warning",
-        });
+        this.$message('只能选择文件夹');
       }
     },
   },
