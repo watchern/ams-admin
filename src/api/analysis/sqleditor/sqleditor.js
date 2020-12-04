@@ -445,7 +445,7 @@ export function initIcon() {
 /**
  * 初始化数据表树
  */
-export function initTableTree(userId) {
+export function initTableTree(result) {
   // 数据表树加载,开始
   var setting = {
     // 异步加载
@@ -592,14 +592,14 @@ export function initTableTree(userId) {
       }
     }
   }
-  const params = { sceneCode: 'auditor', dataUserId: userId }
+/*  const params = { sceneCode: 'auditor', dataUserId: userId }
   // 调用后台获取数据表数据
   request({
     baseURL: dataUrl,
     url: '/tableMeta/getResTree',
     method: 'post',
     params: params
-  }).then(result => {
+  }).then(result => {*/
     // 设置图标
     for (let i = 0; i < result.data.length; i++) {
       if (result.data[i].type === 'table') {
@@ -619,7 +619,7 @@ export function initTableTree(userId) {
     })
     tableTreeData = result.data
     zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
-  })
+ // })
 }
 /**
  * 执行create语句后刷新左侧树

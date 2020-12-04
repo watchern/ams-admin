@@ -314,7 +314,7 @@ let lastSqlIndex = -1
 export default {
   name: "SQLEditor",
   components: { sqlDraftList, childTabs, paramDraw, dataTree },
-  props: ["sqlEditorParamObj", "sqlValue"],
+  props: ["sqlEditorParamObj", "sqlValue","callType"],
   data() {
     return {
       sqlDraftForm: {
@@ -488,12 +488,12 @@ export default {
       const userId = this.$store.state.user.code
       initDragAndDrop()
       initIcon()
-      initTableTree(userId)
       initFunctionTree()
       initVariable()
       initEvent()
       initParamTree()
       initTableTip(userId).then((result) => {
+        initTableTree(result)
         var relTableMap = {}
         var expTableMap = {}
         if (result.data != null) {
@@ -567,6 +567,9 @@ export default {
      * @returns {{arr: *[], flag: (jQuery|string|undefined|*), InfoFlag: jQuery, outColumn: jQuery, flag2: (jQuery|string|undefined), sql: *}}
      */
     getSaveInfo() {
+      if(this.callType != "editorModel"){
+        return;
+      }
       if (!this.isAllExecute) {
         this.$message({ type: "info", message: "全部执行才可以保存!" });
         return;
