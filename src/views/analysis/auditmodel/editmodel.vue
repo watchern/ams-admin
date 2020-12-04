@@ -1113,6 +1113,7 @@ export default {
       this.editorModelLoading = true
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
+          this.editorModelLoading = false
           if (result.code === 0) {
             this.$notify({
               title:'提示',
@@ -1124,11 +1125,11 @@ export default {
             this.closeWinfrom()
           } else {
             this.$message({ type: 'error', message: '新增模型失败!' })
-            this.editorModelLoading = false
           }
         })
       } else {
         updateModel(modelObj).then(result => {
+          this.editorModelLoading = false
           if (result.code === 0) {
             this.$notify({
               title:'提示',
@@ -1140,7 +1141,6 @@ export default {
             this.closeWinfrom()
           } else {
             this.$message({ type: 'error', message: '修改模型失败!' })
-            this.editorModelLoading = false
           }
         })
       }
