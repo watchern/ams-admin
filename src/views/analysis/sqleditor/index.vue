@@ -492,6 +492,8 @@ export default {
       initVariable()
       initEvent()
       initParamTree()
+      this.executeLoading = true
+      this.loadText = "正在初始化数据表..."
       initTableTip(userId).then((result) => {
         initTableTree(result)
         var relTableMap = {}
@@ -500,16 +502,21 @@ export default {
           for (let i = 0; i < result.data.length; i++) {
             if (result.data[i].type === "table") {
               relTableMap[result.data[i].name] = []
-              expTableMap[result.data[i].name] = "";
+              expTableMap[result.data[i].name] = result.data[i].extCol;
             }
           }
         }
         initSQLEditor(document.getElementById('sql'), relTableMap,expTableMap)  //初始化SQL编辑器
+        this.executeLoading = false
+        this.loadText = ""
         if (this.sqlValue != "") {
           // 编辑模型的sql  反显数据
           editorSql(this.sqlValue, this.sqlEditorParamObj);
         }
         refreshCodeMirror()
+      }).catch().then((result)=>{
+        this.executeLoading = false
+        this.loadText = ""
       })
     },
     /**
@@ -830,9 +837,16 @@ export default {
         this.executeLoading = true
         this.loadText = "正在获取sql列..."
         getColumnSqlInfo(data).then((resp) => {
+          //修改执行成功状态
+          isAllExecuteSuccess = true;
+          lastResultColumn = resp.data.columnName;
+          lastResultColumnType = resp.data.columnType;
+          this.$emit("getSqlObj");
           this.executeLoading = false
+          this.loadText = ""
         }).catch((result) =>{
           this.executeLoading = false
+          this.loadText = ""
         });
       });
     },
