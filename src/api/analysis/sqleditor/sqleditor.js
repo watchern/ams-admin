@@ -292,9 +292,7 @@ export function initEvent() {
  * @param relTableMap 智能提示的表对象
  * @returns {CodeMirror.EditorFromTextArea}
  */
-export function initSQLEditor(textarea, relTableMap) {
-  var expTableMap = {};
-  expTableMap = {"OBJ_PERSON_1":"这是人员表","AND":"这是a阿德杀杀杀杀杀杀杀杀杀杀阿三顶顶顶顶顶顶顶顶顶顶顶顶顶杀杀杀杀杀大撒大nd","AS":"这是as"}
+export function initSQLEditor(textarea, relTableMap,expTableMap) {
   // 初始化CodeMirror
   var editor = CodeMirror.fromTextArea(textarea, {
     mode: 'text/x-mssql',
@@ -1804,7 +1802,6 @@ export function getSql() {
   var result = {}
   var isAllExecute = false
   var selText = editorObj.getSelection()
-  // 如果选中执行等于全部待执行SQL或者没有选中直接执行SQL 则视为满足模型生成条件第一条 即：必须将SQL编译器的内容全部执行才可以保存模型结果 flag为控制标识
   if ($.trim(selText) === '' || selText === editorObj.getValue()) {
     selText = editorObj.getValue()
     isAllExecute = true
@@ -1922,9 +1919,9 @@ export function refreshCodeMirror(){
 export function getColumnSqlInfo(data) {
   return request({
     baseURL: analysisUrl,
-    url: '/SQLEditorController/getcolumnsqlinfo',
+    url: '/SQLEditorController/getColumnSqlInfo',
     method: 'post',
-    params:{sql:data}
+    data
   })
 }
 

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div id="container" v-loading="executeLoading">
+    <div id="container" v-loading="executeLoading" :element-loading-text="loadText">
       <div id="sidebar">
         <div class="unfold-shuju add-sidiv"><img :src="shuju"></div>
         <div class="unfold-canshu"><img :src="canshu"></div>
@@ -37,6 +37,13 @@
                 class="oper-btn folder"
                 title="打开sql"
               ></el-button>
+              <el-button
+                type="primary"
+                size="small"
+                @click="getColumnSqlInfo"
+                class="oper-btn folder"
+                title="校验sql"
+              >校验sql</el-button>
               <el-dropdown>
                 <el-button
                   type="primary"
@@ -81,14 +88,7 @@
                   >
                 </el-dropdown-menu>
               </el-dropdown>
-              <label id="InfoFlag" style="display: none"
-                >SQL必须全部执行后才可保存</label
-              >
-              <input id="flag" type="hidden" value="false" />
-              <input id="flag2" type="hidden" value="false" />
-              <input id="outColumn" type="hidden" value="" />
-              {{ path }}
-              <a @click="modelResultSavePathDialog = true" style="color: #409eff; margin-left: 50px">编辑</a>
+              <label style="margin-right: -43px;">{{ path }}</label><a @click="modelResultSavePathDialog = true" style="color: #409eff; margin-left: 50px">编辑</a>
             </el-col>
           </el-row>
           <div
@@ -337,6 +337,8 @@ export default {
       sqlDraftDialogFormVisible: false,
       sqlDraftDialog: false,
       dialogFormVisible: false,
+      //遮罩层文字
+      loadText:"",
       formLabelWidth: "120px",
       paramDrawUuid: "",
       executeLoading: false,
@@ -493,15 +495,16 @@ export default {
       initParamTree()
       initTableTip(userId).then((result) => {
         var relTableMap = {}
+        var expTableMap = {}
         if (result.data != null) {
           for (let i = 0; i < result.data.length; i++) {
             if (result.data[i].type === "table") {
-              relTableMap[result.data[i].name] = [];
+              relTableMap[result.data[i].name] = []
+              expTableMap[result.data[i].name] = "";
             }
           }
         }
-        initSQLEditor(document.getElementById('sql'), relTableMap)  //初始化SQL编辑器
-        //initSQLEditor(document.getElementById('sql'), relTableMap)
+        initSQLEditor(document.getElementById('sql'), relTableMap,expTableMap)  //初始化SQL编辑器
         if (this.sqlValue != "") {
           // 编辑模型的sql  反显数据
           editorSql(this.sqlValue, this.sqlEditorParamObj);
@@ -801,8 +804,34 @@ export default {
       }
     },
     getColumnSqlInfo() {
-      const obj = executeSQL();
-      getColumnSqlInfo(obj.sqls).then((resp) => {});
+      const result = getSql();
+      if (result.sql === "") {
+        this.$message({ type: "info", message: "请输入sql!" });
+        return;
+      }
+      this.isAllExecute = result.isAllExecute;
+      this.executeLoading = true
+      this.loadText = "正在校验sql是否符合语法规范..."
+      verifySql().then((verSqlResult) => {
+        this.executeLoading = false
+        if (!verSqlResult.data.verify) {
+          this.$message({ type: "info", message: "SQL不符合语法规范，请重新输入" });
+          return;
+        }
+        this.resultShow = []; // 清空数据展示对象
+        isAllExecuteSuccess = false;
+        currentExecuteProgress = 0;
+        this.currentExecuteSQL = [];
+        lastResultColumn = [];
+        let data = {sql:result.sql}
+        this.executeLoading = true
+        this.loadText = "正在获取sql列..."
+        getColumnSqlInfo(data).then((resp) => {
+          this.executeLoading = false
+        }).catch((result) =>{
+          this.executeLoading = false
+        });
+      });
     },
   },
 };
