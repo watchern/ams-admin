@@ -292,9 +292,7 @@ export function initEvent() {
  * @param relTableMap 智能提示的表对象
  * @returns {CodeMirror.EditorFromTextArea}
  */
-export function initSQLEditor(textarea, relTableMap) {
-  var expTableMap = {};
-  expTableMap = {"OBJ_PERSON_1":"这是人员表","AND":"这是a阿德杀杀杀杀杀杀杀杀杀杀阿三顶顶顶顶顶顶顶顶顶顶顶顶顶杀杀杀杀杀大撒大nd","AS":"这是as"}
+export function initSQLEditor(textarea, relTableMap,expTableMap) {
   // 初始化CodeMirror
   var editor = CodeMirror.fromTextArea(textarea, {
     mode: 'text/x-mssql',
@@ -447,7 +445,7 @@ export function initIcon() {
 /**
  * 初始化数据表树
  */
-export function initTableTree(userId) {
+export function initTableTree(result) {
   // 数据表树加载,开始
   var setting = {
     // 异步加载
@@ -594,14 +592,14 @@ export function initTableTree(userId) {
       }
     }
   }
-  const params = { sceneCode: 'auditor', dataUserId: userId }
+/*  const params = { sceneCode: 'auditor', dataUserId: userId }
   // 调用后台获取数据表数据
   request({
     baseURL: dataUrl,
     url: '/tableMeta/getResTree',
     method: 'post',
     params: params
-  }).then(result => {
+  }).then(result => {*/
     // 设置图标
     for (let i = 0; i < result.data.length; i++) {
       if (result.data[i].type === 'table') {
@@ -621,7 +619,7 @@ export function initTableTree(userId) {
     })
     tableTreeData = result.data
     zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
-  })
+ // })
 }
 /**
  * 执行create语句后刷新左侧树
@@ -1804,7 +1802,6 @@ export function getSql() {
   var result = {}
   var isAllExecute = false
   var selText = editorObj.getSelection()
-  // 如果选中执行等于全部待执行SQL或者没有选中直接执行SQL 则视为满足模型生成条件第一条 即：必须将SQL编译器的内容全部执行才可以保存模型结果 flag为控制标识
   if ($.trim(selText) === '' || selText === editorObj.getValue()) {
     selText = editorObj.getValue()
     isAllExecute = true
@@ -1922,9 +1919,9 @@ export function refreshCodeMirror(){
 export function getColumnSqlInfo(data) {
   return request({
     baseURL: analysisUrl,
-    url: '/SQLEditorController/getcolumnsqlinfo',
+    url: '/SQLEditorController/getColumnSqlInfo',
     method: 'post',
-    params:{sql:data}
+    data
   })
 }
 

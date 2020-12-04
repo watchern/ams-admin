@@ -223,7 +223,7 @@ export default {
           // 判断 dependItemList 是否有值（无值的时候）
           const value = this.scheduleList[0].processSchedulesUuid
           getTaskLink(value).then((taskRes) => {
-            const depTasksList =  [{ id: 'ALL', name: 'ALL' }].concat(_.map(taskRes.data[value], (v) => v))
+            const depTasksList = [{ id: 'ALL', name: 'ALL' }].concat(_.map(taskRes.data[value], (v) => v))
             this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams(value, this.scheduleList, depTasksList)))
           })
 

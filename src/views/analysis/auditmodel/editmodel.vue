@@ -123,7 +123,7 @@
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id">
             <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor"
-                       :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" class="sql-editor" />
+                       :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel" class="sql-editor" />
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
@@ -301,6 +301,8 @@ export default {
       auditItemTree:false,
       //是否显示保存取消按钮
       isShowBtn:true,
+      //打开sql编辑器时给sql编辑器传值，告诉sql编辑器是从模型编辑界面进来的
+      editorModel:"editorModel",
       //是否禁止编辑
       isBanEdit:false,
       //是否显示模型分类树
@@ -1113,6 +1115,7 @@ export default {
       this.editorModelLoading = true
       if (!this.isUpdate) {
         saveModel(modelObj).then(result => {
+          this.editorModelLoading = false
           if (result.code === 0) {
             this.$notify({
               title:'提示',
@@ -1124,11 +1127,11 @@ export default {
             this.closeWinfrom()
           } else {
             this.$message({ type: 'error', message: '新增模型失败!' })
-            this.editorModelLoading = false
           }
         })
       } else {
         updateModel(modelObj).then(result => {
+          this.editorModelLoading = false
           if (result.code === 0) {
             this.$notify({
               title:'提示',
@@ -1140,7 +1143,6 @@ export default {
             this.closeWinfrom()
           } else {
             this.$message({ type: 'error', message: '修改模型失败!' })
-            this.editorModelLoading = false
           }
         })
       }

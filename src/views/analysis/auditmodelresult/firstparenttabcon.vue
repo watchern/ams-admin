@@ -12,7 +12,7 @@
         </div>
       </el-header>
       <el-main>
-        <div align="right" style="width: 72%">
+        <div align="right" style="width: 66%">
           <el-row>
             <el-button
               v-if="false"
@@ -38,6 +38,7 @@
               type="primary"
               :disabled="buttonIson.resultSplitBtn"
               class="oper-btn split-2"
+              @click="openResultSplitDialog"
             ></el-button>
             <el-button
               type="primary"
@@ -64,7 +65,7 @@
           @sort-change="sortChange"
           @selection-change="handleSelectionChange"
           height="450px"
-          style="overflow-x: scroll; width: 72%"
+          style="overflow-x: scroll; width: 66%"
         >
           <el-table-column type="selection" width="55" />
           <el-table-column
@@ -74,8 +75,9 @@
             prop="model.modelName"
           >
             <template slot-scope="scope">
-              <el-button
+              <a
                 type="text"
+                style="color: #409eff"
                 @click="
                   getResultTables(
                     scope.row.runResultTables,
@@ -84,7 +86,7 @@
                     scope.row.runStatus
                   )
                 "
-                >{{ scope.row.model.modelName }}</el-button
+                >{{ scope.row.model.modelName }}</a
               >
             </template>
           </el-table-column>
@@ -126,6 +128,13 @@
               />
             </template>
           </el-table-column>
+          <el-table-column
+            label="结果总条数"
+            width="200px"
+            align="center"
+            prop="runResultTables"
+            :formatter="dataCountFormatter"
+          />
           <el-table-column
             label="定时运行时间"
             width="200px"
@@ -232,6 +241,35 @@
             <el-button type="primary" @click="modelRunSetting">确 定</el-button>
           </span>
         </el-dialog>
+        <el-dialog
+          title="结果拆分"
+          :visible.sync="resultSplitDialogIsSee"
+          width="40%"
+        >
+          <div align="center">
+            <span>要拆分的数据：</span>
+            <el-select
+              style="width: 50%"
+              size="medium"
+              v-model="selectedValue"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="(item, key) in ResultSplitoptions"
+                :key="key"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </div>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="resultSplitDialogIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="resultSplitDialogIsSee = false"
+              >确 定</el-button
+            >
+          </span>
+        </el-dialog>
         <pagination
           v-show="total > 0"
           :total="total"
@@ -253,6 +291,7 @@ import {
   deleteRunResultShare,
   exportRunTaskRel,
   reRunRunTask,
+  getResultSplitSelectData,
 } from "@/api/analysis/auditmodelresult";
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 import QueryField from "@/components/Ace/query-field/index";
@@ -316,6 +355,9 @@ export default {
       runimmediatelyIsSee: false,
       timingExecutionIsSee: false,
       currentData: [],
+      resultSplitDialogIsSee: false, //结果拆分dialog是否可见
+      ResultSplitoptions: [], //存储结果拆分dialog的下拉框中的数据
+      selectedValue: "",
     };
   },
   created() {
@@ -514,13 +556,13 @@ export default {
       getRunTaskRelByPage(this.pageQuery).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
+        console.log(this.list)
         this.listLoading = false;
       });
     },
     /**
      * 当多选框改变时触发
      */
-    //      buttonIson:{AssociatedBtn:true,DisassociateBtn:true,deleteBtn:true,resultSplitBtn:true,resultShareBtn:true,exportBtn:false}
     handleSelectionChange(val) {
       if (val.length <= 0) {
         this.buttonIson.AssociatedBtn = true;
@@ -533,7 +575,7 @@ export default {
         this.buttonIson.AssociatedBtn = false;
         this.buttonIson.DisassociateBtn = false;
         this.buttonIson.deleteBtn = false;
-        this.buttonIson.resultSplitBtn = false;
+        this.buttonIson.resultSplitBtn = true;
         this.buttonIson.resultShareBtn = false;
         this.buttonIson.exportBtn = false;
       } else if (val.length > 1) {
@@ -860,6 +902,16 @@ export default {
         return "立即运行";
       }
     },
+    dataCountFormatter(row){
+      var tables = row.runResultTables
+      var dataCount = 0
+      for(var i = 0;i<tables.length;i++){
+        if(tables[i].tableType==1){
+            dataCount = tables[i].dataCount
+        }
+      }
+      return dataCount
+    },
     executeProgressFormate(executeProgress) {
       if (executeProgress == null) {
         return 0;
@@ -894,7 +946,7 @@ export default {
       };
       this.nowRunTaskRel.model = results.models[0];
       this.nowRunTaskRel.settingInfo = settingInfo;
-      this.nowRunTaskRel.locationUuid = modelResultSavePathId
+      this.nowRunTaskRel.locationUuid = modelResultSavePathId;
       if (this.timingExecutionIsSee) {
         if (dateTime == "") {
           this.$message({
@@ -964,6 +1016,49 @@ export default {
           this.runimmediatelyIsSee = false;
           this.timingExecutionIsSee = false;
         }
+      }
+    },
+    /**
+     * 点击结果拆分后打开dialog方法
+     */
+    openResultSplitDialog() {
+      this.listLoading = true
+      this.ResultSplitoptions = []
+      var flag = true;
+      for (var i = 0; i < this.selected1.length; i++) {
+        if (this.selected1[i].runStatus != 3) {
+          flag = false;
+          break;
+        }
+      }
+      if (flag == true) {
+        getResultSplitSelectData(this.selected1).then((resp) => {
+          console.log(resp.data);
+          var message = resp.data.message;
+          var result = resp.data.selectValue;
+          if (message == "") {
+            for (var i = 0; i < result.length; i++) {
+              var option = {
+                value: result[i].org_uuid + " (" + result[i].org_name + ")",
+                label: result[i].org_uuid + " (" + result[i].org_name + ")",
+              };
+              this.ResultSplitoptions.push(option);
+            }
+            this.listLoading = false
+            this.resultSplitDialogIsSee = true;
+          } else {
+            this.listLoading = false
+            this.$message({
+              showClose: true,
+              message:message,
+            });
+          }
+        });
+      } else {
+        this.$message({
+          showClose: true,
+          message: "只有运行成功的才可以结果拆分",
+        });
       }
     },
   },
