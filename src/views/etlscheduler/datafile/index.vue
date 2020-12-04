@@ -33,14 +33,10 @@
       />
       <el-table-column
         label="文件名称"
-        width="200px"
-        align="center"
         prop="fullPath"
       />
       <el-table-column
         label="对应表"
-        width="140px"
-        align="center"
         prop="odsTableName"
       />
       <el-table-column
@@ -63,7 +59,6 @@
         :formatter="formatStatus"
       />
     </el-table>
-  
     <pagination
       v-show="total>0"
       :total="total"

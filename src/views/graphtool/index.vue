@@ -37,6 +37,7 @@
                 }
                 this.$refs.graphTree.defaultNodeKey = node.id
                 this.$refs.graphListTable.type = node.type
+                this.$refs.graphListTable.listSelectChange([])
                 this.$refs.graphListTable.getGraphList()
             },
             refreshGraphTree() { // 操作列表数据后刷新图形树

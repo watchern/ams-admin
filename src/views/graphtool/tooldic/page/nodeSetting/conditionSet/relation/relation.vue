@@ -95,21 +95,22 @@
                         <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
                         <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
                     </div>
-                    <table id="column_config" class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th width="5%" style="text-align: center">序号</th>
-                            <th width="30%" style="text-align: center">上一节点名称</th>
-                            <th width="25%" style="text-align: center">字段名称</th>
-                            <th width="25%" style="text-align: center">输出字段名称</th>
-                            <th width="15%" style="text-align: center">是否为输出字段
-                                <!--<input id="sel_all" type="checkbox" class="form-control"/>-->
-                                <el-checkbox v-model="checkAll" @change="handleCheckAllChange"></el-checkbox>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(item,index) in items">
+                    <div id="outPutTable">
+                        <table id="column_config" class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th width="5%" style="text-align: center">序号</th>
+                                <th width="30%" style="text-align: center">上一节点名称</th>
+                                <th width="25%" style="text-align: center">字段名称</th>
+                                <th width="25%" style="text-align: center">输出字段名称</th>
+                                <th width="15%" style="text-align: center">是否为输出字段
+                                    <!--<input id="sel_all" type="checkbox" class="form-control"/>-->
+                                    <el-checkbox v-model="checkAll" @change="handleCheckAllChange"></el-checkbox>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(item,index) in items" class="colTr" :data-index="index">
                                 <td align="center">{{index+1}}</td>
                                 <td>{{item.rtn}}</td>
                                 <td>{{item.columnName}}</td>
@@ -120,8 +121,9 @@
                                     <el-checkbox v-model="item.checked" :name="item.attrColumnName" :key="item.id" @change="checkBoxChange(index)"></el-checkbox>
                                 </td>
                             </tr>
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -158,6 +160,9 @@
                 $('#myTabContent').css({ 'overflow-y': 'auto', 'height': function() {
                     return ($(document).height() - 50) + 'px'
                 } })
+                $('#outPutTable').css({ 'overflow-y': 'auto', 'height': function() {
+                        return ($(document).height() - 80) + 'px'
+                    } })
                 $('#col10').height($(document).height() - $('#myTab').height() - 15)
                 $('#linkDiv').height($(document).height() * 0.25)
                 $('#tips').height($(document).height() * 0.15)
