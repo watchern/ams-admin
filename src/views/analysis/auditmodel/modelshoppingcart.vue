@@ -431,20 +431,11 @@ export default {
       var dateTime = results.dateTime;
       if (this.timingExecutionIsSee) {
         if (dateTime == "") {
-          this.$message({
-            message: "请输入定时时间",
-            type: "warning",
-          });
+          this.$message('请输入定时时间');
         } else if (this.replacedInfo[0].sql == "") {
-          this.$message({
-            message: "请输入参数",
-            type: "warning",
-          });
+          this.$message('请输入参数');
         } else if (modelResultSavePathId == "") {
-          this.$message({
-            message: "请选择模型结果保存路径",
-            type: "warning",
-          });
+          this.$message('请选择模型结果保存路径');
         } else {
           var time1 = Date.parse(dateTime.toString());
           var time2 = Date.parse(new Date().toString());
@@ -512,15 +503,9 @@ export default {
         }
       } else if (this.runimmediatelyIsSee) {
         if (this.replacedInfo[0].sql == "") {
-          this.$message({
-            message: "请输入参数",
-            type: "warning",
-          });
+          this.$message('请输入参数');
         } else if (modelResultSavePathId == "") {
-          this.$message({
-            message: "请选择模型结果保存路径",
-            type: "warning",
-          });
+           this.$message('请选择模型结果保存路径');
         } else {
           var time1 = Date.parse(dateTime.toString());
           var time2 = Date.parse(new Date().toString());

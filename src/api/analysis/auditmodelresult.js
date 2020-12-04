@@ -233,3 +233,17 @@ export function replaceParam(filterArr,arr,replaceSql){
   }
    return replaceSql
 }
+
+/**
+ * 
+ * @param {*} data 
+ */
+export function getResultSplitSelectData(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/RunTaskRelController/getResultSplitSelectData',
+    method: 'post',
+    data
+  })
+}
+
