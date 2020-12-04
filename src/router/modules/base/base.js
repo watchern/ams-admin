@@ -36,6 +36,11 @@ const baseRouter = {
       path: 'frameto',
       name: '跳转',
       component: () => import('@/views/base/frameto')
+    },
+    {
+      path: 'querytask',
+      name: '跳转',
+      component: () => import('@/views/base/systemtask')
     }
   ]
 }

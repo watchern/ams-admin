@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" v-loading="editorModelLoading">
     <el-container class="el-container">
       <div id="drag" ref="dragDiv" class="drag">
         <div class="title">
@@ -36,11 +36,11 @@
                   <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-delete"/></el-button>
                 </span>
               </span>
-              
+
             </el-tree>
               <div class="custom-tree-caidan">
                 <img class="custom-save" :src="imgCus2" @click="save"/>
-                <img class="custom-close" :src="imgCus1" @click="closeWinfrom" /> 
+                <img class="custom-close" :src="imgCus1" @click="closeWinfrom" />
               </div>
               <div class="custom-tree-shangla">
                 <img class="custom-shouqi"  :src="imgCus3" @click="customup"/>
@@ -345,6 +345,7 @@ export default {
       sqlEditorParamObj: {},
       //添加模型详细树时候的索引
       modelDetailIndex: 0,
+      editorModelLoading:false,
       //风险等级
       riskLeve: [],
       //模型类型
@@ -377,7 +378,7 @@ export default {
         ]
       },
       modelDesignRules: {
-        sqlValue: [{ type: 'string', required: true, message: '请选择输入模型SQL', trigger: 'blur' }] 
+        sqlValue: [{ type: 'string', required: true, message: '请选择输入模型SQL', trigger: 'blur' }]
       },
       imgCus1:require("@/views/analysis/auditmodel/imgs/close.png"),
       imgCus2:require("@/views/analysis/auditmodel/imgs/save.png"),
@@ -1391,7 +1392,7 @@ export default {
   display: block;
   margin-left: 5px;
 }
- 
+
 
 .el-tree-rewrite{
   background: #fff;

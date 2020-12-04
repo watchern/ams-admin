@@ -577,28 +577,36 @@ export default {
         var rowData = [];
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           if (this.nextValue.executeSQL.state == "2") {
-            //todo 增加sql类型判断
-            if (true) {
-              this.modelResultButtonIsShow = true;
-              this.modelResultPageIsSee = true;
-              this.modelResultData = this.nextValue.result;
-              this.modelResultColumnNames = this.nextValue.columnNames;
-              for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
-                var rowColom = {
-                  headerName: this.nextValue.columnNames[j],
-                  field: this.nextValue.columnNames[j],
-                  width: "180",
-                };
-                var key = this.nextValue.columnNames[j];
-                var value = this.nextValue.result[j];
-                col.push(rowColom);
+            if(this.nextValue.executeSQL.type=='SELECT'){
+              //todo 增加sql类型判断
+              if (true) {
+                this.modelResultButtonIsShow = true;
+                this.modelResultPageIsSee = true;
+                this.modelResultData = this.nextValue.result;
+                this.modelResultColumnNames = this.nextValue.columnNames;
+                for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
+                  var rowColom = {
+                    headerName: this.nextValue.columnNames[j],
+                    field: this.nextValue.columnNames[j],
+                    width: "180",
+                  };
+                  var key = this.nextValue.columnNames[j];
+                  var value = this.nextValue.result[j];
+                  col.push(rowColom);
+                }
+                for (var k = 0; k < this.nextValue.result.length; k++) {
+                  rowData.push(this.nextValue.result[k]);
+                }
+                this.columnDefs = col;
+                this.getList();
               }
-              for (var k = 0; k < this.nextValue.result.length; k++) {
-                rowData.push(this.nextValue.result[k]);
-              }
-              this.columnDefs = col;
-              this.getList();
+            }else {
+              this.isSee = false;
+              this.modelResultPageIsSee = false;
+              this.modelResultButtonIsShow = false;
+              this.errorMessage = this.nextValue.executeSQL.msg;
             }
+
           } else if (this.nextValue.executeSQL.state == "3") {
             this.isSee = false;
             this.modelResultPageIsSee = false;
