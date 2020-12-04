@@ -167,12 +167,13 @@
             v-model="temp.processDefinitionId"
             :disabled="disableUpdate"
             :filterable="true"
-            :remote="true"
+            :remote="false"
+            :remote-method="remoteMethod"
             reserve-keyword
             :placeholder="disableUpdate === true ? '' : '请选择任务流程'"
-            :remote-method="remoteMethod"
             :loading="loading"
             @change="changeProcess(temp.processDefinitionId)"
+            @focus="remote"
           >
             <el-option
               v-for="item in options"
@@ -856,6 +857,7 @@ export default {
         endTime: null
       }
     },
+    //新增
     handleCreate() {
       this.iconDisable = true
       this.disableUpdate = false
