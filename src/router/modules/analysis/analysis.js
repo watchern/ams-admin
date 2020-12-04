@@ -41,6 +41,11 @@ const analysisRouter = {
       path: 'warningresult',
       name: '审计预警结果',
       component: () => import('@/views/analysis/auditwarningresult/index')
+    },
+    {
+      path: 'sqleditor',
+      name: 'SQL编辑器',
+      component: () => import('@/views/analysis/sqleditor/index')
     }
   ]
 }

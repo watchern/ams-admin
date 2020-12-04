@@ -156,6 +156,7 @@
                     let obj = this.getUuidsANdNames(selectObj)
                     deleteGraphInfoById(obj).then(response => {
                         this.$message({ type: 'success', message: '删除成功!' })
+                        this.listSelectChange([])
                         this.getGraphList()
                         // 刷新图形树
                         this.$emit('refreshGraphTree')
@@ -183,6 +184,7 @@
                 let personObj = { personUuids: '2c91808573e740e001744d54e2800005', personNames: '张闯1' }// 模拟选择的人员结果信息，待集成方法
                 cancelShareGraph({ ...graphObj, ...personObj }).then(response => {
                     this.$message({ type: 'success', message: '成功取消已分享图形' })
+                    this.listSelectChange([])
                     this.getGraphList()
                     // 刷新图形树（主要刷新我的分析图形节点数据）
                     this.$emit('refreshGraphTree')

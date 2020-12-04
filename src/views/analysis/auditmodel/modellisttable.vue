@@ -283,7 +283,10 @@ export default {
       }
       // 发送消息
       this.webSocket.onmessage = function(event) {
-        func1(event)
+        const dataObj = JSON.parse(event.data)
+        if(dataObj.listenerType === "onSQLResult"){
+          func1(event)
+        }
       }
       const func2 = function func3(val) {
         const dataObj = JSON.parse(val.data)
@@ -844,24 +847,9 @@ export default {
           // 记录当前模型的执行任务列表，为了在结果页再次执行时与之前的数据对应
           this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
         } else {
-          this.$message({ type: 'info', message: '执行失败' })
+          this.$message({ type: 'error', message: '执行失败:' + result.data.message})
         }
       })
-    },
-    /**
-     * 合并参数对象
-     * @param paramsArr 替换参数值后的参数数组
-     */
-    mergeParamObj(paramsArr) {
-      const paramObj = this.currentPreviewModelParamAndSql.paramObj // 模型的参数数组
-      for (let i = 0; i < paramObj.length; i++) {
-        for (let j = 0; j < paramsArr.length; j++) {
-          if (paramObj[i].moduleParamId == paramsArr[j].moduleParamId) {
-            // 如果母参相等说明是同一个参数，将输入的值替换到里面
-            paramObj[i].paramValue = paramsArr[j].paramValue
-          }
-        }
-      }
     },
     /**
      * 参数界面点击查询按钮
@@ -884,7 +872,7 @@ export default {
         if (!result.data.isError) {
 
         } else {
-          this.$message({ type: 'info', message: '执行失败' })
+          this.$message({ type: 'info', message: '执行失败' + result.data.message })
         }
       })
     },
