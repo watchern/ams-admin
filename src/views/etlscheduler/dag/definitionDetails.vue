@@ -31,7 +31,8 @@ export default {
   },
   methods: {
     ...mapMutations('dag', ['resetParams', 'setIsDetails']),
-    ...mapActions('dag', ['getProcessList', 'getProcessDetails', 'getClassList']),
+    ...mapActions('dag', ['getProcessList', 'getProcessDetails', 'getClassList', 'getResourcesList']),
+    // ...mapActions('dag', ['getProcessList', 'getProcessDetails', 'getClassList']),
     // ...mapActions('dag', ['getProcessList', 'getProjectList', 'getResourcesList', 'getProcessDetails', 'getResourcesListJar']),
     // ...mapActions('security', ['getTenantList', 'getWorkerGroupsAll']),
     /**
@@ -50,11 +51,11 @@ export default {
         this.getProcessDetails(this.$route.params.id),
         // get process definition
         // this.getProcessList(),
-        this.getClassList()
+        this.getClassList(),
         // get project
         // this.getProjectList(),
         // get resource
-        // this.getResourcesList(),
+        this.getResourcesList()
         // get jar
         // this.getResourcesListJar()
         // ,

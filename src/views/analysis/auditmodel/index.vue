@@ -1,11 +1,11 @@
 <template>
-  <div class="app-container">
+  <div class="app-container"  v-loading="loading" :element-loading-text="loadText">
     <!--模型分类树-->
     <el-container>
       <el-aside class="tree-side">
         <ModelFolderTree ref="modelFolderTree" :power="power" @refreshModelList="refreshModelList" />
       </el-aside>
-      <ModelListTable ref="modelListTable" :power="power"  @refreshTree="refreshTree" />
+      <ModelListTable ref="modelListTable" :power="power" @loadingSet="loadingSet" @refreshTree="refreshTree" />
     </el-container>
   </div>
 </template>
@@ -15,6 +15,12 @@ import ModelListTable from '@/views/analysis/auditmodel/modellisttable'
 export default {
   components: { ModelFolderTree, ModelListTable },
   props:['power'],
+  data() {
+    return {
+      loading:false,
+      loadText:""
+    }
+  },
   methods: {
     /**
      * 刷新模型列表
@@ -36,6 +42,10 @@ export default {
      */
     getModelListCheckData(){
       return this.$refs.modelListTable.getModelListCheckData()
+    },
+    loadingSet(isShow,loadText){
+      this.loading = isShow
+      this.loadText = loadText;
     }
   }
 }
