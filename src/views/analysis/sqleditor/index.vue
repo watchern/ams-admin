@@ -12,7 +12,7 @@
         <ul id="paramTree" class="ztree" />
         <ul id="sqlFunTree" class="ztree" />
       </div>
-      <div id="rightPart" class="col-sm-10" style="height: 90vh">
+      <div id="rightPart" class="col-sm-10" style="height: 100%">
         <div id="sqlEditorDiv" class="sql-editor-div">
           <el-row type="flex" class="row-bg">
             <el-col>
@@ -104,7 +104,7 @@
           />
           <textarea id="sql" />
         </div>
-        <div id="horizontal"/>
+        <div id="horizontal"> <div></div> </div>
 
         <!-- 结果展示和参数输入区域 -->
         <div id="bottomPart" lay-filter="result-data">
@@ -123,7 +123,7 @@
           </div>
         </div>
       </div>
-      <div id="vertical" />
+      <div id="vertical"> <div></div> </div>
       <input
         id="personId"
         type="hidden"
@@ -820,8 +820,10 @@ export default {
   cursor: pointer;
 }
 #rightPart {
-  width: 81.3333%;
+  width: 84.82%;
   position: relative;
+  padding: 0;
+  overflow: hidden;
 }
 
 .app-container {
@@ -834,6 +836,8 @@ export default {
   height: 100%;
 }
 
+.row-bg{margin: 10px 0 5px 5px;}
+
 #sidebar{
   width: 30px;
   height: 100%;
@@ -843,9 +847,9 @@ export default {
   top: -2px;left: -1px;
   border-radius: 50px 0 0 50px;
   text-align: center;
-  z-index: 20;
+  z-index: 50;
   background: #f7f7f7;
-  border-right: 1px solid #5E6572;
+  border-right: 1px solid rgb(206,208,212);
 }
 
 .CodeMirror-hint-table {
@@ -893,14 +897,16 @@ export default {
 
 #vertical {
   position: absolute;
-  left: 15.2%;
+  left: 15.08%;
   height: 100%;
-  width: 3px;
-  overflow: hidden;
-  background: #c0c5d4;
+  width: 8px;
+  /* overflow: hidden; */
   cursor: w-resize;
-  z-index: 20;
+  z-index: 200;
 }
+
+
+
 .el-aside{
   /* margin-bottom: 10px; */
 }
@@ -910,12 +916,10 @@ export default {
   top: 37%;
   right: 0;
   /* width: 100vh; */
-  width: 97.5%;
-  height: 3px;
-  overflow: hidden;
-  background: #c0c5d4;
+  width: 100%;
+  height: 8px;
   cursor: s-resize;
-  z-index: 50;
+  z-index: 150;
 }
 
 .errorHighlight {
@@ -958,11 +962,10 @@ export default {
 .sql-editor-div{
   padding: 0px;
   width: 100%;
-  height: 40%;
+  height: 37%;
 }
 
 .data-show{
-  margin-top: 45px;
   width: 98.7%;
   height: 100%;
 }
@@ -974,6 +977,9 @@ export default {
   float: left;
   height: 100%;
   margin-left: .5%;
+  box-shadow: 15px 0 15px 0 #3F444D12;
+  position: relative;
+  z-index: 20;
 }
 </style>
 

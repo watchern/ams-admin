@@ -15,9 +15,31 @@
 #bottomPart{
 	height: 96%;
 	width: 100%;
-	z-index: 200;
+	z-index: 100;
 	position: relative;
-	margin-top: 8px;
+}
+
+#vertical div{
+	background: url(./img/tztree.png) 0 0 no-repeat;
+	border: none;
+	background-size: 100%;
+	width: 20px;
+	height: 20px;
+	position: absolute;
+    top: 48%;
+    left: -8px;
+}
+
+#horizontal div{
+	background: url(./img/tztree.png) 0 0 no-repeat;
+	border: none;
+	background-size: 100%;
+	width: 20px;
+	height: 20px;
+	position: absolute;
+    top: 0px;
+	left: 48%;
+	transform: rotate(90deg);
 }
 
 #iconImg-huifu{
@@ -93,8 +115,8 @@
 }
 
 #sidebar .add-sidiv{
-	border-top:1px solid #5E6572;
-	border-bottom:1px solid #5E6572;
+	border-top:1px solid rgb(206,208,212);
+	border-bottom:1px solid rgb(206,208,212);
 	background: #fff;
 }
 
@@ -164,10 +186,14 @@
 }
 
 #sidebar img{
-	margin-top: 25px;
-	margin-bottom: 25px;
+	margin-top: 40px;
+	margin-bottom: 40px;
 	width: 18px;
 	height: 18px;
+}
+
+.CodeMirror-scroll{
+	background-color: rgb(237, 241, 245);
 }
 
 .ztree li span.button.chk {
