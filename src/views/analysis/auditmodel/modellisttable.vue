@@ -993,4 +993,5 @@ export default {
 .table{
   height: 450px !important;
 }
+
 </style>

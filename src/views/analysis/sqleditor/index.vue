@@ -87,7 +87,7 @@
                   >
                 </el-dropdown-menu>
               </el-dropdown>
-              <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px">{{ path }}</label><a @click="modelResultSavePathDialog = true" style="color: #409eff; margin-left: 50px">编辑</a>
+              <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;" @click="modelResultSavePathDialog = true">{{ path }}</label>
             </el-col>
           </el-row>
           <div
