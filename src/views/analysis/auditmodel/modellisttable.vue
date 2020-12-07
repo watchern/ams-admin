@@ -283,7 +283,10 @@ export default {
       }
       // 发送消息
       this.webSocket.onmessage = function(event) {
-        func1(event)
+        const dataObj = JSON.parse(event.data)
+        if(dataObj.listenerType === "onSQLResult"){
+          func1(event)
+        }
       }
       const func2 = function func3(val) {
         const dataObj = JSON.parse(val.data)
