@@ -1893,6 +1893,20 @@ export function startExecuteSql(data) {
     data
   })
 }
+
+/**
+ * 获取执行任务
+ * @param {*} data 要执行的数据
+ */
+export function getExecuteTask(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/SQLEditorController/getExecuteTask',
+    method: 'post',
+    data
+  })
+}
+
 /**
  * 编辑模型
  * @param sql 要编辑的sql

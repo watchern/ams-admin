@@ -136,7 +136,7 @@ import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import EditModel from '@/views/analysis/auditmodel/editmodel'
 import { getOneDict } from '@/utils/index'
 import childTabs from '@/views/analysis/auditmodelresult/childtabs'
-import { startExecuteSql } from '@/api/analysis/sqleditor/sqleditor'
+import {getExecuteTask, startExecuteSql} from '@/api/analysis/sqleditor/sqleditor'
 import crossrangeParam from '@/views/analysis/modelparam/crossrangeparam'
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
 import { replaceNodeParam, replaceCrossrangeNodeParam } from '@/api/analysis/auditparam'
@@ -754,14 +754,20 @@ export default {
               businessField: 'modellisttable'
             }
             this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
-            startExecuteSql(obj).then((result) => {
+            getExecuteTask(obj).then((result) => {
               this.$emit('loadingSet',false,"");
-              if (!result.data.isError) {
-                this.addTab(selectObj[0], false, result.data.executeSQLList)
-              } else {
-                this.$message({ type: 'info', message: '执行失败' })
-              }
-            })
+              this.addTab(selectObj[0], false, result.data.executeSQLList)
+              //界面渲染完成之后开始执行sql,将sql送入调度
+              startExecuteSql(result.data).then((result) => {
+                this.executeLoading = false;
+                this.loadText = ""
+              }).catch((result) => {
+                this.executeLoading = false;
+              });
+            }).catch((result) => {
+              this.$message({ type: 'info', message: '执行失败' })
+              this.$emit('loadingSet',false,"");
+            });
           } else {
             const paramObj = []
             for (let i = 0; i < result.data.parammModelRel.length; i++) {
@@ -838,9 +844,21 @@ export default {
       obj.modelUuid = selectObj[0].modelUuid
       obj.businessField = 'modellisttable'
       // 合并参数 将输入的值替换到当前界面
+      this.dialogFormVisible = false
       this.currentPreviewModelParamAndSql.paramObj = obj.paramsArr
+      this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
       // this.mergeParamObj(obj.paramsArr)
-      startExecuteSql(obj).then((result) => {
+      getExecuteTask(obj).then((result) => {
+        this.$emit('loadingSet',false,"");
+        this.addTab(selectObj[0], false, result.data.executeSQLList)
+        //界面渲染完成之后开始执行sql,将sql送入调度
+        startExecuteSql(result.data).then((result) => {
+        })
+      }).catch((result) => {
+        this.$message({ type: 'info', message: '执行失败' })
+        this.$emit('loadingSet',false,"");
+      });
+/*      startExecuteSql(obj).then((result) => {
         this.dialogFormVisible = false
         if (!result.data.isError) {
           this.addTab(selectObj[0], true, result.data.executeSQLList)
@@ -849,7 +867,7 @@ export default {
         } else {
           this.$message({ type: 'error', message: '执行失败:' + result.data.message})
         }
-      })
+      })*/
     },
     /**
      * 参数界面点击查询按钮
