@@ -176,7 +176,7 @@
                     <div class="layui-tab-content">
                         <div class="layui-tab-item">
                             <div id="tableArea">
-                                <div v-for="result in resultTableArr" class="data-show">
+                                <div v-for="result in resultTableArr" class="data-show" v-if="showTableResult">
                                     <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="preValue" />
                                 </div>
                             </div>
@@ -378,6 +378,7 @@
                 webSocket:null,
                 executeType:1,//节点执行的类型（1、执行本节点、2、执行到本节点、3、全部执行）
                 resultTableArr:[],//节点结果集集合
+                showTableResult:false,
                 executeId:'',//当前执行批次ID
                 executeNodeIdArr:[],//当前执行批次的节点ID集合
                 graphFormVisible:false,
@@ -782,6 +783,7 @@
                             // 自动保存图形化
                             indexJs.autoSaveGraph()
                             $this.layuiTabClickLi(0)
+                            $this.showTableResult = false
                             $this.loading.destroy()
                             $this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false,'hasTime':true })
                             //预览数据
@@ -790,6 +792,7 @@
                     }
                     if(executeTaskObj.resultType === 'select'){//展示节点结果集数据
                         $this.loading.destroy()
+                        $this.showTableResult = true
                         if(executeSQLObj.customParam[0] === $this.websocketBatchId){//展示当前操作的结果集
                             $this.$nextTick( () => {
                                 $this.$refs.childTabsRef[0].loadTableData(dataObj)
