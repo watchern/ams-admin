@@ -883,7 +883,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 #tableSearchImg,
 #paramSearchImg,
 #funSearchImg {

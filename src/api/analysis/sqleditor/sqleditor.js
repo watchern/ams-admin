@@ -72,7 +72,7 @@ var tableIconPath = '../../images/ico/table_1.png'
  * 视图图标路径
  * @type {string}
  */
-var viewIconPath = '../../images/ico/table_1.png'
+var viewIconPath = '../../images/ico/view.png'
 /**
  * 参数对象
  * @type {{}}
@@ -613,6 +613,13 @@ export function initTableTree(result) {
         result.data[i].icon = tableIconPath
         result.data[i].isParent = true
       }
+      else if (result.data[i].type === 'view') {
+        result.data[i].icon = viewIconPath
+        result.data[i].isParent = true
+      }
+      else if(result.data[i].type === 'folder'){
+        result.data[i].isParent = true
+      }
     }
     result.data.push({
       'id': 'ROOT',
@@ -812,13 +819,14 @@ var max_width = 0
 var tz_path = 0
   //实时获取最左侧主菜单栏的宽度
   function the_left_all () {
-    var leftcard = document.getElementsByClassName('left-menu')[0]
-    var offleftcard = leftcard.style.width
-    if(offleftcard == 120+"px"){
-        max_left = 125
+    var leftcard=document.getElementsByClassName('left-menu')[0]
+    var offleftcard = leftcard.style.width
+    if(offleftcard == 120+"px"){
+        max_left = 125
         max_width = 93
         tz_path = 55
-    }else if(offleftcard == 64+"px"){
+    }
+    else if(offleftcard== 64+"px"){
         max_left = 70
         max_width = 96
         tz_path = 0
@@ -834,7 +842,7 @@ export function maxOpenOne() {
     $("#iconImg").css("display","none")
     $("#iconImg-huifu").css("display","block")
     $("#bottomPart").css({"position":"fixed","width":max_width+"%","left":max_left,"top":0,"height":96+"%","z-index":1000})
-    $(".ag-theme-balham").css("height",650)
+    $(".ag-theme-balham").css("height",550)
     maxormin = false
   }else if(maxormin == false){
     $("#drag").show(100)
