@@ -253,6 +253,7 @@ import {
   sqlFormat,
   findAndReplace,
   caseTransformation,
+  getExecuteTask,
   selectSqlNotes,
   selectSqlCancelNotes,
   refreshCodeMirror,
@@ -715,43 +716,50 @@ export default {
      * 执行sql
      */
     executeSQL() {
-      const result = getSql();
+      const result = getSql()
       if (result.sql === "") {
-        this.$message({ type: "info", message: "请输入sql!" });
-        return;
+        this.$message({ type: "info", message: "请输入sql!" })
+        return
       }
-      this.isAllExecute = result.isAllExecute;
+      this.isAllExecute = result.isAllExecute
+      this.loadText = "正在检验sql是否符合语法规范..."
       verifySql().then((result) => {
+        this.executeLoading = false
+        this.loadText = ""
         if (!result.data.verify) {
-          this.$message({ type: "info", message: "SQL不合法，请重新输入" });
+          this.$message({ type: "info", message: "SQL不符合语法规范，请重新输入" });
           return;
         }
-        this.resultShow = []; // 清空数据展示对象
-        isAllExecuteSuccess = false;
-        currentExecuteProgress = 0;
-        this.currentExecuteSQL = [];
-        lastResultColumn = [];
-        const obj = executeSQL();
-        obj.businessField = "sqleditor";
-        obj.modelResultSavePathId = this.modelResultSavePathId;
+        this.resultShow = [] // 清空数据展示对象
+        isAllExecuteSuccess = false
+        currentExecuteProgress = 0
+        this.currentExecuteSQL = []
+        lastResultColumn = []
+        const obj = executeSQL()
+        obj.businessField = "sqleditor"
+        obj.modelResultSavePathId = this.modelResultSavePathId
         if (!obj.isExistParam) {
-          this.executeLoading = true;
-          startExecuteSql(obj)
-            .then((result) => {
-              lastSqlIndex = result.data.lastSqlIndex
+          this.executeLoading = true
+          this.loadText = "正在获取sql信息..."
+          getExecuteTask(obj).then((result) => {
+            this.executeLoading = false
+            this.loadText = ""
+            lastSqlIndex = result.data.lastSqlIndex
+            this.executeLoading = false
+            this.currentExecuteSQL = result.data.executeSQLList
+            this.modelOriginalTable = result.data.tables
+            this.createTreeNode = result.data.treeNodeInfo
+            this.resultShow.push({ id: 1 })
+            //界面渲染完成之后开始执行sql,将sql送入调度
+            startExecuteSql(result.data).then((result) => {
               this.executeLoading = false;
-              if (!result.data.isError) {
-                this.currentExecuteSQL = result.data.executeSQLList;
-                this.modelOriginalTable = result.data.tables;
-                this.createTreeNode = result.data.treeNodeInfo;
-                this.resultShow.push({ id: 1 });
-              } else {
-                this.$message({ type: "info", message: "执行失败:" +result.data.message});
-              }
-            })
-            .catch((result) => {
+              this.loadText = ""
+            }).catch((result) => {
               this.executeLoading = false;
             });
+          }).catch((result) => {
+            this.executeLoading = false;
+          });
         } else {
           this.openParamDraw(obj);
         }
@@ -778,7 +786,27 @@ export default {
       }
       obj.sqls = obj.sql;
       obj.businessField = "sqleditor";
-      startExecuteSql(obj).then((result) => {
+      getExecuteTask(obj).then((result) => {
+        this.dialogFormVisible = false;
+        this.executeLoading = false
+        this.loadText = ""
+        lastSqlIndex = result.data.lastSqlIndex
+        this.executeLoading = false
+        this.currentExecuteSQL = result.data.executeSQLList
+        this.modelOriginalTable = result.data.tables
+        this.createTreeNode = result.data.treeNodeInfo
+        this.resultShow.push({ id: 1 })
+        //界面渲染完成之后开始执行sql,将sql送入调度
+        startExecuteSql(result.data).then((result) => {
+          this.executeLoading = false;
+          this.loadText = ""
+        }).catch((result) => {
+          this.executeLoading = false;
+        });
+      }).catch((result) => {
+        this.executeLoading = false;
+      });
+/*      startExecuteSql(obj).then((result) => {
         if (!result.data.isError) {
           this.currentExecuteSQL = result.data.executeSQLList;
           this.modelOriginalTable = result.data.tables;
@@ -787,7 +815,7 @@ export default {
         } else {
           this.$message({ type: "info", message: "执行失败" });
         }
-      });
+      });*/
     },
     maxOpen() {
       maxOpenOne();
