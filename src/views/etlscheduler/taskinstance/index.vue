@@ -18,7 +18,7 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="200"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -29,7 +29,6 @@
       <el-table-column
         label="运行状态"
         align="center"
-        width="100px"
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
@@ -52,26 +51,22 @@
       </el-table-column>
       <el-table-column
         label="任务实例名称"
-        width="150px"
         align="center"
         prop="name"
       />
       <el-table-column
         label="流程实例名称"
-        width="150px"
         align="center"
         prop="processInstanceName"
       />
       <el-table-column
         label="任务类型"
-        width="150px"
         align="center"
         prop="taskType"
       />
       <el-table-column
         label="任务参数"
         align="center"
-        width="130px"
       >
         <template v-if="scope.row.taskParamList!=null && scope.row.taskParamList.length>0" slot-scope="scope">
           <!-- 任务参数使用图标进行显示 -->
@@ -92,19 +87,16 @@
       </el-table-column>
       <el-table-column
         label="调度时间"
-        width="200px"
         align="center"
         prop="scheduleTime"
       />
       <el-table-column
         label="开始运行时间"
-        width="200px"
         align="center"
         prop="startTime"
       />
       <el-table-column
         label="结束运行时间"
-        width="200px"
         align="center"
         prop="endTime"
       />

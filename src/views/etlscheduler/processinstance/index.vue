@@ -61,7 +61,7 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="200"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -103,6 +103,7 @@
       <el-table-column
         label="流程实例名称"
         prop="name"
+        align="center"
       />
       <!-- <el-table-column
         label="流程名称"

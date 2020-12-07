@@ -9,12 +9,35 @@ const pie = {
     clickable: true, // Whether to open clicks
     minAngle: 5, // The smallest sector angle (0 ~ 360), used to prevent a value from being too small, causing the sector to be too small to affect the interaction
     avoidLabelOverlap: true, // Whether to prevent the label overlap policy
-    hoverAnimation: true, // Whether to enable hover to enlarge the animation on the sector.
-    radius: ['30%', '60%'],
-    center: ['53%', '60%'],
+    hoverAnimation: false, // Whether to enable hover to enlarge the animation on the sector.
+    silent:true,
+    radius: ['55%', '75%'],
+    center: ['50%', '37.5%'],
     label: {
+      normal: {
+        show:true,
+        position:'center',
+        formatter:function(){
+          return'  100% \r\n执行完成'
+        },
+        textStyle:{
+          fontSize:30,
+        }
+      },
       align: 'left',
-      normal: {}
+      position: 'center',
+      show:true,
+      
+    },
+    emphasis: {
+        label: {
+            show: false,
+            fontSize: '20',
+            fontWeight: 'bold'
+        }
+    },
+    labelLine: {
+        show: false
     }
   }]
 }
