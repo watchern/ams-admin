@@ -318,7 +318,7 @@ export default {
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '流程实例名称', name: 'name', type: 'text', value: '' },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
+        // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '流程状态', name: 'status', type: 'select',
           data: statuSelect
@@ -422,9 +422,11 @@ export default {
       // 终态数组
       const alreadyStatuses = [6, 7, 8]
       // 可以取消状态数组
-      const waitStatuses = [1, 2, 3, 4, 5]
+      const waitStatuses = [2, 3, 4, 40]
       // 执行和启用以外的状态
-      const otherStatuses = [1, 2, 3, 6, 7, 8]
+      // const otherStatuses = [1, 2, 6, 7, 8, 40, 50, 80, 90]
+      // 可以暂停的状态
+      const stopStatuses = [3, 4, 41, 32]
       // 选择1条数据
       if (this.selections.length === 1) {
         this.selections.forEach((r, i) => {
@@ -436,11 +438,15 @@ export default {
           if (waitStatuses.indexOf(r.status) >= 0) {
             this.doneStatus = false
           }
+          // 判断状态是否在可以暂停的状态数组中
+          if (stopStatuses.indexOf(r.status) >= 0) {
+            this.pusStatus = false
+          }
           switch (r.status) {
-            // 判断状态是否为执行中,如果是执行中，暂停按钮可用
-            case 4:
-              this.pusStatus = false
-              break
+            // // 判断状态是否为执行中,如果是执行中，暂停按钮可用
+            // case 4:
+            //   this.pusStatus = false
+            //   break
             // 判断状态是否为暂停中,如果是暂停中，执行按钮可用
             case 5:
               this.startStatus = false
@@ -471,11 +477,11 @@ export default {
             this.reStartStatus = true
           }
           // 遍历选择的数组判断状态，如果是有状态不是执行中的，启用按钮不可用
-          if (r.status === 4 || otherStatuses.indexOf(r.status) >= 0) {
+          if (r.status !== 5) {
             this.startStatus = true
           }
           // 遍历选择的数组判断状态，如果是有状态不是暂停中的，启用按钮不可用
-          if (r.status === 5 || otherStatuses.indexOf(r.status) >= 0) {
+          if (stopStatuses.indexOf(r.status) < 0) {
             this.pusStatus = true
           }
         })

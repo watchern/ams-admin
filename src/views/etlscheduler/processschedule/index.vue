@@ -473,10 +473,11 @@ export default {
           name: 'processDefinitionId',
           type: 'select',
           data: []
-        },
-        { label: '模糊查询', name: 'keyword',
-          type: 'fuzzyText'
         }
+        // ,
+        // { label: '模糊查询', name: 'keyword',
+        //   type: 'fuzzyText'
+        // }
       ],
       // 格式化参数列表
       formatMap: {
@@ -489,7 +490,7 @@ export default {
       pageQuery: {
         condition: {},
         pageNo: 1,
-        pageSize: 10,
+        pageSize: 20,
         sortBy: 'desc',
         sortName: 'updateTime'
       },
