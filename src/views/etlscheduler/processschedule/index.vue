@@ -38,12 +38,11 @@
       :data="list"
       border
       fit
-      highlight-current-row
       style="width: 100%"
-      height="calc(100vh - 300px)"
-      max-height="calc(100vh - 300px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column
@@ -89,7 +88,6 @@
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
               <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
-
           </el-popover>
         </template>
       </el-table-column>
@@ -152,8 +150,9 @@
         :model="temp"
         class="detail-form"
         label-position="right"
-        style="max-height:60vh; overflow:auto;"
+        style="height:62vh; overflow:auto;"
       >
+     
         <el-form-item label="任务名称" prop="scheduleName">
           <el-input
             v-model="temp.scheduleName"
@@ -161,6 +160,8 @@
             :placeholder="disableUpdate === true ? '' : '请输入任务名称'"
           />
         </el-form-item>
+  
+      
         <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="processDefinitionId">
           <el-select
@@ -173,7 +174,7 @@
             :placeholder="disableUpdate === true ? '' : '请选择任务流程'"
             :loading="loading"
             @change="changeProcess(temp.processDefinitionId)"
-            @focus="remote"
+            @focus="remote-method"
           >
             <el-option
               v-for="item in options"
@@ -195,28 +196,39 @@
             @blur="changeParamValue(item.value, item.name)"
           />
         </el-form-item>
-        <el-form-item label="作业周期范围" prop="startTime">
+        <el-row>
+        <el-col :span="12">
+        <el-form-item label="作业周期开始时间" prop="startTime">
           <el-col :span="8">
             <el-date-picker
               v-model="temp.startTime"
               :picker-options="startTime"
               type="date"
-              prop="startTime"
+              props="startTime"
               :placeholder="disableUpdate === true ? '' : '请选择开始时间'"
               :disabled="disableUpdate"
             />
           </el-col>
-          <el-col class="line" :span="1">-</el-col>
+        </el-form-item>
+        </el-col>
+        <el-col :span="12">
+        <el-form-item label="作业周期结束时间" prop="endTime">
+          <!-- <el-col class="line" :span="1">-</el-col> -->
           <el-col :span="8">
             <el-date-picker
               v-model="temp.endTime"
               :picker-options="endTime"
               type="date"
+              prop="endTime"
               :placeholder="disableUpdate === true ? '' : '请选择结束时间'"
               :disabled="disableUpdate"
             />
           </el-col>
-        </el-form-item>
+        </el-form-item> 
+        </el-col>
+        </el-row>
+      
+      
 
         <el-form-item label="作业周期" prop="crontab">
           <el-select
@@ -270,7 +282,7 @@
                     v-if="dependTaskList!=null && dependTaskList.length>0"
                     @click="!isDetails && _setGlobalRelation()"
                   >
-                  <!-- {{ relation === "AND" ? "且" : "或" }} -->
+                    <!-- {{ relation === "AND" ? "且" : "或" }} -->
                   </span>
                   <div
                     v-for="(el, $index) in dependTaskList"
@@ -283,7 +295,7 @@
                       v-if="el.dependItemList.length"
                       @click="!isDetails && _setRelation($index)"
                     >
-                    <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
+                      <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
                     </span>
 
                     <!-- :depend-item-list="dependTaskList[0].dependItemList" -->
@@ -561,6 +573,13 @@ export default {
           {
             required: true,
             message: '请填写开始执行日期',
+            trigger: 'change'
+          }
+        ],
+        endTime: [
+          {
+            required: true,
+            message: '请填写结束执行日期',
             trigger: 'change'
           }
         ],
