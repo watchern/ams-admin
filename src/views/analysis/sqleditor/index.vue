@@ -514,7 +514,8 @@ export default {
           editorSql(this.sqlValue, this.sqlEditorParamObj);
         }
         refreshCodeMirror()
-      }).catch().then((result)=>{
+      }).catch(() => {
+        this.$message({ type: 'error', message: '初始化数据表失败!' })
         this.executeLoading = false
         this.loadText = ""
       })
