@@ -18,6 +18,8 @@
               <el-option label="模型" :value="1"></el-option>
               <el-option label="指标" :value="2"></el-option>
             </el-select>
+            <el-input v-model="SavePath" class="el-input-z"/>
+            <span class="btn-z">地址</span>
           </el-form-item>
           <el-form-item label="关联模型" v-if="temp.warningType == 1">
             <el-row>
@@ -688,3 +690,22 @@ export default {
   }
 }
 </script>
+<style scoped>
+  .el-input-z{
+    width: 40%;
+    margin: 0 35px 0 60px;
+  }
+  .btn-z{
+    width: 70px;
+    height: 36px;
+    display: inline-block;
+    border-radius: 4px;
+    background-color: #353a43;
+    border-color: #353a43;
+    color: #c8ff8c;
+    font-weight: bold;
+    text-align: center;
+    padding: 0 10px;
+    cursor:pointer;
+  }
+</style>
