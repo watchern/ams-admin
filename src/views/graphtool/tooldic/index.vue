@@ -371,8 +371,8 @@
                 graphUuid:getParams().graphUuid,// 打开图形的ID
                 graphName:'',
                 description:'',
-                openGraphType: Number(getParams().openGraphType),// 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
-                openType: Number(getParams().openType),// 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
+                openGraphType: getParams().openGraphType ? 1 : Number(getParams().openGraphType) ,// 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
+                openType: getParams().openType ? 2 : Number(getParams().openType),// 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
                 loading:null,//遮罩层对象
                 searchZtreeContent:'',
                 webSocket:null,
@@ -760,7 +760,7 @@
                                 let nodeName = executeSQLObj.name
                                 let resultTableName = nodeInfo.resultTableName
                                 let isRoleTable = false
-                                let resultTableObj = {nodeId,nodeName,resultTableName}
+                                let resultTableObj = {nodeId,nodeName,resultTableName,isRoleTable}
                                 //在执行队列的ID集合中找出当前节点的下一个节点即结果表节点
                                 for(let k=0; k<$this.executeNodeIdArr.length; k++){
                                     if($this.executeNodeIdArr[k] === cueNodeId){
@@ -797,7 +797,6 @@
                         }
                     }
                     if(executeTaskObj.resultType === 'select'){//展示节点结果集数据
-                        debugger
                         $this.loading.destroy()
                         if(executeSQLObj.customParam[0] === $this.websocketBatchId){//展示当前操作的结果集
                             $this.$nextTick( () => {
