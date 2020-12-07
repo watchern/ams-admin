@@ -1,7 +1,10 @@
 <template>
   <div class="shell-model">
     <m-list-box>
-      <div slot="text">脚本</div>
+      <div slot="text"><span style="color: red;">*</span>脚本
+        <el-tooltip class="item" effect="dark" content="自定义参数占位格式${参数名},日期类型参数的格式为$[yyyyMMdd-N]" placement="top-start">
+          <i class="el-icon-info" />
+        </el-tooltip></div>
       <div slot="content" class="propwidth">
         <div class="from-mirror">
           <textarea

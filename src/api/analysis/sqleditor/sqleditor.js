@@ -68,7 +68,11 @@ var columnIconPath = '../../images/ico/column.png'
  * @type {string}
  */
 var tableIconPath = '../../images/ico/table_1.png'
-
+/**
+ * 视图图标路径
+ * @type {string}
+ */
+var viewIconPath = '../../images/ico/view.png'
 /**
  * 参数对象
  * @type {{}}
@@ -104,6 +108,9 @@ var tableTreeData = []
 /**
  * 初始化界面托拉拽事件
  */
+
+
+
 export function initDragAndDrop() {
   // 实现左右拖拽改变大小
   var container = document.getElementById('container') //整个窗口
@@ -118,22 +125,22 @@ export function initDragAndDrop() {
   var leftPart = document.getElementById('leftPart')
   var rightContent = document.getElementById('rightPart')
   var vertical = document.getElementById('vertical')
-  var left_min = container.clientWidth*0.2
-  var right_max = rightContent.offsetWidth*0.5
+  // var left_min = container.clientWidth*0.2
+  // var right_max = rightContent.offsetWidth*0.5
   var iT = 0
   vertical.onmousedown = function(e) {
     var disX = (e || event).clientX
-    vertical.left = vertical.offsetLeft
+    the_left_all ()
     document.onmousemove = function(e) {
       var e = e || window.event;
       var tarnameb = e.target || e.srcElement
       vertical.style.margin = 0
       iT = (e || event).clientX
-      if(iT < left_min){iT = left_min}
-      else if(iT > container.clientWidth*.85){iT = container.clientWidth*.85}
-      vertical.style.left = iT - 134 +'px'
-      leftPart.style.width = iT - 126 - 15 + 'px'
-      rightContent.style.width = parseInt(container.clientWidth - iT + 134 -63) + 'px'
+      // if(iT < left_min){iT = left_min}
+      // else if(iT > container.clientWidth*.85){iT = container.clientWidth*.85}
+      vertical.style.left = iT - 80 - tz_path +'px'
+      leftPart.style.width = iT - 86 - tz_path + 'px'
+      rightContent.style.width = parseInt(container.clientWidth - iT + 76 + tz_path) + 'px'
       return false
 
     }
@@ -150,9 +157,9 @@ export function initDragAndDrop() {
   function tree_zy_zhan() {
     if(tree_shuju == false && tree_canshu == false && tree_sql == false){
       $("#leftPart").stop(true).animate({"width":203},300)
-      $("#vertical").delay(300).fadeIn(100).css("left",11.9+"%")
-      $("#rightPart").stop(true).animate({"width":1150,"left":0},300)
-      $("#sidebar").css("border-right",1+"px"+" solid"+" #5E6572")
+      $("#vertical").delay(300).fadeIn(100).css("left",11.5+"%")
+      $("#rightPart").stop(true).animate({"width":1562,"left":0},300)
+      $("#sidebar").css("border-right",1+"px"+" solid"+" rgb(206,208,212)")
     }
   }
 
@@ -160,7 +167,7 @@ export function initDragAndDrop() {
     if(tree_shuju == false && tree_canshu == false && tree_sql == false){
       $("#vertical").fadeOut(100)
       $("#leftPart").delay(100).stop(true).animate({"width":0},300)
-      $("#rightPart").delay(100).stop(true).animate({"width":1350,"left":15},300)
+      $("#rightPart").delay(100).stop(true).animate({"width":1752,"left":15},300)
       $("#sidebar").css("border","none")
     }
   }
@@ -243,8 +250,8 @@ export function initDragAndDrop() {
       iT > maxT && (iT = maxT)
       var cmWrap = $('.CodeMirror-wrap')[0]
       horizontal.style.top = topPart.style.height = iT + 'px'
-      cmWrap.style.height = iT - 21 + 'px'
-      bottomPart.style.height = rightPart.clientHeight - iT -20 + 'px'
+      cmWrap.style.height = iT - 37 + 'px'
+      bottomPart.style.height = rightPart.clientHeight - iT -11 + 'px'
       if (grids) {
         grids.style.height = rightPart.clientHeight - iT - 197 + 'px'
       }
@@ -292,9 +299,7 @@ export function initEvent() {
  * @param relTableMap 智能提示的表对象
  * @returns {CodeMirror.EditorFromTextArea}
  */
-export function initSQLEditor(textarea, relTableMap) {
-  var expTableMap = {};
-  expTableMap = {"OBJ_PERSON_1":"这是人员表","AND":"这是a阿德杀杀杀杀杀杀杀杀杀杀阿三顶顶顶顶顶顶顶顶顶顶顶顶顶杀杀杀杀杀大撒大nd","AS":"这是as"}
+export function initSQLEditor(textarea, relTableMap,expTableMap) {
   // 初始化CodeMirror
   var editor = CodeMirror.fromTextArea(textarea, {
     mode: 'text/x-mssql',
@@ -384,7 +389,7 @@ export function initSQLEditor(textarea, relTableMap) {
   editor.setSize('auto', ($(document).height() * 0.5 - 40) + 'px')
   editorObj = editor
   $('.CodeMirror-scroll').focus()
-  editor.setSize('auto','84.5%');
+  editor.setSize('auto','88%');
 }
 
 /**
@@ -447,7 +452,7 @@ export function initIcon() {
 /**
  * 初始化数据表树
  */
-export function initTableTree(userId) {
+export function initTableTree(result) {
   // 数据表树加载,开始
   var setting = {
     // 异步加载
@@ -594,18 +599,25 @@ export function initTableTree(userId) {
       }
     }
   }
-  const params = { sceneCode: 'auditor', dataUserId: userId }
+/*  const params = { sceneCode: 'auditor', dataUserId: userId }
   // 调用后台获取数据表数据
   request({
     baseURL: dataUrl,
     url: '/tableMeta/getResTree',
     method: 'post',
     params: params
-  }).then(result => {
+  }).then(result => {*/
     // 设置图标
     for (let i = 0; i < result.data.length; i++) {
       if (result.data[i].type === 'table') {
         result.data[i].icon = tableIconPath
+        result.data[i].isParent = true
+      }
+      else if (result.data[i].type === 'view') {
+        result.data[i].icon = viewIconPath
+        result.data[i].isParent = true
+      }
+      else if(result.data[i].type === 'folder'){
         result.data[i].isParent = true
       }
     }
@@ -621,7 +633,7 @@ export function initTableTree(userId) {
     })
     tableTreeData = result.data
     zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
-  })
+ // })
 }
 /**
  * 执行create语句后刷新左侧树
@@ -801,23 +813,42 @@ export function dropTable(dropTableArr){
     }
   }
 }
+
+var max_left = 0
+var max_width = 0
+var tz_path = 0
+  //实时获取最左侧主菜单栏的宽度
+  function the_left_all () {
+    var leftcard=document.getElementsByClassName('left-menu')[0]
+    var offleftcard = leftcard.style.width
+    if(offleftcard == 120+"px"){
+        max_left = 125
+        max_width = 93
+        tz_path = 55
+    }
+    else if(offleftcard== 64+"px"){
+        max_left = 70
+        max_width = 96
+        tz_path = 0
+    }
+  }
+
 //表单最大化
 var maxormin = true
 export function maxOpenOne() {
+  the_left_all()
   if(maxormin == true){
     $("#drag").hide(100)
     $("#iconImg").css("display","none")
     $("#iconImg-huifu").css("display","block")
-    $("#bottomPart").css({"position":"fixed","width":93+"%","left":125,"top":0,"height":100+"%"})
-    $(".data-show").css("margin-top",0)
-    $(".ag-theme-balham").css("height",650)
+    $("#bottomPart").css({"position":"fixed","width":max_width+"%","left":max_left,"top":0,"height":96+"%","z-index":1000})
+    $(".ag-theme-balham").css("height",550)
     maxormin = false
   }else if(maxormin == false){
     $("#drag").show(100)
     $("#iconImg").css("display","block")
     $("#iconImg-huifu").css("display","none")
-    $(".data-show").css("margin-top",45)
-    $("#bottomPart").css({"position":"static","left":0,"width":100+"%","height":100+"%"})
+    $("#bottomPart").css({"position":"static","left":0,"width":100+"%","height":100+"%","z-index":100})
     $(".ag-theme-balham").css("height",200)
     maxormin = true
   }
@@ -1804,7 +1835,6 @@ export function getSql() {
   var result = {}
   var isAllExecute = false
   var selText = editorObj.getSelection()
-  // 如果选中执行等于全部待执行SQL或者没有选中直接执行SQL 则视为满足模型生成条件第一条 即：必须将SQL编译器的内容全部执行才可以保存模型结果 flag为控制标识
   if ($.trim(selText) === '' || selText === editorObj.getValue()) {
     selText = editorObj.getValue()
     isAllExecute = true
@@ -1896,6 +1926,20 @@ export function startExecuteSql(data) {
     data
   })
 }
+
+/**
+ * 获取执行任务
+ * @param {*} data 要执行的数据
+ */
+export function getExecuteTask(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/SQLEditorController/getExecuteTask',
+    method: 'post',
+    data
+  })
+}
+
 /**
  * 编辑模型
  * @param sql 要编辑的sql
@@ -1922,9 +1966,9 @@ export function refreshCodeMirror(){
 export function getColumnSqlInfo(data) {
   return request({
     baseURL: analysisUrl,
-    url: '/SQLEditorController/getcolumnsqlinfo',
+    url: '/SQLEditorController/getColumnSqlInfo',
     method: 'post',
-    params:{sql:data}
+    data
   })
 }
 

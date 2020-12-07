@@ -6,20 +6,21 @@
             <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
             <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
         </div>
-        <table id="column_config" class="table table-bordered">
-            <thead>
-            <tr>
-                <th width="5%" style="text-align: center">序号</th>
-                <th width="30%" style="text-align: center">上一节点名称</th>
-                <th width="25%" style="text-align: center">字段名称</th>
-                <th width="25%" style="text-align: center">输出字段名称</th>
-                <th width="15%" style="text-align: center">是否为输出字段
-                    <el-checkbox v-model="checkAll" @change="handleCheckAllChange" :disabled="isAllDisabled"></el-checkbox>
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(item,index) in items">
+        <div id="outPutTable">
+            <table id="column_config" class="table table-bordered">
+                <thead>
+                <tr>
+                    <th width="5%" style="text-align: center">序号</th>
+                    <th width="30%" style="text-align: center">上一节点名称</th>
+                    <th width="25%" style="text-align: center">字段名称</th>
+                    <th width="25%" style="text-align: center">输出字段名称</th>
+                    <th width="15%" style="text-align: center">是否为输出字段
+                        <el-checkbox v-model="checkAll" @change="handleCheckAllChange" :disabled="isAllDisabled"></el-checkbox>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(item,index) in items" class="colTr" :data-index="index">
                     <td align="center">{{ index+1 }}</td>
                     <td>{{ item.rtn }}</td>
                     <td>{{ item.curColumnName }}</td>
@@ -30,8 +31,9 @@
                         <el-checkbox v-model="item.checked" :name="item.attrColumnName" :key="item.id" @change="checkBoxChange(index)" :disabled="isDisabled"></el-checkbox>
                     </td>
                 </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
@@ -55,6 +57,9 @@
         },
         methods: {
             init() {
+                $("#outPutTable").css({"overflow-y":"auto","height":function () {
+                    return ($(document).height() - 80) + "px"
+                }})
                 let graph = this.$parent.graph
                 nodeData = graph.nodeData[graph.curCell.id]
                 nodeInfo = nodeData.nodeInfo
@@ -164,13 +169,15 @@
                 $('#column_config tbody').sortable().disableSelection()
             },
             get_column() { // 这里保存的是上级节点所有的字段，包括输出字段，（意义：不输出的字段不代表不是该节点的字段，在获取上级节点字段应该进一步筛选师傅是输出字段）
-                var this_columnInfos = []
-                for(let j=0; j<this.items.length; j++) {
-                    var checked = this.items[j].checked
-                    var this_column = JSON.parse(this.items[j].columnInfo)
-                    var old_colum_name = this.items[j].curColumnName// 之前的newColumnName
+                let this_columnInfos = []
+                let $this = this
+                $(".colTr").each(function () {
+                    let index = $(this).attr("data-index");
+                    var checked = $this.items[index].checked
+                    var this_column = JSON.parse($this.items[index].columnInfo)
+                    var old_colum_name = $this.items[index].curColumnName// 之前的newColumnName
                     var re_is_filter_comumn = []
-                    $(this.$parent.is_filter_column).each(function () {
+                    $($this.$parent.is_filter_column).each(function () {
                         re_is_filter_comumn.push(this.value)
                     })
                     if (re_is_filter_comumn.length === 0 || $.inArray(old_colum_name, re_is_filter_comumn) > -1) { // 没有做配置、没有类似去重此功能需求或者配置并且在对勾显示字段的
@@ -182,12 +189,12 @@
                     } else {
                         this_column.isOutputColumn = 0
                     }
-                    this_column.newColumnName = this.items[j].disColumnName
+                    this_column.newColumnName = $this.items[index].disColumnName
                     this_column.columnName = old_colum_name
-                    this_column.rtn = this.items[j].rtn
-                    this_column.nodeId = this.items[j].nodeId
+                    this_column.rtn = $this.items[index].rtn
+                    this_column.nodeId = $this.items[index].nodeId
                     this_columnInfos.push(this_column)
-                }
+                })
                 nodeData.columnsInfo = this_columnInfos
             },
             find_self_column(columnName, nodeId) { // 是否设置并且含有当前字段

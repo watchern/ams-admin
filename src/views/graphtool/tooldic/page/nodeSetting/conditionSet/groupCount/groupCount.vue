@@ -77,19 +77,21 @@
                         <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
                         <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
                     </div>
-                    <table id="column_config" class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th width="30%" class="text-center">上一节点名称</th>
-                            <th width="25%" class="text-center">字段名称</th>
-                            <th width="30%" class="text-center">输出字段名称</th>
-                            <th width="15%" class="text-center">是否为输出字段
-                                <input id="sel_all" type="checkbox" class="form-control"/>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <div id="outPutTable">
+                        <table id="column_config" class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th width="30%" class="text-center">上一节点名称</th>
+                                <th width="25%" class="text-center">字段名称</th>
+                                <th width="30%" class="text-center">输出字段名称</th>
+                                <th width="15%" class="text-center">是否为输出字段
+                                    <input id="sel_all" type="checkbox" class="form-control"/>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -115,6 +117,18 @@
             this.nodeData = this.graph.nodeData[this.graph.curCell.id]
             groupCountJs.sendVueObj(this)
             groupCountJs.init()
+            $('#myTabContent').css({ 'overflow-y': 'auto', 'height': function() {
+                    return ($(document).height() - 50) + 'px'
+                } })
+            $('#group').css({ 'margin-left': function() {
+                    return ($('#collapse').width() - 760) / 2 + 'px'
+                }, 'padding': '10px 0' })
+            $('#countTable').css({ 'margin-left': function() {
+                    return ($('#collapse').width() - 760) / 2 + 'px'
+                }, 'margin-top': '10px', 'margin-bottom': '10px' })
+            $('#outPutTable').css({ 'overflow-y': 'auto', 'height': function() {
+                    return ($(document).height() - 80) + 'px'
+                } })
         },
         methods: {
             addCountTr() {
@@ -126,16 +140,6 @@
             }
         }
     }
-
-    $('#myTabContent').css({ 'overflow-y': 'auto', 'height': function() {
-            return ($(document).height() - 50) + 'px'
-        } })
-    $('#group').css({ 'margin-left': function() {
-            return ($('#collapse').width() - 760) / 2 + 'px'
-        }, 'padding': '10px 0' })
-    $('#countTable').css({ 'margin-left': function() {
-            return ($('#collapse').width() - 760) / 2 + 'px'
-        }, 'margin-top': '10px', 'margin-bottom': '10px' })
 
     // 保存节点信息
     function saveNodeInfo() {

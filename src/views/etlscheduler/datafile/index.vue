@@ -33,14 +33,10 @@
       />
       <el-table-column
         label="文件名称"
-        width="200px"
-        align="center"
         prop="fullPath"
       />
       <el-table-column
         label="对应表"
-        width="140px"
-        align="center"
         prop="odsTableName"
       />
       <el-table-column
@@ -63,7 +59,6 @@
         :formatter="formatStatus"
       />
     </el-table>
-  
     <pagination
       v-show="total>0"
       :total="total"
@@ -98,7 +93,7 @@ export default {
       queryFields: [
         { label: '文件名称', name: 'fullPath', type: 'text', value: '' },
         { label: '表名称', name: 'odsTableName', type: 'text', value: '' },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
+        // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '接收状态', name: 'status', type: 'select',
           data: [{ name: '已接收', value: '1' }, { name: '未接收', value: '0' }]

@@ -1327,11 +1327,13 @@ export function previewNodeData() {
     let nodeId = ''
     let nodeName = ''
     let resultTableName = ''
+    let isRoleTable = false
     switch (curNodeInfo.optType) {
         case 'datasource':				// 如果是原表，直接拿其临时表名称
             resultTableName = curNodeInfo.resultTableName
             nodeId = curNodeInfo.nodeId
             nodeName = curNodeInfo.nodeName
+            isRoleTable = true
             break
         case 'newNullNode':// 如果是结果表
             if (!curNodeInfo.isSet) {// 如果是未配置的结果表，拿其前置节点的临时表名称
@@ -1348,6 +1350,11 @@ export function previewNodeData() {
                 nodeId = curNodeInfo.nodeId
                 nodeName = curNodeInfo.nodeName
             }
+            let midTableStatus = curNodeInfo.midTableStatus
+            let resultTableStatus = curNodeInfo.resultTableStatus
+            if(midTableStatus === 2 || resultTableStatus === 2){
+                isRoleTable = true
+            }
             break
     }
     if (resultTableName === '') {
@@ -1356,11 +1363,13 @@ export function previewNodeData() {
     }
     graphIndexVue.resultTableArr = []
     graphIndexVue.preValue = []
+    graphIndexVue.showTableResult = false
     graphIndexVue.$nextTick( () => {
         graphIndexVue.websocketBatchId = new UUIDGenerator().id
-        graphIndexVue.resultTableArr = [{nodeId, nodeName, resultTableName}]
+        graphIndexVue.resultTableArr = [{nodeId, nodeName, resultTableName,isRoleTable}]
         graphIndexVue.preValue = [{id:nodeId,name:nodeName}]
         graphIndexVue.layuiTabClickLi(0)
+        graphIndexVue.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false,'hasTime':true })
         graphIndexVue.viewData()
     })
 }
