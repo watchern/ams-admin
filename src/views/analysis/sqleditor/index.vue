@@ -2,10 +2,9 @@
   <div class="app-container">
     <div id="container" v-loading="executeLoading" :element-loading-text="loadText">
       <div id="sidebar">
-        <div class="unfold-shuju add-sidiv"><img :src="shuju"></div>
-        <div class="unfold-canshu"><img :src="canshu"></div>
-        <div class="unfold-sql"><img :src="sql">
-        </div>
+        <div class="unfold-shuju add-sidiv"><img :src="shuju"><span>数据表</span></div>
+        <div class="unfold-canshu"><img :src="canshu"><span>参数</span></div>
+        <div class="unfold-sql"><img :src="sql"><span>函数</span></div>
       </div>
       <div id="leftPart" class="left-part">
         <ul id="dataTree" class="ztree" />
@@ -88,7 +87,7 @@
                   >
                 </el-dropdown-menu>
               </el-dropdown>
-              <label style="margin-right: -43px;">{{ path }}</label><a @click="modelResultSavePathDialog = true" style="color: #409eff; margin-left: 50px">编辑</a>
+              <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px">{{ path }}</label><a @click="modelResultSavePathDialog = true" style="color: #409eff; margin-left: 50px">编辑</a>
             </el-col>
           </el-row>
           <div
@@ -108,9 +107,11 @@
 
         <!-- 结果展示和参数输入区域 -->
         <div id="bottomPart" lay-filter="result-data">
-          <div id="maxOpen" class="max-size" @click="maxOpen" >
-            <div id="iconImg" class="iconImg" alt="最大化" />
-            <div id="iconImg-huifu" />
+          <div id="maxOpen" class="max-size" >
+            <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
+            <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
+            <!-- <div id="iconImg-save" class="iconImg" @click="outTable"></div>
+            <div id="iconImg-table" class="iconImg"></div> -->
           </div>
           <div v-for="result in resultShow" id="dataShow" class="data-show">
             <childTabs
@@ -278,6 +279,7 @@ import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import paramDraw from "@/views/analysis/modelparam/paramdraw";
 import { replaceNodeParam } from "@/api/analysis/auditparam";
 import dataTree from "@/views/data/role-res/data-tree";
+import { modelResultExport } from "@/views/analysis/auditmodelresult/childtabcon"
 
 /**
  * 当前执行进度
@@ -882,7 +884,10 @@ export default {
   height: 100%;
 }
 
-.row-bg{margin: 10px 0 5px 5px;}
+.row-bg{
+  padding: 8px 0 8px 5px;
+  background-color: rgb(224, 230, 237);
+}
 
 #sidebar{
   width: 30px;
@@ -1026,6 +1031,21 @@ export default {
   box-shadow: 15px 0 15px 0 #3F444D12;
   position: relative;
   z-index: 20;
+}
+
+.data-show .ag-row-odd{
+  background-color: rgb(242,245,248);
+}
+.data-show .ag-row{
+  border-width: 0px;
+}
+.data-show .ag-row-selected{
+  background-color: #b7e4ff;
+  background-color: var(--ag-selected-row-background-color, #b7e4ff);
+}
+.data-show .ag-row-hover{
+  background-color: #ecf0f1;
+  background-color: var(--ag-row-hover-color, #ecf0f1);
 }
 </style>
 

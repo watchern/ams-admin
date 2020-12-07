@@ -246,7 +246,7 @@ export function initDragAndDrop() {
       iT > maxT && (iT = maxT)
       var cmWrap = $('.CodeMirror-wrap')[0]
       horizontal.style.top = topPart.style.height = iT + 'px'
-      cmWrap.style.height = iT - 29 + 'px'
+      cmWrap.style.height = iT - 37 + 'px'
       bottomPart.style.height = rightPart.clientHeight - iT -11 + 'px'
       if (grids) {
         grids.style.height = rightPart.clientHeight - iT - 197 + 'px'
@@ -385,7 +385,7 @@ export function initSQLEditor(textarea, relTableMap,expTableMap) {
   editor.setSize('auto', ($(document).height() * 0.5 - 40) + 'px')
   editorObj = editor
   $('.CodeMirror-scroll').focus()
-  editor.setSize('auto','90.5%');
+  editor.setSize('auto','88%');
 }
 
 /**

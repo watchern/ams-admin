@@ -37,7 +37,7 @@
 	width: 20px;
 	height: 20px;
 	position: absolute;
-    top: 0px;
+    top: -8px;
 	left: 48%;
 	transform: rotate(90deg);
 }
@@ -54,16 +54,25 @@
 	display: none;
 }
 
+#iconImg-save{
+	background: url(./img/zTreeOut.png) 0 0 no-repeat;
+}
+
+#iconImg-table{
+	width: 48px;
+	background: url(./img/zTreeTable.png) 0 0 no-repeat;
+}
+
 .iconImg {
 	width: 24px;
-	  height: 24px;
-	  float: left;
-	  margin-top: 1px;
-	  background: url(./img/maxmize.png) 0 0 no-repeat;
-	  border: none;
-	  display: inline-block;
-	  background-size: 100%;
-  }
+	height: 24px;
+	float: left;
+	background: url(./img/maxmize.png) 0 0 no-repeat;
+	border: none;
+	display: inline-block;
+	margin: 1px 5px 0 5px;
+	background-size: 100%;
+}
 
 .ztree * {
 	padding: 0;
@@ -187,10 +196,32 @@
 
 #sidebar img{
 	margin-top: 40px;
-	margin-bottom: 40px;
 	width: 18px;
 	height: 18px;
 }
+#sidebar span{
+	width: 96%;
+	margin: 8px 0;
+	display: inline-block;
+	margin-bottom: 32px;
+	font-weight: bolder;
+}
+
+.unfold-shuju span{
+	color: #9B4C4C;
+	font-family: PingFangSC-Semibold;
+}
+
+.unfold-canshu span{
+	color: #514559 ;
+	font-family: PingFangSC-Semibold;
+}
+
+.unfold-sql span{
+	color: #184A4C;
+	font-family: PingFangSC-Semibold;
+}
+
 
 .CodeMirror-scroll{
 	background-color: rgb(237, 241, 245);
