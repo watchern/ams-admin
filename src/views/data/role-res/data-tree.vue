@@ -102,6 +102,11 @@ export default {
         this.treeLoading = false
         this.treeData1 = resp.data
       })
+    },
+    loadNode(node, resolve) {
+      if (node.children) {
+        resolve(node.children)
+      }
     }
   } // 注册
 }

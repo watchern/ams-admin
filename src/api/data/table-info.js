@@ -51,9 +51,10 @@ export function updateTable(data) {
   })
 }
 export function delTable(ids) {
+  var param = ids.split('>')
   return request({
     baseURL: baseURL,
-    url: `/${controller2}/delete/${ids}`,
+    url: `/${controller2}/delete/${param[0]}/${param[1]}`,
     method: 'delete'
   })
 }

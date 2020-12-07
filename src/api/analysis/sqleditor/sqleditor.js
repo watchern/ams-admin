@@ -68,7 +68,11 @@ var columnIconPath = '../../images/ico/column.png'
  * @type {string}
  */
 var tableIconPath = '../../images/ico/table_1.png'
-
+/**
+ * 视图图标路径
+ * @type {string}
+ */
+var viewIconPath = '../../images/ico/table_1.png'
 /**
  * 参数对象
  * @type {{}}
@@ -1914,6 +1918,20 @@ export function startExecuteSql(data) {
     data
   })
 }
+
+/**
+ * 获取执行任务
+ * @param {*} data 要执行的数据
+ */
+export function getExecuteTask(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/SQLEditorController/getExecuteTask',
+    method: 'post',
+    data
+  })
+}
+
 /**
  * 编辑模型
  * @param sql 要编辑的sql

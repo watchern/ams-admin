@@ -124,6 +124,7 @@
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id">
             <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel" class="sql-editor" />
+            <graph v-if="state.id=='002003002'"></graph>
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
@@ -247,10 +248,11 @@ import { getDictList } from '@/utils/index'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import SelectTransCode from '@/views/data/table/transcodeselect'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
+import graph from '@/views/graphtool/tooldic/index'
 // import func from 'vue-temp/vue-editor-bridge'
 export default {
   name: 'EditModel',
-  components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode },
+  components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode,graph },
   props: ['openValue'],
   data() {
     return {
@@ -807,7 +809,10 @@ export default {
         this.modelTypeObj.push(obj)
       }
       else if(this.form.modelType == "002003002"){
-        this.$message({ type: 'info', message: "暂时不支持图形化模型"})
+        let obj = {
+          id:'002003002'
+        }
+        this.modelTypeObj.push(obj)
       }
       $('#sqlValueView').html(sql)
     },
@@ -1086,7 +1091,10 @@ export default {
         // this.handleNodeClick(obj2)
       }
       if(vId == "002003002"){
-        this.$message({ type: 'info', message: "暂时不支持图形化模型"})
+        let obj = {
+          id:'002003002'
+        }
+        this.modelTypeObj.push(obj)
       }
     },
     /**
