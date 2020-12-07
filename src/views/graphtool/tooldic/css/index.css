@@ -2,11 +2,10 @@
 	height:88%;
 	background: url('../images/grid.gif');
 	position: absolute;
-	top: 112px;
+	top: 128px;
 }
 .geToolbarContainer {
-	left: 0;
-	right: 0;
+    /*width: calc(94% - 29px);*/
 	background: whiteSmoke;
 	border-bottom: 1px solid #e0e0e0;
 }
@@ -17,8 +16,7 @@
 }
 #accordion{
 	position: absolute;
-	left: 0;
-	bottom: 0;
+	top: 128px;
 }
 .geResultContainer {
 	width: 100%;
@@ -41,8 +39,9 @@
 }
 #detailContainer {
 	position: absolute;
-	right: 0;
-	bottom: 0;
+	right: 14px;
+	top: 128px;
+    border-left: 1px solid #E5E5E5;
 }
 .tab-content{
 	height:92%;
