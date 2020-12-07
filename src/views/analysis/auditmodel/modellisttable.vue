@@ -844,13 +844,14 @@ export default {
       obj.modelUuid = selectObj[0].modelUuid
       obj.businessField = 'modellisttable'
       // 合并参数 将输入的值替换到当前界面
-      this.dialogFormVisible = false
       this.currentPreviewModelParamAndSql.paramObj = obj.paramsArr
       this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
+      this.dialogFormVisible = false
       // this.mergeParamObj(obj.paramsArr)
       getExecuteTask(obj).then((result) => {
         this.$emit('loadingSet',false,"");
-        this.addTab(selectObj[0], false, result.data.executeSQLList)
+        this.addTab(selectObj[0], true, result.data.executeSQLList)
+        this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
         //界面渲染完成之后开始执行sql,将sql送入调度
         startExecuteSql(result.data).then((result) => {
         })
@@ -885,14 +886,16 @@ export default {
       obj.businessField = 'modellisttable'
       // 重置数据展现界面数据
       this.$refs.[modelUuid][0].reSetTable()
-      startExecuteSql(obj).then((result) => {
-        this.dialogFormVisible = false
-        if (!result.data.isError) {
-
-        } else {
-          this.$message({ type: 'info', message: '执行失败' + result.data.message })
-        }
-      })
+      this.$emit('loadingSet',true,"正在执行...");
+      getExecuteTask(obj).then((result) => {
+        this.$emit('loadingSet',false,"");
+        //界面渲染完成之后开始执行sql,将sql送入调度
+        startExecuteSql(result.data).then((result) => {
+        })
+      }).catch((result) => {
+        this.$message({ type: 'info', message: '执行失败' })
+        this.$emit('loadingSet',false,"");
+      });
     },
     /**
      * 获取模型列表选中的数据

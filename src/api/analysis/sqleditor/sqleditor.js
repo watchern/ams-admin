@@ -68,7 +68,11 @@ var columnIconPath = '../../images/ico/column.png'
  * @type {string}
  */
 var tableIconPath = '../../images/ico/table_1.png'
-
+/**
+ * 视图图标路径
+ * @type {string}
+ */
+var viewIconPath = '../../images/ico/table_1.png'
 /**
  * 参数对象
  * @type {{}}

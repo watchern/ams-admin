@@ -580,12 +580,10 @@ export default {
         return;
       }
       if (!this.isAllExecute) {
-        this.$message({ type: "info", message: "全部执行才可以保存!" });
         return;
       }
       // 如果当前执行进度与要执行的sql数量相等 则证明数据已经全部拿到，允许保存
       if (currentExecuteProgress != this.currentExecuteSQL.length) {
-        this.$message({ type: "info", message: "全部执行成功才可以保存!" });
         return;
       }
       /*      console.log("当前执行总进度:" + currentExecuteProgress);
@@ -786,8 +784,9 @@ export default {
       }
       obj.sqls = obj.sql;
       obj.businessField = "sqleditor";
+      this.executeLoading = true;
+      this.dialogFormVisible = false;
       getExecuteTask(obj).then((result) => {
-        this.dialogFormVisible = false;
         this.executeLoading = false
         this.loadText = ""
         lastSqlIndex = result.data.lastSqlIndex
