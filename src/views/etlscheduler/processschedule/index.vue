@@ -39,10 +39,10 @@
       border
       fit
       style="width: 100%"
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
       height="calc(100vh - 300px)"
       max-height="calc(100vh - 300px)"
+      @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column
@@ -152,7 +152,7 @@
         label-position="right"
         style="height:62vh; overflow:auto;"
       >
-     
+
         <el-form-item label="任务名称" prop="scheduleName">
           <el-input
             v-model="temp.scheduleName"
@@ -160,8 +160,7 @@
             :placeholder="disableUpdate === true ? '' : '请输入任务名称'"
           />
         </el-form-item>
-  
-      
+
         <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="processDefinitionId">
           <el-select
@@ -197,38 +196,36 @@
           />
         </el-form-item>
         <el-row>
-        <el-col :span="12">
-        <el-form-item label="作业周期开始时间" prop="startTime">
-          <el-col :span="8">
-            <el-date-picker
-              v-model="temp.startTime"
-              :picker-options="startTime"
-              type="date"
-              props="startTime"
-              :placeholder="disableUpdate === true ? '' : '请选择开始时间'"
-              :disabled="disableUpdate"
-            />
+          <el-col :span="12">
+            <el-form-item label="作业周期开始时间" prop="startTime">
+              <el-col :span="8">
+                <el-date-picker
+                  v-model="temp.startTime"
+                  :picker-options="startTime"
+                  type="date"
+                  props="startTime"
+                  :placeholder="disableUpdate === true ? '' : '请选择开始时间'"
+                  :disabled="disableUpdate"
+                />
+              </el-col>
+            </el-form-item>
           </el-col>
-        </el-form-item>
-        </el-col>
-        <el-col :span="12">
-        <el-form-item label="作业周期结束时间" prop="endTime">
-          <!-- <el-col class="line" :span="1">-</el-col> -->
-          <el-col :span="8">
-            <el-date-picker
-              v-model="temp.endTime"
-              :picker-options="endTime"
-              type="date"
-              prop="endTime"
-              :placeholder="disableUpdate === true ? '' : '请选择结束时间'"
-              :disabled="disableUpdate"
-            />
+          <el-col :span="12">
+            <el-form-item label="作业周期结束时间" prop="endTime">
+              <!-- <el-col class="line" :span="1">-</el-col> -->
+              <el-col :span="8">
+                <el-date-picker
+                  v-model="temp.endTime"
+                  :picker-options="endTime"
+                  type="date"
+                  prop="endTime"
+                  :placeholder="disableUpdate === true ? '' : '请选择结束时间'"
+                  :disabled="disableUpdate"
+                />
+              </el-col>
+            </el-form-item>
           </el-col>
-        </el-form-item> 
-        </el-col>
         </el-row>
-      
-      
 
         <el-form-item label="作业周期" prop="crontab">
           <el-select
@@ -877,7 +874,7 @@ export default {
         endTime: null
       }
     },
-    //新增
+    // 新增
     handleCreate() {
       this.iconDisable = true
       this.disableUpdate = false
