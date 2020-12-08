@@ -39,8 +39,8 @@
       :data="list"
       border
       highlight-current-row
-      height="calc(100vh - 320px)"
-      max-height="calc(100vh - 320px)"
+      height="calc(100vh - 350px)"
+      max-height="calc(100vh - 350px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       @on-update="_onUpdate"
@@ -148,7 +148,8 @@ export default {
             { name: 'hive', value: '2' }, { name: 'spark', value: '3' },
             { name: 'clickhouse', value: '4' }, { name: 'oracle', value: '5' },
             { name: 'SQLServer', value: '6' }, { name: 'db2', value: '7' }]
-        },
+        }
+        // ,
         // { label: '登录方式', name: 'loginTyp', type: 'select',
         //   data: [{ name: '用户名密码', value: '1' }, { name: 'kerbors认证', value: '2' }]
         // },
@@ -157,7 +158,7 @@ export default {
         //   data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }],
         //   default: '1'
         // },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
+        // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
       ],
       // 格式化参数列表
       formatMap: {

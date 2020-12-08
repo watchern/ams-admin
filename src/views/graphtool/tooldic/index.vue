@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="graphToolDiv" style="width: 100%;height: 100%;">
         <div id="geToolbarContainer" class="geToolbarContainer">
             <div class="menu" style="width: 235px !important;padding-left: 20px !important;">
                 <div class="menuTit">
@@ -123,7 +123,7 @@
                     </div>
                 </div>
             </div>
-            <span id="toolBarSpan" @click="hideAndShow" style="position: absolute;right: 20px;bottom: 0px;font-weight: 800;">【折叠/展开】</span>
+            <span id="toolBarSpan" @click="hideAndShow" style="position: absolute;right: 0;bottom: 2px;font-weight: 800;">【折叠/展开】</span>
         </div>
         <div id="accordion" class="panel-group">
             <ul class="nav nav-tabs" role="tablist">
@@ -176,7 +176,7 @@
                     <div class="layui-tab-content">
                         <div class="layui-tab-item">
                             <div id="tableArea">
-                                <div v-for="result in resultTableArr" class="data-show">
+                                <div v-for="result in resultTableArr" class="data-show" v-if="showTableResult">
                                     <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="preValue" />
                                 </div>
                             </div>
@@ -246,11 +246,11 @@
         <el-dialog :visible.sync="helpDialogVisible" title="帮助">
             <Help/>
         </el-dialog>
-        <el-dialog :visible.sync="graphListDialogVisible" title="图形列表" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal">
+        <el-dialog :visible.sync="graphListDialogVisible" title="选择图形" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal">
             <GraphListExport ref="graphListExport" :openType="openType"/>
             <div slot="footer">
+                <el-button @click="graphListDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="getGraphObject">确定</el-button>
-                <el-button type="primary" @click="graphListDialogVisible = false">关闭</el-button>
             </div>
         </el-dialog>
         <el-dialog :visible.sync="graphFormVisible" :title="graphFormTitle" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
@@ -271,8 +271,8 @@
                 </el-row>
             </el-form>
             <div slot="footer">
-                <el-button type="primary" @click="getGraphFormInfo">确定</el-button>
-                <el-button type="primary" @click="graphFormVisible = false">关闭</el-button>
+                <el-button @click="graphFormVisible = false">取消</el-button>
+                <el-button type="primary" @click="getGraphFormInfo">保存</el-button>
             </div>
         </el-dialog>
         <!-- 右键事件 -->
@@ -378,6 +378,7 @@
                 webSocket:null,
                 executeType:1,//节点执行的类型（1、执行本节点、2、执行到本节点、3、全部执行）
                 resultTableArr:[],//节点结果集集合
+                showTableResult:false,
                 executeId:'',//当前执行批次ID
                 executeNodeIdArr:[],//当前执行批次的节点ID集合
                 graphFormVisible:false,
@@ -395,6 +396,11 @@
             this.init()
         },
         mounted() {
+            // $("#graphToolDiv").css({"width":function () {
+            //         return $()
+            //     },"height":function () {
+            //
+            //     }})
             // 申明common.js的方法为全局方法
             this.initCommon()
             // //申明index.js的方法为全局方法
@@ -412,13 +418,8 @@
         },
         methods: {
             init() {
-                // console.log(this.$store.state.user)
-                // console.log(this.$store.state.user.id)
-                // this.loginUserUuid = Cookies.get("personuuid")
-                // this.loginUserUuid = this.$store.state.user.id
-                this.loginUserCode = 'csi'
-                this.loginUserUuid = '2c948a86757909950175790b10b60002'
-                // console.log(this.loginUserUuid)
+                this.loginUserUuid = this.$store.state.user.id
+                this.loginUserCode = this.$store.state.user.code
                 let roleArr = this.$store.state.user.roles
                 let screenManager = 'screenManager'// 场景查询管理员角色
                 if (roleArr.includes(screenManager)) {
@@ -488,7 +489,7 @@
                     var outline = document.getElementById('outLineArea')
                     outline.style.position = 'absolute'
                     outline.style.width = '97%'
-                    outline.style.height = '135px'
+                    outline.style.height = '210px'
                     outline.style.border = '1px solid whiteSmoke'
                     outline.style.backgroundColor = '#FFFFFF'
                     outline.style.overflow = 'hidden'
@@ -703,9 +704,7 @@
             },
             initWebSocKet(){
                 let $this = this
-                // const webSocketPath = process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET + this.$store.getters.personuuid;
                 const webSocketPath = process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET + this.loginUserUuid + 'GRAPH'
-                console.log('webSocketPath'+webSocketPath)
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
                 // 当服务端打开连接
@@ -783,13 +782,13 @@
                                 $this.preValue.push({id:nodeId,name:nodeName})
                             }
                         }
-                        // console.log($this.resultTableArr)
                         if(isEnd && executeSQLObj.state === "2"){
                             // 记录执行操作
                             indexJs.refrashHistoryZtree('【' + executeSQLObj.name + '】节点执行完毕')
                             // 自动保存图形化
                             indexJs.autoSaveGraph()
                             $this.layuiTabClickLi(0)
+                            $this.showTableResult = false
                             $this.loading.destroy()
                             $this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false,'hasTime':true })
                             //预览数据
@@ -798,6 +797,7 @@
                     }
                     if(executeTaskObj.resultType === 'select'){//展示节点结果集数据
                         $this.loading.destroy()
+                        $this.showTableResult = true
                         if(executeSQLObj.customParam[0] === $this.websocketBatchId){//展示当前操作的结果集
                             $this.$nextTick( () => {
                                 $this.$refs.childTabsRef[0].loadTableData(dataObj)
@@ -820,22 +820,13 @@
                 this.$message({ type: 'info', message: '待集成' })
             },
             newGraph(){
-                // this.$confirm('新建图形将在当前页打开，是否继续?', '提示', {
-                //     confirmButtonText: '确定',
-                //     cancelButtonText: '取消',
-                //     type: 'info',
-                //     center: true
-                // }).then(() => {
-                    // let url = `/graphtool/tooldic?openGraphType=1&openType=${this.openType}`
-                    // this.$router.replace({path: url});
-                    window.open(`/#/graphtool/tooldic?openGraphType=1&openType=${this.openType}`, '_blank')
-                    // const {href} = this.$router.resolve({
-                    //     path: url,
-                    // });
-                    // window.open(href,'_blank');
-                // }).catch(() => {
-                //     this.$message({ type: 'info', message: '已取消' })
-                // })
+                this.$store.commit('aceState/setRightFooterTags', {
+                    type: 'active',
+                    val: {
+                        name: '新增图形',
+                        path: `/graphtool/tooldic?openGraphType=1&openType=${this.openType}`
+                    }
+                })
             },
             openGraph(){
                 indexJs.openGraph()
@@ -988,12 +979,6 @@
                     }else{
                         this.graphListDialogVisible = false
                         this.$nextTick( () => {
-                            // this.$confirm('图形将在当前页打开，是否继续?', '提示', {
-                            //     confirmButtonText: '确定',
-                            //     cancelButtonText: '取消',
-                            //     type: 'info',
-                            //     center: true
-                            // }).then(() => {
                             var urlParamStr = ''
                             if (returnObj.graphType === 3) {
                                 if (returnObj.publicType === 1) { // 场景查询
@@ -1004,10 +989,13 @@
                             } else { // 个人图形
                                 urlParamStr = '?graphUuid=' + returnObj.graphUuid + '&openGraphType=1'
                             }
-                            window.open(`/#/graphtool/tooldic${urlParamStr}&openType=${this.openType}`, '_blank')
-                            // }).catch(() => {
-                            //     this.$message({ type: 'info', message: '已取消' })
-                            // })
+                            this.$store.commit('aceState/setRightFooterTags', {
+                                type: 'active',
+                                val: {
+                                    name: '编辑图形',
+                                    path: `/graphtool/tooldic${urlParamStr}&openType=${this.openType}`
+                                }
+                            })
                         })
                     }
                 }else{//this.showGraphListType === 'export'，图形导出方法
@@ -1024,7 +1012,6 @@
              * 接口：获取中间、最终结果表的输出列信息
              */
             getResultColumnInfo(){
-                // console.log(indexJs.getResultColumnInfo())
                 return indexJs.getResultColumnInfo()
             }
         }
