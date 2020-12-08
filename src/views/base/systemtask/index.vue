@@ -17,7 +17,11 @@
         </template>
       </el-table-column>
       <el-table-column label="创建时间" prop="taskCreateTime" :formatter="formatCreateTime" />
-      <el-table-column label="进度" prop="taskPercent" width="300px" align="center" />
+      <el-table-column label="进度" prop="taskPercent" width="200px">
+        <template slot-scope="scope">
+          <el-progress :text-inside="true" :percentage="scope.row.taskPercent" stroke-width="18" />
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -103,12 +107,12 @@ export default {
             var timestamp = Date.parse(new Date())
             var percent = (timestamp - createTime) / (taskEstimatedTime - createTime)
             if (r.taskStatus === '1') {
-              percent = '100%'
+              percent = '100'
             } else {
               if (percent < 1) {
-                percent = (percent * 100).toFixed(2) + '%'
+                percent = (percent * 100).toFixed(2)
               } else {
-                percent = '99.99%'
+                percent = 99.99
               }
             }
             r.taskPercent = percent
