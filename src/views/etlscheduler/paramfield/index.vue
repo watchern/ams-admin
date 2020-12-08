@@ -180,7 +180,7 @@
         >
           <el-input v-model="temp.defaultValue" :placeholder="disableUpdate === true ? '' : '请输入参数默认值'" :disabled="disableUpdate" />
         </el-form-item>
-        <el-form-item
+        <!-- <el-form-item
           label="可选值"
           prop="selectValue"
         >
@@ -189,7 +189,7 @@
             :placeholder="disableUpdate === true ? '' : '请输入参数可选值'"
             :disabled="disableUpdate"
           />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item
           label="参数描述"
           prop="paramDesc"
@@ -236,7 +236,7 @@ export default {
       queryFields: [
         { label: '参数编码', name: 'paramCode', type: 'text', value: '' },
         { label: '参数名称', name: 'paramName', type: 'text', value: '' },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
+        // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '参数状态', name: 'status', type: 'select',
           data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }],

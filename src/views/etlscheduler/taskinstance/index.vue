@@ -195,7 +195,7 @@ export default {
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '任务实例名称', name: 'name', type: 'text', value: '' },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
+        // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '任务实例状态', name: 'status', type: 'select',
           data: statuSelect

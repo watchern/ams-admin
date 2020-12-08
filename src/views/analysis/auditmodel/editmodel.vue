@@ -20,7 +20,7 @@
         <div class="resizeBR"></div>
         <div class="resizeLB"></div>
         <div class="content">
-          <el-aside>
+          <el-aside style="width:100%">
             <el-tree class="el-tree-rewrite" ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
               <span slot-scope="{ node, data }" class="custom-tree-node">
                 <span>
@@ -38,7 +38,7 @@
               </span>
 
             </el-tree>
-              <div class="custom-tree-caidan">
+              <div class="custom-tree-caidan ">
                 <img class="custom-save" :src="imgCus2" @click="save"/>
                 <img class="custom-close" :src="imgCus1" @click="closeWinfrom" />
               </div>
@@ -124,6 +124,7 @@
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id">
             <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel" class="sql-editor" />
+            <graph v-if="state.id=='002003002'"></graph>
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
@@ -247,10 +248,11 @@ import { getDictList } from '@/utils/index'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import SelectTransCode from '@/views/data/table/transcodeselect'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
+import graph from '@/views/graphtool/tooldic/index'
 // import func from 'vue-temp/vue-editor-bridge'
 export default {
   name: 'EditModel',
-  components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode },
+  components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode,graph },
   props: ['openValue'],
   data() {
     return {
@@ -412,6 +414,7 @@ export default {
       this.displayData(model)
       this.formName = "修改模型"
     }
+
     // 如果为2则反显要显示的数据
     if (this.operationObj.operationType == 3) {
       this.isUpdate = true
@@ -451,6 +454,7 @@ export default {
       // 初始化审计事项
       this.modelTypeData = getDictList('002003')
     },
+
     /**
      * 点击之后切换页签
      * @param data 点击的数据
@@ -805,7 +809,10 @@ export default {
         this.modelTypeObj.push(obj)
       }
       else if(this.form.modelType == "002003002"){
-        this.$message({ type: 'info', message: "暂时不支持图形化模型"})
+        let obj = {
+          id:'002003002'
+        }
+        this.modelTypeObj.push(obj)
       }
       $('#sqlValueView').html(sql)
     },
@@ -817,6 +824,7 @@ export default {
         this.$message({ type: 'info', message: '请先编写SQL!' })
         return
       }
+      $("#drag").css("width",115)
       ++this.modelDetailIndex
       const newChild = {
         id: 'rel' + this.modelDetailIndex,
@@ -842,6 +850,7 @@ export default {
         this.$message({ type: 'info', message: '请先编写SQL!' })
         return
       }
+      $("#drag").css("width",115)
       ++this.modelFilterShowIndex
       const newChild = {
         id: 'filterShow' + this.modelFilterShowIndex,
@@ -1082,7 +1091,10 @@ export default {
         // this.handleNodeClick(obj2)
       }
       if(vId == "002003002"){
-        this.$message({ type: 'info', message: "暂时不支持图形化模型"})
+        let obj = {
+          id:'002003002'
+        }
+        this.modelTypeObj.push(obj)
       }
     },
     /**
@@ -1361,7 +1373,7 @@ export default {
   z-index: 1000;
   top: 40px;
   left: 85%;
-  width: 127px;
+  width: 95px;
   background: #FFFFFF;
   border-radius: 5px;
   box-shadow: 0px 3px 8px 7px #00000015;
@@ -1398,39 +1410,39 @@ export default {
 
 .el-tree-rewrite{
   background: #fff;
-  width: 127px;
+  width: 100%;
 }
 
 .custom-tree-node{
   position: relative;
-  left: 14px;
+  left: -2px;
   font-size: 13px;
   color: #353A43;
 }
 
 .custom-tree-caidan{
   border-top: 1px solid #f0f0f0;
-  width: 127px;
+  width: 100%;
   margin-top: 5px;
-  padding-left: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 12px;
 }
 
 .custom-tree-caidan img{
   width: 20px;
   height: 20px;
-  margin-left: 15px;
-  margin-top: 10px;
+  margin: 10px 0 0 0px;
 }
 .custom-tree-shangla{
   border-top: 1px solid #f0f0f0;
   margin-top: 5px;
-  width: 127px;
+  width: 100%;
   height: 10px;
-  text-align: center;
-}
-.custom-tree-shangla img{
-  position: relative;
-  top: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 .custom-xiala{
   transform: rotate(180deg);
@@ -1460,5 +1472,9 @@ export default {
   text-align: justify;
   line-height: 36px;
   padding: 10px;
+}
+
+.content{
+  overflow: hidden;
 }
 </style>
