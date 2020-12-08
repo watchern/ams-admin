@@ -17,7 +17,8 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="calc(100vh - 280px)"
+      max-height="calc(100vh - 280px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -36,7 +37,7 @@
         prop="fullPath"
       />
       <el-table-column
-        label="对应表"
+        label="表名称"
         prop="odsTableName"
       />
       <el-table-column
