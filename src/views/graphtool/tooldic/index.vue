@@ -1,5 +1,5 @@
 <template>
-    <div id="graphToolDiv">
+    <div id="graphToolDiv" style="width: 100%;height: 100%;">
         <div id="geToolbarContainer" class="geToolbarContainer">
             <div class="menu" style="width: 235px !important;padding-left: 20px !important;">
                 <div class="menuTit">
@@ -396,6 +396,11 @@
             this.init()
         },
         mounted() {
+            // $("#graphToolDiv").css({"width":function () {
+            //         return $()
+            //     },"height":function () {
+            //
+            //     }})
             // 申明common.js的方法为全局方法
             this.initCommon()
             // //申明index.js的方法为全局方法
