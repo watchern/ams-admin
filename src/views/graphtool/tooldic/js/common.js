@@ -1363,11 +1363,13 @@ export function previewNodeData() {
     }
     graphIndexVue.resultTableArr = []
     graphIndexVue.preValue = []
+    graphIndexVue.showTableResult = false
     graphIndexVue.$nextTick( () => {
         graphIndexVue.websocketBatchId = new UUIDGenerator().id
         graphIndexVue.resultTableArr = [{nodeId, nodeName, resultTableName,isRoleTable}]
         graphIndexVue.preValue = [{id:nodeId,name:nodeName}]
         graphIndexVue.layuiTabClickLi(0)
+        graphIndexVue.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false,'hasTime':true })
         graphIndexVue.viewData()
     })
 }

@@ -183,7 +183,7 @@
     }
 </script>
 
-<style type="text/css">
+<style scoped type="text/css">
     #transcode{
         width:700px;
         height:450px;

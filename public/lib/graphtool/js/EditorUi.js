@@ -701,7 +701,7 @@ EditorUi.prototype.sidebarWidth = 240;
 
 EditorUi.prototype.resultHeight = 335;
 
-EditorUi.prototype.resultContentHeight = 185;
+EditorUi.prototype.resultContentHeight = 210;
 
 EditorUi.prototype.scrollBarHeight = 0;
 
@@ -1728,25 +1728,25 @@ EditorUi.prototype.refresh = function(sizeDidChange) {
 	var h = this.container.clientHeight;
 
 	if(mxClient.IS_IOS && !window.navigator.standalone) {
-		if(window.innerHeight != document.documentElement.clientHeight) {
+		if(window.innerHeight !== document.documentElement.clientHeight) {
 			window.scrollTo(0, 0);
 		}
 	}
 
-	var dw = document.body.clientWidth;
-    this.hsplitPosition = typeof this.hsplitPosition != "undefined" ? this.hsplitPosition : 240;
+	var dw = this.graphToolDiv.clientWidth;
+    this.hsplitPosition = typeof this.hsplitPosition !== "undefined" ? this.hsplitPosition : this.sidebarWidth;
 	var effHsplitPosition = Math.max(0, Math.min(this.hsplitPosition, dw - this.splitSize - 20));
 	if(this.sidebarContainer) {
 		this.sidebarContainer.style.width = effHsplitPosition + 'px';
 	}
-	this.sidebarContainer.style.height = (h - 14) + "px";
+	this.sidebarContainer.style.height = h + "px";
 	this.detailContainer.style.height = this.sidebarContainer.style.height;
-	this.container.style.left = effHsplitPosition + this.splitSize + 'px';
+	this.container.style.left = (effHsplitPosition + 130 + this.splitSize) + 'px';
 	this.hsplit.style.left = effHsplitPosition + 'px';
 	this.vsplit.style.width = this.diagramContainer.style.width;
-	if(this.toolbarContainer != null) {
-		this.toolbarContainer.style.left = this.diagramContainer.style.left;
-	}
+	// if(this.toolbarContainer != null) {
+	// 	this.toolbarContainer.style.left = this.diagramContainer.style.left;
+	// }
 };
 /**
  * Refreshes the viewport.
@@ -1765,7 +1765,6 @@ EditorUi.prototype.refreshv = function(sizeDidChange) {
 	this.tableArea.style.height = (effVsplitPosition - 60) + "px";
 	this.sysInfoArea.style.height = (effVsplitPosition - 60) + "px";
 	this.outLineArea.style.height = (effVsplitPosition - 60) + "px";
-	//this.mapContainer.style.bottom = effVsplitPosition + this.scrollBarHeight + "px";
 }
 
 /**
@@ -1773,6 +1772,7 @@ EditorUi.prototype.refreshv = function(sizeDidChange) {
  */
 EditorUi.prototype.createDivs = function() {
 	var h = this.container.clientHeight;
+    this.graphToolDiv = document.getElementById("graphToolDiv");
 	this.sidebarContainer = document.getElementById("accordion");
 	this.toolbarContainer = document.getElementById("geToolbarContainer");
 	this.diagramContainer = document.getElementById("geDiagramContainer");
@@ -1783,7 +1783,7 @@ EditorUi.prototype.createDivs = function() {
 	this.sysInfoArea = document.getElementById("sysInfoArea");
 	this.outLineArea = document.getElementById("outLineArea");
 	this.hsplit = this.createDiv('geHsplit');
-	this.vsplit = this.createDiv('geVsplit');
+    this.vsplit = this.createDiv('geVsplit');
 	
 	if(typeof this.sidebarContainer !== "undefined") {
 		this.sidebarContainer.style.width = this.sidebarWidth + "px";
@@ -1793,18 +1793,16 @@ EditorUi.prototype.createDivs = function() {
 	} else {
 		this.resultHeight = 0;
 	}
-	
-	this.container.style.left = this.sidebarWidth + this.splitSize + "px";
-	this.container.style.right = this.detailContainerWidth + "px";
+    this.toolbarContainer.style.width = $("#graphToolDiv").width() + "px";
+	this.container.style.left = (this.sidebarWidth + 130 + this.splitSize) + "px";
+	this.container.style.right = (this.detailContainerWidth + 15) + "px";
+    this.container.style.height = (h - 59) + "px";
 	this.diagramContainer.style.bottom = this.resultHeight + "px";
 	this.detailContainer.style.width = this.detailContainerWidth + "px";
-//	this.changeDataSource.style.left = (this.sidebarWidth - 40) + "px";
-// 	this.hsplit.setAttribute('title', mxResources.get('collapseExpand'));
 	this.hsplit.style.width = this.splitSize + "px";
 	this.hsplit.style.left = this.sidebarWidth + "px";
     this.hsplit.style.top = (this.toolbarHeight - 10) + "px";
-    this.hsplit.style.height = h + "px";
-	// this.vsplit.setAttribute('title', mxResources.get('collapseExpand'));
+    this.hsplit.style.height = (h - 55) + "px";
 	this.vsplit.style.height = this.splitSize + "px";
 	this.vsplit.style.bottom = this.resultHeight + "px";
 	this.tableArea.style.height = this.resultContentHeight + "px";
@@ -1833,7 +1831,7 @@ EditorUi.prototype.createUi = function() {
 	
 	// HSplit
 	if(this.hsplit != null) {
-		document.body.appendChild(this.hsplit);
+        graphToolDiv.appendChild(this.hsplit);
 
 		this.addSplitHandler(this.hsplit, true, 0, mxUtils.bind(this, function(value) {
 			var wh = w - this.sidebarWidth - this.splitSize - 500;
@@ -2535,25 +2533,30 @@ var old_toolbar_height,old_leftArea_offsetLeft,old_rightArea_width;
  * 工具栏的折叠与展开
  */
 EditorUi.prototype.toolBarH_S = function() {
+    var detailContainer = $("#detailContainer");
+    var accordion = $("#accordion");
+    var graphContainer = $("#graphContainer");
+    var geHsplit = $(".geHsplit");
+    var geToolbarContainer = $("#geToolbarContainer");
     if(topAreaHide){
-        $(".menu").show();
+        $("#geToolbarContainer>.menu").show();
         $("#H_S_Menu>ul>li:eq(0)").html("折叠上方区域");
 		$("#geToolbarContainer").height(old_toolbar_height + "px");
-        $("#detailContainer").height(($("#detailContainer").height() - old_toolbar_height + 20) + "px");
-        $("#accordion").height(($("#accordion").height() - old_toolbar_height + 20) + "px");
-        $("#geDiagramContainer").css("top",$("#geDiagramContainer").position().top + old_toolbar_height - 20);
-        $(".geHsplit").css("top",old_toolbar_height);
+        detailContainer.css({"height":(detailContainer.height() - 90) + "px","top": (detailContainer.position().top + 90) + "px"});
+        accordion.css({"height":(accordion.height() - 90) + "px","top": (accordion.position().top + 90) + "px"});
+        graphContainer.css({"height":(graphContainer.height() - 90) + "px","top": (graphContainer.position().top + 90) + "px"});
+        geHsplit.css({"height":(geHsplit.height() - 90) + "px","top": (geHsplit.position().top + 74) + "px"});
         this.toolbarHeight = 120;
         topAreaHide = false;
     }else{
-        old_toolbar_height = $("#geToolbarContainer").height();
-        $(".menu").hide();
+        old_toolbar_height = geToolbarContainer.height();
+        $("#geToolbarContainer>.menu").hide();
         $("#H_S_Menu>ul>li:eq(0)").html("展开上方区域");
-        $("#geToolbarContainer").height("20px");
-        $("#detailContainer").height(($("#detailContainer").height() + old_toolbar_height - 20) + "px");
-        $("#accordion").height(($("#accordion").height() + old_toolbar_height - 20) + "px");
-        $("#geDiagramContainer").css("top",$("#geDiagramContainer").position().top - old_toolbar_height + 20);
-        $(".geHsplit").css("top",20);
+        geToolbarContainer.height("20px");
+        detailContainer.css({"height":(detailContainer.height() + 90) + "px","top": (detailContainer.position().top - 90) + "px"});
+        accordion.css({"height":(accordion.height() + 90) + "px","top": (accordion.position().top - 90) + "px"});
+        graphContainer.css({"height":(graphContainer.height() + 90) + "px","top": (graphContainer.position().top - 90) + "px"});
+        geHsplit.css({"height":(geHsplit.height() + 90) + "px","top": (geHsplit.position().top - 106) + "px"});
         this.toolbarHeight = 30;
         topAreaHide = true;
     }
@@ -2563,19 +2566,28 @@ EditorUi.prototype.toolBarH_S = function() {
 * 左侧资源树的折叠与展开
 */
 EditorUi.prototype.leftAreaH_S = function() {
+    var accordion = $("#accordion");
+    var geHsplit = $(".geHsplit");
     if(leftAreaHide){
-        $("#accordion").show();
-        $(".geHsplit").show();
+        if(topAreaHide){
+            accordion.css({"top":"40px"});
+            geHsplit.css({"top":"20px"});
+        }else{
+            accordion.css({"top":"128px"});
+            geHsplit.css({"top":"110px"});
+        }
+        accordion.show();
+        geHsplit.show();
         $("#H_S_Menu>ul>li:eq(1)").html("折叠左侧区域");
         $("#graphContainer").css("left",old_leftArea_offsetLeft);
         this.hsplitPosition = old_leftArea_offsetLeft - this.splitSize;
         leftAreaHide = false;
     }else{
         old_leftArea_offsetLeft = $("#graphContainer").position().left;
-        $("#accordion").hide();
+        accordion.hide();
         $(".geHsplit").hide();
         $("#H_S_Menu>ul>li:eq(1)").html("展开左侧区域");
-        $("#graphContainer").css("left",0);
+        $("#graphContainer").css("left","130px");
         this.hsplitPosition = 0;
         leftAreaHide = true;
     }
@@ -2585,16 +2597,22 @@ EditorUi.prototype.leftAreaH_S = function() {
  * 右侧所使用资源树的折叠与展开
  */
 EditorUi.prototype.rightAreaH_S = function() {
+    var detailContainer = $("#detailContainer");
     if(rightAreaHide){
-        $("#detailContainer").show();
+        if(topAreaHide){
+            detailContainer.css({"top":"40px"});
+        }else{
+            detailContainer.css({"top":"128px"});
+        }
+        detailContainer.show();
         $("#H_S_Menu>ul>li:eq(2)").html("折叠右侧区域");
-        $("#graphContainer").css("right",old_rightArea_width);
+        $("#graphContainer").css("right",(old_rightArea_width + 15) + "px");
         rightAreaHide = false;
     }else{
-        old_rightArea_width = $("#detailContainer").width();
-        $("#detailContainer").hide();
+        old_rightArea_width = detailContainer.width();
+        detailContainer.hide();
         $("#H_S_Menu>ul>li:eq(2)").html("展开右侧区域");
-        $("#graphContainer").css("right",0);
+        $("#graphContainer").css("right","14px");
         rightAreaHide = true;
     }
 };

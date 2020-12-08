@@ -47,11 +47,6 @@ const AmsRoutes = [
         component: () => import('@/views/base/frameto')
     },
     {
-        path: '/graphtool/tooldic',
-        name: '图形化工具',
-        component: () => import('@/views/graphtool/tooldic/index')
-    },
-    {
         path: '/graphtool/tooldic/nodeSetting',
         name: '图形化工具节点配置',
         component: () => import('@/views/graphtool/tooldic/page/nodeSetting/nodeSetting')
