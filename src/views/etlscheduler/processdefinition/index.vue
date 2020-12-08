@@ -81,17 +81,10 @@
       :data="list"
       border
       highlight-current-row
-<<<<<<< HEAD
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
-      height="calc(100vh - 300px)"
-      max-height="calc(100vh - 300px)"
-=======
       height="calc(100vh - 300px)"
       max-height="calc(100vh - 300px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
->>>>>>> ca5c535108479c2f92284759a4646a3ce15ef0fe
     >
       <el-table-column
         type="selection"
