@@ -378,6 +378,7 @@
     >
       <el-form
         ref="runForm"
+        :rules="runRules"
         label-position="right"
         class="detail-form"
         :model="runParams"
@@ -727,6 +728,36 @@ export default {
           }
         ]
       },
+      runRules: {
+        failureStrategyEnum: [
+          {
+            required: true,
+            message: '请选择失败策略',
+            trigger: 'change'
+          }
+        ],
+        processInstancePriorityEnum: [
+          {
+            required: true,
+            message: '请选择优先级',
+            trigger: 'change'
+          }
+        ],
+        cronTime: [
+          {
+            required: true,
+            message: '请选择调度时间',
+            trigger: 'change'
+          }
+        ],
+        runModeEnum: [
+          {
+            required: true,
+            message: '请选择执行方式',
+            trigger: 'change'
+          }
+        ]
+      },
       downloadLoading: false
     }
   },
@@ -1050,7 +1081,6 @@ export default {
           const tempData = Object.assign({}, this.runParams)
           startProcessInstance(tempData).then(() => {
             this.getList()
-            this.runDialogFormVisible = false
             this.$notify({
               title: '成功',
               message: '运行成功',
@@ -1059,6 +1089,7 @@ export default {
               position: 'bottom-right'
             })
           })
+          this.runDialogFormVisible = false
         }
       })
     },
