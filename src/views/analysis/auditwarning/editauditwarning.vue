@@ -18,8 +18,8 @@
               <el-option label="模型" :value="1"></el-option>
               <el-option label="指标" :value="2"></el-option>
             </el-select>
-            <el-input v-model="SavePath" class="el-input-z"/>
-            <span class="btn-z">地址</span>
+            <el-input  class="el-input-z" readonly="readonly" v-model="SavePath"/>
+            <span class="btn-z" @click="modelResultSavePathDialog = true">选择</span>
           </el-form-item>
           <el-form-item label="关联模型" v-if="temp.warningType == 1">
             <el-row>
@@ -172,6 +172,25 @@
         </el-form>
       </el-tab-pane>
     </el-tabs>
+    <el-dialog
+      title="选择模型结果保存路径"
+      :visible.sync="modelResultSavePathDialog"
+      width="30%"
+      :append-to-body="true"
+    >
+      <data-tree
+        :data-user-id="personCode"
+        :scene-code="sceneCode"
+        :tree-type="treeType"
+        @node-click="handleClick"
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="modelResultSavePathDialog = false">取 消</el-button>
+        <el-button type="primary" @click="modelResultSavePathDetermine"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -181,9 +200,10 @@ import {findModelsWithParam, getWarningById} from '@/api/analysis/auditwarning'
 import {getOneDict} from "@/utils"
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
 import {replaceNodeParam } from '@/api/analysis/auditparam'
+import dataTree from "@/views/data/role-res/data-tree";
 export default {
   name:"editAuditWarning",
-  components: { SelectModels, paramDraw },
+  components: { SelectModels, paramDraw , dataTree},
   props: {
     //操作类型 add添加 update更新 detail详情查看
     option : {
@@ -306,7 +326,15 @@ export default {
         warningExecuteTime:[]
       },
       //已经初始化参数的模型
-      initedParamModel:[]
+      initedParamModel:[],
+      modelResultSavePathDialog: false,
+      tempPath:'',
+      tempId:'',
+      nodeType:'',
+      SavePath:'选择模型结果保存路径',
+      personCode: this.$store.state.user.code,
+      sceneCode: "auditor",
+      treeType: "save",
     }
   },
   created() {
@@ -686,6 +714,28 @@ export default {
       }
       value = dicObj[0].codeName;
       return value
+    },
+    handleClick(data, node, tree) {
+      this.tempPath = data.label;
+      this.tempId = data.id;
+      this.nodeType = data.type;
+    },
+    modelResultSavePathDetermine() {
+      if (this.nodeType == "folder") {
+        this.path = "当前执行sql保存路径:" + this.tempPath;
+        this.modelResultSavePathId = this.tempId;
+        this.modelResultSavePathDialog = false;
+      } else if (this.nodeType == "") {
+        this.$message({
+          message: "请选择路径",
+          type: "warning",
+        });
+      } else {
+        this.$message({
+          message: "只能选择文件夹",
+          type: "warning",
+        });
+      }
     }
   }
 }
@@ -694,6 +744,7 @@ export default {
   .el-input-z{
     width: 40%;
     margin: 0 35px 0 60px;
+    cursor:no-drop
   }
   .btn-z{
     width: 70px;
