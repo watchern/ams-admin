@@ -118,7 +118,7 @@
     // },"json");
 </script>
 
-<style type="text/css">
+<style scoped type="text/css">
     .layui-form-label {
         width: 20%;
     }
