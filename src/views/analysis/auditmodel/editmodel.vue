@@ -138,7 +138,7 @@
         </div>
       </div>
       <div ref="modelResultOutputCol" class="display default-value">
-        <p class="p-div">注意：只显示最后的结果列</p>
+        <messageTips type="error" message="只显示最后的结果列"></messageTips>
         <div class="model-result-output-col">
           <el-table ref="columnData" :data="columnData" class="div-width" >
             <el-table-column prop="outputColumnName" label="输出列名" width="180" />
@@ -249,10 +249,11 @@ import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import SelectTransCode from '@/views/data/table/transcodeselect'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 import graph from '@/views/graphtool/tooldic/index'
+import messageTips from '@/views/analysis/auditmodel/message'
 // import func from 'vue-temp/vue-editor-bridge'
 export default {
   name: 'EditModel',
-  components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode,graph },
+  components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode,graph,messageTips },
   props: ['openValue'],
   data() {
     return {
