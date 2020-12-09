@@ -69,7 +69,6 @@ const actions = {
           })
         }
         getAllScene().then(res => {
-          alert(res.data[0].sceneCode)
           commit('SET_SCENECODE', res.data[0].sceneCode)
           commit('SET_SCENENAME', res.data[0].sceneName)
         })
