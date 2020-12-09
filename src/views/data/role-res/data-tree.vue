@@ -24,7 +24,7 @@
         <i v-if="data.type==='table' && data.extMap.tblType==='T'" class="el-icon-tickets" style="color:#409EFF" />
         <i v-if="data.type==='table' && data.extMap.tblType==='V'" class="el-icon-search" style="color:#409EFF" />
         <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
-        <span :title="node.name">{{ node.label }}</span>
+        <span :title="data.title">{{ node.label }}</span>
       </span>
     </MyElTree>
   </div>
