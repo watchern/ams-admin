@@ -105,12 +105,21 @@ var sqlDraftObj
  * 存储数据表
  */
 var tableTreeData = []
+
+/**
+ * 记录sql编辑器是否被修改
+ * @type {boolean}
+ */
+var isUpdate = false
+
+/**
+ * 是否第一次加载
+ * @type {number}
+ */
+var isFirst = 0
 /**
  * 初始化界面托拉拽事件
  */
-
-
-
 export function initDragAndDrop() {
   // 实现左右拖拽改变大小
   var container = document.getElementById('container') //整个窗口
@@ -278,6 +287,8 @@ export function initVariable() {
   paramIdDivArr = []
   modelChartSetup = {}
   sqlDraftObj = undefined
+  isFirst = 0
+  isUpdate = false
 }
 /**
  * 初始化事件
@@ -329,6 +340,11 @@ export function initSQLEditor(textarea, relTableMap,expTableMap) {
     }
   })
   editor.on('change', function(instance, changeObj) {
+    //如果第一次加载不做任何校验
+    if(isFirst != 0){
+      isUpdate = true;
+    }
+    isFirst++;
     if (!changeObj.origin) {
       return
     }
@@ -986,7 +1002,6 @@ export function initParamTree() {
 }
 
 $(".ag-theme-balham .ag-header-row").css("background-color","white")
-console.log(11)
 
 /**
  * 数据表树拖拽事件
@@ -1974,8 +1989,21 @@ export function getColumnSqlInfo(data) {
   })
 }
 
+/**
+ * 获取是否被修改
+ * @returns {boolean}
+ */
+export function getIsUpdate(){
+  return isUpdate;
+}
 
-
+/**
+ * 设置sql的被修改状态
+ * @param value true或false
+ */
+export function setIsUpdate(value){
+  isUpdate = value
+}
 
 
 
