@@ -38,7 +38,7 @@
                 type="primary"
                 size="small"
                 @click="sqlFormat"
-                class="oper-btn show-detail"
+                class="oper-btn sqlcheck"
                 title="格式化sql"
               ></el-button>
               <el-button
@@ -159,7 +159,7 @@
     </div>
     <form id="countForm" class="form-horizontal" style="display: none">
       <div class="form-group col-sm-12">
-        <label class="col-sm-3 control-label">视图sql:</label>
+        <label class="col-sm-3 control-label">视图SQL:</label>
         <div class="col-sm-7">
           <textarea
             id="viewSql"
@@ -237,7 +237,7 @@
       </div>
     </el-dialog>
     <el-dialog
-      title="选择模型结果保存路径"
+      title="选择SQL结果保存路径"
       :visible.sync="modelResultSavePathDialog"
       width="30%"
       :append-to-body="true"
@@ -336,7 +336,7 @@ let lastSqlIndex = -1
 export default {
   name: "SQLEditor",
   components: { sqlDraftList, childTabs, paramDraw, dataTree },
-  props: ["sqlEditorParamObj", "sqlValue","callType"],
+  props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName"],
   data() {
     return {
       sqlDraftForm: {
@@ -382,7 +382,7 @@ export default {
       tempPath:'',
       tempId:'',
       nodeType:'',
-      path:'选择模型结果保存路径',
+      path:'选择SQL结果保存路径',
       modelResultSavePathId:'',
       personCode: this.$store.state.user.code,
       sceneCode: "auditor",
@@ -544,6 +544,10 @@ export default {
         if (this.sqlValue != "") {
           // 编辑模型的sql  反显数据
           editorSql(this.sqlValue, this.sqlEditorParamObj);
+          this.tempPath = this.locationName;
+          this.tempId = this.locationUuid;
+          this.path = "当前执行SQL保存路径:" + this.tempPath;
+          this.modelResultSavePathId = this.tempId;
         }
         refreshCodeMirror()
       }).catch(() => {
@@ -608,25 +612,27 @@ export default {
      */
     getSaveInfo() {
       if(this.callType != "editorModel"){
-        return;
+        return
       }
       if (!this.isAllExecute) {
-        return;
+        return
       }
       // 如果当前执行进度与要执行的sql数量相等 则证明数据已经全部拿到，允许保存
       if (currentExecuteProgress != this.currentExecuteSQL.length) {
-        return;
+        return
       }
       /*      console.log("当前执行总进度:" + currentExecuteProgress);
       console.log("是否全部执行成功:" + isAllExecuteSuccess);
       console.log(this.currentExecuteSQL);
       console.log(lastResultColumn);*/
-      const returnObj = getSaveInfo();
-      returnObj.columnNames = lastResultColumn;
-      returnObj.columnTypes = lastResultColumnType;
-      returnObj.modelOriginalTable = this.modelOriginalTable;
-      returnObj.modelType = 1;
-      return returnObj;
+      const returnObj = getSaveInfo()
+      returnObj.columnNames = lastResultColumn
+      returnObj.columnTypes = lastResultColumnType
+      returnObj.modelOriginalTable = this.modelOriginalTable
+      returnObj.modelType = 1
+      returnObj.locationUuid = this.tempId
+      returnObj.locationName = this.tempPath
+      return returnObj
     },
     /**
      * 生成select语句
@@ -643,7 +649,7 @@ export default {
         const sqlObj = getSaveSqlDraftObj(type);
         const sql = sqlObj.draftSql;
         if (sql === "") {
-          this.$message({ type: "info", message: "请输入sql语句!" });
+          this.$message({ type: "info", message: "请输入SQL语句!" });
           return;
         } else {
           if (!sqlObj.isOld) {
@@ -738,26 +744,30 @@ export default {
           useSql(returnObj);
         });
       } else {
-        return;
+        return
       }
     },
     /**
      * 执行sql
      */
     executeSQL() {
+      if(this.tempId === ""){
+        this.$message({ type: "info", message: "请选择SQL执行保存路径!" })
+        return
+      }
       const result = getSql()
       if (result.sql === "") {
-        this.$message({ type: "info", message: "请输入sql!" })
+        this.$message({ type: "info", message: "请输入SQL!" })
         return
       }
       this.isAllExecute = result.isAllExecute
-      this.loadText = "正在检验sql是否符合语法规范..."
+      this.loadText = "正在检验SQL是否符合语法规范..."
       verifySql().then((result) => {
         this.executeLoading = false
         this.loadText = ""
         if (!result.data.verify) {
           this.$message({ type: "info", message: "SQL不符合语法规范，请重新输入" });
-          return;
+          return
         }
         this.resultShow = [] // 清空数据展示对象
         isAllExecuteSuccess = false
@@ -769,7 +779,7 @@ export default {
         obj.modelResultSavePathId = this.modelResultSavePathId
         if (!obj.isExistParam) {
           this.executeLoading = true
-          this.loadText = "正在获取sql信息..."
+          this.loadText = "正在获取SQL信息..."
           getExecuteTask(obj).then((result) => {
             this.executeLoading = false
             this.loadText = ""
@@ -781,18 +791,18 @@ export default {
             this.resultShow.push({ id: 1 })
             //界面渲染完成之后开始执行sql,将sql送入调度
             startExecuteSql(result.data).then((result) => {
-              this.executeLoading = false;
+              this.executeLoading = false
               this.loadText = ""
             }).catch((result) => {
-              this.executeLoading = false;
+              this.executeLoading = false
             });
           }).catch((result) => {
-            this.executeLoading = false;
-          });
+            this.executeLoading = false
+          })
         } else {
-          this.openParamDraw(obj);
+          this.openParamDraw(obj)
         }
-      });
+      })
     },
     /**
      * 打开参数渲染窗体
@@ -857,7 +867,7 @@ export default {
     },
     modelResultSavePathDetermine() {
       if (this.nodeType == "folder") {
-        this.path = "当前执行sql保存路径:" + this.tempPath;
+        this.path = "当前执行SQL保存路径:" + this.tempPath;
         this.modelResultSavePathId = this.tempId;
         this.modelResultSavePathDialog = false;
       } else if (this.nodeType == "") {
@@ -875,7 +885,7 @@ export default {
     getColumnSqlInfo() {
       const result = getSql();
       if (result.sql === "") {
-        this.$message({ type: "info", message: "请输入sql!" });
+        this.$message({ type: "info", message: "请输入SQL!" });
         return;
       }
       this.isAllExecute = result.isAllExecute;
@@ -894,7 +904,7 @@ export default {
         lastResultColumn = [];
         let data = {sql:result.sql}
         this.executeLoading = true
-        this.loadText = "正在获取sql列..."
+        this.loadText = "正在获取SQL列..."
         getColumnSqlInfo(data).then((resp) => {
           //修改执行成功状态
           isAllExecuteSuccess = true;
