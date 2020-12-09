@@ -970,9 +970,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.itxst {
-  margin: 10px;
-  text-align: left;
-}
-</style>

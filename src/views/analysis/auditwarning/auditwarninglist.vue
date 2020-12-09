@@ -90,7 +90,9 @@ export default {
         //操作类型 add添加 update修改 detail详情
         option : "add",
         //操作数据主键
-        optionUuid : ""
+        optionUuid : "",
+        //保存结果文件夹名称
+        // locationName : ""
       },
       //分页查询条件
       pageQuery: {
@@ -258,11 +260,13 @@ export default {
     /**
      * 查看审计预警
      */
-    detail(id){
+    detail(id,locaname){
       this.operationObj.option = "detail"
       this.operationObj.optionUuid = id
       this.editDialogTitle = "审计预警详情"
       this.editDialogVisible = true
+      // this.operationObj.locationName = locaname
+      // console.log(locaname+"111")
     },
 
     /**

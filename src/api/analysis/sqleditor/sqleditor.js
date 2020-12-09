@@ -985,6 +985,8 @@ export function initParamTree() {
   })
 }
 
+$(".ag-theme-balham .ag-header-row").css("background-color","white")
+console.log(11)
 
 /**
  * 数据表树拖拽事件
