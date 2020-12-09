@@ -341,9 +341,7 @@ export function initSQLEditor(textarea, relTableMap,expTableMap) {
   })
   editor.on('change', function(instance, changeObj) {
     //如果第一次加载不做任何校验
-    alert(isFirst)
     if(isFirst != 0){
-      alert(isFirst)
       isUpdate = true;
     }
     isFirst++;
