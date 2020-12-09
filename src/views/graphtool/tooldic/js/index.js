@@ -22,11 +22,15 @@ export function replaceNodeType(e) {
         // 统一表和试图的类型为datasource
         switch (tableType) {
             case 'datasource':
-                this.icon = 'images/icon/tableNode.png'
+                this.icon = 'images/ico/table_1.png'
                 break
             case 'table':
+                this.icon = 'images/ico/table_1.png'
+                this.type = 'datasource'
+                this.oldType = tableType
+                break
             case 'view':
-                this.icon = 'images/icon/tableNode.png'
+                this.icon = 'images/ico/view.png'
                 this.type = 'datasource'
                 this.oldType = tableType
                 break
