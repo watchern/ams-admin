@@ -15,7 +15,7 @@
       </el-row>
       <el-row style="margin-top:20px">
         <el-col>
-          <dataTree v-if="isTreeShow" ref="dataTree" :data-user-id="personcode" :scene-code="sceneCode" @node-click="nodeclick" />
+          <dataTree v-if="isTreeShow" ref="dataTree" :data-user-id="personcode" :scene-code="currentSceneUuid" @node-click="nodeclick" />
         </el-col>
       </el-row>
     </div>
@@ -38,7 +38,7 @@ export default {
     return {
       sceneCode: 'auditor',
       allScene: [],
-      currentSceneUuid: '',
+      currentSceneUuid: this.$store.getters.scenecode,
       isTreeShow: true,
       personcode: this.$store.state.user.code
     }
@@ -52,8 +52,9 @@ export default {
     currentSceneUuid: {
       // 深度监听，可监听到对象、数组的变化
       handler(val, oldVal) {
-        console.log(val)
-        this.sceneCode = val
+        this.currentSceneUuid = val
+        this.$store.state.user.scenecode = val
+        this.$store.state.user.scenename = this.allScene.filter(e => { return e.sceneCode === this.currentSceneUuid })[0].sceneName
         this.reload()
       }
     },
