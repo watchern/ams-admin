@@ -103,7 +103,7 @@
           />
           <textarea id="sql" />
         </div>
-        <div id="horizontal"> <div></div> </div>
+        <div id="horizontal"></div>
 
         <!-- 结果展示和参数输入区域 -->
         <div id="bottomPart" lay-filter="result-data">
@@ -1059,21 +1059,6 @@ export default {
   box-shadow: 15px 0 15px 0 #3F444D12;
   position: relative;
   z-index: 20;
-}
-
-.data-show .ag-row-odd{
-  background-color: rgb(242,245,248);
-}
-.data-show .ag-row{
-  border-width: 0px;
-}
-.data-show .ag-row-selected{
-  background-color: #b7e4ff;
-  background-color: var(--ag-selected-row-background-color, #b7e4ff);
-}
-.data-show .ag-row-hover{
-  background-color: #ecf0f1;
-  background-color: var(--ag-row-hover-color, #ecf0f1);
 }
 </style>
 
