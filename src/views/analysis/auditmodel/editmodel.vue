@@ -123,7 +123,7 @@
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" style="width: 100%" id="graphDiv">
             <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor"
-                       :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel" class="sql-editor" />
+                       :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel" :locationUuid="form.locationUuid" :locationName="form.locationName"  class="sql-editor"/>
             <graph ref="graph" v-if="state.id=='002003002'"></graph>
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
@@ -323,8 +323,8 @@ export default {
         sqlValue: '',
         auditItemName:'',
         modelType:'',  //002003001审计模型编号  002003002图形化编号
-        locationUuid:'',
-        locationName:''
+        locationName:'',
+        locationUuid:''
       },
       //参数模型关联对象
       parammModelRel: {},
@@ -703,12 +703,10 @@ export default {
         modelOriginalTable: modelOriginalTable
       }
       this.form.sqlValue = sqlObj.sqlValue
-      this.form.locationName = returnObj.locationName
-      this.form.locationUuid = returnObj.locationUuid
       // 初始化默认参数
       // 初始化参数默认值界面界面
       if(returnObj.params.length != 0){
-        this.$refs.apple.createParamTableHtml(true, returnObj.params, true)
+        this.$refs.apple.createParamTableHtml(true, returnObj.params, true);
       }
       this.sqlEditorParamObj = {arr:returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
       // region 初始化固定列
@@ -727,6 +725,8 @@ export default {
       this.modelOriginalTable = sqlObj.modelOriginalTable
       // 处理图表JSON
       this.modelChartSetup = sqlObj.modelChartSetup
+      this.form.locationName = returnObj.locationName
+      this.form.locationUuid = returnObj.locationUuid
     },
     /**
      *获取图形化对象

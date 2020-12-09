@@ -336,7 +336,7 @@ let lastSqlIndex = -1
 export default {
   name: "SQLEditor",
   components: { sqlDraftList, childTabs, paramDraw, dataTree },
-  props: ["sqlEditorParamObj", "sqlValue","callType"],
+  props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName"],
   data() {
     return {
       sqlDraftForm: {
@@ -544,6 +544,10 @@ export default {
         if (this.sqlValue != "") {
           // 编辑模型的sql  反显数据
           editorSql(this.sqlValue, this.sqlEditorParamObj);
+          this.tempPath = this.locationName;
+          this.tempId = this.locationUuid;
+          this.path = "当前执行SQL保存路径:" + this.tempPath;
+          this.modelResultSavePathId = this.tempId;
         }
         refreshCodeMirror()
       }).catch(() => {
