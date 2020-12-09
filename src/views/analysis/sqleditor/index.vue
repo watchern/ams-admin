@@ -7,9 +7,28 @@
         <div class="unfold-sql"><img :src="sql"><span>函数</span></div>
       </div>
       <div id="leftPart" class="left-part">
-        <ul id="dataTree" class="ztree" />
-        <ul id="paramTree" class="ztree" />
-        <ul id="sqlFunTree" class="ztree" />
+        <div>
+<!--          <el-input-->
+<!--            v-model="filterText1"-->
+<!--            placeholder="输入关键字进行过滤"-->
+<!--          />-->
+          <ul id="dataTree" class="ztree" />
+        </div>
+        <div>
+<!--          <el-input-->
+<!--            v-model="filterText2"-->
+<!--            placeholder="输入关键字进行过滤"-->
+<!--          />-->
+          <ul id="paramTree" class="ztree" />
+        </div>
+        <div>
+<!--          <el-input-->
+<!--            v-model="filterText3"-->
+<!--            placeholder="输入关键字进行过滤"-->
+<!--          />-->
+          <ul id="sqlFunTree" class="ztree" />
+        </div>
+
       </div>
       <div id="rightPart" class="col-sm-10" style="height: 100%">
         <div id="sqlEditorDiv" class="sql-editor-div">
@@ -40,9 +59,9 @@
                 type="primary"
                 size="small"
                 @click="getColumnSqlInfo"
-                class="oper-btn search"
+                class="oper-btn folder"
                 title="校验sql"
-              ></el-button>
+              >校验sql</el-button>
               <el-dropdown>
                 <el-button
                   type="primary"
@@ -87,7 +106,6 @@
                   >
                 </el-dropdown-menu>
               </el-dropdown>
-             <!-- <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;" @click="modelResultSavePathDialog = true">{{ path }}</label>-->
               <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;" @click="modelResultSavePathDialog = true">{{ path }}</label>
             </el-col>
           </el-row>
@@ -384,6 +402,16 @@ export default {
         }
       });
     },
+    // filterText1(val){
+    //   this.$refs.tree.filter(val);
+    // },
+    // filterText2(val){
+    //   this.$refs.tree.filter(val);
+    // },
+    // filterText3(val){
+    //   this.$refs.tree.filter(val);
+    // }
+
   },
   mounted() {
     this.initData();
@@ -513,12 +541,12 @@ export default {
         initSQLEditor(document.getElementById('sql'), relTableMap,expTableMap)  //初始化SQL编辑器
         this.executeLoading = false
         this.loadText = ""
-        if (this.sqlValue != "" && this.sqlValue != undefined) {
+        if (this.sqlValue != "") {
           // 编辑模型的sql  反显数据
           editorSql(this.sqlValue, this.sqlEditorParamObj);
         }
         refreshCodeMirror()
-      }).catch((result) => {
+      }).catch(() => {
         this.$message({ type: 'error', message: '初始化数据表失败!' })
         this.executeLoading = false
         this.loadText = ""
@@ -943,6 +971,7 @@ export default {
   font-size: 15pt;
 }
 
+
 .CodeMirror-hint-table:before {
   content: " ";
   width: 30px;
@@ -990,8 +1019,6 @@ export default {
   cursor: w-resize;
   z-index: 200;
 }
-
-
 
 .el-aside{
   /* margin-bottom: 10px; */
@@ -1067,6 +1094,8 @@ export default {
   position: relative;
   z-index: 20;
 }
+
+
 </style>
 
 

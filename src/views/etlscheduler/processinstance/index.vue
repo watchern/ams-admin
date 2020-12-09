@@ -120,10 +120,10 @@
           <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="taskParam in scope.row.distinctParamList" :key="taskParam.value">
-              <label class="col-md-2">
+              <label class="col-md-4">
                 {{ taskParam.name }}:
               </label>
-              <div class="col-md-10">
+              <div class="col-md-8">
                 {{ taskParam.value }}
               </div>
             </el-row>

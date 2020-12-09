@@ -61,17 +61,7 @@
       >
        </div>
     </el-row>
-    <el-row v-if="modelResultButtonIsShow" style="display: flex">
-      <!-- 2.1前台导出，双向绑定数据 -->
-      <downloadExcel :data="tableData" :fields="json_fields" :name="excelName">
-        <el-button
-          type="primary"
-          @click="modelResultExport"
-          class="oper-btn export-2"
-        ></el-button>
-      </downloadExcel>
-      <el-button type="primary" title="图表展示" class="oper-btn chart"></el-button>
-    </el-row>
+    
     <ag-grid-vue
       v-if="isSee"
       v-loading="isLoading"
@@ -96,16 +86,32 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="initData(nowSql)"
     />
-    <el-pagination
-      v-if="modelResultPageIsSee"
-      :current-page="page"
-      :page-sizes="[10, 20, 30, 50]"
-      :page-size="limit"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total1"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
+    <el-row v-if="modelResultButtonIsShow" style="display: flex" id="conversion-z">
+      <el-col :span="22">
+        <el-pagination
+          v-if="modelResultPageIsSee"
+          :current-page="page"
+          :page-sizes="[10, 20, 30, 50]"
+          :page-size="limit"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total1"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </el-col>
+      <el-col :span="2">
+      <!-- 2.1前台导出，双向绑定数据 -->
+        <downloadExcel :data="tableData" :fields="json_fields" :name="excelName" class="dowloadexcel-z">
+          <el-button
+            type="primary"
+            @click="modelResultExport"
+            class="oper-btn export-2"
+          ></el-button>
+        </downloadExcel>
+        <el-button type="primary" title="图表展示" class="oper-btn chart"></el-button>
+      </el-col>
+    </el-row>
+    
     <el-dialog
       title="模型详细关联"
       :visible.sync="modelDetailDialogIsShow"
@@ -970,3 +976,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+.dowloadexcel-z{
+  display:inline-block;
+  margin-right: 16px;
+}
+</style>
