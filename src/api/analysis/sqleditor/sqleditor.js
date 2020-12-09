@@ -230,8 +230,6 @@ export function initDragAndDrop() {
     }
   })
 
-
-
   // 实现上下拖拽改变大小
   var rightPart = document.getElementById('rightPart')
   var topPart = document.getElementById('sqlEditorDiv')
@@ -390,6 +388,8 @@ export function initSQLEditor(textarea, relTableMap,expTableMap) {
   editorObj = editor
   $('.CodeMirror-scroll').focus()
   editor.setSize('auto','88%');
+  // sql编辑器颜色 为了不影响公共样式
+  $(".CodeMirror-scroll:eq(0)").css("background-color","rgb(237, 241, 245)")
 }
 
 /**
@@ -985,6 +985,8 @@ export function initParamTree() {
   })
 }
 
+$(".ag-theme-balham .ag-header-row").css("background-color","white")
+console.log(11)
 
 /**
  * 数据表树拖拽事件

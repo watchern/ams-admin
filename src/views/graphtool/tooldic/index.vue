@@ -347,7 +347,6 @@
     import * as commonJs from '@/views/graphtool/tooldic/js/common'
     import * as indexJs from '@/views/graphtool/tooldic/js/index'
     import * as validateJs from '@/views/graphtool/tooldic/js/validate'
-    var ownerEditor, graph
     export default {
         name: 'ToolIndex',
         data() {
@@ -371,8 +370,8 @@
                 graphUuid:getParams().graphUuid,// 打开图形的ID
                 graphName:'',
                 description:'',
-                openGraphType: getParams().openGraphType ? 1 : Number(getParams().openGraphType) ,// 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
-                openType: getParams().openType ? 2 : Number(getParams().openType),// 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
+                openGraphType: getParams().openGraphType ? Number(getParams().openGraphType) : 1,// 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
+                openType: getParams().openType ? Number(getParams().openType) : 2,// 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
                 loading:null,//遮罩层对象
                 searchZtreeContent:'',
                 webSocket:null,
@@ -392,15 +391,11 @@
             }
         },
         components:{ Help, GraphListExport,ChildTabs },
+        // props:["graphUuid","openGraphType","openType"],
         created() {
             this.init()
         },
         mounted() {
-            // $("#graphToolDiv").css({"width":function () {
-            //         return $()
-            //     },"height":function () {
-            //
-            //     }})
             // 申明common.js的方法为全局方法
             this.initCommon()
             // //申明index.js的方法为全局方法
@@ -418,6 +413,18 @@
         },
         methods: {
             init() {
+                // //打开图形的ID
+                // if(typeof this.graphUuid === "undefined" || this.graphUuid == null){
+                //     this.graphUuid = getParams().graphUuid
+                // }
+                // //当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
+                // if(typeof this.openGraphType === "undefined" || this.openGraphType == null){
+                //     this.openGraphType = getParams().openGraphType ? Number(getParams().openGraphType) : 1
+                // }
+                // //打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
+                // if(typeof this.openType === "undefined" || this.openType == null){
+                //     this.openType = getParams().openType ? Number(getParams().openType) : 2
+                // }
                 this.loginUserUuid = this.$store.state.user.id
                 this.loginUserCode = this.$store.state.user.code
                 let roleArr = this.$store.state.user.roles
@@ -465,6 +472,8 @@
                         indexJs.nodeRemark(optType)
                     }
                 })
+                let ownerEditor = null
+                let graph = null
                 mxResources.loadDefaultBundle = false
                 var bundle = mxResources.getDefaultBundle(RESOURCE_BASE, mxLanguage) || mxResources.getSpecialBundle(RESOURCE_BASE, mxLanguage)
                 var defaultXmlUrl = STYLE_PATH + '/default.xml'
@@ -789,8 +798,6 @@
                             indexJs.autoSaveGraph()
                             $this.layuiTabClickLi(0)
                             $this.showTableResult = false
-                            $this.loading.destroy()
-                            $this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false,'hasTime':true })
                             //预览数据
                             $this.viewData()
                         }
@@ -859,7 +866,7 @@
                     'graphName': this.graphName,
                     'description': this.description,
                     'graphXml': xml,
-                    'graphType': 1, // 个人图形
+                    'graphType': this.openGraphType,
                     'nodeData': JSON.stringify(graph.nodeData) // 各个节点的配置信息
                 }
                 if (this.saveGraphType === 'saveGraph') {
@@ -903,6 +910,8 @@
                         })
                     }
                 }
+                this.loading.destroy()
+                this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false,'hasTime':true })
                 viewNodeData({nodeObjs:JSON.stringify(this.resultTableArr),openType:this.openType,websocketBatchId:this.websocketBatchId}).then()
             },
             relationTableQuery() {

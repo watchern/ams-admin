@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "8413325",
+      "name": "清除",
+      "font_class": "oper-clean",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "15466241",
+      "name": "icon-sql",
+      "font_class": "oper-sqlcheck",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
       "icon_id": "1881570",
       "name": "交互",
       "font_class": "jiaohu",
@@ -28,7 +42,7 @@
     },
     {
       "icon_id": "5953258",
-      "name": "拖拽",
+      "name": "drag",
       "font_class": "oper-drag",
       "unicode": "e680",
       "unicode_decimal": 59008

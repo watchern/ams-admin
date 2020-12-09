@@ -22,25 +22,13 @@
 #vertical div{
 	background: url(./img/tztree.png) 0 0 no-repeat;
 	border: none;
-	background-size: 100%;
 	width: 20px;
 	height: 20px;
 	position: absolute;
     top: 48%;
-    left: -8px;
+    left: -2.5px;
 }
 
-#horizontal div{
-	background: url(./img/tztree.png) 0 0 no-repeat;
-	border: none;
-	background-size: 100%;
-	width: 20px;
-	height: 20px;
-	position: absolute;
-    top: -8px;
-	left: 48%;
-	transform: rotate(90deg);
-}
 
 #iconImg-huifu{
 	width: 24px;
@@ -103,7 +91,7 @@
 	margin: 0;
 }
 .ztree li {
-	padding: 0 0 0 20px; 
+	padding: 0 0 0 20px;
 	margin: 0;
 	list-style: none;
 	line-height: 14px;
@@ -220,11 +208,6 @@
 .unfold-sql span{
 	color: #184A4C;
 	font-family: PingFangSC-Semibold;
-}
-
-
-.CodeMirror-scroll{
-	background-color: rgb(237, 241, 245);
 }
 
 .ztree li span.button.chk {
