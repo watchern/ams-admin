@@ -59,9 +59,9 @@
                 type="primary"
                 size="small"
                 @click="getColumnSqlInfo"
-                class="oper-btn folder"
+                class="oper-btn sqlcheck"
                 title="校验sql"
-              >校验sql</el-button>
+              ></el-button>
               <el-dropdown>
                 <el-button
                   type="primary"
@@ -291,7 +291,9 @@ import {
   maxOpenOne,
   getColumnSqlInfo,
   refushTableTree,
-  dropTable
+  dropTable,
+  getIsUpdate,
+  setIsUpdate
 } from "@/api/analysis/sqleditor/sqleditor";
 import sqlDraftList from "@/views/analysis/sqleditor/sqldraftlist";
 import { updateDraft } from "@/api/analysis/sqleditor/sqldraft";
@@ -402,16 +404,6 @@ export default {
         }
       });
     },
-    // filterText1(val){
-    //   this.$refs.tree.filter(val);
-    // },
-    // filterText2(val){
-    //   this.$refs.tree.filter(val);
-    // },
-    // filterText3(val){
-    //   this.$refs.tree.filter(val);
-    // }
-
   },
   mounted() {
     this.initData();
@@ -492,6 +484,7 @@ export default {
         this.$refs.childTabsRef[0].loadTableData(val);
         //已经全部执行完成，调用父组件方法初始化参数列等信息
         if (isAllExecuteSuccess) {
+          setIsUpdate(false)
           this.$emit("getSqlObj");
         }
       };
@@ -619,6 +612,10 @@ export default {
       }
       // 如果当前执行进度与要执行的sql数量相等 则证明数据已经全部拿到，允许保存
       if (currentExecuteProgress != this.currentExecuteSQL.length) {
+        return
+      }
+      if(getIsUpdate()){
+        this.$message({ type: "info", message: "SQL已经被修改,请重新校验或执行!" });
         return
       }
       /*      console.log("当前执行总进度:" + currentExecuteProgress);
@@ -910,6 +907,7 @@ export default {
           isAllExecuteSuccess = true;
           lastResultColumn = resp.data.columnName;
           lastResultColumnType = resp.data.columnType;
+          setIsUpdate(false)
           this.$emit("getSqlObj");
           this.executeLoading = false
           this.loadText = ""
@@ -919,6 +917,13 @@ export default {
         });
       });
     },
+    /**
+     * 获取sql编辑器里的slq是否被修改
+     * @returns {boolean}
+     */
+    getSQLIsUpdate(){
+      return getIsUpdate();
+    }
   },
 };
 </script>

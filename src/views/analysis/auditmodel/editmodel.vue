@@ -132,13 +132,13 @@
         </el-form>
       </div>
       <div ref="paramDefaultValue" class="display default-value">
-        <p class="p-div">拖拽改变参数展示顺序</p>
+        <messageTips type="info" message="拖拽改变参数展示顺序"></messageTips>
         <div id="paramList">
           <paramShow ref="apple"></paramShow>
         </div>
       </div>
       <div ref="modelResultOutputCol" class="display default-value">
-        <p class="p-div">注意：只显示最后的结果列</p>
+        <messageTips type="error" message="只显示最后的结果列"></messageTips>
         <div class="model-result-output-col">
           <el-table ref="columnData" :data="columnData" class="div-width" >
             <el-table-column prop="outputColumnName" label="输出列名" width="180" />
@@ -249,10 +249,11 @@ import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import SelectTransCode from '@/views/data/table/transcodeselect'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 import graph from '@/views/graphtool/tooldic/index'
+import messageTips from '@/views/analysis/auditmodel/message'
 // import func from 'vue-temp/vue-editor-bridge'
 export default {
   name: 'EditModel',
-  components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode,graph },
+  components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode,graph,messageTips },
   props: ['openValue'],
   data() {
     return {
@@ -556,32 +557,38 @@ export default {
      * 获取当前界面的模型对象
      */
     getModelObj() {
-      if(this.$refs.SQLEditor[0] != undefined){
-        //region 获取sql编辑器的模型对象
-        // region 校验基本信息
-        let basicInfoVerResult = false
-        this.$refs['basicInfoForm'].validate((valid) => {
-          if (valid) {
-            basicInfoVerResult = valid
-          }
-        })
-        if (!basicInfoVerResult) {
-          // 自动选中指定树节点
-          this.handleNodeClick({
-            id: '1',
-            label: '基本信息',
-            type: 'basicInfo'
-          }, null)
-          return null
+      // region 校验基本信息
+      let basicInfoVerResult = false
+      this.$refs['basicInfoForm'].validate((valid) => {
+        if (valid) {
+          basicInfoVerResult = valid
         }
-        // endregion
+      })
+      if (!basicInfoVerResult) {
+        // 自动选中指定树节点
+        this.handleNodeClick({
+          id: '1',
+          label: '基本信息',
+          type: 'basicInfo'
+        }, null)
+        return null
+      }
+      // endregion
+      if(this.$refs.SQLEditor != undefined){
+        //region 获取sql编辑器的模型对象
         // region 校验sql语句
         let modelDesignVerResult = false
         this.$refs['modelDesignForm'].validate((valid) => {
           if (valid) {
             modelDesignVerResult = valid
+            message = "请先编写SQL"
           }
         })
+        let message = ""
+        if(this.$refs.SQLEditor[0].getSQLIsUpdate()){
+          modelDesignVerResult = false
+          message = "请先执行或校验SQL"
+        }
         if (!modelDesignVerResult) {
           // 自动选中指定树节点
           this.handleNodeClick({
@@ -589,6 +596,7 @@ export default {
             label: '模型设计',
             type: 'modelDesign'
           }, null)
+          this.$message({ type: 'info', message: message})
           return null
         }
         // endregion
@@ -676,8 +684,15 @@ export default {
         return this.form
         // endregion
       }
-      else if(this.$refs.graph[0] != undefined){
+      else if(this.$refs.graph != undefined){
 
+      }
+      else{
+        this.handleNodeClick({
+          id: '2',
+          label: '模型设计',
+          type: 'modelDesign'
+        }, null)
       }
     },
     /**
@@ -863,7 +878,7 @@ export default {
      */
     createDetail(treeNode,data) {
       if (this.columnData.length == 0) {
-        this.$message({ type: 'info', message: '请先编写SQL!' })
+        this.$message({ type: 'info', message: '请先编写SQL，若已经编写则请执行或校验SQL!' })
         return
       }
       $("#drag").css("width",115)
@@ -1138,7 +1153,6 @@ export default {
         }
         this.modelTypeObj.push(obj)
         this.$nextTick( () => {
-          console.log($("#graphDiv").parent().parent().height());
           $("#graphDiv").css({"height":function (){
               return $(this).parent().parent().height()
             }})
