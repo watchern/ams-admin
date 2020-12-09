@@ -40,9 +40,9 @@
                 type="primary"
                 size="small"
                 @click="getColumnSqlInfo"
-                class="oper-btn folder"
+                class="oper-btn search"
                 title="校验sql"
-              >校验sql</el-button>
+              ></el-button>
               <el-dropdown>
                 <el-button
                   type="primary"
@@ -87,6 +87,7 @@
                   >
                 </el-dropdown-menu>
               </el-dropdown>
+             <!-- <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;" @click="modelResultSavePathDialog = true">{{ path }}</label>-->
               <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;" @click="modelResultSavePathDialog = true">{{ path }}</label>
             </el-col>
           </el-row>
@@ -103,7 +104,7 @@
           />
           <textarea id="sql" />
         </div>
-        <div id="horizontal"> <div></div> </div>
+        <div id="horizontal"></div>
 
         <!-- 结果展示和参数输入区域 -->
         <div id="bottomPart" lay-filter="result-data">
@@ -512,12 +513,12 @@ export default {
         initSQLEditor(document.getElementById('sql'), relTableMap,expTableMap)  //初始化SQL编辑器
         this.executeLoading = false
         this.loadText = ""
-        if (this.sqlValue != "") {
+        if (this.sqlValue != "" && this.sqlValue != undefined) {
           // 编辑模型的sql  反显数据
           editorSql(this.sqlValue, this.sqlEditorParamObj);
         }
         refreshCodeMirror()
-      }).catch(() => {
+      }).catch((result) => {
         this.$message({ type: 'error', message: '初始化数据表失败!' })
         this.executeLoading = false
         this.loadText = ""
@@ -1059,21 +1060,6 @@ export default {
   box-shadow: 15px 0 15px 0 #3F444D12;
   position: relative;
   z-index: 20;
-}
-
-.data-show .ag-row-odd{
-  background-color: rgb(242,245,248);
-}
-.data-show .ag-row{
-  border-width: 0px;
-}
-.data-show .ag-row-selected{
-  background-color: #b7e4ff;
-  background-color: var(--ag-selected-row-background-color, #b7e4ff);
-}
-.data-show .ag-row-hover{
-  background-color: #ecf0f1;
-  background-color: var(--ag-row-hover-color, #ecf0f1);
 }
 </style>
 

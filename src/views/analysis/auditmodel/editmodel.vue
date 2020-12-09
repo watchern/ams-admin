@@ -78,7 +78,7 @@
             </el-form-item>
           </el-row>
           <el-row>
-            <el-col :span="8">
+            <el-col :span="9">
               <el-form-item label="风险等级" prop="riskLevelUuid">
                   <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级">
                     <el-option
@@ -90,9 +90,9 @@
                   </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="9">
               <el-form-item label="模型类型" prop="modelType">
-                <el-select v-model="form.modelType" placeholder="请选择模型类型" @change="modelTypeChangeEvent">
+                <el-select v-model="form.modelType" placeholder="请选择模型类型">
                   <el-option
                     v-for="state in modelTypeData"
                     :key="state.codeValue"
@@ -121,7 +121,7 @@
       </div>
       <div ref="modelDesign" class="display div-width">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
-          <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id">
+          <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" style="width: 100%" id="graphDiv">
             <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel" class="sql-editor" />
             <graph v-if="state.id=='002003002'"></graph>
@@ -478,6 +478,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'block'
+        this.modelTypeChangeEvent(this.form.modelType)
       } else if (data.type == 'paramDefaultValue') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -1095,6 +1096,12 @@ export default {
           id:'002003002'
         }
         this.modelTypeObj.push(obj)
+        this.$nextTick( () => {
+          console.log($("#graphDiv").parent().parent().height());
+          $("#graphDiv").css({"height":function (){
+              return $(this).parent().parent().height()
+            }})
+        })
       }
     },
     /**

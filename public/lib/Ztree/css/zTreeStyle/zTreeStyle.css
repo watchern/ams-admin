@@ -22,25 +22,13 @@
 #vertical div{
 	background: url(./img/tztree.png) 0 0 no-repeat;
 	border: none;
-	background-size: 100%;
 	width: 20px;
 	height: 20px;
 	position: absolute;
     top: 48%;
-    left: -8px;
+    left: -2.5px;
 }
 
-#horizontal div{
-	background: url(./img/tztree.png) 0 0 no-repeat;
-	border: none;
-	background-size: 100%;
-	width: 20px;
-	height: 20px;
-	position: absolute;
-    top: -8px;
-	left: 48%;
-	transform: rotate(90deg);
-}
 
 #iconImg-huifu{
 	width: 24px;
