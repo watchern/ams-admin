@@ -1,15 +1,12 @@
-.graphContainer {
-	height:88%;
+#graphContainer {
 	background: url('../images/grid.gif');
-	position: absolute;
-	top: 128px;
+	position: relative;
 }
-.geToolbarContainer {
-    /*width: calc(94% - 29px);*/
+#geToolbarContainer {
 	background: whiteSmoke;
 	border-bottom: 1px solid #e0e0e0;
 }
-.geDiagramContainer {
+#geDiagramContainer {
 	left: 0;
 	top: 0;
 	right: 0;
@@ -18,7 +15,7 @@
 	position: absolute;
 	top: 128px;
 }
-.geResultContainer {
+#geResultContainer {
 	width: 100%;
 	z-index: 1;
 	bottom: 0;

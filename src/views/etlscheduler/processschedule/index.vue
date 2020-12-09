@@ -6,6 +6,7 @@
     </div>
     <el-row>
       <el-col align="right">
+        <el-button type="primary" class="oper-btn add" :disabled="stopStatus" title="立即运行" @click="handleRun()" />
         <el-button type="primary" class="oper-btn add" title="新增" @click="handleCreate()" />
         <el-button type="primary" class="oper-btn edit" :disabled="editStatus" title="修改" @click="handleUpdate()" />
         <el-button type="primary" class="oper-btn delete" :disabled="deleteStatus" title="删除" @click="handleDelete()" />
@@ -369,6 +370,104 @@
         <el-button type="primary" @click="exportFile()">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 立即执行弹框 -->
+    <el-dialog
+      title="调度执行"
+      :visible.sync="runDialogFormVisible"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        ref="runForm"
+        :rules="runRules"
+        label-position="right"
+        class="detail-form"
+        :model="runParams"
+      >
+        <el-form-item
+          label="调度名称"
+          prop="scheduleName"
+        >
+          <el-input
+            v-model="runParams.scheduleName"
+            :disabled="true"
+          />
+        </el-form-item>
+        <el-form-item
+          label="失败策略"
+          prop="failureStrategyEnum"
+        >
+          <el-select
+            v-model="runParams.failureStrategyEnum"
+            placeholder="请选择选择失败策略"
+          >
+            <el-option
+              label="继续"
+              :value="'CONTINUE'"
+            />
+            <el-option
+              label="结束"
+              :value="'END'"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          label="优先级"
+          prop="processInstancePriorityEnum"
+        >
+          <el-select
+            v-model="runParams.processInstancePriorityEnum"
+          >
+            <el-option
+              v-for="(item,$index) in priorityList"
+              :key="$index"
+              :value="item.code"
+              :label="item.name"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          label="是否补数"
+          prop="checked"
+        >
+          <el-checkbox v-model="runParams.checked">是</el-checkbox>
+        </el-form-item>
+        <el-form-item
+          v-if="runParams.checked"
+          label="执行方式"
+          prop="runModeEnum"
+        >
+          <el-select
+            v-model="runParams.runModeEnum"
+            placeholder="请选择选择执行方式"
+          >
+            <el-option
+              label="串行执行"
+              :value="'RUN_MODE_SERIAL'"
+            />
+            <el-option
+              label="并行执行"
+              :value="'RUN_MODE_PARALLEL'"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="runParams.checked"
+          label="调度时间"
+          prop="cronTime"
+        >
+          <el-date-picker
+            v-model="runParams.cronTime"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+          /></el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="runDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="runSchedule()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -390,7 +489,8 @@ import {
   stopScheduleStatus,
   getByScheduleId,
   copy,
-  queryProcessLike
+  queryProcessLike,
+  startProcessInstance
 } from '@/api/etlscheduler/processschedule'
 import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
@@ -474,8 +574,8 @@ export default {
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
-        { label: '任务名称', name: 'scheduleName', type: 'text', value: '' },
-        { label: '状态', name: 'status', type: 'select',
+        { label: '调度名称', name: 'scheduleName', type: 'text', value: '' },
+        { label: '调度状态', name: 'status', type: 'select',
           data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }], default: '0' },
         {
           label: '流程名称',
@@ -496,6 +596,28 @@ export default {
           null: '停用'
         }
       },
+      priorityList: [
+        {
+          code: 'HIGHEST',
+          name: '最高'
+        },
+        {
+          code: 'HIGH',
+          name: '高'
+        },
+        {
+          code: 'MEDIUM',
+          name: '中'
+        },
+        {
+          code: 'LOW',
+          name: '低'
+        },
+        {
+          code: 'LOWEST',
+          name: '最低'
+        }
+      ],
       pageQuery: {
         condition: {},
         pageNo: 1,
@@ -525,9 +647,26 @@ export default {
         startTimeSpilt: null,
         endTimeSpilt: null
       },
+      runParams: {
+        scheduleName: null,
+        checked: false,
+        processScheduleUuid: null,
+        // 失败策略
+        failureStrategyEnum: 'CONTINUE',
+        // 是否补数
+        isSupply: null,
+        // 执行方式
+        commandTypeEnum: null,
+        runModeEnum: 'RUN_MODE_SERIAL',
+        // 流程优先级
+        processInstancePriorityEnum: 'MEDIUM',
+        // 调度时间字符串
+        cronTime: ''
+      },
       selections: [],
       dialogFormVisible: false,
       dialogFormVisible1: false,
+      runDialogFormVisible: false,
       dialogVisible2: false,
       dialogStatus: '',
       textMap: {
@@ -585,6 +724,36 @@ export default {
           {
             required: true,
             message: '请输入参数值',
+            trigger: 'change'
+          }
+        ]
+      },
+      runRules: {
+        failureStrategyEnum: [
+          {
+            required: true,
+            message: '请选择失败策略',
+            trigger: 'change'
+          }
+        ],
+        processInstancePriorityEnum: [
+          {
+            required: true,
+            message: '请选择优先级',
+            trigger: 'change'
+          }
+        ],
+        cronTime: [
+          {
+            required: true,
+            message: '请选择调度时间',
+            trigger: 'change'
+          }
+        ],
+        runModeEnum: [
+          {
+            required: true,
+            message: '请选择执行方式',
             trigger: 'change'
           }
         ]
@@ -854,6 +1023,24 @@ export default {
       this.pageQuery.sortName = prop
       this.handleFilter()
     },
+    resetRunParams() {
+      this.runParams = {
+        checked: false,
+        scheduleName: null,
+        processScheduleUuid: null,
+        // 失败策略
+        failureStrategyEnum: 'CONTINUE',
+        // 是否补数
+        isSupply: null,
+        // 执行方式
+        commandTypeEnum: null,
+        runModeEnum: 'RUN_MODE_SERIAL',
+        // 流程优先级
+        processInstancePriorityEnum: 'MEDIUM',
+        // 调度时间字符串
+        cronTime: ''
+      }
+    },
     resetTemp() {
       this.temp = {
         scheduleName: null,
@@ -873,6 +1060,38 @@ export default {
         startTime: null,
         endTime: null
       }
+    },
+    // 立即执行
+    handleRun() {
+      this.runDialogFormVisible = true
+      this.resetRunParams()
+      const temp = Object.assign({}, this.selections[0])
+      this.runParams.scheduleName = temp.scheduleName
+      this.runParams.processScheduleUuid = temp.processSchedulesUuid
+      this.$nextTick(() => {
+        this.$refs['runForm'].clearValidate()
+      })
+    },
+    runSchedule() {
+      this.$refs['runForm'].validate((valid) => {
+        if (valid) {
+          this.runParams.checked === true ? this.runParams.commandTypeEnum = 'COMPLEMENT_DATA' : this.runParams.commandTypeEnum = ''
+          this.runParams.checked === true ? this.runParams.isSupply = true : this.runParams.isSupply = false
+          this.runParams.cronTime ? this.runParams.cronTime = this.runParams.cronTime.join(',') : this.runParams.cronTime = ''
+          const tempData = Object.assign({}, this.runParams)
+          startProcessInstance(tempData).then(() => {
+            this.getList()
+            this.$notify({
+              title: '成功',
+              message: '运行成功',
+              type: 'success',
+              duration: 2000,
+              position: 'bottom-right'
+            })
+          })
+          this.runDialogFormVisible = false
+        }
+      })
     },
     // 新增
     handleCreate() {

@@ -40,9 +40,9 @@
                 type="primary"
                 size="small"
                 @click="getColumnSqlInfo"
-                class="oper-btn folder"
+                class="oper-btn search"
                 title="校验sql"
-              >校验sql</el-button>
+              ></el-button>
               <el-dropdown>
                 <el-button
                   type="primary"
@@ -87,6 +87,7 @@
                   >
                 </el-dropdown-menu>
               </el-dropdown>
+             <!-- <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;" @click="modelResultSavePathDialog = true">{{ path }}</label>-->
               <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;" @click="modelResultSavePathDialog = true">{{ path }}</label>
             </el-col>
           </el-row>
@@ -512,12 +513,12 @@ export default {
         initSQLEditor(document.getElementById('sql'), relTableMap,expTableMap)  //初始化SQL编辑器
         this.executeLoading = false
         this.loadText = ""
-        if (this.sqlValue != "") {
+        if (this.sqlValue != "" && this.sqlValue != undefined) {
           // 编辑模型的sql  反显数据
           editorSql(this.sqlValue, this.sqlEditorParamObj);
         }
         refreshCodeMirror()
-      }).catch(() => {
+      }).catch((result) => {
         this.$message({ type: 'error', message: '初始化数据表失败!' })
         this.executeLoading = false
         this.loadText = ""

@@ -1740,38 +1740,34 @@ EditorUi.prototype.refresh = function(sizeDidChange) {
 		this.sidebarContainer.style.width = effHsplitPosition + 'px';
 	}
 	this.sidebarContainer.style.height = h + "px";
-	this.detailContainer.style.height = this.sidebarContainer.style.height;
-	this.container.style.left = (effHsplitPosition + 130 + this.splitSize) + 'px';
+    this.container.style.width = ($("#graphToolDiv").width() - effHsplitPosition - this.detailContainerWidth - this.splitSize) + "px";
+    this.vsplit.style.width = ($("#graphToolDiv").width() - effHsplitPosition - this.detailContainerWidth - this.splitSize) + "px";
+    this.detailContainer.style.height = this.sidebarContainer.style.height;
+	this.container.style.left = (effHsplitPosition + this.splitSize) + 'px';
 	this.hsplit.style.left = effHsplitPosition + 'px';
-	this.vsplit.style.width = this.diagramContainer.style.width;
-	// if(this.toolbarContainer != null) {
-	// 	this.toolbarContainer.style.left = this.diagramContainer.style.left;
-	// }
 };
 /**
  * Refreshes the viewport.
  */
 EditorUi.prototype.refreshv = function(sizeDidChange) {
-	var w = this.resultContainer.clientWidth;
-	var h = this.resultContainer.clientHeight;
-	//距底部距离
-	var effVsplitPosition = Math.max(1, Math.min(this.vsplitPosition, w - this.splitSize - 100));
-	var toolPosition = this.container.clientHeight - this.toolbarContainer.clientHeight;
-	effVsplitPosition = effVsplitPosition < toolPosition ? effVsplitPosition: toolPosition;
-	this.resultContainer.style.height = effVsplitPosition + "px";
-	this.resultContainer.children[0].style.height = effVsplitPosition + "px";
-	this.diagramContainer.style.bottom = effVsplitPosition + this.splitSize + 'px';
-	this.vsplit.style.bottom = effVsplitPosition + 'px';
-	this.tableArea.style.height = (effVsplitPosition - 60) + "px";
-	this.sysInfoArea.style.height = (effVsplitPosition - 60) + "px";
-	this.outLineArea.style.height = (effVsplitPosition - 60) + "px";
+    var w = this.resultContainer.clientWidth;
+    //距底部距离
+    var effVsplitPosition = Math.max(1, Math.min(this.vsplitPosition, w - this.splitSize - 100));
+    var toolPosition = this.container.clientHeight - this.toolbarContainer.clientHeight;
+    effVsplitPosition = effVsplitPosition < toolPosition ? effVsplitPosition: toolPosition;
+    this.resultContainer.style.height = effVsplitPosition + "px";
+    this.resultContainer.children[0].style.height = effVsplitPosition + "px";
+    this.diagramContainer.style.bottom = effVsplitPosition + this.splitSize + 'px';
+    this.vsplit.style.bottom = effVsplitPosition + 'px';
+    this.tableArea.style.height = (effVsplitPosition - 60) + "px";
+    this.sysInfoArea.style.height = (effVsplitPosition - 60) + "px";
+    this.outLineArea.style.height = (effVsplitPosition - 60) + "px";
 }
 
 /**
  * 创建和初始化.
  */
 EditorUi.prototype.createDivs = function() {
-	var h = this.container.clientHeight;
     this.graphToolDiv = document.getElementById("graphToolDiv");
 	this.sidebarContainer = document.getElementById("accordion");
 	this.toolbarContainer = document.getElementById("geToolbarContainer");
@@ -1784,7 +1780,7 @@ EditorUi.prototype.createDivs = function() {
 	this.outLineArea = document.getElementById("outLineArea");
 	this.hsplit = this.createDiv('geHsplit');
     this.vsplit = this.createDiv('geVsplit');
-	
+    var h = $("#graphToolDiv").height() - this.toolbarHeight + 10;
 	if(typeof this.sidebarContainer !== "undefined") {
 		this.sidebarContainer.style.width = this.sidebarWidth + "px";
 	}
@@ -1794,15 +1790,17 @@ EditorUi.prototype.createDivs = function() {
 		this.resultHeight = 0;
 	}
     this.toolbarContainer.style.width = $("#graphToolDiv").width() + "px";
-	this.container.style.left = (this.sidebarWidth + 130 + this.splitSize) + "px";
+	this.container.style.left = (this.sidebarWidth + this.splitSize) + "px";
 	this.container.style.right = (this.detailContainerWidth + 15) + "px";
-    this.container.style.height = (h - 59) + "px";
+    this.container.style.width = ($("#graphToolDiv").width() - this.sidebarWidth - this.splitSize - this.detailContainerWidth) + "px";
+    this.container.style.height = h + "px";
 	this.diagramContainer.style.bottom = this.resultHeight + "px";
 	this.detailContainer.style.width = this.detailContainerWidth + "px";
 	this.hsplit.style.width = this.splitSize + "px";
 	this.hsplit.style.left = this.sidebarWidth + "px";
-    this.hsplit.style.top = (this.toolbarHeight - 10) + "px";
-    this.hsplit.style.height = (h - 55) + "px";
+    this.hsplit.style.bottom = h + "px";
+    this.hsplit.style.height = h + "px";
+    this.vsplit.style.width = ($("#graphToolDiv").width() - this.sidebarWidth - this.splitSize - this.detailContainerWidth) + "px";
 	this.vsplit.style.height = this.splitSize + "px";
 	this.vsplit.style.bottom = this.resultHeight + "px";
 	this.tableArea.style.height = this.resultContentHeight + "px";
@@ -1843,7 +1841,7 @@ EditorUi.prototype.createUi = function() {
 	}
 	// VSplit
 	if(this.vsplit != null) {
-		this.container.appendChild(this.vsplit);
+        graphContainer.appendChild(this.vsplit);
 
 		this.addSplitHandler(this.vsplit, false, 0, mxUtils.bind(this, function(value) {
 			if(value > 150){
