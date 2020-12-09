@@ -2677,14 +2677,14 @@ var iconDrag = function(treeNode) {
 	switch(treeNode.type){
 		case "filter":
 		case "sort":
-		case "sample":
+		// case "sample":
 		case "layering":
-		case "groupCount":
+		// case "groupCount":
 		case "delRepeat":
-		case "comparison":
+		// case "comparison":
 		// case "change":
 		case "union":
-		case "barChart":
+		// case "barChart":
 		case "sql":
 		case "newNullNode":
 		case "relation":
