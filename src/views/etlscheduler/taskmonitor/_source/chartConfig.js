@@ -1,46 +1,81 @@
+import { turn } from 'core-js/fn/array'
+import { data } from 'jquery';
 import _ from 'lodash'
 import {
   tasksState
 } from './config'
 
 const pie = {
+  legend: {
+    orient: 'vertical',
+    left: 0,
+    data: ['等待中', '等待文件', '等待依赖', '执行中', '暂停', '已取消', '执行完成', '执行失败'],
+    data1:['执行完成']
+  },
+  tooltip : { 
+    trigger: 'item', 
+    formatter: "{b} : {c} ({d}%)" 
+},
   series: [{
     type: 'pie',
     clickable: true, // Whether to open clicks
     minAngle: 5, // The smallest sector angle (0 ~ 360), used to prevent a value from being too small, causing the sector to be too small to affect the interaction
-    avoidLabelOverlap: true, // Whether to prevent the label overlap policy
+    avoidLabelOverlap: false, // Whether to prevent the label overlap policy
     hoverAnimation: false, // Whether to enable hover to enlarge the animation on the sector.
-    silent:true,
+    // silent: true,
     radius: ['55%', '75%'],
-    center: ['50%', '37.5%'],
+    center: ['66.8%', '37.5%'],
     label: {
-      normal: {
-        show:true,
-        position:'center',
-        formatter:function(){
-          return'  100% \r\n执行完成'
-        },
-        textStyle:{
-          fontSize:30,
-        }
-      },
-      align: 'left',
+      show: false,
       position: 'center',
-      show:true,
-      
+      // fontSize: '30',
+      // formatter: '   {d}% \r\n'
     },
     emphasis: {
-        label: {
-            show: false,
-            fontSize: '20',
-            fontWeight: 'bold'
-        }
+      label: {
+        show: true,
+        fontSize: '30',
+        // fontWeight: 'bold',
+        formatter: '   {d}% \r\n {b}' 
+      }
     },
     labelLine: {
-        show: false
-    }
-  }]
-}
+      show: false
+    },
+  }
+  ]
+};
+
+//     label: {
+//       normal: {
+//         show: true,
+//         position: 'center',
+//         fontSize: '30',
+//         formatter:function(){
+//           return'   100% \r\n执行完成'
+//       }
+//       },
+//       textStyle:{
+//         fontSize: '30'
+//       },
+//       align: 'left',
+//       position: 'center',
+//       show:true,
+//     },
+
+//     emphasis: {
+//       label: {
+//         show: true,
+//         fontSize: '30',
+//         fontWeight: 'bold'
+//       }
+//     },
+
+//     labelLine: {
+//       show: false
+//     },
+//   }],
+// }
 
 const bar = {
   title: {

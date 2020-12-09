@@ -2,7 +2,7 @@
   <div class="page-container all">
     <!-- 选择日期 -->
     <el-row>
-      <el-col :span="4" :offset="19">
+      <el-col :span="4" :offset="19" style="backgroundcolor: #f8fbfe">
         <!-- <div>
           <x-datepicker
             class="select-time"
@@ -23,6 +23,7 @@
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
+            @change="_datepicker"
           >
           </el-date-picker>
         </div>
@@ -37,8 +38,8 @@
           <div slot="header" class="clearfix" style="padding: 5px">
             <!-- <span>卡片名称</span> -->
             <el-button style="float: right; padding: 3px 0" type="text">
-              <time class="time">{{ time | formatDate }}</time>
-              <span class="el-icon-refresh-left refresh"></span>
+              <time class="time">{{ time | formatDate}}</time>
+              <span class="el-icon-refresh-left refresh1" @click="refresh()"></span>
             </el-button>
           </div>
           <!-- <span class="el-icon-refresh-left refresh" style="float: right" /> -->
@@ -50,7 +51,7 @@
               <div class="bottom clearfix">
                 <time class="title-large">
                   <span class="el-icon-upload"></span>
-                  999999999
+                  <span>{{ count }}</span>
                 </time>
               </div>
               <!-- </el-tag> -->
@@ -63,7 +64,7 @@
               <div class="bottom clearfix">
                 <time class="title-large">
                   <span class="el-icon-time el-icon-time1"></span>
-                  {{ taketime | timeFilter }}
+                  {{ timeConsuming | timeFilter }}
                 </time>
               </div>
             </el-col>
@@ -74,7 +75,8 @@
                   <time class="title-large1">
                     <span class="el-icon-time el-icon-time2"></span>
                     <!-- {{ processtime | timeFilter }} -->
-                    2020-12-07 00:00:00 - 2020-12-07 00:00:00
+                    <span>{{ startTime | formatDate }}</span> -
+                    <span>{{ endTime | formatDate }}</span>
                   </time>
                 </div>
               </div>
@@ -92,7 +94,7 @@
             <!-- <span>卡片名称</span> -->
             <el-button style="float: right; padding: 3px 0" type="text">
               <time class="time">{{ time | formatDate }}</time>
-              <span class="el-icon-refresh-left refresh"></span
+              <span class="el-icon-refresh-left refresh1" @click="refresh()"></span
             ></el-button>
             <!-- <el-button style="float: right;" type="text"><span class="el-icon-refresh-left refresh" /></el-button> -->
           </div>
@@ -135,8 +137,9 @@ import etlDataFile from "@/views/etlscheduler/datafile";
 import {
   getDataFileList,
   takeTime,
-  processTakeTime,
+  taskMonitor,
 } from "@/api/etlscheduler/taskmonitor";
+import format from 'element-ui/src/locale/format';
 
 export default {
   name: "ProjectsIndexIndex",
@@ -163,6 +166,9 @@ export default {
       }
     },
     formatDate(value) {
+      if(value === null){
+        return '------'
+      }
       let date = new Date(value);
       let y = date.getFullYear();
       let MM = date.getMonth() + 1;
@@ -179,19 +185,32 @@ export default {
     },
   },
   props: {},
+  // watch: {
+  //   value1() {
+  //     this.time = Date.parse(new Date())
+  //   }
+  // },
+  // refresh(){
+  //   watch: {
+  //     this.time = Date.parse(new Date())
+  // }
+  // },
   data() {
     return {
       // info: {
       //   stockDate:this.getNowTime(),  //日期
       // },
       time: Date.parse(new Date()),
-
       searchParams: {
         startTimeStart: "",
         startTimeEnd: "",
       },
       taketime: 0,
       processtime: 0,
+      count: 0,
+      timeConsuming: 0,
+      startTime: null,
+      endTime: null,
       dataResourceStatistics: null,
       statusObj: {},
 
@@ -226,8 +245,7 @@ export default {
           },
         ],
       },
-      value1: "",
-      value2: "",
+      value1: null,
     };
   },
   created() {
@@ -236,18 +254,22 @@ export default {
     });
     this.searchParams.startTimeStart = dayjs().format("YYYY-MM-DD");
     this.searchParams.startTimeEnd = dayjs().format("YYYY-MM-DD");
+    this.value1 = [dayjs().format("YYYY-MM-DD"), dayjs().format("YYYY-MM-DD")];
     // console.log('开始' + this.searchParams.startTimeStart + typeof (this.searchParams.startTimeStart))
     // console.log('结束' + this.searchParams.startTimeEnd + typeof (this.searchParams.startTimeEnd))
     // 获取任务的总耗时
-    takeTime().then((resp) => {
-      this.taketime = resp.data;
-    });
+    // takeTime().then((resp) => {
+    //   this.taketime = resp.data;
+    // });
     // 获取任务的历时
-    processTakeTime({
+    taskMonitor({
       startTimeStart: dayjs().format("YYYY-MM-DD"),
       startTimeEnd: dayjs().format("YYYY-MM-DD"),
     }).then((resp) => {
-      this.processtime = resp.data;
+      this.count = resp.data.count;
+      this.timeConsuming = resp.data.timeConsuming;
+      this.startTime = resp.data.startTime;
+      this.endTime = resp.data.endTime;
     });
     // 获取文件资源的列表
     getDataFileList().then((resp) => {
@@ -255,21 +277,10 @@ export default {
     });
   },
   methods: {
-    //处理默认选中当前日期
-    // getNowTime() {
-    //    var now = new Date();
-    //    var year = now.getFullYear(); //得到年份
-    //    var month = now.getMonth(); //得到月份
-    //    var date = now.getDate(); //得到日期
-    //    var hour =" 00:00:00"; //默认时分秒 如果传给后台的格式为年月日时分秒，就需要加这个，如若不需要，此行可忽略
-    //    month = month + 1;
-    //    month = month.toString().padStart(2, "0");
-    //    date = date.toString().padStart(2, "0");
-    //    var defaultDate = `${year}-${month}-${date}${hour}`;
-    //    console.log(defaultDate)
-    //    return defaultDate;
-    //    this.$set(this.info, "stockDate", defaultDate);
-    // },
+    refresh(){
+      this._datepicker()
+      // getProcessStateCount()
+    },
     // 带着开始和结束时间跳转到任务实例页面
     handletask() {
       this.$router.push({
@@ -296,14 +307,18 @@ export default {
       this.$router.push({ path: "/etlscheduler/resourcemonitor" });
     },
     // 根据时间范围获取任务历时
-    _datepicker(val) {
-      this.searchParams.startTimeStart = val[0];
-      this.searchParams.startTimeEnd = val[1];
-      processTakeTime({
+    _datepicker() {
+      this.searchParams.startTimeStart = this.value1[0];
+      this.searchParams.startTimeEnd = this.value1[1];
+      taskMonitor({
         startTimeStart: this.searchParams.startTimeStart,
         startTimeEnd: this.searchParams.startTimeEnd,
       }).then((resp) => {
-        this.processtime = resp.data;
+        this.count = resp.data.count;
+        this.timeConsuming = resp.data.timeConsuming;
+        this.startTime = resp.data.startTime;
+        this.endTime = resp.data.endTime;
+        this.time = Date.parse(new Date())
       });
     },
   },
@@ -355,7 +370,7 @@ export default {
   font-weight: 400;
 }
 
-.refresh {
+.refresh1 {
   font-size: 20px;
   cursor: pointer;
   margin: 0 10px 0 0;

@@ -15,42 +15,22 @@
             <div class="list-box">
               <span class="ellipsis" :title="item.key">{{ item.key }}</span>
               <span
-                ><a href="javascript:" :class="searchParams.projectId ? 'links' : ''" @click="handleProcess(item.key)">({{ item.value }})</a></span>
+                ><a
+                  href="javascript:"
+                  :class="searchParams.projectId ? 'links' : ''"
+                  @click="handleProcess(item.key)"
+                  >({{ item.value }})</a
+                ></span
+              >
               <div class="bottom clearfix">
-                <span class="percentage">22%</span>
+                <span class="percentage">{{ item.percent }}</span>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- <div class="table-small-model">
-              <ul v-for="(item, $index) in processStateList" :key="$index">
-                <td><span>{{ $index+1 }}</span></td>
-                <li>
-                  <span class="el-icon-s-data"></span>
-                  <span class="ellipsis" :title="item.key">{{ item.key }}</span>
-                </li>
-                <li>
-                  <span class="percentage">22%</span>
-                  <br />  
-                  <span
-                    ><a
-                      href="javascript:"
-                      :class="searchParams.projectId ? 'links' : ''"
-                      @click="handleProcess(item.key)"
-                      >{{ item.value }}</a
-                    ></span
-                  >
-                </li>
-              </ul>
-          </div> -->
       </el-col>
     </div>
   </div>
-  <!-- <div v-show="msg">
-      <m-no-data v-if="msg" :msg="msg" :height="430" />
-    </div> -->
-  <!-- </div> -->
 </template>
 <script>
 import _ from "lodash";
@@ -104,21 +84,63 @@ export default {
     },
     _handleProcessState(res) {
       const data = res.data.taskCountDtos;
+      const successStatus = null;
       this.processStateList = _.map(data, (v) => {
         return {
           // key: _.find(stateType, ['code', v.taskStateType])['label'],
           key: _.find(statusType, ["code", v.taskStateType])["label"],
-
+          percent: v.percentDesc,
           value: v.count,
           itemStyle: {
             color: _.find(statusType, ["code", v.taskStateType])["color"],
           },
         };
       });
+      // console.log(this.processStateList);
       const myChart = Chart.pie("#process-state-pie", this.processStateList, {
         title: "",
       });
       myChart.echart.setOption(pie);
+      // (pie.series[0].label = {
+      //   tooltip: {
+      //     trigger: "item",
+      //     formatter: "{b} : {c} ({d}%)",
+      //   },
+      //   normal: {
+      //     show: true,
+      //     position: "center",
+      //     fontSize: "30",
+      //     // fill:'rgb(145,202,140)',
+      //     formatter:'   {d}%\r\n{b}'
+      //   }
+      // }),
+      //   myChart.setOption(option, true);
+      // myChart.statusType({
+      //   type: "highlight",
+      //   seriesIndex: 4,
+      //   dataIndex: 4,
+      // }); //设置默认选中高亮部分
+
+      // myChart.on("mouseover", function (e) {
+      //   if (e.dataIndex != index) {
+      //     myChart.dispatchAction({
+      //        show: false,
+      //       type: "downplay",
+      //       seriesIndex: 4,
+      //       dataIndex: index,
+      //     });
+      //   }
+      // });
+
+      // myChart.on("mouseout", function (e) {
+      //   index = e.dataIndex;
+
+      //   myChart.dispatchAction({
+      //     type: "highlight",
+      //     seriesIndex: 4,
+      //     dataIndex: e.dataIndex,
+      //   });
+      // });
       // 首页不允许跳转
       if (this.searchParams.projectId) {
         myChart.echart.on("click", (e) => {
@@ -204,8 +226,9 @@ export default {
   width: 60%;
   height: 300px;
   float: left;
+  margin: 0 0 0 70px;
 }
-.list-box{
+.list-box {
   width: 100px;
   height: 50px;
 }
