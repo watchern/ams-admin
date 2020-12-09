@@ -18,6 +18,20 @@ export function replaceNodeType(e) {
     // 默认展开根节点的ID集合
     var openNodeIdArr = ['bussRootNode_dev', 'my_space_dev', 'other_space_dev', 'bussRootNode', 'bussDataRoot', 'my_space']
     $(e).each(function() {
+
+        // for (let i = 0; i < result.data.length; i++) {
+        //     if (result.data[i].type === 'table') {
+        //         result.data[i].icon = tableIconPath
+        //         result.data[i].isParent = true
+        //     }
+        //     else if (result.data[i].type === 'view') {
+        //         result.data[i].icon = viewIconPath
+        //         result.data[i].isParent = true
+        //     }
+        //     else if(result.data[i].type === 'folder'){
+        //         result.data[i].isParent = true
+        //     }
+        // }
         var tableType = this.type
         // 统一表和试图的类型为datasource
         switch (tableType) {

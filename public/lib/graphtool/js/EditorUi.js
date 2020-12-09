@@ -2638,28 +2638,28 @@ var iconDrag = function(treeNode) {
 		graph.curCell = cell;
 		var historyNodeName = "拖入【" + treeNode.name + "】";
 		//节点预执行，获取节点所含字段
-		if("datasource" == cell.nodeType) {
-      graph.nodeData[cell.id]["treeNodeId"] = treeNode.id;
-      //获取拖入表的信息
-			graph.isCreateTableNodeError = graph.preExeGetFields(cell,treeNode);
-			//如果有错误，创建表节点失败
-      if(graph.isCreateTableNodeError){
-        //先放入旧的操作数组
-        graph.oldOptArr.push({"optType":"drag","optArr":[{"id":cell.id,"nodeData":graph.nodeData[cell.id]}]});
-        //然后再执行撤销操作，顺便从旧的操作数组中移除记录
-        ownerEditor.editor.undoManager.undo();
-        //从graph的历史纪录中移除此次记录
-        ownerEditor.editor.undoManager.history.pop();
-        delete graph.isCreateTableNodeError;
-				return;
-      }
-			//判断该节点是否是复制节点
-			if($.inArray(treeNode.name,valArr) > -1){
-				setDataSourceCopyIcon(cell.id);
-				graph.nodeData[cell.id].isCopy = true;
-			}
-			historyNodeName = "拖入表【" + treeNode.name + "】";
-		}
+        if("datasource" === cell.nodeType) {
+            graph.nodeData[cell.id]["treeNodeId"] = treeNode.id;
+            //获取拖入表的信息
+            graph.isCreateTableNodeError = graph.preExeGetFields(cell,treeNode);
+            //如果有错误，创建表节点失败
+            if(graph.isCreateTableNodeError){
+                //先放入旧的操作数组
+                graph.oldOptArr.push({"optType":"drag","optArr":[{"id":cell.id,"nodeData":graph.nodeData[cell.id]}]});
+                //然后再执行撤销操作，顺便从旧的操作数组中移除记录
+                ownerEditor.editor.undoManager.undo();
+                //从graph的历史纪录中移除此次记录
+                ownerEditor.editor.undoManager.history.pop();
+                delete graph.isCreateTableNodeError;
+                return;
+            }
+            //判断该节点是否是复制节点
+            if($.inArray(treeNode.name,valArr) > -1){
+                setDataSourceCopyIcon(cell.id);
+                graph.nodeData[cell.id].isCopy = true;
+            }
+            historyNodeName = "拖入表【" + treeNode.name + "】";
+        }
 		graph.oldOptArr.push({"optType":"drag","optArr":[{"id":cell.id,"nodeData":graph.nodeData[cell.id]}]});
 		//刷新所使用资源树
 		refrashResourceZtree(cell.id, treeNode.name, cell.nodeType);
@@ -2682,10 +2682,8 @@ var iconDrag = function(treeNode) {
 		case "groupCount":
 		case "delRepeat":
 		case "comparison":
-		case "change":
+		// case "change":
 		case "union":
-		case "intersect":
-		case "exclude":
 		case "barChart":
 		case "sql":
 		case "newNullNode":
