@@ -2,6 +2,7 @@ import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 import { cacheDict } from '@/api/base/sys-dict'
+import { getAllScene } from '@/api/data/scene'
 
 const state = {
   token: getToken(),
@@ -10,7 +11,9 @@ const state = {
   introduction: '',
   roles: [],
   id: '',
-  code: ''
+  code: '',
+  scenecode: '',
+  scenename: ''
 }
 
 const mutations = {
@@ -37,6 +40,12 @@ const mutations = {
   },
   SET_CODE: (state, code) => {
     state.code = code
+  },
+  SET_SCENECODE: (state, scenecode) => {
+    state.scenecode = scenecode
+  },
+  SET_SCENENAME: (state, scenename) => {
+    state.scenename = scenename
   }
 }
 
@@ -59,6 +68,11 @@ const actions = {
             sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
           })
         }
+        getAllScene().then(res => {
+          alert(res.data[0].sceneCode)
+          commit('SET_SCENECODE', res.data[0].sceneCode)
+          commit('SET_SCENENAME', res.data[0].sceneName)
+        })
       }).catch(error => {
         reject(error)
       })
