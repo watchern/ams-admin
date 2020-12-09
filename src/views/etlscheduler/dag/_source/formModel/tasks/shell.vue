@@ -18,7 +18,7 @@
         </div>
       </div>
     </m-list-box>
-    <m-list-box>
+    <m-list-box v-if="false">
       <div slot="text">资源</div>
       <div slot="content" class="propwidth">
         <treeselect v-model="resourceList" :multiple="true" :options="options" :normalizer="normalizer" :disabled="isDetails" :value-consists-of="valueConsistsOf" placeholder="请选择资源">
