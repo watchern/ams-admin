@@ -3,7 +3,7 @@
   <div v-show="!msg">
     <div v-spin="isSpin" class="data-area">
       <el-col :span="12">
-        <div id="process-state-pie" style="height: 350px" />
+        <div id="process-state-pie" style="height: 300px" />
       </el-col>
       <el-col :span="12">
         <div class="list-table">

@@ -1,21 +1,8 @@
 <template>
-  <div class="page-container all">
+  <div class="page-container">
     <!-- 选择日期 -->
-    <el-row>
-      <el-col :span="4" :offset="19" style="backgroundcolor: #f8fbfe">
-        <!-- <div>
-          <x-datepicker
-            class="select-time"
-            :panel-num="2"
-            placement="bottom-end"
-            :value="[searchParams.startTimeStart, searchParams.startTimeEnd]"
-            type="daterange"
-            placeholder="选择日期区间"
-            format="YYYY-MM-DD"
-            @on-change="_datepicker"
-          />
-        </div> -->
-
+    <el-row style="height: 50px; line-height: 50px; background-color: #f5f7fa;" align="middle">
+      <el-col :span="6" :offset="18">
         <div class="block">
           <el-date-picker
             v-model="value1"
@@ -30,10 +17,9 @@
       </el-col>
     </el-row>
 
-    <el-row></el-row>
     <!-- 监控总览/饼图 -->
-    <el-row :gutter="30">
-      <el-col :span="12">
+    <el-row :gutter="10" style="height: 320px; max-height: 400px;">
+      <el-col :xs="4" :sm="6" :md="12" :lg="12" :xl="12" >
         <el-card class="box-card" shadow="always" style="height: 320px">
           <div slot="header" class="clearfix" style="padding: 5px">
             <!-- <span>卡片名称</span> -->
@@ -45,7 +31,7 @@
           <!-- <span class="el-icon-refresh-left refresh" style="float: right" /> -->
 
           <el-row>
-            <el-col :span="24" style="margin: 0 0 50px 0">
+            <el-col  style="margin: 0 0 50px 0">
               <!-- <el-tag effect="dark" style="width:119%;height: 80px;"> -->
               <label class="title-middle"> 调度任务总数</label>
               <div class="bottom clearfix">
@@ -87,23 +73,15 @@
           <el-button type="success" class="over-btn">结束调度</el-button> -->
         </el-card>
       </el-col>
-
-      <el-col :span="12">
+      <el-col :xs="4" :sm="6" :md="12" :lg="12" :xl="12" >
         <el-card class="box-card" shadow="always" style="height: 320px">
           <div slot="header" class="clearfix" style="padding: 5px">
             <!-- <span>卡片名称</span> -->
-            <el-button style="float: right; padding: 3px 0" type="text">
+            <el-button style="float: right; padding: 3px 0;" type="text">
               <time class="time">{{ time | formatDate }}</time>
-              <span class="el-icon-refresh-left refresh1" @click="refresh()"></span
-            ></el-button>
-            <!-- <el-button style="float: right;" type="text"><span class="el-icon-refresh-left refresh" /></el-button> -->
+              <span class="el-icon-refresh-left refresh1" @click="refresh()"></span>
+            </el-button>
           </div>
-
-          <!-- <div >
-            <label class="title-large">
-              调度流程状态统计
-            </label>
-          </div> -->
           <div class="row">
             <m-process-state-count :search-params="searchParams" />
           </div>
@@ -111,35 +89,35 @@
       </el-col>
     </el-row>
 
-    <el-col :span="24" style="padding: 0px">
-      <div style="margin-top: 10px">
-        <el-tabs type="border-card">
-          <el-tab-pane label="调度流程实例"
-            ><etl-processin-stance
-          /></el-tab-pane>
-          <el-tab-pane label="调度环节实例"><etl-taskin-stance /></el-tab-pane>
-          <el-tab-pane label="上游推送文件情况"><etl-data-file /></el-tab-pane>
-        </el-tabs>
-      </div>
-    </el-col>
+    <el-row style="height: 50%;">
+      <el-col :span="24" style="padding: 0px">
+        <div style="margin-top: 10px">
+          <el-tabs type="border-card">
+            <el-tab-pane label="调度流程实例"><etl-processin-stance /></el-tab-pane>
+            <el-tab-pane label="调度环节实例"><etl-taskin-stance /></el-tab-pane>
+            <el-tab-pane label="上游推送文件情况"><etl-data-file /></el-tab-pane>
+          </el-tabs>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
-  
+
 <script>
-import dayjs from "dayjs";
-import { statusList } from "./_source/common.js";
-import mTaskCtatusCount from "./_source/taskCtatusCount";
-import mProcessStateCount from "./_source/processStateCount";
-import mListConstruction from "./_source/listConstruction";
-import etlProcessinStance from "@/views/etlscheduler/processinstance";
-import etlTaskinStance from "@/views/etlscheduler/taskinstance";
-import etlDataFile from "@/views/etlscheduler/datafile";
+import dayjs from "dayjs"
+import { statusList } from "./_source/common.js"
+import mTaskCtatusCount from "./_source/taskCtatusCount"
+import mProcessStateCount from "./_source/processStateCount"
+import mListConstruction from "./_source/listConstruction"
+import etlProcessinStance from "@/views/etlscheduler/processinstance"
+import etlTaskinStance from "@/views/etlscheduler/taskinstance"
+import etlDataFile from "@/views/etlscheduler/datafile"
 import {
   getDataFileList,
   takeTime,
-  taskMonitor,
-} from "@/api/etlscheduler/taskmonitor";
-import format from 'element-ui/src/locale/format';
+  taskMonitor
+} from "@/api/etlscheduler/taskmonitor"
+import format from 'element-ui/src/locale/format'
 
 export default {
   name: "ProjectsIndexIndex",
