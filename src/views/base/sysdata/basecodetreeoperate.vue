@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="title-div">
-      <span>操作</span>
+      <span class="title">操作</span>
     </div>
     <div>
       <el-form :model="formCodeData" :rules="rules" label-width="150px" class="detail-form">
@@ -238,5 +238,11 @@ export default {
   width: 52%;
   float: left;
 }
+.title {
+  font-family: PingFangSC-Medium;
+  font-size: 14px;
+  color: #42444d;
+  font-weight: 600;
+}
 </style>
-12
+
