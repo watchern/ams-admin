@@ -262,7 +262,6 @@ export default {
           }, 0)
         }).catch(e => {
           this.$message.error(e.msg || '测试连接失败')
-          // this.testLoading = false
         })
       })
     },
