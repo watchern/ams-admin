@@ -17,8 +17,8 @@
       :data="list"
       border
       highlight-current-row
-      height="calc(100vh - 280px)"
-      max-height="calc(100vh - 280px)"
+      height="200px"
+      max-height="200px"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
