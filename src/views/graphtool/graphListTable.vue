@@ -149,7 +149,7 @@
                 this.$store.commit('aceState/setRightFooterTags', {
                     type: 'active',
                     val: {
-                        name: '编辑图形',
+                        name: selectObj[0].graphName,
                         path: `/graphtool/tooldic${urlParamStr}`
                     }
                 })

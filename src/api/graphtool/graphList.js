@@ -166,7 +166,7 @@ export function importGraphXml(formData) {
 }
 
 /**
- * 删除执行节点信息
+ * 删除图形执行缓冲表的数据
  */
 export function deleteExecuteNodes(ids) {
     return request({
@@ -237,7 +237,5 @@ export function getMaxMinColumn(data) {
         params:data,
     })
 }
-
-
 
 
