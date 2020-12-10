@@ -27,7 +27,7 @@
               @click="RemoverelationProject('asdasdasdas')"
               :disabled="buttonIson.DisassociateBtn"
               title="移除项目关联"
-            >移除项目关联</el-button
+              >移除项目关联</el-button
             >
             <el-button
               :disabled="buttonIson.deleteBtn"
@@ -92,7 +92,7 @@
                     resultSpiltObjects
                   )
                 "
-              >{{ scope.row.model.modelName }}</a
+                >{{ scope.row.model.modelName }}</a
               >
             </template>
           </el-table-column>
@@ -102,11 +102,11 @@
             align="center"
             prop="runStatus"
             :formatter="readStatusFormatter"
-          ><template slot-scope="scope">
-            <i
-              :class="runStatusIconFormatter(scope.row.runStatus)"
-              :style="runStatusStyleFormatter(scope.row.runStatus)"
-            ></i> </template
+            ><template slot-scope="scope">
+              <i
+                :class="runStatusIconFormatter(scope.row.runStatus)"
+                :style="runStatusStyleFormatter(scope.row.runStatus)"
+              ></i> </template
           ></el-table-column>
           <el-table-column
             label="运行人"
@@ -207,7 +207,7 @@
                   v-if="scope.row.runStatus == 4"
                   @click="reRunReParam(scope.row)"
                   style="color: #409eff"
-                >重新运行</a
+                  >重新运行</a
                 >
               </div>
             </template>
@@ -273,7 +273,7 @@
           <span slot="footer" class="dialog-footer">
             <el-button @click="resultSplitDialogIsSee = false">取 消</el-button>
             <el-button type="primary" @click="ResultSplitDialogDetermine"
-            >确 定</el-button
+              >确 定</el-button
             >
           </span>
         </el-dialog>
@@ -286,7 +286,7 @@
           <span slot="footer" class="dialog-footer">
             <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
             <el-button type="primary" @click="modelResultShare"
-            >确 定</el-button
+              >确 定</el-button
             >
           </span>
         </el-dialog>
@@ -861,30 +861,30 @@ export default {
               }
             }
           }
-          selectPrimaryKeyByTableName().then((resp) => {
-            var primaryKey = resp.data;
-            getDataAfterResultSpiltToRelateProject(
-              this.resultSpiltObjects,
-              projectId,
-              projctName,
-              selectRunTaskRelUuid
-            ).then((resp) => {
-              if (resp.data == true) {
-                this.listLoading = false;
-                this.getLikeList();
-                this.$message({
-                  type: "success",
-                  message: "关联成功!",
+              selectPrimaryKeyByTableName().then((resp) => {
+                var primaryKey = resp.data;
+                getDataAfterResultSpiltToRelateProject(
+                  this.resultSpiltObjects,
+                  projectId,
+                  projctName,
+                  selectRunTaskRelUuid
+                ).then((resp) => {
+                  if (resp.data == true) {
+                    this.listLoading = false;
+                    this.getLikeList();
+                    this.$message({
+                      type: "success",
+                      message: "关联成功!",
+                    });
+                  } else {
+                    this.listLoading = false;
+                    this.$message({
+                      type: "error",
+                      message: "关联失败!",
+                    });
+                  }
                 });
-              } else {
-                this.listLoading = false;
-                this.$message({
-                  type: "error",
-                  message: "关联失败!",
-                });
-              }
-            });
-          });
+              });
         } else {
           this.listLoading = true;
           var resultRelPro = [];

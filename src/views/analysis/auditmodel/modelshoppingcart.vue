@@ -34,8 +34,8 @@
     <div class="resizeLB"></div> -->
     <div class="content">
       <el-link class="label-tip" type="primary" @click="selectData">{{
-          memoValue
-        }}</el-link>
+        memoValue
+      }}</el-link>
       <div class="btn-div">
         <!-- <el-button type="primary" @click="runImmediately" plain>立</el-button>
         <el-button type="primary" plain @click="timingExecution">定</el-button> -->
@@ -504,7 +504,7 @@ export default {
         if (this.replacedInfo[0].sql == "") {
           this.$message('请输入参数');
         } else if (modelResultSavePathId == "") {
-          this.$message('请选择模型结果保存路径');
+           this.$message('请选择模型结果保存路径');
         } else {
           var time1 = Date.parse(dateTime.toString());
           var time2 = Date.parse(new Date().toString());

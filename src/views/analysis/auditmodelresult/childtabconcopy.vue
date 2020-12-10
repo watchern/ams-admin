@@ -15,51 +15,51 @@
       </span>
     </el-dialog>
     <el-row v-if="myFlag">
-      <div align="right">
-        <el-button
-          :disabled="modelRunResultBtnIson.exportBtn"
-          type="primary"
-          @click="exportExcel"
-          class="oper-btn export-2"
-        ></el-button>
-        <el-button
-          style="display: none"
-          :disabled="modelRunResultBtnIson.chartDisplayBtn"
-          type="primary"
-          class="oper-btn chart"
+       <div align="right">
+      <el-button
+        :disabled="modelRunResultBtnIson.exportBtn"
+        type="primary"
+        @click="exportExcel"
+        class="oper-btn export-2"
+      ></el-button>
+      <el-button
+        style="display: none"
+        :disabled="modelRunResultBtnIson.chartDisplayBtn"
+        type="primary"
+        class="oper-btn chart"
         ></el-button
-        >
-        <el-button
-          style="display: none"
-          :disabled="modelRunResultBtnIson.associatedBtn"
-          type="primary"
-          @click="getValues"
-          class="oper-btn refresh"
-        ></el-button>
-        <el-button
-          style="display: none"
-          :disabled="modelRunResultBtnIson.disassociateBtn"
-          type="primary"
-          @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
+      >
+      <el-button
+        style="display: none"
+        :disabled="modelRunResultBtnIson.associatedBtn"
+        type="primary"
+        @click="getValues"
+        class="oper-btn refresh"
+      ></el-button>
+      <el-button
+        style="display: none"
+        :disabled="modelRunResultBtnIson.disassociateBtn"
+        type="primary"
+        @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
         >移除关联</el-button
-        >
-        <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn search"
+      >
+      <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn search"
         ></el-button
-        >
-        <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
-          >重置</el-button -->
-        <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn again-2"
+      >
+      <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
+        >重置</el-button -->
+      <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn again-2"
         ></el-button
-        >
-        <el-button
-          class="oper-btn link"
-          :disabled="modelRunResultBtnIson.modelDetailAssBtn"
-          v-if="modelDetailButtonIsShow"
-          type="primary"
-          @click="openModelDetail"
+      >
+      <el-button
+        class="oper-btn link"
+        :disabled="modelRunResultBtnIson.modelDetailAssBtn"
+        v-if="modelDetailButtonIsShow"
+        type="primary"
+        @click="openModelDetail"
         ></el-button
-        >
-      </div>
+      >
+       </div>
     </el-row>
     <el-row v-if="modelResultButtonIsShow" style="display: flex">
       <!-- 2.1前台导出，双向绑定数据 -->
@@ -124,7 +124,7 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="modelDetailDialogIsShow = false">取 消</el-button>
         <el-button type="primary" @click="modelDetailCetermine"
-        >确 定</el-button
+          >确 定</el-button
         >
       </span>
     </el-dialog>
@@ -141,12 +141,12 @@
       />
       <span slot="footer" class="dialog-footer">
         <el-button @click="modelDetailModelResultDialogIsShow = false"
-        >取 消</el-button
+          >取 消</el-button
         >
         <el-button
           type="primary"
           @click="modelDetailModelResultDialogIsShow = false"
-        >确 定</el-button
+          >确 定</el-button
         >
       </span>
     </el-dialog>
@@ -478,12 +478,12 @@ export default {
           }
           // 生成ag-grid列信息
           if (this.modelUuid != undefined) {
-            var rowColom = {
-              headerName: 'onlyuuid',
-              field: 'onlyuuid',
-              checkboxSelection: true
-            }
-            col.push(rowColom)
+              var rowColom = {
+                        headerName: 'onlyuuid',
+                        field: 'onlyuuid',
+                        checkboxSelection: true
+                      }
+           col.push(rowColom)
             for (var i = 0; i < colNames.length; i++) {
               loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
                 if (
@@ -555,7 +555,7 @@ export default {
                       var a = da[i][colNames[j]];
                       da[i][colNames[j]] = this.dataCoding[
                         this.modelOutputColumn[k].dataCoding
-                        ][a];
+                      ][a];
                     }
                   }
                 }
@@ -859,7 +859,7 @@ export default {
               var obj = { moduleParamId: "", paramValue: "" };
               obj.moduleParamId = this.modelDetailRelation[i].modelDetailConfig[
                 j
-                ].ammParamUuid;
+              ].ammParamUuid;
               obj.paramValue = selectRowData[0][key.toLowerCase()];
               detailValue.push(obj);
             }
@@ -873,14 +873,14 @@ export default {
           selectModel(this.value).then((resp) => {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
             const obj = { sqls: sql,businessField:'modelresultdetail' };
-            getExecuteTask(obj).then((resp) => {
-              this.currentExecuteSQL = resp.data.executeSQLList;
-              //界面渲染完成之后开始执行sql,将sql送入调度
-              startExecuteSql(resp.data).then((result) => {
-              })
-            }).catch((result) => {
-              this.$message({ type: "info", message: "执行失败" });
-            });
+              getExecuteTask(obj).then((resp) => {
+          this.currentExecuteSQL = resp.data.executeSQLList;
+          //界面渲染完成之后开始执行sql,将sql送入调度
+          startExecuteSql(resp.data).then((result) => {
+          })
+        }).catch((result) => {
+          this.$message({ type: "info", message: "执行失败" });
+        });
             // startExecuteSql(obj).then((resp) => {
             //   if (!resp.data.isError) {
             //     this.currentExecuteSQL = resp.data.executeSQLList;
@@ -941,7 +941,7 @@ export default {
       for (var i = 0; i < this.nextValue.columnNames.length; i++) {
         this.json_fields[
           this.nextValue.columnNames[i]
-          ] = this.nextValue.columnNames[i];
+        ] = this.nextValue.columnNames[i];
       }
       this.excelName = "模型结果导出表";
     },
@@ -961,9 +961,9 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-      /*      const webSocketPath =
-              "ws://localhost:8086/analysis/websocket?" +
-              this.$store.getters.personuuid;*/
+/*      const webSocketPath =
+        "ws://localhost:8086/analysis/websocket?" +
+        this.$store.getters.personuuid;*/
       const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid+'modelresultdetail';
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
