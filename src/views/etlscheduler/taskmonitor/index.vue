@@ -1,8 +1,8 @@
 <template>
-  <div class="page-container">
+  <div class="page-container all" style="height:calc(100vh - 90px);overflow-y:scroll;">
     <!-- 选择日期 -->
-    <el-row style="height: 50px; line-height: 50px; background-color: #f5f7fa;" align="middle">
-      <el-col :span="6" :offset="18">
+    <el-row style="height: 50px;">
+      <el-col :span="6" :offset="17" align="right">
         <div class="block">
           <el-date-picker
             v-model="value1"
@@ -11,32 +11,31 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             @change="_datepicker"
-          >
-          </el-date-picker>
+          />
         </div>
       </el-col>
     </el-row>
 
     <!-- 监控总览/饼图 -->
-    <el-row :gutter="10" style="height: 320px; max-height: 400px;">
-      <el-col :xs="4" :sm="6" :md="12" :lg="12" :xl="12" >
+    <el-row style="height: 320px;">
+      <el-col :xs="4" :sm="6" :md="12" :lg="12" :xl="12">
         <el-card class="box-card" shadow="always" style="height: 320px">
-          <div slot="header" class="clearfix" style="padding: 5px">
+          <div slot="header" class="clearfix" style="text-align:right; ">
+            <time class="time">{{ time | formatDate }}</time>
             <!-- <span>卡片名称</span> -->
-            <el-button style="float: right; padding: 3px 0" type="text">
-              <time class="time">{{ time | formatDate}}</time>
-              <span class="el-icon-refresh-left refresh1" @click="refresh()"></span>
+            <el-button type="text">
+              <span class="el-icon-refresh-left refresh1" @click="refresh()" />
             </el-button>
           </div>
           <!-- <span class="el-icon-refresh-left refresh" style="float: right" /> -->
 
           <el-row>
-            <el-col  style="margin: 0 0 50px 0">
+            <el-col style="margin: 0 0 50px 0">
               <!-- <el-tag effect="dark" style="width:119%;height: 80px;"> -->
               <label class="title-middle"> 调度任务总数</label>
               <div class="bottom clearfix">
                 <time class="title-large">
-                  <span class="el-icon-upload"></span>
+                  <span class="el-icon-upload iconstyle" />
                   <span>{{ count }}</span>
                 </time>
               </div>
@@ -45,24 +44,23 @@
           </el-row>
 
           <el-row>
-            <el-col :span="8">
+            <el-col :span="6">
               <span class="title-middle"> 调度任务总耗时</span>
               <div class="bottom clearfix">
                 <time class="title-large">
-                  <span class="el-icon-time el-icon-time1"></span>
+                  <span class="el-icon-time iconstyle" style="color:#9fe4ed" />
                   {{ timeConsuming | timeFilter }}
                 </time>
               </div>
             </el-col>
-            <el-col :span="16">
+            <el-col :span="18">
               <span class="title-middle">调度任务历时</span>
-              <div style="font-size: 15px; padding-left: 10px">
+              <div>
                 <div class="bottom clearfix">
                   <time class="title-large1">
-                    <span class="el-icon-time el-icon-time2"></span>
+                    <span class="el-icon-time iconstyle" style="color:#716bc9" />
                     <!-- {{ processtime | timeFilter }} -->
-                    <span>{{ startTime | formatDate }}</span> -
-                    <span>{{ endTime | formatDate }}</span>
+                    <span>{{ startTime | formatDate }} - {{ endTime | formatDate }}</span>
                   </time>
                 </div>
               </div>
@@ -73,13 +71,13 @@
           <el-button type="success" class="over-btn">结束调度</el-button> -->
         </el-card>
       </el-col>
-      <el-col :xs="4" :sm="6" :md="12" :lg="12" :xl="12" >
+      <el-col :xs="4" :sm="6" :md="12" :lg="12" :xl="12">
         <el-card class="box-card" shadow="always" style="height: 320px">
-          <div slot="header" class="clearfix" style="padding: 5px">
+          <div slot="header" class="clearfix" style="text-align: right;">
             <!-- <span>卡片名称</span> -->
-            <el-button style="float: right; padding: 3px 0;" type="text">
-              <time class="time">{{ time | formatDate }}</time>
-              <span class="el-icon-refresh-left refresh1" @click="refresh()"></span>
+            <time class="time">{{ time | formatDate }}</time>
+            <el-button type="text">
+              <span class="el-icon-refresh-left refresh1" @click="refresh()" />
             </el-button>
           </div>
           <div class="row">
@@ -89,9 +87,9 @@
       </el-col>
     </el-row>
 
-    <el-row style="height: 50%;">
-      <el-col :span="24" style="padding: 0px">
-        <div style="margin-top: 10px">
+    <el-row>
+      <el-col :span="24">
+        <div style="margin-top: 10px;">
           <el-tabs type="border-card">
             <el-tab-pane label="调度流程实例"><etl-processin-stance /></el-tab-pane>
             <el-tab-pane label="调度环节实例"><etl-taskin-stance /></el-tab-pane>
@@ -104,63 +102,63 @@
 </template>
 
 <script>
-import dayjs from "dayjs"
-import { statusList } from "./_source/common.js"
-import mTaskCtatusCount from "./_source/taskCtatusCount"
-import mProcessStateCount from "./_source/processStateCount"
-import mListConstruction from "./_source/listConstruction"
-import etlProcessinStance from "@/views/etlscheduler/processinstance"
-import etlTaskinStance from "@/views/etlscheduler/taskinstance"
-import etlDataFile from "@/views/etlscheduler/datafile"
+import dayjs from 'dayjs'
+import { statusList } from './_source/common.js'
+// import mTaskCtatusCount from './_source/taskCtatusCount'
+import mProcessStateCount from './_source/processStateCount'
+// import mListConstruction from './_source/listConstruction'
+import etlProcessinStance from '@/views/etlscheduler/processinstance'
+import etlTaskinStance from '@/views/etlscheduler/taskinstance'
+import etlDataFile from '@/views/etlscheduler/datafile'
 import {
   getDataFileList,
-  takeTime,
+  // takeTime,
   taskMonitor
-} from "@/api/etlscheduler/taskmonitor"
-import format from 'element-ui/src/locale/format'
+} from '@/api/etlscheduler/taskmonitor'
+// import format from 'element-ui/src/locale/format'
 
 export default {
-  name: "ProjectsIndexIndex",
+  name: 'ProjectsIndexIndex',
   components: {
-    mTaskCtatusCount,
+    // mTaskCtatusCount,
     mProcessStateCount,
     etlProcessinStance,
     etlTaskinStance,
-    etlDataFile,
+    etlDataFile
   },
   filters: {
     timeFilter(value) {
-      const time = value;
-      if (time === null || time === "" || time === 0) {
-        return 0 + "秒";
+      const time = value
+      if (time === null || time === '' || time === 0) {
+        return 0 + '秒'
       } else {
         if (time / 1000 >= 0 && time / 1000 < 60) {
-          return (time / 1000).toFixed(1) + "秒";
+          return (time / 1000).toFixed(1) + '秒'
         } else if (time / 1000 >= 60 && time / 1000 < 3600) {
-          return (time / 60000).toFixed(1) + "分";
+          return (time / 60000).toFixed(1) + '分'
         } else if (time / 1000 > 3600) {
-          return (time / 3600000).toFixed(1) + "时";
+          return (time / 3600000).toFixed(1) + '时'
         }
       }
     },
     formatDate(value) {
-      if(value === null){
+      if (value === null) {
         return '------'
       }
-      let date = new Date(value);
-      let y = date.getFullYear();
-      let MM = date.getMonth() + 1;
-      MM = MM < 10 ? "0" + MM : MM;
-      let d = date.getDate();
-      d = d < 10 ? "0" + d : d;
-      let h = date.getHours();
-      h = h < 10 ? "0" + h : h;
-      let m = date.getMinutes();
-      m = m < 10 ? "0" + m : m;
-      let s = date.getSeconds();
-      s = s < 10 ? "0" + s : s;
-      return y + "-" + MM + "-" + d + " " + h + ":" + m + ":" + s;
-    },
+      const date = new Date(value)
+      const y = date.getFullYear()
+      let MM = date.getMonth() + 1
+      MM = MM < 10 ? '0' + MM : MM
+      let d = date.getDate()
+      d = d < 10 ? '0' + d : d
+      let h = date.getHours()
+      h = h < 10 ? '0' + h : h
+      let m = date.getMinutes()
+      m = m < 10 ? '0' + m : m
+      let s = date.getSeconds()
+      s = s < 10 ? '0' + s : s
+      return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s
+    }
   },
   props: {},
   // watch: {
@@ -180,8 +178,8 @@ export default {
       // },
       time: Date.parse(new Date()),
       searchParams: {
-        startTimeStart: "",
-        startTimeEnd: "",
+        startTimeStart: '',
+        startTimeEnd: ''
       },
       taketime: 0,
       processtime: 0,
@@ -195,44 +193,44 @@ export default {
       pickerOptions: {
         shortcuts: [
           {
-            text: "最近一周",
+            text: '最近一周',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit("pick", [start, end]);
-            },
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
+            }
           },
           {
-            text: "最近一个月",
+            text: '最近一个月',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit("pick", [start, end]);
-            },
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
+            }
           },
           {
-            text: "最近三个月",
+            text: '最近三个月',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit("pick", [start, end]);
-            },
-          },
-        ],
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+              picker.$emit('pick', [start, end])
+            }
+          }
+        ]
       },
-      value1: null,
-    };
+      value1: null
+    }
   },
   created() {
     statusList.forEach((r, i) => {
-      this.statusObj[r["value"]] = r;
-    });
-    this.searchParams.startTimeStart = dayjs().format("YYYY-MM-DD");
-    this.searchParams.startTimeEnd = dayjs().format("YYYY-MM-DD");
-    this.value1 = [dayjs().format("YYYY-MM-DD"), dayjs().format("YYYY-MM-DD")];
+      this.statusObj[r['value']] = r
+    })
+    this.searchParams.startTimeStart = dayjs().format('YYYY-MM-DD')
+    this.searchParams.startTimeEnd = dayjs().format('YYYY-MM-DD')
+    this.value1 = [dayjs().format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')]
     // console.log('开始' + this.searchParams.startTimeStart + typeof (this.searchParams.startTimeStart))
     // console.log('结束' + this.searchParams.startTimeEnd + typeof (this.searchParams.startTimeEnd))
     // 获取任务的总耗时
@@ -241,71 +239,70 @@ export default {
     // });
     // 获取任务的历时
     taskMonitor({
-      startTimeStart: dayjs().format("YYYY-MM-DD"),
-      startTimeEnd: dayjs().format("YYYY-MM-DD"),
+      startTimeStart: dayjs().format('YYYY-MM-DD'),
+      startTimeEnd: dayjs().format('YYYY-MM-DD')
     }).then((resp) => {
-      this.count = resp.data.count;
-      this.timeConsuming = resp.data.timeConsuming;
-      this.startTime = resp.data.startTime;
-      this.endTime = resp.data.endTime;
-    });
+      this.count = resp.data.count
+      this.timeConsuming = resp.data.timeConsuming
+      this.startTime = resp.data.startTime
+      this.endTime = resp.data.endTime
+    })
     // 获取文件资源的列表
     getDataFileList().then((resp) => {
-      this.dataResourceStatistics = resp.data;
-    });
+      this.dataResourceStatistics = resp.data
+    })
   },
   methods: {
-    refresh(){
+    refresh() {
       this._datepicker()
       // getProcessStateCount()
     },
     // 带着开始和结束时间跳转到任务实例页面
     handletask() {
       this.$router.push({
-        path: "/etlscheduler/taskinstance",
-        name: "taskinstance",
+        path: '/etlscheduler/taskinstance',
+        name: 'taskinstance',
         params: {
           startTimeStart: this.searchParams.startTimeStart,
-          startTimeEnd: this.searchParams.startTimeEnd,
-        },
-      });
+          startTimeEnd: this.searchParams.startTimeEnd
+        }
+      })
     },
     // 带着开始和结束时间跳转到流程实例页面
     handleprocess() {
       this.$router.push({
-        path: "/etlscheduler/processinstance",
-        name: "processinstance",
+        path: '/etlscheduler/processinstance',
+        name: 'processinstance',
         params: {
           startTimeStart: this.searchParams.startTimeStart,
-          startTimeEnd: this.searchParams.startTimeEnd,
-        },
-      });
+          startTimeEnd: this.searchParams.startTimeEnd
+        }
+      })
     },
     handleFile() {
-      this.$router.push({ path: "/etlscheduler/resourcemonitor" });
+      this.$router.push({ path: '/etlscheduler/resourcemonitor' })
     },
     // 根据时间范围获取任务历时
     _datepicker() {
-      this.searchParams.startTimeStart = this.value1[0];
-      this.searchParams.startTimeEnd = this.value1[1];
+      this.searchParams.startTimeStart = this.value1[0]
+      this.searchParams.startTimeEnd = this.value1[1]
       taskMonitor({
         startTimeStart: this.searchParams.startTimeStart,
-        startTimeEnd: this.searchParams.startTimeEnd,
+        startTimeEnd: this.searchParams.startTimeEnd
       }).then((resp) => {
-        this.count = resp.data.count;
-        this.timeConsuming = resp.data.timeConsuming;
-        this.startTime = resp.data.startTime;
-        this.endTime = resp.data.endTime;
+        this.count = resp.data.count
+        this.timeConsuming = resp.data.timeConsuming
+        this.startTime = resp.data.startTime
+        this.endTime = resp.data.endTime
         this.time = Date.parse(new Date())
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>
 <style scope>
 .all {
-  padding: 0;
-  font-family: "Microsoft Yahei", "微软雅黑", "Arial", sans-serif;
+  padding: 10px 0px;
 }
 .el-card__body {
   padding: 10px 10px 10px 10px;
@@ -313,26 +310,14 @@ export default {
 .el-card__header {
   padding: 0px 0px 0 0;
 }
-.el-icon-upload {
-  font-size: 30px;
+.iconstyle{
+  font-size: 25px;
   color: #fbc224;
-  padding: 10px;
-  font-weight: bolder;
-}
-.el-icon-time1 {
-  font-size: 30px;
-  color: #9fe4ed;
-  padding: 10px;
-  font-weight: bolder;
-}
-.el-icon-time2 {
-  font-size: 30px;
-  color: #716bc9;
-  padding: 10px;
+  padding: 5px;
   font-weight: bolder;
 }
 .title-large {
-  font-size: 30px;
+  font-size: 25px;
   padding: 10px;
   font-weight: bolder;
   font-family: "Microsoft Yahei", "微软雅黑", "Arial", sans-serif;
@@ -341,6 +326,7 @@ export default {
   font-size: 20px;
   padding: 10px;
   font-weight: bolder;
+	letter-spacing: -1px;
 }
 .title-middle {
   font-size: 18px;
