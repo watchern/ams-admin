@@ -15,35 +15,63 @@
       </span>
     </el-dialog>
     <el-row v-if="myFlag">
-      <el-button type="primary" @click="exportExcel" class="oper-btn export-2"></el-button>
-      <el-button type="primary" class="oper-btn chart"></el-button>
-      <el-button type="primary" @click="getValues">关联项目</el-button>
-      <el-button
-        type="primary"
-        @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
-        class="oper-btn delete"
-      ></el-button>
-      <el-button type="primary" @click="queryConditionSetting"
-        >查询条件设置</el-button
-      >
-      <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
-        >重置</el-button -->
-      <el-button type="primary" @click="reSet">重置</el-button>
-      <el-button
-        v-if="modelDetailButtonIsShow"
-        type="primary"
-        @click="openModelDetail"
-        >模型详细关联</el-button
-      >
+      <div align="right">
+        <el-button
+          :disabled="modelRunResultBtnIson.exportBtn"
+          type="primary"
+          @click="exportExcel"
+          class="oper-btn export-2"
+        ></el-button>
+        <el-button
+          style="display: none"
+          :disabled="modelRunResultBtnIson.chartDisplayBtn"
+          type="primary"
+          class="oper-btn chart"
+        ></el-button
+        >
+        <el-button
+          style="display: none"
+          :disabled="modelRunResultBtnIson.associatedBtn"
+          type="primary"
+          @click="getValues"
+          class="oper-btn refresh"
+        ></el-button>
+        <el-button
+          style="display: none"
+          :disabled="modelRunResultBtnIson.disassociateBtn"
+          type="primary"
+          @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
+        >移除关联</el-button
+        >
+        <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn search"
+        ></el-button
+        >
+        <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
+          >重置</el-button -->
+        <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn again-2"
+        ></el-button
+        >
+        <el-button
+          class="oper-btn link"
+          :disabled="modelRunResultBtnIson.modelDetailAssBtn"
+          v-if="modelDetailButtonIsShow"
+          type="primary"
+          @click="openModelDetail"
+        ></el-button
+        >
+      </div>
     </el-row>
     <el-row v-if="modelResultButtonIsShow" style="display: flex">
       <!-- 2.1前台导出，双向绑定数据 -->
       <downloadExcel :data="tableData" :fields="json_fields" :name="excelName">
-        <el-button type="primary" @click="modelResultExport" class="oper-btn export-2"></el-button>
+        <el-button
+          type="primary"
+          @click="modelResultExport"
+          class="oper-btn export-2"
+        ></el-button>
       </downloadExcel>
       <el-button type="primary" title="图表展示" class="oper-btn chart"></el-button>
     </el-row>
-    <!-- 使用ag-grid-vue组件 其中columnDefs为列，rowData为表格数据 -->
     <ag-grid-vue
       v-if="isSee"
       v-loading="isLoading"
@@ -56,6 +84,7 @@
       :get-row-style="this.renderTable"
       @cellClicked="onCellClicked"
       @gridReady="onGridReady"
+      @rowSelected="rowChange"
     />
     <el-card v-if="!isSee" class="box-card" style="height: 100px">
       <div>{{ errorMessage }}</div>
@@ -65,7 +94,7 @@
       :total="total"
       :page.sync="pageQuery.pageNo"
       :limit.sync="pageQuery.pageSize"
-      @pagination="initData"
+      @pagination="initData(nowSql)"
     />
     <el-pagination
       v-if="modelResultPageIsSee"
@@ -95,7 +124,7 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="modelDetailDialogIsShow = false">取 消</el-button>
         <el-button type="primary" @click="modelDetailCetermine"
-          >确 定</el-button
+        >确 定</el-button
         >
       </span>
     </el-dialog>
@@ -112,12 +141,12 @@
       />
       <span slot="footer" class="dialog-footer">
         <el-button @click="modelDetailModelResultDialogIsShow = false"
-          >取 消</el-button
+        >取 消</el-button
         >
         <el-button
           type="primary"
           @click="modelDetailModelResultDialogIsShow = false"
-          >确 定</el-button
+        >确 定</el-button
         >
       </span>
     </el-dialog>
@@ -142,7 +171,7 @@ import {
   selectConditionShow,
   selectModel,
   findParamModelRelByModelUuid,
-  replaceParam,
+  replaceParam
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
@@ -222,13 +251,43 @@ export default {
       currentExecuteSQL: [], //模型详细关联dialog中点击确定按钮后根据sql返回的预先加载值，用于判断有几个页签
       webSocket: null, //websocket对象
       dataCoding: {}, //存储返回的数据转码对象
-
+      nowSql: "undefined", //存储当前querybuilder中的sql
+      modelRunResultBtnIson: {
+        exportBtn: false,
+        chartDisplayBtn: false,
+        associatedBtn: true,
+        disassociateBtn: false,
+        modelDetailAssBtn: true,
+      },
+      dynamicSelect: [], //实时存储多选框勾选中的数据
     };
   },
   mounted() {
     this.getRenderTableData();
   },
   methods: {
+    rowChange() {
+      var selectData = this.gridApi.getSelectedRows();
+      if (selectData.length == 0) {
+        this.modelRunResultBtnIson.exportBtn = false;
+        this.modelRunResultBtnIson.chartDisplayBtn = false;
+        this.modelRunResultBtnIson.associatedBtn = true;
+        this.modelRunResultBtnIson.disassociateBtn = false;
+        this.modelRunResultBtnIson.modelDetailAssBtn = true;
+      } else if (selectData.length == 1) {
+        this.modelRunResultBtnIson.exportBtn = false;
+        this.modelRunResultBtnIson.chartDisplayBtn = false;
+        this.modelRunResultBtnIson.associatedBtn = false;
+        this.modelRunResultBtnIson.disassociateBtn = false;
+        this.modelRunResultBtnIson.modelDetailAssBtn = false;
+      } else if (selectData.length > 1) {
+        this.modelRunResultBtnIson.exportBtn = false;
+        this.modelRunResultBtnIson.chartDisplayBtn = false;
+        this.modelRunResultBtnIson.associatedBtn = false;
+        this.modelRunResultBtnIson.disassociateBtn = false;
+        this.modelRunResultBtnIson.modelDetailAssBtn = true;
+      }
+    },
     /**
      * 导出方法
      */
@@ -278,7 +337,7 @@ export default {
           var resultDetailProjectRels = [];
           if (resp.data.length == 0) {
             // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果没有值则直接关联
-            selectPrimaryKeyByTableName(this.nowtable.resultTableName).then(
+            selectPrimaryKeyByTableName().then(
               (resp) => {
                 this.primaryKey = resp.data;
                 for (var i = 0; i < this.selectRows.length; i++) {
@@ -313,7 +372,7 @@ export default {
             // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果有值则要判断是否关联过该主键，如果添加过就不能重复关联
             var resultDetailProjectRels = [];
             var related = [];
-            selectPrimaryKeyByTableName(this.nowtable.resultTableName).then(
+            selectPrimaryKeyByTableName().then(
               (resp) => {
                 this.primaryKey = resp.data;
                 for (var i = 0; i < this.selectRows.length; i++) {
@@ -362,7 +421,10 @@ export default {
                       str += related[i];
                     }
                   }
-                  this.$message({ type: 'info', message: "关联失败，因为其中" + str + "已经关联" })
+                  this.$message({
+                    type: "info",
+                    message: "关联失败，因为其中" + str + "已经关联",
+                  });
                 }
               }
             );
@@ -375,7 +437,7 @@ export default {
       // 获取选中的数据
       var selRows = this.gridApi.getSelectedRows();
       if (selRows.length == 0) {
-        this.$message({ type: 'info', message: "请选择后再进行关联" })
+        this.$message({ type: "info", message: "请选择后再进行关联!" });
       }
       this.selectRows = selRows;
     },
@@ -404,6 +466,9 @@ export default {
           sql = "undefined";
         }
         selectTable(this.pageQuery, sql).then((resp) => {
+          if (resp.data.records[0].result.length == 0) {
+            this.isLoading = false;
+          }
           this.total = resp.data.total;
           this.dataArray = resp.data.records[0].result;
           this.queryData = resp.data.records[0].columnInfo;
@@ -413,6 +478,12 @@ export default {
           }
           // 生成ag-grid列信息
           if (this.modelUuid != undefined) {
+            var rowColom = {
+              headerName: 'onlyuuid',
+              field: 'onlyuuid',
+              checkboxSelection: true
+            }
+            col.push(rowColom)
             for (var i = 0; i < colNames.length; i++) {
               loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
                 if (
@@ -423,8 +494,7 @@ export default {
                     if (i == 0) {
                       var rowColom = {
                         headerName: this.modelOutputColumn[j].columnAlias,
-                        field: colNames[i],
-                        checkboxSelection: true,
+                        field: colNames[i]
                       };
                     } else {
                       var rowColom = {
@@ -481,11 +551,11 @@ export default {
                     this.modelOutputColumn[k].outputColumnName.toLowerCase() ==
                     colNames[j]
                   ) {
-                    if (
-                      this.modelOutputColumn[k].dataCoding != undefined
-                    ) {
-                      var a = da[i][colNames[j]]
-                      da[i][colNames[j]] = this.dataCoding[this.modelOutputColumn[k].dataCoding][a];
+                    if (this.modelOutputColumn[k].dataCoding != undefined) {
+                      var a = da[i][colNames[j]];
+                      da[i][colNames[j]] = this.dataCoding[
+                        this.modelOutputColumn[k].dataCoding
+                        ][a];
                     }
                   }
                 }
@@ -506,30 +576,110 @@ export default {
         var col = [];
         var rowData = [];
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
-          if (this.nextValue.executeSQL.state == '2') {
+          if (this.nextValue.executeSQL.state == "2") {
+            if(this.nextValue.executeSQL.type=='SELECT'){
+              //todo 增加sql类型判断
+              if (true) {
+                this.modelResultButtonIsShow = true;
+                this.modelResultPageIsSee = true;
+                this.modelResultData = this.nextValue.result;
+                this.modelResultColumnNames = this.nextValue.columnNames;
+                for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
+                  var rowColom = {
+                    headerName: this.nextValue.columnNames[j],
+                    field: this.nextValue.columnNames[j],
+                    width: "180",
+                  };
+                  var key = this.nextValue.columnNames[j];
+                  var value = this.nextValue.result[j];
+                  col.push(rowColom);
+                }
+                for (var k = 0; k < this.nextValue.result.length; k++) {
+                  rowData.push(this.nextValue.result[k]);
+                }
+                this.columnDefs = col;
+                this.getList();
+              }
+            }else {
+              this.isSee = false;
+              this.modelResultPageIsSee = false;
+              this.modelResultButtonIsShow = false;
+              this.errorMessage = this.nextValue.executeSQL.msg;
+            }
+
+          } else if (this.nextValue.executeSQL.state == "3") {
+            this.isSee = false;
+            this.modelResultPageIsSee = false;
+            this.modelResultButtonIsShow = false;
+            this.errorMessage = this.nextValue.executeSQL.msg;
+          }
+          this.isLoading = false;
+        }
+      }else if (this.useType == "previewTable"){
+        this.loading = true;
+        this.nextValue = nextValue;
+        var col = [];
+        var rowData = [];
+        if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
+          if (this.nextValue.executeSQL.state == "2") {
             //todo 增加sql类型判断
-            if(true){
-                  this.modelResultButtonIsShow = true;
-            this.modelResultPageIsSee = true;
-            this.modelResultData = this.nextValue.result;
-            this.modelResultColumnNames = this.nextValue.columnNames;
-            for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
-              var rowColom = {
-                headerName: this.nextValue.columnNames[j],
-                field: this.nextValue.columnNames[j],
-                width: "180",
-              };
-              var key = this.nextValue.columnNames[j];
-              var value = this.nextValue.result[j];
-              col.push(rowColom);
+            if (true) {
+              this.modelResultPageIsSee = true;
+              this.modelResultData = this.nextValue.result;
+              this.modelResultColumnNames = this.nextValue.columnNames;
+              for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
+                var rowColom = {
+                  headerName: this.nextValue.columnNames[j],
+                  field: this.nextValue.columnNames[j],
+                  width: "180",
+                };
+                var key = this.nextValue.columnNames[j];
+                var value = this.nextValue.result[j];
+                col.push(rowColom);
+              }
+              for (var k = 0; k < this.nextValue.result.length; k++) {
+                rowData.push(this.nextValue.result[k]);
+              }
+              this.columnDefs = col;
+              this.getList();
             }
-            for (var k = 0; k < this.nextValue.result.length; k++) {
-              rowData.push(this.nextValue.result[k]);
+          } else if (this.nextValue.executeSQL.state == "3") {
+            this.isSee = false;
+            this.modelResultPageIsSee = false;
+            this.modelResultButtonIsShow = false;
+            this.errorMessage = this.nextValue.executeSQL.msg;
+          }
+          this.isLoading = false;
+        }
+      }else if (this.useType == "graph"){
+        this.loading = true;
+        this.nextValue = nextValue;
+        var col = [];
+        var rowData = [];
+        if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
+          if (this.nextValue.executeSQL.state == "2") {
+            //todo 增加sql类型判断
+            if (true) {
+              this.modelResultPageIsSee = true;
+              this.modelResultData = this.nextValue.result;
+              this.modelResultColumnNames = this.nextValue.columnNames;
+              for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
+                var rowColom = {
+                  headerName: this.nextValue.columnNames[j],
+                  field: this.nextValue.columnNames[j],
+                  width: "180",
+                };
+                var key = this.nextValue.columnNames[j];
+                var value = this.nextValue.result[j];
+                col.push(rowColom);
+              }
+              for (var k = 0; k < this.nextValue.result.length; k++) {
+                rowData.push(this.nextValue.result[k]);
+              }
+              this.columnDefs = col;
+              this.getList();
             }
-            this.columnDefs = col;
-            this.getList();
-            }
-          } else if(this.nextValue.executeSQL.state == '3'){
+          } else if (this.nextValue.executeSQL.state == "3") {
             this.isSee = false;
             this.modelResultPageIsSee = false;
             this.modelResultButtonIsShow = false;
@@ -546,10 +696,12 @@ export default {
     },
     // 查询完以后，子组件触发父组件的事件
     queryConditionChangeTable(sql, queryJson) {
+      this.pageQuery.pageNo = 1;
       this.queryJson = queryJson;
       if (sql == "") {
         sql = "undefined";
       }
+      this.nowSql = sql;
       this.initData(sql);
     },
     /**
@@ -562,6 +714,7 @@ export default {
      * 重置按钮，将数据还原为最初
      */
     reSet() {
+      this.nowSql = "undefined";
       this.initData("undefined");
     },
     /**
@@ -578,7 +731,7 @@ export default {
           for (var i = 0; i < this.conditionShowData[0].length; i++) {
             for (var j = 0; j < this.conditionShowData[0][i].length; j++) {
               if (
-                params.data[this.primaryKey] == this.conditionShowData[0][i][j]
+                params.data[this.primaryKey.toLowerCase()] == this.conditionShowData[0][i][j]
               ) {
                 this.isLoading = false;
                 return {
@@ -589,6 +742,7 @@ export default {
               }
             }
           }
+          this.isLoading = false;
         }
       }
     },
@@ -603,7 +757,7 @@ export default {
             this.nowtable.resultTableName
           ).then((resp) => {
             this.conditionShowData = resp.data;
-            selectPrimaryKeyByTableName(this.nowtable.resultTableName).then(
+            selectPrimaryKeyByTableName().then(
               (resp) => {
                 this.primaryKey = resp.data;
                 selectModel(this.modelUuid).then((resp) => {
@@ -615,10 +769,12 @@ export default {
                       datacodes.push(this.modelOutputColumn[i].dataCoding);
                     }
                   }
+                  if (datacodes.length > 0) {
+                    getTransMap(datacodes.join(",")).then((resp) => {
+                      this.dataCoding = resp.data;
+                    });
+                  }
                   //调用方法
-                  getTransMap(datacodes.join(",")).then((resp) => {
-                    this.dataCoding = resp.data;
-                  });
                   this.initData();
                   if (this.modelDetailRelation.length > 0) {
                     this.modelDetailButtonIsShow = true;
@@ -658,7 +814,7 @@ export default {
     openModelDetail() {
       var selRows = this.gridApi.getSelectedRows();
       if (selRows.length < 1) {
-        this.$message({ type: 'info', message: "请选择后再进行关联" })
+        this.$message({ type: "info", message: "请选择后再进行关联!" });
       } else if (selRows.length == 1) {
         this.options = [];
         for (var i = 0; i < this.modelDetailRelation.length; i++) {
@@ -670,7 +826,7 @@ export default {
         }
         this.modelDetailDialogIsShow = true;
       } else {
-        this.$message({ type: 'info', message: "不能选中多条" })
+        this.$message({ type: "info", message: "不能选中多条!" });
       }
     },
     /**
@@ -678,42 +834,101 @@ export default {
      */
     modelDetailCetermine() {
       var selectRowData = this.gridApi.getSelectedRows();
-      var detailValue = [];
+      var relationType = null;
+      var objectName = "";
+      var detailConfig = null;
       for (var i = 0; i < this.modelDetailRelation.length; i++) {
-        if (this.modelDetailRelation[i].relationObjectUuid == this.value) {
-          for (
-            var j = 0;
-            j < this.modelDetailRelation[i].modelDetailConfig.length;
-            j++
-          ) {
-            var key = this.modelDetailRelation[i].modelDetailConfig[j]
-              .resultColumn;
-            var obj = { moduleParamId: "", paramValue: "" };
-            obj.moduleParamId = this.modelDetailRelation[i].modelDetailConfig[
-              j
-            ].ammParamUuid;
-            obj.paramValue = selectRowData[0][key.toLowerCase()];
-            detailValue.push(obj);
-          }
+        if ((this.value == this.modelDetailRelation[i].relationObjectUuid)) {
+          relationType = this.modelDetailRelation[i].relationType;
+          objectName = this.modelDetailRelation[i].relationObjectName;
+          detailConfig = this.modelDetailRelation[i].modelDetailConfig;
+          break;
         }
       }
-      findParamModelRelByModelUuid(this.value).then((resp) => {
-        var arr = [];
-        for (var i = 0; i < resp.data.length; i++) {
-          arr.push(JSON.parse(resp.data[i]));
-        }
-        selectModel(this.value).then((resp) => {
-          var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-          const obj = { sqls: sql };
-          startExecuteSql(obj).then((resp) => {
-            if (!resp.data.isError) {
-              this.currentExecuteSQL = resp.data.executeSQLList;
-            } else {
-              this.$message({ type: "info", message: "执行失败" });
+      if (relationType == 1) {
+        var detailValue = [];
+        for (var i = 0; i < this.modelDetailRelation.length; i++) {
+          if (this.modelDetailRelation[i].relationObjectUuid == this.value) {
+            for (
+              var j = 0;
+              j < this.modelDetailRelation[i].modelDetailConfig.length;
+              j++
+            ) {
+              var key = this.modelDetailRelation[i].modelDetailConfig[j]
+                .resultColumn;
+              var obj = { moduleParamId: "", paramValue: "" };
+              obj.moduleParamId = this.modelDetailRelation[i].modelDetailConfig[
+                j
+                ].ammParamUuid;
+              obj.paramValue = selectRowData[0][key.toLowerCase()];
+              detailValue.push(obj);
             }
+          }
+        }
+        findParamModelRelByModelUuid(this.value).then((resp) => {
+          var arr = [];
+          for (var i = 0; i < resp.data.length; i++) {
+            arr.push(JSON.parse(resp.data[i]));
+          }
+          selectModel(this.value).then((resp) => {
+            var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
+            const obj = { sqls: sql,businessField:'modelresultdetail' };
+            getExecuteTask(obj).then((resp) => {
+              this.currentExecuteSQL = resp.data.executeSQLList;
+              //界面渲染完成之后开始执行sql,将sql送入调度
+              startExecuteSql(resp.data).then((result) => {
+              })
+            }).catch((result) => {
+              this.$message({ type: "info", message: "执行失败" });
+            });
+            // startExecuteSql(obj).then((resp) => {
+            //   if (!resp.data.isError) {
+            //     this.currentExecuteSQL = resp.data.executeSQLList;
+            //   } else {
+            //     this.$message({ type: "info", message: "执行失败" });
+            //   }
+            // });
           });
         });
-      });
+      } else if (relationType == 2) {
+        //modelOutputColumn
+        var sql = "SELECT * FROM " + objectName + " WHERE ";
+        var filterSql = "";
+        for (var i = 0; i < detailConfig.length; i++) {
+          var eachFilter = detailConfig[i].relFilterValue;
+          loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
+            if (eachFilter.indexOf(this.modelOutputColumn[j].outputColumnName) > -1) {
+              eachFilter = eachFilter.replace(
+                this.modelOutputColumn[j].outputColumnName,
+                selectRowData[0][this.modelOutputColumn[j].outputColumnName.toLowerCase()]
+              );
+              break loop;
+            }
+          }
+          if (i == detailConfig.length - 1) {
+            filterSql += eachFilter;
+          } else {
+            filterSql += eachFilter + " or ";
+          }
+        }
+        sql = sql + filterSql;
+        const obj = { sqls: sql,businessField:'modelresultdetail' };
+        getExecuteTask(obj).then((resp) => {
+          this.currentExecuteSQL = resp.data.executeSQLList;
+          //界面渲染完成之后开始执行sql,将sql送入调度
+          startExecuteSql(resp.data).then((result) => {
+          })
+        }).catch((result) => {
+          this.$message({ type: "info", message: "执行失败" });
+        });
+        // startExecuteSql(obj).then((resp) => {
+        //   if (!resp.data.isError) {
+        //     this.currentExecuteSQL = resp.data.executeSQLList;
+        //   } else {
+        //     this.$message({ type: "info", message: "执行失败" });
+        //   }
+        // });
+      }
       this.modelDetailDialogIsShow = false;
       this.modelDetailModelResultDialogIsShow = true;
     },
@@ -726,11 +941,11 @@ export default {
       for (var i = 0; i < this.nextValue.columnNames.length; i++) {
         this.json_fields[
           this.nextValue.columnNames[i]
-        ] = this.nextValue.columnNames[i];
+          ] = this.nextValue.columnNames[i];
       }
       this.excelName = "模型结果导出表";
     },
-    reSet() {
+    reSet1() {
       this.isLoading = true;
     },
     /**
@@ -746,10 +961,10 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-/*      const webSocketPath =
-        "ws://localhost:8086/analysis/websocket?" +
-        this.$store.getters.personuuid;*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid;
+      /*      const webSocketPath =
+              "ws://localhost:8086/analysis/websocket?" +
+              this.$store.getters.personuuid;*/
+      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid+'modelresultdetail';
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接

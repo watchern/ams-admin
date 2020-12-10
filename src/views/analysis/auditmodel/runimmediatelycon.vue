@@ -27,7 +27,7 @@
             </div>
             模型结果保存在 : {{ path }}
             <a @click="modelResultSavePathDialog = true" style="color: #409eff"
-              >编辑</a
+            >编辑</a
             >
           </div>
         </el-header>
@@ -52,10 +52,10 @@
             />
             <span slot="footer" class="dialog-footer">
               <el-button @click="modelResultSavePathDialog = false"
-                >取 消</el-button
+              >取 消</el-button
               >
               <el-button type="primary" @click="modelResultSavePathDetermine"
-                >确 定</el-button
+              >确 定</el-button
               >
             </span>
           </el-dialog>
@@ -178,7 +178,6 @@ export default {
       this.tempPath = data.label;
       this.tempId = data.id;
       this.nodeType = data.type;
-      console.log(data, node, tree);
     },
     modelResultSavePathDetermine() {
       if (this.nodeType == "folder") {
