@@ -240,8 +240,8 @@
           <el-collapse-item title="准备执行" name="pre">
             <el-card style="padding-bottom: 3%;">
               <!-- <el-col class="logtype">
-          日志详情：
-        </el-col> -->
+                日志详情：
+              </el-col> -->
               <el-col
                 style="margin-top:10px"
               >

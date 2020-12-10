@@ -152,15 +152,6 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
-// .el-dialog__header {
-// 	font-weight: bold;
-// 	line-height: 24px;
-// 	font-size: 18px;
-// 	color: #303133;
-//   padding-left: 0px;
-//   padding-top: 0px;
-//   margin-bottom: 10px;
-// }
 .ans-btn-text:hover {
 	color: #252d39;
 }
