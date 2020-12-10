@@ -61,8 +61,8 @@
       :data="list"
       border
       highlight-current-row
-      height="calc(100vh - 300px)"
-      max-height="calc(100vh - 300px)"
+      height="calc(100vh - 280px)"
+      max-height="calc(100vh - 280px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -104,6 +104,7 @@
       <el-table-column
         label="流程实例名称"
         prop="name"
+        align="center"
       />
       <!-- <el-table-column
         label="流程名称"
@@ -413,7 +414,7 @@ export default {
       taskslogsList: null,
       schedule: null,
       nowTask: null,
-      prepLogs: null
+      prepLogs: null,
     }
   },
   watch: {

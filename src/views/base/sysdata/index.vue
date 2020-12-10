@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -21,22 +21,22 @@
       :data="list"
       border
       fit
-      highlight-current-row
-      style="width: 100%;margin-top:50px"
+      style="width: 100%;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
       <el-table-column label="选择" type="selection" width="55" />
-      <el-table-column label="代码类别名称" width="300px" prop="dataSortName" />
+      <el-table-column label="代码类别名称" prop="dataSortName"/>
       <el-table-column label="代码类别编码" width="300px" align="center" prop="dataSortValue" />
-      <el-table-column label="代码类别描述" width="300px" prop="dataSortDesc" />
+      <el-table-column label="代码类别描述" prop="dataSortDesc"/>
       <!-- <el-table-column label="创建时间" width="300px" align="center" prop="createTime" /> -->
-      <el-table-column label="展现形式" prop="extendTag" :formatter="formatTag" />
+      <el-table-column label="展现形式" prop="extendTag" :formatter="formatTag" align="center"/>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <!-- 这是第一个弹窗，用来添加基础数据类别 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" height="70vh">
       <el-form
+        class="detail-form"
         ref="dataForm"
         :rules="rules"
         :model="temp"
@@ -46,7 +46,7 @@
           <el-input v-model="temp.dataSortName" />
         </el-form-item>
         <el-form-item label="代码类别编码" prop="dataSortValue">
-          <el-input v-model="temp.dataSortValue" @change="number()" />
+          <el-input v-model="temp.dataSortValue" />
         </el-form-item>
         <el-form-item label="代码类别描述" prop="dataSortDesc">
           <el-input v-model="temp.dataSortDesc" />
@@ -59,46 +59,50 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button type="primary" size="mini" @click="closeDialog()">取消</el-button>
-        <el-button @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
+        <el-button type="primary" size="mini" @click="closeDialog()" style="color:#353A43;background:#fff;border:none;font-weight:bold;font-size:14px">取消</el-button>
+        <el-button @click="dialogStatus==='create'?createData():updateData()" style="color:#c8ff8c;background:#353A43">保存</el-button>
       </div>
     </el-dialog>
     <!-- 这是第二个弹窗，用来操作类别下具体的基础数据 -->
     <el-dialog :title="textMap[dialogSecondStatus]" :visible.sync="dialogFormSecond">
       <el-form
+        class="detail-form"
         ref="dataSecondForm"
         :rules="rulesSecond"
         :model="tempSecond"
         label-position="right"
-        label-width="140px"
         style="width: 800px; margin-left:50px;"
+        
       >
         <el-form-item label="代码类别" prop="dataSortUuid" hidden>
-          <el-input v-model="tempSecond.dataSortUuid" style="width:300px" />
+          <el-input v-model="tempSecond.dataSortUuid"  />
         </el-form-item>
         <el-form-item label="通用代码名称" prop="codeName">
-          <el-input v-model="tempSecond.codeName" style="width:300px" />
+          <el-input v-model="tempSecond.codeName" />
         </el-form-item>
         <el-form-item label="通用代码编码" prop="codeValue">
-          <el-input v-model="tempSecond.codeValue" style="width:300px" @change="numberSecond()" />
+          <el-input v-model="tempSecond.codeValue"  @change="numberSecond()" />
         </el-form-item>
         <el-form-item label="通用代码描述" prop="codeDesc">
-          <el-input v-model="tempSecond.codeDesc" style="width:300px" />
+          <el-input v-model="tempSecond.codeDesc"  />
         </el-form-item>
         <el-form-item label="代码排序号" prop="codeIndex">
-          <el-input v-model="tempSecond.codeIndex" style="width:300px" @change="numberIndex()" />
+          <el-input v-model="tempSecond.codeIndex"  @change="numberIndex()" />
         </el-form-item>
         <el-form-item label="状态" prop="codeState">
-          <el-select ref="relTypeSelect" v-model="tempSecond.codeState" placeholder="通用代码状态">
+          <el-select ref="relTypeSelect" v-model="tempSecond.codeState" placeholder="通用代码状态" >
             <el-option label="可用" :value="0" />
             <el-option label="禁用" :value="1" />
           </el-select>
         </el-form-item>
       </el-form>
-      <el-button type="primary" icon="el-icon-add-location" size="mini" @click="addSecondCode()">添加</el-button>
-      <el-button type="primary" icon="el-icon-zoom-in" size="mini" @click="resetTempSecond()">重置</el-button>
-      <el-button type="primary" icon="el-icon-edit" size="mini" :disabled="selectionSecond.length !== 1" @click="updateDataSecond()">修改</el-button>
-      <el-button type="danger" icon="el-icon-delete" size="mini" :disabled="selectionSecond.length === 0" @click="deleteDataSecond()">删除</el-button>
+      <el-button type="danger" class="oper-btn delete" size="mini" :disabled="selectionSecond.length === 0" @click="deleteDataSecond()" style="float:right;margin:0 15px 0 10px"></el-button>
+      <el-button type="primary" class="oper-btn edit" size="mini" :disabled="selectionSecond.length !== 1" @click="updateDataSecond()" style="float:right"></el-button>
+      <el-button type="primary" class="oper-btn again-2" size="mini" @click="resetTempSecond()" style="float:right"></el-button>
+      <el-button type="primary" class="oper-btn add" size="mini" @click="addSecondCode()" style="float:right"></el-button>
+      
+      
+      
       <el-table
         :key="tableSecondKey"
         v-loading="listLoadingSecond"
@@ -110,11 +114,11 @@
         @sort-change="sortChange"
         @selection-change="handleSelectionChangeSecond"
       >
-        <el-table-column label="选择" type="selection" width="55" />
-        <el-table-column label="通用代码名称" width="150px" align="center" prop="codeName" />
-        <el-table-column label="通用代码编码" width="150px" align="center" prop="codeValue" />
-        <el-table-column label="通用代码描述" width="150px" align="center" prop="codeDesc" />
-        <el-table-column label="通用代码排序" width="120px" align="center" prop="codeIndex" />
+        <el-table-column label="选择" type="selection" width="55px" />
+        <el-table-column label="通用代码名称" width="200px" align="center" prop="codeName" />
+        <el-table-column label="通用代码编码" width="200px" align="center" prop="codeValue" />
+        <el-table-column label="通用代码描述" width="200px" align="center" prop="codeDesc" />
+        <el-table-column label="通用代码排序" width="150px" align="center" prop="codeIndex" />
         <el-table-column label="状态" width="100px" align="center" prop="codeState" :formatter="formatState" />
       </el-table>
       <pagination v-show="totalSecond>0" :total="totalSecond" :page.sync="pageQuerySecond.pageNo" :limit.sync="pageQuerySecond.pageSize" @pagination="setBaseCode" />
@@ -221,19 +225,19 @@ export default {
         this.listLoading = false
       })
     },
-    // 校验类别格式
-    number() {
-      var data = this.temp.dataSortValue
-      const codeValue = new RegExp('^[0-9]{4,32}$').test(data)
-      if (!codeValue) {
-        this.$notify.error({
-          title: '错误',
-          message: '请输入4-32位的数字',
-          position: 'bottom-right'
-        })
-        this.temp.dataSortValue = ''
-      }
-    },
+    // // 校验类别格式
+    // number() {
+    //   var data = this.temp.dataSortValue
+    //   const codeValue = new RegExp('^[0-9]{4,32}$').test(data)
+    //   if (!codeValue) {
+    //     this.$notify.error({
+    //       title: '错误',
+    //       message: '请输入4-32位的数字',
+    //       position: 'bottom-right'
+    //     })
+    //     this.temp.dataSortValue = ''
+    //   }
+    // },
     // 校验编码格式
     numberSecond() {
       var data = this.tempSecond.codeValue
@@ -296,19 +300,24 @@ export default {
         codeIndex: ''
       }
     },
+    // clearValidate(){
+    //     this.$nextTick(() => {
+    //       this.$refs['dataSecondForm'].clearValidate()
+    //   })      
+    // },
     addCode() {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
+        // this.$refs['dataSecondForm'].clearValidate()
       })
     },
     closeDialog() {
       this.dialogFormVisible = false
     },
     createData() {
-      this.number()
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           save(this.temp).then(() => {
@@ -332,6 +341,7 @@ export default {
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
+        // this.$refs['dataSecondForm'].clearValidate()
       })
     },
     updateData() {
@@ -380,6 +390,9 @@ export default {
           this.totalSecond = resp.data.total
           this.listSecond = resp.data.records
         })
+        this.$nextTick(() => {
+          this.$refs['dataSecondForm'].clearValidate()
+      })    
       } else {
         this.openTree()
       }
@@ -393,7 +406,6 @@ export default {
       })
     },
     addSecondCode() {
-      this.number()
       this.$refs['dataSecondForm'].validate((valid) => {
         if (valid) {
           saveSecond(this.tempSecond).then(() => {
