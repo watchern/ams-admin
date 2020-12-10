@@ -33,7 +33,7 @@
         width="55"
       />
       <el-table-column
-        label="数据资源名称"
+        label="资源名称"
         prop="dataResourceName"
       >
         <template slot-scope="scope">
@@ -42,13 +42,13 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="数据资源编码"
+        label="资源编码"
         width="300px"
         align="center"
         prop="dataResourceCode"
       />
       <el-table-column
-        label="数据资源描述"
+        label="资源描述"
         prop="dataResourceDesc"
       />
       <el-table-column
@@ -79,34 +79,34 @@
         class="detail-form"
       >
         <el-form-item
-          label="数据资源名称"
+          label="资源名称"
           prop="dataResourceName"
         >
           <el-input
             v-model="temp.dataResourceName"
             :disabled="disableUpdate"
-            :placeholder="disableUpdate === true ? '' : '请输入数据资源名称'"
+            :placeholder="disableUpdate === true ? '' : '请输入资源名称'"
           />
         </el-form-item>
         <el-form-item
-          label="数据资源编码"
+          label="资源编码"
           prop="dataResourceCode"
         >
           <el-input
             v-model="temp.dataResourceCode"
             :disabled="disableUpdate"
-            :placeholder="disableUpdate === true ? '' : '请输入数据资源编码'"
+            :placeholder="disableUpdate === true ? '' : '请输入资源编码'"
           />
         </el-form-item>
         <el-form-item
-          label="数据资源描述"
+          label="资源描述"
           prop="dataResourceDesc"
         >
           <el-input
             v-model="temp.dataResourceDesc"
             type="textarea"
             :disabled="disableUpdate"
-            :placeholder="disableUpdate === true ? '' : '请输入数据资源描述'"
+            :placeholder="disableUpdate === true ? '' : '请输入资源描述'"
           />
         </el-form-item>
       </el-form>
