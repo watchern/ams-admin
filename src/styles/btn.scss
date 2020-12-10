@@ -201,3 +201,9 @@
 .oper-btn.interactive:after{
   content:'\e60e'!important;
 }
+.oper-btn.sqlcheck:after{
+  content:'\e613'!important;
+}
+.oper-btn.clean:after{
+  content:'\e600'!important;
+}

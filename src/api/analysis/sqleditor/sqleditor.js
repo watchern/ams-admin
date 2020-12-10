@@ -105,12 +105,21 @@ var sqlDraftObj
  * 存储数据表
  */
 var tableTreeData = []
+
+/**
+ * 记录sql编辑器是否被修改
+ * @type {boolean}
+ */
+var isUpdate = false
+
+/**
+ * 是否第一次加载
+ * @type {number}
+ */
+var isFirst = 0
 /**
  * 初始化界面托拉拽事件
  */
-
-
-
 export function initDragAndDrop() {
   // 实现左右拖拽改变大小
   var container = document.getElementById('container') //整个窗口
@@ -174,9 +183,9 @@ export function initDragAndDrop() {
 
   function tree_zy_all(){
     $("#sidebar div").removeClass("add-sidiv")
-    $("#dataTree").fadeOut(0)
-    $("#paramTree").fadeOut(0)
-    $("#sqlFunTree").fadeOut(0)
+    $(".left-dataTree").fadeOut(0)
+    $(".left-paramTree").fadeOut(0)
+    $(".left-sqlFunTree").fadeOut(0)
     tree_shuju = false
     tree_canshu = false
     tree_sql = false
@@ -185,52 +194,50 @@ export function initDragAndDrop() {
   var tree_shuju = true
   var tree_canshu = false
   var tree_sql = false
-  $("#paramTree").fadeOut(300)
-  $("#sqlFunTree").fadeOut(300)
+  $(".left-paramTree").fadeOut(300)
+  $(".left-sqlFunTree").fadeOut(300)
   $(".unfold-shuju").on("click",function(){
     if(tree_shuju == true){
-      $("#dataTree").fadeOut(300)
+      $(".left-dataTree").fadeOut(300)
       $(this).removeClass("add-sidiv")
       tree_shuju = false
       tree_zy_zhanhe()
     }else if(tree_shuju == false){
       tree_zy_zhan()
       tree_zy_all()
-      $("#dataTree").fadeIn(300)
+      $(".left-dataTree").fadeIn(300)
       $(this).addClass("add-sidiv")
       tree_shuju = true
     }
   })
   $(".unfold-canshu").on("click",function(){
     if(tree_canshu == true){
-      $("#paramTree").fadeOut(300)
+      $(".left-paramTree").fadeOut(300)
       $(this).removeClass("add-sidiv")
       tree_canshu = false
       tree_zy_zhanhe()
     }else if(tree_canshu == false){
       tree_zy_zhan()
       tree_zy_all()
-      $("#paramTree").fadeIn(300)
+      $(".left-paramTree").fadeIn(300)
       $(this).addClass("add-sidiv")
       tree_canshu = true
     }
   })
   $(".unfold-sql").on("click",function(){
     if(tree_sql == true){
-      $("#sqlFunTree").fadeOut(300)
+      $(".left-sqlFunTree").fadeOut(300)
       $(this).removeClass("add-sidiv")
       tree_sql = false
       tree_zy_zhanhe()
     }else if(tree_sql == false){
       tree_zy_zhan()
       tree_zy_all()
-      $("#sqlFunTree").fadeIn(300)
+      $(".left-sqlFunTree").fadeIn(300)
       $(this).addClass("add-sidiv")
       tree_sql = true
     }
   })
-
-
 
   // 实现上下拖拽改变大小
   var rightPart = document.getElementById('rightPart')
@@ -280,6 +287,8 @@ export function initVariable() {
   paramIdDivArr = []
   modelChartSetup = {}
   sqlDraftObj = undefined
+  isFirst = 0
+  isUpdate = false
 }
 /**
  * 初始化事件
@@ -331,6 +340,11 @@ export function initSQLEditor(textarea, relTableMap,expTableMap) {
     }
   })
   editor.on('change', function(instance, changeObj) {
+    //如果第一次加载不做任何校验
+    if(isFirst != 0){
+      isUpdate = true;
+    }
+    isFirst++;
     if (!changeObj.origin) {
       return
     }
@@ -390,6 +404,8 @@ export function initSQLEditor(textarea, relTableMap,expTableMap) {
   editorObj = editor
   $('.CodeMirror-scroll').focus()
   editor.setSize('auto','88%');
+  // sql编辑器颜色 为了不影响公共样式
+  $(".CodeMirror-scroll:eq(0)").css("background-color","rgb(237, 241, 245)")
 }
 
 /**
@@ -986,7 +1002,6 @@ export function initParamTree() {
 }
 
 $(".ag-theme-balham .ag-header-row").css("background-color","white")
-console.log(11)
 
 /**
  * 数据表树拖拽事件
@@ -1974,8 +1989,21 @@ export function getColumnSqlInfo(data) {
   })
 }
 
+/**
+ * 获取是否被修改
+ * @returns {boolean}
+ */
+export function getIsUpdate(){
+  return isUpdate;
+}
 
-
+/**
+ * 设置sql的被修改状态
+ * @param value true或false
+ */
+export function setIsUpdate(value){
+  isUpdate = value
+}
 
 
 

@@ -340,7 +340,6 @@ export default {
     setMemo(obj) {
       this.memoValue = obj.length;
       this.currentData = obj;
-      // console.log(this.currentData)
     },
     selectData() {
       this.dialogFormVisible = true;

@@ -6,13 +6,13 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" class="oper-btn add" :disabled="stopStatus" title="立即运行" @click="handleRun()" />
         <el-button type="primary" class="oper-btn add" title="新增" @click="handleCreate()" />
         <el-button type="primary" class="oper-btn edit" :disabled="editStatus" title="修改" @click="handleUpdate()" />
         <el-button type="primary" class="oper-btn delete" :disabled="deleteStatus" title="删除" @click="handleDelete()" />
         <el-button type="primary" class="oper-btn start" :disabled="startStatus" title="启用" @click="handleUse()" />
         <el-button type="primary" class="oper-btn pause" :disabled="stopStatus" title="停用" @click="handleStop()" />
         <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length !== 1" title="复制" @click="copyData()" />
+        <el-button type="primary" class="oper-btn start" :disabled="stopStatus" title="立即运行" @click="handleRun()" />
         <el-upload
           multiple
           class="upload-demo"
