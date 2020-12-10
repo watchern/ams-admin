@@ -413,7 +413,7 @@ export default {
       taskslogsList: null,
       schedule: null,
       nowTask: null,
-      prepLogs: null
+      prepLogs: null,
     }
   },
   watch: {
