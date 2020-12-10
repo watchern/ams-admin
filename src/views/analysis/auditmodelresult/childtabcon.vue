@@ -15,53 +15,60 @@
       </span>
     </el-dialog>
     <el-row v-if="myFlag">
-       <div align="right">
-      <el-button
-        :disabled="modelRunResultBtnIson.exportBtn"
-        type="primary"
-        @click="exportExcel"
-        class="oper-btn export-2"
-      ></el-button>
-      <el-button
-        style="display: none"
-        :disabled="modelRunResultBtnIson.chartDisplayBtn"
-        type="primary"
-        class="oper-btn chart"
-        ></el-button
-      >
-      <el-button
-        style="display: none"
-        :disabled="modelRunResultBtnIson.associatedBtn"
-        type="primary"
-        @click="getValues"
-        class="oper-btn refresh"
-      ></el-button>
-      <el-button
-        style="display: none"
-        :disabled="modelRunResultBtnIson.disassociateBtn"
-        type="primary"
-        @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
-        >移除关联</el-button
-      >
-      <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn search"
-        ></el-button
-      >
-      <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
-        >重置</el-button -->
-      <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn again-2"
-        ></el-button
-      >
-      <el-button
-        class="oper-btn link"
-        :disabled="modelRunResultBtnIson.modelDetailAssBtn"
-        v-if="modelDetailButtonIsShow"
-        type="primary"
-        @click="openModelDetail"
-        ></el-button
-      >
-       </div>
+      <div align="right">
+        <el-button
+          :disabled="modelRunResultBtnIson.exportBtn"
+          type="primary"
+          @click="exportExcel"
+          class="oper-btn export-2"
+        ></el-button>
+        <el-button
+          style="display: none"
+          :disabled="modelRunResultBtnIson.chartDisplayBtn"
+          type="primary"
+          class="oper-btn chart"
+        ></el-button>
+        <el-button
+          style="display: none"
+          :disabled="modelRunResultBtnIson.associatedBtn"
+          type="primary"
+          @click="getValues"
+          class="oper-btn refresh"
+        ></el-button>
+        <el-button
+          style="display: none"
+          :disabled="modelRunResultBtnIson.disassociateBtn"
+          type="primary"
+          @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
+          >移除关联</el-button
+        >
+        <el-button
+          :disabled="false"
+          type="primary"
+          @click="queryConditionSetting"
+          class="oper-btn search"
+        ></el-button>
+        <el-button
+          type="primary"
+          class="oper-btn refresh"
+          @click="addDetailRel('qwer1', '项目11')"
+        ></el-button>
+        <el-button
+          :disabled="false"
+          type="primary"
+          @click="reSet"
+          class="oper-btn again-2"
+        ></el-button>
+        <el-button
+          class="oper-btn link"
+          :disabled="modelRunResultBtnIson.modelDetailAssBtn"
+          v-if="modelDetailButtonIsShow"
+          type="primary"
+          @click="openModelDetail"
+        ></el-button>
+      </div>
     </el-row>
-    
+
     <ag-grid-vue
       v-if="isSee"
       v-loading="isLoading"
@@ -86,32 +93,29 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="initData(nowSql)"
     />
-    <el-row v-if="modelResultButtonIsShow" style="display: flex" id="conversion-z">
+    <el-row>
       <el-col :span="22">
-        <el-pagination
-          v-if="modelResultPageIsSee"
-          :current-page="page"
-          :page-sizes="[10, 20, 30, 50]"
-          :page-size="limit"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total1"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+        <div v-if="modelResultPageIsSee">共<span class="paging-z">{{rowData.length}}</span>条</div>
       </el-col>
       <el-col :span="2">
-      <!-- 2.1前台导出，双向绑定数据 -->
-        <downloadExcel :data="tableData" :fields="json_fields" :name="excelName" class="dowloadexcel-z">
+        <el-row v-if="modelResultButtonIsShow" style="display: flex">
+          <!-- 2.1前台导出，双向绑定数据 -->
+          <downloadExcel :data="tableData" :fields="json_fields" :name="excelName" class="thechard-z">
+            <el-button
+              type="primary"
+              @click="modelResultExport"
+              class="oper-btn export-2"
+            ></el-button>
+          </downloadExcel>
           <el-button
             type="primary"
-            @click="modelResultExport"
-            class="oper-btn export-2"
+            title="图表展示"
+            class="oper-btn chart"
           ></el-button>
-        </downloadExcel>
-        <el-button type="primary" title="图表展示" class="oper-btn chart"></el-button>
+        </el-row>
       </el-col>
     </el-row>
-    
+    <!-- modelResultPageIsSee -->
     <el-dialog
       title="模型详细关联"
       :visible.sync="modelDetailDialogIsShow"
@@ -177,14 +181,18 @@ import {
   selectConditionShow,
   selectModel,
   findParamModelRelByModelUuid,
-  replaceParam
+  replaceParam,
+  batchCoverAddResultDetailProjectRel,
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
 import myQueryBuilder from "@/views/analysis/auditmodelresult/myquerybuilder";
 import { string } from "jszip/lib/support";
-import { startExecuteSql } from "@/api/analysis/sqleditor/sqleditor";
+import {
+  startExecuteSql,
+  getExecuteTask,
+} from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
 
 export default {
@@ -210,7 +218,13 @@ export default {
    * 模型运行结果使用变量：nowtable：表示模型结果表对象   modelUuid：根据modelUUid进行表格渲染，只有主表用渲染  useType=modelRunResult 表示是模型运行结果所用
    * sql编辑器模型结果使用变量：useType=sqlEditor 表示是sql编辑器模型结果所用  prePersonalVal：每一个prePersonalVal对应一个childtabcon组件，后续会触发父组件chidltabs中的loadTableData方法来根据prePersonalVal进行aggrid数据的展现
    */
-  props: ["nowtable", "modelUuid", "useType", "prePersonalVal"],
+  props: [
+    "nowtable",
+    "modelUuid",
+    "useType",
+    "prePersonalVal",
+    "resultSpiltObjects",
+  ],
   data() {
     return {
       dialogVisible: false,
@@ -237,9 +251,7 @@ export default {
       nextValue: [], // 存放模型结果后传进来的值
       modelResultData: [], // 用来存放模型结果数据
       modelResultColumnNames: [], // 用来存放模型结果的列名
-      limit: 10, // //模型结果前台分页的初始一页有多少条数据属性
       total1: null, // 模型结果前台分页的total属性
-      page: 1, // 模型结果前台分页的当前页属性
       isSee: true, // 当输入sql错误和结果集为0的时候不显示aggrid表格
       errorMessage: "", // 存放模型结果错误消息
       modelResultPageIsSee: false, // 模型结果分页是否可见
@@ -337,22 +349,72 @@ export default {
      * 关联项目
      */
     addDetailRel(projectId, projctName) {
+      this.getValues();
       selectByRunResultTableUUid(this.nowtable.runResultTableUuid).then(
         (resp) => {
           this.detailTable = resp.data;
           var resultDetailProjectRels = [];
           if (resp.data.length == 0) {
             // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果没有值则直接关联
-            selectPrimaryKeyByTableName().then(
-              (resp) => {
-                this.primaryKey = resp.data;
+            selectPrimaryKeyByTableName().then((resp) => {
+              this.primaryKey = resp.data;
+              for (var i = 0; i < this.selectRows.length; i++) {
+                var resultDetailProjectRel = {
+                  resultDetailProjectRelId: "",
+                  runResultTableUuid: this.nowtable.runResultTableUuid,
+                  runTaskRelUuid: this.nowtable.runTaskRelUuid,
+                  projectId: projectId,
+                  resultDetailId: this.selectRows[i][
+                    this.primaryKey.toLowerCase()
+                  ],
+                  projectName: projctName,
+                };
+                resultDetailProjectRels.push(resultDetailProjectRel);
+              }
+              batchSaveResultDetailProjectRel(resultDetailProjectRels).then(
+                (resp) => {
+                  if (resp.data == true) {
+                    this.$message({
+                      type: "success",
+                      message: "关联项目成功!",
+                    });
+                  } else {
+                    this.$message({
+                      type: "error",
+                      message: "关联项目失败!",
+                    });
+                  }
+                }
+              );
+            });
+          } else {
+            // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果有值则要判断是否关联过该主键，如果添加过就不能重复关联
+            var resultDetailProjectRels = [];
+            var related = [];
+            selectPrimaryKeyByTableName().then((resp) => {
+              this.primaryKey = resp.data;
+              for (var i = 0; i < this.selectRows.length; i++) {
+                for (var j = 0; j < this.detailTable.length; j++) {
+                  if (
+                    this.selectRows[i][this.primaryKey.toLowerCase()] ==
+                    this.detailTable[j].resultDetailId
+                  ) {
+                    related.push(
+                      this.selectRows[i][this.primaryKey.toLowerCase()]
+                    );
+                  }
+                }
+              }
+              if (related.length == 0) {
                 for (var i = 0; i < this.selectRows.length; i++) {
                   var resultDetailProjectRel = {
                     resultDetailProjectRelId: "",
                     runResultTableUuid: this.nowtable.runResultTableUuid,
                     runTaskRelUuid: this.nowtable.runTaskRelUuid,
                     projectId: projectId,
-                    resultDetailId: this.selectRows[i][this.primaryKey],
+                    resultDetailId: this.selectRows[i][
+                      this.primaryKey.toLowerCase()
+                    ],
                     projectName: projctName,
                   };
                   resultDetailProjectRels.push(resultDetailProjectRel);
@@ -372,68 +434,50 @@ export default {
                     }
                   }
                 );
-              }
-            );
-          } else {
-            // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果有值则要判断是否关联过该主键，如果添加过就不能重复关联
-            var resultDetailProjectRels = [];
-            var related = [];
-            selectPrimaryKeyByTableName().then(
-              (resp) => {
-                this.primaryKey = resp.data;
+              } else {
+                var resultDetailProjectRels1 = [];
                 for (var i = 0; i < this.selectRows.length; i++) {
-                  for (var j = 0; j < this.detailTable.length; j++) {
-                    if (
-                      this.selectRows[i][this.primaryKey] ==
-                      this.detailTable[j].resultDetailId
-                    ) {
-                      related.push(this.selectRows[i][this.primaryKey]);
-                    }
-                  }
+                  var resultDetailProjectRel = {
+                    resultDetailProjectRelId: "",
+                    runResultTableUuid: this.nowtable.runResultTableUuid,
+                    runTaskRelUuid: this.nowtable.runTaskRelUuid,
+                    projectId: projectId,
+                    resultDetailId: this.selectRows[i][
+                      this.primaryKey.toLowerCase()
+                    ],
+                    projectName: projctName,
+                  };
+                  resultDetailProjectRels1.push(resultDetailProjectRel);
                 }
-                if (related.length == 0) {
-                  for (var i = 0; i < this.selectRows.length; i++) {
-                    var resultDetailProjectRel = {
-                      resultDetailProjectRelId: "",
-                      runResultTableUuid: this.nowtable.runResultTableUuid,
-                      runTaskRelUuid: this.nowtable.runTaskRelUuid,
-                      projectId: projectId,
-                      resultDetailId: this.selectRows[i][this.primaryKey],
-                      projectName: projctName,
-                    };
-                    resultDetailProjectRels.push(resultDetailProjectRel);
-                  }
-                  batchSaveResultDetailProjectRel(resultDetailProjectRels).then(
-                    (resp) => {
-                      if (resp.data == true) {
-                        this.$message({
-                          type: "success",
-                          message: "关联项目成功!",
-                        });
+                debugger;
+                batchCoverAddResultDetailProjectRel(
+                  resultDetailProjectRels1
+                ).then((resp) => {
+                  if (resp.data == true) {
+                    var str = "";
+                    for (var i = 0; i < related.length; i++) {
+                      if (i != related.length - 1) {
+                        str += related[i] + " , ";
                       } else {
-                        this.$message({
-                          type: "error",
-                          message: "关联项目失败!",
-                        });
+                        str += related[i];
                       }
                     }
-                  );
-                } else {
-                  var str = "";
-                  for (var i = 0; i < related.length; i++) {
-                    if (i != related.length - 1) {
-                      str += related[i] + ",";
-                    } else {
-                      str += related[i];
-                    }
+                    this.$message({
+                      type: "success",
+                      message:
+                        "关联成功！ 其中 " +
+                        str +
+                        " 为主键的结果以前关联的项目被覆盖",
+                    });
+                  } else {
+                    this.$message({
+                      type: "error",
+                      message: "关联失败!",
+                    });
                   }
-                  this.$message({
-                    type: "info",
-                    message: "关联失败，因为其中" + str + "已经关联",
-                  });
-                }
+                });
               }
-            );
+            });
           }
         }
       );
@@ -471,109 +515,112 @@ export default {
         if (typeof sql !== "string") {
           sql = "undefined";
         }
-        selectTable(this.pageQuery, sql).then((resp) => {
-          if (resp.data.records[0].result.length == 0) {
-            this.isLoading = false;
-          }
-          this.total = resp.data.total;
-          this.dataArray = resp.data.records[0].result;
-          this.queryData = resp.data.records[0].columnInfo;
-          // 将返回对象的所有属性，按顺序提取出来，用于后续生成ag-grid列信息
-          for (const key in resp.data.records[0].result[0]) {
-            colNames.push(key);
-          }
-          // 生成ag-grid列信息
-          if (this.modelUuid != undefined) {
+        selectTable(this.pageQuery, sql, this.resultSpiltObjects).then(
+          (resp) => {
+            if (resp.data.records[0].result.length == 0) {
+              this.isLoading = false;
+            }
+            this.total = resp.data.total;
+            this.dataArray = resp.data.records[0].result;
+            this.queryData = resp.data.records[0].columnInfo;
+            // 将返回对象的所有属性，按顺序提取出来，用于后续生成ag-grid列信息
+            for (const key in resp.data.records[0].result[0]) {
+              colNames.push(key);
+            }
+            // 生成ag-grid列信息
+            if (this.modelUuid != undefined) {
               var rowColom = {
-                        headerName: 'onlyuuid',
-                        field: 'onlyuuid',
-                        checkboxSelection: true
-                      }
-           col.push(rowColom)
-            for (var i = 0; i < colNames.length; i++) {
-              loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
-                if (
-                  this.modelOutputColumn[j].outputColumnName.toLowerCase() ==
-                  colNames[i]
-                ) {
-                  if (this.modelOutputColumn[j].isShow == 1) {
-                    if (i == 0) {
-                      var rowColom = {
-                        headerName: this.modelOutputColumn[j].columnAlias,
-                        field: colNames[i]
-                      };
-                    } else {
-                      var rowColom = {
-                        headerName: this.modelOutputColumn[j].columnAlias,
-                        field: colNames[i],
-                      };
-                    }
-                    col.push(rowColom);
-                  } else {
-                    if (i == 0) {
-                      var rowColom = {
-                        headerName: colNames[i],
-                        field: colNames[i],
-                        checkboxSelection: true,
-                      };
-                    } else {
-                      var rowColom = {
-                        headerName: colNames[i],
-                        field: colNames[i],
-                      };
-                    }
-                    col.push(rowColom);
-                  }
-                  break loop;
-                }
-              }
-            }
-          } else {
-            for (var i = 0; i < colNames.length; i++) {
-              if (i == 0) {
-                var rowColom = {
-                  headerName: colNames[i],
-                  field: colNames[i],
-                  checkboxSelection: true,
-                };
-              } else {
-                var rowColom = {
-                  headerName: colNames[i],
-                  field: colNames[i],
-                };
-              }
+                headerName: "onlyuuid",
+                field: "onlyuuid",
+                checkboxSelection: true,
+              };
               col.push(rowColom);
-            }
-          }
-          if (this.modelUuid != undefined) {
-            // 生成ag-frid表格数据
-            for (var i = 0; i < resp.data.records[0].result.length; i++) {
-              da.push(resp.data.records[0].result[i]);
-            }
-            for (var i = 0; i < da.length; i++) {
-              for (var j = 0; j < colNames.length; j++) {
-                for (var k = 0; k < this.modelOutputColumn.length; k++) {
+              for (var i = 0; i < colNames.length; i++) {
+                loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
                   if (
-                    this.modelOutputColumn[k].outputColumnName.toLowerCase() ==
-                    colNames[j]
+                    this.modelOutputColumn[j].outputColumnName.toLowerCase() ==
+                    colNames[i]
                   ) {
-                    if (this.modelOutputColumn[k].dataCoding != undefined) {
-                      var a = da[i][colNames[j]];
-                      da[i][colNames[j]] = this.dataCoding[
-                        this.modelOutputColumn[k].dataCoding
-                      ][a];
+                    if (this.modelOutputColumn[j].isShow == 1) {
+                      if (i == 0) {
+                        var rowColom = {
+                          headerName: this.modelOutputColumn[j].columnAlias,
+                          field: colNames[i],
+                        };
+                      } else {
+                        var rowColom = {
+                          headerName: this.modelOutputColumn[j].columnAlias,
+                          field: colNames[i],
+                        };
+                      }
+                      col.push(rowColom);
+                    } else {
+                      if (i == 0) {
+                        var rowColom = {
+                          headerName: colNames[i],
+                          field: colNames[i],
+                          checkboxSelection: true,
+                        };
+                      } else {
+                        var rowColom = {
+                          headerName: colNames[i],
+                          field: colNames[i],
+                        };
+                      }
+                      col.push(rowColom);
+                    }
+                    break loop;
+                  }
+                }
+              }
+            } else {
+              for (var i = 0; i < colNames.length; i++) {
+                if (i == 0) {
+                  var rowColom = {
+                    headerName: colNames[i],
+                    field: colNames[i],
+                    checkboxSelection: true,
+                  };
+                } else {
+                  var rowColom = {
+                    headerName: colNames[i],
+                    field: colNames[i],
+                  };
+                }
+                col.push(rowColom);
+              }
+            }
+            if (this.modelUuid != undefined) {
+              // 生成ag-frid表格数据
+              for (var i = 0; i < resp.data.records[0].result.length; i++) {
+                da.push(resp.data.records[0].result[i]);
+              }
+              for (var i = 0; i < da.length; i++) {
+                for (var j = 0; j < colNames.length; j++) {
+                  for (var k = 0; k < this.modelOutputColumn.length; k++) {
+                    if (
+                      this.modelOutputColumn[
+                        k
+                      ].outputColumnName.toLowerCase() == colNames[j]
+                    ) {
+                      if (this.modelOutputColumn[k].dataCoding != undefined) {
+                        var a = da[i][colNames[j]];
+                        da[i][colNames[j]] = this.dataCoding[
+                          this.modelOutputColumn[k].dataCoding
+                        ][a];
+                      }
                     }
                   }
                 }
               }
-            }
-          } else {
-            // 生成ag-frid表格数据
-            for (var i = 0; i < resp.data.records[0].result.length; i++) {
-              da.push(resp.data.records[0].result[i]);
+            } else {
+              // 生成ag-frid表格数据
+              for (var i = 0; i < resp.data.records[0].result.length; i++) {
+                da.push(resp.data.records[0].result[i]);
+              }
             }
           }
-        });
+        );
         this.columnDefs = col;
         this.rowData = da;
       } else if (this.useType == "sqlEditor") {
@@ -583,12 +630,13 @@ export default {
         var rowData = [];
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           if (this.nextValue.executeSQL.state == "2") {
-            if(this.nextValue.executeSQL.type=='SELECT'){
+            if (this.nextValue.executeSQL.type == "SELECT") {
               //todo 增加sql类型判断
               if (true) {
                 this.modelResultButtonIsShow = true;
                 this.modelResultPageIsSee = true;
                 this.modelResultData = this.nextValue.result;
+                this.rowData = this.modelResultData
                 this.modelResultColumnNames = this.nextValue.columnNames;
                 for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
                   var rowColom = {
@@ -604,15 +652,14 @@ export default {
                   rowData.push(this.nextValue.result[k]);
                 }
                 this.columnDefs = col;
-                this.getList();
+
               }
-            }else {
+            } else {
               this.isSee = false;
               this.modelResultPageIsSee = false;
               this.modelResultButtonIsShow = false;
               this.errorMessage = this.nextValue.executeSQL.msg;
             }
-
           } else if (this.nextValue.executeSQL.state == "3") {
             this.isSee = false;
             this.modelResultPageIsSee = false;
@@ -621,7 +668,7 @@ export default {
           }
           this.isLoading = false;
         }
-      }else if (this.useType == "previewTable"){
+      } else if (this.useType == "previewTable") {
         this.loading = true;
         this.nextValue = nextValue;
         var col = [];
@@ -632,6 +679,7 @@ export default {
             if (true) {
               this.modelResultPageIsSee = true;
               this.modelResultData = this.nextValue.result;
+               this.rowData = this.modelResultData
               this.modelResultColumnNames = this.nextValue.columnNames;
               for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
                 var rowColom = {
@@ -647,7 +695,6 @@ export default {
                 rowData.push(this.nextValue.result[k]);
               }
               this.columnDefs = col;
-              this.getList();
             }
           } else if (this.nextValue.executeSQL.state == "3") {
             this.isSee = false;
@@ -657,7 +704,7 @@ export default {
           }
           this.isLoading = false;
         }
-      }else if (this.useType == "graph"){
+      } else if (this.useType == "graph") {
         this.loading = true;
         this.nextValue = nextValue;
         var col = [];
@@ -668,6 +715,7 @@ export default {
             if (true) {
               this.modelResultPageIsSee = true;
               this.modelResultData = this.nextValue.result;
+               this.rowData = this.modelResultData
               this.modelResultColumnNames = this.nextValue.columnNames;
               for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
                 var rowColom = {
@@ -683,7 +731,6 @@ export default {
                 rowData.push(this.nextValue.result[k]);
               }
               this.columnDefs = col;
-              this.getList();
             }
           } else if (this.nextValue.executeSQL.state == "3") {
             this.isSee = false;
@@ -737,7 +784,8 @@ export default {
           for (var i = 0; i < this.conditionShowData[0].length; i++) {
             for (var j = 0; j < this.conditionShowData[0][i].length; j++) {
               if (
-                params.data[this.primaryKey.toLowerCase()] == this.conditionShowData[0][i][j]
+                params.data[this.primaryKey.toLowerCase()] ==
+                this.conditionShowData[0][i][j]
               ) {
                 this.isLoading = false;
                 return {
@@ -763,56 +811,34 @@ export default {
             this.nowtable.resultTableName
           ).then((resp) => {
             this.conditionShowData = resp.data;
-            selectPrimaryKeyByTableName().then(
-              (resp) => {
-                this.primaryKey = resp.data;
-                selectModel(this.modelUuid).then((resp) => {
-                  this.modelDetailRelation = resp.data.modelDetailRelation;
-                  this.modelOutputColumn = resp.data.modelOutputColumn;
-                  var datacodes = [];
-                  for (var i = 0; i < this.modelOutputColumn.length; i++) {
-                    if (this.modelOutputColumn[i].dataCoding != undefined) {
-                      datacodes.push(this.modelOutputColumn[i].dataCoding);
-                    }
+            selectPrimaryKeyByTableName().then((resp) => {
+              this.primaryKey = resp.data;
+              selectModel(this.modelUuid).then((resp) => {
+                this.modelDetailRelation = resp.data.modelDetailRelation;
+                this.modelOutputColumn = resp.data.modelOutputColumn;
+                var datacodes = [];
+                for (var i = 0; i < this.modelOutputColumn.length; i++) {
+                  if (this.modelOutputColumn[i].dataCoding != undefined) {
+                    datacodes.push(this.modelOutputColumn[i].dataCoding);
                   }
-                  if (datacodes.length > 0) {
-                    getTransMap(datacodes.join(",")).then((resp) => {
-                      this.dataCoding = resp.data;
-                    });
-                  }
-                  //调用方法
-                  this.initData();
-                  if (this.modelDetailRelation.length > 0) {
-                    this.modelDetailButtonIsShow = true;
-                  }
-                });
-              }
-            );
+                }
+                if (datacodes.length > 0) {
+                  getTransMap(datacodes.join(",")).then((resp) => {
+                    this.dataCoding = resp.data;
+                  });
+                }
+                //调用方法
+                this.initData();
+                if (this.modelDetailRelation.length > 0) {
+                  this.modelDetailButtonIsShow = true;
+                }
+              });
+            });
           });
         } else {
           this.initData();
         }
       }
-    },
-    // 处理数据
-    getList() {
-      // es6过滤得到满足搜索条件的展示数据list
-      this.rowData = this.modelResultData.filter(
-        (item, index) =>
-          index < this.page * this.limit &&
-          index >= this.limit * (this.page - 1)
-      );
-      this.total1 = this.modelResultData.length;
-    },
-    // 当每页数量改变
-    handleSizeChange(val) {
-      this.limit = val;
-      this.getList();
-    },
-    // 当当前页改变
-    handleCurrentChange(val) {
-      this.page = val;
-      this.getList();
     },
     /**
      * 点击详细打开dialog效果
@@ -844,7 +870,7 @@ export default {
       var objectName = "";
       var detailConfig = null;
       for (var i = 0; i < this.modelDetailRelation.length; i++) {
-        if ((this.value == this.modelDetailRelation[i].relationObjectUuid)) {
+        if (this.value == this.modelDetailRelation[i].relationObjectUuid) {
           relationType = this.modelDetailRelation[i].relationType;
           objectName = this.modelDetailRelation[i].relationObjectName;
           detailConfig = this.modelDetailRelation[i].modelDetailConfig;
@@ -878,14 +904,23 @@ export default {
           }
           selectModel(this.value).then((resp) => {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-            const obj = { sqls: sql,businessField:'modelresultdetail' };
-            startExecuteSql(obj).then((resp) => {
-              if (!resp.data.isError) {
+            const obj = { sqls: sql, businessField: "modelresultdetail" };
+            getExecuteTask(obj)
+              .then((resp) => {
                 this.currentExecuteSQL = resp.data.executeSQLList;
-              } else {
+                //界面渲染完成之后开始执行sql,将sql送入调度
+                startExecuteSql(resp.data).then((result) => {});
+              })
+              .catch((result) => {
                 this.$message({ type: "info", message: "执行失败" });
-              }
-            });
+              });
+            // startExecuteSql(obj).then((resp) => {
+            //   if (!resp.data.isError) {
+            //     this.currentExecuteSQL = resp.data.executeSQLList;
+            //   } else {
+            //     this.$message({ type: "info", message: "执行失败" });
+            //   }
+            // });
           });
         });
       } else if (relationType == 2) {
@@ -895,10 +930,15 @@ export default {
         for (var i = 0; i < detailConfig.length; i++) {
           var eachFilter = detailConfig[i].relFilterValue;
           loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
-            if (eachFilter.indexOf(this.modelOutputColumn[j].outputColumnName) > -1) {
+            if (
+              eachFilter.indexOf(this.modelOutputColumn[j].outputColumnName) >
+              -1
+            ) {
               eachFilter = eachFilter.replace(
                 this.modelOutputColumn[j].outputColumnName,
-                selectRowData[0][this.modelOutputColumn[j].outputColumnName.toLowerCase()]
+                selectRowData[0][
+                  this.modelOutputColumn[j].outputColumnName.toLowerCase()
+                ]
               );
               break loop;
             }
@@ -910,14 +950,23 @@ export default {
           }
         }
         sql = sql + filterSql;
-        const obj = { sqls: sql,businessField:'modelresultdetail' };
-        startExecuteSql(obj).then((resp) => {
-          if (!resp.data.isError) {
+        const obj = { sqls: sql, businessField: "modelresultdetail" };
+        getExecuteTask(obj)
+          .then((resp) => {
             this.currentExecuteSQL = resp.data.executeSQLList;
-          } else {
+            //界面渲染完成之后开始执行sql,将sql送入调度
+            startExecuteSql(resp.data).then((result) => {});
+          })
+          .catch((result) => {
             this.$message({ type: "info", message: "执行失败" });
-          }
-        });
+          });
+        // startExecuteSql(obj).then((resp) => {
+        //   if (!resp.data.isError) {
+        //     this.currentExecuteSQL = resp.data.executeSQLList;
+        //   } else {
+        //     this.$message({ type: "info", message: "执行失败" });
+        //   }
+        // });
       }
       this.modelDetailDialogIsShow = false;
       this.modelDetailModelResultDialogIsShow = true;
@@ -977,8 +1026,18 @@ export default {
 };
 </script>
 <style scoped>
-.dowloadexcel-z{
-  display:inline-block;
-  margin-right: 16px;
+.itxst {
+  margin: 10px;
+  text-align: left;
+}
+.thechard-z{
+  margin-right: 15px;
+}
+.paging-z{
+  font-weight: bold;
+  color: rgb(52,57,66);
+  margin: 0 5px;
+  font-size: 16px;
+  line-height: 16px;
 }
 </style>

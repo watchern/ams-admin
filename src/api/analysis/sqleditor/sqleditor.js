@@ -183,9 +183,9 @@ export function initDragAndDrop() {
 
   function tree_zy_all(){
     $("#sidebar div").removeClass("add-sidiv")
-    $("#dataTree").fadeOut(0)
-    $("#paramTree").fadeOut(0)
-    $("#sqlFunTree").fadeOut(0)
+    $(".left-dataTree").fadeOut(0)
+    $(".left-paramTree").fadeOut(0)
+    $(".left-sqlFunTree").fadeOut(0)
     tree_shuju = false
     tree_canshu = false
     tree_sql = false
@@ -194,46 +194,46 @@ export function initDragAndDrop() {
   var tree_shuju = true
   var tree_canshu = false
   var tree_sql = false
-  $("#paramTree").fadeOut(300)
-  $("#sqlFunTree").fadeOut(300)
+  $(".left-paramTree").fadeOut(300)
+  $(".left-sqlFunTree").fadeOut(300)
   $(".unfold-shuju").on("click",function(){
     if(tree_shuju == true){
-      $("#dataTree").fadeOut(300)
+      $(".left-dataTree").fadeOut(300)
       $(this).removeClass("add-sidiv")
       tree_shuju = false
       tree_zy_zhanhe()
     }else if(tree_shuju == false){
       tree_zy_zhan()
       tree_zy_all()
-      $("#dataTree").fadeIn(300)
+      $(".left-dataTree").fadeIn(300)
       $(this).addClass("add-sidiv")
       tree_shuju = true
     }
   })
   $(".unfold-canshu").on("click",function(){
     if(tree_canshu == true){
-      $("#paramTree").fadeOut(300)
+      $(".left-paramTree").fadeOut(300)
       $(this).removeClass("add-sidiv")
       tree_canshu = false
       tree_zy_zhanhe()
     }else if(tree_canshu == false){
       tree_zy_zhan()
       tree_zy_all()
-      $("#paramTree").fadeIn(300)
+      $(".left-paramTree").fadeIn(300)
       $(this).addClass("add-sidiv")
       tree_canshu = true
     }
   })
   $(".unfold-sql").on("click",function(){
     if(tree_sql == true){
-      $("#sqlFunTree").fadeOut(300)
+      $(".left-sqlFunTree").fadeOut(300)
       $(this).removeClass("add-sidiv")
       tree_sql = false
       tree_zy_zhanhe()
     }else if(tree_sql == false){
       tree_zy_zhan()
       tree_zy_all()
-      $("#sqlFunTree").fadeIn(300)
+      $(".left-sqlFunTree").fadeIn(300)
       $(this).addClass("add-sidiv")
       tree_sql = true
     }

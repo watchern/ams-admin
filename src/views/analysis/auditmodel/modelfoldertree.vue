@@ -17,20 +17,48 @@
       check-strictly
       @node-click="handleNodeClick"
       @check-change="handleNodeClick1"
-      :show-checkbox="this.publicModel==='editorModel'?true:false"
+      :show-checkbox="
+        this.publicModel === 'editorModel' ||
+        this.publicModel === 'relationModel'
+          ? true
+          : false
+      "
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
-        <span>
-          <i :class="data.icon" />{{ node.label }}
-        </span>
-        <span v-if="data.type=='folder' && power!='warning'">
-          <el-button title="添加模型分类" type="text" size="mini" class="tree-line-btn" @click.stop="() => setSelectTreeNode(node,data,1)"><svg-icon icon-class="icon-add-1" /></el-button>
-          <el-button title="修改模型分类" type="text" size="mini" class="tree-line-btn" @click.stop="() => setSelectTreeNode(node, data,2)"><svg-icon icon-class="icon-edit-1" /></el-button>
-          <el-button title="删除模型分类" type="text" size="mini" class="tree-line-btn" @click.stop="() => deleteFolder(node, data)"><svg-icon icon-class="icon-delete-1" /></el-button>
+        <span> <i :class="data.icon" />{{ node.label }} </span>
+        <span v-if="data.type == 'folder' && power != 'warning'">
+          <el-button
+            title="添加模型分类"
+            type="text"
+            size="mini"
+            class="tree-line-btn"
+            @click.stop="() => setSelectTreeNode(node, data, 1)"
+            ><svg-icon icon-class="icon-add-1"
+          /></el-button>
+          <el-button
+            title="修改模型分类"
+            type="text"
+            size="mini"
+            class="tree-line-btn"
+            @click.stop="() => setSelectTreeNode(node, data, 2)"
+            ><svg-icon icon-class="icon-edit-1"
+          /></el-button>
+          <el-button
+            title="删除模型分类"
+            type="text"
+            size="mini"
+            class="tree-line-btn"
+            @click.stop="() => deleteFolder(node, data)"
+            ><svg-icon icon-class="icon-delete-1"
+          /></el-button>
         </span>
       </span>
     </MyElTree>
-    <el-dialog v-if="dialogFormVisible" title="请填写分类信息" :visible.sync="dialogFormVisible">
+    <el-dialog
+      v-if="dialogFormVisible"
+      title="请填写分类信息"
+      :visible.sync="dialogFormVisible"
+    >
       <el-form :model="form">
         <el-form-item label="分类名称">
           <el-input v-model="form.modelFolderName" autocomplete="off" />
@@ -42,96 +70,110 @@
       </div>
     </el-dialog>
   </div>
-
 </template>
 <script>
-import MyElTree from '@/components/Ace/tree/src/tree.vue'
-import { findModelFolderTree, deleteModelFolder, addModelFolder, updateModelFolder } from '@/api/analysis/auditmodel'
+import MyElTree from "@/components/Ace/tree/src/tree.vue";
+import {
+  findModelFolderTree,
+  deleteModelFolder,
+  addModelFolder,
+  updateModelFolder,
+} from "@/api/analysis/auditmodel";
 export default {
-  name: 'ModelFolderTree',
+  name: "ModelFolderTree",
   components: { MyElTree },
-  props: ['publicModel','power'],
+  props: ["publicModel", "power"],
   data() {
     return {
       filterText: null,
       data: [],
       defaultProps: {
-        children: 'children',
-        label: 'label'
+        children: "children",
+        label: "label",
       },
       selectTreeNode: {},
       operationType: 0, // 操作类型 1、添加；2、修改
       dialogFormVisible: false,
       form: {
-        modelFolderUuid: '',
-        modelFolderName: '',
-        parentUuid: '',
-        folderSort: '',
-        folderPath: '',
-        pbScope: ''
+        modelFolderUuid: "",
+        modelFolderName: "",
+        parentUuid: "",
+        folderSort: "",
+        folderPath: "",
+        pbScope: "",
       },
-      checkedId: ''
-    }
+      checkedId: "",
+    };
   },
   watch: {
     filterText(val) {
       // 搜索树
-      this.$refs.tree.filter(val)
-    }
+      this.$refs.tree.filter(val);
+    },
   },
   created() {
-    this.getModelFolder()
+    this.getModelFolder();
   },
   methods: {
-handleNodeClick1(data, checked, node) {
-    if(checked === true) {
+    handleNodeClick1(data, checked, node) {
+      if (checked === true) {
         this.checkedId = data.id;
         this.$refs.tree.setCheckedKeys([data.id]);
-    } else {
+      } else {
         if (this.checkedId == data.id) {
-            this.$refs.tree.setCheckedKeys([data.id]);
+          this.$refs.tree.setCheckedKeys([data.id]);
         }
-    }
-},
+      }
+    },
     /**
      *获取模型分类
      */
     getModelFolder() {
-      if (this.publicModel != undefined && this.publicModel != '') {
-        findModelFolderTree(false).then(result => {
-          let newData = []
-          if (this.publicModel === 'publicModel') {
+      if (this.publicModel != undefined && this.publicModel != "") {
+        findModelFolderTree(false).then((result) => {
+          let newData = [];
+          if (this.publicModel === "publicModel") {
             // 处理数据  只保留公共分类的文件夹数据
             for (let i = 0; i < result.data.length; i++) {
-              if (result.data[i].id == 'gonggong') {
-                newData.push(result.data[i])
+              if (result.data[i].id == "gonggong") {
+                newData.push(result.data[i]);
               }
             }
-          } else if (this.publicModel === 'editorModel') {
+            this.data = newData;
+          } else if (this.publicModel === "editorModel") {
             // todo 揉入权限信息
             for (let i = 0; i < result.data.length; i++) {
-              if (result.data[i].id == 'gonggong' || result.data[i].id == this.$store.getters.personuuid) {
-                result.data[i].disabled =  true
-                newData.push(result.data[i])
+              if (
+                result.data[i].id == "gonggong" ||
+                result.data[i].id == this.$store.getters.personuuid
+              ) {
+                result.data[i].disabled = true;
+                newData.push(result.data[i]);
               }
             }
+            this.data = newData;
+          } else if (this.publicModel === "relationModel") {
+             findModelFolderTree(true).then((result) => {
+          this.data = result.data;
+        });
           } else {
-            newData = result.data
+            newData = result.data;
+            this.data = newData;
           }
-          this.data = newData
-        })
+
+        });
       } else {
-        findModelFolderTree(true).then(result => {
-          this.data = result.data
-        })
+        findModelFolderTree(true).then((result) => {
+          this.data = result.data;
+        });
       }
     },
     deleteModelData(newData) {
       for (let i = 0; i < newData.children.length; i++) {
-        if (newData.children[i].type == 'model') {
-          newData.children[i].isShow = false
+        if (newData.children[i].type == "model") {
+          newData.children[i].isShow = false;
         } else {
-          this.deleteModelData(newData.children[i])
+          this.deleteModelData(newData.children[i]);
         }
       }
     },
@@ -140,10 +182,10 @@ handleNodeClick1(data, checked, node) {
      * @param data 树的对象数据 包括子节点
      */
     handleNodeClick(data) {
-      this.selectTreeNode = data
-      if (data.type === 'model') {
+      this.selectTreeNode = data;
+      if (data.type === "model") {
       } else {
-        this.$emit('refreshModelList', data)
+        this.$emit("refreshModelList", data);
       }
     },
     /**
@@ -153,8 +195,8 @@ handleNodeClick1(data, checked, node) {
      * @returns {boolean}
      */
     filterNode(value, data) {
-      if (!value) return true
-      return data.label.indexOf(value) !== -1
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
     },
     /**
      * 设置选中的节点
@@ -163,108 +205,110 @@ handleNodeClick1(data, checked, node) {
      * @param operationType 1、添加；2、修改
      */
     setSelectTreeNode(node, data, operationType) {
-      this.operationType = operationType
-      this.selectTreeNode = data
+      this.operationType = operationType;
+      this.selectTreeNode = data;
       if (operationType === 2) {
-        this.form.modelFolderName = this.selectTreeNode.label
+        this.form.modelFolderName = this.selectTreeNode.label;
       }
-      this.dialogFormVisible = true
+      this.dialogFormVisible = true;
     },
     /**
      * 清空表单信息
      */
     clearForm() {
       this.form = {
-        modelFolderUuid: '',
-        modelFolderName: '',
-        parentUuid: '',
-        folderSort: '',
-        folderPath: '',
-        pbScope: ''
-      }
+        modelFolderUuid: "",
+        modelFolderName: "",
+        parentUuid: "",
+        folderSort: "",
+        folderPath: "",
+        pbScope: "",
+      };
     },
     /**
      * 生成UUID
      * @returns {string} 返回生成的UUID
      */
     getGuuid() {
-      var s = []
-      var hexDigits = '0123456789abcdef'
+      var s = [];
+      var hexDigits = "0123456789abcdef";
       for (var i = 0; i < 36; i++) {
-        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
+        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
       }
-      s[14] = '4' // bits 12-15 of the time_hi_and_version field to 0010
-      s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1) // bits 6-7 of the clock_seq_hi_and_reserved to 01
-      s[8] = s[13] = s[18] = s[23] = '-'
-      var uuid = s.join('')
-      return uuid
+      s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+      s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+      s[8] = s[13] = s[18] = s[23] = "-";
+      var uuid = s.join("");
+      return uuid;
     },
     /**
      * 表单确定按钮
      */
     enterBtn() {
       if (this.operationType === 1) {
-        this.addModelFolder()
+        this.addModelFolder();
       } else {
-        this.updateFolder()
+        this.updateFolder();
       }
     },
     /**
      * 添加模型分类
      */
     addModelFolder() {
-      this.form.modelFolderUuid = this.getGuuid()
-      this.form.parentUuid = this.selectTreeNode.id
-      this.form.folderSort = 0
-      const nodePath = this.$refs.tree.getNodePath(this.selectTreeNode)
-      const fullPath = []
-      nodePath.forEach(path => {
-        fullPath.push(path.id)
-      })
-      this.form.folderPath = fullPath.join('/') + '/' + this.form.modelFolderUuid
-      this.form.pbScope = this.selectTreeNode.extMap.pbScope
-      addModelFolder(this.form).then(result => {
+      this.form.modelFolderUuid = this.getGuuid();
+      this.form.parentUuid = this.selectTreeNode.id;
+      this.form.folderSort = 0;
+      const nodePath = this.$refs.tree.getNodePath(this.selectTreeNode);
+      const fullPath = [];
+      nodePath.forEach((path) => {
+        fullPath.push(path.id);
+      });
+      this.form.folderPath =
+        fullPath.join("/") + "/" + this.form.modelFolderUuid;
+      this.form.pbScope = this.selectTreeNode.extMap.pbScope;
+      addModelFolder(this.form).then((result) => {
         if (result != null && result.code === 0) {
           const newChild = {
             id: this.form.modelFolderUuid,
             label: this.form.modelFolderName,
             children: [],
             pid: this.selectTreeNode.id,
-            icon: 'el-icon-folder',
+            icon: "el-icon-folder",
             extMap: { pbScope: this.selectTreeNode.extMap.pbScope },
-            type: 'folder'
-          }
+            type: "folder",
+          };
           if (!this.selectTreeNode.children) {
-            this.$set(this.selectTreeNode, 'children', [])
+            this.$set(this.selectTreeNode, "children", []);
           }
-          this.selectTreeNode.children.push(newChild)
+          this.selectTreeNode.children.push(newChild);
         } else {
-          this.$notify({ title: '提示',
-            message: '请选择模型',
-            type: 'info',
+          this.$notify({
+            title: "提示",
+            message: "请选择模型",
+            type: "info",
             duration: 2000,
-            position: 'bottom-right'
-          })
+            position: "bottom-right",
+          });
         }
-      })
+      });
       // this.clearForm();
-      this.dialogFormVisible = false
+      this.dialogFormVisible = false;
     },
     /**
      * 修改模型分类
      */
     updateFolder() {
-      this.form.modelFolderUuid = this.selectTreeNode.id
-      this.form.parentUuid = null
-      this.form.folderSort = null
-      this.form.folderPath = null
-      this.form.pbScope = null
-      updateModelFolder(this.form).then(result => {
+      this.form.modelFolderUuid = this.selectTreeNode.id;
+      this.form.parentUuid = null;
+      this.form.folderSort = null;
+      this.form.folderPath = null;
+      this.form.pbScope = null;
+      updateModelFolder(this.form).then((result) => {
         if (result.code === 0) {
-          this.getModelFolder()
+          this.getModelFolder();
         }
-      })
-      this.dialogFormVisible = false
+      });
+      this.dialogFormVisible = false;
     },
     /**
      * 删除模型分类
@@ -273,38 +317,46 @@ handleNodeClick1(data, checked, node) {
      */
     deleteFolder(node, data) {
       if (data.pid === 0) {
-        this.$message({ success: 'info', message: '根目录不允许删除' })
-        return
+        this.$message({ success: "info", message: "根目录不允许删除" });
+        return;
       }
-      if ((data.children !== undefined && data.children.length === 0) || data.children === undefined) {
-        var obj = { modelFolderUuid: data.id }
-        this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          deleteModelFolder(obj).then(result => {
-            if (result.code === 0) {
-              this.getModelFolder()
-              this.$message({
-                type: 'success',
-                message: '删除成功!'
-              })
-            }
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
+      if (
+        (data.children !== undefined && data.children.length === 0) ||
+        data.children === undefined
+      ) {
+        var obj = { modelFolderUuid: data.id };
+        this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
         })
+          .then(() => {
+            deleteModelFolder(obj).then((result) => {
+              if (result.code === 0) {
+                this.getModelFolder();
+                this.$message({
+                  type: "success",
+                  message: "删除成功!",
+                });
+              }
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除",
+            });
+          });
       } else {
-        this.$message({ success: 'error', message: '该分类下有分类或模型，不允许删除' })
+        this.$message({
+          success: "error",
+          message: "该分类下有分类或模型，不允许删除",
+        });
       }
     },
     getSelectNode() {
-      return this.$refs.tree.getCheckedNodes()[0]
-    }
-  }
-}
+      return this.$refs.tree.getCheckedNodes()[0];
+    },
+  },
+};
 </script>
