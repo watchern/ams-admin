@@ -21,6 +21,8 @@
       :data="list"
       border
       fit
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
       style="width: 100%;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
