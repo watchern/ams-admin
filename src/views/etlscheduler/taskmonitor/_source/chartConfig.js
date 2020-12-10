@@ -28,8 +28,8 @@ const pie = {
     label: {
       show: false,
       position: 'center',
-      // fontSize: '30',
-      // formatter: '   {d}% \r\n'
+      fontSize: '30',
+      formatter: '   {d}% \r\n {b}' 
     },
     emphasis: {
       label: {
@@ -37,7 +37,13 @@ const pie = {
         fontSize: '30',
         // fontWeight: 'bold',
         formatter: '   {d}% \r\n {b}' 
-      }
+      },
+      // label: {
+      //   show: true,
+      //   fontSize: '20',
+      //   // fontWeight: 'bold',
+      //   formatter: '   {d}% \r\n {b}' 
+      // }
     },
     labelLine: {
       show: false
