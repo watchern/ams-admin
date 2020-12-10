@@ -317,7 +317,7 @@ export default {
           setTimeout(() => {
             this.$notify({
               title: '提示',
-              message: res.msg,
+              message: '测试连接成功',
               type: 'success',
               duration: 2000,
               position: 'bottom-right'

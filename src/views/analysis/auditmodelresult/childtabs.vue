@@ -1,11 +1,12 @@
 <template>
   <!-- childTabs是子页签组件 -->
   <el-tabs type="border-card">
-    <el-tab-pane v-if="useType==='modelRunResult'?true:false" :label="useType === 'modelRunResult' ? '主表' : '结果1'"
+    <el-tab-pane v-if="useType==='modelRunResult'?true:false"  :label="useType === 'modelRunResult' ? '主表' : '结果1'"
       ><childTabCons
         :nowtable="maintable"
         :model-uuid="modelUuid"
         :useType="useType"
+        :resultSpiltObjects="resultSpiltObjects"
     /></el-tab-pane>
     <el-tab-pane
       v-for="(item, key) in useType==='modelRunResult'?helptables:preValue"
@@ -67,7 +68,8 @@ export default {
     "helptables",
     "modelUuid",
     "useType",
-    "preValue"
+    "preValue",
+    "resultSpiltObjects"
   ],
 };
 </script>

@@ -189,8 +189,6 @@
       />
       <el-table-column
         label="当前环节"
-        width="120px"
-        align="center"
         prop="nowTask"
       />
     </el-table>
@@ -265,8 +263,8 @@
           <el-timeline-item
             v-for="(task,$index) in logTasks"
             :key="task.id"
-            :icon="taskslogsList[task.id] != null ? 'el-icon-more': null"
-            :color="taskslogsList[task.id] != null ? '#0bbd87' : null"
+            :icon="taskslogsList[task.id] != null ? statusObj[taskslogsList[task.id].status].unicode: null"
+            :color="taskslogsList[task.id] != null ? statusObj[taskslogsList[task.id].status].color : null"
             size="large"
           >
             <!-- value和name一致，默认展开 -->
@@ -333,6 +331,7 @@ export default {
       formatMap: {
         commandType: commandTypeObj
       },
+      taskInstanceMap: {},
       statusObj: {},
       logColorObj: {},
       pageQuery: {
@@ -547,20 +546,21 @@ export default {
         return
       }
       // 获取任务环节
-      getTaskLink(data.processInstanceUuid).then(resp => {
-        this.logTasks = resp.data
-      })
-      // 获取任务日志
-      findTaskLogs(data.processInstanceUuid).then(resp => {
-        this.logs = resp.data
+      getTaskLink(data.processInstanceUuid).then(res => {
+        this.logTasks = res.data
+        // 获取任务日志
+        findTaskLogs(data.processInstanceUuid).then(respon => {
+          this.logs = respon.data
+        })
+        // 获取调度实例已运行的环节
+        findTaskInstanceById(data.processInstanceUuid).then(respons => {
+          this.taskslogsList = respons.data
+          console.log(this.taskslogsList)
+        })
       })
       // 获取非环节执行任务日志
-      findPrepLogs(data.processInstanceUuid).then(resp => {
-        this.prepLogs = resp.data
-      })
-      // 获取调度实例已运行的环节
-      findTaskInstanceById(data.processInstanceUuid).then(resp => {
-        this.taskslogsList = resp.data
+      findPrepLogs(data.processInstanceUuid).then(respo => {
+        this.prepLogs = respo.data
       })
       this.logDialogFromVisible = true
     },

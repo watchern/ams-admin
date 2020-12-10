@@ -11,6 +11,13 @@
       <el-col align="right">
         <el-button
           type="primary"
+          title="测试连接"
+          class="oper-btn link"
+          :disabled="selections.length !== 1"
+          @click="testConnect"
+        />
+        <el-button
+          type="primary"
           title="新增"
           class="oper-btn add"
           @click="hadleCreate"
@@ -122,9 +129,9 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { pageList, deleteByIds } from '@/api/etlscheduler/datasource'
+import { pageList, deleteByIds, getById } from '@/api/etlscheduler/datasource'
 import QueryField from '@/components/Ace/query-field/index'
-
+import store from '@/store'
 import { mapActions } from 'vuex'
 import mCreateDataSource from './pages/list/_source/createDataSource'
 import listUrlParamHandle from '@/components/etl/mixin/listUrlParamHandle'
@@ -136,6 +143,7 @@ export default {
   props: {},
   data() {
     return {
+      store,
       tableKey: 'datasourceUuid',
       list: null,
       total: 0,
@@ -238,6 +246,24 @@ export default {
     },
     hadleCreate() {
       this._create('')
+    },
+    testConnect() {
+      const item = Object.assign({}, this.selections[0])
+      getById(item.datasourceUuid).then(res => {
+        this.store.dispatch('datasource/connectDatasources', { connectionParams: JSON.stringify(res.data) }).then(resp => {
+          setTimeout(() => {
+            this.$notify({
+              title: '提示',
+              message: '测试连接成功',
+              type: 'success',
+              duration: 2000,
+              position: 'bottom-right'
+            })
+          }, 0)
+        }).catch(e => {
+          this.$message.error(e.msg || '测试连接失败')
+        })
+      })
     },
     sortChange(data) {
       const { prop, order } = data

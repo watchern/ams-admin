@@ -126,7 +126,7 @@
       </div>
     </el-container>
     <el-dialog v-if="ModelTreeDialog" :destroy-on-close="true" :append-to-body="true" :visible.sync="ModelTreeDialog" title="请选择模型" width="80%">
-      <ModelFolderTree ref="modelFolderTree" v-loading="modelTreeLoading" />
+      <ModelFolderTree ref="modelFolderTree" publicModel="relationModel"  v-loading="modelTreeLoading" />
       <div slot="footer">
         <el-button type="primary" @click="getSelectModel">确定</el-button>
         <el-button @click="ModelTreeDialog = false">取消</el-button>
@@ -159,6 +159,7 @@ import dataTree from '@/views/data/role-res/data-tree'
 import myQueryBuilder from '@/views/analysis/auditmodelresult/myquerybuilder'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import { selectModel,getTableCol } from '@/api/analysis/auditmodel'
+import { debug } from 'leancloud-storage'
 export default {
   name: 'EditModel',
   components: { ModelFolderTree,dataTree,myQueryBuilder},
@@ -346,7 +347,6 @@ export default {
           return
         }
         this.relTableColumn = result.data
-        console.log(this.relTableColumn)
         this.$refs.relTableDiv.style.display = 'block'
         this.setQueryBuilderColumn()
       })
@@ -463,6 +463,7 @@ export default {
       this.loadTableCol(currentNode.id)
       this.form.relationObjectName = currentNode.label
       this.form.relationObjectUuid = currentNode.id
+      debugger
       this.dataTableTree = false
 
     },
