@@ -4,7 +4,7 @@
       <span>操作</span>
     </div>
     <div>
-      <el-form :model="formCodeData" :rules="rules" label-width="150px">
+      <el-form :model="formCodeData" :rules="rules" label-width="150px" class="detail-form">
         <el-row>
           <el-col :span="12">
             <el-form-item label="类型名称" prop="codeName" label-width="150px">

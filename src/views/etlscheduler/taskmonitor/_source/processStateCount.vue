@@ -223,7 +223,7 @@ export default {
   margin: 0 0 0 0;
 }
 .list-table {
-  width: 60%;
+  /* width: 60%; */
   height: 300px;
   float: left;
   margin: 0 0 0 70px;

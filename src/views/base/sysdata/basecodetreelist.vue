@@ -25,10 +25,10 @@
             @closeMain="query"
           />
           <div class="divBtn">
-            <el-button v-if="this.editTag!=1" type="primary" icon="el-icon-add-location" size="mini" @click="saveCodeData">添加</el-button>
-            <el-button v-if="this.editTag!=1" type="primary" icon="el-icon-zoom-in" size="mini" @click="resetForm">重置</el-button>
-            <el-button v-if="this.editTag!=1" type="primary" icon="el-icon-edit" size="mini" :disabled="handleSelectionChange.length !== 1" @click="editCodeData">修改</el-button>
-            <el-button v-if="this.editTag!=1" type="danger" icon="el-icon-delete" size="mini" :disabled="handleSelectionChange.length === 0" @click="delCodeData">删除</el-button>
+            <el-button v-if="this.editTag!=1" type="primary" class="oper-btn add" size="mini" @click="saveCodeData"></el-button>
+            <el-button v-if="this.editTag!=1" type="primary" class="oper-btn again-2" size="mini" @click="resetForm"></el-button>
+            <el-button v-if="this.editTag!=1" type="primary" class="oper-btn edit" size="mini" :disabled="handleSelectionChange.length !== 1" @click="editCodeData"></el-button>
+            <el-button v-if="this.editTag!=1" type="danger" class="oper-btn delete" size="mini" :disabled="handleSelectionChange.length === 0" @click="delCodeData"></el-button>
             <el-button type="primary" size="mini" @click="returnList">返回</el-button>
           </div>
         </div>

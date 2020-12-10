@@ -1,9 +1,19 @@
 <template>
-  <div class="app-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
-    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;" @sort-change="sortChange" @selection-change="handleSelectionChange">
+    <!-- <div style="height:70%;overflow:hidden"> -->
+    <el-table 
+    :key="tableKey" 
+    v-loading="listLoading" 
+    :data="list" 
+    border 
+    fit 
+    highlight-current-row 
+    style="width: 100%;" 
+    @sort-change="sortChange" 
+    @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" />
       <el-table-column label="操作用户" width="100px" align="center" prop="opUserName" />
       <el-table-column label="操作IP" width="150px" align="center" prop="opIp" />
@@ -12,6 +22,7 @@
       <el-table-column label="操作信息" prop="opInfo" />
       <el-table-column label="操作时间" prop="opTime" :formatter="dateFormatter" />
     </el-table>
+    <!-- </div> -->
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
   </div>
 </template>
