@@ -22,15 +22,13 @@
       border
       fit
       style="width: 100%;"
-      height="calc(100vh - 300px)"
-      max-height="calc(100vh - 300px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
       <el-table-column label="选择" type="selection" width="55" />
-      <el-table-column label="代码类别名称" width="300px" prop="dataSortName" align="center"/>
+      <el-table-column label="代码类别名称" prop="dataSortName"/>
       <el-table-column label="代码类别编码" width="300px" align="center" prop="dataSortValue" />
-      <el-table-column label="代码类别描述" width="300px" prop="dataSortDesc" align="center"/>
+      <el-table-column label="代码类别描述" prop="dataSortDesc"/>
       <!-- <el-table-column label="创建时间" width="300px" align="center" prop="createTime" /> -->
       <el-table-column label="展现形式" prop="extendTag" :formatter="formatTag" align="center"/>
     </el-table>
