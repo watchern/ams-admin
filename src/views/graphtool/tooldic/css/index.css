@@ -1,26 +1,21 @@
-.graphContainer {
-	height:88%;
+#graphContainer {
 	background: url('../images/grid.gif');
-	position: absolute;
-	top: 112px;
+	position: relative;
 }
-.geToolbarContainer {
-	left: 0;
-	right: 0;
+#geToolbarContainer {
 	background: whiteSmoke;
 	border-bottom: 1px solid #e0e0e0;
 }
-.geDiagramContainer {
+#geDiagramContainer {
 	left: 0;
 	top: 0;
 	right: 0;
 }
 #accordion{
 	position: absolute;
-	left: 0;
-	bottom: 0;
+	top: 128px;
 }
-.geResultContainer {
+#geResultContainer {
 	width: 100%;
 	z-index: 1;
 	bottom: 0;
@@ -41,8 +36,9 @@
 }
 #detailContainer {
 	position: absolute;
-	right: 0;
-	bottom: 0;
+	right: 14px;
+	top: 128px;
+    border-left: 1px solid #E5E5E5;
 }
 .tab-content{
 	height:92%;
@@ -148,7 +144,7 @@ div.rightMenu ul li:hover {
     text-align:center;
     float: left;
 }
-.iconImg{
+.iconImgGraph{
     width: 20px;
     height: 20px;
     margin-bottom: 4px;

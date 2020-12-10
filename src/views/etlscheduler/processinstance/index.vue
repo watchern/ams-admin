@@ -9,7 +9,8 @@
       />
     </div>
     <el-row>
-      <el-col align="right"> <!-- 跳过指定环节 -->
+      <el-col align="right">
+        <!-- 跳过指定环节 -->
         <el-button
           type="primary"
           title="跳过指定环节"
@@ -51,7 +52,6 @@
           @click="handleCancel()"
         /></el-col>
     </el-row>
-    <div class="etl-processinstance-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -61,7 +61,8 @@
       :data="list"
       border
       highlight-current-row
-      height="200"
+      height="calc(100vh - 280px)"
+      max-height="calc(100vh - 280px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -120,10 +121,10 @@
           <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="taskParam in scope.row.distinctParamList" :key="taskParam.value">
-              <label class="col-md-2">
+              <label class="col-md-4">
                 {{ taskParam.name }}:
               </label>
-              <div class="col-md-10">
+              <div class="col-md-8">
                 {{ taskParam.value }}
               </div>
             </el-row>
@@ -189,12 +190,9 @@
       />
       <el-table-column
         label="当前环节"
-        width="120px"
-        align="center"
         prop="nowTask"
       />
     </el-table>
-    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -236,56 +234,63 @@
       :visible.sync="logDialogFromVisible"
       :close-on-click-modal="false"
     >
-      <!-- <el-card style="padding-bottom: 3%;margin-top:10px">
-        <el-col class="logtype">
+      <div style="max-height:60vh; overflow:auto;margin-top:3%;">
+        <!-- value和name一致，默认展开 -->
+        <el-collapse v-if="prepLogs!==null" value="pre" style="width:80%;border:0;margin-left:10%;">
+          <!-- title环节名称 -->
+          <el-collapse-item title="准备执行" name="pre">
+            <el-card style="padding-bottom: 3%;">
+              <!-- <el-col class="logtype">
           日志详情：
-        </el-col>
-        <el-col
-          v-if="prepLogs!=null"
-          style="margin-top:10px"
-        >
-          <el-col
-            v-for="(log,$index) in prepLogs"
-            :key="$index"
-            :label="log.taskLogUuid"
-            :style="{color: logColorObj[log.status].color}"
-          >
-            {{ log.logTime +' '+ log.logMessage }}
-          </el-col>
-        </el-col>
-      </el-card> -->
-      <el-timeline style="margin-left:7%;margin-top:7%">
-        <!-- 使用时间线任务实例的环节和运行的状态 -->
-        <!-- 已运行的环节，改变颜色和图标 -->
-        <el-timeline-item
-          v-for="(task,$index) in logTasks"
-          :key="task.id"
-          :icon="taskslogsList[task.id] != null ? 'el-icon-more': null"
-          :color="taskslogsList[task.id] != null ? '#0bbd87' : null"
-          size="large"
-        >
-          <!-- value和name一致，默认展开 -->
-          <el-collapse :value="task.id" style="width:85%;border:0;">
-            <!-- title环节名称 -->
-            <el-collapse-item :title="($index+1)+'/'+logTasks.length+'  '+task.name" :name="task.id">
-              <el-card style="padding-bottom: 3%">
-                <el-col v-if="taskslogsList[task.id] != null" class="logtype">
-                  耗时： {{ taskslogsList[task.id] != null ? taskslogsList[task.id].time : 0+'秒' }}
-                </el-col>
+        </el-col> -->
+              <el-col
+                style="margin-top:10px"
+              >
                 <el-col
-                  v-for="log in logs[task.id]"
-                  :key="log.taskLogUuid"
+                  v-for="(log,$index) in prepLogs"
+                  :key="$index"
                   :label="log.taskLogUuid"
                   :style="{color: logColorObj[log.status].color}"
-                  style="margin-top:10px"
                 >
                   {{ log.logTime +' '+ log.logMessage }}
                 </el-col>
-              </el-card>
-            </el-collapse-item>
-          </el-collapse>
-        </el-timeline-item>
-      </el-timeline>
+              </el-col>
+            </el-card>
+          </el-collapse-item>
+        </el-collapse>
+        <el-timeline style="margin-left:10%;margin-top:7%">
+          <!-- 使用时间线任务实例的环节和运行的状态 -->
+          <!-- 已运行的环节，改变颜色和图标 -->
+          <el-timeline-item
+            v-for="(task,$index) in logTasks"
+            :key="task.id"
+            :icon="taskslogsList[task.id] != null ? statusObj[taskslogsList[task.id].status].unicode: null"
+            :color="taskslogsList[task.id] != null ? statusObj[taskslogsList[task.id].status].color : null"
+            size="large"
+          >
+            <!-- value和name一致，默认展开 -->
+            <el-collapse :value="task.id" style="width:85%;border:0;">
+              <!-- title环节名称 -->
+              <el-collapse-item :title="($index+1)+'/'+logTasks.length+'  '+task.name" :name="task.id">
+                <el-card style="padding-bottom: 3%">
+                  <el-col v-if="taskslogsList[task.id] != null" class="logtype">
+                    耗时： {{ taskslogsList[task.id] != null ? taskslogsList[task.id].time : 0+'秒' }}
+                  </el-col>
+                  <el-col
+                    v-for="log in logs[task.id]"
+                    :key="log.taskLogUuid"
+                    :label="log.taskLogUuid"
+                    :style="{color: logColorObj[log.status].color}"
+                    style="margin-top:10px"
+                  >
+                    {{ log.logTime +' '+ log.logMessage }}
+                  </el-col>
+                </el-card>
+              </el-collapse-item>
+            </el-collapse>
+          </el-timeline-item>
+        </el-timeline>
+      </div>
       <div slot="footer">
         <el-button type="primary" @click="logDialogFromVisible = false">关闭</el-button>
       </div>
@@ -312,7 +317,7 @@ export default {
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '流程实例名称', name: 'name', type: 'text', value: '' },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
+        // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '流程状态', name: 'status', type: 'select',
           data: statuSelect
@@ -327,6 +332,7 @@ export default {
       formatMap: {
         commandType: commandTypeObj
       },
+      taskInstanceMap: {},
       statusObj: {},
       logColorObj: {},
       pageQuery: {
@@ -416,9 +422,11 @@ export default {
       // 终态数组
       const alreadyStatuses = [6, 7, 8]
       // 可以取消状态数组
-      const waitStatuses = [1, 2, 3, 4, 5]
+      const waitStatuses = [2, 3, 4, 40]
       // 执行和启用以外的状态
-      const otherStatuses = [1, 2, 3, 6, 7, 8]
+      // const otherStatuses = [1, 2, 6, 7, 8, 40, 50, 80, 90]
+      // 可以暂停的状态
+      const stopStatuses = [3, 4, 41, 32]
       // 选择1条数据
       if (this.selections.length === 1) {
         this.selections.forEach((r, i) => {
@@ -430,11 +438,15 @@ export default {
           if (waitStatuses.indexOf(r.status) >= 0) {
             this.doneStatus = false
           }
+          // 判断状态是否在可以暂停的状态数组中
+          if (stopStatuses.indexOf(r.status) >= 0) {
+            this.pusStatus = false
+          }
           switch (r.status) {
-            // 判断状态是否为执行中,如果是执行中，暂停按钮可用
-            case 4:
-              this.pusStatus = false
-              break
+            // // 判断状态是否为执行中,如果是执行中，暂停按钮可用
+            // case 4:
+            //   this.pusStatus = false
+            //   break
             // 判断状态是否为暂停中,如果是暂停中，执行按钮可用
             case 5:
               this.startStatus = false
@@ -465,11 +477,11 @@ export default {
             this.reStartStatus = true
           }
           // 遍历选择的数组判断状态，如果是有状态不是执行中的，启用按钮不可用
-          if (r.status === 4 || otherStatuses.indexOf(r.status) >= 0) {
+          if (r.status !== 5) {
             this.startStatus = true
           }
           // 遍历选择的数组判断状态，如果是有状态不是暂停中的，启用按钮不可用
-          if (r.status === 5 || otherStatuses.indexOf(r.status) >= 0) {
+          if (stopStatuses.indexOf(r.status) < 0) {
             this.pusStatus = true
           }
         })
@@ -535,20 +547,21 @@ export default {
         return
       }
       // 获取任务环节
-      getTaskLink(data.processInstanceUuid).then(resp => {
-        this.logTasks = resp.data
-      })
-      // 获取任务日志
-      findTaskLogs(data.processInstanceUuid).then(resp => {
-        this.logs = resp.data
+      getTaskLink(data.processInstanceUuid).then(res => {
+        this.logTasks = res.data
+        // 获取任务日志
+        findTaskLogs(data.processInstanceUuid).then(respon => {
+          this.logs = respon.data
+        })
+        // 获取调度实例已运行的环节
+        findTaskInstanceById(data.processInstanceUuid).then(respons => {
+          this.taskslogsList = respons.data
+          console.log(this.taskslogsList)
+        })
       })
       // 获取非环节执行任务日志
-      // findPrepLogs(data.processInstanceUuid).then(resp => {
-      //   this.prepLogs = resp.data
-      // })
-      // 获取调度实例已运行的环节
-      findTaskInstanceById(data.processInstanceUuid).then(resp => {
-        this.taskslogsList = resp.data
+      findPrepLogs(data.processInstanceUuid).then(respo => {
+        this.prepLogs = respo.data
       })
       this.logDialogFromVisible = true
     },
@@ -723,9 +736,5 @@ export default {
 	font-weight: 700;
 	font-style: normal;
 	color: #888888;
-  }
-  .etl-processinstance-list{
-    height: 71.5%;
-    overflow: auto;
   }
 </style>

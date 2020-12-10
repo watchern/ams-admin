@@ -231,6 +231,7 @@
 	border:1px solid #d5d5d5 !important;
 }
 .geToolbarContainer {
+    position: relative;
 	background:whiteSmoke;
 	border-bottom:1px solid #e0e0e0;
 }
@@ -420,6 +421,7 @@ div.mxWindow .geButton {
 	background-color: #b3b3b3;
 }
 .geHsplit {
+    position: relative;
 	cursor:col-resize;
 	background-color:#e5e5e5;
 	background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAHBAMAAADdS/HjAAAAGFBMVEUzMzP///9tbW1QUFCKiopBQUF8fHxfX1/IXlmXAAAAHUlEQVQImWMQEGAQFWUQFmYQF2cQEmIQE2MQEQEACy4BF67hpEwAAAAASUVORK5CYII=);
@@ -428,7 +430,7 @@ div.mxWindow .geButton {
 	background-position:center center;
 }
 .geVsplit {
-    width: 100%;
+    position: absolute;
 	font-size:1pt;
 	cursor:row-resize;
 	background-color:#e5e5e5;

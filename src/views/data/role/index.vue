@@ -105,6 +105,7 @@
       </template>
       <div slot="footer">
         <el-button @click="filterVisible = false">关闭</el-button>
+        <el-button type="primary" @click="handleSaveRoleFilter">确定</el-button>
       </div>
     </el-dialog>
   </div>

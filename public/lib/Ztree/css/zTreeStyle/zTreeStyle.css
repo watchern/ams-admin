@@ -15,10 +15,20 @@
 #bottomPart{
 	height: 96%;
 	width: 100%;
-	z-index: 200;
+	z-index: 100;
 	position: relative;
-	margin-top: 8px;
 }
+
+#vertical div{
+	background: url(./img/tztree.png) 0 0 no-repeat;
+	border: none;
+	width: 20px;
+	height: 20px;
+	position: absolute;
+    top: 48%;
+    left: -2.5px;
+}
+
 
 #iconImg-huifu{
 	width: 24px;
@@ -32,16 +42,25 @@
 	display: none;
 }
 
+#iconImg-save{
+	background: url(./img/zTreeOut.png) 0 0 no-repeat;
+}
+
+#iconImg-table{
+	width: 48px;
+	background: url(./img/zTreeTable.png) 0 0 no-repeat;
+}
+
 .iconImg {
 	width: 24px;
-	  height: 24px;
-	  float: left;
-	  margin-top: 1px;
-	  background: url(./img/maxmize.png) 0 0 no-repeat;
-	  border: none;
-	  display: inline-block;
-	  background-size: 100%;
-  }
+	height: 24px;
+	float: left;
+	background: url(./img/maxmize.png) 0 0 no-repeat;
+	border: none;
+	display: inline-block;
+	margin: 1px 5px 0 5px;
+	background-size: 100%;
+}
 
 .ztree * {
 	padding: 0;
@@ -72,7 +91,7 @@
 	margin: 0;
 }
 .ztree li {
-	padding: 0 0 0 20px; 
+	padding: 0 0 0 20px;
 	margin: 0;
 	list-style: none;
 	line-height: 14px;
@@ -93,8 +112,8 @@
 }
 
 #sidebar .add-sidiv{
-	border-top:1px solid #5E6572;
-	border-bottom:1px solid #5E6572;
+	border-top:1px solid rgb(206,208,212);
+	border-bottom:1px solid rgb(206,208,212);
 	background: #fff;
 }
 
@@ -164,10 +183,31 @@
 }
 
 #sidebar img{
-	margin-top: 25px;
-	margin-bottom: 25px;
+	margin-top: 40px;
 	width: 18px;
 	height: 18px;
+}
+#sidebar span{
+	width: 96%;
+	margin: 8px 0;
+	display: inline-block;
+	margin-bottom: 32px;
+	font-weight: bolder;
+}
+
+.unfold-shuju span{
+	color: #9B4C4C;
+	font-family: PingFangSC-Semibold;
+}
+
+.unfold-canshu span{
+	color: #514559 ;
+	font-family: PingFangSC-Semibold;
+}
+
+.unfold-sql span{
+	color: #184A4C;
+	font-family: PingFangSC-Semibold;
 }
 
 .ztree li span.button.chk {

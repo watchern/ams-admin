@@ -13,7 +13,6 @@
         <el-button type="primary" class="oper-btn excel" title="导出" @click="exportFile" />
       </el-col>
     </el-row>
-    <div class="etl-datafilestatistics2-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -26,6 +25,7 @@
       max-height="800"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
+      
     >
       <el-table-column
         label="业务系统"
@@ -68,7 +68,6 @@
         @pagination="getList"
       /> -->
     </el-table>
-    </div>
     </div>
 </template>
 
@@ -206,8 +205,5 @@ export default {
   letter-spacing: 0;
   line-height: 12px;
  }
- .etl-datafilestatistics2-list{
-    height: 71.5%;
-    overflow: auto;
- }
+ 
 </style>

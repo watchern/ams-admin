@@ -2,12 +2,12 @@
   <div class="page-container">
     <el-row :gutter="5">
       <el-col :span="8">
-        <el-select v-model="currentScene" placeholder="请选择">
+        <el-select v-model="currentSceneUuid" placeholder="请选择">
           <el-option
             v-for="scene in allScene"
             :key="scene.sceneUuid"
             :label="scene.sceneName"
-            :value="scene"
+            :value="scene.sceneUuid"
           />
         </el-select>
         <el-tabs v-model="grpUuid" @tab-click="tabClick">
@@ -112,7 +112,8 @@ export default {
     return {
       roleUuid: this.$route.params.roleUuid,
       allScene: [],
-      currentScene: {},
+      // currentScene: {},
+      currentSceneUuid: '',
       treeLoading: false,
       grpUuid: '',
       filterText: null,
@@ -130,6 +131,9 @@ export default {
   computed: {
     currentTreeData() {
       return this.treeData['A' + this.grpUuid]
+    },
+    currentScene() {
+      return this.allScene.filter(e => { return e.sceneUuid === this.currentSceneUuid })[0]
     }
   },
   watch: {
@@ -140,7 +144,7 @@ export default {
   created() {
     getAllScene().then(resp => {
       this.allScene = resp.data
-      if (this.allScene.length > 0) this.currentScene = this.allScene[0]
+      if (this.allScene.length > 0) this.currentSceneUuid = this.allScene[0].sceneUuid
     })
     getRoleGrp(this.roleUuid).then(resp => {
       this.tableData = resp.data

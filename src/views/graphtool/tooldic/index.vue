@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="graphToolDiv" style="width: 100%;height: 100%;">
         <div id="geToolbarContainer" class="geToolbarContainer">
             <div class="menu" style="width: 235px !important;padding-left: 20px !important;">
                 <div class="menuTit">
@@ -7,27 +7,27 @@
                 </div>
                 <div class="menuLi">
                     <div class="icon" style="width:70px !important;">
-                        <img class="iconImg" style="width: 16px;height: 16px;" src="../tooldic/images/icon/new.png" alt="新建">
+                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../tooldic/images/icon/new.png" alt="新建">
                         <a class="iconText" @click="newGraph">&nbsp;新建</a>
                     </div>
                     <div class="icon" style="width:60px !important;">
-                        <img class="iconImg" src="../tooldic/images/icon/save.png" alt="保存">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/save.png" alt="保存">
                         <a class="iconText" @click="saveGraph('saveGraph')">保存</a>
                     </div>
                     <div class="icon" style="width:70px !important;margin-left: 10px;">
-                        <img class="iconImg" src="../tooldic/images/icon/next.png" alt="前进">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/next.png" alt="前进">
                         <a class="iconText" @click="next">恢复</a>
                     </div>
                     <div class="icon" style="width:70px !important;">
-                        <img class="iconImg" src="../tooldic/images/icon/open.png" alt="打开">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/open.png" alt="打开">
                         <a class="iconText" @click="openGraph">打开</a>
                     </div>
                     <div class="icon" style="width:70px !important;padding-left:6px;">
-                        <img class="iconImg" style="width: 16px;height: 16px;" src="../tooldic/images/icon/saveAs.png" alt="另存为">
+                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../tooldic/images/icon/saveAs.png" alt="另存为">
                         <a class="iconText" @click="saveGraph('saveAsGraph')">另存为</a>
                     </div>
                     <div class="icon" style="width:70px !important;">
-                        <img class="iconImg" src="../tooldic/images/icon/back.png" alt="后撤">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/back.png" alt="后撤">
                         <a class="iconText" @click="back">撤销</a>
                     </div>
                 </div>
@@ -36,7 +36,7 @@
                 <div class="menuTit">运行</div>
                 <div class="menuLi">
                     <div class="icon" style="width:100px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImg" src="../tooldic/images/icon/run.png" alt="全部运行">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/run.png" alt="全部运行">
                         <a class="iconText" @click="executeAllNode">全部运行</a>
                     </div>
                 </div>
@@ -45,27 +45,27 @@
                 <div class="menuTit">行数据处理</div>
                 <div class="menuLi">
                     <div id="filter" class="icon" data-type="filter">
-                        <img class="iconImg" src="../tooldic/images/icon/filter.png" alt="数据筛选">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/filter.png" alt="数据筛选">
                         <a class="iconText">数据筛选</a>
                     </div>
                     <div id="sort" class="icon" data-type="sort">
-                        <img class="iconImg" src="../tooldic/images/icon/sort.png" alt="数据排序">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/sort.png" alt="数据排序">
                         <a class="iconText">数据排序</a>
                     </div>
                     <div id="sample" class="icon" data-type="sample">
-                        <img class="iconImg" src="../tooldic/images/icon/sample.png" alt="数据抽样">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/sample.png" alt="数据抽样">
                         <a class="iconText">数据抽样</a>
                     </div>
                     <div id="layering" class="icon" data-type="layering">
-                        <img class="iconImg" src="../tooldic/images/icon/layering.png" alt="数据分层">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/layering.png" alt="数据分层">
                         <a class="iconText">数据分层</a>
                     </div>
                     <div id="groupCount" class="icon" data-type="groupCount">
-                        <img class="iconImg" src="../tooldic/images/icon/groupCount.png" alt="分组汇总">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/groupCount.png" alt="分组汇总">
                         <a class="iconText">分组汇总</a>
                     </div>
                     <div id="delRepeat" class="icon" data-type="delRepeat">
-                        <img class="iconImg" src="../tooldic/images/icon/delRepeat.png" alt="数据去重">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/delRepeat.png" alt="数据去重">
                         <a class="iconText">数据去重</a>
                     </div>
                 </div>
@@ -74,11 +74,11 @@
                 <div class="menuTit">列数据处理</div>
                 <div class="menuLi">
                     <div id="comparison" class="icon" data-type="comparison" style="width:130px !important;">
-                        <img class="iconImg" src="../tooldic/images/icon/comparison.png" alt="数据频次分析">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/comparison.png" alt="数据频次分析">
                         <a class="iconText" style="padding-left: 5px;">数据频次分析</a>
                     </div>
                     <div id="change" class="icon" data-type="change">
-                        <img class="iconImg" src="../tooldic/images/icon/change.png" alt="数据转码">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/change.png" alt="数据转码">
                         <a class="iconText" style="padding-left: 5px;">数据转码</a>
                     </div>
                 </div>
@@ -87,11 +87,11 @@
                 <div class="menuTit">表间数据处理</div>
                 <div class="menuLi">
                     <div id="union" class="icon" data-type="union">
-                        <img class="iconImg" src="../tooldic/images/icon/combineSet.png" alt="数据合并">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/combineSet.png" alt="数据合并">
                         <a class="iconText">数据融合</a>
                     </div>
                     <div id="relation" class="icon" data-type="relation">
-                        <img class="iconImg" src="../tooldic/images/icon/relation.png" alt="数据关联">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/relation.png" alt="数据关联">
                         <a class="iconText">数据关联</a>
                     </div>
                 </div>
@@ -100,7 +100,7 @@
             <!--<div class="menuTit">SQL</div>-->
             <!--<div class="menuLi">-->
             <!--<div class="icon" id="sql" data-type="sql" style="width:110px !important;height: 60px !important;line-height: 60px !important;">-->
-            <!--<img class="iconImg" src="../tooldic/images/icon/sql.png" alt="SQL查询器"/>-->
+            <!--<img class="iconImgGraph" src="../tooldic/images/icon/sql.png" alt="SQL查询器"/>-->
             <!--<a class="iconText">SQL查询器</a>-->
             <!--</div>-->
             <!--</div>-->
@@ -109,7 +109,7 @@
             <!--<div class="menuTit">图形</div>-->
             <!--<div class="menuLi">-->
             <!--<div class="icon" style="width:110px !important;height: 60px !important;line-height: 60px !important;" id="barChart" data-type="barChart">-->
-            <!--<img class="iconImg" src="images/icon/customize.png" alt="自定义"/>-->
+            <!--<img class="iconImgGraph" src="images/icon/customize.png" alt="自定义"/>-->
             <!--<a class="iconText">自定义图形</a>-->
             <!--</div>-->
             <!--</div>-->
@@ -118,12 +118,12 @@
                 <div class="menuTit">帮助</div>
                 <div class="menuLi" style="">
                     <div id="help" class="icon" data-type="help" style="width:80px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImg" src="../tooldic/images/icon/help.png" alt="帮助">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/help.png" alt="帮助">
                         <a class="iconText" @click="help">帮助</a>
                     </div>
                 </div>
             </div>
-            <span id="toolBarSpan" @click="hideAndShow" style="position: absolute;right: 20px;bottom: 0px;font-weight: 800;">【折叠/展开】</span>
+            <span id="toolBarSpan" @click="hideAndShow" style="position: absolute;right: 0;bottom: 2px;font-weight: 800;">【折叠/展开】</span>
         </div>
         <div id="accordion" class="panel-group">
             <ul class="nav nav-tabs" role="tablist">
@@ -170,13 +170,13 @@
                     <!--<button id="viewAllData" class="btn btn-primary" onclick="viewAllData()" style="position: absolute;right: 200px;top: 10px;display:none;">预览全部数据</button>-->
                     <!--<button id="exportAllData" class="btn btn-primary" onclick="exportAllData()" style="position: absolute;right: 100px;top: 10px;display:none;">全部导出</button>-->
                     <!--<div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;display:none;" onclick="maxOpen()">-->
-                        <!--<img class="iconImg" src="../tooldic/images/icon/maximize.png" alt="最大化">-->
+                        <!--<img class="iconImgGraph" src="../tooldic/images/icon/maximize.png" alt="最大化">-->
                         <!--<span class="iconText">最大化</span>-->
                     <!--</div>-->
                     <div class="layui-tab-content">
                         <div class="layui-tab-item">
                             <div id="tableArea">
-                                <div v-for="result in resultTableArr" class="data-show">
+                                <div v-for="result in resultTableArr" class="data-show" v-if="showTableResult">
                                     <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="preValue" />
                                 </div>
                             </div>
@@ -246,11 +246,11 @@
         <el-dialog :visible.sync="helpDialogVisible" title="帮助">
             <Help/>
         </el-dialog>
-        <el-dialog :visible.sync="graphListDialogVisible" title="图形列表" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal">
+        <el-dialog :visible.sync="graphListDialogVisible" title="选择图形" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal">
             <GraphListExport ref="graphListExport" :openType="openType"/>
             <div slot="footer">
+                <el-button @click="graphListDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="getGraphObject">确定</el-button>
-                <el-button type="primary" @click="graphListDialogVisible = false">关闭</el-button>
             </div>
         </el-dialog>
         <el-dialog :visible.sync="graphFormVisible" :title="graphFormTitle" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
@@ -271,8 +271,8 @@
                 </el-row>
             </el-form>
             <div slot="footer">
-                <el-button type="primary" @click="getGraphFormInfo">确定</el-button>
-                <el-button type="primary" @click="graphFormVisible = false">关闭</el-button>
+                <el-button @click="graphFormVisible = false">取消</el-button>
+                <el-button type="primary" @click="getGraphFormInfo">保存</el-button>
             </div>
         </el-dialog>
         <!-- 右键事件 -->
@@ -281,14 +281,14 @@
                 <li onclick="rootDataRefresh">刷新</li>
             </ul>
         </div>
-        <!--<div id="rMenu" class="rightMenu">-->
-            <!--<ul>-->
-                <!--<li @click="viewData">预览数据</li>-->
+        <div id="rMenu" class="rightMenu">
+            <ul>
+                <li @click="viewData(true)">预览数据</li>
                 <!--<li @click="relationTableQuery">关联表查询</li>-->
                 <!--<li @click="editTable_li">修改表结构</li>-->
                 <!--<li @click="dropTable_li">删除表</li>-->
-            <!--</ul>-->
-        <!--</div>-->
+            </ul>
+        </div>
         <div id="folderMenu_dev" class="rightMenu">
             <ul>
                 <li id="addFolder" @click="addFolder()">新建文件夹</li>
@@ -347,7 +347,6 @@
     import * as commonJs from '@/views/graphtool/tooldic/js/common'
     import * as indexJs from '@/views/graphtool/tooldic/js/index'
     import * as validateJs from '@/views/graphtool/tooldic/js/validate'
-    var ownerEditor, graph
     export default {
         name: 'ToolIndex',
         data() {
@@ -371,13 +370,14 @@
                 graphUuid:getParams().graphUuid,// 打开图形的ID
                 graphName:'',
                 description:'',
-                openGraphType: Number(getParams().openGraphType),// 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
-                openType: Number(getParams().openType),// 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
+                openGraphType: getParams().openGraphType ? Number(getParams().openGraphType) : 1,// 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
+                openType: getParams().openType ? Number(getParams().openType) : 2,// 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
                 loading:null,//遮罩层对象
                 searchZtreeContent:'',
                 webSocket:null,
                 executeType:1,//节点执行的类型（1、执行本节点、2、执行到本节点、3、全部执行）
                 resultTableArr:[],//节点结果集集合
+                showTableResult:false,
                 executeId:'',//当前执行批次ID
                 executeNodeIdArr:[],//当前执行批次的节点ID集合
                 graphFormVisible:false,
@@ -391,6 +391,7 @@
             }
         },
         components:{ Help, GraphListExport,ChildTabs },
+        // props:["graphUuid","openGraphType","openType"],
         created() {
             this.init()
         },
@@ -412,13 +413,20 @@
         },
         methods: {
             init() {
-                // console.log(this.$store.state.user)
-                // console.log(this.$store.state.user.id)
-                // this.loginUserUuid = Cookies.get("personuuid")
-                // this.loginUserUuid = this.$store.state.user.id
-                this.loginUserCode = 'csi'
-                this.loginUserUuid = '2c948a86757909950175790b10b60002'
-                // console.log(this.loginUserUuid)
+                // //打开图形的ID
+                // if(typeof this.graphUuid === "undefined" || this.graphUuid == null){
+                //     this.graphUuid = getParams().graphUuid
+                // }
+                // //当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
+                // if(typeof this.openGraphType === "undefined" || this.openGraphType == null){
+                //     this.openGraphType = getParams().openGraphType ? Number(getParams().openGraphType) : 1
+                // }
+                // //打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
+                // if(typeof this.openType === "undefined" || this.openType == null){
+                //     this.openType = getParams().openType ? Number(getParams().openType) : 2
+                // }
+                this.loginUserUuid = this.$store.state.user.id
+                this.loginUserCode = this.$store.state.user.code
                 let roleArr = this.$store.state.user.roles
                 let screenManager = 'screenManager'// 场景查询管理员角色
                 if (roleArr.includes(screenManager)) {
@@ -464,6 +472,8 @@
                         indexJs.nodeRemark(optType)
                     }
                 })
+                let ownerEditor = null
+                let graph = null
                 mxResources.loadDefaultBundle = false
                 var bundle = mxResources.getDefaultBundle(RESOURCE_BASE, mxLanguage) || mxResources.getSpecialBundle(RESOURCE_BASE, mxLanguage)
                 var defaultXmlUrl = STYLE_PATH + '/default.xml'
@@ -488,7 +498,7 @@
                     var outline = document.getElementById('outLineArea')
                     outline.style.position = 'absolute'
                     outline.style.width = '97%'
-                    outline.style.height = '135px'
+                    outline.style.height = '210px'
                     outline.style.border = '1px solid whiteSmoke'
                     outline.style.backgroundColor = '#FFFFFF'
                     outline.style.overflow = 'hidden'
@@ -703,9 +713,7 @@
             },
             initWebSocKet(){
                 let $this = this
-                // const webSocketPath = process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET + this.$store.getters.personuuid;
                 const webSocketPath = process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET + this.loginUserUuid + 'GRAPH'
-                console.log('webSocketPath'+webSocketPath)
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
                 // 当服务端打开连接
@@ -759,37 +767,44 @@
                                 let nodeId = cueNodeId
                                 let nodeName = executeSQLObj.name
                                 let resultTableName = nodeInfo.resultTableName
-                                $this.resultTableArr.push({nodeId,nodeName,resultTableName})
-                                for(let k=0; k<$this.executeNodeIdArr.length; k++){//找出当前节点的下一个节点即结果表节点
+                                let isRoleTable = false
+                                let resultTableObj = {nodeId,nodeName,resultTableName,isRoleTable}
+                                //在执行队列的ID集合中找出当前节点的下一个节点即结果表节点
+                                for(let k=0; k<$this.executeNodeIdArr.length; k++){
                                     if($this.executeNodeIdArr[k] === cueNodeId){
                                         let nextNodeId = $this.executeNodeIdArr[k+1]
                                         if(typeof nextNodeId !== "undefined"){
                                             let optType = graph.nodeData[nextNodeId].nodeInfo.optType
                                             if(optType === 'newNullNode'){
+                                                let midTableStatus = graph.nodeData[nextNodeId].nodeInfo.midTableStatus
+                                                let resultTableStatus = graph.nodeData[nextNodeId].nodeInfo.resultTableStatus
+                                                if(midTableStatus === 2 || resultTableStatus === 2){
+                                                    resultTableObj["isRoleTable"] = true
+                                                }
                                                 nodeName = nodeName + "_" + graph.nodeData[nextNodeId].nodeInfo.nodeName
                                                 break
                                             }
                                         }
                                     }
                                 }
+                                $this.resultTableArr.push(resultTableObj)
                                 $this.preValue.push({id:nodeId,name:nodeName})
                             }
                         }
-                        // console.log($this.resultTableArr)
                         if(isEnd && executeSQLObj.state === "2"){
                             // 记录执行操作
                             indexJs.refrashHistoryZtree('【' + executeSQLObj.name + '】节点执行完毕')
                             // 自动保存图形化
                             indexJs.autoSaveGraph()
                             $this.layuiTabClickLi(0)
-                            $this.loading.destroy()
-                            $this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false,'hasTime':true })
+                            $this.showTableResult = false
                             //预览数据
                             $this.viewData()
                         }
                     }
                     if(executeTaskObj.resultType === 'select'){//展示节点结果集数据
                         $this.loading.destroy()
+                        $this.showTableResult = true
                         if(executeSQLObj.customParam[0] === $this.websocketBatchId){//展示当前操作的结果集
                             $this.$nextTick( () => {
                                 $this.$refs.childTabsRef[0].loadTableData(dataObj)
@@ -812,22 +827,13 @@
                 this.$message({ type: 'info', message: '待集成' })
             },
             newGraph(){
-                // this.$confirm('新建图形将在当前页打开，是否继续?', '提示', {
-                //     confirmButtonText: '确定',
-                //     cancelButtonText: '取消',
-                //     type: 'info',
-                //     center: true
-                // }).then(() => {
-                    // let url = `/graphtool/tooldic?openGraphType=1&openType=${this.openType}`
-                    // this.$router.replace({path: url});
-                    window.open(`/#/graphtool/tooldic?openGraphType=1&openType=${this.openType}`, '_blank')
-                    // const {href} = this.$router.resolve({
-                    //     path: url,
-                    // });
-                    // window.open(href,'_blank');
-                // }).catch(() => {
-                //     this.$message({ type: 'info', message: '已取消' })
-                // })
+                this.$store.commit('aceState/setRightFooterTags', {
+                    type: 'active',
+                    val: {
+                        name: '新增图形',
+                        path: `/graphtool/tooldic?openGraphType=1&openType=${this.openType}`
+                    }
+                })
             },
             openGraph(){
                 indexJs.openGraph()
@@ -860,7 +866,7 @@
                     'graphName': this.graphName,
                     'description': this.description,
                     'graphXml': xml,
-                    'graphType': 1, // 个人图形
+                    'graphType': this.openGraphType,
                     'nodeData': JSON.stringify(graph.nodeData) // 各个节点的配置信息
                 }
                 if (this.saveGraphType === 'saveGraph') {
@@ -883,7 +889,29 @@
             searchZtree() {
                 indexJs.searchZtree()
             },
-            viewData() {
+            viewData(isZtree) {
+                if(isZtree){
+                    indexJs.hideRMenu("rMenu")
+                    let nodes = this.zTreeObj.getSelectedNodes()
+                    if(nodes.length > 0) {
+                        let $this = this
+                        let nodeId = nodes[0].id
+                        let nodeName = nodes[0].name
+                        let resultTableName = nodes[0].name
+                        let isRoleTable = true
+                        $this.resultTableArr = []
+                        $this.preValue = []
+                        $this.$nextTick( () => {
+                            $this.websocketBatchId = new UUIDGenerator().id
+                            $this.resultTableArr = [{nodeId, nodeName, resultTableName,isRoleTable}]
+                            $this.preValue = [{id:nodeId,name:nodeName}]
+                            $this.layuiTabClickLi(0)
+                            $this.viewData()
+                        })
+                    }
+                }
+                this.loading.destroy()
+                this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false,'hasTime':true })
                 viewNodeData({nodeObjs:JSON.stringify(this.resultTableArr),openType:this.openType,websocketBatchId:this.websocketBatchId}).then()
             },
             relationTableQuery() {
@@ -960,12 +988,6 @@
                     }else{
                         this.graphListDialogVisible = false
                         this.$nextTick( () => {
-                            // this.$confirm('图形将在当前页打开，是否继续?', '提示', {
-                            //     confirmButtonText: '确定',
-                            //     cancelButtonText: '取消',
-                            //     type: 'info',
-                            //     center: true
-                            // }).then(() => {
                             var urlParamStr = ''
                             if (returnObj.graphType === 3) {
                                 if (returnObj.publicType === 1) { // 场景查询
@@ -976,10 +998,13 @@
                             } else { // 个人图形
                                 urlParamStr = '?graphUuid=' + returnObj.graphUuid + '&openGraphType=1'
                             }
-                            window.open(`/#/graphtool/tooldic${urlParamStr}&openType=${this.openType}`, '_blank')
-                            // }).catch(() => {
-                            //     this.$message({ type: 'info', message: '已取消' })
-                            // })
+                            this.$store.commit('aceState/setRightFooterTags', {
+                                type: 'active',
+                                val: {
+                                    name: '编辑图形',
+                                    path: `/graphtool/tooldic${urlParamStr}&openType=${this.openType}`
+                                }
+                            })
                         })
                     }
                 }else{//this.showGraphListType === 'export'，图形导出方法
@@ -996,7 +1021,6 @@
              * 接口：获取中间、最终结果表的输出列信息
              */
             getResultColumnInfo(){
-                // console.log(indexJs.getResultColumnInfo())
                 return indexJs.getResultColumnInfo()
             }
         }

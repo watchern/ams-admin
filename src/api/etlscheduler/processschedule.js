@@ -116,3 +116,13 @@ export function queryProcessLike() {
     method: 'get'
   })
 }
+
+// 立即启用
+export function startProcessInstance(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/schedules/start-process-instance`,
+    method: 'put',
+    data
+  })
+}

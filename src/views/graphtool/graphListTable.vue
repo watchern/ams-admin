@@ -40,10 +40,10 @@
             <el-table-column v-if="type === 'shareToGraphType'" label="接收人" prop="sharedPersonName" />
         </el-table>
         <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getGraphList" />
-        <el-dialog v-if="initPreviewGraph" :destroy-on-close="true" :append-to-body="true" :visible.sync="initPreviewGraph" title="图形详情信息" width="600px">
+        <el-dialog v-if="initPreviewGraph" :destroy-on-close="true" :append-to-body="true" :visible.sync="initPreviewGraph" title="查看图形" width="600px">
             <PreviewGraph :graph-uuid="graphUuid" />
             <div slot="footer">
-                <el-button @click="initPreviewGraph=false">关闭</el-button>
+                <el-button @click="initPreviewGraph=false">取消</el-button>
             </div>
         </el-dialog>
     </div>
@@ -123,13 +123,16 @@
                 this.initPreviewGraph = true
             },
             add() {
-                window.open('/#/graphtool/tooldic?openGraphType=1&openType=2', '_blank')
-                // let url = '/graphtool/tooldic?openGraphType=1&openType=2'
-                // this.$router.replace({path: url});
+                this.$store.commit('aceState/setRightFooterTags', {
+                    type: 'active',
+                    val: {
+                        name: '新增图形',
+                        path: '/graphtool/tooldic?openGraphType=1&openType=2'
+                    }
+                })
             },
             edit() {
                 let selectObj = this.$refs.graphListTable.selection
-                let url = '/#/graphtool/tooldic'
                 let graphType = selectObj[0].graphType
                 let publicType = selectObj[0].publicType
                 let urlParamStr = ''
@@ -143,7 +146,13 @@
                 } else { // 个人图形、他人分享图形
                     urlParamStr = "?graphUuid=" + selectObj[0].graphUuid + "&openGraphType=1&openType=2";
                 }
-                window.open(url + urlParamStr,"_blank");
+                this.$store.commit('aceState/setRightFooterTags', {
+                    type: 'active',
+                    val: {
+                        name: '编辑图形',
+                        path: `/graphtool/tooldic${urlParamStr}`
+                    }
+                })
             },
             deleteGraph() {
                 let selectObj = this.$refs.graphListTable.selection
@@ -156,6 +165,7 @@
                     let obj = this.getUuidsANdNames(selectObj)
                     deleteGraphInfoById(obj).then(response => {
                         this.$message({ type: 'success', message: '删除成功!' })
+                        this.listSelectChange([])
                         this.getGraphList()
                         // 刷新图形树
                         this.$emit('refreshGraphTree')
@@ -183,6 +193,7 @@
                 let personObj = { personUuids: '2c91808573e740e001744d54e2800005', personNames: '张闯1' }// 模拟选择的人员结果信息，待集成方法
                 cancelShareGraph({ ...graphObj, ...personObj }).then(response => {
                     this.$message({ type: 'success', message: '成功取消已分享图形' })
+                    this.listSelectChange([])
                     this.getGraphList()
                     // 刷新图形树（主要刷新我的分析图形节点数据）
                     this.$emit('refreshGraphTree')

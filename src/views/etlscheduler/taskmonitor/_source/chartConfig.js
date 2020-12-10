@@ -1,5 +1,5 @@
 import { turn } from 'core-js/fn/array'
-import { data } from 'jquery';
+import { data } from 'jquery'
 import _ from 'lodash'
 import {
   tasksState
@@ -10,12 +10,12 @@ const pie = {
     orient: 'vertical',
     left: 0,
     data: ['等待中', '等待文件', '等待依赖', '执行中', '暂停', '已取消', '执行完成', '执行失败'],
-    data1:['执行完成']
+    data1: ['执行完成']
   },
-  tooltip : { 
-    trigger: 'item', 
-    formatter: "{b} : {c} ({d}%)" 
-},
+  tooltip: {
+    trigger: 'item',
+    formatter: '{b} : {c} ({d}%)'
+  },
   series: [{
     type: 'pie',
     clickable: true, // Whether to open clicks
@@ -23,34 +23,34 @@ const pie = {
     avoidLabelOverlap: false, // Whether to prevent the label overlap policy
     hoverAnimation: false, // Whether to enable hover to enlarge the animation on the sector.
     // silent: true,
-    radius: ['55%', '75%'],
+    radius: ['45%', '75%'],
     center: ['66.8%', '37.5%'],
     label: {
       show: false,
       position: 'center',
-      fontSize: '30',
-      formatter: '   {d}% \r\n {b}' 
+      fontSize: '20',
+      formatter: '   {d}% \r\n {b}'
     },
     emphasis: {
       label: {
         show: true,
-        fontSize: '30',
+        fontSize: '20',
         // fontWeight: 'bold',
-        formatter: '   {d}% \r\n {b}' 
-      },
+        formatter: '   {d}% \r\n {b}'
+      }
       // label: {
       //   show: true,
       //   fontSize: '20',
       //   // fontWeight: 'bold',
-      //   formatter: '   {d}% \r\n {b}' 
+      //   formatter: '   {d}% \r\n {b}'
       // }
     },
     labelLine: {
       show: false
-    },
+    }
   }
   ]
-};
+}
 
 //     label: {
 //       normal: {

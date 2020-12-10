@@ -151,7 +151,7 @@ const statusType = [{
   code: 'G_SUCCESS',
   label: '执行完成',
   color: 'rgb(145,202,140)'
-}, 
+},
 {
   // seriesIndex :'1',
   // dataIndex :'1',

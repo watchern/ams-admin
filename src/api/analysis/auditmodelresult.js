@@ -5,12 +5,22 @@ const analysisUrl = '/analysis'
  * 查询模型运行结果列表
  * @param  data 传入的模糊查询条件
  */
-export function getRunTaskRelByPage(data) {
+export function getRunTaskRelByPage(data, resultSpiltObjects) {
+  var map = {
+    basePageParam: data
+  }
   return request({
     baseURL: analysisUrl,
     url: '/RunTaskRelController/getLikeRunTaskRelByPage',
     method: 'post',
-    data
+    data: {
+      basePageParam: data,
+      orgNameColumnList: resultSpiltObjects.orgNameColumnList,
+      orgNameValues: resultSpiltObjects.orgNameValues,
+      orgUuidColumnList:resultSpiltObjects.orgUuidColumnList,
+      orgUuidValues:resultSpiltObjects.orgUuidValues,
+      resultSpiltedRunResultRel: resultSpiltObjects.resultSpiltedRunResultRel
+    }
   })
 }
 
@@ -42,6 +52,20 @@ export function ResultRelProject(data) {
 }
 
 /**
+ * 关联项目
+ * @param data 要添加的分类对象
+ * @returns {AxiosPromise}
+ */
+export function addCoverResultRelProject(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ResultRelProjectController/addCoverResultRelProject',
+    method: 'post',
+    data
+  })
+}
+
+/**
  * 移除项目关联
  * @param  data 运行结果与项目关联表主键
  */
@@ -57,17 +81,17 @@ export function rmResultRelProjectlr(data) {
  * 添加结果共享
  * @param data 运行结果共享对象
  */
-export function insertRunResultShare(data) {
+export function insertRunResultShare(runTaskRelUuids,personUuids) {
   return request({
     baseURL: analysisUrl,
     url: '/RunResultShareController/addRunResultShare',
     method: 'post',
-    data
+    data:{runTaskRelUuids,personUuids}
   })
 }
 /**
-   * 删除结果共享表
-   */
+ * 删除结果共享表
+ */
 export function deleteRunResultShare(data) {
   return request({
     baseURL: analysisUrl,
@@ -79,13 +103,21 @@ export function deleteRunResultShare(data) {
  * 根据运行结果表查询真实表
  * @param {*} data pageQuery对象
  */
-export function selectTable(data, filterSql) {
-  var map = {basePageParam:data,filterSql:filterSql}
+export function selectTable(data, filterSql,resultSpiltObjects) {
+  var map = {
+    basePageParam: data,
+    filterSql: filterSql,
+    orgNameColumnList: resultSpiltObjects.orgNameColumnList,
+    orgNameValues: resultSpiltObjects.orgNameValues,
+    orgUuidColumnList:resultSpiltObjects.orgUuidColumnList,
+    orgUuidValues:resultSpiltObjects.orgUuidValues,
+    resultSpiltedRunResultRel: resultSpiltObjects.resultSpiltedRunResultRel
+  }
   return request({
     baseURL: analysisUrl,
     url: '/RunResultTableController/selectTable',
     method: 'post',
-    data:map
+    data: map
   })
 }
 
@@ -103,13 +135,16 @@ export function exportRunTaskRel() {
 /**
  * 运行任务重新运行
  */
-export function reRunRunTask(data,setDateTime) {
- var map = {runTaskRel:data,timingExecute:setDateTime}
+export function reRunRunTask(data, setDateTime) {
+  var map = {
+    runTaskRel: data,
+    timingExecute: setDateTime
+  }
   return request({
     baseURL: analysisUrl,
     url: '/RunTaskController/reRunRunTask',
     method: 'post',
-    data:map
+    data: map
   })
 }
 
@@ -124,6 +159,56 @@ export function selectByRunResultTableUUid(data) {
     method: 'post'
   })
 }
+
+/**
+ * 根据运行结果uuids查询运行结果详细与项目关联表
+ * @param data
+ */
+export function selectByRunResultTableUUids(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ResultDetailProjectRelController/getByRunResultTableUUids',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 查询结果拆分后选中要勾选结果中的主表数据，用于项目关联
+ * @param {*} data
+ */
+export function getDataAfterResultSpiltToRelateProject(resultSpiltObjects,projectId,projctName,selectRunTaskRelUuid) {
+  var map = {
+    orgNameColumnList: resultSpiltObjects.orgNameColumnList,
+    orgNameValues: resultSpiltObjects.orgNameValues,
+    orgUuidColumnList:resultSpiltObjects.orgUuidColumnList,
+    orgUuidValues:resultSpiltObjects.orgUuidValues,
+    resultSpiltedRunResultRel: resultSpiltObjects.resultSpiltedRunResultRel,
+    projectId:projectId,
+    projctName:projctName,
+    selectRunTaskRelUuid:selectRunTaskRelUuid
+  }
+  return request({
+    baseURL: analysisUrl,
+    url: '/RunResultTableController/getDataAfterResultSpiltToRelateProject',
+    method: 'post',
+    data:map
+  })
+}
+
+/**
+ * 批量添加关联详细表对象
+ * @param {*} data 关联详细表对象数组
+ */
+export function batchCoverAddResultDetailProjectRel(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ResultDetailProjectRelController/batchCoverAddResultDetailProjectRel',
+    method: 'post',
+    data
+  })
+}
+
 /**
  * 批量添加关联详细表对象
  * @param {*} data 关联详细表对象数组
@@ -136,6 +221,7 @@ export function batchSaveResultDetailProjectRel(data) {
     data
   })
 }
+
 /**
  * 根据表名查询该表中的主键名称
  * @param {*} data
@@ -169,7 +255,9 @@ export function deleteRunTaskFalse(data) {
     baseURL: analysisUrl,
     url: '/RunTaskController/deleteRunTaskFalse',
     method: 'delete',
-    params:{runTaskUuid:data}
+    params: {
+      runTaskUuid: data
+    }
   })
 }
 
@@ -179,12 +267,15 @@ export function deleteRunTaskFalse(data) {
  * @param {*} tableName  渲染主表的名字
  */
 export function selectConditionShow(modelUuid, tableName) {
-  var map = {modelUuid:modelUuid,tableName:tableName}
+  var map = {
+    modelUuid: modelUuid,
+    tableName: tableName
+  }
   return request({
     baseURL: analysisUrl,
     url: '/RunResultTableController/getConditionShow',
     method: 'post',
-    data:map
+    data: map
   })
 }
 
@@ -197,7 +288,9 @@ export function selectModel(modelId) {
     baseURL: analysisUrl,
     url: '/modelController/selectModel',
     method: 'post',
-    params: { modelId: modelId }
+    params: {
+      modelId: modelId
+    }
   })
 }
 
@@ -210,7 +303,9 @@ export function findParamModelRelByModelUuid(data) {
     baseURL: analysisUrl,
     url: '/paramController/findParamModelRelByModelUuid',
     method: 'post',
-    params:{modelId:data}
+    params: {
+      modelId: data
+    }
   })
 }
 
@@ -220,16 +315,29 @@ export function findParamModelRelByModelUuid(data) {
  * @param {*} arr 替换之前sql中参数的Json对象
  * @param {*} replaceSql 要替换的sql
  */
-export function replaceParam(filterArr,arr,replaceSql){
+export function replaceParam(filterArr, arr, replaceSql) {
   for (var j = 0; j < filterArr.length; j++) { // 遍历所有母参数信息
     var moduleParamId = filterArr[j].moduleParamId
     for (var k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数
       if (arr[k].copyParamId === moduleParamId) {
-        if(typeof filterArr[j].paramValue != undefined){
+        if (typeof filterArr[j].paramValue != undefined) {
           replaceSql = replaceSql.replace(arr[k].id, filterArr[j].paramValue) // 将参数SQL中的参数ID替换为输入得值
         }
       }
     }
   }
-   return replaceSql
+  return replaceSql
+}
+
+/**
+ *
+ * @param {*} data
+ */
+export function getResultSplitSelectData(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/RunTaskRelController/getResultSplitSelectData',
+    method: 'post',
+    data
+  })
 }

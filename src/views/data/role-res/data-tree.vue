@@ -14,13 +14,17 @@
       :filter-node-method="filterNode"
       node-key="id"
       @node-click="nodeClick"
+      @node-expand="nodeExpand"
+      lazy
+      :load="loadNode"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
         <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
-        <i v-if="data.type==='table'" class="el-icon-tickets" style="color:#409EFF" />
+        <i v-if="data.type==='table' && data.extMap.tblType==='T'" class="el-icon-tickets" style="color:#409EFF" />
+        <i v-if="data.type==='table' && data.extMap.tblType==='V'" class="el-icon-search" style="color:#409EFF" />
         <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
-        <span :title="node.name">{{ node.label }}</span>
+        <span :title="data.title">{{ node.label }}</span>
       </span>
     </MyElTree>
   </div>
@@ -28,7 +32,7 @@
 
 <script>
 import MyElTree from '@/components/Ace/tree/src/tree.vue'
-import { getResELTree, getResByRole, getRoleCols, saveRoleTable } from '@/api/data/table-info'
+import { getResELTree, getResByRole, getRoleCols, saveRoleTable, getTableCol } from '@/api/data/table-info'
 import { commonNotify } from '@/utils'
 
 export default {
@@ -80,6 +84,9 @@ export default {
     nodeClick(data, node, tree) {
       this.$emit('node-click', data, node, tree)
     },
+    nodeExpand(){
+
+    },
     appendnode(childData, parentNode) {
       this.$refs.tree1.append(childData, parentNode)
       parentNode.loaded = false
@@ -91,6 +98,30 @@ export default {
       })
       parentNode.loaded = false
       parentNode.expand()
+    },
+    loadNode(node, resolve) {
+      if(node.data.children && node.data.type!=='table'){
+        resolve(node.data.children);
+      }else if(node.data.type==='table' && node.data.children.length>0){
+        resolve(node.data.children);
+      }else if(node.data.type==='table' && node.data.children.length===0){
+        getTableCol(node.data.id).then(resp => {
+          var nodes = [];
+          resp.data.forEach(e =>{
+            nodes.push({
+              id: e.colMetaUuid,
+              label: e.colName,
+              type: 'col',
+              dataType: e.dataType,
+              dataLength: e.dataLength,
+              leaf: true
+            })
+          })
+          resolve(nodes)
+        })
+      }else{
+        // debugger;
+      }
     },
     refresh() {
       this.treeLoading = true
