@@ -24,6 +24,7 @@
           :maintable="item.mainTable"
           :helptables="item.helpTables"
           :model-uuid="item.modeluuid"
+          :resultSpiltObjects="item.resultSpiltObjects"
           useType="modelRunResult"
         />
       </el-tab-pane>
@@ -49,7 +50,7 @@ export default {
   },
   methods: {
     // 添加页签方法  resultTable:辅表（运行结果表）数组    mainTable:主表（运行结果表对象）   modelname:模型的名称，用来给新页签赋值title属性用
-    addTab(resultTable, mainTable, modelname, modelUuid) {
+    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects) {
       const newTabName = ++this.tabIndex + ''
       this.mainTable = mainTable
       this.helpTables = resultTable
@@ -58,7 +59,8 @@ export default {
         name: newTabName,
         mainTable: mainTable,
         helpTables: resultTable,
-        modeluuid: modelUuid
+        modeluuid: modelUuid,
+        resultSpiltObjects:resultSpiltObjects
       })
       this.editableTabsValue = newTabName
     },

@@ -7,28 +7,18 @@
         <div class="unfold-sql"><img :src="sql"><span>函数</span></div>
       </div>
       <div id="leftPart" class="left-part">
-        <div>
-<!--          <el-input-->
-<!--            v-model="filterText1"-->
-<!--            placeholder="输入关键字进行过滤"-->
-<!--          />-->
+        <div class="left-dataTree">
+          <el-input placeholder="输入关键字进行过滤" v-model="tableSearchInput" @change="tableTreeSearch" id="dataSearch"></el-input>
           <ul id="dataTree" class="ztree" />
         </div>
-        <div>
-<!--          <el-input-->
-<!--            v-model="filterText2"-->
-<!--            placeholder="输入关键字进行过滤"-->
-<!--          />-->
+        <div class="left-paramTree">
+          <el-input placeholder="输入关键字进行过滤" v-model="paramSearchInput" @change="paramTreeSearch" id="paramSearch"></el-input>
           <ul id="paramTree" class="ztree" />
         </div>
-        <div>
-<!--          <el-input-->
-<!--            v-model="filterText3"-->
-<!--            placeholder="输入关键字进行过滤"-->
-<!--          />-->
+        <div class="left-sqlFunTree">
+          <el-input placeholder="输入关键字进行过滤" v-model="functionInput" @change="functionTreeSearch" id="sqlSearch"></el-input>
           <ul id="sqlFunTree" class="ztree" />
         </div>
-
       </div>
       <div id="rightPart" class="col-sm-10" style="height: 100%">
         <div id="sqlEditorDiv" class="sql-editor-div">
@@ -534,7 +524,7 @@ export default {
         initSQLEditor(document.getElementById('sql'), relTableMap,expTableMap)  //初始化SQL编辑器
         this.executeLoading = false
         this.loadText = ""
-        if (this.sqlValue != "") {
+        if (this.sqlValue != "" && this.sqlValue != undefined) {
           // 编辑模型的sql  反显数据
           editorSql(this.sqlValue, this.sqlEditorParamObj);
           this.tempPath = this.locationName;
@@ -1104,6 +1094,10 @@ export default {
   z-index: 20;
 }
 
+.left-dataTree , .left-paramTree , .left-sqlFunTree{
+  /*width: 85%;*/
+  margin-left: 30px;
+}
 
 </style>
 
