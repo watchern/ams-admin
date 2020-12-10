@@ -25,7 +25,7 @@ export default {
 
 <style lang="scss" rel="stylesheet/scss">
 .content-title {
-      height: 48px;
+      height: 0;
       border-radius: 3px 3px 0 0;
       span {
         font-size: 22px;

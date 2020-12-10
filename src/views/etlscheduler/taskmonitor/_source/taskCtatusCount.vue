@@ -20,7 +20,7 @@
                     <a href="javascript:" :class="searchParams.projectId ?'links':''" @click="handleSchedule(item.key)">{{ item.value }}</a>
                   </span>
                 </td>
-                <td><span class="ellipsis" style="width: 98%;" :title="item.key">{{ item.key }}</span></td>
+                <td><span class="ellipsis" style="width: 50%;" :title="item.key">{{ item.key }}</span></td>
               </tr>
             </table>
           </div>
@@ -136,7 +136,5 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
-  .task-ctatus-count-model {
 
-  }
 </style>
