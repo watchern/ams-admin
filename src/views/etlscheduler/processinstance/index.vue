@@ -189,8 +189,6 @@
       />
       <el-table-column
         label="当前环节"
-        width="120px"
-        align="center"
         prop="nowTask"
       />
     </el-table>
