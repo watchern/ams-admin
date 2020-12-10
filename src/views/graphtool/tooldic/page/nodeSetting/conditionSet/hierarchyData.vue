@@ -95,17 +95,33 @@
                 if (this.pre_str_column.length === 0) {
                     this.$message({ type: 'info', message: '上一节点的表或视图暂无可分层的字段' })
                 } else {
+                    let isRoleTable = false //上级节点的表是否需要走权限
+                    let optType = parent_node.nodeInfo.optType
+                    if(optType === "datasource"){//原表
+                        isRoleTable = true
+                    }
+                    if(optType === "newNullNode"){//结果表
+                        if(parent_node.nodeInfo.midTableStatus === 2 || parent_node.nodeInfo.resultTableStatus === 2){
+                            isRoleTable = true
+                        }
+                        var pre_parentIds = parent_node.parentIds;
+                        if(pre_parentIds && pre_parentIds.length > 0){
+                            parent_node = graph.nodeData[pre_parentIds[0]];
+                        }
+                    }
                     if (parent_node.nodeInfo.resultTableName === '') {
                         this.$message({ type: 'info', message: '请先执行上一节点' })
                     } else {
                         /**
                          * 获得上一节点执行结果的选择字段的最大值和最小值
                          */
+                        console.log(parent_node.nodeInfo.resultTableName)
                         this.loading = $('body').mLoading({ 'text': '正在加载字段的区间值，请稍后……', 'hasCancel': false })
                         let dataParam = {
                             'tableName': parent_node.nodeInfo.resultTableName,
                             'openType': graph.openType,
-                            'exeColumns': this.pre_str_column.join(',')
+                            'exeColumns': this.pre_str_column.join(','),
+                            'isRoleTable':isRoleTable
                         }
                         getMaxMinColumn(dataParam).then( response => {
                             if (response.data == null || response.data.isError) {

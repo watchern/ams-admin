@@ -671,12 +671,11 @@ export function executeNode(notExecuteNodeIdArr) {
         notExecuteNodeIdArr.unshift(parentIds[0])
     }
     // 处理待执行节点队列数组
-    obj = dealWithNodeIdArr(notExecuteNodeIdArr)
-    if (!obj.verify) {
-        alertMsg('提示', obj.message, 'info')
-        return
-    }
-    graphIndexVue.executeType = 1
+    // obj = dealWithNodeIdArr(notExecuteNodeIdArr)
+    // if (!obj.verify) {
+    //     alertMsg('提示', obj.message, 'info')
+    //     return
+    // }
     graphIndexVue.websocketBatchId = new UUIDGenerator().id
     // 获取组织参数的html代码
     var returnObj = createParamNodeHtml(notExecuteNodeIdArr)
@@ -747,10 +746,10 @@ function executeNode_callback(notExecuteNodeIdArr) {
             }
         }
     }
-    var executeCellId = graph.curCell.id
-    // 校验结果表是否有自己的配置信息
-    var isSet = graph.nodeData[executeCellId].isSet
-    var parentIds = graph.nodeData[executeCellId].parentIds
+    var executeCellId = graph.curCell.id;
+    //校验结果表是否有自己的配置信息
+    var isSet = graph.nodeData[executeCellId].isSet;
+    var parentIds = graph.nodeData[executeCellId].parentIds;
     // 记录执行操作
     refrashHistoryZtree('开始执行【' + graph.curCell.value + '】节点')
     // 自动保存图形化
@@ -759,36 +758,63 @@ function executeNode_callback(notExecuteNodeIdArr) {
     var dataParam = {
         'openType': graph.openType,
         'executeId': executeId,
-        'graphUuid': $('#graphUuid').val(),
-        'graphName': $('#graphName').val(),
+        'graphUuid': graphIndexVue.graphUuid,
+        'graphName': graphIndexVue.graphName,
         'nodeIdList': notExecuteNodeIdArr.join(","),
-        'nodeData': JSON.stringify(graph.nodeData),
-        'websocketBatchId':graphIndexVue.websocketBatchId
-        // 'executeType':1//执行本节点
+        'nodeData': JSON.stringify(graph.nodeData)
+        // 'websocketBatchId':graphIndexVue.websocketBatchId
     }
-    $('#sysInfoArea').html('')
     graphIndexVue.executeNodeIdArr = notExecuteNodeIdArr
-    graphIndexVue.executeId = executeId
     graphIndexVue.resultTableArr = []
     graphIndexVue.preValue = []
     graphIndexVue.$nextTick( () => {
         executeNodeSql(dataParam).then(response => {
             if(response.data != null){
-                // $('#sysInfoArea').html(response.data.message)
-                if(response.data.isError){
-                    $('#sysInfoArea').append("<p style='color:red'>节点执行失败！\n错误信息："+ response.data.message +"</p>");
-                    graphIndexVue.layuiTabClickLi(1)
-                    // 更改执行状态图标为未执行
-                    for (var j = 0; j < notExecuteNodeIdArr.length; j++) {
-                        graph.nodeData[notExecuteNodeIdArr[j]].nodeInfo.nodeExcuteStatus = 1
-                        changeNodeIcon(1, null, notExecuteNodeIdArr[j])
-                    }
-                    // 循环所有节点变更执行状态有变化的节点执行状态信息
-                    // nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
-                    autoSaveGraph()
+                var historyNodeName = "";
+                $("#sysInfoArea").html(response.data.message);
+                graphIndexVue.layuiTabClickLi(1)
+                //循环所有节点变更执行状态有变化的节点执行状态信息
+                nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
+                //如果执行的是未配置的结果表
+                if(!isSet){
+                    historyNodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName;
+                }else{
+                    historyNodeName = graph.curCell.value;
                 }
+                //如果当前节点执行成功，则直接显示结果集
+                if(graph.nodeData[executeCellId] && graph.nodeData[executeCellId].nodeInfo && graph.nodeData[executeCellId].nodeInfo.nodeExcuteStatus === 3){
+                    graphIndexVue.layuiTabClickLi(0)
+                    graphIndexVue.showTableResult = false
+                    let nodeId = executeCellId
+                    let nodeName = graph.nodeData[executeCellId].nodeInfo.nodeName
+                    let resultTableName = ""
+                    if(!isSet){
+                        resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName;
+                    }else{
+                        resultTableName = graph.nodeData[executeCellId].nodeInfo.resultTableName
+                    }
+                    let isRoleTable = false
+                    let resultTableObj = {nodeId,nodeName,resultTableName,isRoleTable}
+                    let optType = graph.nodeData[executeCellId].nodeInfo.optType
+                    if(optType === 'newNullNode'){//结果表
+                        let midTableStatus = graph.nodeData[executeCellId].nodeInfo.midTableStatus
+                        let resultTableStatus = graph.nodeData[executeCellId].nodeInfo.resultTableStatus
+                        if(midTableStatus === 2 || resultTableStatus === 2){
+                            resultTableObj["isRoleTable"] = true
+                        }
+                        nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + "_" + nodeName;
+                    }
+                    graphIndexVue.resultTableArr.push(resultTableObj)
+                    graphIndexVue.preValue.push({id:nodeId,name:nodeName})
+                    //预览数据
+                    graphIndexVue.viewData()
+                }
+                //记录执行操作
+                refrashHistoryZtree("【" + historyNodeName + "】节点执行完毕");
+                //自动保存图形化
+                autoSaveGraph();
             }else{
-                $('#sysInfoArea').html("请求失败！")
+                $('#sysInfoArea').html("执行节点的请求失败！")
             }
         })
     })
@@ -902,10 +928,10 @@ export function executeAllNode() {
                     break
                 }
                 // 处理待执行节点队列数组
-                returnObj = dealWithNodeIdArr(notExecuteNodeIdArr)
-                if (!returnObj.verify) {
-                    break
-                }
+                // returnObj = dealWithNodeIdArr(notExecuteNodeIdArr)
+                // if (!returnObj.verify) {
+                //     break
+                // }
                 allNodeIdArr.push.apply(allNodeIdArr, notExecuteNodeIdArr)
                 var executeId = new UUIDGenerator().id// 生成执行ID
                 notExecuteNodeObject[executeId] = notExecuteNodeIdArr
@@ -1032,18 +1058,17 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
         // 获取当前节点的所有子孙节点集合
         var cIdArr = getAllChildrenIds(executeNodeArr[k])
         // 获取当前节点的所有子集合
-        var childrenIds = graph.nodeData[executeNodeArr[k]].childrenIds
+        let childrenIds = graph.nodeData[executeNodeArr[k]].childrenIds
+        let parentIds = graph.nodeData[executeNodeArr[k]].parentIds
         if (nodeExcuteStatus === 3) {
             if (optType === 'sql') {					// SQL查询器单独处理SQL语句
-                var sql = strEncryption(graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql)
-                graph.nodeData[executeNodeArr[k]].setting.sql = sql
-                graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql = sql
-                graph.nodeData[executeNodeArr[k]].nodeInfo.resultSql = strEncryption(graph.nodeData[executeNodeArr[k]].nodeInfo.resultSql)
+                graph.nodeData[executeNodeArr[k]].setting.sql = graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql
+                graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql = graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql
+                graph.nodeData[executeNodeArr[k]].nodeInfo.resultSql = graph.nodeData[executeNodeArr[k]].nodeInfo.resultSql
             }
             if (optType !== 'newNullNode') {					// 如果当前节点是操作节点
                 if (optType === 'layering') {					// 如果节点是数据分层，则需特殊处理
                     // 获取当前节点的所有下一级节点
-                    var childrenIds = graph.nodeData[executeNodeArr[k]].childrenIds
                     if (childrenIds.length > 0) {
                         var childCount = 0
                         for (var j = 0; j < childrenIds.length; j++) {
@@ -1065,6 +1090,15 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
             } else {
                 if (stopNodeId !== executeNodeArr[k]) {				// 如果当前结果表不是停止节点
                     changeNodeIcon(3, null, executeNodeArr[k])
+                }
+                if(graph.nodeData[executeNodeArr[k]].nodeInfo.midTableStatus === 2 || graph.nodeData[executeNodeArr[k]].nodeInfo.resultTableStatus === 2){//辅助结果表或最终结果表
+                    if(graph.nodeData[parentIds[0]]){
+                        graph.nodeData[parentIds[0]].nodeInfo.isDeleteTable = true
+                    }
+                }else{
+                    if(graph.nodeData[parentIds[0]]) {
+                        graph.nodeData[parentIds[0]].nodeInfo.isDeleteTable = false
+                    }
                 }
             }
         }
