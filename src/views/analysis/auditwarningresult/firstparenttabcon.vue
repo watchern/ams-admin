@@ -38,11 +38,13 @@
           @click="deleteRunTaskRel"
           class="oper-btn delete"
         ></el-button>
-        <el-button
-          type="primary"
-          :disabled="buttonIson.resultSplitBtn"
-          class="oper-btn split-2"
-        ></el-button>
+         <el-button
+              type="primary"
+              :disabled="buttonIson.resultSplitBtn"
+              class="oper-btn split-2"
+              @click="openResultSplitDialog"
+              title="结果拆分"
+          ></el-button>
         <el-button
           type="primary"
           @click="modelResultShare('99999', '888888')"
@@ -85,7 +87,8 @@
                 scope.row.runResultTables,
                 scope.row.model.modelName,
                 scope.row.model.modelUuid,
-                scope.row.runStatus
+                scope.row.runStatus,
+                resultSpiltObjects
               )
             "
             >{{ scope.row.model.modelName }}</el-button
@@ -186,6 +189,36 @@
       />
     </el-table>
    </el-main>
+     <el-dialog
+          title="结果拆分"
+          :visible.sync="resultSplitDialogIsSee"
+          width="40%"
+        >
+          <div align="center">
+            <span>要拆分的数据：</span>
+            <el-select
+              multiple
+              style="width: 50%"
+              size="medium"
+              v-model="selectedValue"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="(item, key) in ResultSplitoptions"
+                :key="key"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </div>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="resultSplitDialogIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="ResultSplitDialogDetermine"
+              >确 定</el-button
+            >
+          </span>
+        </el-dialog>
     <el-dialog
       title="设置定时时间"
       :visible.sync="settingTimingIsSee"
@@ -275,6 +308,10 @@ export default {
       settingTimingIsSee: false,
       setDateTime: "",
       nowRunTaskRel: null,
+      resultSpiltObjects: {}, //存储点击结果拆分要传往后台的数据
+      resultSplitDialogIsSee: false, //结果拆分dialog是否可见
+      ResultSplitoptions: [], //存储结果拆分dialog的下拉框中的数据
+      selectedValue: [], //结果查分下拉框选中的值
     };
   },
   created() {
@@ -459,7 +496,7 @@ export default {
           var query1 = {runTaskUuid:null}
           query1.runTaskUuid = '1'
           this.pageQuery.condition = query1;
-        getRunTaskRelByPage(this.pageQuery).then((resp) => {
+        getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
         this.listLoading = false;
@@ -482,7 +519,7 @@ export default {
         query.model = model;
         query.runTask = runTask;
         this.pageQuery.condition = query;
-        getRunTaskRelByPage(this.pageQuery).then((resp) => {
+        getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
         this.listLoading = false;
@@ -803,7 +840,7 @@ export default {
      * val是运行结果中的resultTables
      * modelName是选中的模型的名字
      */
-    getResultTables(val, modelName, modelUuid, runStatus) {
+    getResultTables(val, modelName, modelUuid, runStatus,resultSpiltObjects) {
       if (runStatus == 3) {
         var assistTables = [];
         var mainTable = null;
@@ -816,7 +853,7 @@ export default {
         }
         // 触发父类方法addTab在index.vue界面，同时穿过三个参数assistTables：辅表（运行结果表）数组  mainTable：主表（运行结果表对象）
         // modelName：模型的名称，用来给新页签赋值title属性用
-        this.$emit("addtab", assistTables, mainTable, modelName, modelUuid);
+        this.$emit("addtab", assistTables, mainTable, modelName, modelUuid,resultSpiltObjects);
       } else {
         this.$message({
           type: "info",
@@ -853,7 +890,72 @@ export default {
     clickChangeTable(runTaskRelUuid){
         var query = {runTaskUuid:runTaskRelUuid}
         this.getLikeList(query)
-    }
+    },
+     /**
+     * 点击结果拆分后打开dialog方法
+     */
+    openResultSplitDialog() {
+      this.listLoading = true;
+      this.ResultSplitoptions = [];
+      var flag = true;
+      for (var i = 0; i < this.selected1.length; i++) {
+        if (this.selected1[i].runStatus != 3) {
+          flag = false;
+          break;
+        }
+      }
+      if (flag == true) {
+        getResultSplitSelectData(this.selected1).then((resp) => {
+          this.resultSpiltObjects.orgNameColumnList =
+            resp.data.orgNameColumnList;
+          this.resultSpiltObjects.orgUuidColumnList =
+            resp.data.orgUuidColumnList;
+          var message = resp.data.message;
+          var result = resp.data.selectValue;
+          if (message == "") {
+            for (var i = 0; i < result.length; i++) {
+              var option = {
+                value: result[i].org_uuid + "," + result[i].org_name,
+                label: result[i].org_uuid + "(" + result[i].org_name + ")",
+              };
+              this.ResultSplitoptions.push(option);
+            }
+            this.listLoading = false;
+            this.resultSplitDialogIsSee = true;
+          } else {
+            this.listLoading = false;
+            this.$message({
+              showClose: true,
+              message: message,
+            });
+          }
+        });
+      } else {
+        this.listLoading = false;
+        this.$message({
+          showClose: true,
+          message: "只有运行成功的才可以结果拆分",
+        });
+      }
+    },
+      /**
+     * 点击结果拆分确定按钮触发的事件
+     */
+    ResultSplitDialogDetermine() {
+      var selectValue = this.selectedValue;
+      var orgNameValues = [];
+      var orgUuidValues = [];
+      for (var i = 0; i < selectValue.length; i++) {
+        var eachValue = selectValue[i].split(",");
+        orgNameValues[i] = eachValue[1];
+        orgUuidValues[i] = eachValue[0];
+      }
+      this.resultSpiltObjects.orgUuidValues = orgUuidValues;
+      this.resultSpiltObjects.orgNameValues = orgNameValues;
+      this.resultSpiltObjects.resultSpiltedRunResultRel = this.selected1;
+      this.getLikeList();
+      this.resultSplitDialogIsSee = false;
+    },
   },
 };
 </script>
