@@ -3,7 +3,7 @@
         <div id="geToolbarContainer" class="geToolbarContainer">
             <div class="menu" style="width: 235px !important;padding-left: 20px !important;">
                 <div class="menuTit">
-                    文件<img id="showMoreMenu" src="../tooldic/images/icon/more.png" title="更多" style="width:10px;height:10px;float: right;margin-top:5px;margin-right: 10px;" @click="showMoreMenu">
+                    文件<img id="showMoreMenu" v-if="isShowMoreMenu" src="../tooldic/images/icon/more.png" title="更多" style="width:10px;height:10px;float: right;margin-top:5px;margin-right: 10px;" @click="showMoreMenu">
                 </div>
                 <div class="menuLi">
                     <div class="icon" style="width:70px !important;">
@@ -143,8 +143,6 @@
                         <div id="collapse2" class="panel-collapse collapse in">
                             <div class="panel-body">
                                 <div class="col-sm-12" style="height: 45px;">
-                                    <!--<input id="searchZtree" type="search" class="form-control" placeHolder="搜索关键字" autocomplete="off" style="padding-right: 35px;">-->
-                                    <!--<img id="searchImg" src="../tooldic/images/icon/search.png" @click="searchZtree">-->
                                     <el-input placeholder="搜索关键字" v-model="searchZtreeContent" class="input-with-select">
                                         <el-button slot="append" icon="el-icon-search" @click="searchZtree"></el-button>
                                     </el-input>
@@ -177,7 +175,7 @@
                         <div class="layui-tab-item">
                             <div id="tableArea">
                                 <div v-for="result in resultTableArr" class="data-show" v-if="showTableResult">
-                                    <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="preValue" />
+                                    <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="preValue"/>
                                 </div>
                             </div>
                         </div>
@@ -367,18 +365,16 @@
                 loginUserCode:'',//当前登录人ID
                 canEditor: true,// 当前图形化是否可编辑
                 hasManagerRole: false,// 是否觉有管理员权限（只在开发环境下会用到，用以对左侧资源树的表进行分类）
-                graphUuid:getParams().graphUuid,// 打开图形的ID
                 graphName:'',
                 description:'',
-                openGraphType: getParams().openGraphType ? Number(getParams().openGraphType) : 1,// 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
-                openType: getParams().openType ? Number(getParams().openType) : 2,// 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
+                graphUuid:this.graphUuidParam,// 打开图形的ID
+                openGraphType:this.openGraphTypeParam,// 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
+                openType:this.openTypeParam,// 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
                 loading:null,//遮罩层对象
                 searchZtreeContent:'',
                 webSocket:null,
-                executeType:1,//节点执行的类型（1、执行本节点、2、执行到本节点、3、全部执行）
                 resultTableArr:[],//节点结果集集合
                 showTableResult:false,
-                executeId:'',//当前执行批次ID
                 executeNodeIdArr:[],//当前执行批次的节点ID集合
                 graphFormVisible:false,
                 graphFormTitle:'',
@@ -387,11 +383,12 @@
                 showGraphListType:'',
                 activeTabName:'outLineArea',
                 preValue:[],//结果集页签数组
-                optTypeArr: ['filter', 'sort', 'sample', 'layering', 'groupCount', 'delRepeat', 'comparison', 'change', 'union', 'relation', 'sql', 'barChart']
+                optTypeArr: ['filter', 'sort', 'sample', 'layering', 'groupCount', 'delRepeat', 'comparison', 'change', 'union', 'relation', 'sql'],
+                isShowMoreMenu:true//是否展示更多菜单
             }
         },
         components:{ Help, GraphListExport,ChildTabs },
-        // props:["graphUuid","openGraphType","openType"],
+        props:["graphUuidParam","openGraphTypeParam","openTypeParam"],
         created() {
             this.init()
         },
@@ -413,18 +410,18 @@
         },
         methods: {
             init() {
-                // //打开图形的ID
-                // if(typeof this.graphUuid === "undefined" || this.graphUuid == null){
-                //     this.graphUuid = getParams().graphUuid
-                // }
-                // //当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
-                // if(typeof this.openGraphType === "undefined" || this.openGraphType == null){
-                //     this.openGraphType = getParams().openGraphType ? Number(getParams().openGraphType) : 1
-                // }
-                // //打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
-                // if(typeof this.openType === "undefined" || this.openType == null){
-                //     this.openType = getParams().openType ? Number(getParams().openType) : 2
-                // }
+                if(typeof this.graphUuid === "undefined" || this.graphUuid == null){
+                    this.graphUuid = getParams().graphUuid
+                }
+                if(typeof this.openGraphType === "undefined" || this.openGraphType == null){
+                    this.openGraphType = getParams().openGraphType ? Number(getParams().openGraphType) : 1
+                    if(this.openGraphType === 4){
+                        this.isShowMoreMenu = false//隐藏更多菜单
+                    }
+                }
+                if(typeof this.openType === "undefined" || this.openType == null){
+                    this.openType = getParams().openType ? Number(getParams().openType) : 2
+                }
                 this.loginUserUuid = this.$store.state.user.id
                 this.loginUserCode = this.$store.state.user.code
                 let roleArr = this.$store.state.user.roles
@@ -723,93 +720,13 @@
                 // 发送消息
                 this.webSocket.onmessage = function(event) {
                     let dataObj = JSON.parse(event.data)//接收到返回结果
-                    var executeTaskObj = dataObj.executeTask
                     var executeSQLObj = dataObj.executeSQL
-                    if(executeTaskObj.resultType === 'NotSelect'){//只执行组装的SQL
-                        let cueNodeId = executeSQLObj.id;
-                        let nodeInfo = JSON.parse(executeSQLObj.customParam[1])
-                        let isEnd = executeSQLObj.customParam[2]
-                        if(executeSQLObj.state === "2"){//执行成功
-                            nodeInfo.nodeExcuteStatus = 3
-                            delete nodeInfo.createSql;
-                            delete nodeInfo.dropTableViewSql;
-                            $('#sysInfoArea').append("<p style='color:#0DD140'>节点【"+executeSQLObj.name+"】执行成功！</p>")
-                            for(let k=0; k<$this.executeNodeIdArr.length; k++){//找出当前节点的下一个节点即结果表节点
-                                if($this.executeNodeIdArr[k] === cueNodeId){
-                                    let nextNodeId = $this.executeNodeIdArr[k+1]
-                                    if(typeof nextNodeId !== "undefined"){
-                                        let optType = graph.nodeData[nextNodeId].nodeInfo.optType
-                                        if(optType === 'newNullNode'){
-                                            graph.nodeData[nextNodeId].nodeInfo.nodeExcuteStatus = 3
-                                            break
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if(executeSQLObj.state === "3"){//执行失败
-                            $this.loading.destroy()
-                            nodeInfo.nodeExcuteStatus = 4
-                            delete nodeInfo.resultTableName;
-                            delete nodeInfo.createSql;
-                            delete nodeInfo.dropTableViewSql;
-                            $('#sysInfoArea').append("<p style='color:red'>节点【"+executeSQLObj.name+"】执行失败！\n错误信息："+ executeSQLObj.msg +"</p>");
-                            $this.layuiTabClickLi(1)
-                        }
-                        let curNodeInfo = graph.nodeData[cueNodeId].nodeInfo
-                        graph.nodeData[cueNodeId].nodeInfo = {...curNodeInfo, ...nodeInfo}
-                        // 循环所有节点变更执行状态有变化的节点执行状态信息
-                        commonJs.nodeCallBack($this.executeNodeIdArr, null, $this.executeId)
-                        if($this.executeType === 3){//全部执行，显示标记为中间结果表或最终结果表的结果集
-
-                        }else{//执行本节点和执行到本节点，只显示当前节点的结果集
-                            if(isEnd){
-                                let nodeId = cueNodeId
-                                let nodeName = executeSQLObj.name
-                                let resultTableName = nodeInfo.resultTableName
-                                let isRoleTable = false
-                                let resultTableObj = {nodeId,nodeName,resultTableName,isRoleTable}
-                                //在执行队列的ID集合中找出当前节点的下一个节点即结果表节点
-                                for(let k=0; k<$this.executeNodeIdArr.length; k++){
-                                    if($this.executeNodeIdArr[k] === cueNodeId){
-                                        let nextNodeId = $this.executeNodeIdArr[k+1]
-                                        if(typeof nextNodeId !== "undefined"){
-                                            let optType = graph.nodeData[nextNodeId].nodeInfo.optType
-                                            if(optType === 'newNullNode'){
-                                                let midTableStatus = graph.nodeData[nextNodeId].nodeInfo.midTableStatus
-                                                let resultTableStatus = graph.nodeData[nextNodeId].nodeInfo.resultTableStatus
-                                                if(midTableStatus === 2 || resultTableStatus === 2){
-                                                    resultTableObj["isRoleTable"] = true
-                                                }
-                                                nodeName = nodeName + "_" + graph.nodeData[nextNodeId].nodeInfo.nodeName
-                                                break
-                                            }
-                                        }
-                                    }
-                                }
-                                $this.resultTableArr.push(resultTableObj)
-                                $this.preValue.push({id:nodeId,name:nodeName})
-                            }
-                        }
-                        if(isEnd && executeSQLObj.state === "2"){
-                            // 记录执行操作
-                            indexJs.refrashHistoryZtree('【' + executeSQLObj.name + '】节点执行完毕')
-                            // 自动保存图形化
-                            indexJs.autoSaveGraph()
-                            $this.layuiTabClickLi(0)
-                            $this.showTableResult = false
-                            //预览数据
-                            $this.viewData()
-                        }
-                    }
-                    if(executeTaskObj.resultType === 'select'){//展示节点结果集数据
+                    if(executeSQLObj.customParam[0] === $this.websocketBatchId){//展示当前操作的结果集
                         $this.loading.destroy()
                         $this.showTableResult = true
-                        if(executeSQLObj.customParam[0] === $this.websocketBatchId){//展示当前操作的结果集
-                            $this.$nextTick( () => {
-                                $this.$refs.childTabsRef[0].loadTableData(dataObj)
-                            })
-                        }
+                        $this.$nextTick( () => {
+                            $this.$refs.childTabsRef[0].loadTableData(dataObj)
+                        })
                     }
                 }
 
@@ -827,6 +744,10 @@
                 this.$message({ type: 'info', message: '待集成' })
             },
             newGraph(){
+                if(this.openGraphType === 4){
+                    this.$message({ type: 'info', message: '模型图形不可操作' })
+                    return
+                }
                 this.$store.commit('aceState/setRightFooterTags', {
                     type: 'active',
                     val: {
@@ -839,6 +760,10 @@
                 indexJs.openGraph()
             },
             saveGraph(type){
+                if(this.openGraphType === 4){
+                    this.$message({ type: 'info', message: '模型图形不可操作' })
+                    return
+                }
                 this.saveGraphType = type
                 var str = type === 'saveGraph' ? '保存' : '另存为'
                 if (this.canEditor === false) {
@@ -848,7 +773,7 @@
                         this.$message({ type: 'info', message: '当前图形无节点数据，不可保存' })
                     }else{
                         this.graphFormVisible = true
-                        this.graphFormTitle = `图形${str}`
+                        this.graphFormTitle = `${str}图形`
                     }
                 }
             },
@@ -1022,7 +947,13 @@
              */
             getResultColumnInfo(){
                 return indexJs.getResultColumnInfo()
-            }
+            },
+            /**
+             * 接口，用于保存模型时存储图形信息
+             */
+            saveModelGraph(){
+                return indexJs.saveModelGraph()
+            },
         }
     }
 
