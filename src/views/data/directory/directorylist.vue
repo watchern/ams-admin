@@ -10,14 +10,14 @@
     <el-row>
       <el-col align="right">
         <el-button type="primary" :disabled="selections.length === 0" title="删除" class="oper-btn delete" @click="delData" />
-        <el-button type="primary" class="oper-btn iconoper-cancel" :disabled="saveFlag " title="复制" @click="copyResource" />
-        <el-button type="primary" class="oper-btn iconoper-publish" title="移动" :disabled="clickData===null" @click="movePath" />
-        <el-button type="primary" class="oper-btn edit" title="重命名" :disabled="selections.length !== 1" @click="renameResource" />
+        <el-button type="primary" class="oper-btn copy" :disabled="selections.length !== 1" title="复制" @click="copyResource" />
+        <el-button type="primary" class="oper-btn move" title="移动" :disabled="selections.length === 0" @click="movePath" />
+        <el-button type="primary" class="oper-btn rename" title="重命名" :disabled="selections.length !== 1" @click="renameResource" />
         <el-button type="primary" class="oper-btn add" title="新增表" :disabled="selections.length !== 1" @click="add" />
         <el-button type="primary" class="oper-btn add-folder" title="新增文件夹" :disabled="clickData.type == 'table'" @click="createFolder" />
-        <el-button type="primary" class="oper-btn  iconmenu-2" title="表结构维护" :disabled="selections.length !== 1" @click="add" />
-        <el-button type="primary" class="oper-btn  iconmenu-1" title="表结构展示" :disabled="selections.length !== 1" @click="showTable" />
-        <el-button type="primary" class="oper-btn iconoper-show" title="预览" :disabled="infoFlag" @click="preview()" />
+        <el-button type="primary" class="oper-btn  edit" title="表结构维护" :disabled="selections.length !== 1" @click="add" />
+        <el-button type="primary" class="oper-btn  detail" title="表结构展示" :disabled="selections.length !== 1" @click="showTable" />
+        <el-button type="primary" class="oper-btn search" title="预览" :disabled="infoFlag" @click="preview()" />
       </el-col>
     </el-row>
     <el-table
@@ -192,7 +192,7 @@ export default {
   //   }
   // },
   created() {
-    // this.getList(this.data, this.node, this.tree)
+    // this.getList(this.data, this.node, this.tree)this.$refs.childTabs.loadTableData(this.arrSql)
   },
   methods: {
     formatTableType(row, column) {

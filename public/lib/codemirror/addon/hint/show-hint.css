@@ -11,47 +11,36 @@
   -moz-box-shadow: 0 5px 10px 0 #3F444D22;
   box-shadow: 0 5px 10px 0 #3F444D22;
   border-radius: 3px;
-  width:384px;
+  min-width:384px;
+  max-width:92%;
 
-  background:#B8C6DB;
+  background-color:rgb(184, 198, 219);
   font-size: 14px;
   font-family: PingFangSC-Regular;
-  color: #170000;
   line-height: 23px;
 
   max-height: 20em;
   overflow-y: auto;
 }
 
-.CodeMirror-hints li:first-child{
-  background-color: #8F9CB1;
-}
-
-.CodeMirror-hints li{
-  position: relative;
-}
-
 .CodeMirror-nnt{
-  width: 20px;
-  height: 10px;
-  background-color: black;
-  /* position: absolute;
-  top: 0;
-  right: 0; */
-  display: inline-block;
-  z-index: 1000;
+  color: white;
+  margin-left: 20px;
+  font-family: DINCondensed-Bold;
 } 
 
 .CodeMirror-hint {
   margin: 0;
-  padding: 0 4px;
-  border-radius: 2px;
+  padding: 0 5px;
   white-space: pre;
-  color: black;
   cursor: pointer;
+  background-color:rgb(184, 198, 219);
+  color: #170000;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 li.CodeMirror-hint-active {
-  background: #08f;
-  color: white;
+  background: rgb(143, 156, 177);
+  /* color: rgb(54, 59, 69); */
 }

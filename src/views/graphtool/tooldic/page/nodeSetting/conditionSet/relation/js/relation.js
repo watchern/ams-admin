@@ -700,29 +700,31 @@ export function saveNodeInfo() {
     if (!relationVue.vilidata_simple()) {
         return false
     }
-    for(let i=0; i<relationVue.items.length; i++){
-        let columnInfo = JSON.parse(relationVue.items[i].columnInfo)
+    $(".colTr").each(function () {
+        let index = $(this).attr("data-index");
+        let columnInfo = JSON.parse(relationVue.items[index].columnInfo)
         let tableAlias = ''
-        let resourceTableName = relationVue.items[i].resourceTableName
-        let rtn = relationVue.items[i].rtn
+        let resourceTableName = relationVue.items[index].resourceTableName
+        let rtn = relationVue.items[index].rtn
         for (let j = 0; j < nodeDataArray.length; j++) {
             if (nodeDataArray[j].tableName === resourceTableName) {
                 tableAlias = nodeDataArray[j].key					// 获取来源表名称的别名
                 break
             }
         }
-        if (relationVue.items[i].checked) {
+        if (relationVue.items[index].checked) {
             columnInfo.tableAlias = tableAlias
             columnInfo.isOutputColumn = 1
         } else {
             columnInfo.isOutputColumn = 0
         }
-        columnInfo.columnName = relationVue.items[i].columnName
-        columnInfo.newColumnName = relationVue.items[i].disColumnName
+        columnInfo.columnName = relationVue.items[index].columnName
+        columnInfo.newColumnName = relationVue.items[index].disColumnName
         columnInfo.resourceTableName = resourceTableName
         columnInfo.rtn = rtn
         columnsInfo.push(columnInfo)
-    }
+
+    })
     // 开始保存节点所有数据信息
     nodeData.setting.sqlEdit = myDiagram.model.toJson()
     nodeData.setting.join = join

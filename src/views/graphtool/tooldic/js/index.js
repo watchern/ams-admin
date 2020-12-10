@@ -22,11 +22,15 @@ export function replaceNodeType(e) {
         // 统一表和试图的类型为datasource
         switch (tableType) {
             case 'datasource':
-                this.icon = 'images/icon/tableNode.png'
+                this.icon = 'images/ico/table_1.png'
                 break
             case 'table':
+                this.icon = 'images/ico/table_1.png'
+                this.type = 'datasource'
+                this.oldType = tableType
+                break
             case 'view':
-                this.icon = 'images/icon/tableNode.png'
+                this.icon = 'images/ico/view.png'
                 this.type = 'datasource'
                 this.oldType = tableType
                 break
@@ -54,7 +58,7 @@ export function onRightClick(event, treeId, treeNode) {
         return
     }
     var menuId = ''
-    switch (openType) {
+    switch (graph.openType) {
         case 1:// 开发环境右键菜单
             // 隐藏菜单
             hideRMenu('rMenu')
@@ -148,15 +152,15 @@ export function onRightClick(event, treeId, treeNode) {
             indexVue.zTreeObj.selectNode(treeNode)
             if (treeNode.type === 'datasource') { // 数据表节点
                 menuId = 'rMenu'
-                if (treeNode.pid === 'importDataTable') {
-                    $('#editTable_li').show()
-                    $('#dropTable_li').show()
-                } else {
-                    $('#editTable_li').hide()
-                    $('#dropTable_li').hide()
-                }
-            } else if (treeNode.id === 'bussDataRoot' || treeNode.id === 'bussRootNode' || treeNode.id === 'my_space') {
-                menuId = 'rootMenu'
+            //     if (treeNode.pid === 'importDataTable') {
+            //         $('#editTable_li').show()
+            //         $('#dropTable_li').show()
+            //     } else {
+            //         $('#editTable_li').hide()
+            //         $('#dropTable_li').hide()
+            //     }
+            // } else if (treeNode.id === 'bussDataRoot' || treeNode.id === 'bussRootNode' || treeNode.id === 'my_space') {
+            //     menuId = 'rootMenu'
             }
             break
     }
@@ -660,7 +664,7 @@ export function autoSaveGraph() {
     var encoder = new mxCodec()
     var node = encoder.encode(graph.getModel())
     var xml = mxUtils.getPrettyXml(node)
-    if (indexVue.graphUuid === '' && indexVue.graphUuid != null) {
+    if (typeof indexVue.graphUuid === "undefined" || indexVue.graphUuid === '') {
         indexVue.graphName = '自动保存的副本_' + getCurTime()
         indexVue.description = '系统自动保存的副本'
         $('#graphName_show').val('自动保存的副本_' + getCurTime())

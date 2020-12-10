@@ -46,34 +46,7 @@ export default {
 };
 </script>
 <style>
-#tableSearchImg,
 #paramSearchImg,
-#funSearchImg {
-  width: 20px;
-  height: 20px;
-  position: relative;
-  bottom: -25px;
-  right: 10px;
-  float: right;
-  cursor: pointer;
-}
-.CodeMirror-hint-table {
-  color: #af0000 !important;
-  font-size: 15pt;
-}
-.CodeMirror-hint-table:before {
-  content: " ";
-  width: 30px;
-  height: 20px;
-  background-image: url("/lib/codemirror/img/ic-table.png");
-}
-.menuDemo {
-  position: absolute;
-  display: none;
-  top: 0;
-  text-align: left;
-  padding: 2px;
-}
 .menuDemo ul {
   display: block;
   min-width: 43px;
@@ -83,51 +56,6 @@ export default {
   padding: 0 5px;
   cursor: pointer;
   list-style: none outside none;
-}
-.iconImg {
-  width: 20px;
-  height: 20px;
-  margin-bottom: 4px;
-}
-.iconText {
-  font-size: 14px;
-  cursor: pointer;
-}
-#sql {
-  width: 100%;
-  height: 320px;
-}
-.table-view {
-  overflow-x: auto;
-}
-#vertical {
-  position: absolute;
-  top: 0;
-  left: 17.3%;
-  height: 114vh;
-  width: 3px;
-  overflow: hidden;
-  background: #c0c5d4;
-  cursor: w-resize;
-}
-#horizontal {
-  position: absolute;
- top: 40.5%;
-  /* width: 100vh; */
-  width: 100%;
-  height: 3px;
-  overflow: hidden;
-  background: #c0c5d4;
-  cursor: s-resize;
-}
-.errorHighlight {
-  background-color: #f99999;
-}
-.successHighlight {
-  background-color: transparent !important;
-}
-.CodeMirror-hints {
-  z-index: 1000;
 }
 #dataShow > pre {
   color: red;

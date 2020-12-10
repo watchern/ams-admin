@@ -6,7 +6,7 @@ const controllerName = 'transRule'
 export function listByPage(data) {
   return request({
     baseURL: baseURL,
-    url: '/transRule/listByPage',
+    url: `/${controllerName}/listByPage`,
     method: 'post',
     // 直接加data以json格式传递  后台用RequestBody
     data
@@ -60,7 +60,7 @@ export function selectOne(data) {
 export function getTransCodeList() {
   return request({
     baseURL: baseURL,
-    url: '/transRule/getTransCodeList',
+    url: `/${controllerName}/getTransCodeList`,
     method: 'post'
   })
 }
@@ -68,7 +68,16 @@ export function getTransCodeList() {
 export function selectById(transId) {
   return request({
     baseURL: baseURL,
-    url: `/transRule/selectById/${transId}`,
+    url: `/${controllerName}/selectById/${transId}`,
     method: 'get'
+  })
+}
+
+export function previewSql(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/previewSql`,
+    method: 'post',
+    data
   })
 }

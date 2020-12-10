@@ -72,7 +72,6 @@
           <el-button type="primary" title="上传" class="oper-btn export" />
         </el-upload></el-col>
     </el-row>
-    <div class="etl-processsdefinition-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -82,7 +81,8 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -126,7 +126,6 @@
         prop="updateTime"
       />
     </el-table>
-    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -154,7 +153,7 @@ export default {
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '流程名称', name: 'name', type: 'text', value: '' },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
+        // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '流程状态', name: 'status', type: 'select',
           data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }],
@@ -422,9 +421,5 @@ export default {
 <style scoped>
 .buttonText{
   color: #409eff;
-}
-.etl-processsdefinition-list{
-  height: 71.5%;
-  overflow: auto;
 }
 </style>

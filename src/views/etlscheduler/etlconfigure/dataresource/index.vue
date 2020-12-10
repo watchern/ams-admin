@@ -14,7 +14,6 @@
         <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" title="删除" @click="handleDelete()" />
       </el-col>
     </el-row>
-    <div class="etl-dataresource-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -24,6 +23,8 @@
       fit
       highlight-current-row
       style="width: 100%;"
+      height="calc(100vh - 350px)"
+      max-height="calc(100vh - 350px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -32,7 +33,7 @@
         width="55"
       />
       <el-table-column
-        label="系统名称"
+        label="数据资源名称"
         prop="dataResourceName"
       >
         <template slot-scope="scope">
@@ -41,13 +42,13 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="系统编码"
+        label="数据资源编码"
         width="300px"
         align="center"
         prop="dataResourceCode"
       />
       <el-table-column
-        label="系统描述"
+        label="数据资源描述"
         prop="dataResourceDesc"
       />
       <el-table-column
@@ -57,7 +58,6 @@
         prop="updateTime"
       />
     </el-table>
-    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -79,34 +79,34 @@
         class="detail-form"
       >
         <el-form-item
-          label="系统名称"
+          label="数据资源名称"
           prop="dataResourceName"
         >
           <el-input
             v-model="temp.dataResourceName"
             :disabled="disableUpdate"
-            :placeholder="disableUpdate === true ? '' : '请输入系统名称'"
+            :placeholder="disableUpdate === true ? '' : '请输入数据资源名称'"
           />
         </el-form-item>
         <el-form-item
-          label="系统编码"
+          label="数据资源编码"
           prop="dataResourceCode"
         >
           <el-input
             v-model="temp.dataResourceCode"
             :disabled="disableUpdate"
-            :placeholder="disableUpdate === true ? '' : '请输入系统编码'"
+            :placeholder="disableUpdate === true ? '' : '请输入数据资源编码'"
           />
         </el-form-item>
         <el-form-item
-          label="系统描述"
+          label="数据资源描述"
           prop="dataResourceDesc"
         >
           <el-input
             v-model="temp.dataResourceDesc"
             type="textarea"
             :disabled="disableUpdate"
-            :placeholder="disableUpdate === true ? '' : '请输入系统描述'"
+            :placeholder="disableUpdate === true ? '' : '请输入数据资源描述'"
           />
         </el-form-item>
       </el-form>
@@ -145,8 +145,8 @@ export default {
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '资源编码', name: 'dataResourceCode', type: 'text', value: '' },
-        { label: '资源名称', name: 'dataResourceName', type: 'text', value: '' },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
+        { label: '资源名称', name: 'dataResourceName', type: 'text', value: '' }
+        // ,{ label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
       ],
       pageQuery: {
         condition: {},
@@ -301,10 +301,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-   .etl-dataresource-list{
-    height: 71.5%;
-    overflow: auto;
-  }
-</style>

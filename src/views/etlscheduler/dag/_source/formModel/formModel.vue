@@ -182,6 +182,14 @@
           @on-params="_onParams"
           @on-cache-params="_onCacheParams"
         />
+        <!-- shell node -->
+        <m-shell
+          v-if="taskType === 'SHELL'"
+          ref="SHELL"
+          :backfill-item="backfillItem"
+          @on-params="_onParams"
+          @on-cache-params="_onCacheParams"
+        />
         <!-- description -->
         <div class="clearfix list">
           <div class="text-box">
@@ -230,6 +238,7 @@ import { mapActions } from 'vuex'
 import mLog from './log'
 import mSql from './tasks/sql'
 import mJava from './tasks/java'
+import mShell from './tasks/shell'
 import JSP from './../plugIn/jsPlumbHandle'
 import mTimeoutAlarm from './_source/timeoutAlarm'
 import mWorkerGroups from './_source/workerGroups'
@@ -399,6 +408,7 @@ export default {
      */
     _onParams(o) {
       this.params = Object.assign({}, o)
+      console.log(this.params)
     },
 
     _onCacheParams(o) {
@@ -723,6 +733,7 @@ export default {
   components: {
     mSql,
     mJava,
+    mShell,
     mLog,
     mTimeoutAlarm,
     mPriority,

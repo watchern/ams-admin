@@ -1,18 +1,26 @@
 <template>
   <div class="app-container">
-    <div id="container" v-loading="executeLoading">
+    <div id="container" v-loading="executeLoading" :element-loading-text="loadText">
       <div id="sidebar">
-        <div class="unfold-shuju add-sidiv"><img :src="shuju"></div>
-        <div class="unfold-canshu"><img :src="canshu"></div>
-        <div class="unfold-sql"><img :src="sql">
-        </div>
+        <div class="unfold-shuju add-sidiv"><img :src="shuju"><span>数据表</span></div>
+        <div class="unfold-canshu"><img :src="canshu"><span>参数</span></div>
+        <div class="unfold-sql"><img :src="sql"><span>函数</span></div>
       </div>
       <div id="leftPart" class="left-part">
-        <ul id="dataTree" class="ztree" />
-        <ul id="paramTree" class="ztree" />
-        <ul id="sqlFunTree" class="ztree" />
+        <div class="left-dataTree">
+          <el-input placeholder="输入关键字进行过滤" v-model="tableSearchInput" @change="tableTreeSearch" id="dataSearch"></el-input>
+          <ul id="dataTree" class="ztree" />
+        </div>
+        <div class="left-paramTree">
+          <el-input placeholder="输入关键字进行过滤" v-model="paramSearchInput" @change="paramTreeSearch" id="paramSearch"></el-input>
+          <ul id="paramTree" class="ztree" />
+        </div>
+        <div class="left-sqlFunTree">
+          <el-input placeholder="输入关键字进行过滤" v-model="functionInput" @change="functionTreeSearch" id="sqlSearch"></el-input>
+          <ul id="sqlFunTree" class="ztree" />
+        </div>
       </div>
-      <div id="rightPart" class="col-sm-10" style="height: 90vh">
+      <div id="rightPart" class="col-sm-10" style="height: 100%">
         <div id="sqlEditorDiv" class="sql-editor-div">
           <el-row type="flex" class="row-bg">
             <el-col>
@@ -20,7 +28,7 @@
                 type="primary"
                 size="small"
                 @click="sqlFormat"
-                class="oper-btn show-detail"
+                class="oper-btn sqlcheck"
                 title="格式化sql"
               ></el-button>
               <el-button
@@ -36,6 +44,13 @@
                 @click="openSqlDraftList"
                 class="oper-btn folder"
                 title="打开sql"
+              ></el-button>
+              <el-button
+                type="primary"
+                size="small"
+                @click="getColumnSqlInfo"
+                class="oper-btn sqlcheck"
+                title="校验sql"
               ></el-button>
               <el-dropdown>
                 <el-button
@@ -81,23 +96,7 @@
                   >
                 </el-dropdown-menu>
               </el-dropdown>
-              <label id="InfoFlag" style="display: none"
-                >SQL必须全部执行后才可保存</label
-              >
-              <input id="flag" type="hidden" value="false" />
-              <input id="flag2" type="hidden" value="false" />
-              <input id="outColumn" type="hidden" value="" />
-              {{ path }}
-              <a
-                @click="modelResultSavePathDialog = true"
-                style="color: #409eff; margin-left: 50px"
-                >编辑</a
-              >
-              <a
-                @click="getColumnSqlInfo"
-                style="color: #409eff; margin-left: 50px"
-                >张闯测试</a
-              >
+              <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;" @click="modelResultSavePathDialog = true">{{ path }}</label>
             </el-col>
           </el-row>
           <div
@@ -113,13 +112,15 @@
           />
           <textarea id="sql" />
         </div>
-        <div id="horizontal"/>
+        <div id="horizontal"></div>
 
         <!-- 结果展示和参数输入区域 -->
         <div id="bottomPart" lay-filter="result-data">
-          <div id="maxOpen" class="max-size" @click="maxOpen" >
-            <div id="iconImg" class="iconImg" alt="最大化" />
-            <div id="iconImg-huifu" />
+          <div id="maxOpen" class="max-size" >
+            <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
+            <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
+            <!-- <div id="iconImg-save" class="iconImg" @click="outTable"></div>
+            <div id="iconImg-table" class="iconImg"></div> -->
           </div>
           <div v-for="result in resultShow" id="dataShow" class="data-show">
             <childTabs
@@ -132,7 +133,7 @@
           </div>
         </div>
       </div>
-      <div id="vertical" />
+      <div id="vertical"> <div></div> </div>
       <input
         id="personId"
         type="hidden"
@@ -148,7 +149,7 @@
     </div>
     <form id="countForm" class="form-horizontal" style="display: none">
       <div class="form-group col-sm-12">
-        <label class="col-sm-3 control-label">视图sql:</label>
+        <label class="col-sm-3 control-label">视图SQL:</label>
         <div class="col-sm-7">
           <textarea
             id="viewSql"
@@ -226,7 +227,7 @@
       </div>
     </el-dialog>
     <el-dialog
-      title="选择模型结果保存路径"
+      title="选择SQL结果保存路径"
       :visible.sync="modelResultSavePathDialog"
       width="30%"
       :append-to-body="true"
@@ -262,6 +263,7 @@ import {
   sqlFormat,
   findAndReplace,
   caseTransformation,
+  getExecuteTask,
   selectSqlNotes,
   selectSqlCancelNotes,
   refreshCodeMirror,
@@ -279,14 +281,17 @@ import {
   maxOpenOne,
   getColumnSqlInfo,
   refushTableTree,
+  dropTable,
+  getIsUpdate,
+  setIsUpdate
 } from "@/api/analysis/sqleditor/sqleditor";
 import sqlDraftList from "@/views/analysis/sqleditor/sqldraftlist";
 import { updateDraft } from "@/api/analysis/sqleditor/sqldraft";
 import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import paramDraw from "@/views/analysis/modelparam/paramdraw";
 import { replaceNodeParam } from "@/api/analysis/auditparam";
-import Cookies from "js-cookie";
 import dataTree from "@/views/data/role-res/data-tree";
+import { modelResultExport } from "@/views/analysis/auditmodelresult/childtabcon"
 
 /**
  * 当前执行进度
@@ -314,10 +319,16 @@ let lastResultColumnType = [];
  * 数据界面对象
  */
 let childTabsRef;
+
+/**
+ * 最后一个select索引
+ * @type {number}
+ */
+let lastSqlIndex = -1
 export default {
   name: "SQLEditor",
   components: { sqlDraftList, childTabs, paramDraw, dataTree },
-  props: ["sqlEditorParamObj", "sqlValue"],
+  props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName"],
   data() {
     return {
       sqlDraftForm: {
@@ -340,6 +351,8 @@ export default {
       sqlDraftDialogFormVisible: false,
       sqlDraftDialog: false,
       dialogFormVisible: false,
+      //遮罩层文字
+      loadText:"",
       formLabelWidth: "120px",
       paramDrawUuid: "",
       executeLoading: false,
@@ -361,7 +374,7 @@ export default {
       tempPath:'',
       tempId:'',
       nodeType:'',
-      path:'',
+      path:'选择SQL结果保存路径',
       modelResultSavePathId:'',
       personCode: this.$store.state.user.code,
       sceneCode: "auditor",
@@ -413,47 +426,55 @@ export default {
       this.webSocket.onopen = function (event) {};
       // 发送消息
       this.webSocket.onmessage = function (event) {
-        var treeNodeInfo = JSON.parse(event.data).treeNodeInfo
-        console.log(555555555)
-        console.log(treeNodeInfo)
-        if (treeNodeInfo.length > 0) {
-          var treeNodes = []
-          for (var i = 0; i < treeNodeInfo.length; i++) {
-            var treeNode = {
-              chkDisabled: false,
-              deptColNum: 0,
-              hidden: false,
-              icon: "../../images/ico/table_1.png",
-              id: treeNodeInfo[i].tableMetaUuid,
-              isExist: 0,
-              isParent: true,
-              name: treeNodeInfo[i].displayTbName,
-              personNode: false,
-              pid: treeNodeInfo[i].folderUuid,
-              timeColNum: 0,
-              type: "table",
-            };
-            treeNodes.push(treeNode);
+        const dataObj = JSON.parse(event.data)
+        if(dataObj.listenerType === "afterTaskChangeTable" || dataObj.listenerType === "afterTaskCreateView"){
+          let treeNodeInfo = dataObj.addTableMetaList
+          if (treeNodeInfo.length > 0) {
+            var treeNodes = []
+            for (var i = 0; i < treeNodeInfo.length; i++) {
+              var treeNode = {
+                chkDisabled: false,
+                deptColNum: 0,
+                hidden: false,
+                icon: "../../images/ico/table_1.png",
+                id: treeNodeInfo[i].tableMetaUuid,
+                isExist: 0,
+                isParent: true,
+                name: treeNodeInfo[i].displayTbName,
+                personNode: false,
+                pid: treeNodeInfo[i].folderUuid,
+                timeColNum: 0,
+                type: "table",
+              };
+              treeNodes.push(treeNode)
+            }
+            refushTableTree(treeNodes)
           }
-          refushTableTree(treeNodes);
         }
-
-        const dataObj = JSON.parse(event.data);
-        if (dataObj.result != null) {
-          currentExecuteProgress++;
+        if(dataObj.listenerType === "onSQLResult"){
+          if (dataObj.executeSQL.state == 2) {
+            //如果最后的列索引与当前执行进度一直，说明最后的结果集已经拿到 取出最后一个结果集的列做为模型结果列
+            if(lastSqlIndex == currentExecuteProgress){
+              lastResultColumn = dataObj.columnNames
+              lastResultColumnType = dataObj.columnTypes
+            }
+            currentExecuteProgress++
+          }
+          // 如果当前执行等于总的执行进度  说明sql已经全部执行成功
+          if (currentExecuteProgress == dataObj.executeTask.executeSQL.length) {
+            isAllExecuteSuccess = true
+          }
+          func1(dataObj)
         }
-        // 如果当前执行等于总的执行进度  说明最后的结果集已经拿到 取出最后一个结果集的列做为模型结果列
-        if (currentExecuteProgress == dataObj.executeTask.executeSQL.length) {
-          isAllExecuteSuccess = true;
-          lastResultColumn = dataObj.columnNames;
-          lastResultColumnType = dataObj.columnTypes;
+        if(dataObj.listenerType === "afterTaskDropTable" || dataObj.listenerType === "afterTaskDropView"){
+          dropTable(dataObj.dropTableNameList)
         }
-        func1(dataObj);
       };
       const func2 = function func3(val) {
         this.$refs.childTabsRef[0].loadTableData(val);
         //已经全部执行完成，调用父组件方法初始化参数列等信息
         if (isAllExecuteSuccess) {
+          setIsUpdate(false)
           this.$emit("getSqlObj");
         }
       };
@@ -468,7 +489,7 @@ export default {
      * 此处没有主动发消息给服务端，如果调用此方法，则会发送消息至socket服务端onMessage()方法上
      */
     sendMsgToServer() {
-      const message = "123";
+      const message = "";
       if (message) {
         this.webSocket.send(
           JSON.stringify({ username: $("#username").text(), msg: message })
@@ -479,106 +500,126 @@ export default {
      * 初始化sql编辑器基础数据
      */
     initData() {
-      const userId = this.$store.state.user.code;
-      initDragAndDrop();
-      initIcon();
-      initTableTree(userId);
-      initFunctionTree();
-      initVariable();
-      initEvent();
-      initParamTree();
+      const userId = this.$store.state.user.code
+      initDragAndDrop()
+      initIcon()
+      initFunctionTree()
+      initVariable()
+      initEvent()
+      initParamTree()
+      this.executeLoading = true
+      this.loadText = "正在初始化数据表..."
       initTableTip(userId).then((result) => {
-        var relTableMap = {};
+        initTableTree(result)
+        var relTableMap = {}
+        var expTableMap = {}
         if (result.data != null) {
           for (let i = 0; i < result.data.length; i++) {
             if (result.data[i].type === "table") {
-              relTableMap[result.data[i].name] = [];
+              relTableMap[result.data[i].name] = []
+              expTableMap[result.data[i].name] = result.data[i].extCol;
             }
           }
         }
-        initSQLEditor(document.getElementById('sql'), relTableMap)  //初始化SQL编辑器
-        //initSQLEditor(document.getElementById('sql'), relTableMap)
-        if (this.sqlValue != "") {
+        initSQLEditor(document.getElementById('sql'), relTableMap,expTableMap)  //初始化SQL编辑器
+        this.executeLoading = false
+        this.loadText = ""
+        if (this.sqlValue != "" && this.sqlValue != undefined) {
           // 编辑模型的sql  反显数据
           editorSql(this.sqlValue, this.sqlEditorParamObj);
+          this.tempPath = this.locationName;
+          this.tempId = this.locationUuid;
+          this.path = "当前执行SQL保存路径:" + this.tempPath;
+          this.modelResultSavePathId = this.tempId;
         }
-        refreshCodeMirror();
-      });
+        refreshCodeMirror()
+      }).catch(() => {
+        this.$message({ type: 'error', message: '初始化数据表失败!' })
+        this.executeLoading = false
+        this.loadText = ""
+      })
     },
     /**
      * 数据表树搜索
      */
     tableTreeSearch() {
-      tableTreeSearch();
+      tableTreeSearch()
     },
     /**
      * 参数树搜索
      */
     paramTreeSearch() {
-      paramTreeSearch();
+      paramTreeSearch()
     },
     /**
      * 函数树搜索
      */
     functionTreeSearch() {
-      functionTreeSearch();
+      functionTreeSearch()
     },
     /**
      * sql格式化
      */
     sqlFormat() {
-      sqlFormat();
+      sqlFormat()
     },
     /**
      * 查找和替换
      * @param type 1替换 2查找
      */
     findAndReplace(type) {
-      findAndReplace(type);
+      findAndReplace(type)
     },
     /**
      * 转大小写
      * @param type 1大写2小写
      */
     caseTransformation(type) {
-      caseTransformation(type);
+      caseTransformation(type)
     },
     /**
      * 注释选中行
      */
     selectSqlNotes() {
-      selectSqlNotes();
+      selectSqlNotes()
     },
     /**
      * 取消注释
      */
     selectSqlCancelNotes() {
-      selectSqlCancelNotes();
+      selectSqlCancelNotes()
     },
     /**
      * 获取保存的对象
      * @returns {{arr: *[], flag: (jQuery|string|undefined|*), InfoFlag: jQuery, outColumn: jQuery, flag2: (jQuery|string|undefined), sql: *}}
      */
     getSaveInfo() {
+      if(this.callType != "editorModel"){
+        return
+      }
       if (!this.isAllExecute) {
-        this.$message({ type: "info", message: "全部执行才可以保存!" });
-        return;
+        return
       }
       // 如果当前执行进度与要执行的sql数量相等 则证明数据已经全部拿到，允许保存
       if (currentExecuteProgress != this.currentExecuteSQL.length) {
-        this.$message({ type: "info", message: "全部执行成功才可以保存!" });
-        return;
+        return
+      }
+      if(getIsUpdate()){
+        this.$message({ type: "info", message: "SQL已经被修改,请重新校验或执行!" });
+        return
       }
       /*      console.log("当前执行总进度:" + currentExecuteProgress);
       console.log("是否全部执行成功:" + isAllExecuteSuccess);
       console.log(this.currentExecuteSQL);
       console.log(lastResultColumn);*/
-      const returnObj = getSaveInfo();
-      returnObj.columnNames = lastResultColumn;
-      returnObj.columnTypes = lastResultColumnType;
-      returnObj.modelOriginalTable = this.modelOriginalTable;
-      returnObj.modelType = 1;
-      return returnObj;
+      const returnObj = getSaveInfo()
+      returnObj.columnNames = lastResultColumn
+      returnObj.columnTypes = lastResultColumnType
+      returnObj.modelOriginalTable = this.modelOriginalTable
+      returnObj.modelType = 1
+      returnObj.locationUuid = this.tempId
+      returnObj.locationName = this.tempPath
+      return returnObj
     },
     /**
      * 生成select语句
@@ -595,7 +636,7 @@ export default {
         const sqlObj = getSaveSqlDraftObj(type);
         const sql = sqlObj.draftSql;
         if (sql === "") {
-          this.$message({ type: "info", message: "请输入sql语句!" });
+          this.$message({ type: "info", message: "请输入SQL语句!" });
           return;
         } else {
           if (!sqlObj.isOld) {
@@ -690,53 +731,65 @@ export default {
           useSql(returnObj);
         });
       } else {
-        return;
+        return
       }
     },
     /**
      * 执行sql
      */
     executeSQL() {
-      const result = getSql();
-      if (result.sql === "") {
-        this.$message({ type: "info", message: "请输入sql!" });
-        return;
+      if(this.tempId === ""){
+        this.$message({ type: "info", message: "请选择SQL执行保存路径!" })
+        return
       }
-      this.isAllExecute = result.isAllExecute;
+      const result = getSql()
+      if (result.sql === "") {
+        this.$message({ type: "info", message: "请输入SQL!" })
+        return
+      }
+      this.isAllExecute = result.isAllExecute
+      this.loadText = "正在检验SQL是否符合语法规范..."
       verifySql().then((result) => {
+        this.executeLoading = false
+        this.loadText = ""
         if (!result.data.verify) {
-          this.$message({ type: "info", message: "SQL不合法，请重新输入" });
-          return;
+          this.$message({ type: "info", message: "SQL不符合语法规范，请重新输入" });
+          return
         }
-        this.resultShow = []; // 清空数据展示对象
-        isAllExecuteSuccess = false;
-        currentExecuteProgress = 0;
-        this.currentExecuteSQL = [];
-        lastResultColumn = [];
-        const obj = executeSQL();
-        obj.businessField = "sqleditor";
-        obj.modelResultSavePathId = this.modelResultSavePathId;
+        this.resultShow = [] // 清空数据展示对象
+        isAllExecuteSuccess = false
+        currentExecuteProgress = 0
+        this.currentExecuteSQL = []
+        lastResultColumn = []
+        const obj = executeSQL()
+        obj.businessField = "sqleditor"
+        obj.modelResultSavePathId = this.modelResultSavePathId
         if (!obj.isExistParam) {
-          this.executeLoading = true;
-          startExecuteSql(obj)
-            .then((result) => {
-              this.executeLoading = false;
-              if (!result.data.isError) {
-                this.currentExecuteSQL = result.data.executeSQLList;
-                this.modelOriginalTable = result.data.tables;
-                this.createTreeNode = result.data.treeNodeInfo;
-                this.resultShow.push({ id: 1 });
-              } else {
-                this.$message({ type: "info", message: "执行失败" });
-              }
-            })
-            .catch((result) => {
-              this.executeLoading = false;
+          this.executeLoading = true
+          this.loadText = "正在获取SQL信息..."
+          getExecuteTask(obj).then((result) => {
+            this.executeLoading = false
+            this.loadText = ""
+            lastSqlIndex = result.data.lastSqlIndex
+            this.executeLoading = false
+            this.currentExecuteSQL = result.data.executeSQLList
+            this.modelOriginalTable = result.data.tables
+            this.createTreeNode = result.data.treeNodeInfo
+            this.resultShow.push({ id: 1 })
+            //界面渲染完成之后开始执行sql,将sql送入调度
+            startExecuteSql(result.data).then((result) => {
+              this.executeLoading = false
+              this.loadText = ""
+            }).catch((result) => {
+              this.executeLoading = false
             });
+          }).catch((result) => {
+            this.executeLoading = false
+          })
         } else {
-          this.openParamDraw(obj);
+          this.openParamDraw(obj)
         }
-      });
+      })
     },
     /**
      * 打开参数渲染窗体
@@ -759,7 +812,28 @@ export default {
       }
       obj.sqls = obj.sql;
       obj.businessField = "sqleditor";
-      startExecuteSql(obj).then((result) => {
+      this.executeLoading = true;
+      this.dialogFormVisible = false;
+      getExecuteTask(obj).then((result) => {
+        this.executeLoading = false
+        this.loadText = ""
+        lastSqlIndex = result.data.lastSqlIndex
+        this.executeLoading = false
+        this.currentExecuteSQL = result.data.executeSQLList
+        this.modelOriginalTable = result.data.tables
+        this.createTreeNode = result.data.treeNodeInfo
+        this.resultShow.push({ id: 1 })
+        //界面渲染完成之后开始执行sql,将sql送入调度
+        startExecuteSql(result.data).then((result) => {
+          this.executeLoading = false;
+          this.loadText = ""
+        }).catch((result) => {
+          this.executeLoading = false;
+        });
+      }).catch((result) => {
+        this.executeLoading = false;
+      });
+/*      startExecuteSql(obj).then((result) => {
         if (!result.data.isError) {
           this.currentExecuteSQL = result.data.executeSQLList;
           this.modelOriginalTable = result.data.tables;
@@ -768,7 +842,7 @@ export default {
         } else {
           this.$message({ type: "info", message: "执行失败" });
         }
-      });
+      });*/
     },
     maxOpen() {
       maxOpenOne();
@@ -780,7 +854,7 @@ export default {
     },
     modelResultSavePathDetermine() {
       if (this.nodeType == "folder") {
-        this.path = this.tempPath;
+        this.path = "当前执行SQL保存路径:" + this.tempPath;
         this.modelResultSavePathId = this.tempId;
         this.modelResultSavePathDialog = false;
       } else if (this.nodeType == "") {
@@ -796,13 +870,54 @@ export default {
       }
     },
     getColumnSqlInfo() {
-      const obj = executeSQL();
-      getColumnSqlInfo(obj.sqls).then((resp) => {});
+      const result = getSql();
+      if (result.sql === "") {
+        this.$message({ type: "info", message: "请输入SQL!" });
+        return;
+      }
+      this.isAllExecute = result.isAllExecute;
+      this.executeLoading = true
+      this.loadText = "正在校验sql是否符合语法规范..."
+      verifySql().then((verSqlResult) => {
+        this.executeLoading = false
+        if (!verSqlResult.data.verify) {
+          this.$message({ type: "info", message: "SQL不符合语法规范，请重新输入" });
+          return;
+        }
+        this.resultShow = []; // 清空数据展示对象
+        isAllExecuteSuccess = false;
+        currentExecuteProgress = 0;
+        this.currentExecuteSQL = [];
+        lastResultColumn = [];
+        let data = {sql:result.sql}
+        this.executeLoading = true
+        this.loadText = "正在获取SQL列..."
+        getColumnSqlInfo(data).then((resp) => {
+          //修改执行成功状态
+          isAllExecuteSuccess = true;
+          lastResultColumn = resp.data.columnName;
+          lastResultColumnType = resp.data.columnType;
+          setIsUpdate(false)
+          this.$emit("getSqlObj");
+          this.executeLoading = false
+          this.loadText = ""
+        }).catch((result) =>{
+          this.executeLoading = false
+          this.loadText = ""
+        });
+      });
     },
+    /**
+     * 获取sql编辑器里的slq是否被修改
+     * @returns {boolean}
+     */
+    getSQLIsUpdate(){
+      return getIsUpdate();
+    }
   },
 };
 </script>
-<style>
+<style scoped>
 #tableSearchImg,
 #paramSearchImg,
 #funSearchImg {
@@ -815,8 +930,10 @@ export default {
   cursor: pointer;
 }
 #rightPart {
-  width: 81.3333%;
+  width: 84.82%;
   position: relative;
+  padding: 0;
+  overflow: hidden;
 }
 
 .app-container {
@@ -829,6 +946,11 @@ export default {
   height: 100%;
 }
 
+.row-bg{
+  padding: 8px 0 8px 5px;
+  background-color: rgb(224, 230, 237);
+}
+
 #sidebar{
   width: 30px;
   height: 100%;
@@ -838,15 +960,16 @@ export default {
   top: -2px;left: -1px;
   border-radius: 50px 0 0 50px;
   text-align: center;
-  z-index: 20;
+  z-index: 50;
   background: #f7f7f7;
-  border-right: 1px solid #5E6572;
+  border-right: 1px solid rgb(206,208,212);
 }
 
 .CodeMirror-hint-table {
   color: #af0000 !important;
   font-size: 15pt;
 }
+
 
 .CodeMirror-hint-table:before {
   content: " ";
@@ -888,14 +1011,14 @@ export default {
 
 #vertical {
   position: absolute;
-  left: 15.2%;
+  left: 15.08%;
   height: 100%;
-  width: 3px;
-  overflow: hidden;
-  background: #c0c5d4;
+  width: 8px;
+  /* overflow: hidden; */
   cursor: w-resize;
-  z-index: 20;
+  z-index: 200;
 }
+
 .el-aside{
   /* margin-bottom: 10px; */
 }
@@ -905,12 +1028,10 @@ export default {
   top: 37%;
   right: 0;
   /* width: 100vh; */
-  width: 97.5%;
-  height: 3px;
-  overflow: hidden;
-  background: #c0c5d4;
+  width: 100%;
+  height: 8px;
   cursor: s-resize;
-  z-index: 50;
+  z-index: 150;
 }
 
 .errorHighlight {
@@ -953,11 +1074,10 @@ export default {
 .sql-editor-div{
   padding: 0px;
   width: 100%;
-  height: 40%;
+  height: 37%;
 }
 
 .data-show{
-  margin-top: 45px;
   width: 98.7%;
   height: 100%;
 }
@@ -969,7 +1089,16 @@ export default {
   float: left;
   height: 100%;
   margin-left: .5%;
+  box-shadow: 15px 0 15px 0 #3F444D12;
+  position: relative;
+  z-index: 20;
 }
+
+.left-dataTree , .left-paramTree , .left-sqlFunTree{
+  /*width: 85%;*/
+  margin-left: 30px;
+}
+
 </style>
 
 

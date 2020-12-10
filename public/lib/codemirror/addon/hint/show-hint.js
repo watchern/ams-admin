@@ -51,6 +51,7 @@
   })
 
   function Completion(cm, options) {
+    // console.log(options)
     this.cm = cm;
     this.options = options;
     this.widget = null;
@@ -160,8 +161,14 @@
   }
 
   function getText(completion) {
-    if (typeof completion == "string") return completion;
-    else return completion.text;
+    if (typeof completion == "string") {
+  
+    return completion;
+    
+  }else {
+
+    return completion.text ;
+  }
   }
 
   function buildKeyMap(completion, handle) {
@@ -214,6 +221,8 @@
     }
   }
 
+
+  //智能施法元素显示
   function Widget(completion, data) {
     this.completion = completion;
     this.data = data;
@@ -227,17 +236,25 @@
     hints.className = "CodeMirror-hints " + theme;
     this.selectedHint = data.selectedHint || 0;
 
-    var completions = data.list;
+    var completions = data.list; 
+    var tableNameTitle = completion.cm.options.hintOptions.tablesTitle;
+
     for (var i = 0; i < completions.length; ++i) {
       var elt = hints.appendChild(ownerDocument.createElement("li")), cur = completions[i];
       var className = HINT_ELEMENT_CLASS + (i != this.selectedHint ? "" : " " + ACTIVE_HINT_ELEMENT_CLASS);
       if (cur.className != null) className = cur.className + " " + className;
       elt.className = className;
-      if (cur.render) cur.render(elt, data, cur);// cur>>data.list   elt>>li  data>>???
+      if (cur.render) cur.render(elt, data, cur);
       else elt.appendChild(ownerDocument.createTextNode(cur.displayText || getText(cur)));
       elt.hintId = i;
-      // var nnt = elt.appendChild(ownerDocument.createElement("span"));
-      // nnt.className = "CodeMirror-nnt"
+      var nnt = elt.appendChild(ownerDocument.createElement("span"));
+      nnt.className = "CodeMirror-nnt"
+      for (var key in tableNameTitle) {  
+        if(key==getText(cur)){
+          var tableList = tableNameTitle[key]
+          nnt.appendChild(ownerDocument.createTextNode(getText(tableList)));
+        }
+      }     
     }
 
     var pos = cm.cursorCoords(completion.options.alignWithWord ? data.from : null);
@@ -279,7 +296,7 @@
     if (scrolls) for (var node = hints.firstChild; node; node = node.nextSibling)
       node.style.paddingRight = cm.display.nativeBarWidth + "px"
 
-    cm.addKeyMap(this.keyMap = buildKeyMap(completion, {
+    cm.addKeyMap(this.keyMap = buildKeyMap(completion, {//???
       moveFocus: function(n, avoidWrap) { widget.changeActive(widget.selectedHint + n, avoidWrap); },
       setFocus: function(n) { widget.changeActive(n); },
       menuSize: function() { return widget.screenAmount(); },

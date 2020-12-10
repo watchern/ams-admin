@@ -222,6 +222,10 @@ const tasksType = {
     desc: 'SQL',
     color: '#7A98A1'
   },
+  SHELL: {
+    desc: 'SHELL',
+    color: '#646464'
+  },
   JAVA: {
     desc: 'JAVA',
     color: '#646464'

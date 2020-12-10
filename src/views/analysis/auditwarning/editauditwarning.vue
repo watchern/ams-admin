@@ -13,12 +13,25 @@
           <el-form-item label="预警名称" prop="warningName" >
             <el-input v-model="temp.warningName"  />
           </el-form-item>
-          <el-form-item label="预警类型" >
-            <el-select v-model="temp.warningType" placeholder="请选择预警类型" >
-              <el-option label="模型" :value="1"></el-option>
-              <el-option label="指标" :value="2"></el-option>
-            </el-select>
-          </el-form-item>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="预警类型" >
+                <el-select v-model="temp.warningType" placeholder="请选择预警类型" >
+                  <el-option label="模型" :value="1"></el-option>
+                  <el-option label="指标" :value="2"></el-option>
+                </el-select>
+              </el-form-item> 
+            </el-col>
+            <el-col :span="12">
+              <el-form-item  label="结果保存地址">
+                <el-input  class="el-input-z" readonly="readonly" v-model="this.auditWarningSave.locationName"/>
+                <span class="btn-z" @click="modelResultSavePathDialog = true">选择</span>   
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          
+          
           <el-form-item label="关联模型" v-if="temp.warningType == 1">
             <el-row>
               <el-col align="right">
@@ -170,6 +183,25 @@
         </el-form>
       </el-tab-pane>
     </el-tabs>
+    <el-dialog
+      title="选择模型结果保存路径"
+      :visible.sync="modelResultSavePathDialog"
+      width="30%"
+      :append-to-body="true"
+    >
+      <data-tree
+        :data-user-id="personCode"
+        :scene-code="sceneCode"
+        :tree-type="treeType"
+        @node-click="handleClick"
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="modelResultSavePathDialog = false">取 消</el-button>
+        <el-button type="primary" @click="modelResultSavePathDetermine"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -179,9 +211,10 @@ import {findModelsWithParam, getWarningById} from '@/api/analysis/auditwarning'
 import {getOneDict} from "@/utils"
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
 import {replaceNodeParam } from '@/api/analysis/auditparam'
+import dataTree from "@/views/data/role-res/data-tree";
 export default {
   name:"editAuditWarning",
-  components: { SelectModels, paramDraw },
+  components: { SelectModels, paramDraw , dataTree},
   props: {
     //操作类型 add添加 update更新 detail详情查看
     option : {
@@ -252,8 +285,7 @@ export default {
         //模型列表
         modelList:[],
         //指标列表
-        indexList:[],
-
+        indexList:[]
       },
       //是否显示选择模型列表
       selectModelVisible : false,
@@ -301,10 +333,22 @@ export default {
         //预警任务关联表
         warningTaskRel:[],
         //预警执行时间关联表
-        warningExecuteTime:[]
+        warningExecuteTime:[],
+        //保存结果位置编号
+        locationUuid:'',
+        //保存结果文件夹名称
+        locationName:''
       },
       //已经初始化参数的模型
-      initedParamModel:[]
+      initedParamModel:[],
+      modelResultSavePathDialog: false,
+      tempPath:'',
+      tempId:'',
+      nodeType:'',
+      SavePath:'选择模型结果保存路径',
+      personCode: this.$store.state.user.code,
+      sceneCode: "auditor",
+      treeType: "save",
     }
   },
   created() {
@@ -339,6 +383,8 @@ export default {
       this.temp.warningName = this.auditWarningSave.warningName
       this.temp.warningType = this.auditWarningSave.warningType
       this.temp.executeMode = this.auditWarningSave.executeMode
+      this.temp.locationUuid = this.auditWarningSave.locationUuid
+      this.temp.locationName = this.auditWarningSave.locationName
       //单次执行
       if(this.auditWarningSave.executeMode == 1){
         this.temp.singleExecuteTime = this.auditWarningSave.warningExecuteTime[0].executeTime
@@ -684,7 +730,55 @@ export default {
       }
       value = dicObj[0].codeName;
       return value
+    },
+    handleClick(data, node, tree) {
+      this.tempPath = data.label;
+      this.tempId = data.id;
+      this.auditWarningSave.locationUuid = this.tempId
+      this.auditWarningSave.locationName = this.tempPath
+      this.nodeType = data.type;
+    },
+
+    modelResultSavePathDetermine() {
+      if (this.nodeType == "folder") {
+        // this.path = "当前执行sql保存路径:" + this.tempPath;
+        // this.modelResultSavePathId = this.tempId;
+        this.modelResultSavePathDialog = false;
+      } else if (this.nodeType == "") {
+        this.$message({
+          message: "请选择路径",
+          type: "warning",
+        });
+      } else {
+        this.$message({
+          message: "只能选择文件夹",
+          type: "warning",
+        });
+      }
     }
   }
 }
 </script>
+<style scoped>
+  .el-input-z{
+    width: 60%;
+    margin: 0 35px 0 0;
+    cursor:no-drop
+  }
+  .btn-z{
+    width: 70px;
+    height: 36px;
+    display: inline-block;
+    border-radius: 4px;
+    background-color: #353a43;
+    border-color: #353a43;
+    color: #c8ff8c;
+    font-weight: bold;
+    text-align: center;
+    padding: 0 10px;
+    cursor:pointer;
+  }
+  .el-select{
+  width: 320px;
+}
+</style>

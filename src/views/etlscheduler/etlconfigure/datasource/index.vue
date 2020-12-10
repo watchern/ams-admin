@@ -7,21 +7,15 @@
         @submit="getList"
       />
     </div>
-    <!-- <m-list-construction>
-        <template slot="conditions">
-          <m-conditions>
-            <template slot="button-group">
-              <x-button
-                type="primary"
-                size="mini"
-                @click="_create('')"
-              >添加</x-button>
-            </template>
-          </m-conditions>
-        </template>
-      </m-list-construction> -->
     <el-row>
       <el-col align="right">
+        <el-button
+          type="primary"
+          title="测试连接"
+          class="oper-btn link"
+          :disabled="selections.length !== 1"
+          @click="testConnect"
+        />
         <el-button
           type="primary"
           title="新增"
@@ -43,7 +37,6 @@
           @click="handleDelete()"
         /></el-col>
     </el-row>
-    <div class="etl-datasource-list">
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -53,7 +46,8 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="calc(100vh - 350px)"
+      max-height="calc(100vh - 350px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       @on-update="_onUpdate"
@@ -100,7 +94,6 @@
                 {{ JSON.parse(scope.row.connectionParams).user }}
               </div>
             </el-row>
-
             <div slot="reference" class="name-wrapper">
               <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
@@ -109,8 +102,6 @@
       </el-table-column>
       <el-table-column
         label="描述"
-        width="200px"
-        align="center"
         prop="note"
       />
       <el-table-column
@@ -121,10 +112,11 @@
       />
       <el-table-column
         label="修改时间"
+        width="250px"
+        align="center"
         prop="updateTime"
       />
     </el-table>
-    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -137,9 +129,9 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { pageList, deleteByIds } from '@/api/etlscheduler/datasource'
+import { pageList, deleteByIds, getById } from '@/api/etlscheduler/datasource'
 import QueryField from '@/components/Ace/query-field/index'
-
+import store from '@/store'
 import { mapActions } from 'vuex'
 import mCreateDataSource from './pages/list/_source/createDataSource'
 import listUrlParamHandle from '@/components/etl/mixin/listUrlParamHandle'
@@ -151,6 +143,7 @@ export default {
   props: {},
   data() {
     return {
+      store,
       tableKey: 'datasourceUuid',
       list: null,
       total: 0,
@@ -163,7 +156,8 @@ export default {
             { name: 'hive', value: '2' }, { name: 'spark', value: '3' },
             { name: 'clickhouse', value: '4' }, { name: 'oracle', value: '5' },
             { name: 'SQLServer', value: '6' }, { name: 'db2', value: '7' }]
-        },
+        }
+        // ,
         // { label: '登录方式', name: 'loginTyp', type: 'select',
         //   data: [{ name: '用户名密码', value: '1' }, { name: 'kerbors认证', value: '2' }]
         // },
@@ -172,7 +166,7 @@ export default {
         //   data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }],
         //   default: '1'
         // },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
+        // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
       ],
       // 格式化参数列表
       formatMap: {
@@ -252,6 +246,24 @@ export default {
     },
     hadleCreate() {
       this._create('')
+    },
+    testConnect() {
+      const item = Object.assign({}, this.selections[0])
+      getById(item.datasourceUuid).then(res => {
+        this.store.dispatch('datasource/connectDatasources', { connectionParams: JSON.stringify(res.data) }).then(resp => {
+          setTimeout(() => {
+            this.$notify({
+              title: '提示',
+              message: '测试连接成功',
+              type: 'success',
+              duration: 2000,
+              position: 'bottom-right'
+            })
+          }, 0)
+        }).catch(e => {
+          this.$message.error(e.msg || '测试连接失败')
+        })
+      })
     },
     sortChange(data) {
       const { prop, order } = data
@@ -351,10 +363,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-   .etl-datasource-list{
-    height: 71.5%;
-    overflow: auto;
-  }
-</style>
