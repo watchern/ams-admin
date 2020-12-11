@@ -96,63 +96,43 @@ export default {
           }
         }
       })
-      // console.log(this.processStateList);
       const myChart = Chart.pie('#process-state-pie', this.processStateList, {
         title: ''
       })
-      // pie.series[0].label = {
-      //   show: true,
-      //   position: 'center',
-      //   fontSize: '20',
-      //   formatter: _.find(this.processStateList, ['code', 'G_SUCCESS']).percent +
-      //     '\r\n' + _.find(this.processStateList, ['code', 'G_SUCCESS']).key,
-      //   rich: {
-      //     dark: {
-      //       color: _.find(this.processStateList, ['code', 'G_SUCCESS']).color
-      //     }}
-      //   // }
-      // }
       myChart.echart.setOption(pie)
-      // (pie.series[0].label = {
-      //   tooltip: {
-      //     trigger: "item",
-      //     formatter: "{b} : {c} ({d}%)",
-      //   },
-      //   normal: {
-      //     show: true,
-      //     position: "center",
-      //     fontSize: "30",
-      //     // fill:'rgb(145,202,140)',
-      //     formatter:'   {d}%\r\n{b}'
-      //   }
-      // }),
-      //   myChart.setOption(option, true);
-      // myChart.statusType({
-      //   type: "highlight",
-      //   seriesIndex: 4,
-      //   dataIndex: 4,
-      // }); //设置默认选中高亮部分
+      myChart.echart.dispatchAction({
+        type: 'highlight',
+        seriesIndex: 0,
+        name: '执行完成'
+      })
+      myChart.echart.on('mouseover', (v) => {
+        if (v.name !== '执行完成') {
+          myChart.echart.dispatchAction({
+            type: 'hideTip',
+            seriesIndex: 0,
+            name: '执行完成'
+          })
+          myChart.echart.dispatchAction({
+            type: 'downplay',
+            seriesIndex: 0,
+            name: '执行完成'
+          })
+        }
+      })
 
-      // myChart.on("mouseover", function (e) {
-      //   if (e.dataIndex != index) {
-      //     myChart.dispatchAction({
-      //        show: false,
-      //       type: "downplay",
-      //       seriesIndex: 4,
-      //       dataIndex: index,
-      //     });
-      //   }
-      // });
+      myChart.echart.on('mouseout', (v) => {
+        myChart.echart.dispatchAction({
+          type: 'showTip',
+          seriesIndex: 0,
+          name: '执行完成'
+        })
+        myChart.echart.dispatchAction({
+          type: 'highlight',
+          seriesIndex: 0,
+          name: '执行完成'
+        })
+      })
 
-      // myChart.on("mouseout", function (e) {
-      //   index = e.dataIndex;
-
-      //   myChart.dispatchAction({
-      //     type: "highlight",
-      //     seriesIndex: 4,
-      //     dataIndex: e.dataIndex,
-      //   });
-      // });
       // 首页不允许跳转
       if (this.searchParams.projectId) {
         myChart.echart.on('click', (e) => {
