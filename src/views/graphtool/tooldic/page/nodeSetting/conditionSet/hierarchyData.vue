@@ -1,5 +1,5 @@
 <template>
-    <div style="padding-top: 20px;">
+    <div style="height:580px;padding-top: 20px;" ref="hierarchyDataDiv">
         <el-row>
             <div class="containerDiv">
                 <div class="form-group col-sm-3">
@@ -8,11 +8,13 @@
                 <div class="form-group col-sm-4">
                     <label class="col-sm-4 control-label" style="text-align: right;">分层字段：</label>
                     <div class="col-sm-8">
-                        <select id="hierarchy_column" name="status" class="selectpicker" data-live-search="true" @change="empty_set"></select>
+                        <el-select v-model="hierarchy_column" filterable @change="empty_set">
+                            <el-option v-for="colObj in hierarchyColumnArr" :key="colObj.newColumnName" :value="colObj.newColumnName">{{colObj.newColumnName}}</el-option>
+                        </el-select>
                     </div>
                 </div>
                 <div class="form-group col-sm-5">
-                    <span id="range" style="height:30px;line-height: 30px;padding-left: 20px;"></span>
+                    <span style="height:30px;line-height: 30px;padding-left: 20px;">{{range}}</span>
                 </div>
             </div>
         </el-row>
@@ -43,54 +45,43 @@
 
 <script>
     import {getMaxMinColumn} from '@/api/graphtool/graphList'
-    var nodeData
     export default {
         name: 'HierarchyDataSet',
         data() {
             return {
+                nodeData:null,
                 pre_str_column: [],
                 dict_map: [],
                 keyId: 0,
-                items: [
-                    {
-                        id: this.keyId,
-                        c_col_1: '',
-                        c_col_2: ''
-                    }
-                ],
+                items: [{id: this.keyId,c_col_1: '',c_col_2: ''}],
                 loading: null,
                 websocketLayeringId: '',
-                loginUserUuid: ''
+                loginUserUuid: '',
+                hierarchy_column:'',
+                hierarchyColumnArr:[],
+                range:''
             }
         },
         mounted() {
             this.init()
             this.initWebSocKet()
-            window.inputVerify = this.inputVerify
-            window.saveSetting = this.saveSetting
         },
         methods: {
             init() {
-                $('.containerDiv').css({ 'width': '1000px', 'margin-left': function() {
-                    return ($(document).width() - 900) / 2 + 'px'
-                } })
-                // this.loginUserUuid = Cookies.get("personuuid")
-                this.loginUserUuid = '2c948a86757909950175790b10b60002'
+                this.loginUserUuid = this.$store.state.user.id
                 let graph = this.$parent.graph
-                nodeData = graph.nodeData[graph.curCell.id]
-                let parentIds = nodeData.parentIds
+                this.nodeData = graph.nodeData[graph.curCell.id]
+                let parentIds = this.nodeData.parentIds
                 let parent_node = graph.nodeData[parentIds[0]]
                 let columnsInfoPre = this.$parent.columnsInfoPre
                 let typeArr = ['INTEGER', 'DECIMAL', 'NUMBER', 'FLOAT', 'REAL', 'DATE', 'TIMESTAMP']
                 if (columnsInfoPre.length !== 0) { // 初始化数据源
-                    var html = "<option value=''>请选择</option>"
                     for(let i=0; i<columnsInfoPre.length; i++){
                         if ($.inArray(columnsInfoPre[i].columnType, typeArr) > -1) {
-                            html += "<option value='" + columnsInfoPre[i].newColumnName + "'>" + columnsInfoPre[i].newColumnName + '</option>'
+                            this.hierarchyColumnArr.push({newColumnName:columnsInfoPre[i].newColumnName})
                             this.pre_str_column.push(columnsInfoPre[i].newColumnName)
                         }
                     }
-                    $('#hierarchy_column').html(html)
                 }
                 if (this.pre_str_column.length === 0) {
                     this.$message({ type: 'info', message: '上一节点的表或视图暂无可分层的字段' })
@@ -106,7 +97,7 @@
                         }
                         var pre_parentIds = parent_node.parentIds;
                         if(pre_parentIds && pre_parentIds.length > 0){
-                            parent_node = graph.nodeData[pre_parentIds[0]];
+                            parent_node = this.nodeData[pre_parentIds[0]];
                         }
                     }
                     if (parent_node.nodeInfo.resultTableName === '') {
@@ -115,8 +106,7 @@
                         /**
                          * 获得上一节点执行结果的选择字段的最大值和最小值
                          */
-                        console.log(parent_node.nodeInfo.resultTableName)
-                        this.loading = $('body').mLoading({ 'text': '正在加载字段的区间值，请稍后……', 'hasCancel': false })
+                        this.loading = $(this.$refs.hierarchyDataDiv).mLoading({ 'text': '正在加载字段的区间值，请稍后……', 'hasCancel': false })
                         let dataParam = {
                             'tableName': parent_node.nodeInfo.resultTableName,
                             'openType': graph.openType,
@@ -132,12 +122,12 @@
                         })
                     }
                 }
-                if (nodeData.isSet) {
-                    $('#hierarchy_column').selectpicker('val', nodeData.setting.hierarchy_column)// 选择的分层字段
+                if (this.nodeData.isSet) {
+                    this.hierarchy_column = this.nodeData.setting.hierarchy_column// 选择的分层字段
                     this.items = []
                     this.$nextTick( () => {
-                        for(let i=0; i<nodeData.setting.hierarchy_map.length; i++){
-                            let obj = nodeData.setting.hierarchy_map[i]
+                        for(let i=0; i<this.nodeData.setting.hierarchy_map.length; i++){
+                            let obj = this.nodeData.setting.hierarchy_map[i]
                             this.keyId = i
                             this.items.push({
                                 id:i,
@@ -178,7 +168,8 @@
                     $this.$message.error('数据请求失败')
                 }
             },
-            empty_set() {
+            empty_set(sel_column) {
+                this.hierarchy_column = sel_column
                 this.items = []
                 this.keyId = 0
                 this.$nextTick( () => {
@@ -187,17 +178,16 @@
                         c_col_1: '',
                         c_col_2: ''
                     })
-                    var sel_column = $('#hierarchy_column').val()
                     if (sel_column === '') {
-                        $('#range').text('')
+                        this.range = ''
                         return
                     }
                     var max_value = this.dict_map['max_' + sel_column]
                     var min_value = this.dict_map['min_' + sel_column]
                     if (!isNaN(parseInt(min_value)) && !isNaN(parseInt(max_value))) {
-                        $('#range').text('【最小值：' + min_value + ' ~ 最大值：' + max_value + '】')
+                        this.range = '【最小值：' + min_value + ' ~ 最大值：' + max_value + '】'
                     } else {
-                        $('#range').text('【最小值：空  ~  最大值：空】')
+                        this.range = '【最小值：空  ~  最大值：空】'
                     }
                 })
             },
@@ -219,7 +209,7 @@
             },
             saveSetting() {
                 var obj = {
-                    hierarchy_column: $('#hierarchy_column').val(),
+                    hierarchy_column: this.hierarchy_column,
                     hierarchy_map: []
                 }
                 for(let i=0; i<this.items.length; i++){
@@ -227,11 +217,11 @@
                     let c_col_2 = this.items[i].c_col_2
                     obj.hierarchy_map.push({ c_col_1,c_col_2 })
                 }
-                nodeData.setting = obj
+                this.nodeData.setting = obj
             },
             inputVerify() {
-                var verify = true
-                var hierarchy_column = $('#hierarchy_column').val()
+                let verify = true
+                let hierarchy_column = this.hierarchy_column
                 if (hierarchy_column === '') {
                     this.$message({ type: 'info', message: '未选择分层字段' })
                     return false

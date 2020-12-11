@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div style="width: 100%;height:auto;padding-left: 23%;">
+        <div style="width: 100%;height:auto;padding-left:50px;">
             <p style="height:30px;line-height: 30px;color: red;">注：已排序字段列表中，可通过拖动行改变字段的显示顺序</p>
             <div id="group2" class="demo-transfer twotransfer" style="width: 400px;float: left;margin-top:10px;"></div>
             <div style="float: left;width: 450px; height: 500px;margin-top:10px;background-color: #fff;border:1px solid #E6E6E6;overflow-y: auto">
@@ -34,11 +34,11 @@
 </template>
 
 <script>
-    var nodeData
     export default {
         name: 'ColumnSortSet',
         data(){
             return{
+                nodeData:null,
                 selectAll:false,
                 sortColumnArr:[],
                 columnData:[],
@@ -50,18 +50,16 @@
         },
         methods: {
             init() {
-                window.inputVerify = this.inputVerify
-                window.saveSetting = this.saveSetting
                 let graph = this.$parent.graph
-                nodeData = graph.nodeData[graph.curCell.id]
+                this.nodeData = graph.nodeData[graph.curCell.id]
                 let columnsInfoPre = this.$parent.columnsInfoPre
                 let $this = this
                 layui.use('transfer', function() {
                     let transfer = layui.transfer
                     let reload_value = []
-                    let isSet = nodeData.isSet				// 该节点是否配置
+                    let isSet = $this.nodeData.isSet				// 该节点是否配置
                     if (isSet) {				// 配置过,字段信息来自本身节点
-                        let setting = nodeData.setting			// 该节点的个性化配置信息
+                        let setting = $this.nodeData.setting			// 该节点的个性化配置信息
                         $this.columnData = setting.leftData
                         let rightData = setting.rightData
                         if (rightData.length > 0) {
@@ -173,8 +171,8 @@
                     var obj = { 'column': this.sortColumnArr[i].value, 'sortType': this.sortColumnArr[i].sortType }
                     rightData.push(obj)
                 }
-                nodeData.setting.leftData = this.columnData
-                nodeData.setting.rightData = rightData
+                this.nodeData.setting.leftData = this.columnData
+                this.nodeData.setting.rightData = rightData
             },
             inputVerify() {
                 if (this.sortColumnArr.length === 0) {
