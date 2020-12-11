@@ -153,8 +153,8 @@
         </el-form>
       </el-col>
     </el-row>
-    <div slot="footer">
-      <el-button @click="goBack">返回</el-button>
+    <div slot="footer" style="float:right;">
+      <el-button @click="goBack">取消</el-button>
       <el-button type="primary" @click="save">保存</el-button>
     </div>
   </div>

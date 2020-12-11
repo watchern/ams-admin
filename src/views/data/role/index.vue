@@ -104,8 +104,8 @@
         </el-form>
       </template>
       <div slot="footer">
-        <el-button @click="filterVisible = false">关闭</el-button>
-        <el-button type="primary" @click="handleSaveRoleFilter">确定</el-button>
+        <el-button @click="filterVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSaveRoleFilter">保存</el-button>
       </div>
     </el-dialog>
   </div>
