@@ -21,12 +21,14 @@
           type="primary"
           @click="exportExcel"
           class="oper-btn export-2"
+          title="导出"
         ></el-button>
         <el-button
-          style="display: none"
           :disabled="modelRunResultBtnIson.chartDisplayBtn"
           type="primary"
           class="oper-btn chart"
+          @click="chartShowIsSee=true"
+          title="图表展示"
         ></el-button>
         <el-button
           style="display: none"
@@ -34,12 +36,14 @@
           type="primary"
           @click="getValues"
           class="oper-btn refresh"
+          title="关联项目"
         ></el-button>
         <el-button
           style="display: none"
           :disabled="modelRunResultBtnIson.disassociateBtn"
           type="primary"
           @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
+          title="移除关联"
           >移除关联</el-button
         >
         <el-button
@@ -47,17 +51,20 @@
           type="primary"
           @click="queryConditionSetting"
           class="oper-btn search"
+           title="查询设置"
         ></el-button>
         <el-button
           type="primary"
           class="oper-btn refresh"
           @click="addDetailRel('qwer1', '项目11')"
+          title="关联项目"
         ></el-button>
         <el-button
           :disabled="false"
           type="primary"
           @click="reSet"
           class="oper-btn again-2"
+          title="重置"
         ></el-button>
         <el-button
           class="oper-btn link"
@@ -65,6 +72,7 @@
           v-if="modelDetailButtonIsShow"
           type="primary"
           @click="openModelDetail"
+          title="查询关联"
         ></el-button>
       </div>
     </el-row>
@@ -105,12 +113,14 @@
               type="primary"
               @click="modelResultExport"
               class="oper-btn export-2"
+              title="导出"
             ></el-button>
           </downloadExcel>
           <el-button
             type="primary"
             title="图表展示"
             class="oper-btn chart"
+            @click="chartShowIsSee = true"
           ></el-button>
         </el-row>
       </el-col>
@@ -160,6 +170,19 @@
         >
       </span>
     </el-dialog>
+    <el-dialog
+    title="提示"
+    :visible.sync="chartShowIsSee"
+    width="90%"
+    :fullscreen="true"
+    :append-to-body="true"
+    >
+    <mtEditor :data="result" v-if="chartShowIsSee"></mtEditor>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="chartShowIsSee = false">取 消</el-button>
+      <el-button type="primary" @click="chartShowIsSee = false">确 定</el-button>
+  </span>
+</el-dialog>
   </div>
 </template>
 
@@ -194,7 +217,8 @@ import {
   getExecuteTask,
 } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
-
+import mtEditor from 'ams-datamax'
+import 'iview/dist/styles/iview.css'
 export default {
   name: "childTabCon",
   // 注册draggable组件
@@ -204,6 +228,7 @@ export default {
     myQueryBuilder,
     childtabscopy,
     downloadExcel: JsonExcel,
+    mtEditor
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -278,6 +303,8 @@ export default {
         modelDetailAssBtn: true,
       },
       dynamicSelect: [], //实时存储多选框勾选中的数据
+      chartShowIsSee:false,
+      result:{}
     };
   },
   mounted() {
@@ -449,7 +476,6 @@ export default {
                   };
                   resultDetailProjectRels1.push(resultDetailProjectRel);
                 }
-                debugger;
                 batchCoverAddResultDetailProjectRel(
                   resultDetailProjectRels1
                 ).then((resp) => {
@@ -517,7 +543,34 @@ export default {
         }
         selectTable(this.pageQuery, sql, this.resultSpiltObjects).then(
           (resp) => {
-            if (resp.data.records[0].result.length == 0) {
+            var column = resp.data.records[0].columns
+            this.result.column = column
+            var chartData = []
+            for(var i = 0;i<resp.data.records[0].result.length;i++){
+              var eachChartData = []
+              for(var j = 0;j<column.length;j++){
+                eachChartData.push(resp.data.records[0].result[i][column[j]])
+              }
+              chartData.push(eachChartData)
+            }
+            this.result.data = chartData
+            var columnInfo = resp.data.records[0].columnInfo.columnList
+            var columnType = []
+            for(var i = 0;i<columnInfo.length;i++){  //number,varchar,time,float
+                var type = ''
+                if(columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1 ){
+                  type = 'varchar'
+                }else if(columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") != -1 || columnObj.columnType.toUpperCase().indexOf("INT") != -1){
+                  type = "number"
+                }else if(columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") != -1 ){
+                  type = 'time'
+                }else if (columnInfo[i].columnType.toUpperCase().indexOf("FLOAT") != -1){
+                  type = 'float'
+                }
+                columnType.push(type)
+            }
+             this.result.columnType = columnType
+           if (resp.data.records[0].result.length == 0) {
               this.isLoading = false;
             }
             this.total = resp.data.total;
@@ -636,6 +689,33 @@ export default {
                 this.modelResultButtonIsShow = true;
                 this.modelResultPageIsSee = true;
                 this.modelResultData = this.nextValue.result;
+                this.result.column = this.nextValue.columnNames
+                var columnTypes1 = this.nextValue.columnTypes
+                var columnType = []
+                for(var i = 0;i<columnTypes1.length;i++){
+                   var type = ''
+                if(columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 ){
+                  type = 'varchar'
+                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnObj.columnType.toUpperCase().indexOf("INT") != -1){
+                  type = "number"
+                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ){
+                  type = 'time'
+                }else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1){
+                  type = 'float'
+                }
+                columnType.push(type)
+                }
+                var resultData = this.nextValue.result
+                this.result.columnType = columnType
+                var chartData = []
+                for(var i = 0;i<resultData.length;i++){
+                var eachChartData = []
+                for(var j = 0;j<this.nextValue.columnNames.length;j++){
+                  eachChartData.push(resultData[i][this.nextValue.columnNames[j]])
+                }
+                chartData.push(eachChartData)
+            }
+                this.result.data = chartData
                 this.rowData = this.modelResultData
                 this.modelResultColumnNames = this.nextValue.columnNames;
                 for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
@@ -679,6 +759,33 @@ export default {
             if (true) {
               this.modelResultPageIsSee = true;
               this.modelResultData = this.nextValue.result;
+                              this.result.column = this.nextValue.columnNames
+                var columnTypes1 = this.nextValue.columnTypes
+                var columnType = []
+                for(var i = 0;i<columnTypes1.length;i++){
+                   var type = ''
+                if(columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 ){
+                  type = 'varchar'
+                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnObj.columnType.toUpperCase().indexOf("INT") != -1){
+                  type = "number"
+                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ){
+                  type = 'time'
+                }else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1){
+                  type = 'float'
+                }
+                columnType.push(type)
+                }
+                var resultData = this.nextValue.result
+                this.result.columnType = columnType
+                var chartData = []
+                for(var i = 0;i<resultData.length;i++){
+                var eachChartData = []
+                for(var j = 0;j<this.nextValue.columnNames.length;j++){
+                  eachChartData.push(resultData[i][this.nextValue.columnNames[j]])
+                }
+                chartData.push(eachChartData)
+            }
+                this.result.data = chartData
                this.rowData = this.modelResultData
               this.modelResultColumnNames = this.nextValue.columnNames;
               for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
@@ -715,6 +822,33 @@ export default {
             if (true) {
               this.modelResultPageIsSee = true;
               this.modelResultData = this.nextValue.result;
+                              this.result.column = this.nextValue.columnNames
+                var columnTypes1 = this.nextValue.columnTypes
+                var columnType = []
+                for(var i = 0;i<columnTypes1.length;i++){
+                   var type = ''
+                if(columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 ){
+                  type = 'varchar'
+                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnObj.columnType.toUpperCase().indexOf("INT") != -1){
+                  type = "number"
+                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ){
+                  type = 'time'
+                }else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1){
+                  type = 'float'
+                }
+                columnType.push(type)
+                }
+                var resultData = this.nextValue.result
+                this.result.columnType = columnType
+                var chartData = []
+                for(var i = 0;i<resultData.length;i++){
+                var eachChartData = []
+                for(var j = 0;j<this.nextValue.columnNames.length;j++){
+                  eachChartData.push(resultData[i][this.nextValue.columnNames[j]])
+                }
+                chartData.push(eachChartData)
+            }
+                this.result.data = chartData
                this.rowData = this.modelResultData
               this.modelResultColumnNames = this.nextValue.columnNames;
               for (var j = 0; j <= this.nextValue.columnNames.length; j++) {

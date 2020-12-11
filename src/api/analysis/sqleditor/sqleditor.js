@@ -1,5 +1,10 @@
 import request from '@/utils/request'
-import { deleteModel } from '@/api/analysis/auditmodel'
+import "@/components/ams-codemirror/theme/ambiance.css"
+import "@/components/ams-codemirror/lib/codemirror.css"
+import "@/components/ams-codemirror/addon/hint/show-hint.css"
+import "@/components/ams-ztree/css/zTreeStyle/zTreeStyle.css"
+let CodeMirror = require("@/components/ams-codemirror/lib/codemirror")
+
 const analysisUrl = '/analysis'
 const dataUrl = '/data'
 /**
@@ -378,7 +383,7 @@ export function initSQLEditor(textarea, relTableMap,expTableMap) {
       var hasPaste = false
       for (var i = 0; i < paramObj.arr.length; i++) {
         if (changeText.indexOf(paramObj.arr[i].id) != -1) { // 如果粘贴的是已含有的参数
-          var copyParamId = new UUIDGenerator().id
+          var copyParamId = getUuid()
           var id = '{#' + copyParamId + '#}'
           var name = paramObj.arr[i].name
           var obj = {
@@ -919,7 +924,7 @@ export function initParamTree() {
         }
         var cursor = editorObj.getCursor()
         /* 新修改 star*/
-        var copyParamId = new UUIDGenerator().id
+        var copyParamId = getUuid()
         var id = '{#' + copyParamId + '#}'
         editorObj.replaceRange(id, cursor, cursor)
         var dom = $("<button disabled class='divEditorBtn' style='color: white;background-color:#409eff' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
@@ -2005,5 +2010,15 @@ export function setIsUpdate(value){
   isUpdate = value
 }
 
-
-
+export function getUuid() {
+  var s = []
+  var hexDigits = '0123456789abcdef'
+  for (var i = 0; i < 32; i++) {
+    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
+  }
+  s[14] = '4' // bits 12-15 of the time_hi_and_version field to 0010
+  s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1) // bits 6-7 of the clock_seq_hi_and_reserved to 01
+  s[8] = s[13] = s[18] = s[23]
+  var uuid = s.join('')
+  return uuid
+}
