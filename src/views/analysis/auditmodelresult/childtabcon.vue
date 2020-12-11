@@ -561,9 +561,9 @@ export default {
                 var type = ''
                 if(columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1 ){
                   type = 'varchar'
-                }else if(columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") != -1 || columnObj.columnType.toUpperCase().indexOf("INT") != -1){
+                }else if(columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
                   type = "number"
-                }else if(columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") != -1 ){
+                }else if(columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") != -1 || columnInfo[i].columnType.toUpperCase().indexOf("DATE") != -1){
                   type = 'time'
                 }else if (columnInfo[i].columnType.toUpperCase().indexOf("FLOAT") != -1){
                   type = 'float'
@@ -697,9 +697,9 @@ export default {
                    var type = ''
                 if(columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 ){
                   type = 'varchar'
-                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnObj.columnType.toUpperCase().indexOf("INT") != -1){
+                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
                   type = "number"
-                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ){
+                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 || columnTypes1[i].columnType.toUpperCase().indexOf("DATE") != -1){
                   type = 'time'
                 }else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1){
                   type = 'float'
@@ -767,9 +767,9 @@ export default {
                    var type = ''
                 if(columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 ){
                   type = 'varchar'
-                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnObj.columnType.toUpperCase().indexOf("INT") != -1){
+                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
                   type = "number"
-                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ){
+                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 || columnTypes1[i].columnType.toUpperCase().indexOf("DATE") != -1){
                   type = 'time'
                 }else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1){
                   type = 'float'
@@ -830,9 +830,9 @@ export default {
                    var type = ''
                 if(columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 ){
                   type = 'varchar'
-                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnObj.columnType.toUpperCase().indexOf("INT") != -1){
+                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
                   type = "number"
-                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ){
+                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 || columnTypes1[i].columnType.toUpperCase().indexOf("DATE") != -1){
                   type = 'time'
                 }else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1){
                   type = 'float'
