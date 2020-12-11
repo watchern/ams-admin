@@ -218,7 +218,7 @@ import {
 } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
 import mtEditor from 'ams-datamax'
-import 'iview/dist/styles/iview.css'
+// import 'iview/dist/styles/iview.css'
 
 export default {
   name: "childTabCon",
@@ -699,7 +699,7 @@ export default {
                   type = 'varchar'
                 }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
                   type = "number"
-                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 || columnTypes1[i].columnType.toUpperCase().indexOf("DATE") != -1){
+                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 || columnTypes1[i].toUpperCase().indexOf("DATE") != -1){
                   type = 'time'
                 }else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1){
                   type = 'float'
