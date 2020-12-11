@@ -21,11 +21,13 @@
       :data="list"
       border
       fit
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
       style="width: 100%;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column label="选择" type="selection" width="55" />
+      <el-table-column label="选择" type="selection" width="55"/>
       <el-table-column label="代码类别名称" prop="dataSortName"/>
       <el-table-column label="代码类别编码" width="300px" align="center" prop="dataSortValue" />
       <el-table-column label="代码类别描述" prop="dataSortDesc"/>
@@ -71,7 +73,7 @@
         :rules="rulesSecond"
         :model="tempSecond"
         label-position="right"
-        style="width: 800px; margin-left:50px;"
+        
         
       >
         <el-form-item label="代码类别" prop="dataSortUuid" hidden>

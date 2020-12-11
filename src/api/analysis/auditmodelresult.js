@@ -6,9 +6,6 @@ const analysisUrl = '/analysis'
  * @param  data 传入的模糊查询条件
  */
 export function getRunTaskRelByPage(data, resultSpiltObjects) {
-  var map = {
-    basePageParam: data
-  }
   return request({
     baseURL: analysisUrl,
     url: '/RunTaskRelController/getLikeRunTaskRelByPage',
