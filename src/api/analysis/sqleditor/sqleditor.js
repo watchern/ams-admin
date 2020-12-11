@@ -122,6 +122,31 @@ var isUpdate = false
  * @type {number}
  */
 var isFirst = 0
+
+/**
+ * 获取参数树
+ */
+export function getParamsTree() {
+    return request({
+        baseURL: analysisUrl,
+        url: '/ParamFolderController/getParamsTree',
+        method: 'get'
+    })
+}
+
+/**
+ * 获取参数树节点的子孙节点
+ */
+export function getFolderAndParams(dataParam){
+    return request({
+        baseURL: analysisUrl,
+        url: '/paramController/getFolderAndParams',
+        method: 'get',
+        params: dataParam
+    })
+}
+
+
 /**
  * 初始化界面托拉拽事件
  */
@@ -993,11 +1018,7 @@ export function initParamTree() {
       }
     }
   }
-  request({
-    baseURL: analysisUrl,
-    url: '/ParamFolderController/getParamsTree',
-    method: 'get'
-  }).then(result => {
+    getParamsTree().then(result => {
     if (result.data.isError) {
 
     } else {
@@ -1185,12 +1206,7 @@ function loadParamChildrenNodes(treeNode) {
     'level': treeNode.level
   }
   dataParam.isPersonalParam = getRootNodeType(treeNode, paramZtree)
-  request({
-    baseURL: analysisUrl,
-    url: '/paramController/getFolderAndParams',
-    method: 'get',
-    params: dataParam
-  }).then(result => {
+    getFolderAndParams(dataParam).then(result => {
     paramZtree.removeChildNodes(treeNode)
     paramZtree.addNodes(treeNode, result.data)
   })
