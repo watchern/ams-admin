@@ -3,55 +3,41 @@
         <div class="layui-card">
             <div class="layui-card-header" style="line-height: 42px;vertical-align:middle;">
                 <div class="filter_cell_header">
-                    <span id="pre_node" style="color:red;" />
+                    <span style="color:red;">{{preNodeName}}</span>
                 </div>
             </div>
             <div class="layui-card-header" style="line-height: 42px;vertical-align:middle;">
-                <div class="filter_cell_header">
-                    <span>筛选字段： </span>
-                    <select id="select_colms" style="width: 150px;" class="selectpicker" data-live-search="true">
-                        <option value="">请选择</option>
-                    </select>
+                <div class="filter_cell_header" style="display:flex;justify-content:center;align-items:center;">
+                    <label>筛选字段&nbsp;</label>
+                    <el-select v-model="select_colms" style="width: 150px;" filterable @change="setSelectColms">
+                        <el-option v-for="selectCol in selectColms" :key="selectCol.newColumnName" :label="selectCol.newColumnName" :value="selectCol.newColumnName">{{selectCol.displayName}}</el-option>
+                    </el-select>
                 </div>
+                <div class="filter_cell_header" style="display:flex;justify-content:center;align-items:center;">
+                    <label>条件&nbsp;</label>
+                    <el-select v-model="select_cz" @change="selectCzChange">
+                        <el-option v-for="selectCzObj in selectCzArr" :value="selectCzObj.value" :label="selectCzObj.name">{{selectCzObj.name}}</el-option>
+                    </el-select>
+                </div>
+                <div class="filter_cell_header" style="display:flex;justify-content:center;align-items:center;">
+                    <label>筛选对象&nbsp;</label>
+                    <el-select v-model="compareObj" @change="compareObjChange" :disabled="compareObjDisabled">
+                        <el-option v-for="compare in compareArr" :value="compare.value" :label="compare.name">{{compare.name}}</el-option>
+                    </el-select>
+                    <el-input v-model="conn_value" v-if="showConnValue" style="width: 200px;margin-left: 10px;"/>
+                    <div id="compareColumn" style="margin-left: 10px;" v-if="!showConnValue">
+                        <el-select v-model="compareColumnSel" filterable @change="setCompareColumnSel">
+                            <el-option v-for="compareCol in compareColumnArr" :key="compareCol.newColumnName" :label="compareCol.newColumnName" :value="compareCol.newColumnName">{{compareCol.displayName}}</el-option>
+                        </el-select>
+                    </div>
+                    <span style="color:red;margin-left:10px;" v-if="showMoreVal">多个值请用英文逗号（“,”）隔开</span>
+                </div>
+            </div>
+            <div class="layui-card-header">
                 <div class="filter_cell_header" style="display:flex;justify-content:center;align-items:center;">
                     <el-checkbox v-model="blankSpace">&nbsp;是否去除数据中的空格</el-checkbox>
                 </div>
-            </div>
-            <div class="layui-card-header" style="line-height: 42px;vertical-align:middle;">
-                <div class="filter_cell_header">
-                    <span>条件 : </span>
-                    <select id="select_cz" class="selectpicker" @change="selectCzChange">
-                        <option value="">请选择</option>
-                        <option value="=">等于</option>
-                        <option value="!=">不等于</option>
-                        <option value=">">大于</option>
-                        <option value=">=">大于等于</option>
-                        <option value="<">小于</option>
-                        <option value="<=">小于等于</option>
-                        <option value="like_star">开头是</option>
-                        <option value="like_end">结尾是</option>
-                        <option value="like_all">包含</option>
-                        <option value="not_like_all">不包含</option>
-                        <option value="in">包含多个值</option>
-                    </select>
-                </div>
-                <div class="filter_cell_header" style="display:flex;justify-content:center;align-items:center;">
-                    <span>筛选对象 ： </span>
-                    <select id="compareObj" class="selectpicker" @change="compareObjChange">
-                        <option value="value">值</option>
-                        <option value="column">字段</option>
-                    </select>
-                    <input id="conn_value" class="form-control" style="width: auto;" type="text">
-                    <div id="compareColumn" style="display:none;">
-                        <select id="compareColumnSel" class="selectpicker" data-live-search="true">
-                            <option value="">请选择</option>
-                        </select>
-                    </div>
-                    <span id="moreVal" style="display:none;color:red;margin-left:10px;">多个值请用英文逗号（“,”）隔开</span>
-                </div>
-            </div>
-            <div class="layui-card-header" style="line-height: 42px;vertical-align:middle;">
-                <div class="filter_cell_header" style="display:flex;justify-content:center;align-items:center;">
+                <div class="filter_cell_header" style="display:flex;justify-content:center;align-items:center;margin-left: 20px;">
                     <el-checkbox v-model="quotes" :disabled="quotesDisabled">&nbsp;是否带引号（<span style="color:red;">筛选值在比较数值大小时不能带引号</span>）&nbsp;</el-checkbox>
                 </div>
                 <div id="filter_cell_div" class="filter_cell_header" style="display:flex;justify-content:center;align-items:center;">
@@ -78,52 +64,77 @@
 </template>
 
 <script>
-    var nodeData
     export default {
         name: 'FilterSet',
         data(){
             return{
+                nodeData:null,
                 columnsInfoPre:this.$parent.columnsInfoPre,
                 zTreeObj_Filter:null,
                 connType:'and',
                 quotes:true,
                 quotesDisabled:true,
-                blankSpace:false
+                blankSpace:false,
+                showConnValue:true,
+                selectColms:[],
+                select_colms:'',
+                preNodeName:'',
+                select_cz:'',
+                selectCzArr:[{value:'=',name:'等于'},
+                    {value:'!=',name:'不等于'},
+                    {value:'>',name:'大于'},
+                    {value:'>=',name:'大于等于'},
+                    {value:'<',name:'小于'},
+                    {value:'<=',name:'小于等于'},
+                    {value:'like_star',name:'开头是'},
+                    {value:'like_end',name:'结尾是'},
+                    {value:'like_all',name:'包含'},
+                    {value:'not_like_all',name:'不包含'},
+                    {value:'in',name:'包含多个值'}],
+                compareObj:'',
+                compareArr:[{value:'value',name:'值'},{value:'column',name:'字段'}],
+                compareObjDisabled:false,
+                compareColumnSel:'',
+                compareColumnArr:[],
+                conn_value:'',
+                showMoreVal:false
             }
         },
         mounted() {
             this.init()
-            window.inputVerify = this.inputVerify
-            window.saveSetting = this.saveSetting
         },
         methods: {
             init() {
                 let graph = this.$parent.graph
-                nodeData = graph.nodeData[graph.curCell.id]
-                let parentIds = nodeData.parentIds
-                let isSet = nodeData.isSet// 判断当前节点是否已经设置
-                var parent_node = graph.nodeData[parentIds[0]] // one parent
-                $('#pre_node').text('【上级节点名称：' + parent_node.nodeInfo.nodeName + '】')
+                this.nodeData = graph.nodeData[graph.curCell.id]
+                let parentIds = this.nodeData.parentIds
+                let isSet = this.nodeData.isSet// 判断当前节点是否已经设置
+                let parent_node = graph.nodeData[parentIds[0]] // one parent
+                this.preNodeName = '【上级节点名称：' + parent_node.nodeInfo.nodeName + '】'
                 this.createFilterSelColoms()
                 let settingFilter = this.initZtreeSetting()
                 if (isSet) {
-                    this.zTreeObj_Filter = $.fn.zTree.init($('#filterZtree'), settingFilter, nodeData.setting.nodes)
+                    this.zTreeObj_Filter = $.fn.zTree.init($('#filterZtree'), settingFilter, this.nodeData.setting.nodes)
                 } else {
                     this.zTreeObj_Filter = $.fn.zTree.init($('#filterZtree'), settingFilter, [])
                 }
+            },
+            setSelectColms(val){
+                this.select_colms = val
+            },
+            setCompareColumnSel(val){
+                this.compareColumnSel = val
             },
             /**
              *	创建过滤字段select
              */
             createFilterSelColoms() {
-                var html = ''
-                $(this.columnsInfoPre).each(function() { // 过滤字段
-                    html += "<option value='" + this.newColumnName + "'>" + this.newColumnName + '（' + this.columnType + '）</option>'
-                })
-                $('#select_colms').append(html)
-                $('#select_colms').selectpicker('refresh')
-                $('#compareColumnSel').append(html)
-                $('#compareColumnSel').selectpicker('refresh')
+                for(let i=0;i<this.columnsInfoPre.length; i++){
+                    let newColumnName = this.columnsInfoPre[i].newColumnName
+                    let displayName = `${newColumnName}(${this.columnsInfoPre[i].columnType})`
+                    this.selectColms.push({newColumnName, displayName})
+                    this.compareColumnArr.push({newColumnName, displayName})
+                }
             },
             initZtreeSetting() {
                 let vueObj = this
@@ -196,13 +207,12 @@
                         },
                         onClick: function(event, treeId, treeNode) {
                             if (treeNode.realInfo) {
-                                $('#select_colms').selectpicker('val', treeNode.realInfo.select_colms)// 反显列
-                                $('#select_cz').selectpicker('val', treeNode.realInfo.select_cz)// 反显操作类型
-                                var compareObj = typeof treeNode.realInfo.compareObj === 'undefined' ? 'value' : treeNode.realInfo.compareObj
-                                $('#compareObj').selectpicker('val', compareObj)// 反显筛选对象
-                                vueObj.selectCzChange()
-                                $('#compareColumnSel').selectpicker('val', treeNode.realInfo.compareColumnSel)// 反显筛选对象
-                                $('#conn_value').val(treeNode.realInfo.conn_value)// 反显值
+                                vueObj.select_colms = treeNode.realInfo.select_colms// 反显列
+                                vueObj.select_cz = treeNode.realInfo.select_cz
+                                vueObj.compareObj = typeof treeNode.realInfo.compareObj === 'undefined' ? 'value' : treeNode.realInfo.compareObj
+                                // vueObj.selectCzChange()
+                                vueObj.ompareColumnSel = treeNode.realInfo.compareColumnSel// 反显筛选对象
+                                vueObj.conn_value = treeNode.realInfo.conn_value// 反显值
                                 vueObj.connType = treeNode.realInfo.filter_conn_type
                                 vueObj.quotes = treeNode.realInfo.quotes
                                 vueObj.blankSpace = treeNode.realInfo.blank_space
@@ -211,39 +221,33 @@
                     }
                 }
             },
-            selectCzChange() {
-                let val = $('#select_cz').val()
+            selectCzChange(val) {
+                this.select_cz = val
                 switch (val) {
                     case 'in':
-                        $('#moreVal').show()
+                        this.showMoreVal = true
                         this.quotes = true
                         this.quotesDisabled = true
-                        $('#compareObj').selectpicker('val', 'value')
-                        $('#compareObj').prop('disabled', true)
-                        $('#compareObj').selectpicker('refresh')
-                        $('#conn_value').show()
-                        $('#compareColumn').hide()
+                        this.compareObj = 'value'
+                        this.compareObjDisabled = true
+                        this.showConnValue = true
                         break
                     case 'like_star':
                     case 'like_end':
                     case 'like_all':
                     case 'not_like_all':
-                        $('#moreVal').hide()
+                        this.showMoreVal = false
                         this.quotes = true
                         this.quotesDisabled = true
-                        $('#compareObj').selectpicker('val', 'value')
-                        $('#compareObj').prop('disabled', true)
-                        $('#compareObj').selectpicker('refresh')
-                        $('#conn_value').show()
-                        $('#compareColumn').hide()
+                        this.compareObj = 'value'
+                        this.compareObjDisabled = true
+                        this.showConnValue = true
                         break
                     case '=':
                     case '!=':
-                        $('#moreVal').hide()
-                        $('#compareObj').prop('disabled', false)
-                        $('#compareObj').selectpicker('refresh')
-                        var compareObj = $('#compareObj').val()
-                        if (compareObj === 'value') {
+                        this.showMoreVal = false
+                        this.compareObjDisabled = false
+                        if (this.compareObj === 'value') {
                             this.quotes = true
                             this.quotesDisabled = false
                         } else {
@@ -255,32 +259,27 @@
                     case '>=':
                     case '<':
                     case '<=':
-                        $('#moreVal').hide()
-                        var compareObj = $('#compareObj').val()
-                        // $('#quotes').icheck('unchecked')
+                        this.showMoreVal = false
                         this.quotes = false
-                        if (compareObj === 'value') {
+                        if (this.compareObj === 'value') {
                             this.quotesDisabled = false
                         } else {
                             this.quotesDisabled = true
                         }
-                        $('#compareObj').prop('disabled', false)
-                        $('#compareObj').selectpicker('refresh')
+                        this.compareObjDisabled = false
                         break
                 }
             },
-            compareObjChange() {
-                let val = $('#compareObj').val()
+            compareObjChange(val) {
+                this.compareObj = val
                 if (val === 'value') {
-                    $('#conn_value').show()
-                    $('#compareColumn').hide()
-                    var select_cz = $('#select_cz').val()
-                    $('#select_cz').selectpicker('val', select_cz)
+                    this.showConnValue = true
+                    // var select_cz = $('#select_cz').val()
+                    // $('#select_cz').selectpicker('val', select_cz)
                     this.selectCzChange()
                 } else {
-                    $('#conn_value').hide()
-                    $('#compareColumn').show()
-                    $('#compareColumnSel').selectpicker('val', '')
+                    this.showConnValue = false
+                    this.compareColumnSel = ''
                     this.quotes = false
                     this.quotesDisabled = true
 
@@ -291,8 +290,8 @@
              */
             saveSetting() {
                 var nodes = this.zTreeObj_Filter.getNodes()
-                nodeData.isSet = true
-                nodeData.setting.nodes = nodes
+                this.nodeData.isSet = true
+                this.nodeData.setting.nodes = nodes
             },
             // 页面输入项的校验(或空配置校验)
             inputVerify() {
@@ -308,22 +307,23 @@
              * @param type 操作类型（新增条件、修改条件、删除条件）
              */
             filter_ztree(type) {
-                var select_colms = $('#select_colms').val()// 字段
-                var select_cz = $('#select_cz').val()// 操作类型
-                var conn_value = $('#conn_value').val()// 值
-                var filter_conn_type = this.connType
-                var select_name = $('#select_cz option:selected').html()
-                var quotes = this.quotes// 是否带引号
-                var blank_space = this.blankSpace// 是否去除空格
-                var nodesAll = this.zTreeObj_Filter.getNodes()// 如果为第一个节点 条件不加 and或者or
-                var compareObj = $('#compareObj').val()// 筛选对象
-                var compareColumnSel = $('#compareColumnSel').val()// 筛选对象的列名称
+                let select_colms = this.select_colms// 字段
+                let select_cz = this.select_cz// 操作类型
+                let conn_value = this.conn_value// 值
+                let filter_conn_type = this.connType
+                let selectCzObj = this.selectCzArr.find(item => item.value === select_cz)
+                let select_name = selectCzObj.name
+                let quotes = this.quotes// 是否带引号
+                let blank_space = this.blankSpace// 是否去除空格
+                let nodesAll = this.zTreeObj_Filter.getNodes()// 如果为第一个节点 条件不加 and或者or
+                let compareObj = this.compareObj// 筛选对象
+                let compareColumnSel = this.compareColumnSel// 筛选对象的列名称
                 if (typeof nodesAll === 'undefined') {
                     nodesAll = []
                 }
-                var showFilterConnType = false
-                var sele_nodes = this.zTreeObj_Filter.getSelectedNodes()
-                var node
+                let showFilterConnType = false
+                let sele_nodes = this.zTreeObj_Filter.getSelectedNodes()
+                let node = null
                 switch (type) {
                     case 'add':
                         // 获取左侧树节点加载右侧树节点  这里只操作一张表的字段
@@ -634,7 +634,7 @@
 <style scoped type="text/css">
     .filter_cell_header{
         float: left;
-        margin-left: 20px;
+        margin-left: 10px;
     }
     .filter_cell_centent{
         height: 310px;
@@ -667,19 +667,8 @@
     .layui-btn{
         background: #4476A7;
     }
-
     .layui-laypage .layui-laypage-curr .layui-laypage-em{
         background: #5887B3;
-    }
-    .concet_foot span:hover{
-        color: #F5A623;
-    }
-    .concet_foot .active{
-        color: #fff;
-        background: #F5A623;
-    }
-    .concet_foot .active:hover{
-        color: #fff;
     }
     .layui-form-checkbox[lay-skin="primary"]:hover i{
     }
@@ -693,5 +682,8 @@
     .button-cz {
         cursor: pointer;
         margin-left: 6px;
+    }
+    .layui-card-header{
+        padding: 0;
     }
 </style>

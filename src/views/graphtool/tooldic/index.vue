@@ -1,5 +1,5 @@
 <template>
-    <div id="graphToolDiv" style="width: 100%;height: 100%;">
+    <div id="graphToolDiv" style="width: 100%;height: 100%;" ref="graphToolDiv">
         <div id="geToolbarContainer" class="geToolbarContainer">
             <div class="menu" style="width: 235px !important;padding-left: 20px !important;">
                 <div class="menuTit">
@@ -123,6 +123,15 @@
                     </div>
                 </div>
             </div>
+            <div class="menu" style="width: 90px !important;">
+                <div class="menuTit">参数</div>
+                <div class="menuLi" style="">
+                    <div id="nodeParamSet" class="icon" data-type="nodeParamSet" style="width:80px !important;height: 60px !important;line-height: 60px !important;">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/help.png" alt="参数">
+                        <a class="iconText" @click="showParamNodeList">参数</a>
+                    </div>
+                </div>
+            </div>
             <span id="toolBarSpan" @click="hideAndShow" style="position: absolute;right: 0;bottom: 2px;font-weight: 800;">【折叠/展开】</span>
         </div>
         <div id="accordion" class="panel-group">
@@ -137,10 +146,10 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a id="dataTableList" data-toggle="collapse" href="#collapse2"></a>
+                                <a id="dataTableList" data-toggle="collapse" href="#ztree_datasource_collapse"></a>
                             </h4>
                         </div>
-                        <div id="collapse2" class="panel-collapse collapse in">
+                        <div id="ztree_datasource_collapse" class="panel-collapse collapse in">
                             <div class="panel-body">
                                 <div class="col-sm-12" style="height: 45px;">
                                     <el-input placeholder="搜索关键字" v-model="searchZtreeContent" class="input-with-select">
@@ -156,7 +165,7 @@
         </div>
         <div id="graphContainer" class="graphContainer">
             <div id="geDiagramContainer" class="geDiagramContainer">
-                <div id="geBackgroundPage" class="geBackgroundPage"></div>
+                <div id="geBackgroundPage" ref="geBackgroundPage" class="geBackgroundPage"></div>
             </div>
             <div id="geResultContainer" class="geResultContainer">
                 <div class="layui-tab">
@@ -180,7 +189,7 @@
                             </div>
                         </div>
                         <div class="layui-tab-item"><div id="sysInfoArea"></div></div>
-                        <div class="layui-tab-item layui-show"><div id="outLineArea"></div></div>
+                        <div class="layui-tab-item layui-show"><div id="outLineArea" ref="outLineArea"></div></div>
                     </div>
                 </div>
                 <!--<el-tabs v-model="activeTabName" @tab-click="layuiTabClickLi">-->
@@ -244,7 +253,7 @@
         <el-dialog :visible.sync="helpDialogVisible" title="帮助">
             <Help/>
         </el-dialog>
-        <el-dialog :visible.sync="graphListDialogVisible" title="选择图形" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal">
+        <el-dialog :visible.sync="graphListDialogVisible" v-if="graphListDialogVisible" title="选择图形" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal">
             <GraphListExport ref="graphListExport" :openType="openType"/>
             <div slot="footer">
                 <el-button @click="graphListDialogVisible = false">取消</el-button>
@@ -271,6 +280,50 @@
             <div slot="footer">
                 <el-button @click="graphFormVisible = false">取消</el-button>
                 <el-button type="primary" @click="getGraphFormInfo">保存</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog :visible.sync="nodeParamDialogVisible" v-if="nodeParamDialogVisible" title="参数节点列表" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">节点名称</th>
+                        <th style="text-align: center">结果表序号</th>
+                        <th style="text-align: center">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="paramSetTr" v-for="(nodeObj,index) in nodeParamArr">
+                        <td align="center">{{nodeObj.nodeName}}</td>
+                        <td align="center">{{nodeObj.lineNum}}</td>
+                        <td align="center" v-if="nodeObj.hasParamSet">
+                            <button type="button" class="paramSetting btn btn-primary" @click="settingParam(nodeObj.nodeId,index)">修改参数</button>
+                            <button type="button" id="clearBtn" class="btn btn-primary" style="margin-left: 10px;" @click="clearSettingParam(nodeObj.nodeId,index)">清除参数</button>
+                        </td>
+                        <td align="center" v-if="!nodeObj.hasParamSet">
+                            <button type="button" class="paramSetting btn btn-primary" @click="settingParam(nodeObj.nodeId,index)">设置参数</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div slot="footer">
+                <el-button @click="nodeParamDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="showParamNodeListCallBack()">保存</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog :visible.sync="nodeParamSettingDialogVisible" v-if="nodeParamSettingDialogVisible" title="设置节点参数" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="1000px">
+            <SettingParams ref="settingParams" :graph="graph" :nodeId="sp_nodeId" :paramsSetting="sp_paramsSetting"/>
+            <div slot="footer">
+                <el-button @click="nodeParamSettingDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="settingParamsCallBack()">保存</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog :visible.sync="nodeSettingDialogVisible" v-if="nodeSettingDialogVisible" :title="nodeSettingTitle"
+                   :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" :before-close="closeNodeSetting" width="1000px">
+            <NodeSetting v-if="settingType === 'commonSetting'" ref="nodeSetting" :graph="graph" :optType="sp_optType"/>
+            <RelationSetting v-if="settingType === 'relation'" ref="nodeSetting" :graph="graph"/>
+            <div slot="footer" v-if="graph.canEditor">
+                <el-button @click="nodeSettingDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="saveNodeSetting()">保存</el-button>
             </div>
         </el-dialog>
         <!-- 右键事件 -->
@@ -313,24 +366,6 @@
             </ul>
         </div>
         <input id="importGraphInp" @change="importGraphSubmit" type="file" name="file" style="display: none;"/>
-
-        <form id="chooseFileTypeForm" class="form-horizontal" style="display:none;">
-            <label class="col-sm-4 control-label" style="padding: 13px 20px 0 0;">文件格式</label>
-            <div class="col-sm-8">
-                <ul class="radio">
-                    <li>
-                        <input id="xls_type" type="radio" value="xls" checked="checked" name="fileType">
-                        <label for="xls_type">xls</label>
-                    </li>
-                </ul>
-                <ul class="radio">
-                    <li>
-                        <input id="xlsx_type" type="radio" value="xlsx" name="fileType">
-                        <label for="xlsx_type">xlsx</label>
-                    </li>
-                </ul>
-            </div>
-        </form>
     </div>
 </template>
 
@@ -338,6 +373,9 @@
     import Help from '@/views/graphtool/tooldic/page/funEventVue/help.vue'
     import GraphListExport from '@/views/graphtool/tooldic/page/funEventVue/graphListExport.vue'
     import ChildTabs from '@/views/analysis/auditmodelresult/childtabs'
+    import SettingParams from '@/views/graphtool/tooldic/page/settingParams/settingParams.vue'
+    import NodeSetting from '@/views/graphtool/tooldic/page/nodeSetting/nodeSetting.vue'
+    import RelationSetting from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/relation.vue'
     // 引入后端接口的相关方法
     import { getGraphInfoById, getTableCol,viewNodeData,saveGraphInterface } from '@/api/graphtool/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
@@ -349,6 +387,8 @@
         name: 'ToolIndex',
         data() {
             return {
+                graph:null,
+                ownerEditor:null,
                 zTreeObj: null,
                 resourceZtree: null,
                 historyZtree: null,
@@ -356,6 +396,9 @@
                 historyRootNode:null,
                 helpDialogVisible:false,
                 graphListDialogVisible:false,
+                nodeParamDialogVisible:false,
+                nodeParamSettingDialogVisible:false,
+                nodeSettingDialogVisible:false,
                 pressEscape:false,
                 clickModal:false,
                 oldGraphData:null,// 用来接收打开的图形全部节点数据信息的对象
@@ -384,10 +427,17 @@
                 activeTabName:'outLineArea',
                 preValue:[],//结果集页签数组
                 optTypeArr: ['filter', 'sort', 'sample', 'layering', 'groupCount', 'delRepeat', 'comparison', 'change', 'union', 'relation', 'sql'],
-                isShowMoreMenu:true//是否展示更多菜单
+                isShowMoreMenu:true,//是否展示更多菜单
+                nodeParamRelArr : [],//用来存储每个节点设置的参数信息
+                nodeParamArr:[],//可设置参数的节点集合
+                sp_nodeId:'',//设置节点参数时传递的参数，节点ID
+                sp_paramsSetting:null,//设置节点参数时传递的参数，节点的参数配置信息
+                sp_optType:'',//配置节点信息时传递的参数，操作节点的类型
+                nodeSettingTitle:'',//配置节点时显示的弹窗标题，当前节点的名称
+                settingType:''//节点配置所打开的弹窗类型
             }
         },
-        components:{ Help, GraphListExport,ChildTabs },
+        components:{ Help, GraphListExport, ChildTabs, SettingParams, NodeSetting, RelationSetting },
         props:["graphUuidParam","openGraphTypeParam","openTypeParam"],
         created() {
             this.init()
@@ -401,12 +451,8 @@
             this.initGraph()
             // 申明validate.js的方法为全局方法
             this.initValidateFun()
-            // 将vue实例传给JS
-            indexJs.sendIndexJs(this)
-            commonJs.sendGraphIndexVue(this)
             //初始化websocket
             this.initWebSocKet()
-
         },
         methods: {
             init() {
@@ -463,14 +509,12 @@
                 }
                 let $this = this
                 // 点击操作节点，显示说明信息
-                $('.iconText').click(function(i, v) {
+                $('#graphToolDiv .iconText').click(function(i, v) {
                     let optType = $(this).parent().attr('data-type')
                     if ($.inArray(optType, $this.optTypeArr) > -1) {
                         indexJs.nodeRemark(optType)
                     }
                 })
-                let ownerEditor = null
-                let graph = null
                 mxResources.loadDefaultBundle = false
                 var bundle = mxResources.getDefaultBundle(RESOURCE_BASE, mxLanguage) || mxResources.getSpecialBundle(RESOURCE_BASE, mxLanguage)
                 var defaultXmlUrl = STYLE_PATH + '/default.xml'
@@ -478,34 +522,37 @@
                     mxResources.parse(xhr[0].getText())
                     var themes = new Object()
                     themes['default'] = xhr[1].getDocumentElement()
-                    ownerEditor = new EditorUi(new Editor(themes))
-                    graph = ownerEditor.editor.graph
-                    graph.setCellsResizable(false)// 关闭改变节点大小
-                    graph.setAllowLoops(false)// 不允许连接的源和目标是同一节点
-                    graph.setCellsEditable(false)// 关闭编辑节点
+                    $this.ownerEditor = new EditorUi(new Editor(themes))
+                    $this.graph = $this.ownerEditor.editor.graph
+                    $this.graph.setCellsResizable(false)// 关闭改变节点大小
+                    $this.graph.setAllowLoops(false)// 不允许连接的源和目标是同一节点
+                    $this.graph.setCellsEditable(false)// 关闭编辑节点
                     // 图形化模型 数据对象
-                    graph.nodeData = {}
-                    graph.historyNodeInfo = {}
+                    $this.graph.nodeData = {}
+                    $this.graph.historyNodeInfo = {}
                     // 用来存放每次操作节点的节点信息（包括剪切、复制、删除、粘贴、撤销、还原操作）
-                    graph.oldOptArr = []
-                    graph.newOptArr = []
-                    graph.edgeArr = {}
+                    $this.graph.oldOptArr = []
+                    $this.graph.newOptArr = []
+                    $this.graph.edgeArr = {}
                     // 缩略图
-                    var container = document.getElementById('geBackgroundPage')
-                    var outline = document.getElementById('outLineArea')
-                    outline.style.position = 'absolute'
-                    outline.style.width = '97%'
-                    outline.style.height = '210px'
-                    outline.style.border = '1px solid whiteSmoke'
-                    outline.style.backgroundColor = '#FFFFFF'
-                    outline.style.overflow = 'hidden'
-                    new mxOutline(graph, outline)
+                    // var container = document.getElementById('geBackgroundPage')
+                    // var outline = document.getElementById('outLineArea')
+                    $this.$refs.outLineArea.style.position = 'absolute'
+                    $this.$refs.outLineArea.style.width = '97%'
+                    $this.$refs.outLineArea.style.height = '210px'
+                    $this.$refs.outLineArea.style.border = '1px solid whiteSmoke'
+                    $this.$refs.outLineArea.style.backgroundColor = '#FFFFFF'
+                    $this.$refs.outLineArea.style.overflow = 'hidden'
+                    new mxOutline($this.graph, $this.$refs.outLineArea)
                     // 设置鼠标经过时的高亮样式
-                    new mxCellTracker(graph, '#00A8FF')
-                    window.ownerEditor = ownerEditor
-                    window.graph = graph
+                    new mxCellTracker($this.graph, '#00A8FF')
+                    window.ownerEditor = $this.ownerEditor
+                    window.graph = $this.graph
+                    // 将vue实例传给JS
+                    indexJs.sendIndexJs($this)
+                    commonJs.sendGraphIndexVue($this)
                 }, function() {
-                    document.body.innerHTML = '<center style="margin-top:10%;">加载资源文件出错</center>'
+                    $this.$refs.graphToolDiv.innerHTML = '<center style="margin-top:10%;">加载资源文件出错</center>'
                 })
                 if (this.openGraphType === 3) {
                     if (this.hasManagerRole === false) {
@@ -549,7 +596,7 @@
             initJsp() {
                 var $this = this
                 let initGraphInterval = setInterval(function() {
-                    if (graph != null) {
+                    if ($this.graph != null) {
                         clearInterval(initGraphInterval)
                         if (typeof $this.openType !== 'undefined') {
                             $('#dataTableList').html($this.openType === 1 ? '开发测试库数据' : '业务生产库数据')
@@ -557,37 +604,37 @@
                             $this.openType = 2
                             $('#dataTableList').html('业务生产库数据')
                         }
-                        graph.openType = $this.openType
-                        graph.canEditor = $this.canEditor
-                        graph.openGraphType = $this.openGraphType
+                        $this.graph.openType = $this.openType
+                        $this.graph.canEditor = $this.canEditor
+                        $this.graph.openGraphType = $this.openGraphType
                         switch ($this.openGraphType) {
                             case 1:
-                                graph.graphType = 1// 当前图形是个人图形
+                                $this.graph.graphType = 1// 当前图形是个人图形
                                 break
                             case 2:
                             case 3:
-                                graph.graphType = 3// 当前图形是场景查询图形（包括公共场景查询和个人场景查询）
+                                $this.graph.graphType = 3// 当前图形是场景查询图形（包括公共场景查询和个人场景查询）
                                 break
                             case 4:
-                                graph.graphType = 4// 当前图形是模型图形
+                                $this.graph.graphType = 4// 当前图形是模型图形
                                 break
                         }
                         // 处理文件中的更多菜单
-                        if ($this.openGraphType !== 1) { // 如果当前图形不是普通图形（即场景查询图形和模型图形）
-                            if ($this.openType === 1) { // 开发环境下
-                                $('#moreMenu>ul>li:gt(1)').hide()// 禁用【数据导入】、【生成场景查询】、【生成风险查证模型】菜单
-                            } else { // 权限环境下
-                                var ind = 2// 默认禁用【生成场景查询】、【生成风险查证模型】菜单
-                                if ($this.canEditor === false) { // 如果不可编辑
-                                    ind = 1// 禁用【数据导入】、【生成场景查询】、【生成风险查证模型】菜单
-                                }
-                                $('#moreMenu>ul>li:gt(' + ind + ')').hide()
-                            }
-                        } else {
-                            if ($this.openType === 1) {
-                                $('#moreMenu>ul>li:eq(2)').hide()// 只禁用【数据导入】功能
-                            }
-                        }
+                        // if ($this.openGraphType !== 1) { // 如果当前图形不是普通图形（即场景查询图形和模型图形）
+                        //     if ($this.openType === 1) { // 开发环境下
+                        //         $('#moreMenu>ul>li:gt(1)').hide()// 禁用【数据导入】、【生成场景查询】、【生成风险查证模型】菜单
+                        //     } else { // 权限环境下
+                        //         var ind = 2// 默认禁用【生成场景查询】、【生成风险查证模型】菜单
+                        //         if ($this.canEditor === false) { // 如果不可编辑
+                        //             ind = 1// 禁用【数据导入】、【生成场景查询】、【生成风险查证模型】菜单
+                        //         }
+                        //         $('#moreMenu>ul>li:gt(' + ind + ')').hide()
+                        //     }
+                        // } else {
+                        //     if ($this.openType === 1) {
+                        //         $('#moreMenu>ul>li:eq(2)').hide()// 只禁用【数据导入】功能
+                        //     }
+                        // }
                         /* 右侧所使用资源树,start*/
                         $this.resourceRootNode = { 'name': '所用资源', 'displayName': '所用资源', 'level': 0, 'isParent': true, 'open': true, 'type': 'rootNode', 'id': 'resourceRoot', 'pid': null, 'children': [] }
                         $this.resourceZtree = $.fn.zTree.init($('#resourceZtree'), indexJs.resourceSetting, $this.resourceRootNode)
@@ -769,7 +816,7 @@
                 if (this.canEditor === false) {
                     this.$message({ type: 'info', message: '当前图形您没有【' + str + '】操作的权限' })
                 }else{
-                    if (Object.keys(graph.nodeData).length === 0) {
+                    if (Object.keys(this.graph.nodeData).length === 0) {
                         this.$message({ type: 'info', message: '当前图形无节点数据，不可保存' })
                     }else{
                         this.graphFormVisible = true
@@ -783,7 +830,7 @@
                     return
                 }
                 let encoder = new mxCodec()
-                let node = encoder.encode(graph.getModel())
+                let node = encoder.encode(this.graph.getModel())
                 let xml = mxUtils.getPrettyXml(node)
                 var data = {
                     'createType': this.openType,
@@ -800,7 +847,7 @@
                 saveGraphInterface(data).then(response => {
                     this.graphFormVisible = false
                     if (response.data == null) {
-                        this.$message({ type: 'info', message: '图形保存失败' })
+                        this.$message.error({ message: '图形保存失败' })
                     } else {
                         this.graphUuid = response.data
                         if (this.saveGraphType === 'saveGraph') {
@@ -941,6 +988,34 @@
                         indexJs.exportGraphBack(returnObj);
                     }
                 }
+            },
+            saveNodeSetting(){
+                commonJs.saveNodeSetting()
+            },
+            closeNodeSetting(){
+                this.$refs.nodeSetting.$confirm('即将关闭配置页面，是否更新并保存配置信息?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    commonJs.saveNodeSetting()
+                })
+            },
+            showParamNodeList(){
+                indexJs.showParamNodeList()
+            },
+            showParamNodeListCallBack(){
+                indexJs.showParamNodeListCallBack()
+            },
+            settingParam(nodeId,index){
+                indexJs.settingParam(nodeId,index)
+            },
+            settingParamsCallBack(){
+                indexJs.settingParamsCallBack()
+            },
+            clearSettingParam(nodeId,index){
+                indexJs.clearSettingParam(nodeId,index)
             },
             /**
              * 接口：获取中间、最终结果表的输出列信息

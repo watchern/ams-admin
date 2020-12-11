@@ -1,12 +1,12 @@
 <template>
-    <div style="width: 98%;margin: 4px 1%">
+    <div style="width: 98%;margin: 4px 1%" ref="outputContentDiv">
         <div style="color: red;">
             <p>注：（1）如果修改了【输出字段名称】且存在已配置过或执行过的后续节点，则后续节点关于该字段的配置信息会失效</p>
             <p style="text-indent: 2em">（2）如果继续使用后续节点，则需重新配置和执行相关节点</p>
             <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
             <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
         </div>
-        <div id="outPutTable">
+        <div ref="outPutTable" style="height: 500px;overflow-y: auto;">
             <table id="column_config" class="table table-bordered">
                 <thead>
                 <tr>
@@ -19,8 +19,8 @@
                     </th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr v-for="(item,index) in items" class="colTr" :data-index="index">
+                <tbody ref="outPutTbody">
+                <tr v-for="(item,index) in items" ref="colTr" :data-index="index">
                     <td align="center">{{ index+1 }}</td>
                     <td>{{ item.rtn }}</td>
                     <td>{{ item.curColumnName }}</td>
@@ -38,11 +38,12 @@
 </template>
 
 <script>
-    var nodeData, nodeInfo, columnsInfoPre
     export default {
         name: 'OutputColumnSetting',
         data() {
             return {
+                nodeData:null,
+                columnsInfoPre:this.$parent.columnsInfoPre,
                 re_columnsInfo: '',
                 items: [],
                 isIndeterminate:true,
@@ -53,22 +54,17 @@
         },
         mounted() {
             this.init()
-            window.outputVerify = this.outputVerify
+            // window.outputVerify = this.outputVerify
         },
         methods: {
             init() {
-                $("#outPutTable").css({"overflow-y":"auto","height":function () {
-                    return ($(document).height() - 80) + "px"
-                }})
                 let graph = this.$parent.graph
-                nodeData = graph.nodeData[graph.curCell.id]
-                nodeInfo = nodeData.nodeInfo
-                columnsInfoPre = this.$parent.columnsInfoPre
+                this.nodeData = graph.nodeData[graph.curCell.id]
                 this.initConfig()
             },
             check_old_column() { // 重构字段组，优化查询
                 let object = {}
-                $(nodeData.columnsInfo).each(function(index) {
+                $(this.nodeData.columnsInfo).each(function(index) {
                     object[this.columnName] = this
                 })
                 return object
@@ -87,7 +83,7 @@
                 if (num === 0) {
                     this.checkAll = true
                 }
-                if (nodeInfo.optType === 'groupCount' || nodeInfo.optType === 'delRepeat' || nodeInfo.optType === 'union') {				// 分组汇总和数据去重节点的输出字段单独处理，置为不可编辑
+                if (this.nodeData.nodeInfo.optType === 'groupCount' || this.nodeData.nodeInfo.optType === 'delRepeat' || this.nodeData.nodeInfo.optType === 'union') {				// 分组汇总和数据去重节点的输出字段单独处理，置为不可编辑
                     this.isAllDisabled = true
                     this.isDisabled = true
                 }
@@ -126,14 +122,14 @@
                 }
             },
             createTrFacture() {
-                let isSet = nodeData.isSet// 判断当前节点是否已经设置
-                let columnsInfoArray = isSet ? nodeData.columnsInfo : columnsInfoPre
+                let isSet = this.nodeData.isSet// 判断当前节点是否已经设置
+                let columnsInfoArray = isSet ? this.nodeData.columnsInfo : this.columnsInfoPre
                 for (let column = 0; column < columnsInfoArray.length; column++) {
                     let isHide = false
                     if (isSet) {
                         let num = 0
-                        for (let j = 0; j < columnsInfoPre.length; j++) {
-                            if (columnsInfoArray[column].columnName === columnsInfoPre[j].newColumnName) {
+                        for (let j = 0; j < this.columnsInfoPre.length; j++) {
+                            if (columnsInfoArray[column].columnName === this.columnsInfoPre[j].newColumnName) {
                                 isHide = false
                                 break
                             } else {
@@ -145,11 +141,11 @@
                         }
                     }
                     let curColumnName = isSet ? columnsInfoArray[column].columnName : columnsInfoArray[column].newColumnName
-                    let oldSetColumn = this.find_self_column(curColumnName, columnsInfoPre[column].nodeId)
-                    let nodeId = columnsInfoPre[column].nodeId
-                    let nullNodeId = columnsInfoPre[column].nullNodeId
-                    let columnInfo = JSON.stringify(columnsInfoPre[column])
-                    let rtn = columnsInfoPre[column].rtn
+                    let oldSetColumn = this.find_self_column(curColumnName, this.columnsInfoPre[column].nodeId)
+                    let nodeId = this.columnsInfoPre[column].nodeId
+                    let nullNodeId = this.columnsInfoPre[column].nullNodeId
+                    let columnInfo = JSON.stringify(this.columnsInfoPre[column])
+                    let rtn = this.columnsInfoPre[column].rtn
                     let checked = false
                     let id = column
                     let disColumnName = ''
@@ -166,18 +162,17 @@
                     }
                     this.items.push({ id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, attrColumnName, checked })
                 }
-                $('#column_config tbody').sortable().disableSelection()
+                $(this.$refs.outPutTbody).sortable().disableSelection()
             },
             get_column() { // 这里保存的是上级节点所有的字段，包括输出字段，（意义：不输出的字段不代表不是该节点的字段，在获取上级节点字段应该进一步筛选师傅是输出字段）
                 let this_columnInfos = []
-                let $this = this
-                $(".colTr").each(function () {
-                    let index = $(this).attr("data-index");
-                    var checked = $this.items[index].checked
-                    var this_column = JSON.parse($this.items[index].columnInfo)
-                    var old_colum_name = $this.items[index].curColumnName// 之前的newColumnName
+                for(let i=0; i<this.$refs.colTr.length; i++){
+                    let index = this.$refs.colTr[i].getAttribute("data-index");
+                    var checked = this.items[index].checked
+                    var this_column = JSON.parse(this.items[index].columnInfo)
+                    var old_colum_name = this.items[index].curColumnName// 之前的newColumnName
                     var re_is_filter_comumn = []
-                    $($this.$parent.is_filter_column).each(function () {
+                    $(this.$parent.is_filter_column).each(function () {
                         re_is_filter_comumn.push(this.value)
                     })
                     if (re_is_filter_comumn.length === 0 || $.inArray(old_colum_name, re_is_filter_comumn) > -1) { // 没有做配置、没有类似去重此功能需求或者配置并且在对勾显示字段的
@@ -189,13 +184,13 @@
                     } else {
                         this_column.isOutputColumn = 0
                     }
-                    this_column.newColumnName = $this.items[index].disColumnName
+                    this_column.newColumnName = this.items[index].disColumnName
                     this_column.columnName = old_colum_name
-                    this_column.rtn = $this.items[index].rtn
-                    this_column.nodeId = $this.items[index].nodeId
+                    this_column.rtn = this.items[index].rtn
+                    this_column.nodeId = this.items[index].nodeId
                     this_columnInfos.push(this_column)
-                })
-                nodeData.columnsInfo = this_columnInfos
+                }
+                this.nodeData.columnsInfo = this_columnInfos
             },
             find_self_column(columnName, nodeId) { // 是否设置并且含有当前字段
                 var obj = {
