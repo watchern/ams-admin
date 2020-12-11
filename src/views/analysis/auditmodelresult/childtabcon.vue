@@ -80,7 +80,7 @@
     <ag-grid-vue
       v-if="isSee"
       v-loading="isLoading"
-      style="height: 200px"
+      :style="useType=='modelRunResult'||useType=='modelPreview'?'height:490px':'height:300px'"
       class="table ag-theme-balham"
       :column-defs="columnDefs"
       :row-data="rowData"
@@ -219,6 +219,7 @@ import {
 import { getTransMap } from "@/api/data/transCode.js";
 import mtEditor from 'ams-datamax'
 import 'iview/dist/styles/iview.css'
+
 export default {
   name: "childTabCon",
   // 注册draggable组件
@@ -676,7 +677,7 @@ export default {
         );
         this.columnDefs = col;
         this.rowData = da;
-      } else if (this.useType == "sqlEditor") {
+      } else if (this.useType == "sqlEditor"||this.useType == "modelPreview") {
         this.loading = true;
         this.nextValue = nextValue;
         var col = [];
@@ -1155,7 +1156,7 @@ export default {
 
       // 通信失败
       this.webSocket.onerror = function (event) {};
-    },
+    }
   },
 };
 </script>

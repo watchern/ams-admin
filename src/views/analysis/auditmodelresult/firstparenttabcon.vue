@@ -3,7 +3,7 @@
   <div class="app-container">
     <el-container>
       <el-header>
-        <div class="filter-container">
+        <div class="filter-container" >
           <QueryField
             ref="queryfield"
             :form-data="queryFields"
@@ -12,7 +12,7 @@
         </div>
       </el-header>
       <el-main>
-        <div align="right" style="width: 69%">
+        <div align="right" style="width: 64%">
           <el-row>
             <el-button
               type="primary"
@@ -70,12 +70,12 @@
           @sort-change="sortChange"
           @selection-change="handleSelectionChange"
           height="450px"
-          style="overflow-x: scroll; width: 69%"
+          style="overflow-x: scroll; width: 64%"
         >
           <el-table-column type="selection" width="55" />
           <el-table-column
             label="模型名称"
-            width="100px"
+            width="300px"
             align="center"
             prop="model.modelName"
           >
