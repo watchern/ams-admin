@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container all" style="height:calc(100vh - 90px);overflow-y:scroll;">
+  <div class="page-container all" style="height:calc(100vh - 90px);width:calc(100vw - 90px);overflow-y:scroll;">
     <!-- 选择日期 -->
     <el-row style="height: 50px;">
       <el-col :span="6" :offset="17" align="right">
@@ -19,13 +19,11 @@
     <!-- 监控总览/饼图 -->
     <el-row style="height: 320px;">
       <el-col :xs="4" :sm="6" :md="12" :lg="12" :xl="12">
-        <el-card class="box-card" shadow="always" style="height: 320px">
+        <el-card class="box-card" shadow="always">
           <div slot="header" class="clearfix" style="text-align:right; ">
             <time class="time">{{ time | formatDate }}</time>
             <!-- <span>卡片名称</span> -->
-            <el-button type="text">
-              <span class="el-icon-refresh-left refresh1" @click="refresh()" />
-            </el-button>
+            <span class="el-icon-refresh-left refreshspan" @click="refresh()" />
           </div>
           <!-- <span class="el-icon-refresh-left refresh" style="float: right" /> -->
 
@@ -60,7 +58,8 @@
                   <time class="title-large1">
                     <span class="el-icon-time iconstyle" style="color:#716bc9" />
                     <!-- {{ processtime | timeFilter }} -->
-                    <span>{{ startTime | formatDate }} - {{ endTime | formatDate }}</span>
+                    <span v-if="startTime">{{ startTime | formatDate }} - {{ endTime | formatDate }}</span>
+                    <span v-if="!startTime">暂无</span>
                   </time>
                 </div>
               </div>
@@ -72,13 +71,11 @@
         </el-card>
       </el-col>
       <el-col :xs="4" :sm="6" :md="12" :lg="12" :xl="12">
-        <el-card class="box-card" shadow="always" style="height: 320px">
+        <el-card class="box-card" shadow="always">
           <div slot="header" class="clearfix" style="text-align: right;">
             <!-- <span>卡片名称</span> -->
             <time class="time">{{ time | formatDate }}</time>
-            <el-button type="text">
-              <span class="el-icon-refresh-left refresh1" @click="refresh()" />
-            </el-button>
+            <span class="el-icon-refresh-left refreshspan" @click="refresh()" />
           </div>
           <div class="row">
             <m-process-state-count :search-params="searchParams" />
@@ -143,7 +140,7 @@ export default {
     },
     formatDate(value) {
       if (value === null) {
-        return '------'
+        return ''
       }
       const date = new Date(value)
       const y = date.getFullYear()
@@ -231,8 +228,6 @@ export default {
     this.searchParams.startTimeStart = dayjs().format('YYYY-MM-DD')
     this.searchParams.startTimeEnd = dayjs().format('YYYY-MM-DD')
     this.value1 = [dayjs().format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')]
-    // console.log('开始' + this.searchParams.startTimeStart + typeof (this.searchParams.startTimeStart))
-    // console.log('结束' + this.searchParams.startTimeEnd + typeof (this.searchParams.startTimeEnd))
     // 获取任务的总耗时
     // takeTime().then((resp) => {
     //   this.taketime = resp.data;
@@ -334,10 +329,11 @@ export default {
   font-weight: 400;
 }
 
-.refresh1 {
+.refreshspan {
   font-size: 20px;
   cursor: pointer;
   margin: 0 10px 0 0;
+  height:40px;line-height:40px
 }
 .bottom {
   font-size: 20px;
@@ -345,6 +341,9 @@ export default {
 }
 .time {
   margin: 0 20px 0 0;
+}
+.box-card{
+  height: 320px;
 }
 /* .query-field{
   padding: 10px 0 0 0;
