@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
@@ -9,17 +9,19 @@
       :data="list"
       border
       fit
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
       highlight-current-row
       style="width: 100%;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="标题" width="300px" align="center" prop="remindTitle" />
-      <el-table-column label="内容" width="550px" align="left" prop="remindContent" />
-      <el-table-column label="提醒时间" width="200px" align="center" prop="remindTime" :formatter="dateFormatter" />
-      <el-table-column label="阅读状态" prop="readStatus" align="center" width="100px" :formatter="readStatusFormatter" />
-      <el-table-column label="操作" prop="modeUrl" align="center" width="200px">
+      <el-table-column label="标题"  align="center" prop="remindTitle" />
+      <el-table-column label="内容"  align="left" prop="remindContent" />
+      <el-table-column label="提醒时间"  align="center" prop="remindTime" :formatter="dateFormatter" />
+      <el-table-column label="阅读状态" prop="readStatus" align="center"  :formatter="readStatusFormatter" />
+      <el-table-column label="操作" prop="modeUrl" align="center" >
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="selectDetail(scope.row)">查看</el-button>
           <el-button type="text" size="small" @click="signRead(scope.row)">标记已阅</el-button>

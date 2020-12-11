@@ -21,11 +21,13 @@
       :data="list"
       border
       fit
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
       style="width: 100%;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column label="选择" type="selection" width="55" />
+      <el-table-column label="选择" type="selection" width="55"/>
       <el-table-column label="代码类别名称" prop="dataSortName"/>
       <el-table-column label="代码类别编码" width="300px" align="center" prop="dataSortValue" />
       <el-table-column label="代码类别描述" prop="dataSortDesc"/>
@@ -46,7 +48,7 @@
           <el-input v-model="temp.dataSortName" />
         </el-form-item>
         <el-form-item label="代码类别编码" prop="dataSortValue">
-          <el-input v-model="temp.dataSortValue" @change="number()" />
+          <el-input v-model="temp.dataSortValue" />
         </el-form-item>
         <el-form-item label="代码类别描述" prop="dataSortDesc">
           <el-input v-model="temp.dataSortDesc" />
@@ -71,7 +73,7 @@
         :rules="rulesSecond"
         :model="tempSecond"
         label-position="right"
-        style="width: 800px; margin-left:50px;"
+        
         
       >
         <el-form-item label="代码类别" prop="dataSortUuid" hidden>
@@ -225,19 +227,19 @@ export default {
         this.listLoading = false
       })
     },
-    // 校验类别格式
-    number() {
-      var data = this.temp.dataSortValue
-      const codeValue = new RegExp('^[0-9]{4,32}$').test(data)
-      if (!codeValue) {
-        this.$notify.error({
-          title: '错误',
-          message: '请输入4-32位的数字',
-          position: 'bottom-right'
-        })
-        this.temp.dataSortValue = ''
-      }
-    },
+    // // 校验类别格式
+    // number() {
+    //   var data = this.temp.dataSortValue
+    //   const codeValue = new RegExp('^[0-9]{4,32}$').test(data)
+    //   if (!codeValue) {
+    //     this.$notify.error({
+    //       title: '错误',
+    //       message: '请输入4-32位的数字',
+    //       position: 'bottom-right'
+    //     })
+    //     this.temp.dataSortValue = ''
+    //   }
+    // },
     // 校验编码格式
     numberSecond() {
       var data = this.tempSecond.codeValue
@@ -318,7 +320,6 @@ export default {
       this.dialogFormVisible = false
     },
     createData() {
-      this.number()
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           save(this.temp).then(() => {
@@ -407,7 +408,6 @@ export default {
       })
     },
     addSecondCode() {
-      this.number()
       this.$refs['dataSecondForm'].validate((valid) => {
         if (valid) {
           saveSecond(this.tempSecond).then(() => {

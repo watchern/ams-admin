@@ -167,8 +167,8 @@
         </el-col>
       </el-row>
     </template>
-    <div slot="footer">
-      <el-button @click="closeEdit">返回</el-button>
+    <div slot="footer" style="float:right;">
+      <el-button @click="closeEdit">取消</el-button>
       <el-button type="primary" @click="saveScene">保存</el-button>
     </div>
   </div>

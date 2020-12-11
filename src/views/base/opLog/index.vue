@@ -10,6 +10,8 @@
     :data="list" 
     border 
     fit 
+    height="calc(100vh - 300px)"
+    max-height="calc(100vh - 300px)"
     highlight-current-row 
     style="width: 100%;" 
     @sort-change="sortChange" 
