@@ -20,7 +20,7 @@
           <ul id="sqlFunTree" class="ztree" />
         </div>
       </div>
-      <div id="rightPart" class="col-sm-10" style="height: 100%">
+      <div id="rightPart"  style="height: 100%">
         <div id="sqlEditorDiv" class="sql-editor-div">
           <el-row type="flex" class="row-bg">
             <el-col>
@@ -96,7 +96,7 @@
                   >
                 </el-dropdown-menu>
               </el-dropdown>
-              <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;" @click="modelResultSavePathDialog = true">{{ path }}</label>
+              <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;cursor: pointer;" @click="modelResultSavePathDialog = true">{{ path }}</label>
             </el-col>
           </el-row>
           <div
@@ -148,9 +148,9 @@
       </div>
     </div>
     <form id="countForm" class="form-horizontal" style="display: none">
-      <div class="form-group col-sm-12">
-        <label class="col-sm-3 control-label">视图SQL:</label>
-        <div class="col-sm-7">
+      <div class="form-group">
+        <label class=" control-label">视图SQL:</label>
+        <div>
           <textarea
             id="viewSql"
             name="viewSql"
@@ -226,18 +226,8 @@
         <el-button type="primary" @click="replaceNodeParam">确定</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      title="选择SQL结果保存路径"
-      :visible.sync="modelResultSavePathDialog"
-      width="30%"
-      :append-to-body="true"
-    >
-      <data-tree
-        :data-user-id="personCode"
-        :scene-code="sceneCode"
-        :tree-type="treeType"
-        @node-click="handleClick"
-      />
+    <el-dialog title="选择SQL结果保存路径" :visible.sync="modelResultSavePathDialog" width="30%" :append-to-body="true">
+      <data-tree :data-user-id="personCode" :scene-code="sceneCode" :tree-type="treeType" @node-click="handleClick" style="height: 500px;overflow-y: scroll"/>
       <span slot="footer" class="dialog-footer">
         <el-button @click="modelResultSavePathDialog = false">取 消</el-button>
         <el-button type="primary" @click="modelResultSavePathDetermine"
@@ -248,6 +238,16 @@
   </div>
 </template>
 <script>
+require("@/components/ams-jqueryValidate/jquery.validate.min.js")
+require("@/components/ams-codemirror/addon/edit/matchbrackets")
+require("@/components/ams-codemirror/addon/selection/active-line")
+require("@/components/ams-codemirror/mode/sql/sql")
+require("@/components/ams-codemirror/addon/hint/show-hint")
+require("@/components/ams-codemirror/addon/hint/sql-hint")
+require("@/components/ams-ztree/js/jquery.ztree.all.min")
+require("@/components/ams-ztree/js/jquery.ztree_new.all.min")
+require("@/components/ams-ztree/js/jquery.ztree.excheck")
+require("@/components/ams-ztree/js/jquery.ztree.exhide")
 import {
   initSQLEditor,
   initDragAndDrop,
@@ -291,7 +291,6 @@ import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import paramDraw from "@/views/analysis/modelparam/paramdraw";
 import { replaceNodeParam } from "@/api/analysis/auditparam";
 import dataTree from "@/views/data/role-res/data-tree";
-import { modelResultExport } from "@/views/analysis/auditmodelresult/childtabcon"
 
 /**
  * 当前执行进度
@@ -1017,6 +1016,7 @@ export default {
   /* overflow: hidden; */
   cursor: w-resize;
   z-index: 200;
+  top:0;
 }
 
 .el-aside{
