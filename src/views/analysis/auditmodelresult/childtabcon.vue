@@ -80,7 +80,7 @@
     <ag-grid-vue
       v-if="isSee"
       v-loading="isLoading"
-      style="height: 200px"
+      :style="useType=='modelRunResult'||useType=='modelPreview'?'height:490px':'height:300px'"
       class="table ag-theme-balham"
       :column-defs="columnDefs"
       :row-data="rowData"
@@ -218,7 +218,8 @@ import {
 } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
 import mtEditor from 'ams-datamax'
-import 'iview/dist/styles/iview.css'
+// import 'iview/dist/styles/iview.css'
+
 export default {
   name: "childTabCon",
   // 注册draggable组件
@@ -560,9 +561,9 @@ export default {
                 var type = ''
                 if(columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1 ){
                   type = 'varchar'
-                }else if(columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") != -1 || columnObj.columnType.toUpperCase().indexOf("INT") != -1){
+                }else if(columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
                   type = "number"
-                }else if(columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") != -1 ){
+                }else if(columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") != -1 || columnInfo[i].columnType.toUpperCase().indexOf("DATE") != -1){
                   type = 'time'
                 }else if (columnInfo[i].columnType.toUpperCase().indexOf("FLOAT") != -1){
                   type = 'float'
@@ -676,7 +677,7 @@ export default {
         );
         this.columnDefs = col;
         this.rowData = da;
-      } else if (this.useType == "sqlEditor") {
+      } else if (this.useType == "sqlEditor"||this.useType == "modelPreview") {
         this.loading = true;
         this.nextValue = nextValue;
         var col = [];
@@ -696,9 +697,9 @@ export default {
                    var type = ''
                 if(columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 ){
                   type = 'varchar'
-                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnObj.columnType.toUpperCase().indexOf("INT") != -1){
+                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
                   type = "number"
-                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ){
+                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 || columnTypes1[i].toUpperCase().indexOf("DATE") != -1){
                   type = 'time'
                 }else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1){
                   type = 'float'
@@ -766,9 +767,9 @@ export default {
                    var type = ''
                 if(columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 ){
                   type = 'varchar'
-                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnObj.columnType.toUpperCase().indexOf("INT") != -1){
+                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
                   type = "number"
-                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ){
+                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 || columnTypes1[i].columnType.toUpperCase().indexOf("DATE") != -1){
                   type = 'time'
                 }else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1){
                   type = 'float'
@@ -829,9 +830,9 @@ export default {
                    var type = ''
                 if(columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 ){
                   type = 'varchar'
-                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnObj.columnType.toUpperCase().indexOf("INT") != -1){
+                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
                   type = "number"
-                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ){
+                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 || columnTypes1[i].columnType.toUpperCase().indexOf("DATE") != -1){
                   type = 'time'
                 }else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1){
                   type = 'float'
@@ -1155,7 +1156,7 @@ export default {
 
       // 通信失败
       this.webSocket.onerror = function (event) {};
-    },
+    }
   },
 };
 </script>
