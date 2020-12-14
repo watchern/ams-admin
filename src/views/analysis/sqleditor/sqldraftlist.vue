@@ -10,7 +10,7 @@
       <el-table-column type="selection" width="55" />
       <el-table-column label="草稿名称" width="300px" align="center" prop="draftTitle" />
       <el-table-column label="草稿创建时间" width="300px" align="center" prop="createTime" :formatter="dateFormatter" />
-      <el-table-column label="操作" width="150px" prop="" >
+      <el-table-column label="操作" align="center" width="150px" prop="" >
         <template slot-scope="scope">
           <el-button @click="selectDetail(scope)">查看详情</el-button>
         </template>

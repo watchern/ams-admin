@@ -891,6 +891,7 @@ export default {
           this.$emit("getSqlObj");
           this.executeLoading = false
           this.loadText = ""
+          this.$message({ type: "success", message: "SQL校验通过" });
         }).catch((result) =>{
           this.executeLoading = false
           this.loadText = ""
