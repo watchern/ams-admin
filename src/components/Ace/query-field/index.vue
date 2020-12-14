@@ -30,10 +30,6 @@ export default {
     formData: {
       type: Array,
       default: []
-    },
-    queryDefault: {
-      type: Object,
-      default: {}
     }
   },
   data() {
@@ -54,7 +50,6 @@ export default {
         this.$set(this.query, fd.name, [])
       }
     })
-    if (this.queryDefault !== {}) { this.query = this.queryDefault }
   },
   methods: {
     getData() {

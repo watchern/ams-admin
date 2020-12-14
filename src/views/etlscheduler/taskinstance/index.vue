@@ -265,7 +265,7 @@ export default {
       downloadLoading: false,
       tasks: null,
       checkedTask: null,
-      checkedTaskId: '',
+      checkedTaskId: null,
       logTasks: null,
       logs: null,
       taskslogsList: null,
