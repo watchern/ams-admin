@@ -171,9 +171,11 @@ export default {
       },
       dialogPvVisible: false,
       rules: {
-        dataResourceName: [{ required: true, message: '请填写资源名称', trigger: 'change' }],
-        dataResourceDesc: [{ max: 100, message: '请填写资源描述', trigger: 'change' }],
-        dataResourceCode: [{ required: true, message: '请填写资源编码', trigger: 'change' }]
+        dataResourceName: [{ required: true, message: '请填写资源名称', trigger: 'change' },
+          { max: 20, message: '资源名称在20个字符之内', trigger: 'change' }],
+        dataResourceDesc: [{ max: 500, message: '资源描述在500个字符之内', trigger: 'change' }],
+        dataResourceCode: [{ required: true, message: '请填写资源编码', trigger: 'change' },
+          { max: 20, message: '资源编码在20个字符之内', trigger: 'change' }]
       },
       downloadLoading: false
     }
@@ -278,14 +280,27 @@ export default {
       })
     },
     handleDelete() {
-      var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.dataResourceUuid) })
-      del(ids.join(',')).then(() => {
-        this.getList()
+      this.$confirm('确定删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => { ids.push(r.dataResourceUuid) })
+        del(ids.join(',')).then(() => {
+          this.getList()
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      }).catch(() => {
         this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
+          title: '消息',
+          message: '已取消删除',
           duration: 2000,
           position: 'bottom-right'
         })

@@ -135,7 +135,6 @@ export default {
           })
         }
       })
-
       myChart.echart.on('mouseout', (v) => {
         myChart.echart.dispatchAction({
           type: 'showTip',
@@ -148,7 +147,6 @@ export default {
           name: '执行完成'
         })
       })
-
       // 首页不允许跳转
       if (this.searchParams.projectId) {
         myChart.echart.on('click', (e) => {
