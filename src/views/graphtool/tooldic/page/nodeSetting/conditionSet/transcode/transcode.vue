@@ -62,8 +62,6 @@
             })
             this.$nextTick(() => {
                 this.init()
-                window.inputVerify = this.inputVerify
-                window.saveSetting = this.saveSetting
             })
         },
         methods: {

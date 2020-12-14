@@ -49,7 +49,7 @@ export default {
       tabsName(key){
         if(this.useType==='modelRunResult'){
           return '辅表' + (key + 1)
-        }else if(this.useType==='sqlEditor'){
+        }else if(this.useType==='sqlEditor'||this.useType==='modelPreview'){
             return '结果' + (key + 1)
         }else if(this.useType==='previewTable'){
             return '数据详情'

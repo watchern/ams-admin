@@ -39,8 +39,8 @@
 
             </el-tree>
               <div class="custom-tree-caidan ">
-                <img class="custom-save" :src="imgCus2" @click="save"/>
-                <img class="custom-close" :src="imgCus1" @click="closeWinfrom" />
+                <img class="custom-save" :src="imgCus2" @click="save" style="cursor:pointer"/>
+                <img class="custom-close" :src="imgCus1" @click="closeWinfrom" style="cursor:pointer"/>
               </div>
               <div class="custom-tree-shangla">
                 <img class="custom-shouqi"  :src="imgCus3" @click="customup"/>
@@ -80,7 +80,7 @@
           <el-row>
             <el-col :span="9">
               <el-form-item label="风险等级" prop="riskLevelUuid">
-                  <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级">
+                  <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级"  style="width:67%">
                     <el-option
                       v-for="state in riskLeve"
                       :key="state.codeValue"
@@ -92,7 +92,7 @@
             </el-col>
             <el-col :span="9">
               <el-form-item label="模型类型" prop="modelType">
-                <el-select v-model="form.modelType" placeholder="请选择模型类型">
+                <el-select v-model="form.modelType" placeholder="请选择模型类型" style="width:67%">
                   <el-option
                     v-for="state in modelTypeData"
                     :key="state.codeValue"
@@ -284,11 +284,11 @@ export default {
           type: 'relInfo',
           children: []
         },
-        {
-          id: '6',
-          label: '模型图表',
-          type: 'chartConfig'
-        },
+        // {
+        //   id: '6',
+        //   label: '模型图表',
+        //   type: 'chartConfig'
+        // },
         {
           id: '7',
           label: '模型条件',
@@ -1183,7 +1183,43 @@ export default {
      */
     save() {
       var modelObj = this.getModelObj()
-      if (modelObj == null) {
+      debugger
+      var flag1 = true
+      var flag2 = true
+      var modelDetailRelations = modelObj.modelDetailRelation
+      var resultFilterShows = modelObj.resultFilterShow
+      for(var i = 0;i<modelDetailRelations.length;i++){
+        if(modelDetailRelations[i].modelDetailName>255){
+          flag1 = false
+        }
+      }
+       for(var i = 0;i<resultFilterShows.length;i++){
+        if(resultFilterShows[i].filterName >255){
+          flag2 = false
+        }
+      }
+      if(modelObj.modelName.length>1000){
+        this.$message({
+          message: '模型名称的长度不能超过1000',
+        });
+      }else if(modelObj.auditIdeas.length>2000){
+        this.$message({
+          message: '模型名称的长度不能超过2000',
+        });
+      }else if(modelObj.paramConditions.length>2000){
+           this.$message({
+          message: '参数条件不能超过2000',
+        });
+      }else if(flag1==false){
+          this.$message({
+          message: '模型详细关联名称不能超过255',
+        });
+      }else if(flag2==false){
+          this.$message({
+          message: '条件名称不能超过255',
+        });
+      }else{
+        if (modelObj == null) {
         return
       }
       this.editorModelLoading = true
@@ -1219,6 +1255,7 @@ export default {
             this.$message({ type: 'error', message: '修改模型失败!' })
           }
         })
+      }
       }
     },
     initEvent() {
@@ -1433,8 +1470,8 @@ export default {
 .drag {
   position: absolute;
   z-index: 1000;
-  top: 40px;
-  left: 85%;
+  top: 30px;
+  left: 92%;
   width: 95px;
   background: #FFFFFF;
   border-radius: 5px;

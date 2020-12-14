@@ -161,14 +161,20 @@ export function init() {
                             compare = on.compare
                         }
                     }
-                    $('#comper').val(compare)
-                    $('#MainPort').val(data.fromPort)
-                    $('#toPort').val(data.toPort)
-                    $('#from').val(data.from)
-                    $('#to').val(data.to)
-                    document.getElementById('join2').style.display = ''
-                    document.getElementById('select').style.display = ''
-                    document.getElementById('join1').style.display = ''
+                    relationVue.comper = compare
+                    // $('#comper').val(compare)
+                    relationVue.mainPort = data.fromPort
+                    // $('#MainPort').val(data.fromPort)
+                    relationVue.toPort = data.toPort
+                    // $('#toPort').val(data.toPort)
+                    relationVue.from = data.from
+                    // $('#from').val(data.from)
+                    // $('#to').val(data.to)
+                    relationVue.to = data.to
+                    relationVue.showJoinArea = true
+                    // document.getElementById('join2').style.display = ''
+                    // document.getElementById('select').style.display = ''
+                    // document.getElementById('join1').style.display = ''
                     showJoin(data)
                 } catch (e) {}
             }
@@ -243,16 +249,16 @@ export function init() {
             if (e.change === go.ChangedEvent.Property) {
                 if (e.modelChange === 'linkFromKey' || e.modelChange === 'linkToKey' || e.modelChange === 'linkToPortId' || e.modelChange === 'linkFromPortId') {
                     var objold = e.object
-                    if (e.modelChange === 'linkFromKey') { // 模型修改等于fromkey 就是换源节点
+                    if (e.modelChange === 'linkFromKey') { // 等于fromkey 就是换源节点
                         objold.from = e.oldValue
                     }
-                    if (e.modelChange === 'linkToKey') { // 模型修改等于tokey 就是换目标节点
+                    if (e.modelChange === 'linkToKey') { // 等于tokey 就是换目标节点
                         objold.to = e.oldValue
                     }
-                    if (e.modelChange === 'linkToPortId') { // 模型修改等于portid 就是换线的目标列
+                    if (e.modelChange === 'linkToPortId') { // 等于portid 就是换线的目标列
                         objold.toPort = e.oldValue
                     }
-                    if (e.modelChange === 'linkFromPortId') { // 模型修改等于portid 就是换线的源列
+                    if (e.modelChange === 'linkFromPortId') { // 等于portid 就是换线的源列
                         objold.fromPort = e.oldValue
                     }
                     var iold = indexOfJoin(objold.from)// 源节点在join里的下标
@@ -299,15 +305,22 @@ export function init() {
                         toPort: obj.toPort,
                         compare: '='
                     })
-                    $('#comper').val('=')
-                    $('#MainPort').val('')
-                    $('#toPort').val('')
-                    $('#from').val('')
-                    $('#to').val('')
-                    showJoin()
-                    document.getElementById('join2').style.display = 'none'
-                    document.getElementById('select').style.display = 'none'
-                    document.getElementById('join1').style.display = 'none'
+
+                    // $('#comper').val('=')
+                    // $('#MainPort').val('')
+                    // $('#toPort').val('')
+                    // $('#from').val('')
+                    // $('#to').val('')
+                    relationVue.comper = '='
+                    relationVue.mainPort = obj.fromPort
+                    relationVue.toPort = obj.toPort
+                    relationVue.from = obj.from
+                    relationVue.to = obj.to
+                    showJoin(obj)
+                    relationVue.showJoinArea = true
+                    // document.getElementById('join2').style.display = 'none'
+                    // document.getElementById('select').style.display = 'none'
+                    // document.getElementById('join1').style.display = 'none'
                 }
             }
             // 连线新增
@@ -338,9 +351,10 @@ export function init() {
                     }
                 } catch (e) {}
                 $('#form').html('')
-                document.getElementById('join2').style.display = 'none'
-                document.getElementById('select').style.display = 'none'
-                document.getElementById('join1').style.display = 'none'
+                relationVue.showJoinArea = false
+                // document.getElementById('join2').style.display = 'none'
+                // document.getElementById('select').style.display = 'none'
+                // document.getElementById('join1').style.display = 'none'
             }
 
             // 节点删除
@@ -349,9 +363,10 @@ export function init() {
                 tableNames.splice(tableNames.indexOf(e.oldValue.chineseName), 1)
                 keyNames.splice(keyNames.indexOf(e.oldValue.key), 1)
                 $('#form').html('')
-                document.getElementById('join2').style.display = 'none'
-                document.getElementById('select').style.display = 'none'
-                document.getElementById('join1').style.display = 'none'
+                relationVue.showJoinArea = false
+                // document.getElementById('join2').style.display = 'none'
+                // document.getElementById('select').style.display = 'none'
+                // document.getElementById('join1').style.display = 'none'
             }
             // 节点新增
             else if (e.change === go.ChangedEvent.Insert && e.modelChange === 'nodeDataArray') {
@@ -488,22 +503,28 @@ function addLine(obj, isAdd) {
             compare: '='
         })
     }
-    $('#comper').val('=')
-    $('#MainPort').val(obj.fromPort)
-    $('#toPort').val(obj.toPort)
-    $('#from').val(obj.from)
-    $('#to').val(obj.to)
-    document.getElementById('join2').style.display = ''
-    document.getElementById('select').style.display = ''
-    document.getElementById('join1').style.display = ''
+    relationVue.comper = '='
+    // $('#MainPort').val(obj.fromPort)
+    relationVue.mainPort = obj.fromPort
+    // $('#toPort').val(obj.toPort)
+    relationVue.toPort = obj.toPort
+    relationVue.from = obj.from
+    relationVue.to = obj.to
+    // $('#from').val(obj.from)
+    // $('#to').val(obj.to)
+    relationVue.showJoinArea = true
+    // document.getElementById('join2').style.display = ''
+    // document.getElementById('select').style.display = ''
+    // document.getElementById('join1').style.display = ''
     showJoin(obj)
 }
 
 function addNode(obj) {
     join.push(obj)
-    document.getElementById('join2').style.display = 'none'
-    document.getElementById('select').style.display = 'none'
-    document.getElementById('join1').style.display = 'none'
+    relationVue.showJoinArea = false
+    // document.getElementById('join2').style.display = 'none'
+    // document.getElementById('select').style.display = 'none'
+    // document.getElementById('join1').style.display = 'none'
 }
 
 // 查询join里对象的idx
@@ -535,7 +556,8 @@ function showJoin(curLine) {
                     relationVue.joinShow = false;
                 }
             }
-            $("#join").show()
+            relationVue.showTableJoin = true
+            // $("#join").show()
         }
     } catch (e) {}
 }
@@ -625,19 +647,22 @@ function toSql() {
     return sql
 }
 // 改变右上角表关联字段的选项
-export function changeCopare() {
-    var fromtab = $('#from').val()
-    var totab = $('#to').val()
-    var fromPort = $('#MainPort').val()
-    var toPort = $('#toPort').val()
-    var copare = $('#comper').val()
+export function changeCopare(val) {
+    var fromtab = relationVue.from
+    // var fromtab = $('#from').val()
+    var totab = relationVue.to
+    // var totab = $('#to').val()
+    var fromPort = relationVue.mainPort
+    var toPort = relationVue.toPort
+    // var toPort = $('#toPort').val()
+    // var copare = $('#comper').val()
     var i = indexOfJoin(fromtab)
     var j = indexOfJoin(totab)
     var idx = Math.max(i, j)
     var editIdx = -1
     for (var k = 0; k < join[idx].on.length; k++) {
         if (join[idx].on[k].fromPort === fromPort && join[idx].on[k].toPort === toPort) {
-            join[idx].on[k].compare = copare
+            join[idx].on[k].compare = val
         }
     }
     showJoin()
@@ -646,8 +671,10 @@ export function changeCopare() {
 export function changeType() {
     var idx = indexOfJoin(relationVue.slaverTableName)
     join[idx].type = relationVue.joinType
-    $('#description').show()
-    $('#description>p').hide()
+    relationVue.showDescription = true
+    // $('#description').show()
+    // $('#description>p').hide()
+    $(relationVue.$refs.descriptionP).hide()
     var index = 0
     switch (relationVue.joinType) {
         case 'LEFT JOIN':
@@ -663,28 +690,33 @@ export function changeType() {
             index = 3
             break
     }
-    $('#description>p:eq(' + index + ')').show()
+    $(relationVue.$refs.descriptionP[index]).show()
+    // $('#description>p:eq(' + index + ')').show()
 }
 
 // 提交方法
 export function amplify() {
-    $('#tjHidden').hide()
-    $('#joins').hide()
-    $('#fd').hide()
-    $('#tips').hide()
-    $('#sx').show()
-    $('#dateTree').outerHeight($(document).height() * 0.97)
-    document.getElementById('myDiagramDiv').className = 'col-sm-12'
+    // $('#tjHidden').hide()
+    // $('#joins').hide()
+    // $('#fd').hide()
+    // $('#tips').hide()
+    // $('#sx').show()
+    // $('#dateTree').outerHeight($(document).height() * 0.97)
+    // document.getElementById('myDiagramDiv').className = 'col-sm-12'
+    relationVue.showRight = false
+    relationVue.$refs.myDiagramDiv.style.width = 'calc(100% - 30px)'
     myDiagram.makeSvg()
 }
 export function reduce() {
-    $('#dateTree').outerHeight($(document).height() * 0.585)
-    $('#tjHidden').show()
-    $('#joins').show()
-    $('#fd').show()
-    $('#tips').show()
-    $('#sx').hide()
-    document.getElementById('myDiagramDiv').className = 'col-sm-9'
+    // $('#dateTree').outerHeight($(document).height() * 0.585)
+    // $('#tjHidden').show()
+    // $('#joins').show()
+    // $('#fd').show()
+    // $('#tips').show()
+    // $('#sx').hide()
+    // document.getElementById('myDiagramDiv').className = 'col-sm-9'
+    relationVue.showRight = true
+    relationVue.$refs.myDiagramDiv.style.width = 'calc(100% - 245px)'
     myDiagram.makeSvg()
 }
 
@@ -700,8 +732,9 @@ export function saveNodeInfo() {
     if (!relationVue.vilidata_simple()) {
         return false
     }
-    $(".colTr").each(function () {
-        let index = $(this).attr("data-index");
+    let colTr = relationVue.$refs.colTr
+    for(let i=0; i<colTr.length; i++){
+        let index = colTr[i].getAttribute("data-index");
         let columnInfo = JSON.parse(relationVue.items[index].columnInfo)
         let tableAlias = ''
         let resourceTableName = relationVue.items[index].resourceTableName
@@ -723,13 +756,12 @@ export function saveNodeInfo() {
         columnInfo.resourceTableName = resourceTableName
         columnInfo.rtn = rtn
         columnsInfo.push(columnInfo)
-
-    })
+    }
     // 开始保存节点所有数据信息
     nodeData.setting.sqlEdit = myDiagram.model.toJson()
     nodeData.setting.join = join
     nodeData.columnsInfo = columnsInfo
-    relationVue.$refs.basic.save_base()						// 保存基础信息
+    relationVue.$refs.basicVueRef.save_base()						// 保存基础信息
     nodeData.isSet = true
     return true
 }

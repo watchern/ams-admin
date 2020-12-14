@@ -319,27 +319,41 @@ export default {
     },
     // 删除用户组
     deleteGrp(id) {
-      delGrp(id).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm('确定删除场景?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        delGrp(id).then(() => {
+          this.getList()
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         })
       })
     },
     // 删除关联数据筛选器
     deleteFilter(id) {
-      delFilter(id).then(() => {
-        this.getListFilter()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm('确定删除数据筛选器?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        delFilter(id).then(() => {
+          this.getListFilter()
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         })
       })
     },

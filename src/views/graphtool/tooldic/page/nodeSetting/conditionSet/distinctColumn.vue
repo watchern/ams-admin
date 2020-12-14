@@ -1,27 +1,25 @@
 <template>
-    <div id="transfer_div_column">
+    <div id="transfer_div_column" style="padding: 30px 0 0 150px;">
         <div id="del_repeat" class="demo-transfer"></div>
     </div>
 </template>
 
 <script>
-    var nodeData
     export default {
         name: 'DistinctColumnSet',
         data(){
             return {
+                nodeData:null,
                 transfer1:null
             }
         },
         mounted() {
             this.init()
-            window.saveSetting = this.saveSetting
-            window.inputVerify = this.inputVerify
         },
         methods: {
             init() {
                 let graph = this.$parent.graph
-                nodeData = graph.nodeData[graph.curCell.id]
+                this.nodeData = graph.nodeData[graph.curCell.id]
                 let columnsInfoPre = this.$parent.columnsInfoPre
                 let $this = this
                 layui.use(['transfer'], function() {
@@ -35,9 +33,8 @@
                     })
 
                     // 显示搜索框
-                    var height = 360
+                    var height = 500
                     var width = 300
-                    var move_left = ($(document).width() - 680) / 2
 
                     $this.transfer1 = transfer.render({
                         elem: '#del_repeat',
@@ -53,9 +50,9 @@
                         }
                     })
                     // 是否反显
-                    if (nodeData.isSet) {
+                    if ($this.nodeData.isSet) {
                         var re_value = []
-                        $(nodeData.setting.delRepeatData).each(function() {
+                        $($this.nodeData.setting.delRepeatData).each(function() {
                             re_value.push(this.value)
                         })
                         transfer.reload('delRepeat', {
@@ -63,14 +60,12 @@
                             value: re_value,
                             showSearch: true
                         })
-                        $this.$parent.$refs.outputColumnVueRef.re_checkbox(nodeData.setting.delRepeatData)// 反显
+                        $this.$parent.$refs.outputColumnVueRef.re_checkbox($this.nodeData.setting.delRepeatData)// 反显
                     }
-                    $('ul.layui-transfer-data').css('height', height - 93)
-                    $('#del_repeat').css({ 'margin-left': move_left + 'px', 'margin-top': '30px' })
                 })
             },
             saveSetting() {
-                nodeData.setting.delRepeatData = this.transfer1.getData('delRepeat')
+                this.nodeData.setting.delRepeatData = this.transfer1.getData('delRepeat')
             },
             inputVerify() {
                 var verify = true
