@@ -178,7 +178,6 @@ export default {
       this.tempPath = data.label;
       this.tempId = data.id;
       this.nodeType = data.type;
-      console.log(data, node, tree);
     },
     modelResultSavePathDetermine() {
       if (this.nodeType == "folder") {

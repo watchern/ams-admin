@@ -16,20 +16,21 @@
       />
     </el-header>
     <el-main>
-    <div align="right" style="width: 60%">
+    <div align="right" style="width: 53%">
       <el-row>
         <el-button
-          v-if="false"
           type="primary"
-          @click="relationProject('453453', '项目2')"
+          @click="relationProject('453452', '项目2')"
           :disabled="buttonIson.AssociatedBtn"
           class="oper-btn refresh"
+          title="关联项目"
         ></el-button>
         <el-button
          v-if="false"
           type="danger"
           @click="RemoverelationProject('asdasdasdas')"
           :disabled="buttonIson.DisassociateBtn"
+          title="移除项目关联"
           >移除项目关联</el-button
         >
         <el-button
@@ -37,23 +38,28 @@
           type="danger"
           @click="deleteRunTaskRel"
           class="oper-btn delete"
+          title="删除"
         ></el-button>
+         <el-button
+              type="primary"
+              :disabled="buttonIson.resultSplitBtn"
+              class="oper-btn split-2"
+              @click="openResultSplitDialog"
+              title="结果拆分"
+          ></el-button>
         <el-button
           type="primary"
-          :disabled="buttonIson.resultSplitBtn"
-          class="oper-btn split-2"
-        ></el-button>
-        <el-button
-          type="primary"
-          @click="modelResultShare('99999', '888888')"
+          @click="modelResultOpenDialog()"
           :disabled="buttonIson.resultShareBtn"
           class="oper-btn share"
+          title="结果共享"
         ></el-button>
         <el-button
           type="primary"
           @click="exportExcel"
           :disabled="buttonIson.exportBtn"
           class="oper-btn export-2"
+          title="导出"
         ></el-button>
       </el-row>
     </div>
@@ -68,27 +74,29 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       height="450px"
-      style="overflow-x: scroll; width: 60%"
+      style="overflow-x: scroll; width: 53%"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column
         label="模型名称"
-        width="100px"
+        width="300px"
         align="center"
         prop="model.modelName"
       >
         <template slot-scope="scope">
-          <el-button
+          <a
             type="text"
+            style="color: #409eff"
             @click="
               getResultTables(
                 scope.row.runResultTables,
                 scope.row.model.modelName,
                 scope.row.model.modelUuid,
-                scope.row.runStatus
+                scope.row.runStatus,
+                resultSpiltObjects
               )
             "
-            >{{ scope.row.model.modelName }}</el-button
+            >{{ scope.row.model.modelName }}</a
           >
         </template>
       </el-table-column>
@@ -130,6 +138,13 @@
           />
         </template>
       </el-table-column>
+           <el-table-column
+            label="结果总条数"
+            width="100px"
+            align="center"
+            prop="runResultTables"
+            :formatter="dataCountFormatter"
+          />
       <el-table-column
         label="定时运行时间"
         width="200px"
@@ -187,6 +202,49 @@
     </el-table>
    </el-main>
     <el-dialog
+          title="请选择要分享的人员"
+          :visible.sync="resultShareDialogIsSee"
+          width="50%"
+        >
+          <personTree ref="orgPeopleTree"></personTree>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="modelResultShare"
+              >确 定</el-button
+            >
+          </span>
+        </el-dialog>
+     <el-dialog
+          title="结果拆分"
+          :visible.sync="resultSplitDialogIsSee"
+          width="40%"
+        >
+          <div align="center">
+            <span>要拆分的数据：</span>
+            <el-select
+              multiple
+              style="width: 50%"
+              size="medium"
+              v-model="selectedValue"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="(item, key) in ResultSplitoptions"
+                :key="key"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </div>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="resultSplitDialogIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="ResultSplitDialogDetermine"
+              >确 定</el-button
+            >
+          </span>
+        </el-dialog>
+    <el-dialog
       title="设置定时时间"
       :visible.sync="settingTimingIsSee"
       width="30%"
@@ -225,6 +283,10 @@ import {
   deleteRunResultShare,
   exportRunTaskRel,
   reRunRunTask,
+  getResultSplitSelectData,
+  addCoverResultRelProject,
+  selectPrimaryKeyByTableName,
+  getDataAfterResultSpiltToRelateProject,
 } from "@/api/analysis/auditmodelresult";
 import QueryField from "@/components/Ace/query-field/index";
 import Pagination from "@/components/Pagination/index";
@@ -234,8 +296,9 @@ import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 import warningresulttree from "@/views/analysis/auditwarningresult/warningresulttree";
+import personTree from "@/components/publicpersontree/index";
 export default {
-  components: { Pagination, QueryField, warningresulttree },
+  components: { Pagination, QueryField, warningresulttree,personTree },
   data() {
     return {
       tableKey: "errorUuid",
@@ -275,6 +338,11 @@ export default {
       settingTimingIsSee: false,
       setDateTime: "",
       nowRunTaskRel: null,
+      resultSpiltObjects: {}, //存储点击结果拆分要传往后台的数据
+      resultSplitDialogIsSee: false, //结果拆分dialog是否可见
+      ResultSplitoptions: [], //存储结果拆分dialog的下拉框中的数据
+      selectedValue: [], //结果查分下拉框选中的值
+      resultShareDialogIsSee: false, //点击模型结果关联按钮控制人员dialog显示
     };
   },
   created() {
@@ -459,7 +527,7 @@ export default {
           var query1 = {runTaskUuid:null}
           query1.runTaskUuid = '1'
           this.pageQuery.condition = query1;
-        getRunTaskRelByPage(this.pageQuery).then((resp) => {
+        getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
         this.listLoading = false;
@@ -482,7 +550,7 @@ export default {
         query.model = model;
         query.runTask = runTask;
         this.pageQuery.condition = query;
-        getRunTaskRelByPage(this.pageQuery).then((resp) => {
+        getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
         this.listLoading = false;
@@ -505,7 +573,7 @@ export default {
         this.buttonIson.AssociatedBtn = false;
         this.buttonIson.DisassociateBtn = false;
         this.buttonIson.deleteBtn = false;
-        this.buttonIson.resultSplitBtn = false;
+        this.buttonIson.resultSplitBtn = true;
         this.buttonIson.resultShareBtn = false;
         this.buttonIson.exportBtn = false;
       } else if (val.length > 1) {
@@ -709,53 +777,121 @@ export default {
           });
         });
     },
-    /**
+   /**
      * 关联项目按钮触发
      */
     relationProject(projectId, projctName) {
       var selected2 = this.selected1;
-      var flag = true;
-      // 判断勾选的结果是否已经关联了选中的项目
-      for (var i = 0; i < selected2.length; i++) {
-        var flag = true;
-        if (selected2[i].projectName) {
-          var m = selected2[i].projectName.split(",");
-          for (var j = 0; j < m.length; j++) {
-            if (m[j] == projctName) {
-              flag = false;
-              break;
+      if (selected2.length == 0) {
+        this.$message({ message: "请选择运行结果" });
+      } else {
+        this.listLoading = true;
+        if (this.resultSpiltObjects.orgNameValues != undefined) {
+          var mainTableUuids = [];
+          var selectRunTaskRelUuid = [];
+          for (var i = 0; i < this.selected1.length; i++) {
+            selectRunTaskRelUuid.push(this.selected1[i].runTaskRelUuid);
+            var runResultTables = this.selected1[i].runResultTables;
+            for (var j = 0; j < runResultTables.length; j++) {
+              if (runResultTables[j].tableType == 1) {
+                mainTableUuids.push(runResultTables[j].runResultTableUuid);
+              }
             }
           }
-        }
-      }
-      if (selected2.length == 0) {
-        alert("请选择运行结果");
-      } else if (flag == false) {
-        alert("选中的运行结果中，存在已关联该项目的结果");
-      } else {
-        var resultRelPro = [];
-        for (var i = 0; i < selected2.length; i++) {
-          var resultRelProject = {
-            runTaskRelUuid: selected2[i].runTaskRelUuid,
-            projectUuid: projectId,
-            projectName: projctName,
-          };
-          resultRelPro.push(resultRelProject);
-        }
-        ResultRelProject(resultRelPro).then((resp) => {
-          if (resp.data == true) {
-            this.getLikeList();
-            this.$message({
-              type: "success",
-              message: "关联成功!",
-            });
-          } else {
-            this.$message({
-              type: "error",
-              message: "关联失败!",
-            });
+              selectPrimaryKeyByTableName().then((resp) => {
+                var primaryKey = resp.data;
+                getDataAfterResultSpiltToRelateProject(
+                  this.resultSpiltObjects,
+                  projectId,
+                  projctName,
+                  selectRunTaskRelUuid
+                ).then((resp) => {
+                  if (resp.data == true) {
+                    this.listLoading = false;
+                    this.getLikeList();
+                    this.$message({
+                      type: "success",
+                      message: "关联成功!",
+                    });
+                  } else {
+                    this.listLoading = false;
+                    this.$message({
+                      type: "error",
+                      message: "关联失败!",
+                    });
+                  }
+                });
+              });
+        } else {
+          this.listLoading = true;
+          var resultRelPro = [];
+          for (var i = 0; i < selected2.length; i++) {
+            var resultRelProject = {
+              runTaskRelUuid: selected2[i].runTaskRelUuid,
+              projectUuid: projectId,
+              projectName: projctName,
+            };
+            resultRelPro.push(resultRelProject);
           }
-        });
+          ResultRelProject(resultRelPro).then((resp) => {
+            var flag = resp.data.flag;
+            var resultRelProjects = resp.data.resultRelProjects;
+            if (flag == "haveRelated") {
+              var modelNames = [];
+              for (var i = 0; i < resultRelProjects.length; i++) {
+                for (var j = 0; j < this.selected1.length; j++) {
+                  if (
+                    resultRelProjects[i].runTaskRelUuid ==
+                    this.selected1[j].runTaskRelUuid
+                  ) {
+                    modelNames.push(this.selected1[j].model.modelName);
+                  }
+                }
+              }
+              var resultRelPros = [];
+              for (var i = 0; i < selected2.length; i++) {
+                var resultRelProject = {
+                  runTaskRelUuid: selected2[i].runTaskRelUuid,
+                  projectUuid: projectId,
+                  projectName: projctName,
+                };
+                resultRelPros.push(resultRelProject);
+              }
+              addCoverResultRelProject(resultRelPros).then((resp) => {
+                if (resp.data == true) {
+                  var message = "关联成功！其中  ";
+                  for (var i = 0; i < modelNames.length; i++) {
+                    message += modelNames[i] + " , ";
+                  }
+                  this.getLikeList();
+                  this.listLoading = false;
+                  message += "之前关联的项目已被覆盖";
+                  this.listLoading = false;
+                  this.$message({ type: "success", message: message });
+                } else {
+                  this.listLoading = false;
+                  this.$message({
+                    type: "error",
+                    message: "关联失败!",
+                  });
+                }
+              });
+            } else if (flag == true) {
+              this.listLoading = false;
+              this.getLikeList();
+              this.$message({
+                type: "success",
+                message: "关联成功!",
+              });
+            } else if (flag == false) {
+              this.listLoading = false;
+              this.$message({
+                type: "error",
+                message: "关联失败!",
+              });
+            }
+          });
+        }
       }
     },
     /**
@@ -780,30 +916,45 @@ export default {
     /**
      * 结果共享
      */
-    modelResultShare(runTaskRelUuid, userUuid) {
-      var runResultShare = {
-        runTaskRelUuid: runTaskRelUuid,
-        userUuid: userUuid,
-      };
-      insertRunResultShare(runResultShare).then((resp) => {
-        if (resp.data == true) {
-          this.$message({
-            type: "success",
-            message: "结果共享成功!",
-          });
-        } else {
-          this.$message({
-            type: "error",
-            message: "结果共享失败!",
-          });
-        }
-      });
+    modelResultShare() {
+      this.listLoading = true;
+      var runTaskRelUuids = [];
+      var personUuids = [];
+      var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
+      for (var i = 0; i < selectedNode.length; i++) {
+        personUuids.push(selectedNode[i].personuuid);
+      }
+      for (var i = 0; i < this.selected1.length; i++) {
+        runTaskRelUuids.push(this.selected1[i].runTaskRelUuid);
+      }
+      if (personUuids.length > 0) {
+        insertRunResultShare(runTaskRelUuids, personUuids).then((resp) => {
+          this.listLoading = false;
+          if (resp.data == true) {
+            this.$message({
+              type: "success",
+              message: "结果共享成功!",
+            });
+          } else {
+            this.$message({
+              type: "error",
+              message: "结果共享失败!",
+            });
+          }
+          this.resultShareDialogIsSee = false;
+        });
+      } else {
+        this.listLoading = false;
+        this.$message({
+          message: "请选择要关联的人员！",
+        });
+      }
     },
     /**
      * val是运行结果中的resultTables
      * modelName是选中的模型的名字
      */
-    getResultTables(val, modelName, modelUuid, runStatus) {
+    getResultTables(val, modelName, modelUuid, runStatus,resultSpiltObjects) {
       if (runStatus == 3) {
         var assistTables = [];
         var mainTable = null;
@@ -816,7 +967,7 @@ export default {
         }
         // 触发父类方法addTab在index.vue界面，同时穿过三个参数assistTables：辅表（运行结果表）数组  mainTable：主表（运行结果表对象）
         // modelName：模型的名称，用来给新页签赋值title属性用
-        this.$emit("addtab", assistTables, mainTable, modelName, modelUuid);
+        this.$emit("addtab", assistTables, mainTable, modelName, modelUuid,resultSpiltObjects);
       } else {
         this.$message({
           type: "info",
@@ -853,7 +1004,88 @@ export default {
     clickChangeTable(runTaskRelUuid){
         var query = {runTaskUuid:runTaskRelUuid}
         this.getLikeList(query)
-    }
+    },
+     /**
+     * 点击结果拆分后打开dialog方法
+     */
+    openResultSplitDialog() {
+      this.listLoading = true;
+      this.ResultSplitoptions = [];
+      var flag = true;
+      for (var i = 0; i < this.selected1.length; i++) {
+        if (this.selected1[i].runStatus != 3) {
+          flag = false;
+          break;
+        }
+      }
+      if (flag == true) {
+        getResultSplitSelectData(this.selected1).then((resp) => {
+          this.resultSpiltObjects.orgNameColumnList =
+            resp.data.orgNameColumnList;
+          this.resultSpiltObjects.orgUuidColumnList =
+            resp.data.orgUuidColumnList;
+          var message = resp.data.message;
+          var result = resp.data.selectValue;
+          if (message == "") {
+            for (var i = 0; i < result.length; i++) {
+              var option = {
+                value: result[i].org_uuid + "," + result[i].org_name,
+                label: result[i].org_uuid + "(" + result[i].org_name + ")",
+              };
+              this.ResultSplitoptions.push(option);
+            }
+            this.listLoading = false;
+            this.resultSplitDialogIsSee = true;
+          } else {
+            this.listLoading = false;
+            this.$message({
+              showClose: true,
+              message: message,
+            });
+          }
+        });
+      } else {
+        this.listLoading = false;
+        this.$message({
+          showClose: true,
+          message: "只有运行成功的才可以结果拆分",
+        });
+      }
+    },
+      /**
+     * 点击结果拆分确定按钮触发的事件
+     */
+    ResultSplitDialogDetermine() {
+      var selectValue = this.selectedValue;
+      var orgNameValues = [];
+      var orgUuidValues = [];
+      for (var i = 0; i < selectValue.length; i++) {
+        var eachValue = selectValue[i].split(",");
+        orgNameValues[i] = eachValue[1];
+        orgUuidValues[i] = eachValue[0];
+      }
+      this.resultSpiltObjects.orgUuidValues = orgUuidValues;
+      this.resultSpiltObjects.orgNameValues = orgNameValues;
+      this.resultSpiltObjects.resultSpiltedRunResultRel = this.selected1;
+      this.getLikeList();
+      this.resultSplitDialogIsSee = false;
+    },
+      modelResultOpenDialog() {
+      this.resultShareDialogIsSee = true;
+    },
+     /**
+     * 结果总条数格式化
+     */
+    dataCountFormatter(row) {
+      var tables = row.runResultTables;
+      var dataCount = 0;
+      for (var i = 0; i < tables.length; i++) {
+        if (tables[i].tableType == 1) {
+          dataCount = tables[i].dataCount;
+        }
+      }
+      return dataCount;
+    },
   },
 };
 </script>

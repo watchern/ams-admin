@@ -1,5 +1,19 @@
 import request from '@/utils/request'
-import { deleteModel } from '@/api/analysis/auditmodel'
+import "@/components/ams-codemirror/theme/ambiance.css"
+import "@/components/ams-codemirror/lib/codemirror.css"
+import "@/components/ams-codemirror/addon/hint/show-hint.css"
+import "@/components/ams-ztree/css/zTreeStyle/zTreeStyle.css"
+require("@/components/ams-jqueryValidate/jquery.validate.min.js")
+require("@/components/ams-codemirror/addon/edit/matchbrackets")
+require("@/components/ams-codemirror/addon/selection/active-line")
+require("@/components/ams-codemirror/mode/sql/sql")
+require("@/components/ams-codemirror/addon/hint/show-hint")
+require("@/components/ams-codemirror/addon/hint/sql-hint")
+require("@/components/ams-ztree/js/jquery.ztree.all.min")
+require("@/components/ams-ztree/js/jquery.ztree_new.all.min")
+require("@/components/ams-ztree/js/jquery.ztree.excheck")
+require("@/components/ams-ztree/js/jquery.ztree.exhide")
+let CodeMirror = require("@/components/ams-codemirror/lib/codemirror")
 const analysisUrl = '/analysis'
 const dataUrl = '/data'
 /**
@@ -117,6 +131,31 @@ var isUpdate = false
  * @type {number}
  */
 var isFirst = 0
+
+/**
+ * 获取参数树
+ */
+export function getParamsTree() {
+    return request({
+        baseURL: analysisUrl,
+        url: '/ParamFolderController/getParamsTree',
+        method: 'get'
+    })
+}
+
+/**
+ * 获取参数树节点的子孙节点
+ */
+export function getFolderAndParams(dataParam){
+    return request({
+        baseURL: analysisUrl,
+        url: '/paramController/getFolderAndParams',
+        method: 'get',
+        params: dataParam
+    })
+}
+
+
 /**
  * 初始化界面托拉拽事件
  */
@@ -183,9 +222,9 @@ export function initDragAndDrop() {
 
   function tree_zy_all(){
     $("#sidebar div").removeClass("add-sidiv")
-    $("#dataTree").fadeOut(0)
-    $("#paramTree").fadeOut(0)
-    $("#sqlFunTree").fadeOut(0)
+    $(".left-dataTree").fadeOut(0)
+    $(".left-paramTree").fadeOut(0)
+    $(".left-sqlFunTree").fadeOut(0)
     tree_shuju = false
     tree_canshu = false
     tree_sql = false
@@ -194,46 +233,46 @@ export function initDragAndDrop() {
   var tree_shuju = true
   var tree_canshu = false
   var tree_sql = false
-  $("#paramTree").fadeOut(300)
-  $("#sqlFunTree").fadeOut(300)
+  $(".left-paramTree").fadeOut(300)
+  $(".left-sqlFunTree").fadeOut(300)
   $(".unfold-shuju").on("click",function(){
     if(tree_shuju == true){
-      $("#dataTree").fadeOut(300)
+      $(".left-dataTree").fadeOut(300)
       $(this).removeClass("add-sidiv")
       tree_shuju = false
       tree_zy_zhanhe()
     }else if(tree_shuju == false){
       tree_zy_zhan()
       tree_zy_all()
-      $("#dataTree").fadeIn(300)
+      $(".left-dataTree").fadeIn(300)
       $(this).addClass("add-sidiv")
       tree_shuju = true
     }
   })
   $(".unfold-canshu").on("click",function(){
     if(tree_canshu == true){
-      $("#paramTree").fadeOut(300)
+      $(".left-paramTree").fadeOut(300)
       $(this).removeClass("add-sidiv")
       tree_canshu = false
       tree_zy_zhanhe()
     }else if(tree_canshu == false){
       tree_zy_zhan()
       tree_zy_all()
-      $("#paramTree").fadeIn(300)
+      $(".left-paramTree").fadeIn(300)
       $(this).addClass("add-sidiv")
       tree_canshu = true
     }
   })
   $(".unfold-sql").on("click",function(){
     if(tree_sql == true){
-      $("#sqlFunTree").fadeOut(300)
+      $(".left-sqlFunTree").fadeOut(300)
       $(this).removeClass("add-sidiv")
       tree_sql = false
       tree_zy_zhanhe()
     }else if(tree_sql == false){
       tree_zy_zhan()
       tree_zy_all()
-      $("#sqlFunTree").fadeIn(300)
+      $(".left-sqlFunTree").fadeIn(300)
       $(this).addClass("add-sidiv")
       tree_sql = true
     }
@@ -378,7 +417,7 @@ export function initSQLEditor(textarea, relTableMap,expTableMap) {
       var hasPaste = false
       for (var i = 0; i < paramObj.arr.length; i++) {
         if (changeText.indexOf(paramObj.arr[i].id) != -1) { // 如果粘贴的是已含有的参数
-          var copyParamId = new UUIDGenerator().id
+          var copyParamId = getUuid()
           var id = '{#' + copyParamId + '#}'
           var name = paramObj.arr[i].name
           var obj = {
@@ -919,7 +958,7 @@ export function initParamTree() {
         }
         var cursor = editorObj.getCursor()
         /* 新修改 star*/
-        var copyParamId = new UUIDGenerator().id
+        var copyParamId = getUuid()
         var id = '{#' + copyParamId + '#}'
         editorObj.replaceRange(id, cursor, cursor)
         var dom = $("<button disabled class='divEditorBtn' style='color: white;background-color:#409eff' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
@@ -988,11 +1027,7 @@ export function initParamTree() {
       }
     }
   }
-  request({
-    baseURL: analysisUrl,
-    url: '/ParamFolderController/getParamsTree',
-    method: 'get'
-  }).then(result => {
+    getParamsTree().then(result => {
     if (result.data.isError) {
 
     } else {
@@ -1180,12 +1215,7 @@ function loadParamChildrenNodes(treeNode) {
     'level': treeNode.level
   }
   dataParam.isPersonalParam = getRootNodeType(treeNode, paramZtree)
-  request({
-    baseURL: analysisUrl,
-    url: '/paramController/getFolderAndParams',
-    method: 'get',
-    params: dataParam
-  }).then(result => {
+    getFolderAndParams(dataParam).then(result => {
     paramZtree.removeChildNodes(treeNode)
     paramZtree.addNodes(treeNode, result.data)
   })
@@ -2005,5 +2035,15 @@ export function setIsUpdate(value){
   isUpdate = value
 }
 
-
-
+export function getUuid() {
+  var s = []
+  var hexDigits = '0123456789abcdef'
+  for (var i = 0; i < 32; i++) {
+    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
+  }
+  s[14] = '4' // bits 12-15 of the time_hi_and_version field to 0010
+  s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1) // bits 6-7 of the clock_seq_hi_and_reserved to 01
+  s[8] = s[13] = s[18] = s[23]
+  var uuid = s.join('')
+  return uuid
+}

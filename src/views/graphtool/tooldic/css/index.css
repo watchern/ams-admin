@@ -12,8 +12,9 @@
 	right: 0;
 }
 #accordion{
-	position: absolute;
-	top: 128px;
+	position: relative;
+	/*top: 128px;*/
+    float: left;
 }
 #geResultContainer {
 	width: 100%;
@@ -35,13 +36,14 @@
 	top: 0;
 }
 #detailContainer {
-	position: absolute;
-	right: 14px;
-	top: 128px;
+	position: relative;
+    float: right;
+	/*right: 14px;*/
+	/*top: 128px;*/
     border-left: 1px solid #E5E5E5;
 }
 .tab-content{
-	height:92%;
+	height:calc(100% - 31px);
 	overflow-y: auto;
 	overflow-x:hidden;
 }
@@ -100,6 +102,8 @@ div.rightMenu ul li:hover {
 }
 #ztree_datasource{
 	overflow: auto;
+    margin: 0;
+    max-height: 70vh;
 }
 #usedResourceTree,#historyTree{
 	height:100%;
@@ -112,6 +116,7 @@ div.rightMenu ul li:hover {
 	text-indent: 2em;
 }
 #resourceZtree,#historyZtree{
+    margin:0;
     padding: 10px 0 0 10px;
     position: relative;
     top: 0;
@@ -119,7 +124,7 @@ div.rightMenu ul li:hover {
     overflow: auto;
     height:100%;
 }
-.menu{
+.graphMenu{
     width:155px;
     height:110px;
     float: left;
@@ -137,7 +142,7 @@ div.rightMenu ul li:hover {
     padding-bottom: 14px;
     font-weight: 600;
 }
-.icon{
+.graphIcon{
     width:100px;
     height:30px;
     line-height: 30px;
@@ -169,4 +174,30 @@ p{
 	right:10px;
 	float: right;
 	cursor: pointer;
+}
+#geHsplit {
+    position: relative;
+    cursor:col-resize;
+    background-color:#e5e5e5;
+    background-image:url('../images/graphicon/thumb_vertical.png');
+    background-repeat:no-repeat;
+    background-position:center center;
+}
+#geVsplit {
+    position: absolute;
+    font-size:1pt;
+    cursor:row-resize;
+    background-color:#e5e5e5;
+    background-image:url('../images/graphicon/thumb_horz.png');
+    background-repeat:no-repeat;
+    background-position:center center;
+}
+#geVsplit:before {
+    content: '';
+}
+#geVsplit:after {
+    content: '';
+}
+#geHsplit:hover, .geVsplit:hover {
+    background-color:#d5d5d5;
 }

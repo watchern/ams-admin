@@ -30,11 +30,11 @@ export function getDataFileList() {
   })
 }
 
-// 获取时间范围任务的历时
-export function processTakeTime(data) {
+// 根据起始时间获取任务的耗时,历时，任务总数
+export function taskMonitor(data) {
   return request({
     baseURL: baseURL,
-    url: `/monitor/processTakeTime`,
+    url: `/monitor/taskMonitor`,
     method: 'put',
     data
   })

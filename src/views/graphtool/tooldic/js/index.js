@@ -1,5 +1,5 @@
-import { saveGraphInterface,getExecuteNodeInfoPost,importGraphXml,exportGraphXml } from '@/api/graphtool/graphList'
-import { progressDownLoad,getPreNodes } from '@/views/graphtool/tooldic/js/common'
+import { saveGraphInterface,getExecuteNodeInfoPost,importGraphXml,exportGraphXml,deleteExecuteNodes } from '@/api/graphtool/graphList'
+import { progressDownLoad,getPreNodes,changeNodeIcon,nodeCallBack } from '@/views/graphtool/tooldic/js/common'
 let indexVue = null// index.vue实例
 let curModelSql = ''// 用来临时存储打开模型图形时的模型SQL语句
 let nodeParamRelArr = []// 用来存储每个节点设置的参数信息
@@ -646,12 +646,11 @@ export function exportAllData() {
 
 // 打开
 export function openGraph() {
-    hideRMenu('moreMenu')
     indexVue.graphListDialogVisible = true
     indexVue.showGraphListType = 'open'
-    if (typeof indexVue.$refs.graphListExport !== "undefined") {//非首次加载需刷新列表
-        indexVue.$refs.graphListExport.getGraphList();
-    }
+    // if (typeof indexVue.$refs.graphListExport !== "undefined") {//非首次加载需刷新列表
+    //     indexVue.$refs.graphListExport.getGraphList();
+    // }
 }
 
 /**
@@ -660,6 +659,9 @@ export function openGraph() {
 export function autoSaveGraph() {
     if (graph.canEditor === false) { // 如果当前图形不可编辑，不提供自动保存功能
         return
+    }
+    if(graph.openGraphType === 4){//模型图形不提供自动保存
+        return;
     }
     var encoder = new mxCodec()
     var node = encoder.encode(graph.getModel())
@@ -849,10 +851,11 @@ export function getExecuteNodeInfo(graphUuid, executeId, executeIdArr, refreshHi
         getExecuteNodeInfoPost(obj).then( response => {
             var e = response.data
             if(e && e.length > 0){
-                $('ul.layui-tab-title li:eq(1)').click()
-                var count = 0
+                indexVue.layuiTabClickLi(1)
+                let count = 0
+                let executeIdArr = []
                 for (let i = 0; i < e.length; i++) {
-                    var executeNodeIds = JSON.parse(e[i].executeNodeIds)
+                    var executeNodeIds = e[i].executeNodeIds.split(",")
                     var executeId = e[i].executeId
                     var executeNodeData = JSON.parse(e[i].executeNodeData)
                     var message = e[i].message
@@ -877,10 +880,15 @@ export function getExecuteNodeInfo(graphUuid, executeId, executeIdArr, refreshHi
                         // 自动保存图形化
                         autoSaveGraph()
                         len = len - count // 实时记录剩余的执行中节点数量
+                        executeIdArr.push(executeId)
                     }
                 }
                 if (inerval != null && len === 0) {	// 当剩余的执行中节点数量为0时，结束监听
                     clearInterval(inerval)
+                    if(executeIdArr.length > 0){
+                        //删除缓冲表中已获取执行结果的数据
+                        deleteExecuteNodes(executeIdArr.join(",")).then()
+                    }
                 }
                 if (refreshHistory) {
                     // 记录执行操作
@@ -1435,19 +1443,19 @@ export function getResultColumnInfo(){
         message = '未将结果表标记为最终结果表'
     }else {
         // 判断模型最终结果表的节点是否执行成功
-        if (graph.nodeData[resultTableNodeId].nodeInfo.nodeExcuteStatus !== 3) {
-            isError = true
-            message = '您标记的最终结果表尚未执行成功'
-        }else{
+        // if (graph.nodeData[resultTableNodeId].nodeInfo.nodeExcuteStatus !== 3) {
+        //     isError = true
+        //     message = '您标记的最终结果表尚未执行成功'
+        // }else{
             // 以模型最终结果表节点为最末级节点，向上寻找所有的节点
             let lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
             for (let i = 0; i < lineNodeIdArr.length; i++) {
                 let curNodeInfo = graph.nodeData[lineNodeIdArr[i]].nodeInfo
-                if (curNodeInfo.nodeExcuteStatus !== 3) {
-                    isError = true
-                    message = '节点【' + curNodeInfo.nodeName + '】尚未执行成功'
-                    break
-                } else {
+                // if (curNodeInfo.nodeExcuteStatus !== 3) {
+                //     isError = true
+                //     message = '节点【' + curNodeInfo.nodeName + '】尚未执行成功'
+                //     break
+                // } else {
                     if(curNodeInfo.optType === 'datasource' || curNodeInfo.optType === 'newNullNode'){//如果是源表或结果表
                         if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果是被标记为辅助结果表或最终结果表
                             let columnsInfo = null
@@ -1482,25 +1490,24 @@ export function getResultColumnInfo(){
                             }
                         }
                     }
-                }
+                // }
             }
-        }
+        // }
     }
     return {isError,message,middleTableArr,finalTable}
 }
 
-// 生成风险查证模型
-export function createDegreeModel(type) {
-    hideRMenu('moreMenu')
-    var loading = $('body').mLoading({ 'text': '正在校验节点信息，请稍后……', 'hasCancel': false })
-    // 获取所有操作节点的数组（可用于设置参数的节点）
-    var optTypeArr = ['datasource', 'filter', 'sort', 'sample', 'layering', 'groupCount', 'delRepeat', 'change', 'union', 'relation', 'sql']
-    var resultTableNodeId = ''// 模型最终结果表的节点ID（仅有一个）
-    // 先判断在整个图形中是否存在打了标记的模型最终结果表，默认为未标记（false）
-    var hasResultSign = false
-    var nodeIdArr = Object.keys(graph.nodeData)
-    for (var i = 0; i < nodeIdArr.length; i++) {
-        var resultTableStatus = graph.nodeData[nodeIdArr[i]].nodeInfo.resultTableStatus
+export function saveModelGraph(){
+    let middleTableArr = []
+    let finalTable = {}
+    let isError = false
+    let message = ''
+    let resultTableNodeId = ''// 最终结果表的节点ID（仅有一个）
+    // 先判断在整个图形中是否存在打了标记的最终结果表，默认为未标记（false）
+    let hasResultSign = false
+    let nodeIdArr = Object.keys(graph.nodeData)
+    for (let i = 0; i < nodeIdArr.length; i++) {
+        let resultTableStatus = graph.nodeData[nodeIdArr[i]].nodeInfo.resultTableStatus
         if (resultTableStatus === 2) {
             hasResultSign = true
             resultTableNodeId = nodeIdArr[i]
@@ -1508,386 +1515,156 @@ export function createDegreeModel(type) {
         }
     }
     if (!hasResultSign) {
-        loading.destroy()
-        alertMsg('提示', '未将结果表标记为模型的最终结果表', 'info')
-        return
-    }
-    // 判断模型最终结果表的节点是否执行成功
-    if (graph.nodeData[resultTableNodeId].nodeInfo.nodeExcuteStatus !== 3) {
-        loading.destroy()
-        alertMsg('提示', '您标记的模型的最终结果表尚未执行成功', 'info')
-        return
-    }
-    // 以模型最终结果表节点为最末级节点，向上寻找所有的节点
-    var lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
-    // 检测是否存在未执行成功的节点，默认不存在（即都执行成功，verify = true）
-    var ifSuccess = true; var msg = ''
-    var nodeObjArr = []; var modelOutputColumn = ''
-    for (var i = 0; i < lineNodeIdArr.length; i++) {
-        var curNodeInfo = graph.nodeData[lineNodeIdArr[i]].nodeInfo
-        if (curNodeInfo.nodeExcuteStatus !== 3) {
-            msg = '节点【' + curNodeInfo.nodeName + '】尚未执行成功'
-            ifSuccess = false
-            break
-        } else {
-            /**
-             * 组织节点对象信息
-             * @param nodeId 节点ID
-             * @param nodeName 节点名称
-             * @param optType 节点类型
-             * @param createSql 创建节点临时表/视图的SQL语句
-             * @param selectSql 查询节点数据的SQL语句
-             * @param isCreateTable 当前节点是否保存数据（是否创建的是表）
-             * @type {{nodeId: string, nodeName: string, optType: String, createSql: string, selectSql: string, isCreateTable: boolean}}
-             */
-            var nodeObj = {
-                'nodeId': '',
-                'nodeName': '',
-                'optType': '',
-                'createSql': '',
-                'selectSql': '',
-                'isCreateTable': false
+        isError = true
+        message = '未将结果表标记为最终结果表'
+    }else {
+        // 以模型最终结果表节点为最末级节点，向上寻找所有的节点
+        let lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
+        var executeId = new UUIDGenerator().id
+        var dataParam = {
+            'openType': graph.openType,
+            'nodeIdList': lineNodeIdArr.join(","),
+            'nodeData': JSON.stringify(graph.nodeData)
+        }
+        executeNodeSql(dataParam).then(response => {
+            if(response.data != null){
+                if(response.data.isError){
+                    isError = true
+                    message = '模型设计校验图形未通过'
+                }else{
+
+                }
+            }else{
+                isError = true
+                message = '模型设计校验图形的请求失败'
             }
-            // 只拼接原表与结果表的SQL语句
-            if (curNodeInfo.optType === 'datasource') { // 原表
-                nodeObj.nodeId = curNodeInfo.nodeId
-                nodeObj.nodeName = curNodeInfo.nodeName
-                nodeObj.optType = curNodeInfo.optType
-                nodeObj.selectSql = curNodeInfo.nodeSql
-                nodeObj.midTableStatus = curNodeInfo.midTableStatus
-                nodeObjArr.push(nodeObj)
-            }
-            if (curNodeInfo.optType === 'newNullNode') { // 结果表
-                // 该前置节点的临时表名称
-                var tableName = ''
-                // 当前结果表的查询SQL语句
-                var curSelectSql = ''
-                // 先获取该结果表的前置节点ID集合
-                var parentIds = graph.nodeData[lineNodeIdArr[i]].parentIds
-                // 该节点的输出列名称
-                var selectCol = ''
-                // 如果该节点的前置节点ID在当前的节点ID集合批次中（因结果表的前置节点有且只有一个，所以可直接使用parentIds[0]）
-                if (parentIds.length > 0 && $.inArray(parentIds[0], lineNodeIdArr) > -1) {
-                    // 获取前置节点的输出列信息集合
-                    var preColumnsInfo = graph.nodeData[parentIds[0]].columnsInfo
-                    // 获取前置节点的节点信息
-                    var preNodeInfo = graph.nodeData[parentIds[0]].nodeInfo
-                    nodeObj.nodeId = preNodeInfo.nodeId
-                    nodeObj.nodeName = preNodeInfo.nodeName
-                    nodeObj.optType = preNodeInfo.optType
-                    // 判断该前置节点是否保存了数据
-                    var isCreateTable = preNodeInfo.isCreateTable
-                    if (preNodeInfo.optType === 'layering') { // 如果是前置节点是数据分层节点，则当前结果表的临时表名称需按照下标取值
-                        var index = curNodeInfo.index// 获取当前结果表的下标
-                        // 获取数据分层节点的结果表数组
-                        var resultTableNameArr = preNodeInfo.resultTableNameArr
-                        // 若数组不为空
-                        if (resultTableNameArr.length > index) {
-                            // 设置数据分层节点的当前队列中子节点的结果表名称
-                            tableName = strDecryption(resultTableNameArr[index])
-                            curSelectSql = preNodeInfo.nodeSqlArr[index]
+        })
+
+        for (let i = 0; i < lineNodeIdArr.length; i++) {
+            let curNodeInfo = graph.nodeData[lineNodeIdArr[i]].nodeInfo
+            if(curNodeInfo.optType === 'datasource' || curNodeInfo.optType === 'newNullNode'){//如果是源表或结果表
+                if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果是被标记为辅助结果表或最终结果表
+                    let columnsInfo = null
+                    if(curNodeInfo.optType === 'datasource'){
+                        columnsInfo = graph.nodeData[lineNodeIdArr[i]].columnsInfo
+                    }else if(curNodeInfo.optType === 'newNullNode'){
+                        // 先获取该结果表的前置节点ID集合
+                        let parentIds = graph.nodeData[lineNodeIdArr[i]].parentIds
+                        // 如果该节点的前置节点ID在当前的节点ID集合批次中（因结果表的前置节点有且只有一个，所以可直接使用parentIds[0]）
+                        if (parentIds.length > 0 && $.inArray(parentIds[0], lineNodeIdArr) > -1) {
+                            columnsInfo = graph.nodeData[parentIds[0]].columnsInfo
                         }
-                    } else if (preNodeInfo.optType === 'sql') {
-                        tableName = strDecryption(preNodeInfo.resultTableName)
-                        curSelectSql = strDecryption(preNodeInfo.resultSql)
-                    } else { // 其他类型的操作节点都一样，直接取前置节点的临时表名称
-                        tableName = strDecryption(preNodeInfo.resultTableName)
-                        curSelectSql = preNodeInfo.nodeSql
+                    }else{
+                        continue
                     }
-                    nodeObj.resultTableName = tableName
-                    nodeObj.curSelectSql = curSelectSql
-                    if (isCreateTable === 1) { // 如果保存了数据，就取表名称
-                        nodeObj.createSql = 'CREATE TABLE ' + tableName + ' AS '
-                        nodeObj.isCreateTable = true
-                    } else { // isCreateTable == 0，没保存数据，取视图名称
-                        nodeObj.createSql = 'CREATE OR REPLACE VIEW ' + tableName + ' AS '
-                    }
-                    // 循环
-                    for (var k = 0; k < preColumnsInfo.length; k++) {
+                    let columnNameArr = []//输出列名称数组
+                    let columnTypeArr = []//输出列类型数组
+                    for (let k = 0; k < columnsInfo.length; k++) {
                         // 判断是否为输出列
-                        var isOutputColumn = preColumnsInfo[k].isOutputColumn
-                        // 获取输出列名称
-                        var newColumnName = preColumnsInfo[k].newColumnName
+                        let isOutputColumn = columnsInfo[k].isOutputColumn
                         if (isOutputColumn === 1) { // 如果是输出列，则拼接输出列的字符串
-                            selectCol += newColumnName + ','
+                            columnNameArr.push(columnsInfo[k].newColumnName)
+                            columnTypeArr.push(columnsInfo[k].columnType)
                         }
                     }
-                    selectCol = selectCol.substring(0, selectCol.length - 1)
+                    if (curNodeInfo.midTableStatus === 2) { // 如果是被标记为辅助结果表
+                        middleTableArr.push({columnNameArr,columnTypeArr})
+                    }
+                    if (curNodeInfo.resultTableStatus === 2) { // 如果是被标记为最终结果表，则说明此节点将作最后一个结果表节点
+                        finalTable = {columnNameArr,columnTypeArr}
+                        break
+                    }
                 }
-                if (curNodeInfo.midTableStatus === 2) { // 如果是被标记为模型的辅助结果表，则需多生成一个SELECT查询语句
-                    nodeObj.selectSql = 'SELECT ' + selectCol + ' FROM ' + tableName
-                }
-                if (curNodeInfo.resultTableStatus === 2) { // 如果是被标记为模型的最终结果表，则说明此节点将作为该模型的最后一个结果表节点
-                    nodeObj.selectSql = 'SELECT ' + selectCol + ' FROM ' + tableName
-                    nodeObjArr.push(nodeObj)
-                    modelOutputColumn = selectCol
+            }
+        }
+    }
+    return {isError,message,middleTableArr,finalTable}
+}
+
+
+
+
+/**
+ * 设置图形节点参数
+ */
+export function showParamNodeList(){
+//获取所有操作节点的数组（可用于设置参数的节点）,后台【保存】和【生成场景查询】方法也有用到此数组，修改时请同时修改
+    let optTypeArr = ["filter","sort","sample","layering","groupCount","delRepeat","change","union","relation","sql"];
+    //先获取所有执行成功的结果表节点ID数组
+    let resultTableNodeIdArr = [];
+    let nodeIdArr = Object.keys(graph.nodeData);
+    for(let i=0;i<nodeIdArr.length;i++) {
+        //当前节点执行状态
+        let nodeExcuteStatus = graph.nodeData[nodeIdArr[i]].nodeInfo.nodeExcuteStatus;
+        //当前节点的类型
+        let optType = graph.nodeData[nodeIdArr[i]].nodeInfo.optType;
+        if($.inArray(optType,optTypeArr) > -1){//将当前节点加入到数组中
+            resultTableNodeIdArr.push(nodeIdArr[i]);
+        }
+    }
+    if(indexVue.openGraphType === 2 || indexVue.openGraphType === 3){//场景查询
+        //对节点进行排序（使用直接排序算法）
+        resultTableNodeIdArr = sortNodeByVal(resultTableNodeIdArr);
+    }
+    //弹框显示节点的参数配置列表，start
+    //获取当前图形中的所有线
+    var edgeArr = [];
+    var cells = graph.getModel().cells;//当前图形中的所有节点和线
+    var keys = Object.keys(cells);
+    for(var j=0; j<keys.length; j++){
+        if(cells[keys[j]].edge === 1){//edge == 1为连接线
+            edgeArr.push(cells[keys[j]]);
+        }
+    }
+    indexVue.nodeParamArr = []
+    for(let i=0; i<resultTableNodeIdArr.length; i++){
+        let nodeId = resultTableNodeIdArr[i]
+        let nodeName = graph.nodeData[resultTableNodeIdArr[i]].nodeInfo.nodeName;//节点名称
+        let paramsSetting = $.extend(true,{},nodeParamRelArr[resultTableNodeIdArr[i]]);//参数配置信息
+        let hasParamSet = false
+        let lineNum = 0;//节点生成的序号，默认为0
+        for(let k=0; k<edgeArr.length; k++){
+            if(edgeArr[k].source && edgeArr[k].source.id === resultTableNodeIdArr[i]){
+                lineNum = edgeArr[k].value;
+                break;
+            }
+        }
+        if(paramsSetting && paramsSetting.arr && paramsSetting.arr.length > 0){
+            hasParamSet = true
+        }
+        indexVue.nodeParamArr.push({nodeId,nodeName,hasParamSet,lineNum})
+    }
+    if(indexVue.nodeParamArr.length > 0){
+        indexVue.nodeParamDialogVisible = true
+    }else{
+        indexVue.$message({ type: 'info', message: '暂无可设置参数的节点' })
+    }
+    //弹框显示节点的参数配置列表，end
+}
+
+
+export function showParamNodeListCallBack() {
+    //循环遍历修改nodeData的部分属性值
+    var keyArr = Object.keys(graph.nodeData);
+    for(let k=0; k<keyArr.length; k++){
+        var nodeId = keyArr[k];
+        //匹配设置参数的节点，将参数设置绑定到newGraph中
+        for(let i=0; i<indexVue.nodeParamArr.length; i++){
+            //进行节点的匹配
+            if(indexVue.nodeParamArr[i] === nodeId){
+                graph.nodeData[nodeId].nodeInfo.dataSourceType = graph.openType//给当前节点绑定节点的执行数据源环境
+                //获取节点的参数配置信息
+                var paramsSetting = $.extend(true,{},nodeParamRelArr[nodeId])
+                if(typeof paramsSetting !== "undefined" && Object.keys(paramsSetting).length > 0){//如果参数设置不为空
+                    //绑定参数设置状态和值
+                    graph.nodeData[nodeId].hasParam = true
+                    graph.nodeData[nodeId].paramsSetting = paramsSetting
                     break
                 }
-                nodeObjArr.push(nodeObj)
             }
         }
     }
-    loading.destroy()
-    if (!ifSuccess) {
-        alertMsg('提示', msg, 'info')
-        return
-    }
-    // 获取当前图形中的所有线
-    var edgeArr = []
-    var cells = graph.getModel().cells// 当前图形中的所有节点和线
-    var keys = Object.keys(cells)
-    for (var j = 0; j < keys.length; j++) {
-        if (cells[keys[j]].edge) { // edge == 1为连接线
-            edgeArr.push(cells[keys[j]])
-        }
-    }
-    var html = "<div class='col-sm-8' style='height: 505px;overflow-y: auto;margin-left: 16.666%;'><table class='table table-bordered'><thead><tr><th align='center'>节点名称</th><th align='center'>结果表序号</th><th align='center'>操作</th></tr></thead><tbody>"
-    // 循环nodeObjArr，这里存放的节点都是可以设置参数的节点，拼接html表格
-    for (var i = 0; i < nodeObjArr.length; i++) {
-        var nodeId = nodeObjArr[i].nodeId// 节点ID
-        var optType = nodeObjArr[i].optType// 节点的类型
-        var selectSql = nodeObjArr[i].selectSql// 节点的查询语句
-        if ((selectSql === '' && optType !== 'datasource') || (optType === 'datasource' && nodeObjArr[i].midTableStatus !== 2)) { // 如果当前节点的查询语句为空，则说明当前节点不能设置参数，跳过
-            continue
-        }
-        var nodeName = nodeObjArr[i].nodeName// 节点名称
-        var paramsSetting = $.extend(true, {}, nodeParamRelArr[nodeId])// 参数配置信息
-        var lineNum = 0// 节点生成的序号，默认为0
-        for (var k = 0; k < edgeArr.length; k++) {
-            if (edgeArr[k].source && edgeArr[k].source.id === nodeId) {
-                lineNum = edgeArr[k].value
-                break
-            }
-        }
-        html += "<tr class='paramSetTr' nodeId='" + nodeId + "'><td align='center'>" + nodeName + "</td><td align='center'>" + lineNum + "</td><td align='center'>"
-        if (paramsSetting && paramsSetting.arr && paramsSetting.arr.length > 0) {
-            html += "<button type='button' class='paramSetting btn btn-primary' onclick='settingParam(this,\"" + nodeId + "\")'>修改参数</button>" +
-                "<button type='button' id='clearBtn' class='btn btn-primary' style='margin-left: 10px;' onclick='clearSettingParam(this,\"" + nodeId + "\")'>清除参数</button>"
-        } else {
-            html += "<button type='button' class='paramSetting btn btn-primary' onclick='settingParam(this,\"" + nodeId + "\")'>设置参数</button>"
-        }
-        html += '</td></tr>'
-    }
-    html += '</tbody></table></div>'
-    var strMsg = ''
-    if (type === 'saveGraph') {
-        strMsg = '生成'
-        if (openGraphType === '4') {
-            strMsg = '保存'
-        }
-    } else {
-        strMsg = '另存为'
-    }
-    layer.open({
-        type: 1,
-        title: strMsg + '风险查证模型—模型节点参数设置',
-        id: 'screenQueryParamSetting',
-        area: ['1000px', '600px'],
-        btn: ['确定', '取消'],
-        skin: 'layui-layer-lan',
-        content: html,
-        btn1: function(index, layero) {
-            var newGraph = $.extend(true, {}, graph.nodeData)
-            var modelSql = ''// 组织模型SQL语句
-            var dropSql = ''// 模型SQL的删除临时表语句
-            var modelParamIdArr = []// 模型中用到的参数ID数组
-            var paramArr = []
-            for (var k = 0; k < nodeObjArr.length; k++) {
-                var nodeId = nodeObjArr[k].nodeId
-                var nodeName = nodeObjArr[k].nodeName
-                var optType = nodeObjArr[k].optType
-                var typeTitle = ''; var curDropSql = ''
-                if (nodeObjArr[k].isCreateTable) {
-                    typeTitle = '表'
-                    curDropSql = 'DROP TABLE ' + nodeObjArr[k].resultTableName
-                } else {
-                    typeTitle = '视图'
-                    curDropSql = 'DROP VIEW ' + nodeObjArr[k].resultTableName
-                }
-                if ($.inArray(optType, optTypeArr) > -1) { // 更改操作节点的部分信息
-                    var processNum = 0; var paramSetTr = $('.paramSetTr')
-                    // 匹配设置参数的节点，将参数设置绑定到newGraph中
-                    paramSetTr.each(function() {
-                        // 获取在数据行上绑定的节点ID
-                        var trNodeId = $(this).attr('nodeId')
-                        // 进行节点的匹配
-                        if (trNodeId === nodeId) {
-                            newGraph[nodeId].nodeInfo.dataSourceType = graph.openType// 给当前节点绑定节点的执行数据源环境
-                            // 获取节点的参数配置信息
-                            var paramsSetting = $.extend(true, {}, nodeParamRelArr[nodeId])
-                            var paramSql = ''; var arr = []
-                            if (optType === 'datasource' && nodeObjArr[k].midTableStatus === 2) { // 如果当前节点是原表
-                                if (typeof paramsSetting !== 'undefined' && Object.keys(paramsSetting).length > 0) { // 如果参数设置不为空
-                                    // 开始组织当前节点的模型语句
-                                    paramSql = paramsSetting.sql// 参数部分的SQL语句（where条件部分）
-                                    arr = paramsSetting.arr// 当前节点上绑定的参数数组信息
-                                    nodeObjArr[k].selectSql += ' WHERE ' + paramSql
-                                    for (var t = 0; t < arr.length; t++) {
-                                        modelParamIdArr.push(arr[t].copyParamId)
-                                        paramArr.push($.extend(true, {}, arr[t]))// 此处深层扩展赋值，是为了当改变paramArr中得值时不影响paramsSetting得值
-                                    }
-                                    // 绑定参数设置状态和值
-                                    newGraph[nodeId].hasParam = true
-                                    newGraph[nodeId].paramsSetting = paramsSetting
-                                    newGraph[nodeId].nodeInfo.nodeSort = $(this).find('td:eq(1)').html()
-                                }
-                                modelSql += '/*原表【' + nodeName + '】的查询SQL语句*/\n' + nodeObjArr[k].selectSql + '\n'
-                            } else {
-                                if (typeof paramsSetting !== 'undefined' && Object.keys(paramsSetting).length > 0) { // 如果参数设置不为空
-                                    // 开始组织当前节点的模型语句
-                                    paramSql = paramsSetting.sql// 参数部分的SQL语句（where条件部分）
-                                    arr = paramsSetting.arr// 当前节点上绑定的参数数组信息
-                                    // nodeObjArr[k].selectSql += " WHERE " +  paramSql;
-                                    for (var t = 0; t < arr.length; t++) {
-                                        modelParamIdArr.push(arr[t].copyParamId)
-                                        paramArr.push($.extend(true, {}, arr[t]))// 此处深层扩展赋值，是为了当改变paramArr中得值时不影响paramsSetting得值
-                                    }
-                                    // 绑定参数设置状态和值
-                                    newGraph[nodeId].hasParam = true
-                                    newGraph[nodeId].paramsSetting = paramsSetting
-                                    newGraph[nodeId].nodeInfo.nodeSort = $(this).find('td:eq(1)').html()
-                                    nodeObjArr[k].curSelectSql = 'SELECT * FROM (' + nodeObjArr[k].curSelectSql + ') WHERE ' + paramSql
-                                }
-                                // 先组建建表/视图的SQL语句
-                                modelSql += '/*节点【' + nodeName + '】的结果表的创建' + typeTitle + '的SQL语句*/\n' + nodeObjArr[k].createSql + nodeObjArr[k].curSelectSql + '\n'
-                                modelSql += '/*节点【' + nodeName + '】的结果表的查询SQL语句*/\n' + nodeObjArr[k].selectSql + '\n'
-                                dropSql += '/*节点【' + nodeName + '】的结果表的删除' + typeTitle + '的SQL语句*/\n' + curDropSql + '\n'
-                            }
-                        } else {
-                            processNum++
-                        }
-                    })
-                    if (processNum === paramSetTr.length) { // 当前节点是过程节点
-                        if (optType !== 'datasource') {
-                            modelSql += '/*节点【' + nodeName + '】的结果表的创建' + typeTitle + '的SQL语句*/\n' + nodeObjArr[k].createSql + nodeObjArr[k].curSelectSql + '\n'
-                            dropSql += '/*节点【' + nodeName + '】的结果表的删除' + typeTitle + '的SQL语句*/\n' + curDropSql + '\n'
-                        }
-                    }
-                }
-            }
-            layer.close(index)
-            var createType = 'edit'
-            var graphUuid = $('#graphUuid').val()
-            if (type === 'saveGraph') { // 保存操作
-                if (openGraphType !== '4') { // 如果当前图形不是模型图形即生成风险查证模型操作，则重置图形ID
-                    graphUuid = new UUIDGenerator().id
-                    createType = 'add'
-                }
-            } else { // type=="saveAsGraph"，另存为操作
-                graphUuid = new UUIDGenerator().id
-                createType = 'add'
-            }
-            // 当打开的图形是模型图形时，在执行保存和另存为操作时，都需要重新生成每个节点中参数的ID
-            // 需重新生成的对象包括：modelSql、modelParamIdArr、paramArr、newGraph
-            if (openGraphType === '4') {
-                for (var n = 0; n < modelParamIdArr.length; n++) {
-                    var curCopyParamId = modelParamIdArr[n]// 原参数ID
-                    var newCopyParamId = new UUIDGenerator().id// 新生成的参数ID
-                    // 开始替换ID
-                    modelSql = modelSql.replace(curCopyParamId, newCopyParamId)// 替换modelSql中的参数ID
-                    modelParamIdArr.splice(n, 1, newCopyParamId)// 替换modelParamIdArr中的参数ID
-                    for (var m = 0; m < paramArr.length; m++) {
-                        if (curCopyParamId === paramArr[m].copyParamId) {
-                            paramArr[m].copyParamId = newCopyParamId// 替换paramArr中的参数ID
-                            paramArr[m].id = paramArr[m].id.replace(curCopyParamId, newCopyParamId)
-                            break
-                        }
-                    }
-                    var keys = Object.keys(newGraph)
-                    if (keys && keys.length > 0) {
-                        for (var c = 0; c < keys.length; c++) { // 替换newGraph中各个节点的参数ID
-                            if (typeof newGraph[keys[c]].paramsSetting !== 'undefined') {
-                                var curArr = newGraph[keys[c]].paramsSetting.arr
-                                var curSql = newGraph[keys[c]].paramsSetting.sql
-                                newGraph[keys[c]].paramsSetting.sql = curSql.replace(curCopyParamId, newCopyParamId)
-                                if (typeof curArr !== 'undefined' && curArr.length > 0) {
-                                    for (var a = 0; a < curArr.length; a++) {
-                                        if (curCopyParamId === curArr[a].copyParamId) {
-                                            curArr[a].copyParamId = newCopyParamId
-                                            curArr[a].id = curArr[a].id.replace(curCopyParamId, newCopyParamId)
-                                            break
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    // 替换ID结束
-                }
-            }
-            modelSql += dropSql// 放在此处最优
-            pubDialog({
-                id: 'createDegreeMode',
-                title: strMsg + '风险查证模型—模型基本信息设置',
-                params: { 'modelId': curModelId, 'sql': strEncryption(modelSql), 'paramIds': modelParamIdArr.join(','), 'graphUuid': graphUuid, 'paramArr': JSON.stringify(paramArr), 'columns': modelOutputColumn },
-                url: contextPathAuditAnalysis + '/mlcRiskModelJumpPage/toModelDemandAddPageTuXingHua',
-                funs: {
-                    refresh: function(res) {
-                        if (typeof res !== 'undefined' && res != null) { // 说明模型保存成功，可以继续保存图形
-                            // 获取图形xml数据
-                            var encoder = new mxCodec()
-                            var node = encoder.encode(graph.getModel())
-                            var xml = mxUtils.getPrettyXml(node)
-                            var description = '风险查证模型所关联的图形，模型名称为【' + res.modelName + '】'
-                            // 组织请求的json数据
-                            var param = {
-                                'graphUuid': graphUuid,
-                                'createType': openType,
-                                'executeStatus': getExecuteDetail(),
-                                'graphName': res.modelName,
-                                'description': description,
-                                'graphXml': xml,
-                                'nodeData': JSON.stringify(newGraph), // 各个节点的配置信息
-                                'modelSql': modelSql,
-                                'type': createType
-                            }
-                            $.ajax({
-                                url: contextPath + '/graphEditor/saveModelGraph',
-                                type: 'post',
-                                dataType: 'json',
-                                data: param,
-                                success: function(e) {
-                                    if (e.isError) {
-                                        alertMsg('提示', strMsg + '风险查证模型的图形失败，模型保存失败', 'info')
-                                        $.post(contextPathAuditAnalysis + '/mlcRiskModelMan/deleteModel', { 'ids': [res.modelId] }, function() {}, 'json')
-                                    } else {
-                                        alertMsg('提示', strMsg + '风险查证模型草稿成功，请前往风险查证模型列表进行处理', 'success')
-                                        if (type === 'saveGraph' && openGraphType === '4') { // 保存完需刷新页面
-                                            var obj = {
-                                                'graphUuid': graphUuid,
-                                                'graphName': res.modelName,
-                                                'description': description,
-                                                'nodeData': param.nodeData,
-                                                'graphXml': xml,
-                                                'modelSql': modelSql
-                                            }
-                                            openCallBack(obj)
-                                        }
-                                    }
-                                },
-                                error: function() {
-                                    alertMsg('错误', strMsg + '模型图形的请求失败，风险查证模型保存失败', 'error')
-                                    $.post(contextPathAuditAnalysis + '/mlcRiskModelMan/deleteModel', { 'ids': [res.modelId] }, function() {}, 'json')
-                                }
-                            })
-                        } else {
-                            alertMsg('提示', strMsg + '风险查证模型失败', 'info')
-                        }
-                    }
-                },
-                width: '800px',
-                height: '610px'
-            })
-        },
-        btn2: function(index, layero) {
-            layer.close(index)
-        },
-        end: function() {
-            if (openGraphType === '1') { // 如果打开的当前图形是个人图形，则设置完参数后清除节点参数信息
-                nodeParamRelArr = []
-            }
-        }
-    })
+    indexVue.nodeParamDialogVisible = false
 }
 
 /**
@@ -2125,68 +1902,64 @@ export function createScreenQuery(type) {
 
 /**
  * 给节点设置参数（或修改参数）
- * @param obj 当前按钮的对象
  * @param nodeId 节点ID
+ * @param index 当前节点在参数节点数组中的下标
  */
-function settingParam(obj, nodeId) {
+export function settingParam(nodeId,index) {
     // 先获取当前节点的参数配置信息
-    var paramsSetting = typeof nodeParamRelArr[nodeId] === 'undefined' ? {} : nodeParamRelArr[nodeId]// 先获取实时设置的参数信息
-    window.sessionStorage.setItem('paramsSetting', JSON.stringify(paramsSetting))
-    layer.open({
-        id: 'settingParam',
-        type: 2,
-        title: '设置参数',
-        content: 'page/settingParams/settingParams.jsp?nodeId=' + nodeId,
-        area: ['90%', '90%'],
-        skin: 'layui-layer-lan',
-        resize: false,
-        scrollbar: false,
-        btn: ['确定', '取消'],
-        btn1: function(index, layero) {
-            // 获取操作提示
-            var msg = $(layero).find('iframe')[0].contentWindow.settingParams.getOptMessage()
-            confirmMsg('提示', msg, 'info', function() {
-                // 获取弹出层的参数配置
-                var returnObj = $(layero).find('iframe')[0].contentWindow.settingParams.getParamsSetting()
-                if (!returnObj.verify) {
-                    alertMsg('提示', returnObj.message, 'info')
-                } else {
-                    var arr = returnObj.paramsSetting.arr// 获取设置参数的数组
-                    if (arr.length === 0) {
-                        $(obj).html('设置参数')
-                        $(obj).next().remove()// 移除后一个兄弟节点（清除参数按钮）
-                        var nodeName = graph.nodeData[nodeId].nodeInfo.nodeName
-                        alertMsg('提示', '节点【' + nodeName + '】因暂未进行任何参数的设置，故不对其他信息进行保存', 'info')
-                        delete nodeParamRelArr[nodeId]
-                    } else {
-                        $(obj).html('修改参数')
-                        if (!$(obj).parent().find('#clearBtn')[0]) {
-                            $(obj).after("<button type='button' id='clearBtn' class='btn btn-primary' style='margin-left: 10px;' onclick='clearSettingParam(this,\"" + nodeId + "\")'>清除参数</button>")
-                        }
-                        // 绑定节点的参数配置信息
-                        nodeParamRelArr[nodeId] = $.extend(true, {}, returnObj.paramsSetting)
-                    }
-                    layer.close(index)
+    let paramsSetting = typeof indexVue.nodeParamRelArr[nodeId] === 'undefined' ? {} : indexVue.nodeParamRelArr[nodeId]// 先获取实时设置的参数信息
+    indexVue.sp_nodeId = nodeId
+    indexVue.sp_paramsSetting = paramsSetting
+    indexVue.nodeParamSettingDialogVisible = true
+}
+
+export function settingParamsCallBack() {
+    // 获取操作提示
+    let msg = indexVue.$refs.settingParams.getOptMessage()
+    indexVue.$confirm(msg, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+    }).then(() => {
+        // 获取弹出层的参数配置
+        let returnObj = indexVue.$refs.settingParams.getParamsSetting()
+        if (!returnObj.verify) {
+            indexVue.$message({ type: 'info', message: returnObj.message })
+        } else {
+            let nodeId = indexVue.sp_nodeId
+            let arr = returnObj.paramsSetting.arr// 获取设置参数的数组
+            if (arr.length === 0) {
+                let nodeParamItem = indexVue.nodeParamArr.find(item => item.nodeId === nodeId)
+                if(typeof nodeParamItem !== "undefined"){
+                    nodeParamItem.hasParamSet = false
                 }
-            }, function() {})
-        },
-        btn2: function(index, layero) {
-            layer.close(index)
+                let nodeName = graph.nodeData[nodeId].nodeInfo.nodeName
+                indexVue.$message({ type: 'info', message: '节点【' + nodeName + '】因暂未进行任何参数的设置，故不对其他信息进行保存' })
+                delete indexVue.nodeParamRelArr[nodeId]
+            } else {
+                indexVue.nodeParamArr[index].hasParamSet = true
+                // 绑定节点的参数配置信息
+                indexVue.nodeParamRelArr[nodeId] = {...{}, ...returnObj.paramsSetting}
+            }
         }
     })
 }
 
 /**
  * 清除对节点设置的参数信息
- * @param obj 当前按钮的对象
  * @param nodeId 节点ID
+ * @param index 当前节点在参数节点数组中的下标
  */
-function clearSettingParam(obj, nodeId) {
-    confirmMsg('提示', '确定清除当前节点已设置的参数吗？', 'info', function() {
-        var preObj = $(obj).prev()// 前一个兄弟节点（修改参数按钮）
-        preObj.html('设置参数')
-        delete nodeParamRelArr[nodeId]// 清除绑定的节点参数配置信息
-        $(obj).remove()// 移除清除参数按钮
+export function clearSettingParam(nodeId,index) {
+    indexVue.$confirm('确定清除参数信息?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+    }).then(() => {
+        indexVue.nodeParamArr[index].hasParamSet = false
+        delete indexVue.nodeParamRelArr[nodeId]// 清除绑定的节点参数配置信息
         // 同时清除节点数据中已绑定的参数信息
         if (graph.nodeData[nodeId] && graph.nodeData[nodeId].hasParam) {
             delete graph.nodeData[nodeId].hasParam
@@ -2194,7 +1967,7 @@ function clearSettingParam(obj, nodeId) {
             delete graph.nodeData[nodeId].nodeInfo.nodeSort
             delete graph.nodeData[nodeId].replaceParamSql
         }
-    }, function() {})
+    })
 }
 
 /**

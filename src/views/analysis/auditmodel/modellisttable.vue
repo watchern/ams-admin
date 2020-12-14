@@ -36,7 +36,7 @@
           @select-all="modelTableSelectEvent"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column label="模型名称" width="100px" align="left" prop="modelName">
+          <el-table-column label="模型名称" width="300px" align="center" prop="modelName">
             <template slot-scope="scope">
               <el-link type="primary" @click="selectModelDetail(scope.row.modelUuid)">{{ scope.row.modelName }}</el-link>
             </template>
@@ -77,7 +77,7 @@
             <el-row>
               <div @click="Toggle1()">
                 <el-col :span="24" class="row-all">
-                  <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor" />
+                  <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="modelPreview" />
                 </el-col>
               </div>
               <el-col :span="2">

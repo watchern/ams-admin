@@ -204,7 +204,7 @@ export default {
       this.selections.forEach((r, i) => {
         if (r.type === 'folder') {
           if (r.extMap.folderType === 'virtual') {
-            this.$message({ type: 'info', message: '该文件为系统文件夹不允许重命名!' })
+            this.$message({ type: 'info', message: '该文件为系统文件夹不允许删除!' })
             return
           }
           var foldObj = this.allList.filter(obj => { return obj.label === r.label })
@@ -216,13 +216,20 @@ export default {
         }
         ids.push(r)
       })
-      deleteDirectory(ids).then(() => {
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 5000,
-          position: 'bottom-right'
+      this.$confirm('确定删除该资源?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        deleteDirectory(ids).then(() => {
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 5000,
+            position: 'bottom-right'
+          })
         })
       })
       this.$emit('remove', this.selections, this.clickNode)

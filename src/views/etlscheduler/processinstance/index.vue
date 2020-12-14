@@ -5,6 +5,7 @@
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
+        :query-default="queryDefault"
         @submit="getList"
       />
     </div>
@@ -61,8 +62,8 @@
       :data="list"
       border
       highlight-current-row
-      height="calc(100vh - 300px)"
-      max-height="calc(100vh - 300px)"
+      height="calc(100vh - 350px)"
+      max-height="calc(100vh - 350px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -104,6 +105,7 @@
       <el-table-column
         label="流程实例名称"
         prop="name"
+        align="center"
       />
       <!-- <el-table-column
         label="流程名称"
@@ -189,8 +191,6 @@
       />
       <el-table-column
         label="当前环节"
-        width="120px"
-        align="center"
         prop="nowTask"
       />
     </el-table>
@@ -242,8 +242,8 @@
           <el-collapse-item title="准备执行" name="pre">
             <el-card style="padding-bottom: 3%;">
               <!-- <el-col class="logtype">
-          日志详情：
-        </el-col> -->
+                日志详情：
+              </el-col> -->
               <el-col
                 style="margin-top:10px"
               >
@@ -303,13 +303,19 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findPrepLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
-// statuSelectList, statusComm
-import { commandTypeObj, colorList, statusListComm, statuSelect } from './comm.js'
+// statuSelectList, statuSelect, statusComm
+import { commandTypeObj, colorList, statusListComm, statuSelectList } from './comm.js'
+import store from '@/store'
+import dayjs from 'dayjs'
 
 export default {
   components: { Pagination, QueryField },
+  props: {
+    searchParams: Object
+  },
   data() {
     return {
+      store,
       tableKey: 'processInstanceUuid',
       list: null,
       total: 0,
@@ -319,14 +325,14 @@ export default {
       queryFields: [
         { label: '流程实例名称', name: 'name', type: 'text', value: '' },
         // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
-        {
-          label: '流程状态', name: 'status', type: 'select',
-          data: statuSelect
-        },
         // {
-        //   label: '流程状态', name: 'groupExecutionStatus', type: 'select',
-        //   data: statuSelectList
+        //   label: '流程状态', name: 'status', type: 'select',
+        //   data: statuSelect
         // },
+        {
+          label: '流程状态', name: 'groupExecutionStatus', type: 'select',
+          data: statuSelectList
+        },
         { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
       ],
       // 格式化参数列表
@@ -419,6 +425,31 @@ export default {
     }
   },
   watch: {
+    // searchParams() {
+    //   // this.store.state.monitor.processStartTime
+    //   // startTimeStart: this.store.state.monitor.processStartTime,
+    //   //   startTimeEnd: this.store.state.monitor.processEndTime
+    //   // console.log(this.store.state.monitor.processStartTime)
+    //   console.log('-------------------------------------')
+    //   this.queryDefault = {
+    //     groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+    //     startTimeStart: this.store.state.monitor.processStartTime,
+    //     startTimeEnd: this.store.state.monitor.processEndTime
+    //   }
+    //   this.getList(this.queryDefault)
+    // },
+    searchParams: {
+      deep: true,
+      immediate: true,
+      handler() {
+        this.queryDefault = {
+          groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+          startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
+          startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
+        }
+        this.getList(this.queryDefault)
+      }
+    },
     selections() {
       // 终态数组
       const alreadyStatuses = [6, 7, 8]
@@ -505,11 +536,19 @@ export default {
     colorList.forEach((r, i) => {
       this.logColorObj[r['value']] = r
     })
-    if (this.$route.params instanceof Object) {
-      this.queryDefault = this.$route.params
-    }
+    // if (this.$route.params instanceof Object) {
+    //   // this.queryDefault = this.$route.params
+    //   this.queryDefault = { groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+    //     startTimeStart: this.store.state.monitor.processStartTime,
+    //     startTimeEnd: this.store.state.monitor.processEndTime }
+    // }
+
+    // this.queryDefault = {
+    //   groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+    //   startTimeStart: this.store.state.monitor.processStartTime,
+    //   startTimeEnd: this.store.state.monitor.processEndTime }
     // this.getList(this.queryDefault)
-    this.getList()
+    // this.getList()
   },
   methods: {
     colorFilter(value) {

@@ -1,13 +1,14 @@
 <template>
-  <div class="app-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
-    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;" @sort-change="" @selection-change="">
+    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;" @sort-change="" @selection-change="" height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)">
       <el-table-column type="selection" width="55" />
-      <el-table-column label="操作用户" width="100px" align="center" prop="opUserName" />
-      <el-table-column label="操作IP" width="150px" align="center" prop="opIp" />
-      <el-table-column label="异常类" width="100px" align="center" prop="opClass" />
+      <el-table-column label="操作用户" align="center" prop="opUserName" />
+      <el-table-column label="操作IP"  align="center" prop="opIp" />
+      <el-table-column label="异常类"  align="center" prop="opClass" />
       <el-table-column label="异常方法" prop="opMethod" />
       <el-table-column label="异常时间" prop="logTime" :formatter="dateFormatter" />
       <el-table-column label="异常信息" prop="logContent" />
