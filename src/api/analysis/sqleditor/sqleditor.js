@@ -3,8 +3,17 @@ import "@/components/ams-codemirror/theme/ambiance.css"
 import "@/components/ams-codemirror/lib/codemirror.css"
 import "@/components/ams-codemirror/addon/hint/show-hint.css"
 import "@/components/ams-ztree/css/zTreeStyle/zTreeStyle.css"
+require("@/components/ams-jqueryValidate/jquery.validate.min.js")
+require("@/components/ams-codemirror/addon/edit/matchbrackets")
+require("@/components/ams-codemirror/addon/selection/active-line")
+require("@/components/ams-codemirror/mode/sql/sql")
+require("@/components/ams-codemirror/addon/hint/show-hint")
+require("@/components/ams-codemirror/addon/hint/sql-hint")
+require("@/components/ams-ztree/js/jquery.ztree.all.min")
+require("@/components/ams-ztree/js/jquery.ztree_new.all.min")
+require("@/components/ams-ztree/js/jquery.ztree.excheck")
+require("@/components/ams-ztree/js/jquery.ztree.exhide")
 let CodeMirror = require("@/components/ams-codemirror/lib/codemirror")
-
 const analysisUrl = '/analysis'
 const dataUrl = '/data'
 /**
