@@ -63,16 +63,16 @@ export default {
         arry = JSON.parse(localStorage.getItem('userid'))
       }
       if(arry.length == 0){
-        arry.push({k:item.name,v:this.theIndex,p:item.path})
+        arry.push({id:item.name,v:this.theIndex,p:item.path})
       }
       for(let i = 0 ; i < arry.length-1 ; i++){
-        if(item.name == arry[i].k){
+        if(item.name == arry[i].id){
           arry[i].v = arry[i].v+1
         }
-        lstimeIn.push(arry[i].k)
+        lstimeIn.push(arry[i].id)
       }
       if(lstimeIn.indexOf(item.name)){
-        arry.push({k:item.name,v:this.theIndex,p:item.path})
+        arry.push({id:item.name,v:this.theIndex,p:item.path})
       }
       localStorage.setItem('userid',JSON.stringify(arry))
 

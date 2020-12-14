@@ -9,13 +9,14 @@
         <div class="title-label">最近使用</div>
         <div class="lately-use-box flex a-center j-start flex-row">
           <div
-            v-for="(item,index) in latelyInImgList"
+            v-for="(item,index) in latelyBdInList"
             :key="index"
             class="use-box flex a-center j-center"
             id="use-zy"
-            @click="theRouting"
+            @click="theRouting(index)"
+            :style='{background:item.bg}'
           >
-            <img :src="item" />
+            <img :src="item.image" />
           </div>
 
         </div>
@@ -115,6 +116,23 @@ export default {
           color: ''
         }
       ],
+      latelyBackList:[
+        {
+          bg: '#514559'
+        },
+        {
+          bg: '#594545'
+        },
+        {
+          bg: '#454659'
+        },
+        {
+          bg: '#455659'
+        },
+        {
+          bg: '#514559'
+        }
+      ],
       latelyUseList: [],
       latelyPathList: [],
       latelyImgList:[
@@ -136,6 +154,10 @@ export default {
         },
         {
           name: '项目执行',
+          image: require("../../Ace/base/accessIcon/zhixing.png")
+        },
+        {
+          name: '指标分析',
           image: require("../../Ace/base/accessIcon/zhixing.png")
         },
         {
@@ -176,10 +198,6 @@ export default {
         },
         {
           name: '业务场景维护',
-          image: require("../../Ace/base/accessIcon/yewu.png")
-        },
-        {
-          name: '业务属性维护',
           image: require("../../Ace/base/accessIcon/yewu.png")
         },
         {
@@ -387,7 +405,8 @@ export default {
           image: require("../../Ace/base/accessIcon/jiankong.png")
         }
       ],
-      latelyInImgList:[]
+      latelyInImgList:[],
+      latelyBdInList:[]
     }
   },
   mounted(){
@@ -405,12 +424,12 @@ export default {
       let Num= eval(arryV[arryV.length-x]);
       for(let i=0; i<arry.length; i++){
         if(arry[i].v == Num && arry[i].p != ''){
-          if(this.latelyUseList.indexOf(arry[i].k) == -1) {
+          if(this.latelyUseList.indexOf(arry[i].id) == -1) {
             this.latelyPathList.push(arry[i].p)
-            this.latelyUseList.push(arry[i].k)
+            this.latelyUseList.push(arry[i].id)
             for(let c=0;c<this.latelyImgList.length;c++){
-              if(arry[i].k == this.latelyImgList[c].name){
-                this.latelyInImgList.push(this.latelyImgList[c].image)
+              if(arry[i].id == this.latelyImgList[c].name){
+                this.latelyInImgList.push({image:this.latelyImgList[c].image})
               }
             }
             break
@@ -418,26 +437,24 @@ export default {
 
         }
       }
-      console.log(this.latelyInImgList)
       if(this.latelyUseList.length>=5){
         break
       }
     }
+    for(let i =0; i<this.latelyInImgList.length; i++){
+      this.latelyBdInList.push({image:this.latelyInImgList[i].image,bg:this.latelyBackList[i].bg})
+    }
   },
   methods: {
-    // theRouting(){
-    //   this.$router.push({ path: this.latelyPathList })
-    //   this.$store.commit('aceState/setRightFooterTags', {
-    //     type: 'active',
-    //     val: {
-    //       name: item.name,
-    //       path: item.path
-    //     }
-    //   })
-    // }
-    theRouting() {
-      console.log(this.latelyPathList)
-      console.log(this.item)
+    theRouting(index){
+      this.$router.push({ path: this.latelyPathList[index] })
+      this.$store.commit('aceState/setRightFooterTags', {
+        type: 'active',
+        val: {
+          name: this.latelyUseList[index],
+          path: this.latelyPathList[index]
+        }
+      })
     }
   }
 }
@@ -445,17 +462,18 @@ export default {
 
 <style lang="scss" scoped>
 #use-zy{
-  width:20%;
-  margin:8px 0 2px 2px;
-  padding:25px;
+  width:18%;
+  height:18%;
+  margin:8px 5px 2px 5px;
+  padding:28px;
 }
 #use-zyt{
-  width:20%;
+  width:18%;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   word-break: break-all;
-  margin:0 2px;
+  margin:0px 5px 2px 5px;
   height:24px;
 }
 .tools-template {

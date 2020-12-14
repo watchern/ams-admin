@@ -72,7 +72,8 @@ export default {
     //     path: '/ams/main'
     //   }
     // })
-  },
+    window.addEventListener("click", this.clickOther)
+    },
   methods: {
     close(item) {
       this.selectItem = item
@@ -104,6 +105,9 @@ export default {
         type: item.prop,
         val: this.selectItem
       })
+    },
+    clickOther: function () {
+      this.isShowPopover = false
     }
   }
 }
@@ -175,6 +179,7 @@ export default {
     list-style-type: none;
     margin: 0;
     padding: 5px 0;
+    display: inline-block;
     position: absolute;
     z-index: 100;
     width: 80px;

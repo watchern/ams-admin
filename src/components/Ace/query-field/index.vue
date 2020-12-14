@@ -37,25 +37,27 @@
 import { objectMerge } from '@/utils'
 export default {
   props: {
+
     formData: {
+      //
       type: Array,
-      default: [],
-    },
+      default: []
+    }
   },
   data() {
     return {
       query: {},
       searchBar:'0',
       switchImg:'',
-      inquire:[
+/*      inquire:[
         {
-          text: '112333',
+          text: 'test',
           fuzzyText: 'asd',
-          // select:''
-          startTime:'12点',
-          endTime:'18点'
+          startTime:'2020-12-02',
+          endTime:'2020-12-04',
+          select:'002002001'
         }
-      ],
+      ],*/
 
     }
   },
@@ -66,10 +68,22 @@ export default {
       if (fd.type === 'timePeriod') {
         this.$set(this.query, fd.name + 'Start', null)
         this.$set(this.query, fd.name + 'End', null)
+        // 示例fd.value = '2020-12-02,2020-12-04'
+        if(fd.value && fd.value !== null && fd.value !==''){
+          let valueTime = fd.value.split(",")
+          if(valueTime.length === 2){
+            this.query[fd.name + 'Start'] = valueTime[0]
+            this.query[fd.name + 'End'] = valueTime[1]
+          }
+        }
       } else if (fd.type === 'text' || fd.type === 'fuzzyText') {
         this.$set(this.query, fd.name, '')
-      } else if (fd.type === 'select') {
+        //示例fd.value = 'asd'
+        if(fd.value && fd.value !== null && fd.value !== ''){this.query[fd.name] = fd.value}
+      }else if (fd.type === 'select') {
         this.$set(this.query, fd.name, [])
+        //示例fd.value = '002002001'
+        if(fd.value && fd.value !== null && fd.value !== ''){this.query[fd.name] = fd.value}
       }
     })
   },
@@ -81,10 +95,8 @@ export default {
       return this.query
     },
     onSubmit() {
-      console.log(this.query)
       // return
       this.$emit('submit', this.query)
-
     },
     clearAll() {
       Object.keys(this.query).forEach(o => {

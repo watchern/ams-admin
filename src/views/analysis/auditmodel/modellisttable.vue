@@ -195,8 +195,8 @@ export default {
       // 当前预览模型参数和sql
       currentPreviewModelParamAndSql: {},
       queryFields: [
-        { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
-        { label: '审计事项', name: 'auditItemName', type: 'fuzzyText' },
+        { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: ''},
+        { label: '审计事项', name: 'auditItemName', type: 'fuzzyText', value: ''},
         { label: '风险等级', name: 'riskLevelUuid', type: 'select',
           data: [{ name: '高', value: '002002001' }, { name: '中', value: '002002002' }, { name: '低', value: '002002003' }],
           default: '-1' }
