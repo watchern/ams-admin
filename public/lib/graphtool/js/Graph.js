@@ -4111,7 +4111,7 @@ if(typeof mxVertexHandler != 'undefined') {
 		Graph.prototype.loadStylesheet = function() {
 			var node = (this.themes != null) ? this.themes[this.defaultThemeName] :
 				(!mxStyleRegistry.dynamicLoading) ? null :
-				mxUtils.load(STYLE_PATH + '/default.xml').getDocumentElement();
+				mxUtils.load(RESOURCES_PATH + '/default.xml').getDocumentElement();
 
 			if(node != null) {
 				var dec = new mxCodec(node.ownerDocument);
