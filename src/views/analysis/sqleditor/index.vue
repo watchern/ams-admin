@@ -38,7 +38,7 @@
                 type="primary"
                 size="small"
                 @click="sqlFormat"
-                class="oper-btn sqlcheck"
+                class="oper-btn clean"
                 title="格式化sql"
               ></el-button>
               <el-button

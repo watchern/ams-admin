@@ -1,22 +1,32 @@
 <template>
   <div class="query-field">
     <el-form :inline="true" :model="query" label-position="bottom">
-      <el-form-item v-for="fd in formData" :label="fd.label">
-        <el-input v-if="fd.type==='text'" v-model="query[fd.name]" />
-        <el-input v-if="fd.type==='fuzzyText'" v-model="query[fd.name]" placeholder="模糊查询" />
+      <el-form-item v-for="fd in formData" :label="fd.label"  v-if="searchBar == '0'">
+        <el-input v-if="fd.type==='text'" v-model="query[fd.name]"/>
+        <el-input v-if="fd.type==='fuzzyText'" v-model="query[fd.name]" placeholder="模糊查询"/>
         <el-select v-if="fd.type==='select'" v-model="query[fd.name]">
-          <el-option label="全部" value="" />
+          <el-option label="全部" value=""/>
           <el-option v-for="opt in fd.data" :label="opt.name" :value="opt.value" />
         </el-select>
         <template v-if="fd.type==='timePeriod'">
-          <el-date-picker v-model="query[fd.name+'Start']" type="date" placeholder="开始时间" />-
-          <el-date-picker v-model="query[fd.name+'End']" type="date" placeholder="结束时间" />
+          <el-date-picker v-model="query[fd.name+'Start']" type="date" placeholder="开始时间"/>-
+          <el-date-picker v-model="query[fd.name+'End']" type="date" placeholder="结束时间"/>
         </template>
       </el-form-item>
 
-      <el-form-item>
+      <el-form-item v-if="searchBar == '0'">
         <el-button type="primary" @click="onSubmit">查询</el-button>
         <el-button type="primary" @click="clearAll">清空</el-button>
+      </el-form-item>
+
+      <div class="switch-btn">
+        <img :src="this.switchImg"  @click="onSwitchWith">
+      </div>
+
+      <el-form-item v-if="searchBar == '1'" class="full-search">
+        <el-input  v-model="query['keyword']" placeholder="查询" >
+          <img slot="suffix" src="./input.png" class="img-icon" @click="onSubmit" />
+        </el-input>
       </el-form-item>
 
     </el-form>
@@ -29,12 +39,24 @@ export default {
   props: {
     formData: {
       type: Array,
-      default: []
-    }
+      default: [],
+    },
   },
   data() {
     return {
-      query: {}
+      query: {},
+      searchBar:'0',
+      switchImg:'',
+      inquire:[
+        {
+          text: '112333',
+          fuzzyText: 'asd',
+          // select:''
+          startTime:'12点',
+          endTime:'18点'
+        }
+      ],
+
     }
   },
   computed: {
@@ -51,23 +73,51 @@ export default {
       }
     })
   },
+  mounted() {
+    this.cSearch()
+  },
   methods: {
     getData() {
       return this.query
     },
     onSubmit() {
+      console.log(this.query)
+      // return
       this.$emit('submit', this.query)
+
     },
     clearAll() {
       Object.keys(this.query).forEach(o => {
         this.query[o] = null
       })
-    }
-  }
+    },
+    onSwitchWith() {
+      if(this.searchBar == '0'){
+        this.searchBar = '1'
+      }else{
+        this.searchBar = '0'
+      }
+      let url = window.location.href
+      let urls = url.split('/')
+      this.searchBar == '0' ? this.switchImg = require("../../Ace/query-field/filter.png") : this.switchImg = require("../../Ace/query-field/filter-in.png")
+      localStorage.setItem(urls,this.searchBar);
+    },
+    cSearch(){
+      let url = window.location.href
+      let urls = url.split('/')
+      if(localStorage.getItem(urls)){
+        this.searchBar = localStorage.getItem(urls)
+      }
+      this.searchBar == '0' ? this.switchImg = require("../../Ace/query-field/filter.png") : this.switchImg = require("../../Ace/query-field/filter-in.png")
+    },
+  },
+
 }
 </script>
 <style lang="scss" scoped>
-
+  .query-field{
+    height: 81px;
+  }
   /*.el-form--inline .el-form-item {*/
     /*margin-right: 30px;*/
     /*vertical-align: top;*/
@@ -78,5 +128,15 @@ export default {
   .el-form-item__label {
     text-align: right;
     vertical-align: top;
+  }
+  .full-search{
+    float: right;
+  }
+  .switch-btn{
+    margin-top:3px;
+    float: right;
+  }
+  .img-icon{
+    margin-right:5px;
   }
 </style>
