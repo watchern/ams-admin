@@ -6,7 +6,7 @@
             <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
             <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
         </div>
-        <div ref="outPutTable" style="height: 480px;overflow-y: auto;">
+        <div ref="outPutTable" style="height: 500px;overflow-y: auto;">
             <table id="column_config" class="table table-bordered">
                 <thead>
                 <tr>
@@ -15,7 +15,7 @@
                     <th width="25%" style="text-align: center">字段名称</th>
                     <th width="25%" style="text-align: center">输出字段名称</th>
                     <th width="15%" style="text-align: center">是否为输出字段
-                        <el-checkbox v-model="checkAll" :disabled="isAllDisabled" @change="handleCheckAllChange" />
+                        <el-checkbox v-model="checkAll" :disabled="isAllDisabled" @change="handleCheckAllChange" style="float: right;"/>
                     </th>
                 </tr>
                 </thead>
@@ -25,7 +25,7 @@
                     <td>{{ item.rtn }}</td>
                     <td>{{ item.curColumnName }}</td>
                     <td>
-                        <input v-model="item.disColumnName" type="text" class="form-control newColumn" @blur="vilidata_simple(index)">
+                        <el-input v-model="item.disColumnName" class="newColumn" @blur="vilidata_simple(index)"></el-input>
                     </td>
                     <td class="text-center">
                         <el-checkbox :key="item.id" v-model="item.checked" :name="item.attrColumnName" :disabled="isDisabled" @change="checkBoxChange(index)" />
@@ -54,7 +54,6 @@
         },
         mounted() {
             this.init()
-            // window.outputVerify = this.outputVerify
         },
         methods: {
             init() {
@@ -273,7 +272,8 @@
         }
     }
 </script>
-
+<style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
+<style scoped src="@/components/ams-basic/css/common.css"></style>
 <style scoped type="text/css">
     td>.form-group{
         margin-bottom: 0;
