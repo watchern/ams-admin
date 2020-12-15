@@ -20,14 +20,14 @@
           type="primary"
           title="新增"
           class="oper-btn add"
-          @click="hadleCreate"
+          @click="handelCreated"
         />
         <el-button
           type="primary"
           title="编辑"
           class="oper-btn edit"
           :disabled="selections.length !== 1"
-          @click="_edit"
+          @click="hadleUpdate()"
         />
         <el-button
           type="primary"
@@ -50,7 +50,6 @@
       max-height="calc(100vh - 350px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
-      @on-update="_onUpdate"
     >
       <el-table-column
         type="selection"
@@ -124,17 +123,160 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="getList"
     />
+    <el-dialog
+      :title="textMap[dialogStatus]"
+      :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        ref="dataForm"
+        :model="datasource"
+        :rules="rules"
+        label-position="right"
+        class="detail-form"
+        style="height:62vh; overflow:auto;"
+      >
+        <el-form-item
+          label="数据源类型"
+          prop="dbType"
+        >
+          <el-radio-group v-model="datasource.dbType" size="small">
+            <el-radio :label="'MYSQL'">MYSQL</el-radio>
+            <el-radio :label="'POSTGRESQL'">POSTGRESQL</el-radio>
+            <el-radio :label="'HIVE'">HIVE/IMPALA</el-radio>
+            <el-radio :label="'SPARK'">SPARK</el-radio>
+            <el-radio :label="'CLICKHOUSE'">CLICKHOUSE</el-radio>
+            <el-radio :label="'ORACLE'">ORACLE</el-radio>
+            <el-radio :label="'SQLSERVER'">SQLSERVER</el-radio>
+            <el-radio
+              :label="'DB2'"
+              class="radio-label-last"
+            >DB2</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item
+          label="数据源名称"
+          prop="name"
+        >
+          <el-input
+            v-model="datasource.name"
+            :disabled="isDetails"
+            placeholder="请输入数据源名称(必填)"
+          />
+        </el-form-item>
+        <el-form-item
+          label="IP主机名"
+          prop="host"
+        >
+          <el-input
+            v-model="datasource.host"
+            :disabled="isDetails"
+            placeholder="请输入IP主机名(必填)"
+          />
+        </el-form-item>
+        <el-form-item
+          label="端口"
+          prop="port"
+        >
+          <el-input
+            v-model="datasource.port"
+            :disabled="isDetails"
+            placeholder="请输入端口(必填)"
+          />
+        </el-form-item>
+        <el-form-item
+          label="用户名"
+          prop="userName"
+        >
+          <el-input
+            v-model="datasource.userName"
+            :disabled="isDetails"
+            placeholder="请输入用户名"
+          />
+        </el-form-item>
+        <el-form-item
+          label="密码"
+          prop="password"
+        >
+          <el-input
+            v-model="datasource.password"
+            :disabled="isDetails"
+            placeholder="请输入密码"
+            show-password
+          />
+        </el-form-item>
+        <el-form-item
+          v-if="showConnectType"
+          label="服务名或SID"
+          prop="connectType"
+        >
+          <el-radio-group v-model="datasource.connectType" size="small">
+            <el-radio :label="'ORACLE_SERVICE_NAME'">服务名</el-radio>
+            <el-radio :label="'ORACLE_SID'">SID</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item
+          label="数据库名"
+          prop="database"
+        >
+          <!-- :class="{hidden:showdDatabase}" -->
+          <el-input
+            v-model="datasource.database"
+            :disabled="isDetails"
+            placeholder="数据库名"
+          />
+        </el-form-item>
+        <el-form-item
+          label="jdbc连接参数"
+          prop="other"
+        >
+          <el-input
+            v-model="datasource.other"
+            :disabled="isDetails"
+            type="textarea"
+            :placeholder="_rtOtherPlaceholder()"
+          />
+        </el-form-item>
+        <el-form-item
+          label="描述"
+          prop="note"
+        >
+          <el-input
+            v-model="datasource.note"
+            :disabled="isDetails"
+            type="textarea"
+            placeholder="请输入描述"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button
+          type="text"
+          @click="dialogFormVisible = false"
+        > 取消</el-button>
+        <el-button
+          type="primary"
+          :loading="testLoading"
+          @click="_testConnect()"
+        >测试连接</el-button>
+        <el-button
+          type="primary"
+          :loading="spinnerLoading"
+          @click="dialogStatus==='create'?createData():updateData()"
+        >保存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { pageList, deleteByIds, getById } from '@/api/etlscheduler/datasource'
+import { pageList, deleteByIds, verifyDSName, getById } from '@/api/etlscheduler/datasource'
 import QueryField from '@/components/Ace/query-field/index'
 import store from '@/store'
 import { mapActions } from 'vuex'
-import mCreateDataSource from './pages/list/_source/createDataSource'
 import listUrlParamHandle from '@/components/etl/mixin/listUrlParamHandle'
+import { isJson } from '@/components/etl/util/util'
 
 export default {
   name: 'DatasourceIndexP',
@@ -142,6 +284,13 @@ export default {
   mixins: [listUrlParamHandle],
   props: {},
   data() {
+    var checkOther = (rule, value, callback) => {
+      if (!isJson(value) && value !== '') {
+        return callback(new Error('jdbc连接参数不是一个正确的JSON格式'))
+      } else {
+        callback()
+      }
+    }
     return {
       store,
       tableKey: 'datasourceUuid',
@@ -157,16 +306,6 @@ export default {
             { name: 'clickhouse', value: '4' }, { name: 'oracle', value: '5' },
             { name: 'SQLServer', value: '6' }, { name: 'db2', value: '7' }]
         }
-        // ,
-        // { label: '登录方式', name: 'loginTyp', type: 'select',
-        //   data: [{ name: '用户名密码', value: '1' }, { name: 'kerbors认证', value: '2' }]
-        // },
-        // {
-        //   label: '参数状态', name: 'status', type: 'select',
-        //   data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }],
-        //   default: '1'
-        // },
-        // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
       ],
       // 格式化参数列表
       formatMap: {
@@ -206,9 +345,55 @@ export default {
       },
       dialogPvVisible: false,
       rules: {
-        status: [{ required: true, message: '请选择参数状态', trigger: 'change' }]
+        dbType: [{ required: true, message: '请选择数据源类型', trigger: 'change' }],
+        note: [{ max: 500, message: '数据源描述在500个字符之内', trigger: 'change' }],
+        name: [{ required: true, message: '请填写数据源名称', trigger: 'change' },
+          { max: 20, message: '数据源名称在20个字符之内', trigger: 'change' }],
+        port: [{ required: true, message: '请填写端口号', trigger: 'change' },
+          { max: 5, message: '端口号在5个字符之内', trigger: 'change' }],
+        host: [{ required: true, message: '请填写IP/主机名', trigger: 'change' }],
+        connectType: [{ required: true, message: '请选择数据连接类型', trigger: 'change' }],
+        userName: [{ required: true, message: '请输入用户名', trigger: 'change' },
+          { max: 20, message: '用户名在20个字符之内', trigger: 'change' }],
+        database: [{ required: true, message: '请填写数据库名', trigger: 'change' },
+          { pattern: /^[0-9a-zA-Z_]{1,}$/, message: '数据库名称由字母、数字和下划线组成' }],
+        other: [{ validator: checkOther, trigger: 'change' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      datasource: {
+        // 数据源类型
+        dbType: 'MYSQL',
+        // 数据源名称
+        name: '',
+        // 描述
+        note: '',
+        // ip
+        host: '',
+        // 端口
+        port: '',
+        // 数据库名称
+        database: '',
+        // principal
+        principal: '',
+        // 账号
+        userName: '',
+        // 密码
+        password: '',
+        // 数据连接类型
+        connectType: '',
+        // Jdbc 连接参数
+        other: ''
+      },
+      // btn test loading
+      testLoading: false,
+      showPrincipal: true,
+      showdDatabase: false,
+      showConnectType: false,
+      isShowPrincipal: true,
+      prePortMapper: {},
+      spinnerLoading: false,
+      datasourceUuid: null,
+      isDetails: false
       // ,
     //   // is Loading
     //   isLoading: true,
@@ -224,13 +409,76 @@ export default {
     //   }
     }
   },
+  computed: {
+    getDbType: function() {
+      return this.datasource.dbType
+    },
+    getPort: function() {
+      return this.datasource.port
+    }
+  },
   watch: {
+    showdDatabase(val) {
+      if (val === true) {
+        this.rules.database[0].required = false
+      } else {
+        this.rules.database[0].required = true
+      }
+    },
+    getDbType(value) {
+      if (value === 'POSTGRESQL') {
+        this.showdDatabase = true
+      } else {
+        this.showdDatabase = false
+      }
+
+      if (value === 'ORACLE' && this.dialogStatus === 'create') {
+        this.showConnectType = true
+        this.datasource.connectType = 'ORACLE_SERVICE_NAME'
+      } else if (value === 'ORACLE' && this.dialogStatus !== 'create') {
+        this.showConnectType = true
+      } else {
+        this.showConnectType = false
+      }
+      // Set default port for each type datasource Set default port for each type datasource 为每个类型数据源设置默认端口
+      this._setDefaultValues(value)
+
+      // if ((value === 'HIVE' || value === 'SPARK')) {
+      //   this.showPrincipal = true
+      // } else {
+      //   this.showPrincipal = false
+      // }
+      // TODOKerberos
+      // return new Promise((resolve, reject) => {
+      // this.store.dispatch('datasource/getKerberosStartupState').then(res => {
+      //   this.isShowPrincipal = res
+      //   if ((value === 'HIVE' || value === 'SPARK') && this.isShowPrincipal === true) {
+      //     this.showPrincipal = false
+      //   } else {
+      //     this.showPrincipal = true
+      //   }
+      // }).catch(e => {
+      //   this.$message.error(e.msg || '')
+      //   reject(e)
+      // })
+      // })
+    },
+    /**
+     * Cache the previous input port for each type datasource 为每个类型数据源缓存以前的输入端口
+     * @param value
+     */
+    getPort(value) {
+      this.prePortMapper[this.datasource.dbType] = value
+    }
   },
   created() {
     this.getList()
   },
   methods: {
     ...mapActions('datasource', ['getDatasourcesListP']),
+    _rtOtherPlaceholder() {
+      return `请输入格式为 {"key1":"value1","key2":"value2"...} 连接参数`
+    },
     getList(query) {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
@@ -244,8 +492,117 @@ export default {
       this.pageQuery.pageNo = 1
       this.getList()
     },
-    hadleCreate() {
-      this._create('')
+    handelCreated() {
+      this.resetDatasource()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
+      this._setDefaultValues()
+      this.datasourceUuid = null
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
+    resetDatasource() {
+      this.datasource = {
+        // 数据源类型
+        dbType: 'MYSQL',
+        // 数据源名称
+        name: '',
+        // 描述
+        note: '',
+        // ip
+        host: '',
+        // 端口
+        port: '',
+        // 数据库名称
+        database: '',
+        // principal
+        principal: '',
+        // 账号
+        userName: '',
+        // 密码
+        password: '',
+        // 数据连接类型
+        connectType: '',
+        // Jdbc 连接参数
+        other: ''
+      }
+    },
+    // hadleCreate() {
+    //   this._create('')
+    // },
+    createData() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          this._verifName().then(res => {
+            this._submit('createDatasources')
+          })
+        }
+      })
+    },
+    hadleUpdate() {
+      const item = Object.assign({}, this.selections[0])
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+      this.datasourceUuid = item.datasourceUuid
+      this._getEditDatasource(item.datasourceUuid)
+      this._setDefaultValues()
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
+    updateData() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          this._verifName().then(res => {
+            this._submit('updateDatasource')
+          })
+        }
+      })
+    },
+    /**
+     * submit => add/update
+     */
+    _submit(val) {
+      this.spinnerLoading = true
+      const param = this._rtParam()
+      // edit
+      if (val === 'updateDatasource') {
+        param.datasourceUuid = this.datasourceUuid
+      }
+      this.store.dispatch(`datasource/${val}`, param).then(res => {
+        this.$notify({
+          title: '提示',
+          message: res.msg,
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+        this.spinnerLoading = false
+        this.getList()
+        this.dialogFormVisible = false
+      }).catch(e => {
+        // this.$message.error(e.msg || '')
+        this.spinnerLoading = false
+      })
+    },
+    /**
+     * Verify that the data source name exists 验证数据源名称是否存在
+     */
+    _verifName() {
+      return new Promise((resolve, reject) => {
+        const item = Object.assign({}, this.selections[0])
+        if (item.name === this.datasource.name) {
+          resolve()
+          return
+        }
+        verifyDSName(this.datasource.name).then(res => {
+          resolve()
+        }).catch(e => {
+          // this.$message.error(e.msg || '')
+          reject(e)
+        })
+      })
     },
     testConnect() {
       const item = Object.assign({}, this.selections[0])
@@ -319,60 +676,130 @@ export default {
     formatType(data) {
       return this.formatMap.type[data.type]
     },
-    // 添加事件
-    _create(item) {
-      const self = this
-      const modal = this.$modal.dialog({
-        closable: false,
-        showMask: true,
-        escClose: true,
-        className: 'v-modal-custom',
-        transitionName: 'opacityp',
-        render(h) {
-          return h(mCreateDataSource, {
-            on: {
-              onUpdate() {
-                self._debounceGET('false')
-                self.getList()
-                modal.remove()
-              },
-              close() {
-                modal.remove()
-              }
-            },
-            props: {
-              item: item
-            }
+    _rtParam() {
+      return {
+        dbType: this.datasource.dbType,
+        name: this.datasource.name,
+        note: this.datasource.note,
+        host: this.datasource.host,
+        port: this.datasource.port,
+        database: this.datasource.database,
+        principal: this.datasource.principal,
+        userName: this.datasource.userName,
+        password: this.datasource.password,
+        connectType: this.datasource.connectType,
+        other: this.datasource.other
+      }
+    },
+    /**
+     * test connect
+     */
+    _testConnect() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          this.testLoading = true
+          this.store.dispatch('datasource/connectDatasources', { connectionParams: JSON.stringify(this._rtParam()) }).then(res => {
+            setTimeout(() => {
+              this.$notify({
+                title: '提示',
+                message: '测试连接成功',
+                type: 'success',
+                duration: 2000,
+                position: 'bottom-right'
+              })
+              this.testLoading = false
+            }, 0)
+          }).catch(e => {
+          // this.$message.error(e.msg || '')
+            this.testLoading = false
           })
         }
       })
-    },
-    _edit() {
-      const item = Object.assign({}, this.selections[0])
-      // findComponentDownward(this.$root, 'datasource-indexP')
-      this._create(item)
-    },
-    _onUpdate() {
-      this._debounceGET('false')
-    }
-    /**
-     * get data(List)
+    }, /**
+     * Get modified data 修改数据
      */
-    // _getList (flag) {
-    //   this.isLoading = !flag
-    //   this.getDatasourcesListP(this.searchParams).then(res => {
-    //     if (this.searchParams.pageNo > 1 && res.totalList.length == 0) {
-    //       this.searchParams.pageNo = this.searchParams.pageNo - 1
-    //     } else {
-    //       this.datasourcesList = []
-    //       this.datasourcesList = res.totalList
-    //       this.total = res.total
-    //       this.isLoading = false
-    //     }
-    //   }).catch(e => {
-    //     this.isLoading = false
-    //   })
-    // }
+    _getEditDatasource(val) {
+      getById(val).then(res => {
+        this.datasource.dbType = res.data.dbType
+        this.datasource.name = res.data.name
+        this.datasource.note = res.data.note
+        this.datasource.host = res.data.host
+
+        // When in Editpage, Prevent default value overwrite backfill value  在编辑页中，防止默认值覆盖回填值
+        // const that = this
+        setTimeout(() => {
+          this.datasource.port = res.data.port
+        }, 0)
+
+        this.datasource.principal = res.data.principal
+        this.datasource.database = res.data.database
+        this.datasource.userName = res.data.userName
+        this.datasource.password = res.data.password
+        this.datasource.connectType = res.data.connectType
+        this.datasource.other = JSON.stringify(res.data.other) === '{}' ? '' : JSON.stringify(res.data.other)
+      }).catch(e => {
+        // this.$message.error(e.msg || '')
+      })
+    },
+    /**
+     * Set default port for each type. 为每种类型设置默认端口
+     */
+    _setDefaultValues(value) {
+      // Default type is MYSQL
+      const dbType = this.datasource.dbType || 'MYSQL'
+
+      const defaultPort = this._getDefaultPort(dbType)
+
+      // Backfill the previous input from memcache
+      const mapperPort = this.prePortMapper[dbType]
+      this.datasource.port = mapperPort || defaultPort
+    },
+
+    /**
+     * Get default port by type  按类型获取默认端口
+     */
+    _getDefaultPort(dbType) {
+      var defaultPort = ''
+      switch (dbType) {
+        case 'MYSQL':
+          defaultPort = '3306'
+          break
+        case 'POSTGRESQL':
+          defaultPort = '5432'
+          break
+        case 'HIVE':
+          defaultPort = '10000'
+          break
+        case 'SPARK':
+          defaultPort = '10015'
+          break
+        case 'CLICKHOUSE':
+          defaultPort = '8123'
+          break
+        case 'ORACLE':
+          defaultPort = '1521'
+          break
+        case 'SQLSERVER':
+          defaultPort = '1433'
+          break
+        case 'DB2':
+          defaultPort = '50000'
+          break
+        default:
+          break
+      }
+      return defaultPort
+    }
   }
 }
 </script>
+<style scoped>
+.el-radio {
+  font-size: 12px;
+	margin-right: 15px;
+}
+.el-radio__label {
+	font-size: 12px;
+	padding-left: 5px;
+}
+</style>
