@@ -262,9 +262,10 @@
                       class="add-dep"
                       @click="!isDetails && _addDep()"
                     >
+                      <!-- :class="{'oper-btn add': iconDisable}" -->
                       <em
                         v-if="!isLoading"
-                        :class="{'oper-btn add': iconDisable}"
+                        class="oper-btn add"
                         data-toggle="tooltip"
                         :disable="disableAddStatus"
                         title="添加"
@@ -787,7 +788,6 @@ export default {
       },
       // 这里是关键，代表递归监听 demo 的变化
       deep: true
-
     },
     // 监听selections集合
     selections() {
@@ -821,9 +821,17 @@ export default {
       }
     },
     dependTaskList(e) {
-      setTimeout(() => {
+      if (this.dependTaskList === null || !this.dependTaskList.length > 0 || this.dependTaskList[0] === null) {
         this.isLoading = false
-      }, 600)
+      } else if (this.dependTaskList !== null) {
+        if (this.dependTaskList[0].dependItemList === null) {
+          this.isLoading = false
+        } else {
+          this.isLoading = true
+        }
+      } else {
+        this.isLoading = true
+      }
     },
     cacheDependence(val) {
       this.$emit('on-cache-dependent', val)
@@ -832,7 +840,6 @@ export default {
   created() {
     try {
       this.crontabFormat = getDictList('001001')
-      console.log(this.crontabFormat)
     } catch (e) {
       console.error(e)
     }
@@ -938,7 +945,7 @@ export default {
     },
     _addDep() {
       if (!this.isLoading) {
-        this.isLoading = true
+        // this.isLoading = true
         if (this.dependTaskList == null || this.dependTaskList.length === 0) {
           this.disableAddStatus = false
           this.dependTaskList = [{
