@@ -861,22 +861,22 @@ Actions.prototype.init = function() {
 		var resultTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus;//模型最终结果表状态
 		var midTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.midTableStatus;//模型辅助结果表状态
 		//设置输出图标
-		if(resultTableStatus == 2) {//若已标记，则去掉标记
+		if(resultTableStatus === 2) {//若已标记，则去掉标记
 			graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus = 1;
             setNodeOutputTypeIcon(1,1);
             //自动保存图形化
             autoSaveGraph();
 		} else {
-			if(midTableStatus == 2){//如果该结果表已被标记为模型辅助结果表，则不能再被标记为模型最终结果表
+			if(midTableStatus === 2){//如果该结果表已被标记为模型辅助结果表，则不能再被标记为模型最终结果表
 				verify = false;
 				alertMsg("提示", "该结果表已被标记为模型辅助结果表", "info");
 			}else{
 				var keyArr = Object.keys(graph.model.cells);
                 for(var i=0;i<keyArr.length;i++) {
                     var item = graph.model.cells[keyArr[i]];
-                    if(item.vertex == 1) {
+                    if(item.vertex) {
                         resultTableStatus = graph.nodeData[item.id].nodeInfo.resultTableStatus;
-                        if(resultTableStatus == 2 && item.id != graph.curCell.id) {
+                        if(resultTableStatus === 2 && item.id !== graph.curCell.id) {
                             alertMsg("提示", "已存在被标记的模型最终结果表", "info");
                             verify = false;
                             break;

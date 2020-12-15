@@ -37,9 +37,9 @@ export function data_filter(type, name, nodeName) {
  * 保存节点配置
  */
 export function saveNodeSetting() {
-    const curNodeId = graphIndexVue.sp_nodeId
-    const saveNodeSettingFun = function() {
-        const type = graphIndexVue.sp_optType
+    let curNodeId = graphIndexVue.sp_nodeId
+    let saveNodeSettingFun = function() {
+        let type = graphIndexVue.sp_optType
         if (!graphIndexVue.$refs.nodeSetting.$refs.basicVueRef.basicInfoVerify()) {
             $(graphIndexVue.$refs.nodeSetting.$refs.myTab).find('li:eq(0)>a').click()
             return false
@@ -135,7 +135,7 @@ export function saveNodeSetting() {
         graphIndexVue.nodeSettingDialogVisible = false
         return true
     }
-    const childrenIds = graph.nodeData[curNodeId].childrenIds.slice()
+    let childrenIds = graph.nodeData[curNodeId].childrenIds.slice()
     if (childrenIds.length > 0) {
         graphIndexVue.$confirm('该操作会影响本节点及后续节点的执行信息，是否继续?', '提示', {
             confirmButtonText: '确定',
@@ -500,8 +500,8 @@ function createParamNodeHtml(nodeIdArr) {
     // 第一层循环只是判断当前待执行节点队列中是否有参数节点
     var checkParam = false// 默认没有参数节点
     for (let i = 0; i < nodeIdArr.length; i++) {
-        const hasParam = graph.nodeData[nodeIdArr[i]].hasParam// 是否有参数
-        const paramsSetting = graph.nodeData[nodeIdArr[i]].paramsSetting// 参数设置信息
+        let hasParam = graph.nodeData[nodeIdArr[i]].hasParam// 是否有参数
+        let paramsSetting = graph.nodeData[nodeIdArr[i]].paramsSetting// 参数设置信息
         if (hasParam && paramsSetting && paramsSetting.arr && paramsSetting.arr.length !== 0) {
             checkParam = true
             break
@@ -612,7 +612,7 @@ function createParamNodeHtml(nodeIdArr) {
  * 自动执行
  */
 function autoExcute(curNodeId) {
-    const childrenIds = graph.nodeData[curNodeId].childrenIds
+    let childrenIds = graph.nodeData[curNodeId].childrenIds
     if (childrenIds.length > 0 && childrenIds.length === 1) {
         graphIndexVue.$confirm('节点配置成功，是否立即执行?', '提示', {
             confirmButtonText: '确定',
@@ -620,7 +620,7 @@ function autoExcute(curNodeId) {
             type: 'info',
             center: true
         }).then(() => {
-            const cell = graph.getModel().getCell(childrenIds[0])
+            let cell = graph.getModel().getCell(childrenIds[0])
             if (cell) {
                 graph.curCell = cell
                 executeNode()
@@ -777,7 +777,7 @@ function executeNode_callback(notExecuteNodeIdArr) {
                 if (graph.nodeData[executeCellId] && graph.nodeData[executeCellId].nodeInfo && graph.nodeData[executeCellId].nodeInfo.nodeExcuteStatus === 3) {
                     graphIndexVue.layuiTabClickLi(0)
                     graphIndexVue.showTableResult = false
-                    const nodeId = executeCellId
+                    let nodeId = executeCellId
                     let nodeName = graph.nodeData[executeCellId].nodeInfo.nodeName
                     let resultTableName = ''
                     if (!isSet) {
@@ -785,12 +785,12 @@ function executeNode_callback(notExecuteNodeIdArr) {
                     } else {
                         resultTableName = graph.nodeData[executeCellId].nodeInfo.resultTableName
                     }
-                    const isRoleTable = false
-                    const resultTableObj = { nodeId, nodeName, resultTableName, isRoleTable }
-                    const optType = graph.nodeData[executeCellId].nodeInfo.optType
+                    let isRoleTable = false
+                    let resultTableObj = { nodeId, nodeName, resultTableName, isRoleTable }
+                    let optType = graph.nodeData[executeCellId].nodeInfo.optType
                     if (optType === 'newNullNode') { // 结果表
-                        const midTableStatus = graph.nodeData[executeCellId].nodeInfo.midTableStatus
-                        const resultTableStatus = graph.nodeData[executeCellId].nodeInfo.resultTableStatus
+                        let midTableStatus = graph.nodeData[executeCellId].nodeInfo.midTableStatus
+                        let resultTableStatus = graph.nodeData[executeCellId].nodeInfo.resultTableStatus
                         if (midTableStatus === 2 || resultTableStatus === 2) {
                             resultTableObj['isRoleTable'] = true
                         }
@@ -836,7 +836,7 @@ export function executeAllNode() {
     var key = Object.keys(cells)
     if (key && key.length > 0) {
         for (var i = 0; i < key.length; i++) {
-            if (cells[key[i]].vertex === 1 && graph.nodeData[key[i]]) {
+            if (cells[key[i]].vertex && graph.nodeData[key[i]]) {
                 // 如果是节点且节点类型是结果表(无下级节点)
                 var parentIds = []; var preNodeData = {}
                 if (graph.nodeData[key[i]].nodeInfo.optType === 'newNullNode' && graph.nodeData[key[i]].childrenIds.length === 0) {
@@ -888,7 +888,7 @@ export function executeAllNode() {
     }).then(() => {
         for (var i = 0; i < key.length; i++) {
             // 如果是节点且不是原表，则先变更节点的执行状态为未执行
-            if (cells[key[i]].vertex === 1 && graph.nodeData[key[i]] && graph.nodeData[key[i]].nodeInfo &&
+            if (cells[key[i]].vertex && graph.nodeData[key[i]] && graph.nodeData[key[i]].nodeInfo &&
                 graph.nodeData[key[i]].nodeInfo.optType !== 'datasource' && graph.nodeData[key[i]].nodeInfo.nodeExcuteStatus !== 1) {
                 graph.nodeData[key[i]].nodeInfo.nodeExcuteStatus = 1
                 changeNodeIcon(1, null, key[i])
@@ -1050,8 +1050,8 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
         // 获取当前节点的所有子孙节点集合
         var cIdArr = getAllChildrenIds(executeNodeArr[k])
         // 获取当前节点的所有子集合
-        const childrenIds = graph.nodeData[executeNodeArr[k]].childrenIds
-        const parentIds = graph.nodeData[executeNodeArr[k]].parentIds
+        let childrenIds = graph.nodeData[executeNodeArr[k]].childrenIds
+        let parentIds = graph.nodeData[executeNodeArr[k]].parentIds
         if (nodeExcuteStatus === 3) {
             if (optType === 'sql') {					// SQL查询器单独处理SQL语句
                 graph.nodeData[executeNodeArr[k]].setting.sql = graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql
@@ -1267,7 +1267,7 @@ export function lightHeight(curCellId) {
             graph.highLight.push(parentChildren[i])// 获取线
             graph.highLight.push(parentChildren[i].source)// 获取节点
         }
-        if (parentChildren[i].vertex === 1 && !parentChildren[i].source && parentChildren[i].id === curCellId) {
+        if (parentChildren[i].vertex && !parentChildren[i].source && parentChildren[i].id === curCellId) {
             graph.highLight.push(parentChildren[i])// 获取当前节点（无父节点时高亮）
         }
     }
@@ -1342,8 +1342,8 @@ export function curNodeSQL() {
  * 双击预览数据 / 右键查看数据
  * */
 export function previewNodeData() {
-    const curNodeInfo = graph.nodeData[graph.curCell.id].nodeInfo
-    const nodeExcuteStatus = curNodeInfo.nodeExcuteStatus
+    let curNodeInfo = graph.nodeData[graph.curCell.id].nodeInfo
+    let nodeExcuteStatus = curNodeInfo.nodeExcuteStatus
     if (nodeExcuteStatus !== 3) {
         graphIndexVue.$message({ type: 'warning', message: '当前节点未执行成功，不能预览数据' })
         return
@@ -1374,8 +1374,8 @@ export function previewNodeData() {
                 nodeId = curNodeInfo.nodeId
                 nodeName = curNodeInfo.nodeName
             }
-            const midTableStatus = curNodeInfo.midTableStatus
-            const resultTableStatus = curNodeInfo.resultTableStatus
+            let midTableStatus = curNodeInfo.midTableStatus
+            let resultTableStatus = curNodeInfo.resultTableStatus
             if (midTableStatus === 2 || resultTableStatus === 2) {
                 isRoleTable = true
             }
@@ -1450,7 +1450,7 @@ function viewData(tableName, optType, connGraph, viewAllData) {
                     switch (optType) {
                         case 'comparison':							// 频次分析
                             if (res.columnInfo && res.columnInfo.columnList) {
-                                const columnInfo = res.columnInfo.columnList
+                                let columnInfo = res.columnInfo.columnList
                                 for (var i = 0; i < columnInfo.length; i++) {
                                     var obj = {
                                         'data': columnInfo[i].columnName,
@@ -1597,7 +1597,7 @@ export function reName() {
             }
             var oldName = graph.curCell.value
             graph.cellLabelChanged(graph.curCell, newVal, null)
-            if (graph.curCell.vertex === 1) {
+            if (graph.curCell.vertex) {
                 updateResourceZtreeNodeName(graph.curCell.id, newVal)
                 // 更新操作痕迹树
                 refrashHistoryZtree('重命名节点【' + newVal + '】')
@@ -1703,7 +1703,7 @@ function sqlNodeEdit() {
                 alertMsg('提示', returnObj.message, 'info')
             } else {
                 if ($.trim(returnObj.sql) !== '') {
-                    if (graph.openGraphType === '1') { // 如果是普通个人图形
+                    if (graph.openGraphType === 1) { // 如果是普通个人图形
                         sqlNodeEdit_callBack(returnObj, layero)
                         layer.close(index)
                     } else { // 如果是场景查询图形和模型图形
@@ -1786,7 +1786,7 @@ export function getDataSourceTable() {
     if (parent.children) {
         var parentChildren = parent.children
         for (var i = 0; i < parentChildren.length; i++) {
-            if (parentChildren[i].vertex === 1 && graph.nodeData[parentChildren[i].id] && graph.nodeData[parentChildren[i].id].nodeInfo.optType === 'datasource') {
+            if (parentChildren[i].vertex && graph.nodeData[parentChildren[i].id] && graph.nodeData[parentChildren[i].id].nodeInfo.optType === 'datasource') {
                 dataSourceNodeValArr.push(parentChildren[i].value)
             }
         }
@@ -1965,7 +1965,7 @@ function hadNode(edit) {
     var hadNode = false
     for (var i = 0; i < edit.changes.length; i++) {
         var cell = edit.changes[i].cell ? edit.changes[i].cell : edit.changes[i].child
-        if (cell.vertex === 1) {
+        if (cell.vertex) {
             hadNode = true
             break
         }
@@ -2189,7 +2189,7 @@ export function deleteCells(includeEdges) {
         }
         var arr = []			// 将操作的节点信息存根
         for (var i = 0; i < cells.length; i++) {
-            if (cells[i].vertex === 1) {
+            if (cells[i].vertex) {
                 nodeIdArr.push(cells[i].id)
                 // 找出要删除的节点中的末级节点，更改该末级节点及后续节点的信息，start
                 var lastNodeIdArr = []

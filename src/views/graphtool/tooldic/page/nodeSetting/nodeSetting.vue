@@ -33,6 +33,7 @@
 </template>
 
 <script>
+    require('@/components/ams-bootstrap/js/bootstrap.min.js')
 import Basic from '@/views/graphtool/tooldic/page/nodeSetting/basic.vue'
 import OutputColumn from '@/views/graphtool/tooldic/page/nodeSetting/outputColumn.vue'
 import FilterSet from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/filter.vue'
@@ -53,9 +54,6 @@ export default {
       columnsInfoPre: []// 前置节点的输出列信息集合（只用于有且只有一个前置节点的节点）
     }
   },
-  mounted() {
-    // window.saveGraphNodeSetting = this.saveGraphNodeSetting
-  },
   methods: {
     saveGraphNodeSetting() { // 保存节点配置
       this.$refs.outputColumnVueRef.get_column()
@@ -67,6 +65,5 @@ export default {
 }
 </script>
 <!--引入公共CSS样式-->
-<!--<style scoped src="@/components/ams-layui/css/layui.css"></style>-->
-<!--<style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>-->
-<!--<style scoped src="@/components/ams-basic/css/common.css"></style>-->
+<style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
+<style scoped src="@/components/ams-basic/css/common.css"></style>
