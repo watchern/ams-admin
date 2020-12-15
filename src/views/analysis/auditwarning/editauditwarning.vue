@@ -20,18 +20,15 @@
                   <el-option label="模型" :value="1"></el-option>
                   <el-option label="指标" :value="2"></el-option>
                 </el-select>
-              </el-form-item> 
+              </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item  label="结果保存地址">
                 <el-input  class="el-input-z" readonly="readonly" v-model="this.auditWarningSave.locationName"/>
-                <span class="btn-z" @click="modelResultSavePathDialog = true">选择</span>   
+                <span class="btn-z" @click="modelResultSavePathDialog = true">选择</span>
               </el-form-item>
             </el-col>
           </el-row>
-
-          
-          
           <el-form-item label="关联模型" v-if="temp.warningType == 1">
             <el-row>
               <el-col align="right">
@@ -76,6 +73,7 @@
               <el-option label="周期执行" :value="3"></el-option>
             </el-select>
           </el-form-item>
+
           <!--单次执行时间选择-->
           <el-form-item label="执行时间" v-if="temp.executeMode == 1" prop="singleExecuteTime">
             <el-date-picker
@@ -761,8 +759,8 @@ export default {
 </script>
 <style scoped>
   .el-input-z{
-    width: 60%;
-    margin: 0 35px 0 0;
+    width:78%;
+    margin: 0 15px 0 0;
     cursor:no-drop
   }
   .btn-z{
