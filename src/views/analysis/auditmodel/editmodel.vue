@@ -1184,7 +1184,7 @@ export default {
     save() {
       var modelObj = this.getModelObj()
       debugger
-      var flag1 = true
+      /*var flag1 = true
       var flag2 = true
       var modelDetailRelations = modelObj.modelDetailRelation
       var resultFilterShows = modelObj.resultFilterShow
@@ -1197,28 +1197,28 @@ export default {
         if(resultFilterShows[i].filterName >255){
           flag2 = false
         }
-      }
-      if(modelObj.modelName.length>1000){
-        this.$message({
-          message: '模型名称的长度不能超过1000',
-        });
-      }else if(modelObj.auditIdeas.length>2000){
-        this.$message({
-          message: '模型名称的长度不能超过2000',
-        });
-      }else if(modelObj.paramConditions.length>2000){
-           this.$message({
-          message: '参数条件不能超过2000',
-        });
-      }else if(flag1==false){
-          this.$message({
-          message: '模型详细关联名称不能超过255',
-        });
-      }else if(flag2==false){
-          this.$message({
-          message: '条件名称不能超过255',
-        });
-      }else{
+      }*/
+      // if(modelObj.modelName.length>1000){
+      //   this.$message({
+      //     message: '模型名称的长度不能超过1000',
+      //   });
+      // }else if(modelObj.auditIdeas.length>2000){
+      //   this.$message({
+      //     message: '模型名称的长度不能超过2000',
+      //   });
+      // }else if(modelObj.paramConditions.length>2000){
+      //      this.$message({
+      //     message: '参数条件不能超过2000',
+      //   });
+      // }else if(flag1==false){
+      //     this.$message({
+      //     message: '模型详细关联名称不能超过255',
+      //   });
+      // }else if(flag2==false){
+      //     this.$message({
+      //     message: '条件名称不能超过255',
+      //   });
+      // }else{
         if (modelObj == null) {
         return
       }
@@ -1256,7 +1256,7 @@ export default {
           }
         })
       }
-      }
+      //}
     },
     initEvent() {
       var oDrag = document.getElementById('drag')

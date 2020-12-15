@@ -18,7 +18,7 @@
       max-height="800"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
-      
+
     >
       <el-table-column
         label="文件名称"
@@ -88,7 +88,8 @@ export default {
       titleMsg: {},
       type: null,
       startTimeStart: null,
-      startTimeEnd: null
+      startTimeEnd: null,
+      value:'11111'
     }
   },
   watch: {

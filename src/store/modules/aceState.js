@@ -3,11 +3,10 @@ export default {
   namespaced: true,
   state: {
     rightFooterTags: [],
-    leftMenuShrink: false
+    leftMenuShrink: false,
   },
   mutations: {
     setRightFooterTags: (state, data) => {
-      console.log('data', data)
       let temArr = state.rightFooterTags
       const name = data.val.name
       switch (data.type) {

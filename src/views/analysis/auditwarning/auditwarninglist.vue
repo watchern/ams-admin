@@ -13,7 +13,7 @@
     <el-table :key="tableKey" ref="auditWarningList" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;"
               @select="listSelectChange" @select-all="listSelectChange">
       <el-table-column type="selection" width="55" />
-      <el-table-column label="预警名称" prop="warningName" width="100px" align="center"  >
+      <el-table-column label="预警名称" prop="warningName" width="300px" align="center"  >
         <template slot-scope="scope">
           <el-link
             @click.native.prevent="detail(scope.row.auditWarningUuid)"
@@ -30,6 +30,7 @@
         <template slot-scope="scope">
           <el-link
             type="primary"
+            @click="startWarning(scope.row.auditWarningUuid)"
             v-if="scope.row.isStart == 0"
           >
             启动
@@ -44,7 +45,7 @@
       </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog :title="editDialogTitle" v-if='editDialogVisible' :visible.sync="editDialogVisible" >
+    <el-dialog :title="editDialogTitle" v-if='editDialogVisible' :visible.sync="editDialogVisible">
       <EditAuditWarning ref="edit" :option="operationObj.option" :optionUuid="operationObj.optionUuid"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">关闭</el-button>

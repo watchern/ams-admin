@@ -28,7 +28,7 @@
                 type="primary"
                 size="small"
                 @click="sqlFormat"
-                class="oper-btn sqlcheck"
+                class="oper-btn clean"
                 title="格式化sql"
               ></el-button>
               <el-button
@@ -238,7 +238,16 @@
   </div>
 </template>
 <script>
-
+require("@/components/ams-jqueryValidate/jquery.validate.min.js")
+require("@/components/ams-codemirror/addon/edit/matchbrackets")
+require("@/components/ams-codemirror/addon/selection/active-line")
+require("@/components/ams-codemirror/mode/sql/sql")
+require("@/components/ams-codemirror/addon/hint/show-hint")
+require("@/components/ams-codemirror/addon/hint/sql-hint")
+require("@/components/ams-ztree/js/jquery.ztree.all.min")
+require("@/components/ams-ztree/js/jquery.ztree_new.all.min")
+require("@/components/ams-ztree/js/jquery.ztree.excheck")
+require("@/components/ams-ztree/js/jquery.ztree.exhide")
 import {
   initSQLEditor,
   initDragAndDrop,
@@ -891,6 +900,7 @@ export default {
           this.$emit("getSqlObj");
           this.executeLoading = false
           this.loadText = ""
+          this.$message({ type: "success", message: "SQL校验通过" });
         }).catch((result) =>{
           this.executeLoading = false
           this.loadText = ""
