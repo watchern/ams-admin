@@ -390,7 +390,7 @@ export default {
       showdDatabase: false,
       showConnectType: false,
       isShowPrincipal: true,
-      prePortMapper: {},
+      // prePortMapper: {},
       spinnerLoading: false,
       datasourceUuid: null,
       isDetails: false
@@ -412,9 +412,6 @@ export default {
   computed: {
     getDbType: function() {
       return this.datasource.dbType
-    },
-    getPort: function() {
-      return this.datasource.port
     }
   },
   watch: {
@@ -462,13 +459,6 @@ export default {
       //   reject(e)
       // })
       // })
-    },
-    /**
-     * Cache the previous input port for each type datasource 为每个类型数据源缓存以前的输入端口
-     * @param value
-     */
-    getPort(value) {
-      this.prePortMapper[this.datasource.dbType] = value
     }
   },
   created() {
@@ -751,8 +741,9 @@ export default {
       const defaultPort = this._getDefaultPort(dbType)
 
       // Backfill the previous input from memcache
-      const mapperPort = this.prePortMapper[dbType]
-      this.datasource.port = mapperPort || defaultPort
+      // const mapperPort = this.prePortMapper[dbType]
+      // this.datasource.port = mapperPort || defaultPort
+      this.datasource.port = defaultPort
     },
 
     /**
