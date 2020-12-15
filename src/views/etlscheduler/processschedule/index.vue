@@ -197,7 +197,7 @@
           />
         </el-form-item>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item label="作业周期开始时间" prop="startTime">
               <el-col :span="8">
                 <el-date-picker
@@ -211,7 +211,7 @@
               </el-col>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item label="作业周期结束时间" prop="endTime">
               <!-- <el-col class="line" :span="1">-</el-col> -->
               <el-col :span="8">
