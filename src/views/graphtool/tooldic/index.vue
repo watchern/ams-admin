@@ -151,7 +151,7 @@
                         </div>
                         <div id="ztree_datasource_collapse" class="panel-collapse collapse in">
                             <div class="panel-body">
-                                <div class="col-sm-12" style="height: 45px;">
+                                <div style="height: 45px;line-height:45px;">
                                     <el-input v-model="searchZtreeContent" placeholder="搜索关键字" class="input-with-select">
                                         <el-button slot="append" icon="el-icon-search" @click="searchZtree" />
                                     </el-input>
@@ -294,7 +294,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="(nodeObj,index) in nodeParamArr" class="paramSetTr">
+                <tr v-for="(nodeObj,index) in nodeParamArr" ref="paramSetTr" :index="index">
                     <td align="center">{{ nodeObj.nodeName }}</td>
                     <td align="center">{{ nodeObj.lineNum }}</td>
                     <td v-if="nodeObj.hasParamSet" align="center">
@@ -314,7 +314,7 @@
         </el-dialog>
         <el-dialog v-if="nodeParamSettingDialogVisible" :visible.sync="nodeParamSettingDialogVisible" title="设置节点参数" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="1000px">
             <SettingParams ref="settingParams" :graph="graph" :node-id="sp_nodeId" :params-setting="sp_paramsSetting" />
-            <div slot="footer">
+            <div slot="footer" v-if="initNodeSettingVue">
                 <el-button @click="nodeParamSettingDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="settingParamsCallBack()">保存</el-button>
             </div>
@@ -379,25 +379,10 @@
 </template>
 <script>
     // 引入公用JS
-    // require("@/components/ams-jquery/jquery.form.js")
-    // require("@/components/ams-layui/layui.js")
     require('@/components/ams-bootstrap/js/bootstrap.min.js')
-    require('@/components/ams-bootstrap-select/js/bootstrap-select.cn.min.js')
     require('@/components/ams-ztree/js/jquery.ztree_new.all.js')
     require('@/components/ams-ztree/js/jquery.ztree.excheck.js')
     require('@/components/ams-ztree/js/jquery.ztree.exhide.js')
-
-    // require("@/components/ams-loading/loading.js")
-    // require("@/components/ams-graphtool/inc/toolCommon.js")
-    // 引入图形化专用JS
-    // require("@/components/ams-uuid/UUIDGenerator.js")
-    // require("@/components/ams-graphtool/js/Init.js")
-    // require("@/components/ams-graphtool/js/mxClient.js")
-    // require("@/components/ams-graphtool/js/EditorUi.js")
-    // require("@/components/ams-graphtool/js/Editor.js")
-    // require("@/components/ams-graphtool/js/Graph.js")
-    // require("@/components/ams-graphtool/js/Actions.js")
-    // require("@/components/ams-graphtool/js/Menus.js")
     // 引入子组件
     import Help from '@/views/graphtool/tooldic/page/funEventVue/help.vue'
     import GraphListExport from '@/views/graphtool/tooldic/page/funEventVue/graphListExport.vue'
@@ -460,12 +445,13 @@
                 optTypeArr: ['filter', 'sort', 'sample', 'layering', 'groupCount', 'delRepeat', 'comparison', 'change', 'union', 'relation', 'sql'],
                 isShowMoreMenu: true, // 是否展示更多菜单
                 nodeParamRelArr: [], // 用来存储每个节点设置的参数信息
-                nodeParamArr: [], // 可设置参数的节点集合
+                nodeParamArr: [], // 存储已设置参数的节点集合
                 sp_nodeId: '', // 设置节点参数时传递的参数，节点ID
                 sp_paramsSetting: null, // 设置节点参数时传递的参数，节点的参数配置信息
                 sp_optType: '', // 配置节点信息时传递的参数，操作节点的类型
                 nodeSettingTitle: '', // 配置节点时显示的弹窗标题，当前节点的名称
-                settingType: ''// 节点配置所打开的弹窗类型
+                settingType: '',// 节点配置所打开的弹窗类型
+                initNodeSettingVue:false//节点参数设置页面是否初始化完成
             }
         },
         created() {
@@ -522,11 +508,32 @@
                 window.reSetOptProperty = commonJs.reSetOptProperty
             },
             initIndex() {
+                let $this = this
                 window.refrashResourceZtree = indexJs.refrashResourceZtree
                 window.refrashHistoryZtree = indexJs.refrashHistoryZtree
                 window.autoSaveGraph = indexJs.autoSaveGraph
                 window.nodeRemark = indexJs.nodeRemark
                 window.deleteResourceZtreeNode = indexJs.deleteResourceZtreeNode
+                window.modifyParam = indexJs.modifyParam
+                window.alertMsg = function (title,msg,type){
+                    $this.$message({ type : type, message : msg})
+                }
+                window.confirmMsg = function (title, text, type, confirmMethord, cancelMethord) {
+                    $this.$confirm(text, title, {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: type,
+                        center: true
+                    }).then(() => {
+                        if(typeof cancelMethord === "function"){
+                            confirmMethord()
+                        }
+                    }).catch( () => {
+                        if(typeof cancelMethord === "function"){
+                            cancelMethord()
+                        }
+                    })
+                }
             },
             initValidateFun() {
                 window.edgeVerify = validateJs.edgeVerify
@@ -546,7 +553,7 @@
                 })
                 mxResources.loadDefaultBundle = false
                 var bundle = mxResources.getDefaultBundle(RESOURCE_BASE, mxLanguage) || mxResources.getSpecialBundle(RESOURCE_BASE, mxLanguage)
-                var defaultXmlUrl = RESOURCES_PATH + '/default.xml'
+                var defaultXmlUrl = STYLE_PATH + '/default.xml'
                 mxUtils.getAll([bundle, defaultXmlUrl], function(xhr) {
                     mxResources.parse(xhr[0].getText())
                     var themes = new Object()
@@ -768,7 +775,7 @@
                 /* 左侧数据表树，start*/
                 loadZtree()
                 if (obj.canEditor) {
-                    $.each($('.icon'), function() {
+                    $.each($('.graphIcon'), function() {
                         var id_type = $(this).attr('data-type')
                         if (typeof (id_type) !== 'undefined') {
                             var name = $(this).find('a').html()
@@ -797,12 +804,19 @@
                 this.webSocket.onmessage = function(event) {
                     const dataObj = JSON.parse(event.data)// 接收到返回结果
                     var executeSQLObj = dataObj.executeSQL
-                    if (executeSQLObj.customParam[0] === $this.websocketBatchId) { // 展示当前操作的结果集
+                    if (executeSQLObj.customParam[0] === $this.websocketBatchId) {//匹配结果集
                         $this.loading.destroy()
-                        $this.showTableResult = true
-                        $this.$nextTick(() => {
-                            $this.$refs.childTabsRef[0].loadTableData(dataObj)
-                        })
+                        console.log(executeSQLObj.state)
+                        if(executeSQLObj.state === "2"){//执行成功，展示当前操作的结果集
+                            $this.layuiTabClickLi(0)
+                            $this.showTableResult = true
+                            $this.$nextTick(() => {
+                                $this.$refs.childTabsRef[0].loadTableData(dataObj)
+                            })
+                        }else{
+                            $('#sysInfoArea').html("<p style='color: red;'>预览结果集失败：" + executeSQLObj.msg + "</p>")
+                            $this.layuiTabClickLi(1)
+                        }
                     }
                 }
 
@@ -818,6 +832,7 @@
             executeAllNode() {
                 // commonJs.executeAllNode()
                 this.$message({ type: 'info', message: '待集成' })
+                // console.log(await indexJs.saveModelGraph())
             },
             newGraph() {
                 if (this.openGraphType === 4) {
@@ -1058,13 +1073,14 @@
             /**
              * 接口，用于保存模型时存储图形信息
              */
-            saveModelGraph() {
-                return indexJs.saveModelGraph()
+            async saveModelGraph() {
+                return await indexJs.saveModelGraph()
             }
         }
     }
 
 </script>
 <!--引入图形化工具专用CSS样式-->
-<style scoped src="@/views/graphtool/tooldic/styles/grapheditor.css"></style>
+<style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
+<style scoped src="@/components/ams-basic/css/accordion.css"></style>
 <style scoped src="@/views/graphtool/tooldic/css/index.css"></style>
