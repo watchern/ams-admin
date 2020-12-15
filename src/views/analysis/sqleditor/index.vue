@@ -28,7 +28,7 @@
                 type="primary"
                 size="small"
                 @click="sqlFormat"
-                class="oper-btn sqlcheck"
+                class="oper-btn clean"
                 title="格式化sql"
               ></el-button>
               <el-button
@@ -900,6 +900,7 @@ export default {
           this.$emit("getSqlObj");
           this.executeLoading = false
           this.loadText = ""
+          this.$message({ type: "success", message: "SQL校验通过" });
         }).catch((result) =>{
           this.executeLoading = false
           this.loadText = ""

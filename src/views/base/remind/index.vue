@@ -48,7 +48,7 @@ export default {
         { label: '内容', name: 'remindContent', type: 'fuzzyText' },
         { label: '提醒时间范围', name: 'remindTime', type: 'timePeriod' },
         { label: '阅读状态', name: 'readStatus', type: 'select',
-          data: [{ name: '请选择', value: '-1' }, { name: '未阅', value: '0' }, { name: '已阅', value: '1' }], default: '-1' }
+          data: [{ name: '未阅', value: '0' }, { name: '已阅', value: '1' }], default: '-1' }
       ],
       // selectedRowVal:0,
       tableOptions: {

@@ -28,13 +28,24 @@
           <!-- <span class="el-icon-refresh-left refresh" style="float: right" /> -->
 
           <el-row>
-            <el-col style="margin: 0 0 50px 0">
+            <el-col style="margin: 0 0 50px 0" :span="6">
               <!-- <el-tag effect="dark" style="width:119%;height: 80px;"> -->
               <label class="title-middle"> 调度任务总数</label>
               <div class="bottom clearfix">
                 <time class="title-large">
                   <span class="el-icon-upload iconstyle" />
                   <span>{{ count }}</span>
+                </time>
+              </div>
+              <!-- </el-tag> -->
+            </el-col>
+            <el-col style="margin: 0 0 50px 0" :span="8">
+              <!-- <el-tag effect="dark" style="width:119%;height: 80px;"> -->
+              <label class="title-middle"> 文件接收情况</label>
+              <div class="bottom clearfix">
+                <time class="title-large">
+                  <span class="el-icon-folder-checked iconstyle" style="color:#40dcff" />
+                  <span>{{ fileRecieveCount + '/' + fileCount }}</span>
                 </time>
               </div>
               <!-- </el-tag> -->
@@ -78,7 +89,7 @@
             <span class="el-icon-refresh-left refreshspan" @click="refresh()" />
           </div>
           <div class="row">
-            <m-process-state-count :search-params="searchParams" />
+            <m-process-state-count :search-params="searchParams" @refresh="_datepicker()" />
           </div>
         </el-card>
       </el-col>
@@ -87,10 +98,50 @@
     <el-row>
       <el-col :span="24">
         <div style="margin-top: 10px;">
-          <el-tabs type="border-card">
-            <el-tab-pane label="调度流程实例"><etl-processin-stance /></el-tab-pane>
-            <el-tab-pane label="调度环节实例"><etl-taskin-stance /></el-tab-pane>
-            <el-tab-pane label="上游推送文件情况"><etl-data-file /></el-tab-pane>
+          <el-tabs v-model="tabname" type="border-card">
+            <el-tab-pane label="调度流程实例" name="processinstance"><etl-processin-stance :search-params="searchParams" /></el-tab-pane>
+            <el-tab-pane label="调度环节实例" name="taskinstance"><etl-taskin-stance :search-params="searchParams" /></el-tab-pane>
+            <el-tab-pane label="上游推送文件情况" name="statistics"><etl-data-file /></el-tab-pane>
+            <!-- <el-tab-pane label="上游推送文件统计" name="statisticsCount">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="chart-title">
+                    <span>上游推送文件情况
+                      <el-button
+                        style="margin-left:10px;margin-top:-10px;"
+                        type="primary"
+                        title="查看详情"
+                        class="oper-btn more"
+                        @click="handleFile()"
+                      />
+                    </span>
+                  </div>
+                  <div class="table-small-model">
+                    <table style="width: 100vw">
+                      <tr>
+                        <th width="40">编号</th>
+                        <th width="80">上游系统</th>
+                        <th width="50">文件执行情况</th>
+                        <th width="60">状态</th>
+                      </tr>
+                      <tr v-for="(item,$index) in dataResourceStatistics" :key="$index" style="height:50px">
+                        <td><span>{{ $index+1 }}</span></td>
+                        <td><span>{{ item.dataResourceName }}</span></td>
+                        <td><span>{{ item.executions+'/'+item.pushes }}</span></td>
+                        <td>
+                          <a target="_blank" class="buttonText" :title="statusObj[item.status].name">
+                             遍历statusList，更改不同状态的任务实例的图标和颜色
+                            <i
+                              :class="statusObj[item.status].unicode"
+                              :style="{color: statusObj[item.status].color}"
+                            />
+                          </a></td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </el-tab-pane> -->
           </el-tabs>
         </div>
       </el-col>
@@ -100,6 +151,7 @@
 
 <script>
 import dayjs from 'dayjs'
+import store from '@/store'
 import { statusList } from './_source/common.js'
 // import mTaskCtatusCount from './_source/taskCtatusCount'
 import mProcessStateCount from './_source/processStateCount'
@@ -113,6 +165,7 @@ import {
   taskMonitor
 } from '@/api/etlscheduler/taskmonitor'
 // import format from 'element-ui/src/locale/format'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'ProjectsIndexIndex',
@@ -143,50 +196,45 @@ export default {
         return ''
       }
       const date = new Date(value)
-      const y = date.getFullYear()
-      let MM = date.getMonth() + 1
-      MM = MM < 10 ? '0' + MM : MM
-      let d = date.getDate()
-      d = d < 10 ? '0' + d : d
-      let h = date.getHours()
-      h = h < 10 ? '0' + h : h
-      let m = date.getMinutes()
-      m = m < 10 ? '0' + m : m
-      let s = date.getSeconds()
-      s = s < 10 ? '0' + s : s
-      return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s
+      return dayjs(date).format('YYYY-MM-DD HH:mm:ss')
+      // const y = date.getFullYear()
+      // let MM = date.getMonth() + 1
+      // MM = MM < 10 ? '0' + MM : MM
+      // let d = date.getDate()
+      // d = d < 10 ? '0' + d : d
+      // let h = date.getHours()
+      // h = h < 10 ? '0' + h : h
+      // let m = date.getMinutes()
+      // m = m < 10 ? '0' + m : m
+      // let s = date.getSeconds()
+      // s = s < 10 ? '0' + s : s
+      // return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s
     }
   },
   props: {},
-  // watch: {
-  //   value1() {
-  //     this.time = Date.parse(new Date())
-  //   }
-  // },
-  // refresh(){
-  //   watch: {
-  //     this.time = Date.parse(new Date())
-  // }
-  // },
   data() {
     return {
+      store,
+      tabname: 'processinstance',
       // info: {
       //   stockDate:this.getNowTime(),  //日期
       // },
       time: Date.parse(new Date()),
       searchParams: {
         startTimeStart: '',
-        startTimeEnd: ''
+        startTimeEnd: '',
+        statusType: null
       },
       taketime: 0,
       processtime: 0,
       count: 0,
+      fileCount: 0,
+      fileRecieveCount: 0,
       timeConsuming: 0,
       startTime: null,
       endTime: null,
       dataResourceStatistics: null,
       statusObj: {},
-
       pickerOptions: {
         shortcuts: [
           {
@@ -221,6 +269,11 @@ export default {
       value1: null
     }
   },
+  // refresh(){
+  //   watch: {
+  //     this.time = Date.parse(new Date())
+  // }
+  // },
   created() {
     statusList.forEach((r, i) => {
       this.statusObj[r['value']] = r
@@ -228,6 +281,8 @@ export default {
     this.searchParams.startTimeStart = dayjs().format('YYYY-MM-DD')
     this.searchParams.startTimeEnd = dayjs().format('YYYY-MM-DD')
     this.value1 = [dayjs().format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')]
+    this.setProcessStartTime(this.searchParams.startTimeStart)
+    this.setProcessEndTime(this.searchParams.startTimeEnd)
     // 获取任务的总耗时
     // takeTime().then((resp) => {
     //   this.taketime = resp.data;
@@ -241,6 +296,8 @@ export default {
       this.timeConsuming = resp.data.timeConsuming
       this.startTime = resp.data.startTime
       this.endTime = resp.data.endTime
+      this.fileCount = resp.data.fileCount
+      this.fileRecieveCount = resp.data.fileRecieveCount
     })
     // 获取文件资源的列表
     getDataFileList().then((resp) => {
@@ -248,6 +305,7 @@ export default {
     })
   },
   methods: {
+    ...mapMutations('monitor', ['setProcessStatus', 'setProcessStartTime', 'setProcessEndTime', 'setProcessGroupExecutionStatusType']),
     refresh() {
       this._datepicker()
       // getProcessStateCount()
@@ -281,6 +339,10 @@ export default {
     _datepicker() {
       this.searchParams.startTimeStart = this.value1[0]
       this.searchParams.startTimeEnd = this.value1[1]
+      this.searchParams.statusType = this.store.state.monitor.processGroupExecutionStatusType
+      this.setProcessStartTime(this.searchParams.startTimeStart)
+      this.setProcessEndTime(this.searchParams.startTimeEnd)
+      this.tabname = 'processinstance'
       taskMonitor({
         startTimeStart: this.searchParams.startTimeStart,
         startTimeEnd: this.searchParams.startTimeEnd
@@ -290,20 +352,22 @@ export default {
         this.startTime = resp.data.startTime
         this.endTime = resp.data.endTime
         this.time = Date.parse(new Date())
+        this.fileCount = resp.data.fileCount
+        this.fileRecieveCount = resp.data.fileRecieveCount
       })
     }
   }
 }
 </script>
-<style scope>
+<style scope lang="scss">
 .all {
   padding: 10px 0px;
 }
 .el-card__body {
-  padding: 10px 10px 10px 10px;
+  padding: 10px;
 }
 .el-card__header {
-  padding: 0px 0px 0 0;
+  padding: 0;
 }
 .iconstyle{
   font-size: 25px;
@@ -354,4 +418,31 @@ export default {
 .el-table{
   height: 180px;
 } */
+/*.chart-title {
+    text-align: center;
+    height: 60px;
+    line-height: 60px;
+    span {
+      font-size: 22px;
+      color: #333;
+      font-weight: bold;
+    }
+}
+.table-small-model {
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space:  nowrap;
+    display: block;
+  }
+}*/
+tr td{
+  text-align: center;
+}
+tr th{
+  text-align: center;
+}
+td i{
+  font-size: 20px;
+}
 </style>

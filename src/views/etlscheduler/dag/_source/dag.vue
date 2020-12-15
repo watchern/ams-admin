@@ -60,12 +60,14 @@
             class="copy-name"
             :data-clipboard-text="name"
             @click="_copyName"
-          ><em
+          >
+          <!-- <em
             class="ans-icon-copy"
             data-container="body"
             data-toggle="tooltip"
             title="复制名称"
-          /></span>
+          /> -->
+          </span>
         </div>
         <div class="save-btn">
           <div

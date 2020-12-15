@@ -112,6 +112,7 @@
         border
         fit
         highlight-current-row
+        height="250"
         style="width: 100%;"
         @sort-change="sortChange"
         @selection-change="handleSelectionChangeSecond"
@@ -194,8 +195,8 @@ export default {
       dialogStatus: '',
       dialogSecondStatus: '',
       textMap: {
-        update: '编辑代码',
-        create: '添加代码'
+        update: '修改代码',
+        create: '新增代码'
       },
       dialogPvVisible: false,
       rules: {
@@ -366,14 +367,27 @@ export default {
       })
     },
     deleteCode() {
-      var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.dataSortUuid) })
+      this.$confirm('确定删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+         var ids = []
+        this.selections.forEach((r, i) => { ids.push(r.dataSortUuid) })
       del(ids).then(() => {
         this.getList()
         this.$notify({
           title: '成功',
           message: '删除成功',
           type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      })
+      }).catch(() => {
+        this.$notify({
+          title: '消息',
+          message: '已取消删除',
           duration: 2000,
           position: 'bottom-right'
         })
