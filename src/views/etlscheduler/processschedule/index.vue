@@ -685,7 +685,8 @@ export default {
             required: true,
             message: '请填写调度任务名称',
             trigger: 'change'
-          }
+          },
+          { max: 20, message: '调度任务名称在20个字符之内', trigger: 'change' }
         ],
         processDefName: [
           {
@@ -697,7 +698,7 @@ export default {
         crontab: [
           {
             required: true,
-            message: '请填写作业周期',
+            message: '请选择作业周期',
             trigger: 'change'
           }
         ],
@@ -711,14 +712,14 @@ export default {
         startTime: [
           {
             required: true,
-            message: '请填写开始执行日期',
+            message: '请选择开始执行日期',
             trigger: 'change'
           }
         ],
         endTime: [
           {
             required: true,
-            message: '请填写结束执行日期',
+            message: '请选择结束执行日期',
             trigger: 'change'
           }
         ],
@@ -727,7 +728,8 @@ export default {
             required: true,
             message: '请输入参数值',
             trigger: 'change'
-          }
+          },
+          { max: 50, message: '参数值在50个字符之内', trigger: 'change' }
         ]
       },
       runRules: {
@@ -830,6 +832,7 @@ export default {
   created() {
     try {
       this.crontabFormat = getDictList('001001')
+      console.log(this.crontabFormat)
     } catch (e) {
       console.error(e)
     }
@@ -1206,16 +1209,29 @@ export default {
       }
     },
     handleDelete() {
-      var ids = []
-      this.selections.forEach((r, i) => {
-        ids.push(r.processSchedulesUuid)
-      })
-      del(ids.join(',')).then(() => {
-        this.getList()
+      this.$confirm('确定删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => {
+          ids.push(r.processSchedulesUuid)
+        })
+        del(ids.join(',')).then(() => {
+          this.getList()
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      }).catch(() => {
         this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
+          title: '消息',
+          message: '已取消删除',
           duration: 2000,
           position: 'bottom-right'
         })

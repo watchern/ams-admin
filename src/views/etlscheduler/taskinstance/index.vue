@@ -5,6 +5,7 @@
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
+        :query-default="queryDefault"
         @submit="getList"
       />
     </div>
@@ -152,11 +153,16 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, findTaskLogs } from '@/api/etlscheduler/taskinstance'
 import QueryField from '@/components/Ace/query-field/index'
-// statuSelectList, statusComm
-import { colorList, statusListComm, statuSelect } from '@/views/etlscheduler/processinstance/comm.js'
+// statuSelect, statusComm
+import { colorList, statusListComm, statuSelectList } from '@/views/etlscheduler/processinstance/comm.js'
+import dayjs from 'dayjs'
+import store from '@/store'
 
 export default {
   components: { Pagination, QueryField },
+  props: {
+    searchParams: Object
+  },
   // filters: {
   // 耗时的时间格式转换
   // timeFilter(value) {
@@ -179,6 +185,7 @@ export default {
   // },
   data() {
     return {
+      store,
       tableKey: 'taskInstanceUuid',
       list: null,
       total: 0,
@@ -188,9 +195,13 @@ export default {
       queryFields: [
         { label: '任务实例名称', name: 'name', type: 'text', value: '' },
         // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
+        // {
+        //   label: '任务实例状态', name: 'status', type: 'select',
+        //   data: statuSelect
+        // },
         {
-          label: '任务实例状态', name: 'status', type: 'select',
-          data: statuSelect
+          label: '任务实例状态', name: 'groupExecutionStatus', type: 'select',
+          data: statuSelectList
         },
         // {
         //   label: '任务实例状态', name: 'groupExecutionStatus', type: 'select',
@@ -254,7 +265,7 @@ export default {
       downloadLoading: false,
       tasks: null,
       checkedTask: null,
-      checkedTaskId: '',
+      checkedTaskId: null,
       logTasks: null,
       logs: null,
       taskslogsList: null,
@@ -263,6 +274,18 @@ export default {
     }
   },
   watch: {
+    searchParams: {
+      deep: true,
+      immediate: true,
+      handler() {
+        this.queryDefault = {
+          groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+          startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
+          startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
+        }
+        this.getList(this.queryDefault)
+      }
+    }
   },
   created() {
     statusListComm.forEach((r, i) => {
@@ -283,12 +306,12 @@ export default {
     //   status: JSON.stringify(this.$route.query.stateType)
     // }
     // console.log(condition)
-    if (this.$route.params instanceof Object) {
-      this.queryDefault = this.$route.params
-    }
+    // if (this.$route.params instanceof Object) {
+    //   this.queryDefault = this.$route.params
+    // }
     // this.getList(this.queryDefault)
 
-    this.getList()
+    // this.getList()
   },
   mounted() {
     // this.statusList = statusListComm

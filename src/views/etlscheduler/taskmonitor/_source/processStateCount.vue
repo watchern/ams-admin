@@ -33,19 +33,26 @@
 </template>
 <script>
 import _ from 'lodash'
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import { pie } from './chartConfig'
 import Chart from '@/components/etl/ana-charts'
 // import mNoData from '@/components/etl/noData/noData'
 // stateType,
 import { statusType } from './common'
+import store from '@/store'
 export default {
   name: 'ProcessStateCount',
   props: {
     searchParams: Object
+    // ,
+    // refresh: {
+    //   type: Function,
+    //   default: null
+    // }
   },
   data() {
     return {
+      store,
       currentDate: new Date(),
       isSpin: true,
       msg: '',
@@ -54,6 +61,7 @@ export default {
   },
   methods: {
     ...mapActions('projects', ['getProcessStateCount']),
+    ...mapMutations('monitor', ['setProcessStatus', 'setProcessStartTime', 'setProcessEndTime', 'setProcessGroupExecutionStatusType']),
     _goProcess(name) {
       this.$router.push({
         name: 'projects-instance-list',
@@ -70,16 +78,24 @@ export default {
     },
     // 带着状态和开始结束时间进行页面的跳转，跳转到流程实例页面
     handleProcess(name) {
-      this.$router.push({
-        path: '/etlscheduler/processinstance',
-        name: 'processinstance',
-        params: {
-          // status: JSON.stringify(_.find(stateType, ['label', name]).value),
-          status: JSON.stringify(_.find(statusType, ['label', name]).value),
-          startTimeStart: this.searchParams.startTimeStart,
-          startTimeEnd: this.searchParams.startTimeEnd
-        }
-      })
+      this.setProcessGroupExecutionStatusType(_.find(statusType, ['label', name]).value)
+      this.setProcessStartTime(this.searchParams.startTimeStart)
+      this.setProcessEndTime(this.searchParams.startTimeEnd)
+      // this.refresh()
+      this.$emit('refresh')
+      // this.$router.push({
+      //   path: '/etlscheduler/processinstance',
+      //   name: 'processinstance',
+      //   params: {
+      //     // status: JSON.stringify(_.find(stateType, ['label', name]).value),
+      //     // groupExecutionStatus: _.find(statusType, ['label', name]).value,
+      //     // startTimeStart: this.searchParams.startTimeStart,
+      //     // startTimeEnd: this.searchParams.startTimeEnd
+      //     groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+      //     startTimeStart: this.store.state.monitor.processStartTime,
+      //     startTimeEnd: this.store.state.monitor.processEndTime
+      //   }
+      // })
     },
     _handleProcessState(res) {
       const data = res.data.taskCountDtos
@@ -119,7 +135,6 @@ export default {
           })
         }
       })
-
       myChart.echart.on('mouseout', (v) => {
         myChart.echart.dispatchAction({
           type: 'showTip',
@@ -132,7 +147,6 @@ export default {
           name: '执行完成'
         })
       })
-
       // 首页不允许跳转
       if (this.searchParams.projectId) {
         myChart.echart.on('click', (e) => {
