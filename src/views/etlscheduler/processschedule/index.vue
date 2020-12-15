@@ -1345,9 +1345,21 @@ export default {
     formatCron(row, column) {
       const date = row[column.property]
       var onJsonDate = new Date(row.startTime)
-      var onTime = onJsonDate.toLocaleDateString()
+      var onTimeList = onJsonDate.toLocaleDateString().split("/")
+      for(var i=0;i<onTimeList.length;i++){
+        if(onTimeList[i]<10){
+          onTimeList[i] = '0'+onTimeList[i]
+        }
+        var onTime = onTimeList[0] + "/" + onTimeList[1] + "/" + onTimeList[2] 
+      }
       var stopJsonDate = new Date(row.endTime)
-      var stopTime = stopJsonDate.toLocaleDateString()
+      var stopTimeList = stopJsonDate.toLocaleDateString().split("/")
+      for(var k=0;k<stopTimeList.length;k++){
+        if(stopTimeList[k]<10){
+          stopTimeList[k] = '0'+stopTimeList[k]
+        }
+        var stopTime = stopTimeList[0] + "/" + stopTimeList[1] + "/" + stopTimeList[2] 
+      }
       var message = ''
       this.crontabFormat.forEach((r, i) => {
         if (date === r.codeDesc) {
