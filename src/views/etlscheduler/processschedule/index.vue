@@ -197,9 +197,9 @@
           />
         </el-form-item>
         <el-row>
-          <el-col :span="8">
+          <el-col :span="8" class="ellines">
             <el-form-item label="作业周期开始时间" prop="startTime">
-              <el-col :span="8">
+              <el-col :span="8" class="ellines">
                 <el-date-picker
                   v-model="temp.startTime"
                   :picker-options="startTime"
@@ -1496,5 +1496,8 @@ export default {
     // position: relative;
     // left: 460px;
     // bottom: 115px;
+  }
+  .ellines{
+    padding: 0;
   }
 </style>
