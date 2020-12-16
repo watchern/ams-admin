@@ -10,14 +10,29 @@
       <el-table-column label="操作IP"  align="center" prop="opIp" />
       <el-table-column label="异常类"  align="center" prop="opClass" />
       <el-table-column label="异常方法" prop="opMethod" />
-      <el-table-column label="异常时间" prop="logTime" :formatter="dateFormatter" />
-      <el-table-column label="异常信息" prop="logContent" />
+      <el-table-column label="异常时间" prop="logTime" align="center"/>
+      <el-table-column label="异常信息" align="center" >
+        <template slot-scope="scope">
+          <el-button type="text" size="small" @click="handReadError(scope.row)">查看异常信息</el-button>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column label="异常信息" prop="logContent" /> -->
     </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />  
+    <el-dialog
+      title="异常信息"
+      :visible.sync="dialogVisible">
+      <div style="max-height:60vh; overflow:auto">
+        <span>{{this.logContent}}</span>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { listByPageErrorLog } from '@/api/base/base'
+import { 
+  listByPageErrorLog,
+  getReadErrorLog
+} from '@/api/base/base'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 export default {
@@ -28,6 +43,7 @@ export default {
       list: null,
       total: 0,
       listLoading: false,
+      dialogVisible: false,
       queryFields: [
         { label: '操作用户', name: 'opUserName', type: 'fuzzyText', value: '' },
         { label: '操作IP', name: 'opIp', type: 'fuzzyText' },
@@ -76,11 +92,6 @@ export default {
             field: 'logTime',
             filter: 'agNumberColumnFilter'
           },
-          {
-            headerName: '异常信息',
-            field: 'logContent',
-            filter: 'agNumberColumnFilter'
-          }
         ]
       },
       formStyle: {
@@ -113,27 +124,27 @@ export default {
     this.getList()
   },
   methods: {
-    /**
-     * 格式化时间
-     * @param row 指定行
-     * @param column 指定列
-     * @returns {string} 返回格式化后的时间
-     */
-    dateFormatter(row, column) {
-      const datetime = row.logTime
-      if (datetime) {
-        var dateMat = new Date(datetime)
-        var year = dateMat.getFullYear()
-        var month = dateMat.getMonth() + 1
-        var day = dateMat.getDate()
-        var hh = dateMat.getHours()
-        var mm = dateMat.getMinutes()
-        var ss = dateMat.getSeconds()
-        var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
-        return timeFormat
-      }
-      return ''
-    },
+    // /**
+    //  * 格式化时间
+    //  * @param row 指定行
+    //  * @param column 指定列
+    //  * @returns {string} 返回格式化后的时间
+    //  */
+    // dateFormatter(row, column) {
+    //   const datetime = row.logTime
+    //   if (datetime) {
+    //     var dateMat = new Date(datetime)
+    //     var year = dateMat.getFullYear()
+    //     var month = dateMat.getMonth() + 1
+    //     var day = dateMat.getDate()
+    //     var hh = dateMat.getHours()
+    //     var mm = dateMat.getMinutes()
+    //     var ss = dateMat.getSeconds()
+    //     var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
+    //     return timeFormat
+    //   }
+    //   return ''
+    // },
     /**
      * 获取列表
      * @param query 查询对象
@@ -163,7 +174,17 @@ export default {
           endTime: ''
         }
       }
-    }
+    },
+    /**
+     * 获取详细异常信息 
+     */
+    handReadError(data){
+      this.dialogVisible = true
+      this.logContent = data.logContent
+      // getReadErrorLog(data.errorUuid).then(res => {
+      //   this.logContent = res.data
+      // })
+    },
   }
 }
 </script>

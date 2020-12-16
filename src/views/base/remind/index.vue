@@ -19,7 +19,7 @@
       <el-table-column type="selection" width="55" />
       <el-table-column label="标题"  align="center" prop="remindTitle" />
       <el-table-column label="内容"  align="left" prop="remindContent" />
-      <el-table-column label="提醒时间"  align="center" prop="remindTime" :formatter="dateFormatter" />
+      <el-table-column label="提醒时间"  align="center" prop="remindTime"/>
       <el-table-column label="阅读状态" prop="readStatus" align="center"  :formatter="readStatusFormatter" />
       <el-table-column label="操作" prop="modeUrl" align="center" >
         <template slot-scope="scope">
@@ -130,27 +130,27 @@ export default {
     this.getList()
   },
   methods: {
-    /**
-     * 格式化时间字符串
-     * @param row 行数据
-     * @param column 列数据
-     * @returns {string} 返回格式化后的字符串
-     */
-    dateFormatter(row, column) {
-      const datetime = row.remindTime
-      if (datetime) {
-        var dateMat = new Date(datetime)
-        var year = dateMat.getFullYear()
-        var month = dateMat.getMonth() + 1
-        var day = dateMat.getDate()
-        var hh = dateMat.getHours()
-        var mm = dateMat.getMinutes()
-        var ss = dateMat.getSeconds()
-        var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
-        return timeFormat
-      }
-      return ''
-    },
+    // /**
+    //  * 格式化时间字符串
+    //  * @param row 行数据
+    //  * @param column 列数据
+    //  * @returns {string} 返回格式化后的字符串
+    //  */
+    // dateFormatter(row, column) {
+    //   const datetime = row.remindTime
+    //   if (datetime) {
+    //     var dateMat = new Date(datetime)
+    //     var year = dateMat.getFullYear()
+    //     var month = dateMat.getMonth() + 1
+    //     var day = dateMat.getDate()
+    //     var hh = dateMat.getHours()
+    //     var mm = dateMat.getMinutes()
+    //     var ss = dateMat.getSeconds()
+    //     var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
+    //     return timeFormat
+    //   }
+    //   return ''
+    // },
     /**
      * 格式化已阅状态
      * @param row 行数据
