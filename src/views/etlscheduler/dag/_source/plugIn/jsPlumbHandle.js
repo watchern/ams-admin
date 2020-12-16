@@ -365,6 +365,10 @@ JSP.prototype.tasksContextmenu = function(event) {
 JSP.prototype.tasksDblclick = function(e) {
   // Untie event
   if (this.config.isDblclick) {
+    // $('.w').removeClass('jtk-tasks-active')
+    // $(e.currentTarget.offsetParent).addClass('jtk-tasks-active')
+    // $(e.currentTarget.offsetParent).addClass('jtk-tasks-active')
+    // console.log(e.currentTarget.offsetParent)
     const id = $(e.currentTarget.offsetParent).attr('id')
     findComponentDownward(this.dag.$root, 'DagChart')._createNodes({
       id: id,
