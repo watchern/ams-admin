@@ -631,7 +631,7 @@ Menus.prototype.createNodeMenus = function(nodeType,nodeId) {
 	switch (nodeType) {
 		//数据库表
 		case "datasource":
-            menuArr = ["previewNodeData", "showCurNodeSQL","markCenterOutput","reName"];
+            menuArr = ["previewNodeData", "showCurNodeSQL","markCenterOutput","markFinalOutput","reName"];
 			break;
 		//结果表
 		case "newNullNode":

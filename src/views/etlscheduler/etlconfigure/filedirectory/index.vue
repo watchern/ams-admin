@@ -263,8 +263,8 @@ export default {
             this.getList()
             this.dialogFormVisible = false
             this.$notify({
-              title: '成功',
-              message: '创建成功',
+              title: this.$t('message.title'),
+              message: this.$t('message.insert.success'),
               type: 'success',
               duration: 2000,
               position: 'bottom-right'
@@ -290,8 +290,8 @@ export default {
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
             this.$notify({
-              title: '成功',
-              message: '更新成功',
+              title: this.$t('message.title'),
+              message: this.$t('message.update.success'),
               type: 'success',
               duration: 2000,
               position: 'bottom-right'
@@ -306,8 +306,8 @@ export default {
       del(ids.join(',')).then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
-          message: '删除成功',
+          title: this.$t('message.title'),
+          message: this.$t('message.delete.success'),
           type: 'success',
           duration: 2000,
           position: 'bottom-right'

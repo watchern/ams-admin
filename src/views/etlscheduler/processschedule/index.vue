@@ -78,12 +78,14 @@
         <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(taskParam,$index) in scope.row.distinctParamList" :key="$index">
-              <label class="col-md-4">
-                {{ taskParam.name }}:
-              </label>
-              <div class="col-md-8">
+              <el-col :span="8">
+                <label>
+                  {{ taskParam.name }}:
+                </label>
+              </el-col>
+              <el-col :span="16">
                 {{ taskParam.value }}
-              </div>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -101,12 +103,16 @@
         <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
-              <label class="col-md-2">
-                [{{ dependTask.dateValueName }}]
-              </label>
-              <label class="col-md-10" align="right">
-                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
-              </label>
+              <el-col :span="4">
+                <label>
+                  [{{ dependTask.dateValueName }}]
+                </label>
+              </el-col>
+              <el-col :span="20">
+                <label align="right">
+                  {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+                </label>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -499,6 +505,8 @@ import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
 // import { crontabExpression } from './common.js'
 import { getDictList } from '@/utils'
+import { mapMutations } from 'vuex'
+import store from '@/store'
 // import _ from lodash
 
 export default {
@@ -515,6 +523,7 @@ export default {
   },
   data() {
     return {
+      store,
       downProcessDefinitionId: null,
       disableAddStatus: false,
       // 开始时间大于今天
@@ -869,6 +878,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('monitor', ['setScheduleDetail']),
     // 修改参数
     changeParamValue(value, name) {
       if (value === '') {
@@ -890,6 +900,7 @@ export default {
       this.temp = Object.assign({}, rowdata) // copy obj
       this.dialogStatus = 'show'
       this.dialogFormVisible = true
+      this.setScheduleDetail(true)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -934,7 +945,7 @@ export default {
         copy(r.processSchedulesUuid).then(() => {
           this.getList()
           this.$notify({
-            title: '成功',
+            title: this.$t('message.title'),
             message: '复制成功',
             type: 'success',
             duration: 2000,
@@ -1094,7 +1105,7 @@ export default {
           startProcessInstance(tempData).then(() => {
             this.getList()
             this.$notify({
-              title: '成功',
+              title: this.$t('message.title'),
               message: '运行成功',
               type: 'success',
               duration: 2000,
@@ -1116,6 +1127,7 @@ export default {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
+      this.setScheduleDetail(false)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -1124,7 +1136,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (this.flag === false) {
           this.$notify({
-            title: '失败',
+            title: this.$t('message.title'),
             message: '请输入参数值',
             type: 'error',
             duration: 3000,
@@ -1146,8 +1158,8 @@ export default {
               this.getList()
               this.dialogFormVisible = false
               this.$notify({
-                title: '成功',
-                message: '创建成功',
+                title: this.$t('message.title'),
+                message: this.$t('message.insert.success'),
                 type: 'success',
                 duration: 2000,
                 position: 'bottom-right'
@@ -1172,6 +1184,7 @@ export default {
       this.temp = Object.assign({}, this.selections[0]) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      this.setScheduleDetail(false)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -1185,7 +1198,7 @@ export default {
     updateData() {
       if (this.flag === false) {
         this.$notify({
-          title: '失败',
+          title: this.$t('message.title'),
           message: '请输入参数值',
           type: 'error',
           duration: 3000,
@@ -1204,8 +1217,8 @@ export default {
               this.list.splice(index, 1, this.temp)
               this.dialogFormVisible = false
               this.$notify({
-                title: '成功',
-                message: '更新成功',
+                title: this.$t('message.title'),
+                message: this.$t('message.update.success'),
                 type: 'success',
                 duration: 2000,
                 position: 'bottom-right'
@@ -1216,9 +1229,9 @@ export default {
       }
     },
     handleDelete() {
-      this.$confirm('确定删除吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
         type: 'warning'
       }).then(() => {
         var ids = []
@@ -1228,20 +1241,14 @@ export default {
         del(ids.join(',')).then(() => {
           this.getList()
           this.$notify({
-            title: '成功',
-            message: '删除成功',
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
             type: 'success',
             duration: 2000,
             position: 'bottom-right'
           })
         })
       }).catch(() => {
-        this.$notify({
-          title: '消息',
-          message: '已取消删除',
-          duration: 2000,
-          position: 'bottom-right'
-        })
       })
     },
     handleUse() {
@@ -1252,7 +1259,7 @@ export default {
       startScheduleStatus(ids.join(','), 1).then((res) => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '启用成功',
           type: 'success',
           duration: 2000,
@@ -1262,19 +1269,26 @@ export default {
     },
     // 停用
     handleStop() {
-      var ids = []
-      this.selections.forEach((r, i) => {
-        ids.push(r.processSchedulesUuid)
-      })
-      stopScheduleStatus(ids.join(','), 0).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '停用成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm('确定要停用吗？', this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => {
+          ids.push(r.processSchedulesUuid)
         })
+        stopScheduleStatus(ids.join(','), 0).then(() => {
+          this.getList()
+          this.$notify({
+            title: this.$t('message.title'),
+            message: '停用成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      }).catch(() => {
       })
     },
     // 下载模板
@@ -1291,7 +1305,6 @@ export default {
     },
     // 上传文件，获取文件流
     handleFileChange(file) {
-      // console.log(file)
       this.file = file.raw
     },
     handleRemove(file, fileList) {
@@ -1327,7 +1340,7 @@ export default {
         if (res.data.code === 2501) {
           this.getList()
           this.$notify({
-            title: '失败',
+            title: this.$t('message.title'),
             message: res.data.msg,
             type: 'error',
             duration: 2000,
@@ -1336,7 +1349,7 @@ export default {
         } else {
           this.getList()
           this.$notify({
-            title: '成功',
+            title: this.$t('message.title'),
             message: '导入成功',
             type: 'success',
             duration: 5000,
@@ -1352,20 +1365,20 @@ export default {
     formatCron(row, column) {
       const date = row[column.property]
       var onJsonDate = new Date(row.startTime)
-      var onTimeList = onJsonDate.toLocaleDateString().split("/")
-      for(var i=0;i<onTimeList.length;i++){
-        if(onTimeList[i]<10){
-          onTimeList[i] = '0'+onTimeList[i]
+      var onTimeList = onJsonDate.toLocaleDateString().split('/')
+      for (var i = 0; i < onTimeList.length; i++) {
+        if (onTimeList[i] < 10) {
+          onTimeList[i] = '0' + onTimeList[i]
         }
-        var onTime = onTimeList[0] + "/" + onTimeList[1] + "/" + onTimeList[2] 
+        var onTime = onTimeList[0] + '/' + onTimeList[1] + '/' + onTimeList[2]
       }
       var stopJsonDate = new Date(row.endTime)
-      var stopTimeList = stopJsonDate.toLocaleDateString().split("/")
-      for(var k=0;k<stopTimeList.length;k++){
-        if(stopTimeList[k]<10){
-          stopTimeList[k] = '0'+stopTimeList[k]
+      var stopTimeList = stopJsonDate.toLocaleDateString().split('/')
+      for (var k = 0; k < stopTimeList.length; k++) {
+        if (stopTimeList[k] < 10) {
+          stopTimeList[k] = '0' + stopTimeList[k]
         }
-        var stopTime = stopTimeList[0] + "/" + stopTimeList[1] + "/" + stopTimeList[2] 
+        var stopTime = stopTimeList[0] + '/' + stopTimeList[1] + '/' + stopTimeList[2]
       }
       var message = ''
       this.crontabFormat.forEach((r, i) => {

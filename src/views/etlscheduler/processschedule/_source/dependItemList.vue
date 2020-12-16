@@ -99,11 +99,11 @@
           />
         </span>
       </template>
-      <span class="operation">
+      <span v-if="show" class="operation">
         <a href="javascript:" class="delete" @click="!isDetails && _remove($index)">
           <em class="oper-btn delete" :class="_isDetails" data-toggle="tooltip" data-container="body" title="删除" />
         </a>
-        <a v-if="$index === (dependItemList.length - 1)" href="javascript:" class="add" @click="!isDetails && _add()">
+        <a v-if="($index === (dependItemList.length - 1))" href="javascript:" class="add" @click="!isDetails && _add()">
           <em class="oper-btn add" :class="_isDetails" data-toggle="tooltip" data-container="body" title="添加" />
         </a>
       </span>
@@ -112,6 +112,7 @@
 </template>
 <script>
 import _ from 'lodash'
+import store from '@/store'
 import {
   cycleList,
   dateValueList
@@ -139,6 +140,7 @@ export default {
   },
   data() {
     return {
+      store,
       // dependTaskList: Array,
       task: null,
       list: [],
@@ -150,11 +152,24 @@ export default {
       cycleValue: '',
       dateValueName: '',
       cycle: { value: 'day' },
-      depTasksList: {}
+      depTasksList: {},
+      show: false
+    }
+  },
+  computed: {
+    isScheduleDetail() {
+      return this.store.state.monitor.scheduleDetail // 需要监听的数据
     }
   },
   watch: {
-    'dependTaskList': 'initDepend'
+    'dependTaskList': 'initDepend',
+    isScheduleDetail(val) {
+      if (val) {
+        this.show = false
+      } else {
+        this.show = true
+      }
+    }
     // dependItemList() {
     //   this.isInstance = false
     //   getScheduleList().then((resp) => {
@@ -200,6 +215,7 @@ export default {
   created() {
     // is type projects-instance-details
     this.isInstance = false
+    this.show = !this.store.state.monitor.scheduleDetail
     // this.initDepend()
   },
   mounted() {

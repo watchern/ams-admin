@@ -408,7 +408,6 @@ export default {
      */
     _onParams(o) {
       this.params = Object.assign({}, o)
-      console.log(this.params)
     },
 
     _onCacheParams(o) {

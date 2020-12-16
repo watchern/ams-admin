@@ -73,12 +73,14 @@
           <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="taskParam in scope.row.taskParamList" :key="taskParam.value">
-              <label class="col-md-2">
-                {{ taskParam.name }}:
-              </label>
-              <div class="col-md-10">
+              <el-col :span="8">
+                <label>
+                  {{ taskParam.name }}:
+                </label>
+              </el-col>
+              <el-col :span="16">
                 {{ taskParam.value }}
-              </div>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <el-link :underline="false" type="primary">查看参数</el-link>
@@ -305,7 +307,6 @@ export default {
     //   startTimeEnd: JSON.stringify(this.$route.query.startTimeEnd),
     //   status: JSON.stringify(this.$route.query.stateType)
     // }
-    // console.log(condition)
     // if (this.$route.params instanceof Object) {
     //   this.queryDefault = this.$route.params
     // }

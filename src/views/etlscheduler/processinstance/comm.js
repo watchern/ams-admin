@@ -262,9 +262,6 @@ const statuSelectList = [
   }, {
     value: 'G_FAILURE',
     name: '执行失败'
-  }, {
-    value: 'G_OTHER',
-    name: '其它'
   }
 ]
 // 命令的类型
