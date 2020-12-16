@@ -355,7 +355,7 @@
 
     <!-- 下载流程模板弹框 -->
     <el-dialog title="下载流程模板" :visible.sync="dialogFormVisible1">
-      <el-form label-position="right">
+      <el-form label-position="right" class="detail-form">
         <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="downProcessDefinitionId">
           <el-select
