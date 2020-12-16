@@ -161,7 +161,7 @@ export default {
           icon: '',
           name: '提醒事项',
           count: 20,
-          method: this.logout
+          method: this.logoutRemind
         },
         {
           icon: '',
@@ -308,6 +308,9 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    logoutRemind(){
+      this.$router.push({ path:'/base/remind'})
     }
   }
 }
