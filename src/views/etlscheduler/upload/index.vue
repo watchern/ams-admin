@@ -50,7 +50,7 @@ export default {
         file.cancel()
       } else {
         this.$notify({
-          title: '提示',
+          title: this.$t('message.title'),
           message: this.$t(JSON.parse(response).data + '上传成功'),
           type: 'success',
           duration: 2000,
