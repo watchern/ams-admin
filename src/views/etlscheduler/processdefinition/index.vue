@@ -373,7 +373,6 @@ export default {
     },
     // 上传文件，获取文件流
     handleFileChange(file) {
-      // console.log(file)
       this.file = file.raw
     },
     handleRemove(file, fileList) {

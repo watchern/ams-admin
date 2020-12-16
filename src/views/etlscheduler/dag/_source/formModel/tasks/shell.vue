@@ -133,7 +133,6 @@ export default {
   },
   created() {
     const item = this.store.state.dag.resourcesListS
-    console.log('o.params.resourceList' + JSON.stringify(this.store.state.dag.resourcesListS))
     this.diGuiTree(item)
     this.options = item
     const o = this.backfillItem

@@ -78,12 +78,14 @@
         <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(taskParam,$index) in scope.row.distinctParamList" :key="$index">
-              <label class="col-md-4">
-                {{ taskParam.name }}:
-              </label>
-              <div class="col-md-8">
+              <el-col :span="8">
+                <label>
+                  {{ taskParam.name }}:
+                </label>
+              </el-col>
+              <el-col :span="16">
                 {{ taskParam.value }}
-              </div>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -101,12 +103,16 @@
         <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
-              <label class="col-md-2">
-                [{{ dependTask.dateValueName }}]
-              </label>
-              <label class="col-md-10" align="right">
-                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
-              </label>
+              <el-col :span="4">
+                <label>
+                  [{{ dependTask.dateValueName }}]
+                </label>
+              </el-col>
+              <el-col :span="20">
+                <label align="right">
+                  {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+                </label>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -499,6 +505,8 @@ import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
 // import { crontabExpression } from './common.js'
 import { getDictList } from '@/utils'
+import { mapMutations } from 'vuex'
+import store from '@/store'
 // import _ from lodash
 
 export default {
@@ -515,6 +523,7 @@ export default {
   },
   data() {
     return {
+      store,
       downProcessDefinitionId: null,
       disableAddStatus: false,
       // 开始时间大于今天
@@ -869,6 +878,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('monitor', ['setScheduleDetail']),
     // 修改参数
     changeParamValue(value, name) {
       if (value === '') {
@@ -890,6 +900,7 @@ export default {
       this.temp = Object.assign({}, rowdata) // copy obj
       this.dialogStatus = 'show'
       this.dialogFormVisible = true
+      this.setScheduleDetail(true)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -1116,6 +1127,7 @@ export default {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
+      this.setScheduleDetail(false)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -1172,6 +1184,7 @@ export default {
       this.temp = Object.assign({}, this.selections[0]) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      this.setScheduleDetail(false)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -1292,7 +1305,6 @@ export default {
     },
     // 上传文件，获取文件流
     handleFileChange(file) {
-      // console.log(file)
       this.file = file.raw
     },
     handleRemove(file, fileList) {
