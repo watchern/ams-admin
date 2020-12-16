@@ -562,7 +562,7 @@ export default {
       }
       this.store.dispatch(`datasource/${val}`, param).then(res => {
         this.$notify({
-          title: '提示',
+          title: this.$t('message.title'),
           message: res.msg,
           type: 'success',
           duration: 2000,
@@ -600,7 +600,7 @@ export default {
         this.store.dispatch('datasource/connectDatasources', { connectionParams: JSON.stringify(res.data) }).then(resp => {
           setTimeout(() => {
             this.$notify({
-              title: '提示',
+              title: this.$t('message.title'),
               message: '测试连接成功',
               type: 'success',
               duration: 2000,
@@ -691,7 +691,7 @@ export default {
           this.store.dispatch('datasource/connectDatasources', { connectionParams: JSON.stringify(this._rtParam()) }).then(res => {
             setTimeout(() => {
               this.$notify({
-                title: '提示',
+                title: this.$t('message.title'),
                 message: '测试连接成功',
                 type: 'success',
                 duration: 2000,

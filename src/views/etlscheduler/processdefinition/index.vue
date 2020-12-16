@@ -267,7 +267,7 @@ export default {
       updateDefinitionStatus(ids.join(','), 1).then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '启用成功',
           type: 'success',
           duration: 2000,
@@ -306,7 +306,7 @@ export default {
         downloadBlob(res.data, 'process_' + new Date().getTime())
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '下载成功',
           type: 'success',
           duration: 2000,
@@ -317,23 +317,30 @@ export default {
       })
     },
     handleStop() {
-      var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
-      updateDefinitionStatus(ids.join(','), 0).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '停用成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm('此操作将停用相关的调度任务, 是否继续?', this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
+        updateDefinitionStatus(ids.join(','), 0).then(() => {
+          this.getList()
+          this.$notify({
+            title: this.$t('message.title'),
+            message: '停用成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         })
+      }).catch(() => {
       })
     },
     handleDelete() {
-      this.$confirm('此操作将删除相关的调度任务, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('此操作将删除相关的调度任务, 是否继续?', this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
         type: 'warning'
       }).then(() => {
         var ids = []
@@ -341,20 +348,20 @@ export default {
         del(ids.join(',')).then(() => {
           this.getList()
           this.$notify({
-            title: '成功',
-            message: '删除成功',
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
             type: 'success',
             duration: 2000,
             position: 'bottom-right'
           })
         })
       }).catch(() => {
-        this.$notify({
-          title: '消息',
-          message: '已取消删除',
-          duration: 2000,
-          position: 'bottom-right'
-        })
+        // this.$notify({
+        //   title: '消息',
+        //   message: '已取消删除',
+        //   duration: 2000,
+        //   position: 'bottom-right'
+        // })
       })
     },
     handleSelectionChange(val) {
@@ -403,7 +410,7 @@ export default {
       }).then((res) => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '导入成功',
           type: 'success',
           duration: 2000,

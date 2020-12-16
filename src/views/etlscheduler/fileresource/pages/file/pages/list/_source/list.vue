@@ -164,7 +164,7 @@ export default {
         this.$refs[`poptip-${i}`][0].doClose()
         this.$emit('on-update')
         this.$notify({
-          title: '提示',
+          title: this.$t('message.title'),
           message: res.msg,
           type: 'success',
           duration: 2000,

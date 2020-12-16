@@ -636,7 +636,7 @@ export default {
         this.list.splice(index, 1, this.temp)
         this.dialogFormVisible = false
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '设置跳过环节成功成功',
           type: 'success',
           duration: 2000,
@@ -661,7 +661,7 @@ export default {
       execute(ids.join(','), 'PAUSE').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '暂停成功',
           type: 'success',
           duration: 2000,
@@ -676,7 +676,7 @@ export default {
       execute(ids.join(','), 'START_UP').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '启用成功',
           type: 'success',
           duration: 2000,
@@ -691,7 +691,7 @@ export default {
       execute(ids.join(','), 'REPEAT_RUNNING').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '重新运行成功',
           type: 'success',
           duration: 2000,
@@ -706,7 +706,7 @@ export default {
       execute(ids.join(','), 'CANCEL').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '取消成功',
           type: 'success',
           duration: 2000,

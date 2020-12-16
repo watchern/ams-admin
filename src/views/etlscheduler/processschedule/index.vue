@@ -934,7 +934,7 @@ export default {
         copy(r.processSchedulesUuid).then(() => {
           this.getList()
           this.$notify({
-            title: '成功',
+            title: this.$t('message.title'),
             message: '复制成功',
             type: 'success',
             duration: 2000,
@@ -1094,7 +1094,7 @@ export default {
           startProcessInstance(tempData).then(() => {
             this.getList()
             this.$notify({
-              title: '成功',
+              title: this.$t('message.title'),
               message: '运行成功',
               type: 'success',
               duration: 2000,
@@ -1124,7 +1124,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (this.flag === false) {
           this.$notify({
-            title: '失败',
+            title: this.$t('message.title'),
             message: '请输入参数值',
             type: 'error',
             duration: 3000,
@@ -1146,8 +1146,8 @@ export default {
               this.getList()
               this.dialogFormVisible = false
               this.$notify({
-                title: '成功',
-                message: '创建成功',
+                title: this.$t('message.title'),
+                message: this.$t('message.insert.success'),
                 type: 'success',
                 duration: 2000,
                 position: 'bottom-right'
@@ -1185,7 +1185,7 @@ export default {
     updateData() {
       if (this.flag === false) {
         this.$notify({
-          title: '失败',
+          title: this.$t('message.title'),
           message: '请输入参数值',
           type: 'error',
           duration: 3000,
@@ -1204,8 +1204,8 @@ export default {
               this.list.splice(index, 1, this.temp)
               this.dialogFormVisible = false
               this.$notify({
-                title: '成功',
-                message: '更新成功',
+                title: this.$t('message.title'),
+                message: this.$t('message.update.success'),
                 type: 'success',
                 duration: 2000,
                 position: 'bottom-right'
@@ -1216,9 +1216,9 @@ export default {
       }
     },
     handleDelete() {
-      this.$confirm(this.$t('confirm.delete'), '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
         type: 'warning'
       }).then(() => {
         var ids = []
@@ -1228,7 +1228,7 @@ export default {
         del(ids.join(',')).then(() => {
           this.getList()
           this.$notify({
-            title: '成功',
+            title: this.$t('message.title'),
             message: this.$t('message.delete.success'),
             type: 'success',
             duration: 2000,
@@ -1246,7 +1246,7 @@ export default {
       startScheduleStatus(ids.join(','), 1).then((res) => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '启用成功',
           type: 'success',
           duration: 2000,
@@ -1256,19 +1256,26 @@ export default {
     },
     // 停用
     handleStop() {
-      var ids = []
-      this.selections.forEach((r, i) => {
-        ids.push(r.processSchedulesUuid)
-      })
-      stopScheduleStatus(ids.join(','), 0).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '停用成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm('确定要停用吗？', this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => {
+          ids.push(r.processSchedulesUuid)
         })
+        stopScheduleStatus(ids.join(','), 0).then(() => {
+          this.getList()
+          this.$notify({
+            title: this.$t('message.title'),
+            message: '停用成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      }).catch(() => {
       })
     },
     // 下载模板
@@ -1321,7 +1328,7 @@ export default {
         if (res.data.code === 2501) {
           this.getList()
           this.$notify({
-            title: '失败',
+            title: this.$t('message.title'),
             message: res.data.msg,
             type: 'error',
             duration: 2000,
@@ -1330,7 +1337,7 @@ export default {
         } else {
           this.getList()
           this.$notify({
-            title: '成功',
+            title: this.$t('message.title'),
             message: '导入成功',
             type: 'success',
             duration: 5000,
@@ -1346,20 +1353,20 @@ export default {
     formatCron(row, column) {
       const date = row[column.property]
       var onJsonDate = new Date(row.startTime)
-      var onTimeList = onJsonDate.toLocaleDateString().split("/")
-      for(var i=0;i<onTimeList.length;i++){
-        if(onTimeList[i]<10){
-          onTimeList[i] = '0'+onTimeList[i]
+      var onTimeList = onJsonDate.toLocaleDateString().split('/')
+      for (var i = 0; i < onTimeList.length; i++) {
+        if (onTimeList[i] < 10) {
+          onTimeList[i] = '0' + onTimeList[i]
         }
-        var onTime = onTimeList[0] + "/" + onTimeList[1] + "/" + onTimeList[2] 
+        var onTime = onTimeList[0] + '/' + onTimeList[1] + '/' + onTimeList[2]
       }
       var stopJsonDate = new Date(row.endTime)
-      var stopTimeList = stopJsonDate.toLocaleDateString().split("/")
-      for(var k=0;k<stopTimeList.length;k++){
-        if(stopTimeList[k]<10){
-          stopTimeList[k] = '0'+stopTimeList[k]
+      var stopTimeList = stopJsonDate.toLocaleDateString().split('/')
+      for (var k = 0; k < stopTimeList.length; k++) {
+        if (stopTimeList[k] < 10) {
+          stopTimeList[k] = '0' + stopTimeList[k]
         }
-        var stopTime = stopTimeList[0] + "/" + stopTimeList[1] + "/" + stopTimeList[2] 
+        var stopTime = stopTimeList[0] + '/' + stopTimeList[1] + '/' + stopTimeList[2]
       }
       var message = ''
       this.crontabFormat.forEach((r, i) => {
