@@ -280,12 +280,10 @@ export default {
       })
     },
     handleCheckChange(data, checked, indeterminate) {
-      // console.log(data, checked, indeterminate)
       this.moveDirPath = data.path
       this.options.query.path = data.path
     },
     handleNodeClick(data, checked, node) {
-      // console.log('多选框设为单选框', checked, data)
       if (checked) {
         this.$refs.treeForm.setCheckedKeys([data.id])
       }

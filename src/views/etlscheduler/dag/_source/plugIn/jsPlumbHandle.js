@@ -27,7 +27,7 @@ import {
 import mStart from '@/views/etlscheduler/workflow/start'
 import $ from 'jquery'
 
-const JSP = function () {
+const JSP = function() {
   this.dag = {}
   this.selectedElement = {}
 
@@ -49,7 +49,7 @@ const JSP = function () {
 /**
  * dag init
  */
-JSP.prototype.init = function ({
+JSP.prototype.init = function({
   dag,
   instance,
   options
@@ -94,14 +94,14 @@ JSP.prototype.init = function ({
 /**
  * set config attribute
  */
-JSP.prototype.setConfig = function (o) {
+JSP.prototype.setConfig = function(o) {
   this.config = Object.assign(this.config, {}, o)
 }
 
 /**
  * Node binding event
  */
-JSP.prototype.tasksEvent = function (selfId) {
+JSP.prototype.tasksEvent = function(selfId) {
   const tasks = $(`#${selfId}`)
   // Bind right event
   tasks.on('contextmenu', e => {
@@ -123,7 +123,7 @@ JSP.prototype.tasksEvent = function (selfId) {
 /**
  * Dag node drag and drop processing
  */
-JSP.prototype.draggable = function () {
+JSP.prototype.draggable = function() {
   if (this.config.isNewNodes) {
     let selfId
     const self = this
@@ -131,15 +131,15 @@ JSP.prototype.draggable = function () {
       scope: 'plant',
       helper: 'clone',
       containment: $('.dag-model'),
-      stop: function (e, ui) {},
-      drag: function () {
+      stop: function(e, ui) {},
+      drag: function() {
         $('body').find('.tooltip.fade.top.in').remove()
       }
     })
 
     $('#canvas').droppable({
       scope: 'plant',
-      drop: function (ev, ui) {
+      drop: function(ev, ui) {
         let id = 'tasks-' + Math.ceil(Math.random() * 100000) // eslint-disable-line
 
         let scale = computeScale($(this))
@@ -184,7 +184,7 @@ JSP.prototype.draggable = function () {
 /**
  * Echo json processing and old data structure processing
  */
-JSP.prototype.jsonHandle = function ({
+JSP.prototype.jsonHandle = function({
   largeJson,
   locations
 }) {
@@ -225,7 +225,7 @@ JSP.prototype.jsonHandle = function ({
 /**
  * Initialize a single node
  */
-JSP.prototype.initNode = function (el) {
+JSP.prototype.initNode = function(el) {
   // Whether to drag
   if (this.config.isDrag) {
     this.JspInstance.draggable(el, {
@@ -265,7 +265,7 @@ JSP.prototype.initNode = function (el) {
 /**
  * Node right click menu
  */
-JSP.prototype.tasksContextmenu = function (event) {
+JSP.prototype.tasksContextmenu = function(event) {
   if (this.config.isContextmenu) {
     const routerName = router.history.current.name
     // state
@@ -362,11 +362,10 @@ JSP.prototype.tasksContextmenu = function (event) {
 /**
  * Node double click event
  */
-JSP.prototype.tasksDblclick = function (e) {
+JSP.prototype.tasksDblclick = function(e) {
   // Untie event
   if (this.config.isDblclick) {
     const id = $(e.currentTarget.offsetParent).attr('id')
-
     findComponentDownward(this.dag.$root, 'DagChart')._createNodes({
       id: id,
       type: $(`#${id}`).attr('data-tasks-type')
@@ -377,7 +376,7 @@ JSP.prototype.tasksDblclick = function (e) {
 /**
  * Node click event
  */
-JSP.prototype.tasksClick = function (e) {
+JSP.prototype.tasksClick = function(e) {
   let $id
   const self = this
   const $body = $('body')
@@ -397,10 +396,10 @@ JSP.prototype.tasksClick = function (e) {
     $id = self.selectedElement.id
 
     $body.bind({
-      copy: function () {
+      copy: function() {
         $id = self.selectedElement.id
       },
-      paste: function () {
+      paste: function() {
         $id && self.copyNodes($id)
       }
     })
@@ -411,7 +410,7 @@ JSP.prototype.tasksClick = function (e) {
  * Remove binding events
  * paste
  */
-JSP.prototype.removePaste = function () {
+JSP.prototype.removePaste = function() {
   const $body = $('body')
   // Unbind copy and paste events
   $body.unbind('copy').unbind('paste')
@@ -424,7 +423,7 @@ JSP.prototype.removePaste = function () {
 /**
  * Line click event
  */
-JSP.prototype.connectClick = function (e) {
+JSP.prototype.connectClick = function(e) {
   // Set svg color
   setSvgColor(e, '#0097e0')
   const $id = this.selectedElement.id
@@ -439,7 +438,7 @@ JSP.prototype.connectClick = function (e) {
  * toolbarEvent
  * @param {Pointer}
  */
-JSP.prototype.handleEventPointer = function (is) {
+JSP.prototype.handleEventPointer = function(is) {
   this.setConfig({
     isClick: is,
     isAttachment: false
@@ -450,7 +449,7 @@ JSP.prototype.handleEventPointer = function (is) {
  * toolbarEvent
  * @param {Line}
  */
-JSP.prototype.handleEventLine = function (is) {
+JSP.prototype.handleEventLine = function(is) {
   const wDom = $('.w')
   this.setConfig({
     isAttachment: is
@@ -462,7 +461,7 @@ JSP.prototype.handleEventLine = function (is) {
  * toolbarEvent
  * @param {Remove}
  */
-JSP.prototype.handleEventRemove = function () {
+JSP.prototype.handleEventRemove = function() {
   const $id = this.selectedElement.id || null
   const $connect = this.selectedElement.connect || null
   if ($id) {
@@ -478,7 +477,7 @@ JSP.prototype.handleEventRemove = function () {
 /**
  * Delete node
  */
-JSP.prototype.removeNodes = function ($id) {
+JSP.prototype.removeNodes = function($id) {
   // Delete node processing(data-targetarr)
   _.map(tasksAll(), v => {
     const targetarr = v.targetarr.split(',')
@@ -500,7 +499,7 @@ JSP.prototype.removeNodes = function ($id) {
 /**
  * Delete connection
  */
-JSP.prototype.removeConnect = function ($connect) {
+JSP.prototype.removeConnect = function($connect) {
   if (!$connect) {
     return
   }
@@ -523,7 +522,7 @@ JSP.prototype.removeConnect = function ($connect) {
 /**
  * Copy node
  */
-JSP.prototype.copyNodes = function ($id) {
+JSP.prototype.copyNodes = function($id) {
   let newNodeInfo = _.cloneDeep(_.find(store.state.dag.tasks, v => v.id === $id))
   const newNodePors = store.state.dag.locations[$id]
   // Unstored nodes do not allow replication
@@ -587,7 +586,7 @@ JSP.prototype.copyNodes = function ($id) {
  * toolbarEvent
  * @param {Screen}
  */
-JSP.prototype.handleEventScreen = function ({
+JSP.prototype.handleEventScreen = function({
   item,
   is
 }) {
@@ -612,7 +611,7 @@ JSP.prototype.handleEventScreen = function ({
  * @param locations
  * @param connects
  */
-JSP.prototype.saveStore = function () {
+JSP.prototype.saveStore = function() {
   return new Promise((resolve, reject) => {
     const connects = []
     const locations = {}
@@ -683,8 +682,8 @@ JSP.prototype.saveStore = function () {
  * Event processing
  */
 
-JSP.prototype.handleEvent = function () {
-  this.JspInstance.bind('beforeDrop', function (info) {
+JSP.prototype.handleEvent = function() {
+  this.JspInstance.bind('beforeDrop', function(info) {
     const sourceId = info.sourceId // 出
     const targetId = info.targetId // 入
     /**
@@ -730,7 +729,7 @@ JSP.prototype.handleEvent = function () {
 /**
  * Backfill data processing
  */
-JSP.prototype.jspBackfill = function ({
+JSP.prototype.jspBackfill = function({
   connects,
   locations,
   largeJson
