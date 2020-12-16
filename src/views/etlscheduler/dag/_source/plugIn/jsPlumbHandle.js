@@ -389,7 +389,7 @@ JSP.prototype.tasksClick = function(e) {
     $('.w').removeClass('jtk-tasks-active')
     $(e.currentTarget).addClass('jtk-tasks-active')
     if ($connect) {
-      setSvgColor($connect, '#2d8cf0')
+      // setSvgColor($connect, '#2d8cf0')
       this.selectedElement.connect = null
     }
     this.selectedElement.id = $(e.currentTarget).attr('id')
@@ -429,7 +429,7 @@ JSP.prototype.removePaste = function() {
  */
 JSP.prototype.connectClick = function(e) {
   // Set svg color
-  setSvgColor(e, '#0097e0')
+  // setSvgColor(e, '#0097e0')
   const $id = this.selectedElement.id
   if ($id) {
     $(`#${$id}`).removeClass('jtk-tasks-active')
