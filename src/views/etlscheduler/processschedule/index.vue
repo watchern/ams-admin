@@ -1216,7 +1216,7 @@ export default {
       }
     },
     handleDelete() {
-      this.$confirm('确定删除吗?', '提示', {
+      this.$confirm(this.$t('confirm.delete'), '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -1229,19 +1229,13 @@ export default {
           this.getList()
           this.$notify({
             title: '成功',
-            message: '删除成功',
+            message: this.$t('message.delete.success'),
             type: 'success',
             duration: 2000,
             position: 'bottom-right'
           })
         })
       }).catch(() => {
-        this.$notify({
-          title: '消息',
-          message: '已取消删除',
-          duration: 2000,
-          position: 'bottom-right'
-        })
       })
     },
     handleUse() {
