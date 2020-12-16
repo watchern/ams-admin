@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 const baseURL = '/graphtool'
 const dataUrl = '/data'
+const analysisUrl = '/analysis'
 
 /**
  * 获取图形树
@@ -238,4 +239,42 @@ export function getMaxMinColumn(data) {
     })
 }
 
+/**
+ * 获取所有母版参数集合以及模型用到的参数集合
+ */
+export function findParamsAndModelRelParams() {
+    return request({
+        baseURL: analysisUrl,
+        url: '/paramController/findParamsAndModelRelParams',
+        method: 'post'
+    })
+}
 
+/**
+ * 执行当前参数SQL语句
+ * @param {*} data   SQL语句
+ */
+export async function executeParamSql(data) {
+    return await request({
+        baseURL: analysisUrl,
+        url: '/paramController/executeParamSql',
+        method: 'post',
+        data
+    })
+}
+
+/**
+ * 查询下拉树参数SQL的结果集
+ * @param {*} sqlValue sql语句
+ */
+async function getSelectTreeData(sqlValue) {
+    const data = {
+        sqlValue: sqlValue
+    }
+    return await request({
+        baseURL: analysisUrl,
+        url: '/paramController/getSelectTreeData',
+        method: 'post',
+        data
+    })
+}

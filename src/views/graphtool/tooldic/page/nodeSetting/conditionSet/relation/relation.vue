@@ -17,14 +17,14 @@
       </div>
       <div id="filter_jsp" class="tab-pane fade in active">
         <div id="col10" class="col-sm-12" style="position: relative;background-color: #fff">
-          <div id="myDiagramDiv" ref="myDiagramDiv" class="col-sm-9" style="width:calc(100% - 245px);border: solid 1px #F3F3F3;height:600px;" @mouseover="myDiagramMousemove" />
+            <div id="myDiagramDiv" ref="myDiagramDiv" class="col-sm-9" style="width:calc(100% - 245px);border: solid 1px #F3F3F3;height:600px;" @mouseover="myDiagramMousemove"></div>
           <img v-if="showRight" width="15" height="15" title="画布放大" src="../images/fangda.png" style="z-index:9999;position: relative;top: 10px;right:30px;" @click="amplify">
           <img v-if="!showRight" width="15" height="15" title="画布缩小" src="../images/fangda.png" style="z-index:9999;position: relative;right: 0;top: 10px;" @click="reduce">
           <div v-if="showRight" style="width: 245px;float: right;">
             <div style="padding: 0px 4px; height: 120px;">
               <div class="tstext"><span style="font-weight: 800">表连接</span>（显示多个表间的关联关系）</div>
               <div id="form" style="background: #F7F7F7;border: 1px solid #F3F3F3;height:90%;overflow-y:auto">
-                <div v-if="showTableJoin" class="form-group">
+                <div v-if="showTableJoin">
                   <div class="col-sm-12">
                     <input id="MainTable" v-model="mainTableName" name="MainTable" type="text" class="form-control" disabled="disabled">
                   </div>
@@ -79,7 +79,7 @@
             </div>
           </div>
         </div>
-        <div id="sql" class="col-sm-12" style="display:none;background: #F7F7F7;height: 40%;overflow:auto" />
+          <div id="sql" class="col-sm-12" style="display:none;background: #F7F7F7;height: 40%;overflow:auto"></div>
       </div>
       <div id="column" class="tab-pane fade">
         <div style="width: 98%;margin: 4px 1%">
@@ -89,7 +89,7 @@
             <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
             <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
           </div>
-          <div id="outPutTable"style="height: 480px;overflow-y: auto;">
+          <div id="outPutTable"style="height: 500px;overflow-y: auto;">
             <table id="column_config" class="table table-bordered">
               <thead>
                 <tr>
@@ -108,7 +108,7 @@
                   <td>{{ item.rtn }}</td>
                   <td>{{ item.columnName }}</td>
                   <td>
-                    <input v-model="item.disColumnName" type="text" class="form-control newColumn" @blur="vilidata_simple(index)">
+                      <el-input v-model="item.disColumnName" class="newColumn" @blur="vilidata_simple(index)"></el-input>
                   </td>
                   <td class="text-center">
                     <el-checkbox :key="item.id" v-model="item.checked" :name="item.attrColumnName" @change="checkBoxChange(index)" />
@@ -124,6 +124,7 @@
 </template>
 
 <script>
+    // require('@/components/ams-bootstrap/js/bootstrap.min.js')
 require('@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/js/go.js')
 import Basic from '@/views/graphtool/tooldic/page/nodeSetting/basic.vue'
 import * as relationJs from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/js/relation'
@@ -258,12 +259,25 @@ export default {
   }
 }
 </script>
-
+<!--引入公共CSS样式-->
+<style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
+<style scoped src="@/components/ams-basic/css/common.css"></style>
 <style scoped type="text/css">
     .column-has-error{
         border: 1px solid red;
     }
     .tstext{
         padding-left: 5px;
+    }
+    td>.form-group{
+        margin-bottom: 0;
+    }
+    .table > tbody > tr > td{
+        font-size: 13px;
+        color: #4B4B4B;
+    }
+    .table > thead > tr > th {
+        background-color: #5886B2;
+        color: #ECF0F5;
     }
 </style>

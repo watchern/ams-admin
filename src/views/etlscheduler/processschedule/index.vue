@@ -197,9 +197,9 @@
           />
         </el-form-item>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="8" class="ellines">
             <el-form-item label="作业周期开始时间" prop="startTime">
-              <el-col :span="8">
+              <el-col :span="8" class="ellines">
                 <el-date-picker
                   v-model="temp.startTime"
                   :picker-options="startTime"
@@ -211,7 +211,7 @@
               </el-col>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item label="作业周期结束时间" prop="endTime">
               <!-- <el-col class="line" :span="1">-</el-col> -->
               <el-col :span="8">
@@ -262,9 +262,10 @@
                       class="add-dep"
                       @click="!isDetails && _addDep()"
                     >
+                      <!-- :class="{'oper-btn add': iconDisable}" -->
                       <em
                         v-if="!isLoading"
-                        :class="{'oper-btn add': iconDisable}"
+                        class="oper-btn add"
                         data-toggle="tooltip"
                         :disable="disableAddStatus"
                         title="添加"
@@ -787,7 +788,6 @@ export default {
       },
       // 这里是关键，代表递归监听 demo 的变化
       deep: true
-
     },
     // 监听selections集合
     selections() {
@@ -821,9 +821,17 @@ export default {
       }
     },
     dependTaskList(e) {
-      setTimeout(() => {
+      if (this.dependTaskList === null || !this.dependTaskList.length > 0 || this.dependTaskList[0] === null) {
         this.isLoading = false
-      }, 600)
+      } else if (this.dependTaskList !== null) {
+        if (this.dependTaskList[0].dependItemList === null) {
+          this.isLoading = false
+        } else {
+          this.isLoading = true
+        }
+      } else {
+        this.isLoading = true
+      }
     },
     cacheDependence(val) {
       this.$emit('on-cache-dependent', val)
@@ -832,7 +840,6 @@ export default {
   created() {
     try {
       this.crontabFormat = getDictList('001001')
-      console.log(this.crontabFormat)
     } catch (e) {
       console.error(e)
     }
@@ -938,7 +945,7 @@ export default {
     },
     _addDep() {
       if (!this.isLoading) {
-        this.isLoading = true
+        // this.isLoading = true
         if (this.dependTaskList == null || this.dependTaskList.length === 0) {
           this.disableAddStatus = false
           this.dependTaskList = [{
@@ -1345,9 +1352,21 @@ export default {
     formatCron(row, column) {
       const date = row[column.property]
       var onJsonDate = new Date(row.startTime)
-      var onTime = onJsonDate.toLocaleDateString()
+      var onTimeList = onJsonDate.toLocaleDateString().split("/")
+      for(var i=0;i<onTimeList.length;i++){
+        if(onTimeList[i]<10){
+          onTimeList[i] = '0'+onTimeList[i]
+        }
+        var onTime = onTimeList[0] + "/" + onTimeList[1] + "/" + onTimeList[2] 
+      }
       var stopJsonDate = new Date(row.endTime)
-      var stopTime = stopJsonDate.toLocaleDateString()
+      var stopTimeList = stopJsonDate.toLocaleDateString().split("/")
+      for(var k=0;k<stopTimeList.length;k++){
+        if(stopTimeList[k]<10){
+          stopTimeList[k] = '0'+stopTimeList[k]
+        }
+        var stopTime = stopTimeList[0] + "/" + stopTimeList[1] + "/" + stopTimeList[2] 
+      }
       var message = ''
       this.crontabFormat.forEach((r, i) => {
         if (date === r.codeDesc) {
@@ -1496,5 +1515,8 @@ export default {
     // position: relative;
     // left: 460px;
     // bottom: 115px;
+  }
+  .ellines{
+    padding: 0;
   }
 </style>

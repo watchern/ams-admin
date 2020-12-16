@@ -596,7 +596,6 @@ export default {
         // 获取调度实例已运行的环节
         findTaskInstanceById(data.processInstanceUuid).then(respons => {
           this.taskslogsList = respons.data
-          console.log(this.taskslogsList)
         })
       })
       // 获取非环节执行任务日志
