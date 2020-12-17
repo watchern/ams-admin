@@ -312,7 +312,6 @@ import QueryField from '@/components/Ace/query-field/index'
 import { commandTypeObj, colorList, statusListComm, statuSelectList } from './comm.js'
 import store from '@/store'
 import dayjs from 'dayjs'
-import _ from 'lodash'
 
 export default {
   components: { Pagination, QueryField },

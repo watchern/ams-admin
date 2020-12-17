@@ -512,7 +512,6 @@ import QueryField from '@/components/Ace/query-field/index'
 import { getDictList } from '@/utils'
 import { mapMutations } from 'vuex'
 import store from '@/store'
-// import _ from lodash
 
 export default {
   name: 'Dependence',

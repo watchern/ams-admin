@@ -19,7 +19,7 @@ import {
 import {
   tasksAll,
   rtTasksTpl,
-  setSvgColor,
+  // setSvgColor,
   saveTargetarr,
   rtTargetarrArr,
   computeScale
