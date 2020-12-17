@@ -43,14 +43,13 @@ export function getGraphInfoById(id) {
 
 /**
  * 根据图形UUID删除图形
- * @param data 参数1：图形UUID串，以逗号分隔；参数2：图形名称串，以中文顿号分隔
+ * @param ids 图形UUID串，以逗号分隔
  */
-export function deleteGraphInfoById(data) {
+export function deleteGraphInfoById(ids) {
   return request({
     baseURL: baseURL,
-    url: `/graphCt/delete`,
-    method: 'delete',
-    params: data
+    url: `/graphCt/delete/${ids}`,
+    method: 'delete'
   })
 }
 
