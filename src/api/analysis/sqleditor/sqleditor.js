@@ -952,7 +952,7 @@ export function initParamTree() {
         var copyParamId = getUuid()
         var id = '{#' + copyParamId + '#}'
         editorObj.replaceRange(id, cursor, cursor)
-        var dom = $("<button disabled class='divEditorBtn' style='color: white;background-color:#409eff' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
+        var dom = $("<button type='button' class='divEditorBtn' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
         var endCursor = { ch: cursor.ch + id.length, line: cursor.line, sticky: null }
         editorObj.markText(cursor, endCursor, {
           replacedWith: dom,
@@ -1473,7 +1473,7 @@ function replaceCopyParam(paramObj) {
         var startCursor = { ch: ch, line: b, sticky: null }
         var endCursor = { ch: ch + arr[a].id.length, line: b, sticky: null }
         editorObj.replaceRange(arr[a].id, startCursor, endCursor)// 替换复制的参数的ID
-        var dom = $("<button class='divEditorBtn' id='" + arr[a].id + "'>" + arr[a].name + '</buttonn>').get(0)
+        var dom = $("<button type='button' class='divEditorBtn' id='" + arr[a].id + "'>" + arr[a].name + '</buttonn>').get(0)
         editorObj.markText(startCursor, endCursor, {
           replacedWith: dom,
           className: 'paramBlock'
@@ -1571,7 +1571,7 @@ function replaceParam(paramObj) {
         var text = editorObj.getLine(b)// 获取当前行的内容
         indexArr = getIndexArr(text, arr[a].id, 0, indexArr)// 获取某行内容中参数id字符串出现的位置数组
         for (var i = 0; i < indexArr.length; i++) { // 第三层循环获取出来的字符串数组
-          var dom = $("<button class='divEditorBtn' id='" + arr[a].id + "'>" + arr[a].name + '</buttonn>').get(0)
+          var dom = $("<button type='button' class='divEditorBtn' id='" + arr[a].id + "'>" + arr[a].name + '</buttonn>').get(0)
           var startCursor = { ch: indexArr[i], line: b, sticky: null }
           var endCursor = { ch: indexArr[i] + arr[a].id.length, line: b, sticky: null }
           editorObj.markText(startCursor, endCursor, {

@@ -610,7 +610,7 @@ export default {
         // endregion
         //获取SQL编辑器参数对象 到下边去处理
         if(this.sqlEditorParamObj.arr.length != 0){
-          let paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
+          paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
           if(!paramDefaultValue.verify){
             this.$message({ type: 'info', message: paramDefaultValue.message})
             return null
@@ -1141,7 +1141,6 @@ export default {
         for(let i = 0;i < this.columnData.length;i++){
           this.graphColumnInfo.finalTable.columnNameArr.push(this.columnData[i].outputColumnName)
         }
-        console.log(this.graphColumnInfo)
       }
       // endregion
       // region 反显关联详细
