@@ -86,9 +86,11 @@ export default {
             // 示例fd.value = 'asd'
             if (fd.value && fd.value !== null && fd.value !== '') { this.query[fd.name] = fd.value }
           } else if (fd.type === 'select') {
-            this.$set(this.query, fd.name, [])
             // 示例fd.value = '002002001'
-            if (fd.value && fd.value !== null && fd.value !== '') { this.query[fd.name] = fd.value }
+            if (fd.value && fd.value !== null && fd.value !== '') {
+              this.$set(this.query, fd.name, [])
+              this.query[fd.name] = fd.value
+            }
           }
         })
       }

@@ -23,7 +23,6 @@
               </el-col>
               <el-col :span="12">
                 <span class="percentage">{{ item.percent }}</span>
-
               </el-col>
 
             </el-row>

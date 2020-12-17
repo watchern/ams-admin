@@ -8,6 +8,7 @@ import {
 const pie = {
   legend: {
     orient: 'vertical',
+    selectedMode: false,
     left: 0,
     data: ['等待中', '等待文件', '等待依赖', '执行中', '暂停', '已取消', '执行完成', '执行失败']
   },

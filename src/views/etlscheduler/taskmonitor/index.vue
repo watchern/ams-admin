@@ -279,6 +279,7 @@ export default {
     this.searchParams.startTimeStart = dayjs().format('YYYY-MM-DD')
     this.searchParams.startTimeEnd = dayjs().format('YYYY-MM-DD')
     this.value1 = [dayjs().format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')]
+    this.setProcessGroupExecutionStatusType('G_SUCCESS')
     this.setProcessStartTime(this.searchParams.startTimeStart)
     this.setProcessEndTime(this.searchParams.startTimeEnd)
     // 获取任务的总耗时
