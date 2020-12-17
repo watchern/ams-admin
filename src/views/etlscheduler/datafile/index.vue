@@ -73,11 +73,17 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage } from '@/api/etlscheduler/datafile'
 import QueryField from '@/components/Ace/query-field/index'
+import store from '@/store'
+import dayjs from 'dayjs'
 
 export default {
   components: { Pagination, QueryField },
+  props: {
+    searchParams: Object
+  },
   data() {
     return {
+      store,
       tableKey: 'dataFileUuid',
       list: null,
       total: 0,
@@ -114,6 +120,20 @@ export default {
         createTime: null
       },
       selections: []
+    }
+  },
+  watch: {
+    searchParams: {
+      deep: true,
+      immediate: true,
+      handler() {
+        this.queryDefault = {
+          startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
+          startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
+        }
+        this.queryFields[3].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
+        this.getList(this.queryDefault)
+      }
     }
   },
   created() {

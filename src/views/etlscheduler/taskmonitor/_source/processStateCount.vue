@@ -14,16 +14,15 @@
           >
             <el-row>
               <el-col :span="12">
-                <span class="ellipsis" :title="item.key">{{ item.key }}</span>
+                <span class="ellipsis" :title="item.key">
+                  {{ item.key }}</span>
                 <span><a
                   href="javascript:"
-                  :class="searchParams.projectId ? 'links' : ''"
                   @click="handleProcess(item.key)"
-                >({{ item.value }})</a></span>
+                >（{{ item.value }}）</a></span>
               </el-col>
               <el-col :span="12">
                 <span class="percentage">{{ item.percent }}</span>
-
               </el-col>
 
             </el-row>
@@ -215,9 +214,8 @@ export default {
   color: #333;
   /* padding: 0 0 0 0; */
 }
-
 .text a {
-  color: #2d8cf0;
+  color: #409eff;
   font-size: 14px;
   /* padding: 14px 0 0 0; */
 }

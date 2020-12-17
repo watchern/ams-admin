@@ -122,9 +122,9 @@
       <div ref="modelDesign" class="display div-width">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" style="width: 100%" id="graphDiv">
-            <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor"
+            <SQLEditor @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel" :locationUuid="form.locationUuid" :locationName="form.locationName"  class="sql-editor"/>
-            <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2" v-if="state.id=='002003002'"></graph>
+            <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2" v-if="state.id==graphEditorStr"></graph>
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
@@ -302,6 +302,8 @@ export default {
       },
       //是否显示审计事项树
       auditItemTree:false,
+      sqlEditorStr:'002003001',//sql编辑器编码
+      graphEditorStr:'002003002',//图形化编码
       //是否显示保存取消按钮
       isShowBtn:true,
       //打开sql编辑器时给sql编辑器传值，告诉sql编辑器是从模型编辑界面进来的
@@ -608,7 +610,7 @@ export default {
         // endregion
         //获取SQL编辑器参数对象 到下边去处理
         if(this.sqlEditorParamObj.arr.length != 0){
-          let paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
+          paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
           if(!paramDefaultValue.verify){
             this.$message({ type: 'info', message: paramDefaultValue.message})
             return null
@@ -775,7 +777,10 @@ export default {
      */
     getGraphObj(){
       //如果没有选择任何类型则不加载
-      if(this.form.modelType == ''){
+      if(this.form.modelType === ''){
+        return
+      }
+      if(this.$refs.graph === undefined){
         return
       }
       //获取图形化列信息
@@ -1131,6 +1136,12 @@ export default {
       // endregion
       // region 模型结果输出列
       this.columnData = model.modelOutputColumn
+      if(this.form.modelType === this.graphEditorStr){
+        this.graphColumnInfo = {finalTable:{columnNameArr:[]}}
+        for(let i = 0;i < this.columnData.length;i++){
+          this.graphColumnInfo.finalTable.columnNameArr.push(this.columnData[i].outputColumnName)
+        }
+      }
       // endregion
       // region 反显关联详细
       var treeNodeDetail = this.treeNodeData[4]
@@ -1192,9 +1203,9 @@ export default {
      */
     modelTypeChangeEvent(vId){
       this.modelTypeObj = []
-      if(vId == "002003001"){
+      if(vId === this.sqlEditorStr){
         let obj = {
-          id:'002003001'
+          id:this.sqlEditorStr
         }
         this.modelTypeObj.push(obj)
         //
@@ -1205,9 +1216,9 @@ export default {
         // }
         // this.handleNodeClick(obj2)
       }
-      if(vId == "002003002"){
+      if(vId == this.graphEditorStr){
         let obj = {
-          id:'002003002'
+          id:this.graphEditorStr
         }
         this.modelTypeObj.push(obj)
         this.$nextTick( () => {

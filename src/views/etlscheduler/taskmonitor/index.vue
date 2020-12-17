@@ -7,6 +7,7 @@
           <el-date-picker
             v-model="value1"
             type="daterange"
+            :clearable="false"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
@@ -99,7 +100,7 @@
           <el-tabs v-model="tabname" type="border-card">
             <el-tab-pane label="调度流程实例" name="processinstance"><etl-processin-stance :search-params="searchParams" /></el-tab-pane>
             <el-tab-pane label="调度环节实例" name="taskinstance"><etl-taskin-stance :search-params="searchParams" /></el-tab-pane>
-            <el-tab-pane label="上游推送文件情况" name="statistics"><etl-data-file /></el-tab-pane>
+            <el-tab-pane label="上游推送文件情况" name="statistics"><etl-data-file :search-params="searchParams" /></el-tab-pane>
             <!-- <el-tab-pane label="上游推送文件统计" name="statisticsCount">
               <div class="row">
                 <div class="col-md-12">
@@ -279,6 +280,7 @@ export default {
     this.searchParams.startTimeStart = dayjs().format('YYYY-MM-DD')
     this.searchParams.startTimeEnd = dayjs().format('YYYY-MM-DD')
     this.value1 = [dayjs().format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')]
+    this.setProcessGroupExecutionStatusType('G_SUCCESS')
     this.setProcessStartTime(this.searchParams.startTimeStart)
     this.setProcessEndTime(this.searchParams.startTimeEnd)
     // 获取任务的总耗时

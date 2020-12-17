@@ -203,7 +203,7 @@ export default {
         // },
         {
           label: '任务实例状态', name: 'groupExecutionStatus', type: 'select',
-          data: statuSelectList
+          data: statuSelectList, value: []
         },
         // {
         //   label: '任务实例状态', name: 'groupExecutionStatus', type: 'select',
@@ -285,6 +285,8 @@ export default {
           startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
           startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
         }
+        this.queryFields[1].value = this.queryDefault.groupExecutionStatus
+        this.queryFields[2].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
         this.getList(this.queryDefault)
       }
     }
