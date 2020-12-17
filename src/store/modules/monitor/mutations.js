@@ -22,5 +22,8 @@ export default {
    */
   setProcessGroupExecutionStatusType(state, payload) {
     state.processGroupExecutionStatusType = payload
+  },
+  setScheduleDetail(state, payload) {
+    state.scheduleDetail = payload
   }
 }

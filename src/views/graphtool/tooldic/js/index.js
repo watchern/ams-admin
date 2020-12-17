@@ -1438,57 +1438,49 @@ export function getResultColumnInfo(){
         isError = true
         message = '未将结果表标记为最终结果表'
     }else {
-        // 判断模型最终结果表的节点是否执行成功
-        // if (graph.nodeData[resultTableNodeId].nodeInfo.nodeExcuteStatus !== 3) {
-        //     isError = true
-        //     message = '您标记的最终结果表尚未执行成功'
-        // }else{
-            // 以模型最终结果表节点为最末级节点，向上寻找所有的节点
-            let lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
+      let lineNodeIdArr = []
+      if(graph.nodeData[resultTableNodeId].nodeInfo.optType === "datasource"){//只将原表标记成了最终结果表
+        lineNodeIdArr = [resultTableNodeId]
+      }else{// 以模型最终结果表节点为最末级节点，向上寻找所有的节点
+        lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
+      }
             for (let i = 0; i < lineNodeIdArr.length; i++) {
                 let curNodeInfo = graph.nodeData[lineNodeIdArr[i]].nodeInfo
-                // if (curNodeInfo.nodeExcuteStatus !== 3) {
-                //     isError = true
-                //     message = '节点【' + curNodeInfo.nodeName + '】尚未执行成功'
-                //     break
-                // } else {
-                    if(curNodeInfo.optType === 'datasource' || curNodeInfo.optType === 'newNullNode'){//如果是源表或结果表
-                        if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果是被标记为辅助结果表或最终结果表
-                            let columnsInfo = null
-                            if(curNodeInfo.optType === 'datasource'){
-                                columnsInfo = graph.nodeData[lineNodeIdArr[i]].columnsInfo
-                            }else if(curNodeInfo.optType === 'newNullNode'){
-                                // 先获取该结果表的前置节点ID集合
-                                let parentIds = graph.nodeData[lineNodeIdArr[i]].parentIds
-                                // 如果该节点的前置节点ID在当前的节点ID集合批次中（因结果表的前置节点有且只有一个，所以可直接使用parentIds[0]）
-                                if (parentIds.length > 0 && $.inArray(parentIds[0], lineNodeIdArr) > -1) {
-                                    columnsInfo = graph.nodeData[parentIds[0]].columnsInfo
-                                }
-                            }else{
-                                continue
-                            }
-                            let columnNameArr = []//输出列名称数组
-                            let columnTypeArr = []//输出列类型数组
-                            for (let k = 0; k < columnsInfo.length; k++) {
-                                // 判断是否为输出列
-                                let isOutputColumn = columnsInfo[k].isOutputColumn
-                                if (isOutputColumn === 1) { // 如果是输出列，则拼接输出列的字符串
-                                    columnNameArr.push(columnsInfo[k].newColumnName)
-                                    columnTypeArr.push(columnsInfo[k].columnType)
-                                }
-                            }
-                            if (curNodeInfo.midTableStatus === 2) { // 如果是被标记为辅助结果表
-                                middleTableArr.push({columnNameArr,columnTypeArr})
-                            }
-                            if (curNodeInfo.resultTableStatus === 2) { // 如果是被标记为最终结果表，则说明此节点将作最后一个结果表节点
-                                finalTable = {columnNameArr,columnTypeArr}
-                                break
-                            }
-                        }
-                    }
-                // }
+                  if(curNodeInfo.optType === 'datasource' || curNodeInfo.optType === 'newNullNode'){//如果是源表或结果表
+                      if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果是被标记为辅助结果表或最终结果表
+                          let columnsInfo = null
+                          if(curNodeInfo.optType === 'datasource'){
+                              columnsInfo = graph.nodeData[lineNodeIdArr[i]].columnsInfo
+                          }else if(curNodeInfo.optType === 'newNullNode'){
+                              // 先获取该结果表的前置节点ID集合
+                              let parentIds = graph.nodeData[lineNodeIdArr[i]].parentIds
+                              // 如果该节点的前置节点ID在当前的节点ID集合批次中（因结果表的前置节点有且只有一个，所以可直接使用parentIds[0]）
+                              if (parentIds.length > 0 && $.inArray(parentIds[0], lineNodeIdArr) > -1) {
+                                  columnsInfo = graph.nodeData[parentIds[0]].columnsInfo
+                              }
+                          }else{
+                              continue
+                          }
+                          let columnNameArr = []//输出列名称数组
+                          let columnTypeArr = []//输出列类型数组
+                          for (let k = 0; k < columnsInfo.length; k++) {
+                              // 判断是否为输出列
+                              let isOutputColumn = columnsInfo[k].isOutputColumn
+                              if (isOutputColumn === 1) { // 如果是输出列，则拼接输出列的字符串
+                                  columnNameArr.push(columnsInfo[k].newColumnName)
+                                  columnTypeArr.push(columnsInfo[k].columnType)
+                              }
+                          }
+                          if (curNodeInfo.midTableStatus === 2) { // 如果是被标记为辅助结果表
+                              middleTableArr.push({columnNameArr,columnTypeArr})
+                          }
+                          if (curNodeInfo.resultTableStatus === 2) { // 如果是被标记为最终结果表，则说明此节点将作最后一个结果表节点
+                              finalTable = {columnNameArr,columnTypeArr}
+                              break
+                          }
+                      }
+                  }
             }
-        // }
     }
     return {isError,message,middleTableArr,finalTable}
 }
@@ -1521,179 +1513,186 @@ export async function saveModelGraph(){
         isError = true
         message = '未将结果表标记为最终结果表'
     }else {
-        // 以模型最终结果表节点为最末级节点，向上寻找所有的节点
-        let lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
-        var dataParam = {
-            'openType': graph.openType,
-            'nodeIdList': lineNodeIdArr.join(","),
-            'nodeData': JSON.stringify(graph.nodeData)
-        }
-        // graph.nodeData[nodeId].replaceParamSql = replaceParamSql
-        const response = await executeNodeSql(dataParam)
-        if(response.data != null){
-            if(response.data.isError){
-                isError = true
-                message = '模型设计校验图形未通过'
-            }else{
-                //改变当前图形节点的信息
-                nodeCallBack(lineNodeIdArr, response.data.nodeData)
-                let newNodeData = { ...{}, ...graph.nodeData }
-                let dropViewSql = ''//删除视图的SQL语句
-                let dropTableSql = ''//删除表的SQL语句
-                let selectSql = ''
-                let tableName = ''
-                for (let i = 0; i < lineNodeIdArr.length; i++) {
-                    let curNodeInfo = newNodeData[lineNodeIdArr[i]].nodeInfo
-                    if(curNodeInfo.optType === 'datasource'){
-                        if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){
-                            selectSql = curNodeInfo.nodeSql
-                            if(newNodeData[lineNodeIdArr[i]].hasParam && newNodeData[lineNodeIdArr[i]].paramsSetting){
-                                selectSql += " WHERE " +  newNodeData[lineNodeIdArr[i]].paramsSetting.sql;//参数部分的SQL语句（where条件部分）
-                                let arr = newNodeData[lineNodeIdArr[i]].paramsSetting.arr
-                                for(let t=0; t<arr.length; t++){
-                                    modelParamIdArr.push(arr[t].copyParamId);
-                                    paramArr.push({ ...{}, ...arr[t] });//此处深层扩展赋值，是为了当改变paramArr中得值时不影响paramsSetting得值
-                                }
-                            }
-                            modelSql += "/*原表【" + curNodeInfo.nodeName + "】的查询SQL语句*/\n" + curNodeInfo.nodeSql + "\n";
-                        }
-                    }
-                    if(curNodeInfo.optType === 'newNullNode'){
-                        //先获取该结果表的前置节点ID集合
-                        let parentIds = newNodeData[lineNodeIdArr[i]].parentIds;
-                        //如果该节点的前置节点ID在当前的节点ID集合批次中（因结果表的前置节点有且只有一个，所以可直接使用parentIds[0]）
-                        if(parentIds.length > 0 && $.inArray(parentIds[0],lineNodeIdArr) > -1) {
-                            //获取前置节点的节点信息
-                            let preNodeInfo = newNodeData[parentIds[0]].nodeInfo
-                            //获取前置节点的输出列信息集合
-                            let preColumnsInfo = graph.nodeData[parentIds[0]].columnsInfo
-                            //循环获取输出列
-                            let selectColArr = []
-                            for(var k=0; k<preColumnsInfo.length; k++){
-                                if(preColumnsInfo[k].isOutputColumn === 1){//如果是输出列，则拼接输出列的字符串
-                                    selectColArr.push(preColumnsInfo[k].newColumnName)
-                                }
-                            }
-                            if(preNodeInfo.optType === "layering"){//如果是前置节点是数据分层节点，则当前结果表的临时表名称需按照下标取值
-                                let index = curNodeInfo.index;//获取当前结果表的下标
-                                //获取数据分层节点的结果表数组
-                                let resultTableNameArr = preNodeInfo.resultTableNameArr;
-                                //若数组不为空
-                                if(resultTableNameArr.length > index){
-                                    selectSql = preNodeInfo.nodeSqlArr[index]
-                                    tableName = resultTableNameArr[index]
-                                }
-                            }else if(preNodeInfo.optType === "sql"){
-                                selectSql = preNodeInfo.resultSql
-                                tableName = preNodeInfo.resultTableName
-                            }else{//其他类型的操作节点都一样，直接取前置节点的临时表名称
-                                selectSql = preNodeInfo.nodeSql
-                                tableName = preNodeInfo.resultTableName
-                            }
-                            //组织SQL语句
-                            if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果结果表是辅助结果表或最终结果表
-                                dropTableSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果表的SQL语句*/\n DROP TABLE " + tableName + "\n"
-                                modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS " + selectSql + "\n";//不能移动位置
-                                selectSql = `SELECT ${selectColArr.join(",")} FROM ${tableName}`
-                                if(newNodeData[parentIds[0]].hasParam && newNodeData[parentIds[0]].paramsSetting){
-                                    //此处处理不同操作节点SELECT语句附带的参数条件
-                                    // switch (preNodeInfo.optType) {
-                                    //     case "filter"://数据筛选
-                                    //     case "layering"://数据分层
-                                    //     case "sample"://数据抽样
-                                    //         selectSql += " AND " +  newNodeData[parentIds[0]].paramsSetting.sql
-                                    //         break
-                                    //     case "delRepeat"://数据去重
-                                    //     case "change"://数据转码
-                                    //     case "relation"://数据关联
-                                    //         selectSql += " WHERE " +  newNodeData[parentIds[0]].paramsSetting.sql
-                                    //         break
-                                    //     default:
-                                    //         selectSql = "SELECT * FROM (" + selectSql +") WHERE " +  newNodeData[parentIds[0]].paramsSetting.sql
-                                    //         break
-                                    // }
-                                    selectSql = `${selectSql} WHERE ${newNodeData[parentIds[0]].paramsSetting.sql}`
-                                    let arr = newNodeData[parentIds[0]].paramsSetting.arr
+        let newNodeData = { ...{}, ...graph.nodeData }
+        if(newNodeData[resultTableNodeId].nodeInfo.optType === "datasource"){//只将原表标记成了最终结果表
+            modelSql += "/*原表【" + newNodeData[resultTableNodeId].nodeInfo.nodeName + "】的查询SQL语句*/\n" + newNodeData[resultTableNodeId].nodeInfo.nodeSql + "\n";
+        }else{
+            // 以模型最终结果表节点为最末级节点，向上寻找所有的节点
+            let lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
+            var dataParam = {
+                'openType': graph.openType,
+                'nodeIdList': lineNodeIdArr.join(","),
+                'nodeData': JSON.stringify(graph.nodeData)
+            }
+            // graph.nodeData[nodeId].replaceParamSql = replaceParamSql
+            const response = await executeNodeSql(dataParam)
+            if(response.data != null){
+                if(response.data.isError){
+                    isError = true
+                    message = '模型设计校验图形未通过'
+                }else{
+                    //改变当前图形节点的信息
+                    nodeCallBack(lineNodeIdArr, response.data.nodeData)
+                    newNodeData = { ...{}, ...graph.nodeData }//二次赋值是因为此时的【graph.nodeData】部分值发生了改变
+                    let dropViewSql = ''//删除视图的SQL语句
+                    let dropTableSql = ''//删除表的SQL语句
+                    let selectSql = ''
+                    let tableName = ''
+                    for (let i = 0; i < lineNodeIdArr.length; i++) {
+                        let curNodeInfo = newNodeData[lineNodeIdArr[i]].nodeInfo
+                        if(curNodeInfo.optType === 'datasource'){
+                            if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){
+                                selectSql = curNodeInfo.nodeSql
+                                if(newNodeData[lineNodeIdArr[i]].hasParam && newNodeData[lineNodeIdArr[i]].paramsSetting){
+                                    selectSql += " WHERE " +  newNodeData[lineNodeIdArr[i]].paramsSetting.sql;//参数部分的SQL语句（where条件部分）
+                                    let arr = newNodeData[lineNodeIdArr[i]].paramsSetting.arr
                                     for(let t=0; t<arr.length; t++){
                                         modelParamIdArr.push(arr[t].copyParamId);
                                         paramArr.push({ ...{}, ...arr[t] });//此处深层扩展赋值，是为了当改变paramArr中得值时不影响paramsSetting得值
                                     }
                                 }
-                                modelSql += "/*节点【" + preNodeInfo.nodeName + "】的查询结果表的SQL语句*/\n " + selectSql + "\n"
-                            }else{
-                                dropViewSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果视图的SQL语句*/\n DROP VIEW " + tableName + "\n"
-                                modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE OR REPLACE VIEW " + tableName + " AS " + selectSql + "\n";//不能移动位置
+                                modelSql += "/*原表【" + curNodeInfo.nodeName + "】的查询SQL语句*/\n" + selectSql + "\n";
+                            }
+                        }
+                        if(curNodeInfo.optType === 'newNullNode'){
+                            //先获取该结果表的前置节点ID集合
+                            let parentIds = newNodeData[lineNodeIdArr[i]].parentIds;
+                            //如果该节点的前置节点ID在当前的节点ID集合批次中（因结果表的前置节点有且只有一个，所以可直接使用parentIds[0]）
+                            if(parentIds.length > 0 && $.inArray(parentIds[0],lineNodeIdArr) > -1) {
+                                //获取前置节点的节点信息
+                                let preNodeInfo = newNodeData[parentIds[0]].nodeInfo
+                                //获取前置节点的输出列信息集合
+                                let preColumnsInfo = graph.nodeData[parentIds[0]].columnsInfo
+                                //循环获取输出列
+                                let selectColArr = []
+                                for(var k=0; k<preColumnsInfo.length; k++){
+                                    if(preColumnsInfo[k].isOutputColumn === 1){//如果是输出列，则拼接输出列的字符串
+                                        selectColArr.push(preColumnsInfo[k].newColumnName)
+                                    }
+                                }
+                                if(preNodeInfo.optType === "layering"){//如果是前置节点是数据分层节点，则当前结果表的临时表名称需按照下标取值
+                                    let index = curNodeInfo.index;//获取当前结果表的下标
+                                    //获取数据分层节点的结果表数组
+                                    let resultTableNameArr = preNodeInfo.resultTableNameArr;
+                                    //若数组不为空
+                                    if(resultTableNameArr.length > index){
+                                        selectSql = preNodeInfo.nodeSqlArr[index]
+                                        tableName = resultTableNameArr[index]
+                                    }
+                                }else if(preNodeInfo.optType === "sql"){
+                                    selectSql = preNodeInfo.resultSql
+                                    tableName = preNodeInfo.resultTableName
+                                }else{//其他类型的操作节点都一样，直接取前置节点的临时表名称
+                                    selectSql = preNodeInfo.nodeSql
+                                    tableName = preNodeInfo.resultTableName
+                                }
+                                //组织SQL语句
+                                if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果结果表是辅助结果表或最终结果表
+                                    dropTableSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果表的SQL语句*/\n DROP TABLE " + tableName + "\n"
+                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS " + selectSql + "\n";//不能移动位置
+                                    selectSql = `SELECT ${selectColArr.join(",")} FROM ${tableName}`
+                                    if(newNodeData[parentIds[0]].hasParam && newNodeData[parentIds[0]].paramsSetting){
+                                        //此处处理不同操作节点SELECT语句附带的参数条件
+                                        // switch (preNodeInfo.optType) {
+                                        //     case "filter"://数据筛选
+                                        //     case "layering"://数据分层
+                                        //     case "sample"://数据抽样
+                                        //         selectSql += " AND " +  newNodeData[parentIds[0]].paramsSetting.sql
+                                        //         break
+                                        //     case "delRepeat"://数据去重
+                                        //     case "change"://数据转码
+                                        //     case "relation"://数据关联
+                                        //         selectSql += " WHERE " +  newNodeData[parentIds[0]].paramsSetting.sql
+                                        //         break
+                                        //     default:
+                                        //         selectSql = "SELECT * FROM (" + selectSql +") WHERE " +  newNodeData[parentIds[0]].paramsSetting.sql
+                                        //         break
+                                        // }
+                                        selectSql = `${selectSql} WHERE ${newNodeData[parentIds[0]].paramsSetting.sql}`
+                                        let arr = newNodeData[parentIds[0]].paramsSetting.arr
+                                        for(let t=0; t<arr.length; t++){
+                                            modelParamIdArr.push(arr[t].copyParamId);
+                                            paramArr.push({ ...{}, ...arr[t] });//此处深层扩展赋值，是为了当改变paramArr中得值时不影响paramsSetting得值
+                                        }
+                                    }
+                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的查询结果表的SQL语句*/\n " + selectSql + "\n"
+                                }else{
+                                    dropViewSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果视图的SQL语句*/\n DROP VIEW " + tableName + "\n"
+                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE OR REPLACE VIEW " + tableName + " AS " + selectSql + "\n";//不能移动位置
+                                }
                             }
                         }
                     }
+                    //重新生成每个节点中参数的ID
+                    // for(var n=0; n<modelParamIdArr.length; n++){
+                    //     var curCopyParamId = modelParamIdArr[n];//原参数ID
+                    //     var newCopyParamId = new UUIDGenerator().id;//新生成的参数ID
+                    //     //开始替换ID
+                    //     modelSql = modelSql.replace(curCopyParamId,newCopyParamId);//替换modelSql中的参数ID
+                    //     modelParamIdArr.splice(n,1,newCopyParamId);//替换modelParamIdArr中的参数ID
+                    //     for(var m=0; m<paramArr.length; m++){
+                    //         if(curCopyParamId === paramArr[m].copyParamId){
+                    //             paramArr[m].copyParamId = newCopyParamId;//替换paramArr中的参数ID
+                    //             paramArr[m].id = paramArr[m].id.replace(curCopyParamId,newCopyParamId);
+                    //             break;
+                    //         }
+                    //     }
+                    //     var keys = Object.keys(newNodeData);
+                    //     if(keys && keys.length > 0){
+                    //         for(var c=0; c<keys.length; c++){//替换newGraph中各个节点的参数ID
+                    //             if(typeof newNodeData[keys[c]].paramsSetting !== "undefined"){
+                    //                 var curArr = newNodeData[keys[c]].paramsSetting.arr;
+                    //                 var curSql = newNodeData[keys[c]].paramsSetting.sql;
+                    //                 newNodeData[keys[c]].paramsSetting.sql = curSql.replace(curCopyParamId,newCopyParamId);
+                    //                 if(typeof curArr !== "undefined" && curArr.length > 0){
+                    //                     for(var a=0; a<curArr.length; a++){
+                    //                         if(curCopyParamId === curArr[a].copyParamId){
+                    //                             curArr[a].copyParamId = newCopyParamId;
+                    //                             curArr[a].id = curArr[a].id.replace(curCopyParamId,newCopyParamId);
+                    //                             break;
+                    //                         }
+                    //                     }
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    //     //替换ID结束
+                    // }
+                    modelSql = dropTableSql + modelSql + dropViewSql
                 }
-                //重新生成每个节点中参数的ID
-                // for(var n=0; n<modelParamIdArr.length; n++){
-                //     var curCopyParamId = modelParamIdArr[n];//原参数ID
-                //     var newCopyParamId = new UUIDGenerator().id;//新生成的参数ID
-                //     //开始替换ID
-                //     modelSql = modelSql.replace(curCopyParamId,newCopyParamId);//替换modelSql中的参数ID
-                //     modelParamIdArr.splice(n,1,newCopyParamId);//替换modelParamIdArr中的参数ID
-                //     for(var m=0; m<paramArr.length; m++){
-                //         if(curCopyParamId === paramArr[m].copyParamId){
-                //             paramArr[m].copyParamId = newCopyParamId;//替换paramArr中的参数ID
-                //             paramArr[m].id = paramArr[m].id.replace(curCopyParamId,newCopyParamId);
-                //             break;
-                //         }
-                //     }
-                //     var keys = Object.keys(newNodeData);
-                //     if(keys && keys.length > 0){
-                //         for(var c=0; c<keys.length; c++){//替换newGraph中各个节点的参数ID
-                //             if(typeof newNodeData[keys[c]].paramsSetting !== "undefined"){
-                //                 var curArr = newNodeData[keys[c]].paramsSetting.arr;
-                //                 var curSql = newNodeData[keys[c]].paramsSetting.sql;
-                //                 newNodeData[keys[c]].paramsSetting.sql = curSql.replace(curCopyParamId,newCopyParamId);
-                //                 if(typeof curArr !== "undefined" && curArr.length > 0){
-                //                     for(var a=0; a<curArr.length; a++){
-                //                         if(curCopyParamId === curArr[a].copyParamId){
-                //                             curArr[a].copyParamId = newCopyParamId;
-                //                             curArr[a].id = curArr[a].id.replace(curCopyParamId,newCopyParamId);
-                //                             break;
-                //                         }
-                //                     }
-                //                 }
-                //             }
-                //         }
-                //     }
-                //     //替换ID结束
-                // }
-                modelSql = dropTableSql + modelSql + dropViewSql
-                //保存当前模型图形信息
-                //获取图形xml数据
-                var encoder = new mxCodec();
-                var node = encoder.encode(graph.getModel());
-                var xml = mxUtils.getPrettyXml(node);
-                //组织请求的json数据
-                let curTime = getCurTime()
-                var param = {
-                    "graphUuid" : indexVue.graphUuid,
-                    "createType" : indexVue.openType_graph,
-                    "graphType" : 4,
-                    "executeStatus" : getExecuteDetail(),
-                    "graphName" : '模型图形_' + curTime,
-                    "description": '系统自动保存的模型图形_' + curTime,
-                    "graphXml" : xml,
-                    "nodeData" : JSON.stringify(newNodeData), //各个节点的配置信息
-                    "modelSql" : modelSql
-                };
-                saveGraphInterface(param).then(response => {
-                    if (!response.data) {
-                        isError = true
-                        message = '模型设计保存图形信息失败'
-                    } else {
-                        indexVue.graphUuid = response.data
-                        graphUuid = response.data
-                    }
-                })
+            }else{
+                isError = true
+                message = '模型设计校验图形的请求失败'
             }
-        }else{
-            isError = true
-            message = '模型设计校验图形的请求失败'
+        }
+        if(!isError){
+            //保存当前模型图形信息
+            //获取图形xml数据
+            var encoder = new mxCodec();
+            var node = encoder.encode(graph.getModel());
+            var xml = mxUtils.getPrettyXml(node);
+            //组织请求的json数据
+            let curTime = getCurTime()
+            var param = {
+                "graphUuid" : indexVue.graphUuid,
+                "createType" : indexVue.openType_graph,
+                "graphType" : 4,
+                "executeStatus" : getExecuteDetail(),
+                "graphName" : '模型图形_' + curTime,
+                "description": '系统自动保存的模型图形_' + curTime,
+                "graphXml" : xml,
+                "nodeData" : JSON.stringify(newNodeData), //各个节点的配置信息
+                "modelSql" : modelSql
+            };
+            await saveGraphInterface(param).then(response => {
+                if (!response.data) {
+                    isError = true
+                    message = '模型设计保存图形信息失败'
+                } else {
+                    indexVue.graphUuid = response.data
+                    graphUuid = response.data
+                }
+            })
         }
     }
     return {isError,message,graphUuid,modelSql,modelParamIdArr,paramArr}
@@ -1707,7 +1706,7 @@ export async function saveModelGraph(){
  */
 export function showParamNodeList(){
 //获取所有操作节点的数组（可用于设置参数的节点）,后台【保存】和【生成场景查询】方法也有用到此数组，修改时请同时修改
-    let optTypeArr = ["datasource","filter","sort","sample","layering","groupCount","delRepeat","change","union","relation","sql"];
+    let optTypeArr = ["filter","sort","sample","layering","groupCount","delRepeat","change","union","relation","sql"];
     //先获取所有执行成功的结果表节点ID数组
     let resultTableNodeIdArr = [];
     let nodeIdArr = Object.keys(graph.nodeData);
@@ -1754,6 +1753,9 @@ export function showParamNodeList(){
     }
     if(indexVue.nodeParamArr.length > 0){
         indexVue.nodeParamDialogVisible = true
+        indexVue.$nextTick( () => {
+            $(indexVue.$refs.nodeParamToby).sortable().disableSelection()
+        })
     }else{
         indexVue.$message({ type: 'info', message: '暂无可设置参数的节点' })
     }

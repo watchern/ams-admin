@@ -17,8 +17,8 @@
     </el-row>
 
     <!-- 监控总览/饼图 -->
-    <el-row style="height: 320px;">
-      <el-col :xs="4" :sm="6" :md="12" :lg="12" :xl="12">
+    <el-row style="height: 320px;" :gutter="15">
+      <el-col :span="12">
         <el-card class="box-card" shadow="always">
           <div slot="header" class="clearfix" style="text-align:right; ">
             <time class="time">{{ time | formatDate }}</time>
@@ -27,8 +27,8 @@
           </div>
           <!-- <span class="el-icon-refresh-left refresh" style="float: right" /> -->
 
-          <el-row>
-            <el-col style="margin: 0 0 50px 0" :span="6">
+          <el-row style="margin: 40px 0">
+            <el-col :span="6">
               <!-- <el-tag effect="dark" style="width:119%;height: 80px;"> -->
               <label class="title-middle"> 调度任务总数</label>
               <div class="bottom clearfix">
@@ -39,7 +39,7 @@
               </div>
               <!-- </el-tag> -->
             </el-col>
-            <el-col style="margin: 0 0 50px 0" :span="8">
+            <el-col :span="8">
               <!-- <el-tag effect="dark" style="width:119%;height: 80px;"> -->
               <label class="title-middle"> 文件接收情况</label>
               <div class="bottom clearfix">
@@ -81,16 +81,14 @@
           <el-button type="success" class="over-btn">结束调度</el-button> -->
         </el-card>
       </el-col>
-      <el-col :xs="4" :sm="6" :md="12" :lg="12" :xl="12">
+      <el-col :span="12">
         <el-card class="box-card" shadow="always">
           <div slot="header" class="clearfix" style="text-align: right;">
             <!-- <span>卡片名称</span> -->
             <time class="time">{{ time | formatDate }}</time>
             <span class="el-icon-refresh-left refreshspan" @click="refresh()" />
           </div>
-          <div class="row">
-            <m-process-state-count :search-params="searchParams" @refresh="_datepicker()" />
-          </div>
+          <m-process-state-count :search-params="searchParams" @refresh="_datepicker()" />
         </el-card>
       </el-col>
     </el-row>

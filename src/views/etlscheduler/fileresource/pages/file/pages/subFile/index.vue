@@ -100,7 +100,7 @@ export default {
           content: editor.getValue()
         }).then(res => {
           this.$notify({
-            title: '提示',
+            title: this.$t('message.title'),
             message: res.msg,
             type: 'success',
             duration: 2000,

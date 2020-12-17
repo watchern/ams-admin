@@ -280,12 +280,10 @@ export default {
       })
     },
     handleCheckChange(data, checked, indeterminate) {
-      // console.log(data, checked, indeterminate)
       this.moveDirPath = data.path
       this.options.query.path = data.path
     },
     handleNodeClick(data, checked, node) {
-      // console.log('多选框设为单选框', checked, data)
       if (checked) {
         this.$refs.treeForm.setCheckedKeys([data.id])
       }
@@ -329,8 +327,8 @@ export default {
       createDir({ name: this.dirName, path: this.selections[0].path }).then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
-          message: '创建成功',
+          title: this.$t('message.title'),
+          message: this.$t('message.insert.success'),
           type: 'success',
           duration: 2000,
           position: 'bottom-right'
@@ -370,8 +368,8 @@ export default {
         this.getList()
         if (res.code === 0) {
           this.$notify({
-            title: '成功',
-            message: '删除成功',
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
             type: 'success',
             duration: 2000,
             position: 'bottom-right'
@@ -404,7 +402,7 @@ export default {
       moveFile({ param: JSON.stringify(a) }).then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '文件移动成功',
           type: 'success',
           duration: 2000,
@@ -431,7 +429,7 @@ export default {
         file.cancel()
       } else {
         this.$notify({
-          title: '提示',
+          title: this.$t('message.title'),
           message: this.$t(JSON.parse(response).data + '上传成功'),
           type: 'success',
           duration: 2000,

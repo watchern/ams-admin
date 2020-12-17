@@ -5,7 +5,6 @@
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
-        :query-default="queryDefault"
         @submit="getList"
       />
     </div>
@@ -122,12 +121,14 @@
           <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="taskParam in scope.row.distinctParamList" :key="taskParam.value">
-              <label class="col-md-4">
-                {{ taskParam.name }}:
-              </label>
-              <div class="col-md-8">
+              <el-col :span="8">
+                <label>
+                  {{ taskParam.name }}:
+                </label>
+              </el-col>
+              <el-col :span="16">
                 {{ taskParam.value }}
-              </div>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -145,12 +146,16 @@
         <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
-              <label class="col-md-2">
-                [{{ dependTask.dateValueName }}]
-              </label>
-              <label class="col-md-10" align="right">
-                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
-              </label>
+              <el-col :span="4">
+                <label>
+                  [{{ dependTask.dateValueName }}]
+                </label>
+              </el-col>
+              <el-col :span="20" align="right">
+                <label>
+                  {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+                </label>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -429,8 +434,6 @@ export default {
     //   // this.store.state.monitor.processStartTime
     //   // startTimeStart: this.store.state.monitor.processStartTime,
     //   //   startTimeEnd: this.store.state.monitor.processEndTime
-    //   // console.log(this.store.state.monitor.processStartTime)
-    //   console.log('-------------------------------------')
     //   this.queryDefault = {
     //     groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
     //     startTimeStart: this.store.state.monitor.processStartTime,
@@ -447,6 +450,8 @@ export default {
           startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
           startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
         }
+        this.queryFields[1].value = this.store.state.monitor.processGroupExecutionStatusType
+        this.queryFields[2].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
         this.getList(this.queryDefault)
       }
     },
@@ -636,7 +641,7 @@ export default {
         this.list.splice(index, 1, this.temp)
         this.dialogFormVisible = false
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '设置跳过环节成功成功',
           type: 'success',
           duration: 2000,
@@ -661,7 +666,7 @@ export default {
       execute(ids.join(','), 'PAUSE').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '暂停成功',
           type: 'success',
           duration: 2000,
@@ -676,7 +681,7 @@ export default {
       execute(ids.join(','), 'START_UP').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '启用成功',
           type: 'success',
           duration: 2000,
@@ -691,7 +696,7 @@ export default {
       execute(ids.join(','), 'REPEAT_RUNNING').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '重新运行成功',
           type: 'success',
           duration: 2000,
@@ -706,7 +711,7 @@ export default {
       execute(ids.join(','), 'CANCEL').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '取消成功',
           type: 'success',
           duration: 2000,

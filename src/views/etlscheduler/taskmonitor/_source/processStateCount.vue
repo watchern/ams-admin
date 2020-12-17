@@ -3,28 +3,31 @@
   <div v-show="!msg">
     <div v-spin="isSpin" class="data-area">
       <el-row>
-        <el-col :span="12">
+        <el-col :span="14">
           <div id="process-state-pie" style="height: 240px;margin-top:20px" />
         </el-col>
-        <el-col :span="12">
-          <div class="list-table">
-            <div
-              v-for="(item, $index) in processStateList"
-              :key="$index"
-              class="text item"
-            >
-              <div class="list-box">
+        <el-col :offset="2" :span="8">
+          <div
+            v-for="(item, $index) in processStateList"
+            :key="$index"
+            class="text item"
+          >
+            <el-row>
+              <el-col :span="12">
                 <span class="ellipsis" :title="item.key">{{ item.key }}</span>
                 <span><a
                   href="javascript:"
                   :class="searchParams.projectId ? 'links' : ''"
                   @click="handleProcess(item.key)"
                 >({{ item.value }})</a></span>
-                <div class="bottom clearfix">
-                  <span class="percentage">{{ item.percent }}</span>
-                </div>
-              </div>
-            </div>
+              </el-col>
+              <el-col :span="12">
+                <span class="percentage">{{ item.percent }}</span>
+
+              </el-col>
+
+            </el-row>
+
           </div>
         </el-col>
       </el-row>
@@ -198,25 +201,25 @@ export default {
   border: 0px solid #000;
 }
 .text {
-  float: left;
-  margin: 15px 0 0 15px;
+  /* float: left;*/
+  margin: 10px 15px;
 }
 .text .ellipsis {
   /* font-size: 16px; */
   color: #333;
-  padding: 0 0 0 0;
+  /* padding: 0 0 0 0; */
   font-weight: bold;
 }
 .text .percentage {
   font-size: 14px;
   color: #333;
-  padding: 0 0 0 0;
+  /* padding: 0 0 0 0; */
 }
 
 .text a {
   color: #2d8cf0;
   font-size: 14px;
-  padding: 14px 0 0 0;
+  /* padding: 14px 0 0 0; */
 }
 .refresh {
   /* position: absolute;
@@ -233,9 +236,5 @@ export default {
   height: 300px;
   float: left;
   margin: 0 0 0 70px;
-}
-.list-box {
-  width:100px;
-  /* height: 50px; */
 }
 </style>

@@ -291,7 +291,7 @@ export default {
       const clipboard = new Clipboard(`.copy-name`)
       clipboard.on('success', e => {
         this.$notify({
-          title: '提示',
+          title: this.$t('message.title'),
           message: `复制成功`,
           type: 'success',
           duration: 2000,
@@ -422,7 +422,7 @@ export default {
                */
               this[this.type === 'instance' ? 'updateInstance' : 'updateDefinition'](this.urlParam.id).then(res => {
                 this.$notify({
-                  title: '提示',
+                  title: this.$t('message.title'),
                   message: res.msg,
                   type: 'success',
                   duration: 2000,
@@ -448,7 +448,7 @@ export default {
               // New
               this.saveDAGchart().then(res => {
                 this.$notify({
-                  title: '提示',
+                  title: this.$t('message.title'),
                   message: res.msg,
                   type: 'success',
                   duration: 2000,
@@ -550,7 +550,7 @@ export default {
         setTimeout(() => {
           this.isRefresh = false
           this.$notify({
-            title: '提示',
+            title: this.$t('message.title'),
             message: `刷新状态成功`,
             type: 'success',
             duration: 2000,

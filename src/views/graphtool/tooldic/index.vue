@@ -118,7 +118,7 @@
                 <div class="menuTit">参数</div>
                 <div class="menuLi" style="">
                     <div id="nodeParamSet" class="graphIcon" data-type="nodeParamSet" style="width:80px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/help.png" alt="参数">
+                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../tooldic/images/icon/param.png" alt="参数">
                         <a class="iconText" @click="showParamNodeList">参数</a>
                     </div>
                 </div>
@@ -293,7 +293,7 @@
                     <th style="text-align: center">操作</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody ref="nodeParamToby">
                 <tr v-for="(nodeObj,index) in nodeParamArr" ref="paramSetTr" :index="index">
                     <td align="center">{{ nodeObj.nodeName }}</td>
                     <td align="center">{{ nodeObj.lineNum }}</td>

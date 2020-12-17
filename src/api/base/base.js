@@ -60,3 +60,15 @@ export function updateRemind(data) {
   })
 }
 
+// /**
+//  * 获取单个系统异常信息
+//  * @param {*} data 
+//  */
+// export function getReadErrorLog(id) {
+//   return request({
+//     baseURL: baseURL,
+//     url: `/logSysErrorController/getErrorLog/${id}`,
+//     method: 'get',
+//   })
+// }
+

@@ -99,7 +99,7 @@ export default {
       const clipboard = new Clipboard(`.${className}`)
       clipboard.on('success', e => {
         this.$notify({
-          title: '提示',
+          title: this.$t('message.title'),
           message: `复制成功`,
           type: 'success',
           duration: 2000,

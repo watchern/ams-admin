@@ -122,7 +122,6 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      console.log('query:' + JSON.stringify(query))
       if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then(resp => {
         this.total = resp.data.total
