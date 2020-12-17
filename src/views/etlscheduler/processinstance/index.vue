@@ -5,7 +5,6 @@
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
-        :query-default="queryDefault"
         @submit="getList"
       />
     </div>
@@ -451,6 +450,8 @@ export default {
           startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
           startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
         }
+        this.queryFields[1].value = this.store.state.monitor.processGroupExecutionStatusType
+        this.queryFields[2].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
         this.getList(this.queryDefault)
       }
     },
