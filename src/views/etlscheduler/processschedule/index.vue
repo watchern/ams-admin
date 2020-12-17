@@ -129,7 +129,7 @@
         :formatter="formatStatus"
       />
       <el-table-column
-        label="最新修改人"
+        label="最近修改人"
         width="150px"
         align="center"
         prop="updateUserName"
@@ -167,29 +167,79 @@
             :placeholder="disableUpdate === true ? '' : '请输入任务名称'"
           />
         </el-form-item>
-
-        <!-- 查询任务流程 -->
-        <el-form-item label="任务流程" prop="processDefinitionId">
-          <el-select
-            v-model="temp.processDefinitionId"
-            :disabled="disableUpdate"
-            :filterable="true"
-            :remote="false"
-            :remote-method="remoteMethod"
-            reserve-keyword
-            :placeholder="disableUpdate === true ? '' : '请选择任务流程'"
-            :loading="loading"
-            @change="changeProcess(temp.processDefinitionId)"
-            @focus="remote-method"
-          >
-            <el-option
-              v-for="item in options"
-              :key="item.processDefinitionUuid"
-              :label="item.name"
-              :value="item.processDefinitionUuid"
-            />
-          </el-select>
-        </el-form-item>
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="调度开始时间" prop="startTime">
+              <el-date-picker
+                v-model="temp.startTime"
+                :picker-options="startTime"
+                style="width:100%"
+                type="date"
+                props="startTime"
+                :placeholder="disableUpdate === true ? '' : '请选择开始时间'"
+                :disabled="disableUpdate"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11" :offset="2">
+            <el-form-item label="调度结束时间" prop="endTime">
+              <!-- <el-col class="line" :span="1">-</el-col> -->
+              <el-date-picker
+                v-model="temp.endTime"
+                :picker-options="endTime"
+                type="date"
+                prop="endTime"
+                style="width:100%"
+                :placeholder="disableUpdate === true ? '' : '请选择结束时间'"
+                :disabled="disableUpdate"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="11">
+            <!-- 查询任务流程 -->
+            <el-form-item label="任务流程" prop="processDefinitionId">
+              <el-select
+                v-model="temp.processDefinitionId"
+                :disabled="disableUpdate"
+                :filterable="true"
+                style="width:100%"
+                :remote="false"
+                :remote-method="remoteMethod"
+                reserve-keyword
+                :placeholder="disableUpdate === true ? '' : '请选择任务流程'"
+                :loading="loading"
+                @change="changeProcess(temp.processDefinitionId)"
+                @focus="remote-method"
+              >
+                <el-option
+                  v-for="item in options"
+                  :key="item.processDefinitionUuid"
+                  :label="item.name"
+                  :value="item.processDefinitionUuid"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="11" :offset="2">
+            <el-form-item label="作业周期" prop="crontab">
+              <el-select
+                v-model="temp.crontab"
+                style="width:100%;"
+                :placeholder="disableUpdate === true ? '' : '请选择作业周期'"
+                :disabled="disableUpdate"
+              >
+                <el-option
+                  v-for="item in crontabFormat"
+                  :key="item.codeDesc"
+                  :label="item.codeName"
+                  :value="item.codeDesc"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item
           v-for="(item, $index) in distinctParamList"
           :key="$index"
@@ -202,52 +252,7 @@
             @blur="changeParamValue(item.value, item.name)"
           />
         </el-form-item>
-        <el-row>
-          <el-col :span="8" class="ellines">
-            <el-form-item label="作业周期开始时间" prop="startTime">
-              <el-col :span="8" class="ellines">
-                <el-date-picker
-                  v-model="temp.startTime"
-                  :picker-options="startTime"
-                  type="date"
-                  props="startTime"
-                  :placeholder="disableUpdate === true ? '' : '请选择开始时间'"
-                  :disabled="disableUpdate"
-                />
-              </el-col>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="作业周期结束时间" prop="endTime">
-              <!-- <el-col class="line" :span="1">-</el-col> -->
-              <el-col :span="8">
-                <el-date-picker
-                  v-model="temp.endTime"
-                  :picker-options="endTime"
-                  type="date"
-                  prop="endTime"
-                  :placeholder="disableUpdate === true ? '' : '请选择结束时间'"
-                  :disabled="disableUpdate"
-                />
-              </el-col>
-            </el-form-item>
-          </el-col>
-        </el-row>
 
-        <el-form-item label="作业周期" prop="crontab">
-          <el-select
-            v-model="temp.crontab"
-            :placeholder="disableUpdate === true ? '' : '请选择作业周期'"
-            :disabled="disableUpdate"
-          >
-            <el-option
-              v-for="item in crontabFormat"
-              :key="item.codeDesc"
-              :label="item.codeName"
-              :value="item.codeDesc"
-            />
-          </el-select>
-        </el-form-item>
         <!-- 添加任务依赖 -->
         <!-- temp.dependTaskInfoList!=null && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList -->
         <!-- <el-form-item v-if="dialogStatus === 'create' || dialogStatus === 'update' || (dialogStatus === 'show' && temp.dependTaskInfoList && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList )"> -->
@@ -350,7 +355,7 @@
 
     <!-- 下载流程模板弹框 -->
     <el-dialog title="下载流程模板" :visible.sync="dialogFormVisible1">
-      <el-form label-position="right">
+      <el-form label-position="right" class="detail-form">
         <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="downProcessDefinitionId">
           <el-select
@@ -1528,8 +1533,5 @@ export default {
     // position: relative;
     // left: 460px;
     // bottom: 115px;
-  }
-  .ellines{
-    padding: 0;
   }
 </style>

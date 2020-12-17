@@ -115,7 +115,7 @@
         prop="description"
       />
       <el-table-column
-        label="最新修改人"
+        label="最近修改人"
         align="center"
         prop="updateUserName"
       />
@@ -169,11 +169,11 @@ export default {
         }
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
-        sortBy: 'asc',
-        sortName: 'create_time'
+        sortBy: 'desc',
+        sortName: 'updateTime'
       },
       temp: {
         processDefinitionUuid: null
