@@ -23,7 +23,7 @@
       title="异常信息"
       :visible.sync="dialogVisible">
       <div style="max-height:60vh; overflow:auto">
-        <span>{{this.logContent}}</span>
+        <p class="error-log">{{this.logContent}}</p>
       </div>
     </el-dialog>
   </div>
@@ -188,3 +188,11 @@ export default {
   }
 }
 </script>
+<style scoped>
+.error-log{
+  margin: 10px;
+  line-height: 28px;
+  font-size: 18px;
+
+}
+</style>
