@@ -32,14 +32,6 @@
         ></el-button>
         <el-button
           style="display: none"
-          :disabled="modelRunResultBtnIson.associatedBtn"
-          type="primary"
-          @click="getValues"
-          class="oper-btn refresh"
-          title="关联项目"
-        ></el-button>
-        <el-button
-          style="display: none"
           :disabled="modelRunResultBtnIson.disassociateBtn"
           type="primary"
           @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
@@ -56,6 +48,7 @@
         <el-button
           type="primary"
           class="oper-btn refresh"
+          :disabled="modelRunResultBtnIson.associatedBtn"
           @click="addDetailRel('qwer1', '项目11')"
           title="关联项目"
         ></el-button>
@@ -218,7 +211,7 @@ import {
 } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
 import mtEditor from 'ams-datamax'
-// import 'iview/dist/styles/iview.css'
+import 'iview/dist/styles/iview.css'
 
 export default {
   name: "childTabCon",

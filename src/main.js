@@ -83,7 +83,23 @@ Object.keys(filters).forEach(key => {
 })
 
 Vue.config.productionTip = false
+//region 图表引用
+import iview from 'iview'
 
+import VueQriously from 'vue-qriously'
+import baseConfig from 'ams-datamax/src/config/config'
+import clipboard from 'clipboard'
+Vue.prototype.$clipboard = clipboard
+Vue.use(iview)
+Vue.use(VueQriously)
+Vue.mixin({
+  data () {
+    return {
+      commonConfig: baseConfig
+    }
+  }
+})
+//endregion 图表引用
 new Vue({
   el: '#app',
   router,
