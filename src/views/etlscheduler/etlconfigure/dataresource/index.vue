@@ -131,11 +131,13 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, save, update, del } from '@/api/etlscheduler/dataresource'
 import QueryField from '@/components/Ace/query-field/index'
+import store from '@/store'
 
 export default {
   components: { Pagination, QueryField },
   data() {
     return {
+      store,
       tableKey: 'dataResourceUuid',
       list: null,
       total: 0,
