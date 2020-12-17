@@ -1438,57 +1438,49 @@ export function getResultColumnInfo(){
         isError = true
         message = '未将结果表标记为最终结果表'
     }else {
-        // 判断模型最终结果表的节点是否执行成功
-        // if (graph.nodeData[resultTableNodeId].nodeInfo.nodeExcuteStatus !== 3) {
-        //     isError = true
-        //     message = '您标记的最终结果表尚未执行成功'
-        // }else{
-            // 以模型最终结果表节点为最末级节点，向上寻找所有的节点
-            let lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
+      let lineNodeIdArr = []
+      if(graph.nodeData[resultTableNodeId].nodeInfo.optType === "datasource"){//只将原表标记成了最终结果表
+        lineNodeIdArr = [resultTableNodeId]
+      }else{// 以模型最终结果表节点为最末级节点，向上寻找所有的节点
+        lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
+      }
             for (let i = 0; i < lineNodeIdArr.length; i++) {
                 let curNodeInfo = graph.nodeData[lineNodeIdArr[i]].nodeInfo
-                // if (curNodeInfo.nodeExcuteStatus !== 3) {
-                //     isError = true
-                //     message = '节点【' + curNodeInfo.nodeName + '】尚未执行成功'
-                //     break
-                // } else {
-                    if(curNodeInfo.optType === 'datasource' || curNodeInfo.optType === 'newNullNode'){//如果是源表或结果表
-                        if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果是被标记为辅助结果表或最终结果表
-                            let columnsInfo = null
-                            if(curNodeInfo.optType === 'datasource'){
-                                columnsInfo = graph.nodeData[lineNodeIdArr[i]].columnsInfo
-                            }else if(curNodeInfo.optType === 'newNullNode'){
-                                // 先获取该结果表的前置节点ID集合
-                                let parentIds = graph.nodeData[lineNodeIdArr[i]].parentIds
-                                // 如果该节点的前置节点ID在当前的节点ID集合批次中（因结果表的前置节点有且只有一个，所以可直接使用parentIds[0]）
-                                if (parentIds.length > 0 && $.inArray(parentIds[0], lineNodeIdArr) > -1) {
-                                    columnsInfo = graph.nodeData[parentIds[0]].columnsInfo
-                                }
-                            }else{
-                                continue
-                            }
-                            let columnNameArr = []//输出列名称数组
-                            let columnTypeArr = []//输出列类型数组
-                            for (let k = 0; k < columnsInfo.length; k++) {
-                                // 判断是否为输出列
-                                let isOutputColumn = columnsInfo[k].isOutputColumn
-                                if (isOutputColumn === 1) { // 如果是输出列，则拼接输出列的字符串
-                                    columnNameArr.push(columnsInfo[k].newColumnName)
-                                    columnTypeArr.push(columnsInfo[k].columnType)
-                                }
-                            }
-                            if (curNodeInfo.midTableStatus === 2) { // 如果是被标记为辅助结果表
-                                middleTableArr.push({columnNameArr,columnTypeArr})
-                            }
-                            if (curNodeInfo.resultTableStatus === 2) { // 如果是被标记为最终结果表，则说明此节点将作最后一个结果表节点
-                                finalTable = {columnNameArr,columnTypeArr}
-                                break
-                            }
-                        }
-                    }
-                // }
+                  if(curNodeInfo.optType === 'datasource' || curNodeInfo.optType === 'newNullNode'){//如果是源表或结果表
+                      if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果是被标记为辅助结果表或最终结果表
+                          let columnsInfo = null
+                          if(curNodeInfo.optType === 'datasource'){
+                              columnsInfo = graph.nodeData[lineNodeIdArr[i]].columnsInfo
+                          }else if(curNodeInfo.optType === 'newNullNode'){
+                              // 先获取该结果表的前置节点ID集合
+                              let parentIds = graph.nodeData[lineNodeIdArr[i]].parentIds
+                              // 如果该节点的前置节点ID在当前的节点ID集合批次中（因结果表的前置节点有且只有一个，所以可直接使用parentIds[0]）
+                              if (parentIds.length > 0 && $.inArray(parentIds[0], lineNodeIdArr) > -1) {
+                                  columnsInfo = graph.nodeData[parentIds[0]].columnsInfo
+                              }
+                          }else{
+                              continue
+                          }
+                          let columnNameArr = []//输出列名称数组
+                          let columnTypeArr = []//输出列类型数组
+                          for (let k = 0; k < columnsInfo.length; k++) {
+                              // 判断是否为输出列
+                              let isOutputColumn = columnsInfo[k].isOutputColumn
+                              if (isOutputColumn === 1) { // 如果是输出列，则拼接输出列的字符串
+                                  columnNameArr.push(columnsInfo[k].newColumnName)
+                                  columnTypeArr.push(columnsInfo[k].columnType)
+                              }
+                          }
+                          if (curNodeInfo.midTableStatus === 2) { // 如果是被标记为辅助结果表
+                              middleTableArr.push({columnNameArr,columnTypeArr})
+                          }
+                          if (curNodeInfo.resultTableStatus === 2) { // 如果是被标记为最终结果表，则说明此节点将作最后一个结果表节点
+                              finalTable = {columnNameArr,columnTypeArr}
+                              break
+                          }
+                      }
+                  }
             }
-        // }
     }
     return {isError,message,middleTableArr,finalTable}
 }
@@ -1522,18 +1514,8 @@ export async function saveModelGraph(){
         message = '未将结果表标记为最终结果表'
     }else {
         let newNodeData = { ...{}, ...graph.nodeData }
-        let nodeType = newNodeData[resultTableNodeId].nodeInfo.optType
-        if(nodeType === "datasource"){//只将原表标记成了最终结果表
-            let selectSql = newNodeData[resultTableNodeId].nodeInfo.nodeSql
-            if(newNodeData[resultTableNodeId].hasParam && newNodeData[resultTableNodeId].paramsSetting){
-                selectSql += " WHERE " +  newNodeData[resultTableNodeId].paramsSetting.sql;//参数部分的SQL语句（where条件部分）
-                let arr = newNodeData[resultTableNodeId].paramsSetting.arr
-                for(let t=0; t<arr.length; t++){
-                    modelParamIdArr.push(arr[t].copyParamId);
-                    paramArr.push({ ...{}, ...arr[t] });//此处深层扩展赋值，是为了当改变paramArr中得值时不影响paramsSetting得值
-                }
-            }
-            modelSql += "/*原表【" + newNodeData[resultTableNodeId].nodeInfo.nodeName + "】的查询SQL语句*/\n" + selectSql + "\n";
+        if(newNodeData[resultTableNodeId].nodeInfo.optType === "datasource"){//只将原表标记成了最终结果表
+            modelSql += "/*原表【" + newNodeData[resultTableNodeId].nodeInfo.nodeName + "】的查询SQL语句*/\n" + newNodeData[resultTableNodeId].nodeInfo.nodeSql + "\n";
         }else{
             // 以模型最终结果表节点为最末级节点，向上寻找所有的节点
             let lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
@@ -1724,7 +1706,7 @@ export async function saveModelGraph(){
  */
 export function showParamNodeList(){
 //获取所有操作节点的数组（可用于设置参数的节点）,后台【保存】和【生成场景查询】方法也有用到此数组，修改时请同时修改
-    let optTypeArr = ["datasource","filter","sort","sample","layering","groupCount","delRepeat","change","union","relation","sql"];
+    let optTypeArr = ["filter","sort","sample","layering","groupCount","delRepeat","change","union","relation","sql"];
     //先获取所有执行成功的结果表节点ID数组
     let resultTableNodeIdArr = [];
     let nodeIdArr = Object.keys(graph.nodeData);
