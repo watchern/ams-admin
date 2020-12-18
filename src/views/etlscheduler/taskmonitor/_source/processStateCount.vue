@@ -13,7 +13,7 @@
             class="text item"
           >
             <el-row>
-              <el-col :span="12">
+              <el-col :span="14">
                 <span class="ellipsis" :title="item.key">
                   {{ item.key }}</span>
                 <span><a
@@ -21,7 +21,7 @@
                   @click="handleProcess(item.key)"
                 >（{{ item.value }}）</a></span>
               </el-col>
-              <el-col :span="12">
+              <el-col :span="10">
                 <span class="percentage">{{ item.percent }}</span>
               </el-col>
 
@@ -58,7 +58,8 @@ export default {
       currentDate: new Date(),
       isSpin: true,
       msg: '',
-      processStateList: []
+      processStateList: [],
+      statusName: null
     }
   },
   methods: {
@@ -83,6 +84,7 @@ export default {
       this.setProcessGroupExecutionStatusType(_.find(statusType, ['label', name]).value)
       this.setProcessStartTime(this.searchParams.startTimeStart)
       this.setProcessEndTime(this.searchParams.startTimeEnd)
+      this.statusName = name
       // this.refresh()
       this.$emit('refresh')
       // this.$router.push({
@@ -121,19 +123,19 @@ export default {
       myChart.echart.dispatchAction({
         type: 'highlight',
         seriesIndex: 0,
-        name: '执行完成'
+        name: this.statusName
       })
       myChart.echart.on('mouseover', (v) => {
-        if (v.name !== '执行完成') {
+        if (v.name !== this.statusName) {
           myChart.echart.dispatchAction({
             type: 'hideTip',
             seriesIndex: 0,
-            name: '执行完成'
+            name: this.statusName
           })
           myChart.echart.dispatchAction({
             type: 'downplay',
             seriesIndex: 0,
-            name: '执行完成'
+            name: this.statusName
           })
         }
       })
@@ -141,12 +143,12 @@ export default {
         myChart.echart.dispatchAction({
           type: 'showTip',
           seriesIndex: 0,
-          name: '执行完成'
+          name: this.statusName
         })
         myChart.echart.dispatchAction({
           type: 'highlight',
           seriesIndex: 0,
-          name: '执行完成'
+          name: this.statusName
         })
       })
       // 首页不允许跳转
@@ -178,7 +180,9 @@ export default {
     }
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.statusName = '执行完成'
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
