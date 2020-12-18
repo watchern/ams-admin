@@ -193,6 +193,5 @@ export default {
   margin: 10px;
   line-height: 28px;
   font-size: 18px;
-
 }
 </style>
