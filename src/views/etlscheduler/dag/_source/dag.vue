@@ -640,12 +640,16 @@ export default {
              */
             cacheTaskInfo({ item, fromThis }) {
               // 给选中的元素添加class
-              document.getElementById(item.id).classList.add('jtk-tasks-active')
+              if (document.getElementById(item.id) !== null) {
+                document.getElementById(item.id).classList.add('jtk-tasks-active')
+              }
               self.cacheTasks(item)
             },
             close({ item, flag, fromThis }) {
               // 给选中的元素移除class
-              document.getElementById(item.id).classList.remove('jtk-tasks-active')
+              if (document.getElementById(item.id) !== null) {
+                document.getElementById(item.id).classList.remove('jtk-tasks-active')
+              }
               self.addTasks(item)
               // Edit status does not allow deletion of nodes
               if (flag) {

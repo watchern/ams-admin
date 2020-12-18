@@ -63,21 +63,21 @@ export default {
   methods: {
     ...mapActions('projects', ['getProcessStateCount']),
     ...mapMutations('monitor', ['setProcessStatus', 'setProcessStartTime', 'setProcessEndTime', 'setProcessGroupExecutionStatusType']),
-    _goProcess(name) {
-      this.$router.push({
-        name: 'projects-instance-list',
-        query: {
-          // stateType: _.find(stateType, ['label', name])['code'],
-          stateType: _.find(statusType, ['label', name])['code'],
+    // _goProcess(name) {
+    //   this.$router.push({
+    //     name: 'projects-instance-list',
+    //     query: {
+    //       // stateType: _.find(stateType, ['label', name])['code'],
+    //       stateType: _.find(statusType, ['label', name])['code'],
 
-          // startDate: this.searchParams.startDate,
-          // endDate: this.searchParams.endDate
-          startTimeStart: this.searchParams.startTimeStart,
-          startTimeEnd: this.searchParams.startTimeEnd
-        }
-      })
-    },
-    // 带着状态和开始结束时间进行页面的跳转，跳转到流程实例页面
+    //       // startDate: this.searchParams.startDate,
+    //       // endDate: this.searchParams.endDate
+    //       startTimeStart: this.searchParams.startTimeStart,
+    //       startTimeEnd: this.searchParams.startTimeEnd
+    //     }
+    //   })
+    // },
+    // 带着状态和开始结束时间进行页面参数传递到流程实例页面
     handleProcess(name) {
       this.setProcessGroupExecutionStatusType(_.find(statusType, ['label', name]).value)
       this.setProcessStartTime(this.searchParams.startTimeStart)
@@ -149,12 +149,12 @@ export default {
           name: this.statusName
         })
       })
-      // 首页不允许跳转
-      if (this.searchParams.projectId) {
-        myChart.echart.on('click', (e) => {
-          this._goProcess(e.data.name)
-        })
-      }
+      // // 首页不允许跳转
+      // if (this.searchParams.projectId) {
+      myChart.echart.on('click', (e) => {
+        this.handleProcess(e.data.name)
+      })
+      // }
     }
   },
   computed: {},

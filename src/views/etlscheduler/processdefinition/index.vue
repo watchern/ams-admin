@@ -138,7 +138,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, del, updateDefinitionStatus } from '@/api/etlscheduler/processdefinition'
+import { listByPage, del, disableDefinitionStatus, enableDefinitionStatus } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
 import axios from 'axios'
 
@@ -264,7 +264,7 @@ export default {
     handleStart() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
-      updateDefinitionStatus(ids.join(','), 1).then(() => {
+      enableDefinitionStatus(ids.join(',')).then(() => {
         this.getList()
         this.$notify({
           title: this.$t('message.title'),
@@ -324,7 +324,7 @@ export default {
       }).then(() => {
         var ids = []
         this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
-        updateDefinitionStatus(ids.join(','), 0).then(() => {
+        disableDefinitionStatus(ids.join(',')).then(() => {
           this.getList()
           this.$notify({
             title: this.$t('message.title'),

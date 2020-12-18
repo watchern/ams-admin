@@ -83,14 +83,20 @@ export function findParams(className) {
   })
 }
 
-// 流程定义状态修改
-export function updateDefinitionStatus(ids, status) {
+// 启用流程
+export function enableDefinitionStatus(ids) {
   return request({
     baseURL: baseURL,
-    url: `/processDefinition/updateDefinitionStatus/${ids}`,
-    params: {
-      status
-    },
+    url: `/processDefinition/enableDefinitionStatus/${ids}`,
+    method: 'get'
+  })
+}
+
+// 禁用流程
+export function disableDefinitionStatus(ids) {
+  return request({
+    baseURL: baseURL,
+    url: `/processDefinition/disableDefinitionStatus/${ids}`,
     method: 'get'
   })
 }
