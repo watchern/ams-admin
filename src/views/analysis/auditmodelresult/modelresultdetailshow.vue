@@ -57,8 +57,9 @@ export default {
                  break
               }
           }
+          debugger
           var resultTables = this.runTaskRel.runResultTables
-           this.modeluuid = this.runTaskRel.model.modelUuid
+          this.modeluuid = this.runTaskRel.model.modelUuid
           for(var i = 0;i<resultTables.length;i++){
               if(resultTables[i].tableType==1){
                   this.mainTable = resultTables[i]
