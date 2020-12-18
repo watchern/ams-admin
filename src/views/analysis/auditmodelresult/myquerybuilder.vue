@@ -39,6 +39,10 @@ export default {
      * 设置queryBuilder列
      */
     setQueryBuilderColumn() {
+      console.log(11111111111111)
+      console.log(this.columns)
+      console.log(this.data)
+      console.log(this.inputselectvalue)
       const queryRules = [];
       for (let i = 0; i < this.columns.columnList.length; i++) {
         const operators = this.getQueryBuilderOperators(

@@ -17,6 +17,7 @@
     <el-row v-if="myFlag">
       <div align="right">
         <el-button
+          v-if="false"
           :disabled="modelRunResultBtnIson.exportBtn"
           type="primary"
           @click="exportExcel"
@@ -24,6 +25,7 @@
           title="导出"
         ></el-button>
         <el-button
+          v-if="false"
           :disabled="modelRunResultBtnIson.chartDisplayBtn"
           type="primary"
           class="oper-btn chart"
@@ -31,7 +33,7 @@
           title="图表展示"
         ></el-button>
         <el-button
-          style="display: none"
+          v-if="false"
           :disabled="modelRunResultBtnIson.disassociateBtn"
           type="primary"
           @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
@@ -46,6 +48,7 @@
            title="查询设置"
         ></el-button>
         <el-button
+          v-if="false"
           type="primary"
           class="oper-btn refresh"
           :disabled="modelRunResultBtnIson.associatedBtn"
@@ -60,9 +63,9 @@
           title="重置"
         ></el-button>
         <el-button
+          v-if="false"
           class="oper-btn link"
           :disabled="modelRunResultBtnIson.modelDetailAssBtn"
-          v-if="modelDetailButtonIsShow"
           type="primary"
           @click="openModelDetail"
           title="查询关联"
@@ -200,6 +203,7 @@ import {
   replaceParam,
   batchCoverAddResultDetailProjectRel,
 } from "@/api/analysis/auditmodelresult";
+import { selectTableHandle } from "@/api/analysis/modelresulthandle"
 import axios from "axios";
 import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
@@ -535,7 +539,7 @@ export default {
         if (typeof sql !== "string") {
           sql = "undefined";
         }
-        selectTable(this.pageQuery, sql, this.resultSpiltObjects).then(
+        selectTableHandle(this.pageQuery, sql).then(
           (resp) => {
             var column = resp.data.records[0].columns
             this.result.column = column
@@ -554,7 +558,7 @@ export default {
                 var type = ''
                 if(columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1 ){
                   type = 'varchar'
-                }else if(columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") != -1 || columnInfo[i].columnType.toUpperCase().indexOf("INT") != -1){
+                }else if(columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
                   type = "number"
                 }else if(columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") != -1 || columnInfo[i].columnType.toUpperCase().indexOf("DATE") != -1){
                   type = 'time'
@@ -576,7 +580,6 @@ export default {
             }
             // 生成ag-grid列信息
             if (this.modelUuid != undefined) {
-              debugger
               var rowColom = {
                 headerName: "onlyuuid",
                 field: "onlyuuid",
@@ -935,10 +938,6 @@ export default {
     getRenderTableData() {
       if (this.useType == "modelRunResult") {
         if (this.modelUuid != undefined) {
-          console.log(333333333333)
-          console.log(this.modelUuid)
-          console.log(4444444444)
-          console.log(this.nowtable)
           selectConditionShow(
             this.modelUuid,
             this.nowtable.resultTableName
