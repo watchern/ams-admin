@@ -13,7 +13,7 @@
             class="text item"
           >
             <el-row>
-              <el-col :span="12">
+              <el-col :span="14">
                 <span class="ellipsis" :title="item.key">
                   {{ item.key }}</span>
                 <span><a
@@ -21,7 +21,7 @@
                   @click="handleProcess(item.key)"
                 >（{{ item.value }}）</a></span>
               </el-col>
-              <el-col :span="12">
+              <el-col :span="10">
                 <span class="percentage">{{ item.percent }}</span>
               </el-col>
 
