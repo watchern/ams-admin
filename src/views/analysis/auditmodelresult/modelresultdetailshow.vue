@@ -50,14 +50,12 @@ export default {
       this.runTaskRelUuid = runTaskRelUuid
       getAllRunTaskRel().then(resp=>{
           var dataList = resp.data
-          console.log(dataList)
           for(var i = 0;i<dataList.length;i++){
               if(dataList[i].runTaskRelUuid==this.runTaskRelUuid){
                  this.runTaskRel = dataList[i]
                  break
               }
           }
-          debugger
           var resultTables = this.runTaskRel.runResultTables
           this.modeluuid = this.runTaskRel.model.modelUuid
           for(var i = 0;i<resultTables.length;i++){

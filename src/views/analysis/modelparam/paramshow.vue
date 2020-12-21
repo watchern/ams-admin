@@ -37,6 +37,11 @@ import {
   getParamSettingArr,
 } from "@/api/analysis/auditparam";
 export default {
+  data(){
+    return{
+
+    }
+  },
   methods: {
     //初始化参数显示界面
     createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
@@ -49,5 +54,6 @@ export default {
       return getParamSettingArr(paramArr);
     },
   },
+  props: ["myId"],
 };
 </script>

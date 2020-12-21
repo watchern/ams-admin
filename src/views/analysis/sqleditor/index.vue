@@ -388,7 +388,8 @@ export default {
             this.executeData.sql,
             this.executeData.arr,
             "     ",
-            this.paramDrawUuid
+            this.paramDrawUuid,
+            "sqlEditor"
           );
         }
       });
