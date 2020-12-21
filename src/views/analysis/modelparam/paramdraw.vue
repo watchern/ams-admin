@@ -38,10 +38,11 @@ export default {
     /**
      * 初始化参数渲染界面
      */
-    initParamHtmlSS(sql, paramsArr, name, id) {
+    initParamHtmlSS(sql, paramsArr, name, id,serviceInfo) {
+      debugger
       this.accordionName = name
       this.paramsArr = paramsArr
-      initParamHtml(sql, paramsArr, name, id);
+      initParamHtml(sql, paramsArr, name, id,serviceInfo);
     },
   },
 };

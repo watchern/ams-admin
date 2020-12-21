@@ -96,7 +96,6 @@ export default {
      */
     handleNodeClick(data) {
       this.listLoading = true;
-      console.log(data);
       this.initData(data.id);
     },
     /**

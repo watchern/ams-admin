@@ -170,10 +170,10 @@
     :fullscreen="true"
     :append-to-body="true"
     >
-    <mtEditor :data="result" v-if="chartShowIsSee"></mtEditor>
+    <mtEditor ref='chart' :data="result" v-if="chartShowIsSee"></mtEditor>
     <span slot="footer" class="dialog-footer">
       <el-button @click="chartShowIsSee = false">取 消</el-button>
-      <el-button type="primary" @click="chartShowIsSee = false">确 定</el-button>
+      <el-button type="primary" @click="saveChart">确 定</el-button>
   </span>
 </el-dialog>
   </div>
@@ -576,7 +576,6 @@ export default {
             }
             // 生成ag-grid列信息
             if (this.modelUuid != undefined) {
-              debugger
               var rowColom = {
                 headerName: "onlyuuid",
                 field: "onlyuuid",
@@ -935,10 +934,6 @@ export default {
     getRenderTableData() {
       if (this.useType == "modelRunResult") {
         if (this.modelUuid != undefined) {
-          console.log(333333333333)
-          console.log(this.modelUuid)
-          console.log(4444444444)
-          console.log(this.nowtable)
           selectConditionShow(
             this.modelUuid,
             this.nowtable.resultTableName
@@ -1154,6 +1149,11 @@ export default {
 
       // 通信失败
       this.webSocket.onerror = function (event) {};
+    },
+    saveChart(){
+       this.chartShowIsSee = false
+       console.log('------------------------------1')
+       console.log(this.$refs.chart.getChartConfig())
     }
   },
 };
