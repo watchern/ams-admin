@@ -130,7 +130,7 @@
 </template>
 <script>
 import { findModel, saveModel, deleteModel, shareModel, selectModel, updateModel, updateModelBasicInfo, exportModel, setModelSession } from '@/api/analysis/auditmodel'
-import {getGraphInfoById,deleteGraphInfoById} from '@/api/graphtool/graphList'
+import {deleteGraphInfoById} from '@/api/graphtool/graphList'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
@@ -140,10 +140,9 @@ import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import {getExecuteTask, startExecuteSql} from '@/api/analysis/sqleditor/sqleditor'
 import crossrangeParam from '@/views/analysis/modelparam/crossrangeparam'
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
-import { replaceNodeParam, replaceCrossrangeNodeParam } from '@/api/analysis/auditparam'
+import { replaceNodeParam } from '@/api/analysis/auditparam'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 import personTree from '@/components/publicpersontree/index'
-import Cookies from 'js-cookie'
 export default {
   name: 'ModelListTable',
   components: { Pagination, QueryField, EditModel, ModelFolderTree, childTabs, crossrangeParam, paramDraw, modelshoppingcart, personTree },

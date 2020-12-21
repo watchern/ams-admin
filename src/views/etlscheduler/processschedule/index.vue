@@ -1102,7 +1102,7 @@ export default {
     runSchedule() {
       this.$refs['runForm'].validate((valid) => {
         if (valid) {
-          this.runParams.checked === true ? this.runParams.commandTypeEnum = 'COMPLEMENT_DATA' : this.runParams.commandTypeEnum = ''
+          this.runParams.checked === true ? this.runParams.commandTypeEnum = 'COMPLEMENT_DATA' : this.runParams.commandTypeEnum = 'START_PROCESS'
           this.runParams.checked === true ? this.runParams.isSupply = true : this.runParams.isSupply = false
           this.runParams.cronTime ? this.runParams.cronTime = this.runParams.cronTime.join(',') : this.runParams.cronTime = ''
           const tempData = Object.assign({}, this.runParams)
