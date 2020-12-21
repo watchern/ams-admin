@@ -182,10 +182,24 @@
       :fullscreen="true"
       :append-to-body="true"
     >
-      <mtEditor ref="chart" :data="result" v-if="chartShowIsSee" :chart-config='modelChartSetup.chartJson!=undefined?JSON.parse(modelChartSetup.chartJson):undefined'></mtEditor>
+      <mtEditor
+        ref="chart"
+        :data="result"
+        v-if="chartShowIsSee"
+        :chart-config="
+          modelChartSetup.chartJson != undefined
+            ? JSON.parse(modelChartSetup.chartJson)
+            : undefined
+        "
+      ></mtEditor>
       <span slot="footer" class="dialog-footer">
         <el-button @click="chartShowIsSee = false">取 消</el-button>
-        <el-button v-if="useType=='sqlEditor'?false:true" type="primary" @click="saveChart">保 存</el-button>
+        <el-button
+          v-if="useType == 'sqlEditor' ? false : true"
+          type="primary"
+          @click="saveChart"
+          >保 存</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -213,7 +227,7 @@ import {
   batchCoverAddResultDetailProjectRel,
   addModelChartSetup,
   getModelChartSetup,
-  updateModelChartSetup
+  updateModelChartSetup,
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
@@ -608,18 +622,22 @@ export default {
             }
             // 生成ag-grid列信息
             if (this.modelUuid != undefined) {
-              var rowColom = {
-                headerName: "onlyuuid",
-                field: "onlyuuid",
-                checkboxSelection: true,
-              };
-              col.push(rowColom);
+              var onlyFlag = false
               for (var i = 0; i < colNames.length; i++) {
                 loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
                   if (
                     this.modelOutputColumn[j].outputColumnName.toLowerCase() ==
                     colNames[i]
                   ) {
+                    if(onlyFlag==false){
+                      var rowColom = {
+                      headerName: "onlyuuid",
+                      field: "onlyuuid",
+                      checkboxSelection: true,
+                    };
+                    col.push(rowColom);
+                      onlyFlag = true
+                    }
                     if (this.modelOutputColumn[j].isShow == 1) {
                       if (i == 0) {
                         var rowColom = {
@@ -1221,8 +1239,12 @@ export default {
       this.chartShowIsSee = false;
       if (this.chartSaveOrUpdate == "save") {
         var chartJson = this.$refs.chart.getChartConfig();
-        var modelUuid = this.useType=='modelRunResult'?this.modelUuid:this.modelId;
-        var modelChartSetup = { chartJson: JSON.stringify(chartJson), modelUuid: modelUuid };
+        var modelUuid =
+          this.useType == "modelRunResult" ? this.modelUuid : this.modelId;
+        var modelChartSetup = {
+          chartJson: JSON.stringify(chartJson),
+          modelUuid: modelUuid,
+        };
         addModelChartSetup(modelChartSetup).then((resp) => {
           if (resp.data) {
             this.$notify({
@@ -1233,12 +1255,12 @@ export default {
               position: "bottom-right",
             });
           }
-        });   
-      }else if(this.chartSaveOrUpdate == "update"){
+        });
+      } else if (this.chartSaveOrUpdate == "update") {
         var chartJson = this.$refs.chart.getChartConfig();
-        var modelChartSetup = this.modelChartSetup
-        modelChartSetup.chartJson = JSON.stringify(chartJson)
-        updateModelChartSetup(modelChartSetup).then(resp=>{
+        var modelChartSetup = this.modelChartSetup;
+        modelChartSetup.chartJson = JSON.stringify(chartJson);
+        updateModelChartSetup(modelChartSetup).then((resp) => {
           if (resp.data) {
             this.$notify({
               title: this.$t("提示"),
@@ -1248,9 +1270,9 @@ export default {
               position: "bottom-right",
             });
           }
-        })
+        });
       }
-      this.chartReflexion()
+      this.chartReflexion();
     },
     /**
      * 获取参数返显的数据
