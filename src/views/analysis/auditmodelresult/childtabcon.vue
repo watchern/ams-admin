@@ -571,7 +571,11 @@ export default {
         selectTable(this.pageQuery, sql, this.resultSpiltObjects).then(
           (resp) => {
             var column = resp.data.records[0].columns;
-            this.result.column = column;
+            var columnToUppercase = []
+            for(var i = 0;i<column.length;i++){
+              columnToUppercase.push(column[i].toUpperCase())
+            }
+            this.result.column = columnToUppercase;
             var chartData = [];
             for (var i = 0; i < resp.data.records[0].result.length; i++) {
               var eachChartData = [];
@@ -1281,6 +1285,8 @@ export default {
             this.chartSaveOrUpdate = "save";
           } else {
             //做修改操作
+            console.log('结果')
+            console.log(resp.data.modelChartSetup)
             this.modelChartSetup = resp.data.modelChartSetup;
             this.chartSaveOrUpdate = "update";
           }
@@ -1292,6 +1298,8 @@ export default {
             this.chartSaveOrUpdate = "save";
           } else {
             //做修改操作
+            console.log('预览')
+            console.log(resp.data.modelChartSetup)
             this.modelChartSetup = resp.data.modelChartSetup;
             this.chartSaveOrUpdate = "update";
           }
