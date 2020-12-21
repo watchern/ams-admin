@@ -1067,10 +1067,10 @@ function initParamInputAndSelect() {
         selectSetting.clickClose = true
       }
       // 设置默认值
-      var defaultVal = $(this).attr('data-defaultVal')
-      if (typeof defaultVal !== 'undefined') {
-        selectSetting.initValue = JSON.parse(defaultVal).paramValue // 初始化默认值
-      }
+      // var defaultVal = $(this).attr('data-defaultVal')
+      // if (typeof defaultVal !== 'undefined') {
+      //   selectSetting.initValue = JSON.parse(defaultVal).paramValue // 初始化默认值
+      // }
       xmSelect.render(selectSetting)
     })
   }
@@ -1263,6 +1263,7 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
           sql = 'SELECT * FROM (' + sql + ') where 1=1' + sqlWhereStr
           executeParamSql(sql).then(res => {
             if (res.data.isError) {
+              alert('获取参数【' + paramName + '】的值的失败，原因：' + res.data.message);
               this.$message({
                 type: 'error',
                 message: '获取参数【' + paramName + '】的值的失败，原因：' + res.data.message
@@ -2383,6 +2384,7 @@ export function findParamsAndModelRelParams() {
  * @param {*} data   SQL语句
  */
 async function executeParamSql(data) {
+  data = {sql:data}
   return await request({
     baseURL: analysisUrl,
     url: '/paramController/executeParamSql',
@@ -2396,7 +2398,7 @@ async function executeParamSql(data) {
  * @param {*} sqlValue sql语句
  */
 async function getSelectTreeData(sqlValue) {
-  const data = {
+  let data = {
     sqlValue: sqlValue
   }
   return await request({
