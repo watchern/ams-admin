@@ -77,7 +77,7 @@
             <el-row>
               <div @click="Toggle1()">
                 <el-col :span="24" class="row-all">
-                  <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="modelPreview" />
+                  <childTabs :modelId="modelId"  :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="modelPreview" />
                 </el-col>
               </div>
               <el-col :span="2">
@@ -224,7 +224,8 @@ export default {
         pageSize: 20
       },
       // 人员选择
-      dialogFormVisiblePersonTree: false
+      dialogFormVisiblePersonTree: false,
+      modelId:''
     }
   },
   computed: {
@@ -738,6 +739,8 @@ export default {
     },
     previewModel() {
       var selectObj = this.$refs.modelListTable.selection
+      this.modelId = selectObj[0].modelUuid
+      console.log(this.modelId)
       if (selectObj == undefined || selectObj.length === 0) {
         this.$message({ type: 'info', message: '请先选择要预览的模型!' })
         return

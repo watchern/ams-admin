@@ -354,3 +354,42 @@ export function getResultSplitSelectData(data) {
     data
   })
 }
+
+/**
+ * 添加模型图表配置
+ * @param {*} data 图表配置对象
+ */
+export function addModelChartSetup(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelChartSetupController/addModelChartSetup',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 根据模型获取模型图表配置
+ * @param modelUuid  模型编号
+ */
+export function getModelChartSetup(modelUuid) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelChartSetupController/getModelChartSetup',
+    method: 'get',
+    params:{modelUuid:modelUuid}
+  })
+}
+
+/**
+ * 修改模型图表配置
+ * @param {*} data 图表配置对象
+ */
+export function updateModelChartSetup(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelChartSetupController/updateModelChartSetup',
+    method: 'put',
+    data
+  })
+}
