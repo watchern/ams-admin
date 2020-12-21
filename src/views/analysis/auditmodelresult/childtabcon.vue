@@ -616,10 +616,7 @@ export default {
             this.total = resp.data.total;
             this.dataArray = resp.data.records[0].result;
             this.queryData = resp.data.records[0].columnInfo;
-            // 将返回对象的所有属性，按顺序提取出来，用于后续生成ag-grid列信息
-            for (const key in resp.data.records[0].result[0]) {
-              colNames.push(key);
-            }
+            colNames = resp.data.records[0].columns
             // 生成ag-grid列信息
             if (this.modelUuid != undefined) {
               var onlyFlag = false
