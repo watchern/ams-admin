@@ -1131,7 +1131,7 @@ export default {
       // endregion
       // region 反显参数默认值
       if(returnObj.params.arr.length != 0){
-        this.$refs.apple.createParamTableHtml(true, displayParamObj, true);
+        this.$refs.apple.createParamTableHtml(true, displayParamObj, true,'参数展示');
       }
       // endregion
       // region 模型结果输出列
