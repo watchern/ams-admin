@@ -61,8 +61,8 @@
       :data="list"
       border
       highlight-current-row
-      height="200px"
-      max-height="200px"
+      height="calc(100vh - 350px)"
+      max-height="calc(100vh - 350px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -121,12 +121,14 @@
           <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="taskParam in scope.row.distinctParamList" :key="taskParam.value">
-              <label class="col-md-4">
-                {{ taskParam.name }}:
-              </label>
-              <div class="col-md-8">
+              <el-col :span="8">
+                <label>
+                  {{ taskParam.name }}:
+                </label>
+              </el-col>
+              <el-col :span="16">
                 {{ taskParam.value }}
-              </div>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -144,12 +146,16 @@
         <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
-              <label class="col-md-2">
-                [{{ dependTask.dateValueName }}]
-              </label>
-              <label class="col-md-10" align="right">
-                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
-              </label>
+              <el-col :span="4">
+                <label>
+                  [{{ dependTask.dateValueName }}]
+                </label>
+              </el-col>
+              <el-col :span="20" align="right">
+                <label>
+                  {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+                </label>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -241,8 +247,8 @@
           <el-collapse-item title="准备执行" name="pre">
             <el-card style="padding-bottom: 3%;">
               <!-- <el-col class="logtype">
-          日志详情：
-        </el-col> -->
+                日志详情：
+              </el-col> -->
               <el-col
                 style="margin-top:10px"
               >
@@ -302,13 +308,19 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findPrepLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
-// statuSelectList, statusComm
-import { commandTypeObj, colorList, statusListComm, statuSelect } from './comm.js'
+// statuSelectList, statuSelect, statusComm
+import { commandTypeObj, colorList, statusListComm, statuSelectList } from './comm.js'
+import store from '@/store'
+import dayjs from 'dayjs'
 
 export default {
   components: { Pagination, QueryField },
+  props: {
+    searchParams: Object
+  },
   data() {
     return {
+      store,
       tableKey: 'processInstanceUuid',
       list: null,
       total: 0,
@@ -318,14 +330,14 @@ export default {
       queryFields: [
         { label: '流程实例名称', name: 'name', type: 'text', value: '' },
         // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
-        {
-          label: '流程状态', name: 'status', type: 'select',
-          data: statuSelect
-        },
         // {
-        //   label: '流程状态', name: 'groupExecutionStatus', type: 'select',
-        //   data: statuSelectList
+        //   label: '流程状态', name: 'status', type: 'select',
+        //   data: statuSelect
         // },
+        {
+          label: '流程状态', name: 'groupExecutionStatus', type: 'select',
+          data: statuSelectList, value: []
+        },
         { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
       ],
       // 格式化参数列表
@@ -418,6 +430,31 @@ export default {
     }
   },
   watch: {
+    // searchParams() {
+    //   // this.store.state.monitor.processStartTime
+    //   // startTimeStart: this.store.state.monitor.processStartTime,
+    //   //   startTimeEnd: this.store.state.monitor.processEndTime
+    //   this.queryDefault = {
+    //     groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+    //     startTimeStart: this.store.state.monitor.processStartTime,
+    //     startTimeEnd: this.store.state.monitor.processEndTime
+    //   }
+    //   this.getList(this.queryDefault)
+    // },
+    searchParams: {
+      deep: true,
+      immediate: true,
+      handler() {
+        this.queryDefault = {
+          groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+          startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
+          startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
+        }
+        this.queryFields[1].value = this.queryDefault.groupExecutionStatus
+        this.queryFields[2].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
+        this.getList(this.queryDefault)
+      }
+    },
     selections() {
       // 终态数组
       const alreadyStatuses = [6, 7, 8]
@@ -504,11 +541,19 @@ export default {
     colorList.forEach((r, i) => {
       this.logColorObj[r['value']] = r
     })
-    if (this.$route.params instanceof Object) {
-      this.queryDefault = this.$route.params
-    }
+    // if (this.$route.params instanceof Object) {
+    //   // this.queryDefault = this.$route.params
+    //   this.queryDefault = { groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+    //     startTimeStart: this.store.state.monitor.processStartTime,
+    //     startTimeEnd: this.store.state.monitor.processEndTime }
+    // }
+
+    // this.queryDefault = {
+    //   groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+    //   startTimeStart: this.store.state.monitor.processStartTime,
+    //   startTimeEnd: this.store.state.monitor.processEndTime }
     // this.getList(this.queryDefault)
-    this.getList()
+    // this.getList()
   },
   methods: {
     colorFilter(value) {
@@ -556,7 +601,6 @@ export default {
         // 获取调度实例已运行的环节
         findTaskInstanceById(data.processInstanceUuid).then(respons => {
           this.taskslogsList = respons.data
-          console.log(this.taskslogsList)
         })
       })
       // 获取非环节执行任务日志
@@ -597,7 +641,7 @@ export default {
         this.list.splice(index, 1, this.temp)
         this.dialogFormVisible = false
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '设置跳过环节成功成功',
           type: 'success',
           duration: 2000,
@@ -622,7 +666,7 @@ export default {
       execute(ids.join(','), 'PAUSE').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '暂停成功',
           type: 'success',
           duration: 2000,
@@ -637,7 +681,7 @@ export default {
       execute(ids.join(','), 'START_UP').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '启用成功',
           type: 'success',
           duration: 2000,
@@ -652,7 +696,7 @@ export default {
       execute(ids.join(','), 'REPEAT_RUNNING').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '重新运行成功',
           type: 'success',
           duration: 2000,
@@ -667,7 +711,7 @@ export default {
       execute(ids.join(','), 'CANCEL').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '取消成功',
           type: 'success',
           duration: 2000,

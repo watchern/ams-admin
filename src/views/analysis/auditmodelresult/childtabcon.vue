@@ -21,25 +21,21 @@
           type="primary"
           @click="exportExcel"
           class="oper-btn export-2"
+          title="导出"
         ></el-button>
         <el-button
-          style="display: none"
           :disabled="modelRunResultBtnIson.chartDisplayBtn"
           type="primary"
           class="oper-btn chart"
-        ></el-button>
-        <el-button
-          style="display: none"
-          :disabled="modelRunResultBtnIson.associatedBtn"
-          type="primary"
-          @click="getValues"
-          class="oper-btn refresh"
+          @click="chartShowIsSee = true"
+          title="图表展示"
         ></el-button>
         <el-button
           style="display: none"
           :disabled="modelRunResultBtnIson.disassociateBtn"
           type="primary"
           @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
+          title="移除关联"
           >移除关联</el-button
         >
         <el-button
@@ -47,17 +43,21 @@
           type="primary"
           @click="queryConditionSetting"
           class="oper-btn search"
+          title="查询设置"
         ></el-button>
         <el-button
           type="primary"
           class="oper-btn refresh"
+          :disabled="modelRunResultBtnIson.associatedBtn"
           @click="addDetailRel('qwer1', '项目11')"
+          title="关联项目"
         ></el-button>
         <el-button
           :disabled="false"
           type="primary"
           @click="reSet"
           class="oper-btn again-2"
+          title="重置"
         ></el-button>
         <el-button
           class="oper-btn link"
@@ -65,6 +65,7 @@
           v-if="modelDetailButtonIsShow"
           type="primary"
           @click="openModelDetail"
+          title="查询关联"
         ></el-button>
       </div>
     </el-row>
@@ -72,7 +73,11 @@
     <ag-grid-vue
       v-if="isSee"
       v-loading="isLoading"
-      style="height: 200px"
+      :style="
+        useType == 'modelRunResult' || useType == 'modelPreview'
+          ? 'height:490px'
+          : 'height:300px'
+      "
       class="table ag-theme-balham"
       :column-defs="columnDefs"
       :row-data="rowData"
@@ -95,22 +100,32 @@
     />
     <el-row>
       <el-col :span="22">
-        <div v-if="modelResultPageIsSee">共<span class="paging-z">{{rowData.length}}</span>条</div>
+        <div v-if="modelResultPageIsSee">
+          共<span class="paging-z">{{ rowData.length }}</span
+          >条
+        </div>
       </el-col>
       <el-col :span="2">
         <el-row v-if="modelResultButtonIsShow" style="display: flex">
           <!-- 2.1前台导出，双向绑定数据 -->
-          <downloadExcel :data="tableData" :fields="json_fields" :name="excelName" class="thechard-z">
+          <downloadExcel
+            :data="tableData"
+            :fields="json_fields"
+            :name="excelName"
+            class="thechard-z"
+          >
             <el-button
               type="primary"
               @click="modelResultExport"
               class="oper-btn export-2"
+              title="导出"
             ></el-button>
           </downloadExcel>
           <el-button
             type="primary"
             title="图表展示"
             class="oper-btn chart"
+            @click="openChartDialog"
           ></el-button>
         </el-row>
       </el-col>
@@ -160,6 +175,33 @@
         >
       </span>
     </el-dialog>
+    <el-dialog
+      title="提示"
+      :visible.sync="chartShowIsSee"
+      width="90%"
+      :fullscreen="true"
+      :append-to-body="true"
+    >
+      <mtEditor
+        ref="chart"
+        :data="result"
+        v-if="chartShowIsSee"
+        :chart-config="
+          modelChartSetup.chartJson != undefined
+            ? JSON.parse(modelChartSetup.chartJson)
+            : undefined
+        "
+      ></mtEditor>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="chartShowIsSee = false">取 消</el-button>
+        <el-button
+          v-if="useType == 'sqlEditor' ? false : true"
+          type="primary"
+          @click="saveChart"
+          >保 存</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -183,6 +225,9 @@ import {
   findParamModelRelByModelUuid,
   replaceParam,
   batchCoverAddResultDetailProjectRel,
+  addModelChartSetup,
+  getModelChartSetup,
+  updateModelChartSetup,
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
@@ -194,6 +239,8 @@ import {
   getExecuteTask,
 } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
+import mtEditor from "ams-datamax";
+import "iview/dist/styles/iview.css";
 
 export default {
   name: "childTabCon",
@@ -204,6 +251,7 @@ export default {
     myQueryBuilder,
     childtabscopy,
     downloadExcel: JsonExcel,
+    mtEditor,
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -224,6 +272,7 @@ export default {
     "useType",
     "prePersonalVal",
     "resultSpiltObjects",
+    "modelId",
   ],
   data() {
     return {
@@ -278,10 +327,15 @@ export default {
         modelDetailAssBtn: true,
       },
       dynamicSelect: [], //实时存储多选框勾选中的数据
+      chartShowIsSee: false,
+      result: {},
+      chartSaveOrUpdate: "", //判断图标是保存还是更新操作
+      modelChartSetup: {}, //用于存储返显图标所用数据
     };
   },
   mounted() {
     this.getRenderTableData();
+    this.chartReflexion();
   },
   methods: {
     rowChange() {
@@ -449,7 +503,6 @@ export default {
                   };
                   resultDetailProjectRels1.push(resultDetailProjectRel);
                 }
-                debugger;
                 batchCoverAddResultDetailProjectRel(
                   resultDetailProjectRels1
                 ).then((resp) => {
@@ -517,30 +570,75 @@ export default {
         }
         selectTable(this.pageQuery, sql, this.resultSpiltObjects).then(
           (resp) => {
+            var column = resp.data.records[0].columns;
+            var columnToUppercase = []
+            for(var i = 0;i<column.length;i++){
+              columnToUppercase.push(column[i].toUpperCase())
+            }
+            this.result.column = columnToUppercase;
+            var chartData = [];
+            for (var i = 0; i < resp.data.records[0].result.length; i++) {
+              var eachChartData = [];
+              for (var j = 0; j < column.length; j++) {
+                eachChartData.push(resp.data.records[0].result[i][column[j]]);
+              }
+              chartData.push(eachChartData);
+            }
+            this.result.data = chartData;
+            var columnInfo = resp.data.records[0].columnInfo.columnList;
+            var columnType = [];
+            for (var i = 0; i < columnInfo.length; i++) {
+              //number,varchar,time,float
+              var type = "";
+              if (
+                columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1
+              ) {
+                type = "varchar";
+              } else if (
+                columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") !=
+                  -1 ||
+                columnInfo[i].columnType.toUpperCase().indexOf("INT") != -1
+              ) {
+                type = "number";
+              } else if (
+                columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") !=
+                  -1 ||
+                columnInfo[i].columnType.toUpperCase().indexOf("DATE") != -1
+              ) {
+                type = "time";
+              } else if (
+                columnInfo[i].columnType.toUpperCase().indexOf("FLOAT") != -1
+              ) {
+                type = "float";
+              }
+              columnType.push(type);
+            }
+            this.result.columnType = columnType;
             if (resp.data.records[0].result.length == 0) {
               this.isLoading = false;
             }
             this.total = resp.data.total;
             this.dataArray = resp.data.records[0].result;
             this.queryData = resp.data.records[0].columnInfo;
-            // 将返回对象的所有属性，按顺序提取出来，用于后续生成ag-grid列信息
-            for (const key in resp.data.records[0].result[0]) {
-              colNames.push(key);
-            }
+            colNames = resp.data.records[0].columns
             // 生成ag-grid列信息
             if (this.modelUuid != undefined) {
-              var rowColom = {
-                headerName: "onlyuuid",
-                field: "onlyuuid",
-                checkboxSelection: true,
-              };
-              col.push(rowColom);
+              var onlyFlag = false
               for (var i = 0; i < colNames.length; i++) {
                 loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
                   if (
                     this.modelOutputColumn[j].outputColumnName.toLowerCase() ==
                     colNames[i]
                   ) {
+                    if(onlyFlag==false){
+                      var rowColom = {
+                      headerName: "onlyuuid",
+                      field: "onlyuuid",
+                      checkboxSelection: true,
+                    };
+                    col.push(rowColom);
+                      onlyFlag = true
+                    }
                     if (this.modelOutputColumn[j].isShow == 1) {
                       if (i == 0) {
                         var rowColom = {
@@ -623,7 +721,10 @@ export default {
         );
         this.columnDefs = col;
         this.rowData = da;
-      } else if (this.useType == "sqlEditor") {
+      } else if (
+        this.useType == "sqlEditor" ||
+        this.useType == "modelPreview"
+      ) {
         this.loading = true;
         this.nextValue = nextValue;
         var col = [];
@@ -636,7 +737,44 @@ export default {
                 this.modelResultButtonIsShow = true;
                 this.modelResultPageIsSee = true;
                 this.modelResultData = this.nextValue.result;
-                this.rowData = this.modelResultData
+                this.result.column = this.nextValue.columnNames;
+                var columnTypes1 = this.nextValue.columnTypes;
+                var columnType = [];
+                for (var i = 0; i < columnTypes1.length; i++) {
+                  var type = "";
+                  if (columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1) {
+                    type = "varchar";
+                  } else if (
+                    columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 ||
+                    columnTypes1[i].toUpperCase().indexOf("INT") != -1
+                  ) {
+                    type = "number";
+                  } else if (
+                    columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ||
+                    columnTypes1[i].toUpperCase().indexOf("DATE") != -1
+                  ) {
+                    type = "time";
+                  } else if (
+                    columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1
+                  ) {
+                    type = "float";
+                  }
+                  columnType.push(type);
+                }
+                var resultData = this.nextValue.result;
+                this.result.columnType = columnType;
+                var chartData = [];
+                for (var i = 0; i < resultData.length; i++) {
+                  var eachChartData = [];
+                  for (var j = 0; j < this.nextValue.columnNames.length; j++) {
+                    eachChartData.push(
+                      resultData[i][this.nextValue.columnNames[j]]
+                    );
+                  }
+                  chartData.push(eachChartData);
+                }
+                this.result.data = chartData;
+                this.rowData = this.modelResultData;
                 this.modelResultColumnNames = this.nextValue.columnNames;
                 for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
                   var rowColom = {
@@ -652,7 +790,6 @@ export default {
                   rowData.push(this.nextValue.result[k]);
                 }
                 this.columnDefs = col;
-
               }
             } else {
               this.isSee = false;
@@ -679,7 +816,44 @@ export default {
             if (true) {
               this.modelResultPageIsSee = true;
               this.modelResultData = this.nextValue.result;
-               this.rowData = this.modelResultData
+              this.result.column = this.nextValue.columnNames;
+              var columnTypes1 = this.nextValue.columnTypes;
+              var columnType = [];
+              for (var i = 0; i < columnTypes1.length; i++) {
+                var type = "";
+                if (columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1) {
+                  type = "varchar";
+                } else if (
+                  columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 ||
+                  columnTypes1[i].toUpperCase().indexOf("INT") != -1
+                ) {
+                  type = "number";
+                } else if (
+                  columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ||
+                  columnTypes1[i].columnType.toUpperCase().indexOf("DATE") != -1
+                ) {
+                  type = "time";
+                } else if (
+                  columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1
+                ) {
+                  type = "float";
+                }
+                columnType.push(type);
+              }
+              var resultData = this.nextValue.result;
+              this.result.columnType = columnType;
+              var chartData = [];
+              for (var i = 0; i < resultData.length; i++) {
+                var eachChartData = [];
+                for (var j = 0; j < this.nextValue.columnNames.length; j++) {
+                  eachChartData.push(
+                    resultData[i][this.nextValue.columnNames[j]]
+                  );
+                }
+                chartData.push(eachChartData);
+              }
+              this.result.data = chartData;
+              this.rowData = this.modelResultData;
               this.modelResultColumnNames = this.nextValue.columnNames;
               for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
                 var rowColom = {
@@ -715,7 +889,44 @@ export default {
             if (true) {
               this.modelResultPageIsSee = true;
               this.modelResultData = this.nextValue.result;
-               this.rowData = this.modelResultData
+              this.result.column = this.nextValue.columnNames;
+              var columnTypes1 = this.nextValue.columnTypes;
+              var columnType = [];
+              for (var i = 0; i < columnTypes1.length; i++) {
+                var type = "";
+                if (columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1) {
+                  type = "varchar";
+                } else if (
+                  columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 ||
+                  columnTypes1[i].toUpperCase().indexOf("INT") != -1
+                ) {
+                  type = "number";
+                } else if (
+                  columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ||
+                  columnTypes1[i].columnType.toUpperCase().indexOf("DATE") != -1
+                ) {
+                  type = "time";
+                } else if (
+                  columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1
+                ) {
+                  type = "float";
+                }
+                columnType.push(type);
+              }
+              var resultData = this.nextValue.result;
+              this.result.columnType = columnType;
+              var chartData = [];
+              for (var i = 0; i < resultData.length; i++) {
+                var eachChartData = [];
+                for (var j = 0; j < this.nextValue.columnNames.length; j++) {
+                  eachChartData.push(
+                    resultData[i][this.nextValue.columnNames[j]]
+                  );
+                }
+                chartData.push(eachChartData);
+              }
+              this.result.data = chartData;
+              this.rowData = this.modelResultData;
               this.modelResultColumnNames = this.nextValue.columnNames;
               for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
                 var rowColom = {
@@ -1000,10 +1211,13 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-/*      const webSocketPath =
+      /*      const webSocketPath =
         "ws://localhost:8086/analysis/websocket?" +
         this.$store.getters.personuuid;*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid+'modelresultdetail';
+      const webSocketPath =
+        process.env.VUE_APP_ANALYSIS_WEB_SOCKET +
+        this.$store.getters.personuuid +
+        "modelresultdetail";
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接
@@ -1022,6 +1236,80 @@ export default {
       // 通信失败
       this.webSocket.onerror = function (event) {};
     },
+    saveChart() {
+      this.chartShowIsSee = false;
+      if (this.chartSaveOrUpdate == "save") {
+        var chartJson = this.$refs.chart.getChartConfig();
+        var modelUuid =
+          this.useType == "modelRunResult" ? this.modelUuid : this.modelId;
+        var modelChartSetup = {
+          chartJson: JSON.stringify(chartJson),
+          modelUuid: modelUuid,
+        };
+        addModelChartSetup(modelChartSetup).then((resp) => {
+          if (resp.data) {
+            this.$notify({
+              title: this.$t("提示"),
+              message: this.$t("保存成功"),
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          }
+        });
+      } else if (this.chartSaveOrUpdate == "update") {
+        var chartJson = this.$refs.chart.getChartConfig();
+        var modelChartSetup = this.modelChartSetup;
+        modelChartSetup.chartJson = JSON.stringify(chartJson);
+        updateModelChartSetup(modelChartSetup).then((resp) => {
+          if (resp.data) {
+            this.$notify({
+              title: this.$t("提示"),
+              message: this.$t("修改成功"),
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          }
+        });
+      }
+    },
+    /**
+     * 获取参数返显的数据
+     */
+    chartReflexion() {
+      if (this.modelUuid != undefined) {
+        getModelChartSetup(this.modelUuid).then((resp) => {
+          if (resp.data.isError == true) {
+            //做保存操作
+            this.chartSaveOrUpdate = "save";
+          } else {
+            //做修改操作
+            console.log('结果')
+            console.log(resp.data.modelChartSetup)
+            this.modelChartSetup = resp.data.modelChartSetup;
+            this.chartSaveOrUpdate = "update";
+          }
+        });
+      } else if (this.modelId != undefined) {
+        getModelChartSetup(this.modelId).then((resp) => {
+          if (resp.data.isError == true) {
+            //做保存操作
+            this.chartSaveOrUpdate = "save";
+          } else {
+            //做修改操作
+            console.log('预览')
+            console.log(resp.data.modelChartSetup)
+            this.modelChartSetup = resp.data.modelChartSetup;
+            this.chartSaveOrUpdate = "update";
+          }
+        });
+      }
+    },
+    openChartDialog(){
+      this.chartReflexion()
+      this.chartShowIsSee = true
+    }
   },
 };
 </script>
@@ -1030,12 +1318,12 @@ export default {
   margin: 10px;
   text-align: left;
 }
-.thechard-z{
+.thechard-z {
   margin-right: 15px;
 }
-.paging-z{
+.paging-z {
   font-weight: bold;
-  color: rgb(52,57,66);
+  color: rgb(52, 57, 66);
   margin: 0 5px;
   font-size: 16px;
   line-height: 16px;

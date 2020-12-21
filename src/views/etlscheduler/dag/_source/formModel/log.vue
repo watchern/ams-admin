@@ -134,7 +134,7 @@ export default {
           this.loading = false
           if (res.data) {
             this.$notify({
-              title: '提示',
+              title: this.$t('message.title'),
               message: `更新日志成功`,
               type: 'success',
               duration: 2000,

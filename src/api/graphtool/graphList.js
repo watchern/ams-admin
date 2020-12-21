@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 const baseURL = '/graphtool'
 const dataUrl = '/data'
+const analysisUrl = '/analysis'
 
 /**
  * 获取图形树
@@ -42,14 +43,13 @@ export function getGraphInfoById(id) {
 
 /**
  * 根据图形UUID删除图形
- * @param data 参数1：图形UUID串，以逗号分隔；参数2：图形名称串，以中文顿号分隔
+ * @param ids 图形UUID串，以逗号分隔
  */
-export function deleteGraphInfoById(data) {
+export function deleteGraphInfoById(ids) {
   return request({
     baseURL: baseURL,
-    url: `/graphCt/delete`,
-    method: 'delete',
-    params: data
+    url: `/graphCt/delete/${ids}`,
+    method: 'delete'
   })
 }
 
@@ -166,7 +166,7 @@ export function importGraphXml(formData) {
 }
 
 /**
- * 删除执行节点信息
+ * 删除图形执行缓冲表的数据
  */
 export function deleteExecuteNodes(ids) {
     return request({
@@ -238,6 +238,42 @@ export function getMaxMinColumn(data) {
     })
 }
 
+/**
+ * 获取所有母版参数集合以及模型用到的参数集合
+ */
+export function findParamsAndModelRelParams() {
+    return request({
+        baseURL: analysisUrl,
+        url: '/paramController/findParamsAndModelRelParams',
+        method: 'post'
+    })
+}
 
+/**
+ * 执行当前参数SQL语句
+ * @param {*} data   SQL语句
+ */
+export async function executeParamSql(data) {
+    return await request({
+        baseURL: analysisUrl,
+        url: '/paramController/executeParamSql',
+        method: 'post',
+        data
+    })
+}
 
-
+/**
+ * 查询下拉树参数SQL的结果集
+ * @param {*} sqlValue sql语句
+ */
+async function getSelectTreeData(sqlValue) {
+    const data = {
+        sqlValue: sqlValue
+    }
+    return await request({
+        baseURL: analysisUrl,
+        url: '/paramController/getSelectTreeData',
+        method: 'post',
+        data
+    })
+}

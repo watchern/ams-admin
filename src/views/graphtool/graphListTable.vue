@@ -43,7 +43,7 @@
         <el-dialog v-if="initPreviewGraph" :destroy-on-close="true" :append-to-body="true" :visible.sync="initPreviewGraph" title="查看图形" width="600px">
             <PreviewGraph :graph-uuid="graphUuid" />
             <div slot="footer">
-                <el-button @click="initPreviewGraph=false">取消</el-button>
+                <el-button type="primary" @click="initPreviewGraph=false">关闭</el-button>
             </div>
         </el-dialog>
     </div>
@@ -149,7 +149,7 @@
                 this.$store.commit('aceState/setRightFooterTags', {
                     type: 'active',
                     val: {
-                        name: '编辑图形',
+                        name: selectObj[0].graphName,
                         path: `/graphtool/tooldic${urlParamStr}`
                     }
                 })
@@ -163,7 +163,7 @@
                     center: true
                 }).then(() => {
                     let obj = this.getUuidsANdNames(selectObj)
-                    deleteGraphInfoById(obj).then(response => {
+                    deleteGraphInfoById(obj.graphUuids).then(response => {
                         this.$message({ type: 'success', message: '删除成功!' })
                         this.listSelectChange([])
                         this.getGraphList()

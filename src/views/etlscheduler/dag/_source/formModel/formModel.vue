@@ -47,7 +47,7 @@
         </div>
 
         <!-- task Node -->
-        <div class="clearfix list">
+        <div v-if="false" class="clearfix list">
           <div class="text-box">
             <span style="color: red;">*</span>
             <span>节点编码</span></div>
@@ -408,7 +408,6 @@ export default {
      */
     _onParams(o) {
       this.params = Object.assign({}, o)
-      console.log(this.params)
     },
 
     _onCacheParams(o) {
@@ -451,10 +450,10 @@ export default {
         this.$message.warning(`请输入名称（必填）`)
         return false
       }
-      if (!_.trim(this.taskCode)) {
-        this.$message.warning(`请输入节点编码（必填）`)
-        return false
-      }
+      // if (!_.trim(this.taskCode)) {
+      //   this.$message.warning(`请输入节点编码（必填）`)
+      //   return false
+      // }
       if (!_.trim(this.errorType)) {
         this.$message.warning(`请选择出错策略（必填）`)
         return false

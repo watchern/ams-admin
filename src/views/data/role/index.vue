@@ -104,8 +104,8 @@
         </el-form>
       </template>
       <div slot="footer">
-        <el-button @click="filterVisible = false">关闭</el-button>
-        <el-button type="primary" @click="handleSaveRoleFilter">确定</el-button>
+        <el-button @click="filterVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSaveRoleFilter">保存</el-button>
       </div>
     </el-dialog>
   </div>
@@ -323,14 +323,21 @@ export default {
     handleDelete() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.dataRoleUuid) })
-      del(ids.join(',')).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm('确定删除该角色?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        del(ids.join(',')).then(() => {
+          this.getList()
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         })
       })
     },

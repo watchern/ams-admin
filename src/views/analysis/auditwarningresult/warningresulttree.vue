@@ -86,7 +86,6 @@ export default {
     },
     remove(data) {
       this.openIsDelete(data)
-      this.$emit('getLikeList')
     },
     openIsDelete(data) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
@@ -97,7 +96,18 @@ export default {
         .then(() => {
           deleteRunTaskFalse(data).then((resp) => {
             if (resp.data == true) {
-              this.initTreeData();
+              // this.initTreeData();
+              for(var i = 0;i<this.data.length;i++){
+                var children = this.data[i].children
+                if(children.length>0){
+                  for(var j = 0;j<children.length;j++){
+                    if(data==children[j].id){
+                      children.splice(j,1)
+                    }
+                  }
+                }
+              }
+               this.$emit('getLikeList')
               this.$message({
                 type: "success",
                 message: "删除成功!",

@@ -837,60 +837,70 @@ Actions.prototype.init = function() {
 	this.addAction('markCenterOutput', function(e) {
         var resultTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus;//模型最终结果表状态
         var midTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.midTableStatus;//模型辅助结果表状态
-        //设置输出图标
-        if(midTableStatus == 2) {//若已标记，则去掉标记
-            graph.nodeData[graph.curCell.id].nodeInfo.midTableStatus = 1;
-            setNodeOutputTypeIcon(1,0);
-            //自动保存图形化
-            autoSaveGraph();
-        } else {
-            if(resultTableStatus == 2){//如果该结果表已被标记为模型辅助结果表，则不能再被标记为模型最终结果表
-                alertMsg("提示", "该结果表已被标记为模型最终结果表", "info");
-            }else{
-                graph.nodeData[graph.curCell.id].nodeInfo.midTableStatus = 2;
-                setNodeOutputTypeIcon(2,0);
+        var nodeExcuteStatus = graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus;//节点的执行状态
+        if(nodeExcuteStatus === 2){
+            alertMsg("提示", "无法标记正在执行的节点", "warning");
+        }else {
+            //设置输出图标
+            if (midTableStatus === 2) {//若已标记，则去掉标记
+                graph.nodeData[graph.curCell.id].nodeInfo.midTableStatus = 1;
+                setNodeOutputTypeIcon(1, 0);
                 //自动保存图形化
                 autoSaveGraph();
+            } else {
+                if (resultTableStatus === 2) {//如果该结果表已被标记为模型辅助结果表，则不能再被标记为模型最终结果表
+                    alertMsg("提示", "该结果表已被标记为模型最终结果表", "info");
+                } else {
+                    graph.nodeData[graph.curCell.id].nodeInfo.midTableStatus = 2;
+                    setNodeOutputTypeIcon(2, 0);
+                    //自动保存图形化
+                    autoSaveGraph();
+                }
             }
         }
 	});
 	
 	//标记为模型最终结果表
 	this.addAction('markFinalOutput', function(e) {
-		var verify = true;
 		var resultTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus;//模型最终结果表状态
 		var midTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.midTableStatus;//模型辅助结果表状态
-		//设置输出图标
-		if(resultTableStatus == 2) {//若已标记，则去掉标记
-			graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus = 1;
-            setNodeOutputTypeIcon(1,1);
-            //自动保存图形化
-            autoSaveGraph();
-		} else {
-			if(midTableStatus == 2){//如果该结果表已被标记为模型辅助结果表，则不能再被标记为模型最终结果表
-				verify = false;
-				alertMsg("提示", "该结果表已被标记为模型辅助结果表", "info");
-			}else{
-				var keyArr = Object.keys(graph.model.cells);
-                for(var i=0;i<keyArr.length;i++) {
-                    var item = graph.model.cells[keyArr[i]];
-                    if(item.vertex == 1) {
-                        resultTableStatus = graph.nodeData[item.id].nodeInfo.resultTableStatus;
-                        if(resultTableStatus == 2 && item.id != graph.curCell.id) {
-                            alertMsg("提示", "已存在被标记的模型最终结果表", "info");
-                            verify = false;
-                            break;
+        var nodeExcuteStatus = graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus;//节点的执行状态
+		if(nodeExcuteStatus === 2){
+            alertMsg("提示", "无法标记正在执行的节点", "warning");
+        }else{
+            //设置输出图标
+            if(resultTableStatus === 2) {//若已标记，则去掉标记
+                graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus = 1;
+                setNodeOutputTypeIcon(1,1);
+                //自动保存图形化
+                autoSaveGraph();
+            } else {
+                var verify = true;
+                if(midTableStatus === 2){//如果该结果表已被标记为模型辅助结果表，则不能再被标记为模型最终结果表
+                    verify = false;
+                    alertMsg("提示", "该结果表已被标记为模型辅助结果表", "info");
+                }else{
+                    var keyArr = Object.keys(graph.model.cells);
+                    for(var i=0;i<keyArr.length;i++) {
+                        var item = graph.model.cells[keyArr[i]];
+                        if(item.vertex) {
+                            resultTableStatus = graph.nodeData[item.id].nodeInfo.resultTableStatus;
+                            if(resultTableStatus === 2 && item.id !== graph.curCell.id) {
+                                alertMsg("提示", "已存在被标记的模型最终结果表", "info");
+                                verify = false;
+                                break;
+                            }
                         }
                     }
                 }
-			}
-            if(verify){
-                graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus = 2;
-                setNodeOutputTypeIcon(2,1);
-                //自动保存图形化
-                autoSaveGraph();
+                if(verify){
+                    graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus = 2;
+                    setNodeOutputTypeIcon(2,1);
+                    //自动保存图形化
+                    autoSaveGraph();
+                }
             }
-		}
+        }
 	});
 	
 	//查看节点结果集SQL语句

@@ -1,5 +1,5 @@
 import { turn } from 'core-js/fn/array'
-import { data } from 'jquery';
+import { data } from 'jquery'
 import _ from 'lodash'
 import {
   tasksState
@@ -8,49 +8,45 @@ import {
 const pie = {
   legend: {
     orient: 'vertical',
+    // 颜色卡能不能点击
+    selectedMode: false,
     left: 0,
-    data: ['等待中', '等待文件', '等待依赖', '执行中', '暂停', '已取消', '执行完成', '执行失败'],
-    data1:['执行完成']
+    data: ['等待中', '等待文件', '等待依赖', '执行中', '暂停', '已取消', '执行完成', '执行失败']
   },
-  tooltip : { 
-    trigger: 'item', 
-    formatter: "{b} : {c} ({d}%)" 
-},
+  tooltip: {
+    trigger: 'item',
+    formatter: '{b} : {c} ({d}%)'
+  },
   series: [{
     type: 'pie',
-    clickable: true, // Whether to open clicks
-    minAngle: 5, // The smallest sector angle (0 ~ 360), used to prevent a value from being too small, causing the sector to be too small to affect the interaction
-    avoidLabelOverlap: false, // Whether to prevent the label overlap policy
-    hoverAnimation: false, // Whether to enable hover to enlarge the animation on the sector.
+    clickable: true, // 是否打开点击
+    minAngle: 5, // 最小扇区角度（0〜360），用于防止值太小而导致扇区太小而影响交互
+    avoidLabelOverlap: false, // 是否防止标签重叠政策
+    hoverAnimation: false, // 是否启用悬停以放大该扇区上的动画.
+    legendHoverLink: false, // 执行颜色卡片时，相应的选项高亮
     // silent: true,
-    radius: ['55%', '75%'],
+    radius: ['45%', '75%'],
     center: ['66.8%', '37.5%'],
     label: {
       show: false,
       position: 'center',
-      fontSize: '30',
-      formatter: '   {d}% \r\n {b}' 
+      fontSize: '20',
+      formatter: '   {d}% \r\n {b}'
     },
     emphasis: {
       label: {
         show: true,
-        fontSize: '30',
+        fontSize: '20',
         // fontWeight: 'bold',
-        formatter: '   {d}% \r\n {b}' 
-      },
-      // label: {
-      //   show: true,
-      //   fontSize: '20',
-      //   // fontWeight: 'bold',
-      //   formatter: '   {d}% \r\n {b}' 
-      // }
+        formatter: '   {d}% \r\n {b}'
+      }
     },
     labelLine: {
       show: false
-    },
+    }
   }
   ]
-};
+}
 
 //     label: {
 //       normal: {

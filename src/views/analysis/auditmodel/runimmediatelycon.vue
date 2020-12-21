@@ -139,9 +139,15 @@ export default {
             );
           }
         }
+        let sql = "";
+        if(this.detailModels[i].modelType == "002003001"){
+          sql = this.detailModels[i].sqlValue
+        }
+        if(this.detailModels[i].modelType == "002003002"){
+          sql = this.detailModels[i].modelSql
+        }
         this.$refs.paramassembly[i].initParamHtmlSS(
-          this.detailModels[i].sqlValue,
-          paramArr,
+          sql, paramArr,
           this.detailModels[i].modelName + "参数",
           this.detailModels[i].modelUuid + "2"
         );

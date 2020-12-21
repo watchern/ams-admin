@@ -1,10 +1,10 @@
 <template>
-    <div id="div_config">
+    <div style="padding: 30px 0 0 15px;">
         <div style="color:red">注：两张表所勾选融合字段的含义和顺序需保持一致，均可通过拖动行改变字段的的显示顺序</div>
         <div id="table_left" class="div_table">
             <div class="_table">
                 <div class="_table_th">
-                    <div id="table_name_left"></div>
+                    <div id="table_name_left">{{leftTableName}}</div>
                     <div class="mtDiv">
                         <el-checkbox v-model="leftMainTableChecked" @change="leftMainTableChange">主表</el-checkbox>
                     </div>
@@ -19,8 +19,8 @@
                             <th>融合字段</th>
                         </tr>
                         </thead>
-                        <tbody>
-                            <tr v-for="(leftObj,index) in leftTableColArr" :key="leftObj.id" :data-index="index">
+                        <tbody ref="leftTableCol">
+                            <tr ref="leftTableColTr" v-for="(leftObj,index) in leftTableColArr" :key="leftObj.id" :data-index="index">
                                 <td>
                                     <el-checkbox v-model="leftObj.checked" @change="leftColumnChange"></el-checkbox>
                                 </td>
@@ -32,16 +32,14 @@
             </div>
         </div>
         <div class="div_table" style="width: 130px;margin-top: 150px">
-            <select id="conn_type" name="conn_type" class="form-control">
-                <option value="union">合并</option>
-                <option value="intersect">交集</option>
-                <option value="exclude">补集</option>
-            </select>
+            <el-select v-model="conn_type" @change="setConnType">
+                <el-option v-for="connTypeObj in connTypeArr" :value="connTypeObj.value" :label="connTypeObj.name">{{connTypeObj.name}}</el-option>
+            </el-select>
         </div>
         <div id="table_right" class="div_table">
             <div class="_table">
                 <div class="_table_th">
-                    <div id="table_name_right"></div>
+                    <div id="table_name_right">{{rightTableName}}}</div>
                     <div class="mtDiv">
                         <el-checkbox v-model="rightMainTableChecked" @change="rightMainTableChange">主表</el-checkbox>
                     </div>
@@ -56,8 +54,8 @@
                             <th>融合字段</th>
                         </tr>
                         </thead>
-                        <tbody>
-                            <tr v-for="(rightObj,index) in rightTableColArr" :key="rightObj.id" :data-index="index">
+                        <tbody ref="rightTableCol">
+                            <tr ref="rightTableColTr" v-for="(rightObj,index) in rightTableColArr" :key="rightObj.id" :data-index="index">
                                 <td>
                                     <el-checkbox v-model="rightObj.checked" @change="rightColumnChange"></el-checkbox>
                                 </td>
@@ -72,11 +70,11 @@
 </template>
 
 <script>
-    var nodeData
     export default {
         name: 'unionDataSet',
         data(){
             return{
+                nodeData:null,
                 leftMainTableChecked: true,
                 rightMainTableChecked: false,
                 leftSelectAll: false,
@@ -86,34 +84,34 @@
                 leftTableNodeId: '',
                 rightTableNodeId: '',
                 leftTablePreNodeId: '',
-                rightTablePreNodeId: ''
+                rightTablePreNodeId: '',
+                conn_type:'union',
+                connTypeArr:[{value:"union",name:"合并"},{value:"intersect",name:"交集"},{value:"exclude",name:"补集"}],
+                leftTableName:'',
+                rightTableName:''
             }
         },
         mounted(){
             this.init();
-            window.saveSetting = this.saveSetting
-            window.inputVerify = this.inputVerify
         },
         methods:{
             init(){
-                let svg_width = (($(document).width() - 930) / 2) + 'px'
-                $('#div_config').css({ 'margin-left': svg_width, 'margin-top': '20px' })
                 let graph = this.$parent.graph
-                nodeData = graph.nodeData[graph.curCell.id]
-                let parentIds = nodeData.parentIds
-                let isSet = nodeData.isSet
+                this.nodeData = graph.nodeData[graph.curCell.id]
+                let parentIds = this.nodeData.parentIds
+                let isSet = this.nodeData.isSet
                 if (isSet) {
-                    var setting = nodeData.setting
-                    $('#conn_type').selectpicker('val', setting.conn_type)
+                    var setting = this.nodeData.setting
+                    this.conn_type = setting.conn_type
                     var left_data = setting.left_data
                     var right_data = setting.right_data
                     var mainType = ''// 默认主表
                     this.leftTableNodeId = left_data.nodeId
                     this.leftTablePreNodeId = left_data.preNodeId
-                    $('#table_name_left').html(left_data.nodeName)
+                    this.leftTableName = left_data.nodeName
                     this.rightTableNodeId = right_data.nodeId
                     this.rightTablePreNodeId = right_data.preNodeId
-                    $('#table_name_right').html(right_data.nodeName)
+                    this.rightTableName = right_data.nodeName
                     if (left_data.mainTable) {
                         mainType = 'left'
                         this.leftMainTableChecked = true
@@ -206,20 +204,20 @@
                                 if (i === 0) {
                                     this.leftTableNodeId = nodeId
                                     this.leftTablePreNodeId = preNodeId
-                                    $('#table_name_left').html(tableName)
+                                    this.leftTableName = tableName
                                     this.leftTableColArr = [...colArr]
                                 } else {
                                     this.rightTableNodeId = nodeId
                                     this.rightTablePreNodeId = preNodeId
-                                    $('#table_name_right').html(tableName)
+                                    this.rightTableName = tableName
                                     this.rightTableColArr = [...colArr]
                                 }
                             }
                         }
                     }
                 }
-                $('#col_table_col_left_data>tbody').sortable().disableSelection()
-                $('#col_table_col_right_data>tbody').sortable().disableSelection()
+                $(this.$refs.leftTableCol).sortable().disableSelection()
+                $(this.$refs.rightTableCol).sortable().disableSelection()
             },
             leftColumnChange(checked){
                 let chk = 0
@@ -376,7 +374,7 @@
             saveSetting() {
                 let left_data = {
                     'nodeId': this.leftTableNodeId,
-                    'nodeName': $('#table_name_left').html(),
+                    'nodeName': this.leftTableName,
                     'columnSetArr': [],
                     'mainTable': false,
                     'selectAll': this.leftSelectAll,
@@ -384,7 +382,7 @@
                 }
                 let right_data = {
                     'nodeId': this.rightTableNodeId,
-                    'nodeName': $('#table_name_right').html(),
+                    'nodeName': this.rightTableName,
                     'columnSetArr': [],
                     'mainTable': false,
                     'selectAll': this.rightSelectAll,
@@ -395,55 +393,71 @@
                 } else {
                     right_data.mainTable = true
                 }
-                let $this = this
-                $("#col_table_col_left_data>tbody>tr").each(function(i,v){
-                    let leftIndex = Number($(this).attr("data-index"))
+                let leftTableColTr = this.$refs.leftTableColTr
+                for(let i=0; i<leftTableColTr.length; i++){
+                    let leftIndex = Number(leftTableColTr[i].getAttribute("data-index"))
                     let id = i
-                    let name = $this.leftTableColArr[leftIndex].colName
-                    let checked = $this.leftTableColArr[leftIndex].checked
+                    let name = this.leftTableColArr[leftIndex].colName
+                    let checked = this.leftTableColArr[leftIndex].checked
                     left_data.columnSetArr.push({id, name, checked})
-                });
-                $("#col_table_col_right_data>tbody>tr").each(function(i,v){
-                    let rightIndex = Number($(this).attr("data-index"))
+                }
+                let rightTableColTr = this.$refs.rightTableColTr
+                for(let i=0; i<rightTableColTr.length; i++){
+                    let rightIndex = Number(rightTableColTr[i].getAttribute("data-index"))
                     let id = i
-                    let name = $this.rightTableColArr[rightIndex].colName
-                    let checked = $this.rightTableColArr[rightIndex].checked
+                    let name = this.rightTableColArr[rightIndex].colName
+                    let checked = this.rightTableColArr[rightIndex].checked
                     right_data.columnSetArr.push({id, name, checked})
-                });
-                nodeData.setting.left_data = left_data// 选择的数据（带顺序）
-                nodeData.setting.right_data = right_data// 选择的数据（带顺序）
-                nodeData.setting.conn_type = $('#conn_type').val()
+                }
+                // $("#col_table_col_left_data>tbody>tr").each(function(i,v){
+                //     let leftIndex = Number($(this).attr("data-index"))
+                //     let id = i
+                //     let name = $this.leftTableColArr[leftIndex].colName
+                //     let checked = $this.leftTableColArr[leftIndex].checked
+                //     left_data.columnSetArr.push({id, name, checked})
+                // });
+                // $("#col_table_col_right_data>tbody>tr").each(function(i,v){
+                //     let rightIndex = Number($(this).attr("data-index"))
+                //     let id = i
+                //     let name = $this.rightTableColArr[rightIndex].colName
+                //     let checked = $this.rightTableColArr[rightIndex].checked
+                //     right_data.columnSetArr.push({id, name, checked})
+                // });
+                this.nodeData.setting.left_data = left_data// 选择的数据（带顺序）
+                this.nodeData.setting.right_data = right_data// 选择的数据（带顺序）
+                this.nodeData.setting.conn_type = this.conn_type
             },
             inputVerify() {
                 let checkedIndex = 0
                 let verify = true
-                let $this = this
-                if($this.leftMainTableChecked){//左表为主表
-                    checkedIndex = $this.leftTableColArr.findIndex( n => n.checked === true)
-                    $("#col_table_col_left_data>tbody>tr").each(function(i,v){
-                        let leftIndex = Number($(this).attr("data-index"))
-                        if($this.leftTableColArr[leftIndex].checked){
-                            let rightIndex = Number($("#col_table_col_right_data>tbody>tr:eq("+i+")").attr("data-index"))
-                            let curRightCol = $this.rightTableColArr[rightIndex]
-                            if(typeof curRightCol === 'undefined' || !$this.rightTableColArr[rightIndex].checked){
+                let leftTableColTr = this.$refs.leftTableColTr
+                let rightTableColTr = this.$refs.rightTableColTr
+                if(this.leftMainTableChecked){//左表为主表
+                    checkedIndex = this.leftTableColArr.findIndex( n => n.checked === true)
+                    for(let i=0; i<leftTableColTr.length; i++){
+                        let leftIndex = Number(leftTableColTr[i].getAttribute("data-index"))
+                        if(this.leftTableColArr[leftIndex].checked){
+                            let rightIndex = Number(rightTableColTr[i].getAttribute("data-index"))
+                            let curRightCol = this.rightTableColArr[rightIndex]
+                            if(typeof curRightCol === 'undefined' || !this.rightTableColArr[rightIndex].checked){
                                 verify = false
                                 return false
                             }
                         }
-                    });
+                    }
                 }else{//右表为主表
                     checkedIndex = this.rightTableColArr.findIndex( n => n.checked === true)
-                    $("#col_table_col_right_data>tbody>tr").each(function(i,v){
-                        let rightIndex = Number($(this).attr("data-index"))
-                        if($this.rightTableColArr[rightIndex].checked){
-                            let leftIndex = Number($("#col_table_col_left_data>tbody>tr:eq("+i+")").attr("data-index"))
-                            let curLeftCol = $this.rightTableColArr[leftIndex]
-                            if(typeof curLeftCol === 'undefined' || !$this.leftTableColArr[leftIndex].checked){
+                    for(let i=0; i<rightTableColTr.length; i++){
+                        let rightIndex = Number(rightTableColTr[i].getAttribute("data-index"))
+                        if(this.rightTableColArr[rightIndex].checked){
+                            let leftIndex = Number(leftTableColTr[i].getAttribute("data-index"))
+                            let curLeftCol = this.rightTableColArr[leftIndex]
+                            if(typeof curLeftCol === 'undefined' || !this.leftTableColArr[leftIndex].checked){
                                 verify = false
                                 return false
                             }
                         }
-                    });
+                    }
                 }
                 if(checkedIndex < 0){
                     this.$message({ type: 'info', message: '请勾选主表的输出字段' })
@@ -453,7 +467,10 @@
                     this.$message({ type: 'info', message: '字段顺序或勾选状态不一致，请修改' })
                 }
                 return verify
-            }
+            },
+            setConnType(val){
+                this.conn_type = val
+            },
         }
     }
 </script>

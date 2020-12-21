@@ -60,12 +60,14 @@
             class="copy-name"
             :data-clipboard-text="name"
             @click="_copyName"
-          ><em
+          >
+          <!-- <em
             class="ans-icon-copy"
             data-container="body"
             data-toggle="tooltip"
             title="复制名称"
-          /></span>
+          /> -->
+          </span>
         </div>
         <div class="save-btn">
           <div
@@ -289,7 +291,7 @@ export default {
       const clipboard = new Clipboard(`.copy-name`)
       clipboard.on('success', e => {
         this.$notify({
-          title: '提示',
+          title: this.$t('message.title'),
           message: `复制成功`,
           type: 'success',
           duration: 2000,
@@ -420,7 +422,7 @@ export default {
                */
               this[this.type === 'instance' ? 'updateInstance' : 'updateDefinition'](this.urlParam.id).then(res => {
                 this.$notify({
-                  title: '提示',
+                  title: this.$t('message.title'),
                   message: res.msg,
                   type: 'success',
                   duration: 2000,
@@ -446,7 +448,7 @@ export default {
               // New
               this.saveDAGchart().then(res => {
                 this.$notify({
-                  title: '提示',
+                  title: this.$t('message.title'),
                   message: res.msg,
                   type: 'success',
                   duration: 2000,
@@ -548,7 +550,7 @@ export default {
         setTimeout(() => {
           this.isRefresh = false
           this.$notify({
-            title: '提示',
+            title: this.$t('message.title'),
             message: `刷新状态成功`,
             type: 'success',
             duration: 2000,
@@ -637,9 +639,17 @@ export default {
              * @param fromThis
              */
             cacheTaskInfo({ item, fromThis }) {
+              // 给选中的元素添加class
+              if (document.getElementById(item.id) !== null) {
+                document.getElementById(item.id).classList.add('jtk-tasks-active')
+              }
               self.cacheTasks(item)
             },
             close({ item, flag, fromThis }) {
+              // 给选中的元素移除class
+              if (document.getElementById(item.id) !== null) {
+                document.getElementById(item.id).classList.remove('jtk-tasks-active')
+              }
               self.addTasks(item)
               // Edit status does not allow deletion of nodes
               if (flag) {

@@ -5,6 +5,7 @@
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
+        :query-default="queryDefault"
         @submit="getList"
       />
     </div>
@@ -17,8 +18,8 @@
       :data="list"
       border
       highlight-current-row
-      height="200px"
-      max-height="200px"
+      height="calc(100vh - 350px)"
+      max-height="calc(100vh - 350px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -72,12 +73,14 @@
           <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="taskParam in scope.row.taskParamList" :key="taskParam.value">
-              <label class="col-md-2">
-                {{ taskParam.name }}:
-              </label>
-              <div class="col-md-10">
+              <el-col :span="8">
+                <label>
+                  {{ taskParam.name }}:
+                </label>
+              </el-col>
+              <el-col :span="16">
                 {{ taskParam.value }}
-              </div>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <el-link :underline="false" type="primary">查看参数</el-link>
@@ -152,11 +155,16 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, findTaskLogs } from '@/api/etlscheduler/taskinstance'
 import QueryField from '@/components/Ace/query-field/index'
-// statuSelectList, statusComm
-import { colorList, statusListComm, statuSelect } from '@/views/etlscheduler/processinstance/comm.js'
+// statuSelect, statusComm
+import { colorList, statusListComm, statuSelectList } from '@/views/etlscheduler/processinstance/comm.js'
+import dayjs from 'dayjs'
+import store from '@/store'
 
 export default {
   components: { Pagination, QueryField },
+  props: {
+    searchParams: Object
+  },
   // filters: {
   // 耗时的时间格式转换
   // timeFilter(value) {
@@ -179,6 +187,7 @@ export default {
   // },
   data() {
     return {
+      store,
       tableKey: 'taskInstanceUuid',
       list: null,
       total: 0,
@@ -188,9 +197,13 @@ export default {
       queryFields: [
         { label: '任务实例名称', name: 'name', type: 'text', value: '' },
         // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
+        // {
+        //   label: '任务实例状态', name: 'status', type: 'select',
+        //   data: statuSelect
+        // },
         {
-          label: '任务实例状态', name: 'status', type: 'select',
-          data: statuSelect
+          label: '任务实例状态', name: 'groupExecutionStatus', type: 'select',
+          data: statuSelectList, value: []
         },
         // {
         //   label: '任务实例状态', name: 'groupExecutionStatus', type: 'select',
@@ -254,7 +267,7 @@ export default {
       downloadLoading: false,
       tasks: null,
       checkedTask: null,
-      checkedTaskId: '',
+      checkedTaskId: null,
       logTasks: null,
       logs: null,
       taskslogsList: null,
@@ -263,6 +276,20 @@ export default {
     }
   },
   watch: {
+    searchParams: {
+      deep: true,
+      immediate: true,
+      handler() {
+        this.queryDefault = {
+          groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+          startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
+          startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
+        }
+        this.queryFields[1].value = this.queryDefault.groupExecutionStatus
+        this.queryFields[2].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
+        this.getList(this.queryDefault)
+      }
+    }
   },
   created() {
     statusListComm.forEach((r, i) => {
@@ -282,13 +309,12 @@ export default {
     //   startTimeEnd: JSON.stringify(this.$route.query.startTimeEnd),
     //   status: JSON.stringify(this.$route.query.stateType)
     // }
-    // console.log(condition)
-    if (this.$route.params instanceof Object) {
-      this.queryDefault = this.$route.params
-    }
+    // if (this.$route.params instanceof Object) {
+    //   this.queryDefault = this.$route.params
+    // }
     // this.getList(this.queryDefault)
 
-    this.getList()
+    // this.getList()
   },
   mounted() {
     // this.statusList = statusListComm

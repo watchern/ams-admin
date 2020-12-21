@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="page-container">
     <div class="filter-container">
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
@@ -9,17 +9,19 @@
       :data="list"
       border
       fit
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
       highlight-current-row
       style="width: 100%;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="标题" width="300px" align="center" prop="remindTitle" />
-      <el-table-column label="内容" width="550px" align="left" prop="remindContent" />
-      <el-table-column label="提醒时间" width="200px" align="center" prop="remindTime" :formatter="dateFormatter" />
-      <el-table-column label="阅读状态" prop="readStatus" align="center" width="100px" :formatter="readStatusFormatter" />
-      <el-table-column label="操作" prop="modeUrl" align="center" width="200px">
+      <el-table-column label="标题"  align="center" prop="remindTitle" />
+      <el-table-column label="内容"  align="left" prop="remindContent" />
+      <el-table-column label="提醒时间"  align="center" prop="remindTime"/>
+      <el-table-column label="阅读状态" prop="readStatus" align="center"  :formatter="readStatusFormatter" />
+      <el-table-column label="操作" prop="modeUrl" align="center" >
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="selectDetail(scope.row)">查看</el-button>
           <el-button type="text" size="small" @click="signRead(scope.row)">标记已阅</el-button>
@@ -46,7 +48,7 @@ export default {
         { label: '内容', name: 'remindContent', type: 'fuzzyText' },
         { label: '提醒时间范围', name: 'remindTime', type: 'timePeriod' },
         { label: '阅读状态', name: 'readStatus', type: 'select',
-          data: [{ name: '请选择', value: '-1' }, { name: '未阅', value: '0' }, { name: '已阅', value: '1' }], default: '-1' }
+          data: [{ name: '未阅', value: '0' }, { name: '已阅', value: '1' }], default: '-1' }
       ],
       // selectedRowVal:0,
       tableOptions: {
@@ -128,27 +130,27 @@ export default {
     this.getList()
   },
   methods: {
-    /**
-     * 格式化时间字符串
-     * @param row 行数据
-     * @param column 列数据
-     * @returns {string} 返回格式化后的字符串
-     */
-    dateFormatter(row, column) {
-      const datetime = row.remindTime
-      if (datetime) {
-        var dateMat = new Date(datetime)
-        var year = dateMat.getFullYear()
-        var month = dateMat.getMonth() + 1
-        var day = dateMat.getDate()
-        var hh = dateMat.getHours()
-        var mm = dateMat.getMinutes()
-        var ss = dateMat.getSeconds()
-        var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
-        return timeFormat
-      }
-      return ''
-    },
+    // /**
+    //  * 格式化时间字符串
+    //  * @param row 行数据
+    //  * @param column 列数据
+    //  * @returns {string} 返回格式化后的字符串
+    //  */
+    // dateFormatter(row, column) {
+    //   const datetime = row.remindTime
+    //   if (datetime) {
+    //     var dateMat = new Date(datetime)
+    //     var year = dateMat.getFullYear()
+    //     var month = dateMat.getMonth() + 1
+    //     var day = dateMat.getDate()
+    //     var hh = dateMat.getHours()
+    //     var mm = dateMat.getMinutes()
+    //     var ss = dateMat.getSeconds()
+    //     var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
+    //     return timeFormat
+    //   }
+    //   return ''
+    // },
     /**
      * 格式化已阅状态
      * @param row 行数据

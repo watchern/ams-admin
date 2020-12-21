@@ -36,7 +36,7 @@
           @select-all="modelTableSelectEvent"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column label="模型名称" width="100px" align="left" prop="modelName">
+          <el-table-column label="模型名称" width="300px" align="center" prop="modelName">
             <template slot-scope="scope">
               <el-link type="primary" @click="selectModelDetail(scope.row.modelUuid)">{{ scope.row.modelName }}</el-link>
             </template>
@@ -77,7 +77,7 @@
             <el-row>
               <div @click="Toggle1()">
                 <el-col :span="24" class="row-all">
-                  <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor" />
+                  <childTabs :modelId="modelId"  :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="modelPreview" />
                 </el-col>
               </div>
               <el-col :span="2">
@@ -130,6 +130,7 @@
 </template>
 <script>
 import { findModel, saveModel, deleteModel, shareModel, selectModel, updateModel, updateModelBasicInfo, exportModel, setModelSession } from '@/api/analysis/auditmodel'
+import {deleteGraphInfoById} from '@/api/graphtool/graphList'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
@@ -139,10 +140,9 @@ import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import {getExecuteTask, startExecuteSql} from '@/api/analysis/sqleditor/sqleditor'
 import crossrangeParam from '@/views/analysis/modelparam/crossrangeparam'
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
-import { replaceNodeParam, replaceCrossrangeNodeParam } from '@/api/analysis/auditparam'
+import { replaceNodeParam } from '@/api/analysis/auditparam'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 import personTree from '@/components/publicpersontree/index'
-import Cookies from 'js-cookie'
 export default {
   name: 'ModelListTable',
   components: { Pagination, QueryField, EditModel, ModelFolderTree, childTabs, crossrangeParam, paramDraw, modelshoppingcart, personTree },
@@ -195,8 +195,8 @@ export default {
       // 当前预览模型参数和sql
       currentPreviewModelParamAndSql: {},
       queryFields: [
-        { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
-        { label: '审计事项', name: 'auditItemName', type: 'fuzzyText' },
+        { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: ''},
+        { label: '审计事项', name: 'auditItemName', type: 'fuzzyText', value: ''},
         { label: '风险等级', name: 'riskLevelUuid', type: 'select',
           data: [{ name: '高', value: '002002001' }, { name: '中', value: '002002002' }, { name: '低', value: '002002003' }],
           default: '-1' }
@@ -224,7 +224,8 @@ export default {
         pageSize: 20
       },
       // 人员选择
-      dialogFormVisiblePersonTree: false
+      dialogFormVisiblePersonTree: false,
+      modelId:''
     }
   },
   computed: {
@@ -535,6 +536,15 @@ export default {
       }).then(() => {
         deleteModel(selectObj).then(result => {
           if (result.code == 0) {
+            //删除成功  同时删除图形化模型
+            if(result.data != null){
+              for(let i = 0;i < result.data.length;i++){
+                //如果包含图形化模型则同时删除图形化模型
+                if(result.data[i].graphUuid != null){
+                  deleteGraphInfoById(result.data[i].graphUuid)
+                }
+              }
+            }
             this.getList(this.query)
             this.$emit('refreshTree')
             this.$notify({
@@ -729,6 +739,8 @@ export default {
     },
     previewModel() {
       var selectObj = this.$refs.modelListTable.selection
+      this.modelId = selectObj[0].modelUuid
+      console.log(this.modelId)
       if (selectObj == undefined || selectObj.length === 0) {
         this.$message({ type: 'info', message: '请先选择要预览的模型!' })
         return
@@ -748,12 +760,26 @@ export default {
         this.$emit('loadingSet',false,"");
         if (result.code == 0) {
           if (result.data.parammModelRel.length == 0) {
-            const obj = {
-              sqls: result.data.sqlValue,
-              modelUuid: selectObj[0].modelUuid,
-              businessField: 'modellisttable'
+            let obj = null
+            //没有参数，判断是图形化还是sql编辑器模型
+            if(result.data.graphUuid != null){
+              //调用图形化接口找到sql
+              obj = {
+                sqls: result.data.modelSql,
+                modelUuid: selectObj[0].modelUuid,
+                businessField: 'modellisttable'
+              }
+              this.executeSql(obj,selectObj)
             }
-            this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
+            else{
+              obj = {
+                sqls: result.data.sqlValue,
+                modelUuid: selectObj[0].modelUuid,
+                businessField: 'modellisttable'
+              }
+              this.executeSql(obj,selectObj)
+            }
+/*            this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
             getExecuteTask(obj).then((result) => {
               this.$emit('loadingSet',false,"");
               this.addTab(selectObj[0], false, result.data.executeSQLList)
@@ -767,7 +793,8 @@ export default {
             }).catch((result) => {
               this.$message({ type: 'info', message: '执行失败' })
               this.$emit('loadingSet',false,"");
-            });
+            })*/
+
           } else {
             const paramObj = []
             for (let i = 0; i < result.data.parammModelRel.length; i++) {
@@ -787,6 +814,28 @@ export default {
         } else {
           this.$message({ type: 'error', message: '获取模型信息失败' })
         }
+      })
+    },
+    /**
+     *执行sql
+     * @param obj 执行对象  包含sql、模型编号、业务编号
+     * @param selectObj 界面选中元素
+     */
+    executeSql(obj,selectObj){
+      this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
+      getExecuteTask(obj).then((result) => {
+        this.$emit('loadingSet',false,"");
+        this.addTab(selectObj[0], false, result.data.executeSQLList)
+        //界面渲染完成之后开始执行sql,将sql送入调度
+        startExecuteSql(result.data).then((result) => {
+          this.executeLoading = false;
+          this.loadText = ""
+        }).catch((result) => {
+          this.executeLoading = false;
+        });
+      }).catch((result) => {
+        this.$message({ type: 'info', message: '执行失败' })
+        this.$emit('loadingSet',false,"");
       })
     },
     /**
@@ -845,10 +894,9 @@ export default {
       obj.businessField = 'modellisttable'
       // 合并参数 将输入的值替换到当前界面
       this.currentPreviewModelParamAndSql.paramObj = obj.paramsArr
-      this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
       this.dialogFormVisible = false
-      // this.mergeParamObj(obj.paramsArr)
-      getExecuteTask(obj).then((result) => {
+      this.executeSql(obj,selectObj)
+/*      getExecuteTask(obj).then((result) => {
         this.$emit('loadingSet',false,"");
         this.addTab(selectObj[0], true, result.data.executeSQLList)
         this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
@@ -858,7 +906,7 @@ export default {
       }).catch((result) => {
         this.$message({ type: 'info', message: '执行失败' })
         this.$emit('loadingSet',false,"");
-      });
+      });*/
 /*      startExecuteSql(obj).then((result) => {
         this.dialogFormVisible = false
         if (!result.data.isError) {

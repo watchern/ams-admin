@@ -53,6 +53,10 @@ const dataRouter = {
       path: 'roleGrp/:roleUuid',
       name: '数据角色维护-角色用户组绑定',
       component: () => import('@/views/data/role-grp/index')
+    }, {
+      path: 'formula',
+      name: '指标计算公式维护',
+      component: () => import('@/views/data/formula/index')
     }
   ]
 }

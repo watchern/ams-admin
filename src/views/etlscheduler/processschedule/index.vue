@@ -78,12 +78,14 @@
         <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(taskParam,$index) in scope.row.distinctParamList" :key="$index">
-              <label class="col-md-4">
-                {{ taskParam.name }}:
-              </label>
-              <div class="col-md-8">
+              <el-col :span="8">
+                <label>
+                  {{ taskParam.name }}:
+                </label>
+              </el-col>
+              <el-col :span="16">
                 {{ taskParam.value }}
-              </div>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -101,12 +103,16 @@
         <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
-              <label class="col-md-2">
-                [{{ dependTask.dateValueName }}]
-              </label>
-              <label class="col-md-10" align="right">
-                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
-              </label>
+              <el-col :span="4">
+                <label>
+                  [{{ dependTask.dateValueName }}]
+                </label>
+              </el-col>
+              <el-col :span="20">
+                <label align="right">
+                  {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+                </label>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -123,7 +129,7 @@
         :formatter="formatStatus"
       />
       <el-table-column
-        label="最新修改人"
+        label="最近修改人"
         width="150px"
         align="center"
         prop="updateUserName"
@@ -161,29 +167,79 @@
             :placeholder="disableUpdate === true ? '' : '请输入任务名称'"
           />
         </el-form-item>
-
-        <!-- 查询任务流程 -->
-        <el-form-item label="任务流程" prop="processDefinitionId">
-          <el-select
-            v-model="temp.processDefinitionId"
-            :disabled="disableUpdate"
-            :filterable="true"
-            :remote="false"
-            :remote-method="remoteMethod"
-            reserve-keyword
-            :placeholder="disableUpdate === true ? '' : '请选择任务流程'"
-            :loading="loading"
-            @change="changeProcess(temp.processDefinitionId)"
-            @focus="remote-method"
-          >
-            <el-option
-              v-for="item in options"
-              :key="item.processDefinitionUuid"
-              :label="item.name"
-              :value="item.processDefinitionUuid"
-            />
-          </el-select>
-        </el-form-item>
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="调度开始时间" prop="startTime">
+              <el-date-picker
+                v-model="temp.startTime"
+                :picker-options="startTime"
+                style="width:100%"
+                type="date"
+                props="startTime"
+                :placeholder="disableUpdate === true ? '' : '请选择开始时间'"
+                :disabled="disableUpdate"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11" :offset="2">
+            <el-form-item label="调度结束时间" prop="endTime">
+              <!-- <el-col class="line" :span="1">-</el-col> -->
+              <el-date-picker
+                v-model="temp.endTime"
+                :picker-options="endTime"
+                type="date"
+                prop="endTime"
+                style="width:100%"
+                :placeholder="disableUpdate === true ? '' : '请选择结束时间'"
+                :disabled="disableUpdate"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="11">
+            <!-- 查询任务流程 -->
+            <el-form-item label="任务流程" prop="processDefinitionId">
+              <el-select
+                v-model="temp.processDefinitionId"
+                :disabled="disableUpdate"
+                :filterable="true"
+                style="width:100%"
+                :remote="false"
+                :remote-method="remoteMethod"
+                reserve-keyword
+                :placeholder="disableUpdate === true ? '' : '请选择任务流程'"
+                :loading="loading"
+                @change="changeProcess(temp.processDefinitionId)"
+                @focus="remote-method"
+              >
+                <el-option
+                  v-for="item in options"
+                  :key="item.processDefinitionUuid"
+                  :label="item.name"
+                  :value="item.processDefinitionUuid"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="11" :offset="2">
+            <el-form-item label="作业周期" prop="crontab">
+              <el-select
+                v-model="temp.crontab"
+                style="width:100%;"
+                :placeholder="disableUpdate === true ? '' : '请选择作业周期'"
+                :disabled="disableUpdate"
+              >
+                <el-option
+                  v-for="item in crontabFormat"
+                  :key="item.codeDesc"
+                  :label="item.codeName"
+                  :value="item.codeDesc"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item
           v-for="(item, $index) in distinctParamList"
           :key="$index"
@@ -196,52 +252,7 @@
             @blur="changeParamValue(item.value, item.name)"
           />
         </el-form-item>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="作业周期开始时间" prop="startTime">
-              <el-col :span="8">
-                <el-date-picker
-                  v-model="temp.startTime"
-                  :picker-options="startTime"
-                  type="date"
-                  props="startTime"
-                  :placeholder="disableUpdate === true ? '' : '请选择开始时间'"
-                  :disabled="disableUpdate"
-                />
-              </el-col>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="作业周期结束时间" prop="endTime">
-              <!-- <el-col class="line" :span="1">-</el-col> -->
-              <el-col :span="8">
-                <el-date-picker
-                  v-model="temp.endTime"
-                  :picker-options="endTime"
-                  type="date"
-                  prop="endTime"
-                  :placeholder="disableUpdate === true ? '' : '请选择结束时间'"
-                  :disabled="disableUpdate"
-                />
-              </el-col>
-            </el-form-item>
-          </el-col>
-        </el-row>
 
-        <el-form-item label="作业周期" prop="crontab">
-          <el-select
-            v-model="temp.crontab"
-            :placeholder="disableUpdate === true ? '' : '请选择作业周期'"
-            :disabled="disableUpdate"
-          >
-            <el-option
-              v-for="item in crontabFormat"
-              :key="item.codeDesc"
-              :label="item.codeName"
-              :value="item.codeDesc"
-            />
-          </el-select>
-        </el-form-item>
         <!-- 添加任务依赖 -->
         <!-- temp.dependTaskInfoList!=null && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList -->
         <!-- <el-form-item v-if="dialogStatus === 'create' || dialogStatus === 'update' || (dialogStatus === 'show' && temp.dependTaskInfoList && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList )"> -->
@@ -262,9 +273,10 @@
                       class="add-dep"
                       @click="!isDetails && _addDep()"
                     >
+                      <!-- :class="{'oper-btn add': iconDisable}" -->
                       <em
                         v-if="!isLoading"
-                        :class="{'oper-btn add': iconDisable}"
+                        class="oper-btn add"
                         data-toggle="tooltip"
                         :disable="disableAddStatus"
                         title="添加"
@@ -343,7 +355,7 @@
 
     <!-- 下载流程模板弹框 -->
     <el-dialog title="下载流程模板" :visible.sync="dialogFormVisible1">
-      <el-form label-position="right">
+      <el-form label-position="right" class="detail-form">
         <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="downProcessDefinitionId">
           <el-select
@@ -498,7 +510,8 @@ import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
 // import { crontabExpression } from './common.js'
 import { getDictList } from '@/utils'
-// import _ from lodash
+import { mapMutations } from 'vuex'
+import store from '@/store'
 
 export default {
   name: 'Dependence',
@@ -514,6 +527,7 @@ export default {
   },
   data() {
     return {
+      store,
       downProcessDefinitionId: null,
       disableAddStatus: false,
       // 开始时间大于今天
@@ -578,7 +592,7 @@ export default {
       queryFields: [
         { label: '调度名称', name: 'scheduleName', type: 'text', value: '' },
         { label: '调度状态', name: 'status', type: 'select',
-          data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }], default: '0' },
+          data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }] },
         {
           label: '流程名称',
           name: 'processDefinitionId',
@@ -685,7 +699,8 @@ export default {
             required: true,
             message: '请填写调度任务名称',
             trigger: 'change'
-          }
+          },
+          { max: 20, message: '调度任务名称在20个字符之内', trigger: 'change' }
         ],
         processDefName: [
           {
@@ -697,7 +712,7 @@ export default {
         crontab: [
           {
             required: true,
-            message: '请填写作业周期',
+            message: '请选择作业周期',
             trigger: 'change'
           }
         ],
@@ -711,14 +726,14 @@ export default {
         startTime: [
           {
             required: true,
-            message: '请填写开始执行日期',
+            message: '请选择开始执行日期',
             trigger: 'change'
           }
         ],
         endTime: [
           {
             required: true,
-            message: '请填写结束执行日期',
+            message: '请选择结束执行日期',
             trigger: 'change'
           }
         ],
@@ -727,7 +742,8 @@ export default {
             required: true,
             message: '请输入参数值',
             trigger: 'change'
-          }
+          },
+          { max: 50, message: '参数值在50个字符之内', trigger: 'change' }
         ]
       },
       runRules: {
@@ -785,7 +801,6 @@ export default {
       },
       // 这里是关键，代表递归监听 demo 的变化
       deep: true
-
     },
     // 监听selections集合
     selections() {
@@ -819,9 +834,17 @@ export default {
       }
     },
     dependTaskList(e) {
-      setTimeout(() => {
+      if (this.dependTaskList === null || !this.dependTaskList.length > 0 || this.dependTaskList[0] === null) {
         this.isLoading = false
-      }, 600)
+      } else if (this.dependTaskList !== null) {
+        if (this.dependTaskList[0].dependItemList === null) {
+          this.isLoading = false
+        } else {
+          this.isLoading = true
+        }
+      } else {
+        this.isLoading = true
+      }
     },
     cacheDependence(val) {
       this.$emit('on-cache-dependent', val)
@@ -859,6 +882,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('monitor', ['setScheduleDetail']),
     // 修改参数
     changeParamValue(value, name) {
       if (value === '') {
@@ -880,6 +904,7 @@ export default {
       this.temp = Object.assign({}, rowdata) // copy obj
       this.dialogStatus = 'show'
       this.dialogFormVisible = true
+      this.setScheduleDetail(true)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -924,7 +949,7 @@ export default {
         copy(r.processSchedulesUuid).then(() => {
           this.getList()
           this.$notify({
-            title: '成功',
+            title: this.$t('message.title'),
             message: '复制成功',
             type: 'success',
             duration: 2000,
@@ -935,7 +960,7 @@ export default {
     },
     _addDep() {
       if (!this.isLoading) {
-        this.isLoading = true
+        // this.isLoading = true
         if (this.dependTaskList == null || this.dependTaskList.length === 0) {
           this.disableAddStatus = false
           this.dependTaskList = [{
@@ -1077,14 +1102,14 @@ export default {
     runSchedule() {
       this.$refs['runForm'].validate((valid) => {
         if (valid) {
-          this.runParams.checked === true ? this.runParams.commandTypeEnum = 'COMPLEMENT_DATA' : this.runParams.commandTypeEnum = ''
+          this.runParams.checked === true ? this.runParams.commandTypeEnum = 'COMPLEMENT_DATA' : this.runParams.commandTypeEnum = 'START_PROCESS'
           this.runParams.checked === true ? this.runParams.isSupply = true : this.runParams.isSupply = false
           this.runParams.cronTime ? this.runParams.cronTime = this.runParams.cronTime.join(',') : this.runParams.cronTime = ''
           const tempData = Object.assign({}, this.runParams)
           startProcessInstance(tempData).then(() => {
             this.getList()
             this.$notify({
-              title: '成功',
+              title: this.$t('message.title'),
               message: '运行成功',
               type: 'success',
               duration: 2000,
@@ -1106,6 +1131,7 @@ export default {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
+      this.setScheduleDetail(false)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -1114,7 +1140,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (this.flag === false) {
           this.$notify({
-            title: '失败',
+            title: this.$t('message.title'),
             message: '请输入参数值',
             type: 'error',
             duration: 3000,
@@ -1136,8 +1162,8 @@ export default {
               this.getList()
               this.dialogFormVisible = false
               this.$notify({
-                title: '成功',
-                message: '创建成功',
+                title: this.$t('message.title'),
+                message: this.$t('message.insert.success'),
                 type: 'success',
                 duration: 2000,
                 position: 'bottom-right'
@@ -1162,6 +1188,7 @@ export default {
       this.temp = Object.assign({}, this.selections[0]) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      this.setScheduleDetail(false)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -1175,7 +1202,7 @@ export default {
     updateData() {
       if (this.flag === false) {
         this.$notify({
-          title: '失败',
+          title: this.$t('message.title'),
           message: '请输入参数值',
           type: 'error',
           duration: 3000,
@@ -1194,8 +1221,8 @@ export default {
               this.list.splice(index, 1, this.temp)
               this.dialogFormVisible = false
               this.$notify({
-                title: '成功',
-                message: '更新成功',
+                title: this.$t('message.title'),
+                message: this.$t('message.update.success'),
                 type: 'success',
                 duration: 2000,
                 position: 'bottom-right'
@@ -1206,19 +1233,26 @@ export default {
       }
     },
     handleDelete() {
-      var ids = []
-      this.selections.forEach((r, i) => {
-        ids.push(r.processSchedulesUuid)
-      })
-      del(ids.join(',')).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => {
+          ids.push(r.processSchedulesUuid)
         })
+        del(ids.join(',')).then(() => {
+          this.getList()
+          this.$notify({
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      }).catch(() => {
       })
     },
     handleUse() {
@@ -1229,7 +1263,7 @@ export default {
       startScheduleStatus(ids.join(','), 1).then((res) => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '启用成功',
           type: 'success',
           duration: 2000,
@@ -1239,19 +1273,26 @@ export default {
     },
     // 停用
     handleStop() {
-      var ids = []
-      this.selections.forEach((r, i) => {
-        ids.push(r.processSchedulesUuid)
-      })
-      stopScheduleStatus(ids.join(','), 0).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '停用成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm('确定要停用吗？', this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => {
+          ids.push(r.processSchedulesUuid)
         })
+        stopScheduleStatus(ids.join(','), 0).then(() => {
+          this.getList()
+          this.$notify({
+            title: this.$t('message.title'),
+            message: '停用成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      }).catch(() => {
       })
     },
     // 下载模板
@@ -1268,7 +1309,6 @@ export default {
     },
     // 上传文件，获取文件流
     handleFileChange(file) {
-      // console.log(file)
       this.file = file.raw
     },
     handleRemove(file, fileList) {
@@ -1304,7 +1344,7 @@ export default {
         if (res.data.code === 2501) {
           this.getList()
           this.$notify({
-            title: '失败',
+            title: this.$t('message.title'),
             message: res.data.msg,
             type: 'error',
             duration: 2000,
@@ -1313,7 +1353,7 @@ export default {
         } else {
           this.getList()
           this.$notify({
-            title: '成功',
+            title: this.$t('message.title'),
             message: '导入成功',
             type: 'success',
             duration: 5000,
@@ -1329,9 +1369,21 @@ export default {
     formatCron(row, column) {
       const date = row[column.property]
       var onJsonDate = new Date(row.startTime)
-      var onTime = onJsonDate.toLocaleDateString()
+      var onTimeList = onJsonDate.toLocaleDateString().split('/')
+      for (var i = 0; i < onTimeList.length; i++) {
+        if (onTimeList[i] < 10) {
+          onTimeList[i] = '0' + onTimeList[i]
+        }
+        var onTime = onTimeList[0] + '/' + onTimeList[1] + '/' + onTimeList[2]
+      }
       var stopJsonDate = new Date(row.endTime)
-      var stopTime = stopJsonDate.toLocaleDateString()
+      var stopTimeList = stopJsonDate.toLocaleDateString().split('/')
+      for (var k = 0; k < stopTimeList.length; k++) {
+        if (stopTimeList[k] < 10) {
+          stopTimeList[k] = '0' + stopTimeList[k]
+        }
+        var stopTime = stopTimeList[0] + '/' + stopTimeList[1] + '/' + stopTimeList[2]
+      }
       var message = ''
       this.crontabFormat.forEach((r, i) => {
         if (date === r.codeDesc) {

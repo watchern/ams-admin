@@ -27,7 +27,7 @@
       border
       highlight-current-row
       height="calc(100vh - 350px)"
-      max-height="calc(100vh - 350px)"  
+      max-height="calc(100vh - 350px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -56,13 +56,13 @@
         align="center"
         prop="paramCode"
       />
-      <el-table-column
+      <!-- <el-table-column
         label="参数类型"
         width="150px"
         align="center"
         prop="paramType"
         :formatter="formatType"
-      />
+      /> -->
       <el-table-column
         label="默认值"
         prop="defaultValue"
@@ -282,10 +282,13 @@ export default {
       },
       // 新增的表单验证
       rules: {
-        paramName: [{ required: true, message: '请填写参数名', trigger: 'change' }],
-        paramDesc: [{ max: 100, message: '请填写参数的描述', trigger: 'change' }],
-        paramCode: [{ required: true, message: '请填写参数的编码', trigger: 'change' }],
+        paramName: [{ required: true, message: '请填写参数名', trigger: 'change' },
+          { max: 20, message: '参数名称在20个字符之内', trigger: 'change' }],
+        paramDesc: [{ max: 500, message: '参数描述在500个字符之内', trigger: 'change' }],
+        paramCode: [{ required: true, message: '请填写参数的编码', trigger: 'change' },
+          { max: 20, message: '参数编码在20个字符之内', trigger: 'change' }],
         paramType: [{ required: true, message: '请选择参数的类型', trigger: 'change' }],
+        defaultValue: [{ max: 50, message: '默认值在50个字符之内', trigger: 'change' }],
         status: [{ required: true, message: '请选择参数状态', trigger: 'change' }]
       },
       disableUpdate: false,
@@ -356,8 +359,8 @@ export default {
             this.getList()
             this.dialogFormVisible = false
             this.$notify({
-              title: '成功',
-              message: '创建成功',
+              title: this.$t('message.title'),
+              message: this.$t('message.insert.success'),
               type: 'success',
               duration: 2000,
               position: 'bottom-right'
@@ -387,8 +390,8 @@ export default {
             this.dialogFormVisible = false
             this.getList()
             this.$notify({
-              title: '成功',
-              message: '更新成功',
+              title: this.$t('message.title'),
+              message: this.$t('message.update.success'),
               type: 'success',
               duration: 2000,
               position: 'bottom-right'
@@ -398,17 +401,30 @@ export default {
       })
     },
     handleDelete() {
-      var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.paramUuid) })
-      del(ids.join(',')).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => { ids.push(r.paramUuid) })
+        del(ids.join(',')).then(() => {
+          this.getList()
+          this.$notify({
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         })
+      }).catch(() => {
+        // this.$notify({
+        //   title: '消息',
+        //   message: '已取消删除',
+        //   duration: 2000,
+        //   position: 'bottom-right'
+        // })
       })
     },
     handleSelectionChange(val) {

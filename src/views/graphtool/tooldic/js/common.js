@@ -1,172 +1,159 @@
-import { deleteExecuteNodes, checkTableName,executeNodeSql } from '@/api/graphtool/graphList'
+import { deleteExecuteNodes, checkTableName, executeNodeSql } from '@/api/graphtool/graphList'
 import * as validateJs from '@/views/graphtool/tooldic/js/validate'
-import {updateResourceZtreeNodeName} from '@/views/graphtool/tooldic/js/index'
+import { updateResourceZtreeNodeName } from '@/views/graphtool/tooldic/js/index'
 let hL = null
 let graphIndexVue = null
+let graph = null
 export var sendGraphIndexVue = (_this) => {
     graphIndexVue = _this
+    graph = _this.graph
 }
 
-// 功能节点跳转
+// 打开节点配置
 export function data_filter(type, name, nodeName) {
     var curNodeId = graph.curCell.id
     var obj = validateJs.verifyPreNodes(type, curNodeId)
     if (obj.isError) {
-        alertMsg('错误', obj.message, 'error')
+        this.$message({ type: 'info', message: obj.message })
         return
     }
     if (!validateJs.settingVerify(type)) {
         return
     }
-    var url = ''
     if (type === 'relation') {
-        url = '/#/graphtool/tooldic/relation'
+        graphIndexVue.settingType = 'relation'
     } else if (type === 'groupCount') {
-        url = '/#/graphtool/tooldic/groupCount'
+        graphIndexVue.settingType = 'groupCount'
     } else {
-        url = '/#/graphtool/tooldic/nodeSetting?jspType=' + type
+        graphIndexVue.settingType = 'commonSetting'
     }
-    var setting = {
-        id: 'setProperty',
-        type: 2,
-        title: name,
-        content: url,
-        area: ['90%', '90%'],
-        skin: 'layui-layer-lan',
-        success: function() {
-            if (type !== 'barChart') {
-                var link = "<a style='color:#fff;position:absolute;top:13px;right:80px;font-size:15px;' class='open_" + type + "' href='javascript:void(0);' onclick='showSettingRemark(this,\"" + type + "\")' title='点击查看详细的配置说明'>"
-                link += "<span style='position: relative;left: 5px;bottom: 2px;'>帮助</span></a>"
-                $('.layui-layer-title').after(link)
-            }
-            $('#setProperty>iframe').attr('scrolling', 'no')
-        }
-    }
-    if (graph.canEditor) { // 如果能编辑，则能保存修改后的配置
-        setting.btn = ['确定', '取消']
-        setting.btn1 = function(index, layero) {
-            if (settingCallBack(curNodeId, type, layero)) {
-                layer.close(index)
-                autoExcute()
-            }
-        }
-        setting.btn2 = function(index, layero) {
-            layer.close(index)
-        }
-        setting.cancel = function(index, layero) {
-            if (confirm('即将关闭配置页面，是否更新并保存配置信息？')) { // 只有当点击confirm框的确定时，该层才会关闭
-                if (settingCallBack(curNodeId, type, layero)) {
-                    autoExcute()
-                }
-            }
-        }
-    } else {
-        setting.btn = ['关闭']
-        setting.btn1 = function(index) {
-            layer.close(index)
-        }
-    }
-    layer.open(setting)
+    graphIndexVue.sp_optType = type
+    graphIndexVue.sp_nodeId = curNodeId
+    graphIndexVue.nodeSettingTitle = name
+    graphIndexVue.nodeSettingDialogVisible = true
 }
 
 /**
- * 配置完成后的回调方法
- * */
-function settingCallBack(curNodeId, type, layero) {
-    if (!window[layero.find('iframe')[0]['name']].basicInfoVerify()) {
-        window[layero.find('iframe')[0]['name']].$('#myTab>li:eq(0)>a').click()
-        return false
-    }
-    if (!window[layero.find('iframe')[0]['name']].inputVerify()) {
-        window[layero.find('iframe')[0]['name']].$('#myTab>li:eq(1)>a').click()
-        return false
-    }
-    var childrenIds = graph.nodeData[curNodeId].childrenIds.slice()
-    if (childrenIds.length > 0) {
-        if (!confirm('该操作会影响本节点及后续节点的执行信息，是否继续？')) {
+ * 保存节点配置
+ */
+export function saveNodeSetting() {
+    let curNodeId = graphIndexVue.sp_nodeId
+    let saveNodeSettingFun = function() {
+        let type = graphIndexVue.sp_optType
+        if (!graphIndexVue.$refs.nodeSetting.$refs.basicVueRef.basicInfoVerify()) {
+            $(graphIndexVue.$refs.nodeSetting.$refs.myTab).find('li:eq(0)>a').click()
             return false
         }
-    }
-    if (type === 'relation' || type === 'groupCount') {					// 数据关联和分组汇总节点特殊处理
-        var flag = window[layero.find('iframe')[0]['name']].saveNodeInfo()
-        if (!flag) {
-            return false
-        }
-    } else if (type === 'comparison' || type === 'barChart') {		// 频次分析没有输出列，特殊处理
-        window[layero.find('iframe')[0]['name']].saveNotOutput()
-    } else {
-        if (!window[layero.find('iframe')[0]['name']].outputVerify()) {
-            return false
-        }
-        window[layero.find('iframe')[0]['name']].saveGraphNodeSetting()
-    }
-    // 变更当前节点的配置状态信息
-    graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 1
-    graph.nodeData[curNodeId].isSet = true
-    graph.nodeData[curNodeId].setting.settingId = new UUIDGenerator().id
-    changeNodeIcon(1, true, curNodeId)
-    graph.cellLabelChanged(graph.curCell, graph.nodeData[curNodeId].nodeInfo.nodeName, null)
-    // 自动生成节点和线，start
-    graph.getModel().beginUpdate()
-    try {
-        var nodeType = graph.nodeData[curNodeId].nodeInfo.optType
-        // 判断当前节点是否已经生成【结果表】节点
-        var y = graph.curCell.geometry.y				// 纵向坐标位置
-        if (nodeType === 'layering') {				// 数据分层节点特殊处理
-            if (childrenIds.length > 0) {					// 如果有已经生成的结果表，则先删除已有的结果表
-                var cells = []
-                for (var i = 0; i < childrenIds.length; i++) {
-                    cells.push(graph.model.getCell(childrenIds[i]))
-                }
-                if (cells.length > 0) {
-                    graph.setSelectionCells(cells)
-                    deleteCells(true)
-                    // 对应删除右侧所使用资源树上的节点
-                    deleteResourceZtreeNode(childrenIds)
-                }
+        if (type === 'relation' || type === 'groupCount') {					// 数据关联和分组汇总节点特殊处理
+            if (!graphIndexVue.$refs.nodeSetting.inputVerify()) {
+                $(graphIndexVue.$refs.nodeSetting.$refs.myTab).find('li:eq(1)>a').click()
+                return false
             }
-            var newTableArr = []; var newSqlArr = []; var areaArr = []
-            var resultTableNameArr = graph.nodeData[curNodeId].nodeInfo.resultTableNameArr
-            var nodeSqlArr = graph.nodeData[curNodeId].nodeInfo.nodeSqlArr
-            var colName = graph.nodeData[curNodeId].setting.hierarchy_column
-            var layeringArr = graph.nodeData[curNodeId].setting.hierarchy_map
-            for (var j = 0; j < layeringArr.length; j++) {
-                var name = colName + '【' + layeringArr[j].c_col_1 + '至' + layeringArr[j].c_col_2 + '】'
-                areaArr.push('字段【' + colName + '】：' + layeringArr[j].c_col_1 + '至' + layeringArr[j].c_col_2)
-                autoCreateNode(y + j * 130, j, name)
-                if (resultTableNameArr.length === 0) {
-                    newTableArr.push('')
-                    newSqlArr.push('')
-                    continue
-                }
-                if (j <= resultTableNameArr.length - 1) {
-                    newTableArr[j] = resultTableNameArr[j]
-                    newSqlArr[j] = nodeSqlArr[j]
-                } else {
-                    newTableArr.push('')
-                    newSqlArr.push('')
-                }
+            if (!graphIndexVue.$refs.nodeSetting.saveNodeInfo()) {
+                return false
             }
-            graph.nodeData[curNodeId].nodeInfo.resultTableNameArr = newTableArr.slice()
-            graph.nodeData[curNodeId].nodeInfo.nodeSqlArr = newSqlArr.slice()
-            graph.nodeData[curNodeId].nodeInfo.areaArr = areaArr
         } else {
-            if (childrenIds.length === 0 && nodeType !== 'barChart') {			// 自定义图形不生成结果表
-                autoCreateNode(y)
+            if (!graphIndexVue.$refs.nodeSetting.$refs.conditionSet.inputVerify()) {
+                $(graphIndexVue.$refs.nodeSetting.$refs.myTab).find('li:eq(1)>a').click()
+                return false
+            }
+            if (type === 'comparison' || type === 'barChart') {		// 频次分析没有输出列，特殊处理
+                graphIndexVue.$refs.nodeSetting.$refs.conditionSet.saveNotOutput()
+            } else {
+                if (!graphIndexVue.$refs.nodeSetting.$refs.outputColumnVueRef.outputVerify()) {
+                    return false
+                }
+                graphIndexVue.$refs.nodeSetting.saveGraphNodeSetting()
             }
         }
-    } finally {
-        graph.getModel().endUpdate()
+        // 变更当前节点的配置状态信息
+        graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 1
+        graph.nodeData[curNodeId].isSet = true
+        graph.nodeData[curNodeId].setting.settingId = new UUIDGenerator().id
+        changeNodeIcon(1, true, curNodeId)
+        graph.cellLabelChanged(graph.curCell, graph.nodeData[curNodeId].nodeInfo.nodeName, null)
+        // 自动生成节点和线，start
+        graph.getModel().beginUpdate()
+        try {
+            var nodeType = graph.nodeData[curNodeId].nodeInfo.optType
+            // 判断当前节点是否已经生成【结果表】节点
+            var y = graph.curCell.geometry.y				// 纵向坐标位置
+            if (nodeType === 'layering') {				// 数据分层节点特殊处理
+                if (childrenIds.length > 0) {					// 如果有已经生成的结果表，则先删除已有的结果表
+                    var cells = []
+                    for (var i = 0; i < childrenIds.length; i++) {
+                        cells.push(graph.model.getCell(childrenIds[i]))
+                    }
+                    if (cells.length > 0) {
+                        graph.setSelectionCells(cells)
+                        deleteCells(true)
+                        // 对应删除右侧所使用资源树上的节点
+                        deleteResourceZtreeNode(childrenIds)
+                    }
+                }
+                var newTableArr = []; var newSqlArr = []; var areaArr = []
+                var resultTableNameArr = graph.nodeData[curNodeId].nodeInfo.resultTableNameArr
+                var nodeSqlArr = graph.nodeData[curNodeId].nodeInfo.nodeSqlArr
+                var colName = graph.nodeData[curNodeId].setting.hierarchy_column
+                var layeringArr = graph.nodeData[curNodeId].setting.hierarchy_map
+                for (var j = 0; j < layeringArr.length; j++) {
+                    var name = colName + '【' + layeringArr[j].c_col_1 + '至' + layeringArr[j].c_col_2 + '】'
+                    areaArr.push('字段【' + colName + '】：' + layeringArr[j].c_col_1 + '至' + layeringArr[j].c_col_2)
+                    autoCreateNode(y + j * 130, j, name)
+                    if (resultTableNameArr.length === 0) {
+                        newTableArr.push('')
+                        newSqlArr.push('')
+                        continue
+                    }
+                    if (j <= resultTableNameArr.length - 1) {
+                        newTableArr[j] = resultTableNameArr[j]
+                        newSqlArr[j] = nodeSqlArr[j]
+                    } else {
+                        newTableArr.push('')
+                        newSqlArr.push('')
+                    }
+                }
+                graph.nodeData[curNodeId].nodeInfo.resultTableNameArr = newTableArr.slice()
+                graph.nodeData[curNodeId].nodeInfo.nodeSqlArr = newSqlArr.slice()
+                graph.nodeData[curNodeId].nodeInfo.areaArr = areaArr
+            } else {
+                if (childrenIds.length === 0 && nodeType !== 'barChart') {			// 自定义图形不生成结果表
+                    autoCreateNode(y)
+                }
+            }
+        } finally {
+            graph.getModel().endUpdate()
+        }
+        // 自动生成节点和线，end
+        if (childrenIds.length > 0) {
+            changeNodeInfo(curNodeId, false)
+        }
+        // 记录执行操作的操作痕迹
+        refrashHistoryZtree('配置【' + graph.curCell.value + '】节点')
+        // 自动保存图形化
+        autoSaveGraph()
+        graphIndexVue.nodeSettingDialogVisible = false
+        return true
     }
-    // 自动生成节点和线，end
+    let childrenIds = graph.nodeData[curNodeId].childrenIds.slice()
     if (childrenIds.length > 0) {
-        changeNodeInfo(curNodeId, false)
+        graphIndexVue.$confirm('该操作会影响本节点及后续节点的执行信息，是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            center: true
+        }).then(() => {
+            if (saveNodeSettingFun()) {
+                autoExcute(curNodeId)
+            }
+        }).catch(() => {
+            graphIndexVue.nodeSettingDialogVisible = false
+        })
+    } else {
+        if (saveNodeSettingFun()) {
+            autoExcute(curNodeId)
+        }
     }
-    // 记录执行操作的操作痕迹
-    refrashHistoryZtree('配置【' + graph.curCell.value + '】节点')
-    // 自动保存图形化
-    autoSaveGraph()
-    return true
 }
 
 /**
@@ -457,11 +444,11 @@ function dealWithNodeIdArr(notExecuteNodeIdArr) {
             var resultTableName = graph.nodeData[notExecuteNodeIdArr[i]].nodeInfo.resultTableName
             // 如果结果表不为空，说明之前执行过，则进行结果表名称的重复性校验（重复则定义删除标志）
             if (resultTableName !== '') {
-                checkTableName({ 'tableName': resultTableName, 'openType': graph.openType }).then( response => {
-                    if(response.data == null){
+                checkTableName({ 'tableName': resultTableName, 'openType': graph.openType }).then(response => {
+                    if (response.data == null) {
                         checkFlag = false
                         returnObj.message = '校验节点【' + graph.nodeData[notExecuteNodeIdArr[i]].nodeInfo.nodeName + '】的结果表出错'
-                    }else {
+                    } else {
                         isDeleteTable = response.data
                     }
                 })
@@ -624,18 +611,23 @@ function createParamNodeHtml(nodeIdArr) {
 /**
  * 自动执行
  */
-function autoExcute() {
-    var childrenIds = graph.nodeData[ graph.curCell.id].childrenIds
+function autoExcute(curNodeId) {
+    let childrenIds = graph.nodeData[curNodeId].childrenIds
     if (childrenIds.length > 0 && childrenIds.length === 1) {
-        confirmMsg('提示', '节点配置成功，是否立即执行？', 'info', function() {
-            var cell = graph.getModel().getCell(childrenIds[0])
+        graphIndexVue.$confirm('节点配置成功，是否立即执行?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'info',
+            center: true
+        }).then(() => {
+            let cell = graph.getModel().getCell(childrenIds[0])
             if (cell) {
                 graph.curCell = cell
                 executeNode()
             } else {
-                alertMsg('错误', '自动获取执行节点出错，请手动选择节点执行', 'error')
+                graphIndexVue.$message.error({ message: '自动获取执行节点出错，请手动选择节点执行' })
             }
-        }, function() {})
+        })
     }
 }
 
@@ -649,7 +641,7 @@ export function executeNode(notExecuteNodeIdArr) {
         'verify': true,
         'message': ''
     }
-    if (typeof notExecuteNodeIdArr === "undefined" || notExecuteNodeIdArr == null || notExecuteNodeIdArr.length === 0) {
+    if (typeof notExecuteNodeIdArr === 'undefined' || notExecuteNodeIdArr == null || notExecuteNodeIdArr.length === 0) {
         if (!validateJs.executeVerify()) {
             return
         }
@@ -671,12 +663,11 @@ export function executeNode(notExecuteNodeIdArr) {
         notExecuteNodeIdArr.unshift(parentIds[0])
     }
     // 处理待执行节点队列数组
-    obj = dealWithNodeIdArr(notExecuteNodeIdArr)
-    if (!obj.verify) {
-        alertMsg('提示', obj.message, 'info')
-        return
-    }
-    graphIndexVue.executeType = 1
+    // obj = dealWithNodeIdArr(notExecuteNodeIdArr)
+    // if (!obj.verify) {
+    //     alertMsg('提示', obj.message, 'info')
+    //     return
+    // }
     graphIndexVue.websocketBatchId = new UUIDGenerator().id
     // 获取组织参数的html代码
     var returnObj = createParamNodeHtml(notExecuteNodeIdArr)
@@ -759,36 +750,63 @@ function executeNode_callback(notExecuteNodeIdArr) {
     var dataParam = {
         'openType': graph.openType,
         'executeId': executeId,
-        'graphUuid': $('#graphUuid').val(),
-        'graphName': $('#graphName').val(),
-        'nodeIdList': notExecuteNodeIdArr.join(","),
-        'nodeData': JSON.stringify(graph.nodeData),
-        'websocketBatchId':graphIndexVue.websocketBatchId
-        // 'executeType':1//执行本节点
+        'graphUuid': graphIndexVue.graphUuid,
+        'graphName': graphIndexVue.graphName,
+        'nodeIdList': notExecuteNodeIdArr.join(','),
+        'nodeData': JSON.stringify(graph.nodeData)
+        // 'websocketBatchId':graphIndexVue.websocketBatchId
     }
-    $('#sysInfoArea').html('')
     graphIndexVue.executeNodeIdArr = notExecuteNodeIdArr
-    graphIndexVue.executeId = executeId
     graphIndexVue.resultTableArr = []
     graphIndexVue.preValue = []
-    graphIndexVue.$nextTick( () => {
+    graphIndexVue.$nextTick(() => {
         executeNodeSql(dataParam).then(response => {
-            if(response.data != null){
-                // $('#sysInfoArea').html(response.data.message)
-                if(response.data.isError){
-                    $('#sysInfoArea').append("<p style='color:red'>节点执行失败！\n错误信息："+ response.data.message +"</p>");
-                    graphIndexVue.layuiTabClickLi(1)
-                    // 更改执行状态图标为未执行
-                    for (var j = 0; j < notExecuteNodeIdArr.length; j++) {
-                        graph.nodeData[notExecuteNodeIdArr[j]].nodeInfo.nodeExcuteStatus = 1
-                        changeNodeIcon(1, null, notExecuteNodeIdArr[j])
-                    }
-                    // 循环所有节点变更执行状态有变化的节点执行状态信息
-                    // nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
-                    autoSaveGraph()
+            if (response.data != null) {
+                var historyNodeName = ''
+                $('#sysInfoArea').html(response.data.message)
+                graphIndexVue.layuiTabClickLi(1)
+                // 循环所有节点变更执行状态有变化的节点执行状态信息
+                nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
+                // 如果执行的是未配置的结果表
+                if (!isSet) {
+                    historyNodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName
+                } else {
+                    historyNodeName = graph.curCell.value
                 }
-            }else{
-                $('#sysInfoArea').html("请求失败！")
+                // 如果当前节点执行成功，则直接显示结果集
+                if (graph.nodeData[executeCellId] && graph.nodeData[executeCellId].nodeInfo && graph.nodeData[executeCellId].nodeInfo.nodeExcuteStatus === 3) {
+                    graphIndexVue.layuiTabClickLi(0)
+                    graphIndexVue.showTableResult = false
+                    let nodeId = executeCellId
+                    let nodeName = graph.nodeData[executeCellId].nodeInfo.nodeName
+                    let resultTableName = ''
+                    if (!isSet) {
+                        resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName
+                    } else {
+                        resultTableName = graph.nodeData[executeCellId].nodeInfo.resultTableName
+                    }
+                    let isRoleTable = false
+                    let resultTableObj = { nodeId, nodeName, resultTableName, isRoleTable }
+                    let optType = graph.nodeData[executeCellId].nodeInfo.optType
+                    if (optType === 'newNullNode') { // 结果表
+                        let midTableStatus = graph.nodeData[executeCellId].nodeInfo.midTableStatus
+                        let resultTableStatus = graph.nodeData[executeCellId].nodeInfo.resultTableStatus
+                        if (midTableStatus === 2 || resultTableStatus === 2) {
+                            resultTableObj['isRoleTable'] = true
+                        }
+                        nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + nodeName
+                    }
+                    graphIndexVue.resultTableArr.push(resultTableObj)
+                    graphIndexVue.preValue.push({ id: nodeId, name: nodeName })
+                    // 预览数据
+                    graphIndexVue.viewData()
+                }
+                // 记录执行操作
+                refrashHistoryZtree('【' + historyNodeName + '】节点执行完毕')
+                // 自动保存图形化
+                autoSaveGraph()
+            } else {
+                $('#sysInfoArea').html('执行节点的请求失败！')
             }
         })
     })
@@ -818,7 +836,7 @@ export function executeAllNode() {
     var key = Object.keys(cells)
     if (key && key.length > 0) {
         for (var i = 0; i < key.length; i++) {
-            if (cells[key[i]].vertex === 1 && graph.nodeData[key[i]]) {
+            if (cells[key[i]].vertex && graph.nodeData[key[i]]) {
                 // 如果是节点且节点类型是结果表(无下级节点)
                 var parentIds = []; var preNodeData = {}
                 if (graph.nodeData[key[i]].nodeInfo.optType === 'newNullNode' && graph.nodeData[key[i]].childrenIds.length === 0) {
@@ -870,7 +888,7 @@ export function executeAllNode() {
     }).then(() => {
         for (var i = 0; i < key.length; i++) {
             // 如果是节点且不是原表，则先变更节点的执行状态为未执行
-            if (cells[key[i]].vertex === 1 && graph.nodeData[key[i]] && graph.nodeData[key[i]].nodeInfo &&
+            if (cells[key[i]].vertex && graph.nodeData[key[i]] && graph.nodeData[key[i]].nodeInfo &&
                 graph.nodeData[key[i]].nodeInfo.optType !== 'datasource' && graph.nodeData[key[i]].nodeInfo.nodeExcuteStatus !== 1) {
                 graph.nodeData[key[i]].nodeInfo.nodeExcuteStatus = 1
                 changeNodeIcon(1, null, key[i])
@@ -902,10 +920,10 @@ export function executeAllNode() {
                     break
                 }
                 // 处理待执行节点队列数组
-                returnObj = dealWithNodeIdArr(notExecuteNodeIdArr)
-                if (!returnObj.verify) {
-                    break
-                }
+                // returnObj = dealWithNodeIdArr(notExecuteNodeIdArr)
+                // if (!returnObj.verify) {
+                //     break
+                // }
                 allNodeIdArr.push.apply(allNodeIdArr, notExecuteNodeIdArr)
                 var executeId = new UUIDGenerator().id// 生成执行ID
                 notExecuteNodeObject[executeId] = notExecuteNodeIdArr
@@ -1022,7 +1040,7 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
         if (graph.nodeData[executeNodeArr[k]].nodeInfo.nodeExcuteStatus === 1) {			// 若当前节点是因取消执行操作变为未执行，直接跳过
             continue
         }
-        if(typeof executeNodeData !== "undefined" && executeNodeData != null){
+        if (typeof executeNodeData !== 'undefined' && executeNodeData != null) {
             // 循环赋值
             graph.nodeData[executeNodeArr[k]] = $.extend(true, {}, executeNodeData[executeNodeArr[k]])
         }
@@ -1032,18 +1050,15 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
         // 获取当前节点的所有子孙节点集合
         var cIdArr = getAllChildrenIds(executeNodeArr[k])
         // 获取当前节点的所有子集合
-        var childrenIds = graph.nodeData[executeNodeArr[k]].childrenIds
+        let childrenIds = graph.nodeData[executeNodeArr[k]].childrenIds
+        let parentIds = graph.nodeData[executeNodeArr[k]].parentIds
         if (nodeExcuteStatus === 3) {
             if (optType === 'sql') {					// SQL查询器单独处理SQL语句
-                var sql = strEncryption(graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql)
-                graph.nodeData[executeNodeArr[k]].setting.sql = sql
-                graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql = sql
-                graph.nodeData[executeNodeArr[k]].nodeInfo.resultSql = strEncryption(graph.nodeData[executeNodeArr[k]].nodeInfo.resultSql)
+                graph.nodeData[executeNodeArr[k]].setting.sql = graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql
             }
             if (optType !== 'newNullNode') {					// 如果当前节点是操作节点
                 if (optType === 'layering') {					// 如果节点是数据分层，则需特殊处理
                     // 获取当前节点的所有下一级节点
-                    var childrenIds = graph.nodeData[executeNodeArr[k]].childrenIds
                     if (childrenIds.length > 0) {
                         var childCount = 0
                         for (var j = 0; j < childrenIds.length; j++) {
@@ -1065,6 +1080,15 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
             } else {
                 if (stopNodeId !== executeNodeArr[k]) {				// 如果当前结果表不是停止节点
                     changeNodeIcon(3, null, executeNodeArr[k])
+                }
+                if (graph.nodeData[executeNodeArr[k]].nodeInfo.midTableStatus === 2 || graph.nodeData[executeNodeArr[k]].nodeInfo.resultTableStatus === 2) { // 辅助结果表或最终结果表
+                    if (graph.nodeData[parentIds[0]]) {
+                        graph.nodeData[parentIds[0]].nodeInfo.isDeleteTable = true
+                    }
+                } else {
+                    if (graph.nodeData[parentIds[0]]) {
+                        graph.nodeData[parentIds[0]].nodeInfo.isDeleteTable = false
+                    }
                 }
             }
         }
@@ -1104,7 +1128,7 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
     }
     if (executeId && executeId !== '') {
         // 删除缓冲表中的执行节点信息
-        deleteExecuteNodes(executeId).then();
+        deleteExecuteNodes(executeId).then()
     }
 }
 
@@ -1243,7 +1267,7 @@ export function lightHeight(curCellId) {
             graph.highLight.push(parentChildren[i])// 获取线
             graph.highLight.push(parentChildren[i].source)// 获取节点
         }
-        if (parentChildren[i].vertex === 1 && !parentChildren[i].source && parentChildren[i].id === curCellId) {
+        if (parentChildren[i].vertex && !parentChildren[i].source && parentChildren[i].id === curCellId) {
             graph.highLight.push(parentChildren[i])// 获取当前节点（无父节点时高亮）
         }
     }
@@ -1318,7 +1342,7 @@ export function curNodeSQL() {
  * 双击预览数据 / 右键查看数据
  * */
 export function previewNodeData() {
-    let curNodeInfo = graph.nodeData[graph.curCell.id].nodeInfo;
+    let curNodeInfo = graph.nodeData[graph.curCell.id].nodeInfo
     let nodeExcuteStatus = curNodeInfo.nodeExcuteStatus
     if (nodeExcuteStatus !== 3) {
         graphIndexVue.$message({ type: 'warning', message: '当前节点未执行成功，不能预览数据' })
@@ -1336,7 +1360,7 @@ export function previewNodeData() {
             isRoleTable = true
             break
         case 'newNullNode':// 如果是结果表
-            if (!curNodeInfo.isSet) {// 如果是未配置的结果表，拿其前置节点的临时表名称
+            if (!curNodeInfo.isSet) { // 如果是未配置的结果表，拿其前置节点的临时表名称
                 var parentIds = graph.nodeData[graph.curCell.id].parentIds
                 if (graph.nodeData[parentIds[0]].nodeInfo.optType === 'layering') {
                     resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableNameArr[curNodeInfo.index]
@@ -1344,7 +1368,7 @@ export function previewNodeData() {
                     resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName
                 }
                 nodeId = graph.nodeData[parentIds[0]].nodeInfo.nodeId
-                nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName+"_"+graph.nodeData[graph.curCell.id].nodeInfo.nodeName
+                nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + graph.nodeData[graph.curCell.id].nodeInfo.nodeName
             } else {																										// 如果是非空结果表，直接拿其临时表名称
                 resultTableName = curNodeInfo.resultTableName
                 nodeId = curNodeInfo.nodeId
@@ -1352,7 +1376,7 @@ export function previewNodeData() {
             }
             let midTableStatus = curNodeInfo.midTableStatus
             let resultTableStatus = curNodeInfo.resultTableStatus
-            if(midTableStatus === 2 || resultTableStatus === 2){
+            if (midTableStatus === 2 || resultTableStatus === 2) {
                 isRoleTable = true
             }
             break
@@ -1364,10 +1388,10 @@ export function previewNodeData() {
     graphIndexVue.resultTableArr = []
     graphIndexVue.preValue = []
     graphIndexVue.showTableResult = false
-    graphIndexVue.$nextTick( () => {
+    graphIndexVue.$nextTick(() => {
         graphIndexVue.websocketBatchId = new UUIDGenerator().id
-        graphIndexVue.resultTableArr = [{nodeId, nodeName, resultTableName,isRoleTable}]
-        graphIndexVue.preValue = [{id:nodeId,name:nodeName}]
+        graphIndexVue.resultTableArr = [{ nodeId, nodeName, resultTableName, isRoleTable }]
+        graphIndexVue.preValue = [{ id: nodeId, name: nodeName }]
         graphIndexVue.layuiTabClickLi(0)
         graphIndexVue.viewData()
     })
@@ -1573,7 +1597,7 @@ export function reName() {
             }
             var oldName = graph.curCell.value
             graph.cellLabelChanged(graph.curCell, newVal, null)
-            if (graph.curCell.vertex === 1) {
+            if (graph.curCell.vertex) {
                 updateResourceZtreeNodeName(graph.curCell.id, newVal)
                 // 更新操作痕迹树
                 refrashHistoryZtree('重命名节点【' + newVal + '】')
@@ -1679,7 +1703,7 @@ function sqlNodeEdit() {
                 alertMsg('提示', returnObj.message, 'info')
             } else {
                 if ($.trim(returnObj.sql) !== '') {
-                    if (graph.openGraphType === '1') { // 如果是普通个人图形
+                    if (graph.openGraphType === 1) { // 如果是普通个人图形
                         sqlNodeEdit_callBack(returnObj, layero)
                         layer.close(index)
                     } else { // 如果是场景查询图形和模型图形
@@ -1762,7 +1786,7 @@ export function getDataSourceTable() {
     if (parent.children) {
         var parentChildren = parent.children
         for (var i = 0; i < parentChildren.length; i++) {
-            if (parentChildren[i].vertex === 1 && graph.nodeData[parentChildren[i].id] && graph.nodeData[parentChildren[i].id].nodeInfo.optType === 'datasource') {
+            if (parentChildren[i].vertex && graph.nodeData[parentChildren[i].id] && graph.nodeData[parentChildren[i].id].nodeInfo.optType === 'datasource') {
                 dataSourceNodeValArr.push(parentChildren[i].value)
             }
         }
@@ -1941,7 +1965,7 @@ function hadNode(edit) {
     var hadNode = false
     for (var i = 0; i < edit.changes.length; i++) {
         var cell = edit.changes[i].cell ? edit.changes[i].cell : edit.changes[i].child
-        if (cell.vertex === 1) {
+        if (cell.vertex) {
             hadNode = true
             break
         }
@@ -2165,7 +2189,7 @@ export function deleteCells(includeEdges) {
         }
         var arr = []			// 将操作的节点信息存根
         for (var i = 0; i < cells.length; i++) {
-            if (cells[i].vertex === 1) {
+            if (cells[i].vertex) {
                 nodeIdArr.push(cells[i].id)
                 // 找出要删除的节点中的末级节点，更改该末级节点及后续节点的信息，start
                 var lastNodeIdArr = []
@@ -2219,68 +2243,6 @@ export function deleteCells(includeEdges) {
 }
 
 /**
- * 初始化layui插件
- */
-export function initPlugIn() {
-    // datetimepicker初始化
-    if ($('.form_datetime').length > 0) {
-        $('.form_datetime').datetimepicker({
-            language: 'zh-CN',
-            todayBtn: true,
-            autoclose: true,
-            todayHighlight: true,
-            startView: 'month',
-            showMeridian: true
-        })
-    }
-    if ($('.form_date').length > 0) {
-        $('.form_date').datetimepicker({
-            language: 'zh-CN',
-            todayBtn: true,
-            autoclose: true,
-            todayHighlight: true,
-            startView: 'month',
-            showMeridian: true,
-            minView: 'month'
-        })
-    }
-    if ($('.form_time').length > 0) {
-        $('.form_time').datetimepicker({
-            language: 'zh-CN',
-            todayBtn: true,
-            autoclose: true,
-            todayHighlight: true,
-            startView: 'day',
-            showMeridian: true,
-            minView: 'hour',
-            maxView: 'day'
-        })
-    }
-
-    // bootstrap-select初始化
-    if ($('.selectpicker').length > 0) {
-        $('.selectpicker').selectpicker()
-    }
-
-    // iCheck初始化
-    $("input[type='checkbox'], input[type='radio']").icheck({
-        checkboxClass: 'icheckbox_square-purple',
-        radioClass: 'iradio_square-purple',
-        increaseArea: '20%'
-    })
-    $('.checkbox, .radio').css('float', 'left')
-    $('.checkbox, .radio').css('padding-right', '60px')
-
-    $('.selectpicker').change(function() {
-        if (($(this).val()) != null || ($(this).val()) !== '') {
-            $(this).parents('.form-group').find('i').remove()
-            $(this).parents('.form-group').removeClass('has-error')
-            $(this).selectpicker('setStyle', 'btn-danger', 'remove')
-        }
-    })
-}
-
-/**
  * 下载文件 - 带进度监控
  * @param url: 文件下载请求路径
  * @param filename: 保存的文件名
@@ -2289,58 +2251,58 @@ export function initPlugIn() {
  * @param error: 下载失败回调函数
  * @param progress: 进度处理回调函数
  **/
-export function progressDownLoad(url,filename,params,success,error,progress){
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    //监听进度事件
-    xhr.addEventListener("progress", function (evt) {
-        if(typeof progress === "function"){
-            progress(evt);
+export function progressDownLoad(url, filename, params, success, error, progress) {
+    var xhr = new XMLHttpRequest()
+    xhr.open('POST', url, true)
+    // 监听进度事件
+    xhr.addEventListener('progress', function(evt) {
+        if (typeof progress === 'function') {
+            progress(evt)
         }
-    }, false);
-    xhr.responseType = "blob";
-    xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
-    xhr.onreadystatechange = function () {
-        if(xhr.readyState === 4 && xhr.status === 200){
+    }, false)
+    xhr.responseType = 'blob'
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
             if (typeof window.chrome !== 'undefined') {
                 // Chrome version
-                var reader = new FileReader();
-                reader.readAsDataURL(xhr.response);    // 转换为base64，可以直接放入a表情href
-                reader.onload = function (e) {
+                var reader = new FileReader()
+                reader.readAsDataURL(xhr.response) // 转换为base64，可以直接放入a表情href
+                reader.onload = function(e) {
                     // 转换完成，创建一个a标签用于下载
-                    var a = document.createElement('a');
-                    a.download = filename;
-                    a.href = e.target.result;
-                    a.target ="downloadframe";
-                    $("body").append(a);    // 修复firefox中无法触发click
-                    a.click();
-                    $(a).remove();
+                    var a = document.createElement('a')
+                    a.download = filename
+                    a.href = e.target.result
+                    a.target = 'downloadframe'
+                    $('body').append(a) // 修复firefox中无法触发click
+                    a.click()
+                    $(a).remove()
                 }
             } else {
                 // Firefox version
-                var file = new File([xhr.response], filename, { type: 'application/force-download' });
-                window.open(URL.createObjectURL(file));
+                var file = new File([xhr.response], filename, { type: 'application/force-download' })
+                window.open(URL.createObjectURL(file))
             }
-            if(xhr.response && xhr.response.size !== 0){
-                if(typeof success === "function"){
-                    success();
+            if (xhr.response && xhr.response.size !== 0) {
+                if (typeof success === 'function') {
+                    success()
                 }
-            }else{
-                if(typeof error === "function"){
-                    error();
+            } else {
+                if (typeof error === 'function') {
+                    error()
                 }
             }
-        }
-    };
-    var paramsStr = "";
-    if(params){
-        var key = Object.keys(params);
-        for (var i=0;i<key.length;i++){
-            paramsStr += '&'+key[i]+'='+params[key[i]];
-        }
-        if(paramsStr !== ""){
-            paramsStr = paramsStr.substring(1);
         }
     }
-    xhr.send(paramsStr);
+    var paramsStr = ''
+    if (params) {
+        var key = Object.keys(params)
+        for (var i = 0; i < key.length; i++) {
+            paramsStr += '&' + key[i] + '=' + params[key[i]]
+        }
+        if (paramsStr !== '') {
+            paramsStr = paramsStr.substring(1)
+        }
+    }
+    xhr.send(paramsStr)
 }
