@@ -185,7 +185,7 @@
       <mtEditor ref="chart" :data="result" v-if="chartShowIsSee" :chart-config='modelChartSetup.chartJson!=undefined?JSON.parse(modelChartSetup.chartJson):undefined'></mtEditor>
       <span slot="footer" class="dialog-footer">
         <el-button @click="chartShowIsSee = false">取 消</el-button>
-        <el-button v-if="useType=='sqlEditor'?false:true" type="primary" @click="saveChart">确 定</el-button>
+        <el-button v-if="useType=='sqlEditor'?false:true" type="primary" @click="saveChart">保 存</el-button>
       </span>
     </el-dialog>
   </div>
@@ -1233,7 +1233,7 @@ export default {
               position: "bottom-right",
             });
           }
-        });
+        });   
       }else if(this.chartSaveOrUpdate == "update"){
         var chartJson = this.$refs.chart.getChartConfig();
         var modelChartSetup = this.modelChartSetup
@@ -1250,6 +1250,7 @@ export default {
           }
         })
       }
+      this.chartReflexion()
     },
     /**
      * 获取参数返显的数据
