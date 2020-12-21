@@ -105,7 +105,7 @@ const statusListComm = [{
 
 const statusComm = [
   {
-    value: 'G_WATTING',
+    value: 'G_WAITTING',
     label: '等待中',
     unicode: 'el-icon-s-help',
     color: '#f9be0a'
@@ -233,7 +233,7 @@ const statuSelect = [{
 // 查询状态的下拉框
 const statuSelectList = [
   {
-    value: 'G_WATTING',
+    value: 'G_WAITTING',
     name: '等待中'
   },
   {

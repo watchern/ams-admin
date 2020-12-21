@@ -19,6 +19,22 @@ export function getById(id) {
     method: 'get'
   })
 }
+export function getProcessinstanceById(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/processInstance/getById/${id}`,
+    method: 'get'
+  })
+}
+
+// 根据流程实例id找任务实例list和状态
+export function getTaskListByProcessId(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/processInstance/task-list-by-process-id/${id}`,
+    method: 'get'
+  })
+}
 // 添加对象
 export function save(data) {
   return request({
