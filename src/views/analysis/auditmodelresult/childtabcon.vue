@@ -125,7 +125,7 @@
             type="primary"
             title="图表展示"
             class="oper-btn chart"
-            @click="chartShowIsSee = true"
+            @click="openChartDialog"
           ></el-button>
         </el-row>
       </el-col>
@@ -1269,7 +1269,6 @@ export default {
           }
         });
       }
-      this.chartReflexion();
     },
     /**
      * 获取参数返显的数据
@@ -1299,6 +1298,10 @@ export default {
         });
       }
     },
+    openChartDialog(){
+      this.chartReflexion()
+      this.chartShowIsSee = true
+    }
   },
 };
 </script>
