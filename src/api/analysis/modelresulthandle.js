@@ -27,3 +27,16 @@ export function selectTableHandle(data, filterSql) {
     data: {basePageParam:data,filterSql:filterSql}
   })
 }
+
+/**
+ * 添加处理意见等信息
+ * @param  data 关联任务
+ */
+export function addOrUpdate(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelResultHandle/addOrUpdate',
+    method: 'post',
+    data
+  })
+}
