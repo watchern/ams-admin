@@ -13,7 +13,9 @@
       <el-table-column label="异常时间" prop="logTime" align="center"/>
       <el-table-column label="异常信息" align="center" >
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="handReadError(scope.row)">查看异常信息</el-button>
+          <a type="text" size="small" @click="handReadError(scope.row)" class="handreada">
+            查看异常信息
+          </a>
         </template>
       </el-table-column>
       <!-- <el-table-column label="异常信息" prop="logContent" /> -->
@@ -194,4 +196,12 @@ export default {
   line-height: 28px;
   font-size: 18px;
 }
+.handreada{
+    cursor: pointer;
+    padding: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1890ff;
+}
+.handreada:hover{text-decoration:underline}
 </style>

@@ -24,9 +24,7 @@
               <el-col :span="10">
                 <span class="percentage">{{ item.percent }}</span>
               </el-col>
-
             </el-row>
-
           </div>
         </el-col>
       </el-row>
@@ -58,31 +56,33 @@ export default {
       currentDate: new Date(),
       isSpin: true,
       msg: '',
-      processStateList: []
+      processStateList: [],
+      statusName: null
     }
   },
   methods: {
     ...mapActions('projects', ['getProcessStateCount']),
     ...mapMutations('monitor', ['setProcessStatus', 'setProcessStartTime', 'setProcessEndTime', 'setProcessGroupExecutionStatusType']),
-    _goProcess(name) {
-      this.$router.push({
-        name: 'projects-instance-list',
-        query: {
-          // stateType: _.find(stateType, ['label', name])['code'],
-          stateType: _.find(statusType, ['label', name])['code'],
+    // _goProcess(name) {
+    //   this.$router.push({
+    //     name: 'projects-instance-list',
+    //     query: {
+    //       // stateType: _.find(stateType, ['label', name])['code'],
+    //       stateType: _.find(statusType, ['label', name])['code'],
 
-          // startDate: this.searchParams.startDate,
-          // endDate: this.searchParams.endDate
-          startTimeStart: this.searchParams.startTimeStart,
-          startTimeEnd: this.searchParams.startTimeEnd
-        }
-      })
-    },
-    // 带着状态和开始结束时间进行页面的跳转，跳转到流程实例页面
+    //       // startDate: this.searchParams.startDate,
+    //       // endDate: this.searchParams.endDate
+    //       startTimeStart: this.searchParams.startTimeStart,
+    //       startTimeEnd: this.searchParams.startTimeEnd
+    //     }
+    //   })
+    // },
+    // 带着状态和开始结束时间进行页面参数传递到流程实例页面
     handleProcess(name) {
       this.setProcessGroupExecutionStatusType(_.find(statusType, ['label', name]).value)
       this.setProcessStartTime(this.searchParams.startTimeStart)
       this.setProcessEndTime(this.searchParams.startTimeEnd)
+      this.statusName = name
       // this.refresh()
       this.$emit('refresh')
       // this.$router.push({
@@ -121,19 +121,19 @@ export default {
       myChart.echart.dispatchAction({
         type: 'highlight',
         seriesIndex: 0,
-        name: '执行完成'
+        name: this.statusName
       })
       myChart.echart.on('mouseover', (v) => {
-        if (v.name !== '执行完成') {
+        if (v.name !== this.statusName) {
           myChart.echart.dispatchAction({
             type: 'hideTip',
             seriesIndex: 0,
-            name: '执行完成'
+            name: this.statusName
           })
           myChart.echart.dispatchAction({
             type: 'downplay',
             seriesIndex: 0,
-            name: '执行完成'
+            name: this.statusName
           })
         }
       })
@@ -141,20 +141,20 @@ export default {
         myChart.echart.dispatchAction({
           type: 'showTip',
           seriesIndex: 0,
-          name: '执行完成'
+          name: this.statusName
         })
         myChart.echart.dispatchAction({
           type: 'highlight',
           seriesIndex: 0,
-          name: '执行完成'
+          name: this.statusName
         })
       })
-      // 首页不允许跳转
-      if (this.searchParams.projectId) {
-        myChart.echart.on('click', (e) => {
-          this._goProcess(e.data.name)
-        })
-      }
+      // // 首页不允许跳转
+      // if (this.searchParams.projectId) {
+      myChart.echart.on('click', (e) => {
+        this.handleProcess(e.data.name)
+      })
+      // }
     }
   },
   computed: {},
@@ -178,7 +178,9 @@ export default {
     }
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.statusName = '执行完成'
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
