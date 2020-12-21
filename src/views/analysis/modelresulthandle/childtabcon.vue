@@ -33,27 +33,18 @@
           title="图表展示"
         ></el-button>
         <el-button
-          v-if="false"
-          :disabled="modelRunResultBtnIson.disassociateBtn"
+          :disabled="false"
           type="primary"
-          @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
-          title="移除关联"
-          >移除关联</el-button
-        >
+          @click="queryConditionSetting"
+          class="oper-btn search"
+          title="查询设置"
+        ></el-button>
         <el-button
           :disabled="false"
           type="primary"
           @click="queryConditionSetting"
           class="oper-btn search"
-           title="查询设置"
-        ></el-button>
-        <el-button
-          v-if="false"
-          type="primary"
-          class="oper-btn refresh"
-          :disabled="modelRunResultBtnIson.associatedBtn"
-          @click="addDetailRel('qwer1', '项目11')"
-          title="关联项目"
+          title="查询设置"
         ></el-button>
         <el-button
           :disabled="false"
@@ -74,6 +65,7 @@
     </el-row>
 
     <ag-grid-vue
+      ref="agGridVue"
       v-if="isSee"
       v-loading="isLoading"
       :style="useType=='modelRunResult'||useType=='modelPreview'?'height:490px':'height:300px'"
@@ -86,6 +78,7 @@
       @cellClicked="onCellClicked"
       @gridReady="onGridReady"
       @rowSelected="rowChange"
+      @cellEditingStopped="agGridUpdateEvent"
     />
     <el-card v-if="!isSee" class="box-card" style="height: 100px">
       <div>{{ errorMessage }}</div>
@@ -99,7 +92,7 @@
     />
     <el-row>
       <el-col :span="22">
-        <div v-if="modelResultPageIsSee">共<span class="paging-z">{{rowData.length}}</span>条</div>
+        <div v-if="modelResultPageIsSee">共<span class="paging-z">{{ rowData.length }}</span>条</div>
       </el-col>
       <el-col :span="2">
         <el-row v-if="modelResultButtonIsShow" style="display: flex">
@@ -140,7 +133,7 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="modelDetailDialogIsShow = false">取 消</el-button>
         <el-button type="primary" @click="modelDetailCetermine"
-          >确 定</el-button
+        >确 定</el-button
         >
       </span>
     </el-dialog>
@@ -157,28 +150,28 @@
       />
       <span slot="footer" class="dialog-footer">
         <el-button @click="modelDetailModelResultDialogIsShow = false"
-          >取 消</el-button
+        >取 消</el-button
         >
         <el-button
           type="primary"
           @click="modelDetailModelResultDialogIsShow = false"
-          >确 定</el-button
+        >确 定</el-button
         >
       </span>
     </el-dialog>
     <el-dialog
-    title="提示"
-    :visible.sync="chartShowIsSee"
-    width="90%"
-    :fullscreen="true"
-    :append-to-body="true"
+      title="提示"
+      :visible.sync="chartShowIsSee"
+      width="90%"
+      :fullscreen="true"
+      :append-to-body="true"
     >
-    <mtEditor :data="result" v-if="chartShowIsSee"></mtEditor>
-    <span slot="footer" class="dialog-footer">
+      <mtEditor :data="result" v-if="chartShowIsSee"></mtEditor>
+      <span slot="footer" class="dialog-footer">
       <el-button @click="chartShowIsSee = false">取 消</el-button>
       <el-button type="primary" @click="chartShowIsSee = false">确 定</el-button>
   </span>
-</el-dialog>
+    </el-dialog>
   </div>
 </template>
 
@@ -187,7 +180,7 @@
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-balham.css";
 // 引入ag-grid-vue
-import { AgGridVue } from "ag-grid-vue";
+import {AgGridVue} from "ag-grid-vue";
 import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";
 import childtabscopy from "@/views/analysis/auditmodelresult/childtabscopy";
@@ -203,17 +196,17 @@ import {
   replaceParam,
   batchCoverAddResultDetailProjectRel,
 } from "@/api/analysis/auditmodelresult";
-import { selectTableHandle } from "@/api/analysis/modelresulthandle"
+import {selectTableHandle, addOrUpdate} from "@/api/analysis/modelresulthandle"
 import axios from "axios";
 import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
 import myQueryBuilder from "@/views/analysis/auditmodelresult/myquerybuilder";
-import { string } from "jszip/lib/support";
+import {string} from "jszip/lib/support";
 import {
   startExecuteSql,
   getExecuteTask,
 } from "@/api/analysis/sqleditor/sqleditor";
-import { getTransMap } from "@/api/data/transCode.js";
+import {getTransMap} from "@/api/data/transCode.js";
 import mtEditor from 'ams-datamax'
 import 'iview/dist/styles/iview.css'
 
@@ -269,7 +262,6 @@ export default {
       queryData: [], // 保存列信息，用来传给子组件(queryBuilder组件)
       queryJson: {}, // 用来储存由子组件传过来的 queryBuilder 的 Json数据
       conditionShowData: [], // 存放模型运行结果需要渲染的数据
-      primaryKey: "", // 存放模型运行结果主键
       isLoading: true, //给agrrid加遮罩
       nextValue: [], // 存放模型结果后传进来的值
       modelResultData: [], // 用来存放模型结果数据
@@ -301,8 +293,8 @@ export default {
         modelDetailAssBtn: true,
       },
       dynamicSelect: [], //实时存储多选框勾选中的数据
-      chartShowIsSee:false,
-      result:{}
+      chartShowIsSee: false,
+      result: {}
     };
   },
   mounted() {
@@ -342,7 +334,7 @@ export default {
         responseType: "blob",
       }).then((res) => {
         const link = document.createElement("a");
-        const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
+        const blob = new Blob([res.data], {type: "application/vnd.ms-excel"});
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
         link.setAttribute("download", "模型运行结果表.xlsx");
@@ -370,148 +362,12 @@ export default {
         }
       });
     },
-    /**
-     * 关联项目
-     */
-    addDetailRel(projectId, projctName) {
-      this.getValues();
-      selectByRunResultTableUUid(this.nowtable.runResultTableUuid).then(
-        (resp) => {
-          this.detailTable = resp.data;
-          var resultDetailProjectRels = [];
-          if (resp.data.length == 0) {
-            // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果没有值则直接关联
-            selectPrimaryKeyByTableName().then((resp) => {
-              this.primaryKey = resp.data;
-              for (var i = 0; i < this.selectRows.length; i++) {
-                var resultDetailProjectRel = {
-                  resultDetailProjectRelId: "",
-                  runResultTableUuid: this.nowtable.runResultTableUuid,
-                  runTaskRelUuid: this.nowtable.runTaskRelUuid,
-                  projectId: projectId,
-                  resultDetailId: this.selectRows[i][
-                    this.primaryKey.toLowerCase()
-                  ],
-                  projectName: projctName,
-                };
-                resultDetailProjectRels.push(resultDetailProjectRel);
-              }
-              batchSaveResultDetailProjectRel(resultDetailProjectRels).then(
-                (resp) => {
-                  if (resp.data == true) {
-                    this.$message({
-                      type: "success",
-                      message: "关联项目成功!",
-                    });
-                  } else {
-                    this.$message({
-                      type: "error",
-                      message: "关联项目失败!",
-                    });
-                  }
-                }
-              );
-            });
-          } else {
-            // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果有值则要判断是否关联过该主键，如果添加过就不能重复关联
-            var resultDetailProjectRels = [];
-            var related = [];
-            selectPrimaryKeyByTableName().then((resp) => {
-              this.primaryKey = resp.data;
-              for (var i = 0; i < this.selectRows.length; i++) {
-                for (var j = 0; j < this.detailTable.length; j++) {
-                  if (
-                    this.selectRows[i][this.primaryKey.toLowerCase()] ==
-                    this.detailTable[j].resultDetailId
-                  ) {
-                    related.push(
-                      this.selectRows[i][this.primaryKey.toLowerCase()]
-                    );
-                  }
-                }
-              }
-              if (related.length == 0) {
-                for (var i = 0; i < this.selectRows.length; i++) {
-                  var resultDetailProjectRel = {
-                    resultDetailProjectRelId: "",
-                    runResultTableUuid: this.nowtable.runResultTableUuid,
-                    runTaskRelUuid: this.nowtable.runTaskRelUuid,
-                    projectId: projectId,
-                    resultDetailId: this.selectRows[i][
-                      this.primaryKey.toLowerCase()
-                    ],
-                    projectName: projctName,
-                  };
-                  resultDetailProjectRels.push(resultDetailProjectRel);
-                }
-                batchSaveResultDetailProjectRel(resultDetailProjectRels).then(
-                  (resp) => {
-                    if (resp.data == true) {
-                      this.$message({
-                        type: "success",
-                        message: "关联项目成功!",
-                      });
-                    } else {
-                      this.$message({
-                        type: "error",
-                        message: "关联项目失败!",
-                      });
-                    }
-                  }
-                );
-              } else {
-                var resultDetailProjectRels1 = [];
-                for (var i = 0; i < this.selectRows.length; i++) {
-                  var resultDetailProjectRel = {
-                    resultDetailProjectRelId: "",
-                    runResultTableUuid: this.nowtable.runResultTableUuid,
-                    runTaskRelUuid: this.nowtable.runTaskRelUuid,
-                    projectId: projectId,
-                    resultDetailId: this.selectRows[i][
-                      this.primaryKey.toLowerCase()
-                    ],
-                    projectName: projctName,
-                  };
-                  resultDetailProjectRels1.push(resultDetailProjectRel);
-                }
-                batchCoverAddResultDetailProjectRel(
-                  resultDetailProjectRels1
-                ).then((resp) => {
-                  if (resp.data == true) {
-                    var str = "";
-                    for (var i = 0; i < related.length; i++) {
-                      if (i != related.length - 1) {
-                        str += related[i] + " , ";
-                      } else {
-                        str += related[i];
-                      }
-                    }
-                    this.$message({
-                      type: "success",
-                      message:
-                        "关联成功！ 其中 " +
-                        str +
-                        " 为主键的结果以前关联的项目被覆盖",
-                    });
-                  } else {
-                    this.$message({
-                      type: "error",
-                      message: "关联失败!",
-                    });
-                  }
-                });
-              }
-            });
-          }
-        }
-      );
-    },
     // 获取选中的数据数组
     getValues() {
       // 获取选中的数据
       var selRows = this.gridApi.getSelectedRows();
       if (selRows.length == 0) {
-        this.$message({ type: "info", message: "请选择后再进行关联!" });
+        this.$message({type: "info", message: "请选择后再进行关联!"});
       }
       this.selectRows = selRows;
     },
@@ -524,7 +380,8 @@ export default {
       this.gridApi.sizeColumnsToFit();
     },
     // 单元格点击事件
-    onCellClicked(cell) {},
+    onCellClicked(cell) {
+    },
     initData(sql, nextValue) {
       if (this.useType == "modelRunResult") {
         this.isLoading = true;
@@ -544,9 +401,9 @@ export default {
             var column = resp.data.records[0].columns
             this.result.column = column
             var chartData = []
-            for(var i = 0;i<resp.data.records[0].result.length;i++){
+            for (var i = 0; i < resp.data.records[0].result.length; i++) {
               var eachChartData = []
-              for(var j = 0;j<column.length;j++){
+              for (var j = 0; j < column.length; j++) {
                 eachChartData.push(resp.data.records[0].result[i][column[j]])
               }
               chartData.push(eachChartData)
@@ -554,21 +411,23 @@ export default {
             this.result.data = chartData
             var columnInfo = resp.data.records[0].columnInfo.columnList
             var columnType = []
-            for(var i = 0;i<columnInfo.length;i++){  //number,varchar,time,float
-                var type = ''
-                if(columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1 ){
-                  type = 'varchar'
-                }else if(columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
-                  type = "number"
-                }else if(columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") != -1 || columnInfo[i].columnType.toUpperCase().indexOf("DATE") != -1){
-                  type = 'time'
-                }else if (columnInfo[i].columnType.toUpperCase().indexOf("FLOAT") != -1){
-                  type = 'float'
-                }
-                columnType.push(type)
+            for (var i = 0; i < columnInfo.length; i++) {  //number,varchar,time,float
+              var type = ''
+              if (columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1) {
+                type = 'varchar'
+              } else if (columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") != -1) {
+                type = "number"
+              } else if (columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") != -1) {
+                type = 'time'
+              } else if (columnInfo[i].columnType.toUpperCase().indexOf("FLOAT") != -1) {
+                type = 'float'
+              } else {
+                type = 'varchar'
+              }
+              columnType.push(type)
             }
-             this.result.columnType = columnType
-           if (resp.data.records[0].result.length == 0) {
+            this.result.columnType = columnType
+            if (resp.data.records[0].result.length == 0) {
               this.isLoading = false;
             }
             this.total = resp.data.total;
@@ -580,18 +439,31 @@ export default {
             }
             // 生成ag-grid列信息
             if (this.modelUuid != undefined) {
-              var rowColom = {
-                headerName: "onlyuuid",
-                field: "onlyuuid",
-                checkboxSelection: true,
-              };
-              col.push(rowColom);
+              col.push({headerName: "", field: "", checkboxSelection: true,width:40});
+              col.push({headerName: "详细主键", field: "onlyuuid",hide:true});
+              col.push({headerName: "处理时间", field: "handle_time"});
+              col.push({headerName: "处理人编号", field: "handle_person_uuid",hide:true});
+              col.push({headerName: "处理人名称", field: "handle_person_name"});
+              col.push({
+                headerName: "处理状态",
+                editable:true,
+                field: "handle_state",
+                cellEditor: "agSelectCellEditor",//编辑时 显示下拉列表**************
+                cellEditorParams: { values: ["待处理", "未处理","已落实","不处理"] }});
+              col.push({headerName: "模型结果处理主键", field: "model_result_handle_uuid",hide:true});
+              col.push({headerName: "运行任务关联主键", field: "run_task_rel_uuid",hide:true});
+              col.push({headerName: "模型结果表名", field: "model_result_table_name",hide:true});
+              col.push({headerName: "处理意见", field: "handle_idea",
+                cellEditor: 'agLargeTextCellEditor', //编辑时 显示长文本框**************
+                editable:true,
+                cellEditorParams: {
+                  maxLength: '300',
+                  cols: '50',
+                  rows: '6'
+                }});
               for (var i = 0; i < colNames.length; i++) {
                 loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
-                  if (
-                    this.modelOutputColumn[j].outputColumnName.toLowerCase() ==
-                    colNames[i]
-                  ) {
+                  if (this.modelOutputColumn[j].outputColumnName.toLowerCase() == colNames[i]) {
                     if (this.modelOutputColumn[j].isShow == 1) {
                       if (i == 0) {
                         var rowColom = {
@@ -649,16 +521,10 @@ export default {
               for (var i = 0; i < da.length; i++) {
                 for (var j = 0; j < colNames.length; j++) {
                   for (var k = 0; k < this.modelOutputColumn.length; k++) {
-                    if (
-                      this.modelOutputColumn[
-                        k
-                      ].outputColumnName.toLowerCase() == colNames[j]
-                    ) {
+                    if (this.modelOutputColumn[k].outputColumnName.toLowerCase() == colNames[j]) {
                       if (this.modelOutputColumn[k].dataCoding != undefined) {
                         var a = da[i][colNames[j]];
-                        da[i][colNames[j]] = this.dataCoding[
-                          this.modelOutputColumn[k].dataCoding
-                        ][a];
+                        da[i][colNames[j]] = this.dataCoding[this.modelOutputColumn[k].dataCoding][a];
                       }
                     }
                   }
@@ -674,204 +540,6 @@ export default {
         );
         this.columnDefs = col;
         this.rowData = da;
-      } else if (this.useType == "sqlEditor"||this.useType == "modelPreview") {
-        this.loading = true;
-        this.nextValue = nextValue;
-        var col = [];
-        var rowData = [];
-        if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
-          if (this.nextValue.executeSQL.state == "2") {
-            if (this.nextValue.executeSQL.type == "SELECT") {
-              //todo 增加sql类型判断
-              if (true) {
-                this.modelResultButtonIsShow = true;
-                this.modelResultPageIsSee = true;
-                this.modelResultData = this.nextValue.result;
-                this.result.column = this.nextValue.columnNames
-                var columnTypes1 = this.nextValue.columnTypes
-                var columnType = []
-                for(var i = 0;i<columnTypes1.length;i++){
-                   var type = ''
-                if(columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 ){
-                  type = 'varchar'
-                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
-                  type = "number"
-                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 || columnTypes1[i].toUpperCase().indexOf("DATE") != -1){
-                  type = 'time'
-                }else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1){
-                  type = 'float'
-                }
-                columnType.push(type)
-                }
-                var resultData = this.nextValue.result
-                this.result.columnType = columnType
-                var chartData = []
-                for(var i = 0;i<resultData.length;i++){
-                var eachChartData = []
-                for(var j = 0;j<this.nextValue.columnNames.length;j++){
-                  eachChartData.push(resultData[i][this.nextValue.columnNames[j]])
-                }
-                chartData.push(eachChartData)
-            }
-                this.result.data = chartData
-                this.rowData = this.modelResultData
-                this.modelResultColumnNames = this.nextValue.columnNames;
-                for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
-                  var rowColom = {
-                    headerName: this.nextValue.columnNames[j],
-                    field: this.nextValue.columnNames[j],
-                    width: "180",
-                  };
-                  var key = this.nextValue.columnNames[j];
-                  var value = this.nextValue.result[j];
-                  col.push(rowColom);
-                }
-                for (var k = 0; k < this.nextValue.result.length; k++) {
-                  rowData.push(this.nextValue.result[k]);
-                }
-                this.columnDefs = col;
-
-              }
-            } else {
-              this.isSee = false;
-              this.modelResultPageIsSee = false;
-              this.modelResultButtonIsShow = false;
-              this.errorMessage = this.nextValue.executeSQL.msg;
-            }
-          } else if (this.nextValue.executeSQL.state == "3") {
-            this.isSee = false;
-            this.modelResultPageIsSee = false;
-            this.modelResultButtonIsShow = false;
-            this.errorMessage = this.nextValue.executeSQL.msg;
-          }
-          this.isLoading = false;
-        }
-      } else if (this.useType == "previewTable") {
-        this.loading = true;
-        this.nextValue = nextValue;
-        var col = [];
-        var rowData = [];
-        if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
-          if (this.nextValue.executeSQL.state == "2") {
-            //todo 增加sql类型判断
-            if (true) {
-              this.modelResultPageIsSee = true;
-              this.modelResultData = this.nextValue.result;
-                              this.result.column = this.nextValue.columnNames
-                var columnTypes1 = this.nextValue.columnTypes
-                var columnType = []
-                for(var i = 0;i<columnTypes1.length;i++){
-                   var type = ''
-                if(columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 ){
-                  type = 'varchar'
-                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
-                  type = "number"
-                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 || columnTypes1[i].columnType.toUpperCase().indexOf("DATE") != -1){
-                  type = 'time'
-                }else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1){
-                  type = 'float'
-                }
-                columnType.push(type)
-                }
-                var resultData = this.nextValue.result
-                this.result.columnType = columnType
-                var chartData = []
-                for(var i = 0;i<resultData.length;i++){
-                var eachChartData = []
-                for(var j = 0;j<this.nextValue.columnNames.length;j++){
-                  eachChartData.push(resultData[i][this.nextValue.columnNames[j]])
-                }
-                chartData.push(eachChartData)
-            }
-                this.result.data = chartData
-               this.rowData = this.modelResultData
-              this.modelResultColumnNames = this.nextValue.columnNames;
-              for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
-                var rowColom = {
-                  headerName: this.nextValue.columnNames[j],
-                  field: this.nextValue.columnNames[j],
-                  width: "180",
-                };
-                var key = this.nextValue.columnNames[j];
-                var value = this.nextValue.result[j];
-                col.push(rowColom);
-              }
-              for (var k = 0; k < this.nextValue.result.length; k++) {
-                rowData.push(this.nextValue.result[k]);
-              }
-              this.columnDefs = col;
-            }
-          } else if (this.nextValue.executeSQL.state == "3") {
-            this.isSee = false;
-            this.modelResultPageIsSee = false;
-            this.modelResultButtonIsShow = false;
-            this.errorMessage = this.nextValue.executeSQL.msg;
-          }
-          this.isLoading = false;
-        }
-      } else if (this.useType == "graph") {
-        this.loading = true;
-        this.nextValue = nextValue;
-        var col = [];
-        var rowData = [];
-        if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
-          if (this.nextValue.executeSQL.state == "2") {
-            //todo 增加sql类型判断
-            if (true) {
-              this.modelResultPageIsSee = true;
-              this.modelResultData = this.nextValue.result;
-                              this.result.column = this.nextValue.columnNames
-                var columnTypes1 = this.nextValue.columnTypes
-                var columnType = []
-                for(var i = 0;i<columnTypes1.length;i++){
-                   var type = ''
-                if(columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 ){
-                  type = 'varchar'
-                }else if(columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 || columnTypes1[i].toUpperCase().indexOf("INT") != -1){
-                  type = "number"
-                }else if(columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 || columnTypes1[i].columnType.toUpperCase().indexOf("DATE") != -1){
-                  type = 'time'
-                }else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1){
-                  type = 'float'
-                }
-                columnType.push(type)
-                }
-                var resultData = this.nextValue.result
-                this.result.columnType = columnType
-                var chartData = []
-                for(var i = 0;i<resultData.length;i++){
-                var eachChartData = []
-                for(var j = 0;j<this.nextValue.columnNames.length;j++){
-                  eachChartData.push(resultData[i][this.nextValue.columnNames[j]])
-                }
-                chartData.push(eachChartData)
-            }
-                this.result.data = chartData
-               this.rowData = this.modelResultData
-              this.modelResultColumnNames = this.nextValue.columnNames;
-              for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
-                var rowColom = {
-                  headerName: this.nextValue.columnNames[j],
-                  field: this.nextValue.columnNames[j],
-                  width: "180",
-                };
-                var key = this.nextValue.columnNames[j];
-                var value = this.nextValue.result[j];
-                col.push(rowColom);
-              }
-              for (var k = 0; k < this.nextValue.result.length; k++) {
-                rowData.push(this.nextValue.result[k]);
-              }
-              this.columnDefs = col;
-            }
-          } else if (this.nextValue.executeSQL.state == "3") {
-            this.isSee = false;
-            this.modelResultPageIsSee = false;
-            this.modelResultButtonIsShow = false;
-            this.errorMessage = this.nextValue.executeSQL.msg;
-          }
-          this.isLoading = false;
-        }
       }
     },
     // 点击查询按钮触发事件
@@ -978,7 +646,7 @@ export default {
     openModelDetail() {
       var selRows = this.gridApi.getSelectedRows();
       if (selRows.length < 1) {
-        this.$message({ type: "info", message: "请选择后再进行关联!" });
+        this.$message({type: "info", message: "请选择后再进行关联!"});
       } else if (selRows.length == 1) {
         this.options = [];
         for (var i = 0; i < this.modelDetailRelation.length; i++) {
@@ -990,7 +658,7 @@ export default {
         }
         this.modelDetailDialogIsShow = true;
       } else {
-        this.$message({ type: "info", message: "不能选中多条!" });
+        this.$message({type: "info", message: "不能选中多条!"});
       }
     },
     /**
@@ -1020,10 +688,10 @@ export default {
             ) {
               var key = this.modelDetailRelation[i].modelDetailConfig[j]
                 .resultColumn;
-              var obj = { moduleParamId: "", paramValue: "" };
+              var obj = {moduleParamId: "", paramValue: ""};
               obj.moduleParamId = this.modelDetailRelation[i].modelDetailConfig[
                 j
-              ].ammParamUuid;
+                ].ammParamUuid;
               obj.paramValue = selectRowData[0][key.toLowerCase()];
               detailValue.push(obj);
             }
@@ -1036,15 +704,16 @@ export default {
           }
           selectModel(this.value).then((resp) => {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-            const obj = { sqls: sql, businessField: "modelresultdetail" };
+            const obj = {sqls: sql, businessField: "modelresultdetail"};
             getExecuteTask(obj)
               .then((resp) => {
                 this.currentExecuteSQL = resp.data.executeSQLList;
                 //界面渲染完成之后开始执行sql,将sql送入调度
-                startExecuteSql(resp.data).then((result) => {});
+                startExecuteSql(resp.data).then((result) => {
+                });
               })
               .catch((result) => {
-                this.$message({ type: "info", message: "执行失败" });
+                this.$message({type: "info", message: "执行失败"});
               });
             // startExecuteSql(obj).then((resp) => {
             //   if (!resp.data.isError) {
@@ -1070,7 +739,7 @@ export default {
                 this.modelOutputColumn[j].outputColumnName,
                 selectRowData[0][
                   this.modelOutputColumn[j].outputColumnName.toLowerCase()
-                ]
+                  ]
               );
               break loop;
             }
@@ -1082,15 +751,16 @@ export default {
           }
         }
         sql = sql + filterSql;
-        const obj = { sqls: sql, businessField: "modelresultdetail" };
+        const obj = {sqls: sql, businessField: "modelresultdetail"};
         getExecuteTask(obj)
           .then((resp) => {
             this.currentExecuteSQL = resp.data.executeSQLList;
             //界面渲染完成之后开始执行sql,将sql送入调度
-            startExecuteSql(resp.data).then((result) => {});
+            startExecuteSql(resp.data).then((result) => {
+            });
           })
           .catch((result) => {
-            this.$message({ type: "info", message: "执行失败" });
+            this.$message({type: "info", message: "执行失败"});
           });
         // startExecuteSql(obj).then((resp) => {
         //   if (!resp.data.isError) {
@@ -1112,7 +782,7 @@ export default {
       for (var i = 0; i < this.nextValue.columnNames.length; i++) {
         this.json_fields[
           this.nextValue.columnNames[i]
-        ] = this.nextValue.columnNames[i];
+          ] = this.nextValue.columnNames[i];
       }
       this.excelName = "模型结果导出表";
     },
@@ -1132,14 +802,15 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-/*      const webSocketPath =
-        "ws://localhost:8086/analysis/websocket?" +
-        this.$store.getters.personuuid;*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid+'modelresultdetail';
+      /*      const webSocketPath =
+              "ws://localhost:8086/analysis/websocket?" +
+              this.$store.getters.personuuid;*/
+      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid + 'modelresultdetail';
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接
-      this.webSocket.onopen = function (event) {};
+      this.webSocket.onopen = function (event) {
+      };
       // 发送消息
       this.webSocket.onmessage = function (event) {
         const dataObj = JSON.parse(event.data);
@@ -1149,10 +820,32 @@ export default {
         this.$refs.childTabsRef.loadTableData(val);
       };
       const func1 = func2.bind(this);
-      this.webSocket.onclose = function (event) {};
+      this.webSocket.onclose = function (event) {
+      };
 
       // 通信失败
-      this.webSocket.onerror = function (event) {};
+      this.webSocket.onerror = function (event) {
+      };
+    },
+    /**
+     * aggrid单元格修改事件
+     * @param event 事件
+     */
+    agGridUpdateEvent(event){
+      let data = {
+        runTaskRelUuid:this.nowtable.runTaskRelUuid,
+        modelResultDetailUuid:event.data.onlyuuid,
+        handleState:event.data.handle_state,
+        handleIdea:event.data.handle_idea,
+        modelResultTableName:this.nowtable.resultTableName
+      }
+      event.data.handle_idea = "测试修改数据"
+      this.$refs.agGridVue.setRowData(event.data)
+      console.log(event)
+      //修改或添加处理意见等信息
+/*      addOrUpdate(data).then(result=>{
+
+      })*/
     }
   },
 };
@@ -1162,12 +855,14 @@ export default {
   margin: 10px;
   text-align: left;
 }
-.thechard-z{
+
+.thechard-z {
   margin-right: 15px;
 }
-.paging-z{
+
+.paging-z {
   font-weight: bold;
-  color: rgb(52,57,66);
+  color: rgb(52, 57, 66);
   margin: 0 5px;
   font-size: 16px;
   line-height: 16px;

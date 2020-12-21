@@ -134,7 +134,7 @@
       <div ref="paramDefaultValue" class="display default-value">
         <messageTips type="info" message="拖拽改变参数展示顺序"></messageTips>
         <div id="paramList">
-          <paramShow ref="apple"></paramShow>
+          <paramShow ref="apple" v-if="paramShowVIf"></paramShow>
         </div>
       </div>
       <div ref="modelResultOutputCol" class="display default-value">
@@ -355,6 +355,7 @@ export default {
       sqlEditorParamObj: {},
       //添加模型详细树时候的索引
       modelDetailIndex: 0,
+      paramShowVIf:true,
       editorModelLoading:false,
       //风险等级
       riskLeve: [],
@@ -376,6 +377,8 @@ export default {
       operationObj:{},
       //图形化的列信息，比较列是否相同
       graphColumnInfo:null,
+      //sql编辑器界面返回来的参数
+      sqlEditorParam:null,
       basicInfoRules: {
         modelName: [
           { type: 'string', required: true, message: '请输入模型名称', trigger: 'blur' }
@@ -406,6 +409,13 @@ export default {
     newFilterShowValue(newChild) {
       this.$nextTick(function() {
         this.handleNodeClick(newChild)
+      })
+    },
+    paramShowVIf(newChild){
+      this.$nextTick(function() {
+        if(newChild){
+          this.$refs.apple.createParamTableHtml(true,this.sqlEditorParam , true);
+        }
       })
     }
   },
@@ -750,7 +760,11 @@ export default {
       // 初始化默认参数
       // 初始化参数默认值界面界面
       if(returnObj.params.length != 0){
-        this.$refs.apple.createParamTableHtml(true, returnObj.params, true);
+        this.paramShowVIf = true
+        this.sqlEditorParam = returnObj.params
+      }
+      else{
+        this.paramShowVIf = false
       }
       this.sqlEditorParamObj = {arr:returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
       // region 初始化固定列
