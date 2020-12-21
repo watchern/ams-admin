@@ -20,8 +20,8 @@
       <el-table-column label="操作用户" width="100px" align="center" prop="opUserName" />
       <el-table-column label="操作IP" width="150px" align="center" prop="opIp" />
       <el-table-column label="操作模块" width="100px" align="center" prop="moduleName" />
-      <el-table-column label="操作子模块" prop="subModuleName" />
-      <el-table-column label="操作类型" prop="opOperate"/>
+      <el-table-column label="操作子模块" width="200px" prop="subModuleName" />
+      <el-table-column label="操作类型" width="100px" prop="opOperate"/>
       <el-table-column label="操作信息" prop="opInfo"/>
       <el-table-column label="操作时间" prop="opTime" align="center"/>
     </el-table>
@@ -116,9 +116,11 @@ export default {
         subModuleName: ''
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
-        pageSize: 20
+        pageSize: 20,
+        sortBy: 'desc',
+        sortName: 'opTime'
       }
     }
   },
