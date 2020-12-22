@@ -44,10 +44,17 @@
               @click="openResultSplitDialog"
               title="结果拆分"
             ></el-button>
-            <el-button
+           <!-- <el-button
               type="primary"
               @click="modelResultOpenDialog()"
               :disabled="buttonIson.resultShareBtn"
+              class="oper-btn share"
+              title="结果共享"
+            ></el-button>-->
+            <el-button
+              type="primary"
+              @click="sendToOA()"
+              :disabled="selected1.length !== 1"
               class="oper-btn share"
               title="结果共享"
             ></el-button>
@@ -318,6 +325,7 @@ import {
   selectByRunResultTableUUids,
   getDataAfterResultSpiltToRelateProject,
   addCoverResultRelProject,
+  sendToOA
 } from "@/api/analysis/auditmodelresult";
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 import QueryField from "@/components/Ace/query-field/index";
@@ -1256,6 +1264,18 @@ export default {
     modelResultOpenDialog() {
       this.resultShareDialogIsSee = true;
     },
+    sendToOA() {
+      var runTaskRelUuid =  this.selected1[0].runTaskRelUuid;
+      sendToOA(runTaskRelUuid).then(resp=>{
+        this.$message({
+          type: "success",
+          message: "发送成功!",
+        });
+      })
+
+
+    },
+
   },
 };
 </script>
