@@ -3,13 +3,14 @@ import { progressDownLoad,getPreNodes,changeNodeIcon,nodeCallBack } from '@/view
 let indexVue = null// index.vue实例
 let curModelSql = ''// 用来临时存储打开模型图形时的模型SQL语句
 let isSearchExpand = false// 左侧资源树搜索功能的变量
-
+let graph = null
 /**
  * 获取vue实例
  * @param _this vue实例
  */
 export const sendIndexJs = (_this) => {
     indexVue = _this
+    graph = _this.graph
 }
 
 // 替换左侧资源树表节点的类型
@@ -551,13 +552,13 @@ export function getColumnsByTable(treeNode, async, closeParent) {
 
 // 最大化
 export function maxOpen() {
-    var tableArea_height = $('#tableArea').height()
-    var handSonTable_height = $('#handSonTable').height()
+    let tableArea = $('#tableArea')
+    let tableArea_height = tableArea.height()
     layer.open({
         id: 'maxOpen11',
         type: 1,
         title: '数据结果集',
-        content: $('#tableArea'),
+        content: tableArea,
         area: ['90%', '90%'],
         skin: 'layui-layer-lan',
         resize: false,
@@ -565,20 +566,12 @@ export function maxOpen() {
         success: function(layero, index) {
             $('.layui-layer-shade').appendTo(layero.parent())
             $('#tableArea').css('height', '100%')
-            $('#handSonTable').css('height', (document.documentElement.clientHeight * 0.8 - 100) + 'px')
-            if (hot != null) {
-                hot.render()
-            }
-            addWaterMark('handSonTable')
+            // addWaterMark('handSonTable')
         },
         end: function(index) {
             $('#tableArea').css('height', tableArea_height + 'px')
-            $('#handSonTable').css('height', handSonTable_height + 'px')
-            if (hot != null) {
-                hot.render()
-            }
             // 移除水印
-            $('.mask_div').remove()
+            // $('.mask_div').remove()
         }
     })
 }
@@ -900,92 +893,6 @@ export function getExecuteNodeInfo(graphUuid, executeId, executeIdArr, refreshHi
     executeNodeInfo()
 }
 
-// 保存
-export function saveGraph(type) {
-    var str = type === 'saveGraph' ? '保存' : '另存为'
-    if (graph.canEditor === false) {
-        alertMsg('提示', '当前图形您没有【' + str + '】操作的权限', 'info')
-        return
-    }
-    // if (graph.openGraphType === 2 || graph.openGraphType === 3) { // 保存场景查询图形
-    //     createScreenQuery(type)
-    // } else if (graph.openGraphType === 4) { // 保存模型图形
-    //     createDegreeModel(type)
-    // } else {
-        if (Object.keys(graph.nodeData).length === 0) {
-            alertMsg('提示', '当前图形无节点数据，不可保存', 'info')
-            return
-        }
-        var encoder = new mxCodec()
-        var node = encoder.encode(graph.getModel())
-        var xml = mxUtils.getPrettyXml(node)
-
-        layer.open({
-            id: 'saveGraph1',
-            type: 1,
-            title: '图形化' + str,
-            content: $('#saveGraph'),
-            area: ['50%', '40%'],
-            skin: 'layui-layer-lan',
-            resize: false,
-            scrollbar: false,
-            btn: ['确定', '取消'],
-            btn1: function(index, layero) {
-                var data = {
-                    'createType': openType,
-                    'executeStatus': getExecuteDetail(),
-                    'graphName': $('#graphName').val(),
-                    'description': $('#description').val(),
-                    'graphXml': xml,
-                    'graphType': '1', // 个人图形
-                    'nodeData': JSON.stringify(graph.nodeData) // 各个节点的配置信息
-                }
-                if (type === 'saveGraph') {
-                    data.graphUuid = $('#graphUuid').val()
-                }
-                $.ajax({
-                    url: contextPath + '/graphEditor/saveGraph',
-                    type: 'post',
-                    dataType: 'json',
-                    data: data,
-                    success: function(e) {
-                        alertMsg('提示', e.message, 'info')
-                        if (!e.isError) {
-                            $('#graphUuid').val(e.graphUuid)
-                            if (type === 'saveGraph') {
-                                $('#graphName_show').val($('#graphName').val())
-                                $('#description_show').val($('#description').val())
-                            }
-                            layer.close(index)
-                        }
-                    }
-                })
-            },
-            btn2: function(index) {
-                layer.close(index)
-            }
-        })
-    // }
-}
-
-// 帮助
-export function help() {
-    layer.open({
-        id: 'graphHelp',
-        type: 2,
-        title: '图形化帮助手册',
-        content: 'page/C_Rows_Data/help.jsp',
-        area: ['90%', '90%'],
-        skin: 'layui-layer-lan',
-        resize: false,
-        scrollbar: false,
-        btn: ['关闭'],
-        btn1: function(index, layero) {
-            layer.close(index)
-        }
-    })
-}
-
 // 点击节点，查看节点说明信息
 export function nodeRemark(nodeType) {
     var html = ''
@@ -1300,14 +1207,7 @@ function saveOptHistoryInfo(id) {
 
 // 节点右键事件,start
 export function showRMenu(menuId, type, x, y, containerId) {
-    if (containerId) { // 只有【折叠/展开】右键菜单时计算X坐标
-        var w_ = $('#' + containerId).width() - event.clientX
-        if (w_ < $('#' + menuId).width()) {
-            x = $('#' + containerId).width() - $('#' + menuId).width() - 10
-        }
-    } else {
-        x += document.body.scrollLeft
-    }
+    x += document.body.scrollLeft
     y += document.body.scrollTop
     $('#' + menuId + ' ul').show()
     $('#' + menuId).css({ 'top': y + 'px', 'left': x + 'px', 'visibility': 'visible' })
@@ -1438,57 +1338,52 @@ export function getResultColumnInfo(){
         isError = true
         message = '未将结果表标记为最终结果表'
     }else {
-      let lineNodeIdArr = []
-      if(graph.nodeData[resultTableNodeId].nodeInfo.optType === "datasource"){//只将原表标记成了最终结果表
-        lineNodeIdArr = [resultTableNodeId]
-      }else{// 以模型最终结果表节点为最末级节点，向上寻找所有的节点
-        lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
-      }
-            for (let i = 0; i < lineNodeIdArr.length; i++) {
-                let curNodeInfo = graph.nodeData[lineNodeIdArr[i]].nodeInfo
-                  if(curNodeInfo.optType === 'datasource' || curNodeInfo.optType === 'newNullNode'){//如果是源表或结果表
-                      if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果是被标记为辅助结果表或最终结果表
-                          let columnsInfo = null
-                          if(curNodeInfo.optType === 'datasource'){
-                              columnsInfo = graph.nodeData[lineNodeIdArr[i]].columnsInfo
-                          }else if(curNodeInfo.optType === 'newNullNode'){
-                              // 先获取该结果表的前置节点ID集合
-                              let parentIds = graph.nodeData[lineNodeIdArr[i]].parentIds
-                              // 如果该节点的前置节点ID在当前的节点ID集合批次中（因结果表的前置节点有且只有一个，所以可直接使用parentIds[0]）
-                              if (parentIds.length > 0 && $.inArray(parentIds[0], lineNodeIdArr) > -1) {
-                                  columnsInfo = graph.nodeData[parentIds[0]].columnsInfo
-                              }
-                          }else{
-                              continue
-                          }
-                          let columnNameArr = []//输出列名称数组
-                          let columnTypeArr = []//输出列类型数组
-                          for (let k = 0; k < columnsInfo.length; k++) {
-                              // 判断是否为输出列
-                              let isOutputColumn = columnsInfo[k].isOutputColumn
-                              if (isOutputColumn === 1) { // 如果是输出列，则拼接输出列的字符串
-                                  columnNameArr.push(columnsInfo[k].newColumnName)
-                                  columnTypeArr.push(columnsInfo[k].columnType)
-                              }
-                          }
-                          if (curNodeInfo.midTableStatus === 2) { // 如果是被标记为辅助结果表
-                              middleTableArr.push({columnNameArr,columnTypeArr})
-                          }
-                          if (curNodeInfo.resultTableStatus === 2) { // 如果是被标记为最终结果表，则说明此节点将作最后一个结果表节点
-                              finalTable = {columnNameArr,columnTypeArr}
-                              break
-                          }
-                      }
-                  }
+        let lineNodeIdArr = []
+        if(graph.nodeData[resultTableNodeId].nodeInfo.optType === "datasource"){//只将原表标记成了最终结果表
+            lineNodeIdArr = [resultTableNodeId]
+        }else{// 以模型最终结果表节点为最末级节点，向上寻找所有的节点
+            lineNodeIdArr = getPreNodes(resultTableNodeId, [resultTableNodeId])
+        }
+        for (let i = 0; i < lineNodeIdArr.length; i++) {
+            let curNodeInfo = graph.nodeData[lineNodeIdArr[i]].nodeInfo
+            if(curNodeInfo.optType === 'datasource' || curNodeInfo.optType === 'newNullNode'){//如果是源表或结果表
+                if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果是被标记为辅助结果表或最终结果表
+                    let columnsInfo = null
+                    if(curNodeInfo.optType === 'datasource'){
+                        columnsInfo = graph.nodeData[lineNodeIdArr[i]].columnsInfo
+                    }else if(curNodeInfo.optType === 'newNullNode'){
+                        // 先获取该结果表的前置节点ID集合
+                        let parentIds = graph.nodeData[lineNodeIdArr[i]].parentIds
+                        // 如果该节点的前置节点ID在当前的节点ID集合批次中（因结果表的前置节点有且只有一个，所以可直接使用parentIds[0]）
+                        if (parentIds.length > 0 && $.inArray(parentIds[0], lineNodeIdArr) > -1) {
+                            columnsInfo = graph.nodeData[parentIds[0]].columnsInfo
+                        }
+                    }else{
+                        continue
+                    }
+                    let columnNameArr = []//输出列名称数组
+                    let columnTypeArr = []//输出列类型数组
+                    for (let k = 0; k < columnsInfo.length; k++) {
+                        // 判断是否为输出列
+                        let isOutputColumn = columnsInfo[k].isOutputColumn
+                        if (isOutputColumn === 1) { // 如果是输出列，则拼接输出列的字符串
+                            columnNameArr.push(columnsInfo[k].newColumnName)
+                            columnTypeArr.push(columnsInfo[k].columnType)
+                        }
+                    }
+                    if (curNodeInfo.midTableStatus === 2) { // 如果是被标记为辅助结果表
+                        middleTableArr.push({columnNameArr,columnTypeArr})
+                    }
+                    if (curNodeInfo.resultTableStatus === 2) { // 如果是被标记为最终结果表，则说明此节点将作最后一个结果表节点
+                        finalTable = {columnNameArr,columnTypeArr}
+                        break
+                    }
+                }
             }
+        }
     }
     return {isError,message,middleTableArr,finalTable}
 }
-
-export function saveModelGraphCallBack(){
-
-}
-
 
 export async function saveModelGraph(){
     let isError = false
@@ -2051,26 +1946,27 @@ export function settingParamsCallBack() {
             indexVue.$message({ type: 'info', message: returnObj.message })
         } else {
             let nodeId = indexVue.sp_nodeId
-            let arr = returnObj.paramsSetting.arr// 获取设置参数的数组
             let nodeParamItem = indexVue.nodeParamArr.find(item => item.nodeId === nodeId)
-            if (arr.length === 0) {
-                if(typeof nodeParamItem !== "undefined"){
-                    nodeParamItem.hasParamSet = false
-                }
-                let nodeName = graph.nodeData[nodeId].nodeInfo.nodeName
-                indexVue.$message({ type: 'info', message: '节点【' + nodeName + '】因暂未进行任何参数的设置，故不对其他信息进行保存' })
-                delete indexVue.nodeParamRelArr[nodeId]
-            } else {
+            if (returnObj.paramsSetting.sql !== "" && returnObj.paramsSetting.arr.length > 0) {
                 if(typeof nodeParamItem !== "undefined"){
                     nodeParamItem.hasParamSet = true
                 }
                 // 绑定节点的参数配置信息
                 indexVue.nodeParamRelArr[nodeId] = {...{}, ...returnObj.paramsSetting}
+                graph.nodeData[nodeId].hasParam = true
+                graph.nodeData[nodeId].paramsSetting = returnObj.paramsSetting
+            } else {
+                if(typeof nodeParamItem !== "undefined"){
+                    nodeParamItem.hasParamSet = false
+                }
+                let nodeName = graph.nodeData[nodeId].nodeInfo.nodeName
+                indexVue.$message({ type: 'warning', message: '节点【' + nodeName + '】参数设置不正确，不对参数配置信息进行保存' })
+                delete graph.nodeData[nodeId].hasParam;
+                delete graph.nodeData[nodeId].paramsSetting;
+                delete indexVue.nodeParamRelArr[nodeId]
             }
             indexVue.initNodeSettingVue = false
             indexVue.nodeParamSettingDialogVisible = false
-            graph.nodeData[nodeId].hasParam = true
-            graph.nodeData[nodeId].paramsSetting = returnObj.paramsSetting
             autoSaveGraph()
         }
     })
@@ -2225,9 +2121,19 @@ function isHiddenNodes(flag, searchText) {
  * 折叠/展开菜单事件
  */
 export function hideAndShow() {
-    var y = $('#geToolbarContainer').height()
     var event = event || window.event
-    showRMenu('H_S_Menu', 'node', event.clientX, y, 'geToolbarContainer')
+    var x = event.clientX
+    var y = event.clientY
+    var H_S_Menu = $("#H_S_Menu")
+    var container = $("#geToolbarContainer")
+    var w_ = document.documentElement.clientWidth - x
+    if (w_ < H_S_Menu.width()) {
+        x = document.documentElement.clientWidth - H_S_Menu.width() - 20
+    }
+    y += document.body.scrollTop
+    $('#H_S_Menu ul').show()
+    H_S_Menu.css({ 'top': y + 'px', 'left': x + 'px', 'visibility': 'visible' })
+    $('body').bind('mousedown', { 'menuId': "H_S_Menu" }, onBodyMouseDown)
 }
 
 /**
@@ -2278,34 +2184,18 @@ export function modifyParam() {
     indexVue.sp_nodeId = nodeId
     indexVue.sp_paramsSetting = paramsSetting
     indexVue.nodeParamSettingDialogVisible = true
-    // layer.open({
-    //     id: 'modifyParam',
-    //     type: 2,
-    //     title: '修改参数',
-    //     content: 'page/settingParams/settingParams.jsp?nodeId=' + nodeId,
-    //     area: ['90%', '90%'],
-    //     skin: 'layui-layer-lan',
-    //     resize: false,
-    //     scrollbar: false,
-    //     btn: ['确定', '取消'],
-    //     btn1: function(index, layero) {
-    //         // 获取操作提示
-    //         var msg = $(layero).find('iframe')[0].contentWindow.settingParams.getOptMessage()
-    //         confirmMsg('提示', msg, 'info', function() {
-    //             // 获取弹出层的参数配置
-    //             var returnObj = $(layero).find('iframe')[0].contentWindow.settingParams.getParamsSetting()
-    //             if (!returnObj.verify) {
-    //                 alertMsg('提示', returnObj.message, 'info')
-    //             } else {
-    //                 graph.nodeData[nodeId].paramsSetting = $.extend(true, {}, returnObj.paramsSetting)
-    //                 indexVue.nodeParamRelArr[nodeId] = $.extend(true, {}, returnObj.paramsSetting)
-    //                 layer.close(index)
-    //                 autoSaveGraph()
-    //             }
-    //         }, function() {})
-    //     },
-    //     btn2: function(index, layero) {
-    //         layer.close(index)
-    //     }
-    // })
+}
+
+export function getParamsArr(){
+    let paramsArr = []
+    let nodeIdArr = Object.keys(indexVue.nodeParamRelArr)
+    for(let i=0; i<nodeIdArr.length; i++){
+        let keys = Object.keys(indexVue.nodeParamRelArr[nodeIdArr[i]])
+        //paramSetting不为{}，存在当前节点，当前节点设置了参数信息
+        if(keys.length !==0 && typeof graph.nodeData[nodeIdArr[i]] !== "undefined" && graph.nodeData[nodeIdArr[i]].hasParam){
+            let arr = indexVue.nodeParamRelArr[nodeIdArr[i]].arr
+            Array.from(arr, item => paramsArr.push(item))
+        }
+    }
+    return paramsArr
 }

@@ -280,7 +280,7 @@ export default {
         },
         {
           id: '5',
-          label: '模型详细',
+          label: '模型关联',
           type: 'relInfo',
           children: []
         },

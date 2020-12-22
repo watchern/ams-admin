@@ -24,6 +24,8 @@
               />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="排序号" prop="codeIndex" label-width="150px">
               <el-input

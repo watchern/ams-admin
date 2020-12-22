@@ -24,8 +24,8 @@ let $isPop = true
  * Listen for route changes
  */
 router.beforeEach((to, from, next) => {
-  // if (from.name === 'projectsdefinitiondetails' || from.name === 'projects-instance-details' || from.name === 'processinstance') {
-  if (from.name === 'projectsdefinitiondetails' || from.name === 'projects-instance-details' || from.name === 'workflow') {
+  // if (from.name === 'projectsdefinitiondetails' || from.name === 'instancedetails' || from.name === 'processinstance') {
+  if (from.name === 'projectsdefinitiondetails' || from.name === 'instancedetails' || from.name === 'workflow') {
     if (!Affirm.paramVerification(from.name)) {
       Affirm.isPop(() => {
         next()
@@ -67,7 +67,7 @@ Affirm.paramVerification = (name) => {
     }
   } else {
     // View history direct jump
-    flag = name === 'projects-instance-details' ? true : !dagStore.isEditDag
+    flag = name === 'instancedetails' ? true : !dagStore.isEditDag
   }
   return flag
 }

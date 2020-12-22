@@ -3,9 +3,9 @@
         <div id="geToolbarContainer" class="geToolbarContainer">
             <div class="graphMenu" style="width: 235px !important;padding-left: 20px !important;">
                 <div class="menuTit">
-                    文件<img v-if="isShowMoreMenu" id="showMoreMenu" src="../tooldic/images/icon/more.png" title="更多" style="width:10px;height:10px;float: right;margin-top:5px;margin-right: 10px;" @click="showMoreMenu">
+                    文件<img v-show="openGraphType !== 4" id="showMoreMenu" src="../tooldic/images/icon/more.png" title="更多" style="width:10px;height:10px;float: right;margin-top:5px;margin-right: 10px;" @click="showMoreMenu">
                 </div>
-                <div class="menuLi">
+                <div class="menuLi" v-show="openGraphType !== 4">
                     <div class="graphIcon" style="width:70px !important;">
                         <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../tooldic/images/icon/new.png" alt="新建">
                         <a class="iconText" @click="newGraph">&nbsp;新建</a>
@@ -27,6 +27,20 @@
                         <a class="iconText" @click="saveGraph('saveAsGraph')">另存为</a>
                     </div>
                     <div class="graphIcon" style="width:70px !important;">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/back.png" alt="后撤">
+                        <a class="iconText" @click="back">撤销</a>
+                    </div>
+                </div>
+                <div class="menuLi" v-show="openGraphType === 4">
+                    <div class="graphIcon" style="width:70px !important;height: 60px !important;line-height: 60px !important;">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/open.png" alt="打开">
+                        <a class="iconText" @click="openGraph">打开</a>
+                    </div>
+                    <div class="graphIcon" style="width:70px !important;height: 60px !important;line-height: 60px !important;">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/next.png" alt="前进">
+                        <a class="iconText" @click="next">恢复</a>
+                    </div>
+                    <div class="graphIcon" style="width:70px !important;height: 60px !important;line-height: 60px !important;">
                         <img class="iconImgGraph" src="../tooldic/images/icon/back.png" alt="后撤">
                         <a class="iconText" @click="back">撤销</a>
                     </div>
@@ -228,13 +242,13 @@
             </ul>
             <div class="tab-content">
                 <div id="graphInfo" role="tabpanel" class="tab-pane active">
-                    <div class="form-group">
+                    <div style="margin-top: 15px;height: 40px;line-height: 40px;">
                         <label for="graphName_show" class="col-sm-2 control-label" style="text-align: right;">名称</label>
                         <div class="col-sm-10">
                             <input id="graphName_show" type="text" class="form-control" autocomplete="off" placeholder="名称" readonly>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div style="margin-top: 10px;">
                         <label for="description_show" class="col-sm-2 control-label" style="text-align: right;">描述</label>
                         <div class="col-sm-10">
                             <textarea id="description_show" class="form-control" placeholder="描述" style="resize:none;min-height:100px;max-height:300px;" readonly />
@@ -333,6 +347,25 @@
             <div v-if="graph.canEditor" slot="footer">
                 <el-button @click="nodeSettingDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="saveNodeSetting()">保存</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog v-if="viewNodeSqlDialogVisible" :visible.sync="viewNodeSqlDialogVisible" title="查看SQL语句" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
+            <div style='height: 400px;padding: 20px;'>{{curNodeExecuteSQL}}</div>
+        </el-dialog>
+        <el-dialog v-if="nodeReNameDialogVisible" :visible.sync="nodeReNameDialogVisible" title="重命名" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
+            <el-form>
+                <el-row>
+                    <el-col>
+                        <el-form-item :label="reNameObj.name">
+                            <el-input v-model="reNameObj.value" v-if="reNameObj.edge" type="number"/>
+                            <el-input v-model="reNameObj.value" v-if="!reNameObj.edge"/>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <div slot="footer">
+                <el-button @click="nodeReNameDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="reNameCallBack">保存</el-button>
             </div>
         </el-dialog>
         <!-- 右键事件 -->
@@ -443,7 +476,6 @@
                 activeTabName: 'outLineArea',
                 preValue: [], // 结果集页签数组
                 optTypeArr: ['filter', 'sort', 'sample', 'layering', 'groupCount', 'delRepeat', 'comparison', 'change', 'union', 'relation', 'sql'],
-                isShowMoreMenu: true, // 是否展示更多菜单
                 nodeParamRelArr: [], // 用来存储每个节点设置的参数信息
                 nodeParamArr: [], // 存储已设置参数的节点集合
                 sp_nodeId: '', // 设置节点参数时传递的参数，节点ID
@@ -451,7 +483,11 @@
                 sp_optType: '', // 配置节点信息时传递的参数，操作节点的类型
                 nodeSettingTitle: '', // 配置节点时显示的弹窗标题，当前节点的名称
                 settingType: '',// 节点配置所打开的弹窗类型
-                initNodeSettingVue:false//节点参数设置页面是否初始化完成
+                initNodeSettingVue:false,//节点参数设置页面是否初始化完成
+                viewNodeSqlDialogVisible:false,
+                curNodeExecuteSQL:'',//当前节点的SQL语句
+                nodeReNameDialogVisible:false,
+                reNameObj:{"name":'节点名称',"value":"","edge":false},//重命名节点的名称
             }
         },
         created() {
@@ -476,9 +512,6 @@
                 }
                 if (typeof this.openGraphType === 'undefined' || this.openGraphType == null) {
                     this.openGraphType = getParams().openGraphType ? Number(getParams().openGraphType) : 1
-                    if (this.openGraphType === 4) {
-                        this.isShowMoreMenu = false// 隐藏更多菜单
-                    }
                 }
                 if (typeof this.openType === 'undefined' || this.openType == null) {
                     this.openType = getParams().openType ? Number(getParams().openType) : 2
@@ -835,10 +868,6 @@
                 // console.log(await indexJs.saveModelGraph())
             },
             newGraph() {
-                if (this.openGraphType === 4) {
-                    this.$message({ type: 'info', message: '模型图形不可操作' })
-                    return
-                }
                 this.$store.commit('aceState/setRightFooterTags', {
                     type: 'active',
                     val: {
@@ -851,10 +880,6 @@
                 indexJs.openGraph()
             },
             saveGraph(type) {
-                if (this.openGraphType === 4) {
-                    this.$message({ type: 'info', message: '模型图形不可操作' })
-                    return
-                }
                 this.saveGraphType = type
                 var str = type === 'saveGraph' ? '保存' : '另存为'
                 if (this.canEditor === false) {
@@ -1063,6 +1088,15 @@
             },
             clearSettingParam(nodeId, index) {
                 indexJs.clearSettingParam(nodeId, index)
+            },
+            reNameCallBack(){
+                commonJs.reNameCallBack()
+            },
+            /**
+             * 接口：获取节点参数信息
+             */
+            getParamsArr() {
+                return indexJs.getParamsArr()
             },
             /**
              * 接口：获取中间、最终结果表的输出列信息

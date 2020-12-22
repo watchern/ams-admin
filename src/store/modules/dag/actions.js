@@ -11,6 +11,10 @@ import {
   findClassesByPackage
 } from '@/api/etlscheduler/processdefinition'
 import {
+  getTaskListByProcessId,
+  getProcessinstanceById
+} from '@/api/etlscheduler/processinstance'
+import {
   resourcesList,
   resourceId
 } from '@/api/etlscheduler/resources'
@@ -24,11 +28,9 @@ export default {
     state
   }, payload) {
     return new Promise((resolve, reject) => {
-      io.get(`projects/${state.projectName}/instance/task-list-by-process-id`, {
-        processInstanceId: payload
-      }, res => {
+      getTaskListByProcessId(payload).then(res => {
         const arr = _.map(res.data.taskList, v => {
-          return _.cloneDeep(_.assign(tasksState[v.state], {
+          return _.cloneDeep(_.assign(tasksState[v.groupExecutionStatus], {
             name: v.name,
             stateId: v.id,
             dependentResult: v.dependentResult
@@ -42,6 +44,24 @@ export default {
       }).catch(e => {
         reject(e)
       })
+    //   io.get(`projects/${state.projectName}/instance/task-list-by-process-id`, {
+    //     processInstanceId: payload
+    //   }, res => {
+    //     const arr = _.map(res.data.taskList, v => {
+    //       return _.cloneDeep(_.assign(tasksState[v.state], {
+    //         name: v.name,
+    //         stateId: v.id,
+    //         dependentResult: v.dependentResult
+    //       }))
+    //     })
+    //     resolve({
+    //       list: arr,
+    //       processInstanceState: res.data.processInstanceState,
+    //       taskList: res.data.taskList
+    //     })
+    //   }).catch(e => {
+    //     reject(e)
+    //   })
     })
   },
   /**
@@ -164,44 +184,82 @@ export default {
     state
   }, payload) {
     return new Promise((resolve, reject) => {
-      io.get(`projects/${state.projectName}/instance/select-by-id`, {
-        processInstanceId: payload
-      }, res => {
-        // name
-        state.name = res.data.name
-        // desc
-        state.description = res.data.description
-        // TODO
-        state.status = res.data.status
-        state.orderNo = res.data.orderNo
-        // connects
-        state.connects = JSON.parse(res.data.connects)
-        // locations
-        state.locations = JSON.parse(res.data.locations)
-        // process instance
-        const processInstanceJson = JSON.parse(res.data.processInstanceJson)
-        // tasks info
-        state.tasks = processInstanceJson.tasks
-        // tasks cache
-        state.cacheTasks = {}
-        processInstanceJson.tasks.forEach(v => {
-          state.cacheTasks[v.id] = v
-        })
-        // global params
-        state.globalParams = processInstanceJson.globalParams
-        // timeout
-        state.timeout = processInstanceJson.timeout
+      getProcessinstanceById(payload).then(
+        res => {
+          // name
+          state.name = res.data.name
+          // desc
+          state.description = res.data.description
+          // TODO
+          state.status = res.data.status
+          state.orderNo = res.data.orderNo
+          // connects
+          state.connects = JSON.parse(res.data.connects)
+          // locations
+          state.locations = JSON.parse(res.data.locations)
+          // process instance
+          const processInstanceJson = JSON.parse(res.data.processInstanceJson)
+          // tasks info
+          state.tasks = processInstanceJson.tasks
+          // tasks cache
+          state.cacheTasks = {}
+          processInstanceJson.tasks.forEach(v => {
+            state.cacheTasks[v.id] = v
+          })
+          // global params
+          state.globalParams = processInstanceJson.globalParams
+          // timeout
+          state.timeout = processInstanceJson.timeout
 
-        state.tenantId = processInstanceJson.tenantId
+          state.tenantId = processInstanceJson.tenantId
 
-        // startup parameters
-        state.startup = _.assign(state.startup, _.pick(res.data, ['commandType', 'failureStrategy', 'processInstancePriority', 'workerGroup', 'warningType', 'warningGroupId', 'receivers', 'receiversCc']))
-        state.startup.commandParam = JSON.parse(res.data.commandParam)
+          // startup parameters
+          state.startup = _.assign(state.startup, _.pick(res.data, ['commandType', 'failureStrategy', 'processInstancePriority', 'workerGroup', 'warningType', 'warningGroupId', 'receivers', 'receiversCc']))
+          state.startup.commandParam = JSON.parse(res.data.commandParam)
 
-        resolve(res.data)
-      }).catch(res => {
-        reject(res)
+          resolve(res.data)
+        }).catch(e => {
+        reject(e)
       })
+
+      // io.get(`projects/${state.projectName}/instance/select-by-id`, {
+      //   processInstanceId: payload
+      // }, res => {
+      //   // name
+      //   state.name = res.data.name
+      //   // desc
+      //   state.description = res.data.description
+      //   // TODO
+      //   state.status = res.data.status
+      //   state.orderNo = res.data.orderNo
+      //   // connects
+      //   state.connects = JSON.parse(res.data.connects)
+      //   // locations
+      //   state.locations = JSON.parse(res.data.locations)
+      //   // process instance
+      //   const processInstanceJson = JSON.parse(res.data.processInstanceJson)
+      //   // tasks info
+      //   state.tasks = processInstanceJson.tasks
+      //   // tasks cache
+      //   state.cacheTasks = {}
+      //   processInstanceJson.tasks.forEach(v => {
+      //     state.cacheTasks[v.id] = v
+      //   })
+      //   // global params
+      //   state.globalParams = processInstanceJson.globalParams
+      //   // timeout
+      //   state.timeout = processInstanceJson.timeout
+
+      //   state.tenantId = processInstanceJson.tenantId
+
+      //   // startup parameters
+      //   state.startup = _.assign(state.startup, _.pick(res.data, ['commandType', 'failureStrategy', 'processInstancePriority', 'workerGroup', 'warningType', 'warningGroupId', 'receivers', 'receiversCc']))
+      //   state.startup.commandParam = JSON.parse(res.data.commandParam)
+
+      //   resolve(res.data)
+      // }).catch(res => {
+      //   reject(res)
+      // })
     })
   },
   /**
@@ -476,18 +534,19 @@ export default {
     state
   }, payload) {
     return new Promise((resolve, reject) => {
-      io.get('alert-group/list', res => {
-        state.notifyGroupListS = _.map(res.data, v => {
-          return {
-            id: v.id,
-            code: v.groupName,
-            disabled: false
-          }
-        })
-        resolve(_.cloneDeep(state.notifyGroupListS))
-      }).catch(res => {
-        reject(res)
-      })
+      // io.get('alert-group/list', res => {
+      //   state.notifyGroupListS = _.map(res.data, v => {
+      //     return {
+      //       id: v.id,
+      //       code: v.groupName,
+      //       disabled: false
+      //     }
+      //   })
+      //   resolve(_.cloneDeep(state.notifyGroupListS))
+      // }).catch(res => {
+      //   reject(res)
+      // })
+      state.notifyGroupListS = null
     })
   },
   /**

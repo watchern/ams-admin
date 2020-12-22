@@ -99,8 +99,8 @@ const statusType = [{
 {
   // seriesIndex :'6',
   // dataIndex :'6',
-  value: 'G_WATTING',
-  code: 'G_WATTING',
+  value: 'G_WAITTING',
+  code: 'G_WAITTING',
   label: '等待中',
   color: 'rgb(255,186,0)'
 },
