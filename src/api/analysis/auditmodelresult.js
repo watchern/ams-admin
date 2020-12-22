@@ -56,6 +56,19 @@ export function ResultRelProject(data) {
  * @param data 要添加的分类对象
  * @returns {AxiosPromise}
  */
+export function getAllRunTaskRel() {
+  return request({
+    baseURL: analysisUrl,
+    url: '/RunTaskRelController/getAllRunTaskRel',
+    method: 'post'
+  })
+}
+
+/**
+ * 关联项目
+ * @param data 要添加的分类对象
+ * @returns {AxiosPromise}
+ */
 export function addCoverResultRelProject(data) {
   return request({
     baseURL: analysisUrl,
@@ -81,12 +94,12 @@ export function rmResultRelProjectlr(data) {
  * 添加结果共享
  * @param data 运行结果共享对象
  */
-export function insertRunResultShare(runTaskRelUuids,personUuids) {
+export function insertRunResultShare(runTaskRelUuids,personUuids,personNames) {
   return request({
     baseURL: analysisUrl,
     url: '/RunResultShareController/addRunResultShare',
     method: 'post',
-    data:{runTaskRelUuids,personUuids}
+    data:{runTaskRelUuids,personUuids,personNames}
   })
 }
 /**
@@ -338,6 +351,45 @@ export function getResultSplitSelectData(data) {
     baseURL: analysisUrl,
     url: '/RunTaskRelController/getResultSplitSelectData',
     method: 'post',
+    data
+  })
+}
+
+/**
+ * 添加模型图表配置
+ * @param {*} data 图表配置对象
+ */
+export function addModelChartSetup(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelChartSetupController/addModelChartSetup',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 根据模型获取模型图表配置
+ * @param modelUuid  模型编号
+ */
+export function getModelChartSetup(modelUuid) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelChartSetupController/getModelChartSetup',
+    method: 'get',
+    params:{modelUuid:modelUuid}
+  })
+}
+
+/**
+ * 修改模型图表配置
+ * @param {*} data 图表配置对象
+ */
+export function updateModelChartSetup(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelChartSetupController/updateModelChartSetup',
+    method: 'put',
     data
   })
 }

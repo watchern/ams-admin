@@ -27,7 +27,7 @@
         ></el-button>
         <el-button
          v-if="false"
-          type="danger"
+          type="primary"
           @click="RemoverelationProject('asdasdasdas')"
           :disabled="buttonIson.DisassociateBtn"
           title="移除项目关联"
@@ -35,7 +35,7 @@
         >
         <el-button
           :disabled="buttonIson.deleteBtn"
-          type="danger"
+          type="primary"
           @click="deleteRunTaskRel"
           class="oper-btn delete"
           title="删除"
@@ -920,15 +920,17 @@ export default {
       this.listLoading = true;
       var runTaskRelUuids = [];
       var personUuids = [];
+      var personNames = []
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
+        personNames.push(selectedNode[i].cnname);
       }
       for (var i = 0; i < this.selected1.length; i++) {
         runTaskRelUuids.push(this.selected1[i].runTaskRelUuid);
       }
       if (personUuids.length > 0) {
-        insertRunResultShare(runTaskRelUuids, personUuids).then((resp) => {
+        insertRunResultShare(runTaskRelUuids, personUuids,personNames).then((resp) => {
           this.listLoading = false;
           if (resp.data == true) {
             this.$message({

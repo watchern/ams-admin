@@ -43,14 +43,13 @@ export function getGraphInfoById(id) {
 
 /**
  * 根据图形UUID删除图形
- * @param data 参数1：图形UUID串，以逗号分隔；参数2：图形名称串，以中文顿号分隔
+ * @param ids 图形UUID串，以逗号分隔
  */
-export function deleteGraphInfoById(data) {
+export function deleteGraphInfoById(ids) {
   return request({
     baseURL: baseURL,
-    url: `/graphCt/delete`,
-    method: 'delete',
-    params: data
+    url: `/graphCt/delete/${ids}`,
+    method: 'delete'
   })
 }
 
@@ -177,20 +176,6 @@ export function deleteExecuteNodes(ids) {
     })
 }
 
-
-/**
- * 检测当前节点中结果表之前是否被创建过，若创建过则给删除标志为true
- */
-export function checkTableName(data) {
-    return request({
-        baseURL: baseURL,
-        url: '/graphCt/checkTableName',
-        method: 'post',
-        params:data,
-        async: false
-    })
-}
-
 /**
  * 执行节点
  */
@@ -254,11 +239,12 @@ export function findParamsAndModelRelParams() {
  * 执行当前参数SQL语句
  * @param {*} data   SQL语句
  */
-export async function executeParamSql(data) {
-    return await request({
+export function executeParamSql(data) {
+    return request({
         baseURL: analysisUrl,
         url: '/paramController/executeParamSql',
         method: 'post',
+        async:false,
         data
     })
 }
@@ -267,11 +253,11 @@ export async function executeParamSql(data) {
  * 查询下拉树参数SQL的结果集
  * @param {*} sqlValue sql语句
  */
-async function getSelectTreeData(sqlValue) {
+export function getSelectTreeData(sqlValue) {
     const data = {
         sqlValue: sqlValue
     }
-    return await request({
+    return request({
         baseURL: analysisUrl,
         url: '/paramController/getSelectTreeData',
         method: 'post',

@@ -66,6 +66,16 @@ const AmsRoutes = [
         name: '图形化工具数据转码节点转码详情',
         component: () => import('@/views/graphtool/tooldic/page/nodeSetting/conditionSet/transcode/transcodeDetail')
     },
+    {
+        path: '/datamining',
+        name: '数据挖掘',
+        component: () => import('@/portal/default/index'),
+        children: [{
+          path: '/datamining/index',
+          name: '数据挖掘',
+          component: () => import('@/views/datamining/index')
+        }]
+    },
     dataRouter,
     baseRouter,
     analysisRouter,

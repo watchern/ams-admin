@@ -1,5 +1,5 @@
 <template>
-  <div class="centerDiv">
+  <div class="centerDiv" >
     <el-card class="box-card">
       <div class="text item treeDiv">
         <el-tree
@@ -134,7 +134,9 @@ export default {
 </script>
 
 <style  scoped>
-.treeDiv {
-  height: 600px;
+.box-card{
+  height: calc(93.3vh);
+  border-radius: 10px;
+  overflow: auto;
 }
 </style>

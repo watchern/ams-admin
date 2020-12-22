@@ -11,289 +11,294 @@
           />
         </div>
       </el-header>
-        <el-main style="width:1836px;">
-          <div align="right">
-            <el-row>
-              <el-button
-                type="primary"
-                @click="relationProject('4534532', '项目5')"
-                :disabled="buttonIson.AssociatedBtn"
-                class="oper-btn refresh"
-                title="关联项目"
-              ></el-button>
-              <el-button
-                v-if="false"
-                type="danger"
-                @click="RemoverelationProject('asdasdasdas')"
-                :disabled="buttonIson.DisassociateBtn"
-                title="移除项目关联"
-                >移除项目关联</el-button
-              >
-              <el-button
-                :disabled="buttonIson.deleteBtn"
-                type="danger"
-                @click="deleteRunTaskRel"
-                class="oper-btn delete"
-                title="删除"
-              ></el-button>
-              <el-button
-                type="primary"
-                :disabled="buttonIson.resultSplitBtn"
-                class="oper-btn split-2"
-                @click="openResultSplitDialog"
-                title="结果拆分"
-              ></el-button>
-              <el-button
-                type="primary"
-                @click="modelResultOpenDialog()"
-                :disabled="buttonIson.resultShareBtn"
-                class="oper-btn share"
-                title="结果共享"
-              ></el-button>
-              <el-button
-                type="primary"
-                @click="exportExcel"
-                :disabled="buttonIson.exportBtn"
-                class="oper-btn export-2"
-                title="导出"
-              ></el-button>
-            </el-row>
-          </div>
-          <el-table
-            id="table"
-            :key="tableKey"
-            v-loading="listLoading"
-            :data="list"
-            border
-            fit
-            highlight-current-row
-            @sort-change="sortChange"
-            @selection-change="handleSelectionChange"
-            height="450px"
-            style="overflow-x: scroll;"
-          >
-            <el-table-column type="selection" width="55" />
-            <el-table-column
-              label="模型名称"
-              width="300px"
-              align="center"
-              prop="model.modelName"
-            >
-              <template slot-scope="scope">
-                <a
-                  type="text"
-                  style="color: #409eff"
-                  @click="
-                    getResultTables(
-                      scope.row.runResultTables,
-                      scope.row.model.modelName,
-                      scope.row.model.modelUuid,
-                      scope.row.runStatus,
-                      resultSpiltObjects
-                    )
-                  "
-                  >{{ scope.row.model.modelName }}</a
-                >
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="运行状态"
-              width="100px"
-              align="center"
-              prop="runStatus"
-              :formatter="readStatusFormatter"
-              ><template slot-scope="scope">
-                <i
-                  :class="runStatusIconFormatter(scope.row.runStatus)"
-                  :style="runStatusStyleFormatter(scope.row.runStatus)"
-                ></i> </template
-            ></el-table-column>
-            <el-table-column
-              label="运行人"
-              width="100px"
-              align="center"
-              prop="runTask.runUserName"
-            />
-            <el-table-column
-              label="运行类型"
-              width="100px"
-              align="center"
-              prop="runTask.runType"
-              :formatter="runTypeFormate"
-            />
-            <el-table-column
-              label="执行进度"
-              prop="executeProgress"
-              align="center"
-              width="200px"
-            >
-              <template slot-scope="scope">
-                <el-progress
-                  :percentage="executeProgressFormate(scope.row.executeProgress)"
-                  :color="customColorMethod(scope.row.executeProgress)"
-                />
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="结果总条数"
-              width="100px"
-              align="center"
-              prop="runResultTables"
-              :formatter="dataCountFormatter"
-            />
-            <el-table-column
-              label="定时运行时间"
-              width="200px"
-              align="center"
-              prop="runTask.timingExecute"
-              :formatter="dateFormatter2"
-            />
-            <el-table-column
-              label="运行开始时间"
-              width="200px"
-              align="center"
-              prop="runStartTime"
-              :formatter="dateFormatter"
-            />
-            <el-table-column
-              label="运行结束时间"
-              width="200px"
-              align="center"
-              prop="runEndTime"
-              :formatter="dateFormatter1"
-            />
-            <el-table-column
-              label="运行SQL"
-              prop="settingInfo"
-              align="center"
-              width="200px"
-              :formatter="settingInfoSqlFormatter"
-            />
-            <el-table-column
-              label="运行参数"
-              prop="settingInfo"
-              align="center"
-              width="200px"
-              :formatter="settingInfoParamsArrFormatter"
-            />
-            <el-table-column
-              label="运行信息"
-              prop="runMessage"
-              align="center"
-              width="200px"
-            />
-            <el-table-column
-              label="关联项目"
-              prop="projectName"
-              align="center"
-              width="200px"
-            />
-            <el-table-column
+      <el-main>
+        <div align="right" style="width: 64%">
+          <el-row>
+            <el-button
+            v-if="false"
+              type="primary"
+              @click="relationProject('4534532', '项目5')"
+              :disabled="buttonIson.AssociatedBtn"
+              class="oper-btn refresh"
+              title="关联项目"
+            ></el-button>
+            <el-button
               v-if="false"
-              label="运行结果共享表主键"
-              prop="runResultShare.runResultShareUuid"
-              align="center"
-              width="200px"
-            />
-            <el-table-column
-              fixed="right"
-              label="操作"
-              width="150px"
-              align="center"
+              type="primary"
+              @click="RemoverelationProject('asdasdasdas')"
+              :disabled="buttonIson.DisassociateBtn"
+              title="移除项目关联"
+              >移除项目关联</el-button
             >
-              <template slot-scope="scope">
-                <div>
-                  <a
-                    v-if="scope.row.runStatus == 4"
-                    @click="reRunReParam(scope.row)"
-                    style="color: #409eff"
-                    >重新运行</a
-                  >
-                </div>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-dialog
-            title="模型运行设置-立即"
-            :visible.sync="runimmediatelyIsSee"
-            :append-to-body="true"
+            <el-button
+              :disabled="buttonIson.deleteBtn"
+              type="primary"
+              @click="deleteRunTaskRel"
+              class="oper-btn delete"
+              title="删除"
+            ></el-button>
+            <el-button
+              type="primary"
+              :disabled="buttonIson.resultSplitBtn"
+              class="oper-btn split-2"
+              @click="openResultSplitDialog"
+              title="结果拆分"
+            ></el-button>
+            <el-button
+              type="primary"
+              @click="modelResultOpenDialog()"
+              :disabled="buttonIson.resultShareBtn"
+              class="oper-btn share"
+              title="结果共享"
+            ></el-button>
+            <el-button
+              type="primary"
+              @click="exportExcel"
+              :disabled="buttonIson.exportBtn"
+              class="oper-btn export-2"
+              title="导出"
+            ></el-button>
+          </el-row>
+        </div>
+        <el-table
+          id="table"
+          :key="tableKey"
+          v-loading="listLoading"
+          :data="list"
+          border
+          fit
+          highlight-current-row
+          @sort-change="sortChange"
+          @selection-change="handleSelectionChange"
+          height="450px"
+          style="overflow-x: scroll; width: 64%"
+        >
+          <el-table-column type="selection" width="55" />
+          <el-table-column
+            label="模型名称"
+            width="300px"
+            align="center"
+            prop="model.modelName"
           >
-            <runimmediatelycon
-              v-if="runimmediatelyIsSee"
-              ref="modelsetting"
-              :timing="false"
-              :models="this.currentData"
-            />
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="runimmediatelyIsSee = false">取 消</el-button>
-              <el-button type="primary" @click="modelRunSetting">确 定</el-button>
-            </span>
-          </el-dialog>
-          <el-dialog
-            title="模型运行设置-定时"
-            :visible.sync="timingExecutionIsSee"
-            :append-to-body="true"
-          >
-            <runimmediatelycon
-              v-if="timingExecutionIsSee"
-              ref="modelsetting"
-              :timing="true"
-              :models="this.currentData"
-            />
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="timingExecutionIsSee = false">取 消</el-button>
-              <el-button type="primary" @click="modelRunSetting">确 定</el-button>
-            </span>
-          </el-dialog>
-          <el-dialog
-            title="结果拆分"
-            :visible.sync="resultSplitDialogIsSee"
-          >
-            <div align="center">
-              <span>要拆分的数据：</span>
-              <el-select
-                multiple
-                style="width: 50%"
-                size="medium"
-                v-model="selectedValue"
-                placeholder="请选择"
+            <template slot-scope="scope">
+              <a
+                type="text"
+                style="color: #409eff"
+                @click="
+                  getResultTables(
+                    scope.row.runResultTables,
+                    scope.row.model.modelName,
+                    scope.row.model.modelUuid,
+                    scope.row.runStatus,
+                    resultSpiltObjects
+                  )
+                "
+                >{{ scope.row.model.modelName }}</a
               >
-                <el-option
-                  v-for="(item, key) in ResultSplitoptions"
-                  :key="key"
-                  :label="item.label"
-                  :value="item.value"
-                >
-                </el-option>
-              </el-select>
-            </div>
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="resultSplitDialogIsSee = false">取 消</el-button>
-              <el-button type="primary" @click="ResultSplitDialogDetermine"
-                >确 定</el-button
-              >
-            </span>
-          </el-dialog>
-          <el-dialog
-            title="请选择要分享的人员"
-            :visible.sync="resultShareDialogIsSee"
-          >
-            <personTree ref="orgPeopleTree"></personTree>
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
-              <el-button type="primary" @click="modelResultShare"
-                >确 定</el-button
-              >
-            </span>
-          </el-dialog>
-          <pagination
-            v-show="total > 0"
-            :total="total"
-            :page.sync="pageQuery.pageNo"
-            :limit.sync="pageQuery.pageSize"
-            @pagination="getLikeList"
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="运行状态"
+            width="100px"
+            align="center"
+            prop="runStatus"
+            :formatter="readStatusFormatter"
+            ><template slot-scope="scope">
+              <i
+                :class="runStatusIconFormatter(scope.row.runStatus)"
+                :style="runStatusStyleFormatter(scope.row.runStatus)"
+              ></i> </template
+          ></el-table-column>
+          <el-table-column
+            label="运行人"
+            width="100px"
+            align="center"
+            prop="runTask.runUserName"
           />
-        </el-main>
+          <el-table-column
+            label="运行类型"
+            width="100px"
+            align="center"
+            prop="runTask.runType"
+            :formatter="runTypeFormate"
+          />
+          <el-table-column
+            label="执行进度"
+            prop="executeProgress"
+            align="center"
+            width="200px"
+          >
+            <template slot-scope="scope">
+              <el-progress
+                :percentage="executeProgressFormate(scope.row.executeProgress)"
+                :color="customColorMethod(scope.row.executeProgress)"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="结果总条数"
+            width="100px"
+            align="center"
+            prop="runResultTables"
+            :formatter="dataCountFormatter"
+          />
+          <el-table-column
+            label="定时运行时间"
+            width="200px"
+            align="center"
+            prop="runTask.timingExecute"
+            :formatter="dateFormatter2"
+          />
+          <el-table-column
+            label="运行开始时间"
+            width="200px"
+            align="center"
+            prop="runStartTime"
+            :formatter="dateFormatter"
+          />
+          <el-table-column
+            label="运行结束时间"
+            width="200px"
+            align="center"
+            prop="runEndTime"
+            :formatter="dateFormatter1"
+          />
+          <el-table-column
+            label="运行SQL"
+            prop="settingInfo"
+            align="center"
+            width="200px"
+            :formatter="settingInfoSqlFormatter"
+          />
+          <el-table-column
+            label="运行参数"
+            prop="settingInfo"
+            align="center"
+            width="200px"
+            :formatter="settingInfoParamsArrFormatter"
+          />
+          <el-table-column
+            label="运行信息"
+            prop="runMessage"
+            align="center"
+            width="200px"
+          />
+          <el-table-column
+            label="关联项目"
+            prop="projectName"
+            align="center"
+            width="200px"
+          />
+          <el-table-column
+            v-if="false"
+            label="运行结果共享表主键"
+            prop="runResultShare.runResultShareUuid"
+            align="center"
+            width="200px"
+          />
+          <el-table-column
+            fixed="right"
+            label="操作"
+            width="150px"
+            align="center"
+          >
+            <template slot-scope="scope">
+              <div>
+                <a
+                  v-if="scope.row.runStatus == 4"
+                  @click="reRunReParam(scope.row)"
+                  style="color: #409eff"
+                  >重新运行</a
+                >
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-dialog
+          title="模型运行设置-立即"
+          :visible.sync="runimmediatelyIsSee"
+          width="60%"
+          :append-to-body="true"
+        >
+          <runimmediatelycon
+            v-if="runimmediatelyIsSee"
+            ref="modelsetting"
+            :timing="false"
+            :models="this.currentData"
+          />
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="runimmediatelyIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="modelRunSetting">确 定</el-button>
+          </span>
+        </el-dialog>
+        <el-dialog
+          title="模型运行设置-定时"
+          :visible.sync="timingExecutionIsSee"
+          width="60%"
+          :append-to-body="true"
+        >
+          <runimmediatelycon
+            v-if="timingExecutionIsSee"
+            ref="modelsetting"
+            :timing="true"
+            :models="this.currentData"
+          />
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="timingExecutionIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="modelRunSetting">确 定</el-button>
+          </span>
+        </el-dialog>
+        <el-dialog
+          title="结果拆分"
+          :visible.sync="resultSplitDialogIsSee"
+          width="40%"
+        >
+          <div align="center">
+            <span>要拆分的数据：</span>
+            <el-select
+              multiple
+              style="width: 50%"
+              size="medium"
+              v-model="selectedValue"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="(item, key) in ResultSplitoptions"
+                :key="key"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </div>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="resultSplitDialogIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="ResultSplitDialogDetermine"
+              >确 定</el-button
+            >
+          </span>
+        </el-dialog>
+        <el-dialog
+          title="请选择要分享的人员"
+          :visible.sync="resultShareDialogIsSee"
+          width="50%"
+        >
+          <personTree ref="orgPeopleTree"></personTree>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="modelResultShare"
+              >确 定</el-button
+            >
+          </span>
+        </el-dialog>
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          :page.sync="pageQuery.pageNo"
+          :limit.sync="pageQuery.pageSize"
+          @pagination="getLikeList"
+        />
+      </el-main>
     </el-container>
   </div>
 </template>

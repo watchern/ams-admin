@@ -2513,7 +2513,7 @@ EditorUi.prototype.resetHistory = function(){
 var topAreaHide = false;
 var leftAreaHide = false;
 var rightAreaHide = false;
-var old_toolbar_height,old_leftArea_offsetLeft,old_rightArea_width;
+var old_toolbar_height,old_leftArea_width,old_rightArea_width;
 /**
  * 工具栏的折叠与展开
  */
@@ -2521,16 +2521,16 @@ EditorUi.prototype.toolBarH_S = function() {
     var detailContainer = $("#detailContainer");
     var accordion = $("#accordion");
     var graphContainer = $("#graphContainer");
-    var geHsplit = $(".geHsplit");
+    var geHsplit = $("#geHsplit");
     var geToolbarContainer = $("#geToolbarContainer");
     if(topAreaHide){
         $("#geToolbarContainer>.menu").show();
         $("#H_S_Menu>ul>li:eq(0)").html("折叠上方区域");
 		$("#geToolbarContainer").height(old_toolbar_height + "px");
-        detailContainer.css({"height":(detailContainer.height() - 90) + "px","top": (detailContainer.position().top + 90) + "px"});
-        accordion.css({"height":(accordion.height() - 90) + "px","top": (accordion.position().top + 90) + "px"});
-        graphContainer.css({"height":(graphContainer.height() - 90) + "px","top": (graphContainer.position().top + 90) + "px"});
-        geHsplit.css({"height":(geHsplit.height() - 90) + "px","top": (geHsplit.position().top + 74) + "px"});
+        detailContainer.css({"height":(detailContainer.height() - 90) + "px","bottom": (detailContainer.height() - 90) + "px"});
+        accordion.css({"height":(accordion.height() - 90) + "px"});
+        graphContainer.css({"height":(graphContainer.height() - 90) + "px"});
+        geHsplit.css({"height":(geHsplit.height() - 90) + "px","bottom": (geHsplit.height() - 90) + "px"});
         this.toolbarHeight = 120;
         topAreaHide = false;
     }else{
@@ -2538,10 +2538,10 @@ EditorUi.prototype.toolBarH_S = function() {
         $("#geToolbarContainer>.menu").hide();
         $("#H_S_Menu>ul>li:eq(0)").html("展开上方区域");
         geToolbarContainer.height("20px");
-        detailContainer.css({"height":(detailContainer.height() + 90) + "px","top": (detailContainer.position().top - 90) + "px"});
-        accordion.css({"height":(accordion.height() + 90) + "px","top": (accordion.position().top - 90) + "px"});
-        graphContainer.css({"height":(graphContainer.height() + 90) + "px","top": (graphContainer.position().top - 90) + "px"});
-        geHsplit.css({"height":(geHsplit.height() + 90) + "px","top": (geHsplit.position().top - 106) + "px"});
+        detailContainer.css({"height":(detailContainer.height() + 90) + "px","bottom": (detailContainer.height() + 90) + "px"});
+        accordion.css({"height":(accordion.height() + 90) + "px"});
+        graphContainer.css({"height":(graphContainer.height() + 90) + "px"});
+        geHsplit.css({"height":(geHsplit.height() + 90) + "px","bottom": (geHsplit.height() + 90) + "px"});
         this.toolbarHeight = 30;
         topAreaHide = true;
     }
@@ -2552,27 +2552,25 @@ EditorUi.prototype.toolBarH_S = function() {
 */
 EditorUi.prototype.leftAreaH_S = function() {
     var accordion = $("#accordion");
-    var geHsplit = $(".geHsplit");
+    var geHsplit = $("#geHsplit");
+    var geVsplit = $("#geVsplit");
+    var graphContainer = $("#graphContainer");
+    var left = graphContainer.position().left;
     if(leftAreaHide){
-        if(topAreaHide){
-            accordion.css({"top":"40px"});
-            geHsplit.css({"top":"20px"});
-        }else{
-            accordion.css({"top":"128px"});
-            geHsplit.css({"top":"110px"});
-        }
         accordion.show();
         geHsplit.show();
         $("#H_S_Menu>ul>li:eq(1)").html("折叠左侧区域");
-        $("#graphContainer").css("left",old_leftArea_offsetLeft);
-        this.hsplitPosition = old_leftArea_offsetLeft - this.splitSize;
+        graphContainer.css({"width":(graphContainer.width() - old_leftArea_width - this.splitSize) + "px","left":old_leftArea_width + this.splitSize + "px"});
+        geVsplit.css({"width":(geVsplit.width() - old_leftArea_width - this.splitSize) + "px","left":(left + old_leftArea_width + this.splitSize) + "px"});
+        this.hsplitPosition = old_leftArea_width + this.splitSize;
         leftAreaHide = false;
     }else{
-        old_leftArea_offsetLeft = $("#graphContainer").position().left;
+        old_leftArea_width = accordion.width();
         accordion.hide();
-        $(".geHsplit").hide();
+        geHsplit.hide();
         $("#H_S_Menu>ul>li:eq(1)").html("展开左侧区域");
-        $("#graphContainer").css("left","130px");
+        graphContainer.css({"width":(graphContainer.width() + old_leftArea_width + this.splitSize) + "px","left":"0"});
+        geVsplit.css({"width":(geVsplit.width() + old_leftArea_width + this.splitSize) + "px","left":(left - old_leftArea_width - this.splitSize) + "px"});
         this.hsplitPosition = 0;
         leftAreaHide = true;
     }
@@ -2583,21 +2581,21 @@ EditorUi.prototype.leftAreaH_S = function() {
  */
 EditorUi.prototype.rightAreaH_S = function() {
     var detailContainer = $("#detailContainer");
+    var geVsplit = $("#geVsplit");
+    var graphContainer = $("#graphContainer");
+    var left = graphContainer.position().left;
     if(rightAreaHide){
-        if(topAreaHide){
-            detailContainer.css({"top":"40px"});
-        }else{
-            detailContainer.css({"top":"128px"});
-        }
         detailContainer.show();
         $("#H_S_Menu>ul>li:eq(2)").html("折叠右侧区域");
-        $("#graphContainer").css("right",(old_rightArea_width + 15) + "px");
+        graphContainer.css({"width":(graphContainer.width() - old_rightArea_width) + "px","right":(old_rightArea_width + 15) + "px"});
+        geVsplit.css({"width":(geVsplit.width() - old_rightArea_width) + "px"});
         rightAreaHide = false;
     }else{
         old_rightArea_width = detailContainer.width();
         detailContainer.hide();
         $("#H_S_Menu>ul>li:eq(2)").html("展开右侧区域");
-        $("#graphContainer").css("right","14px");
+        graphContainer.css({"width":(graphContainer.width() + old_rightArea_width) + "px","right":"14px"});
+        geVsplit.css({"width":(geVsplit.width() + old_rightArea_width) + "px"});
         rightAreaHide = true;
     }
 };

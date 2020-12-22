@@ -562,7 +562,7 @@ export default {
       }
       this.store.dispatch(`datasource/${val}`, param).then(res => {
         this.$notify({
-          title: '提示',
+          title: this.$t('message.title'),
           message: res.msg,
           type: 'success',
           duration: 2000,
@@ -600,7 +600,7 @@ export default {
         this.store.dispatch('datasource/connectDatasources', { connectionParams: JSON.stringify(res.data) }).then(resp => {
           setTimeout(() => {
             this.$notify({
-              title: '提示',
+              title: this.$t('message.title'),
               message: '测试连接成功',
               type: 'success',
               duration: 2000,
@@ -629,9 +629,9 @@ export default {
       }
     },
     handleDelete() {
-      this.$confirm('确定删除吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
         type: 'warning'
       }).then(() => {
         var ids = []
@@ -639,20 +639,20 @@ export default {
         deleteByIds(ids.join(',')).then(() => {
           this.getList()
           this.$notify({
-            title: '成功',
-            message: '删除成功',
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
             type: 'success',
             duration: 2000,
             position: 'bottom-right'
           })
         })
       }).catch(() => {
-        this.$notify({
-          title: '消息',
-          message: '已取消删除',
-          duration: 2000,
-          position: 'bottom-right'
-        })
+        // this.$notify({
+        //   title: '消息',
+        //   message: '已取消删除',
+        //   duration: 2000,
+        //   position: 'bottom-right'
+        // })
       })
     },
     handleSelectionChange(val) {
@@ -691,7 +691,7 @@ export default {
           this.store.dispatch('datasource/connectDatasources', { connectionParams: JSON.stringify(this._rtParam()) }).then(res => {
             setTimeout(() => {
               this.$notify({
-                title: '提示',
+                title: this.$t('message.title'),
                 message: '测试连接成功',
                 type: 'success',
                 duration: 2000,

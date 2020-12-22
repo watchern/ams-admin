@@ -131,11 +131,13 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, save, update, del } from '@/api/etlscheduler/dataresource'
 import QueryField from '@/components/Ace/query-field/index'
+import store from '@/store'
 
 export default {
   components: { Pagination, QueryField },
   data() {
     return {
+      store,
       tableKey: 'dataResourceUuid',
       list: null,
       total: 0,
@@ -198,7 +200,6 @@ export default {
       this.listLoading = true
       if (query) this.pageQuery.condition = query
       listByPage(this.pageQuery).then(resp => {
-        // console.log(resp.data)
         this.total = resp.data.total
         this.list = resp.data.records
         this.listLoading = false
@@ -239,8 +240,8 @@ export default {
             this.getList()
             this.dialogFormVisible = false
             this.$notify({
-              title: '成功',
-              message: '创建成功',
+              title: this.$t('message.title'),
+              message: this.$t('message.insert.success'),
               type: 'success',
               duration: 2000,
               position: 'bottom-right'
@@ -269,8 +270,8 @@ export default {
             this.getList()
             this.dialogFormVisible = false
             this.$notify({
-              title: '成功',
-              message: '更新成功',
+              title: this.$t('message.title'),
+              message: this.$t('message.update.success'),
               type: 'success',
               duration: 2000,
               position: 'bottom-right'
@@ -280,9 +281,9 @@ export default {
       })
     },
     handleDelete() {
-      this.$confirm('确定删除吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
         type: 'warning'
       }).then(() => {
         var ids = []
@@ -290,20 +291,20 @@ export default {
         del(ids.join(',')).then(() => {
           this.getList()
           this.$notify({
-            title: '成功',
-            message: '删除成功',
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
             type: 'success',
             duration: 2000,
             position: 'bottom-right'
           })
         })
       }).catch(() => {
-        this.$notify({
-          title: '消息',
-          message: '已取消删除',
-          duration: 2000,
-          position: 'bottom-right'
-        })
+        // this.$notify({
+        //   title: '消息',
+        //   message: '已取消删除',
+        //   duration: 2000,
+        //   position: 'bottom-right'
+        // })
       })
     },
     handleSelectionChange(val) {

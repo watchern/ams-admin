@@ -227,7 +227,7 @@
           :loading="spinnerLoading"
           :disabled="isDetails"
           @click="ok()"
-        >{{ spinnerLoading ? 'Loading...' : '确认添加' }} </x-button>
+        >{{ spinnerLoading ? 'Loading...' : '保存' }} </x-button>
       </div>
     </div>
   </div>
@@ -380,7 +380,7 @@ export default {
         this.$message.warning(`新创建子工作流还未执行，不能进入子工作流`)
         return
       }
-      // if (this.router.history.current.name === 'projects-instance-details') {
+      // if (this.router.history.current.name === 'instancedetails') {
       const a = false
       if (a) {
         const stateId = $(`#${this.id}`).attr('data-state-id') || null
@@ -408,7 +408,6 @@ export default {
      */
     _onParams(o) {
       this.params = Object.assign({}, o)
-      console.log(this.params)
     },
 
     _onCacheParams(o) {

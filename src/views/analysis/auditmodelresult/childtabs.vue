@@ -7,12 +7,13 @@
         :model-uuid="modelUuid"
         :useType="useType"
         :resultSpiltObjects="resultSpiltObjects"
+        :modelId="modelId"
     /></el-tab-pane>
     <el-tab-pane
       v-for="(item, key) in useType==='modelRunResult'?helptables:preValue"
       :key="key"
       :label="tabsName(key)"
-      ><childTabCons ref="child" :nowtable="item" :prePersonalVal="item" :useType="useType" />
+      ><childTabCons ref="child" :modelId="modelId" :nowtable="item" :prePersonalVal="item" :useType="useType" />
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -69,7 +70,8 @@ export default {
     "modelUuid",
     "useType",
     "preValue",
-    "resultSpiltObjects"
+    "resultSpiltObjects",
+    "modelId"
   ],
 };
 </script>

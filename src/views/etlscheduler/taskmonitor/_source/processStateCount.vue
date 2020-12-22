@@ -3,28 +3,28 @@
   <div v-show="!msg">
     <div v-spin="isSpin" class="data-area">
       <el-row>
-        <el-col :span="12">
+        <el-col :span="14">
           <div id="process-state-pie" style="height: 240px;margin-top:20px" />
         </el-col>
-        <el-col :span="12">
-          <div class="list-table">
-            <div
-              v-for="(item, $index) in processStateList"
-              :key="$index"
-              class="text item"
-            >
-              <div class="list-box">
-                <span class="ellipsis" :title="item.key">{{ item.key }}</span>
+        <el-col :offset="2" :span="8">
+          <div
+            v-for="(item, $index) in processStateList"
+            :key="$index"
+            class="text item"
+          >
+            <el-row>
+              <el-col :span="14">
+                <span class="ellipsis" :title="item.key">
+                  {{ item.key }}</span>
                 <span><a
                   href="javascript:"
-                  :class="searchParams.projectId ? 'links' : ''"
                   @click="handleProcess(item.key)"
-                >({{ item.value }})</a></span>
-                <div class="bottom clearfix">
-                  <span class="percentage">{{ item.percent }}</span>
-                </div>
-              </div>
-            </div>
+                >（{{ item.value }}）</a></span>
+              </el-col>
+              <el-col :span="10">
+                <span class="percentage">{{ item.percent }}</span>
+              </el-col>
+            </el-row>
           </div>
         </el-col>
       </el-row>
@@ -56,31 +56,33 @@ export default {
       currentDate: new Date(),
       isSpin: true,
       msg: '',
-      processStateList: []
+      processStateList: [],
+      statusName: null
     }
   },
   methods: {
     ...mapActions('projects', ['getProcessStateCount']),
     ...mapMutations('monitor', ['setProcessStatus', 'setProcessStartTime', 'setProcessEndTime', 'setProcessGroupExecutionStatusType']),
-    _goProcess(name) {
-      this.$router.push({
-        name: 'projects-instance-list',
-        query: {
-          // stateType: _.find(stateType, ['label', name])['code'],
-          stateType: _.find(statusType, ['label', name])['code'],
+    // _goProcess(name) {
+    //   this.$router.push({
+    //     name: 'projects-instance-list',
+    //     query: {
+    //       // stateType: _.find(stateType, ['label', name])['code'],
+    //       stateType: _.find(statusType, ['label', name])['code'],
 
-          // startDate: this.searchParams.startDate,
-          // endDate: this.searchParams.endDate
-          startTimeStart: this.searchParams.startTimeStart,
-          startTimeEnd: this.searchParams.startTimeEnd
-        }
-      })
-    },
-    // 带着状态和开始结束时间进行页面的跳转，跳转到流程实例页面
+    //       // startDate: this.searchParams.startDate,
+    //       // endDate: this.searchParams.endDate
+    //       startTimeStart: this.searchParams.startTimeStart,
+    //       startTimeEnd: this.searchParams.startTimeEnd
+    //     }
+    //   })
+    // },
+    // 带着状态和开始结束时间进行页面参数传递到流程实例页面
     handleProcess(name) {
       this.setProcessGroupExecutionStatusType(_.find(statusType, ['label', name]).value)
       this.setProcessStartTime(this.searchParams.startTimeStart)
       this.setProcessEndTime(this.searchParams.startTimeEnd)
+      this.statusName = name
       // this.refresh()
       this.$emit('refresh')
       // this.$router.push({
@@ -119,19 +121,19 @@ export default {
       myChart.echart.dispatchAction({
         type: 'highlight',
         seriesIndex: 0,
-        name: '执行完成'
+        name: this.statusName
       })
       myChart.echart.on('mouseover', (v) => {
-        if (v.name !== '执行完成') {
+        if (v.name !== this.statusName) {
           myChart.echart.dispatchAction({
             type: 'hideTip',
             seriesIndex: 0,
-            name: '执行完成'
+            name: this.statusName
           })
           myChart.echart.dispatchAction({
             type: 'downplay',
             seriesIndex: 0,
-            name: '执行完成'
+            name: this.statusName
           })
         }
       })
@@ -139,20 +141,20 @@ export default {
         myChart.echart.dispatchAction({
           type: 'showTip',
           seriesIndex: 0,
-          name: '执行完成'
+          name: this.statusName
         })
         myChart.echart.dispatchAction({
           type: 'highlight',
           seriesIndex: 0,
-          name: '执行完成'
+          name: this.statusName
         })
       })
-      // 首页不允许跳转
-      if (this.searchParams.projectId) {
-        myChart.echart.on('click', (e) => {
-          this._goProcess(e.data.name)
-        })
-      }
+      // // 首页不允许跳转
+      // if (this.searchParams.projectId) {
+      myChart.echart.on('click', (e) => {
+        this.handleProcess(e.data.name)
+      })
+      // }
     }
   },
   computed: {},
@@ -176,7 +178,9 @@ export default {
     }
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.statusName = '执行完成'
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -198,25 +202,24 @@ export default {
   border: 0px solid #000;
 }
 .text {
-  float: left;
-  margin: 15px 0 0 15px;
+  /* float: left;*/
+  margin: 10px 15px;
 }
 .text .ellipsis {
   /* font-size: 16px; */
   color: #333;
-  padding: 0 0 0 0;
+  /* padding: 0 0 0 0; */
   font-weight: bold;
 }
 .text .percentage {
   font-size: 14px;
   color: #333;
-  padding: 0 0 0 0;
+  /* padding: 0 0 0 0; */
 }
-
 .text a {
-  color: #2d8cf0;
+  color: #409eff;
   font-size: 14px;
-  padding: 14px 0 0 0;
+  /* padding: 14px 0 0 0; */
 }
 .refresh {
   /* position: absolute;
@@ -233,9 +236,5 @@ export default {
   height: 300px;
   float: left;
   margin: 0 0 0 70px;
-}
-.list-box {
-  width:100px;
-  /* height: 50px; */
 }
 </style>

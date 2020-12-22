@@ -68,9 +68,9 @@ export function init() {
                     const initCountColumnData = JSON.parse(JSON.stringify(columnData))// 复制全局汇总字段的数组变量的值
                     initCountColumnData.unshift({ 'name': '请选择', 'value': '', 'type': '' })
                     for (let n = 0; n < initCountColumnData.length; n++) { // 设置已汇总字段名称值的选中状态，重新渲染当前行的下拉框
-                        if (countData[k].columnName === initCountColumnData[n].value) {
-                            initCountColumnData[n].selected = true
-                            break
+                        if(countData[k].columnName === countData[k].countTypeValue + "(" + initCountColumnData[n].value + ")"){
+                            initCountColumnData[n].selected = true;
+                            break;
                         }
                     }
                     // 重新渲染汇总字段当前行的下拉框
@@ -189,15 +189,22 @@ function initGroupTransfer(columnsInfo, transfer) {
  */
 function initOutputColumn(columnInfo, isCountTr, sign, countType) {
     let html = ''
-    const columnName = isSet ? columnInfo.columnName : columnInfo.newColumnName// 字段名称
+    let columnName = isSet ? columnInfo.columnName : columnInfo.newColumnName// 字段名称
     let outputColumnName = columnInfo.newColumnName// 输出字段名称
     if (isCountTr) { // 如果汇总配置列的行，则附加唯一标识
         html = "<tr class='colTr' nodeId='" + columnInfo.nodeId + "' columnInfo='" + JSON.stringify(columnInfo) + "' id='count" + sign + "' data-sign='" + sign + "' data-countType='" + JSON.stringify(countType) + "'>"
-        if (!outputColumnName.endWith('_' + countType.name)) { // 判断结尾是否加过提示串，加过就不需要加第二次了
-            outputColumnName = columnName + '_' + countType.name
+        if(countType){
+            outputColumnName = (columnInfo.oldColumnName || columnInfo.columnName) + "_" + countType.name;
         }
     } else {
         html = "<tr class='colTr' nodeId='" + columnInfo.nodeId + "' columnInfo='" + JSON.stringify(columnInfo) + "'>"
+    }
+    if(countType){
+        if(typeof columnInfo.oldColumnName !== "undefined"){
+            columnName = countType.value + "(" + columnInfo.oldColumnName + ")";
+        }else{
+            columnName = countType.value + "(" + columnInfo.columnName + ")";
+        }
     }
     html += '<td>' + columnInfo.rtn + '</td>'
     // 设置过就读取本节点的字段名称，否则就读取上级节点的输出字段名称
@@ -560,6 +567,7 @@ export function saveNodeInfo() {
             columnInfo.checked = false
             columnInfo.isOutputColumn = 0
         }
+        columnInfo.oldColumnName = columnInfo.oldColumnName || columnInfo.columnName;//将原字段存储一份
         columnInfo.columnName = $(this).find('td:eq(1)').html()
         if ($.inArray(newColumnName, newColumnNameArr) < 0) { // 如果输出列名称数组中不含有当前输出列的名称
             newColumnNameArr.push(newColumnName)
