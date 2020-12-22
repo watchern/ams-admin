@@ -313,17 +313,31 @@ export default {
     dateFormatter(row, column) {
       const datetime = row.createTime
       if (datetime) {
-        var dateMat = new Date(datetime)
-        var year = dateMat.getFullYear()
-        var month = dateMat.getMonth() + 1
-        var day = dateMat.getDate()
-        var hh = dateMat.getHours()
-        var mm = dateMat.getMinutes()
-        var ss = dateMat.getSeconds()
-        var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
-        return timeFormat
+        let dateMat = new Date(datetime)
+        let year = dateMat.getFullYear()
+        let month = dateMat.getMonth() + 1
+        let day = dateMat.getDate()
+        let hours = dateMat.getHours()
+        let minutes = dateMat.getMinutes()
+        let second = dateMat.getSeconds()
+        if (month.toString().length == 1) {
+          month = "0" + month
+        }
+        if (day.toString().length == 1) {
+          day = "0" + day
+        }
+        if (hours.toString().length == 1) {
+          hours = "0" + hours
+        }
+        if (minutes.toString().length == 1) {
+          minutes = "0" + minutes
+        }
+        if(second.toString().length == 1){
+          second = "0" + second
+        }
+        var d = year + "-" + month + "-" + day + " " + hours + ":" + minutes+ ":" + second;
+        return d;
       }
-      return ''
     },
     /**
      * 格式化模型类型
