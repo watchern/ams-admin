@@ -15,70 +15,19 @@
         <div align="right" style="width: 57%">
           <el-row>
             <el-button
-              v-if="false"
+              :disabled="false"
               type="primary"
-              @click="relationProject('4534532', '项目5')"
-              :disabled="buttonIson.AssociatedBtn"
-              class="oper-btn refresh"
-              title="关联项目"
-            ></el-button>
-            <el-button
-              v-if="false"
-              @click="RemoverelationProject('asdasdasdas')"
-              :disabled="buttonIson.DisassociateBtn"
-              title="移除项目关联"
-              >移除项目关联</el-button
-            >
-               <el-button
-              type="primary"
-              title="待处理"
-              size="mini"
-            >待处理</el-button>
-               <el-button
-              type="primary"
-              title="已处理"
-              size="mini"
-            >已处理</el-button>
-               <el-button
-              type="primary"
-              title="已完成"
-              size="mini"
-            >已完成</el-button>
-               <el-button
-              type="primary"
-              :disabled="buttonIson.deleteBtn"
-              @click="deleteRunTaskRel"
-              class="oper-btn delete"
-              title="删除"
-            ></el-button>
-            <el-button
-              v-if="false"
-              type="primary"
-              :disabled="buttonIson.resultSplitBtn"
-              class="oper-btn split-2"
-              @click="openResultSplitDialog"
-              title="结果拆分"
-            ></el-button>
-            <el-button
-              v-if="false"
-              type="primary"
-              @click="modelResultOpenDialog()"
-              :disabled="buttonIson.resultShareBtn"
-              class="oper-btn share"
-              title="结果共享"
-            ></el-button>
-            <el-button
-              v-if="false"
-              type="primary"
-              @click="exportExcel"
-              :disabled="buttonIson.exportBtn"
-              class="oper-btn export-2"
-              title="导出"
+              size="small"
+              @click=""
+              title="处理"
+              class="oper-btn processing"
+              @click="handleResult"
             ></el-button>
           </el-row>
         </div>
         <el-table
           id="table"
+          ref="resultTable"
           :key="tableKey"
           v-loading="listLoading"
           :data="list"
@@ -87,31 +36,22 @@
           highlight-current-row
           @sort-change="sortChange"
           @selection-change="handleSelectionChange"
-          height="450px"
-          style="overflow-x: scroll; width: 57%"
-        >
+          height="450px">
           <el-table-column type="selection" width="55" />
           <el-table-column
             label="模型名称"
             width="300px"
             align="center"
-            prop="model.modelName"
-          >
+            prop="model.modelName">
             <template slot-scope="scope">
-              <a
-                type="text"
-                style="color: #409eff"
-                @click="
+              <a type="text" style="color: #409eff" @click="
                   getResultTables(
                     scope.row.runResultTables,
                     scope.row.model.modelName,
                     scope.row.model.modelUuid,
                     scope.row.runStatus,
                     resultSpiltObjects
-                  )
-                "
-                >{{ scope.row.model.modelName }}</a
-              >
+                  )">{{ scope.row.model.modelName }}</a>
             </template>
           </el-table-column>
           <el-table-column
@@ -119,20 +59,13 @@
             width="100px"
             align="center"
             prop="handleState"
-            :formatter="handleStateFormatter"
           />
           <el-table-column
-            label="运行状态"
+            label="处理意见"
             width="100px"
             align="center"
-            prop="runStatus"
-            :formatter="readStatusFormatter"
-            ><template slot-scope="scope">
-              <i
-                :class="runStatusIconFormatter(scope.row.runStatus)"
-                :style="runStatusStyleFormatter(scope.row.runStatus)"
-              ></i> </template
-          ></el-table-column>
+            prop="handleIdea"
+          />
           <el-table-column
             label="运行人"
             width="100px"
@@ -147,19 +80,6 @@
             :formatter="runTypeFormate"
           />
           <el-table-column
-            label="执行进度"
-            prop="executeProgress"
-            align="center"
-            width="200px"
-          >
-            <template slot-scope="scope">
-              <el-progress
-                :percentage="executeProgressFormate(scope.row.executeProgress)"
-                :color="customColorMethod(scope.row.executeProgress)"
-              />
-            </template>
-          </el-table-column>
-          <el-table-column
             label="结果总条数"
             width="100px"
             align="center"
@@ -167,45 +87,20 @@
             :formatter="dataCountFormatter"
           />
           <el-table-column
-            label="定时运行时间"
-            width="200px"
-            align="center"
-            prop="runTask.timingExecute"
-            :formatter="dateFormatter2"
-          />
-          <el-table-column
-            label="运行开始时间"
-            width="200px"
-            align="center"
-            prop="runStartTime"
-            :formatter="dateFormatter"
-          />
-          <el-table-column
-            label="运行结束时间"
-            width="200px"
-            align="center"
-            prop="runEndTime"
-            :formatter="dateFormatter1"
-          />
-          <el-table-column
             label="运行SQL"
             prop="settingInfo"
             align="center"
-            width="200px"
-            :formatter="settingInfoSqlFormatter"
-          />
+            width="200px">
+            <template slot-scope="scope">
+              <el-link type="primary" @click="selectSql(scope.row)">{{ settingInfoSqlFormatter(scope.row)}}</el-link>
+            </template>
+          </el-table-column>
           <el-table-column
             label="运行参数"
             prop="settingInfo"
             align="center"
             width="200px"
             :formatter="settingInfoParamsArrFormatter"
-          />
-          <el-table-column
-            label="运行信息"
-            prop="runMessage"
-            align="center"
-            width="200px"
           />
           <el-table-column
             label="关联项目"
@@ -226,101 +121,7 @@
             align="center"
             width="200px"
           />
-          <el-table-column
-            fixed="right"
-            label="操作"
-            width="150px"
-            align="center"
-          >
-            <template slot-scope="scope">
-              <div>
-                <a
-                  v-if="scope.row.runStatus == 4"
-                  @click="reRunReParam(scope.row)"
-                  style="color: #409eff"
-                  >重新运行</a
-                >
-              </div>
-            </template>
-          </el-table-column>
         </el-table>
-        <el-dialog
-          title="模型运行设置-立即"
-          :visible.sync="runimmediatelyIsSee"
-          width="60%"
-          :append-to-body="true"
-        >
-          <runimmediatelycon
-            v-if="runimmediatelyIsSee"
-            ref="modelsetting"
-            :timing="false"
-            :models="this.currentData"
-          />
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="runimmediatelyIsSee = false">取 消</el-button>
-            <el-button type="primary" @click="modelRunSetting">确 定</el-button>
-          </span>
-        </el-dialog>
-        <el-dialog
-          title="模型运行设置-定时"
-          :visible.sync="timingExecutionIsSee"
-          width="60%"
-          :append-to-body="true"
-        >
-          <runimmediatelycon
-            v-if="timingExecutionIsSee"
-            ref="modelsetting"
-            :timing="true"
-            :models="this.currentData"
-          />
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="timingExecutionIsSee = false">取 消</el-button>
-            <el-button type="primary" @click="modelRunSetting">确 定</el-button>
-          </span>
-        </el-dialog>
-        <el-dialog
-          title="结果拆分"
-          :visible.sync="resultSplitDialogIsSee"
-          width="40%"
-        >
-          <div align="center">
-            <span>要拆分的数据：</span>
-            <el-select
-              multiple
-              style="width: 50%"
-              size="medium"
-              v-model="selectedValue"
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="(item, key) in ResultSplitoptions"
-                :key="key"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </div>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="resultSplitDialogIsSee = false">取 消</el-button>
-            <el-button type="primary" @click="ResultSplitDialogDetermine"
-              >确 定</el-button
-            >
-          </span>
-        </el-dialog>
-        <el-dialog
-          title="请选择要分享的人员"
-          :visible.sync="resultShareDialogIsSee"
-          width="50%"
-        >
-          <personTree ref="orgPeopleTree"></personTree>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
-            <el-button type="primary" @click="modelResultShare"
-              >确 定</el-button
-            >
-          </span>
-        </el-dialog>
         <pagination
           v-show="total > 0"
           :total="total"
@@ -330,6 +131,45 @@
         />
       </el-main>
     </el-container>
+    <el-dialog v-if="sqlInfoDialog" :visible.sync="sqlInfoDialog" title="SQL信息" width="50%">
+      <el-input
+        disabled
+        type="textarea"
+        :rows="15"
+        v-model="sqlInfo">
+      </el-input>
+    </el-dialog>
+    <el-dialog
+      title="请处理"
+      :visible.sync="handleIdeaDialog"
+      width="30%"
+      :append-to-body="true">
+      <div ref="basicInfo">
+        <el-form ref="basicInfoForm">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="处理状态">
+                <el-select style="margin: 5px" v-model="modelResultHandle.handleState">
+                  <el-option value="待处理">待处理</el-option>
+                  <el-option value="处理中">处理中</el-option>
+                  <el-option value="已完成">已完成</el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="处理意见">
+                <el-input v-model="modelResultHandle.handleIdea" type="textarea" :rows="6" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+      <el-button @click="handleIdeaDialog = false">取 消</el-button>
+      <el-button type="primary" @click="updateHandleResult()">确 定</el-button></span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -349,7 +189,7 @@ import {
   getDataAfterResultSpiltToRelateProject,
   addCoverResultRelProject
 } from "@/api/analysis/auditmodelresult"
-import { selectLikePageVoHandle } from "@/api/analysis/modelresulthandle"
+import { selectLikePageVoHandle,updateRunTaskRel } from "@/api/analysis/modelresulthandle"
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 import QueryField from "@/components/Ace/query-field/index";
 import Pagination from "@/components/Pagination/index";
@@ -398,60 +238,43 @@ export default {
         resultShareBtn: true,
         exportBtn: false,
       },
-      setDateTime: "",
-      nowRunTaskRel: null,
-      //单次/多次/周期执行的周期开始结束时间 执行时间选择配置
-      executeTimeOptions: {
-        disabledDate(time) {
-          //不能选择小于当前日志的事件
-          return (
-            new Date(time.toLocaleDateString()) <
-            new Date(new Date().toLocaleDateString())
-          );
-        },
+      //模型结果处理对象
+      modelResultHandle:{
+        handleState:'',
+        handleIdea:''
       },
-      runimmediatelyIsSee: false,
-      timingExecutionIsSee: false,
-      currentData: [],
-      resultSplitDialogIsSee: false, //结果拆分dialog是否可见
-      ResultSplitoptions: [], //存储结果拆分dialog的下拉框中的数据
-      selectedValue: [], //结果查分下拉框选中的值
-      resultSpiltedRunResultRel: [], //存储进行结果拆分的模型任务关联对象
+      //处理意见dialog
+      handleIdeaDialog:false,
       resultSpiltObjects: {}, //存储点击结果拆分要传往后台的数据
-      resultShareDialogIsSee: false, //点击模型结果关联按钮控制人员dialog显示
+      sqlInfo:"",
+      sqlInfoDialog: false, //点击模型结果关联按钮控制人员dialog显示
     };
   },
   created() {
-    this.getLikeList();
+    //判断是不是从项目进来的 如果从项目进来则走项目的权限
+    // todo 梁瑞
+    let params = this.getQueryString()
+    if(params.projectUuid != undefined){
+      alert(params.projectUuid)
+    }
+    else{
+      this.getLikeList()
+    }
   },
   methods: {
     /**
-     * 导出方法
+     *解析url上的参数
      */
-    exportExcel() {
-      axios({
-        method: "get",
-        url: "/analysis/RunTaskRelController/exportRunTaskRelTable",
-        responseType: "blob",
-      }).then((res) => {
-        const link = document.createElement("a");
-        const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
-        link.style.display = "none";
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "模型运行结果表.xlsx");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      });
-    },
-    customColorMethod(percentage) {
-      if (percentage < 30) {
-        return "#909399";
-      } else if (percentage < 70) {
-        return "#e6a23c";
-      } else {
-        return "#67c23a";
+    getQueryString() {
+      let url = window.location.href
+      var params = [],
+        h;
+      var hash = url.slice(url.indexOf("?") + 1).split('&');
+      for (var i = 0; i < hash.length; i++) {
+        h = hash[i].split("="); //
+        params[h[0]] = h[1];
       }
+      return params;
     },
     /**
      * 格式化时间字符串
@@ -483,6 +306,38 @@ export default {
         return timeFormat;
       }
       return "";
+    },
+    /**
+     * val是运行结果中的resultTables
+     * modelName是选中的模型的名字
+     */
+    getResultTables(val, modelName, modelUuid, runStatus, resultSpiltObjects) {
+      if (runStatus == 3) {
+        var assistTables = [];
+        var mainTable = null;
+        for (var i = 0; i < val.length; i++) {
+          if (val[i].tableType == 1) {
+            mainTable = val[i];
+          } else {
+            assistTables.push(val[i]);
+          }
+        }
+        // 触发父类方法addTab在index.vue界面，同时穿过三个参数assistTables：辅表（运行结果表）数组  mainTable：主表（运行结果表对象）
+        // modelName：模型的名称，用来给新页签赋值title属性用
+        this.$emit(
+          "addtab",
+          assistTables,
+          mainTable,
+          modelName,
+          modelUuid,
+          resultSpiltObjects
+        );
+      } else {
+        this.$message({
+          type: "info",
+          message: "该运行结果不是成功状态",
+        });
+      }
     },
     /**
      格式化时间字符串
@@ -549,6 +404,8 @@ export default {
         return "";
       } else {
         var sql = JSON.parse(row.settingInfo).sql;
+        sql = sql.substring(0,10)
+        sql = sql + "..."
         return sql;
       }
     },
@@ -561,7 +418,7 @@ export default {
       } else {
         var paramShowStr = "";
         var params = JSON.parse(row.settingInfo).paramsArr;
-        if (params == undefined) {
+        if (params == undefined || params.length == 0) {
           return "无";
         } else {
           for (var i = 0; i < params.length; i++) {
@@ -571,65 +428,6 @@ export default {
           // var paramsArr = JSON.stringify(JSON.parse(row.settingInfo).paramsArr);
           return paramShowStr;
         }
-      }
-    },
-    /**
-     * 格式化已阅状态
-     * @param row 行数据
-     * @param column 列数据
-     * @returns {string} 返回格式化后的数据
-     */
-    readStatusFormatter(row, column) {
-      var status = row.runStatus;
-      if (status == 1) {
-        return "待运行";
-      } else if (status == 2) {
-        return "运行中";
-      } else if (status == 3) {
-        return "运行成功";
-      } else {
-        return "运行失败";
-      }
-    },
-    /**
-     * 处理状态格式化
-     */
-    handleStateFormatter(row){
-      var handleState = row.handleState;
-      if (status == 1) {
-        return "待处理";
-      } else if (status == 2) {
-        return "已处理";
-      } else if (status == 3) {
-        return "已完成";
-      } 
-    },
-    /**
-     * 运行状态图标展示
-     */
-    runStatusIconFormatter(status) {
-      if (status == 1) {
-        return "el-icon-video-play";
-      } else if (status == 2) {
-        return "el-icon-loading";
-      } else if (status == 3) {
-        return "el-icon-success";
-      } else {
-        return "el-icon-error";
-      }
-    },
-    /**
-     * 运行状态图标颜色
-     */
-    runStatusStyleFormatter(status) {
-      if (status == 1) {
-        return "color:blue";
-      } else if (status == 2) {
-        return "el-icon-loading";
-      } else if (status == 3) {
-        return "color:green";
-      } else {
-        return "color:red";
       }
     },
     /**
@@ -656,7 +454,6 @@ export default {
       }
         selectLikePageVoHandle(this.pageQuery).then(
         (resp) => {
-          console.log(resp.data.records)
           this.total = resp.data.total;
           this.list = resp.data.records;
           this.listLoading = false;
@@ -765,7 +562,7 @@ export default {
      * 打开确认删除弹出层,当勾选中共享结果为0是打开，非共享不为0时调用
      */
     open() {
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该结果, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -802,7 +599,7 @@ export default {
      * 当共享的长度不为0，非共享长度为0时调用
      */
     open1() {
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该结果, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -839,7 +636,7 @@ export default {
      * 当共享和非共享都不为0的时候调用
      */
     open2() {
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该结果, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -887,214 +684,6 @@ export default {
         });
     },
     /**
-     * 关联项目按钮触发
-     */
-    relationProject(projectId, projctName) {
-      var selected2 = this.selected1;
-      if (selected2.length == 0) {
-        this.$message({ message: "请选择运行结果" });
-      } else {
-        this.listLoading = true;
-        if (this.resultSpiltObjects.orgNameValues != undefined) {
-          var mainTableUuids = [];
-          var selectRunTaskRelUuid = [];
-          for (var i = 0; i < this.selected1.length; i++) {
-            selectRunTaskRelUuid.push(this.selected1[i].runTaskRelUuid);
-            var runResultTables = this.selected1[i].runResultTables;
-            for (var j = 0; j < runResultTables.length; j++) {
-              if (runResultTables[j].tableType == 1) {
-                mainTableUuids.push(runResultTables[j].runResultTableUuid);
-              }
-            }
-          }
-              selectPrimaryKeyByTableName().then((resp) => {
-                var primaryKey = resp.data;
-                getDataAfterResultSpiltToRelateProject(
-                  this.resultSpiltObjects,
-                  projectId,
-                  projctName,
-                  selectRunTaskRelUuid
-                ).then((resp) => {
-                  if (resp.data == true) {
-                    this.listLoading = false;
-                    this.getLikeList();
-                    this.$message({
-                      type: "success",
-                      message: "关联成功!",
-                    });
-                  } else {
-                    this.listLoading = false;
-                    this.$message({
-                      type: "error",
-                      message: "关联失败!",
-                    });
-                  }
-                });
-              });
-        } else {
-          this.listLoading = true;
-          var resultRelPro = [];
-          for (var i = 0; i < selected2.length; i++) {
-            var resultRelProject = {
-              runTaskRelUuid: selected2[i].runTaskRelUuid,
-              projectUuid: projectId,
-              projectName: projctName,
-            };
-            resultRelPro.push(resultRelProject);
-          }
-          ResultRelProject(resultRelPro).then((resp) => {
-            var flag = resp.data.flag;
-            var resultRelProjects = resp.data.resultRelProjects;
-            if (flag == "haveRelated") {
-              var modelNames = [];
-              for (var i = 0; i < resultRelProjects.length; i++) {
-                for (var j = 0; j < this.selected1.length; j++) {
-                  if (
-                    resultRelProjects[i].runTaskRelUuid ==
-                    this.selected1[j].runTaskRelUuid
-                  ) {
-                    modelNames.push(this.selected1[j].model.modelName);
-                  }
-                }
-              }
-              var resultRelPros = [];
-              for (var i = 0; i < selected2.length; i++) {
-                var resultRelProject = {
-                  runTaskRelUuid: selected2[i].runTaskRelUuid,
-                  projectUuid: projectId,
-                  projectName: projctName,
-                };
-                resultRelPros.push(resultRelProject);
-              }
-              addCoverResultRelProject(resultRelPros).then((resp) => {
-                if (resp.data == true) {
-                  var message = "关联成功！其中  ";
-                  for (var i = 0; i < modelNames.length; i++) {
-                    message += modelNames[i] + " , ";
-                  }
-                  this.getLikeList();
-                  this.listLoading = false;
-                  message += "之前关联的项目已被覆盖";
-                  this.listLoading = false;
-                  this.$message({ type: "success", message: message });
-                } else {
-                  this.listLoading = false;
-                  this.$message({
-                    type: "error",
-                    message: "关联失败!",
-                  });
-                }
-              });
-            } else if (flag == true) {
-              this.listLoading = false;
-              this.getLikeList();
-              this.$message({
-                type: "success",
-                message: "关联成功!",
-              });
-            } else if (flag == false) {
-              this.listLoading = false;
-              this.$message({
-                type: "error",
-                message: "关联失败!",
-              });
-            }
-          });
-        }
-      }
-    },
-    /**
-     * 移除项目关联
-     */
-    RemoverelationProject(resultRelProjectUuid) {
-      rmResultRelProjectlr(resultRelProjectUuid).then((resp) => {
-        if (resp.data == true) {
-          this.getLikeList();
-          this.$message({
-            type: "success",
-            message: "取消关联成功!",
-          });
-        } else {
-          this.$message({
-            type: "error",
-            message: "取消关联失败!",
-          });
-        }
-      });
-    },
-    /**
-     * 结果共享
-     */
-    modelResultShare() {
-      this.listLoading = true;
-      var runTaskRelUuids = [];
-      var personUuids = [];
-      var personNames = []
-      var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
-      debugger
-      for (var i = 0; i < selectedNode.length; i++) {
-        personUuids.push(selectedNode[i].personuuid);
-        personNames.push(selectedNode[i].cnname);
-      }
-      for (var i = 0; i < this.selected1.length; i++) {
-        runTaskRelUuids.push(this.selected1[i].runTaskRelUuid);
-      }
-      if (personUuids.length > 0) {
-        insertRunResultShare(runTaskRelUuids, personUuids,personNames).then((resp) => {
-          this.listLoading = false;
-          if (resp.data == true) {
-            this.$message({
-              type: "success",
-              message: "结果共享成功!",
-            });
-          } else {
-            this.$message({
-              type: "error",
-              message: "结果共享失败!",
-            });
-          }
-          this.resultShareDialogIsSee = false;
-        });
-      } else {
-        this.listLoading = false;
-        this.$message({
-          message: "请选择要关联的人员！",
-        });
-      }
-    },
-    /**
-     * val是运行结果中的resultTables
-     * modelName是选中的模型的名字
-     */
-    getResultTables(val, modelName, modelUuid, runStatus, resultSpiltObjects) {
-      if (runStatus == 3) {
-        var assistTables = [];
-        var mainTable = null;
-        for (var i = 0; i < val.length; i++) {
-          if (val[i].tableType == 1) {
-            mainTable = val[i];
-          } else {
-            assistTables.push(val[i]);
-          }
-        }
-        // 触发父类方法addTab在index.vue界面，同时穿过三个参数assistTables：辅表（运行结果表）数组  mainTable：主表（运行结果表对象）
-        // modelName：模型的名称，用来给新页签赋值title属性用
-        this.$emit(
-          "addtab",
-          assistTables,
-          mainTable,
-          modelName,
-          modelUuid,
-          resultSpiltObjects
-        );
-      } else {
-        this.$message({
-          type: "info",
-          message: "该运行结果不是成功状态",
-        });
-      }
-    },
-    /**
      * 运行类型格式化
      */
     runTypeFormate(row) {
@@ -1119,185 +708,47 @@ export default {
       return dataCount;
     },
     /**
-     * 执行进度格式化
+     * 查看sql
+     * @param row 查看的sql行
+     * @returns {string}
      */
-    executeProgressFormate(executeProgress) {
-      if (executeProgress == null) {
-        return 0;
+    selectSql(row){
+      if (row.settingInfo == null) {
+        return ""
       } else {
-        var executeProgress1 = parseInt(executeProgress);
-        return executeProgress1;
+        var sql = JSON.parse(row.settingInfo).sql
+        this.sqlInfo = sql
+        this.sqlInfoDialog = true
       }
     },
     /**
-     * 重新运行功能
+     * 处理结果
      */
-    reRunReParam(runTaskRel) {
-      var runType = runTaskRel.runTask.runType;
-      this.nowRunTaskRel = runTaskRel;
-      this.currentData = [];
-      this.currentData.push(runTaskRel.model);
-      if (runType == 3) {
-        this.runimmediatelyIsSee = true;
-      } else if (runType == 2) {
-        this.timingExecutionIsSee = true;
-      }
-    },
-    /**
-     * 添加运行任务和运行任务关联表
-     */
-    modelRunSetting() {
-      var runType = this.nowRunTaskRel.runTask.runType;
-      var results = this.$refs.modelsetting.replaceParams();
-      this.replacedInfo = results.replaceInfo;
-      var modelResultSavePathId = results.modelResultSavePathId;
-      var dateTime = results.dateTime;
-      var settingInfo = {
-        sql: this.replacedInfo[0].sql,
-        paramsArr: this.replacedInfo[0].paramsArr,
-      };
-      this.nowRunTaskRel.model = results.models[0];
-      this.nowRunTaskRel.settingInfo = settingInfo;
-      this.nowRunTaskRel.locationUuid = modelResultSavePathId;
-      if (this.timingExecutionIsSee) {
-        if (dateTime == "") {
-          this.$message({
-            message: "请输入定时时间",
-            type: "warning",
-          });
-        } else if (this.replacedInfo[0].sql == "") {
-          this.$message({
-            message: "请输入参数",
-            type: "warning",
-          });
-        } else if (modelResultSavePathId == "") {
-          this.$message({
-            message: "请选择模型结果保存路径",
-            type: "warning",
-          });
-        } else {
-          if (runType == 3) {
-            reRunRunTask(this.nowRunTaskRel).then((resp) => {
-              if (resp.data == true) {
-                this.getLikeList();
-              } else {
-                this.$message({ type: "info", message: "重新执行失败!" });
-              }
-            });
-          } else if (runType == 2) {
-            reRunRunTask(this.nowRunTaskRel, dateTime).then((resp) => {
-              if (resp.data == true) {
-                this.getLikeList();
-              } else {
-                this.$message({ type: "info", message: "重新执行失败!" });
-              }
-            });
-          }
-          this.runimmediatelyIsSee = false;
-          this.timingExecutionIsSee = false;
-        }
-      } else if (this.runimmediatelyIsSee) {
-        if (this.replacedInfo[0].sql == "") {
-          this.$message({
-            message: "请输入参数",
-            type: "warning",
-          });
-        } else if (modelResultSavePathId == "") {
-          this.$message({
-            message: "请选择模型结果保存路径",
-            type: "warning",
-          });
-        } else {
-          if (runType == 3) {
-            reRunRunTask(this.nowRunTaskRel).then((resp) => {
-              if (resp.data == true) {
-                this.getLikeList();
-              } else {
-                this.$message({ type: "info", message: "重新执行失败!" });
-              }
-            });
-          } else if (runType == 2) {
-            reRunRunTask(this.nowRunTaskRel, dateTime).then((resp) => {
-              if (resp.data == true) {
-                this.getLikeList();
-              } else {
-                this.$message({ type: "info", message: "重新执行失败!" });
-              }
-            });
-          }
-          this.runimmediatelyIsSee = false;
-          this.timingExecutionIsSee = false;
-        }
-      }
-    },
-    /**
-     * 点击结果拆分后打开dialog方法
-     */
-    openResultSplitDialog() {
-      this.listLoading = true;
-      this.ResultSplitoptions = [];
-      var flag = true;
-      for (var i = 0; i < this.selected1.length; i++) {
-        if (this.selected1[i].runStatus != 3) {
-          flag = false;
-          break;
-        }
-      }
-      if (flag == true) {
-        getResultSplitSelectData(this.selected1).then((resp) => {
-          this.resultSpiltObjects.orgNameColumnList =
-            resp.data.orgNameColumnList;
-          this.resultSpiltObjects.orgUuidColumnList =
-            resp.data.orgUuidColumnList;
-          var message = resp.data.message;
-          var result = resp.data.selectValue;
-          if (message == "") {
-            for (var i = 0; i < result.length; i++) {
-              var option = {
-                value: result[i].org_uuid + "," + result[i].org_name,
-                label: result[i].org_uuid + "(" + result[i].org_name + ")",
-              };
-              this.ResultSplitoptions.push(option);
-            }
-            this.listLoading = false;
-            this.resultSplitDialogIsSee = true;
-          } else {
-            this.listLoading = false;
-            this.$message({
-              showClose: true,
-              message: message,
-            });
-          }
-        });
-      } else {
-        this.listLoading = false;
+    handleResult(){
+      var selectObj = this.$refs.resultTable.selection
+      if(selectObj.length == 0){
         this.$message({
-          showClose: true,
-          message: "只有运行成功的才可以结果拆分",
-        });
+          type: "info",
+          message: "请选择要处理的模型结果",
+        })
+        return
       }
+      this.handleIdeaDialog = true
     },
     /**
-     * 点击结果拆分确定按钮触发的事件
+     * 修改模型结果的处理意见
      */
-    ResultSplitDialogDetermine() {
-      var selectValue = this.selectedValue;
-      var orgNameValues = [];
-      var orgUuidValues = [];
-      for (var i = 0; i < selectValue.length; i++) {
-        var eachValue = selectValue[i].split(",");
-        orgNameValues[i] = eachValue[1];
-        orgUuidValues[i] = eachValue[0];
+    updateHandleResult(){
+      var selectObj = this.$refs.resultTable.selection
+      for(let i = 0;i < selectObj.length;i++){
+        //组织处理意见等对象
+        selectObj[i].handleState = this.modelResultHandle.handleState
+        selectObj[i].handleIdea = this.modelResultHandle.handleIdea
+        updateRunTaskRel(selectObj[i]).then(result => {})
+        this.handleIdeaDialog = false
+        //处理完成直接修改
       }
-      this.resultSpiltObjects.orgUuidValues = orgUuidValues;
-      this.resultSpiltObjects.orgNameValues = orgNameValues;
-      this.resultSpiltObjects.resultSpiltedRunResultRel = this.selected1;
-      this.getLikeList();
-      this.resultSplitDialogIsSee = false;
-    },
-    modelResultOpenDialog() {
-      this.resultShareDialogIsSee = true;
-    },
+    }
   },
 };
 </script>
