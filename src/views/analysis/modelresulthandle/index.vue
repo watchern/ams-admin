@@ -5,19 +5,18 @@
       v-model="editableTabsValue"
       type="card"
       closable
-      @tab-remove="removeTab"
-    >
+      @tab-remove="removeTab">
       <!-- 加一个固定页签 -->
       <el-tab-pane
         name="模型分配结果"
         label="模型分配结果"
-      ><firstParentTabCon @addtab="addTab" /></el-tab-pane>
+      ><firstParentTabCon @addtab="addTab" />
+      </el-tab-pane>
       <el-tab-pane
         v-for="item in editableTabs"
         :key="item.name"
         :label="item.title"
-        :name="item.name"
-      >
+        :name="item.name">
         <!-- 新页签中页签组件 -->
         <!-- <div v-html="item.content"></div> -->
         <childTabs
