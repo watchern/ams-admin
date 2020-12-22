@@ -102,12 +102,13 @@
             type="text"
             class="ans-btn-text"
             style="vertical-align: middle;"
-            title="格式化DAG"
+            title="格式化流程图"
             @click="dagAutomaticLayout"
           />
           <!--  v-tooltip.light=""
             size="xsmall"
             type="primary"
+            刷新DAG状态
            -->
           <x-button
             v-if="type === 'instance'"
@@ -117,7 +118,7 @@
             :loading="isRefresh"
             type="text"
             class="ans-btn-text"
-            title="刷新DAG状态"
+            title="刷新流程实例状态"
             @click="!isRefresh && _refresh()"
           />
           <x-button
@@ -328,9 +329,16 @@ export default {
           const idArr = allNodesId()
           const titleTpl = (item, desc) => {
             const $item = _.filter(taskList, v => v.name === item.name)[0]
-            return `<div style="text-align: left">名称：${$item.name}</br>状态：${desc}</br>类型：${$item.taskType}</br>host：${$item.host || '-'}</br>重试次数：${$item.retryTimes}</br>提交时间：${formatDate($item.submitTime)}</br>开始时间：${formatDate($item.startTime)}</br>结束时间：${$item.endTime ? formatDate($item.endTime) : '-'}</br></div>`
+            return `名称：      ${$item.name}
+状态：      ${desc}
+类型：      ${$item.taskType}
+host：      ${$item.host || '-'}
+重试次数：${$item.retryTimes}
+提交时间：${formatDate($item.submitTime)}
+开始时间：${formatDate($item.startTime)}
+结束时间：${$item.endTime ? formatDate($item.endTime) : '-'}`
+            // return `<div style="text-align: left">名称：${$item.name}</br>状态：${desc}</br>类型：${$item.taskType}</br>host：${$item.host || '-'}</br>重试次数：${$item.retryTimes}</br>提交时间：${formatDate($item.submitTime)}</br>开始时间：${formatDate($item.startTime)}</br>结束时间：${$item.endTime ? formatDate($item.endTime) : '-'}</br></div>`
           }
-
           // remove tip state dom
           $('.w').find('.state-p').html('')
 
@@ -345,20 +353,19 @@ export default {
                     // depState = item.state
                     depState = item.groupExecutionStatus
                   }
-                })               
+                })
                 dom.attr('data-state-id', v1.stateId)
                 dom.attr('data-dependent-result', v1.dependentResult || '')
                 dom.attr('data-dependent-depState', depState)
                 state.append(`<strong class="${v1.icoUnicode} ${v1.isSpin ? 'as as-spin' : ''}" style="color:${v1.color}" data-toggle="tooltip" data-html="true" data-container="body"></strong>`)
                 state.find('strong').attr('title', titleTpl(v2, v1.desc))
-                // state.append(`<el-tooltip class="item" effect="dark" placement="top">
-                //                   <div slot="content">多行信息<br/>第二行信息</div>
-                //                   <el-button><strong class="${v1.icoUnicode} ${v1.isSpin ? 'as as-spin' : ''}" style="color:${v1.color}" data-toggle="tooltip" data-html="true" data-container="body"></strong></el-button>
-                //              </el-tooltip>`)
-                // state.find('el-tooltip').attr('content', titleTpl(v2, v1.desc))
-                // state.find('div').append(titleTpl(v2, v1.desc))
-                state.find('strong').attr(':data-title', titleTpl(v2, v1.desc))
-                // state.find('strong').attr('data-original-title', titleTpl(v2, v1.desc))
+                // state.append(titleTpl2(v2, v1.desc))
+                // state.find('strong').mouseover(function() {
+                //   state.find('div').css('display', 'block')
+                // })
+                // state.find('strong').mouseout(function() {
+                //   state.find('div').css('display', 'none')
+                // })
               }
             })
           })
@@ -489,7 +496,11 @@ export default {
       })
     },
     returnDefinition() {
-      this.$router.push('/etlscheduler/processdefinition')
+      if (this.type === 'instance') {
+        this.$router.push('/etlscheduler/taskmonitor')
+      } else {
+        this.$router.push('/etlscheduler/processdefinition')
+      }
     },
     _verifConditions(value) {
       const tasks = value
@@ -794,6 +805,6 @@ export default {
 .ans-btn-primary[disabled],.ans-btn-primary[disabled]:hover {
 	color: #fff;
 	background-color: #c6cfd6;
-	border-color: #c6cfd6;
+  border-color: #c6cfd6;
 }
 </style>
