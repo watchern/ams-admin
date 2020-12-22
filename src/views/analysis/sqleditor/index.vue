@@ -220,7 +220,7 @@
       :visible.sync="dialogFormVisible"
       :append-to-body="true"
     >
-      <paramDraw :myId="paramDrawUuid" ref="paramDrawRef" />
+      <paramDraw v-if="dialogFormVisible" :myId="paramDrawUuid" ref="paramDrawRef" />
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
         <el-button type="primary" @click="replaceNodeParam">确定</el-button>
@@ -248,6 +248,10 @@ require("@/components/ams-ztree/js/jquery.ztree.all.min")
 require("@/components/ams-ztree/js/jquery.ztree_new.all.min")
 require("@/components/ams-ztree/js/jquery.ztree.excheck")
 require("@/components/ams-ztree/js/jquery.ztree.exhide")
+import "@/components/ams-codemirror/theme/ambiance.css"
+import "@/components/ams-codemirror/lib/codemirror.css"
+import "@/components/ams-codemirror/addon/hint/show-hint.css"
+import "@/components/ams-ztree/css/zTreeStyle/zTreeStyle.css"
 import {
   initSQLEditor,
   initDragAndDrop,

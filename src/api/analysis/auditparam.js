@@ -1057,7 +1057,7 @@ function initParamInputAndSelect(id,serviceInfo) {
         },
         data: dataArr
       }
-      if (sql !== '') { // 当前参数是SQL语句方式
+      if (sql !== '') {// 当前参数是SQL语句方式
         var associatedParamIdArr = typeof $(this).attr('data-associatedParamIdArr') !== 'undefined' ? JSON.parse($(this).attr('data-associatedParamIdArr')) : [] // 当前参数的被关联的参数的集合
         var paramArr = typeof $(this).attr('data-paramArr') !== 'undefined' ? JSON.parse($(this).attr('data-paramArr')) : [] // 影响当前参数的主参数的集合
         selectSetting.show = function () {
@@ -1225,6 +1225,7 @@ function getParentChecked(checkData, parentCheckedArr, arr) {
  * @author JL
  */
 function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataArr, initDataArr,serviceInfo) {
+  debugger
   if(serviceInfo==undefined){
     serviceInfo = ''
   }
@@ -1730,12 +1731,15 @@ export function replaceNodeParam(modelid,serviceInfo) {
         }
       } else {
         if (choiceType == 1) { // 单选
-          obj.paramValue = paramSelectedObj[0].value
+          let arr = []
+          arr.push(paramSelectedObj[0].value)
+          obj.paramValue = arr
         } else {
+          let arr = []
           for (var j = 0; j < paramSelectedObj.length; j++) { // 多值，以'','',……形式展现
-            obj.paramValue += "'" + paramSelectedObj[j].value + "',"
+            arr.push(paramSelectedObj[j].value)
           }
-          obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
+          obj.paramValue = arr
         }
       }
       filterArr.push(obj)
@@ -1859,6 +1863,7 @@ export function replaceNodeParam(modelid,serviceInfo) {
       }
     }
   }
+  debugger
   return returnObj
 }
 
