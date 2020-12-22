@@ -115,7 +115,7 @@ function matchingPcRelation(dataArr) {
  * @description 只适用于xmSelect下拉树（实现非严格父子结构下的全选功能）
  * @author JL
  */
-function getChildrenData(checkData, dataArr) {
+export function getChildrenData(checkData, dataArr) {
     if (checkData.children && checkData.children.length > 0) { // 若当前节点有子节点
         var childrenArr = []// 存放有孙子节点的当前节点
         for (var i = 0; i < checkData.children.length; i++) {
@@ -140,7 +140,7 @@ function getChildrenData(checkData, dataArr) {
  * @return parentCheckedArr
  * @author JL
  */
-function getParentChecked(checkData, parentCheckedArr, arr) {
+export function getParentChecked(checkData, parentCheckedArr, arr) {
     if (arr && arr.length > 0) {
         var obj = {}
         for (var i = 0; i < arr.length; i++) {
@@ -167,7 +167,7 @@ function getParentChecked(checkData, parentCheckedArr, arr) {
  * @return parentUnCheckedArr
  * @author JL
  */
-function getParentUnChecked(checkData, parentUnCheckedArr, dataArr, arr) {
+export function getParentUnChecked(checkData, parentUnCheckedArr, dataArr, arr) {
     if (dataArr && dataArr.length > 0) {
         var obj = {}
         for (var i = 0; i < dataArr.length; i++) {
@@ -202,7 +202,7 @@ function getParentUnChecked(checkData, parentUnCheckedArr, dataArr, arr) {
  * @return preDataArr 拆分后的数据
  * @author JL
  */
-function getSplitDataArr(dataArr) {
+export function getSplitDataArr(dataArr) {
     var preDataArr = []
     for (var i = 0; i < dataArr.length; i++) {
         preDataArr.push(dataArr[i])
@@ -256,8 +256,7 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
     let hasSql = false// 下拉列表或下拉树是非SQL方式或者是SQL方式但值为空
     switch (obj.setParamObj.inputType) {
         case 'lineinp':// 下拉列表
-            // 备选sql为空的情况下 取静态的option值
-            if (!paramSql) {
+            if (!paramSql) {// 备选sql为空的情况下 取静态的option值
                 $.each(paramObj.paramChoice.paramOptionsList, function(i, v) {
                     if (v.optionsVal && v.optionsName) {
                         // 组织下拉选项数据
@@ -403,10 +402,11 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
             if (paramSql !== '') { // 执行备选SQL
                 hasSql = true
                 if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
-                    getSelectTreeData(paramSql).then( response => {
+                    const request = getSelectTreeData(paramSql)
+                    request.then( response => {
                         if (response.data == null || response.data.isError) {
                             obj.isError = true
-                            obj.message = '获取参数【' + paramObj.paramName + '】的值的失败，原因：' + e.message
+                            obj.message = '获取参数【' + paramObj.paramName + '】的值的失败，原因：' + response.data.message
                         } else {
                             if(response.data.result && response.data.result.length > 0){
                                 dataArr = organizeSelectTreeData(response.data.result)
@@ -526,7 +526,7 @@ export function initParamHtml_Common(paramObj, selectNum, selectTreeNum) {
                             url: contextPathAuditAnalysis + '/param/executeParamSql',
                             method: 'POST',
                             cache: false,
-                            data: { 'sql': strEncryption(paramObj.paramChoice.optionsSql) },
+                            data: { 'sql': paramObj.paramChoice.optionsSql },
                             dataType: 'json',
                             async: false,
                             success: function(e) {
@@ -580,7 +580,7 @@ export function initParamHtml_Common(paramObj, selectNum, selectTreeNum) {
             }
             var divId = 'selectParam' + (typeof selectNum !== 'undefined' ? selectNum : paramObj.ammParamUuid)
             obj.htmlContent += "<div id='" + divId + "' title='" + title + "'  data-id='" + paramObj.ammParamUuid + "' data-name='" + paramObj.paramName + "' data-choiceType='" + paramObj.paramChoice.choiceType + "'" +
-                (hasSql ? " data-sql='" + strEncryption(paramSql) + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
+                (hasSql ? " data-sql='" + paramSql + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
                 (typeof paramObj.defaultVal !== 'undefined' ? " data-defaultVal='" + JSON.stringify(paramObj.defaultVal) + "' " : '') +
                 (dataArr.length > 0 ? " data='" + JSON.stringify(dataArr) + "' " : '') +
                 (typeof paramObj.paramChoice.allowedNull !== 'undefined' ? " data-allowedNull='" + paramObj.paramChoice.allowedNull + "' " : '') +
@@ -618,7 +618,7 @@ export function initParamHtml_Common(paramObj, selectNum, selectTreeNum) {
                         url: contextPathAuditAnalysis + '/param/getSelectTreeData',
                         method: 'POST',
                         cache: false,
-                        data: { 'sql': strEncryption(paramSql) },
+                        data: { 'sql': paramSql },
                         dataType: 'json',
                         async: false,
                         success: function(e) {
@@ -664,7 +664,7 @@ export function initParamHtml_Common(paramObj, selectNum, selectTreeNum) {
             var divId = 'selectTreeParam' + (typeof selectTreeNum !== 'undefined' ? selectTreeNum : paramObj.ammParamUuid)
             obj.htmlContent += "<div id='" + divId + "' title='" + title + "'  data-id='" + paramObj.ammParamUuid + "' data-name='" + paramObj.paramName + "' data-choiceType='" + paramObj.paramChoice.choiceType + "' " +
                 (typeof paramObj.paramChoice.allowedNull !== 'undefined' ? " data-allowedNull='" + paramObj.paramChoice.allowedNull + "' " : '') +
-                (paramSql !== '' ? " data-sql='" + strEncryption(paramSql) + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
+                (paramSql !== '' ? " data-sql='" + paramSql + "' data-paramArr='" + JSON.stringify(paramArr) + "' data-associatedParamIdArr='" + JSON.stringify(associatedParamIdArr) + "' " : '') +
                 (typeof paramObj.defaultVal !== 'undefined' ? " data-defaultVal='" + JSON.stringify(paramObj.defaultVal) + "' data='" + JSON.stringify(dataArr) + "' " : '') +
                 " class='xm-select-demo selectTreeParam paramTr' style='" + divWidth + "display: inline-block;'></div>"
             if (typeof selectTreeNum !== 'undefined') {
@@ -681,7 +681,7 @@ export function initParamHtml_Common(paramObj, selectNum, selectTreeNum) {
  * @param pDivId 当前标签所属的DIV盒子的ID
  * @author JL
  */
-function initParamInputAndSelect(pDivId) {
+export function initParamInputAndSelect(pDivId) {
     // 初始化普通文本框（只为反显默认值）
     var textParam = (typeof pDivId !== 'undefined' && pDivId !== '') ? $('#' + pDivId + ' .textParam') : $('.textParam')
     if (textParam.length > 0) {
@@ -721,7 +721,7 @@ function initParamInputAndSelect(pDivId) {
         selectParam.each(function(i, v) {
             var choiceType = $(this).attr('data-choiceType')// 下拉列表的数据是单选还是多选
             var paramName = $(this).attr('data-name')// 母参数名称
-            var sql = typeof $(this).attr('data-sql') !== 'undefined' ? strDecryption($(this).attr('data-sql')) : ''// 该参数是否有SQL语句（0否1是）
+            var sql = typeof $(this).attr('data-sql') !== 'undefined' ? $(this).attr('data-sql') : ''// 该参数是否有SQL语句（0否1是）
             var dataArr = typeof $(this).attr('data') !== 'undefined' ? JSON.parse($(this).attr('data')) : []// 下拉列表数据
             var initDataArr = false// 是否初始化数据
             var selectSetting = {
@@ -771,7 +771,7 @@ function initParamInputAndSelect(pDivId) {
         selectTreeParam.each(function(i, v) {
             var choiceType = $(this).attr('data-choiceType')// 下拉树的数据是单选还是多选
             var paramName = $(this).attr('data-name')// 母参数名称
-            var sql = typeof $(this).attr('data-sql') !== 'undefined' ? strDecryption($(this).attr('data-sql')) : ''// 该参数是否有SQL语句（0否1是）
+            var sql = typeof $(this).attr('data-sql') !== 'undefined' ? $(this).attr('data-sql') : ''// 该参数是否有SQL语句（0否1是）
             var dataArr = typeof $(this).attr('data') !== 'undefined' ? JSON.parse($(this).attr('data')) : []// 下拉树数据
             var initDataArr = false// 是否初始化数据
             var selectSetting = {
@@ -879,7 +879,7 @@ function initParamInputAndSelect(pDivId) {
  * @description 下拉框展开时调用 "#selectParam"，适用于场景查询JS和图形化工具的执行JS
  * @author JL
  */
-function selectShow_common(idStr, ind, paramName, sql, choiceType, paramArr, dataArr, initDataArr) {
+export function selectShow_common(idStr, ind, paramName, sql, choiceType, paramArr, dataArr, initDataArr) {
     var loading = $('body').mLoading({ 'text': '参数数据请求中，请稍后……', 'hasCancel': false })
     // 找出该参数与被关联参数之间的联系（它影响谁和谁影响它两种）
     try {
@@ -937,7 +937,7 @@ function selectShow_common(idStr, ind, paramName, sql, choiceType, paramArr, dat
             }
         })
         var selectXs = xmSelect.get(idStr + ind, true)// 获取当前下拉框的实体对象
-        var oldSqlWhereStr = typeof $(idStr + ind).attr('data-sqlWhereStr') !== 'undefined' ? strDecryption($(idStr + ind).attr('data-sqlWhereStr')) : ''
+        var oldSqlWhereStr = typeof $(idStr + ind).attr('data-sqlWhereStr') !== 'undefined' ? $(idStr + ind).attr('data-sqlWhereStr') : ''
         var url = ''
         if (idStr === '#selectParam') { // 下拉列表
             url = contextPathAuditAnalysis + '/param/executeParamSql'
@@ -947,7 +947,7 @@ function selectShow_common(idStr, ind, paramName, sql, choiceType, paramArr, dat
         if (sqlWhereStr !== '') {
             if (oldSqlWhereStr === '' || oldSqlWhereStr !== sqlWhereStr) {
                 sql = 'SELECT * FROM (' + sql + ') where 1=1' + sqlWhereStr
-                $.post(url, { 'sql': strEncryption(sql) }, function(res) {
+                $.post(url, { 'sql': sql }, function(res) {
                     if (res.isError) {
                         loading.destroy()
                         alertMsg('错误', '获取参数【' + paramName + '】的值的失败，原因：' + res.message, 'error')
@@ -968,7 +968,7 @@ function selectShow_common(idStr, ind, paramName, sql, choiceType, paramArr, dat
                             data: newDataArr
                             // autoRow: true,
                         })
-                        $(idStr + ind).attr('data-sqlWhereStr', strEncryption(sqlWhereStr))
+                        $(idStr + ind).attr('data-sqlWhereStr', sqlWhereStr)
                         loading.destroy()
                     }
                 }, 'json')
@@ -978,7 +978,7 @@ function selectShow_common(idStr, ind, paramName, sql, choiceType, paramArr, dat
         }
         if (sqlWhereStr === '' && dataArr.length === 0) { // 当影响它的主参没有选择值且本身没数据时（第一次加载全部数据）
             initDataArr = true
-            $.post(url, { 'sql': strEncryption(sql) }, function(res) {
+            $.post(url, { 'sql': sql }, function(res) {
                 if (res.isError) {
                     loading.destroy()
                     alertMsg('错误', '获取参数【' + paramName + '】的值的失败，原因：' + res.message, 'error')
@@ -1026,7 +1026,7 @@ function selectShow_common(idStr, ind, paramName, sql, choiceType, paramArr, dat
  * @description 当前参数选中值时，适用于场景查询JS和图形化工具的执行JS
  * @author JL
  */
-function selectHide_common(associatedParamIdArr) {
+export function selectHide_common(associatedParamIdArr) {
     $('.selectParam').each(function(i, v) {
         var curParamId = $(this).attr('data-id')// 参数ID
         if ($.inArray(curParamId, associatedParamIdArr) != -1) {
@@ -1051,6 +1051,7 @@ function selectHide_common(associatedParamIdArr) {
 
 /**
  * 根据影响当前参数的主参所选中的值，过滤当前参数的数据
+ * @param dom 遮罩层的dom对象
  * @param idStr 当前下拉框是下拉列表还是下拉树（传它们的部分ID标识）
  * @param paramId 参数的标识（下标或当前参数的ID）
  * @param paramName 当前参数的名称
@@ -1062,8 +1063,8 @@ function selectHide_common(associatedParamIdArr) {
  * @description 下拉框展开时调用 "#selectParam",只适用于图形化工具的参数设置JS
  * @author JL
  */
-function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataArr, initDataArr) {
-    var loading = $('body').mLoading({ 'text': '参数数据请求中，请稍后……', 'hasCancel': false })
+export function selectShow(dom,idStr, paramId, paramName, sql, choiceType, paramArr, dataArr, initDataArr) {
+    var loading = $(dom).mLoading({ 'text': '参数数据请求中，请稍后……', 'hasCancel': false })
     // 找出该参数与被关联参数之间的联系（它影响谁和谁影响它两种）
     try {
         var sqlWhereStr = ''
@@ -1104,62 +1105,67 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
             }
         })
         var selectXs = xmSelect.get(idStr + paramId, true)// 获取当前下拉框的实体对象
-        var oldSqlWhereStr = typeof $(idStr + paramId).attr('data-sqlWhereStr') !== 'undefined' ? strDecryption($(idStr + paramId).attr('data-sqlWhereStr')) : ''
-        var url = ''
-        if (idStr === '#selectParam') { // 下拉列表
-            url = contextPathAuditAnalysis + '/param/executeParamSql'
-        } else { // idStr=='#selectTreeParam'   下拉树
-            url = contextPathAuditAnalysis + '/param/getSelectTreeData'
-        }
+        var oldSqlWhereStr = typeof $(idStr + paramId).attr('data-sqlWhereStr') !== 'undefined' ? $(idStr + paramId).attr('data-sqlWhereStr') : ''
+        let request = null;
         if (sqlWhereStr !== '') {
             if (oldSqlWhereStr === '' || oldSqlWhereStr !== sqlWhereStr) {
                 sql = 'SELECT * FROM (' + sql + ') where 1=1' + sqlWhereStr
-                $.post(url, { 'sql': strEncryption(sql) }, function(res) {
-                    if (res.isError) {
+                if (idStr === '#selectParam') { // 下拉列表
+                    request = executeParamSql(sql)
+                } else { // idStr=='#selectTreeParam'   下拉树
+                    request = getSelectTreeData(sql)
+                }
+                request.then( response => {
+                    if(response.data.isError){
                         loading.destroy()
-                        alertMsg('错误', '获取参数【' + paramName + '】的值的失败，原因：' + res.message, 'error')
-                    } else {
+                        alertMsg('错误', '获取参数【' + paramName + '】的值的失败，原因：' + response.data.message, 'error')
+                    }else{
                         var newDataArr = []
                         if (idStr === '#selectParam') {
-                            for (var k = 0; k < res.paramList.length; k++) {
+                            for (var k = 0; k < response.data.paramList.length; k++) {
                                 var paramObj = {
-                                    'name': res.paramList[k].paramName,
-                                    'value': res.paramList[k].paramValue
+                                    'name': response.data.paramList[k].paramName,
+                                    'value': response.data.paramList[k].paramValue
                                 }
                                 newDataArr.push(paramObj)
                             }
                         } else { // idStr=='#selectTreeParam'
-                            newDataArr = organizeSelectTreeData(res.result)
+                            newDataArr = organizeSelectTreeData(response.data.result)
                         }
                         selectXs.update({
                             data: newDataArr
                             // autoRow: true,
                         })
-                        $(idStr + paramId).attr('data-sqlWhereStr', strEncryption(sqlWhereStr))
+                        $(idStr + paramId).attr('data-sqlWhereStr', sqlWhereStr)
                         loading.destroy()
                     }
-                }, 'json')
+                })
             } else {
                 loading.destroy()
             }
         }
         if (sqlWhereStr === '' && dataArr.length === 0) { // 当影响它的主参没有选择值且本身没数据时（第一次加载全部数据）
             initDataArr = true
-            $.post(url, { 'sql': strEncryption(sql) }, function(res) {
-                if (res.isError) {
+            if (idStr === '#selectParam') { // 下拉列表
+                request = executeParamSql(sql)
+            } else { // idStr=='#selectTreeParam'   下拉树
+                request = getSelectTreeData(sql)
+            }
+            request.then( response => {
+                if (response.data.isError) {
                     loading.destroy()
-                    alertMsg('错误', '获取参数【' + paramName + '】的值的失败，原因：' + res.message, 'error')
+                    alertMsg('错误', '获取参数【' + paramName + '】的值的失败，原因：' + response.data.message, 'error')
                 } else {
                     if (idStr === '#selectParam') {
-                        for (var k = 0; k < res.paramList.length; k++) {
+                        for (var k = 0; k < response.data.paramList.length; k++) {
                             var paramObj = {
-                                'name': res.paramList[k].paramName,
-                                'value': res.paramList[k].paramValue
+                                'name': response.data.paramList[k].paramName,
+                                'value': response.data.paramList[k].paramValue
                             }
                             dataArr.push(paramObj)
                         }
                     } else { // idStr=='#selectTreeParam'
-                        dataArr = organizeSelectTreeData(res.result)
+                        dataArr = organizeSelectTreeData(response.data.result)
                     }
                     selectXs.update({
                         data: dataArr
@@ -1167,7 +1173,7 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
                     })
                     loading.destroy()
                 }
-            }, 'json')
+            })
         }
         if (sqlWhereStr === '' && dataArr.length !== 0) {
             if (paramArr.length !== 0) { // 本身受其它参数影响
@@ -1193,7 +1199,7 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
  * @description 当前参数选中值时,只适用于图形化工具的参数设置JS
  * @author JL
  */
-function selectHide(associatedParamIdArr) {
+export function selectHide(associatedParamIdArr) {
     $('.xm-select-demo').each(function() {
         var curParamId = $(this).attr('data-id')// 参数ID
         if ($.inArray(curParamId, associatedParamIdArr) != -1) {
@@ -1261,7 +1267,7 @@ export function sortParamArr(paramAarr) {
  *  }
  * @author JL
  */
-function createParamHtml(sql, paramsArr, name, modelId, callBackFun) {
+export function createParamHtml(sql, paramsArr, name, modelId, callBackFun) {
     top.layer.open({
         id: 'paramSetting',
         type: 2,
