@@ -3,41 +3,6 @@ layui.use('layer', function() {
     layer = layui.layer;
 });
 
-// 标题，内容，类型（"warning","error","success"，"info"）
-// function alertMsg(title, msg, type) {
-    // layer.open({
-    // 	title:title,
-    // 	id: 'layer_msg',
-    // 	skin: "layui-layer-lan",
-    // 	content: '<div style="padding: 10px 0; line-height: 22px; color: #000; font-weight: 800;text-align: center;">'+ msg +'</div>'
-    // });
-    // layui.use('layer', function() {
-    //     var layer = layui.layer;
-    //     layer.msg(msg);
-    // });
-// }
-// param：标题，内容，类型（"warning","error","success"，"info"）,确认方法，取消方法
-// function confirmMsg(title, text, type, confirmMethord, cancelMethord) {
-//     layui.use('layer', function() {
-//         var layer = layui.layer;
-//         layer.open({
-//             title:title,
-//             id: 'layer_confirmMsg',
-//             btn: ['确定', '取消'],
-//             skin: "layui-layer-lan",
-//             content: '<div style="padding: 20px; line-height: 22px; color: #000; font-weight: 800;text-align: center;">'+ text +'</div>',
-//             btn1: function(index, layero){
-//                 layer.close(index);
-//                 confirmMethord();
-//             },
-//             btn2: function(index, layero){
-//                 layer.close(index);
-//                 cancelMethord();
-//             }
-//         });
-//     });
-// }
-
 //获取layer.open的url参数
 function getParams(){
     var url = window.location.href;
