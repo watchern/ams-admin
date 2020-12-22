@@ -155,8 +155,8 @@ export default {
       listLoadingSecond: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
-        { label: '代码类别名称', name: 'dataSortValue', type: 'text', value: '' },
-        { label: '代码类别编码', name: 'dataSortDesc', type: 'text', value: '' }
+        { label: '代码类别名称', name: 'dataSortName', type: 'text', value: '' },
+        { label: '代码类别编码', name: 'dataSortValue', type: 'text', value: '' }
       ],
       pageQuery: {
         condition: null,
