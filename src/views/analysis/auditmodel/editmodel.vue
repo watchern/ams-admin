@@ -280,7 +280,7 @@ export default {
         },
         {
           id: '5',
-          label: '模型详细',
+          label: '模型关联',
           type: 'relInfo',
           children: []
         },
@@ -629,6 +629,7 @@ export default {
       }
       else if(this.$refs.graph != undefined){
         // todo 获取图形化参数对象  到下边去处理
+        paramDefaultValue = this.$refs.graph[0].getParamsArr()
         //处理模型结果固定输出列
         //说明选择了图形化并且没有输出列，自动获取，如果获取不到则返回并给予提示
         if(columnData.length == 0 && this.form.modelType == "002003002"){
@@ -670,7 +671,7 @@ export default {
       // region 处理参数数据
       // 获取到参数的默认值，是个JSON，将JSON存入到数据库  以便下次反显时使用
       //拿到默认值后组织成后台数据库的格式
-      if(paramDefaultValue != undefined){
+      if(paramDefaultValue != undefined && paramDefaultValue.length != 0){
         const paramData = paramDefaultValue.paramSettingArr
         let newParamData = []
         for (let i = 0; i < paramData.length; i++) {
@@ -815,6 +816,7 @@ export default {
         this.$message({ type: 'info', message:returnObj.message })
         return false
       }
+      //region 初始化模型结果固定输出列
       const columnData = []
       for (let i = 0; i < returnObj.finalTable.columnNameArr.length; i++) {
         const columnDataObj = {
@@ -823,6 +825,18 @@ export default {
         }
         columnData.push(columnDataObj)
       }
+      //endregion
+      // region初始化默认参数
+      // 初始化参数默认值界面界面
+      let params = this.$refs.graph[0].getParamsArr()
+      if(params.length != 0){
+        this.paramShowVIf = true
+        this.sqlEditorParam = params
+      }
+      else{
+        this.paramShowVIf = false
+      }
+      //endregion
       this.graphColumnInfo = returnObj
       this.columnData = columnData
       //直接获取图形化编号

@@ -1,8 +1,4 @@
 import request from '@/utils/request'
-import "@/components/ams-codemirror/theme/ambiance.css"
-import "@/components/ams-codemirror/lib/codemirror.css"
-import "@/components/ams-codemirror/addon/hint/show-hint.css"
-import "@/components/ams-ztree/css/zTreeStyle/zTreeStyle.css"
 let CodeMirror = require("@/components/ams-codemirror/lib/codemirror")
 
 const analysisUrl = '/analysis'

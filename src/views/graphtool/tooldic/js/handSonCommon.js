@@ -731,7 +731,7 @@ function viewRelationData(type) {
                 'height_': 300
               }
               handSonTableFun(setting)
-              graph.curTableName = strEncryption(targetTableName)
+              graph.curTableName = targetTableName
               graph.viewDataType = 1
               load.destroy()
             }
@@ -755,7 +755,7 @@ function getResourceTableByColumn(columnName) {
   var type = graph.viewDataType		// 1、右键资源树预览数据；2、双击节点预览数据 / 右键节点查看数据
   var tableNameArr = []
   if (type == 1) {
-    tableNameArr.push(strDecryption(graph.curTableName))
+    tableNameArr.push(graph.curTableName)
     return tableNameArr
   }
   if (type == 2) {
@@ -774,7 +774,7 @@ function getParentTableName(curNodeId, tableNameArr) {
   var nodeData = graph.nodeData[curNodeId]
   var parentIds = nodeData.parentIds
   if (nodeData.parentIds.length == 0) {
-    if (nodeData.nodeInfo.optType == 'datasource' && $.inArray(strDecryption(nodeData.nodeInfo.nodeName), tableNameArr) == -1) {
+    if (nodeData.nodeInfo.optType == 'datasource' && $.inArray(nodeData.nodeInfo.nodeName, tableNameArr) == -1) {
       tableNameArr.push(nodeData.nodeInfo.nodeName)
     }
   } else {

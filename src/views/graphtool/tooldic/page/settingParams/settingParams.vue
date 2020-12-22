@@ -136,8 +136,7 @@
                 sql:this.paramsSetting.sql ? this.paramsSetting.sql : '',
                 mouseX: -1,
                 mouseY: -1,
-                selectTreeNum:0,//下拉树参数的个数
-                selectNum:0//下拉列表参数的个数
+                initTreeSuccess:false//左侧树是否成功加载
             }
         },
         props:["graph","nodeId","paramsSetting"],

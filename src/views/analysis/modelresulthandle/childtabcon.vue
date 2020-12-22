@@ -35,11 +35,12 @@
         <el-button
           :disabled="false"
           type="primary"
-          @click="queryConditionSetting"
-          class="oper-btn search"
-          title="查询设置"
+          size="small"
+          @click="handleResult"
+          title="处理"
+          class="oper-btn processing"
         ></el-button>
-        <el-button
+<!--        <el-button
           :disabled="false"
           type="primary"
           @click="queryConditionSetting"
@@ -52,7 +53,7 @@
           @click="reSet"
           class="oper-btn again-2"
           title="重置"
-        ></el-button>
+        ></el-button>-->
         <el-button
           v-if="false"
           class="oper-btn link"
@@ -63,7 +64,6 @@
         ></el-button>
       </div>
     </el-row>
-
     <ag-grid-vue
       ref="agGridVue"
       v-if="isSee"
@@ -79,6 +79,7 @@
       @gridReady="onGridReady"
       @rowSelected="rowChange"
       @cellEditingStopped="agGridUpdateEvent"
+      :localeText="localeText"
     />
     <el-card v-if="!isSee" class="box-card" style="height: 100px">
       <div>{{ errorMessage }}</div>
@@ -88,6 +89,7 @@
       :total="total"
       :page.sync="pageQuery.pageNo"
       :limit.sync="pageQuery.pageSize"
+      :pageSizes="[200,400,800,1000]"
       @pagination="initData(nowSql)"
     />
     <el-row>
@@ -164,13 +166,43 @@
       :visible.sync="chartShowIsSee"
       width="90%"
       :fullscreen="true"
-      :append-to-body="true"
-    >
+      :append-to-body="true">
       <mtEditor :data="result" v-if="chartShowIsSee"></mtEditor>
       <span slot="footer" class="dialog-footer">
       <el-button @click="chartShowIsSee = false">取 消</el-button>
-      <el-button type="primary" @click="chartShowIsSee = false">确 定</el-button>
-  </span>
+      <el-button type="primary" @click="chartShowIsSee = false">确 定</el-button></span>
+    </el-dialog>
+    <el-dialog
+      title="请处理"
+      :visible.sync="handleIdeaDialog"
+      width="30%"
+      :append-to-body="true">
+      <div ref="basicInfo">
+        <el-form ref="basicInfoForm">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="处理状态">
+                <el-select style="margin: 5px" v-model="modelResultHandle.handleState">
+                  <el-option value="待处理">待处理</el-option>
+                  <el-option value="未处理">未处理</el-option>
+                  <el-option value="已落实">已落实</el-option>
+                  <el-option value="不处理">不处理</el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="处理意见">
+                <el-input v-model="modelResultHandle.handleIdea" type="textarea" :rows="6" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+      <el-button @click="handleIdeaDialog = false">取 消</el-button>
+      <el-button type="primary" @click="updateHandleResult()">确 定</el-button></span>
     </el-dialog>
   </div>
 </template>
@@ -253,38 +285,170 @@ export default {
         pageNo: 1,
         pageSize: 20,
       },
+      //aggrid搜索
+      key:"",
       total: 0,
-      myFlag: false, // 用来判断主表界面有按钮，辅表界面没有按钮，为true是主表，为false是辅表
-      selectRows: [], //用于存放多选框选中的数据
-      detailTable: [], //存放关联详细表
-      primaryKey: "", // 保存每个表中的主键，因为每个表的主键都不一样，所以得根据表明查出来
-      dataArray: [], // 保存当前表格中的数据
-      queryData: [], // 保存列信息，用来传给子组件(queryBuilder组件)
-      queryJson: {}, // 用来储存由子组件传过来的 queryBuilder 的 Json数据
-      conditionShowData: [], // 存放模型运行结果需要渲染的数据
-      isLoading: true, //给agrrid加遮罩
-      nextValue: [], // 存放模型结果后传进来的值
-      modelResultData: [], // 用来存放模型结果数据
-      modelResultColumnNames: [], // 用来存放模型结果的列名
-      total1: null, // 模型结果前台分页的total属性
-      isSee: true, // 当输入sql错误和结果集为0的时候不显示aggrid表格
-      errorMessage: "", // 存放模型结果错误消息
-      modelResultPageIsSee: false, // 模型结果分页是否可见
-      modelResultButtonIsShow: false, // 模型结果按钮是否可见
-      modelDetailRelation: [], // 存放模型详细关联表
-      modelOutputColumn: [], // 存放模型结果输出列
-      modelDetailButtonIsShow: false, // 模型详细关联按钮是否可见
-      modelDetailDialogIsShow: false, // 点击模型详细关联按钮后弹出的Dialog是否可见
-      options: [], //存放模型详细关联dialog中下拉框的值
-      value: "", //模型详细关联dialog中下拉框选中的值
-      tableData: [], // 存放导出的数据（sql编辑器模型结果界面）
-      excelName: "", // 导出后excle的名称（sql编辑器模型结果界面）
-      json_fields: {}, // 导出表的列名（sql编辑器模型结果界面）
-      modelDetailModelResultDialogIsShow: false, //点击模型详细dialog确定按钮后执行显示模型详细结果弹窗是否可见
-      currentExecuteSQL: [], //模型详细关联dialog中点击确定按钮后根据sql返回的预先加载值，用于判断有几个页签
-      webSocket: null, //websocket对象
-      dataCoding: {}, //存储返回的数据转码对象
-      nowSql: "undefined", //存储当前querybuilder中的sql
+      // 用来判断主表界面有按钮，辅表界面没有按钮，为true是主表，为false是辅表
+      myFlag: false,
+      //用于存放多选框选中的数据
+      selectRows: [],
+      //存放关联详细表
+      detailTable: [],
+      //agrid汉化
+      localeText:{
+        // for filter panel
+        page: '页',
+        more: '更多',
+        to: '到',
+        /* of: 'daOf', */
+        next: '下一页',
+        last: '最后',
+        first: '第一',
+        previous: '以前的',
+        loadingOoo: '加载中...',
+        // Row:"行",
+        // 'Row Groups':"行分组",
+        // for set filter
+        selectAll: '全选',
+        searchOoo: '搜索...',
+        blanks: '空',
+        Column:"列",
+        labels:"标签",
+        // for number filter and text filter
+        filterOoo: '过滤',
+        applyFilter: '过滤中...',
+        equals: '等于',
+        notEqual: '不等于',
+        // for number filter
+        lessThan: '少于',
+        greaterThan: '多于',
+        lessThanOrEqual: '小于等于',
+        greaterThanOrEqual: '大于等于',
+        inRange: '在范围内',
+        // for text filter
+        contains: '包含',
+        notContains: '不包含',
+        startsWith: '开始',
+        endsWith: '结束',
+        // filter conditions
+        andCondition: '并且',
+        orCondition: '或者',
+        // the header of the default group column
+        // group: '分组',
+        // tool panel
+        columns: '列',
+        filters: '过滤器',
+        rowGroupColumns: '行列组',
+        // rowGroupColumnsEmptyMessage: '行列组为空',
+        valueColumns: '列值',
+        pivotMode: '透视模式',
+        // groups: '分组',
+        values: '值',
+        // pivots: '中心点',
+        valueColumnsEmptyMessage: '列值为空',
+        // pivotColumnsEmptyMessage: '中心点为空',
+        toolPanelButton: '工具按钮',
+
+        // other
+        noRowsToShow: '没有可以展示的数据',
+        // enterprise menu
+        pinColumn: '固定列',
+        valueAggregation: '聚合值',
+        autosizeThiscolumn: '自适应本列',
+        autosizeAllColumns: '自适应所有列',
+        groupBy: '分组',
+        ungroupBy: '取消分组',
+        resetColumns: '重置列',
+        expandAll: '展开所有',
+        collapseAll: '关闭所有',
+        toolPanel: '工具',
+        export: '导出',
+        csvExport: 'CSV 导出',
+        excelExport: 'Excel 导出(.xlsx)',
+        excelXmlExport: 'Excel 导出(.xml)',
+        // enterprise menu pinning
+        PinColumn:"固定",
+        pinLeft: '固定到左侧',
+        pinRight: '固定到右侧',
+        noPin: '无固定',
+        // enterprise menu aggregation and status bar
+        sum: '合计',
+        min: '最小值',
+        max: '最大值',
+        /* none: 'laNone', */
+        count: '计数',
+        average: '平均值',
+        avg : '平均值',
+        // standard menu
+        copy: '复制',
+        copyWithHeaders: '携表头复制',
+        ctrlC: 'ctrl-C',
+        paste: '粘贴',
+        ctrlV: 'ctrl-V'
+      },
+      //模型结果处理对象
+      modelResultHandle:{
+        handleState:'',
+        handleIdea:''
+      },
+      // 保存每个表中的主键，因为每个表的主键都不一样，所以得根据表明查出来
+      primaryKey: "",
+      // 保存当前表格中的数据
+      dataArray: [],
+      // 保存列信息，用来传给子组件(queryBuilder组件)
+      queryData: [],
+      // 用来储存由子组件传过来的 queryBuilder 的 Json数据
+      queryJson: {},
+      // 存放模型运行结果需要渲染的数据
+      conditionShowData: [],
+      //给agrrid加遮罩
+      isLoading: true,
+      //处理意见dialog
+      handleIdeaDialog:false,
+      // 存放模型结果后传进来的值
+      nextValue: [],
+      // 用来存放模型结果数据
+      modelResultData: [],
+      // 用来存放模型结果的列名
+      modelResultColumnNames: [],
+      // 模型结果前台分页的total属性
+      total1: null,
+      // 当输入sql错误和结果集为0的时候不显示aggrid表格
+      isSee: true,
+      // 存放模型结果错误消息
+      errorMessage: "",
+      // 模型结果分页是否可见
+      modelResultPageIsSee: false,
+      // 模型结果按钮是否可见
+      modelResultButtonIsShow: false,
+      // 存放模型详细关联表
+      modelDetailRelation: [],
+      // 存放模型结果输出列
+      modelOutputColumn: [],
+      // 模型详细关联按钮是否可见
+      modelDetailButtonIsShow: false,
+      // 点击模型详细关联按钮后弹出的Dialog是否可见
+      modelDetailDialogIsShow: false,
+      //存放模型详细关联dialog中下拉框的值
+      options: [],
+      //模型详细关联dialog中下拉框选中的值
+      value: "",
+      // 存放导出的数据（sql编辑器模型结果界面）
+      tableData: [],
+      // 导出后excle的名称（sql编辑器模型结果界面）
+      excelName: "",
+      // 导出表的列名（sql编辑器模型结果界面）
+      json_fields: {},
+      //点击模型详细dialog确定按钮后执行显示模型详细结果弹窗是否可见
+      modelDetailModelResultDialogIsShow: false,
+      //模型详细关联dialog中点击确定按钮后根据sql返回的预先加载值，用于判断有几个页签
+      currentExecuteSQL: [],
+      //websocket对象
+      webSocket: null,
+      //存储返回的数据转码对象
+      dataCoding: {},
+      //存储当前querybuilder中的sql
+      nowSql: "undefined",
       modelRunResultBtnIson: {
         exportBtn: false,
         chartDisplayBtn: false,
@@ -441,15 +605,15 @@ export default {
             if (this.modelUuid != undefined) {
               col.push({headerName: "", field: "", checkboxSelection: true,width:40});
               col.push({headerName: "详细主键", field: "onlyuuid",hide:true});
-              col.push({headerName: "处理时间", field: "handle_time"});
+              col.push({headerName: "处理时间", field: "handle_time", valueFormatter:this.formatDate,filter: true});
               col.push({headerName: "处理人编号", field: "handle_person_uuid",hide:true});
-              col.push({headerName: "处理人名称", field: "handle_person_name"});
+              col.push({headerName: "处理人名称", field: "handle_person_name",filter: true});
               col.push({
                 headerName: "处理状态",
                 editable:true,
                 field: "handle_state",
                 cellEditor: "agSelectCellEditor",//编辑时 显示下拉列表**************
-                cellEditorParams: { values: ["待处理", "未处理","已落实","不处理"] }});
+                cellEditorParams: { values: ["待处理", "未处理","已落实","不处理"] },filter: true});
               col.push({headerName: "模型结果处理主键", field: "model_result_handle_uuid",hide:true});
               col.push({headerName: "运行任务关联主键", field: "run_task_rel_uuid",hide:true});
               col.push({headerName: "模型结果表名", field: "model_result_table_name",hide:true});
@@ -460,7 +624,7 @@ export default {
                   maxLength: '300',
                   cols: '50',
                   rows: '6'
-                }});
+                },filter: true});
               for (var i = 0; i < colNames.length; i++) {
                 loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
                   if (this.modelOutputColumn[j].outputColumnName.toLowerCase() == colNames[i]) {
@@ -468,12 +632,13 @@ export default {
                       if (i == 0) {
                         var rowColom = {
                           headerName: this.modelOutputColumn[j].columnAlias,
-                          field: colNames[i],
+                          field: colNames[i]
                         };
                       } else {
                         var rowColom = {
                           headerName: this.modelOutputColumn[j].columnAlias,
                           field: colNames[i],
+                          filter: true
                         };
                       }
                       col.push(rowColom);
@@ -488,6 +653,7 @@ export default {
                         var rowColom = {
                           headerName: colNames[i],
                           field: colNames[i],
+                          filter: true
                         };
                       }
                       col.push(rowColom);
@@ -508,6 +674,7 @@ export default {
                   var rowColom = {
                     headerName: colNames[i],
                     field: colNames[i],
+                    filter: true
                   };
                 }
                 col.push(rowColom);
@@ -832,20 +999,135 @@ export default {
      * @param event 事件
      */
     agGridUpdateEvent(event){
-      let data = {
+      let data = this.handleSelectRowData(event.data)
+      //修改或添加处理意见等信息
+      addOrUpdate(data).then(result=>{
+        //给数据重新赋值并刷新表格
+        if(!result.data.isError){
+          this.$message({ type: "error", message: "修改信息失败!"})
+          return
+        }
+        let modelResultHandle = result.data.modelResultHandle
+        event.data.handle_time = modelResultHandle.handleTime
+        event.data.handle_person_uuid = modelResultHandle.handlePersonUuid
+        event.data.handle_person_name = modelResultHandle.handlePersonName
+        event.data.model_result_handle_uuid = modelResultHandle.modelResultHandleUuid
+        event.data.run_task_rel_uuid = modelResultHandle.runTaskRelUuid
+        event.data.model_result_table_name = modelResultHandle.modelResultTableName
+        this.rowData[event.rowIndex] = event.data
+        this.gridApi.refreshCells()
+      })
+    },
+    /**
+     * 选中的数据行
+     * @param data 数据行
+     */
+    handleSelectRowData(data){
+      let dataObj = {
+        modelResultHandleUuid:data.model_result_handle_uuid,
         runTaskRelUuid:this.nowtable.runTaskRelUuid,
-        modelResultDetailUuid:event.data.onlyuuid,
-        handleState:event.data.handle_state,
-        handleIdea:event.data.handle_idea,
+        modelResultDetailUuid:data.onlyuuid,
+        handleState:data.handle_state,
+        handleIdea:data.handle_idea,
         modelResultTableName:this.nowtable.resultTableName
       }
-      event.data.handle_idea = "测试修改数据"
-      this.$refs.agGridVue.setRowData(event.data)
-      console.log(event)
-      //修改或添加处理意见等信息
-/*      addOrUpdate(data).then(result=>{
-
-      })*/
+      return dataObj
+    },
+    /**
+     * 格式化时间字符串
+     * @param date 时间
+     * @returns {string}
+     */
+    formatDate(date) {
+      date = date.value
+      if (!date) {
+        return '-'
+      }
+      if(date === "无"){
+        return date
+      }
+      var date2 = new Date(date)
+      var year = date2.getFullYear()
+      var month = date2.getMonth() + 1
+      var day = date2.getDate()
+      var hours = date2.getHours()
+      var minutes = date2.getMinutes()
+      var second = date2.getSeconds()
+      if (month.toString().length == 1) {
+        month = "0" + month
+      }
+      if (day.toString().length == 1) {
+        day = "0" + day
+      }
+      if (hours.toString().length == 1) {
+        hours = "0" + hours
+      }
+      if (minutes.toString().length == 1) {
+        minutes = "0" + minutes
+      }
+      if(second.toString().length == 1){
+        second = "0" + second
+      }
+      var d = year + "-" + month + "-" + day + " " + hours + ":" + minutes+ ":" + second
+      return d
+    },
+    /**
+     *处理结果
+     */
+    handleResult(){
+      let selRows=  this.gridApi.getSelectedRows()
+      if(selRows == null || selRows.length <= 0) {
+        this.$message({type: "info", message: "请选择要处理的数据!"})
+        return
+      }
+      this.handleIdeaDialog = true
+    },
+    /**
+     * 修改处理结果
+     */
+    updateHandleResult(){
+      let selRows=  this.gridApi.getSelectedRows()
+      for(let i = 0;i < selRows.length;i++){
+        selRows[i].handle_idea = this.modelResultHandle.handleIdea
+        selRows[i].handle_state = this.modelResultHandle.handleState
+        let data = this.handleSelectRowData(selRows[i])
+        addOrUpdate(data).then(result=>{
+          //给数据重新赋值并刷新表格
+          if(!result.data.isError){
+            this.$message({ type: "error", message: "修改信息失败!"})
+            return
+          }
+          let modelResultHandle = result.data.modelResultHandle
+          selRows[i].handle_time = modelResultHandle.handleTime
+          selRows[i].handle_person_uuid = modelResultHandle.handlePersonUuid
+          selRows[i].handle_person_name = modelResultHandle.handlePersonName
+          selRows[i].model_result_handle_uuid = modelResultHandle.modelResultHandleUuid
+          selRows[i].run_task_rel_uuid = modelResultHandle.runTaskRelUuid
+          selRows[i].model_result_table_name = modelResultHandle.modelResultTableName
+          this.gridApi.refreshCells()
+        })
+      }
+      this.handleIdeaDialog = false
+      this.modelResultHandle.handleIdea = ""
+      this.modelResultHandle.handleState = ""
+    },
+    externalFilterChanged(newValue){
+      const newArr = []
+      this.gridApi.onFilterChanged()
+      const keys = this.key
+      if (keys !== '') {
+        // 这里是循环遍历把搜索框中内容同表格数据对比，
+        // 包含的化重新组成数据赋值给tableList
+        this.tableList.forEach(element => {
+          if (element.UploadTime.includes(keys)) {
+            newArr.push(element)
+            this.tableList = newArr
+          }
+        })
+        // 不包含就重新获取
+      } else {
+        return this.getData()
+      }
     }
   },
 };
