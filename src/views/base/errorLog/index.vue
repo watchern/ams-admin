@@ -6,14 +6,16 @@
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;" @sort-change="" @selection-change="" height="calc(100vh - 300px)"
       max-height="calc(100vh - 300px)">
       <el-table-column type="selection" width="55" />
-      <el-table-column label="操作用户" align="center" prop="opUserName" />
-      <el-table-column label="操作IP"  align="center" prop="opIp" />
-      <el-table-column label="异常类"  align="center" prop="opClass" />
-      <el-table-column label="异常方法" prop="opMethod" />
-      <el-table-column label="异常时间" prop="logTime" align="center"/>
-      <el-table-column label="异常信息" align="center" >
+      <el-table-column label="操作用户"  width="100px" align="center" prop="opUserName" />
+      <el-table-column label="操作IP"   width="160px" align="center" prop="opIp" />
+      <el-table-column label="异常类"   prop="opClass" />
+      <el-table-column label="异常方法"  width="300px" prop="opMethod" />
+      <el-table-column label="异常时间"  width="300px" prop="logTime" align="center"/>
+      <el-table-column label="异常信息"  width="300px" align="center" >
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="handReadError(scope.row)">查看异常信息</el-button>
+          <a type="text" size="small" @click="handReadError(scope.row)" class="handreada">
+            查看异常信息
+          </a>
         </template>
       </el-table-column>
       <!-- <el-table-column label="异常信息" prop="logContent" /> -->
@@ -111,9 +113,11 @@ export default {
         endTime: ''
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
-        pageSize: 20
+        pageSize: 20,
+        sortBy: 'desc',
+        sortName: 'logTime'
       }
     }
   },
@@ -193,6 +197,13 @@ export default {
   margin: 10px;
   line-height: 28px;
   font-size: 18px;
-
 }
+.handreada{
+    cursor: pointer;
+    padding: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1890ff;
+}
+.handreada:hover{text-decoration:underline}
 </style>

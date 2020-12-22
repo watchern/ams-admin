@@ -7,18 +7,17 @@
         :model-uuid="modelUuid"
         :useType="useType"
         :resultSpiltObjects="resultSpiltObjects"
-        :modelId="modelId"
     /></el-tab-pane>
     <el-tab-pane
       v-for="(item, key) in useType==='modelRunResult'?helptables:preValue"
       :key="key"
       :label="tabsName(key)"
-      ><childTabCons ref="child" :modelId="modelId" :nowtable="item" :prePersonalVal="item" :useType="useType" />
+      ><childTabCons ref="child" :nowtable="item" :prePersonalVal="item" :useType="useType" />
     </el-tab-pane>
   </el-tabs>
 </template>
 <script>
-import childTabCons from "@/views/analysis/auditmodelresult/childtabcon";
+import childTabCons from "@/views/analysis/modelresulthandle/childtabcon";
 import { now } from "moment";
 export default {
   components: {
@@ -70,8 +69,7 @@ export default {
     "modelUuid",
     "useType",
     "preValue",
-    "resultSpiltObjects",
-    "modelId"
+    "resultSpiltObjects"
   ],
 };
 </script>

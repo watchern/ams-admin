@@ -512,7 +512,6 @@ import QueryField from '@/components/Ace/query-field/index'
 import { getDictList } from '@/utils'
 import { mapMutations } from 'vuex'
 import store from '@/store'
-// import _ from lodash
 
 export default {
   name: 'Dependence',
@@ -593,7 +592,7 @@ export default {
       queryFields: [
         { label: '调度名称', name: 'scheduleName', type: 'text', value: '' },
         { label: '调度状态', name: 'status', type: 'select',
-          data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }], default: '0' },
+          data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }] },
         {
           label: '流程名称',
           name: 'processDefinitionId',
@@ -1103,7 +1102,7 @@ export default {
     runSchedule() {
       this.$refs['runForm'].validate((valid) => {
         if (valid) {
-          this.runParams.checked === true ? this.runParams.commandTypeEnum = 'COMPLEMENT_DATA' : this.runParams.commandTypeEnum = ''
+          this.runParams.checked === true ? this.runParams.commandTypeEnum = 'COMPLEMENT_DATA' : this.runParams.commandTypeEnum = 'START_PROCESS'
           this.runParams.checked === true ? this.runParams.isSupply = true : this.runParams.isSupply = false
           this.runParams.cronTime ? this.runParams.cronTime = this.runParams.cronTime.join(',') : this.runParams.cronTime = ''
           const tempData = Object.assign({}, this.runParams)

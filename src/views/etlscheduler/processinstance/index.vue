@@ -5,7 +5,6 @@
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
-        :query-default="queryDefault"
         @submit="getList"
       />
     </div>
@@ -106,7 +105,11 @@
         label="流程实例名称"
         prop="name"
         align="center"
-      />
+      >
+        <template slot-scope="scope">
+          <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processInstanceUuid)">{{ scope.row.name }}</el-link>
+        </template>
+      </el-table-column>
       <!-- <el-table-column
         label="流程名称"
         width="130px"
@@ -337,7 +340,7 @@ export default {
         // },
         {
           label: '流程状态', name: 'groupExecutionStatus', type: 'select',
-          data: statuSelectList
+          data: statuSelectList, value: []
         },
         { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
       ],
@@ -451,6 +454,8 @@ export default {
           startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
           startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
         }
+        this.queryFields[1].value = this.queryDefault.groupExecutionStatus
+        this.queryFields[2].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
         this.getList(this.queryDefault)
       }
     },
@@ -573,6 +578,10 @@ export default {
         this.list = resp.data.records
         this.listLoading = false
       })
+    },
+    handleView(processInstanceUuid) {
+      // 查看详情的页面跳转,传递状态为1为查看
+      this.$router.push(`/etlscheduler/instance/${processInstanceUuid}`)
     },
     handleFilter() {
       this.pageQuery.pageNo = 1

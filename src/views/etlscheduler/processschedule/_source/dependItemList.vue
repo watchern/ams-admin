@@ -213,7 +213,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    // is type projects-instance-details
+    // is type instancedetails
     this.isInstance = false
     this.show = !this.store.state.monitor.scheduleDetail
     // this.initDepend()

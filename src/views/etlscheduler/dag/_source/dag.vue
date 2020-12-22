@@ -30,7 +30,7 @@
       <div class="dag-toolbar">
         <div class="assist-btn">
           <!--
-            :disabled="$route.name !== 'projects-instance-details'" -->
+            :disabled="$route.name !== 'instancedetails'" -->
           <x-button
             style="vertical-align: middle; display:none"
             data-toggle="tooltip"
@@ -49,7 +49,7 @@
             data-container="body"
             type="primary"
             size="xsmall"
-            :disabled="$route.name !== 'projects-instance-details'"
+            :disabled="$route.name !== 'instancedetails'"
             icon="ans-icon-arrow-circle-right"
             @click="_toggleParam"
           />
@@ -91,25 +91,33 @@
               />
             </a>
           </div>
-          <!-- <x-button
-            v-if="(type === 'instance' || 'definition') && urlParam.id !=undefined"
-            v-tooltip.light="格式化DAG"
+          <!--size="xsmall"
             type="primary"
+            v-tooltip.light="格式化DAG"
+            -->
+          <x-button
+            v-if="(type === 'instance' || 'definition') && urlParam.id !=undefined"
             icon="ans-icon-triangle-solid-right"
-            size="xsmall"
             data-container="body"
+            type="text"
+            class="ans-btn-text"
             style="vertical-align: middle;"
+            title="格式化DAG"
             @click="dagAutomaticLayout"
-          /> -->
+          />
+          <!--  v-tooltip.light=""
+            size="xsmall"
+            type="primary"
+           -->
           <x-button
             v-if="type === 'instance'"
-            v-tooltip.light="刷新DAG状态"
             data-container="body"
             style="vertical-align: middle;"
             icon="ans-icon-refresh"
-            type="primary"
             :loading="isRefresh"
-            size="xsmall"
+            type="text"
+            class="ans-btn-text"
+            title="刷新DAG状态"
             @click="!isRefresh && _refresh()"
           />
           <x-button
@@ -156,7 +164,7 @@
 
     <m-udp :dialog-form-visible="dialogFormVisible" @onUdp="onUdp" @onClose="onClose" />
   </div>
-</template>d
+</template>
 <script>
 import _ from 'lodash'
 import dag0 from './dag'
@@ -334,18 +342,28 @@ export default {
                 let depState = ''
                 taskList.forEach(item => {
                   if (item.name === v1.name) {
-                    depState = item.state
+                    // depState = item.state
+                    depState = item.groupExecutionStatus
                   }
-                })
+                })               
                 dom.attr('data-state-id', v1.stateId)
                 dom.attr('data-dependent-result', v1.dependentResult || '')
                 dom.attr('data-dependent-depState', depState)
                 state.append(`<strong class="${v1.icoUnicode} ${v1.isSpin ? 'as as-spin' : ''}" style="color:${v1.color}" data-toggle="tooltip" data-html="true" data-container="body"></strong>`)
                 state.find('strong').attr('title', titleTpl(v2, v1.desc))
+                // state.append(`<el-tooltip class="item" effect="dark" placement="top">
+                //                   <div slot="content">多行信息<br/>第二行信息</div>
+                //                   <el-button><strong class="${v1.icoUnicode} ${v1.isSpin ? 'as as-spin' : ''}" style="color:${v1.color}" data-toggle="tooltip" data-html="true" data-container="body"></strong></el-button>
+                //              </el-tooltip>`)
+                // state.find('el-tooltip').attr('content', titleTpl(v2, v1.desc))
+                // state.find('div').append(titleTpl(v2, v1.desc))
+                state.find('strong').attr(':data-title', titleTpl(v2, v1.desc))
+                // state.find('strong').attr('data-original-title', titleTpl(v2, v1.desc))
               }
             })
           })
-          if (state === 'PAUSE' || state === 'STOP' || state === 'FAILURE' || this.state === 'SUCCESS') {
+          // if (state === 'PAUSE' || state === 'STOP' || state === 'FAILURE' || this.state === 'SUCCESS') {
+          if (state === 'G_PAUSE' || state === 'G_CANCEL' || state === 'G_FAILURE' || this.state === 'G_SUCCESS') {
             // Manual refresh does not regain large json
             if (isReset) {
               findComponentDownward(this.$root, `${this.type}-details`)._reset()
@@ -639,9 +657,17 @@ export default {
              * @param fromThis
              */
             cacheTaskInfo({ item, fromThis }) {
+              // 给选中的元素添加class
+              if (document.getElementById(item.id) !== null) {
+                document.getElementById(item.id).classList.add('jtk-tasks-active')
+              }
               self.cacheTasks(item)
             },
             close({ item, flag, fromThis }) {
+              // 给选中的元素移除class
+              if (document.getElementById(item.id) !== null) {
+                document.getElementById(item.id).classList.remove('jtk-tasks-active')
+              }
               self.addTasks(item)
               // Edit status does not allow deletion of nodes
               if (flag) {

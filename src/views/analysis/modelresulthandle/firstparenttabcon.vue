@@ -2,219 +2,283 @@
   <!-- firstParentTabCon.vue界面是父页签第一个页签中的内容 -->
   <div class="app-container">
     <el-container>
-      <el-aside class="tree-side">
-        <div class="tree-container" style = "height:700px;overflow:auto;">
-    <warningresulttree @getLikeList="getLikeList" @clickChangeTable="clickChangeTable"></warningresulttree>
-    </div>
-     </el-aside>
-     <el-container>
-     <el-header style="width: 60%">
-      <QueryField
-        ref="queryfield"
-        :form-data="queryFields"
-        @submit="getLikeList"
-      />
-    </el-header>
-    <el-main>
-    <div align="right" style="width: 53%">
-      <el-row>
-        <el-button
-          type="primary"
-          @click="relationProject('453452', '项目2')"
-          :disabled="buttonIson.AssociatedBtn"
-          class="oper-btn refresh"
-          title="关联项目"
-        ></el-button>
-        <el-button
-         v-if="false"
-          type="primary"
-          @click="RemoverelationProject('asdasdasdas')"
-          :disabled="buttonIson.DisassociateBtn"
-          title="移除项目关联"
-          >移除项目关联</el-button
-        >
-        <el-button
-          :disabled="buttonIson.deleteBtn"
-          type="primary"
-          @click="deleteRunTaskRel"
-          class="oper-btn delete"
-          title="删除"
-        ></el-button>
-         <el-button
+      <el-header>
+        <div class="filter-container" >
+          <QueryField
+            ref="queryfield"
+            :form-data="queryFields"
+            @submit="getLikeList"
+          />
+        </div>
+      </el-header>
+      <el-main>
+        <div align="right" style="width: 57%">
+          <el-row>
+            <el-button
+              v-if="false"
+              type="primary"
+              @click="relationProject('4534532', '项目5')"
+              :disabled="buttonIson.AssociatedBtn"
+              class="oper-btn refresh"
+              title="关联项目"
+            ></el-button>
+            <el-button
+              v-if="false"
+              @click="RemoverelationProject('asdasdasdas')"
+              :disabled="buttonIson.DisassociateBtn"
+              title="移除项目关联"
+              >移除项目关联</el-button
+            >
+               <el-button
+              type="primary"
+              title="待处理"
+              size="mini"
+            >待处理</el-button>
+               <el-button
+              type="primary"
+              title="已处理"
+              size="mini"
+            >已处理</el-button>
+               <el-button
+              type="primary"
+              title="已完成"
+              size="mini"
+            >已完成</el-button>
+               <el-button
+              type="primary"
+              :disabled="buttonIson.deleteBtn"
+              @click="deleteRunTaskRel"
+              class="oper-btn delete"
+              title="删除"
+            ></el-button>
+            <el-button
+              v-if="false"
               type="primary"
               :disabled="buttonIson.resultSplitBtn"
               class="oper-btn split-2"
               @click="openResultSplitDialog"
               title="结果拆分"
-          ></el-button>
-        <el-button
-          type="primary"
-          @click="modelResultOpenDialog()"
-          :disabled="buttonIson.resultShareBtn"
-          class="oper-btn share"
-          title="结果共享"
-        ></el-button>
-        <el-button
-          type="primary"
-          @click="exportExcel"
-          :disabled="buttonIson.exportBtn"
-          class="oper-btn export-2"
-          title="导出"
-        ></el-button>
-      </el-row>
-    </div>
-    <el-table
-      id="table"
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
-      height="450px"
-      style="overflow-x: scroll; width: 53%"
-    >
-      <el-table-column type="selection" width="55" />
-      <el-table-column
-        label="模型名称"
-        width="300px"
-        align="center"
-        prop="model.modelName"
-      >
-        <template slot-scope="scope">
-          <a
-            type="text"
-            style="color: #409eff"
-            @click="
-              getResultTables(
-                scope.row.runResultTables,
-                scope.row.model.modelName,
-                scope.row.model.modelUuid,
-                scope.row.runStatus,
-                resultSpiltObjects
-              )
-            "
-            >{{ scope.row.model.modelName }}</a
+            ></el-button>
+            <el-button
+              v-if="false"
+              type="primary"
+              @click="modelResultOpenDialog()"
+              :disabled="buttonIson.resultShareBtn"
+              class="oper-btn share"
+              title="结果共享"
+            ></el-button>
+            <el-button
+              v-if="false"
+              type="primary"
+              @click="exportExcel"
+              :disabled="buttonIson.exportBtn"
+              class="oper-btn export-2"
+              title="导出"
+            ></el-button>
+          </el-row>
+        </div>
+        <el-table
+          id="table"
+          :key="tableKey"
+          v-loading="listLoading"
+          :data="list"
+          border
+          fit
+          highlight-current-row
+          @sort-change="sortChange"
+          @selection-change="handleSelectionChange"
+          height="450px"
+          style="overflow-x: scroll; width: 57%"
+        >
+          <el-table-column type="selection" width="55" />
+          <el-table-column
+            label="模型名称"
+            width="300px"
+            align="center"
+            prop="model.modelName"
           >
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="运行状态"
-        width="100px"
-        align="center"
-        prop="runStatus"
-        :formatter="readStatusFormatter"
-        ><template slot-scope="scope">
-          <i
-            :class="runStatusIconFormatter(scope.row.runStatus)"
-            :style="runStatusStyleFormatter(scope.row.runStatus)"
-          ></i> </template
-      ></el-table-column>
-      <el-table-column
-        label="运行人"
-        width="100px"
-        align="center"
-        prop="runTask.runUserName"
-      />
-      <el-table-column
-        label="运行类型"
-        width="100px"
-        align="center"
-        prop="runTask.runType"
-        :formatter="runTypeFormate"
-      />
-      <el-table-column
-        label="执行进度"
-        prop="executeProgress"
-        align="center"
-        width="200px"
-      >
-        <template slot-scope="scope">
-          <el-progress
-            :percentage="executeProgressFormate(scope.row.executeProgress)"
-            :color="customColorMethod(scope.row.executeProgress)"
+            <template slot-scope="scope">
+              <a
+                type="text"
+                style="color: #409eff"
+                @click="
+                  getResultTables(
+                    scope.row.runResultTables,
+                    scope.row.model.modelName,
+                    scope.row.model.modelUuid,
+                    scope.row.runStatus,
+                    resultSpiltObjects
+                  )
+                "
+                >{{ scope.row.model.modelName }}</a
+              >
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="处理状态"
+            width="100px"
+            align="center"
+            prop="handleState"
+            :formatter="handleStateFormatter"
           />
-        </template>
-      </el-table-column>
-           <el-table-column
+          <el-table-column
+            label="运行状态"
+            width="100px"
+            align="center"
+            prop="runStatus"
+            :formatter="readStatusFormatter"
+            ><template slot-scope="scope">
+              <i
+                :class="runStatusIconFormatter(scope.row.runStatus)"
+                :style="runStatusStyleFormatter(scope.row.runStatus)"
+              ></i> </template
+          ></el-table-column>
+          <el-table-column
+            label="运行人"
+            width="100px"
+            align="center"
+            prop="runTask.runUserName"
+          />
+          <el-table-column
+            label="运行类型"
+            width="100px"
+            align="center"
+            prop="runTask.runType"
+            :formatter="runTypeFormate"
+          />
+          <el-table-column
+            label="执行进度"
+            prop="executeProgress"
+            align="center"
+            width="200px"
+          >
+            <template slot-scope="scope">
+              <el-progress
+                :percentage="executeProgressFormate(scope.row.executeProgress)"
+                :color="customColorMethod(scope.row.executeProgress)"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column
             label="结果总条数"
             width="100px"
             align="center"
             prop="runResultTables"
             :formatter="dataCountFormatter"
           />
-      <el-table-column
-        label="定时运行时间"
-        width="200px"
-        align="center"
-        prop="runEndTime"
-        :formatter="dateFormatter2"
-      />
-      <el-table-column
-        label="运行开始时间"
-        width="200px"
-        align="center"
-        prop="runStartTime"
-        :formatter="dateFormatter"
-      />
-      <el-table-column
-        label="运行结束时间"
-        width="200px"
-        align="center"
-        prop="runEndTime"
-        :formatter="dateFormatter1"
-      />
-      <el-table-column
-        label="运行SQL"
-        prop="settingInfo"
-        align="center"
-        width="200px"
-        :formatter="settingInfoSqlFormatter"
-      />
-      <el-table-column
-        label="运行参数"
-        prop="settingInfo"
-        align="center"
-        width="200px"
-        :formatter="settingInfoParamsArrFormatter"
-      />
-      <el-table-column
-        label="运行信息"
-        prop="runMessage"
-        align="center"
-        width="200px"
-      />
-      <el-table-column
-        label="关联项目"
-        prop="projectName"
-        align="center"
-        width="200px"
-      />
-      <el-table-column
-        v-if="false"
-        label="运行结果共享表主键"
-        prop="runResultShare.runResultShareUuid"
-        align="center"
-        width="200px"
-      />
-    </el-table>
-   </el-main>
-    <el-dialog
-          title="请选择要分享的人员"
-          :visible.sync="resultShareDialogIsSee"
-          width="50%"
+          <el-table-column
+            label="定时运行时间"
+            width="200px"
+            align="center"
+            prop="runTask.timingExecute"
+            :formatter="dateFormatter2"
+          />
+          <el-table-column
+            label="运行开始时间"
+            width="200px"
+            align="center"
+            prop="runStartTime"
+            :formatter="dateFormatter"
+          />
+          <el-table-column
+            label="运行结束时间"
+            width="200px"
+            align="center"
+            prop="runEndTime"
+            :formatter="dateFormatter1"
+          />
+          <el-table-column
+            label="运行SQL"
+            prop="settingInfo"
+            align="center"
+            width="200px"
+            :formatter="settingInfoSqlFormatter"
+          />
+          <el-table-column
+            label="运行参数"
+            prop="settingInfo"
+            align="center"
+            width="200px"
+            :formatter="settingInfoParamsArrFormatter"
+          />
+          <el-table-column
+            label="运行信息"
+            prop="runMessage"
+            align="center"
+            width="200px"
+          />
+          <el-table-column
+            label="关联项目"
+            prop="projectName"
+            align="center"
+            width="200px"
+          />
+             <el-table-column
+            label="共享人"
+            prop="runResultShare.userName"
+            align="center"
+            width="200px"
+          />
+          <el-table-column
+            v-if="false"
+            label="运行结果共享表主键"
+            prop="runResultShare.runResultShareUuid"
+            align="center"
+            width="200px"
+          />
+          <el-table-column
+            fixed="right"
+            label="操作"
+            width="150px"
+            align="center"
+          >
+            <template slot-scope="scope">
+              <div>
+                <a
+                  v-if="scope.row.runStatus == 4"
+                  @click="reRunReParam(scope.row)"
+                  style="color: #409eff"
+                  >重新运行</a
+                >
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-dialog
+          title="模型运行设置-立即"
+          :visible.sync="runimmediatelyIsSee"
+          width="60%"
+          :append-to-body="true"
         >
-          <personTree ref="orgPeopleTree"></personTree>
+          <runimmediatelycon
+            v-if="runimmediatelyIsSee"
+            ref="modelsetting"
+            :timing="false"
+            :models="this.currentData"
+          />
           <span slot="footer" class="dialog-footer">
-            <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
-            <el-button type="primary" @click="modelResultShare"
-              >确 定</el-button
-            >
+            <el-button @click="runimmediatelyIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="modelRunSetting">确 定</el-button>
           </span>
         </el-dialog>
-     <el-dialog
+        <el-dialog
+          title="模型运行设置-定时"
+          :visible.sync="timingExecutionIsSee"
+          width="60%"
+          :append-to-body="true"
+        >
+          <runimmediatelycon
+            v-if="timingExecutionIsSee"
+            ref="modelsetting"
+            :timing="true"
+            :models="this.currentData"
+          />
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="timingExecutionIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="modelRunSetting">确 定</el-button>
+          </span>
+        </el-dialog>
+        <el-dialog
           title="结果拆分"
           :visible.sync="resultSplitDialogIsSee"
           width="40%"
@@ -244,33 +308,28 @@
             >
           </span>
         </el-dialog>
-    <el-dialog
-      title="设置定时时间"
-      :visible.sync="settingTimingIsSee"
-      width="30%"
-    >
-      <el-date-picker
-        v-model="setDateTime"
-        type="datetime"
-        placeholder="选择日期时间"
-      >
-      </el-date-picker>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="settingTimingIsSee = false">取 消</el-button>
-        <el-button type="primary" @click="afterSettingTime">确 定</el-button>
-      </span>
-    </el-dialog>
-    <el-footer>
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="pageQuery.pageNo"
-      :limit.sync="pageQuery.pageSize"
-      @pagination="getLikeList"
-    />
-    </el-footer>
+        <el-dialog
+          title="请选择要分享的人员"
+          :visible.sync="resultShareDialogIsSee"
+          width="50%"
+        >
+          <personTree ref="orgPeopleTree"></personTree>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="resultShareDialogIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="modelResultShare"
+              >确 定</el-button
+            >
+          </span>
+        </el-dialog>
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          :page.sync="pageQuery.pageNo"
+          :limit.sync="pageQuery.pageSize"
+          @pagination="getLikeList"
+        />
+      </el-main>
     </el-container>
-     </el-container>
   </div>
 </template>
 <script>
@@ -284,21 +343,25 @@ import {
   exportRunTaskRel,
   reRunRunTask,
   getResultSplitSelectData,
-  addCoverResultRelProject,
   selectPrimaryKeyByTableName,
+  batchSaveResultDetailProjectRel,
+  selectByRunResultTableUUids,
   getDataAfterResultSpiltToRelateProject,
-} from "@/api/analysis/auditmodelresult";
+  addCoverResultRelProject
+} from "@/api/analysis/auditmodelresult"
+import { selectLikePageVoHandle } from "@/api/analysis/modelresulthandle"
+import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 import QueryField from "@/components/Ace/query-field/index";
 import Pagination from "@/components/Pagination/index";
 import { elementInside } from "dropzone";
+import runimmediatelycon from "@/views/analysis/auditmodel/runimmediatelycon";
 import axios from "axios";
 import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
-import warningresulttree from "@/views/analysis/auditwarningresult/warningresulttree";
 import personTree from "@/components/publicpersontree/index";
 export default {
-  components: { Pagination, QueryField, warningresulttree,personTree },
+  components: { Pagination, QueryField, runimmediatelycon, personTree },
   data() {
     return {
       tableKey: "errorUuid",
@@ -335,13 +398,26 @@ export default {
         resultShareBtn: true,
         exportBtn: false,
       },
-      settingTimingIsSee: false,
       setDateTime: "",
       nowRunTaskRel: null,
-      resultSpiltObjects: {}, //存储点击结果拆分要传往后台的数据
+      //单次/多次/周期执行的周期开始结束时间 执行时间选择配置
+      executeTimeOptions: {
+        disabledDate(time) {
+          //不能选择小于当前日志的事件
+          return (
+            new Date(time.toLocaleDateString()) <
+            new Date(new Date().toLocaleDateString())
+          );
+        },
+      },
+      runimmediatelyIsSee: false,
+      timingExecutionIsSee: false,
+      currentData: [],
       resultSplitDialogIsSee: false, //结果拆分dialog是否可见
       ResultSplitoptions: [], //存储结果拆分dialog的下拉框中的数据
       selectedValue: [], //结果查分下拉框选中的值
+      resultSpiltedRunResultRel: [], //存储进行结果拆分的模型任务关联对象
+      resultSpiltObjects: {}, //存储点击结果拆分要传往后台的数据
       resultShareDialogIsSee: false, //点击模型结果关联按钮控制人员dialog显示
     };
   },
@@ -393,6 +469,15 @@ export default {
         var hh = dateMat.getHours();
         var mm = dateMat.getMinutes();
         var ss = dateMat.getSeconds();
+        if (hh < 10) {
+          hh = "0" + hh;
+        }
+        if (mm < 10) {
+          mm = "0" + mm;
+        }
+        if (ss < 10) {
+          ss = "0" + ss;
+        }
         var timeFormat =
           year + "-" + month + "-" + day + " " + hh + ":" + mm + ":" + ss;
         return timeFormat;
@@ -415,6 +500,15 @@ export default {
         var hh = dateMat.getHours();
         var mm = dateMat.getMinutes();
         var ss = dateMat.getSeconds();
+        if (hh < 10) {
+          hh = "0" + hh;
+        }
+        if (mm < 10) {
+          mm = "0" + mm;
+        }
+        if (ss < 10) {
+          ss = "0" + ss;
+        }
         var timeFormat =
           year + "-" + month + "-" + day + " " + hh + ":" + mm + ":" + ss;
         return timeFormat;
@@ -422,7 +516,7 @@ export default {
       return "";
     },
     dateFormatter2(row) {
-      const datetime = row.timingExecute;
+      const datetime = row.runTask.timingExecute;
       if (datetime) {
         var dateMat = new Date(datetime);
         var year = dateMat.getFullYear();
@@ -431,6 +525,15 @@ export default {
         var hh = dateMat.getHours();
         var mm = dateMat.getMinutes();
         var ss = dateMat.getSeconds();
+        if (hh < 10) {
+          hh = "0" + hh;
+        }
+        if (mm < 10) {
+          mm = "0" + mm;
+        }
+        if (ss < 10) {
+          ss = "0" + ss;
+        }
         var timeFormat =
           year + "-" + month + "-" + day + " " + hh + ":" + mm + ":" + ss;
         return timeFormat;
@@ -454,12 +557,12 @@ export default {
      */
     settingInfoParamsArrFormatter(row, column) {
       if (row.settingInfo == null) {
-        return "";
+        return "无";
       } else {
         var paramShowStr = "";
         var params = JSON.parse(row.settingInfo).paramsArr;
         if (params == undefined) {
-          return "";
+          return "无";
         } else {
           for (var i = 0; i < params.length; i++) {
             paramShowStr +=
@@ -487,6 +590,19 @@ export default {
       } else {
         return "运行失败";
       }
+    },
+    /**
+     * 处理状态格式化
+     */
+    handleStateFormatter(row){
+      var handleState = row.handleState;
+      if (status == 1) {
+        return "待处理";
+      } else if (status == 2) {
+        return "已处理";
+      } else if (status == 3) {
+        return "已完成";
+      } 
     },
     /**
      * 运行状态图标展示
@@ -523,16 +639,6 @@ export default {
       this.listLoading = true;
       var model = {};
       var runTask = {};
-      if(query==undefined){
-          var query1 = {runTaskUuid:null}
-          query1.runTaskUuid = '1'
-          this.pageQuery.condition = query1;
-        getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
-        this.total = resp.data.total;
-        this.list = resp.data.records;
-        this.listLoading = false;
-      });
-      }
       if (query) {
         if (query.modelName == null || query.modelName == "") {
           model = null;
@@ -544,23 +650,22 @@ export default {
         } else {
           var runTask = { runUserName: query.runUserName };
         }
-        if(query.runTaskUuid == undefined){
-          query.runTaskUuid = '1'
-        }
         query.model = model;
         query.runTask = runTask;
         this.pageQuery.condition = query;
-        getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
-        this.total = resp.data.total;
-        this.list = resp.data.records;
-        this.listLoading = false;
-      });
       }
+        selectLikePageVoHandle(this.pageQuery).then(
+        (resp) => {
+          console.log(resp.data.records)
+          this.total = resp.data.total;
+          this.list = resp.data.records;
+          this.listLoading = false;
+        }
+      );
     },
     /**
      * 当多选框改变时触发
      */
-    //      buttonIson:{AssociatedBtn:true,DisassociateBtn:true,deleteBtn:true,resultSplitBtn:true,resultShareBtn:true,exportBtn:false}
     handleSelectionChange(val) {
       if (val.length <= 0) {
         this.buttonIson.AssociatedBtn = true;
@@ -612,7 +717,7 @@ export default {
      */
     deleteRunTaskRel() {
       if (this.share.length == 0 && this.notShare.length == 0) {
-        alert("请选择要删除的运行结果");
+        this.$message({ message: "请选择要删除的运行结果" });
       } else if (this.notShare.length != 0 && this.share.length == 0) {
         // 当选中的要删除结果中都是自己的没有别人共享结果的时候
         var flag = true;
@@ -625,7 +730,9 @@ export default {
         }
         // 如果有关联的项目
         if (flag == false) {
-          alert("选择的运行结果有项目关联，请取消关联，再删除！");
+          this.$message({
+            message: "选择的运行结果有项目关联，请取消关联，再删除！",
+          });
         } else {
           // 打开删除提示框
           this.open();
@@ -645,7 +752,9 @@ export default {
           }
         }
         if (flag == false) {
-          alert("选择的运行结果有项目关联，请取消关联，再删除！");
+          this.$message({
+            message: "选择的运行结果有项目关联，请取消关联，再删除！",
+          });
         } else {
           // 打开删除提示框
           this.open2();
@@ -777,7 +886,7 @@ export default {
           });
         });
     },
-   /**
+    /**
      * 关联项目按钮触发
      */
     relationProject(projectId, projctName) {
@@ -922,6 +1031,7 @@ export default {
       var personUuids = [];
       var personNames = []
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
+      debugger
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
         personNames.push(selectedNode[i].cnname);
@@ -956,7 +1066,7 @@ export default {
      * val是运行结果中的resultTables
      * modelName是选中的模型的名字
      */
-    getResultTables(val, modelName, modelUuid, runStatus,resultSpiltObjects) {
+    getResultTables(val, modelName, modelUuid, runStatus, resultSpiltObjects) {
       if (runStatus == 3) {
         var assistTables = [];
         var mainTable = null;
@@ -969,7 +1079,14 @@ export default {
         }
         // 触发父类方法addTab在index.vue界面，同时穿过三个参数assistTables：辅表（运行结果表）数组  mainTable：主表（运行结果表对象）
         // modelName：模型的名称，用来给新页签赋值title属性用
-        this.$emit("addtab", assistTables, mainTable, modelName, modelUuid,resultSpiltObjects);
+        this.$emit(
+          "addtab",
+          assistTables,
+          mainTable,
+          modelName,
+          modelUuid,
+          resultSpiltObjects
+        );
       } else {
         this.$message({
           type: "info",
@@ -977,6 +1094,9 @@ export default {
         });
       }
     },
+    /**
+     * 运行类型格式化
+     */
     runTypeFormate(row) {
       var runType = row.runTask.runType;
       if (runType == 2) {
@@ -985,6 +1105,22 @@ export default {
         return "立即运行";
       }
     },
+    /**
+     * 结果总条数格式化
+     */
+    dataCountFormatter(row) {
+      var tables = row.runResultTables;
+      var dataCount = 0;
+      for (var i = 0; i < tables.length; i++) {
+        if (tables[i].tableType == 1) {
+          dataCount = tables[i].dataCount;
+        }
+      }
+      return dataCount;
+    },
+    /**
+     * 执行进度格式化
+     */
     executeProgressFormate(executeProgress) {
       if (executeProgress == null) {
         return 0;
@@ -993,21 +1129,108 @@ export default {
         return executeProgress1;
       }
     },
-    afterSettingTime() {
-      reRunRunTask(this.nowRunTaskRel, this.setDateTime).then((resp) => {
-        if (resp.data == true) {
-          this.getLikeList();
+    /**
+     * 重新运行功能
+     */
+    reRunReParam(runTaskRel) {
+      var runType = runTaskRel.runTask.runType;
+      this.nowRunTaskRel = runTaskRel;
+      this.currentData = [];
+      this.currentData.push(runTaskRel.model);
+      if (runType == 3) {
+        this.runimmediatelyIsSee = true;
+      } else if (runType == 2) {
+        this.timingExecutionIsSee = true;
+      }
+    },
+    /**
+     * 添加运行任务和运行任务关联表
+     */
+    modelRunSetting() {
+      var runType = this.nowRunTaskRel.runTask.runType;
+      var results = this.$refs.modelsetting.replaceParams();
+      this.replacedInfo = results.replaceInfo;
+      var modelResultSavePathId = results.modelResultSavePathId;
+      var dateTime = results.dateTime;
+      var settingInfo = {
+        sql: this.replacedInfo[0].sql,
+        paramsArr: this.replacedInfo[0].paramsArr,
+      };
+      this.nowRunTaskRel.model = results.models[0];
+      this.nowRunTaskRel.settingInfo = settingInfo;
+      this.nowRunTaskRel.locationUuid = modelResultSavePathId;
+      if (this.timingExecutionIsSee) {
+        if (dateTime == "") {
+          this.$message({
+            message: "请输入定时时间",
+            type: "warning",
+          });
+        } else if (this.replacedInfo[0].sql == "") {
+          this.$message({
+            message: "请输入参数",
+            type: "warning",
+          });
+        } else if (modelResultSavePathId == "") {
+          this.$message({
+            message: "请选择模型结果保存路径",
+            type: "warning",
+          });
         } else {
-          this.$message({ type: "info", message: "重新执行失败!" });
+          if (runType == 3) {
+            reRunRunTask(this.nowRunTaskRel).then((resp) => {
+              if (resp.data == true) {
+                this.getLikeList();
+              } else {
+                this.$message({ type: "info", message: "重新执行失败!" });
+              }
+            });
+          } else if (runType == 2) {
+            reRunRunTask(this.nowRunTaskRel, dateTime).then((resp) => {
+              if (resp.data == true) {
+                this.getLikeList();
+              } else {
+                this.$message({ type: "info", message: "重新执行失败!" });
+              }
+            });
+          }
+          this.runimmediatelyIsSee = false;
+          this.timingExecutionIsSee = false;
         }
-      });
-      this.settingTimingIsSee = false;
+      } else if (this.runimmediatelyIsSee) {
+        if (this.replacedInfo[0].sql == "") {
+          this.$message({
+            message: "请输入参数",
+            type: "warning",
+          });
+        } else if (modelResultSavePathId == "") {
+          this.$message({
+            message: "请选择模型结果保存路径",
+            type: "warning",
+          });
+        } else {
+          if (runType == 3) {
+            reRunRunTask(this.nowRunTaskRel).then((resp) => {
+              if (resp.data == true) {
+                this.getLikeList();
+              } else {
+                this.$message({ type: "info", message: "重新执行失败!" });
+              }
+            });
+          } else if (runType == 2) {
+            reRunRunTask(this.nowRunTaskRel, dateTime).then((resp) => {
+              if (resp.data == true) {
+                this.getLikeList();
+              } else {
+                this.$message({ type: "info", message: "重新执行失败!" });
+              }
+            });
+          }
+          this.runimmediatelyIsSee = false;
+          this.timingExecutionIsSee = false;
+        }
+      }
     },
-    clickChangeTable(runTaskRelUuid){
-        var query = {runTaskUuid:runTaskRelUuid}
-        this.getLikeList(query)
-    },
-     /**
+    /**
      * 点击结果拆分后打开dialog方法
      */
     openResultSplitDialog() {
@@ -1054,7 +1277,7 @@ export default {
         });
       }
     },
-      /**
+    /**
      * 点击结果拆分确定按钮触发的事件
      */
     ResultSplitDialogDetermine() {
@@ -1072,21 +1295,8 @@ export default {
       this.getLikeList();
       this.resultSplitDialogIsSee = false;
     },
-      modelResultOpenDialog() {
+    modelResultOpenDialog() {
       this.resultShareDialogIsSee = true;
-    },
-     /**
-     * 结果总条数格式化
-     */
-    dataCountFormatter(row) {
-      var tables = row.runResultTables;
-      var dataCount = 0;
-      for (var i = 0; i < tables.length; i++) {
-        if (tables[i].tableType == 1) {
-          dataCount = tables[i].dataCount;
-        }
-      }
-      return dataCount;
     },
   },
 };

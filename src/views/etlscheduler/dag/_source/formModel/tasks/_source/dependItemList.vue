@@ -164,8 +164,8 @@ export default {
   beforeCreate() {
   },
   created() {
-    // is type projects-instance-details
-    this.isInstance = this.router.history.current.name === 'projects-instance-details'
+    // is type instancedetails
+    this.isInstance = this.router.history.current.name === 'instancedetails'
     // get processlist
     this._getProjectList().then(() => {
       if (!this.dependItemList.length) {
