@@ -17,23 +17,28 @@
       <div class="right flex a-end j-center flex-column">
         <div class="top-card flex a-start j-start flex-row">
           <div class="top-card-left flex-shrink  flex a-center j-center">
-            <img src="../../../../assets/Ace/image/logo.png" class="img">
+            <img src="../../../../assets/Ace/image/c2.png" class="img">
           </div>
           <div class="top-card-right">
-            <div class="title">审计新平台公告栏</div>
-            <div class="des">为提供更好的服务，6月27日凌晨进行系统升级维护，届时相关业务可能会造成局部中断，系统升级对您造成的不便，敬请谅解。</div>
+            <div class="title">待办事项</div>
+            <div class="des" v-for="(item,index) in TopTodo">
+              <span>{{item.text}}</span>
+              <span v-if="item.icon" :style="{color:item.iconColor}" class="icon">{{ item.icon }}</span>
+            </div>
+            <div class=""></div>
           </div>
         </div>
         <div class="bottom-card flex a-center j-between flex-row">
           <div v-for="(item,index) in cardList" :key="index" class="card flex a-start j-center flex-column" :style="{background:item.bg}">
             <div class="img-box flex a-center j-center" :style="{background:item.cardBg}">
-              <img :src="item.img" class="img">
+              <img :src="item.img" class="img" :style="{width:item.imgwith,height:item.imgheight}">
             </div>
             <div class="title">{{ item.title }}</div>
             <div v-for="(text,index) in item.des" :key="index" class="line">
-              <span>{{ text.text }}</span>
-              <span v-if="text.icon" :style="{color:text.iconColor}" class="icon">{{ text.icon }}</span>
+              <span @click="toDoJump" >{{ text.text }}</span>
+              <span v-if="text.icon" :style="{color:text.iconColor,width:text.width}" class="icon">{{ text.icon }}</span>
             </div>
+            <span class="card-more" @click="moreJump">更多</span>
           </div>
         </div>
       </div>
@@ -67,6 +72,7 @@
 </template>
 
 <script>
+import { getRemindByDescTime } from '@/api/base/base'
 export default {
   data() {
     return {
@@ -76,32 +82,51 @@ export default {
           title: '预警监控',
           bg: '#EDF1F5',
           cardBg: '#353A43',
+          path:'',
           des: [
             {
               text: '住房消费贷客户年龄不合规',
               iconColor: '#D81020',
-              icon: '+'
+              icon: ''
             },
             {
               text: '个人贷款担保不良贷款客户 ',
-              icon: '-'
+              icon: ''
             }
           ]
         },
         {
-          img: require('../../../../assets/Ace/image/c2.png'),
-          title: '待办事项',
+          img: require('../../../../assets/Ace/image/c3.png'),
+          title: '提醒事项',
           bg: '#ffffff',
-          cardBg: '#ffffff',
+          cardBg: '#353A43',
+          path:'/base/remind',
           des: [
             {
-              text: '薪酬考核审计立项申请',
+              text: '',
               iconColor: '#D81020',
-              icon: 'New'
+              icon: ''
             },
             {
-              text: '#2020审计发现整改专项审计 '
-            }
+              text: '',
+              iconColor: '#D81020',
+              icon: ''
+            },
+            {
+              text: '',
+              iconColor: '#D81020',
+              icon: ''
+            },
+            {
+              text: '',
+              iconColor: '#D81020',
+              icon: ''
+            },
+            {
+              text: '',
+              iconColor: '#D81020',
+              icon: ''
+            },
           ]
         }
       ],
@@ -128,8 +153,45 @@ export default {
           label: 'Sun',
           value: 8
         }
+      ],
+      TopTodo: [
+        {
+          text: '暂无待办事项',
+          iconColor: '#D81020',
+          icon: ''
+        },
+        {
+          text: '',
+          iconColor: '#D81020',
+          icon: ''
+        },
+        {
+          text: '',
+          iconColor: '#D81020',
+          icon: ''
+        },
+        {
+          text: '',
+          iconColor: '#D81020',
+          icon: ''
+        },
+        {
+          text: '',
+          iconColor: '#D81020',
+          icon: ''
+        },
       ]
     }
+  },
+  mounted() {
+    getRemindByDescTime().then(resp => {
+      for(let i=0;i<this.cardList[1].des.length;i++){
+        this.cardList[1].des[i].text = resp.data.records[i].remindTitle
+        if(resp.data.records[i].readStatus === 0){
+          this.cardList[1].des[i].icon = ' New'
+        }
+      }
+    })
   },
   methods: {
     formatter(num) {
@@ -137,6 +199,22 @@ export default {
     },
     formatter1(num) {
       return num.toFixed(1)
+    },
+    activeTags(item) {
+      this.$store.commit('aceState/setRightFooterTags', {
+        type: item.type,
+        val: item.val
+      })
+    },
+    toDoJump(){
+
+    },
+    moreJump(){
+      // this.activeTags({
+      //   type: 'active',
+      //   val: {val:this.cardList[1].path , name:'提醒'}
+      // })
+      this.$router.push({ path:this.cardList[1].path})
     }
   }
 }
@@ -223,7 +301,7 @@ export default {
         border-radius: 25.2px;
         padding: 27px;
         width: 479px;
-        height: 188px;
+        //height: 188px;
         &-left{
           background: #FFFFFF;
           border: 1px solid #D8D8D8;
@@ -269,10 +347,11 @@ export default {
           background: #FFFFFF;
         }
         .card{
+          position: relative;
           box-shadow: 17px 17px 34px 0 rgba(0,0,0,0.10);
           border-radius: 25.2px;
           width: 227px;
-          height: 242px;
+          //height: 242px;
           padding: 27px 20px 27px 27px;
           .img-box{
             background: #FFFFFF;
@@ -389,5 +468,16 @@ export default {
       border-bottom-right-radius: 100px;
     }
   }
+}
+.card-more{
+  position: absolute;
+  right:20px;
+  bottom:5px;
+  font-family: PingFangSC-Regular;
+  font-size: 13.5px;
+  color: rgba(21,21,21,.5);
+  letter-spacing: 0;
+  text-align: justify;
+  line-height: 22px;
 }
 </style>

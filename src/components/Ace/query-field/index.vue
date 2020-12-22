@@ -48,17 +48,7 @@ export default {
     return {
       query: {},
       searchBar:'0',
-      switchImg:'',
-/*      inquire:[
-        {
-          text: 'test',
-          fuzzyText: 'asd',
-          startTime:'2020-12-02',
-          endTime:'2020-12-04',
-          select:'002002001'
-        }
-      ],*/
-
+      switchImg:''
     }
   },
   computed: {

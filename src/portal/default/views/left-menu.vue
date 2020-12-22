@@ -43,9 +43,9 @@
         <span class="label-open" @click="isShowToolsList=!isShowToolsList">
           <i class="el-icon-s-grid" />
         </span>
-        <span class="label-wang">{{ userInfo.name }}</span>
+        <span class="label-wang" @click="isShowSettingList=!isShowSettingList" >{{ userInfo.name }}</span>
         <!-- <i class="shrink-btn icon iconfont iconright-1" @click="isShrink=false" /> -->
-        <i class="setting-btn icon iconfont iconmenu-2" @mouseover="isShowSettingList=true" />
+        <i class="setting-btn icon iconfont iconmenu-2 setting-btn-Upright"  @click="widthChange" />
       </div>
     </template>
     <template v-else>
@@ -88,14 +88,15 @@
         <div
           class="label-open flex a-center j-start flex-row"
           @click="isShowToolsList=!isShowToolsList"
+
         >
           <i class="el-icon-s-grid" />
           <span>More tools</span>
         </div>
         <div class="footer-btns flex a-center j-between flex-row">
-          <span class="label-wang">{{ userInfo.name }}</span>
           <!-- <i class="shrink-btn icon iconfont iconleft-1" @click="isShrink=false" /> -->
-          <i class="setting-btn icon iconfont iconmenu-2" @mouseover="isShowSettingList=true" />
+          <i class="setting-btn icon iconfont iconmenu-2 setting-btn-right" @click="widthChange" />
+          <span class="label-wang"  @click="isShowSettingList=!isShowSettingList">{{ userInfo.name }}</span>
         </div>
       </div>
     </template>
@@ -111,7 +112,7 @@
       </div>
     </transition>
     <transition name="setting-fade">
-      <div v-if="isShowSettingList" class="setting-list absolute" @mouseover="isShowSettingList=true" @mouseleave="isShowSettingList=false">
+      <div v-if="isShowSettingList" class="setting-list absolute" @click="isShowSettingList=!isShowSettingList" @mouseleave="isShowSettingList=false">
         <div class="setting-list-content">
           <div
             v-for="(item,index) in settingList"
@@ -131,9 +132,11 @@
         </div>
       </div>
     </transition>
-    <div v-if="isShowToolsList" class="tools-list" :style="{left:isShrink?'64px':'120px'}">
-      <tools-template />
-    </div>
+    <transition name="showAnimation">
+      <div v-if="isShowToolsList" class="tools-list" :style="{left:isShrink?'64px':'120px'}">
+        <tools-template @func="showWith"/>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -141,6 +144,7 @@
 import { getUserRes } from '@/api/user'
 import MenuTree from './menu-tree/index.vue'
 import { cacheDict } from '@/api/base/sys-dict'
+import { getUnReadRemind } from '@/api/base/base'
 export default {
   components: { MenuTree },
   data() {
@@ -245,6 +249,14 @@ export default {
       .catch(error => {
         console.error(error)
       })
+    getUnReadRemind().then(resp => {
+      if(resp.data <= 99 ) {
+        this.settingList[0].count = resp.data
+      }else{
+        this.settingList[0].count = '···'
+      }
+    })
+
 
   },
 
@@ -311,6 +323,12 @@ export default {
     },
     logoutRemind(){
       this.$router.push({ path:'/base/remind'})
+    },
+    showWith(obj){
+      this.isShowToolsList = obj
+    },
+    widthChange(){
+      this.isShrink = !this.isShrink
     }
   }
 }
@@ -647,5 +665,26 @@ export default {
   font-size: 20px;
   color:#ffffff;
   cursor:pointer;
+}
+.showAnimation-enter-active, .showAnimation-leave-active {
+  transition: all 1s;
+}
+.showAnimation-enter, .showAnimation-leave-to {
+  opacity: 0;
+  margin-left:-60px;
+}
+
+.setting-fade-enter-active, .setting-fade-leave-active {
+  transition: all 1s;
+}
+.setting-fade-enter, .setting-fade-leave-to {
+  opacity: 0;
+}
+.setting-btn-right{
+  margin-left:16px;
+  margin-right:15px;
+}
+.setting-btn-Upright{
+  transform:rotate(90deg) ;
 }
 </style>

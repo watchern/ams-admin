@@ -10,8 +10,7 @@ const analysisRouter = {
     {
       path: 'auditmodel',
       name: '审计模型',
-      component: () => import('@/views/analysis/auditmodel/index'),
-      meta: { keepAlive: true }
+      component: () => import('@/views/analysis/auditmodel/index')
     },
     {
       path: 'auditmodelresult',
@@ -50,5 +49,6 @@ const analysisRouter = {
     }
   ]
 }
+
 
 export default analysisRouter
