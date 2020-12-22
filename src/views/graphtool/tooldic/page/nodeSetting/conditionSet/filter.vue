@@ -642,7 +642,7 @@ export default {
 <style scoped type="text/css">
     .filter_cell_header{
         float: left;
-        margin-left: 10px;
+        margin-left: 3px;
     }
     .filter_cell_centent{
         height: 310px;
