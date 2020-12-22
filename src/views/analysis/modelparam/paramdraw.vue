@@ -1,29 +1,13 @@
 <template>
-  <div>
-    <form class="form-horizontal" >
-      <div class="col-sm-12" id="zzzzz-zy">
-        <div :id="myId+'1'" class="panel-group">
-          <div class="panel panel-default">
-            <el-collapse v-model="activeName" accordion>
-              <el-collapse-item :title="accordionName" name="1">
-                <!-- <a
-                  data-toggle="collapse"
-                  :data-parent="'#'+myId+'1'"
-                  :href="'#'+myId+'collapse'"
-                ></a> -->
-                <div :id="myId+'collapse'" class="panel-collapse collapse in">
-                  <div :id="myId" class="panel-body" style="padding: 10px 0"></div>
-                </div>
-              </el-collapse-item>
-            </el-collapse>
-          </div>
+    <div :id="myId+'1'">
+        <div :id="myId+'collapse'">
+          <div :id="myId" style="padding: 10px 0"></div>
         </div>
-      </div>
-    </form>
-  </div>
+    </div>
 </template>
 <script>
 import { initParamHtml } from "@/api/analysis/auditparam";
+import {removeJcCssfile,addCssFile,addJsFile} from "@/api/analysis/common"
 export default {
   data() {
     return {
@@ -33,13 +17,40 @@ export default {
       message:'该模型暂无参数'
     };
   },
+  created() {
+    //动态引入css
+    addCssFile('/lib/bootstrap/css/bootstrap.css','bootstrap')
+    addCssFile('/lib/datetimepicker/bootstrap-datetimepicker.min.css','bootstrap-datetimepicker')
+    addCssFile( '/lib/icheck/skins/square/blue.css','blue')
+    addCssFile('/lib/bootstrap-select/css/bootstrap-select.css','bootstrap-select')
+    addCssFile('/lib/switch/bootstrap-switch.css','bootstrap-switch')
+    //动态引入js
+    //addJsFile('/lib/jquery/jquery-1.9.1.min.js','jquery')
+    //addJsFile('/lib/jquery-ui-1.12.1/jquery-ui.min.js','jquery-ui.min')
+    addJsFile('/lib/datetimepicker/bootstrap-datetimepicker.js','bootstrap-datetimepicker-js')
+    addJsFile('/lib/layui/xm-select.js','xm-select')
+    addJsFile('/lib/icheck/icheck.js','icheck')
+  },
+  beforeDestroy() {
+    //移除css
+    removeJcCssfile("bootstrap.css","css")
+    removeJcCssfile("bootstrap-datetimepicker.min.css","css")
+    removeJcCssfile("blue.css","css")
+    removeJcCssfile("bootstrap-select.css","css")
+    removeJcCssfile("bootstrap-switch.css","css")
+    //移除js
+    //removeJcCssfile("jquery-1.9.1.min.js","js")
+    //removeJcCssfile("jquery-ui.min.js","js")
+    removeJcCssfile("bootstrap-datetimepicker.js","js")
+    removeJcCssfile("xm-select.js","js")
+    removeJcCssfile("icheck.js","js")
+  },
   props: ["myId"],
   methods: {
     /**
      * 初始化参数渲染界面
      */
     initParamHtmlSS(sql, paramsArr, name, id,serviceInfo) {
-      debugger
       this.accordionName = name
       this.paramsArr = paramsArr
       initParamHtml(sql, paramsArr, name, id,serviceInfo);

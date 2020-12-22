@@ -20,14 +20,10 @@ export const sendSettingVue = ( (_this) => {
  * @param nodeId 节点ID
  */
 export function init(nodeId) {
-    try {
-        // 初始化节点信息树
-        initNodeZtree(nodeId)
-        // 初始化参数树
-        initParamZtree()
-    } catch (e) {
-        settingVue.$message.error({ message: '页面初始化失败' })
-    }
+    // 初始化节点信息树
+    initNodeZtree(nodeId)
+    // 初始化参数树
+    initParamZtree()
 }
 
 /**
@@ -41,9 +37,12 @@ function initNodeZtree(nodeId) {
     // 获取节点类型
     let optType = settingVue.graph.nodeData[nodeId].nodeInfo.optType
     if (optType === 'sql' && typeof settingVue.graph.nodeData[nodeId].sqlIsChanged !== 'undefined') {
-        let nodeExcuteStatus = settingVue.graph.nodeData[nodeId].nodeInfo.nodeExcuteStatus
-        if (nodeExcuteStatus !== 3 && settingVue.graph.nodeData[nodeId].sqlIsChanged) {
-            isError = true
+        let hasSign = graph.nodeData[nodeId].nodeInfo.hasSign;//SELECT语句的输出列是否含有【*】
+        if(hasSign){
+            let nodeExcuteStatus = settingVue.graph.nodeData[nodeId].nodeInfo.nodeExcuteStatus
+            if (nodeExcuteStatus !== 3 && settingVue.graph.nodeData[nodeId].sqlIsChanged) {
+                isError = true
+            }
         }
     }
     if (!isError) {
@@ -127,14 +126,52 @@ function initNodeZtree(nodeId) {
                     'type': 'column',
                     'icon': '/images/ico/column.png'
                 }
-                obj.name = columnsInfo[i].newColumnName
-                if (optType === 'relation') {
-                    obj.displayName = columnsInfo[i].tableAlias + '.' + columnsInfo[i].newColumnName
-                } else {
-                    obj.displayName = columnsInfo[i].newColumnName
+                //根据不同节点组织节点名称
+                switch (optType) {
+                    case "sql":
+                        var hasSign = graph.nodeData[nodeId].nodeInfo.hasSign;//SELECT语句的输出列是否含有【*】
+                        if(hasSign){//有【*】则使用结果集输出字段进行设参
+                            obj.name = columnsInfo[i].newColumnName;
+                            obj.displayName = columnsInfo[i].newColumnName;
+                        }else{//没有【*】则使用原字段进行设参
+                            obj.name = columnsInfo[i].columnName;
+                            obj.displayName = columnsInfo[i].newColumnName;
+                        }
+                        nodeRoot.children.push(obj);
+                        break;
+                    case "filter":
+                    case "sort":
+                    case "layering":
+                    case "groupCount":
+                    case "delRepeat":
+                        obj.name = columnsInfo[i].columnName;
+                        obj.displayName = columnsInfo[i].newColumnName;
+                        nodeRoot.children.push(obj);
+                        break;
+                    case "change":
+                        obj.name = columnsInfo[i].columnName;
+                        obj.displayName = columnsInfo[i].newColumnName;
+                        if($.inArray(nodeNameArr,obj.name) < 0){//此处是为了去除重复的未被转码的原字段
+                            nodeNameArr.push(obj.name);
+                            nodeRoot.children.push(obj);
+                        }
+                        break;
+                    case "relation":
+                        obj.name = columnsInfo[i].tableAlias + "." + columnsInfo[i].columnName;
+                        obj.displayName = columnsInfo[i].tableAlias + "." + columnsInfo[i].newColumnName;
+                        nodeRoot.children.push(obj);
+                        break;
+                    case "sample":
+                    case "union":
+                        obj.name = columnsInfo[i].newColumnName;
+                        obj.displayName = columnsInfo[i].newColumnName;
+                        nodeRoot.children.push(obj);
+                        break;
                 }
-                nodeRoot.children.push(obj)
             }
+        }
+        if(nodeRoot.children.length > 0){
+            settingVue.initTreeSuccess = true
         }
         nodeZtreeObj = $.fn.zTree.init($('#nodeZtree'), nodeSetting, nodeRoot)
         if (nodeRoot.children.length === 0) {
@@ -467,6 +504,12 @@ function getIndexArr(text, str, index, indexArr) {
  * 初始化参数配置
  */
 export function initSetting() {
+    //判断节点树是否正常加载（防止存在不正确的自定义参数SQL语句）
+    if(!settingVue.initTreeSuccess){
+        settingVue.setParamArr = []
+        settingVue.$message({ type:"warning", message:'界面未成功初始化数据，配置加载失败'})
+        return
+    }
     let load = $(settingVue.$refs.settingParamDiv).mLoading({ 'text': '正在加载配置，请稍后……', 'hasCancel': false })
     try {
         // 第一步：先判断编辑的参数SQL语句是否有变化
@@ -550,22 +593,24 @@ export function initSetting() {
                     let setParamObj = {dataModuleParamId:paramArr[j].moduleParamId,name:paramArr[j].name,}
                     for (let k = 0; k < paramList.length; k++) { // 循环所有母版参数
                         let moduleParamId = paramList[k].ammParamUuid
+                        let paramObj = {...{}, ...paramList[k]}
                         if (moduleParamId === paramArr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
-                            setParamObj.inputType = paramList[k].inputType//参数类型
-                            let returnObj = paramCommonJs.getSettingParamArr(paramList[k],setParamObj)
+                            setParamObj.inputType = paramObj.inputType//参数类型
+                            //设置默认值
+                            if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
+                                paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
+                                setParamObj.value = paramArr[j].defaultVal
+                                paramObj.defaultVal = paramArr[j].defaultVal
+                            }
+                            let returnObj = paramCommonJs.getSettingParamArr(paramObj,setParamObj)
                             if (!returnObj.isError) {
                                 setParamObj = returnObj.setParamObj
                             }else{
                                 settingVue.$message.error({message:returnObj.message})
                             }
                             moduleParamArr.push(moduleParamId)
-                            if (typeof paramList[k].description !== 'undefined' && paramList[k].description != null) {
-                                setParamObj.description = paramList[k].description
-                            }
-                            //设置默认值
-                            if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
-                                paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
-                                setParamObj.value = paramArr[j].defaultVal
+                            if (typeof paramObj.description !== 'undefined' && paramObj.description != null) {
+                                setParamObj.description = paramObj.description
                             }
                             settingVue.setParamArr.push(setParamObj)
                             break
@@ -594,22 +639,6 @@ export function initSetting() {
  * @param hasSetParamIdArr 已配置的复制参数ID集合
  */
 function initParam(paramArr, hasSetParamIdArr) {
-    // 初始化普通文本框
-    // let $textParam = settingVue.$refs.textParam
-    // if ($textParam && $textParam.length > 0) {
-    //     for(let i=0; i<$textParam.length; i++){
-    //         let index = Number($textParam[i].parentNode.getAttribute("index"))
-    //         // 设置默认值
-    //         let moduleParamId = settingVue.setParamArr[index].dataId
-    //         for (let j = 0; j < paramArr.length; j++) {
-    //             if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
-    //                 paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
-    //                 settingVue.setParamArr[index].value = paramArr[j].defaultVal
-    //                 break
-    //             }
-    //         }
-    //     }
-    // }
     // 初始化日期插件
     if ($('.form_date').length > 0) {
         $('.form_date').each(function(i, v) {
@@ -624,18 +653,6 @@ function initParam(paramArr, hasSetParamIdArr) {
                 minView: 2
             }
             $(this).datetimepicker(setting)
-            // 设置默认值
-            // let moduleParamId = $(this).find('.dataParam').attr('data-id')
-            // let index = settingVue.$refs.dataParam[i].getAttribute("index")
-            // let moduleParamId = settingVue.setParamArr[index].dataId
-            // for (let j = 0; j < paramArr.length; j++) {
-            //     if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
-            //         paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
-            //         // $(this).find('.dataParam').val(paramArr[j].defaultVal)// 设置默认值
-            //         settingVue.setParamArr[index].value = paramArr[j].defaultVal// 设置默认值
-            //         break
-            //     }
-            // }
         })
     }
     // 初始化下拉列表
@@ -671,7 +688,7 @@ function initParam(paramArr, hasSetParamIdArr) {
                 let associatedParamIdArr = typeof $(this).attr('data-associatedParamIdArr') !== 'undefined' ? JSON.parse($(this).attr('data-associatedParamIdArr')) : []// 当前参数的被关联的参数的集合
                 let paramArrNew = typeof $(this).attr('data-paramArr') !== 'undefined' ? JSON.parse($(this).attr('data-paramArr')) : []// 影响当前参数的主参数的集合
                 selectSetting.show = function() {
-                    initDataArr = selectShow('#selectParam', moduleParamId, paramName, sql, choiceType, paramArrNew, dataArr, initDataArr)
+                    initDataArr = paramCommonJs.selectShow(settingVue.$refs.settingParamDiv,'#selectParam', moduleParamId, paramName, sql, choiceType, paramArrNew, dataArr, initDataArr)
                 }
                 selectSetting.hide = function() {
                     if (initDataArr && dataArr.length === 0) {
@@ -679,21 +696,9 @@ function initParam(paramArr, hasSetParamIdArr) {
                         dataArr = selectXs.options.data
                         initDataArr = false
                     }
-                    selectHide(associatedParamIdArr)
+                    paramCommonJs.selectHide(associatedParamIdArr)
                 }
             }
-            // 设置默认值
-            // let defaultVal = []
-            // for (let j = 0; j < paramArr.length; j++) {
-            //     if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
-            //         paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
-            //         defaultVal = paramArr[j].defaultVal// 设置默认值
-            //         break
-            //     }
-            // }
-            // if (defaultVal.length > 0) {
-            //     selectSetting.initValue = defaultVal// 初始化默认值
-            // }
             // 设置默认值
             if(typeof settingVue.setParamArr[index].value !== "undefined" && settingVue.setParamArr[index].value != null){
                 selectSetting.initValue = settingVue.setParamArr[index].value
@@ -730,7 +735,7 @@ function initParam(paramArr, hasSetParamIdArr) {
                 let associatedParamIdArr = typeof $(this).attr('data-associatedParamIdArr') !== 'undefined' ? JSON.parse($(this).attr('data-associatedParamIdArr')) : []// 当前参数的被关联的参数的集合
                 let paramArrNew = typeof $(this).attr('data-paramArr') !== 'undefined' ? JSON.parse($(this).attr('data-paramArr')) : []// 影响当前参数的主参数的集合
                 selectSetting.show = function() {
-                    initDataArr = selectShow('#selectTreeParam', moduleParamId, paramName, sql, choiceType, paramArrNew, dataArr, initDataArr)
+                    initDataArr = paramCommonJs.selectShow(settingVue.$refs.settingParamDiv,'#selectTreeParam', moduleParamId, paramName, sql, choiceType, paramArrNew, dataArr, initDataArr)
                 }
                 selectSetting.hide = function() {
                     if (initDataArr && dataArr.length === 0) {
@@ -738,25 +743,13 @@ function initParam(paramArr, hasSetParamIdArr) {
                         dataArr = selectXs.options.data
                         initDataArr = false
                     }
-                    selectHide(associatedParamIdArr)
+                    paramCommonJs.selectHide(associatedParamIdArr)
                 }
             }
             // 设置默认值
             if(typeof settingVue.setParamArr[index].value !== "undefined" && settingVue.setParamArr[index].value != null){
                 selectSetting.initValue = settingVue.setParamArr[index].value
             }
-            // 设置默认值
-            // let defaultVal = []
-            // for (let j = 0; j < paramArr.length; j++) {
-            //     if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
-            //         paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
-            //         defaultVal = paramArr[j].defaultVal// 设置默认值
-            //         break
-            //     }
-            // }
-            // if (defaultVal.length > 0) {
-            //     selectSetting.initValue = defaultVal// 初始化默认值
-            // }
             if (choiceType == 1) { // 单选
                 selectSetting.radio = true
                 selectSetting.clickClose = true
@@ -845,19 +838,6 @@ export function getParamsSetting() {
     // 验证文本框输入的默认值
     for(let i=0; i<settingVue.$refs.setParamTr.length; i++){
         let index = Number(settingVue.$refs.setParamTr[i].parentNode.getAttribute("index"))
-        // if ($(this).val() !== '') { // 如果当前值不为空
-        //     let defaultVal = $(this).val()
-        //     if ($(this).hasClass('textParam')) { // 如果是文本框参数（非日期）验证文本框参数值的长度是否满足
-        //         let paramName = $(this).attr('data-name')// 获取参数名称
-        //         let dataLength = $(this).attr('data-dataLength')// 获取参数值长度
-        //         if (typeof dataLength !== 'undefined' && defaultVal.length !== parseInt(dataLength)) { // 如果该参数有长度限制且默认值不等于设置的长度值
-        //             returnObj.verify = false
-        //             returnObj.message = '参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
-        //             return false
-        //         }
-        //     }
-            // $(this).attr('data-value', defaultVal)
-        // }
         if(settingVue.setParamArr[index].value !== '' && settingVue.setParamArr[index].inputType === 'textinp'){// 如果当前值不为空且如果是文本框参数（非日期）
             //验证文本框参数值的长度是否满足
             let paramName = settingVue.setParamArr[index].dataName// 获取参数名称
@@ -880,7 +860,6 @@ export function getParamsSetting() {
             // $('.selectParam').each(function(i, v) {
             let index = Number($selectParam[i].parentNode.getAttribute("index"))
             let moduleParamId = settingVue.setParamArr[index].dataId// 母参ID
-            // let moduleParamId = $(this).attr('data-id')// 母参ID
             let selectParamXs = xmSelect.get('#selectParam' + moduleParamId, true)
             let paramSelectedObj = selectParamXs.getValue()// 获取选中的参数值名称
             let defaultValueArr = []
@@ -895,12 +874,11 @@ export function getParamsSetting() {
     }
     // 绑定下拉树选中的默认值
     let $selectTreeParam = settingVue.$refs.selectTreeParam
-    if ($selectTreeParam && $selectParam.length > 0) {
+    if ($selectTreeParam && $selectTreeParam.length > 0) {
         for (let i = 0; i < $selectTreeParam.length; i++) {
             // $('.selectTreeParam').each(function(i, v) {
             let index = Number($selectTreeParam[i].parentNode.getAttribute("index"))
             let moduleParamId = settingVue.setParamArr[index].dataId// 母参ID
-            // let moduleParamId = $(this).attr('data-id')// 母参ID
             let selectTreeParamXs = xmSelect.get('#selectTreeParam' + moduleParamId, true)
             let paramSelectedObj = selectTreeParamXs.getValue()// 获取选中的参数值名称
             let defaultValueArr = []
@@ -929,11 +907,6 @@ export function getParamsSetting() {
                         if (obj.moduleParamId === moduleParamId) {
                             if (typeof settingVue.setParamArr[index].value !== 'undefined') {
                                 defaultVal = settingVue.setParamArr[index].value
-                                // if ($(this).hasClass('paramOption')) { // 文本框
-                                //     defaultVal = $(this).attr('data-value')
-                                // } else {
-                                //     defaultVal = JSON.parse($(this).attr('data-value'))
-                                // }
                             }
                             sortVal = parseInt(k + 1)
                             break

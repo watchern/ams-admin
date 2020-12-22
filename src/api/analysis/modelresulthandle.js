@@ -40,3 +40,17 @@ export function addOrUpdate(data) {
     data
   })
 }
+
+/**
+ * 修改运行任务关联
+ * @param data 要修改的对象
+ * @returns {AxiosPromise}
+ */
+export function updateRunTaskRel(data){
+  return request({
+    baseURL: analysisUrl,
+    url: '/RunTaskRelController/updateRunTaskRel',
+    method: 'put',
+    data
+  })
+}

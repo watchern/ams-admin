@@ -1,4 +1,4 @@
-import { deleteExecuteNodes, checkTableName, executeNodeSql } from '@/api/graphtool/graphList'
+import { deleteExecuteNodes, executeNodeSql } from '@/api/graphtool/graphList'
 import * as validateJs from '@/views/graphtool/tooldic/js/validate'
 import { updateResourceZtreeNodeName } from '@/views/graphtool/tooldic/js/index'
 let hL = null
@@ -252,6 +252,9 @@ function changeNodeInfo(curNodeId, isChangeSource) {
         graph.nodeData[idArr[i]].isChangeSource = isChangeSource			// 置改变前置节点信息为已改变
         if (graph.nodeData[idArr[i]].isSet && graph.nodeData[idArr[i]].isChangeSource) {		// 如果当前节点已配置且改变了前置节点信息
             graph.nodeData[idArr[i]].isSet = false			// 重置其配置状态，在打开时不读取已配置信息，重新进行配置
+            delete graph.nodeData[idArr[i]].hasParam;
+            delete graph.nodeData[idArr[i]].paramsSetting;
+            delete graphIndexVue.nodeParamRelArr[idArr[i]];
         }
         changeNodeIcon(1, graph.nodeData[idArr[i]].isSet, idArr[i])
     }
@@ -423,67 +426,6 @@ export function cancelExecute() {
         // 自动保存图形化
         autoSaveGraph()
     }
-}
-
-/**
- * 	循环遍历处理待执行节点ID集合
- * 	@param notExecuteNodeIdArr 待执行节点ID数组
- */
-function dealWithNodeIdArr(notExecuteNodeIdArr) {
-    var returnObj = {
-        'verify': true,
-        'message': ''
-    }
-    var checkFlag = true; var isDeleteTable = false
-    // 验证结果表是否已经创建
-    for (var i = 0; i < notExecuteNodeIdArr.length; i++) {
-        var isCreateTable = graph.nodeData[notExecuteNodeIdArr[i]].nodeInfo.isCreateTable
-        // 判断节点中是否要创建表
-        if (isCreateTable === 1) { // 若创建
-            // 获取当前节点的结果表名称
-            var resultTableName = graph.nodeData[notExecuteNodeIdArr[i]].nodeInfo.resultTableName
-            // 如果结果表不为空，说明之前执行过，则进行结果表名称的重复性校验（重复则定义删除标志）
-            if (resultTableName !== '') {
-                checkTableName({ 'tableName': resultTableName, 'openType': graph.openType }).then(response => {
-                    if (response.data == null) {
-                        checkFlag = false
-                        returnObj.message = '校验节点【' + graph.nodeData[notExecuteNodeIdArr[i]].nodeInfo.nodeName + '】的结果表出错'
-                    } else {
-                        isDeleteTable = response.data
-                    }
-                })
-                // $.ajax({
-                //     url: contextPath + '/graphEditor/checkTableName',
-                //     data: { 'tableName': resultTableName, 'openType': graph.openType },
-                //     dataType: 'json',
-                //     type: 'post',
-                //     async: false,
-                //     success: function(e) {
-                //         if (e.isError) {
-                //             checkFlag = false
-                //             returnObj.message = '校验节点【' + graph.nodeData[notExecuteNodeIdArr[i]].nodeInfo.nodeName + '】的结果表是否已被创建时出错'
-                //         } else {
-                //             isDeleteTable = e.isDeleteTable
-                //         }
-                //     }
-                // })
-            }
-            graph.nodeData[notExecuteNodeIdArr[i]].nodeInfo.isDeleteTable = isDeleteTable
-        } else {
-            var userTableName = graph.nodeData[notExecuteNodeIdArr[i]].nodeInfo.userTableName// 自定义命名的结果表名称
-            if (userTableName && userTableName !== '') { // 说明去除了保存临时数据的选项，此时需删除已保存的临时结果表
-                graph.nodeData[notExecuteNodeIdArr[i]].nodeInfo.isDeleteTable = true
-                delete graph.nodeData[notExecuteNodeIdArr[i]].nodeInfo.userTableName
-            }
-        }
-        if (!checkFlag) {
-            break
-        }
-    }
-    if (!checkFlag) {
-        returnObj.verify = false
-    }
-    return returnObj
 }
 
 /**
@@ -1053,9 +995,10 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
         let childrenIds = graph.nodeData[executeNodeArr[k]].childrenIds
         let parentIds = graph.nodeData[executeNodeArr[k]].parentIds
         if (nodeExcuteStatus === 3) {
-            if (optType === 'sql') {					// SQL查询器单独处理SQL语句
-                graph.nodeData[executeNodeArr[k]].setting.sql = graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql
-            }
+            // if (optType === 'sql') {					// SQL查询器单独处理SQL语句
+            //     graph.nodeData[executeNodeArr[k]].setting.sql = graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql
+            //
+            // }
             if (optType !== 'newNullNode') {					// 如果当前节点是操作节点
                 if (optType === 'layering') {					// 如果节点是数据分层，则需特殊处理
                     // 获取当前节点的所有下一级节点
@@ -1096,12 +1039,6 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
             changeNodeIcon(4, null, executeNodeArr[k])
             graph.nodeData[executeNodeArr[k]].nodeInfo.nodeExcuteStatus = 4
             if (optType !== 'newNullNode') {						// 如果当前节点为操作节点
-                if (optType === 'sql') {					// SQL查询器单独处理SQL语句
-                    var sql = strEncryption(graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql)
-                    graph.nodeData[executeNodeArr[k]].setting.sql = sql
-                    graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql = sql
-                    graph.nodeData[executeNodeArr[k]].nodeInfo.resultSql = strEncryption(graph.nodeData[executeNodeArr[k]].nodeInfo.resultSql)
-                }
                 for (var t = 0; t < childrenIds.length; t++) {						// 遍历当前节点的所有子集合
                     if ($.inArray(childrenIds[t], executeNodeArr) > -1) {		// 如果子节点ID包含在执行节点队列中，节点状态与当前节点状态保持一致，为执行出错状态
                         if (graph.nodeData[childrenIds[t]].isSet) {
@@ -1241,39 +1178,44 @@ export function setDataSourceCopyIcon(curCellId) {
 /**
  * 根据当前节点ID，高亮显示其前置节点和线
  * */
-export function lightHeight(curCellId) {
-    // 先清空前一次高亮节点结合的样式，start
-    var cells = graph.highLight
-    if (cells && cells.length > 0) {
-        for (var k = 0; k < cells.length; k++) {
-            if (cells[k].edge) {
-                var h = new mxCellHighlight(graph, '#3e6f96', 2)
-                h.highlight(graph.view.getState(cells[k]))
+export function lightHeight(curCellId){
+    //先清空前一次高亮节点结合的样式，start
+    var cells = graph.highLightList;
+    if(cells && cells.length > 0){
+        for(var k=0;k<cells.length;k++){
+            if(cells[k].cell.edge){
+                var h = new mxCellHighlight(graph,"#3e6f96",2);
+                h.highlight(graph.view.getState(cells[k].cell));
+            }
+            if(cells[k].cell.vertex && cells[k].light){
+                cells[k].light.destroy();
             }
         }
-        if (hL != null) {
-            hL.destroy()
-        }
     }
-    // end
-    if (!curCellId || curCellId == null) {
-        return
+    //end
+    if(!curCellId || curCellId == null){
+        return;
     }
-    graph.highLight = []
-    var parent = graph.getDefaultParent()
-    var parentChildren = parent.children
-    for (var i = 0; i < parentChildren.length; i++) {
+    graph.highLightList = [];
+    var parent = graph.getDefaultParent();
+    var parentChildren = parent.children;
+    lightHeightCallBack(curCellId,parentChildren);
+    for(var j=0;j<graph.highLightList.length;j++){
+        var hL = new mxCellHighlight(graph,"#00A8FF",2);
+        hL.highlight(graph.view.getState(graph.highLightList[j].cell));
+        graph.highLightList[j].light = hL;
+    }
+}
+
+function lightHeightCallBack(curCellId,parentChildren){
+    for(var i=0;i<parentChildren.length;i++){
         if (parentChildren[i].edge && parentChildren[i].target && parentChildren[i].target.id === curCellId) {
-            graph.highLight.push(parentChildren[i])// 获取线
-            graph.highLight.push(parentChildren[i].source)// 获取节点
+            graph.highLightList.push({cell:parentChildren[i]});//获取线
+            lightHeightCallBack(parentChildren[i].source.id, parentChildren);
         }
         if (parentChildren[i].vertex && !parentChildren[i].source && parentChildren[i].id === curCellId) {
-            graph.highLight.push(parentChildren[i])// 获取当前节点（无父节点时高亮）
+            graph.highLightList.push({cell:parentChildren[i]});
         }
-    }
-    for (var j = 0; j < graph.highLight.length; j++) {
-        hL = new mxCellHighlight(graph, '#00A8FF', 2)
-        hL.highlight(graph.view.getState(graph.highLight[j]))
     }
 }
 
@@ -1281,13 +1223,12 @@ export function lightHeight(curCellId) {
  * SQL详情（查询执行语句）
  */
 export function curNodeSQL() {
-    var nodeSql = ''
     var nodeExcuteStatus = graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus
     if (nodeExcuteStatus === 1) {			// 未执行
-        alertMsg('提示', '该节点尚未执行，请执行后再查看！', 'info')
+        graphIndexVue.$message({"type":"warning","message":"该节点尚未执行，请执行后再查看"})
         return
     } else if (nodeExcuteStatus === 2) {			// 执行中
-        alertMsg('提示', '该节点尚未执行完成，请等待执行完成后再查看！', 'info')
+        graphIndexVue.$message({"type":"warning","message":"该节点尚未执行完成，请等待执行完成后再查看"})
         return
     } else {
         var optType = graph.nodeData[graph.curCell.id].nodeInfo.optType
@@ -1296,46 +1237,21 @@ export function curNodeSQL() {
             var curId = graph.nodeData[graph.curCell.id].parentIds[0]
             optType = graph.nodeData[curId].nodeInfo.optType
             switch (optType) {
-                case 'layering':// 数据分层需根据当前结果的下标在上级节点的SQL数组中取
+                case "layering"://数据分层需根据当前结果的下标在上级节点的SQL数组中取
                     var index = graph.nodeData[graph.curCell.id].nodeInfo.index
-                    nodeSql = graph.nodeData[curId].nodeInfo.nodeSqlArr[index]
-                    break
-                case 'sql':// SQL编辑器中的SQL语句是加密的，需解密显示
-                    nodeSql = strDecryption(graph.nodeData[curId].nodeInfo.resultSql)
-                    break
+                    graphIndexVue.curNodeExecuteSQL = graph.nodeData[curId].nodeInfo.nodeSqlArr[index]
+                    break;
                 default:
-                    nodeSql = graph.nodeData[curId].nodeInfo.nodeSql
-                    break
-            }
-            var hasParam = graph.nodeData[curId].hasParam
-            var paramsSetting = graph.nodeData[curId].paramsSetting
-            if (hasParam && paramsSetting && paramsSetting.arr && paramsSetting.arr.length !== 0) {
-                var replaceParamSql = graph.nodeData[curId].replaceParamSql
-                nodeSql = 'SELECT * FROM (' + nodeSql + ') WHERE ' + replaceParamSql
+                    graphIndexVue.curNodeExecuteSQL = graph.nodeData[curId].nodeInfo.nodeSql
+                    break;
             }
         } else if (optType === 'sql') {
-            nodeSql = strDecryption(graph.nodeData[graph.curCell.id].nodeInfo.nodeSql)
+            graphIndexVue.curNodeExecuteSQL = graph.nodeData[graph.curCell.id].nodeInfo.nodeSql
         } else {
-            nodeSql = graph.nodeData[graph.curCell.id].nodeInfo.nodeSql
+            graphIndexVue.curNodeExecuteSQL = graph.nodeData[graph.curCell.id].nodeInfo.nodeSql
         }
     }
-    layer.open({
-        id: 'curNodeSQL',
-        type: 1,
-        title: '查询执行语句',
-        content: "<textarea style='width: 100%; height: 100%; border: none; padding: 5px; resize: none;'></textarea>",
-        area: ['800px', '400px'],
-        skin: 'layui-layer-lan',
-        resize: false,
-        scrollbar: false,
-        success: function(layero) {
-            $('#curNodeSQL').css('overflow', 'hidden')
-            if (typeof nodeSql === 'undefined' || nodeSql === '' || nodeSql === 'undefined') {
-                nodeSql = '无'
-            }
-            $('#curNodeSQL>textarea').val(nodeSql)
-        }
-    })
+    graphIndexVue.viewNodeSqlDialogVisible = true
 }
 
 /**
@@ -1564,57 +1480,33 @@ function showTableDetail(dataTableName, cVal) {
  * 节点重命名
  * */
 export function reName() {
-    var value = graph.curCell.value
-    var name = graph.curCell.edge ? '连接线序号' : '节点名称'
-    var html = '<div class="form-group" style="padding-top:35px;">' +
-        '<label for="nodeName" class="col-sm-3 control-label" style="text-align:right;">' + name + '</label>' +
-        '<div class="col-sm-8">'
-    if (graph.curCell.edge) {
-        html += '<input type="number" class="form-control" id="nodeName" autocomplete="off" placeholder="重命名" step="1"/>'
-    } else {
-        html += '<input type="text" class="form-control" id="nodeName" autocomplete="off" placeholder="重命名"/>'
+    graphIndexVue.reNameObj.value = graph.curCell.value
+    graphIndexVue.reNameObj.edge = graph.curCell.edge ? true: false
+    graphIndexVue.reNameObj.name = graph.curCell.edge ? '连接线序号' : '节点名称'
+    graphIndexVue.nodeReNameDialogVisible = true
+}
+
+export function reNameCallBack() {
+    const newVal = graphIndexVue.reNameObj.value
+    if (newVal === '') {
+        graphIndexVue.$message({"type":"info","message":`${graphIndexVue.reNameObj.name}不能为空`})
+        return
     }
-    html += '</div></div>'
-    layer.open({
-        id: 'reName',
-        type: 1,
-        title: '重命名',
-        content: html,
-        area: ['400px', '200px'],
-        skin: 'layui-layer-lan',
-        resize: false,
-        scrollbar: false,
-        btn: ['确定', '取消'],
-        success: function(layero) {
-            $('#curNodeSQL').css('overflow', 'hidden')
-            $('#nodeName ').val(value)
-        },
-        btn1: function(index, layero) {
-            var newVal = $('#nodeName').val()
-            if (newVal === '') {
-                alertMsg('提示', '节点名称不能为空', 'info')
-                return false
-            }
-            var oldName = graph.curCell.value
-            graph.cellLabelChanged(graph.curCell, newVal, null)
-            if (graph.curCell.vertex) {
-                updateResourceZtreeNodeName(graph.curCell.id, newVal)
-                // 更新操作痕迹树
-                refrashHistoryZtree('重命名节点【' + newVal + '】')
-            } else {
-                refrashHistoryZtree('重命名连接线【' + newVal + '】')
-            }
-            if (graph.nodeData[graph.curCell.id] && graph.nodeData[graph.curCell.id].nodeInfo) {
-                graph.nodeData[graph.curCell.id].nodeInfo.nodeName = newVal
-            }
-            // 自动保存图形化
-            autoSaveGraph()
-            layer.close(index)
-        },
-        btn2: function(index) {
-            layer.close(index)
-        }
-    })
+    const oldName = graph.curCell.value
+    graph.cellLabelChanged(graph.curCell, newVal, null)
+    if (graph.curCell.vertex) {
+        updateResourceZtreeNodeName(graph.curCell.id, newVal)
+        // 更新操作痕迹树
+        refrashHistoryZtree(`节点【${oldName}】重命名为【${newVal}】`)
+    } else {
+        refrashHistoryZtree(`连接线【${oldName}】重命名为【${newVal}】`)
+    }
+    if (graph.nodeData[graph.curCell.id] && graph.nodeData[graph.curCell.id].nodeInfo) {
+        graph.nodeData[graph.curCell.id].nodeInfo.nodeName = newVal
+    }
+    // 自动保存图形化
+    autoSaveGraph()
+    graphIndexVue.nodeReNameDialogVisible = false
 }
 
 /**
@@ -1654,6 +1546,9 @@ export function reSetOptProperty() {
         }
         graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 1	// 置节点执行状态为未执行
         graph.nodeData[curNodeId].isSet = false// 重置其配置状态，在打开时不读取已配置信息，重新进行配置
+        delete graph.nodeData[curNodeId].hasParam;
+        delete graph.nodeData[curNodeId].paramsSetting;
+        delete graphIndexVue.nodeParamRelArr[curNodeId];
         // 重置当前操作节点的状态图标
         changeNodeIcon(1, false, graph.curCell.id)
         // 更新其结果表的执行状态，与其保持一致
@@ -1751,8 +1646,8 @@ function sqlNodeEdit_callBack(returnObj, layero) {
     }
     graph.nodeData[graph.curCell.id].isSet = true
     graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus = 1
-    graph.nodeData[graph.curCell.id].nodeInfo.nodeSql = strEncryption(returnObj.sql)
-    graph.nodeData[graph.curCell.id].setting.sql = strEncryption(returnObj.sql)
+    graph.nodeData[graph.curCell.id].nodeInfo.nodeSql = returnObj.sql
+    graph.nodeData[graph.curCell.id].setting.sql = returnObj.sql
     // 更新SQL编辑器的配置状态
     changeNodeIcon(1, true, graph.curCell.id)
     // 更新结果表的状态
@@ -1942,22 +1837,6 @@ function getRunningTaskNodes(nodeParentIds, nodeIds) {
 function saveGraphData(id, setting) {
     graph.nodeData[id]['setting'] = setting// save settting
     graph.nodeData[id]['isSet'] = true
-}
-
-// 对字符串进行加密
-function strEncryption(str) {
-    str = encodeURIComponent(str)
-    var key = CryptoJS.enc.Utf8.parse(enctyptionKey)
-    var srcs = CryptoJS.enc.Utf8.parse(str)
-    var encryptStr = CryptoJS.AES.encrypt(srcs, key, { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 })
-    return encryptStr.toString()
-}
-
-// 对字符串进行解密
-function strDecryption(str) {
-    var key = CryptoJS.enc.Utf8.parse(enctyptionKey)
-    var decryptStr = CryptoJS.AES.decrypt(str, key, { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 })
-    return decodeURIComponent(CryptoJS.enc.Utf8.stringify(decryptStr).toString())
 }
 
 // 判断更改的操作中是否包含节点

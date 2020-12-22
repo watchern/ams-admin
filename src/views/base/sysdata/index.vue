@@ -54,7 +54,11 @@
           <el-input v-model="temp.dataSortDesc" />
         </el-form-item>
         <el-form-item label="展现形式" prop="extendTag">
-          <el-select ref="relTypeSelect" v-model="temp.extendTag" placeholder="请选择展现形式">
+          <el-select 
+            ref="relTypeSelect" 
+            v-model="temp.extendTag" 
+            style="width:100%"
+            placeholder="请选择展现形式">
             <el-option label="列表类" :value="0" />
             <el-option label="树形类" :value="1" />
           </el-select>
@@ -73,38 +77,62 @@
         :rules="rulesSecond"
         :model="tempSecond"
         label-position="right"
-        
-        
       >
-        <el-form-item label="代码类别" prop="dataSortUuid" hidden>
-          <el-input v-model="tempSecond.dataSortUuid"  />
+        <el-form-item 
+          label="代码类别" 
+          prop="dataSortUuid" hidden>
+          <el-input 
+          v-model="tempSecond.dataSortUuid"  />
         </el-form-item>
-        <el-form-item label="通用代码名称" prop="codeName">
-          <el-input v-model="tempSecond.codeName" />
+        <el-form-item 
+          label="通用代码名称" 
+          prop="codeName">
+          <el-input 
+            v-model="tempSecond.codeName" />
         </el-form-item>
-        <el-form-item label="通用代码编码" prop="codeValue">
-          <el-input v-model="tempSecond.codeValue"  @change="numberSecond()" />
+        <el-form-item 
+          label="通用代码编码" 
+          prop="codeValue">
+          <el-input 
+            v-model="tempSecond.codeValue"  
+            @change="numberSecond()" />
         </el-form-item>
-        <el-form-item label="通用代码描述" prop="codeDesc">
-          <el-input v-model="tempSecond.codeDesc"  />
+        <el-form-item 
+          label="通用代码描述" 
+          prop="codeDesc">
+          <el-input 
+            v-model="tempSecond.codeDesc"  />
         </el-form-item>
-        <el-form-item label="代码排序号" prop="codeIndex">
-          <el-input v-model="tempSecond.codeIndex"  @change="numberIndex()" />
+        <el-form-item 
+          label="代码排序号" 
+          prop="codeIndex">
+          <el-input 
+            v-model="tempSecond.codeIndex"  
+            @change="numberIndex()" />
         </el-form-item>
-        <el-form-item label="状态" prop="codeState">
-          <el-select ref="relTypeSelect" v-model="tempSecond.codeState" placeholder="通用代码状态" >
-            <el-option label="可用" :value="0" />
-            <el-option label="禁用" :value="1" />
+        <el-form-item 
+          label="状态" 
+          prop="codeState"
+          >
+          <el-select 
+            ref="relTypeSelect" 
+            v-model="tempSecond.codeState" 
+            style="width:100%"
+            placeholder="通用代码状态" >
+            <el-option 
+              label="启用" 
+              :value="0" />
+            <el-option 
+              label="禁用" 
+              :value="1" />
           </el-select>
         </el-form-item>
       </el-form>
-      <el-button type="danger" class="oper-btn delete" size="mini" :disabled="selectionSecond.length === 0" @click="deleteDataSecond()" style="float:right;margin:0 15px 0 10px"></el-button>
-      <el-button type="primary" class="oper-btn edit" size="mini" :disabled="selectionSecond.length !== 1" @click="updateDataSecond()" style="float:right"></el-button>
-      <el-button type="primary" class="oper-btn again-2" size="mini" @click="resetTempSecond()" style="float:right"></el-button>
-      <el-button type="primary" class="oper-btn add" size="mini" @click="addSecondCode()" style="float:right"></el-button>
-      
-      
-      
+      <el-button type="danger" class="oper-btn delete" size="mini" :disabled="selectionSecond.length === 0" title="删除" @click="deleteDataSecond()" style="float:right;margin:0 15px 0 10px"></el-button>
+      <el-button type="primary" class="oper-btn edit" size="mini" :disabled="selectionSecond.length !== 1" title="修改" @click="updateDataSecond()" style="float:right"></el-button>
+      <el-button type="primary" class="oper-btn again-2" size="mini" @click="resetTempSecond()" title="刷新" style="float:right"></el-button>
+      <el-button type="primary" class="oper-btn add" size="mini" @click="addSecondCode()" title="添加"  style="float:right"></el-button>
+          
       <el-table
         :key="tableSecondKey"
         v-loading="listLoadingSecond"
@@ -159,14 +187,14 @@ export default {
         { label: '代码类别编码', name: 'dataSortValue', type: 'text', value: '' }
       ],
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
         sortBy: 'asc',
         sortName: 'create_time'
       },
       pageQuerySecond: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
         sortBy: 'asc',
@@ -200,17 +228,17 @@ export default {
       },
       dialogPvVisible: false,
       rules: {
-        dataSortName: [{ required: true, message: '请填写代码类别名称', trigger: 'change' }],
-        dataSortValue: [{ required: true, message: '请填写代码类别编码', trigger: 'change' }],
-        dataSortDesc: [{ max: 100, message: '长度不得超过100', trigger: 'change' }],
-        extendTag: [{ required: true, message: '请选择数据展示类型', trigger: 'change' }]
+        dataSortName: [{ required: true, message: '请填写代码类别名称', trigger: 'blur' }],
+        dataSortValue: [{ required: true, message: '请填写代码类别编码', trigger: 'blur' }],
+        dataSortDesc: [{ max: 100, message: '长度不得超过100', trigger: 'blur' }],
+        extendTag: [{ required: true, message: '请选择数据展示类型', trigger: 'blur' }]
       },
       rulesSecond: {
-        codeName: [{ required: true, message: '请填写通用代码类别名称', trigger: 'change' }],
-        codeValue: [{ required: true, message: '请填写通用代码编码', trigger: 'change' }],
-        codeDesc: [{ max: 100, message: '长度不得超过100', trigger: 'change' }],
-        codeIndex: [{ required: true, message: '请填写通用代码排序号', trigger: 'change' }],
-        codeState: [{ required: true, message: '请选择代码状态', trigger: 'change' }]
+        codeName: [{ required: true, message: '请填写通用代码类别名称', trigger: 'blur' }],
+        codeValue: [{ required: true, message: '请填写通用代码编码', trigger: 'blur' }],
+        codeDesc: [{ max: 100, message: '长度不得超过100', trigger: 'blur' }],
+        codeIndex: [{ required: true, message: '请填写通用代码排序号', trigger: 'blur' }],
+        codeState: [{ required: true, message: '请选择代码状态', trigger: 'blur' }]
       },
       downloadLoading: false
     }
@@ -228,20 +256,20 @@ export default {
         this.listLoading = false
       })
     },
-    // // 校验类别格式
-    // number() {
-    //   var data = this.temp.dataSortValue
-    //   const codeValue = new RegExp('^[0-9]{4,32}$').test(data)
-    //   if (!codeValue) {
-    //     this.$notify.error({
-    //       title: '错误',
-    //       message: '请输入4-32位的数字',
-    //       position: 'bottom-right'
-    //     })
-    //     this.temp.dataSortValue = ''
-    //   }
-    // },
-    // 校验编码格式
+    // 校验类别格式
+    number() {
+      var data = this.temp.dataSortValue
+      const codeValue = new RegExp('^[0-9]{4,32}$').test(data)
+      if (!codeValue) {
+        this.$notify.error({
+          title: '错误',
+          message: '请输入4-32位的数字',
+          position: 'bottom-right'
+        })
+        this.temp.dataSortValue = ''
+      }
+    },
+    //校验编码格式
     numberSecond() {
       var data = this.tempSecond.codeValue
       const codeValue = new RegExp('^[0-9]{4,32}$').test(data)
@@ -302,6 +330,9 @@ export default {
         codeState: '',
         codeIndex: ''
       }
+      this.$nextTick(() => {
+        this.$refs['dataSecondForm'].clearValidate()
+      })
     },
     // clearValidate(){
     //     this.$nextTick(() => {
@@ -367,30 +398,25 @@ export default {
       })
     },
     deleteCode() {
-      this.$confirm('确定删除吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+     this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'),{
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
         type: 'warning'
       }).then(() => {
          var ids = []
         this.selections.forEach((r, i) => { ids.push(r.dataSortUuid) })
       del(ids).then(() => {
-        this.getList()
+        this.getList()  
         this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
         })
       })
       }).catch(() => {
-        this.$notify({
-          title: '消息',
-          message: '已取消删除',
-          duration: 2000,
-          position: 'bottom-right'
-        })
+        //点击取消
       })
     },
     // 打开设置第二个弹窗 基础设置信息
@@ -456,16 +482,22 @@ export default {
       })
     },
     deleteDataSecond() {
+      this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'),{
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
       var ids = []
       this.selectionSecond.forEach((r, i) => { ids.push(r) })
       delSecond(ids).then(() => {
         this.setBaseCode()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+          this.$notify({
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         })
       })
     },

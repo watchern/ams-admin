@@ -620,7 +620,6 @@ export default {
       }
       getRunTaskRelByPage(this.pageQuery, this.resultSpiltObjects).then(
         (resp) => {
-          console.log(resp.data)
           this.total = resp.data.total;
           this.list = resp.data.records;
           this.listLoading = false;
@@ -741,17 +740,17 @@ export default {
             ids[i] = this.notShare[i].runTaskRelUuid;
           }
           batchDeleteRunTaskRel(ids.join(",")).then((resp) => {
-            if (resp.data == false) {
+            if (resp.data == true) {
               this.getLikeList();
-              this.$notify({
-            title: this.$t('提示'),
-            message: this.$t('删除成功'),
-            type: 'success',
-            duration: 2000,
-            position: 'bottom-right'
-          })
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
             } else {
-            this.$message.error(this.$t('删除失败'))
+              this.$message({
+                type: "error",
+                message: "删除失败!",
+              });
             }
           });
         })
@@ -780,15 +779,15 @@ export default {
           deleteRunResultShare(ids.join(",")).then((resp) => {
             if (resp.data == true) {
               this.getLikeList();
-               this.$notify({
-            title: this.$t('提示'),
-            message: this.$t('删除成功'),
-            type: 'success',
-            duration: 2000,
-            position: 'bottom-right'
-          })
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
             } else {
-         this.$message.error(this.$t('删除失败'))
+              this.$message({
+                type: "error",
+                message: "删除失败!",
+              });
             }
           });
         })
@@ -831,15 +830,15 @@ export default {
             }
             if (this.success == true && this.success1 == true) {
               this.getLikeList();
-            this.$notify({
-            title: this.$t('提示'),
-            message: this.$t('删除成功'),
-            type: 'success',
-            duration: 2000,
-            position: 'bottom-right'
-          })
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
             } else {
-        this.$message.error(this.$t('删除失败'))
+              this.$message({
+                type: "error",
+                message: "删除失败!",
+              });
             }
           });
         })
@@ -882,13 +881,10 @@ export default {
                   if (resp.data == true) {
                     this.listLoading = false;
                     this.getLikeList();
-                       this.$notify({
-            title: this.$t('提示'),
-            message: this.$t('删除成功'),
-            type: 'success',
-            duration: 2000,
-            position: 'bottom-right'
-          })
+                    this.$message({
+                      type: "success",
+                      message: "关联成功!",
+                    });
                   } else {
                     this.listLoading = false;
                     this.$message({
@@ -996,17 +992,15 @@ export default {
       this.listLoading = true;
       var runTaskRelUuids = [];
       var personUuids = [];
-      var personNames = []
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
-        personNames.push(selectedNode[i].cnname);
       }
       for (var i = 0; i < this.selected1.length; i++) {
         runTaskRelUuids.push(this.selected1[i].runTaskRelUuid);
       }
       if (personUuids.length > 0) {
-        insertRunResultShare(runTaskRelUuids, personUuids,personNames).then((resp) => {
+        insertRunResultShare(runTaskRelUuids, personUuids).then((resp) => {
           this.listLoading = false;
           if (resp.data == true) {
             this.$message({
