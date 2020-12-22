@@ -805,7 +805,7 @@ export default {
      * 获取替换参数后的sql  直接直接
      */
     replaceNodeParam() {
-      var obj = replaceNodeParam(this.paramDrawUuid);
+      var obj = replaceNodeParam(this.paramDrawUuid,'sqlEditor');
       if (!obj.verify) {
         this.$message({ type: "info", message: obj.message });
         return;
@@ -813,7 +813,6 @@ export default {
       obj.sqls = obj.sql;
       obj.businessField = "sqleditor";
       this.executeLoading = true;
-      this.dialogFormVisible = false;
       getExecuteTask(obj).then((result) => {
         this.executeLoading = false
         this.loadText = ""
@@ -843,6 +842,7 @@ export default {
           this.$message({ type: "info", message: "执行失败" });
         }
       });*/
+      this.dialogFormVisible = false;
     },
     maxOpen() {
       maxOpenOne();
