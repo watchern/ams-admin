@@ -1048,7 +1048,9 @@ function onDrop(event, treeId, treeNodes) {
  * @returns {AxiosPromise}
  */
 export function initTableTip(userId) {
-  const params = { sceneCode: 'auditor', dataUserId: userId }
+  const sceneCode = sessionStorage.getItem('sceneCode')
+  const dataUserId = sessionStorage.getItem('dataUserId')
+  const params = { sceneCode: sceneCode, dataUserId: dataUserId }
   // 调用后台获取数据表数据
   return request({
     baseURL: dataUrl,
@@ -1966,6 +1968,10 @@ export function startExecuteSql(data) {
  * @param {*} data 要执行的数据
  */
 export function getExecuteTask(data) {
+  const userId = sessionStorage.getItem('sceneCode');
+  const sceneCode = sessionStorage.getItem('dataUserId');
+  data.userId = userId;
+  data.sceneCode = sceneCode;
   return request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/getExecuteTask',

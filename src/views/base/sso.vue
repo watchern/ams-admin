@@ -1,12 +1,13 @@
 <template>
-    系统跳转中...
 </template>
 <script>
   import { cacheDict } from '@/api/base/sys-dict'
-  import { getAllScene } from '@/api/data/scene'
+  import { getSceneInst } from '@/api/data/scene'
+  import Cookies from 'js-cookie'
     export default {
       name: "sso",
       created() {
+        var sceneCode = "project";
         debugger;
         var params = this.$route.query.param.split(",");
         var personuuid = params[0];
@@ -20,12 +21,19 @@
             sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
           })
         }
-        this.$store.dispatch('user/saveScene', "project", "项目场景", prjcode)
-        if(mrid == null){  //模型结果查看
-          this.$router.push("/analysis/modelresultdetailshow?runTaskRelUuid="+mrid);
-        }else{   //否则 模型列表
-          this.$router.push("/analysis/auditmodel");
-        }
+        getSceneInst(sceneCode , prjcode).then(resp => {
+          var prjname = resp.data;
+          this.$store.dispatch('user/saveScene', sceneCode, "项目场景", prjcode, personuuid, prjname);
+          sessionStorage.setItem('sceneCode', sceneCode);
+          sessionStorage.setItem('sceneName', "项目场景");
+          sessionStorage.setItem('dataUserId', prjcode);
+          sessionStorage.setItem('dataUserName', prjname);
+          if(mrid != null){  //模型结果查看
+            this.$router.push("/analysis/modelresultdetailshow?runTaskRelUuid="+mrid);
+          }else{   //否则 模型列表
+            this.$router.push("/analysis/auditmodel");
+          }
+        })
 
       }
     }

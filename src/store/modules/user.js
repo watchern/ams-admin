@@ -4,8 +4,9 @@ import router, { resetRouter } from '@/router'
 import { onAccessSystem } from '@/utils/permission'
 import { cacheDict } from '@/api/base/sys-dict'
 import { getAllScene } from '@/api/data/scene'
-
+import Cookies from 'js-cookie'
 const state = {
+  ext: "xxxx",
   token: getToken(),
   name: '',
   avatar: '',
@@ -15,7 +16,8 @@ const state = {
   code: '',
   scenecode: '',
   scenename: '',
-  datauserid: ''
+  datauserid: '',
+  datausername: ''
 }
 
 const mutations = {
@@ -51,6 +53,9 @@ const mutations = {
   },
   SET_DATAUSERID: (state, datauserid) => {
     state.datauserid = datauserid
+  },
+  SET_DATAUSERNAME: (state, datausername) => {
+    state.datausername = datausername
   }
 }
 
@@ -61,10 +66,13 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ userid: username.trim(), password: password }).then(response => {
         const { data } = response
+        debugger
         commit('SET_ID', data.personUuid)
         commit('SET_NAME', data.username)
         /*commit('SET_TOKEN', data.personUuid)*/
         commit('SET_CODE', data.userid)
+        Cookies.set("PERSONUUID", data.personUuid)
+        commit('SET_DATAUSERID', data.userid)
         /*setToken(data.personUuid)*/
         var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
         if (sysDict == null) {
@@ -75,6 +83,11 @@ const actions = {
         getAllScene().then(res => {
           commit('SET_SCENECODE', res.data[0].sceneCode)
           commit('SET_SCENENAME', res.data[0].sceneName)
+          debugger;
+          sessionStorage.setItem('sceneCode', res.data[0].sceneCode);
+          sessionStorage.setItem('sceneName', res.data[0].sceneName);
+          sessionStorage.setItem('dataUserId', data.userid);
+          sessionStorage.setItem('dataUserName', data.username);
         })
         resolve()
       }).catch(error => {
@@ -87,12 +100,15 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       //console.log(state);
-      debugger
+      debugger;
       var personuuid = state.id;
       if(personuuid == "" || personuuid == null){
-        personuuid = window.location.hash.replace('#/base/sso?param=', '').split(",")[0];
+        personuuid = Cookies.get("PERSONUUID")
       }
-      var query = window.location.search.substring(1);
+      if(personuuid == "" || personuuid == null){
+        personuuid = window.location.hash.replace('#/base/sso?param=', '').split(",")[0];
+        Cookies.set("PERSONUUID", personuuid)
+      }
       getInfo(personuuid).then(response => {
         const { data } = response
         if (!data) {
@@ -142,11 +158,13 @@ const actions = {
       resolve()
     })
   },
-  saveScene({ commit, code, name, datauserid }) {
+  saveScene({ commit, code, name, datauserid, personuuid, datausername }) {
     return new Promise(resolve => {
       commit('SET_SCENECODE', code)
       commit('SET_SCENENAME', name)
       commit('SET_DATAUSERID', datauserid)
+      commit('SET_DATAUSERNAME', datausername)
+      commit('SET_ID', personuuid)
       resolve()
     })
   }
