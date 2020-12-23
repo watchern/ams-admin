@@ -14,7 +14,7 @@
         <el-button type="primary" @click="queryCondition">查 询</el-button>
       </span>
     </el-dialog>
-    <el-row v-if="myFlag">
+    <el-row>
       <div align="right">
         <el-button
           v-if="false"
