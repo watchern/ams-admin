@@ -1225,7 +1225,6 @@ function getParentChecked(checkData, parentCheckedArr, arr) {
  * @author JL
  */
 function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataArr, initDataArr,serviceInfo) {
-  debugger
   if(serviceInfo==undefined){
     serviceInfo = ''
   }
@@ -1863,7 +1862,6 @@ export function replaceNodeParam(modelid,serviceInfo) {
       }
     }
   }
-  debugger
   return returnObj
 }
 

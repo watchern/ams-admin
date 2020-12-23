@@ -28,9 +28,11 @@ export default {
   },
   methods: {
     initTable(tableId) {
-      getCreateSql(tableId).then(resp => {
-        this.parentContent = resp.data
-      })
+      if (this.openType !== 'addTable') {
+        getCreateSql(tableId).then(resp => {
+          this.parentContent = resp.data
+        })
+      }
     }
   }}
 </script>

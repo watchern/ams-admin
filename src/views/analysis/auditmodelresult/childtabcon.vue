@@ -880,6 +880,7 @@ export default {
         }
       } else if (this.useType == "graph") {
         this.loading = true;
+        this.modelResultButtonIsShow = true;
         this.nextValue = nextValue;
         var col = [];
         var rowData = [];
@@ -903,7 +904,7 @@ export default {
                   type = "number";
                 } else if (
                   columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ||
-                  columnTypes1[i].columnType.toUpperCase().indexOf("DATE") != -1
+                  columnTypes1[i].toUpperCase().indexOf("DATE") != -1
                 ) {
                   type = "time";
                 } else if (

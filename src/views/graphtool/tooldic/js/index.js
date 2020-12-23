@@ -1647,7 +1647,7 @@ export function showParamNodeList(){
         indexVue.nodeParamArr.push({nodeId,nodeName,hasParamSet,lineNum})
     }
     if(indexVue.nodeParamArr.length > 0){
-        indexVue.nodeParamDialogVisible = true
+        indexVue.nodeParamListDialogVisible = true
         indexVue.$nextTick( () => {
             $(indexVue.$refs.nodeParamToby).sortable().disableSelection()
         })
@@ -1682,7 +1682,7 @@ export function showParamNodeListCallBack() {
             }
         }
     }
-    indexVue.nodeParamDialogVisible = false
+    indexVue.nodeParamListDialogVisible = false
 }
 
 /**

@@ -213,6 +213,8 @@ export default {
       modelId:'',
       //当前界面运行的所有模型的配置 包含sql以及参数
       currentRunModelAllConfig:{},
+      //当前模型是否运行过
+      currentModelIsRun:false
     }
   },
   computed: {
@@ -282,6 +284,7 @@ export default {
           this.$refs.[dataObj.modelUuid + 'param'][0].
           initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', dataObj.modelUuid)
         }*/
+        console.log(dataObj)
         this.$refs.[dataObj.modelUuid][0].loadTableData(dataObj)
       }
       const func1 = func2.bind(this)
@@ -739,6 +742,7 @@ export default {
       })
     },
     previewModel() {
+      this.currentModelIsRun = false
       var selectObj = this.$refs.modelListTable.selection
       this.modelId = selectObj[0].modelUuid
       if (selectObj == undefined || selectObj.length === 0) {
@@ -810,6 +814,7 @@ export default {
       this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
       getExecuteTask(obj).then((result) => {
         this.$emit('loadingSet',false,"");
+        this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
         this.addTab(selectObj[0], isExistParam, result.data.executeSQLList)
         //界面渲染完成之后开始执行sql,将sql送入调度
         startExecuteSql(result.data).then((result) => {
@@ -869,31 +874,35 @@ export default {
      */
     replaceNodeParam() {
       var selectObj = this.$refs.modelListTable.selection
-      var obj = replaceNodeParam(this.paramDrawUuid,"sqlEditor")
-      debugger
-      if (!obj.verify) {
-        this.$message({ type: 'info', message: obj.message })
-        return
+      if(!this.currentModelIsRun){
+        var obj = replaceNodeParam(this.paramDrawUuid,"sqlEditor")
+        if (!obj.verify) {
+          this.$message({ type: 'info', message: obj.message })
+          return
+        }
+        obj.sqls = obj.sql
+        obj.modelUuid = selectObj[0].modelUuid
+        obj.businessField = 'modellisttable'
+        // 合并参数 将输入的值替换到当前界面
+        this.currentPreviewModelParamAndSql.paramObj = obj.paramsArr
+        this.dialogFormVisible = false
+        let runModelConfig = {
+          sqlValue:this.currentPreviewModelParamAndSql.sqlValue,
+          paramObj:obj.paramsArr
+        }
+        this.currentRunModelAllConfig[selectObj[0].modelUuid] = runModelConfig
+        this.executeSql(obj,selectObj,true)
       }
-      obj.sqls = obj.sql
-      obj.modelUuid = selectObj[0].modelUuid
-      obj.businessField = 'modellisttable'
-      // 合并参数 将输入的值替换到当前界面
-      this.currentPreviewModelParamAndSql.paramObj = obj.paramsArr
-      this.dialogFormVisible = false
-      let runModelConfig = {
-        sqlValue:this.currentPreviewModelParamAndSql.sqlValue,
-        paramObj:obj.paramsArr
+      else{
+        this.queryModel(this.paramDrawUuid)
       }
-      this.currentRunModelAllConfig[selectObj[0].modelUuid] = runModelConfig
-      this.executeSql(obj,selectObj,true)
     },
     /**
      * 参数界面点击查询按钮
      * @param modelUuid 模型编号
      */
     queryModel(modelUuid) {
-      var obj = replaceNodeParam(modelUuid,modelUuid)
+      var obj = replaceNodeParam(this.paramDrawUuid,"sqlEditor")
       if (!obj.verify) {
         this.$message({ type: 'info', message: obj.message })
         return
@@ -904,6 +913,13 @@ export default {
       obj.businessField = 'modellisttable'
       // 重置数据展现界面数据
       this.$refs.[modelUuid][0].reSetTable()
+      //设置新的参数信息
+      let runModelConfig = {
+        sqlValue:this.currentRunModelAllConfig[modelUuid].sqlValue,
+        paramObj:obj.paramsArr
+      }
+      this.currentRunModelAllConfig[modelUuid] = runModelConfig
+      this.dialogFormVisible = false
       this.$emit('loadingSet',true,"正在执行...");
       getExecuteTask(obj).then((result) => {
         this.$emit('loadingSet',false,"");
@@ -951,11 +967,11 @@ export default {
       })
     },
     loadParamDraw(modelUuid){
+      this.currentModelIsRun = true
       this.paramDrawUuid = modelUuid
       this.currentPreviewModelParamAndSql.sqlValue = this.currentRunModelAllConfig[modelUuid].sqlValue
       this.currentPreviewModelParamAndSql.paramObj = this.currentRunModelAllConfig[modelUuid].paramObj
       this.dialogFormVisible = true
-      console.log(this.currentRunModelAllConfig[modelUuid])
     }
   }
 }

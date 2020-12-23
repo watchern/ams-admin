@@ -75,7 +75,9 @@ export default {
     }
   },
   created() {
-    this.initTable(this.tableId)
+    if (this.openType !== 'addTable') {
+      this.initTable(this.tableId)
+    }
   },
   methods: {
     initTable(tableId) {
