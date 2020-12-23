@@ -1286,8 +1286,6 @@ export default {
             this.chartSaveOrUpdate = "save";
           } else {
             //做修改操作
-            console.log('结果')
-            console.log(resp.data.modelChartSetup)
             this.modelChartSetup = resp.data.modelChartSetup;
             this.chartSaveOrUpdate = "update";
           }
@@ -1299,8 +1297,6 @@ export default {
             this.chartSaveOrUpdate = "save";
           } else {
             //做修改操作
-            console.log('预览')
-            console.log(resp.data.modelChartSetup)
             this.modelChartSetup = resp.data.modelChartSetup;
             this.chartSaveOrUpdate = "update";
           }

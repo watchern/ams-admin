@@ -3,7 +3,7 @@
   <div class="app-container">
     <el-container>
       <el-header>
-        <div class="filter-container" >
+        <div class="filter-container">
           <QueryField
             ref="queryfield"
             :form-data="queryFields"
@@ -23,6 +23,13 @@
               class="oper-btn processing"
               @click="handleResult"
             ></el-button>
+            <el-button
+              :disabled="buttonIson.deleteBtn"
+              type="primary"
+              @click="deleteRunTaskRel"
+              class="oper-btn delete"
+              title="删除"
+            ></el-button>
           </el-row>
         </div>
         <el-table
@@ -36,22 +43,30 @@
           highlight-current-row
           @sort-change="sortChange"
           @selection-change="handleSelectionChange"
-          height="450px">
+          height="450px"
+        >
           <el-table-column type="selection" width="55" />
           <el-table-column
             label="模型名称"
             width="300px"
             align="center"
-            prop="model.modelName">
+            prop="model.modelName"
+          >
             <template slot-scope="scope">
-              <a type="text" style="color: #409eff" @click="
+              <a
+                type="text"
+                style="color: #409eff"
+                @click="
                   getResultTables(
                     scope.row.runResultTables,
                     scope.row.model.modelName,
                     scope.row.model.modelUuid,
                     scope.row.runStatus,
                     resultSpiltObjects
-                  )">{{ scope.row.model.modelName }}</a>
+                  )
+                "
+                >{{ scope.row.model.modelName }}</a
+              >
             </template>
           </el-table-column>
           <el-table-column
@@ -90,9 +105,12 @@
             label="运行SQL"
             prop="settingInfo"
             align="center"
-            width="200px">
+            width="200px"
+          >
             <template slot-scope="scope">
-              <el-link type="primary" @click="selectSql(scope.row)">{{ settingInfoSqlFormatter(scope.row)}}</el-link>
+              <el-link type="primary" @click="selectSql(scope.row)">{{
+                settingInfoSqlFormatter(scope.row)
+              }}</el-link>
             </template>
           </el-table-column>
           <el-table-column
@@ -105,12 +123,6 @@
           <el-table-column
             label="关联项目"
             prop="projectName"
-            align="center"
-            width="200px"
-          />
-             <el-table-column
-            label="共享人"
-            prop="runResultShare.userName"
             align="center"
             width="200px"
           />
@@ -131,25 +143,30 @@
         />
       </el-main>
     </el-container>
-    <el-dialog v-if="sqlInfoDialog" :visible.sync="sqlInfoDialog" title="SQL信息" width="50%">
-      <el-input
-        disabled
-        type="textarea"
-        :rows="15"
-        v-model="sqlInfo">
+    <el-dialog
+      v-if="sqlInfoDialog"
+      :visible.sync="sqlInfoDialog"
+      title="SQL信息"
+      width="50%"
+    >
+      <el-input disabled type="textarea" :rows="15" v-model="sqlInfo">
       </el-input>
     </el-dialog>
     <el-dialog
       title="请处理"
       :visible.sync="handleIdeaDialog"
       width="30%"
-      :append-to-body="true">
+      :append-to-body="true"
+    >
       <div ref="basicInfo">
         <el-form ref="basicInfoForm">
           <el-row>
             <el-col :span="24">
               <el-form-item label="处理状态">
-                <el-select style="margin: 5px" v-model="modelResultHandle.handleState">
+                <el-select
+                  style="margin: 5px"
+                  v-model="modelResultHandle.handleState"
+                >
                   <el-option value="待处理">待处理</el-option>
                   <el-option value="处理中">处理中</el-option>
                   <el-option value="已完成">已完成</el-option>
@@ -160,15 +177,23 @@
           <el-row>
             <el-col :span="24">
               <el-form-item label="处理意见">
-                <el-input v-model="modelResultHandle.handleIdea" type="textarea" :rows="6" placeholder="请输入内容"></el-input>
+                <el-input
+                  v-model="modelResultHandle.handleIdea"
+                  type="textarea"
+                  :rows="6"
+                  placeholder="请输入内容"
+                ></el-input>
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
-      <el-button @click="handleIdeaDialog = false">取 消</el-button>
-      <el-button type="primary" @click="updateHandleResult()">确 定</el-button></span>
+        <el-button @click="handleIdeaDialog = false">取 消</el-button>
+        <el-button type="primary" @click="updateHandleResult()"
+          >确 定</el-button
+        ></span
+      >
     </el-dialog>
   </div>
 </template>
@@ -187,9 +212,13 @@ import {
   batchSaveResultDetailProjectRel,
   selectByRunResultTableUUids,
   getDataAfterResultSpiltToRelateProject,
-  addCoverResultRelProject
-} from "@/api/analysis/auditmodelresult"
-import { selectLikePageVoHandle,updateRunTaskRel } from "@/api/analysis/modelresulthandle"
+  addCoverResultRelProject,
+  batchDeleteResultRelProject
+} from "@/api/analysis/auditmodelresult";
+import {
+  selectLikePageVoHandle,
+  updateRunTaskRel,
+} from "@/api/analysis/modelresulthandle";
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 import QueryField from "@/components/Ace/query-field/index";
 import Pagination from "@/components/Pagination/index";
@@ -239,26 +268,27 @@ export default {
         exportBtn: false,
       },
       //模型结果处理对象
-      modelResultHandle:{
-        handleState:'',
-        handleIdea:''
+      modelResultHandle: {
+        handleState: "",
+        handleIdea: "",
       },
       //处理意见dialog
-      handleIdeaDialog:false,
+      handleIdeaDialog: false,
       resultSpiltObjects: {}, //存储点击结果拆分要传往后台的数据
-      sqlInfo:"",
+      sqlInfo: "",
       sqlInfoDialog: false, //点击模型结果关联按钮控制人员dialog显示
+      projectUuid: "", //关联项目的Uuid
     };
   },
   created() {
     //判断是不是从项目进来的 如果从项目进来则走项目的权限
     // todo 梁瑞
-    let params = this.getQueryString()
-    if(params.projectUuid != undefined){
-      alert(params.projectUuid)
-    }
-    else{
-      this.getLikeList()
+    let params = this.getQueryString();
+    if (params.projectUuid != undefined) {
+      this.projectUuid = params.projectUuid;
+      this.getLikeList();
+    } else {
+      this.getLikeList();
     }
   },
   methods: {
@@ -266,10 +296,10 @@ export default {
      *解析url上的参数
      */
     getQueryString() {
-      let url = window.location.href
+      let url = window.location.href;
       var params = [],
         h;
-      var hash = url.slice(url.indexOf("?") + 1).split('&');
+      var hash = url.slice(url.indexOf("?") + 1).split("&");
       for (var i = 0; i < hash.length; i++) {
         h = hash[i].split("="); //
         params[h[0]] = h[1];
@@ -404,8 +434,8 @@ export default {
         return "";
       } else {
         var sql = JSON.parse(row.settingInfo).sql;
-        sql = sql.substring(0,10)
-        sql = sql + "..."
+        sql = sql.substring(0, 10);
+        sql = sql + "...";
         return sql;
       }
     },
@@ -444,21 +474,31 @@ export default {
           model = { modelName: query.modelName };
         }
         if (query.runUserName == null || query.runUserName == "") {
-          var runTask = null;
+          runTask = null;
         } else {
-          var runTask = { runUserName: query.runUserName };
+          runTask = { runUserName: query.runUserName };
         }
+        if (this.projectUuid != "") {
+          resultRelProject = { resultRelProjectUuid: this.projectUuid };
+        }
+        query.resultRelProject = resultRelProject;
         query.model = model;
         query.runTask = runTask;
         this.pageQuery.condition = query;
-      }
-        selectLikePageVoHandle(this.pageQuery).then(
-        (resp) => {
-          this.total = resp.data.total;
-          this.list = resp.data.records;
-          this.listLoading = false;
+      } else {
+        var runTaskRel = {};
+        var resultRelProject = {};
+        if (this.projectUuid != "") {
+          resultRelProject = { resultRelProjectUuid: this.projectUuid };
         }
-      );
+        runTaskRel.resultRelProject = resultRelProject;
+        this.pageQuery.condition = runTaskRel;
+      }
+      selectLikePageVoHandle(this.pageQuery).then((resp) => {
+        this.total = resp.data.total;
+        this.list = resp.data.records;
+        this.listLoading = false;
+      });
     },
     /**
      * 当多选框改变时触发
@@ -513,175 +553,40 @@ export default {
      * 点击删除按钮触发的事件
      */
     deleteRunTaskRel() {
-      if (this.share.length == 0 && this.notShare.length == 0) {
-        this.$message({ message: "请选择要删除的运行结果" });
-      } else if (this.notShare.length != 0 && this.share.length == 0) {
-        // 当选中的要删除结果中都是自己的没有别人共享结果的时候
-        var flag = true;
-        // 判断选中的项目中是否有关联的项目
-        for (var i = 0; i < this.notShare.length; i++) {
-          if (this.notShare[i].projectName != null) {
-            flag = false;
-            break;
-          }
-        }
-        // 如果有关联的项目
-        if (flag == false) {
-          this.$message({
-            message: "选择的运行结果有项目关联，请取消关联，再删除！",
-          });
-        } else {
-          // 打开删除提示框
-          this.open();
-        }
-      } else if (this.notShare.length == 0 && this.share.length != 0) {
-        // 当选中的要删除结果中没有自己的都是别人共享结果的时候
-        // 打开删除提示框
-        this.open1();
-      } else {
-        // 当选中的要删除结果中有自己的也有别人共享结果的时候
-        var flag = true;
-        // 判断自己的结果中有无项目关联
-        for (var i = 0; i < this.notShare.length; i++) {
-          if (this.notShare[i].projectName != null) {
-            flag = false;
-            break;
-          }
-        }
-        if (flag == false) {
-          this.$message({
-            message: "选择的运行结果有项目关联，请取消关联，再删除！",
-          });
-        } else {
-          // 打开删除提示框
-          this.open2();
+      var selected = this.selected1;
+      var tips = "";
+      var resultRelProjectUuids = []
+      for (var i = 0; i < selected.length; i++) {
+        if (selected[i].resultRelProject.resultRelProjectUuid == null) {
+          tips += selected[i].model.modelName + " , ";
+        }else{
+          resultRelProjectUuids.push(selected[i].resultRelProject.resultRelProjectUuid)
         }
       }
-    },
-    /**
-     * 打开确认删除弹出层,当勾选中共享结果为0是打开，非共享不为0时调用
-     */
-    open() {
-      this.$confirm("此操作将永久删除该结果, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-        center: true,
-      })
-        .then(() => {
-          var ids = [];
-          for (var i = 0; i < this.notShare.length; i++) {
-            ids[i] = this.notShare[i].runTaskRelUuid;
-          }
-          batchDeleteRunTaskRel(ids.join(",")).then((resp) => {
-            if (resp.data == true) {
-              this.getLikeList();
-              this.$message({
-                type: "success",
-                message: "删除成功!",
-              });
-            } else {
-              this.$message({
-                type: "error",
-                message: "删除失败!",
-              });
-            }
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除",
-          });
+      if (tips != "") {
+        tips += "不存在项目关联不能删除";
+        this.$message({
+          message: tips,
         });
-    },
-    /**
-     * 当共享的长度不为0，非共享长度为0时调用
-     */
-    open1() {
-      this.$confirm("此操作将永久删除该结果, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-        center: true,
-      })
-        .then(() => {
-          var ids = [];
-          for (var i = 0; i < this.share.length; i++) {
-            ids[i] = this.share[i].runResultShare.runResultShareUuid;
-          }
-          deleteRunResultShare(ids.join(",")).then((resp) => {
-            if (resp.data == true) {
-              this.getLikeList();
-              this.$message({
-                type: "success",
-                message: "删除成功!",
-              });
-            } else {
-              this.$message({
-                type: "error",
-                message: "删除失败!",
-              });
-            }
-          });
-        })
-        .catch(() => {
+      } else {
+        batchDeleteResultRelProject(resultRelProjectUuids).then(resp=>{
+          if(resp.data==true){
+             this.$notify({
+              title: this.$t("提示"),
+              message: this.$t("删除成功"),
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          }else{
           this.$message({
-            type: "info",
-            message: "已取消删除",
+            type: "error",
+            message: "移除关联项目失败!",
           });
-        });
-    },
-    /**
-     * 当共享和非共享都不为0的时候调用
-     */
-    open2() {
-      this.$confirm("此操作将永久删除该结果, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-        center: true,
-      })
-        .then(() => {
-          this.success = false;
-          this.success1 = false;
-          var ids1 = [];
-          var ids = [];
-          for (var i = 0; i < this.notShare.length; i++) {
-            ids1[i] = this.notShare[i].runTaskRelUuid;
           }
-          batchDeleteRunTaskRel(ids1.join(",")).then((resp) => {
-            if (resp.data == true) {
-              this.success = true;
-            }
-          });
-          for (var i = 0; i < this.share.length; i++) {
-            ids[i] = this.share[i].runResultShare.runResultShareUuid;
-          }
-          deleteRunResultShare(ids.join(",")).then((resp) => {
-            if (resp.data == true) {
-              this.success1 = true;
-            }
-            if (this.success == true && this.success1 == true) {
-              this.getLikeList();
-              this.$message({
-                type: "success",
-                message: "删除成功!",
-              });
-            } else {
-              this.$message({
-                type: "error",
-                message: "删除失败!",
-              });
-            }
-          });
         })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除",
-          });
-        });
+        this.getLikeList()
+      }
     },
     /**
      * 运行类型格式化
@@ -712,43 +617,43 @@ export default {
      * @param row 查看的sql行
      * @returns {string}
      */
-    selectSql(row){
+    selectSql(row) {
       if (row.settingInfo == null) {
-        return ""
+        return "";
       } else {
-        var sql = JSON.parse(row.settingInfo).sql
-        this.sqlInfo = sql
-        this.sqlInfoDialog = true
+        var sql = JSON.parse(row.settingInfo).sql;
+        this.sqlInfo = sql;
+        this.sqlInfoDialog = true;
       }
     },
     /**
      * 处理结果
      */
-    handleResult(){
-      var selectObj = this.$refs.resultTable.selection
-      if(selectObj.length == 0){
+    handleResult() {
+      var selectObj = this.$refs.resultTable.selection;
+      if (selectObj.length == 0) {
         this.$message({
           type: "info",
           message: "请选择要处理的模型结果",
-        })
-        return
+        });
+        return;
       }
-      this.handleIdeaDialog = true
+      this.handleIdeaDialog = true;
     },
     /**
      * 修改模型结果的处理意见
      */
-    updateHandleResult(){
-      var selectObj = this.$refs.resultTable.selection
-      for(let i = 0;i < selectObj.length;i++){
+    updateHandleResult() {
+      var selectObj = this.$refs.resultTable.selection;
+      for (let i = 0; i < selectObj.length; i++) {
         //组织处理意见等对象
-        selectObj[i].handleState = this.modelResultHandle.handleState
-        selectObj[i].handleIdea = this.modelResultHandle.handleIdea
-        updateRunTaskRel(selectObj[i]).then(result => {})
-        this.handleIdeaDialog = false
+        selectObj[i].handleState = this.modelResultHandle.handleState;
+        selectObj[i].handleIdea = this.modelResultHandle.handleIdea;
+        updateRunTaskRel(selectObj[i]).then((result) => {});
+        this.handleIdeaDialog = false;
         //处理完成直接修改
       }
-    }
+    },
   },
 };
 </script>

@@ -17,7 +17,6 @@
     <el-row v-if="myFlag">
       <div align="right">
         <el-button
-          v-if="false"
           :disabled="modelRunResultBtnIson.exportBtn"
           type="primary"
           @click="exportExcel"
@@ -25,7 +24,6 @@
           title="导出"
         ></el-button>
         <el-button
-          v-if="false"
           :disabled="modelRunResultBtnIson.chartDisplayBtn"
           type="primary"
           class="oper-btn chart"
@@ -40,22 +38,7 @@
           title="处理"
           class="oper-btn processing"
         ></el-button>
-<!--        <el-button
-          :disabled="false"
-          type="primary"
-          @click="queryConditionSetting"
-          class="oper-btn search"
-          title="查询设置"
-        ></el-button>
         <el-button
-          :disabled="false"
-          type="primary"
-          @click="reSet"
-          class="oper-btn again-2"
-          title="重置"
-        ></el-button>-->
-        <el-button
-          v-if="false"
           class="oper-btn link"
           :disabled="modelRunResultBtnIson.modelDetailAssBtn"
           type="primary"

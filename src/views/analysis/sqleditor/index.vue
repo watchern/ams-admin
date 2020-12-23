@@ -287,7 +287,8 @@ import {
   refushTableTree,
   dropTable,
   getIsUpdate,
-  setIsUpdate
+  setIsUpdate,
+  getByPersonUuid
 } from "@/api/analysis/sqleditor/sqleditor";
 import sqlDraftList from "@/views/analysis/sqleditor/sqldraftlist";
 import { updateDraft } from "@/api/analysis/sqleditor/sqldraft";
@@ -535,6 +536,10 @@ export default {
           this.tempId = this.locationUuid;
           this.path = "当前执行SQL保存路径:" + this.tempPath;
           this.modelResultSavePathId = this.tempId;
+        }else{
+          getByPersonUuid().then(resp=>{
+
+          })
         }
         refreshCodeMirror()
       }).catch(() => {
