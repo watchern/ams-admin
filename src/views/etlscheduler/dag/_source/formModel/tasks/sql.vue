@@ -79,6 +79,7 @@
     <m-list-box>
       <div slot="text">自定义参数</div>
       <div slot="content">
+        <span v-if="!localParams.length && isDetails" class="spanparam">无</span>
         <m-local-params
           ref="refLocalParams"
           :udp-list="localParams"
@@ -89,6 +90,7 @@
     <m-list-box>
       <div slot="text">前置sql</div>
       <div slot="content">
+        <span v-if="!preStatements.length && isDetails" class="spanparam">无</span>
         <m-statement-list
           ref="refPreStatements"
           :statement-list="preStatements"
@@ -99,6 +101,7 @@
     <m-list-box>
       <div slot="text">后置sql</div>
       <div slot="content">
+        <span v-if="!postStatements.length && isDetails" class="spanparam">无</span>
         <m-statement-list
           ref="refPostStatements"
           :statement-list="postStatements"
@@ -478,6 +481,11 @@ export default {
 }
 .propwidth{
   width:500px
+}
+.spanparam {
+	font-size: 14px;
+  color: #777;
+  line-height: 32px;
 }
 </style>
 

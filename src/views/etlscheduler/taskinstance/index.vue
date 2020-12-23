@@ -202,7 +202,7 @@ export default {
         //   data: statuSelect
         // },
         {
-          label: '任务实例状态', name: 'groupExecutionStatus', type: 'select',
+          label: '运行状态', name: 'groupExecutionStatus', type: 'select',
           data: statuSelectList, value: []
         },
         // {
