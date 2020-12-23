@@ -70,14 +70,14 @@
 <!--        </div>-->
 <!--      </div>-->
     </div>
-    <div class="new-time-wrap absolute">
-      <ace-progress />
-    </div>
-    <div v-if="isShowInfoBox" class="info-box absolute flex a-center j-start flex-row">
-      <img src="../../../assets/Ace/image/提示icon2@2x.png" class="info-icon">
-      <span class="msg">Helpful and short message.</span>
-      <i class="el-icon-close icon-close" @click="isShowInfoBox=false" />
-    </div>
+<!--    <div class="new-time-wrap absolute">-->
+<!--      <ace-progress />-->
+<!--    </div>-->
+<!--    <div v-if="isShowInfoBox" class="info-box absolute flex a-center j-start flex-row">-->
+<!--      <img src="../../../assets/Ace/image/提示icon2@2x.png" class="info-icon">-->
+<!--      <span class="msg">Helpful and short message.</span>-->
+<!--      <i class="el-icon-close icon-close" @click="isShowInfoBox=false" />-->
+<!--    </div>-->
   </div>
 </template>
 
@@ -420,10 +420,10 @@ export default {
     arryV.sort(function(num1,num2){
       return num1-num2;
     })
-    for(let x=1;x<50;x++){
+    for(let x=1;x<200;x++){
       let Num= eval(arryV[arryV.length-x]);
       for(let i=0; i<arry.length; i++){
-        if(arry[i].v == Num && arry[i].p != ''){
+        if(arry[i].v == Num && arry[i].p !== ''){
           if(this.latelyUseList.indexOf(arry[i].id) == -1) {
             this.latelyPathList.push(arry[i].p)
             this.latelyUseList.push(arry[i].id)
@@ -455,6 +455,7 @@ export default {
           path: this.latelyPathList[index]
         }
       })
+      this.$emit('func',false)
     }
   }
 }
@@ -467,6 +468,9 @@ export default {
   margin:8px 5px 2px 5px;
   padding:28px;
 }
+#use-zy img{
+  width:100%
+}
 #use-zyt{
   width:18%;
   white-space: nowrap;
@@ -477,7 +481,7 @@ export default {
   height:24px;
 }
 .tools-template {
-  background: rgba(0, 0, 0, 0.5);
+  //background: rgba(0, 0, 0, 0.5);
 
   .info-box {
     background: #fcf4f1;
@@ -521,7 +525,7 @@ export default {
   }
   .tools-content {
     background: #2a2e37;
-    box-shadow: 0 40px 80px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: 75px 0px 80px 0 rgba(0, 0, 0, 0.4);
     border-radius: 1px 46px 1px 1px;
     width: 510px;
     padding: 25px 20px;

@@ -227,7 +227,7 @@
           :loading="spinnerLoading"
           :disabled="isDetails"
           @click="ok()"
-        >{{ spinnerLoading ? 'Loading...' : '确认添加' }} </x-button>
+        >{{ spinnerLoading ? 'Loading...' : '保存' }} </x-button>
       </div>
     </div>
   </div>
