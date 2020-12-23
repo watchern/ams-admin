@@ -89,3 +89,14 @@ export function getRemindByDescTime(data) {
     params: data
   })
 }
+
+
+export function updateReminds(ids) {
+  return request({
+    baseURL: baseURL,
+    url: `/remindController/updateReminds/${ids}`,
+    method: 'put',
+    // params 以formData格式传递  后台用RequestParam
+    // 直接加data以json格式传递  后台用RequestBody
+  })
+}

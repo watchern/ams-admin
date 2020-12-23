@@ -3,6 +3,11 @@
     <div class="filter-container">
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
+    <el-row>
+      <el-col align="right">
+        <el-button type="primary" size="mini" class="oper-btn edit" title="标记已阅" @click="updateCode()" />
+      </el-col>
+    </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -17,22 +22,41 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="标题"  align="center" prop="remindTitle" />
-      <el-table-column label="内容"  align="left" prop="remindContent" />
-      <el-table-column label="提醒时间"  align="center" prop="remindTime"/>
-      <el-table-column label="阅读状态" prop="readStatus" align="center"  :formatter="readStatusFormatter" />
-      <el-table-column label="操作" prop="modeUrl" align="center" >
+      <el-table-column 
+        label="标题" 
+        prop="remindTitle" >
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="selectDetail(scope.row)">查看</el-button>
-          <el-button type="text" size="small" @click="signRead(scope.row)">标记已阅</el-button>
+          <el-link target="_blank" :underline="false" type="primary" class="handreada" @click="handdetails(scope.row)">
+          {{ scope.row.remindTitle }}</el-link>
         </template>
       </el-table-column>
+      <!-- <el-table-column label="内容"  align="left" prop="remindContent" /> -->
+      <el-table-column label="提醒时间"  align="center" prop="remindTime"/>
+      <el-table-column label="阅读状态" prop="readStatus" align="center"  :formatter="readStatusFormatter" />
+      <!-- <el-table-column label="操作" prop="modeUrl" align="center" >
+        <template slot-scope="scope">
+          <el-button type="text" size="small" @click="selectDetail(scope.row)">查看</el-button>
+        </template>
+      </el-table-column> -->
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
+    <el-dialog 
+      :visible.sync="dialogFormVisible" 
+      top = "10vh"
+      title="消息详情"
+      width="50%"
+      :before-close="handleClose"
+      v-model="temp"
+      >
+      <span class="visible-span">消息标题</span>
+      <p class="visible-p1">{{this.temp.remindTitle}}</p>
+      <span class="visible-span">消息内容</span>
+      <p class="visible-p2">{{this.temp.remindContent}}</p>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { listByPageRemind, updateRemind } from '@/api/base/base'
+import { listByPageRemind, updateRemind, updateReminds} from '@/api/base/base'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 export default {
@@ -45,7 +69,7 @@ export default {
       listLoading: false,
       queryFields: [
         { label: '标题', name: 'remindTitle', type: 'fuzzyText', value: '' },
-        { label: '内容', name: 'remindContent', type: 'fuzzyText' },
+        //{ label: '内容', name: 'remindContent', type: 'fuzzyText' },
         { label: '提醒时间范围', name: 'remindTime', type: 'timePeriod' },
         { label: '阅读状态', name: 'readStatus', type: 'select',
           data: [{ name: '未阅', value: '0' }, { name: '已阅', value: '1' }], default: '-1' }
@@ -116,6 +140,8 @@ export default {
         remindedUserName: '',
         remindedType: ''
       },
+      selections: [],
+      dialogFormVisible: false,
       pageQuery: {
         condition: null,
         pageNo: 1,
@@ -207,19 +233,71 @@ export default {
         path: url
       })
     },
-    signRead(data) {
-      var obj = {
-        remindUuid: data.remindUuid
-      }
-      updateRemind(obj).then(result => {
-        if (result.code == 0) {
+    updateCode(){
+      var ids = []
+      this.selections.forEach((r, i) => {
+        ids.push(r.remindUuid)})
+      console.log(ids)
+      updateReminds(ids).then(result =>{
+         if (result.code == 0) {
           this.getList()
         } else {
           this.$notify({ success: '失败', message: '标记已阅失败' })
         }
       })
+    },
+    handdetails(data){
+    if(data.modeUrl != null){
+      this.selectDetail(data)
+    }else{
+      this.temp = data
+      this.dialogFormVisible = true
+      updateRemind(data).then(result =>{
+         if (result.code == 0) {
+          this.getList()
+        } else {
+          this.$notify({ success: '失败', message: '标记已阅失败' })
+        }
+      })
+      }
     }
   }
 }
 </script>
-
+<style scoped>
+.handreada{
+    cursor: pointer;
+    padding: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1890ff;
+}
+.handreada:hover{text-decoration:underline}
+.visible-span{
+  width: 95%;
+  margin: 2.5% 2.5% .5%;
+  display: inline-block;
+  font-size: 24px;
+}
+.visible-p1{
+  width: 95%;
+  margin:.5% 2.5% 2.5%;
+  padding: 10px;
+  border: 1px solid #ddfdff;
+  font-size: 16px;border-radius: 6px; 
+  display: inline-block;
+  height: 40px;
+  overflow: auto;
+}
+.visible-p2{
+  width: 95%;
+  margin:.5% 2.5% 2.5%;
+  padding: 10px;
+  border: 1px solid #ddfdff;
+  font-size: 16px;border-radius: 6px; 
+  display: inline-block;
+  line-height: 27px;
+  height: 400px;
+  overflow: auto;
+}
+</style>
