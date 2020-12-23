@@ -1,16 +1,16 @@
 <template>
   <div class="query-field">
     <el-form :inline="true" :model="query" label-position="bottom">
-      <el-form-item v-for="fd in formData" v-if="searchBar == '0'" :label="fd.label">
-        <el-input v-if="fd.type==='text'" v-model="query[fd.name]" />
-        <el-input v-if="fd.type==='fuzzyText'" v-model="query[fd.name]" placeholder="模糊查询" />
+      <el-form-item v-for="fd in formData" :label="fd.label"  v-if="searchBar == '0'">
+        <el-input v-if="fd.type==='text'" v-model="query[fd.name]"/>
+        <el-input v-if="fd.type==='fuzzyText'" v-model="query[fd.name]" placeholder="模糊查询"/>
         <el-select v-if="fd.type==='select'" v-model="query[fd.name]">
-          <el-option label="全部" value="" />
+          <el-option label="全部" value=""/>
           <el-option v-for="opt in fd.data" :label="opt.name" :value="opt.value" />
         </el-select>
         <template v-if="fd.type==='timePeriod'">
-          <el-date-picker v-model="query[fd.name+'Start']" type="date" placeholder="开始时间" />-
-          <el-date-picker v-model="query[fd.name+'End']" type="date" placeholder="结束时间" />
+          <el-date-picker v-model="query[fd.name+'Start']" type="date" placeholder="开始时间"/>-
+          <el-date-picker v-model="query[fd.name+'End']" type="date" placeholder="结束时间"/>
         </template>
       </el-form-item>
 
@@ -20,12 +20,12 @@
       </el-form-item>
 
       <div class="switch-btn">
-        <img :src="switchImg" @click="onSwitchWith">
+        <img :src="this.switchImg"  @click="onSwitchWith">
       </div>
 
       <el-form-item v-if="searchBar == '1'" class="full-search">
-        <el-input v-model="query['keyword']" placeholder="查询">
-          <img slot="suffix" src="./input.png" class="img-icon" @click="onSubmit">
+        <el-input  v-model="query['keyword']" placeholder="查询" >
+          <img slot="suffix" src="./input.png" class="img-icon" @click="onSubmit" />
         </el-input>
       </el-form-item>
 
@@ -47,6 +47,8 @@ export default {
   data() {
     return {
       query: {},
+      searchBar:'0',
+      switchImg:'',
       searchBar: '0',
       switchImg: ''
       /*      inquire:[

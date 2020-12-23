@@ -236,7 +236,7 @@
         <el-button
           type="primary"
           @click="taskSkip()"
-        >确定</el-button>
+        >保存</el-button>
       </div>
     </el-dialog>
     <!-- 显示任务日志的dialog -->
@@ -788,5 +788,14 @@ export default {
 	font-weight: 700;
 	font-style: normal;
 	color: #888888;
+  }
+  .el-timeline-item__node--large {
+	left: -2px;
+	width: 20px !important;
+	height: 20px !important;
+  }
+  .el-timeline-item__icon {
+	color: #fff;
+	font-size: 20px !important;
   }
 </style>

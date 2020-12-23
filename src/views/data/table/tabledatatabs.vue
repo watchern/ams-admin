@@ -1,13 +1,13 @@
 <template class="divContent">
   <div>
-    <el-tabs v-model="tabShowName" style="text-aling = center">
-      <el-tab-pane label="基本信息" name="basicinfo"><basic-info :table-id="tableId" :open-type="openType" /></el-tab-pane>
-      <el-tab-pane label="列" name="column"><column :table-id="tableId" :open-type="openType" /></el-tab-pane>
-      <el-tab-pane disabled label="约束" name="constraint"><constraint :table-id="tableId" /></el-tab-pane> 
-      <el-tab-pane label="索引" name="indexSql"><index-sql :table-id="tableId" :open-type="openType" /></el-tab-pane>
-      <el-tab-pane disabled label="关联关系" name="correlation"><correlation :table-id="tableId" :open-type="openType" /></el-tab-pane>
-      <el-tab-pane label="创建语句" name="createSql"><create-sql :table-id="tableId" :open-type="openType" /></el-tab-pane>
-      <el-tab-pane label="业务信息" name="bizInfo"><biz-info :table-id="tableId" :open-type="openType" /></el-tab-pane>
+    <el-tabs ref="tabs" v-model="tabShowName" style="text-aling = center">
+      <el-tab-pane v-if="openType === 'showTable'" label="基本信息" name="basicinfo"><basic-info :table-id="tableId" :open-type="openType" /></el-tab-pane>
+      <el-tab-pane label="列" name="column"><column :table-id="tableId" :forder-id="forderId" :open-type="openType" /></el-tab-pane>
+      <el-tab-pane v-if="openType === 'showTable'" label="约束" name="constraint"><constraint :table-id="tableId" /></el-tab-pane>
+      <el-tab-pane v-if="openType === 'showTable'" label="索引" name="indexSql"><index-sql :table-id="tableId" :open-type="openType" /></el-tab-pane>
+      <el-tab-pane label="关联关系" name="tablerelation"><tablerelation :table-id="tableId" :open-type="openType" /></el-tab-pane>
+      <el-tab-pane v-if="openType === 'showTable'" label="创建语句" name="createSql"><create-sql :table-id="tableId" :open-type="openType" /></el-tab-pane>
+      <el-tab-pane v-if="openType === 'showTable'" label="业务信息" name="bizInfo"><biz-info :table-id="tableId" :open-type="openType" /></el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -19,11 +19,11 @@ import constraint from '@/views/data/table/constraint'
 import indexSql from '@/views/data/table/indexsql'
 import createSql from '@/views/data/table/createsql'
 import bizInfo from '@/views/data/table/bizinfo'
-import correlation from '@/views/data/table/correlation'
+import tablerelation from '@/views/data/table/tablerelation'
 export default {
-  components: { basicInfo, column, constraint, indexSql, createSql, bizInfo, correlation },
+  components: { basicInfo, column, constraint, indexSql, createSql, bizInfo, tablerelation },
   // eslint-disable-next-line vue/require-prop-types
-  props: ['tableId', 'tabShow', 'openType'],
+  props: ['tableId', 'tabShow', 'openType', 'forderId'],
   data() {
     return {
       tabShowName: ''
@@ -38,9 +38,16 @@ export default {
     }
   },
   created() {
+    this.initTabs()
     this.tabShowName = this.tabShow
   },
   methods: {
+    initTabs() {
+      if (this.openType === 'addType') {
+        this.$refs.tabs.$children[0].$refs.tabs[3].style.display = 'none'
+        this.$refs.tabs.$children[0].$refs.tabs[3].style.display = 'none'
+      }
+    }
   }
 }
 </script>
