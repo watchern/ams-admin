@@ -82,6 +82,29 @@ export function getTableCol(tableMetaUuid) {
   })
 }
 
+/**
+ * 获取关联列
+ * @param data
+ * @returns {AxiosPromise}
+ */
+export function selectRelTable(tableMetaUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/selectRelTable`,
+    method: 'post',
+    params: { tableMetaUuid: tableMetaUuid }
+  })
+}
+
+export function saveTableCols(sql) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/saveTableCols`,
+    method: 'post',
+    params: { sql: sql }
+  })
+}
+
 export function getTableInfo(tableMetaUuid) {
   return request({
     baseURL: baseURL,

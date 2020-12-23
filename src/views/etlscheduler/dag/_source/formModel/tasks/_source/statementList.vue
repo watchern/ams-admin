@@ -16,7 +16,7 @@
         style="width: 500px;"
         @on-blur="_verifProp()"
       />
-      <span class="lt-add">
+      <span v-if="!isDetails" class="lt-add">
         <a
           href="javascript:"
           style="color:red;"
@@ -31,7 +31,7 @@
         </a>
       </span>
       <span
-        v-if="$index === (localStatementList.length - 1)"
+        v-if="$index === (localStatementList.length - 1) && !isDetails"
         class="add"
       >
         <a
@@ -48,7 +48,7 @@
       </span>
     </div>
     <span
-      v-if="!localStatementList.length"
+      v-if="!localStatementList.length && !isDetails"
       class="add"
     >
       <a
@@ -154,6 +154,11 @@ export default {
       margin: 2px;
       padding-left: 4px;
       a {
+        // em{
+        //   vertical-align: middle;
+        //   margin-bottom: 15px;
+        //   display: inline-block;
+        // }
         .iconfont {
           font-size: 18px;
           vertical-align: middle;
