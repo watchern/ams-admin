@@ -1,12 +1,12 @@
 import request from '@/utils/request'
 
 const baseURL = '/data'
-const controllerName = 'scene'
+const controllerName = 'tableRelation'
 
 export function listByPage(data) {
   return request({
     baseURL: baseURL,
-    url: '/scene/listByPage',
+    url: `/${controllerName}/listByPage`,
     method: 'post',
     data
   })
@@ -38,19 +38,10 @@ export function del(ids) {
   })
 }
 
-export function initSceneTree(grpUuid) {
+export function getById(id) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/initSceneTree?grpUuid=${grpUuid}`,
-    method: 'post'
+    url: `/${controllerName}/getById/${id}`,
+    method: 'get'
   })
 }
-
-export function getAllScene() {
-  return request({
-    baseURL: baseURL,
-    url: `/${controllerName}/getAllScene`,
-    method: 'post'
-  })
-}
-

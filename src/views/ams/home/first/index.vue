@@ -29,16 +29,18 @@
           </div>
         </div>
         <div class="bottom-card flex a-center j-between flex-row">
-          <div v-for="(item,index) in cardList" :key="index" class="card flex a-start j-center flex-column" :style="{background:item.bg}">
-            <div class="img-box flex a-center j-center" :style="{background:item.cardBg}">
-              <img :src="item.img" class="img" :style="{width:item.imgwith,height:item.imgheight}">
+          <div v-for="(item,index) in cardList" :key="index" class="top-card flex a-start j-start flex-row" :style="{background:item.bg}">
+            <div class="top-card-left flex-shrink  flex a-center j-center" :style="{background:item.cardBg}">
+              <img :src="item.img" class="img">
             </div>
-            <div class="title">{{ item.title }}</div>
-            <div v-for="(text,index) in item.des" :key="index" class="line">
-              <span @click="toDoJump" >{{ text.text }}</span>
-              <span v-if="text.icon" :style="{color:text.iconColor,width:text.width}" class="icon">{{ text.icon }}</span>
+            <div class="top-card-right">
+              <div class="title">{{ item.title }}</div>
+              <div v-for="(text,index) in item.des" :key="index" class="line">
+                <span @click="toDoJump" >{{ text.text }}</span>
+                <span v-if="text.icon" :style="{color:text.iconColor,width:text.width}" class="icon">{{ text.icon }}</span>
+              </div>
+              <span class="card-more" @click="moreJump">更多</span>
             </div>
-            <span class="card-more" @click="moreJump">更多</span>
           </div>
         </div>
       </div>
@@ -79,56 +81,38 @@ export default {
       cardList: [
         {
           img: require('../../../../assets/Ace/image/c1.png'),
-          title: '预警监控',
+          title: '提醒事项',
           bg: '#EDF1F5',
           cardBg: '#353A43',
           path:'',
           des: [
             {
-              text: '住房消费贷客户年龄不合规',
+              text: '',
               iconColor: '#D81020',
               icon: ''
             },
             {
-              text: '个人贷款担保不良贷款客户 ',
+              text: '',
+              iconColor: '#D81020',
               icon: ''
-            }
+            },
+            {
+              text: '',
+              iconColor: '#D81020',
+              icon: ''
+            },
+            {
+              text: '',
+              iconColor: '#D81020',
+              icon: ''
+            },
+            {
+              text: '',
+              iconColor: '#D81020',
+              icon: ''
+            },
           ]
         },
-        {
-          img: require('../../../../assets/Ace/image/c3.png'),
-          title: '提醒事项',
-          bg: '#ffffff',
-          cardBg: '#353A43',
-          path:'/base/remind',
-          des: [
-            {
-              text: '',
-              iconColor: '#D81020',
-              icon: ''
-            },
-            {
-              text: '',
-              iconColor: '#D81020',
-              icon: ''
-            },
-            {
-              text: '',
-              iconColor: '#D81020',
-              icon: ''
-            },
-            {
-              text: '',
-              iconColor: '#D81020',
-              icon: ''
-            },
-            {
-              text: '',
-              iconColor: '#D81020',
-              icon: ''
-            },
-          ]
-        }
       ],
       boxList: [
         {
@@ -185,10 +169,10 @@ export default {
   },
   mounted() {
     getRemindByDescTime().then(resp => {
-      for(let i=0;i<this.cardList[1].des.length;i++){
-        this.cardList[1].des[i].text = resp.data.records[i].remindTitle
+      for(let i=0;i<this.cardList[0].des.length;i++){
+        this.cardList[0].des[i].text = resp.data.records[i].remindTitle
         if(resp.data.records[i].readStatus === 0){
-          this.cardList[1].des[i].icon = ' New'
+          this.cardList[0].des[i].icon = ' New'
         }
       }
     })
@@ -214,7 +198,7 @@ export default {
       //   type: 'active',
       //   val: {val:this.cardList[1].path , name:'提醒'}
       // })
-      this.$router.push({ path:this.cardList[1].path})
+      this.$router.push({ path:this.cardList[0].path})
     }
   }
 }
@@ -340,51 +324,52 @@ export default {
       .bottom-card{
         width: 479px;
         margin-top: 33px;
-        .left-card{
-          background: #EDF1F5;
-        }
-        .right-card{
-          background: #FFFFFF;
-        }
-        .card{
-          position: relative;
-          box-shadow: 17px 17px 34px 0 rgba(0,0,0,0.10);
-          border-radius: 25.2px;
-          width: 227px;
-          //height: 242px;
-          padding: 27px 20px 27px 27px;
-          .img-box{
-            background: #FFFFFF;
-            border: 1px solid #D8D8D8;
-            border-radius: 12.6px;
-            width: 67px;
-            height: 67px;
-            .img{
-              width: 30px;
-              height: 30px;
-              object-fit: cover;
-            }
-          }
-          .title{
-            font-family: PingFangSC-Regular;
-            font-size: 20.16px;
-            color: #333333;
-            line-height: 26.88px;
-            margin: 18px 0;
-          }
-          .line{
-            font-family: PingFangSC-Regular;
-            font-size: 13.5px;
-            color: rgba(21,21,21,0.50);
-            letter-spacing: 0;
-            text-align: justify;
-            line-height: 22px;
-            .icon{
-              display: inline-block;
-              margin-left: 4px;
-            }
-          }
-        }
+        position: relative;
+        //.left-card{
+        //  background: #EDF1F5;
+        //}
+        //.right-card{
+        //  background: #FFFFFF;
+        //}
+        //.card{
+        //  position: relative;
+        //  box-shadow: 17px 17px 34px 0 rgba(0,0,0,0.10);
+        //  border-radius: 25.2px;
+        //  width: 479px;
+        //  //height: 242px;
+        //  padding: 27px 20px 27px 27px;
+        //  .img-box{
+        //    background: #FFFFFF;
+        //    border: 1px solid #D8D8D8;
+        //    border-radius: 12.6px;
+        //    width: 67px;
+        //    height: 67px;
+        //    .img{
+        //      width: 30px;
+        //      height: 30px;
+        //      object-fit: cover;
+        //    }
+        //  }
+        //  .title{
+        //    font-family: PingFangSC-Regular;
+        //    font-size: 20.16px;
+        //    color: #333333;
+        //    line-height: 26.88px;
+        //    margin: 18px 0;
+        //  }
+        //  .line{
+        //    font-family: PingFangSC-Regular;
+        //    font-size: 13.5px;
+        //    color: rgba(21,21,21,0.50);
+        //    letter-spacing: 0;
+        //    text-align: justify;
+        //    line-height: 22px;
+        //    .icon{
+        //      display: inline-block;
+        //      margin-left: 4px;
+        //    }
+        //  }
+        //}
       }
     }
   }
@@ -475,9 +460,10 @@ export default {
   bottom:5px;
   font-family: PingFangSC-Regular;
   font-size: 13.5px;
-  color: rgba(21,21,21,.5);
+  color: #1890ff;
   letter-spacing: 0;
   text-align: justify;
   line-height: 22px;
+  cursor:pointer;
 }
 </style>

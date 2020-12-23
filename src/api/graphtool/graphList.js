@@ -264,3 +264,21 @@ export function getSelectTreeData(sqlValue) {
         data
     })
 }
+
+/**
+ * 替换参数SQL语句
+ * @param sql sql语句
+ * @param paramArr 参数Json字符串
+ */
+async function replaceModelSqlByParams(sql, paramArr) {
+    const data = {
+        sqlValue: sql,
+        paramConditions: paramArr
+    }
+    return await request({
+        baseURL: analysisUrl,
+        url: '/paramController/replaceSqlByAllowedNull',
+        method: 'post',
+        data
+    })
+}
