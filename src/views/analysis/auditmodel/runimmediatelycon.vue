@@ -49,6 +49,7 @@
               :scene-code="sceneCode"
               :tree-type="treeType"
               @node-click="handleClick"
+              style="height: 500px;overflow-y: scroll"
             />
             <span slot="footer" class="dialog-footer">
               <el-button @click="modelResultSavePathDialog = false"
@@ -149,6 +150,7 @@ export default {
         this.$refs.paramassembly[i].initParamHtmlSS(
           sql, paramArr,
           this.detailModels[i].modelName + "参数",
+          this.detailModels[i].modelUuid + "2",
           this.detailModels[i].modelUuid + "2"
         );
       }
@@ -160,7 +162,7 @@ export default {
       var replaceInfo = [];
       for (var i = 0; i < this.detailModels.length; i++) {
         replaceInfo.push(
-          replaceNodeParam(this.detailModels[i].modelUuid + "2")
+          replaceNodeParam(this.detailModels[i].modelUuid + "2",this.detailModels[i].modelUuid + "2")
         );
       }
       var obj = {

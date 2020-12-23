@@ -73,11 +73,7 @@
     <ag-grid-vue
       v-if="isSee"
       v-loading="isLoading"
-      :style="
-        useType == 'modelRunResult' || useType == 'modelPreview'
-          ? 'height:490px'
-          : 'height:300px'
-      "
+      :style="useType == 'modelRunResult' || useType == 'modelPreview'? 'height:490px': 'height:150px'"
       class="table ag-theme-balham"
       :column-defs="columnDefs"
       :row-data="rowData"
@@ -113,6 +109,7 @@
             :fields="json_fields"
             :name="excelName"
             class="thechard-z"
+            v-if="this.preLength==this.myIndex+1"
           >
             <el-button
               type="primary"
@@ -122,6 +119,7 @@
             ></el-button>
           </downloadExcel>
           <el-button
+            v-if="this.preLength==this.myIndex+1"
             type="primary"
             title="图表展示"
             class="oper-btn chart"
@@ -130,6 +128,7 @@
         </el-row>
       </el-col>
     </el-row>
+
     <!-- modelResultPageIsSee -->
     <el-dialog
       title="模型详细关联"
@@ -273,6 +272,8 @@ export default {
     "prePersonalVal",
     "resultSpiltObjects",
     "modelId",
+    "preLength",
+    "myIndex"
   ],
   data() {
     return {
@@ -1286,8 +1287,6 @@ export default {
             this.chartSaveOrUpdate = "save";
           } else {
             //做修改操作
-            console.log('结果')
-            console.log(resp.data.modelChartSetup)
             this.modelChartSetup = resp.data.modelChartSetup;
             this.chartSaveOrUpdate = "update";
           }
@@ -1299,8 +1298,6 @@ export default {
             this.chartSaveOrUpdate = "save";
           } else {
             //做修改操作
-            console.log('预览')
-            console.log(resp.data.modelChartSetup)
             this.modelChartSetup = resp.data.modelChartSetup;
             this.chartSaveOrUpdate = "update";
           }
