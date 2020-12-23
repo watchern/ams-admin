@@ -73,7 +73,7 @@
         </el-col>
       </el-row>
       <span slot="footer">
-        <el-button type="primary" @click="previewVisible = false">关闭</el-button>
+        <el-button type="primary" @click="uploadVisible = false">关闭</el-button>
       </span>
     </el-dialog>
     <!-- 弹窗4 -->
@@ -473,6 +473,7 @@ export default {
     preview() {
       preview(this.selections[0]).then(res => {
         this.executeSQLList = res.data.executeTask.executeSQL
+        debugger
         this.arrSql = res.data
         this.previewVisible = true
         this.$nextTick(() => {
