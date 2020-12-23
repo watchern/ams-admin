@@ -611,44 +611,64 @@ export function executeNode(notExecuteNodeIdArr) {
     //     return
     // }
     graphIndexVue.websocketBatchId = new UUIDGenerator().id
-    // 获取组织参数的html代码
-    var returnObj = createParamNodeHtml(notExecuteNodeIdArr)
-    if (returnObj.htmlContent && returnObj.htmlContent !== '') { // 如果有组织的参数html
-        graph.htmlContent = returnObj.htmlContent// 将html串绑定在graph上
-        layer.open({
-            id: 'nodeParamSetting',
-            type: 2,
-            title: '节点参数设置',
-            content: 'page/inputParams/inputParams.jsp',
-            area: ['1000px', '600px'],
-            skin: 'layui-layer-lan',
-            btn: ['确定', '取消'],
-            btn1: function(index, layero) {
-                // 替换节点的参数
-                var returnVal = $(layero).find('iframe')[0].contentWindow.replaceNodeParam()
-                if (returnVal.verify) {
-                    layer.close(index)
-                    // 节点的核心执行方法
-                    executeNode_callback(notExecuteNodeIdArr)
-                } else {
-                    alertMsg('提示', returnVal.message, 'info')
-                }
-            },
-            btn2: function(index, layero) {
-                layer.close(index)
-            }
+    let checkParam = false// 默认没有参数节点
+    for (let i = 0; i < notExecuteNodeIdArr.length; i++) {
+        let hasParam = graph.nodeData[notExecuteNodeIdArr[i]].hasParam// 是否有参数
+        let paramsSetting = graph.nodeData[notExecuteNodeIdArr[i]].paramsSetting// 参数设置信息
+        if (hasParam && paramsSetting && paramsSetting.arr && paramsSetting.arr.length !== 0) {
+            checkParam = true
+            break
+        }
+    }
+    graphIndexVue.executeNodeIdArr = notExecuteNodeIdArr
+    if(checkParam){
+        graphIndexVue.nodeParamDialogVisible = true
+        graphIndexVue.$nextTick( () => {
+            // graphIndexVue.$refs.inputParams.nodeIdArr = notExecuteNodeIdArr
+            graphIndexVue.$refs.inputParams.createParamNodeHtml()
         })
-    } else {
+    }else {
         // 节点的核心执行方法
         executeNode_callback(notExecuteNodeIdArr)
     }
+    // // 获取组织参数的html代码
+    // var returnObj = createParamNodeHtml(notExecuteNodeIdArr)
+    // if (returnObj.htmlContent && returnObj.htmlContent !== '') { // 如果有组织的参数html
+    //     graph.htmlContent = returnObj.htmlContent// 将html串绑定在graph上
+    //     layer.open({
+    //         id: 'nodeParamSetting',
+    //         type: 2,
+    //         title: '节点参数设置',
+    //         content: 'page/inputParams/inputParams.jsp',
+    //         area: ['1000px', '600px'],
+    //         skin: 'layui-layer-lan',
+    //         btn: ['确定', '取消'],
+    //         btn1: function(index, layero) {
+    //             // 替换节点的参数
+    //             var returnVal = $(layero).find('iframe')[0].contentWindow.replaceNodeParam()
+    //             if (returnVal.verify) {
+    //                 layer.close(index)
+    //                 // 节点的核心执行方法
+    //                 executeNode_callback(notExecuteNodeIdArr)
+    //             } else {
+    //                 alertMsg('提示', returnVal.message, 'info')
+    //             }
+    //         },
+    //         btn2: function(index, layero) {
+    //             layer.close(index)
+    //         }
+    //     })
+    // } else {
+    //     // 节点的核心执行方法
+    //     executeNode_callback(notExecuteNodeIdArr)
+    // }
 }
 
 /**
  * 执行本节点方法（执行当前节点这条线上所有未执行的节点，执行过的节点会被忽略）
  * @param notExecuteNodeIdArr 所有未执行节点的ID数组
  * */
-function executeNode_callback(notExecuteNodeIdArr) {
+export function executeNode_callback(notExecuteNodeIdArr) {
     // 更改执行状态图标为执行中
     for (var j = 0; j < notExecuteNodeIdArr.length; j++) {
         graph.nodeData[notExecuteNodeIdArr[j]].nodeInfo.nodeExcuteStatus = 2
@@ -698,7 +718,6 @@ function executeNode_callback(notExecuteNodeIdArr) {
         'nodeData': JSON.stringify(graph.nodeData)
         // 'websocketBatchId':graphIndexVue.websocketBatchId
     }
-    graphIndexVue.executeNodeIdArr = notExecuteNodeIdArr
     graphIndexVue.resultTableArr = []
     graphIndexVue.preValue = []
     graphIndexVue.$nextTick(() => {
@@ -875,6 +894,7 @@ export function executeAllNode() {
             graphIndexVue.$message({ type: 'warning', message: returnObj.message })
             return
         }
+        graphIndexVue.executeNodeIdArr = notExecuteNodeIdArr
         // 获取组织参数的html代码
         returnObj = createParamNodeHtml(allNodeIdArr)
         if (returnObj.htmlContent && returnObj.htmlContent !== '') { // 如果有组织的参数html

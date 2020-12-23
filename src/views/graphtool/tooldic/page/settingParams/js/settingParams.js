@@ -1,6 +1,5 @@
 import {getParamsTree, getFolderAndParams} from '@/api/analysis/sqleditor/sqleditor'
 import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
-// import { findParamsAndModelRelParams } from '@/api/analysis/auditparam'
 import { findParamsAndModelRelParams } from '@/api/graphtool/graphList'
 let CodeMirror = require("@/components/ams-codemirror/lib/codemirror")
 // 节点树、参数树的对象
@@ -696,7 +695,9 @@ function initParam(paramArr, hasSetParamIdArr) {
                         dataArr = selectXs.options.data
                         initDataArr = false
                     }
-                    paramCommonJs.selectHide(associatedParamIdArr)
+                    if ($.inArray(moduleParamId, associatedParamIdArr) > -1) {
+                        paramCommonJs.selectHide('#selectParam', moduleParamId,associatedParamIdArr)
+                    }
                 }
             }
             // 设置默认值
@@ -743,7 +744,9 @@ function initParam(paramArr, hasSetParamIdArr) {
                         dataArr = selectXs.options.data
                         initDataArr = false
                     }
-                    paramCommonJs.selectHide(associatedParamIdArr)
+                    if ($.inArray(moduleParamId, associatedParamIdArr) > -1) {
+                        paramCommonJs.selectHide('#selectTreeParam', moduleParamId,associatedParamIdArr)
+                    }
                 }
             }
             // 设置默认值
