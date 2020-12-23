@@ -13,11 +13,12 @@
         <el-button type="primary" class="oper-btn copy" :disabled="selections.length !== 1" title="复制" @click="copyResource" />
         <el-button type="primary" class="oper-btn move" title="移动" :disabled="selections.length === 0" @click="movePath" />
         <el-button type="primary" class="oper-btn rename" title="重命名" :disabled="selections.length !== 1" @click="renameResource" />
-        <el-button type="primary" class="oper-btn add" title="新增表" :disabled="selections.length !== 1" @click="add" />
+        <el-button type="primary" class="oper-btn add" title="新增表" :disabled="clickData.type == 'table'" @click="add" />
+        <el-button type="primary" class="oper-btn add-folder" title="导入表" :disabled="clickData.type == 'table'" @click="uploadTable" />
         <el-button type="primary" class="oper-btn add-folder" title="新增文件夹" :disabled="clickData.type == 'table'" @click="createFolder" />
-        <el-button type="primary" class="oper-btn  edit" title="表结构维护" :disabled="selections.length !== 1" @click="add" />
+        <el-button type="primary" class="oper-btn  edit" title="表结构维护" :disabled="selections.length !== 1" @click="update" />
         <el-button type="primary" class="oper-btn  detail" title="表结构展示" :disabled="selections.length !== 1" @click="showTable" />
-        <el-button type="primary" class="oper-btn search" title="预览" :disabled="infoFlag" @click="preview()" />
+        <el-button type="primary" class="oper-btn search" title="预览" :disabled="infoFlag" @click="preview" />
       </el-col>
     </el-row>
     <el-table
@@ -65,17 +66,28 @@
       </span>
     </el-dialog>
     <!-- 弹窗3 -->
+    <el-dialog v-if="uploadVisible" :visible.sync="uploadVisible" width="800px">
+      <el-row>
+        <el-col>
+          <directory-file-upload />
+        </el-col>
+      </el-row>
+      <span slot="footer">
+        <el-button type="primary" @click="previewVisible = false">关闭</el-button>
+      </span>
+    </el-dialog>
+    <!-- 弹窗4 -->
     <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="800px">
       <el-row>
         <el-col>
-          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :open-type="openType" :tab-show.sync="tabShow" />
+          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" />
         </el-col>
       </el-row>
       <span slot="footer">
         <el-button type="primary" @click="tableShowVisible = false">关闭</el-button>
       </span>
     </el-dialog>
-    <!-- 弹窗4 -->
+    <!-- 弹窗5 -->
     <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
       <el-row>
         <el-col>
@@ -89,6 +101,7 @@
   </div>
 </template>
 <script>
+import directoryFileUpload from '@/views/etlscheduler/upload'
 import tabledatatabs from '@/views/data/table/tabledatatabs'
 import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -107,7 +120,7 @@ export default {
     })
   },
   // eslint-disable-next-line vue/order-in-components
-  components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs },
+  components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs, directoryFileUpload },
   // eslint-disable-next-line vue/order-in-components
   data() {
     return {
@@ -156,7 +169,7 @@ export default {
         orderNum: 0,
         fullPath: null
       },
-      clickData: { type: '' },
+      clickData: { id: '', type: '' },
       clickNode: {},
       clickFullPath: [],
       allList: [],
@@ -177,6 +190,7 @@ export default {
       previewVisible: false,
       tableShowVisible: false,
       moveTreeVisible: false,
+      uploadVisible: false,
       textMap: {
         updateFolder: '重命名文件夹',
         updateTable: '重命名表',
@@ -346,6 +360,24 @@ export default {
       this.folderFormVisible = false
       this.$emit('refresh')
     },
+    // 新增表
+    add() {
+      this.openType = 'addTable'
+      this.tableShowVisible = true
+      this.tabShow = 'column'
+      this.tableId = '1'
+    },
+    // 上传表
+    uploadTable() {
+      this.uploadVisible = true
+    },
+    // 表结构维护
+    update() {
+      this.openType = 'updateTable'
+      this.tableShowVisible = true
+      this.tabShow = 'column'
+      this.tableId = this.selections[0].id
+    },
     // 得到分页列表
     getListSelect(query) {
       if (query) {
@@ -360,6 +392,7 @@ export default {
     // 初始化列表页面
     getList(data, node, tree) {
       this.clickData = data
+      console.log(data)
       this.clickNode = node
       this.clickFullPath = []
       this.clickFullPath.push(data.label)
@@ -452,9 +485,6 @@ export default {
       this.pageQuery.sortBy = order
       this.pageQuery.sortName = prop
       this.handleFilter()
-    },
-    add() {
-      alert(1)
     },
     handleCreate() {
       this.resetTemp()
