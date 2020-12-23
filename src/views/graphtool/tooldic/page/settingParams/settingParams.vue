@@ -102,7 +102,7 @@
                                         </span>
                                     </div>
                                 </td>
-                                <td v-if="setParamObj.inputType === 'treeinp'" ref="selectTreeParam" >
+                                <td v-if="setParamObj.inputType === 'treeinp'" ref="selectTreeParam">
                                     <div :id="setParamObj.id" :title="setParamObj.title" class='xm-select-demo paramTr'></div>
                                 </td>
                                 <td>{{setParamObj.description}}</td>
