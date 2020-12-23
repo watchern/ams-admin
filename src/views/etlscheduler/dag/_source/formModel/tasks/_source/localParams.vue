@@ -69,7 +69,7 @@
           :label="model.paramName"
         />
       </x-select>
-      <span class="lt-add">
+      <span v-if="!isDetails" class="lt-add">
         <a
           href="javascript:"
           style="color:red;"
@@ -84,8 +84,10 @@
           />
         </a>
       </span>
+      <!-- <span v-if="!localParamsList.length && isDetails">暂无</span> -->
+      <!-- <span>无</span> -->
       <span
-        v-if="$index === (localParamsList.length - 1)"
+        v-if="$index === (localParamsList.length - 1) && !isDetails"
         class="add"
       >
         <a
@@ -103,7 +105,7 @@
       </span>
     </div>
     <span
-      v-if="!localParamsList.length"
+      v-if="!localParamsList.length && !isDetails"
       class="add-dp"
     >
       <a
