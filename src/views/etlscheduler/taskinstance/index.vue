@@ -202,7 +202,7 @@ export default {
         //   data: statuSelect
         // },
         {
-          label: '任务实例状态', name: 'groupExecutionStatus', type: 'select',
+          label: '运行状态', name: 'groupExecutionStatus', type: 'select',
           data: statuSelectList, value: []
         },
         // {
@@ -339,7 +339,10 @@ export default {
     },
     getList(query) {
       this.listLoading = true
-      if (query) this.pageQuery.condition = query
+      if (query) {
+        this.pageQuery.condition = query
+        this.pageQuery.pageNo = 1
+      }
       listByPage(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records
