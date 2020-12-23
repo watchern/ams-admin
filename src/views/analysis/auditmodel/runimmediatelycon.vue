@@ -81,6 +81,7 @@ export default {
   },
   created() {
     this.initDialog();
+    this.modelResultSavePathId = this.$store.getters.personcode
   },
   components: {
     paramDraw,
@@ -106,8 +107,8 @@ export default {
       personCode: this.$store.state.user.code,
       sceneCode: "auditor",
       treeType: "save",
-      path: "",
-      modelResultSavePathId: "",
+      path: "根路径",
+      modelResultSavePathId: '',
       tempPath: "",
       nodeType: "",
       tempId: "",
