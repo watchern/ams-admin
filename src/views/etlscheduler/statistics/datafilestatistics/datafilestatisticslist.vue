@@ -18,7 +18,6 @@
       max-height="800"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
-
     >
       <el-table-column
         label="文件名称"
@@ -53,7 +52,7 @@
         @pagination="getList"
       />
     </el-table>
-    </div>
+  </div>
 </template>
 
 <script>
@@ -89,7 +88,7 @@ export default {
       type: null,
       startTimeStart: null,
       startTimeEnd: null,
-      value:'11111'
+      value: '11111'
     }
   },
   watch: {
@@ -110,7 +109,10 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      if (query) this.pageQuery.condition = query
+      if (query) {
+        this.pageQuery.condition = query
+        this.pageQuery.pageNo = 1
+      }
       datafileStatisticsListBySys(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records
