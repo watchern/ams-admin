@@ -5,7 +5,7 @@ import { executeParamSql,getSelectTreeData } from '@/api/graphtool/graphList'
  * @return dataArr 可用于xmSelect插件的格式数据数组
  * @author JL
  */
-function organizeSelectTreeData(result) {
+export function organizeSelectTreeData(result) {
     var dataArr = []
     for (var i = 0; i < result.length; i++) { // 先把每一条数据转换成xmSelect的数据格式{"name":xx,"value":xx,"children":[]}
         var obj = {
@@ -238,7 +238,7 @@ function splitDataArr(curSplitData, preDataArr) {
  * @param paramObj 参数对象
  * @param selectNum 下拉列表参数的个数
  * @param selectTreeNum 下拉树参数的个数
- * @param setParamObj 有效的参数对象
+ * @param setParamObj 待返回的参数对象
  */
 export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeNum){
     let obj = {
@@ -253,6 +253,7 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
     let associatedParamIdArr = []// 受当前参数影响的被关联参数ID集合
     let paramSql = paramObj.paramChoice.optionsSql//拉列表或下拉树的SQL语句
     obj.setParamObj.title = paramObj.paramChoice.allowedNull === 0 ? '不可为空' : '可为空'
+    // obj.setParamObj.allowedNull = paramObj.paramChoice.allowedNull === 0 ? true : false
     let hasSql = false// 下拉列表或下拉树是非SQL方式或者是SQL方式但值为空
     switch (obj.setParamObj.inputType) {
         case 'lineinp':// 下拉列表
@@ -1068,43 +1069,32 @@ export function selectShow(dom,idStr, paramId, paramName, sql, choiceType, param
     // 找出该参数与被关联参数之间的联系（它影响谁和谁影响它两种）
     try {
         var sqlWhereStr = ''
+        let selectXs = null
         // 在当前参数列表中匹配影响当前参数的主参数集合，获取其选中的值拼接where条件
-        $('.xm-select-demo').each(function() {
-            var curParamId = $(this).attr('data-id')// 参数ID
-            for (var t = 0; t < paramArr.length; t++) {
-                if (paramArr[t].paramId === curParamId) {
-                    var str = ''
-                    if ($(this).hasClass('selectParam')) {
-                        str = '#selectParam' + curParamId
-                    }
-                    if ($(this).hasClass('selectTreeParam')) {
-                        str = '#selectTreeParam' + curParamId
-                    }
-                    if (str !== '') {
-                        var selectXs = xmSelect.get(str, true)// 获取当前下拉框的实体对象
-                        var selectedObjArr = selectXs.getValue()// 获取选中的参数值集合
-                        if (selectedObjArr && selectedObjArr.length > 0) {
-                            var associatedParamCol = paramArr[t].associatedParamCol// 被关联参数值（对应的列名称）
-                            var key = paramArr[t].paramValueType === 'realValue' ? 'value' : 'name'// 判断是真实值还是显示值
-                            if (choiceType == 1) { // 单选
-                                sqlWhereStr += ' and ' + associatedParamCol + "='" + selectedObjArr[0][key] + "'"
-                            } else { // 多选
-                                var valueStr = ''
-                                for (var k = 0; k < selectedObjArr.length; k++) {
-                                    valueStr += "'" + selectedObjArr[k][key] + "',"
-                                }
-                                if (valueStr !== '') {
-                                    valueStr = valueStr.substring(0, valueStr.length - 1)
-                                }
-                                sqlWhereStr += ' and ' + associatedParamCol + ' in (' + valueStr + ')'
-                            }
+        for (var t = 0; t < paramArr.length; t++) {
+            if (paramArr[t].paramId === paramId) {
+                selectXs = xmSelect.get(idStr + paramId, true)// 获取当前下拉框的实体对象
+                var selectedObjArr = selectXs.getValue()// 获取选中的参数值集合
+                if (selectedObjArr && selectedObjArr.length > 0) {
+                    var associatedParamCol = paramArr[t].associatedParamCol// 被关联参数值（对应的列名称）
+                    var key = paramArr[t].paramValueType === 'realValue' ? 'value' : 'name'// 判断是真实值还是显示值
+                    if (choiceType == 1) { // 单选
+                        sqlWhereStr += ' and ' + associatedParamCol + "='" + selectedObjArr[0][key] + "'"
+                    } else { // 多选
+                        var valueStr = ''
+                        for (var k = 0; k < selectedObjArr.length; k++) {
+                            valueStr += "'" + selectedObjArr[k][key] + "',"
                         }
+                        if (valueStr !== '') {
+                            valueStr = valueStr.substring(0, valueStr.length - 1)
+                        }
+                        sqlWhereStr += ' and ' + associatedParamCol + ' in (' + valueStr + ')'
                     }
-                    break
                 }
+                break
             }
-        })
-        var selectXs = xmSelect.get(idStr + paramId, true)// 获取当前下拉框的实体对象
+        }
+        selectXs = xmSelect.get(idStr + paramId, true)// 获取当前下拉框的实体对象
         var oldSqlWhereStr = typeof $(idStr + paramId).attr('data-sqlWhereStr') !== 'undefined' ? $(idStr + paramId).attr('data-sqlWhereStr') : ''
         let request = null;
         if (sqlWhereStr !== '') {
@@ -1195,30 +1185,17 @@ export function selectShow(dom,idStr, paramId, paramName, sql, choiceType, param
 
 /**
  * 清空当前参数的被关联参数的值
+ * @param idStr 当前下拉框是下拉列表还是下拉树（传它们的部分ID标识）
+ * @param ind 参数的标识（下标）
  * @param associatedParamIdArr 当前参数的所有被关联参数ID数组
- * @description 当前参数选中值时,只适用于图形化工具的参数设置JS
  * @author JL
  */
-export function selectHide(associatedParamIdArr) {
-    $('.xm-select-demo').each(function() {
-        var curParamId = $(this).attr('data-id')// 参数ID
-        if ($.inArray(curParamId, associatedParamIdArr) != -1) {
-            var str = ''
-            if ($(this).hasClass('selectParam')) {
-                str = '#selectParam' + curParamId
-            }
-            if ($(this).hasClass('selectTreeParam')) {
-                str = '#selectTreeParam' + curParamId
-            }
-            if (str !== '') {
-                var selectXs = xmSelect.get(str, true)// 获取当前下拉框的实体对象
-                var selectedObj = selectXs.getValue()// 获取选中的参数值
-                if (selectedObj && selectedObj.length > 0) {
-                    selectXs.setValue([])// 清空选中值
-                }
-            }
-        }
-    })
+export function selectHide(idStr, ind, associatedParamIdArr) {
+    var selectXs = xmSelect.get(idStr + ind, true)// 获取当前下拉框的实体对象
+    var selectedObj = selectXs.getValue()// 获取选中的参数值
+    if (selectedObj && selectedObj.length > 0) {
+        selectXs.setValue([])// 清空选中值
+    }
 }
 
 /**

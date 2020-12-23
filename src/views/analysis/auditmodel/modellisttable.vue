@@ -273,7 +273,6 @@ export default {
       }
       // 发送消息
       this.webSocket.onmessage = function(event) {
-        debugger
         const dataObj = JSON.parse(event.data)
         if(dataObj.listenerType === "onSQLResult"){
           func1(event)
@@ -903,7 +902,6 @@ export default {
      * @param modelUuid 模型编号
      */
     queryModel(modelUuid) {
-      debugger
       var obj = replaceNodeParam(this.paramDrawUuid,"sqlEditor")
       if (!obj.verify) {
         this.$message({ type: 'info', message: obj.message })
