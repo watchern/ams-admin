@@ -1033,7 +1033,10 @@ export default {
     },
     getList(query) {
       this.listLoading = true
-      if (query) this.pageQuery.condition = query
+      if (query) {
+        this.pageQuery.condition = query
+        this.pageQuery.pageNo = 1
+      }
       listByPage(this.pageQuery).then((resp) => {
         this.total = resp.data.total
         this.list = resp.data.records

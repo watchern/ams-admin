@@ -203,7 +203,7 @@
                 :autosize="{minRows:2}"
                 type="textarea"
                 :disabled="isDetails"
-                placeholder="请输入描述"
+                :placeholder="isDetails===true?'':'请输入描述'"
                 autocomplete="off"
                 class="propwidth"
               />

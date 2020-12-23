@@ -339,7 +339,7 @@ export default {
         //   data: statuSelect
         // },
         {
-          label: '流程状态', name: 'groupExecutionStatus', type: 'select',
+          label: '运行状态', name: 'groupExecutionStatus', type: 'select',
           data: statuSelectList, value: []
         },
         { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
@@ -572,7 +572,10 @@ export default {
     },
     getList(query) {
       this.listLoading = true
-      if (query) this.pageQuery.condition = query
+      if (query) {
+        this.pageQuery.condition = query
+        this.pageQuery.pageNo = 1
+      }
       listByPage(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records

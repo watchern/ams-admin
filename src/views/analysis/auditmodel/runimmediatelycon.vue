@@ -49,6 +49,7 @@
               :scene-code="sceneCode"
               :tree-type="treeType"
               @node-click="handleClick"
+              style="height: 500px;overflow-y: scroll"
             />
             <span slot="footer" class="dialog-footer">
               <el-button @click="modelResultSavePathDialog = false"
@@ -80,6 +81,7 @@ export default {
   },
   created() {
     this.initDialog();
+    this.modelResultSavePathId = this.$store.getters.personcode
   },
   components: {
     paramDraw,
@@ -105,8 +107,8 @@ export default {
       personCode: this.$store.state.user.code,
       sceneCode: "auditor",
       treeType: "save",
-      path: "",
-      modelResultSavePathId: "",
+      path: "根路径",
+      modelResultSavePathId: '',
       tempPath: "",
       nodeType: "",
       tempId: "",
@@ -149,6 +151,7 @@ export default {
         this.$refs.paramassembly[i].initParamHtmlSS(
           sql, paramArr,
           this.detailModels[i].modelName + "参数",
+          this.detailModels[i].modelUuid + "2",
           this.detailModels[i].modelUuid + "2"
         );
       }
@@ -160,7 +163,7 @@ export default {
       var replaceInfo = [];
       for (var i = 0; i < this.detailModels.length; i++) {
         replaceInfo.push(
-          replaceNodeParam(this.detailModels[i].modelUuid + "2")
+          replaceNodeParam(this.detailModels[i].modelUuid + "2",this.detailModels[i].modelUuid + "2")
         );
       }
       var obj = {

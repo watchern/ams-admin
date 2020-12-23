@@ -5,6 +5,7 @@
     </div>
     <div>
       <el-form 
+        ref="dataForm"
         :model="formCodeData" 
         :rules="rules" 
         class="detail-form">
@@ -17,7 +18,7 @@
               v-model="formCodeData.codeName" 
               class="input" />
           </el-form-item>
-            <!-- <el-form-item 
+            <el-form-item 
               v-if="show=false" 
               label="uuid" 
               prop="codeUuid">
@@ -25,7 +26,7 @@
                 v-model="formCodeData.codeUuid" 
                 placeholder="请输入数字"
                 class="input" />
-          </el-form-item> -->
+          </el-form-item>
           </el-col>
           <el-col span="11" :offset="2">
           <el-form-item 
@@ -139,7 +140,7 @@ export default {
         delTag: ''
       }
       this.$nextTick(() => {
-        this.$refs['detail-form'].clearValidate()
+        this.$refs['dataForm'].clearValidate()
       })
     },
     // 添加
