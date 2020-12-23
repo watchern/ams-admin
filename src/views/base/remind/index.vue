@@ -168,7 +168,6 @@ export default {
     getList(query) {
       this.listLoading = true
       if (query) {
-
         this.pageQuery.condition = query
       }
       listByPageRemind(this.pageQuery).then(resp => {

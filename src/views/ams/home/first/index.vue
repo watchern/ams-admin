@@ -36,7 +36,7 @@
             <div class="top-card-right">
               <div class="title">{{ item.title }}</div>
               <div v-for="(text,index) in item.des" :key="index" class="line">
-                <span @click="toDoJump" >{{ text.text }}</span>
+                <span @click="toDoJump(text.index)" class="notes-text">{{ text.text }}</span>
                 <span v-if="text.icon" :style="{color:text.iconColor,width:text.width}" class="icon">{{ text.icon }}</span>
               </div>
               <span class="card-more" @click="moreJump">更多</span>
@@ -70,6 +70,18 @@
         <div class="btn">查看此项目的详情</div>
       </div>
     </div>
+    <el-dialog
+      :visible.sync="dialogFormVisible"
+      top = "10vh"
+      title="消息详情"
+      width="50%"
+      v-model="this.PopUpContent"
+      >
+      <span class="visible-span">消息标题</span>
+      <p class="visible-p1">{{this.PopUpContent[0].text}}</p >
+      <span class="visible-span">消息内容</span>
+      <p class="visible-p2">{{this.PopUpContent[0].content}}</p >
+    </el-dialog>
   </div>
 </template>
 
@@ -85,33 +97,7 @@ export default {
           bg: '#EDF1F5',
           cardBg: '#353A43',
           path:'',
-          des: [
-            {
-              text: '',
-              iconColor: '#D81020',
-              icon: ''
-            },
-            {
-              text: '',
-              iconColor: '#D81020',
-              icon: ''
-            },
-            {
-              text: '',
-              iconColor: '#D81020',
-              icon: ''
-            },
-            {
-              text: '',
-              iconColor: '#D81020',
-              icon: ''
-            },
-            {
-              text: '',
-              iconColor: '#D81020',
-              icon: ''
-            },
-          ]
+          des: []
         },
       ],
       boxList: [
@@ -142,35 +128,54 @@ export default {
         {
           text: '暂无待办事项',
           iconColor: '#D81020',
-          icon: ''
+          icon: '',
+          url:'',
+          title:'',
+          content:''
         },
         {
           text: '',
           iconColor: '#D81020',
-          icon: ''
+          icon: '',
+          url:''
         },
         {
           text: '',
           iconColor: '#D81020',
-          icon: ''
+          icon: '',
+          url:''
         },
         {
           text: '',
           iconColor: '#D81020',
-          icon: ''
+          icon: '',
+          url:''
         },
         {
           text: '',
           iconColor: '#D81020',
-          icon: ''
+          icon: '',
+          url:''
         },
-      ]
+      ],
+      dialogFormVisible: false,
+      PopUpContent:[{
+        text:'',
+        content:''
+      }]
     }
   },
   mounted() {
     getRemindByDescTime().then(resp => {
-      for(let i=0;i<this.cardList[0].des.length;i++){
-        this.cardList[0].des[i].text = resp.data.records[i].remindTitle
+      for(let i=0;i<5;i++){
+        this.cardList[0].des.push({
+          text:resp.data.records[i].remindTitle,
+          iconColor: '#D81020',
+          icon: '',
+          url:resp.data.records[i].modeUrl,
+          content:resp.data.records[i].remindContent,
+          index:i
+        })
         if(resp.data.records[i].readStatus === 0){
           this.cardList[0].des[i].icon = ' New'
         }
@@ -190,16 +195,28 @@ export default {
         val: item.val
       })
     },
-    toDoJump(){
-
+    toDoJump(data){
+      if(this.cardList[0].des[data].url == null){
+        this.dialogFormVisible = true
+        this.PopUpContent=[]
+        this.PopUpContent.push({
+          text: this.cardList[0].des[data].text,
+          content:this.cardList[0].des[data].content
+        })
+      }else{
+        this.$router.push({ path:this.cardList[0].des[data].url})
+      }
     },
     moreJump(){
       // this.activeTags({
       //   type: 'active',
       //   val: {val:this.cardList[1].path , name:'提醒'}
       // })
-      this.$router.push({ path:this.cardList[0].path})
-    }
+      this.$router.push({ path: '/base/remind'})
+    },
+    // handleClose(done) {
+    //   done();
+    // }
   }
 }
 </script>
@@ -465,5 +482,36 @@ export default {
   text-align: justify;
   line-height: 22px;
   cursor:pointer;
+}
+.visible-span{
+    width: 95%;
+    margin: 2.5% 2.5% .5%;
+    display: inline-block;
+    font-size: 24px;
+}
+.visible-p1{
+    width: 95%;
+    margin:.5% 2.5% 2.5%;
+  padding: 10px;
+  border: 1px solid #ddfdff;
+  font-size: 16px;border-radius: 6px;
+  display: inline-block;
+  height: 40px;
+  overflow: auto;
+}
+.visible-p2{
+    width: 95%;
+    margin:.5% 2.5% 2.5%;
+  padding: 10px;
+  border: 1px solid #ddfdff;
+  font-size: 16px;border-radius: 6px;
+  display: inline-block;
+  line-height: 27px;
+  height: 400px;
+  overflow: auto;
+}
+.notes-text{
+  line-height:25px;
+  cursor: pointer;
 }
 </style>
