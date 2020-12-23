@@ -1,6 +1,7 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+import { onAccessSystem } from '@/utils/permission'
 import { cacheDict } from '@/api/base/sys-dict'
 import { getAllScene } from '@/api/data/scene'
 
@@ -13,7 +14,8 @@ const state = {
   id: '',
   code: '',
   scenecode: '',
-  scenename: ''
+  scenename: '',
+  datauserid: ''
 }
 
 const mutations = {
@@ -46,6 +48,9 @@ const mutations = {
   },
   SET_SCENENAME: (state, scenename) => {
     state.scenename = scenename
+  },
+  SET_DATAUSERID: (state, datauserid) => {
+    state.datauserid = datauserid
   }
 }
 
@@ -58,10 +63,9 @@ const actions = {
         const { data } = response
         commit('SET_ID', data.personUuid)
         commit('SET_NAME', data.username)
-        commit('SET_TOKEN', data.personUuid)
+        /*commit('SET_TOKEN', data.personUuid)*/
         commit('SET_CODE', data.userid)
-        setToken(data.personUuid)
-        resolve()
+        /*setToken(data.personUuid)*/
         var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
         if (sysDict == null) {
           cacheDict().then(resp => {
@@ -72,6 +76,7 @@ const actions = {
           commit('SET_SCENECODE', res.data[0].sceneCode)
           commit('SET_SCENENAME', res.data[0].sceneName)
         })
+        resolve()
       }).catch(error => {
         reject(error)
       })
@@ -81,7 +86,14 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      //console.log(state);
+      debugger
+      var personuuid = state.id;
+      if(personuuid == "" || personuuid == null){
+        personuuid = window.location.hash.replace('#/base/sso?param=', '').split(",")[0];
+      }
+      var query = window.location.search.substring(1);
+      getInfo(personuuid).then(response => {
         const { data } = response
         if (!data) {
           reject('Verification failed, please Login again.')
@@ -127,6 +139,14 @@ const actions = {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
       removeToken()
+      resolve()
+    })
+  },
+  saveScene({ commit, code, name, datauserid }) {
+    return new Promise(resolve => {
+      commit('SET_SCENECODE', code)
+      commit('SET_SCENENAME', name)
+      commit('SET_DATAUSERID', datauserid)
       resolve()
     })
   }
