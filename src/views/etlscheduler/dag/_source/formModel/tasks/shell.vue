@@ -40,6 +40,7 @@
     <m-list-box>
       <div slot="text">自定义参数</div>
       <div slot="content">
+        <span v-if="!localParams.length && isDetails" class="spanparam">无</span>
         <m-local-params
           ref="refLocalParams"
           :udp-list="localParams"
@@ -373,30 +374,35 @@ export default {
 .propwidth{
   width:500px
 }
-  .scriptModal {
-    .ans-modal-box-content-wrapper {
-      width: 90%;
-      .ans-modal-box-close {
-        right: -12px;
-        top: -16px;
-        color: #fff;
-      }
+.scriptModal {
+  .ans-modal-box-content-wrapper {
+    width: 90%;
+    .ans-modal-box-close {
+      right: -12px;
+      top: -16px;
+      color: #fff;
     }
   }
-  .ans-modal-box-close {
-    z-index: 100;
-  }
-  .ans-modal-box-max {
-    position: absolute;
-    right: -12px;
-    top: -16px;
-  }
-  .vue-treeselect--disabled {
-    .vue-treeselect__control {
-      background-color: #ecf3f8;
-      .vue-treeselect__single-value {
-        color: #6d859e;
-      }
+}
+.ans-modal-box-close {
+  z-index: 100;
+}
+.ans-modal-box-max {
+  position: absolute;
+  right: -12px;
+  top: -16px;
+}
+.vue-treeselect--disabled {
+  .vue-treeselect__control {
+    background-color: #ecf3f8;
+    .vue-treeselect__single-value {
+      color: #6d859e;
     }
   }
+}
+.spanparam {
+font-size: 14px;
+color: #777;
+line-height: 32px;
+}
 </style>
