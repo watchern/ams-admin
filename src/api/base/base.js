@@ -62,7 +62,7 @@ export function updateRemind(data) {
 
 // /**
 //  * 获取单个系统异常信息
-//  * @param {*} data 
+//  * @param {*} data
 //  */
 // export function getReadErrorLog(id) {
 //   return request({
@@ -72,3 +72,20 @@ export function updateRemind(data) {
 //   })
 // }
 
+export function getUnReadRemind(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/remindController/getUnReadRemind',
+    method: 'get',
+    params: data
+  })
+}
+
+export function getRemindByDescTime(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/remindController/getRemindByDescTime/5',
+    method: 'get',
+    params: data
+  })
+}

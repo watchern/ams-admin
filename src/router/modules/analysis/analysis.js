@@ -60,4 +60,5 @@ const analysisRouter = {
   ]
 }
 
+
 export default analysisRouter
