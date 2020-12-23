@@ -70,19 +70,24 @@
       </div>
     </el-dialog>
     <!-- 这是第二个弹窗，用来操作类别下具体的基础数据 -->
-    <el-dialog :title="textMap[dialogSecondStatus]" :visible.sync="dialogFormSecond">
+    <el-dialog 
+      :title="textMap[dialogSecondStatus]" 
+      :visible.sync="dialogFormSecond"
+      top="5vh"
+      >
       <el-form
         class="detail-form"
         ref="dataSecondForm"
         :rules="rulesSecond"
         :model="tempSecond"
         label-position="right"
-      >
+      > 
         <el-form-item 
-          label="代码类别" 
-          prop="dataSortUuid" hidden>
-          <el-input 
-          v-model="tempSecond.dataSortUuid"  />
+              label="代码类别" 
+              prop="dataSortUuid" hidden>
+              <el-input 
+                v-model="tempSecond.dataSortUuid" 
+              />
         </el-form-item>
         <el-form-item 
           label="通用代码名称" 
@@ -140,7 +145,7 @@
         border
         fit
         highlight-current-row
-        height="250"
+        height="300"
         style="width: 100%;"
         @sort-change="sortChange"
         @selection-change="handleSelectionChangeSecond"
@@ -249,7 +254,10 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      if (query) this.pageQuery.condition = query
+      if (query){
+        this.pageQuery.pageNo = 1
+        this.pageQuery.condition = query
+      }
       listByPage(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records
