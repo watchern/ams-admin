@@ -66,7 +66,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ userid: username.trim(), password: password }).then(response => {
         const { data } = response
-        debugger
         commit('SET_ID', data.personUuid)
         commit('SET_NAME', data.username)
         /*commit('SET_TOKEN', data.personUuid)*/
@@ -88,6 +87,12 @@ const actions = {
           sessionStorage.setItem('sceneName', res.data[0].sceneName);
           sessionStorage.setItem('dataUserId', data.userid);
           sessionStorage.setItem('dataUserName', data.username);
+         /* saveSession({
+            sceneCode: res.data[0].sceneCode,
+            sceneName :res.data[0].sceneName,
+            dataUserId: data.userid,
+            dataUserName: data.username
+          });*/
         })
         resolve()
       }).catch(error => {

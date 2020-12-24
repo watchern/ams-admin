@@ -2040,3 +2040,15 @@ export function getUuid() {
   var uuid = s.join('')
   return uuid
 }
+
+/**
+ * 根据登录人的Uuid查询此人有没有默认的模型结果保存路径
+ */
+export function getByPersonUuid(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/defaultSqlLocation/getByPersonUuid',
+    method: 'get',
+    params:{personUuid:data}
+  })
+}

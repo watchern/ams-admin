@@ -62,4 +62,14 @@ export function getSceneInst(sceneCode, sceneInst) {
     method: 'get'
   })
 }
+/*export function saveSession(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/saveSession`,
+    method: 'post',
+    data
+  })
+}*/
+
+
 

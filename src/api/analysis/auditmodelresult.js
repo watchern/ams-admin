@@ -403,3 +403,16 @@ export function sendToOA(taskRelUuid) {
   })
 }
 
+
+/**
+ * 批量删除删除运行结果与项目关联表
+ * @param {*} data  运行结果与项目关联主键数组
+ */
+export function batchDeleteResultRelProject(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ResultRelProjectController/batchDeleteResultRelProject',
+    method: 'delete',
+    data
+  })
+}

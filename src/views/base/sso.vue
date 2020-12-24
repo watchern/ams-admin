@@ -25,9 +25,15 @@
           var prjname = resp.data;
           this.$store.dispatch('user/saveScene', sceneCode, "项目场景", prjcode, personuuid, prjname);
           sessionStorage.setItem('sceneCode', sceneCode);
-          sessionStorage.setItem('sceneName', "项目场景");
+          sessionStorage.setItem('sceneName', "审计项目场景");
           sessionStorage.setItem('dataUserId', prjcode);
           sessionStorage.setItem('dataUserName', prjname);
+          /*saveSession({
+            sceneCode: sceneCode,
+            sceneName :"审计项目场景",
+            dataUserId: prjcode,
+            dataUserName: prjname
+          });*/
           if(mrid != null){  //模型结果查看
             this.$router.push("/analysis/modelresultdetailshow?runTaskRelUuid="+mrid);
           }else{   //否则 模型列表

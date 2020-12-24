@@ -240,6 +240,10 @@ export function findModelList(data){
  * @param {*} data 运行任务对象
  */
 export function addRunTaskAndRunTaskRel(data){
+  const sceneCode = sessionStorage.getItem('sceneCode')
+  const dataUserId = sessionStorage.getItem('dataUserId')
+  data.sceneCode = sceneCode;
+  data.dataUserId = dataUserId;
   return request({
     baseURL: analysisUrl,
     url: '/RunTaskController/addRunTaskAndRunTaskRel',
