@@ -97,7 +97,7 @@
         </div>
       </el-col>
       <el-col :span="14">
-        <tabledatatabs v-if="divInfo" ref="tabledatatabs" :table-id="tableId" :tab-show.sync="tabShow" />
+        <tabledatatabs v-if="divInfo" ref="tabledatatabs" open-type="tableRegister" :table-id="tableId" :tab-show.sync="tabShow" />
       </el-col>
     </el-row>
     <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="600px">

@@ -43,7 +43,7 @@
       <el-table-column prop="onlyIndex" label="是否唯一" width="80px">
         <template slot-scope="scope">
           <el-radio-group v-model="scope.row.onlyIndex">
-            <el-radio :label="'1'" @click.native.prevent="clickitem(scope.$index,'1')">&nbsp;</el-radio>
+            <el-radio :label="'1'" @click.native.prevent="clickitem(scope.$index,'1')"><span /></el-radio>
           </el-radio-group>
         </template>
       </el-table-column>
