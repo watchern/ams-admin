@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-let CodeMirror = require("@/components/ams-codemirror/lib/codemirror")
+const CodeMirror = require('@/components/ams-codemirror/lib/codemirror')
 
 const analysisUrl = '/analysis'
 const dataUrl = '/data'
@@ -123,32 +123,31 @@ var isFirst = 0
  * 获取参数树
  */
 export function getParamsTree() {
-    return request({
-        baseURL: analysisUrl,
-        url: '/ParamFolderController/getParamsTree',
-        method: 'get'
-    })
+  return request({
+    baseURL: analysisUrl,
+    url: '/ParamFolderController/getParamsTree',
+    method: 'get'
+  })
 }
 
 /**
  * 获取参数树节点的子孙节点
  */
-export function getFolderAndParams(dataParam){
-    return request({
-        baseURL: analysisUrl,
-        url: '/paramController/getFolderAndParams',
-        method: 'get',
-        params: dataParam
-    })
+export function getFolderAndParams(dataParam) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/paramController/getFolderAndParams',
+    method: 'get',
+    params: dataParam
+  })
 }
-
 
 /**
  * 初始化界面托拉拽事件
  */
 export function initDragAndDrop() {
   // 实现左右拖拽改变大小
-  var container = document.getElementById('container') //整个窗口
+  var container = document.getElementById('container') // 整个窗口
   var pathname = window.location.pathname
   var img = document.getElementById('iconImg')
   if (pathname.match('page')) {
@@ -165,19 +164,18 @@ export function initDragAndDrop() {
   var iT = 0
   vertical.onmousedown = function(e) {
     var disX = (e || event).clientX
-    the_left_all ()
+    the_left_all()
     document.onmousemove = function(e) {
-      var e = e || window.event;
+      var e = e || window.event
       var tarnameb = e.target || e.srcElement
       vertical.style.margin = 0
       iT = (e || event).clientX
       // if(iT < left_min){iT = left_min}
       // else if(iT > container.clientWidth*.85){iT = container.clientWidth*.85}
-      vertical.style.left = iT - 80 - tz_path +'px'
+      vertical.style.left = iT - 80 - tz_path + 'px'
       leftPart.style.width = iT - 86 - tz_path + 'px'
       rightContent.style.width = parseInt(container.clientWidth - iT + 76 + tz_path) + 'px'
       return false
-
     }
     document.onmouseup = function() {
       document.onmousemove = null
@@ -188,79 +186,79 @@ export function initDragAndDrop() {
     return false
   }
 
-  //单击侧边按钮收起左边栏
+  // 单击侧边按钮收起左边栏
   function tree_zy_zhan() {
-    if(tree_shuju == false && tree_canshu == false && tree_sql == false){
-      $("#leftPart").stop(true).animate({"width":203},300)
-      $("#vertical").delay(300).fadeIn(100).css("left",11.5+"%")
-      $("#rightPart").stop(true).animate({"width":1562,"left":0},300)
-      $("#sidebar").css("border-right",1+"px"+" solid"+" rgb(206,208,212)")
+    if (tree_shuju == false && tree_canshu == false && tree_sql == false) {
+      $('#leftPart').stop(true).animate({ 'width': 203 }, 300)
+      $('#vertical').delay(300).fadeIn(100).css('left', 11.5 + '%')
+      $('#rightPart').stop(true).animate({ 'width': 1562, 'left': 0 }, 300)
+      $('#sidebar').css('border-right', 1 + 'px' + ' solid' + ' rgb(206,208,212)')
     }
   }
 
   function tree_zy_zhanhe() {
-    if(tree_shuju == false && tree_canshu == false && tree_sql == false){
-      $("#vertical").fadeOut(100)
-      $("#leftPart").delay(100).stop(true).animate({"width":0},300)
-      $("#rightPart").delay(100).stop(true).animate({"width":1752,"left":15},300)
-      $("#sidebar").css("border","none")
+    if (tree_shuju == false && tree_canshu == false && tree_sql == false) {
+      $('#vertical').fadeOut(100)
+      $('#leftPart').delay(100).stop(true).animate({ 'width': 0 }, 300)
+      $('#rightPart').delay(100).stop(true).animate({ 'width': 1752, 'left': 15 }, 300)
+      $('#sidebar').css('border', 'none')
     }
   }
 
-  function tree_zy_all(){
-    $("#sidebar div").removeClass("add-sidiv")
-    $(".left-dataTree").fadeOut(0)
-    $(".left-paramTree").fadeOut(0)
-    $(".left-sqlFunTree").fadeOut(0)
+  function tree_zy_all() {
+    $('#sidebar div').removeClass('add-sidiv')
+    $('.left-dataTree').fadeOut(0)
+    $('.left-paramTree').fadeOut(0)
+    $('.left-sqlFunTree').fadeOut(0)
     tree_shuju = false
     tree_canshu = false
     tree_sql = false
   }
-  //分别显示隐藏三个表
+  // 分别显示隐藏三个表
   var tree_shuju = true
   var tree_canshu = false
   var tree_sql = false
-  $(".left-paramTree").fadeOut(300)
-  $(".left-sqlFunTree").fadeOut(300)
-  $(".unfold-shuju").on("click",function(){
-    if(tree_shuju == true){
-      $(".left-dataTree").fadeOut(300)
-      $(this).removeClass("add-sidiv")
+  $('.left-paramTree').fadeOut(300)
+  $('.left-sqlFunTree').fadeOut(300)
+  $('.unfold-shuju').on('click', function() {
+    if (tree_shuju == true) {
+      $('.left-dataTree').fadeOut(300)
+      $(this).removeClass('add-sidiv')
       tree_shuju = false
       tree_zy_zhanhe()
-    }else if(tree_shuju == false){
+    } else if (tree_shuju == false) {
       tree_zy_zhan()
       tree_zy_all()
-      $(".left-dataTree").fadeIn(300)
-      $(this).addClass("add-sidiv")
+      $('.left-dataTree').fadeIn(300)
+      $(this).addClass('add-sidiv')
       tree_shuju = true
     }
   })
-  $(".unfold-canshu").on("click",function(){
-    if(tree_canshu == true){
-      $(".left-paramTree").fadeOut(300)
-      $(this).removeClass("add-sidiv")
+  $('.unfold-canshu').on('click', function() {
+    if (tree_canshu == true) {
+      $('.left-paramTree').fadeOut(300)
+      $(this).removeClass('add-sidiv')
       tree_canshu = false
       tree_zy_zhanhe()
-    }else if(tree_canshu == false){
+    } else if (tree_canshu == false) {
       tree_zy_zhan()
       tree_zy_all()
-      $(".left-paramTree").fadeIn(300)
-      $(this).addClass("add-sidiv")
+      $('.left-paramTree').fadeIn(300)
+      $(this).addClass('add-sidiv')
       tree_canshu = true
     }
   })
-  $(".unfold-sql").on("click",function(){
-    if(tree_sql == true){
-      $(".left-sqlFunTree").fadeOut(300)
-      $(this).removeClass("add-sidiv")
+  $('.unfold-sql').on('click', function() {
+    if (tree_sql == true) {
+      $('.left-sqlFunTree').fadeOut(300)
+      $(this).removeClass('add-sidiv')
       tree_sql = false
       tree_zy_zhanhe()
-    }else if(tree_sql == false){
+    } else if (tree_sql == false) {
       tree_zy_zhan()
       tree_zy_all()
-      $(".left-sqlFunTree").fadeIn(300)
-      $(this).addClass("add-sidiv")
+      $('.left-sqlFunTree').fadeIn(300)
+      $(this).addClass('add-sidiv')
       tree_sql = true
     }
   })
@@ -284,7 +282,7 @@ export function initDragAndDrop() {
       var cmWrap = $('.CodeMirror-wrap')[0]
       horizontal.style.top = topPart.style.height = iT + 'px'
       cmWrap.style.height = iT - 37 + 'px'
-      bottomPart.style.height = rightPart.clientHeight - iT -11 + 'px'
+      bottomPart.style.height = rightPart.clientHeight - iT - 11 + 'px'
       if (grids) {
         grids.style.height = rightPart.clientHeight - iT - 197 + 'px'
       }
@@ -334,43 +332,43 @@ export function initEvent() {
  * @param relTableMap 智能提示的表对象
  * @returns {CodeMirror.EditorFromTextArea}
  */
-export function initSQLEditor(textarea, relTableMap,expTableMap) {
+export function initSQLEditor(textarea, relTableMap, expTableMap) {
   // 初始化CodeMirror
   var editor = CodeMirror.fromTextArea(textarea, {
     mode: 'text/x-mssql',
     theme: 'idea',
-    indentWithTabs: true,   //带字符表得缩进
-    lineNumbers: true,      //线条数量
-    lineWrapping: true,     //线条包装
-    smartIndent: true,      //智能缩进
-    autofocus: true,        //自动对齐
-    matchBrackets: true,    //开启括号匹配
-    styleActiveLine: false, //样式激活线
-    hintOptions: {          //选项
+    indentWithTabs: true, // 带字符表得缩进
+    lineNumbers: true, // 线条数量
+    lineWrapping: true, // 线条包装
+    smartIndent: true, // 智能缩进
+    autofocus: true, // 自动对齐
+    matchBrackets: true, // 开启括号匹配
+    styleActiveLine: false, // 样式激活线
+    hintOptions: { // 选项
       tables: relTableMap,
       tablesTitle: expTableMap
     }
   })
   // 输入时事件cursorActivity
-  editor.on('cursorActivity', function(cm) { //光标活动
+  editor.on('cursorActivity', function(cm) { // 光标活动
     if (cm.curOp.focus === false) {
       initHint(editor)
     }
     $('span').removeClass('errorHighlight')
   })
-  editor.on('beforeChange', function(instance, changeObj) { //改变之前
-    if (changeObj.origin === 'paste' && isFirstPaste) { //第一次粘贴？？？
-      cursor = editor.getCursor()   //获取光标
-      checkSqlText = editor.getRange({ ch: 0, line: cursor.line }, { ch: cursor.ch, line: cursor.line })//光标范围
+  editor.on('beforeChange', function(instance, changeObj) { // 改变之前
+    if (changeObj.origin === 'paste' && isFirstPaste) { // 第一次粘贴？？？
+      cursor = editor.getCursor() // 获取光标
+      checkSqlText = editor.getRange({ ch: 0, line: cursor.line }, { ch: cursor.ch, line: cursor.line })// 光标范围
       isFirstPaste = false
     }
   })
   editor.on('change', function(instance, changeObj) {
-    //如果第一次加载不做任何校验
-    if(isFirst != 0){
-      isUpdate = true;
+    // 如果第一次加载不做任何校验
+    if (isFirst != 0) {
+      isUpdate = true
     }
-    isFirst++;
+    isFirst++
     if (!changeObj.origin) {
       return
     }
@@ -429,9 +427,9 @@ export function initSQLEditor(textarea, relTableMap,expTableMap) {
   editor.setSize('auto', ($(document).height() * 0.5 - 40) + 'px')
   editorObj = editor
   $('.CodeMirror-scroll').focus()
-  editor.setSize('auto','88%');
+  editor.setSize('auto', '88%')
   // sql编辑器颜色 为了不影响公共样式
-  $(".CodeMirror-scroll:eq(0)").css("background-color","rgb(237, 241, 245)")
+  $('.CodeMirror-scroll:eq(0)').css('background-color', 'rgb(237, 241, 245)')
 }
 
 /**
@@ -580,10 +578,9 @@ export function initTableTree(result) {
                 // 处理拿回来的数据 处理成列表
                 const columns = []
                 for (let i = 0; i < result.data.length; i++) {
-                  if(result.data[i].chnName === "" || result.data[i].chnName == null || result.data[i].chnName == undefined){
+                  if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
                     columns.push(result.data[i].colName)
-                  }
-                  else{
+                  } else {
                     columns.push(result.data[i].chnName)
                   }
                 }
@@ -641,7 +638,7 @@ export function initTableTree(result) {
       }
     }
   }
-/*  const params = { sceneCode: 'auditor', dataUserId: userId }
+  /*  const params = { sceneCode: 'auditor', dataUserId: userId }
   // 调用后台获取数据表数据
   request({
     baseURL: dataUrl,
@@ -649,38 +646,36 @@ export function initTableTree(result) {
     method: 'post',
     params: params
   }).then(result => {*/
-    // 设置图标
-    for (let i = 0; i < result.data.length; i++) {
-      if (result.data[i].type === 'table') {
-        result.data[i].icon = tableIconPath
-        result.data[i].isParent = true
-      }
-      else if (result.data[i].type === 'view') {
-        result.data[i].icon = viewIconPath
-        result.data[i].isParent = true
-      }
-      else if(result.data[i].type === 'folder'){
-        result.data[i].isParent = true
-      }
+  // 设置图标
+  for (let i = 0; i < result.data.length; i++) {
+    if (result.data[i].type === 'table') {
+      result.data[i].icon = tableIconPath
+      result.data[i].isParent = true
+    } else if (result.data[i].type === 'view') {
+      result.data[i].icon = viewIconPath
+      result.data[i].isParent = true
+    } else if (result.data[i].type === 'folder') {
+      result.data[i].isParent = true
     }
-    result.data.push({
-      'id': 'ROOT',
-      'pid': null,
-      'name': '所有数据',
-      'displayName': '所有数据',
-      'type': 'ROOT',
-      'isParent': true,
-      'open': true,
-      'level': 0
-    })
-    tableTreeData = result.data
-    zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
- // })
+  }
+  result.data.push({
+    'id': 'ROOT',
+    'pid': null,
+    'name': '所有数据',
+    'displayName': '所有数据',
+    'type': 'ROOT',
+    'isParent': true,
+    'open': true,
+    'level': 0
+  })
+  tableTreeData = result.data
+  zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
+  // })
 }
 /**
  * 执行create语句后刷新左侧树
  */
-export function refushTableTree(treeNodes){
+export function refushTableTree(treeNodes) {
   var setting = {
     // 异步加载
     data: {
@@ -765,10 +760,9 @@ export function refushTableTree(treeNodes){
                 // 处理拿回来的数据 处理成列表
                 const columns = []
                 for (let i = 0; i < result.data.length; i++) {
-                  if(result.data[i].chnName === "" || result.data[i].chnName == null || result.data[i].chnName == undefined){
+                  if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
                     columns.push(result.data[i].colName)
-                  }
-                  else{
+                  } else {
                     columns.push(result.data[i].chnName)
                   }
                 }
@@ -826,32 +820,31 @@ export function refushTableTree(treeNodes){
       }
     }
   }
-  if(treeNodes!= undefined && treeNodes.length > 0){
+  if (treeNodes != undefined && treeNodes.length > 0) {
     tableTreeData = tableTreeData.concat(treeNodes)
     zTreeObj = $.fn.zTree.init($('#dataTree'), setting, tableTreeData)
-    for(var i = 0; i < treeNodes.length;i++){
-      //添加sql编辑器智能提示
-      CodeMirror.tableColMapping[treeNodes[i].name] = [];
-      //重新加载表与列的关系
-      editorObj.options.hintOptions.tables[treeNodes[i].name] = [];
+    for (var i = 0; i < treeNodes.length; i++) {
+      // 添加sql编辑器智能提示
+      CodeMirror.tableColMapping[treeNodes[i].name] = []
+      // 重新加载表与列的关系
+      editorObj.options.hintOptions.tables[treeNodes[i].name] = []
     }
   }
-
 }
 
 /**
  * 删除表或试图后删除左侧树
  * @param dropTableArr 删除的表
  */
-export function dropTable(dropTableArr){
-  if(dropTableArr != undefined && dropTableArr.length > 0){
-    for(var k = 0; k<dropTableArr.length; k++){
-      var dropedNode = zTreeObj.getNodesByParam("name", dropTableArr[k], null)[0];
-      zTreeObj.removeNode(dropedNode);
-      //删除智能提示
-      delete CodeMirror.tableColMapping[dropTableArr[k]];
-      //清除表与列的关系
-      delete editorObj.options.hintOptions.tables[dropTableArr[k]];
+export function dropTable(dropTableArr) {
+  if (dropTableArr != undefined && dropTableArr.length > 0) {
+    for (var k = 0; k < dropTableArr.length; k++) {
+      var dropedNode = zTreeObj.getNodesByParam('name', dropTableArr[k], null)[0]
+      zTreeObj.removeNode(dropedNode)
+      // 删除智能提示
+      delete CodeMirror.tableColMapping[dropTableArr[k]]
+      // 清除表与列的关系
+      delete editorObj.options.hintOptions.tables[dropTableArr[k]]
     }
   }
 }
@@ -859,39 +852,38 @@ export function dropTable(dropTableArr){
 var max_left = 0
 var max_width = 0
 var tz_path = 0
-  //实时获取最左侧主菜单栏的宽度
-  function the_left_all () {
-    var leftcard=document.getElementsByClassName('left-menu')[0]
-    var offleftcard = leftcard.style.width
-    if(offleftcard == 120+"px"){
-        max_left = 125
-        max_width = 93
-        tz_path = 55
-    }
-    else if(offleftcard== 64+"px"){
-        max_left = 70
-        max_width = 96
-        tz_path = 0
-    }
+// 实时获取最左侧主菜单栏的宽度
+function the_left_all() {
+  var leftcard = document.getElementsByClassName('left-menu')[0]
+  var offleftcard = leftcard.style.width
+  if (offleftcard == 120 + 'px') {
+    max_left = 125
+    max_width = 93
+    tz_path = 55
+  } else if (offleftcard == 64 + 'px') {
+    max_left = 70
+    max_width = 96
+    tz_path = 0
   }
+}
 
-//表单最大化
+// 表单最大化
 var maxormin = true
 export function maxOpenOne() {
   the_left_all()
-  if(maxormin == true){
-    $("#drag").hide(100)
-    $("#iconImg").css("display","none")
-    $("#iconImg-huifu").css("display","block")
-    $("#bottomPart").css({"position":"fixed","width":max_width+"%","left":max_left,"top":0,"height":96+"%","z-index":1000})
-    $(".ag-theme-balham").css("height",550)
+  if (maxormin == true) {
+    $('#drag').hide(100)
+    $('#iconImg').css('display', 'none')
+    $('#iconImg-huifu').css('display', 'block')
+    $('#bottomPart').css({ 'position': 'fixed', 'width': max_width + '%', 'left': max_left, 'top': 0, 'height': 96 + '%', 'z-index': 1000 })
+    $('.ag-theme-balham').css('height', 550)
     maxormin = false
-  }else if(maxormin == false){
-    $("#drag").show(100)
-    $("#iconImg").css("display","block")
-    $("#iconImg-huifu").css("display","none")
-    $("#bottomPart").css({"position":"static","left":0,"width":100+"%","height":100+"%","z-index":100})
-    $(".ag-theme-balham").css("height",200)
+  } else if (maxormin == false) {
+    $('#drag').show(100)
+    $('#iconImg').css('display', 'block')
+    $('#iconImg-huifu').css('display', 'none')
+    $('#bottomPart').css({ 'position': 'static', 'left': 0, 'width': 100 + '%', 'height': 100 + '%', 'z-index': 100 })
+    $('.ag-theme-balham').css('height', 200)
     maxormin = true
   }
 }
@@ -1014,7 +1006,7 @@ export function initParamTree() {
       }
     }
   }
-    getParamsTree().then(result => {
+  getParamsTree().then(result => {
     if (result.data.isError) {
 
     } else {
@@ -1023,7 +1015,7 @@ export function initParamTree() {
   })
 }
 
-$(".ag-theme-balham .ag-header-row").css("background-color","white")
+$('.ag-theme-balham .ag-header-row').css('background-color', 'white')
 
 /**
  * 数据表树拖拽事件
@@ -1202,7 +1194,7 @@ function loadParamChildrenNodes(treeNode) {
     'level': treeNode.level
   }
   dataParam.isPersonalParam = getRootNodeType(treeNode, paramZtree)
-    getFolderAndParams(dataParam).then(result => {
+  getFolderAndParams(dataParam).then(result => {
     paramZtree.removeChildNodes(treeNode)
     paramZtree.addNodes(treeNode, result.data)
   })
@@ -1733,15 +1725,14 @@ export function getSelectSql(menuId) {
         params: { tableMetaUuid: tableMetaUuid }
       }).then(result => {
         if (result.data == undefined || result.data == null) {
-          return;
+          return
         } else {
           if (result.data && result.data.length > 0) {
-            var columns = [];
-            for(var i = 0;i < result.data.length;i++){
-              if(result.data[i].chnName == "" || result.data[i].chnName == null || result.data[i].chnName == undefined){
+            var columns = []
+            for (var i = 0; i < result.data.length; i++) {
+              if (result.data[i].chnName == '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
                 columns.push(result.data[i].colName)
-              }
-              else{
+              } else {
                 columns.push(result.data[i].chnName)
               }
             }
@@ -1903,8 +1894,8 @@ export function verifySql() {
  * 执行SQL
  */
 export function executeSQL() {
-  //显示最大化按钮
-  $(".max-size").show()
+  // 显示最大化按钮
+  $('.max-size').show()
   // 这是存放参数的数组
   var arr = new Array()
   var selText = editorObj.getSelection()
@@ -1985,12 +1976,12 @@ export function editorSql(sql, paramObjOne) {
   replaceParam(paramObjOne)
 }
 
-export function refreshCodeMirror(){
-  //修复sql编辑区多次加载界面错位情况，手动刷新codeMirror
+export function refreshCodeMirror() {
+  // 修复sql编辑区多次加载界面错位情况，手动刷新codeMirror
   setTimeout(() => {
-    editorObj.refresh();
-  },1);//让编辑器每次在调用的时候进行自动刷新
-  $("#sql").click()
+    editorObj.refresh()
+  }, 1)// 让编辑器每次在调用的时候进行自动刷新
+  $('#sql').click()
 }
 
 /**
@@ -2010,15 +2001,15 @@ export function getColumnSqlInfo(data) {
  * 获取是否被修改
  * @returns {boolean}
  */
-export function getIsUpdate(){
-  return isUpdate;
+export function getIsUpdate() {
+  return isUpdate
 }
 
 /**
  * 设置sql的被修改状态
  * @param value true或false
  */
-export function setIsUpdate(value){
+export function setIsUpdate(value) {
   isUpdate = value
 }
 
@@ -2038,11 +2029,24 @@ export function getUuid() {
 /**
  * 根据登录人的Uuid查询此人有没有默认的模型结果保存路径
  */
-export function getByPersonUuid(data) {
+export function getDefaultSqlEditorLocationByPersonUuid() {
   return request({
     baseURL: analysisUrl,
     url: '/defaultSqlLocation/getByPersonUuid',
-    method: 'get',
-    params:{personUuid:data}
+    method: 'get'
+  })
+}
+
+/**
+ * 保存当前登录人在sql编辑器所选择的默认执行路径方便下次使用
+ * @param data  对象
+ * @returns {AxiosPromise}
+ */
+export function saveSqlEditorExecuteDefaultPath(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/defaultSqlLocation/save',
+    method: 'post',
+    data
   })
 }
