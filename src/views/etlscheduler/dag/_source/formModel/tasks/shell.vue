@@ -70,7 +70,8 @@ export default {
   components: { mLocalParams, mListBox, Treeselect },
   mixins: [disabledState],
   props: {
-    backfillItem: Object
+    backfillItem: Object,
+    createNodeId: String
   },
   data() {
     return {
@@ -141,7 +142,9 @@ export default {
     // Non-null objects represent backfill
     if (!_.isEmpty(o)) {
       this.rawScript = o.params.rawScript || ''
-
+      if (document.getElementById(this.createNodeId) !== null) {
+        document.getElementById(this.createNodeId).classList.add('jtk-tasks-active')
+      }
       // backfill resourceList
       const backResource = o.params.resourceList || []
       const resourceList = o.params.resourceList || []
@@ -171,6 +174,9 @@ export default {
       if (localParams.length) {
         this.localParams = localParams
       }
+    }
+    if (!_.some(this.store.state.dag.cacheTasks, { id: this.createNodeId })) {
+      // this._getReceiver()
     }
   },
   mounted() {

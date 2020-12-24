@@ -640,7 +640,7 @@ export default {
      * @returns {{arr: *[], flag: (jQuery|string|undefined|*), InfoFlag: jQuery, outColumn: jQuery, flag2: (jQuery|string|undefined), sql: *}}
      */
     getSaveInfo() {
-      if (this.callType != 'editorModel' || this.callType != 'graphModel') {
+      if (this.callType != 'editorModel' && this.callType != 'graphModel') {
         return
       }
       if (!this.isAllExecute) {

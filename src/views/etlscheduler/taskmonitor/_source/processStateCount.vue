@@ -4,7 +4,7 @@
     <div v-spin="isSpin" class="data-area">
       <el-row>
         <el-col :span="14">
-          <div id="process-state-pie" style="height: 240px;margin-top:20px" />
+          <div id="process-state-pie" style="height: 240px;margin-top:30px" />
         </el-col>
         <el-col :offset="2" :span="8">
           <div
@@ -194,37 +194,25 @@ export default {
 <style scoped>
 .table-small-model {
   padding: 0 10px;
-  /* width: 100%; */
   position: absolute;
-  /* top: 12px; */
-  /* left: 220px; */
-  /* height: 100%; */
   border: 0px solid #000;
 }
 .text {
-  /* float: left;*/
   margin: 10px 15px;
 }
 .text .ellipsis {
-  /* font-size: 16px; */
   color: #333;
-  /* padding: 0 0 0 0; */
   font-weight: bold;
 }
 .text .percentage {
   font-size: 14px;
   color: #333;
-  /* padding: 0 0 0 0; */
 }
 .text a {
   color: #409eff;
   font-size: 14px;
-  /* padding: 14px 0 0 0; */
 }
 .refresh {
-  /* position: absolute;
-  top: 0;
-  left: 720px; */
   font-size: 22px;
   cursor: pointer;
 }
@@ -232,7 +220,6 @@ export default {
   margin: 0 0 0 0;
 }
 .list-table {
-  /* width: 60%; */
   height: 300px;
   float: left;
   margin: 0 0 0 70px;
