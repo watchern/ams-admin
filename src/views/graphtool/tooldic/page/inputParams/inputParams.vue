@@ -1,24 +1,26 @@
 <template>
-    <div ref="inputParamContent" style="height: 400px;">
+    <div ref="inputParamContent" style="height: 400px;overflow-y: auto;">
         <el-collapse accordion v-model="activeName">
             <el-collapse-item v-for="(nodeParamInfo,index) in nodeParamInfoArr" :title="nodeParamInfo.nodeName" :name="nodeParamInfo.curInd" :index="index" ref="nodeParam">
-                <el-row v-for="(paramInfo,ind) in nodeParamInfo.paramInfoArr">
-                    <el-col :span="7" style="line-height:36px;padding-right: 10px;text-align: right;">
-                        <!--<label :title="paramInfo.description">{{paramInfo.paramName}}</label>-->
-                        <el-tooltip :content="paramInfo.description" placement="bottom">
-                            <label>{{paramInfo.paramName}}</label>
-                        </el-tooltip>
-                    </el-col>
-                    <el-col :span="15">
-                        <div ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title" class="xm-select-demo"></div>
-                        <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.value"></el-input>
-                        <el-date-picker ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.value" class="dataParam"></el-date-picker>
-                        <div ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title" class="xm-select-demo"></div>
-                    </el-col>
-                    <el-col :span="2" v-show="paramInfo.allowedNull">
-                        <div style="color: red;display: inline-block;font-weight: bold;font-size: 20px;">*</div>
-                    </el-col>
-                </el-row>
+                <div style="min-height: 290px;overflow-y: auto;" >
+                    <el-row v-for="(paramInfo,ind) in nodeParamInfo.paramInfoArr">
+                        <el-col :span="7" style="line-height:36px;padding-right: 10px;text-align: right;">
+                            <!--<label :title="paramInfo.description">{{paramInfo.paramName}}</label>-->
+                            <el-tooltip :content="paramInfo.description" placement="bottom">
+                                <label>{{paramInfo.paramName}}</label>
+                            </el-tooltip>
+                        </el-col>
+                        <el-col :span="15">
+                            <div ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title" :nodeId="nodeParamInfo.nodeId" class="xm-select-demo"></div>
+                            <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.value"></el-input>
+                            <el-date-picker ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.value" class="dataParam"></el-date-picker>
+                            <div ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title" :nodeId="nodeParamInfo.nodeId" class="xm-select-demo"></div>
+                        </el-col>
+                        <el-col :span="2" v-show="paramInfo.allowedNull">
+                            <div style="color: red;display: inline-block;font-weight: bold;font-size: 20px;">*</div>
+                        </el-col>
+                    </el-row>
+                </div>
             </el-collapse-item>
         </el-collapse>
     </div>
@@ -27,6 +29,7 @@
 <script>
     import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams  } from '@/api/graphtool/graphList'
     import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
+    import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
     export default {
         name: 'InputParams',
         data(){
@@ -34,12 +37,16 @@
                 selectNum:0,// 用于临时记录参数为下拉列表的个数
                 selectTreeNum:0,// 用于临时记录参数为下拉树的个数
                 nodeParamInfoArr:[],
-                activeName:[]
+                activeName:[],
+                loading:null
             }
         },
         props:["graph","nodeIdArr"],
-        mounted(){
-            // this.createParamNodeHtml()
+        created(){
+            addJsFile('/lib/layui/xm-select.js','xm-select')
+        },
+        beforeDestroy() {
+            removeJcCssfile("xm-select.js","js")
         },
         methods:{
             /**
@@ -47,84 +54,92 @@
              * @author JL
              */
             async createParamNodeHtml(){
-                let paramsArr = []// 定义所有母参信息数组
-                const response = await findParamsAndModelRelParams()
-                if(response.data == null || response.data.isError){
-                    this.$message.error(response.data.message)
-                    return
-                }else {
-                    paramsArr = response.data.paramList// 定义所有母参信息数组
-                }
-                let nodeParamObj = {}// 节点与参数配置绑定的对象
-                for (let i = 0; i < this.nodeIdArr.length; i++) {
-                    let hasParam = this.graph.nodeData[this.nodeIdArr[i]].hasParam// 是否有参数
-                    let paramsSetting = this.graph.nodeData[this.nodeIdArr[i]].paramsSetting
-                    if (hasParam && paramsSetting && paramsSetting.arr && paramsSetting.arr.length !== 0) {
-                        let copyParamArr = []// 定义所有参数的对象数组（已去重）
-                        let arr = paramsSetting.arr// 获取设置的参数数组
-                        let moduleParamArr = []// 母参数数组（去重用）
-                        for (let j = 0; j < arr.length; j++) { // 循环节点上绑定的参数（复制参数）
-                            for (let k = 0; k < paramsArr.length; k++) { // 循环所有母版参数
-                                let moduleParamId = paramsArr[k].ammParamUuid
-                                if (moduleParamId === arr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
-                                    if (arr[j].defaultVal) {
-                                        paramsArr[k].defaultVal = arr[j].defaultVal
+                try {
+                    this.loading = $(this.$refs.inputParamContent).mLoading({ 'text': '正在初始化数据，请稍后……', 'hasCancel': false })
+                    let paramsArr = []// 定义所有母参信息数组
+                    const response = await findParamsAndModelRelParams()
+                    if (response.data == null || response.data.isError) {
+                        this.$message.error(response.data.message)
+                        return
+                    } else {
+                        paramsArr = response.data.paramList// 定义所有母参信息数组
+                    }
+                    let nodeParamObj = {}// 节点与参数配置绑定的对象
+                    for (let i = 0; i < this.nodeIdArr.length; i++) {
+                        let hasParam = this.graph.nodeData[this.nodeIdArr[i]].hasParam// 是否有参数
+                        let paramsSetting = this.graph.nodeData[this.nodeIdArr[i]].paramsSetting
+                        if (hasParam && paramsSetting && paramsSetting.arr && paramsSetting.arr.length !== 0) {
+                            let copyParamArr = []// 定义所有参数的对象数组（已去重）
+                            let arr = paramsSetting.arr// 获取设置的参数数组
+                            let moduleParamArr = []// 母参数数组（去重用）
+                            for (let j = 0; j < arr.length; j++) { // 循环节点上绑定的参数（复制参数）
+                                for (let k = 0; k < paramsArr.length; k++) { // 循环所有母版参数
+                                    let moduleParamId = paramsArr[k].ammParamUuid
+                                    if (moduleParamId === arr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
+                                        if (arr[j].defaultVal) {
+                                            paramsArr[k].defaultVal = arr[j].defaultVal
+                                        }
+                                        copyParamArr.push(paramsArr[k])
+                                        moduleParamArr.push(moduleParamId)
+                                        break
                                     }
-                                    copyParamArr.push(paramsArr[k])
-                                    moduleParamArr.push(moduleParamId)
-                                    break
                                 }
                             }
-                        }
-                        if (copyParamArr.length > 0) {
-                            nodeParamObj[this.nodeIdArr[i]] = copyParamArr
+                            if (copyParamArr.length > 0) {
+                                nodeParamObj[this.nodeIdArr[i]] = copyParamArr
+                            }
                         }
                     }
+                    let keys = Object.keys(nodeParamObj)// 获取有参数设置的节点的ID集合
+                    for (let j = 0; j < keys.length; j++) {
+                        let curNodeId = keys[j]
+                        let nodeParamInfoObj = {
+                            "curInd": j,
+                            "nodeId": curNodeId,
+                            "nodeName": `【${this.graph.nodeData[curNodeId].nodeInfo.nodeName}】节点`,
+                            "paramInfoArr": [],
+                        }
+                        if (j === 0) {
+                            this.activeName.push(j)
+                        }
+                        // 遍历该节点绑定的所有参数
+                        let copyParamArr = nodeParamObj[keys[j]]
+                        for (let k = 0; k < copyParamArr.length; k++) {
+                            let paramInfoObj = {
+                                "paramName": copyParamArr[k].paramName,
+                                "description": '（参数说明：无）',
+                                "inputType": copyParamArr[k].inputType//参数类型
+                            }
+                            if (typeof copyParamArr[k].description !== 'undefined' && copyParamArr[k].description != null) {
+                                paramInfoObj.description = '（参数说明：' + copyParamArr[k].description + '）'
+                            }
+                            let returnObj = await this.initParamHtml_Common(copyParamArr[k], paramInfoObj, this.selectNum, this.selectTreeNum)
+                            if (typeof returnObj.selectNum !== 'undefined') {
+                                this.selectNum = returnObj.selectNum
+                                paramInfoObj.selectNum = returnObj.selectNum
+                            }
+                            if (typeof returnObj.selectTreeNum !== 'undefined') {
+                                this.selectTreeNum = returnObj.selectTreeNum
+                                paramInfoObj.selectTreeNum = returnObj.selectTreeNum
+                            }
+                            if (returnObj.isError) {
+                                this.$message.error(returnObj.message)
+                                return
+                            } else {
+                                paramInfoObj = {...paramInfoObj, ...returnObj.setParamObj}
+                                paramInfoObj.description += `${paramInfoObj.title}`
+                            }
+                            nodeParamInfoObj.paramInfoArr.push(paramInfoObj)
+                        }
+                        this.nodeParamInfoArr.push(nodeParamInfoObj)
+                    }
+                    this.$nextTick(() => {
+                        this.initParamInputAndSelect()
+                    })
+                }catch (e) {
+                    this.loading.destroy()
+                    console.info(e)
                 }
-                let keys = Object.keys(nodeParamObj)// 获取有参数设置的节点的ID集合
-                for (let j = 0; j < keys.length; j++) {
-                    let curNodeId = keys[j]
-                    let nodeParamInfoObj = {
-                        "curInd": j,
-                        "nodeId":curNodeId,
-                        "nodeName":`【${this.graph.nodeData[curNodeId].nodeInfo.nodeName}】节点`,
-                        "paramInfoArr":[],
-                    }
-                    if(j === 0){
-                        this.activeName.push(j)
-                    }
-                    // 遍历该节点绑定的所有参数
-                    let copyParamArr = nodeParamObj[keys[j]]
-                    for (let k = 0; k < copyParamArr.length; k++) {
-                        let paramInfoObj = {
-                            "paramName":copyParamArr[k].paramName,
-                            "description":'（参数说明：无）',
-                            "inputType":copyParamArr[k].inputType//参数类型
-                        }
-                        if (typeof copyParamArr[k].description !== 'undefined' && copyParamArr[k].description != null) {
-                            paramInfoObj.description = '（参数说明：' + copyParamArr[k].description + '）'
-                        }
-                        let returnObj = await this.initParamHtml_Common(copyParamArr[k], paramInfoObj, this.selectNum, this.selectTreeNum)
-                        if (typeof returnObj.selectNum !== 'undefined') {
-                            this.selectNum = returnObj.selectNum
-                        }
-                        if (typeof returnObj.selectTreeNum !== 'undefined') {
-                            this.selectTreeNum = returnObj.selectTreeNum
-                        }
-                        if (returnObj.isError) {
-                            this.$message.error(returnObj.message)
-                            return
-                        } else {
-                            paramInfoObj = {...paramInfoObj, ...returnObj.setParamObj}
-                        }
-                        nodeParamInfoObj.paramInfoArr.push(paramInfoObj)
-                    }
-                    this.nodeParamInfoArr.push(nodeParamInfoObj)
-                }
-                this.initParamInputAndSelect()
-                // this.$nextTick( () => {
-                //     this.initParamInputAndSelect()
-                // })
             },
             /**
              * 根据参数类型组织参数的HTML元素
@@ -156,11 +171,10 @@
                             $.each(paramObj.paramChoice.paramOptionsList, function(i, v) {
                                 if (v.optionsVal && v.optionsName) {
                                     // 组织下拉选项数据
-                                    let optionObj = {
+                                    dataArr.push({
                                         'name': v.optionsName,
                                         'value': v.optionsVal
-                                    }
-                                    dataArr.push(optionObj)
+                                    })
                                 }
                             })
                         } else { // 执行备选sql
@@ -292,7 +306,7 @@
              */
             initParamInputAndSelect() {
                 // 初始化下拉列表
-                let selectParam = $(this.$refs.selectParam)
+                let selectParam = this.$refs.selectParam
                 if (selectParam && selectParam.length > 0) {
                     for(let i=0; i<selectParam.length; i++) {
                         let nodeId = selectParam[i].getAttribute("nodeId")
@@ -310,7 +324,7 @@
                         let dataArr = typeof paramInfoObj.data !== 'undefined' ? paramInfoObj.data : []// 下拉列表数据
                         let initDataArr = false// 是否初始化数据
                         let selectSetting = {
-                            el: divId,
+                            el: `#${divId}`,
                             filterable: true,
                             filterMethod: function (val, item, index, prop) {
                                 if (val === item.value) { // 把value相同的搜索出来
@@ -353,7 +367,7 @@
                     }
                 }
                 // 初始化下拉树
-                let selectTreeParam = $(this.$refs.selectTreeParam)
+                let selectTreeParam = this.$refs.selectTreeParam
                 if (selectTreeParam && selectTreeParam.length > 0) {
                     for(let i=0; i<selectTreeParam.length; i++){
                         let nodeId = selectTreeParam[i].getAttribute("nodeId")
@@ -371,7 +385,7 @@
                         let dataArr = typeof paramInfoObj.data !== 'undefined' ? paramInfoObj.data : []// 下拉列表数据
                         let initDataArr = false// 是否初始化数据
                         let selectSetting = {
-                            el: divId, // 此处使用【i】的原因在于每个参数都可能被重复使用，只能通过数量下标来确保【el】唯一
+                            el: `#${divId}`, // 此处使用【i】的原因在于每个参数都可能被重复使用，只能通过数量下标来确保【el】唯一
                             // autoRow: true,
                             filterable: true,
                             tree: {
@@ -458,6 +472,7 @@
                         xmSelect.render(selectSetting)
                     }
                 }
+                this.loading.destroy()
             },
             /**
              * 根据影响当前参数的主参所选中的值，过滤当前参数的数据
@@ -473,7 +488,7 @@
              * @author JL
              */
             async selectShow_common(dom, idStr, ind, paramInfoObj, sql, paramArr, dataArr, initDataArr) {
-                let loading = $(dom).mLoading({ 'text': '参数数据请求中，请稍后……', 'hasCancel': false })
+                this.loading = $(dom).mLoading({ 'text': '参数数据请求中，请稍后……', 'hasCancel': false })
                 // 找出该参数与被关联参数之间的联系（它影响谁和谁影响它两种）
                 try {
                     let sqlWhereStr = ''
@@ -514,7 +529,7 @@
                                 response = await getSelectTreeData(sql)
                             }
                             if (response.data.isError) {
-                                loading.destroy()
+                                this.loading.destroy()
                                 alertMsg('错误', '获取参数【' + paramInfoObj.dataName + '】的值的失败，原因：' + response.data.message, 'error')
                             } else {
                                 let newDataArr = []
@@ -533,10 +548,10 @@
                                     // autoRow: true,
                                 })
                                 $(idStr + ind).attr('data-sqlWhereStr', sqlWhereStr)
-                                loading.destroy()
+                                this.loading.destroy()
                             }
                         } else {
-                            loading.destroy()
+                            this.loading.destroy()
                         }
                     }
                     if (sqlWhereStr === '' && dataArr.length === 0) { // 当影响它的主参没有选择值且本身没数据时（第一次加载全部数据）
@@ -547,7 +562,7 @@
                             response = await getSelectTreeData(sql)
                         }
                         if (response.data.isError) {
-                            loading.destroy()
+                            this.loading.destroy()
                             alertMsg('错误', '获取参数【' + paramInfoObj.dataName + '】的值的失败，原因：' + response.data.message, 'error')
                         } else {
                             if (idStr === '#selectParam') {
@@ -564,7 +579,7 @@
                                 data: dataArr
                                 // autoRow: true,
                             })
-                            loading.destroy()
+                            this.loading.destroy()
                         }
                     }
                     if (sqlWhereStr === '' && dataArr.length !== 0) {
@@ -575,10 +590,10 @@
                             })
                         }
                         $(idStr + ind).removeAttr('data-sqlWhereStr')
-                        loading.destroy()
+                        this.loading.destroy()
                     }
                 } catch (e) {
-                    loading.destroy()
+                    this.loading.destroy()
                     alertMsg('错误', '程序执行出错，刷新参数数据失败', 'error')
                     console.info(e)
                 }
@@ -616,7 +631,7 @@
                         let filterArr = []// 参数条件的数组，包含参数ID和参数值
                         let paramNum = 0// 记录参数不允许为空却未输入值的参数数量
                         let hasAllowedNullParam = false// 本次查询是否含有可为空的参数条件
-                        let index = nodeParamDom[i].getAttribute("index")
+                        let index = nodeParamDom[i].$attrs.index
                         let nodeName = this.nodeParamInfoArr[index].nodeName// 当前节点的名称
                         let nodeId = this.nodeParamInfoArr[index].nodeId// 当前节点的ID
                         let paramsSetting = this.graph.nodeData[nodeId].paramsSetting// 获取当前节点得参数配置信息
@@ -635,8 +650,8 @@
                         if(paramOptionDom && paramOptionDom.length > 0){
                             for(let j=0; j<paramOptionDom.length; j++){
                                 // $(nodeParamDom[i]).find('.paramOption').each(function() {
-                                let ind = paramOptionDom[j].getAttribute("ind")
-                                paramInfoObj = paramInfoArr[ind]
+                                let index = paramOptionDom[j].getAttribute("index")
+                                paramInfoObj = paramInfoArr[index]
                                 let moduleParamId = paramInfoObj.dataId// 母参数ID
                                 let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
                                 let paramValue = paramInfoObj.value
@@ -649,9 +664,9 @@
                                     obj.allowedNull = '1'
                                     if (paramValue === '') {
                                         hasAllowedNullParam = true
-                                        for (let k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
-                                            if (arr[k].moduleParamId === moduleParamId) {
-                                                arr[k]['value'] = ''
+                                        for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                                            if (arr[w].moduleParamId === moduleParamId) {
+                                                arr[w]['value'] = ''
                                             }
                                         }
                                     }
@@ -668,9 +683,9 @@
                         // 获取参数查询条件（下拉列表）
                         let selectParamDom = this.$refs.selectParam
                         if(selectParamDom && selectParamDom.length > 0){
-                            for(let k=0; k<selectParamDom.length; k++){
-                                let ind = selectParamDom[k].getAttribute("ind")
-                                paramInfoObj = paramInfoArr[ind]
+                            for(let n=0; n<selectParamDom.length; n++){
+                                let index = selectParamDom[n].getAttribute("index")
+                                paramInfoObj = paramInfoArr[index]
                                 let moduleParamId = paramInfoObj.dataId// 母参数ID
                                 let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
                                 let choiceType = paramInfoObj.dataChoiceType// 当前参数是多选还是单选：0：多选，1、单选
@@ -685,9 +700,9 @@
                                     obj.allowedNull = '1'
                                     if (paramSelectedObj.length === 0) { // 未选择值
                                         hasAllowedNullParam = true
-                                        for (let k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
-                                            if (arr[k].moduleParamId === moduleParamId) {
-                                                arr[k]['value'] = ''
+                                        for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                                            if (arr[w].moduleParamId === moduleParamId) {
+                                                arr[w]['value'] = ''
                                             }
                                         }
                                     } else {
@@ -724,8 +739,8 @@
                         if(selectTreeParamDom && selectTreeParamDom.length > 0) {
                             for (let m = 0; m < selectTreeParamDom.length; m++) {
                                 // $(this).find('.selectTreeParam').each(function(i, v) {
-                                let ind = selectTreeParamDom[m].getAttribute("ind")
-                                paramInfoObj = paramInfoArr[ind]
+                                let index = selectTreeParamDom[m].getAttribute("index")
+                                paramInfoObj = paramInfoArr[index]
                                 let moduleParamId = paramInfoObj.dataId// 母参数ID
                                 let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
                                 let choiceType = paramInfoObj.dataChoiceType// 当前参数是多选还是单选：0：多选，1、单选
@@ -740,17 +755,17 @@
                                     obj.allowedNull = '1'
                                     if (paramSelectedObj.length === 0) { // 未选择值
                                         hasAllowedNullParam = true
-                                        for (let k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
-                                            if (arr[k].moduleParamId === moduleParamId) {
-                                                arr[k]['value'] = ''
+                                        for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                                            if (arr[w].moduleParamId === moduleParamId) {
+                                                arr[w]['value'] = ''
                                             }
                                         }
                                     } else {
                                         if (choiceType === '1') { // 单选
                                             obj.paramValue = paramSelectedObj[0].value
                                         } else {
-                                            for (let j = 0; j < paramSelectedObj.length; j++) { // 多值，以'','',……形式展现
-                                                obj.paramValue += "'" + paramSelectedObj[j].value + "',"
+                                            for (let b = 0; b < paramSelectedObj.length; b++) { // 多值，以'','',……形式展现
+                                                obj.paramValue += "'" + paramSelectedObj[b].value + "',"
                                             }
                                             obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
                                         }
@@ -761,8 +776,8 @@
                                         if (choiceType === '1') { // 单选
                                             obj.paramValue = paramSelectedObj[0].value
                                         } else {
-                                            for (let j = 0; j < paramSelectedObj.length; j++) { // 多值，以'','',……形式展现
-                                                obj.paramValue += "'" + paramSelectedObj[j].value + "',"
+                                            for (let b = 0; b < paramSelectedObj.length; b++) { // 多值，以'','',……形式展现
+                                                obj.paramValue += "'" + paramSelectedObj[b].value + "',"
                                             }
                                             obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
                                         }
@@ -783,8 +798,8 @@
                             let textParamLen = $(nodeParamDom[i]).find('.textParam').length
                             for (let t = 0; t < textParamLen; t++) {
                                 let textParam = $(nodeParamDom[i]).find('.textParam:eq(' + t + ')')
-                                let ind = textParam.attr("index")
-                                paramInfoObj = paramInfoArr[ind]
+                                let index = textParam.attr("index")
+                                paramInfoObj = paramInfoArr[index]
                                 let dataLength = paramInfoObj.dataDatalength// 获取参数值长度
                                 let paramName = paramInfoObj.dataName// 获取参数名称
                                 if (typeof dataLength !== 'undefined' && paramInfoObj.value.length !== parseInt(dataLength)) { // 如果该参数有长度限制且默认值不等于设置的长度值
@@ -807,11 +822,11 @@
                                 }
                                 if (replaceParamSql !== '') {
                                     // 替换参数SQL中的ID（多值怎么替换？）
-                                    for (let j = 0; j < filterArr.length; j++) { // 遍历所有母参数信息
-                                        let moduleParamId = filterArr[j].moduleParamId
-                                        for (let k = 0; k < arr.length; k++) { // 遍历当前节点绑定的参数
-                                            if (arr[k].moduleParamId === moduleParamId) {
-                                                replaceParamSql = replaceParamSql.replace(arr[k].id, filterArr[j].paramValue)// 将参数SQL中的参数ID替换为输入得值
+                                    for (let x = 0; x < filterArr.length; x++) { // 遍历所有母参数信息
+                                        let moduleParamId = filterArr[x].moduleParamId
+                                        for (let a = 0; a < arr.length; a++) { // 遍历当前节点绑定的参数
+                                            if (arr[a].moduleParamId === moduleParamId) {
+                                                replaceParamSql = replaceParamSql.replace(arr[a].id, filterArr[x].paramValue)// 将参数SQL中的参数ID替换为输入得值
                                             }
                                         }
                                     }
@@ -828,3 +843,8 @@
         }
     }
 </script>
+<style scoped type="text/css">
+    xm-select > .xm-body{
+        max-height: 240px !important;
+    }
+</style>

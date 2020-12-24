@@ -50,7 +50,26 @@ export function getAllScene() {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/getAllScene`,
-    method: 'post'
+    method: 'get'
   })
 }
+
+
+export function getSceneInst(sceneCode, sceneInst) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/getSceneInst/${sceneCode}/${sceneInst}`,
+    method: 'get'
+  })
+}
+/*export function saveSession(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/saveSession`,
+    method: 'post',
+    data
+  })
+}*/
+
+
 

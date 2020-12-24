@@ -164,7 +164,7 @@ export default {
         {
           icon: '',
           name: '提醒事项',
-          count: 20,
+          count: 0,
           method: this.logoutRemind
         },
         {
@@ -329,6 +329,8 @@ export default {
     },
     widthChange(){
       this.isShrink = !this.isShrink
+    },
+    reminderAutomaticRefresh(){
     }
   }
 }
@@ -658,7 +660,6 @@ export default {
   transition: all 0.6s
 }
 .slide-fade-enter,.slide-fade-leave-to {
-  transform: translateX(-30px);
   opacity: 0;
 }
 .setting-btn{
@@ -667,15 +668,14 @@ export default {
   cursor:pointer;
 }
 .showAnimation-enter-active, .showAnimation-leave-active {
-  transition: all 1s;
+  transition: all .5s;
 }
 .showAnimation-enter, .showAnimation-leave-to {
   opacity: 0;
-  margin-left:-60px;
 }
 
 .setting-fade-enter-active, .setting-fade-leave-active {
-  transition: all 1s;
+  transition: all .5s;
 }
 .setting-fade-enter, .setting-fade-leave-to {
   opacity: 0;

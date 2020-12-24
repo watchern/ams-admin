@@ -529,6 +529,8 @@ export default {
     border-radius: 1px 46px 1px 1px;
     width: 510px;
     padding: 25px 20px;
+
+    overflow: hidden;
     .btns-wrap {
       right: 9px;
       top: 186px;
@@ -656,6 +658,13 @@ export default {
         }
       }
     }
+  }
+  .tools-content{
+  animation: allinwidth .5s ease-out;
+  }
+  @keyframes allinwidth
+  {
+    0%{width:0px}100%{width: 510px;}
   }
 }
 </style>

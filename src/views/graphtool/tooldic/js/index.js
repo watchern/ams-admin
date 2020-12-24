@@ -1488,22 +1488,20 @@ export async function saveModelGraph(){
                                     selectSql = `SELECT ${selectColArr.join(",")} FROM ${tableName}`
                                     if(newNodeData[parentIds[0]].hasParam && newNodeData[parentIds[0]].paramsSetting){
                                         //此处处理不同操作节点SELECT语句附带的参数条件
-                                        // switch (preNodeInfo.optType) {
-                                        //     case "filter"://数据筛选
-                                        //     case "layering"://数据分层
-                                        //     case "sample"://数据抽样
-                                        //         selectSql += " AND " +  newNodeData[parentIds[0]].paramsSetting.sql
-                                        //         break
-                                        //     case "delRepeat"://数据去重
-                                        //     case "change"://数据转码
-                                        //     case "relation"://数据关联
-                                        //         selectSql += " WHERE " +  newNodeData[parentIds[0]].paramsSetting.sql
-                                        //         break
-                                        //     default:
-                                        //         selectSql = "SELECT * FROM (" + selectSql +") WHERE " +  newNodeData[parentIds[0]].paramsSetting.sql
-                                        //         break
-                                        // }
-                                        selectSql = `${selectSql} WHERE ${newNodeData[parentIds[0]].paramsSetting.sql}`
+                                        let dealParam = {
+                                            "sql": selectSql,
+                                            "replaceParamSql": newNodeData[parentIds[0]].paramsSetting.sql,
+                                            "optType":preNodeInfo.optType
+                                        }
+                                        const dealSqlResponse = await dealReplaceParamSql(dealParam)
+                                        if(dealSqlResponse.data == null || dealSqlResponse.data.isError){
+                                            isError = true
+                                            message = '未正确获取模型语句'
+                                            break
+                                        }else{
+                                            selectSql = dealSqlResponse.data.dealSql
+                                        }
+                                        // selectSql = `${selectSql} WHERE ${newNodeData[parentIds[0]].paramsSetting.sql}`
                                         let arr = newNodeData[parentIds[0]].paramsSetting.arr
                                         for(let t=0; t<arr.length; t++){
                                             modelParamIdArr.push(arr[t].copyParamId);

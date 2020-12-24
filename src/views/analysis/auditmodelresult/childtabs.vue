@@ -8,12 +8,14 @@
         :useType="useType"
         :resultSpiltObjects="resultSpiltObjects"
         :modelId="modelId"
+        :myIndex='1'
+        :preLength="1"
     /></el-tab-pane>
     <el-tab-pane
       v-for="(item, key) in useType==='modelRunResult'?helptables:preValue"
       :key="key"
       :label="tabsName(key)"
-      ><childTabCons ref="child" :modelId="modelId" :nowtable="item" :prePersonalVal="item" :useType="useType" />
+      ><childTabCons ref="child" :resultSpiltObjects="resultSpiltObjects" :modelId="modelId" :nowtable="item" :prePersonalVal="item" :useType="useType" :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1" :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"/>
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -26,7 +28,8 @@ export default {
   },
   data() {
     return {
-      index:0
+      index:0,
+      hasButton:false
     };
   },
   methods: {
@@ -51,7 +54,12 @@ export default {
         if(this.useType==='modelRunResult'){
           return '辅表' + (key + 1)
         }else if(this.useType==='sqlEditor'||this.useType==='modelPreview'){
-            return '结果' + (key + 1)
+          if(this.preValue.length === key + 1){
+            return '主表'
+          }
+          else{
+            return '辅助' + (key + 1)
+          }
         }else if(this.useType==='previewTable'){
             return '数据详情'
         }else if(this.useType==='graph'){

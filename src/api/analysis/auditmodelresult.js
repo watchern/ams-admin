@@ -393,3 +393,26 @@ export function updateModelChartSetup(data) {
     data
   })
 }
+/*BOE 发送模型结果到作业平台 */
+export function sendToOA(taskRelUuid) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ResultRelProjectController/sendToOA',
+    method: 'get',
+    params:{taskRelUuid: taskRelUuid}
+  })
+}
+
+
+/**
+ * 批量删除删除运行结果与项目关联表
+ * @param {*} data  运行结果与项目关联主键数组
+ */
+export function batchDeleteResultRelProject(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ResultRelProjectController/batchDeleteResultRelProject',
+    method: 'delete',
+    data
+  })
+}

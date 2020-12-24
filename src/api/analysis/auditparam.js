@@ -638,6 +638,7 @@ export function initcrossrangeParamHtml(sql, paramsArr, name, id) {
  * @author JL
  */
 export function initParamHtml_Common(paramObj, selectNum, selectTreeNum,serviceInfo) {
+  debugger
   if(serviceInfo==undefined){
     serviceInfo = ''
   }
@@ -1809,7 +1810,7 @@ export function replaceNodeParam(modelid,serviceInfo) {
       }
     }
   })
-  if (paramNum !== 0) { // 第一步，先判断是否有必填的参数没有输入值
+  if (false) { // 第一步，先判断是否有必填的参数没有输入值
     returnObj.verify = false
     returnObj.message = '含有未输入值的参数项，请重新输入'
   } else {
@@ -2012,7 +2013,7 @@ export function replaceCrossrangeNodeParam(modelId) {
       }
     }
   })
-  if (paramNum !== 0) { // 第一步，先判断是否有必填的参数没有输入值
+  if (false) { // 第一步，先判断是否有必填的参数没有输入值
     returnObj.verify = false
     returnObj.message = '含有未输入值的参数项，请重新输入'
   } else {
@@ -2597,7 +2598,9 @@ export function createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
             $.inArray(moduleParamId, moduleParamArr) == -1
           ) {
             // 匹配复制参数的母版参数ID    paramObj.defaultVal
-            paramList[k].defaultVal = JSON.stringify(paramList[k].defaultVal)
+            if(paramList[k].dataType!='date'){
+              paramList[k].defaultVal = JSON.stringify(paramList[k].defaultVal)
+            }
             var returnObj = initParamHtml_Common(paramList[k])
             if (!returnObj.isError) {
               htmlContent = returnObj.htmlContent

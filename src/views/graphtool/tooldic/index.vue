@@ -197,9 +197,9 @@
                     <div class="layui-tab-content">
                         <div class="layui-tab-item">
                             <div id="tableArea">
-                                <div v-for="result in resultTableArr" v-if="showTableResult" class="data-show">
-                                    <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="preValue" />
-                                </div>
+                                <!--<div v-for="result in resultTableArr" v-if="showTableResult" class="data-show">-->
+                                    <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="resultTableArr" v-if="showTableResult"/>
+                                <!--</div>-->
                             </div>
                         </div>
                         <div class="layui-tab-item"><div id="sysInfoArea" /></div>
@@ -298,31 +298,33 @@
                 <el-button type="primary" @click="getGraphFormInfo">保存</el-button>
             </div>
         </el-dialog>
-        <el-dialog v-if="nodeParamDialogVisible" :visible.sync="nodeParamDialogVisible" title="参数节点列表" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal">
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th style="text-align: center">节点名称</th>
-                    <th style="text-align: center">结果表序号</th>
-                    <th style="text-align: center">操作</th>
-                </tr>
-                </thead>
-                <tbody ref="nodeParamToby">
-                <tr v-for="(nodeObj,index) in nodeParamArr" ref="paramSetTr" :index="index">
-                    <td align="center">{{ nodeObj.nodeName }}</td>
-                    <td align="center">{{ nodeObj.lineNum }}</td>
-                    <td v-if="nodeObj.hasParamSet" align="center">
-                        <button type="button" class="paramSetting btn btn-primary" @click="settingParam(nodeObj.nodeId,index)">修改参数</button>
-                        <button id="clearBtn" type="button" class="btn btn-primary" style="margin-left: 10px;" @click="clearSettingParam(nodeObj.nodeId,index)">清除参数</button>
-                    </td>
-                    <td v-if="!nodeObj.hasParamSet" align="center">
-                        <button type="button" class="paramSetting btn btn-primary" @click="settingParam(nodeObj.nodeId,index)">设置参数</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <el-dialog v-if="nodeParamListDialogVisible" :visible.sync="nodeParamListDialogVisible" title="参数节点列表" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal">
+            <div  style="height: 400px;overflow-y: auto;">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th style="text-align: center">节点名称</th>
+                        <th style="text-align: center">结果表序号</th>
+                        <th style="text-align: center">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody ref="nodeParamToby">
+                    <tr v-for="(nodeObj,index) in nodeParamArr" ref="paramSetTr" :index="index">
+                        <td align="center">{{ nodeObj.nodeName }}</td>
+                        <td align="center">{{ nodeObj.lineNum }}</td>
+                        <td v-if="nodeObj.hasParamSet" align="center">
+                            <button type="button" class="paramSetting btn btn-primary" @click="settingParam(nodeObj.nodeId,index)">修改参数</button>
+                            <button id="clearBtn" type="button" class="btn btn-primary" style="margin-left: 10px;" @click="clearSettingParam(nodeObj.nodeId,index)">清除参数</button>
+                        </td>
+                        <td v-if="!nodeObj.hasParamSet" align="center">
+                            <button type="button" class="paramSetting btn btn-primary" @click="settingParam(nodeObj.nodeId,index)">设置参数</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
             <div slot="footer">
-                <el-button @click="nodeParamDialogVisible = false">取消</el-button>
+                <el-button @click="nodeParamListDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="showParamNodeListCallBack()">保存</el-button>
             </div>
         </el-dialog>
@@ -366,6 +368,13 @@
             <div slot="footer">
                 <el-button @click="nodeReNameDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="reNameCallBack">保存</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog v-if="nodeParamDialogVisible" :visible.sync="nodeParamDialogVisible" title="设置执行参数" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
+            <InputParams ref="inputParams" :graph="graph" :nodeIdArr="executeNodeIdArr"/>
+            <div slot="footer">
+                <el-button @click="nodeParamDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="setExecuteParamCallBack">保存</el-button>
             </div>
         </el-dialog>
         <!-- 右键事件 -->
@@ -423,6 +432,7 @@
     import SettingParams from '@/views/graphtool/tooldic/page/settingParams/settingParams.vue'
     import NodeSetting from '@/views/graphtool/tooldic/page/nodeSetting/nodeSetting.vue'
     import RelationSetting from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/relation.vue'
+    import InputParams from '@/views/graphtool/tooldic/page/inputParams/inputParams.vue'
     // 引入后端接口的相关方v
     import { getGraphInfoById, getTableCol, viewNodeData, saveGraphInterface } from '@/api/graphtool/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
@@ -432,7 +442,7 @@
     import * as validateJs from '@/views/graphtool/tooldic/js/validate'
     export default {
         name: 'ToolIndex',
-        components: { Help, GraphListExport, ChildTabs, SettingParams, NodeSetting, RelationSetting },
+        components: { Help, GraphListExport, ChildTabs, SettingParams, NodeSetting, RelationSetting, InputParams },
         props: ['graphUuidParam', 'openGraphTypeParam', 'openTypeParam'],
         data() {
             return {
@@ -445,7 +455,7 @@
                 historyRootNode: null,
                 helpDialogVisible: false,
                 graphListDialogVisible: false,
-                nodeParamDialogVisible: false,
+                nodeParamListDialogVisible: false,
                 nodeParamSettingDialogVisible: false,
                 nodeSettingDialogVisible: false,
                 pressEscape: false,
@@ -466,6 +476,7 @@
                 searchZtreeContent: '',
                 webSocket: null,
                 resultTableArr: [], // 节点结果集集合
+                loadResultNum:0,//已加载结果集的数量
                 showTableResult: false,
                 executeNodeIdArr: [], // 当前执行批次的节点ID集合
                 graphFormVisible: false,
@@ -474,7 +485,6 @@
                 websocketBatchId: '',
                 showGraphListType: '',
                 activeTabName: 'outLineArea',
-                preValue: [], // 结果集页签数组
                 optTypeArr: ['filter', 'sort', 'sample', 'layering', 'groupCount', 'delRepeat', 'comparison', 'change', 'union', 'relation', 'sql'],
                 nodeParamRelArr: [], // 用来存储每个节点设置的参数信息
                 nodeParamArr: [], // 存储已设置参数的节点集合
@@ -488,6 +498,9 @@
                 curNodeExecuteSQL:'',//当前节点的SQL语句
                 nodeReNameDialogVisible:false,
                 reNameObj:{"name":'节点名称',"value":"","edge":false},//重命名节点的名称
+                nodeParamDialogVisible:false,
+                executeNodeObject:null,//全部执行的节点批次信息
+                executeType:''//当前执行操作的类型（全部执行【all】和普通执行【''】）
             }
         },
         created() {
@@ -835,20 +848,26 @@
                 }
                 // 发送消息
                 this.webSocket.onmessage = function(event) {
+                    console.log("bb")
                     const dataObj = JSON.parse(event.data)// 接收到返回结果
                     var executeSQLObj = dataObj.executeSQL
                     if (executeSQLObj.customParam[0] === $this.websocketBatchId) {//匹配结果集
-                        $this.loading.destroy()
-                        console.log(executeSQLObj.state)
+                        $this.loadResultNum++
                         if(executeSQLObj.state === "2"){//执行成功，展示当前操作的结果集
                             $this.layuiTabClickLi(0)
                             $this.showTableResult = true
-                            $this.$nextTick(() => {
-                                $this.$refs.childTabsRef[0].loadTableData(dataObj)
-                            })
+                            let index = $this.resultTableArr.findIndex( item => item.id === executeSQLObj.id)
+                            if(index > -1) {
+                                $this.$nextTick(() => {
+                                    $this.$refs.childTabsRef.loadTableData(dataObj)
+                                })
+                            }
                         }else{
                             $('#sysInfoArea').html("<p style='color: red;'>预览结果集失败：" + executeSQLObj.msg + "</p>")
                             $this.layuiTabClickLi(1)
+                        }
+                        if($this.loadResultNum === $this.resultTableArr.length){
+                            $this.loading.destroy()
                         }
                     }
                 }
@@ -863,9 +882,7 @@
                 }
             },
             executeAllNode() {
-                // commonJs.executeAllNode()
-                this.$message({ type: 'info', message: '待集成' })
-                // console.log(await indexJs.saveModelGraph())
+                commonJs.executeAllNode()
             },
             newGraph() {
                 this.$store.commit('aceState/setRightFooterTags', {
@@ -941,11 +958,9 @@
                         const resultTableName = nodes[0].name
                         const isRoleTable = true
                         $this.resultTableArr = []
-                        $this.preValue = []
                         $this.$nextTick(() => {
                             $this.websocketBatchId = new UUIDGenerator().id
-                            $this.resultTableArr = [{ nodeId, nodeName, resultTableName, isRoleTable }]
-                            $this.preValue = [{ id: nodeId, name: nodeName }]
+                            $this.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable }]
                             $this.layuiTabClickLi(0)
                             $this.viewData()
                         })
@@ -1092,6 +1107,20 @@
             reNameCallBack(){
                 commonJs.reNameCallBack()
             },
+            async setExecuteParamCallBack(){
+                let returnVal = await this.$refs.inputParams.replaceNodeParam()
+                if (returnVal.verify) {
+                    this.nodeParamDialogVisible = false
+                    // 节点的核心执行方法
+                    if(this.executeType === 'all'){//全部执行
+                        commonJs.executeAllNode_callback(this.executeNodeIdArr, this.executeNodeObject)
+                    }else{//其他执行
+                        commonJs.executeNode_callback(this.executeNodeIdArr)
+                    }
+                } else {
+                    this.$refs.inputParams.$message({'type':'warning', 'message':returnVal.message})
+                }
+            },
             /**
              * 接口：获取节点参数信息
              */
@@ -1118,3 +1147,4 @@
 <style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
 <style scoped src="@/components/ams-basic/css/accordion.css"></style>
 <style scoped src="@/views/graphtool/tooldic/css/index.css"></style>
+<style src="@/components/ams-ztree/css/zTreeStyle/zTreeStyle.css"></style>

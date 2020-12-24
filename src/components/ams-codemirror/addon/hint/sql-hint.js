@@ -160,10 +160,12 @@
     }
 
     var columns = getTable(table);
+    alert(table)
     if (columns && columns.columns && columns.columns.length!==0){
       columns = columns.columns;
     }else{
-      alert("该请求后台")
+      //todo 在这请求后台
+      //alert("该请求后台")
     }
 
     if (columns && columns.length > 0) {

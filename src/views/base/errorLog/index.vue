@@ -157,6 +157,7 @@ export default {
       this.listLoading = true
       if (query) {
         this.pageQuery.condition = query
+        this.pageQuery.pageNo = 1
       }
       listByPageErrorLog(this.pageQuery).then(resp => {
         this.total = resp.data.total

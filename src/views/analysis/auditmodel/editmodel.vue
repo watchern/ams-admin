@@ -245,6 +245,7 @@ import { getBusinessAttribute, saveModel, updateModel } from '@/api/analysis/aud
 import VRuntimeTemplate from 'v-runtime-template'
 import paramShow from "@/views/analysis/modelparam/paramshow";
 import { getDictList } from '@/utils/index'
+import { getUuid } from '@/api/analysis/common'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import SelectTransCode from '@/views/data/table/transcodeselect'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
@@ -316,6 +317,7 @@ export default {
       columnData: [],
       //实体对象
       form: {
+        modelUuid:'',
         modelName: '',
         modelFolderUuid: '',
         modelFolderName: '',
@@ -420,6 +422,8 @@ export default {
     }
   },
   created() {
+    //设置一个默认的模型编号
+    this.form.modelUuid = getUuid()
     this.operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
   },
   mounted() {
@@ -1128,6 +1132,7 @@ export default {
     displayData(model) {
       // region 处理模型结果列
       const columnData = []
+
       for (let i = 0; i < model.modelOutputColumn.length; i++) {
         const columnDataObj = {
           outputColumnName: model.modelOutputColumn[i].columnName,

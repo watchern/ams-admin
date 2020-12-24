@@ -122,6 +122,7 @@
     require('@/components/ams-codemirror/addon/hint/sql-hint.js')
     require('@/components/ams-codemirror/addon/hint/show-hint.js')
     require('@/components/ams-codemirror/addon/wrap/hardwrap.js')
+    import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
     import * as settingParams from '@/views/graphtool/tooldic/page/settingParams/js/settingParams'
     export default {
         name: 'SettingParams',
@@ -138,6 +139,12 @@
                 mouseY: -1,
                 initTreeSuccess:false//左侧树是否成功加载
             }
+        },
+        created(){
+            addJsFile('/lib/layui/xm-select.js','xm-select')
+        },
+        beforeDestroy() {
+            removeJcCssfile("xm-select.js","js")
         },
         props:["graph","nodeId","paramsSetting"],
         mounted(){
