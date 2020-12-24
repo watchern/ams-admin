@@ -50,7 +50,7 @@ export function getAllScene() {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/getAllScene`,
-    method: 'post'
+    method: 'get'
   })
 }
 
