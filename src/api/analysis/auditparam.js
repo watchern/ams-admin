@@ -638,7 +638,6 @@ export function initcrossrangeParamHtml(sql, paramsArr, name, id) {
  * @author JL
  */
 export function initParamHtml_Common(paramObj, selectNum, selectTreeNum,serviceInfo) {
-  debugger
   if(serviceInfo==undefined){
     serviceInfo = ''
   }
@@ -1665,6 +1664,7 @@ export function replaceNodeParam(modelid,serviceInfo) {
   if(serviceInfo==undefined){
     serviceInfo=''
   }
+  //根据编号找到sql，利用解析sql里面的所有参数编号，如果得到的数量与参数的arr不相等，则证明是多个同样的参数，进行特殊处理
   var returnObj = {
     'verify': true, // 校验是否通过
     'message': '', // 提示信息
@@ -1810,7 +1810,7 @@ export function replaceNodeParam(modelid,serviceInfo) {
       }
     }
   })
-  if (paramNum !== 0) { // 第一步，先判断是否有必填的参数没有输入值
+  if (false) { // 第一步，先判断是否有必填的参数没有输入值
     returnObj.verify = false
     returnObj.message = '含有未输入值的参数项，请重新输入'
   } else {
@@ -1850,13 +1850,31 @@ export function replaceNodeParam(modelid,serviceInfo) {
             }
           }
         }
-        for (var j = 0; j < arr1.length; j++) {
-          filterArr[j].copyParamId = arr1[j].copyParamId
-          filterArr[j].id = arr1[j].id
-          filterArr[j].sort = arr1[j].sort
+        //2020年12月24日 17:35:22 ZhangSiWeiG
+        //如果他俩不相等说明是一参输入多次，进行特殊处理
+        if(filterArr.length != arr1.length){
+          var newFilterArr = []
+          for(var i = 0; i < arr1.length;i++){
+            for (var j = 0; j < filterArr.length;j++){
+              if(arr1[i].moduleParamId === filterArr[j].moduleParamId){
+                var newObj = arr1[i];
+                newObj.paramValue = filterArr[j].paramValue
+                newObj.alloweNull = filterArr[j].alloweNull
+                newFilterArr.push(newObj)
+              }
+            }
+          }
+          filterArr = newFilterArr;
         }
-        for(var k = 0;k<filterArr.length;k++){
-          filterArr[k]= JSON.parse(JSON.stringify(filterArr[k]).replace(/paramName/g,"name"));
+        else{
+          for (var j = 0; j < arr1.length; j++) {
+            filterArr[j].copyParamId = arr1[j].copyParamId
+            filterArr[j].id = arr1[j].id
+            filterArr[j].sort = arr1[j].sort
+          }
+          for(var k = 0;k<filterArr.length;k++){
+            filterArr[k]= JSON.parse(JSON.stringify(filterArr[k]).replace(/paramName/g,"name"));
+          }
         }
         returnObj.sql = replaceSql1
         returnObj.paramsArr = filterArr
@@ -2013,7 +2031,7 @@ export function replaceCrossrangeNodeParam(modelId) {
       }
     }
   })
-  if (paramNum !== 0) { // 第一步，先判断是否有必填的参数没有输入值
+  if (false) { // 第一步，先判断是否有必填的参数没有输入值
     returnObj.verify = false
     returnObj.message = '含有未输入值的参数项，请重新输入'
   } else {

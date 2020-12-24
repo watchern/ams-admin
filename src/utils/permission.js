@@ -1,4 +1,7 @@
 import store from '@/store'
+import { cacheDict } from '@/api/base/sys-dict'
+import { getAllScene } from '@/api/data/scene'
+
 
 /**
  * @param {Array} value
@@ -23,3 +26,19 @@ export default function checkPermission(value) {
     return false
   }
 }
+
+export function onAccessSystem(sceneCode, dataUserId) {
+  var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
+  if (sysDict == null) {
+    cacheDict().then(resp => {
+      sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
+    })
+  }
+  getAllScene().then(res => {
+    commit('SET_SCENECODE', res.data[0].sceneCode)
+    commit('SET_SCENENAME', res.data[0].sceneName)
+  })
+
+}
+
+

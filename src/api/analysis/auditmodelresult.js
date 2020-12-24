@@ -393,6 +393,16 @@ export function updateModelChartSetup(data) {
     data
   })
 }
+/*BOE 发送模型结果到作业平台 */
+export function sendToOA(taskRelUuid) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ResultRelProjectController/sendToOA',
+    method: 'get',
+    params:{taskRelUuid: taskRelUuid}
+  })
+}
+
 
 /**
  * 批量删除删除运行结果与项目关联表
