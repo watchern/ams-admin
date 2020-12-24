@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-col v-if="openType !== 'showTable'" align="right">
+      <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'" align="right">
         <el-button type="primary" size="mini" class="oper-btn iconoper-export" title="上移" @click="upTheCol()" />
         <el-button type="primary" size="mini" class="oper-btn iconoper-import" title="下移" @click="downTheCol()" />
         <el-button type="primary" size="mini" class="oper-btn add" title="添加" @click="addCol()" />
@@ -9,7 +9,7 @@
         <el-button type="danger" size="mini" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="delCol()" />
       </el-col>
     </el-row>
-    <template v-if="openType !== 'showTable'" class="detail-form">
+    <template v-if="openType !== 'showTable' && openType !== 'tableRegister'" class="detail-form">
       <el-form
         ref="dataForm"
         :model="tempTable"
@@ -27,13 +27,13 @@
       <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
         <template slot-scope="scope" show-overflow-tooltip>
           <el-tooltip :disabled="scope.row.colName.length < 12" effect="dark" :content="scope.row.colName" placement="top">
-            <el-input v-model="scope.row.colName" style="width:90%;" :disabled="openType === 'showTable'" />
+            <el-input v-model="scope.row.colName" style="width:90%;" :disabled="openType === 'showTable' || openType === 'tableRegister'" />
           </el-tooltip>
         </template>
       </el-table-column>
       <el-table-column prop="dataType" label="数据类型">
         <template slot-scope="scope">
-          <el-select ref="dataType" v-model="scope.row.dataType" :disabled="openType === 'showTable'" filterable style="width:90%" placeholder="请选择数据类型">
+          <el-select ref="dataType" v-model="scope.row.dataType" :disabled="openType === 'showTable' || openType === 'tableRegister'" filterable style="width:90%" placeholder="请选择数据类型">
             <el-option
               v-for="item in sqlType"
               :key="item"
@@ -45,21 +45,21 @@
       </el-table-column>
       <el-table-column prop="dataLength" label="数据长度" show-overflow-tooltip>
         <template slot-scope="scope" show-overflow-tooltip>
-          <el-input v-model="scope.row.dataLength" style="width:90%;" :disabled="openType === 'showTable'" />
+          <el-input v-model="scope.row.dataLength" style="width:90%;" :disabled="openType === 'showTable' || openType === 'tableRegister'" />
         </template>
       </el-table-column>
       <el-table-column prop="isNullable" label="是否为空" width="80px">
         <template slot-scope="scope">
-          <el-radio v-model="scope.row.isNullable" :disabled="openType === 'showTable'" :label="1" @click.native.prevent="clickitem(scope.$index,1)"><span /></el-radio>
+          <el-radio v-model="scope.row.isNullable" :disabled="openType === 'showTable' || openType === 'tableRegister'" :label="1" @click.native.prevent="clickitem(scope.$index,1)"><span /></el-radio>
         </template>
       </el-table-column>
       <el-table-column v-if="openType !== 'addTable'" prop="colComment" label="注释" show-overflow-tooltip>
         <template slot-scope="scope" show-overflow-tooltip>
-          <el-input v-model="scope.row.colComment" :disabled="openType === 'showTable'" style="width:90%;" />
+          <el-input v-model="scope.row.colComment" :disabled="openType === 'showTable' || openType === 'tableRegister'" style="width:90%;" />
         </template>
       </el-table-column>
     </el-table>
-    <el-button v-if="openType !== 'showTable'" type="primary" style="float:right;margin-top:20px" @click="openType==='addTable'?saveTable():updateTable()">保存</el-button>
+    <el-button v-if="openType !== 'showTable' || openType !== 'tableRegister'" type="primary" style="float:right;margin-top:20px" @click="openType==='addTable'?saveTable():updateTable()">保存</el-button>
   </div>
 </template>
 
