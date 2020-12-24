@@ -5,7 +5,7 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" size="mini" class="oper-btn processing" title="标记已阅" @click="updateCode()" />
+        <el-button type="primary" size="mini" class="oper-btn processing" :disabled="selections.length === 0" title="标记已阅" @click="updateCode()" />
       </el-col>
     </el-row>
     <el-table
