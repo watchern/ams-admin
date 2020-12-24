@@ -209,7 +209,7 @@ export default {
         //   label: '任务实例状态', name: 'groupExecutionStatus', type: 'select',
         //   data: statuSelectList
         // },
-        { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
+        { label: '开始运行时间', name: 'startTime', type: 'timePeriod', value: '' }
       ],
       pageQuery: {
         condition: {},

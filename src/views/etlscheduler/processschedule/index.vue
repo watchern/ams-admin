@@ -1377,7 +1377,7 @@ export default {
         if (onTimeList[i] < 10) {
           onTimeList[i] = '0' + onTimeList[i]
         }
-        var onTime = onTimeList[0] + '/' + onTimeList[1] + '/' + onTimeList[2]
+        var onTime = onTimeList[0] + '-' + onTimeList[1] + '-' + onTimeList[2]
       }
       var stopJsonDate = new Date(row.endTime)
       var stopTimeList = stopJsonDate.toLocaleDateString().split('/')
@@ -1385,7 +1385,7 @@ export default {
         if (stopTimeList[k] < 10) {
           stopTimeList[k] = '0' + stopTimeList[k]
         }
-        var stopTime = stopTimeList[0] + '/' + stopTimeList[1] + '/' + stopTimeList[2]
+        var stopTime = stopTimeList[0] + '-' + stopTimeList[1] + '-' + stopTimeList[2]
       }
       var message = ''
       this.crontabFormat.forEach((r, i) => {
@@ -1393,7 +1393,7 @@ export default {
           message = r.codeName
         }
       })
-      return onTime + '-' + stopTime + ' ' + message
+      return onTime + '~' + stopTime + ' ' + message
     }
   }
 }

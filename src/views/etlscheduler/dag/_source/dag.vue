@@ -96,7 +96,7 @@
             v-tooltip.light="格式化DAG"
             -->
           <x-button
-            v-if="(type === 'instance' || 'definition') && urlParam.id !=undefined"
+            v-if="(type === 'instance' || 'definition') && urlParam.id !=undefined && isDetails"
             icon="ans-icon-triangle-solid-right"
             data-container="body"
             type="text"
@@ -668,7 +668,7 @@ host：      ${$item.host || '-'}
              * @param fromThis
              */
             cacheTaskInfo({ item, fromThis }) {
-              // 给选中的元素添加class
+              // // 给选中的元素添加class
               if (document.getElementById(item.id) !== null) {
                 document.getElementById(item.id).classList.add('jtk-tasks-active')
               }

@@ -342,7 +342,7 @@ export default {
           label: '运行状态', name: 'groupExecutionStatus', type: 'select',
           data: statuSelectList, value: []
         },
-        { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
+        { label: '开始运行时间', name: 'startTime', type: 'timePeriod', value: '' }
       ],
       // 格式化参数列表
       formatMap: {
