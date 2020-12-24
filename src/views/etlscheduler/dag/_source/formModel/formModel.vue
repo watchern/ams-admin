@@ -186,6 +186,7 @@
         <m-shell
           v-if="taskType === 'SHELL'"
           ref="SHELL"
+          :create-node-id="id"
           :backfill-item="backfillItem"
           @on-params="_onParams"
           @on-cache-params="_onCacheParams"
@@ -218,10 +219,18 @@
         style="background: #fff;"
       >
         <x-button
+          v-if="!isDetails"
           type="text"
           @click="close()"
         > 取消 </x-button>
         <x-button
+          v-if="isDetails"
+          type="primary"
+          class="btnclass"
+          @click="close()"
+        >关闭</x-button>
+        <x-button
+          v-if="!isDetails"
           type="primary"
           class="btnclass"
           :loading="spinnerLoading"

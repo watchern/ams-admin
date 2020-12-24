@@ -98,9 +98,9 @@
       <el-col :span="24">
         <div style="margin-top: 10px;">
           <el-tabs v-model="tabname" type="border-card">
-            <el-tab-pane label="调度流程实例" name="processinstance"><etl-processin-stance :search-params="searchParams" /></el-tab-pane>
-            <el-tab-pane label="调度环节实例" name="taskinstance"><etl-taskin-stance :search-params="searchParams" /></el-tab-pane>
-            <el-tab-pane label="上游推送文件情况" name="statistics"><etl-data-file :search-params="searchParams" /></el-tab-pane>
+            <el-tab-pane label="调度流程实例" name="processinstance"><etl-processin-stance :search-params="searchParams" style="padding-top:0px" /></el-tab-pane>
+            <el-tab-pane label="调度环节实例" name="taskinstance"><etl-taskin-stance :search-params="searchParams" style="padding-top:0px" /></el-tab-pane>
+            <el-tab-pane label="上游推送文件情况" name="statistics"><etl-data-file :search-params="searchParams" style="padding-top:0px" /></el-tab-pane>
             <!-- <el-tab-pane label="上游推送文件统计" name="statisticsCount">
               <div class="row">
                 <div class="col-md-12">
