@@ -189,6 +189,18 @@ export function executeNodeSql(data) {
 }
 
 /**
+ * 执行全部节点
+ */
+export function executeAllNodeSql(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/executeAllNodeSql',
+        method: 'post',
+        data
+    })
+}
+
+/**
  * 预览节点结果
  */
 export function viewNodeData(data) {
@@ -219,6 +231,19 @@ export function getMaxMinColumn(data) {
     return request({
         baseURL: baseURL,
         url: '/graphCt/getMaxMinColumn',
+        method: 'post',
+        params:data,
+    })
+}
+
+/**
+ * 将原SQL与参数SQL进行拼接
+ * @param data
+ */
+export function dealReplaceParamSql(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/dealReplaceParamSql',
         method: 'post',
         params:data,
     })
