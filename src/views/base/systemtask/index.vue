@@ -106,7 +106,7 @@ export default {
           if (createTime !== undefined && taskEstimatedTime !== undefined) {
             var timestamp = Date.parse(new Date())
             var percent = (timestamp - createTime) / (taskEstimatedTime - createTime)
-            if (r.taskStatus === '1') {
+            if (r.taskStatus === '2' || r.taskStatus === '3') {
               percent = 100
             } else {
               if (percent < 1) {
@@ -118,13 +118,13 @@ export default {
             r.taskPercent = percent
           }
           var html = ''
-          if (r.taskStatus === '1') {
+          if (r.taskStatus === '2' || r.taskStatus === '3') {
             html = "<span  class='el-icon-success' />"
           }
-          if (r.taskStatus === '2') {
+          if (r.taskStatus === '1') {
             html = '<span  class="el-icon-loading" />'
           }
-          if (r.taskStatus === '3') {
+          if (r.taskStatus === '0') {
             html = '<span  class="el-icon-error" />'
           }
           r.taskStatus = html
