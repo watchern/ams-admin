@@ -224,7 +224,6 @@ export default {
     dialogFormVisible(value) {
       this.$nextTick(function() {
         if (value) {
-          console.log(this.currentPreviewModelParamAndSql.paramObj)
           this.$refs.paramDrawRef.initParamHtmlSS(
             this.currentPreviewModelParamAndSql.sqlValue,
             this.currentPreviewModelParamAndSql.paramObj,
@@ -284,7 +283,6 @@ export default {
           this.$refs.[dataObj.modelUuid + 'param'][0].
           initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', dataObj.modelUuid)
         }*/
-        console.log(dataObj)
         this.$refs.[dataObj.modelUuid][0].loadTableData(dataObj)
       }
       const func1 = func2.bind(this)

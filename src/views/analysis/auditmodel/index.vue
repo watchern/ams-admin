@@ -3,7 +3,7 @@
     <!--模型分类树-->
     <el-container>
       <el-aside class="tree-side">
-        <span class="spacetitle">当前空间：{{dataSpaceName}}</span>
+<!--        <span class="spacetitle">当前空间：{{dataSpaceName}}</span>-->
         <ModelFolderTree ref="modelFolderTree" :power="power" @refreshModelList="refreshModelList" />
       </el-aside>
       <ModelListTable ref="modelListTable" :power="power" @loadingSet="loadingSet" @refreshTree="refreshTree" />
