@@ -444,9 +444,14 @@ export function initHint(editor) {
   // 获取用户当前的编辑器中的编写的代码
   var cur = editor.getCursor()
   var words = editor.getTokenAt(cur).string
-  var shieldString = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', ' ', ',', '-', '_', '=', '+', '-', '/', ';']
+  var shieldString = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')',
+    ' ', ',', '-', '_', '=', '+', '-', '/', ';', '{', '}','\'','\'\'','\'\'\'','|','\\','<','>']
   // 如果用户输入空格，则退回
   if ($.trim(words) === '') {
+    return
+  }
+  //判断是否拖拽参数进来，如果是拖拽参数进来则不显示
+  if(words.indexOf("{#") != -1 && words.indexOf("#}") != -1){
     return
   }
   if (shieldString.indexOf(words) != -1) {
@@ -1032,7 +1037,7 @@ function onDrop(event, treeId, treeNodes) {
     return
   }
   var cursor = editorObj.getCursor()
-  dragOne(treeNodes[0]['name'], cursor, cursor)
+  dragOne(treeNodes[0]['name'] + " ", cursor, cursor)
 }
 
 /**
@@ -1069,9 +1074,9 @@ function showRMenu(type, containerId, menuId, x, y) {
   if (h_ < $('#' + menuId).height()) {
     y = y - $('#' + menuId).height()
   }
-  if (w_ < $('#' + menuId).width()) {
+ /* if (w_ < $('#' + menuId).width()) {
     x = $('#' + containerId).width() - $('#' + menuId).width()
-  }
+  }*/
   $('#' + menuId + ' ul').show()
   $('#' + menuId).css({ 'top': y + 'px', 'left': x + 'px', 'visibility': 'visible' })
   $('body').bind('mousedown', { 'menuId': menuId }, onBodyMouseDown)

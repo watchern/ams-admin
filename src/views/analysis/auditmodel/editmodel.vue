@@ -122,7 +122,7 @@
       <div ref="modelDesign" class="display div-width">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" style="width: 100%" id="graphDiv">
-            <SQLEditor @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
+            <SQLEditor :modelUuid='form.modelUuid' @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel" :locationUuid="form.locationUuid" :locationName="form.locationName"  class="sql-editor"/>
             <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2" v-if="state.id==graphEditorStr"></graph>
           </div>

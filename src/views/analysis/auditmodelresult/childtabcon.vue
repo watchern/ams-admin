@@ -73,7 +73,7 @@
     <ag-grid-vue
       v-if="isSee"
       v-loading="isLoading"
-      :style="useType == 'modelRunResult' || useType == 'modelPreview'? 'height:490px': 'height:150px'"
+      style="height:200px"
       class="table ag-theme-balham"
       :column-defs="columnDefs"
       :row-data="rowData"
@@ -118,17 +118,16 @@
               title="导出"
             ></el-button>
           </downloadExcel>
-          <el-button
+          <!-- <el-button
             v-if="this.preLength==this.myIndex+1"
             type="primary"
             title="图表展示"
             class="oper-btn chart"
             @click="openChartDialog"
-          ></el-button>
+          ></el-button> -->
         </el-row>
       </el-col>
     </el-row>
-
     <!-- modelResultPageIsSee -->
     <el-dialog
       title="模型详细关联"
@@ -174,7 +173,7 @@
         >
       </span>
     </el-dialog>
-    <el-dialog
+       <el-dialog
       title="提示"
       :visible.sync="chartShowIsSee"
       width="90%"
@@ -184,23 +183,51 @@
       <mtEditor
         ref="chart"
         :data="result"
-        v-if="chartShowIsSee"
-        :chart-config="
-          modelChartSetup.chartJson != undefined
-            ? JSON.parse(modelChartSetup.chartJson)
-            : undefined
-        "
+        :v-if="chartShowIsSee"
+        :chart-config="nowChartJson"
+        :key="chartPreview"
       ></mtEditor>
       <span slot="footer" class="dialog-footer">
         <el-button @click="chartShowIsSee = false">取 消</el-button>
         <el-button
-          v-if="useType == 'sqlEditor' ? false : true"
+          v-if="useType == 'sqlEditor' ||  useType == 'modelRunResult'? true: false"
           type="primary"
-          @click="saveChart"
+          @click="chartSaveOrUpdate=='save'?saveChart():updateChart()"
           >保 存</el-button
         >
       </span>
     </el-dialog>
+    <el-row>
+      <div align="right" v-if="this.preLength==this.myIndex+1||myFlag">
+        <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" style="width:40px;height:40px" @click="changeChart(item.id)" :key="key"/>
+           <el-button
+              v-if="useType=='sqlEditor'||myFlag"
+              type="primary"
+              @click="openChartDialog"
+              class="oper-btn add"
+              title="添加图表"
+            ></el-button>
+             <el-button
+              v-if="useType=='sqlEditor'||myFlag"
+              type="primary"
+              @click="openEditChartDialog"
+              class="oper-btn edit"
+              title="修改图标"
+            ></el-button>
+             <el-button
+              v-if="useType=='sqlEditor'||myFlag"
+              type="primary"
+              @click="deleteChart"
+              class="oper-btn delete"
+              title="删除图表"
+            ></el-button>
+      </div>
+    </el-row>
+    <div style="height: 450px;" v-if="this.preLength==this.myIndex+1||myFlag">
+      <div align='center' style='font-weight:lighter ;font-size:15px' v-if="afterAddChartsWithNoConfigure">请选择图表</div>
+      <div align='center' style='font-weight:lighter ;font-size:15px' v-if="isHaveCharts">该模型暂无图标</div>
+      <mtEditor v-loading="chartLoading" v-if="afterResult" :key="chartPreview" ref='chart1' :data='result' :chart-config='nowChartJson' :preview="true"></mtEditor>
+    </div>
   </div>
 </template>
 
@@ -227,6 +254,7 @@ import {
   addModelChartSetup,
   getModelChartSetup,
   updateModelChartSetup,
+  deleteModelChartSetup
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
@@ -260,6 +288,9 @@ export default {
         }
       });
     },
+    nowChartJson () {
+        this.chartPreview = !this.chartPreview
+      }
   },
   /**
    * 模型运行结果使用变量：nowtable：表示模型结果表对象   modelUuid：根据modelUUid进行表格渲染，只有主表用渲染  useType=modelRunResult 表示是模型运行结果所用
@@ -273,10 +304,12 @@ export default {
     "resultSpiltObjects",
     "modelId",
     "preLength",
-    "myIndex"
+    "myIndex",
+    "chartModelUuid"
   ],
   data() {
     return {
+      chartPreview: true,
       dialogVisible: false,
       // 定义ag-grid列
       columnDefs: [],
@@ -288,6 +321,7 @@ export default {
         pageSize: 20,
       },
       total: 0,
+      imgBaseCode:'',
       myFlag: false, // 用来判断主表界面有按钮，辅表界面没有按钮，为true是主表，为false是辅表
       selectRows: [], //用于存放多选框选中的数据
       detailTable: [], //存放关联详细表
@@ -329,9 +363,15 @@ export default {
       },
       dynamicSelect: [], //实时存储多选框勾选中的数据
       chartShowIsSee: false,
-      result: {},
+      result: {},   //给myeditor传的数据
       chartSaveOrUpdate: "", //判断图标是保存还是更新操作
-      modelChartSetup: {}, //用于存储返显图标所用数据
+      nowChartJson: undefined, //存储当前正在显示的图表的json
+      modelChartSetups:[],  //用于存储添加的多个图标，用于图表返显功能
+      chartConfigs:[],   //用于存储当前模型的图表config   （myeditor组件的chart-config属性）chartConfigs
+      afterResult:false,  //等result数据赋值完以后再初始化返显的charts组件
+      chartLoading:true,  //图表加载的loading
+      afterAddChartsWithNoConfigure:false,
+      isHaveCharts:false //判断该模型是否有图表
     };
   },
   mounted() {
@@ -556,11 +596,14 @@ export default {
     // 单元格点击事件
     onCellClicked(cell) {},
     initData(sql, nextValue) {
+      this.result = {}
       if (this.useType == "modelRunResult") {
         this.isLoading = true;
         // 当当前表是主表的时候myFlag赋值为true
         if (this.nowtable.tableType == 1) {
           this.myFlag = true;
+        }else{
+          this.chartLoading = false
         }
         var colNames = [];
         var col = [];
@@ -573,14 +616,14 @@ export default {
           (resp) => {
             var column = resp.data.records[0].columns;
             var columnToUppercase = []
-            for(var i = 0;i<column.length;i++){
+            for(var i = 1;i<column.length;i++){
               columnToUppercase.push(column[i].toUpperCase())
             }
             this.result.column = columnToUppercase;
             var chartData = [];
             for (var i = 0; i < resp.data.records[0].result.length; i++) {
               var eachChartData = [];
-              for (var j = 0; j < column.length; j++) {
+              for (var j = 1; j < column.length; j++) {
                 eachChartData.push(resp.data.records[0].result[i][column[j]]);
               }
               chartData.push(eachChartData);
@@ -588,7 +631,7 @@ export default {
             this.result.data = chartData;
             var columnInfo = resp.data.records[0].columnInfo.columnList;
             var columnType = [];
-            for (var i = 0; i < columnInfo.length; i++) {
+            for (var i = 1; i < columnInfo.length; i++) {
               //number,varchar,time,float
               var type = "";
               if (
@@ -615,6 +658,7 @@ export default {
               columnType.push(type);
             }
             this.result.columnType = columnType;
+            this.afterResult = true
             if (resp.data.records[0].result.length == 0) {
               this.isLoading = false;
             }
@@ -792,6 +836,7 @@ export default {
                 }
                 this.columnDefs = col;
               }
+              this.afterResult = true
             } else {
               this.isSee = false;
               this.modelResultPageIsSee = false;
@@ -1127,13 +1172,6 @@ export default {
               .catch((result) => {
                 this.$message({ type: "info", message: "执行失败" });
               });
-            // startExecuteSql(obj).then((resp) => {
-            //   if (!resp.data.isError) {
-            //     this.currentExecuteSQL = resp.data.executeSQLList;
-            //   } else {
-            //     this.$message({ type: "info", message: "执行失败" });
-            //   }
-            // });
           });
         });
       } else if (relationType == 2) {
@@ -1238,32 +1276,58 @@ export default {
       // 通信失败
       this.webSocket.onerror = function (event) {};
     },
-    saveChart() {
+    /**
+     * sql编辑器保存图标
+     */
+    saveChart(){
+      this.isHaveCharts = false
+      this.afterAddChartsWithNoConfigure = false
       this.chartShowIsSee = false;
-      if (this.chartSaveOrUpdate == "save") {
         var chartJson = this.$refs.chart.getChartConfig();
-        var modelUuid =
-          this.useType == "modelRunResult" ? this.modelUuid : this.modelId;
+        this.chartConfigs.push(chartJson)
+        this.nowChartJson = chartJson
+        var modelUuid = this.nowtable.runResultTableUuid==undefined?this.chartModelUuid:this.nowtable.runTaskRelUuid
         var modelChartSetup = {
           chartJson: JSON.stringify(chartJson),
           modelUuid: modelUuid,
         };
+        this.modelChartSetups.push(modelChartSetup)
         addModelChartSetup(modelChartSetup).then((resp) => {
           if (resp.data) {
             this.$notify({
               title: this.$t("提示"),
-              message: this.$t("保存成功"),
+              message: this.$t("添加图标成功"),
               type: "success",
               duration: 2000,
               position: "bottom-right",
             });
           }
         });
-      } else if (this.chartSaveOrUpdate == "update") {
-        var chartJson = this.$refs.chart.getChartConfig();
-        var modelChartSetup = this.modelChartSetup;
-        modelChartSetup.chartJson = JSON.stringify(chartJson);
-        updateModelChartSetup(modelChartSetup).then((resp) => {
+    },
+    /**
+     * 修改图标方法
+     */
+    updateChart(){
+      this.chartShowIsSee = false;
+      var chartJson = this.$refs.chart.getChartConfig();
+      for(var i = 0;i<this.chartConfigs.length;i++){
+        if(this.nowChartJson.id == this.chartConfigs[i].id){
+          this.chartConfigs.splice(i,1)
+          break
+        }
+      }
+      this.chartConfigs.push(chartJson)
+      if(this.modelChartSetups.length!=0){
+        var modelChartSetup = {}
+        for(var i =0;i<this.modelChartSetups.length;i++){
+           var charjson= JSON.parse(this.modelChartSetups[i].chartJson)
+           if(charjson.id==this.nowChartJson.id){
+             modelChartSetup = this.modelChartSetups[i]
+             modelChartSetup.chartJson = JSON.stringify(chartJson)
+             break
+           }
+        }
+      updateModelChartSetup(modelChartSetup).then((resp) => {
           if (resp.data) {
             this.$notify({
               title: this.$t("提示"),
@@ -1274,22 +1338,61 @@ export default {
             });
           }
         });
+      }else{
+              this.$notify({
+              title: this.$t("提示"),
+              message: this.$t("修改成功"),
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
       }
     },
     /**
      * 获取参数返显的数据
      */
     chartReflexion() {
-      if (this.modelUuid != undefined) {
+      this.chartConfigs = []
+      this.modelChartSetups = []
+      if(this.nowtable.runResultTableUuid!=undefined){
+        getModelChartSetup(this.nowtable.runTaskRelUuid).then((resp) => {
+          console.log(this.nowtable)
+              if (resp.data.isError == true) {
+            //做保存操作
+            this.chartSaveOrUpdate = "save";
+          } else {
+            //做修改操作
+            this.modelChartSetups = resp.data.modelChartSetups;
+            for(var i = 0;i<this.modelChartSetups.length;i++){
+              this.chartConfigs.push(JSON.parse(this.modelChartSetups[i].chartJson))
+            }
+            this.nowChartJson = this.chartConfigs[0]
+            this.chartSaveOrUpdate = "update";
+          }
+          if(this.chartConfigs.length==0){
+            this.isHaveCharts = true
+          }
+          this.chartLoading = false
+        });
+      }else{
+         if (this.modelUuid != undefined) {
         getModelChartSetup(this.modelUuid).then((resp) => {
           if (resp.data.isError == true) {
             //做保存操作
             this.chartSaveOrUpdate = "save";
           } else {
             //做修改操作
-            this.modelChartSetup = resp.data.modelChartSetup;
+            this.modelChartSetups = resp.data.modelChartSetups;
+            for(var i = 0;i<this.modelChartSetups.length;i++){
+              this.chartConfigs.push(JSON.parse(this.modelChartSetups[i].chartJson))
+            }
+            this.nowChartJson = this.chartConfigs[0]
             this.chartSaveOrUpdate = "update";
           }
+          if(this.chartConfigs.length==0){
+            this.isHaveCharts = true
+          }
+          this.chartLoading = false
         });
       } else if (this.modelId != undefined) {
         getModelChartSetup(this.modelId).then((resp) => {
@@ -1297,16 +1400,98 @@ export default {
             //做保存操作
             this.chartSaveOrUpdate = "save";
           } else {
-            //做修改操作
-            this.modelChartSetup = resp.data.modelChartSetup;
+              //做修改操作
+            this.modelChartSetups = resp.data.modelChartSetups;
+            for(var i = 0;i<this.modelChartSetups.length;i++){
+              this.chartConfigs.push(JSON.parse(this.modelChartSetups[i].chartJson))
+            }
+            this.nowChartJson = this.chartConfigs[0]
             this.chartSaveOrUpdate = "update";
           }
+          if(this.chartConfigs.length==0){
+            this.isHaveCharts = true
+          }
+          this.chartLoading = false
         });
       }
+      }
+     
     },
+    /**
+     * 打开添加图标的dialog
+     */
     openChartDialog(){
-      this.chartReflexion()
+      this.afterAddChartsWithNoConfigure = true
+      this.chartSaveOrUpdate = 'save'
+      this.nowChartJson = undefined
       this.chartShowIsSee = true
+    },
+    /**
+     * 点击小图表的时候大图标切换方法
+     */
+    changeChart(chartId){
+      this.afterAddChartsWithNoConfigure = false
+      var chartConfigs = this.chartConfigs
+      for(var i = 0;i<chartConfigs.length;i++){
+        if(chartId==chartConfigs[i].id){
+          this.nowChartJson = chartConfigs[i]
+          break
+        }
+      }
+    },
+    /**
+     * 打开修改图表的dialog
+     */
+    openEditChartDialog(){
+      this.chartSaveOrUpdate = 'update'
+      this.chartShowIsSee = true
+    },
+    /**
+     * 删除图标
+     */
+    deleteChart(){
+      debugger
+      for(var i = 0;i<this.chartConfigs.length;i++){
+        if(this.nowChartJson.id == this.chartConfigs[i].id){
+          this.chartConfigs.splice(i,1)
+          break
+        }
+      }
+      if(this.modelChartSetups.length!=0){
+        var modelChartSetupUuid = {}
+        for(var i =0;i<this.modelChartSetups.length;i++){
+           var charjson= JSON.parse(this.modelChartSetups[i].chartJson)
+           if(charjson.id==this.nowChartJson.id){
+             modelChartSetupUuid = this.modelChartSetups[i].chartSetupUuid
+             break
+           }
+        }
+      deleteModelChartSetup(modelChartSetupUuid).then((resp) => {
+          if (resp.data) {
+            this.$notify({
+              title: this.$t("提示"),
+              message: this.$t("删除成功"),
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          }
+        });
+      }else{
+              this.$notify({
+              title: this.$t("提示"),
+              message: this.$t("删除成功"),
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+      }
+      if(this.chartConfigs.length!=0){
+        this.nowChartJson = this.chartConfigs[0]
+      }else{
+        this.nowChartJson = undefined
+        this.isHaveCharts = true
+      }
     }
   },
 };

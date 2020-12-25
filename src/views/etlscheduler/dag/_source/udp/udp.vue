@@ -18,6 +18,19 @@
         />
       </el-form-item>
       <el-form-item
+        label="流程状态"
+        prop="status"
+      >
+        <el-select v-model="temp.status" placeholder="请选择状态" style="width:100%">
+          <el-option
+            v-for="(model,$index) in statusList"
+            :key="$index"
+            :value="model.value"
+            :label="model.label"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item
         label="排序号"
         prop="orderNo"
       >
@@ -26,19 +39,6 @@
           :disabled="isDetails"
           placeholder="请输入排序号(选填)"
         />
-      </el-form-item>
-      <el-form-item
-        label="流程状态"
-        prop="status"
-      >
-        <el-select v-model="temp.status" placeholder="请选择状态">
-          <el-option
-            v-for="(model,$index) in statusList"
-            :key="$index"
-            :value="model.value"
-            :label="model.label"
-          />
-        </el-select>
       </el-form-item>
       <el-form-item
         label="参数描述"
