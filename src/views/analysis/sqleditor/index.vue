@@ -129,6 +129,8 @@
               :pre-value="currentExecuteSQL"
               use-type="sqlEditor"
               style="width: 101.5%"
+              :chartModelUuid='modelUuid'
+              :modelId='modelUuid'
             />
           </div>
         </div>
@@ -334,7 +336,7 @@ let lastSqlIndex = -1
 export default {
   name: 'SQLEditor',
   components: { sqlDraftList, childTabs, paramDraw, dataTree },
-  props: ['sqlEditorParamObj', 'sqlValue', 'callType', 'locationUuid', 'locationName'],
+  props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName","modelUuid"],
   data() {
     return {
       sqlDraftForm: {
