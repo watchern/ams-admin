@@ -142,8 +142,8 @@
       <div id="tableMenu" class="rightMenu">
         <ul>
           <li @click="getSelectSql('tableMenu')">生成SELECT语句</li>
-          <li onclick="">查看表信息</li>
-          <li onclick="">查看表关联信息</li>
+<!--          <li onclick="">查看表信息</li>
+          <li onclick="">查看表关联信息</li>-->
         </ul>
       </div>
     </div>
@@ -1154,6 +1154,24 @@ export default {
   /*width: 85%;*/
   margin-left: 30px;
 }
-
+div.rightMenu {
+  position: fixed;
+  visibility: hidden;
+  top: 0;
+  padding: 5px;
+  background-color: #fff;
+  text-align: left;
+  width: 150px;
+  z-index: 800;
+  font-size: 12px;
+  border: 1px solid #ccc;
+}
+div.rightMenu ul li{
+  cursor:pointer;
+  padding: 5px;
+}
+div.rightMenu ul li:hover{
+  background: rgb(237, 241, 245);
+}
 </style>
 
