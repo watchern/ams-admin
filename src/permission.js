@@ -1,10 +1,12 @@
 import router from './router'
-import store from './store'
+import store from '@/store'
+import { getInfo } from '@/api/user'
 import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
+import { getSceneInst } from '@/api/data/scene'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -24,7 +26,22 @@ router.beforeEach(async(to, from, next) =>
 /*console.log(to);
   console.log(from);
   next({ ...to, replace: true })*/
-
+   console.log(to.query);
+   if(to.query.scene){  //如果参数中有scene 则设置场景
+     var sceneCode = to.query.scene.split(',')[0];
+     var dataUserId = to.query.scene.split(',')[1];
+     getSceneInst(sceneCode, dataUserId).then(resp => {
+       var dataUserName = resp.data.dataUserName;
+       var sceneName = resp.data.sceneName;
+       console.log("getSceneInst" + dataUserName + "  " + sceneName)
+       store.dispatch('user/saveScene', {
+         sceneCode: sceneCode,
+         sceneName: sceneName,
+         dataUserId: dataUserId,
+         dataUserName: dataUserName
+       });
+     });
+   }
 
   if (hasToken) {
     if (to.path === '/login') {
