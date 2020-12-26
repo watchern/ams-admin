@@ -652,8 +652,7 @@ EditorUi = function(editor, container, lightbox) {
               if(e.data == null){
                   isCreateTableNodeError = true;
                   $("ul.layui-tab-title li:eq(1)").click();
-                  $("#sysInfoArea").html("获取数据表【" + cell.value + "】信息失败,无法创建数据表节点");
-                  $("#sysInfoArea").css({"color":"red"});
+                  $("#sysInfoArea").html("获取数据表【" + cell.value + "】信息失败,无法创建数据表节点").css({"color":"red"});
                   nodeExcuteStatus = 4;//执行失败
               }else{
                   let columnsInfo = [];
@@ -2662,14 +2661,13 @@ var iconDrag = function(treeNode) {
 	switch(treeNode.type){
 		case "filter":
 		case "sort":
-		// case "sample":
+		case "sample":
 		case "layering":
-		// case "groupCount":
+		case "groupCount":
 		case "delRepeat":
-		// case "comparison":
-		// case "change":
+		case "comparison":
+		case "change":
 		case "union":
-		// case "barChart":
 		case "sql":
 		case "newNullNode":
 		case "relation":

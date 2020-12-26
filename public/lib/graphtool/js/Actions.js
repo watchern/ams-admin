@@ -838,6 +838,11 @@ Actions.prototype.init = function() {
         var resultTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus;//模型最终结果表状态
         var midTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.midTableStatus;//模型辅助结果表状态
         var nodeExcuteStatus = graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus;//节点的执行状态
+        var parantIds = graph.nodeData[graph.curCell.id].parentIds
+        if(graph.nodeData[parantIds[0]] && graph.nodeData[parantIds[0]].nodeInfo.optType === "comparison"){
+            alertMsg("提示", "频次分析节点的结果表无法被标记", "warning");
+            return
+        }
         if(nodeExcuteStatus === 2){
             alertMsg("提示", "无法标记正在执行的节点", "warning");
         }else {
@@ -865,6 +870,11 @@ Actions.prototype.init = function() {
 		var resultTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.resultTableStatus;//模型最终结果表状态
 		var midTableStatus = graph.nodeData[graph.curCell.id].nodeInfo.midTableStatus;//模型辅助结果表状态
         var nodeExcuteStatus = graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus;//节点的执行状态
+        var parantIds = graph.nodeData[graph.curCell.id].parentIds
+        if(graph.nodeData[parantIds[0]] && graph.nodeData[parantIds[0]].nodeInfo.optType === "comparison"){
+            alertMsg("提示", "频次分析节点的结果表无法被标记", "warning");
+            return
+        }
 		if(nodeExcuteStatus === 2){
             alertMsg("提示", "无法标记正在执行的节点", "warning");
         }else{

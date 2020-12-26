@@ -170,7 +170,7 @@
                         // 刷新图形树
                         this.$emit('refreshGraphTree')
                     })
-                })
+                }).catch( ()=> {})
             },
             share() {
                 let selectObj = this.$refs.graphListTable.selection

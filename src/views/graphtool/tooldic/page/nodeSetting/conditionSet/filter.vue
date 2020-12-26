@@ -629,16 +629,6 @@ export default {
 }
 
 </script>
-<!--引入公共CSS样式-->
-<!--<style scoped src="@/components/ams-layui/css/layui.css"></style>-->
-<!--<style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>-->
-<!--<style scoped src="@/components/ams-bootstrap-select/css/bootstrap-select.css"></style>-->
-<!--<style scoped src="@/components/ams-ztree/css/zTreeStyle/zTreeStyle.css"></style>-->
-<!--<style scoped src="@/components/ams-basic/css/all-style.css"></style>-->
-<!--<style scoped src="@/components/ams-basic/css/components.css"></style>-->
-<!--<style scoped src="@/components/ams-basic/css/accordion.css"></style>-->
-<!--<style scoped src="@/components/ams-basic/css/common.css"></style>-->
-<!--<style scoped src="@/components/ams-basic/css/form.css"></style>-->
 <style scoped type="text/css">
     .filter_cell_header{
         float: left;

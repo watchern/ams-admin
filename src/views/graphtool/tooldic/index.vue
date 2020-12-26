@@ -110,24 +110,15 @@
                     </div>
                 </div>
             </div>
-            <!--<div class="graphMenu" style="width: 120px !important;">-->
-            <!--<div class="menuTit">SQL</div>-->
-            <!--<div class="menuLi">-->
-            <!--<div class="graphIcon" id="sql" data-type="sql" style="width:110px !important;height: 60px !important;line-height: 60px !important;">-->
-            <!--<img class="iconImgGraph" src="../tooldic/images/icon/sql.png" alt="SQL查询器"/>-->
-            <!--<a class="iconText">SQL查询器</a>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--<div class="graphMenu" style="width: 120px !important;">-->
-            <!--<div class="menuTit">图形</div>-->
-            <!--<div class="menuLi">-->
-            <!--<div class="graphIcon" style="width:110px !important;height: 60px !important;line-height: 60px !important;" id="barChart" data-type="barChart">-->
-            <!--<img class="iconImgGraph" src="images/icon/customize.png" alt="自定义"/>-->
-            <!--<a class="iconText">自定义图形</a>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
+            <div class="graphMenu" style="width: 120px !important;">
+                <div class="menuTit">SQL</div>
+                <div class="menuLi">
+                    <div class="graphIcon" id="sql" data-type="sql" style="width:110px !important;height: 60px !important;line-height: 60px !important;">
+                        <img class="iconImgGraph" src="../tooldic/images/icon/sql.png" alt="SQL查询器"/>
+                        <a class="iconText">SQL查询器</a>
+                    </div>
+                </div>
+            </div>
             <div class="graphMenu" style="width: 90px !important;">
                 <div class="menuTit">参数</div>
                 <div class="menuLi" style="">
@@ -346,9 +337,26 @@
         >
             <NodeSetting v-if="settingType === 'commonSetting'" ref="nodeSetting" :graph="graph" :opt-type="sp_optType" />
             <RelationSetting v-if="settingType === 'relation'" ref="nodeSetting" :graph="graph" />
+            <GroupCount v-if="settingType === 'groupCount'" ref="nodeSetting" :graph="graph"/>
             <div v-if="graph.canEditor" slot="footer">
                 <el-button @click="nodeSettingDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="saveNodeSetting()">保存</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog
+            v-if="sqlEditorDialogVisible"
+            :visible.sync="sqlEditorDialogVisible"
+            title="SQL编辑器"
+            :close-on-press-escape="pressEscape"
+            :close-on-click-modal="clickModal"
+            :width="sqlEditorWidth"
+            :modal-append-to-body="clickModal" :style="sqlEditorStyle">
+            <!--width="100%"-->
+            <!--:fullscreen="!clickModal"-->
+            <SqlEditor ref="sqlEditor" callType="graphModel" :sqlValue="sqlEditorCurSql"/>
+            <div v-if="graph.canEditor" slot="footer">
+                <el-button @click="sqlEditorDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="sqlNodeEditCallBack()">保存</el-button>
             </div>
         </el-dialog>
         <el-dialog v-if="viewNodeSqlDialogVisible" :visible.sync="viewNodeSqlDialogVisible" title="查看SQL语句" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
@@ -420,11 +428,6 @@
     </div>
 </template>
 <script>
-    // 引入公用JS
-    require('@/components/ams-bootstrap/js/bootstrap.min.js')
-    require('@/components/ams-ztree/js/jquery.ztree_new.all.js')
-    require('@/components/ams-ztree/js/jquery.ztree.excheck.js')
-    require('@/components/ams-ztree/js/jquery.ztree.exhide.js')
     // 引入子组件
     import Help from '@/views/graphtool/tooldic/page/funEventVue/help.vue'
     import GraphListExport from '@/views/graphtool/tooldic/page/funEventVue/graphListExport.vue'
@@ -433,7 +436,10 @@
     import NodeSetting from '@/views/graphtool/tooldic/page/nodeSetting/nodeSetting.vue'
     import RelationSetting from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/relation.vue'
     import InputParams from '@/views/graphtool/tooldic/page/inputParams/inputParams.vue'
-    // 引入后端接口的相关方v
+    import GroupCount from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/groupCount/groupCount.vue'
+    import SqlEditor from '@/views/analysis/sqleditor/index.vue'
+    // 引入后端接口的相关方法
+    import { removeJcCssfile, addCssFile, addJsFile } from "@/api/analysis/common"
     import { getGraphInfoById, getTableCol, viewNodeData, saveGraphInterface } from '@/api/graphtool/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
     // 引入前段JS的相关方法
@@ -442,7 +448,7 @@
     import * as validateJs from '@/views/graphtool/tooldic/js/validate'
     export default {
         name: 'ToolIndex',
-        components: { Help, GraphListExport, ChildTabs, SettingParams, NodeSetting, RelationSetting, InputParams },
+        components: { Help, GraphListExport, ChildTabs, SettingParams, NodeSetting, RelationSetting, InputParams, GroupCount, SqlEditor },
         props: ['graphUuidParam', 'openGraphTypeParam', 'openTypeParam'],
         data() {
             return {
@@ -500,11 +506,29 @@
                 reNameObj:{"name":'节点名称',"value":"","edge":false},//重命名节点的名称
                 nodeParamDialogVisible:false,
                 executeNodeObject:null,//全部执行的节点批次信息
-                executeType:''//当前执行操作的类型（全部执行【all】和普通执行【''】）
+                executeType:'',//当前执行操作的类型（全部执行【all】和普通执行【''】）
+                sqlEditorCurSql:'',//SQL编辑器的SQL语句
+                sqlEditorDialogVisible:false,
+                sqlEditorWidth:'',
+                sqlEditorStyle:''
             }
         },
         created() {
+            // 引入公用CSS、JS
+            addCssFile('/lib/Ztree/css/zTreeStyle/zTreeStyle.css','zTreeStyle')
+            addJsFile('/lib/bootstrap/js/bootstrap.min.js','bootstrap.min')
+            addJsFile('/lib/Ztree/js/jquery.ztree_new.all.min.js','jquery.ztree_new.all.min')
+            addJsFile('/lib/Ztree/js/jquery.ztree.excheck.min.js','jquery.ztree.excheck.min')
+            addJsFile('/lib/Ztree/js/jquery.ztree.exhide.min.js','jquery.ztree.exhide.min')
             this.init()
+        },
+        beforeDestroy() {
+            //销毁公用CSS、JS
+            removeJcCssfile("zTreeStyle.css","css")
+            removeJcCssfile("bootstrap.min.js","js")
+            removeJcCssfile("jquery.ztree_new.all.min.js","js")
+            removeJcCssfile("jquery.ztree.excheck.min.js","js")
+            removeJcCssfile("jquery.ztree.exhide.min.js","js")
         },
         mounted() {
             // 申明common.js的方法为全局方法
@@ -517,6 +541,9 @@
             this.initValidateFun()
             // 初始化websocket
             this.initWebSocKet()
+            this.sqlEditorWidth = $(this.$refs.graphToolDiv).width() + "px"
+            let sqlEditorHeight = $(this.$refs.graphToolDiv).height() + "px"
+            this.sqlEditorStyle = `margin-left:${$(this.$refs.graphToolDiv).position().left -10}px;height:${sqlEditorHeight}`
         },
         methods: {
             init() {
@@ -547,6 +574,7 @@
                 window.executeNode = commonJs.executeNode
                 window.executeToNode = commonJs.executeToNode
                 window.cancelExecute = commonJs.cancelExecute
+                window.sqlNodeEdit = commonJs.sqlNodeEdit
                 window.reName = commonJs.reName
                 window.curNodeSQL = commonJs.curNodeSQL
                 window.deleteCells = commonJs.deleteCells
@@ -848,14 +876,15 @@
                 }
                 // 发送消息
                 this.webSocket.onmessage = function(event) {
-                    console.log("bb")
                     const dataObj = JSON.parse(event.data)// 接收到返回结果
                     var executeSQLObj = dataObj.executeSQL
                     if (executeSQLObj.customParam[0] === $this.websocketBatchId) {//匹配结果集
                         $this.loadResultNum++
                         if(executeSQLObj.state === "2"){//执行成功，展示当前操作的结果集
                             $this.layuiTabClickLi(0)
-                            $this.showTableResult = true
+                            if(!$this.showTableResult){
+                                $this.showTableResult = true
+                            }
                             let index = $this.resultTableArr.findIndex( item => item.id === executeSQLObj.id)
                             if(index > -1) {
                                 $this.$nextTick(() => {
@@ -952,13 +981,13 @@
                     indexJs.hideRMenu('rMenu')
                     const nodes = this.zTreeObj.getSelectedNodes()
                     if (nodes.length > 0) {
-                        const $this = this
+                        let $this = this
                         const nodeId = nodes[0].id
                         const nodeName = nodes[0].name
                         const resultTableName = nodes[0].name
                         const isRoleTable = true
-                        $this.resultTableArr = []
-                        $this.$nextTick(() => {
+                        this.initData()
+                        this.$nextTick(() => {
                             $this.websocketBatchId = new UUIDGenerator().id
                             $this.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable }]
                             $this.layuiTabClickLi(0)
@@ -970,6 +999,11 @@
                     this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false, 'hasTime': true })
                     viewNodeData({ nodeObjs: JSON.stringify(this.resultTableArr), openType: this.openType, websocketBatchId: this.websocketBatchId }).then()
                 }
+            },
+            initData(){
+                this.loadResultNum = 0
+                this.showTableResult = false
+                this.resultTableArr = []
             },
             relationTableQuery() {
 
@@ -1121,6 +1155,9 @@
                     this.$refs.inputParams.$message({'type':'warning', 'message':returnVal.message})
                 }
             },
+            sqlNodeEditCallBack(){
+                commonJs.sqlNodeEdit_callBack()
+            },
             /**
              * 接口：获取节点参数信息
              */
@@ -1147,4 +1184,3 @@
 <style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
 <style scoped src="@/components/ams-basic/css/accordion.css"></style>
 <style scoped src="@/views/graphtool/tooldic/css/index.css"></style>
-<style src="@/components/ams-ztree/css/zTreeStyle/zTreeStyle.css"></style>

@@ -1967,7 +1967,7 @@ export function settingParamsCallBack() {
             indexVue.nodeParamSettingDialogVisible = false
             autoSaveGraph()
         }
-    })
+    }).catch( ()=> {})
 }
 
 /**
@@ -1991,7 +1991,7 @@ export function clearSettingParam(nodeId,index) {
             delete graph.nodeData[nodeId].nodeInfo.nodeSort
             delete graph.nodeData[nodeId].replaceParamSql
         }
-    })
+    }).catch( ()=> {})
 }
 
 /**
