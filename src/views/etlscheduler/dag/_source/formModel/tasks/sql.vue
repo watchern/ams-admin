@@ -242,7 +242,6 @@ export default {
     // // read tasks from cache
     // if (!_.some(this.store.state.dag.cacheTasks, { id: this.createNodeId }) &&
     //   this.router.history.currentRoute.name !== 'processinstance') {
-
     if (!_.some(this.store.state.dag.cacheTasks, { id: this.createNodeId })) {
       this._getReceiver()
     }

@@ -25,10 +25,10 @@
               >
               </el-date-picker>
             </div>
-            模型结果保存在 : {{ path }}
-            <a @click="modelResultSavePathDialog = true" style="color: #409eff"
+            <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;cursor: pointer;" @click="modelResultSavePathDialog = true">{{ path }}</label>
+<!--            <a @click="modelResultSavePathDialog = true" style="color: #409eff"
               >编辑</a
-            >
+            >-->
           </div>
         </el-header>
         <el-main>
@@ -81,7 +81,10 @@ export default {
   },
   created() {
     this.initDialog();
+    this.tempPath = "根路径";
+    this.tempId = this.$store.getters.personcode
     this.modelResultSavePathId = this.$store.getters.personcode
+    this.path = "当前执行模型保存路径:根路径"
   },
   components: {
     paramDraw,
@@ -107,7 +110,7 @@ export default {
       personCode: this.$store.state.user.code,
       sceneCode: "auditor",
       treeType: "save",
-      path: "根路径",
+      path: "",
       modelResultSavePathId: '',
       tempPath: "",
       nodeType: "",
@@ -190,7 +193,7 @@ export default {
     },
     modelResultSavePathDetermine() {
       if (this.nodeType == "folder") {
-        this.path = this.tempPath;
+        this.path = "当前执行模型保存路径:" + this.tempPath;
         this.modelResultSavePathId = this.tempId;
         this.modelResultSavePathDialog = false;
       } else if(this.nodeType == ""){

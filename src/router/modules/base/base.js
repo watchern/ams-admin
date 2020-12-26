@@ -41,6 +41,11 @@ const baseRouter = {
       path: 'querytask',
       name: '跳转',
       component: () => import('@/views/base/systemtask')
+    },
+    {
+      path: 'sso',
+      name: '跳转',
+      component: () => import('@/views/base/sso')
     }
   ]
 }

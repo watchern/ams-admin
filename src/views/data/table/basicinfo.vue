@@ -1,155 +1,63 @@
 <template>
-  <div class="app-container">
-    <div v-if="isShow">
-      <div class="detail-form">
-        <el-form
-          ref="dataForm"
-          :model="temp"
-          label-position="right"
-          style="width: 750px;"
-        >
-          业务表信息：
-          <el-form-item label="汉化名称：" prop="chnName">
-            <el-input v-model="temp.chnName" style="width:60%;" :disabled="openType === 'showTable'" />
-          </el-form-item>
-          列业务信息：
-          <el-table :data="temp.colMetas" height="200">
-            <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
-              <template slot-scope="scope" show-overflow-tooltip>
-                <el-tooltip effect="dark" :content="scope.row.colName" placement="top">
-                  <el-input v-model="scope.row.colName" style="width:90%;" :disabled="openType === 'showTable'" />
-                </el-tooltip>
-              </template>
-            </el-table-column>
-            <el-table-column prop="chnName" label="汉化名称" show-overflow-tooltip>
-              <template slot-scope="scope">
-                <el-tooltip effect="dark" :content="scope.row.chnName" placement="top">
-                  <el-input v-model="scope.row.chnName" style="width:90%;" :disabled="openType === 'showTable'" />
-                </el-tooltip>
-              </template>
-            </el-table-column>
-            <el-table-column prop="bizAttrUuid" label="业务标签">
-              <template slot-scope="scope">
-                <el-select ref="bizAttrUuid" v-model="scope.row.bizAttrUuid" style="width:90%" placeholder="请选择业务属性" :disabled="openType === 'showTable'">
-                  <el-option
-                    v-for="item in bizJson"
-                    :key="item.bizAttrUuid"
-                    :label="item.attrName"
-                    :value="item.bizAttrUuid"
-                  />
-                </el-select>
-              </template>
-            </el-table-column>
-            <el-table-column prop="transRuleUuid" label="转码规则" width="260px" :disabled="openType === 'showTable'">
-              <template slot-scope="scope">
-                <SelectTransCode
-                  ref="SelectTransCode"
-                  :transuuid.sync="scope.row.transRuleUuid"
-                  :open-type="openType"
-                />
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-form>
-        <el-button v-if="openType !== 'showTable'" type="primary" style="float:right;margin-top:20px" @click="saveTable()">保存</el-button>
-      </div>
+  <div class="page-container">
+    <div class="detail-form">
+      <el-form
+        ref="dataForm"
+        :model="temp"
+        label-position="right"
+        style="width: 600px; margin-left:50px;"
+      >
+        <el-form-item label="表名称" prop="tbName">
+          <el-input v-model="temp.tbName" readonly />
+        </el-form-item>
+        <el-form-item label="表路径" prop="tablePath">
+          <el-input v-model="temp.tablePath" readonly />
+        </el-form-item>
+        <el-form-item label="字段数" prop="fieldsNum">
+          <el-input v-model="temp.fieldsNum" readonly />
+        </el-form-item>
+        <el-form-item label="行数" prop="rowNum">
+          <el-input v-model="temp.rowNum" readonly />
+        </el-form-item>
+        <el-form-item label="表容量" prop="tableSize">
+          <el-input v-model="temp.tableSize" readonly />
+        </el-form-item>
+      </el-form>
     </div>
+    <!-- <div slot="footer">
+      <el-button @click="dialogFormVisible = false">取消</el-button>
+      <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
+    </div> -->
   </div>
 </template>
 
 <script>
-import { getTableCol, getTableInfo, saveTableInfo } from '@/api/data/table-info'
-import { listByPage } from '@/api/data/biz-attr'
-import SelectTransCode from '@/views/data/table/transcodeselect'
-import { selectById } from '@/api/data/transCode'
+import { getBasicInfo } from '@/api/data/table-info'
+
 export default {
-  components: { SelectTransCode },
   // eslint-disable-next-line vue/require-prop-types
-  props: ['tableId', 'openType'],
+  props: ['tableId'],
   data() {
     return {
-      isShow: false,
-      tableKey: 'tableMetaUuid',
-      isSql: false,
-      transRuleId: '',
-      list: null,
-      disabled: true,
-      total: 0,
-      transRuleUuid: '',
-      dialogStatus: '',
-      textMap: {
-        select: '查看数据转码信息'
-      },
-      isTrueInput: false,
-      listLoading: false,
-      bizJson: [],
-      transJson: [],
-      dialogFormVisible: false,
-      dialogPvVisible: false,
       temp: {
-        tableMetaUuid: '',
-        chnName: '',
-        colMetas: []
-      },
-      tempRule: [],
-      pageQuery: {
+        tableMetaUuid: undefined,
+        tbName: '',
+        tablePath: '',
+        fieldsNum: '',
+        rowNum: '',
+        tableSize: ''
       }
     }
   },
   created() {
-    this.initTable(this.tableId)
+    this.initBasicInfo(this.tableId)
   },
   methods: {
-    initTable(tableId) {
+    initBasicInfo(tableId) {
       if (this.openType !== 'addTable') {
-        listByPage(this.pageQuery).then(resp => {
-          this.bizJson = resp.data.records
-        })
-        this.isShow = true
-        getTableCol(tableId).then(resp => {
-          this.temp.colMetas = resp.data
-        })
-        getTableInfo(tableId).then(resp => {
+        getBasicInfo(tableId).then(resp => {
           this.temp = resp.data
-          this.isTrueInput = true
         })
-      }
-    },
-    seleteTransCode(ruleId) {
-      this.dialogStatus = 'select'
-      selectById(ruleId).then(res => {
-        this.tempRule = res.data
-        if (this.tempRule.ruleType === 1) {
-          this.dialogFormVisible = true
-          this.tempRule.ruleType = 'SQL语句'
-          this.isSql = true
-        } else {
-          this.dialogFormVisible = true
-          this.tempRule.ruleType = '手动添加'
-          this.isSql = false
-        }
-      })
-    },
-    setTransId(childData) {
-      this.temp.colMetas.transRuleId = childData
-    },
-    saveTable() {
-      saveTableInfo(this.temp).then(() => {
-        this.$notify({
-          title: '成功',
-          message: '保存成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
-        })
-      })
-    },
-    resetTemp() {
-      this.temp = {
-        bizAttrUuid: undefined,
-        attrName: '',
-        attrCode: '',
-        describe: ''
       }
     }
   }

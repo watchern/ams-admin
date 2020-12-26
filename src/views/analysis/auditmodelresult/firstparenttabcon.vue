@@ -44,10 +44,17 @@
               @click="openResultSplitDialog"
               title="结果拆分"
             ></el-button>
-            <el-button
+           <!-- <el-button
               type="primary"
               @click="modelResultOpenDialog()"
               :disabled="buttonIson.resultShareBtn"
+              class="oper-btn share"
+              title="结果共享"
+            ></el-button>-->
+            <el-button
+              type="primary"
+              @click="sendToOA()"
+              :disabled="selected1.length !== 1"
               class="oper-btn share"
               title="结果共享"
             ></el-button>
@@ -168,8 +175,13 @@
             prop="settingInfo"
             align="center"
             width="200px"
-            :formatter="settingInfoSqlFormatter"
-          />
+          >
+            <template slot-scope="scope">
+              <el-link type="primary" @click="selectSql(scope.row)">{{
+                  settingInfoSqlFormatter(scope.row)
+                }}</el-link>
+            </template>
+          </el-table-column>
           <el-table-column
             label="运行参数"
             prop="settingInfo"
@@ -300,6 +312,15 @@
         />
       </el-main>
     </el-container>
+    <el-dialog
+      v-if="sqlInfoDialog"
+      :visible.sync="sqlInfoDialog"
+      title="SQL信息"
+      width="50%"
+    >
+      <el-input disabled type="textarea" :rows="15" v-model="sqlInfo">
+      </el-input>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -318,6 +339,7 @@ import {
   selectByRunResultTableUUids,
   getDataAfterResultSpiltToRelateProject,
   addCoverResultRelProject,
+  sendToOA
 } from "@/api/analysis/auditmodelresult";
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 import QueryField from "@/components/Ace/query-field/index";
@@ -367,6 +389,7 @@ export default {
         resultShareBtn: true,
         exportBtn: false,
       },
+      sqlInfoDialog:false,
       setDateTime: "",
       nowRunTaskRel: null,
       //单次/多次/周期执行的周期开始结束时间 执行时间选择配置
@@ -518,6 +541,8 @@ export default {
         return "";
       } else {
         var sql = JSON.parse(row.settingInfo).sql;
+        sql = sql.substring(0, 10);
+        sql = sql + "...";
         return sql;
       }
     },
@@ -1247,9 +1272,35 @@ export default {
       this.getLikeList();
       this.resultSplitDialogIsSee = false;
     },
+    /**
+     * 查看sql
+     * @param row 查看的sql行
+     * @returns {string}
+     */
+    selectSql(row) {
+      if (row.settingInfo == null) {
+        return "";
+      } else {
+        var sql = JSON.parse(row.settingInfo).sql;
+        this.sqlInfo = sql;
+        this.sqlInfoDialog = true;
+      }
+    },
     modelResultOpenDialog() {
       this.resultShareDialogIsSee = true;
     },
+    sendToOA() {
+      var runTaskRelUuid =  this.selected1[0].runTaskRelUuid;
+      sendToOA(runTaskRelUuid).then(resp=>{
+        this.$message({
+          type: "success",
+          message: "发送成功!",
+        });
+      })
+
+
+    },
+
   },
 };
 </script>

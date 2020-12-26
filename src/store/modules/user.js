@@ -1,10 +1,12 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+import { onAccessSystem } from '@/utils/permission'
 import { cacheDict } from '@/api/base/sys-dict'
 import { getAllScene } from '@/api/data/scene'
-
+import Cookies from 'js-cookie'
 const state = {
+  ext: "xxxx",
   token: getToken(),
   name: '',
   avatar: '',
@@ -13,7 +15,9 @@ const state = {
   id: '',
   code: '',
   scenecode: '',
-  scenename: ''
+  scenename: '',
+  datauserid: '',
+  datausername: ''
 }
 
 const mutations = {
@@ -46,6 +50,12 @@ const mutations = {
   },
   SET_SCENENAME: (state, scenename) => {
     state.scenename = scenename
+  },
+  SET_DATAUSERID: (state, datauserid) => {
+    state.datauserid = datauserid
+  },
+  SET_DATAUSERNAME: (state, datausername) => {
+    state.datausername = datausername
   }
 }
 
@@ -58,10 +68,11 @@ const actions = {
         const { data } = response
         commit('SET_ID', data.personUuid)
         commit('SET_NAME', data.username)
-        commit('SET_TOKEN', data.personUuid)
+        /*commit('SET_TOKEN', data.personUuid)*/
         commit('SET_CODE', data.userid)
-        setToken(data.personUuid)
-        resolve()
+        Cookies.set("PERSONUUID", data.personUuid)
+        commit('SET_DATAUSERID', data.userid)
+        /*setToken(data.personUuid)*/
         var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
         if (sysDict == null) {
           cacheDict().then(resp => {
@@ -71,7 +82,18 @@ const actions = {
         getAllScene().then(res => {
           commit('SET_SCENECODE', res.data[0].sceneCode)
           commit('SET_SCENENAME', res.data[0].sceneName)
+          sessionStorage.setItem('sceneCode', res.data[0].sceneCode);
+          sessionStorage.setItem('sceneName', res.data[0].sceneName);
+          sessionStorage.setItem('dataUserId', data.userid);
+          sessionStorage.setItem('dataUserName', data.username);
+         /* saveSession({
+            sceneCode: res.data[0].sceneCode,
+            sceneName :res.data[0].sceneName,
+            dataUserId: data.userid,
+            dataUserName: data.username
+          });*/
         })
+        resolve()
       }).catch(error => {
         reject(error)
       })
@@ -81,7 +103,16 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      //console.log(state);
+      var personuuid = state.id;
+      if(personuuid == "" || personuuid == null){
+        personuuid = Cookies.get("PERSONUUID")
+      }
+      if(personuuid == "" || personuuid == null){
+        personuuid = window.location.hash.replace('#/base/sso?param=', '').split(",")[0];
+        Cookies.set("PERSONUUID", personuuid)
+      }
+      getInfo(personuuid).then(response => {
         const { data } = response
         if (!data) {
           reject('Verification failed, please Login again.')
@@ -127,6 +158,16 @@ const actions = {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
       removeToken()
+      resolve()
+    })
+  },
+  saveScene({ commit, code, name, datauserid, personuuid, datausername }) {
+    return new Promise(resolve => {
+      commit('SET_SCENECODE', code)
+      commit('SET_SCENENAME', name)
+      commit('SET_DATAUSERID', datauserid)
+      commit('SET_DATAUSERNAME', datausername)
+      commit('SET_ID', personuuid)
       resolve()
     })
   }

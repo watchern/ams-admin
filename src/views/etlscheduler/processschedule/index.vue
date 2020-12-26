@@ -366,7 +366,7 @@
             placeholder="请选择任务流程"
             :remote-method="remoteMethod"
             :loading="loading"
-            class="propwidth"
+            style="width:100%"
           >
             <el-option
               v-for="item in options"
@@ -404,39 +404,48 @@
             :disabled="true"
           />
         </el-form-item>
-        <el-form-item
-          label="失败策略"
-          prop="failureStrategyEnum"
-        >
-          <el-select
-            v-model="runParams.failureStrategyEnum"
-            placeholder="请选择选择失败策略"
-          >
-            <el-option
-              label="继续"
-              :value="'CONTINUE'"
-            />
-            <el-option
-              label="结束"
-              :value="'END'"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          label="优先级"
-          prop="processInstancePriorityEnum"
-        >
-          <el-select
-            v-model="runParams.processInstancePriorityEnum"
-          >
-            <el-option
-              v-for="(item,$index) in priorityList"
-              :key="$index"
-              :value="item.code"
-              :label="item.name"
-            />
-          </el-select>
-        </el-form-item>
+        <el-row>
+          <el-col :span="11">
+            <el-form-item
+              label="失败策略"
+              prop="failureStrategyEnum"
+            >
+              <el-select
+                v-model="runParams.failureStrategyEnum"
+                placeholder="请选择选择失败策略"
+                style="width:100%;"
+              >
+                <el-option
+                  label="继续"
+                  :value="'CONTINUE'"
+                />
+                <el-option
+                  label="结束"
+                  :value="'END'"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="11" :offset="2">
+            <el-form-item
+              label="优先级"
+              prop="processInstancePriorityEnum"
+            >
+              <el-select
+                v-model="runParams.processInstancePriorityEnum"
+                style="width:100%;"
+              >
+                <el-option
+                  v-for="(item,$index) in priorityList"
+                  :key="$index"
+                  :value="item.code"
+                  :label="item.name"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
         <el-form-item
           label="是否补数"
           prop="checked"
@@ -451,6 +460,7 @@
           <el-select
             v-model="runParams.runModeEnum"
             placeholder="请选择选择执行方式"
+            style="width:100%"
           >
             <el-option
               label="串行执行"
@@ -475,6 +485,7 @@
             end-placeholder="结束日期"
             format="yyyy-MM-dd"
             value-format="yyyy-MM-dd HH:mm:ss"
+            style="width:100%"
           /></el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -1377,7 +1388,7 @@ export default {
         if (onTimeList[i] < 10) {
           onTimeList[i] = '0' + onTimeList[i]
         }
-        var onTime = onTimeList[0] + '/' + onTimeList[1] + '/' + onTimeList[2]
+        var onTime = onTimeList[0] + '-' + onTimeList[1] + '-' + onTimeList[2]
       }
       var stopJsonDate = new Date(row.endTime)
       var stopTimeList = stopJsonDate.toLocaleDateString().split('/')
@@ -1385,7 +1396,7 @@ export default {
         if (stopTimeList[k] < 10) {
           stopTimeList[k] = '0' + stopTimeList[k]
         }
-        var stopTime = stopTimeList[0] + '/' + stopTimeList[1] + '/' + stopTimeList[2]
+        var stopTime = stopTimeList[0] + '-' + stopTimeList[1] + '-' + stopTimeList[2]
       }
       var message = ''
       this.crontabFormat.forEach((r, i) => {
@@ -1393,7 +1404,7 @@ export default {
           message = r.codeName
         }
       })
-      return onTime + '-' + stopTime + ' ' + message
+      return onTime + '~' + stopTime + ' ' + message
     }
   }
 }

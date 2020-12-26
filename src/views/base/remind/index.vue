@@ -5,7 +5,7 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" size="mini" class="oper-btn edit" title="标记已阅" @click="updateCode()" />
+        <el-button type="primary" size="mini" class="oper-btn processing" :disabled="selections.length === 0" title="标记已阅" @click="updateCode()" />
       </el-col>
     </el-row>
     <el-table
@@ -26,8 +26,15 @@
         label="标题" 
         prop="remindTitle" >
         <template slot-scope="scope">
-          <el-link target="_blank" :underline="false" type="primary" class="handreada" @click="handdetails(scope.row)">
-          {{ scope.row.remindTitle }}</el-link>
+          <a
+            type="text" size="small"
+            :class="scope.row.readStatus === 1 ?'handreada' :'handreada-no'"
+            @click="handdetails(scope.row)">
+           {{scope.row.remindTitle}}
+           <span 
+            v-if="scope.row.readStatus === 0"
+            class ="notRead"
+            > NEW</span></a>
         </template>
       </el-table-column>
       <!-- <el-table-column label="内容"  align="left" prop="remindContent" /> -->
@@ -45,13 +52,30 @@
       top = "10vh"
       title="消息详情"
       width="50%"
-      :before-close="handleClose"
       v-model="temp"
       >
-      <span class="visible-span">消息标题</span>
-      <p class="visible-p1">{{this.temp.remindTitle}}</p>
-      <span class="visible-span">消息内容</span>
-      <p class="visible-p2">{{this.temp.remindContent}}</p>
+      <el-row>
+        <!-- class="visible-p1" -->
+        <el-col :span="24"><div class="visible-p1">
+          {{this.temp.remindTitle}}
+        </div></el-col>
+      </el-row>
+      <el-divider></el-divider>
+      <el-row>
+        <!-- class="visible-p1" -->
+        <el-col :span="12"><div class="visible-p2">
+          {{this.temp.remindTime}}
+        </div></el-col>
+        <el-col :span="12"><div class="visible-p4">
+          发送人：{{this.temp.remindUserName}}
+        </div></el-col>
+      </el-row>
+      <el-row>
+        <!-- class="visible-p1" -->
+        <el-col :span="24"><div class="visible-p3">
+          {{this.temp.remindContent}}
+        </div></el-col>
+      </el-row>
     </el-dialog>
   </div>
 </template>
@@ -76,51 +100,51 @@ export default {
       ],
       // selectedRowVal:0,
       tableOptions: {
-        columnDefs: [
-          {
-            headerName: '',
-            checkboxSelection: true,
-            headerCheckboxSelection: true,
-            width: 30,
-            pinned: 'left',
-            display: false
-          },
-          {
-            field: 'errorUuid',
-            hide: true
-          },
-          {
-            headerName: '操作用户',
-            field: 'opUserName',
-            pinned: 'left',
-            filter: 'agTextColumnFilter'
-          },
-          {
-            headerName: '操作IP',
-            field: 'opIp',
-            pinned: 'left'
-          },
-          {
-            headerName: '模块名称',
-            field: 'moduleName',
-            pinned: 'left'
-          },
-          {
-            headerName: '操作类型',
-            field: 'opOperate',
-            filter: 'agNumberColumnFilter'
-          },
-          {
-            headerName: '操作时间',
-            field: 'opTime',
-            filter: 'agNumberColumnFilter'
-          },
-          {
-            headerName: '操作信息',
-            field: 'opInfo',
-            filter: 'agNumberColumnFilter'
-          }
-        ]
+        // columnDefs: [
+        //   {
+        //     headerName: '',
+        //     checkboxSelection: true,
+        //     headerCheckboxSelection: true,
+        //     width: 30,
+        //     pinned: 'left',
+        //     display: false
+        //   },
+        //   {
+        //     field: 'errorUuid',
+        //     hide: true
+        //   },
+        //   {
+        //     headerName: '操作用户',
+        //     field: 'opUserName',
+        //     pinned: 'left',
+        //     filter: 'agTextColumnFilter'
+        //   },
+        //   {
+        //     headerName: '操作IP',
+        //     field: 'opIp',
+        //     pinned: 'left'
+        //   },
+        //   {
+        //     headerName: '模块名称',
+        //     field: 'moduleName',
+        //     pinned: 'left'
+        //   },
+        //   {
+        //     headerName: '操作类型',
+        //     field: 'opOperate',
+        //     filter: 'agNumberColumnFilter'
+        //   },
+        //   {
+        //     headerName: '操作时间',
+        //     field: 'opTime',
+        //     filter: 'agNumberColumnFilter'
+        //   },
+        //   {
+        //     headerName: '操作信息',
+        //     field: 'opInfo',
+        //     filter: 'agNumberColumnFilter'
+        //   }
+        // ]
       },
       formStyle: {
         width: '700px',
@@ -186,9 +210,9 @@ export default {
     readStatusFormatter(row, column) {
       var status = row.readStatus
       if (status == 0) {
-        return '未阅'
+        return <span class="red">未阅</span>
       } else {
-        return '已阅'
+        return  '已阅'
       }
     },
     getList(query) {
@@ -249,6 +273,13 @@ export default {
     handdetails(data){
     if(data.modeUrl != null){
       this.selectDetail(data)
+      updateRemind(data).then(result =>{
+         if (result.code == 0) {
+          this.getList()
+        } else {
+          this.$notify({ success: '失败', message: '标记已阅失败' })
+        }
+      })
     }else{
       this.temp = data
       this.dialogFormVisible = true
@@ -269,35 +300,66 @@ export default {
     cursor: pointer;
     padding: 0;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: normal;
     color: #1890ff;
 }
-.handreada:hover{text-decoration:underline}
-.visible-span{
-  width: 95%;
-  margin: 2.5% 2.5% .5%;
-  display: inline-block;
-  font-size: 24px;
+.handreada-no{
+    cursor: pointer;
+    padding: 0;
+    font-size: 14px;
+    font-weight: bolder;
+    color: #1890ff;
 }
+.notRead{
+    text-align: left;
+    padding: 0;
+    font-size: 10px;
+    font-weight: normal;
+    color: red;
+}
+.handreada-no:hover{text-decoration:underline}
+.handreada:hover{text-decoration:underline}
 .visible-p1{
+  text-align: center;
   width: 95%;
-  margin:.5% 2.5% 2.5%;
-  padding: 10px;
-  border: 1px solid #ddfdff;
-  font-size: 16px;border-radius: 6px; 
+  margin:.5% 2.5% 0%;
+  padding: 10px 0px;
+  font-size: 25px;
+  /* border-radius: 6px;  */
   display: inline-block;
-  height: 40px;
-  overflow: auto;
+  font-weight: bold;
 }
 .visible-p2{
+  text-align: right;
+  width: 95%;
+  margin:.5% 2.5% .5%;
+  padding: 5px;
+  font-size: 16px;
+  border-radius: 6px; 
+  display: inline-block;
+}
+.visible-p4{
+  text-align: left;
+  width: 95%;
+  margin:.5% 2.5% .5%;
+  padding: 5px;
+  font-size: 16px;
+  border-radius: 6px; 
+  display: inline-block;
+}
+.visible-p3{
+  text-indent: 2em;
   width: 95%;
   margin:.5% 2.5% 2.5%;
   padding: 10px;
-  border: 1px solid #ddfdff;
-  font-size: 16px;border-radius: 6px; 
+  font-size: 16px;
+  border-radius: 6px; 
   display: inline-block;
   line-height: 27px;
   height: 400px;
   overflow: auto;
+}
+.red{
+  font-weight: bold;
 }
 </style>
