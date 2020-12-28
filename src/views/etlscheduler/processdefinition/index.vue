@@ -427,8 +427,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-.buttonText{
-  color: #409eff;
-}
-</style>

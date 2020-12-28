@@ -387,14 +387,14 @@ export default {
   font-size: 22px;
   cursor: pointer;
   }
-  .logcol{
+  /* .logcol{
   font-size: 24px;
 	font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
 	font-weight: 700;
 	font-style: normal;
 	font-size: 18px;
 	color: #676A6C;
-  }
+  } */
   .logtype{
 	font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
 	font-weight: 700;

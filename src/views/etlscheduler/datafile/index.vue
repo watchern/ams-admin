@@ -29,7 +29,7 @@
         label="所属系统"
         width="150px"
         align="center"
-        prop="dataResourceCode"
+        prop="dataResourceName"
       />
       <el-table-column
         label="文件名称"
