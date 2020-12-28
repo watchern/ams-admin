@@ -124,10 +124,9 @@
 </template>
 
 <script>
-    // require('@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/js/go.js')
+    require('@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/js/go.js')
     import Basic from '@/views/graphtool/tooldic/page/nodeSetting/basic.vue'
     import * as relationJs from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/js/relation'
-    import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
     export default {
         name: 'RelationSetting',
         components: { Basic },
@@ -165,12 +164,6 @@
                     { value: 'INNER JOIN', name: '内连接' },
                     { value: 'FULL JOIN', name: '外连接' }]
             }
-        },
-        created(){
-            addJsFile('/lib/graphtool/relation/go.js','go')
-        },
-        beforeDestroy() {
-            removeJcCssfile("go.js","js")
         },
         mounted() {
             this.init()
