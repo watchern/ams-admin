@@ -11,7 +11,9 @@
       <el-table-column label="异常类"   prop="opClass" />
       <el-table-column label="异常方法"  width="300px" prop="opMethod" />
       <el-table-column label="异常时间"  width="300px" prop="logTime" align="center"/>
-      <el-table-column label="异常信息"  width="300px" align="center" >
+      <el-table-column label="异常信息"  
+        width="300px" 
+        align="center" >
         <template slot-scope="scope">
           <a type="text" size="small" @click="handReadError(scope.row)" class="handreada">
             查看异常信息
@@ -22,10 +24,11 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />  
     <el-dialog
+      :append-to-body="true"
       title="异常信息"
       :visible.sync="dialogVisible">
       <div style="max-height:60vh; overflow:auto">
-        <p class="error-log">{{this.logContent}}</p>
+        <p class="error-log">{{this.logerrortxt}}</p>
       </div>
     </el-dialog>
   </div>
@@ -41,6 +44,7 @@ export default {
   components: { Pagination, QueryField },
   data() {
     return {
+      logerrortxt: '',
       tableKey: 'errorUuid',
       list: null,
       total: 0,
@@ -185,10 +189,7 @@ export default {
      */
     handReadError(data){
       this.dialogVisible = true
-      this.logContent = data.logContent
-      // getReadErrorLog(data.errorUuid).then(res => {
-      //   this.logContent = res.data
-      // })
+      this.logerrortxt = data.logContent
     },
   }
 }
