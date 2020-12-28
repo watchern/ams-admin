@@ -49,14 +49,13 @@ export function listByPageRemind(data) {
   })
 }
 
-export function updateRemind(data) {
+export function updateRemind(id) {
   return request({
     baseURL: baseURL,
-    url: '/remindController/update',
+    url:`/remindController/update/${id}`,
     method: 'put',
     // params 以formData格式传递  后台用RequestParam
     // 直接加data以json格式传递  后台用RequestBody
-    params: data
   })
 }
 
