@@ -1,12 +1,14 @@
 <template>
   <m-list-construction :title="'Zookeeper 管理'">
     <template slot="content">
-      <template v-if="zookeeperList.length">
-        <m-list :list="zookeeperList" />
-      </template>
-      <template v-if="!zookeeperList.length">
-        <m-no-data />
-      </template>
+      <el-row class="servers-wrapper">
+        <el-row v-if="zookeeperList.length">
+          <m-list :list="zookeeperList" />
+        </el-row>
+        <el-row v-if="!zookeeperList.length">
+          <m-no-data />
+        </el-row>
+      </el-row>
       <m-spin :is-spin="isLoading" />
     </template>
   </m-list-construction>

@@ -14,22 +14,22 @@
               <span class="sp">最后心跳时间: {{ item.lastHeartbeatTime | formatDate }}</span>
             </div>
           </div>
-          <div class="row-cont">
-            <div class="col-md-4">
+          <el-row>
+            <el-col :span="8">
               <m-gauge
                 :id="'gauge-cpu-' + item.id"
                 :value="(item.resInfo.cpuUsage * 100).toFixed(2)"
                 :name="'cpu使用率'"
               />
-            </div>
-            <div class="col-md-4">
+            </el-col>
+            <el-col :span="8">
               <m-gauge
                 :id="'gauge-memory-' + item.id"
                 :value="(item.resInfo.memoryUsage * 100).toFixed(2)"
                 :name="'内存使用率'"
               />
-            </div>
-            <div class="col-md-4">
+            </el-col>
+            <el-col :span="8">
               <div class="text-num-model">
                 <div class="value-p">
                   <strong :style="{color:color[$index]}">{{ item.resInfo.loadAverage > 0? item.resInfo.loadAverage.toFixed(2):0 }}</strong>
@@ -38,8 +38,8 @@
                   负载
                 </div>
               </div>
-            </div>
-          </div>
+            </el-col>
+          </el-row>
         </div>
       </div>
       <div v-if="!workerList.length">

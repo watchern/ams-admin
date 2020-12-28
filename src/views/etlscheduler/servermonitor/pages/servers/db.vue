@@ -7,104 +7,95 @@
             <span>{{ item.dbType+ '管理' }}</span>
           </div>
         </div>
-        <div class="col-md-3">
-          <div class="text-num-model text">
-            <div class="title">
-              <span>健康状态</span>
-            </div>
-            <div class="value-p">
-              <span class="state">
-                <em v-if="item.state" class="ans-icon-success-solid success" />
-                <em v-else class="ans-icon-fail-solid error" />
-              </span>
-            </div>
-            <div class="text-1">健康状态</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-num-model text">
-            <div class="title">
-              <span>最大连接数 - {{ item.date | formatDate }}</span>
-            </div>
-            <div class="value-p">
-              <strong :style="{color:color[0]}">{{ item.maxConnections }}</strong>
-            </div>
-            <div class="text-1">最大连接数</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-num-model text">
-            <div class="title">
-              <span>当前连接数</span>
-            </div>
-            <div class="value-p">
-              <strong :style="{color:color[8]}">{{ item.threadsConnections }}</strong>
-            </div>
-            <div class="text-1">当前连接数</div>
-          </div>
-        </div>
-        <!-- <div class="col-md-2">
+        <el-row :gutter="40">
+          <el-col :span="8">
             <div class="text-num-model text">
               <div class="title">
-                <span>{{$t('Max used connections')}}</span>
+                <span>健康状态</span>
               </div>
               <div class="value-p">
-                <strong :style="{color:color[2]}">{{item.maxUsedConnections}}</strong>
+                <span class="state">
+                  <em v-if="item.state" class="ans-icon-success-solid success" />
+                  <em v-else class="ans-icon-fail-solid error" />
+                </span>
               </div>
-              <div class="text-1">
-                {{$t('Max used connections')}}
+              <div class="text-1">健康状态</div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="text-num-model text">
+              <div class="title">
+                <span>最大连接数 - {{ item.date | formatDate }}</span>
               </div>
+              <div class="value-p">
+                <strong :style="{color:color[0]}">{{ item.maxConnections }}</strong>
+              </div>
+              <div class="text-1">最大连接数</div>
             </div>
-        </div>-->
-        <div class="col-md-3">
-          <div class="text-num-model text">
-            <div class="title">
-              <span>数据库当前活跃连接数</span>
+          </el-col>
+          <el-col :span="8">
+            <div class="text-num-model text">
+              <div class="title">
+                <span>当前连接数</span>
+              </div>
+              <div class="value-p">
+                <strong :style="{color:color[8]}">{{ item.threadsConnections }}</strong>
+              </div>
+              <div class="text-1">当前连接数</div>
             </div>
-            <div class="value-p">
-              <strong :style="{color:color[4]}">{{ item.threadsRunningConnections }}</strong>
+          </el-col>
+          <el-col :span="8">
+            <div class="text-num-model text">
+              <div class="title">
+                <span>数据库当前活跃连接数</span>
+              </div>
+              <div class="value-p">
+                <strong :style="{color:color[4]}">{{ item.threadsRunningConnections }}</strong>
+              </div>
+              <div class="text-1">数据库当前活跃连接数</div>
             </div>
-            <div class="text-1">数据库当前活跃连接数</div>
-          </div>
-        </div>
+          </el-col>
+        </el-row>
         <div class="col-md-12" style="margin-top:20px;">
           <div class="db-title">
             <span>PGA内存状态</span>
           </div>
         </div>
-        <div class="col-md-3">
-          <div class="text-num-model text">
-            <div class="title">
-              <span>PGA内存使用率</span>
+        <el-row :gutter="40">
+          <el-col :span="8">
+            <div class="text-num-model text">
+              <div class="title">
+                <span>PGA内存使用率</span>
+              </div>
+              <div class="value-p">
+                <strong :style="{color:color[5]}" style="font-size:70px">{{ (item.sumPgaUsedMem/item.sumPgaAllocMem*100).toFixed(1) + '%' }}</strong>
+              </div>
+              <div class="text-1">PGA内存使用率</div>
+              <div style="text-align:center;margin-bottom:10px;">
+                <div><label>分配内存：</label>{{ item.sumPgaAllocMem | changeBite }} <label>已使用：</label>{{ item.sumPgaUsedMem | changeBite }} </div>
+              </div>
             </div>
-            <div class="value-p">
-              <strong :style="{color:color[5]}" style="font-size:70px">{{ (item.sumPgaUsedMem/item.sumPgaAllocMem*100).toFixed(1) + '%' }}</strong>
-            </div>
-            <div class="text-1">PGA内存使用率</div>
-            <div style="text-align:center;margin-bottom:10px;">
-              <div><label>分配内存：</label>{{ item.sumPgaAllocMem | changeBite }} <label>已使用：</label>{{ item.sumPgaUsedMem | changeBite }} </div>
-            </div>
-          </div>
-        </div>
+          </el-col>
+        </el-row>
         <div class="col-md-12" style="margin-top:20px;">
           <div class="db-title">
             <span>会话状态</span>
           </div>
         </div>
-        <div class="col-md-12">
-          <table class="col-md-12 text-num-model text">
-            <tr>
-              <th>编号</th>
-              <th>用户名</th>
-              <th>会话连接数</th>
-            </tr>
-            <tr v-for="(user,$in) in item.userConn" :key="$in" style="height:30px">
-              <td><span>{{ $in+1 }}</span></td>
-              <td><span>{{ user.username }}</span></td>
-              <td><span>{{ user.sessionCount }}</span></td>
-            </tr>
-          </table>
-        </div>
+        <el-row>
+          <div class="text-num-model text">
+            <el-row class="rowtable">
+              <el-col :span="6" align="center">编号</el-col>
+              <el-col :span="10" align="center">用户名</el-col>
+              <el-col :span="8" align="center">会话连接数</el-col>
+            </el-row>
+            <el-row v-for="(user,$in) in item.userConn" :key="$in" style="min-height: 30px;">
+              <el-col :span="6" align="center">{{ $in+1 }}</el-col>
+              <el-col :span="10" align="center">{{ user.username }}</el-col>
+              <el-col :span="8" align="center">{{ user.sessionCount }}</el-col>
+            </el-row>
+          </div>
+        </el-row>
       </div>
     </div>
     <div v-if="!mysqlList.length">
@@ -180,6 +171,13 @@ export default {
   background: #fff;
   min-height: calc(100vh - 100px);
   margin: 20px;
+}
+.rowtable{
+  min-height: 40px;
+  line-height:40px;
+  .el-col{
+    color: #102033;font-weight: bold;
+  }
 }
 .db-title {
   height: 48px;

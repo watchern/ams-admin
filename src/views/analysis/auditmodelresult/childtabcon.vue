@@ -1457,7 +1457,6 @@ export default {
      * 删除图标
      */
     deleteChart(){
-      debugger
       for(var i = 0;i<this.chartConfigs.length;i++){
         if(this.nowChartJson.id == this.chartConfigs[i].id){
           this.chartConfigs.splice(i,1)

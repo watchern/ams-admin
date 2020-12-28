@@ -307,3 +307,16 @@ async function replaceModelSqlByParams(sql, paramArr) {
         data
     })
 }
+
+/**
+ * 对比SQL语句是否发生变化
+ * @param data
+ */
+export function compareSql(data){
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/compareSql',
+        method: 'post',
+        params: data
+    })
+}

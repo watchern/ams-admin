@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import { compareSql } from '@/api/graphtool/graphList'
 const CodeMirror = require('@/components/ams-codemirror/lib/codemirror')
 import store from '@/store'
 const analysisUrl = '/analysis'
@@ -118,6 +119,12 @@ var isUpdate = false
  * @type {number}
  */
 var isFirst = 0
+
+let sqlEditorVue = null
+
+export const sendSqlEditorVue = ( (this_) => {
+    sqlEditorVue = this_
+})
 
 /**
  * 获取参数树
@@ -1878,7 +1885,7 @@ export function getSql() {
 }
 
 // 校验sql 只返回true或者false
-export function verifySql() {
+export async function verifySql() {
   var selText = editorObj.getSelection()
   if ($.trim(selText) === '') {
     selText = editorObj.getValue()
@@ -1890,7 +1897,7 @@ export function verifySql() {
     }
   }
   var data = { sqls: selText }
-  return request({
+  return await request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/checkSql',
     method: 'post',
@@ -1994,7 +2001,8 @@ export function refreshCodeMirror() {
   setTimeout(() => {
     editorObj.refresh()
   }, 1)// 让编辑器每次在调用的时候进行自动刷新
-  $('#sql').click()
+  // $('#sql').click()
+    $(sqlEditorVue.$refs.sql).click()
 }
 
 /**
@@ -2062,4 +2070,25 @@ export function saveSqlEditorExecuteDefaultPath(data) {
     method: 'post',
     data
   })
+}
+
+export async function getGraphSaveInfo(){
+    var returnObj = {
+        "isError":false,
+        "message":"",
+        "sql":editorObj.getValue(),
+        "isChange":false
+    };
+    //检查SQL语句是否发生变化
+    const response = await compareSql({"oldSql":sqlEditorVue.sqlValue,"newSql":returnObj.sql})
+    if(response.data == null|| response.data.isError){
+        returnObj.isError = true;
+        returnObj.message = "检测SQL语句是否改变发生错误";
+    }else{
+        if(response.data.isChange){
+            returnObj.message = "系统检查到SQL语句已发生改变，可能会影响已配置的参数信息";
+        }
+        returnObj.isChange = response.data.isChange;
+    }
+    return returnObj;
 }
