@@ -82,8 +82,8 @@ export default {
   created() {
     this.initDialog();
     this.tempPath = "根路径";
-    this.tempId = this.$store.getters.personcode
-    this.modelResultSavePathId = this.$store.getters.personcode
+    this.tempId = this.$store.getters.datauserid
+    this.modelResultSavePathId = this.$store.getters.datauserid
     this.path = "当前执行模型保存路径:根路径"
   },
   components: {

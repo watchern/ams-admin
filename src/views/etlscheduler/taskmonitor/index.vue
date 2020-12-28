@@ -27,7 +27,6 @@
             <span class="el-icon-refresh-left refreshspan" @click="refresh()" />
           </div>
           <!-- <span class="el-icon-refresh-left refresh" style="float: right" /> -->
-
           <el-row style="margin: 40px 0">
             <el-col :span="6">
               <!-- <el-tag effect="dark" style="width:119%;height: 80px;"> -->
@@ -52,7 +51,6 @@
               <!-- </el-tag> -->
             </el-col>
           </el-row>
-
           <el-row>
             <el-col :span="6">
               <span class="title-middle"> 调度任务总耗时</span>
@@ -77,7 +75,6 @@
               </div>
             </el-col>
           </el-row>
-
           <!-- <el-button type="primary" class="start-btn">开始调度</el-button>
           <el-button type="success" class="over-btn">结束调度</el-button> -->
         </el-card>
@@ -392,7 +389,6 @@ export default {
   padding: 10px;
   font-weight: 400;
 }
-
 .refreshspan {
   font-size: 20px;
   cursor: pointer;
@@ -409,40 +405,15 @@ export default {
 .box-card{
   height: 320px;
 }
-/* .query-field{
-  padding: 10px 0 0 0;
-}
-/*.filter-container,.page-container{
-  padding: 0;
-}
-.el-table{
-  height: 180px;
-} */
-/*.chart-title {
+tr{
+  td{
     text-align: center;
-    height: 60px;
-    line-height: 60px;
-    span {
-      font-size: 22px;
-      color: #333;
-      font-weight: bold;
+    i{
+      font-size: 20px;
     }
-}
-.table-small-model {
-  .ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space:  nowrap;
-    display: block;
   }
-}*/
-tr td{
-  text-align: center;
-}
-tr th{
-  text-align: center;
-}
-td i{
-  font-size: 20px;
+  th{
+    text-align: center;
+  }
 }
 </style>

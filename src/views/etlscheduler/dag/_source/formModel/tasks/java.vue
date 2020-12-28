@@ -410,10 +410,3 @@ export default {
   }
 }
 </script>
-<style lang="scss" rel="stylesheet/scss">
-.requiredIcon {
-  color: #ff0000;
-  padding-right: 4px;
-}
-</style>
-

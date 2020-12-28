@@ -99,7 +99,6 @@ export default {
     },
     _validation(val) {
       if (val === '0') return true
-
       if (!(/(^[0-9]*[1-9][0-9]*$)/.test(val))) {
         this.$message.warning(`请输入正整数`)
         // init
