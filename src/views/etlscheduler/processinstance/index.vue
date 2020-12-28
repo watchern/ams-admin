@@ -492,9 +492,10 @@ export default {
             case 5:
               this.startStatus = false
               break
-            // 判断状态是否为执行失败中,如果是执行失败中，重新运行按钮可用
+            // 判断状态是否为执行失败中,如果是执行失败中，重新运行按钮可用，执行按钮可用
             case 8:
               this.reStartStatus = false
+              this.startStatus = false
               break
             default:
               break
@@ -518,10 +519,10 @@ export default {
             this.reStartStatus = true
           }
           // 遍历选择的数组判断状态，如果是有状态不是执行中的，启用按钮不可用
-          if (r.status !== 5) {
+          if (r.status !== 5 && r.status !== 8) {
             this.startStatus = true
           }
-          // 遍历选择的数组判断状态，如果是有状态不是暂停中的，启用按钮不可用
+          // 遍历选择的数组判断状态，如果是有状态不是暂停中的，停用按钮不可用
           if (stopStatuses.indexOf(r.status) < 0) {
             this.pusStatus = true
           }
