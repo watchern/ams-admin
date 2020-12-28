@@ -44,10 +44,7 @@ export default {
   methods: {
     getQueryVariable() {
       this.helpTables = []
-      var query = window.location.href
-      var vars = query.split("?")[1];
-      var runTaskRelUuid = vars.split("=")[1]
-      this.runTaskRelUuid = runTaskRelUuid
+      this.runTaskRelUuid = this.$route.query.runTaskRelUuid
       getAllRunTaskRel().then(resp=>{
           var dataList = resp.data
           for(var i = 0;i<dataList.length;i++){
