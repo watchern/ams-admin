@@ -146,7 +146,9 @@ export function saveNodeSetting() {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning',
-                center: true
+                center: true,
+                closeOnClickModal:false,
+                closeOnPressEscape:false
             }).then(() => {
                 saveNodeSettingFun()
             }).catch(() => {
@@ -564,7 +566,9 @@ function autoExcute(curNodeId) {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'info',
-            center: true
+            center: true,
+            closeOnClickModal:false,
+            closeOnPressEscape:false
         }).then(() => {
             let cell = graph.getModel().getCell(childrenIds[0])
             if (cell) {
@@ -821,7 +825,9 @@ export function executeAllNode() {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
-        center: true
+        center: true,
+        closeOnClickModal:false,
+        closeOnPressEscape:false
     }).then(() => {
         for (var i = 0; i < key.length; i++) {
             // 如果是节点且不是原表，则先变更节点的执行状态为未执行
@@ -1557,7 +1563,9 @@ export function reSetOptProperty() {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
-        center: true
+        center: true,
+        closeOnClickModal:false,
+        closeOnPressEscape:false
     }).then(() => {
         var curNodeId = graph.curCell.id
         var nodeExcuteStatus = graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus
@@ -1694,7 +1702,9 @@ export async function sqlNodeEdit_callBack() {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'info',
-                        center: true
+                        center: true,
+                        closeOnClickModal:false,
+                        closeOnPressEscape:false
                     }).then(() => {
                         graph.nodeData[graph.curCell.id].sqlIsChanged = true
                         graph.nodeData[graph.curCell.id].columnsInfo = []// 若SQL发生改变，则清除当前节点的输出列信息
