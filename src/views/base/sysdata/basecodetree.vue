@@ -93,7 +93,7 @@ export default {
         this.pageQueryTree.condition = Object.assign({}, this.objCode)
         loadchildnodeOne(this.pageQueryTree).then(resp => {
           var jsonStr = JSON.stringify(resp.data.records)
-          console.log(jsonStr)
+          // console.log(jsonStr)
           // eslint-disable-next-line no-eval
           var label = eval('(' + jsonStr + ')')
           resolve(label)

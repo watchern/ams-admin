@@ -50,7 +50,7 @@
         <div class="title">我的项目</div>
         <div class="des flex a-center j-start flex-row">
           <div class="count-font">
-            <animate-number from="1" to="1" class="count-font" />/<animate-number from="1" to="9"class="count-font" />
+            <animate-number from="1" to="1" class="count-font" />/<animate-number from="1" to="9" class="count-font" />
           </div>
           <div class="right">
             <div class="p1">#2020公司信贷业务专项审计</div>
@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import { getRemindByDescTime } from '@/api/base/base'
+import { getRemindByDescTime, updateRemind } from '@/api/base/base'
 export default {
   data() {
     return {
@@ -167,6 +167,7 @@ export default {
   },
   mounted() {
     getRemindByDescTime().then(resp => {
+      this.cardList[0].des = []
       for(let i=0;i<5;i++){
         this.cardList[0].des.push({
           text:resp.data.records[i].remindTitle,
@@ -174,10 +175,11 @@ export default {
           icon: '',
           url:resp.data.records[i].modeUrl,
           content:resp.data.records[i].remindContent,
-          index:i
+          index:i,
+          Uuid:resp.data.records[i].remindUuid
         })
         if(resp.data.records[i].readStatus === 0){
-          this.cardList[0].des[i].icon = ' New'
+          this.cardList[0].des[i].icon = ' NEW'
         }
       }
     })
@@ -206,6 +208,8 @@ export default {
       }else{
         this.$router.push({ path:this.cardList[0].des[data].url})
       }
+      updateRemind(this.cardList[0].des[data].Uuid)
+      location.reload()
     },
     moreJump(){
       // this.activeTags({

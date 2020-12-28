@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import store from '@/store'
 const analysisUrl = '/analysis'
 const dataUrl = '/data'
 
@@ -240,8 +241,9 @@ export function findModelList(data){
  * @param {*} data 运行任务对象
  */
 export function addRunTaskAndRunTaskRel(data){
-  const sceneCode = sessionStorage.getItem('sceneCode')
-  const dataUserId = sessionStorage.getItem('dataUserId')
+  const dataUserId = store.getters.datauserid
+  const sceneCode = store.getters.scenecode
+  debugger;
   data.sceneCode = sceneCode;
   data.dataUserId = dataUserId;
   return request({

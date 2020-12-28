@@ -10,12 +10,12 @@ export function login(data) {
   })
 }
 
-export function getInfo(token) {
+export function getInfo() {
   return request({
     baseURL: baseURL,
     url: '/userInfo',
     method: 'get',
-    params: { token }
+    params: { }
   })
 }
 export function getUserRes() {

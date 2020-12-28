@@ -194,6 +194,9 @@ export default {
       }
       const appid = this.applications[this.currentIndex].id
       return this.menugroup[appid]
+    },
+    getPersonUuid(){
+      return this.$store.getters.personuuid;
     }
     // isShowTreeList(){
     //   return this.$store.state.aceState.isShowTreeList
@@ -208,12 +211,20 @@ export default {
     },
     currentIndex() {
       this.currentIndexChange()
+    },
+    getPersonUuid(newv, oldv){
+      if(newv && newv!=''){
+        this.webSocket = this.getWebSocket(newv)
+      }
+
     }
   },
   created() {
     // 页面刚进入时开启长连接
-    this.init()
-    this.initWebSocket()
+    this.init();
+    if(this.getPersonUuid){
+      this.webSocket = this.getWebSocket(this.getPersonUuid)
+    }
   },
   mounted() {
     getUserRes()
@@ -269,17 +280,17 @@ export default {
       querySystemTask().then(resp => {
       })
     },
-    initWebSocket() {
+   /* initWebSocket() {
       this.webSocket = this.getWebSocket()
-    },
+    },*/
     /**
      *
      * 使用说明：
      * 1、WebSocket客户端通过回调函数来接收服务端消息。例如：webSocket.onmessage
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
-    getWebSocket() {
-      const wsuri = process.env.VUE_APP_BASE_WEB_SOCKET + this.$store.getters.personuuid + 'systemTask'// 连接地址，可加参数
+    getWebSocket(personuuid) {
+      const wsuri = process.env.VUE_APP_BASE_WEB_SOCKET + personuuid + 'systemTask'// 连接地址，可加参数
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(wsuri) // 建立与服务端的连接
       // 当服务端打开连接
