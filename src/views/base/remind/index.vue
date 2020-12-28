@@ -1,7 +1,10 @@
 <template>
   <div class="page-container">
     <div class="filter-container">
-      <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
+      <QueryField 
+        ref="queryfield" 
+        :form-data="queryFields"
+        @submit="getList" />
     </div>
     <el-row>
       <el-col align="right">
@@ -34,7 +37,8 @@
            <span 
             v-if="scope.row.readStatus === 0"
             class ="notRead"
-            > NEW</span></a>
+            > NEW</span>
+          </a>
         </template>
       </el-table-column>
       <!-- <el-table-column label="内容"  align="left" prop="remindContent" /> -->
@@ -55,14 +59,12 @@
       v-model="temp"
       >
       <el-row>
-        <!-- class="visible-p1" -->
         <el-col :span="24"><div class="visible-p1">
           {{this.temp.remindTitle}}
         </div></el-col>
       </el-row>
       <el-divider></el-divider>
       <el-row>
-        <!-- class="visible-p1" -->
         <el-col :span="12"><div class="visible-p2">
           {{this.temp.remindTime}}
         </div></el-col>
@@ -71,7 +73,6 @@
         </div></el-col>
       </el-row>
       <el-row>
-        <!-- class="visible-p1" -->
         <el-col :span="24"><div class="visible-p3">
           {{this.temp.remindContent}}
         </div></el-col>
@@ -93,58 +94,13 @@ export default {
       listLoading: false,
       queryFields: [
         { label: '标题', name: 'remindTitle', type: 'fuzzyText', value: '' },
-        //{ label: '内容', name: 'remindContent', type: 'fuzzyText' },
+        // { label: '内容', name: 'remindContent', type: 'fuzzyText' },
         { label: '提醒时间范围', name: 'remindTime', type: 'timePeriod' },
         { label: '阅读状态', name: 'readStatus', type: 'select',
           data: [{ name: '未阅', value: '0' }, { name: '已阅', value: '1' }], default: '-1' }
       ],
       // selectedRowVal:0,
       tableOptions: {
-        // columnDefs: [
-        //   {
-        //     headerName: '',
-        //     checkboxSelection: true,
-        //     headerCheckboxSelection: true,
-        //     width: 30,
-        //     pinned: 'left',
-        //     display: false
-        //   },
-        //   {
-        //     field: 'errorUuid',
-        //     hide: true
-        //   },
-        //   {
-        //     headerName: '操作用户',
-        //     field: 'opUserName',
-        //     pinned: 'left',
-        //     filter: 'agTextColumnFilter'
-        //   },
-        //   {
-        //     headerName: '操作IP',
-        //     field: 'opIp',
-        //     pinned: 'left'
-        //   },
-        //   {
-        //     headerName: '模块名称',
-        //     field: 'moduleName',
-        //     pinned: 'left'
-        //   },
-        //   {
-        //     headerName: '操作类型',
-        //     field: 'opOperate',
-        //     filter: 'agNumberColumnFilter'
-        //   },
-        //   {
-        //     headerName: '操作时间',
-        //     field: 'opTime',
-        //     filter: 'agNumberColumnFilter'
-        //   },
-        //   {
-        //     headerName: '操作信息',
-        //     field: 'opInfo',
-        //     filter: 'agNumberColumnFilter'
-        //   }
-        // ]
       },
       formStyle: {
         width: '700px',
@@ -167,7 +123,7 @@ export default {
       selections: [],
       dialogFormVisible: false,
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20
       }
@@ -180,27 +136,6 @@ export default {
     this.getList()
   },
   methods: {
-    // /**
-    //  * 格式化时间字符串
-    //  * @param row 行数据
-    //  * @param column 列数据
-    //  * @returns {string} 返回格式化后的字符串
-    //  */
-    // dateFormatter(row, column) {
-    //   const datetime = row.remindTime
-    //   if (datetime) {
-    //     var dateMat = new Date(datetime)
-    //     var year = dateMat.getFullYear()
-    //     var month = dateMat.getMonth() + 1
-    //     var day = dateMat.getDate()
-    //     var hh = dateMat.getHours()
-    //     var mm = dateMat.getMinutes()
-    //     var ss = dateMat.getSeconds()
-    //     var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
-    //     return timeFormat
-    //   }
-    //   return ''
-    // },
     /**
      * 格式化已阅状态
      * @param row 行数据
@@ -261,7 +196,6 @@ export default {
       var ids = []
       this.selections.forEach((r, i) => {
         ids.push(r.remindUuid)})
-      console.log(ids)
       updateReminds(ids).then(result =>{
          if (result.code == 0) {
           this.getList()
@@ -271,9 +205,10 @@ export default {
       })
     },
     handdetails(data){
+      var id = data.remindUuid
     if(data.modeUrl != null){
       this.selectDetail(data)
-      updateRemind(data).then(result =>{
+      updateRemind(id).then(result =>{
          if (result.code == 0) {
           this.getList()
         } else {
@@ -281,9 +216,10 @@ export default {
         }
       })
     }else{
+      console.log(id)
       this.temp = data
       this.dialogFormVisible = true
-      updateRemind(data).then(result =>{
+      updateRemind(id).then(result =>{
          if (result.code == 0) {
           this.getList()
         } else {
