@@ -333,6 +333,8 @@
             :close-on-press-escape="pressEscape"
             :close-on-click-modal="clickModal"
             :before-close="closeNodeSetting"
+            :modal-append-to-body="pressEscape"
+            :destroy-on-close="!pressEscape"
             width="1000px"
         >
             <NodeSetting v-if="settingType === 'commonSetting'" ref="nodeSetting" :graph="graph" :opt-type="sp_optType" />
@@ -349,7 +351,7 @@
             title="SQL编辑器"
             :close-on-press-escape="pressEscape"
             :close-on-click-modal="clickModal"
-            :width="sqlEditorWidth"
+            :width="sqlEditorWidth" top="20px"
             :modal-append-to-body="clickModal" :style="sqlEditorStyle">
             <!--width="100%"-->
             <!--:fullscreen="!clickModal"-->
@@ -542,7 +544,7 @@
             // 初始化websocket
             this.initWebSocKet()
             this.sqlEditorWidth = $(this.$refs.graphToolDiv).width() + "px"
-            let sqlEditorHeight = $(this.$refs.graphToolDiv).height() + "px"
+            let sqlEditorHeight = $(this.$refs.graphToolDiv).height() + 18 + "px"
             this.sqlEditorStyle = `margin-left:${$(this.$refs.graphToolDiv).position().left -10}px;height:${sqlEditorHeight}`
         },
         methods: {
