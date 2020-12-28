@@ -394,12 +394,12 @@ export function updateModelChartSetup(data) {
   })
 }
 /*BOE 发送模型结果到作业平台 */
-export function sendToOA(taskRelUuid) {
+export function sendToOA(taskRelUuid, dataUserId, dataUserName) {
   return request({
     baseURL: analysisUrl,
     url: '/ResultRelProjectController/sendToOA',
     method: 'get',
-    params:{taskRelUuid: taskRelUuid}
+    params:{taskRelUuid: taskRelUuid, dataUserId: dataUserId, dataUserName: dataUserName}
   })
 }
 

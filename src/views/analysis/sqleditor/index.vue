@@ -405,8 +405,8 @@ export default {
       nodeType: '',
       path: '选择SQL结果保存路径',
       modelResultSavePathId: '',
-      personCode: this.$store.state.user.code,
-      sceneCode: 'auditor',
+      personCode: this.$store.getters.datauserid,
+      sceneCode: this.$store.getters.scenecode,
       treeType: 'save'
     }
   },
@@ -567,7 +567,7 @@ export default {
             if (result.data == null) {
               // 证明当前登录人没有任何执行路径记录 直接给一个默认的  从数据模块那面取  暂时没有 因为数据那面让写死  数据组长-张闯
               this.tempPath = '根路径'
-              this.tempId = this.$store.getters.personcode
+              this.tempId = this.$store.getters.datauserid;
               this.path = '当前执行SQL保存路径:' + this.tempPath
               this.modelResultSavePathId = this.tempId
             } else {

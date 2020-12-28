@@ -17,6 +17,12 @@
     <el-row v-if="myFlag">
       <div align="right">
         <el-button
+          type="primary"
+          @click="sendToOA()"
+          class="oper-btn share"
+          title="发送到作业平台"
+        ></el-button>
+        <el-button
           :disabled="modelRunResultBtnIson.exportBtn"
           type="primary"
           @click="exportExcel"
@@ -254,7 +260,8 @@ import {
   addModelChartSetup,
   getModelChartSetup,
   updateModelChartSetup,
-  deleteModelChartSetup
+  deleteModelChartSetup,
+  sendToOA
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
@@ -1492,7 +1499,21 @@ export default {
         this.nowChartJson = undefined
         this.isHaveCharts = true
       }
-    }
+    },
+
+    sendToOA() {
+      var runTaskRelUuid =  this.nowtable.runTaskRelUuid;
+      const dataUserId = this.$store.getters.datauserid
+      const dataUserName = this.$store.getters.datausername
+      sendToOA(runTaskRelUuid, dataUserId, dataUserName).then(resp=>{
+        this.$message({
+          type: "success",
+          message: "发送成功!",
+        });
+      })
+
+
+    },
   },
 };
 </script>

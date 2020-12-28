@@ -127,7 +127,9 @@ const actions = {
         Cookies.set("PERSONUUID", personuuid)
       }*/
      console.log(state);
-      debugger
+
+
+
       getInfo().then(response => {
         const { data } = response
         if (!data) {
@@ -145,6 +147,21 @@ const actions = {
         commit('SET_AVATAR', avatar)
         commit('SET_INTRODUCTION', introduction)
         commit('SET_CODE', personcode)
+
+        if(state.scenecode == "" || state.scenecode == null){
+
+          var sceneCode = 'auditor';
+          var dataUserId = personcode;
+          getSceneInst(sceneCode, dataUserId).then(resp => {
+            var dataUserName = resp.data.dataUserName;
+            var sceneName = resp.data.sceneName;
+            commit('SET_SCENECODE', sceneCode)
+            commit('SET_SCENENAME', sceneName)
+            commit('SET_DATAUSERID', dataUserId)
+            debugger;
+            commit('SET_DATAUSERNAME', dataUserName)
+          });
+        }
         resolve(data)
       }).catch(error => {
         reject(error)
