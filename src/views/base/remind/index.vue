@@ -35,9 +35,10 @@
             @click="handdetails(scope.row)">
            {{scope.row.remindTitle}}
            <span 
-            v-show="scope.row.readStatus === 0"
+            v-if="scope.row.readStatus === 0"
             class ="notRead"
-            > NEW</span></a>
+            > NEW</span>
+          </a>
         </template>
       </el-table-column>
       <!-- <el-table-column label="内容"  align="left" prop="remindContent" /> -->
@@ -100,51 +101,6 @@ export default {
       ],
       // selectedRowVal:0,
       tableOptions: {
-        // columnDefs: [
-        //   {
-        //     headerName: '',
-        //     checkboxSelection: true,
-        //     headerCheckboxSelection: true,
-        //     width: 30,
-        //     pinned: 'left',
-        //     display: false
-        //   },
-        //   {
-        //     field: 'errorUuid',
-        //     hide: true
-        //   },
-        //   {
-        //     headerName: '操作用户',
-        //     field: 'opUserName',
-        //     pinned: 'left',
-        //     filter: 'agTextColumnFilter'
-        //   },
-        //   {
-        //     headerName: '操作IP',
-        //     field: 'opIp',
-        //     pinned: 'left'
-        //   },
-        //   {
-        //     headerName: '模块名称',
-        //     field: 'moduleName',
-        //     pinned: 'left'
-        //   },
-        //   {
-        //     headerName: '操作类型',
-        //     field: 'opOperate',
-        //     filter: 'agNumberColumnFilter'
-        //   },
-        //   {
-        //     headerName: '操作时间',
-        //     field: 'opTime',
-        //     filter: 'agNumberColumnFilter'
-        //   },
-        //   {
-        //     headerName: '操作信息',
-        //     field: 'opInfo',
-        //     filter: 'agNumberColumnFilter'
-        //   }
-        // ]
       },
       formStyle: {
         width: '700px',
@@ -240,7 +196,6 @@ export default {
       var ids = []
       this.selections.forEach((r, i) => {
         ids.push(r.remindUuid)})
-      console.log(ids)
       updateReminds(ids).then(result =>{
          if (result.code == 0) {
           this.getList()
@@ -250,9 +205,10 @@ export default {
       })
     },
     handdetails(data){
+      var id = data.remindUuid
     if(data.modeUrl != null){
       this.selectDetail(data)
-      updateRemind(data).then(result =>{
+      updateRemind(id).then(result =>{
          if (result.code == 0) {
           this.getList()
         } else {
@@ -260,9 +216,10 @@ export default {
         }
       })
     }else{
+      console.log(id)
       this.temp = data
       this.dialogFormVisible = true
-      updateRemind(data).then(result =>{
+      updateRemind(id).then(result =>{
          if (result.code == 0) {
           this.getList()
         } else {
