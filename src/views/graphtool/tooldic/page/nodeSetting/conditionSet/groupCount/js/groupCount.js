@@ -51,15 +51,16 @@ export function init() {
                     groupCountVue.countTrNum = k
                     // addCountTr()// 插入一行汇总配置的数据
                     groupCountVue.items.push({ 'id': groupCountVue.countTrNum})
-
-                    groupCountVue.$nextTick(() => {
+                }
+                groupCountVue.$nextTick(() => {
+                    for (let m = 0; m < countData.length; m++) {
                         initCountSelectData(groupCountVue.countTrNum)
                         groupCountVue.countTrNum = groupCountVue.countTrNum + 1
-                        var chooseColumnXs = xmSelect.get(`#searchName${k}` , true)// 获取当前行中汇总字段名称的单实例
+                        var chooseColumnXs = xmSelect.get(`#searchName${m}` , true)// 获取当前行中汇总字段名称的单实例
                         var initCountColumnData = JSON.parse(JSON.stringify(groupCountVue.columnData))// 复制全局汇总字段的数组变量的值
                         initCountColumnData.unshift({ 'name': '请选择', 'value': '', 'type': '' })
                         for (let n = 0; n < initCountColumnData.length; n++) { // 设置已汇总字段名称值的选中状态，重新渲染当前行的下拉框
-                            if(countData[k].columnName === countData[k].countTypeValue + "(" + initCountColumnData[n].value + ")"){
+                            if(countData[m].columnName === countData[m].countTypeValue + "(" + initCountColumnData[n].value + ")"){
                                 initCountColumnData[n].selected = true;
                                 break;
                             }
@@ -69,7 +70,7 @@ export function init() {
                             'data': initCountColumnData
                             // "autoRow" : true
                         })
-                        var chooseTypeXs = xmSelect.get(`#searchType${k}`, true)// 获取当前行中汇总方式的单实例
+                        var chooseTypeXs = xmSelect.get(`#searchType${m}`, true)// 获取当前行中汇总方式的单实例
                         // 汇总方式的初始化默认数据数组
                         var initCountTypeData = [
                             { 'name': '请选择', 'value': '' },
@@ -79,19 +80,19 @@ export function init() {
                             { 'name': '最小值', 'value': 'min' },
                             { 'name': '平均值', 'value': 'ave' }
                         ]
-                        for (let n = 0; n < initCountTypeData.length; n++) {
-                            if ($.inArray(countData[k].columnType, typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
-                                switch (initCountTypeData[n].value) {
+                        for (let c = 0; c < initCountTypeData.length; c++) {
+                            if ($.inArray(countData[m].columnType, typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
+                                switch (initCountTypeData[c].value) {
                                     case 'sum':
                                     case 'max':
                                     case 'min':
                                     case 'ave':
-                                        initCountTypeData[n].disabled = true
+                                        initCountTypeData[c].disabled = true
                                         break
                                 }
                             }
-                            if (countData[k].countTypeValue === initCountTypeData[n].value) { // 设置已汇总类型的选中状态
-                                initCountTypeData[n].selected = true
+                            if (countData[m].countTypeValue === initCountTypeData[c].value) { // 设置已汇总类型的选中状态
+                                initCountTypeData[c].selected = true
                             }
                         }
                         // 重新渲染汇总方式当前行的下拉框
@@ -99,8 +100,12 @@ export function init() {
                             'data': initCountTypeData
                             // "autoRow" : true
                         })
-                    })
-                }
+                    }
+                    let a = xmSelect.get()
+                    let b = xmSelect.get(/searchName.*/);
+                    console.log(a)
+                    console.log(b)
+                })
             } else {
                 groupCountVue.countTrNum = 0
                 addCountTr()
@@ -491,6 +496,8 @@ export function inputVerify() {
     let countNum = 0
     let a = xmSelect.get()
     let b = xmSelect.get(/searchName.*/);
+    console.log(a)
+    console.log(b)
     for(let i=0; i<groupCountVue.items.length; i++){
         let chooseColumnXs = xmSelect.get(`#searchName${groupCountVue.items[i].id}`, true)// 获取当前行中汇总字段名称的单实例
         let chooseTypeXs = xmSelect.get(`#searchType${groupCountVue.items[i].id}`, true)// 获取当前行中汇总方式的单实例
