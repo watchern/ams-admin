@@ -43,13 +43,9 @@ export function init() {
             }
             let countData = nodeData.setting.countData// 获取汇总字段的配置数组
             if (countData.length > 0) { // 如果有汇总字段
-                // 更改输出列的复选框未不可修改的状态
-                groupCountVue.isAllDisabled = true
-                groupCountVue.isDisabled = true
                 // 反显汇总字段的配置
                 for (let k = 0; k < countData.length; k++) {
                     groupCountVue.countTrNum = k
-                    // addCountTr()// 插入一行汇总配置的数据
                     groupCountVue.items.push({ 'id': groupCountVue.countTrNum})
                 }
                 groupCountVue.$nextTick(() => {
@@ -100,11 +96,12 @@ export function init() {
                             'data': initCountTypeData
                             // "autoRow" : true
                         })
+                        groupCountVue.items[m].chooseColumnXs = chooseColumnXs
+                        groupCountVue.items[m].chooseTypeXs = chooseTypeXs
                     }
-                    let a = xmSelect.get()
-                    let b = xmSelect.get(/searchName.*/);
-                    console.log(a)
-                    console.log(b)
+                    // 更改输出列的复选框未不可修改的状态
+                    groupCountVue.isAllDisabled = true
+                    groupCountVue.isDisabled = true
                 })
             } else {
                 groupCountVue.countTrNum = 0
@@ -190,7 +187,8 @@ function initOutputColumn(columnInfo, isCountTr, sign, countType) {
         "columnInfo":columnInfo,//所有输出字段信息
         "columnName":nodeData.isSet ? columnInfo.columnName : columnInfo.newColumnName,// 字段名称
         "newColumnName":columnInfo.newColumnName,// 输出字段名称
-        "rtn":columnInfo.rtn
+        "rtn":columnInfo.rtn,
+        "checked":columnInfo.checked
     }
     if (isCountTr) { // 如果是汇总配置列的行，则附加唯一标识
         columnItem.sign = sign
@@ -444,6 +442,13 @@ export function addCountTr() {
     groupCountVue.items.push({ 'id': groupCountVue.countTrNum})
     groupCountVue.$nextTick(() => {
         initCountSelectData(groupCountVue.countTrNum)
+        let chooseColumnXs = xmSelect.get(`#searchName${groupCountVue.countTrNum}`, true)
+        let chooseTypeXs = xmSelect.get(`#searchType${groupCountVue.countTrNum}`, true)
+        let itemObj = groupCountVue.items.find( item => item.id === groupCountVue.countTrNum)
+        if(typeof itemObj !== "undefined"){
+            itemObj.chooseColumnXs = chooseColumnXs
+            itemObj.chooseTypeXs = chooseTypeXs
+        }
         groupCountVue.countTrNum = groupCountVue.countTrNum + 1
     })
 }
@@ -494,13 +499,9 @@ export function inputVerify() {
     const groupData = groupCountVue.groupTransfer.getData()
     // 获取已汇总字段数量
     let countNum = 0
-    let a = xmSelect.get()
-    let b = xmSelect.get(/searchName.*/);
-    console.log(a)
-    console.log(b)
     for(let i=0; i<groupCountVue.items.length; i++){
-        let chooseColumnXs = xmSelect.get(`#searchName${groupCountVue.items[i].id}`, true)// 获取当前行中汇总字段名称的单实例
-        let chooseTypeXs = xmSelect.get(`#searchType${groupCountVue.items[i].id}`, true)// 获取当前行中汇总方式的单实例
+        let chooseColumnXs = groupCountVue.items[i].chooseColumnXs// 获取当前行中汇总字段名称的单实例
+        let chooseTypeXs = groupCountVue.items[i].chooseTypeXs// 获取当前行中汇总方式的单实例
         let columnValue = chooseColumnXs.getValue()// 获取选中的汇总字段名称
         let typeValue = chooseTypeXs.getValue()// 获取选中的汇总方式
         if (columnValue.length > 0 && typeValue.length > 0) { // 如果都有选中的值
@@ -578,61 +579,5 @@ export function saveNodeInfo() {
     nodeData.columnsInfo = curColumnsInfo
     nodeData.isSet = true
     groupCountVue.$refs.basicVueRef.save_base()// 保存基础信息
-
-
-    // $('.colTr').each(function() {
-    //     const columnInfo = JSON.parse($(this).attr('columnInfo'))
-    //     const newColumnName = $(this).find('.newColumn').val()
-    //     if ($(this).find('div.ckbox').hasClass('checked')) {
-    //         columnInfo.isOutputColumn = 1
-    //         columnInfo.checked = true
-    //         columnInfo.newColumnName = newColumnName
-    //         checkedNum++
-    //     } else {
-    //         columnInfo.checked = false
-    //         columnInfo.isOutputColumn = 0
-    //     }
-    //     columnInfo.oldColumnName = columnInfo.oldColumnName || columnInfo.columnName;//将原字段存储一份
-    //     columnInfo.columnName = $(this).find('td:eq(1)').html()
-    //     if ($.inArray(newColumnName, newColumnNameArr) < 0) { // 如果输出列名称数组中不含有当前输出列的名称
-    //         newColumnNameArr.push(newColumnName)
-    //     } else { // 如果有（重复），则将已重复的输出列标注出来（加红线框）
-    //         const index = $.inArray(newColumnName, newColumnNameArr)
-    //         if ($(this).find('div.ckbox').hasClass('checked') && $('.colTr:eq(' + index + ')').find('div.ckbox').hasClass('checked')) {
-    //             isExsist = true
-    //             $('.colTr:eq(' + index + ')').find('div.ckbox').addClass('has-error')
-    //             $(this).find('div.ckbox').addClass('has-error')
-    //             return false
-    //         }
-    //     }
-    //     if ($(this).attr('id')) { // 汇总字段的输出列数据行
-    //         // 组织汇总列的字段配置信息
-    //         const countObj = {}
-    //         columnInfo.isCount = true
-    //         columnInfo.sign = $(this).attr('data-sign')
-    //         columnInfo.countType = JSON.parse($(this).attr('data-countType'))
-    //         countObj.columnName = columnInfo.columnName
-    //         countObj.columnType = columnInfo.columnType
-    //         countObj.countTypeValue = columnInfo.countType.value
-    //         countObj.newColumnName = newColumnName
-    //         countData.push(countObj)
-    //     } else { // 分组字段的输出列数据行
-    //         columnInfo.isCount = false
-    //     }
-    //     curColumnsInfo.push(columnInfo)
-    // })
-    // if (checkedNum === 0) {
-    //     alertMsg('提示', '请选择输出字段', 'warning')
-    //     return false
-    // }
-    // if (isExsist) {
-    //     alertMsg('提示', '输出字段名称有重复，请修改', 'warning')
-    //     return false
-    // }
-    // nodeData.setting.countData = countData
-    // nodeData.setting.groupData = groupTransfer.getData()// 获取已分组字段数组
-    // nodeData.columnsInfo = curColumnsInfo
-    // basicObj.save_base()// 保存基础信息
-    // nodeData.isSet = true
     return true
 }

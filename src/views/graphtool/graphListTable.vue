@@ -156,19 +156,26 @@
             },
             deleteGraph() {
                 let selectObj = this.$refs.graphListTable.selection
-                this.$confirm('确定删除图形?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning',
-                    center: true
+                this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'),{
+                    confirmButtonText: this.$t('confirm.okBtn'),
+                    cancelButtonText: this.$t('confirm.cancelBtn'),
+                    type: 'warning'
                 }).then(() => {
                     let obj = this.getUuidsANdNames(selectObj)
                     deleteGraphInfoById(obj.graphUuids).then(response => {
-                        this.$message({ type: 'success', message: '删除成功!' })
+                        this.$notify({
+                            title: this.$t('message.title'),
+                            message: this.$t('message.delete.success'),
+                            type: 'success',
+                            duration: 2000,
+                            position: 'bottom-right'
+                        })
                         this.listSelectChange([])
                         this.getGraphList()
                         // 刷新图形树
                         this.$emit('refreshGraphTree')
+                    }).catch( () => {
+                        this.$message.error(this.$t('message.delete.fail'))
                     })
                 }).catch( ()=> {})
             },

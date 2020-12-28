@@ -1936,7 +1936,9 @@ export function settingParamsCallBack() {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
-        center: true
+        center: true,
+        closeOnClickModal:false,
+        closeOnPressEscape:false
     }).then(() => {
         // 获取弹出层的参数配置
         let returnObj = indexVue.$refs.settingParams.getParamsSetting()
@@ -1980,7 +1982,9 @@ export function clearSettingParam(nodeId,index) {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
-        center: true
+        center: true,
+        closeOnClickModal:false,
+        closeOnPressEscape:false
     }).then(() => {
         indexVue.nodeParamArr[index].hasParamSet = false
         delete indexVue.nodeParamRelArr[nodeId]// 清除绑定的节点参数配置信息
