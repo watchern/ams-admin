@@ -82,7 +82,6 @@ const actions = {
         getAllScene().then(res => {
           commit('SET_SCENECODE', res.data[0].sceneCode)
           commit('SET_SCENENAME', res.data[0].sceneName)
-          debugger;
           sessionStorage.setItem('sceneCode', res.data[0].sceneCode);
           sessionStorage.setItem('sceneName', res.data[0].sceneName);
           sessionStorage.setItem('dataUserId', data.userid);
@@ -105,7 +104,6 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       //console.log(state);
-      debugger;
       var personuuid = state.id;
       if(personuuid == "" || personuuid == null){
         personuuid = Cookies.get("PERSONUUID")

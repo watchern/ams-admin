@@ -1,7 +1,3 @@
-var models = []
-var linkData = []
-var join = []// 储存node对象
-var myDiagram
 let relationVue = null
 let nodeData = null
 let graph = null
@@ -22,7 +18,7 @@ export function init() {
     }
     // for conciseness in defining templates为了简洁定义模板
     var make = go.GraphObject.make
-    myDiagram = make(
+    relationVue.myDiagram = make(
         go.Diagram,
         'myDiagramDiv',
         {
@@ -71,7 +67,7 @@ export function init() {
     )
 
     // This template represents a whole "record".此模板代表整个“记录”。
-    myDiagram.nodeTemplate = make(
+    relationVue.myDiagram.nodeTemplate = make(
         go.Node,
         'Auto',
         new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -129,7 +125,7 @@ export function init() {
     // 结束表项目面板
     // 结束垂直面板
     // 结束节点
-    myDiagram.linkTemplate = make(
+    relationVue.myDiagram.linkTemplate = make(
         go.Link,
         {
             relinkableFrom: true,
@@ -155,8 +151,8 @@ export function init() {
 
                     var idx = Math.max(i, j)
                     var compare = ''
-                    for (var i = 0; i < join[idx].on.length; i++) {
-                        var on = join[idx].on[i]
+                    for (var i = 0; i < relationVue.join[idx].on.length; i++) {
+                        var on = relationVue.join[idx].on[i]
                         if ((data.fromPort === on.fromPort && data.toPort === on.toPort) || (data.fromPort === on.toPort && data.toPort === on.fromPort)) {
                             compare = on.compare
                         }
@@ -180,15 +176,15 @@ export function init() {
             }
         }
     )
-    myDiagram.model = make(
+    relationVue.myDiagram.model = make(
         go.GraphLinksModel,
         {
             copiesArrays: true,
             copiesArrayObjects: true,
             linkFromPortIdProperty: 'fromPort',
             linkToPortIdProperty: 'toPort',
-            nodeDataArray: models,
-            linkDataArray: linkData
+            nodeDataArray: [],
+            linkDataArray: []
         }
     )
 
@@ -196,7 +192,7 @@ export function init() {
     // 这有点效率低，但对于每个节点具有合理数量项目的正常大小的图表应该没问题
     function findAllSelectedItems() {
         var items = []
-        for (var nit = myDiagram.nodes; nit.next();) {
+        for (var nit = relationVue.myDiagram.nodes; nit.next();) {
             var node = nit.value
             var table = node.findObject('TABLE')
             if (table) {
@@ -215,21 +211,21 @@ export function init() {
     // If there are any selected items, delete them instead of deleting any selected nodes or links.
     // 覆盖标准CommandHandler deleteSelection行为。
     // 如果有任何选定的项目，请删除它们，而不是删除任何选定的节点或链接。
-    myDiagram.commandHandler.canDeleteSelection = function() {
+    relationVue.myDiagram.commandHandler.canDeleteSelection = function() {
         // true if there are any selected deletable nodes or links,
         // or if there are any selected items within nodes
         // 如果有任何选定的可删除节点或链接，则为true
         // 或者节点中是否有任何选定的项目
-        return go.CommandHandler.prototype.canDeleteSelection.call(myDiagram.commandHandler) || findAllSelectedItems().length > 0
+        return go.CommandHandler.prototype.canDeleteSelection.call(relationVue.myDiagram.commandHandler) || findAllSelectedItems().length > 0
     }
 
-    myDiagram.commandHandler.deleteSelection = function() {
-        go.CommandHandler.prototype.deleteSelection.call(myDiagram.commandHandler)
+    relationVue.myDiagram.commandHandler.deleteSelection = function() {
+        go.CommandHandler.prototype.deleteSelection.call(relationVue.myDiagram.commandHandler)
     }
 
     // 禁用键盘快捷键事件
-    myDiagram.commandHandler.doKeyDown = function() {
-        var e = myDiagram.lastInput
+    relationVue.myDiagram.commandHandler.doKeyDown = function() {
+        var e = relationVue.myDiagram.lastInput
         var control = e.control || e.meta
         var key = e.key
         // 取消Ctrl+X/C/V键的命令关联:
@@ -239,7 +235,7 @@ export function init() {
         go.CommandHandler.prototype.doKeyDown.call(this)
     }
 
-    myDiagram.addModelChangedListener(function(evt) {
+    relationVue.myDiagram.addModelChangedListener(function(evt) {
         if (!evt.isTransactionFinished) { return }
         var txn = evt.object
         var count = 0
@@ -265,16 +261,16 @@ export function init() {
                     var jold = indexOfJoin(objold.to)// 目标节点在join里的下标
                     var idxold = Math.max(iold, jold) // 求最大的
                     var delIdxold = -1
-                    for (var i = 0; i < join[idxold].on.length; i++) {
-                        if (join[idxold].on[i].fromPort === objold.fromPort && join[idxold].on[i].toPort === objold.toPort) {
+                    for (var i = 0; i < relationVue.join[idxold].on.length; i++) {
+                        if (relationVue.join[idxold].on[i].fromPort === objold.fromPort && relationVue.join[idxold].on[i].toPort === objold.toPort) {
                             delIdxold = i
                             break
                         }
                     }
-                    join[idxold].on.splice(delIdxold, 1)
-                    if (join[idxold].on.length === 0) {
-                        join[idxold].type = ','
-                        delete join[idxold].on
+                    relationVue.join[idxold].on.splice(delIdxold, 1)
+                    if (relationVue.join[idxold].on.length === 0) {
+                        relationVue.join[idxold].type = ','
+                        delete relationVue.join[idxold].on
                     }
                     var obj = e.object
                     if (e.modelChange === 'linkFromKey') {
@@ -292,13 +288,13 @@ export function init() {
                     var i = indexOfJoin(obj.from)
                     var j = indexOfJoin(obj.to)
                     var idx = Math.max(i, j)
-                    if (join[idx].type === ',') {
-                        join[idx].type = 'INNER JOIN'
+                    if (relationVue.join[idx].type === ',') {
+                        relationVue.join[idx].type = 'INNER JOIN'
                     }
-                    if (!join[idx].on) {
-                        join[idx].on = []
+                    if (!relationVue.join[idx].on) {
+                        relationVue.join[idx].on = []
                     }
-                    join[idx].on.push({
+                    relationVue.join[idx].on.push({
                         from: obj.from,
                         to: obj.to,
                         fromPort: obj.fromPort,
@@ -337,17 +333,17 @@ export function init() {
                 var j = indexOfJoin(obj.to)
                 var idx = Math.max(i, j)
                 var delIdx = -1
-                for (var i = 0; i < join[idx].on.length; i++) {
-                    if (join[idx].on[i].fromPort === obj.fromPort && join[idx].on[i].toPort === obj.toPort) {
+                for (var i = 0; i < relationVue.join[idx].on.length; i++) {
+                    if (relationVue.join[idx].on[i].fromPort === obj.fromPort && relationVue.join[idx].on[i].toPort === obj.toPort) {
                         delIdx = i
                         break
                     }
                 }
-                join[idx].on.splice(delIdx, 1)
+                relationVue.join[idx].on.splice(delIdx, 1)
                 try {
-                    if (join[idx].on.length === 0) {
-                        join[idx].type = ','
-                        delete join[idxold].on
+                    if (relationVue.join[idx].on.length === 0) {
+                        relationVue.join[idx].type = ','
+                        delete relationVue.join[idxold].on
                     }
                 } catch (e) {}
                 $('#form').html('')
@@ -359,7 +355,7 @@ export function init() {
 
             // 节点删除
             else if (e.change === go.ChangedEvent.Remove && e.modelChange === 'nodeDataArray') {
-                join.splice(join.indexOf(e.oldValue), 1)
+                relationVue.join.splice(relationVue.join.indexOf(e.oldValue), 1)
                 tableNames.splice(tableNames.indexOf(e.oldValue.chineseName), 1)
                 keyNames.splice(keyNames.indexOf(e.oldValue.key), 1)
                 $('#form').html('')
@@ -380,7 +376,7 @@ export function init() {
         if (nodeData.setting.sqlEdit) {
             let columnsInfo = nodeData.columnsInfo
             let obj = JSON.parse(nodeData.setting.sqlEdit)
-            myDiagram.model = go.Model.fromJson(nodeData.setting.sqlEdit)
+            relationVue.myDiagram.model = go.Model.fromJson(nodeData.setting.sqlEdit)
             // 获取节点数据
             let nodeDataArray = obj.nodeDataArray
             // 获取连线数据
@@ -488,14 +484,14 @@ function addLine(obj, isAdd) {
     var i = indexOfJoin(obj.from)
     var j = indexOfJoin(obj.to)
     var idx = Math.max(i, j)
-    if (join[idx].type === ',') {
-        join[idx].type = 'INNER JOIN'
+    if (relationVue.join[idx].type === ',') {
+        relationVue.join[idx].type = 'INNER JOIN'
     }
-    if (!join[idx].on) {
-        join[idx].on = []
+    if (!relationVue.join[idx].on) {
+        relationVue.join[idx].on = []
     }
     if (isAdd) {
-        join[idx].on.push({
+        relationVue.join[idx].on.push({
             from: obj.from,
             to: obj.to,
             fromPort: obj.fromPort,
@@ -520,7 +516,7 @@ function addLine(obj, isAdd) {
 }
 
 function addNode(obj) {
-    join.push(obj)
+    relationVue.join.push(obj)
     relationVue.showJoinArea = false
     // document.getElementById('join2').style.display = 'none'
     // document.getElementById('select').style.display = 'none'
@@ -530,8 +526,8 @@ function addNode(obj) {
 // 查询join里对象的idx
 export function indexOfJoin(tableName) {
     var idx = -1
-    for (var i = 0; i < join.length; i++) {
-        if (join[i].key === tableName || join[i].chineseName === tableName) {
+    for (var i = 0; i < relationVue.join.length; i++) {
+        if (relationVue.join[i].key === tableName || relationVue.join[i].chineseName === tableName) {
             idx = i
             break
         }
@@ -541,9 +537,9 @@ export function indexOfJoin(tableName) {
 // 显示表连接关系
 function showJoin(curLine) {
     try {
-        if (join.length > 0) {
-            for (var i = 0; i < join.length; i++) {
-                var joinData = join[i]
+        if (relationVue.join.length > 0) {
+            for (var i = 0; i < relationVue.join.length; i++) {
+                var joinData = relationVue.join[i]
                 if ((typeof curLine !== 'undefined' && (curLine.from === joinData.key || curLine.to === joinData.key)) || typeof curLine === 'undefined') {
                     if (!relationVue.joinShow) {
                         relationVue.mainTableName = joinData.chineseName
@@ -563,7 +559,7 @@ function showJoin(curLine) {
 }
 
 function get() {
-    return myDiagram
+    return relationVue.myDiagram
 }
 
 // 生成sql
@@ -590,7 +586,7 @@ function addNodeData(node) {
         node.fields[i].key = node.key
         node.fields[i].screen = []
     }
-    myDiagram.model.addNodeData(node)
+    relationVue.myDiagram.model.addNodeData(node)
 }
 function createNewAS(asname) {
     var i = 0
@@ -620,8 +616,8 @@ function createTableName() {
 // 生成sql
 function toSql() {
     var sql = 'SELECT * FROM '
-    for (var i = 0; i < join.length; i++) {
-        var item = join[i]
+    for (var i = 0; i < relationVue.join.length; i++) {
+        var item = relationVue.join[i]
         if (i !== 0) {
             sql += ' ' + item.type + ' '
         }
@@ -639,7 +635,7 @@ function toSql() {
             }
         }
     }
-    if (join.length === 0) {
+    if (relationVue.join.length === 0) {
         document.getElementById('sql').innerHTML = ''
     } else {
         document.getElementById('sql').innerHTML = sql
@@ -660,9 +656,9 @@ export function changeCopare(val) {
     var j = indexOfJoin(totab)
     var idx = Math.max(i, j)
     var editIdx = -1
-    for (var k = 0; k < join[idx].on.length; k++) {
-        if (join[idx].on[k].fromPort === fromPort && join[idx].on[k].toPort === toPort) {
-            join[idx].on[k].compare = val
+    for (var k = 0; k < relationVue.join[idx].on.length; k++) {
+        if (relationVue.join[idx].on[k].fromPort === fromPort && relationVue.join[idx].on[k].toPort === toPort) {
+            relationVue.join[idx].on[k].compare = val
         }
     }
     showJoin()
@@ -670,7 +666,7 @@ export function changeCopare(val) {
 // 改变join的类型
 export function changeType() {
     var idx = indexOfJoin(relationVue.slaverTableName)
-    join[idx].type = relationVue.joinType
+    relationVue.join[idx].type = relationVue.joinType
     relationVue.showDescription = true
     // $('#description').show()
     // $('#description>p').hide()
@@ -705,7 +701,7 @@ export function amplify() {
     // document.getElementById('myDiagramDiv').className = 'col-sm-12'
     relationVue.showRight = false
     relationVue.$refs.myDiagramDiv.style.width = 'calc(100% - 30px)'
-    myDiagram.makeSvg()
+    relationVue.myDiagram.makeSvg()
 }
 export function reduce() {
     // $('#dateTree').outerHeight($(document).height() * 0.585)
@@ -717,12 +713,12 @@ export function reduce() {
     // document.getElementById('myDiagramDiv').className = 'col-sm-9'
     relationVue.showRight = true
     relationVue.$refs.myDiagramDiv.style.width = 'calc(100% - 245px)'
-    myDiagram.makeSvg()
+    relationVue.myDiagram.makeSvg()
 }
 
 export function saveNodeInfo() {
     let columnsInfo = []
-    let diaGramJson = JSON.parse(myDiagram.model.toJson())				// 获取图表的json串
+    let diaGramJson = JSON.parse(relationVue.myDiagram.model.toJson())				// 获取图表的json串
     let nodeDataArray = diaGramJson.nodeDataArray		// 获取节点（图）的数组数据
     let linkDataArray = diaGramJson.linkDataArray
     if (linkDataArray.length === 0) {
@@ -758,8 +754,8 @@ export function saveNodeInfo() {
         columnsInfo.push(columnInfo)
     }
     // 开始保存节点所有数据信息
-    nodeData.setting.sqlEdit = myDiagram.model.toJson()
-    nodeData.setting.join = join
+    nodeData.setting.sqlEdit = relationVue.myDiagram.model.toJson()
+    nodeData.setting.join = relationVue.join
     nodeData.columnsInfo = columnsInfo
     relationVue.$refs.basicVueRef.save_base()						// 保存基础信息
     nodeData.isSet = true

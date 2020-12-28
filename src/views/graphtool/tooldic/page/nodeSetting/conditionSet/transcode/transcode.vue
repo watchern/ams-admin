@@ -1,7 +1,7 @@
 <template>
-    <div id="transcode">
-        <div class="layui-form-item" style="padding-top:20px;">
-            <label class="layui-form-label">上一节点名称：<span></span></label>
+    <div ref="transcode" style="height: 570px;">
+        <div class="layui-form-item" style="padding-top:20px; width: 700px;margin-left:125px;">
+            <label class="layui-form-label">上一节点名称：<span ref="nodeName"></span></label>
             <div class="layui-input-block">
                 <button type="button" style="float:right;" class="layui-btn" @click="addTranscode">添加</button>
             </div>
@@ -34,47 +34,56 @@
             </tr>
             </tbody>
         </table>
+        <el-dialog v-if="detailDialogVisible" :visible.sync="detailDialogVisible" title="数据转码详情" :append-to-body="!pressEscape"
+                   :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
+            <TranscodeDetail :transRuleUuid="transRuleUuid"/>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     import {getTransCodeList} from '@/api/data/transCode'
-    import SelectTransCode from '@/views/data/table/transcodeselect'
-    var nodeData
+    import TranscodeDetail from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/transcode/transcodeDetail.vue'
     export default {
         name: 'TranscodeSet',
+        components:{ TranscodeDetail },
         data() {
             return {
+                nodeData:null,
                 columns: [],
                 items: [],
                 ruleArr: [],
+                detailDialogVisible:false,
+                pressEscape:false,
+                clickModal:false,
+                transRuleUuid:''
             }
         },
         mounted() {
-            let loading = $('#transcode').mLoading({ 'text': '正在加载转码规则数据，请稍后……', 'hasCancel': false })
+            let loading = $(this.$refs.transcode).mLoading({ 'text': '正在加载转码规则数据，请稍后……', 'hasCancel': false })
             getTransCodeList().then(response => {
                 loading.destroy();
                 if (response.data == null) {
                     this.$message.error({ message: '转码规则数据获取失败' })
                 } else {
                     this.ruleArr = response.data
+                    this.$nextTick(() => {
+                        this.init()
+                    })
                 }
-            })
-            this.$nextTick(() => {
-                this.init()
             })
         },
         methods: {
             init() {
                 let graph = this.$parent.graph
-                nodeData = graph.nodeData[graph.curCell.id]
+                this.nodeData = graph.nodeData[graph.curCell.id]
                 let parentIds = graph.nodeData[graph.curCell.id].parentIds
-                $('#transcode span').html(graph.nodeData[parentIds[0]].nodeInfo.nodeName)
+                $(this.$refs.nodeName).html(graph.nodeData[parentIds[0]].nodeInfo.nodeName)
                 // 判断当前节点是否已配置过
-                if (nodeData.isSet) {			// 如果配置过，直接读取已配置转码设置
-                    var tableData = nodeData.setting.tableData
+                if (this.nodeData.isSet) {			// 如果配置过，直接读取已配置转码设置
+                    var tableData = this.nodeData.setting.tableData
                     var changeColName = Object.keys(tableData)
-                    this.columns = JSON.parse(JSON.stringify(nodeData.setting.columns))
+                    this.columns = JSON.parse(JSON.stringify(this.nodeData.setting.columns))
                     for (var k = 0; k < changeColName.length; k++) {
                         this.addTranscode(changeColName[k], tableData[changeColName[k]].transRuleUuid, tableData[changeColName[k]].ruleName)
                     }
@@ -125,18 +134,8 @@
                 this.items.splice(index, 1)
             },
             previewTransCode(transRuleUuid) {
-                top.layer.open({
-                    id: 'transcodeDetail',
-                    type: 2,
-                    title: '查看数据转码信息',
-                    content: '/#/graphtool/tooldic/transcodeDetail?id='+transRuleUuid,
-                    area: ['600px', '500px'],
-                    skin: 'layui-layer-lan',
-                    btn: ['关闭'],
-                    btn1: function(index, layero) {
-                        top.layer.close(index)
-                    }
-                })
+                this.transRuleUuid = transRuleUuid
+                this.detailDialogVisible = true
             },
             saveSetting() {
                 let arr = {}
@@ -144,8 +143,8 @@
                     'transRuleUuid': n.transRuleUuid,
                     'ruleName': n.ruleName
                 })
-                nodeData.setting.columns = this.columns
-                nodeData.setting.tableData = arr
+                this.nodeData.setting.columns = this.columns
+                this.nodeData.setting.tableData = arr
             },
             inputVerify() {
                 if(this.items.length === 0){
@@ -180,18 +179,11 @@
         }
     }
 </script>
-
 <style scoped type="text/css">
-    #transcode{
-        width:700px;
-        height:450px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        margin:0 auto;
-    }
     #main_table{
         width:700px;
-        height:auto;
+        max-height:490px;
+        margin-left:125px;
     }
     #main_table td{
         text-align: center;
@@ -210,20 +202,5 @@
         width:auto;
         float:left;
         font-size: 20px;
-    }
-    .selectCol{
-        width:90%;
-        height:30px;
-        line-height: 30px;
-        font-size: 16px;
-    }
-    .ruleName{
-        width:70%;
-        height:30px;
-        line-height:30px;
-        display:inline;
-    }
-    form{
-        background: none;
     }
 </style>

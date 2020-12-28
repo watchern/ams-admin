@@ -6,7 +6,7 @@
             <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
             <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
         </div>
-        <div ref="outPutTable" style="height: 500px;overflow-y: auto;">
+        <div ref="outPutTable" style="height: 490px;overflow-y: auto;">
             <table id="column_config" class="table table-bordered">
                 <thead>
                 <tr>
@@ -253,7 +253,7 @@
                         if (this.items[i].checked) {
                             const disColumnName = this.items[i].disColumnName
                             const curIndex = vili_column.findIndex(item => item === disColumnName)
-                            if (curIndex > 0) {
+                            if (curIndex > -1) {
                                 verify = false
                                 message = `第${curIndex + 1}行与第${i + 1}行的输出字段重复！请修改`
                             }

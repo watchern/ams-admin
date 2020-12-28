@@ -416,3 +416,16 @@ export function batchDeleteResultRelProject(data) {
     data
   })
 }
+
+/**
+ * 删除图标功能
+ * @param {*} data 图标对象UUid
+ */
+export function deleteModelChartSetup(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/modelChartSetupController/deleteModelChartSetup',
+    method: 'delete',
+    data
+  })
+}

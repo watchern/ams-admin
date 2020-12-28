@@ -38,7 +38,7 @@ export function data_filter(type, name, nodeName) {
  */
 export function saveNodeSetting() {
     let curNodeId = graphIndexVue.sp_nodeId
-    let saveNodeSettingFun = function() {
+    let verifyFun = function() {
         let type = graphIndexVue.sp_optType
         if (!graphIndexVue.$refs.nodeSetting.$refs.basicVueRef.basicInfoVerify()) {
             $(graphIndexVue.$refs.nodeSetting.$refs.myTab).find('li:eq(0)>a').click()
@@ -57,7 +57,7 @@ export function saveNodeSetting() {
                 $(graphIndexVue.$refs.nodeSetting.$refs.myTab).find('li:eq(1)>a').click()
                 return false
             }
-            if (type === 'comparison' || type === 'barChart') {		// 频次分析没有输出列，特殊处理
+            if (type === 'comparison') {		// 频次分析没有输出列，特殊处理
                 graphIndexVue.$refs.nodeSetting.$refs.conditionSet.saveNotOutput()
             } else {
                 if (!graphIndexVue.$refs.nodeSetting.$refs.outputColumnVueRef.outputVerify()) {
@@ -66,6 +66,9 @@ export function saveNodeSetting() {
                 graphIndexVue.$refs.nodeSetting.saveGraphNodeSetting()
             }
         }
+        return true
+    }
+    let saveNodeSettingFun = function() {
         // 变更当前节点的配置状态信息
         graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 1
         graph.nodeData[curNodeId].isSet = true
@@ -133,25 +136,26 @@ export function saveNodeSetting() {
         // 自动保存图形化
         autoSaveGraph()
         graphIndexVue.nodeSettingDialogVisible = false
-        return true
+        //自动执行
+        autoExcute(curNodeId)
     }
     let childrenIds = graph.nodeData[curNodeId].childrenIds.slice()
     if (childrenIds.length > 0) {
-        graphIndexVue.$confirm('该操作会影响本节点及后续节点的执行信息，是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-            center: true
-        }).then(() => {
-            if (saveNodeSettingFun()) {
-                autoExcute(curNodeId)
-            }
-        }).catch(() => {
-            graphIndexVue.nodeSettingDialogVisible = false
-        })
+        if(verifyFun()){
+            graphIndexVue.$confirm('该操作会影响本节点及后续节点的执行信息，是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+            }).then(() => {
+                saveNodeSettingFun()
+            }).catch(() => {
+                graphIndexVue.nodeSettingDialogVisible = false
+            })
+        }
     } else {
-        if (saveNodeSettingFun()) {
-            autoExcute(curNodeId)
+        if(verifyFun()){
+            saveNodeSettingFun()
         }
     }
 }
@@ -569,7 +573,7 @@ function autoExcute(curNodeId) {
             } else {
                 graphIndexVue.$message.error({ message: '自动获取执行节点出错，请手动选择节点执行' })
             }
-        })
+        }).catch( ()=> {})
     }
 }
 
@@ -686,9 +690,8 @@ export function executeNode_callback(notExecuteNodeIdArr) {
         'nodeIdList': notExecuteNodeIdArr.join(','),
         'nodeData': JSON.stringify(graph.nodeData)
     }
-    graphIndexVue.loadResultNum = 0
+    graphIndexVue.initData()
     graphIndexVue.websocketBatchId = executeId
-    graphIndexVue.resultTableArr = []
     graphIndexVue.$nextTick(() => {
         executeNodeSql(dataParam).then(response => {
             if (response.data != null) {
@@ -890,7 +893,7 @@ export function executeAllNode() {
         }
         // 记录执行操作
         refrashHistoryZtree('节点全部执行完毕')
-    })
+    }).catch( ()=> {})
 }
 
 /**
@@ -915,9 +918,8 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
         'nodeData': JSON.stringify(graph.nodeData),
         'nodeObject': JSON.stringify(notExecuteNodeObject)
     }
-    graphIndexVue.loadResultNum = 0
     graphIndexVue.websocketBatchId = new UUIDGenerator().id
-    graphIndexVue.resultTableArr = []
+    graphIndexVue.initData()
     graphIndexVue.$nextTick(() => {
         executeAllNodeSql(dataParam).then( response => {
             load.hide()
@@ -1323,9 +1325,7 @@ export function previewNodeData() {
         graphIndexVue.$message.error('预览数据的表名称为空，预览失败')
         return
     }
-    graphIndexVue.loadResultNum = 0
-    graphIndexVue.resultTableArr = []
-    graphIndexVue.showTableResult = false
+    graphIndexVue.initData()
     graphIndexVue.$nextTick(() => {
         graphIndexVue.websocketBatchId = new UUIDGenerator().id
         graphIndexVue.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable }]
@@ -1585,112 +1585,174 @@ export function reSetOptProperty() {
         }
         autoSaveGraph()
         graphIndexVue.$message({ type: 'success', message: '节点配置已清除' })
-    })
+    }).catch( ()=> {})
 }
 
 /**
  * SQL编辑
  */
-function sqlNodeEdit() {
-    var curSql = graph.nodeData[graph.curCell.id].setting.sql || ''
-    window.sessionStorage.setItem('sql', curSql)
-    layer.open({
-        id: 'sqlNodeEdit',
-        type: 2,
-        title: '我的SQL编辑',
-        content: '../sqlEditor/sqlEditor.jsp',
-        area: ['100%', '100%'],
-        skin: 'layui-layer-lan',
-        resize: false,
-        scrollbar: false,
-        btn: ['确定', '取消'],
-        success: function() {
-            var link = "<a style='color:#fff;position:absolute;top:13px;right:80px;font-size:15px;' class='open_sql' href='#' title=\"点击查看详细的配置说明\">"
-            link += '<img src="images/icon/open_help.png" width="16px" height="16px" style="background-size:100%;vertical-align:inherit;"/>'
-            link += '<span style="position: relative;left: 5px;bottom: 2px;">帮助</span></a>'
-            $('.layui-layer-title').after(link)
-            $('.open_sql').click(function() {
-                showSettingRemark('sql')
-            })
-        },
-        btn1: function(index, layero) {
-            var returnObj = $(layero).find('iframe')[0].contentWindow.getSaveInfo()
-            if (returnObj.isError) {
-                alertMsg('提示', returnObj.message, 'info')
-            } else {
-                if ($.trim(returnObj.sql) !== '') {
-                    if (graph.openGraphType === 1) { // 如果是普通个人图形
-                        sqlNodeEdit_callBack(returnObj, layero)
-                        layer.close(index)
-                    } else { // 如果是场景查询图形和模型图形
-                        if (returnObj.isChange) {
-                            confirmMsg('提示', returnObj.message + '，是否继续？', 'info', function() {
-                                graph.nodeData[graph.curCell.id].sqlIsChanged = true
-                                graph.nodeData[graph.curCell.id].columnsInfo = []// 若SQL发生改变，则清除当前节点的输出列信息
-                                sqlNodeEdit_callBack(returnObj, layero)
-                                layer.close(index)
-                            }, function() {})
-                        } else {
-                            graph.nodeData[graph.curCell.id].sqlIsChanged = false
-                            sqlNodeEdit_callBack(returnObj, layero)
-                            layer.close(index)
-                        }
-                    }
-                } else {
-                    alertMsg('提示', '请输入SQL内容', 'info')
-                }
-            }
-        },
-        btn2: function(index) {
-            layer.close(index)
-        }
-    })
+export function sqlNodeEdit() {
+    graphIndexVue.sqlEditorCurSql = graph.nodeData[graph.curCell.id].setting.sql || ''
+    graphIndexVue.sqlEditorDialogVisible = true
+    // var curSql = graph.nodeData[graph.curCell.id].setting.sql || ''
+    // window.sessionStorage.setItem('sql', curSql)
+    // layer.open({
+    //     id: 'sqlNodeEdit',
+    //     type: 2,
+    //     title: '我的SQL编辑',
+    //     content: '../sqlEditor/sqlEditor.jsp',
+    //     area: ['100%', '100%'],
+    //     skin: 'layui-layer-lan',
+    //     resize: false,
+    //     scrollbar: false,
+    //     btn: ['确定', '取消'],
+    //     success: function() {
+    //         var link = "<a style='color:#fff;position:absolute;top:13px;right:80px;font-size:15px;' class='open_sql' href='#' title=\"点击查看详细的配置说明\">"
+    //         link += '<img src="images/icon/open_help.png" width="16px" height="16px" style="background-size:100%;vertical-align:inherit;"/>'
+    //         link += '<span style="position: relative;left: 5px;bottom: 2px;">帮助</span></a>'
+    //         $('.layui-layer-title').after(link)
+    //         $('.open_sql').click(function() {
+    //             showSettingRemark('sql')
+    //         })
+    //     },
+    //     btn1: function(index, layero) {
+    //         var returnObj = $(layero).find('iframe')[0].contentWindow.getSaveInfo()
+    //         if (returnObj.isError) {
+    //             alertMsg('提示', returnObj.message, 'info')
+    //         } else {
+    //             if ($.trim(returnObj.sql) !== '') {
+    //                 if (graph.openGraphType === 1) { // 如果是普通个人图形
+    //                     sqlNodeEdit_callBack(returnObj, layero)
+    //                     layer.close(index)
+    //                 } else { // 如果是场景查询图形和模型图形
+    //                     if (returnObj.isChange) {
+    //                         confirmMsg('提示', returnObj.message + '，是否继续？', 'info', function() {
+    //                             graph.nodeData[graph.curCell.id].sqlIsChanged = true
+    //                             graph.nodeData[graph.curCell.id].columnsInfo = []// 若SQL发生改变，则清除当前节点的输出列信息
+    //                             sqlNodeEdit_callBack(returnObj, layero)
+    //                             layer.close(index)
+    //                         }, function() {})
+    //                     } else {
+    //                         graph.nodeData[graph.curCell.id].sqlIsChanged = false
+    //                         sqlNodeEdit_callBack(returnObj, layero)
+    //                         layer.close(index)
+    //                     }
+    //                 }
+    //             } else {
+    //                 alertMsg('提示', '请输入SQL内容', 'info')
+    //             }
+    //         }
+    //     },
+    //     btn2: function(index) {
+    //         layer.close(index)
+    //     }
+    // })
 }
 
-function sqlNodeEdit_callBack(returnObj, layero) {
-    var verify = $(layero).find('iframe')[0].contentWindow.verifySql()
-    // if(!verify.verifyFormat){
-    // 	alertMsg("提示","SQL语句不合法，验证不通过","warning");
-    // 	return false;
-    // }
-    // 是否保存数据
-    var ifSaveData = $(layero).find('iframe')[0].contentWindow.$('#ifSaveData')[0]
-    // 获取用户自定义表名称（只有保存数据时才会有值,否则为“”值）
-    var tableName = $(layero).find('iframe')[0].contentWindow.$('#dataTableName').val()
-    // 获取旧的用户自定义的表名称（只有设置过保存数据且保存过节点配置时才会有，否则为“undefined”）
-    var userTableName = graph.nodeData[graph.curCell.id].nodeInfo.userTableName
-    if ($(ifSaveData).is(':checked')) {
-        graph.nodeData[graph.curCell.id].nodeInfo.isCreateTable = 1
-        graph.nodeData[graph.curCell.id].nodeInfo.userTableName = tableName
-    } else {
-        graph.nodeData[graph.curCell.id].nodeInfo.isCreateTable = 0
-    }
-    graph.nodeData[graph.curCell.id].isSet = true
-    graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus = 1
-    graph.nodeData[graph.curCell.id].nodeInfo.nodeSql = returnObj.sql
-    graph.nodeData[graph.curCell.id].setting.sql = returnObj.sql
-    // 更新SQL编辑器的配置状态
-    changeNodeIcon(1, true, graph.curCell.id)
-    // 更新结果表的状态
-    if (verify.verifySelect) {
-        if (graph.nodeData[graph.curCell.id].childrenIds.length === 0) {
-            graph.getModel().beginUpdate()
-            try {
-                // 自动生成结果表
-                autoCreateNode()
-            } finally {
-                graph.getModel().endUpdate()
-            }
-        } else {
-            if (returnObj.isChange || (userTableName && userTableName !== tableName)) { // 如果sql值有变化或者改变了用户自定义的结果表名称
-                // 更改结果表的状态
-                var nodeId = graph.nodeData[graph.curCell.id].childrenIds[0]
-                changeNodeInfo(nodeId, true)
+function sqlNodeEdit_callBack() {
+    let callFun = function () {
+        graphIndexVue.sqlEditorDialogVisible = false
+        graph.nodeData[graph.curCell.id].isSet = true
+        graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus = 1
+        graph.nodeData[graph.curCell.id].nodeInfo.nodeSql = returnObj.sql
+        graph.nodeData[graph.curCell.id].setting.sql = returnObj.sql
+        // 更新SQL编辑器的配置状态
+        changeNodeIcon(1, true, graph.curCell.id)
+        let verify = graphIndexVue.$refs.sqlEditor.verifySql()
+        if (verify.verifySelect) {
+            if (graph.nodeData[graph.curCell.id].childrenIds.length === 0) {
+                graph.getModel().beginUpdate()
+                try {
+                    // 自动生成结果表
+                    autoCreateNode()
+                } finally {
+                    graph.getModel().endUpdate()
+                }
+            } else {
+                if (returnObj.isChange || (userTableName && userTableName !== tableName)) { // 如果sql值有变化或者改变了用户自定义的结果表名称
+                    // 更改结果表的状态
+                    var nodeId = graph.nodeData[graph.curCell.id].childrenIds[0]
+                    changeNodeInfo(nodeId, true)
+                }
             }
         }
+        // 自动保存图形化
+        autoSaveGraph()
     }
-    // 自动保存图形化
-    autoSaveGraph()
+    var returnObj = graphIndexVue.$refs.sqlEditor.getSaveInfo()
+    if (returnObj.isError) {
+        graphIndexVue.$refs.sqlEditor.$message({"type":"warning", "message":returnObj.message})
+    } else {
+        if ($.trim(returnObj.sql) !== '') {
+            if (graph.openGraphType === 1) { // 如果是普通个人图形
+                callFun()
+            } else { // 如果是场景查询图形和模型图形
+                if (returnObj.isChange) {
+                    graphIndexVue.$refs.sqlEditor.$confirm(`${returnObj.message}，是否继续？`, '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'info',
+                        center: true
+                    }).then(() => {
+                        graph.nodeData[graph.curCell.id].sqlIsChanged = true
+                        graph.nodeData[graph.curCell.id].columnsInfo = []// 若SQL发生改变，则清除当前节点的输出列信息
+                        callFun()
+                    }).catch( ()=> {})
+                } else {
+                    graph.nodeData[graph.curCell.id].sqlIsChanged = false
+                    callFun()
+                }
+            }
+        } else {
+            graphIndexVue.$refs.sqlEditor.$message({"type":"warning", "message":"请输入SQL内容"})
+        }
+    }
+
+
+    // var verify = $(layero).find('iframe')[0].contentWindow.verifySql()
+    // // if(!verify.verifyFormat){
+    // // 	alertMsg("提示","SQL语句不合法，验证不通过","warning");
+    // // 	return false;
+    // // }
+    // // 是否保存数据
+    // var ifSaveData = $(layero).find('iframe')[0].contentWindow.$('#ifSaveData')[0]
+    // // 获取用户自定义表名称（只有保存数据时才会有值,否则为“”值）
+    // var tableName = $(layero).find('iframe')[0].contentWindow.$('#dataTableName').val()
+    // // 获取旧的用户自定义的表名称（只有设置过保存数据且保存过节点配置时才会有，否则为“undefined”）
+    // var userTableName = graph.nodeData[graph.curCell.id].nodeInfo.userTableName
+    // if ($(ifSaveData).is(':checked')) {
+    //     graph.nodeData[graph.curCell.id].nodeInfo.isCreateTable = 1
+    //     graph.nodeData[graph.curCell.id].nodeInfo.userTableName = tableName
+    // } else {
+    //     graph.nodeData[graph.curCell.id].nodeInfo.isCreateTable = 0
+    // }
+    // graph.nodeData[graph.curCell.id].isSet = true
+    // graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus = 1
+    // graph.nodeData[graph.curCell.id].nodeInfo.nodeSql = returnObj.sql
+    // graph.nodeData[graph.curCell.id].setting.sql = returnObj.sql
+    // // 更新SQL编辑器的配置状态
+    // changeNodeIcon(1, true, graph.curCell.id)
+    // // 更新结果表的状态
+    // if (verify.verifySelect) {
+    //     if (graph.nodeData[graph.curCell.id].childrenIds.length === 0) {
+    //         graph.getModel().beginUpdate()
+    //         try {
+    //             // 自动生成结果表
+    //             autoCreateNode()
+    //         } finally {
+    //             graph.getModel().endUpdate()
+    //         }
+    //     } else {
+    //         if (returnObj.isChange || (userTableName && userTableName !== tableName)) { // 如果sql值有变化或者改变了用户自定义的结果表名称
+    //             // 更改结果表的状态
+    //             var nodeId = graph.nodeData[graph.curCell.id].childrenIds[0]
+    //             changeNodeInfo(nodeId, true)
+    //         }
+    //     }
+    // }
+    // // 自动保存图形化
+    // autoSaveGraph()
+
 }
 
 /**

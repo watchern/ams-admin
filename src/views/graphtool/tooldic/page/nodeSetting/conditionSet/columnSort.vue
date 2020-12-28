@@ -8,7 +8,6 @@
           <thead>
             <tr>
               <td width="80px">
-                <!--<input @click="selectAll" type="checkbox"/>-->
                 <el-checkbox v-model="selectAll" @change="handleCheckAllChange" />
               </td>
               <td width="200px" align="center">已选择排序字段</td>
