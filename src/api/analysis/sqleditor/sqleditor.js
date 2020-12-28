@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 import { compareSql } from '@/api/graphtool/graphList'
 const CodeMirror = require('@/components/ams-codemirror/lib/codemirror')
-import store from '@/store'
+
 const analysisUrl = '/analysis'
 const dataUrl = '/data'
 /**
@@ -1051,11 +1051,8 @@ function onDrop(event, treeId, treeNodes) {
  * 初始化智能提示的数据表
  * @returns {AxiosPromise}
  */
-export function initTableTip(userId) {
-  const dataUserId = store.getters.datauserid
-  const sceneCode = store.getters.scenecode
-  debugger;
-  const params = { sceneCode: sceneCode, dataUserId: dataUserId }
+export function initTableTip(datauserid,datausername) {
+  const params = { datausername: datausername, dataUserId: datauserid }
   // 调用后台获取数据表数据
   return request({
     baseURL: dataUrl,
@@ -1972,11 +1969,6 @@ export function startExecuteSql(data) {
  * @param {*} data 要执行的数据
  */
 export function getExecuteTask(data) {
-  const dataUserId = store.getters.datauserid
-  const sceneCode = store.getters.scenecode
-  debugger;
-  data.userId = dataUserId;
-  data.sceneCode = sceneCode;
   return request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/getExecuteTask',
