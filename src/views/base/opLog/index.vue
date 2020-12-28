@@ -134,21 +134,6 @@ export default {
     this.getList()
   },
   methods: {
-    // dateFormatter(row, column) {
-    //   const datetime = row.opTime
-    //   if (datetime) {
-    //     var dateMat = new Date(datetime)
-    //     var year = dateMat.getFullYear()
-    //     var month = dateMat.getMonth() + 1
-    //     var day = dateMat.getDate()
-    //     var hh = dateMat.getHours()
-    //     var mm = dateMat.getMinutes()
-    //     var ss = dateMat.getSeconds()
-    //     var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
-    //     return timeFormat
-    //   }
-    //   return ''
-    // },
     getList(query) {
       this.listLoading = true
       if (query) {

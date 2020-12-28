@@ -1,7 +1,10 @@
 <template>
   <div class="page-container">
     <div class="filter-container">
-      <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
+      <QueryField 
+        ref="queryfield" 
+        :form-data="queryFields"
+        @submit="getList" />
     </div>
     <el-row>
       <el-col align="right">
@@ -32,7 +35,7 @@
             @click="handdetails(scope.row)">
            {{scope.row.remindTitle}}
            <span 
-            v-if="scope.row.readStatus === 0"
+            v-show="scope.row.readStatus === 0"
             class ="notRead"
             > NEW</span></a>
         </template>
@@ -55,14 +58,12 @@
       v-model="temp"
       >
       <el-row>
-        <!-- class="visible-p1" -->
         <el-col :span="24"><div class="visible-p1">
           {{this.temp.remindTitle}}
         </div></el-col>
       </el-row>
       <el-divider></el-divider>
       <el-row>
-        <!-- class="visible-p1" -->
         <el-col :span="12"><div class="visible-p2">
           {{this.temp.remindTime}}
         </div></el-col>
@@ -71,7 +72,6 @@
         </div></el-col>
       </el-row>
       <el-row>
-        <!-- class="visible-p1" -->
         <el-col :span="24"><div class="visible-p3">
           {{this.temp.remindContent}}
         </div></el-col>
@@ -93,7 +93,7 @@ export default {
       listLoading: false,
       queryFields: [
         { label: '标题', name: 'remindTitle', type: 'fuzzyText', value: '' },
-        //{ label: '内容', name: 'remindContent', type: 'fuzzyText' },
+        // { label: '内容', name: 'remindContent', type: 'fuzzyText' },
         { label: '提醒时间范围', name: 'remindTime', type: 'timePeriod' },
         { label: '阅读状态', name: 'readStatus', type: 'select',
           data: [{ name: '未阅', value: '0' }, { name: '已阅', value: '1' }], default: '-1' }
@@ -167,7 +167,7 @@ export default {
       selections: [],
       dialogFormVisible: false,
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20
       }
@@ -180,27 +180,6 @@ export default {
     this.getList()
   },
   methods: {
-    // /**
-    //  * 格式化时间字符串
-    //  * @param row 行数据
-    //  * @param column 列数据
-    //  * @returns {string} 返回格式化后的字符串
-    //  */
-    // dateFormatter(row, column) {
-    //   const datetime = row.remindTime
-    //   if (datetime) {
-    //     var dateMat = new Date(datetime)
-    //     var year = dateMat.getFullYear()
-    //     var month = dateMat.getMonth() + 1
-    //     var day = dateMat.getDate()
-    //     var hh = dateMat.getHours()
-    //     var mm = dateMat.getMinutes()
-    //     var ss = dateMat.getSeconds()
-    //     var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
-    //     return timeFormat
-    //   }
-    //   return ''
-    // },
     /**
      * 格式化已阅状态
      * @param row 行数据
