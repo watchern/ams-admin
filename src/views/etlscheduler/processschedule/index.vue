@@ -1531,9 +1531,9 @@ export default {
       }
     }
   }
-  .buttonText {
-    color: #409eff;
-  }
+  // .buttonText {
+    // color: #409eff;
+  // }
   .el-popover{
     width: 60%;
     overflow: auto;
@@ -1542,9 +1542,9 @@ export default {
     position: static;
 
   }
-  .deleteIcon{
+  // .deleteIcon{
     // position: relative;
     // left: 460px;
     // bottom: 115px;
-  }
+  // }
 </style>

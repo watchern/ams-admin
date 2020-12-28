@@ -52,6 +52,7 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <el-dialog 
+      :append-to-body="true"
       :visible.sync="dialogFormVisible" 
       top = "10vh"
       title="消息详情"
@@ -208,17 +209,12 @@ export default {
       var id = data.remindUuid
     if(data.modeUrl != null){
       this.selectDetail(data)
-      updateRemind(id).then(result =>{
-         if (result.code == 0) {
-          this.getList()
-        } else {
-          this.$notify({ success: '失败', message: '标记已阅失败' })
-        }
-      })
     }else{
       console.log(id)
       this.temp = data
       this.dialogFormVisible = true
+    }
+    if(data.readStatus == 0){
       updateRemind(id).then(result =>{
          if (result.code == 0) {
           this.getList()
@@ -228,6 +224,7 @@ export default {
       })
       }
     }
+
   }
 }
 </script>

@@ -10,7 +10,7 @@
         :rules="rules" 
         class="detail-form">
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
           <el-form-item 
             label="类型名称" 
             prop="codeName" >
@@ -28,7 +28,7 @@
                 class="input" />
           </el-form-item>
           </el-col>
-          <el-col span="11" :offset="2">
+          <el-col :span="11" :offset="2">
           <el-form-item 
               label="类型编码" 
               prop="codeValue" >
@@ -42,7 +42,7 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
           <el-form-item 
             label="排序号" 
             prop="codeIndex" >

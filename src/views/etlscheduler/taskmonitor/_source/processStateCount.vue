@@ -10,7 +10,7 @@
           <div
             v-for="(item, $index) in processStateList"
             :key="$index"
-            class="text item"
+            class="piedetails item"
           >
             <el-row>
               <el-col :span="14">
@@ -191,37 +191,20 @@ export default {
 }
 </script>
 
-<style scoped>
-.table-small-model {
-  padding: 0 10px;
-  position: absolute;
-  border: 0px solid #000;
-}
-.text {
+<style scoped lang="scss">
+.piedetails {
   margin: 10px 15px;
-}
-.text .ellipsis {
-  color: #333;
-  font-weight: bold;
-}
-.text .percentage {
-  font-size: 14px;
-  color: #333;
-}
-.text a {
-  color: #409eff;
-  font-size: 14px;
-}
-.refresh {
-  font-size: 22px;
-  cursor: pointer;
-}
-.bottom {
-  margin: 0 0 0 0;
-}
-.list-table {
-  height: 300px;
-  float: left;
-  margin: 0 0 0 70px;
+  .ellipsis {
+    color: #333;
+    font-weight: bold;
+  }
+  .percentage {
+    font-size: 14px;
+    color: #333;
+  }
+  a {
+    color: #409eff;
+    font-size: 14px;
+  }
 }
 </style>

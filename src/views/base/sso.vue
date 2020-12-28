@@ -22,7 +22,7 @@
           })
         }
         getSceneInst(sceneCode , prjcode).then(resp => {
-          var prjname = resp.data;
+          var prjname = resp.data.dataUserName;
           this.$store.dispatch('user/saveScene', sceneCode, "项目场景", prjcode, personuuid, prjname);
           sessionStorage.setItem('sceneCode', sceneCode);
           sessionStorage.setItem('sceneName', "审计项目场景");

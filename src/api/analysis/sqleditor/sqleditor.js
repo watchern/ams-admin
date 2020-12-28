@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 import { compareSql } from '@/api/graphtool/graphList'
 const CodeMirror = require('@/components/ams-codemirror/lib/codemirror')
-
+import store from '@/store'
 const analysisUrl = '/analysis'
 const dataUrl = '/data'
 /**
@@ -1052,8 +1052,9 @@ function onDrop(event, treeId, treeNodes) {
  * @returns {AxiosPromise}
  */
 export function initTableTip(userId) {
-  const sceneCode = sessionStorage.getItem('sceneCode')
-  const dataUserId = sessionStorage.getItem('dataUserId')
+  const dataUserId = store.getters.datauserid
+  const sceneCode = store.getters.scenecode
+  debugger;
   const params = { sceneCode: sceneCode, dataUserId: dataUserId }
   // 调用后台获取数据表数据
   return request({
@@ -1971,9 +1972,10 @@ export function startExecuteSql(data) {
  * @param {*} data 要执行的数据
  */
 export function getExecuteTask(data) {
-  const userId = sessionStorage.getItem('sceneCode');
-  const sceneCode = sessionStorage.getItem('dataUserId');
-  data.userId = userId;
+  const dataUserId = store.getters.datauserid
+  const sceneCode = store.getters.scenecode
+  debugger;
+  data.userId = dataUserId;
   data.sceneCode = sceneCode;
   return request({
     baseURL: analysisUrl,

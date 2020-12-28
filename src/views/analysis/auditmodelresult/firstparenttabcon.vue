@@ -1290,8 +1290,10 @@ export default {
       this.resultShareDialogIsSee = true;
     },
     sendToOA() {
+      const dataUserId = this.$store.getters.datauserid
+      const dataUserName = this.$store.getters.datausername
       var runTaskRelUuid =  this.selected1[0].runTaskRelUuid;
-      sendToOA(runTaskRelUuid).then(resp=>{
+      sendToOA(runTaskRelUuid, dataUserId, dataUserName).then(resp=>{
         this.$message({
           type: "success",
           message: "发送成功!",
