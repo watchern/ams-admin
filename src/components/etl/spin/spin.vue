@@ -52,7 +52,7 @@
           </g>
         </g>
       </svg>
-      <span class="sp1">{{ $t('Loading...') }}</span>
+      <span class="sp1">正在努力加载中...</span>
     </div>
   </div>
 </template>

@@ -1649,17 +1649,17 @@ export function sqlNodeEdit() {
     // })
 }
 
-function sqlNodeEdit_callBack() {
-    let callFun = function () {
-        graphIndexVue.sqlEditorDialogVisible = false
-        graph.nodeData[graph.curCell.id].isSet = true
-        graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus = 1
-        graph.nodeData[graph.curCell.id].nodeInfo.nodeSql = returnObj.sql
-        graph.nodeData[graph.curCell.id].setting.sql = returnObj.sql
-        // 更新SQL编辑器的配置状态
-        changeNodeIcon(1, true, graph.curCell.id)
-        let verify = graphIndexVue.$refs.sqlEditor.verifySql()
-        if (verify.verifySelect) {
+export async function sqlNodeEdit_callBack() {
+    let callFun = async function (obj) {
+        let response = await graphIndexVue.$refs.sqlEditor.getVerifySqlResult()
+        if (response.data.verifySelect) {
+            graphIndexVue.sqlEditorDialogVisible = false
+            graph.nodeData[graph.curCell.id].isSet = true
+            graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus = 1
+            graph.nodeData[graph.curCell.id].nodeInfo.nodeSql = obj.sql
+            graph.nodeData[graph.curCell.id].setting.sql = obj.sql
+            // 更新SQL编辑器的配置状态
+            changeNodeIcon(1, true, graph.curCell.id)
             if (graph.nodeData[graph.curCell.id].childrenIds.length === 0) {
                 graph.getModel().beginUpdate()
                 try {
@@ -1669,23 +1669,25 @@ function sqlNodeEdit_callBack() {
                     graph.getModel().endUpdate()
                 }
             } else {
-                if (returnObj.isChange || (userTableName && userTableName !== tableName)) { // 如果sql值有变化或者改变了用户自定义的结果表名称
+                if (obj.isChange) { // 如果sql值有变化或者改变了用户自定义的结果表名称
                     // 更改结果表的状态
                     var nodeId = graph.nodeData[graph.curCell.id].childrenIds[0]
                     changeNodeInfo(nodeId, true)
                 }
             }
+            // 自动保存图形化
+            autoSaveGraph()
+        }else{
+            graphIndexVue.$refs.sqlEditor.$message({"type":"warning", "message":"最末句SQL不是SELECT查询语句，请修改"})
         }
-        // 自动保存图形化
-        autoSaveGraph()
     }
-    var returnObj = graphIndexVue.$refs.sqlEditor.getSaveInfo()
+    var returnObj = await graphIndexVue.$refs.sqlEditor.saveSqlInfo()
     if (returnObj.isError) {
         graphIndexVue.$refs.sqlEditor.$message({"type":"warning", "message":returnObj.message})
     } else {
         if ($.trim(returnObj.sql) !== '') {
             if (graph.openGraphType === 1) { // 如果是普通个人图形
-                callFun()
+                callFun(returnObj)
             } else { // 如果是场景查询图形和模型图形
                 if (returnObj.isChange) {
                     graphIndexVue.$refs.sqlEditor.$confirm(`${returnObj.message}，是否继续？`, '提示', {
@@ -1696,11 +1698,11 @@ function sqlNodeEdit_callBack() {
                     }).then(() => {
                         graph.nodeData[graph.curCell.id].sqlIsChanged = true
                         graph.nodeData[graph.curCell.id].columnsInfo = []// 若SQL发生改变，则清除当前节点的输出列信息
-                        callFun()
+                        callFun(returnObj)
                     }).catch( ()=> {})
                 } else {
                     graph.nodeData[graph.curCell.id].sqlIsChanged = false
-                    callFun()
+                    callFun(returnObj)
                 }
             }
         } else {
