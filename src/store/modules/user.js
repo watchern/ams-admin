@@ -126,9 +126,6 @@ const actions = {
         personuuid = window.location.hash.replace('#/base/sso?param=', '').split(",")[0];
         Cookies.set("PERSONUUID", personuuid)
       }*/
-     console.log(state);
-
-
 
       getInfo().then(response => {
         const { data } = response
@@ -140,7 +137,6 @@ const actions = {
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
-        debugger;
         commit('SET_ID', id)
         commit('SET_ROLES', roles)
         commit('SET_NAME', name)
@@ -158,7 +154,6 @@ const actions = {
             commit('SET_SCENECODE', sceneCode)
             commit('SET_SCENENAME', sceneName)
             commit('SET_DATAUSERID', dataUserId)
-            debugger;
             commit('SET_DATAUSERNAME', dataUserName)
           });
         }
@@ -198,7 +193,6 @@ const actions = {
 
   saveScene({ commit }, payload) {
     return new Promise(resolve => {
-      debugger;
       commit('SET_SCENECODE', payload.sceneCode)
       commit('SET_SCENENAME', payload.sceneName)
       commit('SET_DATAUSERID', payload.dataUserId)
