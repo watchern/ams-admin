@@ -41,14 +41,8 @@
           </a>
         </template>
       </el-table-column>
-      <!-- <el-table-column label="内容"  align="left" prop="remindContent" /> -->
       <el-table-column label="提醒时间"  align="center" prop="remindTime"/>
       <el-table-column label="阅读状态" prop="readStatus" align="center"  :formatter="readStatusFormatter" />
-      <!-- <el-table-column label="操作" prop="modeUrl" align="center" >
-        <template slot-scope="scope">
-          <el-button type="text" size="small" @click="selectDetail(scope.row)">查看</el-button>
-        </template>
-      </el-table-column> -->
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <el-dialog 
