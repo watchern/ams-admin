@@ -566,7 +566,7 @@
                 this.loginUserCode = this.$store.state.user.code
                 const roleArr = this.$store.state.user.roles
                 const screenManager = 'screenManager'// 场景查询管理员角色
-                if (roleArr.includes(screenManager)) {
+                if (roleArr && roleArr.includes(screenManager)) {
                     this.hasManagerRole = true
                 }
             },
@@ -841,6 +841,7 @@
                             }
                         }, 'json')
                     } else {						// 业务权限环境
+                        console.log(obj.$store.getters)
                         console.log(obj.$store.getters.datauserid)
                         console.log(obj.$store.getters.datausername)
                         initTableTip(obj.$store.getters.datauserid,obj.$store.getters.datausername).then(response => {
