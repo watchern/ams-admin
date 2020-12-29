@@ -108,7 +108,7 @@
                                 <td>{{ item.rtn }}</td>
                                 <td>{{ item.columnName }}</td>
                                 <td>
-                                    <el-input v-model="item.disColumnName" class="newColumn" @blur="vilidata_simple(index)"></el-input>
+                                    <el-input v-model="item.disColumnName" class="newColumn"></el-input>
                                 </td>
                                 <td class="text-center">
                                     <el-checkbox :key="item.id" v-model="item.checked" :name="item.attrColumnName" @change="checkBoxChange(index)" />
@@ -212,45 +212,43 @@
                 }
             },
             vilidata_simple(index) {
+                const checkedIndex = this.items.findIndex(n => n.checked === true)
+                if (checkedIndex < 0) {
+                    this.$message({ type: 'warning', message: '请选择输出字段' })
+                    return false
+                }
                 const vili_column = []
                 let verify = true
                 let message = ''
-                let checkedNum = 0
-                if (typeof index !== 'undefined') { // 失焦时校验输出列是否重复
-                    const curDisColumnName = this.items[index].disColumnName
-                    for (let i = 0; i < this.items.length; i++) {
-                        if (this.items[i].checked) {
-                            if (index !== i) {
-                                if (curDisColumnName === this.items[i].disColumnName) {
-                                    verify = false
-                                    message = `第${index + 1}行与第${i + 1}行的输出字段重复！请修改`
-                                    break
-                                }
-                            }
-                            checkedNum++
+                for (let i = 0; i < this.items.length; i++) {
+                    if (this.items[i].checked) {
+                        const disColumnName = this.items[i].disColumnName
+                        if($.trim(disColumnName) === ""){
+                            verify = false
+                            message = `第${i + 1}行的输出字段的内容不能为空值，请修改`
+                            break;
+                        }
+                        if(getStrBytes(disColumnName) > 30){
+                            verify = false
+                            message = `第${i + 1}行的输出字段超过30个字符的长度限制，请修改`
+                            break;
+                        }
+                        if(!verifyReg(newColumnName)){
+                            verify = false
+                            message = `第${i + 1}行的输出字段中含有特殊字符或以数字开头，请修改`
+                            break;
+                        }
+                        const curIndex = vili_column.findIndex(item => item === disColumnName)
+                        if (curIndex > -1) {
+                            verify = false
+                            message = `第${curIndex + 1}行与第${i + 1}行的输出字段重复，请修改`
+                            break;
                         }
                     }
-                } else { // 保存配置时校验输出列是否重复
-                    for (let i = 0; i < this.items.length; i++) {
-                        if (this.items[i].checked) {
-                            const disColumnName = this.items[i].disColumnName
-                            const curIndex = vili_column.findIndex(item => item === disColumnName)
-                            if (curIndex > -1) {
-                                verify = false
-                                message = `第${curIndex + 1}行与第${i + 1}行的输出字段重复！请修改`
-                            }
-                            checkedNum++
-                        }
-                        vili_column.push(this.items[i].disColumnName)
-                    }
+                    vili_column.push(this.items[i].disColumnName)
                 }
-                if (checkedNum === 0) {
-                    this.$message({ type: 'info', message: '请选择输出字段' })
-                    verify = false
-                } else {
-                    if (!verify) {
-                        this.$message({ type: 'info', message: message })
-                    }
+                if (!verify) {
+                    this.$message({ type: 'warning', message: message })
                 }
                 return verify
             },

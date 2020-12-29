@@ -1,7 +1,6 @@
 import { deleteExecuteNodes, executeNodeSql, executeAllNodeSql } from '@/api/graphtool/graphList'
 import * as validateJs from '@/views/graphtool/tooldic/js/validate'
 import { updateResourceZtreeNodeName } from '@/views/graphtool/tooldic/js/index'
-let hL = null
 let graphIndexVue = null
 let graph = null
 export var sendGraphIndexVue = (_this) => {
@@ -78,12 +77,12 @@ export function saveNodeSetting() {
         // 自动生成节点和线，start
         graph.getModel().beginUpdate()
         try {
-            var nodeType = graph.nodeData[curNodeId].nodeInfo.optType
+            let nodeType = graph.nodeData[curNodeId].nodeInfo.optType
             // 判断当前节点是否已经生成【结果表】节点
-            var y = graph.curCell.geometry.y				// 纵向坐标位置
+            let y = graph.curCell.geometry.y				// 纵向坐标位置
             if (nodeType === 'layering') {				// 数据分层节点特殊处理
                 if (childrenIds.length > 0) {					// 如果有已经生成的结果表，则先删除已有的结果表
-                    var cells = []
+                    let cells = []
                     for (var i = 0; i < childrenIds.length; i++) {
                         cells.push(graph.model.getCell(childrenIds[i]))
                     }
@@ -94,11 +93,15 @@ export function saveNodeSetting() {
                         deleteResourceZtreeNode(childrenIds)
                     }
                 }
-                var newTableArr = []; var newSqlArr = []; var areaArr = []
-                var resultTableNameArr = graph.nodeData[curNodeId].nodeInfo.resultTableNameArr
-                var nodeSqlArr = graph.nodeData[curNodeId].nodeInfo.nodeSqlArr
-                var colName = graph.nodeData[curNodeId].setting.hierarchy_column
-                var layeringArr = graph.nodeData[curNodeId].setting.hierarchy_map
+                let newTableArr = []
+                let newSqlArr = []
+                let newSelectSqlArr = []
+                let areaArr = []
+                let resultTableNameArr = graph.nodeData[curNodeId].nodeInfo.resultTableNameArr
+                let nodeSqlArr = graph.nodeData[curNodeId].nodeInfo.nodeSqlArr
+                let selectSqlNotViewTableArr = graph.nodeData[curNodeId].nodeInfo.selectSqlNotViewTableArr
+                let colName = graph.nodeData[curNodeId].setting.hierarchy_column
+                let layeringArr = graph.nodeData[curNodeId].setting.hierarchy_map
                 for (var j = 0; j < layeringArr.length; j++) {
                     var name = colName + '【' + layeringArr[j].c_col_1 + '至' + layeringArr[j].c_col_2 + '】'
                     areaArr.push('字段【' + colName + '】：' + layeringArr[j].c_col_1 + '至' + layeringArr[j].c_col_2)
@@ -106,18 +109,22 @@ export function saveNodeSetting() {
                     if (resultTableNameArr.length === 0) {
                         newTableArr.push('')
                         newSqlArr.push('')
+                        newSelectSqlArr.push('')
                         continue
                     }
                     if (j <= resultTableNameArr.length - 1) {
                         newTableArr[j] = resultTableNameArr[j]
                         newSqlArr[j] = nodeSqlArr[j]
+                        newSelectSqlArr[j] = selectSqlNotViewTableArr[j]
                     } else {
                         newTableArr.push('')
                         newSqlArr.push('')
+                        newSelectSqlArr.push('')
                     }
                 }
                 graph.nodeData[curNodeId].nodeInfo.resultTableNameArr = newTableArr.slice()
                 graph.nodeData[curNodeId].nodeInfo.nodeSqlArr = newSqlArr.slice()
+                graph.nodeData[curNodeId].nodeInfo.selectSqlNotViewTableArr = newSelectSqlArr.slice()
                 graph.nodeData[curNodeId].nodeInfo.areaArr = areaArr
             } else {
                 if (childrenIds.length === 0 && nodeType !== 'barChart') {			// 自定义图形不生成结果表
