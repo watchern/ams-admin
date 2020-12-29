@@ -122,21 +122,6 @@
                         })
                     }
                 }
-                if (this.nodeData.isSet) {
-                    this.hierarchy_column = this.nodeData.setting.hierarchy_column// 选择的分层字段
-                    this.items = []
-                    this.$nextTick( () => {
-                        for(let i=0; i<this.nodeData.setting.hierarchy_map.length; i++){
-                            let obj = this.nodeData.setting.hierarchy_map[i]
-                            this.keyId = i
-                            this.items.push({
-                                id:i,
-                                c_col_1: obj.c_col_1,
-                                c_col_2: obj.c_col_2
-                            })
-                        }
-                    })
-                }
             },
             initWebSocKet(){
                 let $this = this
@@ -160,6 +145,21 @@
                                 obj[minKey] = minKey
                                 $this.dict_map.push(obj)
                             }
+                        }
+                        if (this.nodeData.isSet) {
+                            this.hierarchy_column = this.nodeData.setting.hierarchy_column// 选择的分层字段
+                            this.items = []
+                            this.$nextTick( () => {
+                                for(let i=0; i<this.nodeData.setting.hierarchy_map.length; i++){
+                                    let obj = this.nodeData.setting.hierarchy_map[i]
+                                    this.keyId = i
+                                    this.items.push({
+                                        id:i,
+                                        c_col_1: obj.c_col_1,
+                                        c_col_2: obj.c_col_2
+                                    })
+                                }
+                            })
                         }
                     }
                 }

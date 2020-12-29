@@ -234,15 +234,15 @@
             <div class="tab-content">
                 <div id="graphInfo" role="tabpanel" class="tab-pane active">
                     <div style="margin-top: 15px;height: 40px;line-height: 40px;">
-                        <label for="graphName_show" class="col-sm-2 control-label" style="text-align: right;">名称</label>
+                        <label class="col-sm-2 control-label" style="text-align: right;">名称</label>
                         <div class="col-sm-10">
-                            <input id="graphName_show" type="text" class="form-control" autocomplete="off" placeholder="名称" readonly>
+                            <input v-model="graphName_show" type="text" class="form-control" autocomplete="off" placeholder="名称" readonly>
                         </div>
                     </div>
                     <div style="margin-top: 10px;">
-                        <label for="description_show" class="col-sm-2 control-label" style="text-align: right;">描述</label>
+                        <label class="col-sm-2 control-label" style="text-align: right;">描述</label>
                         <div class="col-sm-10">
-                            <textarea id="description_show" class="form-control" placeholder="描述" style="resize:none;min-height:100px;max-height:300px;" readonly />
+                            <textarea v-model="description_show" class="form-control" placeholder="描述" style="resize:none;min-height:100px;max-height:300px;" readonly />
                         </div>
                     </div>
                 </div>
@@ -442,7 +442,7 @@
     import SqlEditor from '@/views/analysis/sqleditor/index.vue'
     // 引入后端接口的相关方法
     import { removeJcCssfile, addCssFile, addJsFile } from "@/api/analysis/common"
-    import { getGraphInfoById, getTableCol, viewNodeData, saveGraphInterface } from '@/api/graphtool/graphList'
+    import { getGraphInfoById, getTableCol, viewNodeData, saveGraphInterface, createScreenQuery } from '@/api/graphtool/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
     // 引入前段JS的相关方法
     import * as commonJs from '@/views/graphtool/tooldic/js/common'
@@ -477,6 +477,8 @@
                 hasManagerRole: false, // 是否觉有管理员权限（只在开发环境下会用到，用以对左侧资源树的表进行分类）
                 graphName: '',
                 description: '',
+                graphName_show:'',
+                description_show:'',
                 graphUuid: this.graphUuidParam, // 打开图形的ID
                 openGraphType: this.openGraphTypeParam, // 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
                 openType: this.openTypeParam, // 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
@@ -512,7 +514,9 @@
                 sqlEditorCurSql:'',//SQL编辑器的SQL语句
                 sqlEditorDialogVisible:false,
                 sqlEditorWidth:'',
-                sqlEditorStyle:''
+                sqlEditorStyle:'',
+                curModelSql: '',// 用来临时存储打开模型图形时的模型SQL语句
+                isSearchExpand:false// 左侧资源树搜索功能的变量
             }
         },
         created() {
@@ -668,8 +672,8 @@
                 }, function() {
                     $this.$refs.graphToolDiv.innerHTML = '<center style="margin-top:10%;">加载资源文件出错</center>'
                 })
-                if (this.openGraphType === 3) {
-                    if (this.hasManagerRole === false) {
+                if (this.openGraphType === 3) {//当打开公共场景查询图形时
+                    if (this.hasManagerRole === false) {//如果没有场景查询管理员权限，则图形不可编辑
                         this.canEditor = false
                     }
                     // 此请求不需要做ID校验
@@ -837,6 +841,8 @@
                             }
                         }, 'json')
                     } else {						// 业务权限环境
+                        console.log(obj.$store.getters.datauserid)
+                        console.log(obj.$store.getters.datausername)
                         initTableTip(obj.$store.getters.datauserid,obj.$store.getters.datausername).then(response => {
                             if (response.data == null) {
                                 obj.loading.destroy()
@@ -957,25 +963,41 @@
                     'graphName': this.graphName,
                     'description': this.description,
                     'graphXml': xml,
-                    'graphType': this.openGraphType,
                     'nodeData': JSON.stringify(graph.nodeData) // 各个节点的配置信息
                 }
                 if (this.saveGraphType === 'saveGraph') {
                     data.graphUuid = this.graphUuid
                 }
-                saveGraphInterface(data).then(response => {
+                let callBack = function(response,msg_success,msg_error){
                     this.graphFormVisible = false
                     if (response.data == null) {
-                        this.$message.error({ message: '图形保存失败' })
+                        this.$message.error({ message: msg_error })
                     } else {
                         this.graphUuid = response.data
                         if (this.saveGraphType === 'saveGraph') {
-                            $('#graphName_show').val(this.graphName)
-                            $('#description_show').val(this.description)
+                            this.graphName_show = this.graphName
+                            this.description_show = this.description
                         }
-                        this.$message({ type: 'info', message: '图形保存成功' })
+                        this.$message({ type: 'info', message: msg_success })
                     }
-                })
+                }
+                if(this.openGraphType === 1){//个人图形
+                    data.graphType = 1
+                    saveGraphInterface(data).then(response => {
+                        callBack(response,'图形保存失败','图形保存成功')
+                    }).catch( error => {})
+                }else{//场景查询图形
+                    data.graphType = 3
+                    if(this.openGraphType === 2){//个人场景查询图形
+                        data.publicType = 0
+                    }else{//公共场景查询图形
+                        data.publicType = 1
+                        data.executeStatus = 3// 未执行
+                    }
+                    createScreenQuery(data).then( response => {
+                        callBack(response,'场景查询图形保存失败','场景查询图形保存成功')
+                    }).catch( error => {})
+                }
             },
             searchZtree() {
                 indexJs.searchZtree()

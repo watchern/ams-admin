@@ -94,7 +94,7 @@
                                 <td>{{ item.rtn }}</td>
                                 <td>{{ item.columnName }}</td>
                                 <td>
-                                    <el-input v-model="item.newColumnName" class="newColumn" @blur="vilidata_simple(index)"></el-input>
+                                    <el-input v-model="item.newColumnName" class="newColumn"></el-input>
                                 </td>
                                 <td class="text-center">
                                     <el-checkbox :key="item.columnName" v-model="item.checked" :disabled="isDisabled" @change="checkBoxChange(index)" />
@@ -168,24 +168,43 @@
                 groupCountJs.delCountTr(index)
             },
             vilidata_simple(index) {
+                const checkedIndex = this.columnItems.findIndex(n => n.checked === true)
+                if (checkedIndex < 0) {
+                    this.$message({ type: 'warning', message: '请选择输出字段' })
+                    return false
+                }
+                const vili_column = []
                 let verify = true
                 let message = ''
-                const curNewColumnName = this.columnItems[index].newColumnName
-                if (this.columnItems[index].checked) {
-                    for (let i = 0; i < this.columnItems.length; i++) {
-                        if (this.columnItems[i].checked) {
-                            if (index !== i) {
-                                if (curNewColumnName === this.columnItems[i].newColumnName) {
-                                    verify = false
-                                    message = `第${index + 1}行与第${i + 1}行的输出字段重复！请修改`
-                                    break
-                                }
-                            }
+                for (let i = 0; i < this.columnItems.length; i++) {
+                    if (this.columnItems[i].checked) {
+                        const curNewColumnName = this.columnItems[index].newColumnName
+                        if($.trim(curNewColumnName) === ""){
+                            verify = false
+                            message = `第${i + 1}行的输出字段的内容不能为空值，请修改`
+                            break;
+                        }
+                        if(getStrBytes(curNewColumnName) > 30){
+                            verify = false
+                            message = `第${i + 1}行的输出字段的内容超过30个字符的长度限制，请修改`
+                            break;
+                        }
+                        if(!verifyReg(curNewColumnName)){
+                            verify = false
+                            message = `第${i + 1}行的输出字段的内容含有特殊字符或以数字开头，请修改`
+                            break;
+                        }
+                        const curIndex = vili_column.findIndex(item => item === curNewColumnName)
+                        if (curIndex > -1) {
+                            verify = false
+                            message = `第${curIndex + 1}行与第${i + 1}行的输出字段的内容重复，请修改`
+                            break;
                         }
                     }
+                    vili_column.push(this.columnItems[i].newColumnName)
                 }
                 if (!verify) {
-                    this.$message({ type: 'info', message: message })
+                    this.$message({ type: 'warning', message: message })
                 }
                 return verify
             },
