@@ -21,6 +21,7 @@ router.beforeEach(async(to, from, next) =>
 
   // determine whether the user has logged in
   const hasToken = getToken()
+
 /*console.log(to);
   console.log(from);
   next({ ...to, replace: true })*/
