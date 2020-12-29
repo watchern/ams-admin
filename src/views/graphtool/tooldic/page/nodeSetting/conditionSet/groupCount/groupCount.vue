@@ -49,13 +49,6 @@
                                         </tr>
                                         </thead>
                                         <tbody id="row_add">
-                                        <!--<tr ref="countTr" :data-trNum="1">-->
-                                            <!--<td><div id="searchName1" class="xm-select-demo searchName"></div></td>-->
-                                            <!--<td><div id="searchType1" class="xm-select-demo searchType"></div></td>-->
-                                            <!--<td align="center">-->
-                                                <!--<button type="button" class="btn btn-primary" @click="addCountTr">添加行</button>-->
-                                            <!--</td>-->
-                                        <!--</tr>-->
                                         <tr v-for="(item,index) in items" :key="item.id" ref="countTr">
                                             <td><div :id="`searchName${(item.id)}`" class="xm-select-demo"></div></td>
                                             <td><div :id="`searchType${(item.id)}`" class="xm-select-demo"></div></td>
@@ -135,7 +128,8 @@
                 isDisabled:false,
                 columnData:[],// 穿梭框中加载的字段数据数组集合
                 columnsInfo:[],// 所有输出列信息
-                groupTransfer:null// 分组的穿梭框对象
+                groupTransfer:null,// 分组的穿梭框对象
+                a:null
             }
         },
         props:['graph'],

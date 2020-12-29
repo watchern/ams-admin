@@ -40,7 +40,7 @@
     <m-list-box>
       <div slot="text">自定义参数</div>
       <div slot="content">
-        <span v-if="!localParams.length && isDetails" class="spanparam">无</span>
+        <span v-if="!localParams.length && isDetails" class="paramtext">无</span>
         <m-local-params
           ref="refLocalParams"
           :udp-list="localParams"
@@ -406,7 +406,7 @@ export default {
     }
   }
 }
-.spanparam {
+.paramtext {
 font-size: 14px;
 color: #777;
 line-height: 32px;

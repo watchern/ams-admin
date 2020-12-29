@@ -81,7 +81,7 @@
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
-                <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
+                <a target="_blank" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色-->
                   <i
                     :class="statusObj[scope.row.status].unicode"

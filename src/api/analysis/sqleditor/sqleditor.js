@@ -1051,10 +1051,8 @@ function onDrop(event, treeId, treeNodes) {
  * 初始化智能提示的数据表
  * @returns {AxiosPromise}
  */
-export function initTableTip(userId) {
-  const sceneCode = sessionStorage.getItem('sceneCode')
-  const dataUserId = sessionStorage.getItem('dataUserId')
-  const params = { sceneCode: sceneCode, dataUserId: dataUserId }
+export function initTableTip(datauserid,datausername) {
+  const params = { datausername: datausername, dataUserId: datauserid }
   // 调用后台获取数据表数据
   return request({
     baseURL: dataUrl,
@@ -1971,10 +1969,6 @@ export function startExecuteSql(data) {
  * @param {*} data 要执行的数据
  */
 export function getExecuteTask(data) {
-  const userId = sessionStorage.getItem('sceneCode');
-  const sceneCode = sessionStorage.getItem('dataUserId');
-  data.userId = userId;
-  data.sceneCode = sceneCode;
   return request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/getExecuteTask',

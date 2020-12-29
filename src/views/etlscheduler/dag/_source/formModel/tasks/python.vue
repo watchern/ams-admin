@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 <template>
   <div class="shell-model">
     <m-list-box>
@@ -62,6 +46,7 @@ import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import disabledState from '@/module/mixin/disabledState'
 import codemirror from '@/components/etl/file/codemirror'
+import $ from 'jquery'
 
 let editor
 
@@ -112,7 +97,7 @@ export default {
       const result = []
       resourceIdArr.forEach(item => {
         this.allNoResources.forEach(item1 => {
-          if (item.id == item1.id) {
+          if (item.id === item1.id) {
             // resultBool = true
             result.push(item1)
           }
@@ -270,7 +255,7 @@ export default {
     },
     searchTree(element, id) {
       // 根据id查找节点
-      if (element.id == id) {
+      if (element.id === id) {
         return element
       } else if (element.children != null) {
         var i

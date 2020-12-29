@@ -30,7 +30,6 @@ export default {
 .el-tabs{
   padding: 0;
 }
-
 /* .el-tabs--border-card > .el-tabs__content {
     padding: 0px!important;
 } */

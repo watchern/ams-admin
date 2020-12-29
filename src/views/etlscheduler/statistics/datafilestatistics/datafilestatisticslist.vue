@@ -148,21 +148,6 @@ export default {
   font-size: 22px;
   cursor: pointer;
   }
-  .logcol{
-  font-size: 24px;
-	font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
-	font-weight: 700;
-	font-style: normal;
-	font-size: 18px;
-	color: #676A6C;
-  }
-  .logtype{
-	font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
-	font-weight: 700;
-	font-style: normal;
-  color: #3f3a3a;
-  padding: 5px 0px;
-  }
   .el-select{
   /* display: inline-flex !important; */
   /* border: 1px solid #343942 !important; */

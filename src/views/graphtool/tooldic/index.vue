@@ -599,7 +599,9 @@
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: type,
-                        center: true
+                        center: true,
+                        closeOnClickModal:false,
+                        closeOnPressEscape:false
                     }).then(() => {
                         if(typeof cancelMethord === "function"){
                             confirmMethord()
@@ -835,7 +837,7 @@
                             }
                         }, 'json')
                     } else {						// 业务权限环境
-                        initTableTip(obj.loginUserCode).then(response => {
+                        initTableTip(obj.$store.getters.datauserid,obj.$store.getters.datausername).then(response => {
                             if (response.data == null) {
                                 obj.loading.destroy()
                                 this.$message.error('资源树列表加载出错')
@@ -1000,6 +1002,9 @@
                     this.loading.destroy()
                     this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false, 'hasTime': true })
                     viewNodeData({ nodeObjs: JSON.stringify(this.resultTableArr), openType: this.openType, websocketBatchId: this.websocketBatchId }).then()
+                        .catch( error => {
+                            this.loading.destroy()
+                        })
                 }
             },
             initData(){
@@ -1118,7 +1123,9 @@
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
-                    center: true
+                    center: true,
+                    closeOnClickModal:false,
+                    closeOnPressEscape:false
                 }).then(() => {
                     commonJs.saveNodeSetting()
                 }).catch(() => {
