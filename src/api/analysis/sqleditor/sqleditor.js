@@ -1051,10 +1051,9 @@ function onDrop(event, treeId, treeNodes) {
  * 初始化智能提示的数据表
  * @returns {AxiosPromise}
  */
-export function initTableTip(userId) {
+export function initTableTip() {
   const dataUserId = store.getters.datauserid
   const sceneCode = store.getters.scenecode
-  debugger;
   const params = { sceneCode: sceneCode, dataUserId: dataUserId }
   // 调用后台获取数据表数据
   return request({

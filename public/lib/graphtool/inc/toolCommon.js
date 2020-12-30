@@ -20,6 +20,23 @@ function getParams(){
 }
 
 /**
+ * 获取字符串的字节数
+ * @param str
+ */
+function getStrBytes(str){
+    var bytesCount = 0;
+    for (var i = 0; i < str.length; i++){
+        var c = str.charAt(i);
+        if (/^[\u0000-\u00ff]$/.test(c)){ //匹配双字节
+            bytesCount += 1;
+        }else{
+            bytesCount += 2;
+        }
+    }
+    return bytesCount;
+}
+
+/**
  * 校验字段名称是否含有特殊字符
  * @param columnName
  * @return {boolean}

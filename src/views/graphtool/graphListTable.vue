@@ -123,11 +123,21 @@
                 this.initPreviewGraph = true
             },
             add() {
+                let currentNode = this.$parent.$parent.$refs.graphTree.$refs.tree.getCurrentNode()
+                let openGraphType = 1;//默认打开的是个人图形
+                switch (currentNode.id) {
+                    case "personScreenGraph"://个人场景查询图形
+                        openGraphType = 2
+                        break;
+                    case "screenGraph"://场景查询图形
+                        openGraphType = 3
+                        break;
+                }
                 this.$store.commit('aceState/setRightFooterTags', {
                     type: 'active',
                     val: {
                         name: '新增图形',
-                        path: '/graphtool/tooldic?openGraphType=1&openType=2'
+                        path: `/graphtool/tooldic?openGraphType=${openGraphType}&openType=2`
                     }
                 })
             },

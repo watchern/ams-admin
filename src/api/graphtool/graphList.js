@@ -98,7 +98,7 @@ export function getTableCol(tableMetaUuid) {
 
 /**
  * 图形保存
- * @param data 图形对象
+ * @param data 图形对象信息
  * @returns {AxiosPromise}
  */
 export function saveGraphInterface(data) {
@@ -108,6 +108,19 @@ export function saveGraphInterface(data) {
     method: 'post',
     data
   })
+}
+
+/**
+ * 保存场景查询图形
+ * @param data 图形对象信息
+ */
+export function createScreenQuery(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/createScreenQuery',
+        method: 'post',
+        data
+    })
 }
 
 /**

@@ -25,7 +25,7 @@
                 if (node.type === 'screenGraphType') { // 场景查询图形
                     let curRoles = this.$store.getters.roles
                     let screenManager = 'screenManager'// 模拟场景查询管理员角色
-                    if (curRoles.includes(screenManager)) {
+                    if (curRoles && curRoles.includes(screenManager)) {
                         this.$refs.graphListTable.showDelBtn = true
                     } else {
                         this.$refs.graphListTable.showDelBtn = false

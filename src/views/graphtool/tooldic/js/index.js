@@ -1,15 +1,13 @@
 import { saveGraphInterface,getExecuteNodeInfoPost,importGraphXml,exportGraphXml,deleteExecuteNodes,executeNodeSql } from '@/api/graphtool/graphList'
 import { progressDownLoad,getPreNodes,changeNodeIcon,nodeCallBack } from '@/views/graphtool/tooldic/js/common'
-let indexVue = null// index.vue实例
-let curModelSql = ''// 用来临时存储打开模型图形时的模型SQL语句
-let isSearchExpand = false// 左侧资源树搜索功能的变量
+let graphIndexVue = null//vue实例
 let graph = null
 /**
  * 获取vue实例
  * @param _this vue实例
  */
 export const sendIndexJs = (_this) => {
-    indexVue = _this
+    graphIndexVue = _this
     graph = _this.graph
 }
 
@@ -64,7 +62,7 @@ export function onRightClick(event, treeId, treeNode) {
             hideRMenu('rMenu')
             hideRMenu('folderMenu_dev')
             hideRMenu('moreMenu')
-            var nodes = indexVue.zTreeObj.getSelectedNodes()
+            var nodes = graphIndexVue.zTreeObj.getSelectedNodes()
             // 获取全部选中的节点
             if (nodes && nodes.length > 1) { // 多个节点时
                 menuId = 'folderMenu_dev'
@@ -78,11 +76,11 @@ export function onRightClick(event, treeId, treeNode) {
                 }
                 if (hasTreeNode) {
                     for (var k = 0; k < nodes.length; k++) {
-                        indexVue.zTreeObj.selectNode(nodes[k], true)
+                        graphIndexVue.zTreeObj.selectNode(nodes[k], true)
                     }
                 } else {
-                    indexVue.zTreeObj.cancelSelectedNode()
-                    indexVue.zTreeObj.selectNode(treeNode)
+                    graphIndexVue.zTreeObj.cancelSelectedNode()
+                    graphIndexVue.zTreeObj.selectNode(treeNode)
                     onRightClick(event, treeId, treeNode)
                     return
                 }
@@ -94,7 +92,7 @@ export function onRightClick(event, treeId, treeNode) {
                     $('#moveTo').show()
                 }
             } else {
-                indexVue.zTreeObj.selectNode(treeNode)
+                graphIndexVue.zTreeObj.selectNode(treeNode)
                 if (treeNode.type === 'folder') { // 文件夹节点
                     menuId = 'folderMenu_dev'
                     // 处理当前节点的右键事件菜单
@@ -149,7 +147,7 @@ export function onRightClick(event, treeId, treeNode) {
             }
             break
         case 2:// 权限环境右键菜单
-            indexVue.zTreeObj.selectNode(treeNode)
+            graphIndexVue.zTreeObj.selectNode(treeNode)
             if (treeNode.type === 'datasource') { // 数据表节点
                 menuId = 'rMenu'
             //     if (treeNode.pid === 'importDataTable') {
@@ -181,7 +179,7 @@ export function onRightClick(event, treeId, treeNode) {
  * @param treeNode 需刷新的节点对象
  */
 export function rootDataRefresh(treeNode) {
-    var curNode = treeNode || indexVue.zTreeObj.getSelectedNodes()[0]
+    var curNode = treeNode || graphIndexVue.zTreeObj.getSelectedNodes()[0]
     var url = ''
     var param = {}
     if (openType === 1) {
@@ -216,8 +214,8 @@ export function rootDataRefresh(treeNode) {
             }
             // 统一表和试图的类型为datasource，不需要替换的就执行空方法
             replaceNodeType(res)
-            indexVue.zTreeObj.removeChildNodes(curNode)
-            indexVue.zTreeObj.addNodes(curNode, res)
+            graphIndexVue.zTreeObj.removeChildNodes(curNode)
+            graphIndexVue.zTreeObj.addNodes(curNode, res)
             loading.destroy()
         }
     }, 'json')
@@ -228,7 +226,7 @@ export function rootDataRefresh(treeNode) {
  */
 export function addFolder() {
     hideRMenu('folderMenu_dev')
-    var curNode = indexVue.zTreeObj.getSelectedNodes()[0]
+    var curNode = graphIndexVue.zTreeObj.getSelectedNodes()[0]
     layer.open({
         id: 'addFolder_layer',
         type: 2,
@@ -280,7 +278,7 @@ export function addFolder() {
  */
 export function editFolder() {
     hideRMenu('folderMenu_dev')
-    var curNode = indexVue.zTreeObj.getSelectedNodes()[0]
+    var curNode = graphIndexVue.zTreeObj.getSelectedNodes()[0]
     var oldFolderName = ''; var oldFolderSort = ''
     $.post(contextPathAuditAnalysis + '/folder/findFolder', { 'folderId': curNode.id }, function(e) {
         oldFolderName = e.folderName
@@ -325,9 +323,9 @@ export function editFolder() {
                     if (oldFolderSort === folderSort) { // 如果排序没变，只刷新当前节点
                         curNode.name = folderName
                         curNode.displayName = folderName
-                        indexVue.zTreeObj.updateNode(curNode)
+                        graphIndexVue.zTreeObj.updateNode(curNode)
                     } else { // 刷新当前节点的父节点
-                        var nodes = indexVue.zTreeObj.getNodesByParam('id', curNode.pid, null)
+                        var nodes = graphIndexVue.zTreeObj.getNodesByParam('id', curNode.pid, null)
                         if (nodes && nodes.length > 0) {
                             rootDataRefresh(nodes[0])
                         }
@@ -346,7 +344,7 @@ export function editFolder() {
  */
 export function delFolder() {
     hideRMenu('folderMenu_dev')
-    var curNode = indexVue.zTreeObj.getSelectedNodes()[0]
+    var curNode = graphIndexVue.zTreeObj.getSelectedNodes()[0]
     if (nodes[0].children && nodes[0].children.length > 0) {
         alertMsg('错误', '该文件夹下有子文件夹或数据表，不能删除', 'error')
         return
@@ -354,7 +352,7 @@ export function delFolder() {
     confirmMsg('提示', '是否确认删除文件夹【' + nodes[0].name + '】？', 'info', function() {
         $.post(contextPathAuditAnalysis + '/folder/delFolder', { 'folderId': curNode.id, 'folderName': curNode.name }, function(e) {
             alertMsg('提示', '删除成功', 'info')
-            indexVue.zTreeObj.removeNode(curNode)
+            graphIndexVue.zTreeObj.removeNode(curNode)
         }, 'json')
     }, function() {})
 }
@@ -364,7 +362,7 @@ export function delFolder() {
  */
 export function moveTo(containerId) {
     hideRMenu(containerId)
-    var selectedNodes = indexVue.zTreeObj.getSelectedNodes()
+    var selectedNodes = graphIndexVue.zTreeObj.getSelectedNodes()
     var tableNameArrInRootFolder = []; var tableNameArrInOtherFolder = []; var folderIdArr = []// 数据表节点和文件夹节点分开存储
     // 检验所选的节点是否均可被移动
     var hasChildren = false// 是否有子节点
@@ -497,7 +495,7 @@ function moveToCallBack(selectedNodes, tableNameArrInRootFolder, tableNameArrInO
                         } else {
                             layer.close(index)
                             alertMsg('提示', '移动至目标文件夹【' + nodes[0].name + '】成功', 'error')
-                            nodes = indexVue.zTreeObj.getNodesByParam('id', 'bussRootNode_dev')// 直接刷新【业务数据】节点
+                            nodes = graphIndexVue.zTreeObj.getNodesByParam('id', 'bussRootNode_dev')// 直接刷新【业务数据】节点
                             rootDataRefresh(nodes[0])
                         }
                     }, 'json')
@@ -543,8 +541,8 @@ export function getColumnsByTable(treeNode, async, closeParent) {
             if (e.isError) {
                 alertMsg('提示', '数据加载出错，原因：' + e.message, 'error')
             } else {
-                indexVue.zTreeObj.removeChildNodes(treeNode)
-                indexVue.zTreeObj.addNodes(treeNode, e.data, closeParent)
+                graphIndexVue.zTreeObj.removeChildNodes(treeNode)
+                graphIndexVue.zTreeObj.addNodes(treeNode, e.data, closeParent)
             }
         }
     })
@@ -638,8 +636,8 @@ export function exportAllData() {
 
 // 打开
 export function openGraph() {
-    indexVue.graphListDialogVisible = true
-    indexVue.showGraphListType = 'open'
+    graphIndexVue.graphListDialogVisible = true
+    graphIndexVue.showGraphListType = 'open'
 }
 
 /**
@@ -655,18 +653,18 @@ export function autoSaveGraph() {
     var encoder = new mxCodec()
     var node = encoder.encode(graph.getModel())
     var xml = mxUtils.getPrettyXml(node)
-    if (typeof indexVue.graphUuid === "undefined" || indexVue.graphUuid === '') {
-        indexVue.graphName = '自动保存的副本_' + getCurTime()
-        indexVue.description = '系统自动保存的副本'
-        $('#graphName_show').val('自动保存的副本_' + getCurTime())
-        $('#description_show').val('系统自动保存的副本')
+    if (typeof graphIndexVue.graphUuid === "undefined" || graphIndexVue.graphUuid === '') {
+        graphIndexVue.graphName = '自动保存的副本_' + getCurTime()
+        graphIndexVue.description = '系统自动保存的副本'
+        graphIndexVue.graphName_show = '自动保存的副本_' + getCurTime()
+        graphIndexVue.description_show = '系统自动保存的副本'
     }
     var newNodeData = $.extend(true, {}, graph.nodeData)
     var data = {
-        'graphName': indexVue.graphName,
-        'description': indexVue.description,
+        'graphName': graphIndexVue.graphName,
+        'description': graphIndexVue.description,
         'graphXml': xml,
-        'graphUuid': indexVue.graphUuid,
+        'graphUuid': graphIndexVue.graphUuid,
         'createType': graph.openType,
         'graphType': graph.graphType,
         'nodeData': JSON.stringify(newNodeData) // 各个节点的配置信息
@@ -678,6 +676,7 @@ export function autoSaveGraph() {
         case 2:// 个人场景查询
             data.executeStatus = getExecuteDetail()
             data.graphType = 3
+            data.publicType = 0
             break
         case 3:// 公共场景查询
             data.executeStatus = 3
@@ -686,15 +685,14 @@ export function autoSaveGraph() {
             break
         case 4:// 模型图形
             data.executeStatus = getExecuteDetail()
-            data.modelSql = curModelSql// 临时将模型SQL语句绑在数据串中
-            data.nodeData = JSON.stringify(newNodeData)
+            data.modelSql = graphIndexVue.curModelSql// 临时将模型SQL语句绑在数据串中
             break
     }
     saveGraphInterface(data).then(response => {
         if (!response.data) {
-            indexVue.$message({ type: 'info', message: '自动保存图形失败' })
+            graphIndexVue.$message({ type: 'info', message: '自动保存图形失败' })
         } else {
-            indexVue.graphUuid = response.data
+            graphIndexVue.graphUuid = response.data
         }
     })
 }
@@ -761,15 +759,15 @@ export function getExecuteDetail() {
 // 打开图形化后的回调
 export function openCallBack(obj) {
     var executeIdArr = []
-    indexVue.graphUuid = obj.graphUuid
-    indexVue.graphName = obj.graphName
-    indexVue.description = obj.description
-    $('#graphName_show').val(obj.graphName)
-    $('#description_show').val(obj.description)
+    graphIndexVue.graphUuid = obj.graphUuid
+    graphIndexVue.graphName = obj.graphName
+    graphIndexVue.description = obj.description
+    graphIndexVue.graphName_show = obj.graphName
+    graphIndexVue.description_show = obj.description
     graph.nodeData = JSON.parse(obj.nodeData)
     mxUtils.setPrettyXmlLayout(obj.graphXml)
     if (graph.openGraphType === 4 && typeof obj.modelSql !== 'undefined') { // 如果加载的是模型图形
-        curModelSql = obj.modelSql
+        graphIndexVue.curModelSql = obj.modelSql
     }
     var arr = Object.keys(graph.nodeData)
     for (var i = 0; i < arr.length; i++) {
@@ -781,11 +779,11 @@ export function openCallBack(obj) {
             var hasParam = graph.nodeData[arr[i]].hasParam
             var paramsSetting = graph.nodeData[arr[i]].paramsSetting
             if (hasParam && paramsSetting && Object.keys(paramsSetting).length !== 0) {
-                indexVue.nodeParamRelArr[arr[i]] = $.extend(true, {}, paramsSetting)
+                graphIndexVue.nodeParamRelArr[arr[i]] = $.extend(true, {}, paramsSetting)
             }
             refrashResourceZtree(id, '加载' + name, type)
-            if (graph.openGraphType === 3 || (graph.openGraphType === 1 && indexVue.createUserId !== '' && indexVue.createUserId !== indexVue.loginUserUuid) ||
-                parseInt(indexVue.openType_graph) !== parseInt(graph.openType)) { // 如果加载的是公共场景查询图形或者他人分享的图形或者当前打开的图形的数据源环境与当前使用的数据源环境不相符时
+            if (graph.openGraphType === 3 || (graph.openGraphType === 1 && graphIndexVue.createUserId !== '' && graphIndexVue.createUserId !== graphIndexVue.loginUserUuid) ||
+                parseInt(graphIndexVue.openType_graph) !== parseInt(graph.openType)) { // 如果加载的是公共场景查询图形或者他人分享的图形或者当前打开的图形的数据源环境与当前使用的数据源环境不相符时
                 if (type !== 'datasource' && nodeExcuteStatus !== 1) { // 改变非原表节点的执行状态为未执行
                     graph.nodeData[arr[i]].nodeInfo.nodeExcuteStatus = 1
                     // 改变节点执行状态的图标
@@ -840,7 +838,7 @@ export function getExecuteNodeInfo(graphUuid, executeId, executeIdArr, refreshHi
         getExecuteNodeInfoPost(obj).then( response => {
             var e = response.data
             if(e && e.length > 0){
-                indexVue.layuiTabClickLi(1)
+                graphIndexVue.layuiTabClickLi(1)
                 let count = 0
                 let executeIdArr = []
                 for (let i = 0; i < e.length; i++) {
@@ -1018,16 +1016,16 @@ export const historySetting = {
     callback: {
         onClick: function(event, treeId, treeNode) {
             confirmMsg('提示', '确定跳转到到此处？', 'info', function() {
-                let resourceRootNode = indexVue.resourceRootNode;
+                let resourceRootNode = graphIndexVue.resourceRootNode;
                 // 更新所有节点信息
                 graph.nodeData = JSON.parse(graph.historyNodeInfo[treeNode.id].nodeData)
                 // 刷新svg
                 mxUtils.setPrettyXmlLayout(graph.historyNodeInfo[treeNode.id].xml)
                 // 更新所使用资源树
-                indexVue.resourceZtree.removeChildNodes(resourceRootNode)
+                graphIndexVue.resourceZtree.removeChildNodes(resourceRootNode)
                 resourceRootNode.children = graph.historyNodeInfo[treeNode.id].resourceZtreeNodes
                 resourceRootNode.open = true
-                indexVue.resourceZtree = $.fn.zTree.init($('#resourceZtree'), resourceSetting, resourceRootNode)
+                graphIndexVue.resourceZtree = $.fn.zTree.init($('#resourceZtree'), resourceSetting, resourceRootNode)
                 ownerEditor.resetHistory()
                 // 查找当前快照下的graph中节点状态为执行中的节点
                 var executingNodeIdArr = []
@@ -1057,24 +1055,24 @@ export function refrashResourceZtree(id, name, type) {
         'open': false,
         'icon': 'images/icon/text.png'
     }
-    var nodes = indexVue.resourceZtree.getNodesByParam('pid', null, null)
+    var nodes = graphIndexVue.resourceZtree.getNodesByParam('pid', null, null)
     nodes[0].children.push(resourceNode)
     $.fn.zTree.init($('#resourceZtree'), resourceSetting, nodes[0])
 }
 
 // 工作区节点的名称改变联动更新所使用资源树节点的名称
 export function updateResourceZtreeNodeName(treeNodeId, name) {
-    var nodes = indexVue.resourceZtree.getNodesByParam('id', treeNodeId, null)
+    var nodes = graphIndexVue.resourceZtree.getNodesByParam('id', treeNodeId, null)
     nodes[0].name = name
     nodes[0].displayName = name
-    indexVue.resourceZtree.updateNode(nodes[0])
+    graphIndexVue.resourceZtree.updateNode(nodes[0])
 }
 
 // 删除工作区节点时联动删除所使用资源树的对应节点，支持批量删除
 export function deleteResourceZtreeNode(treeNodeIdArr) {
     for (var i = 0; i < treeNodeIdArr.length; i++) {
-        var nodes = indexVue.resourceZtree.getNodesByParam('id', treeNodeIdArr[i], null)
-        indexVue.resourceZtree.hideNode(nodes[0])
+        var nodes = graphIndexVue.resourceZtree.getNodesByParam('id', treeNodeIdArr[i], null)
+        graphIndexVue.resourceZtree.hideNode(nodes[0])
     }
 }
 
@@ -1095,16 +1093,16 @@ export function undoResourceZtreeNode(idArr, status) {
         }
     }
     for (var i = 0; i < idArr.length; i++) {
-        var nodes = indexVue.resourceZtree.getNodesByParam('id', idArr[i], null)
+        var nodes = graphIndexVue.resourceZtree.getNodesByParam('id', idArr[i], null)
         if (nodes.length !== 0) {
             if (nodes[0].isHidden && status) {
                 for (var j = 0; j < nodes.length; j++) {
-                    indexVue.resourceZtree.showNode(nodes[j])
+                    graphIndexVue.resourceZtree.showNode(nodes[j])
                 }
             }
             if (!nodes[0].isHidden && !status) {
                 for (var t = 0; t < nodes.length; t++) {
-                    indexVue.resourceZtree.hideNode(nodes[t])
+                    graphIndexVue.resourceZtree.hideNode(nodes[t])
                 }
             }
         }
@@ -1128,16 +1126,16 @@ export function redoResourceZtreeNode(idArr, status) {
         }
     }
     for (var i = 0; i < idArr.length; i++) {
-        var nodes = indexVue.resourceZtree.getNodesByParam('id', idArr[i], null)
+        var nodes = graphIndexVue.resourceZtree.getNodesByParam('id', idArr[i], null)
         if (nodes.length !== 0) {
             if (nodes[0].isHidden && !status) {
                 for (var j = 0; j < nodes.length; j++) {
-                    indexVue.resourceZtree.showNode(nodes[j])
+                    graphIndexVue.resourceZtree.showNode(nodes[j])
                 }
             }
             if (!nodes[0].isHidden && status) {
                 for (var t = 0; t < nodes.length; t++) {
-                    indexVue.resourceZtree.hideNode(nodes[t])
+                    graphIndexVue.resourceZtree.hideNode(nodes[t])
                 }
             }
         }
@@ -1181,7 +1179,7 @@ export function refrashHistoryZtree(name) {
         'open': false,
         'icon': 'images/icon/text.png'
     }
-    var nodes = indexVue.historyZtree.getNodesByParam('pid', null, null)
+    var nodes = graphIndexVue.historyZtree.getNodesByParam('pid', null, null)
     nodes[0].children.push(historyNode)
     $.fn.zTree.init($('#historyZtree'), historySetting, nodes[0])
     saveOptHistoryInfo(id)
@@ -1196,7 +1194,7 @@ function saveOptHistoryInfo(id) {
     var encoder = new mxCodec()
     var node = encoder.encode(graph.getModel())
     var xml = mxUtils.getPrettyXml(node)
-    var resourceZtreeNodes = indexVue.resourceZtree.getNodesByParam('pid', 'resourceRoot', null)
+    var resourceZtreeNodes = graphIndexVue.resourceZtree.getNodesByParam('pid', 'resourceRoot', null)
     graph.historyNodeInfo[id] = {
         'node': node,
         'xml': xml,										// 图形化XML信息
@@ -1231,7 +1229,7 @@ export function importGraph(data) {
     var val = $('#importGraphInp').val()
     if (val !== '') {
         if (val.split('.')[1] !== 'xml') {
-            indexVue.$message({ type: 'info', message: '导入的文件仅支持xml格式' })
+            graphIndexVue.$message({ type: 'info', message: '导入的文件仅支持xml格式' })
         }else{
             let graphType = (graph.openGraphType === 2 || graph.openGraphType === 3) ? 3 : 1
             let formData = new FormData()
@@ -1241,42 +1239,42 @@ export function importGraph(data) {
             importGraphXml(formData).then( response => {
                 loading.destroy()
                 if(response.data){
-                    indexVue.$message({ type: 'info', message: '文件导入成功' })
+                    graphIndexVue.$message({ type: 'info', message: '文件导入成功' })
                 }else{
-                    indexVue.$message({ type: 'info', message: '导入时解析文件出错' })
+                    graphIndexVue.$message({ type: 'info', message: '导入时解析文件出错' })
                 }
             })
         }
     }else{
-        indexVue.$message({ type: 'info', message: '未选择待上传的文件' })
+        graphIndexVue.$message({ type: 'info', message: '未选择待上传的文件' })
     }
 }
 
 // 导出
 export function exportGraph() {
     hideRMenu('moreMenu')
-    indexVue.graphListDialogVisible = true
-    indexVue.showGraphListType = 'export'
-    if (typeof indexVue.$refs.graphListExport !== "undefined") {//非首次加载需刷新列表
-        indexVue.$refs.graphListExport.getGraphList();
+    graphIndexVue.graphListDialogVisible = true
+    graphIndexVue.showGraphListType = 'export'
+    if (typeof graphIndexVue.$refs.graphListExport !== "undefined") {//非首次加载需刷新列表
+        graphIndexVue.$refs.graphListExport.getGraphList();
     }
 }
 
 export function exportGraphBack(param) {
     let loading = $('body').mLoading({ 'text': '正在导出图形，请稍后……', 'hasCancel': false })
-    let fileName = indexVue.$store.getters.personcode + '_exportGraph_' + new Date().Format('yyyyMMddHHmmssS') + '.xml'
+    let fileName = graphIndexVue.$store.getters.personcode + '_exportGraph_' + new Date().Format('yyyyMMddHHmmssS') + '.xml'
     exportGraphXml({fileName,...param}).then( response => {
         if(response.data){
             progressDownLoad('/graphtool/graphCt/downLoadXml', fileName, {fileName: fileName}, function() {
                 loading.destroy()
-                indexVue.$message({ type: 'info', message: '图形文件下载成功' })
+                graphIndexVue.$message({ type: 'info', message: '图形文件下载成功' })
             }, function() {
                 loading.destroy()
-                indexVue.$message({ type: 'info', message: '图形文件下载失败' })
+                graphIndexVue.$message({ type: 'info', message: '图形文件下载失败' })
             }, function() {})
         }else{
             loading.destroy()
-            indexVue.$message({ type: 'info', message: '图形导出失败' })
+            graphIndexVue.$message({ type: 'info', message: '图形导出失败' })
         }
     })
 }
@@ -1284,7 +1282,7 @@ export function exportGraphBack(param) {
 // 前进
 export function next() {
     if (graph.canEditor === false) {
-        indexVue.$message({ type: 'info', message: '当前图形您没有【恢复】操作的权限' })
+        graphIndexVue.$message({ type: 'info', message: '当前图形您没有【恢复】操作的权限' })
         return
     }
     ownerEditor.redo()
@@ -1293,27 +1291,10 @@ export function next() {
 // 后退
 export function back() {
     if (graph.canEditor === false) {
-        indexVue.$message({ type: 'info', message: '当前图形您没有【撤销】操作的权限' })
+        graphIndexVue.$message({ type: 'info', message: '当前图形您没有【撤销】操作的权限' })
         return
     }
     ownerEditor.undo()
-}
-
-// 数据导入
-function importData() {
-    var catalogId = 'importDataTable'
-    layer.open({
-        id: 'importData',
-        type: 2,
-        title: '数据导入',
-        content: '/AuditAnalysis/personSpaceDirectory/toImportDataPage?catalogId=' + catalogId,
-        area: ['90%', '90%'],
-        skin: 'layui-layer-lan',
-        btn: ['关闭'],
-        cancel: function(index, layero) {
-            layer.close()
-        }
-    })
 }
 
 //获取中间、最终结果表的输出列信息
@@ -1567,8 +1548,8 @@ export async function saveModelGraph(){
             //组织请求的json数据
             let curTime = getCurTime()
             var param = {
-                "graphUuid" : indexVue.graphUuid,
-                "createType" : indexVue.openType_graph,
+                "graphUuid" : graphIndexVue.graphUuid,
+                "createType" : graphIndexVue.openType_graph,
                 "graphType" : 4,
                 "executeStatus" : getExecuteDetail(),
                 "graphName" : '模型图形_' + curTime,
@@ -1582,7 +1563,7 @@ export async function saveModelGraph(){
                     isError = true
                     message = '模型设计保存图形信息失败'
                 } else {
-                    indexVue.graphUuid = response.data
+                    graphIndexVue.graphUuid = response.data
                     graphUuid = response.data
                 }
             })
@@ -1590,9 +1571,6 @@ export async function saveModelGraph(){
     }
     return {isError,message,graphUuid,modelSql,modelParamIdArr,paramArr}
 }
-
-
-
 
 /**
  * 设置图形节点参数
@@ -1604,15 +1582,13 @@ export function showParamNodeList(){
     let resultTableNodeIdArr = [];
     let nodeIdArr = Object.keys(graph.nodeData);
     for(let i=0;i<nodeIdArr.length;i++) {
-        //当前节点执行状态
-        let nodeExcuteStatus = graph.nodeData[nodeIdArr[i]].nodeInfo.nodeExcuteStatus;
         //当前节点的类型
         let optType = graph.nodeData[nodeIdArr[i]].nodeInfo.optType;
         if($.inArray(optType,optTypeArr) > -1){//将当前节点加入到数组中
             resultTableNodeIdArr.push(nodeIdArr[i]);
         }
     }
-    if(indexVue.openGraphType === 2 || indexVue.openGraphType === 3){//场景查询
+    if(graphIndexVue.openGraphType === 2 || graphIndexVue.openGraphType === 3){//场景查询
         //对节点进行排序（使用直接排序算法）
         resultTableNodeIdArr = sortNodeByVal(resultTableNodeIdArr);
     }
@@ -1626,11 +1602,11 @@ export function showParamNodeList(){
             edgeArr.push(cells[keys[j]]);
         }
     }
-    indexVue.nodeParamArr = []
+    graphIndexVue.nodeParamArr = []
     for(let i=0; i<resultTableNodeIdArr.length; i++){
         let nodeId = resultTableNodeIdArr[i]
         let nodeName = graph.nodeData[resultTableNodeIdArr[i]].nodeInfo.nodeName;//节点名称
-        let paramsSetting = $.extend(true,{},indexVue.nodeParamRelArr[resultTableNodeIdArr[i]]);//参数配置信息
+        let paramsSetting = $.extend(true,{},graphIndexVue.nodeParamRelArr[resultTableNodeIdArr[i]]);//参数配置信息
         let hasParamSet = false
         let lineNum = 0;//节点生成的序号，默认为0
         for(let k=0; k<edgeArr.length; k++){
@@ -1642,15 +1618,15 @@ export function showParamNodeList(){
         if(paramsSetting && paramsSetting.arr && paramsSetting.arr.length > 0){
             hasParamSet = true
         }
-        indexVue.nodeParamArr.push({nodeId,nodeName,hasParamSet,lineNum})
+        graphIndexVue.nodeParamArr.push({nodeId,nodeName,hasParamSet,lineNum})
     }
-    if(indexVue.nodeParamArr.length > 0){
-        indexVue.nodeParamListDialogVisible = true
-        indexVue.$nextTick( () => {
-            $(indexVue.$refs.nodeParamToby).sortable().disableSelection()
+    if(graphIndexVue.nodeParamArr.length > 0){
+        graphIndexVue.nodeParamListDialogVisible = true
+        graphIndexVue.$nextTick( () => {
+            $(graphIndexVue.$refs.nodeParamToby).sortable().disableSelection()
         })
     }else{
-        indexVue.$message({ type: 'info', message: '暂无可设置参数的节点' })
+        graphIndexVue.$message({ type: 'info', message: '暂无可设置参数的节点' })
     }
     //弹框显示节点的参数配置列表，end
 }
@@ -1662,14 +1638,14 @@ export function showParamNodeListCallBack() {
     for(let k=0; k<keyArr.length; k++){
         let nodeId = keyArr[k];
         //匹配设置参数的节点，将参数设置绑定到newGraph中
-        let $paramSetTr = indexVue.$refs.paramSetTr
+        let $paramSetTr = graphIndexVue.$refs.paramSetTr
         for(let i=0; i<$paramSetTr.length; i++){
             let index = $paramSetTr[i].getAttribute("index")
             //进行节点的匹配
-            if(indexVue.nodeParamArr[index].nodeId === nodeId){
+            if(graphIndexVue.nodeParamArr[index].nodeId === nodeId){
                 graph.nodeData[nodeId].nodeInfo.dataSourceType = graph.openType//给当前节点绑定节点的执行数据源环境
                 //获取节点的参数配置信息
-                var paramsSetting = $.extend(true,{},indexVue.nodeParamRelArr[nodeId])
+                var paramsSetting = $.extend(true,{},graphIndexVue.nodeParamRelArr[nodeId])
                 if(typeof paramsSetting !== "undefined" && Object.keys(paramsSetting).length > 0){//如果参数设置不为空
                     //绑定参数设置状态和值
                     graph.nodeData[nodeId].hasParam = true
@@ -1680,7 +1656,7 @@ export function showParamNodeListCallBack() {
             }
         }
     }
-    indexVue.nodeParamListDialogVisible = false
+    graphIndexVue.nodeParamListDialogVisible = false
 }
 
 /**
@@ -1720,202 +1696,6 @@ function sortNodeByVal(nodeIdArr) {
     return sortValArr
 }
 
-// 生成场景查询
-export function createScreenQuery(type) {
-    // 获取所有操作节点的数组（可用于设置参数的节点）,后台【保存】和【生成场景查询】方法也有用到此数组，修改时请同时修改
-    var optTypeArr = ['filter', 'sort', 'sample', 'layering', 'groupCount', 'delRepeat', 'change', 'union', 'relation', 'sql']
-    // 先获取所有执行成功的结果表节点ID数组
-    var resultTableNodeIdArr = []
-    var nodeIdArr = Object.keys(graph.nodeData)
-    for (var i = 0; i < nodeIdArr.length; i++) {
-        // 当前节点执行状态
-        var nodeExcuteStatus = graph.nodeData[nodeIdArr[i]].nodeInfo.nodeExcuteStatus
-        // 当前节点的类型
-        var optType = graph.nodeData[nodeIdArr[i]].nodeInfo.optType
-        if (nodeExcuteStatus === 3 && $.inArray(optType, optTypeArr) > -1) { // 如果执行成功，将当前节点加入到数组中
-            resultTableNodeIdArr.push(nodeIdArr[i])
-        }
-    }
-    if (resultTableNodeIdArr.length === 0) {
-        alertMsg('提示', '该图形中不存在已设置成功的操作节点', 'info')
-        return
-    }
-    if (type === 'saveGraph' && (openGraphType === '2' || openGraphType === '3')) {
-        // 对节点进行排序（使用直接排序算法）
-        resultTableNodeIdArr = sortNodeByVal(resultTableNodeIdArr)
-    }
-    // 弹框显示节点的参数配置列表，start
-    // 获取当前图形中的所有线
-    var edgeArr = []
-    var cells = graph.getModel().cells// 当前图形中的所有节点和线
-    var keys = Object.keys(cells)
-    for (var j = 0; j < keys.length; j++) {
-        if (cells[keys[j]].edge) { // edge == 1为连接线
-            edgeArr.push(cells[keys[j]])
-        }
-    }
-    // 拼接html元素
-    var fromHtml = $('#saveGraph').html()
-    var graphName = $('#graphName').val()
-    var description = $('#description').val()
-    var html = "<div class='col-sm-5'>" + fromHtml + '</div>'
-    html += "<div class='col-sm-7' style='overflow-y: auto;'><div  class='col-sm-12'><span style='color: red;'>注：可上下拖动行改变节点的显示顺序</span></div><div class='col-sm-12' style='height: 505px;'>" +
-        "<table class='table table-bordered'><thead><tr><th align='center'>节点名称</th><th align='center'>结果表序号</th><th align='center'>操作</th></tr></thead><tbody>"
-    for (var i = 0; i < resultTableNodeIdArr.length; i++) {
-        var nodeName = graph.nodeData[resultTableNodeIdArr[i]].nodeInfo.nodeName// 节点名称
-        var paramsSetting = $.extend(true, {}, indexVue.nodeParamRelArr[resultTableNodeIdArr[i]])// 参数配置信息
-        var lineNum = 0// 节点生成的序号，默认为0
-        for (var k = 0; k < edgeArr.length; k++) {
-            if (edgeArr[k].source && edgeArr[k].source.id === resultTableNodeIdArr[i]) {
-                lineNum = edgeArr[k].value
-                break
-            }
-        }
-        html += "<tr class='paramSetTr' nodeId='" + resultTableNodeIdArr[i] + "'><td align='center'>" + nodeName + "</td><td align='center'>" + lineNum + "</td><td align='center'>"
-        if (paramsSetting && paramsSetting.arr && paramsSetting.arr.length > 0) {
-            html += "<button type='button' class='paramSetting btn btn-primary' onclick='settingParam(this,\"" + resultTableNodeIdArr[i] + "\")'>修改参数</button>" +
-                "<button type='button' id='clearBtn' class='btn btn-primary' style='margin-left: 10px;' onclick='clearSettingParam(this,\"" + resultTableNodeIdArr[i] + "\")'>清除参数</button>"
-        } else {
-            html += "<button type='button' class='paramSetting btn btn-primary' onclick='settingParam(this,\"" + resultTableNodeIdArr[i] + "\")'>设置参数</button>"
-        }
-        html += '</td></tr>'
-    }
-    html += '</tbody></table></div></div>'
-    layer.open({
-        type: 1,
-        title: (type === 'saveGraph' ? '生成' : '另存为') + '场景查询—节点参数设置',
-        id: 'screenQueryParamSetting',
-        area: ['1000px', '600px'],
-        btn: ['确定', '取消'],
-        skin: 'layui-layer-lan',
-        content: html,
-        success: function(layero) {
-            if (openGraphType === '2' || openGraphType === '3') { // 如果打开的是场景查询图形（即编辑），则反显名称和描述
-                $(layero).find('#graphName').val(graphName)
-                $(layero).find('#description').val(description)
-            }
-            $(layero).find('.table>tbody').sortable().disableSelection()
-        },
-        btn1: function(index, layero) {
-            var graphUuid = $(layero).find('#graphUuid').val()
-            graphName = $(layero).find('#graphName').val()
-            if (graphName === '') {
-                alertMsg('提示', '请输入场景查询的名称', 'info')
-                return
-            }
-            description = $(layero).find('#description').val()
-            var newGraphStr = JSON.stringify(graph.nodeData)
-            var newGraph = JSON.parse(newGraphStr)// 只能以这种当时解决两个变量指向同一个地址的问题，这样可以做到修改newGraph的值不影响graph的值
-            // 循环遍历修改nodeData的部分属性值
-            var keyArr = Object.keys(newGraph)
-            for (var k = 0; k < keyArr.length; k++) {
-                var nodeId = keyArr[k]
-                var optType = newGraph[nodeId].nodeInfo.optType
-                if ($.inArray(optType, optTypeArr) > -1) { // 更改操作节点的部分信息
-                    // 匹配设置参数的节点，将参数设置绑定到newGraph中
-                    $('.paramSetTr').each(function() {
-                        // 获取在数据行上绑定的节点ID
-                        var trNodeId = $(this).attr('nodeId')
-                        // 进行节点的匹配
-                        if (trNodeId === nodeId) {
-                            newGraph[nodeId].nodeInfo.dataSourceType = graph.openType// 给当前节点绑定节点的执行数据源环境
-                            // 获取节点的参数配置信息
-                            var paramsSetting = $.extend(true, {}, indexVue.nodeParamRelArr[nodeId])
-                            if (typeof paramsSetting !== 'undefined' && Object.keys(paramsSetting).length > 0) { // 如果参数设置不为空
-                                // 绑定参数设置状态和值
-                                newGraph[nodeId].hasParam = true
-                                newGraph[nodeId].paramsSetting = paramsSetting
-                                return false
-                            }
-                        }
-                    })
-                }
-            }
-            // 保存场景查询
-            // 获取图形xml数据
-            var encoder = new mxCodec()
-            var node = encoder.encode(graph.getModel())
-            var xml = mxUtils.getPrettyXml(node)
-            // 则绑定节点的排序值
-            $(layero).find('.paramSetTr').each(function(i, v) {
-                var nodeId = $(this).attr('nodeId')
-                newGraph[nodeId].nodeInfo.nodeSort = i
-            })
-            // 组织请求的json数据
-            var param = {
-                'createType': openType,
-                'graphName': graphName,
-                'description': description,
-                'graphXml': xml,
-                'nodeData': JSON.stringify(newGraph) // 各个节点的配置信息
-            }
-            if (type === 'saveGraph') { // 保存
-                if (graphUuid !== '') { // 如果图形ID不为空，即在修改图形过程中执行保存场景查询的操作
-                    // 如果当前打开的图形是场景查询图形，则图形ID不变，否则后台重新分配图形ID
-                    switch (openGraphType) {
-                        case '1':// 普通图形
-                            param.executeStatus = getExecuteDetail()
-                            break
-                        case '2':// 个人场景查询图形
-                            param.graphUuid = graphUuid
-                            param.executeStatus = getExecuteDetail()
-                            break
-                        case '3':// 公共场景查询图形
-                            param.graphUuid = graphUuid
-                            param.publicType = '1'
-                            param.executeStatus = 3// 未执行
-                            break
-                    }
-                }
-            } else { // type=="saveAsGraph"，另存为
-                switch (openGraphType) { // 此处不会有出现个人图形的情况
-                    case '2':// 个人场景查询图形
-                        param.executeStatus = getExecuteDetail()
-                        break
-                    case '3':// 公共场景查询图形
-                        param.publicType = '1'
-                        param.executeStatus = '3'// 未执行
-                        break
-                }
-            }
-            $.ajax({
-                url: contextPath + '/graphEditor/createScreenQuery',
-                type: 'post',
-                dataType: 'json',
-                data: param,
-                success: function(e) {
-                    alertMsg('提示', e.message, 'info')
-                    if (!e.isError) {
-                        layer.close(index)
-                        if (type === 'saveGraph' && (openGraphType === '2' || openGraphType === '3')) { // 保存完需刷新页面
-                            var obj = {
-                                'graphUuid': graphUuid,
-                                'graphName': graphName,
-                                'description': description,
-                                'nodeData': param.nodeData,
-                                'graphXml': xml
-                            }
-                            openCallBack(obj)
-                        }
-                    }
-                },
-                error: function() {
-                    alertMsg('错误', '生成场景查询的请求失败', 'error')
-                }
-            })
-        },
-        btn2: function(index, layero) {
-            layer.close(index)
-        },
-        end: function() {
-            if (openGraphType === '1') { // 如果打开的当前图形是个人图形，则设置完参数后清除节点参数信息
-                indexVue.nodeParamRelArr = []
-            }
-        }
-    })
-    // 弹框显示节点的参数配置列表，end
-}
-
 /**
  * 给节点设置参数（或修改参数）
  * @param nodeId 节点ID
@@ -1923,16 +1703,16 @@ export function createScreenQuery(type) {
  */
 export function settingParam(nodeId,index) {
     // 先获取当前节点的参数配置信息
-    let paramsSetting = typeof indexVue.nodeParamRelArr[nodeId] === 'undefined' ? {} : indexVue.nodeParamRelArr[nodeId]// 先获取实时设置的参数信息
-    indexVue.sp_nodeId = nodeId
-    indexVue.sp_paramsSetting = paramsSetting
-    indexVue.nodeParamSettingDialogVisible = true
+    let paramsSetting = typeof graphIndexVue.nodeParamRelArr[nodeId] === 'undefined' ? {} : graphIndexVue.nodeParamRelArr[nodeId]// 先获取实时设置的参数信息
+    graphIndexVue.sp_nodeId = nodeId
+    graphIndexVue.sp_paramsSetting = paramsSetting
+    graphIndexVue.nodeParamSettingDialogVisible = true
 }
 
 export function settingParamsCallBack() {
     // 获取操作提示
-    let msg = indexVue.$refs.settingParams.getOptMessage()
-    indexVue.$confirm(msg, '提示', {
+    let msg = graphIndexVue.$refs.settingParams.getOptMessage()
+    graphIndexVue.$confirm(msg, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -1941,18 +1721,18 @@ export function settingParamsCallBack() {
         closeOnPressEscape:false
     }).then(() => {
         // 获取弹出层的参数配置
-        let returnObj = indexVue.$refs.settingParams.getParamsSetting()
+        let returnObj = graphIndexVue.$refs.settingParams.getParamsSetting()
         if (!returnObj.verify) {
-            indexVue.$message({ type: 'info', message: returnObj.message })
+            graphIndexVue.$message({ type: 'info', message: returnObj.message })
         } else {
-            let nodeId = indexVue.sp_nodeId
-            let nodeParamItem = indexVue.nodeParamArr.find(item => item.nodeId === nodeId)
+            let nodeId = graphIndexVue.sp_nodeId
+            let nodeParamItem = graphIndexVue.nodeParamArr.find(item => item.nodeId === nodeId)
             if (returnObj.paramsSetting.sql !== "" && returnObj.paramsSetting.arr.length > 0) {
                 if(typeof nodeParamItem !== "undefined"){
                     nodeParamItem.hasParamSet = true
                 }
                 // 绑定节点的参数配置信息
-                indexVue.nodeParamRelArr[nodeId] = {...{}, ...returnObj.paramsSetting}
+                graphIndexVue.nodeParamRelArr[nodeId] = {...{}, ...returnObj.paramsSetting}
                 graph.nodeData[nodeId].hasParam = true
                 graph.nodeData[nodeId].paramsSetting = returnObj.paramsSetting
             } else {
@@ -1960,13 +1740,13 @@ export function settingParamsCallBack() {
                     nodeParamItem.hasParamSet = false
                 }
                 let nodeName = graph.nodeData[nodeId].nodeInfo.nodeName
-                indexVue.$message({ type: 'warning', message: '节点【' + nodeName + '】参数设置不正确，不对参数配置信息进行保存' })
+                graphIndexVue.$message({ type: 'warning', message: '节点【' + nodeName + '】参数设置不正确，不对参数配置信息进行保存' })
                 delete graph.nodeData[nodeId].hasParam;
                 delete graph.nodeData[nodeId].paramsSetting;
-                delete indexVue.nodeParamRelArr[nodeId]
+                delete graphIndexVue.nodeParamRelArr[nodeId]
             }
-            indexVue.initNodeSettingVue = false
-            indexVue.nodeParamSettingDialogVisible = false
+            graphIndexVue.initNodeSettingVue = false
+            graphIndexVue.nodeParamSettingDialogVisible = false
             autoSaveGraph()
         }
     }).catch( ()=> {})
@@ -1978,7 +1758,7 @@ export function settingParamsCallBack() {
  * @param index 当前节点在参数节点数组中的下标
  */
 export function clearSettingParam(nodeId,index) {
-    indexVue.$confirm('确定清除参数信息?', '提示', {
+    graphIndexVue.$confirm('确定清除参数信息?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -1986,8 +1766,8 @@ export function clearSettingParam(nodeId,index) {
         closeOnClickModal:false,
         closeOnPressEscape:false
     }).then(() => {
-        indexVue.nodeParamArr[index].hasParamSet = false
-        delete indexVue.nodeParamRelArr[nodeId]// 清除绑定的节点参数配置信息
+        graphIndexVue.nodeParamArr[index].hasParamSet = false
+        delete graphIndexVue.nodeParamRelArr[nodeId]// 清除绑定的节点参数配置信息
         // 同时清除节点数据中已绑定的参数信息
         if (graph.nodeData[nodeId] && graph.nodeData[nodeId].hasParam) {
             delete graph.nodeData[nodeId].hasParam
@@ -2002,20 +1782,20 @@ export function clearSettingParam(nodeId,index) {
  * 左侧资源树的搜素
  */
 export function searchZtree() {
-    var searchText = $.trim(indexVue.searchZtreeContent)
+    var searchText = $.trim(graphIndexVue.searchZtreeContent)
     if (searchText === '') {
-        if (isSearchExpand) {
+        if (graphIndexVue.isSearchExpand) {
             showNodes()
-            indexVue.zTreeObj.expandAll(false)
-            isSearchExpand = false
+            graphIndexVue.zTreeObj.expandAll(false)
+            graphIndexVue.isSearchExpand = false
         }
     } else {
-        if (isSearchExpand) {
+        if (graphIndexVue.isSearchExpand) {
             showNodes()
         }
-        isSearchExpand = true
+        graphIndexVue.isSearchExpand = true
         isHiddenNodes(false, searchText)
-        var nodeList = indexVue.zTreeObj.getNodesByFilter(getFilter)
+        var nodeList = graphIndexVue.zTreeObj.getNodesByFilter(getFilter)
         if (nodeList && nodeList.length > 0) {
             expandNodes(nodeList)
             updateNodes(nodeList, true)
@@ -2024,7 +1804,7 @@ export function searchZtree() {
             var nodeArr = getAllNodes()
             for (var i = 0; i < nodeArr.length; i++) {
                 if (nodeArr[i].id !== 'bussRootNode' && nodeArr[i].id !== 'bussDataRoot' && nodeArr[i].id !== 'my_space') {
-                    indexVue.zTreeObj.hideNode(nodeArr[i])
+                    graphIndexVue.zTreeObj.hideNode(nodeArr[i])
                 }
             }
         }
@@ -2032,7 +1812,7 @@ export function searchZtree() {
 }
 
 function getFilter(node) {
-    var searchText = $.trim(indexVue.searchZtreeContent)
+    var searchText = $.trim(graphIndexVue.searchZtreeContent)
     return (node.name.indexOf(searchText) > -1 || node.name.indexOf(searchText.toUpperCase()) > -1 || node.name.indexOf(searchText.toLowerCase()) > -1)
 }
 
@@ -2040,7 +1820,7 @@ function expandNodes(nodes) {
     for (var i = 0, l = nodes.length; i < l; i++) {
         var pNode = nodes[i].getParentNode()
         if (pNode) {
-            indexVue.zTreeObj.expandNode(pNode, true, false, false)
+            graphIndexVue.zTreeObj.expandNode(pNode, true, false, false)
         }
     }
 }
@@ -2048,7 +1828,7 @@ function expandNodes(nodes) {
 function updateNodes(nodeList, highlight) {
     for (var i = 0; i < nodeList.length; i++) {
         nodeList[i].highlight = highlight
-        indexVue.zTreeObj.updateNode(nodeList[i])
+        graphIndexVue.zTreeObj.updateNode(nodeList[i])
     }
 }
 
@@ -2056,12 +1836,12 @@ function hiddenNodes(nodeList, searchText) {
     isHiddenNodes(true, searchText)
     for (var i = 0; i < nodeList.length; i++) {
         nodeList[i].isHidden = false
-        indexVue.zTreeObj.updateNode(nodeList[i])
+        graphIndexVue.zTreeObj.updateNode(nodeList[i])
         var pNode = nodeList[i].getParentNode()
         if (pNode && pNode.isHidden) {
             pNode.isHidden = false
             pNode.open = true
-            indexVue.zTreeObj.updateNode(pNode)
+            graphIndexVue.zTreeObj.updateNode(pNode)
         }
     }
 }
@@ -2071,15 +1851,15 @@ function showNodes() {
     for (var k = 0; k < nodeArr.length; k++) {
         if (nodeArr[k].isHidden) {
             nodeArr[k].isHidden = false
-            indexVue.zTreeObj.updateNode(nodeArr[k])
+            graphIndexVue.zTreeObj.updateNode(nodeArr[k])
         }
-        indexVue.zTreeObj.showNode(nodeArr[k])
+        graphIndexVue.zTreeObj.showNode(nodeArr[k])
     }
 }
 
 function getAllNodes() {
     var nodeArr = []
-    var nodes = indexVue.zTreeObj.getNodes()
+    var nodes = graphIndexVue.zTreeObj.getNodes()
     for (var i = 0; i < nodes.length; i++) {
         nodeArr.push(nodes[i])
         nodeArr = getNodeChildren(nodes[i], nodeArr)
@@ -2101,19 +1881,19 @@ function getNodeChildren(node, nodeArr) {
 }
 
 function isHiddenNodes(flag, searchText) {
-    var allNodeList = indexVue.zTreeObj.transformToArray(indexVue.zTreeObj.getNodes())
+    var allNodeList = graphIndexVue.zTreeObj.transformToArray(graphIndexVue.zTreeObj.getNodes())
     if (flag) {
         for (var i = 0; i < allNodeList.length; i++) {
-            if (allNodeList[i].pid != null && indexVue.zTreeObj.getNodesByFilter(getFilter, false, allNodeList[i]).length === 0 &&
+            if (allNodeList[i].pid != null && graphIndexVue.zTreeObj.getNodesByFilter(getFilter, false, allNodeList[i]).length === 0 &&
                 (allNodeList[i].name.indexOf(searchText) < 0 && allNodeList[i].name.indexOf(searchText.toUpperCase()) < 0 && allNodeList[i].name.indexOf(searchText.toLowerCase()) < 0)) {		// 过滤掉最根节点
-                indexVue.zTreeObj.hideNode(allNodeList[i])
+                graphIndexVue.zTreeObj.hideNode(allNodeList[i])
             }
         }
     } else {
         for (var i = 0; i < allNodeList.length; i++) {
             if (allNodeList[i].isHidden === true) {
                 allNodeList[i].isHidden = false
-                indexVue.zTreeObj.updateNode(allNodeList[i])
+                graphIndexVue.zTreeObj.updateNode(allNodeList[i])
             }
         }
     }
@@ -2182,20 +1962,20 @@ export function addWaterMark(containerId) {
 // 修改参数设置
 export function modifyParam() {
     var nodeId = graph.curCell.id
-    var paramsSetting = indexVue.nodeParamRelArr[nodeId] ? indexVue.nodeParamRelArr[nodeId] : {}// 先获取节点的参数信息
-    indexVue.sp_nodeId = nodeId
-    indexVue.sp_paramsSetting = paramsSetting
-    indexVue.nodeParamSettingDialogVisible = true
+    var paramsSetting = graphIndexVue.nodeParamRelArr[nodeId] ? graphIndexVue.nodeParamRelArr[nodeId] : {}// 先获取节点的参数信息
+    graphIndexVue.sp_nodeId = nodeId
+    graphIndexVue.sp_paramsSetting = paramsSetting
+    graphIndexVue.nodeParamSettingDialogVisible = true
 }
 
 export function getParamsArr(){
     let paramsArr = []
-    let nodeIdArr = Object.keys(indexVue.nodeParamRelArr)
+    let nodeIdArr = Object.keys(graphIndexVue.nodeParamRelArr)
     for(let i=0; i<nodeIdArr.length; i++){
-        let keys = Object.keys(indexVue.nodeParamRelArr[nodeIdArr[i]])
+        let keys = Object.keys(graphIndexVue.nodeParamRelArr[nodeIdArr[i]])
         //paramSetting不为{}，存在当前节点，当前节点设置了参数信息
         if(keys.length !==0 && typeof graph.nodeData[nodeIdArr[i]] !== "undefined" && graph.nodeData[nodeIdArr[i]].hasParam){
-            let arr = indexVue.nodeParamRelArr[nodeIdArr[i]].arr
+            let arr = graphIndexVue.nodeParamRelArr[nodeIdArr[i]].arr
             Array.from(arr, item => paramsArr.push(item))
         }
     }
