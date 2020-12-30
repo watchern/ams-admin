@@ -841,10 +841,7 @@
                             }
                         }, 'json')
                     } else {						// 业务权限环境
-                        console.log(obj.$store.getters)
-                        console.log(obj.$store.getters.datauserid)
-                        console.log(obj.$store.getters.datausername)
-                        initTableTip(obj.$store.getters.datauserid,obj.$store.getters.datausername).then(response => {
+                        initTableTip().then(response => {
                             if (response.data == null) {
                                 obj.loading.destroy()
                                 this.$message.error('资源树列表加载出错')
@@ -969,23 +966,23 @@
                 if (this.saveGraphType === 'saveGraph') {
                     data.graphUuid = this.graphUuid
                 }
-                let callBack = function(response,msg_success,msg_error){
-                    this.graphFormVisible = false
+                let callBack = function(vueObj,response,msg_success,msg_error){
+                    vueObj.graphFormVisible = false
                     if (response.data == null) {
-                        this.$message.error({ message: msg_error })
+                        vueObj.$message.error({ message: msg_error })
                     } else {
-                        this.graphUuid = response.data
-                        if (this.saveGraphType === 'saveGraph') {
-                            this.graphName_show = this.graphName
-                            this.description_show = this.description
+                        vueObj.graphUuid = response.data
+                        if (vueObj.saveGraphType === 'saveGraph') {
+                            vueObj.graphName_show = vueObj.graphName
+                            vueObj.description_show = vueObj.description
                         }
-                        this.$message({ type: 'info', message: msg_success })
+                        vueObj.$message({ type: 'info', message: msg_success })
                     }
                 }
                 if(this.openGraphType === 1){//个人图形
                     data.graphType = 1
                     saveGraphInterface(data).then(response => {
-                        callBack(response,'图形保存失败','图形保存成功')
+                        callBack(this,response,'图形保存成功','图形保存失败')
                     }).catch( error => {})
                 }else{//场景查询图形
                     data.graphType = 3
@@ -996,7 +993,7 @@
                         data.executeStatus = 3// 未执行
                     }
                     createScreenQuery(data).then( response => {
-                        callBack(response,'场景查询图形保存失败','场景查询图形保存成功')
+                        callBack(this,response,'场景查询图形保存成功','场景查询图形保存失败')
                     }).catch( error => {})
                 }
             },

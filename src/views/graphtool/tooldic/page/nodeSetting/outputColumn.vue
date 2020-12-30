@@ -246,7 +246,7 @@
                             message = `第${i + 1}行的输出字段超过30个字符的长度限制，请修改`
                             break;
                         }
-                        if(!verifyReg(newColumnName)){
+                        if(!verifyReg(disColumnName)){
                             verify = false
                             message = `第${i + 1}行的输出字段中含有特殊字符或以数字开头，请修改`
                             break;
