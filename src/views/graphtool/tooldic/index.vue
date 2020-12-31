@@ -594,6 +594,8 @@
                 window.autoSaveGraph = indexJs.autoSaveGraph
                 window.nodeRemark = indexJs.nodeRemark
                 window.deleteResourceZtreeNode = indexJs.deleteResourceZtreeNode
+                window.undoResourceZtreeNode = indexJs.undoResourceZtreeNode
+                window.redoResourceZtreeNode = indexJs.redoResourceZtreeNode
                 window.modifyParam = indexJs.modifyParam
                 window.alertMsg = function (title,msg,type){
                     $this.$message({ type : type, message : msg})

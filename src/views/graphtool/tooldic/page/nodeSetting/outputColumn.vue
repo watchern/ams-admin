@@ -274,12 +274,10 @@
 <style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
 <style scoped src="@/components/ams-basic/css/common.css"></style>
 <style scoped type="text/css">
-    td>.form-group{
-        margin-bottom: 0;
-    }
     .table > tbody > tr > td{
         font-size: 13px;
         color: #4B4B4B;
+        line-height: 36px;
     }
     .table > thead > tr > th {
         background-color: #5886B2;
