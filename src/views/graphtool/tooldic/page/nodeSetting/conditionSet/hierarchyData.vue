@@ -1,44 +1,42 @@
 <template>
     <div style="height:580px;padding-top: 20px;" ref="hierarchyDataDiv">
         <el-row>
-            <div class="containerDiv">
-                <div class="form-group col-sm-3">
-                    <p style="color:red;height:30px;line-height: 30px;">注：每次分层区间数不能超过五个</p>
-                </div>
-                <div class="form-group col-sm-4">
-                    <label class="col-sm-4 control-label" style="text-align: right;">分层字段：</label>
-                    <div class="col-sm-8">
-                        <el-select v-model="hierarchy_column" filterable @change="empty_set">
-                            <el-option v-for="colObj in hierarchyColumnArr" :key="colObj.newColumnName" :value="colObj.newColumnName">{{colObj.newColumnName}}</el-option>
-                        </el-select>
-                    </div>
-                </div>
-                <div class="form-group col-sm-5">
-                    <span style="height:30px;line-height: 30px;padding-left: 20px;">{{range}}</span>
-                </div>
-            </div>
+            <el-col :span="5">
+                <p style="color:red;height:30px;line-height: 30px;">注：分层区间数不能超过五个</p>
+            </el-col>
+            <el-col :span="7">
+                <el-col :span="8" style="text-align: right;">
+                    <label style="line-height: 36px;">分层字段：</label>
+                </el-col>
+                <el-col :span="16">
+                    <el-select v-model="hierarchy_column" filterable @change="empty_set">
+                        <el-option v-for="colObj in hierarchyColumnArr" :key="colObj.newColumnName" :value="colObj.newColumnName">{{colObj.newColumnName}}</el-option>
+                    </el-select>
+                </el-col>
+            </el-col>
+            <el-col :span="12">
+                <span style="height:30px;line-height: 30px;padding-left: 20px;">{{range}}</span>
+            </el-col>
         </el-row>
         <el-row>
-            <div class="containerDiv">
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th colspan="5" style="text-align: center;">分层区间列表
-                            <button type="button" class="btn" @click="addRows" style="float: right;color: #000;">增加区间</button>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="(item,index) in items" :key="item.id">
-                        <td align="right" width="100px">区间</td>
-                        <td><input v-model="item.c_col_1" type="number" min="1" class="col-1 form-control"/></td>
-                        <td align="center" width="100px">至</td>
-                        <td><input v-model="item.c_col_2" type="number" min="1" class="col-2 form-control"/></td>
-                        <td width="100px"><img v-if="index > 0" style="width:25px;cursor:pointer;" src="../../../images/delred.png" @click="clickDel(index)"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th colspan="5" style="text-align: center;">分层区间列表
+                        <button type="button" class="btn" @click="addRows" style="float: right;color: #000;">增加区间</button>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(item,index) in items" :key="item.id">
+                    <td align="right" width="100px">区间</td>
+                    <td><input v-model="item.c_col_1" type="number" min="1" class="col-1 form-control"/></td>
+                    <td align="center" width="100px">至</td>
+                    <td><input v-model="item.c_col_2" type="number" min="1" class="col-2 form-control"/></td>
+                    <td width="100px"><img v-if="index > 0" style="width:25px;cursor:pointer;" src="../../../images/delred.png" @click="clickDel(index)"></td>
+                </tr>
+                </tbody>
+            </table>
         </el-row>
     </div>
 </template>
@@ -64,7 +62,6 @@
         },
         mounted() {
             this.init()
-            this.initWebSocKet()
         },
         methods: {
             init() {
@@ -114,65 +111,36 @@
                             'isRoleTable':isRoleTable
                         }
                         getMaxMinColumn(dataParam).then( response => {
+                            this.loading.destroy()
                             if (response.data == null || response.data.isError) {
                                 this.$message.error({ message: response.data.message })
                             }else{
-                                this.websocketLayeringId = response.data.websocketLayeringId
+                                this.dict_map = response.data.map_range
+                                if (this.nodeData.isSet) {
+                                    this.empty_set(this.nodeData.setting.hierarchy_column)// 选择的分层字段
+                                    this.items = []
+                                    this.$nextTick( () => {
+                                        for(let i=0; i<this.nodeData.setting.hierarchy_map.length; i++){
+                                            let obj = this.nodeData.setting.hierarchy_map[i]
+                                            this.keyId = i
+                                            this.items.push({
+                                                id:i,
+                                                c_col_1: obj.c_col_1,
+                                                c_col_2: obj.c_col_2
+                                            })
+                                        }
+                                    })
+                                }
                             }
                         })
                     }
-                }
-            },
-            initWebSocKet(){
-                let $this = this
-                // const webSocketPath = process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET + this.$store.getters.personuuid;
-                const webSocketPath = process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET + this.loginUserUuid + 'GRAPH_LAYERING'
-                // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
-                this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
-                // 发送消息
-                this.webSocket.onmessage = function(event) {
-                    let dataObj = JSON.parse(event.data)//接收到返回结果
-                    var result = dataObj.result
-                    var executeSQLObj = dataObj.executeSQL
-                    $this.loading.destroy()
-                    if(executeSQLObj.id === $this.websocketLayeringId){//展示当前操作的结果集
-                        for(let i=0; i<result.length; i++){
-                            for(let j=0; j<$this.pre_str_column.length; j++){
-                                let maxKey = `max_${$this.pre_str_column[j]}`
-                                let minKey = `min_${$this.pre_str_column[j]}`
-                                let obj = {}
-                                obj[maxKey] = maxKey
-                                obj[minKey] = minKey
-                                $this.dict_map.push(obj)
-                            }
-                        }
-                        if (this.nodeData.isSet) {
-                            this.hierarchy_column = this.nodeData.setting.hierarchy_column// 选择的分层字段
-                            this.items = []
-                            this.$nextTick( () => {
-                                for(let i=0; i<this.nodeData.setting.hierarchy_map.length; i++){
-                                    let obj = this.nodeData.setting.hierarchy_map[i]
-                                    this.keyId = i
-                                    this.items.push({
-                                        id:i,
-                                        c_col_1: obj.c_col_1,
-                                        c_col_2: obj.c_col_2
-                                    })
-                                }
-                            })
-                        }
-                    }
-                }
-                // 通信失败
-                this.webSocket.onerror = function(event) {
-                    $this.$message.error('数据请求失败')
                 }
             },
             empty_set(sel_column) {
                 this.hierarchy_column = sel_column
                 this.items = []
                 this.keyId = 0
-                this.$nextTick( () => {
+                // this.$nextTick( () => {
                     this.items.push({
                         id: this.keyId,
                         c_col_1: '',
@@ -189,7 +157,7 @@
                     } else {
                         this.range = '【最小值：空  ~  最大值：空】'
                     }
-                })
+                // })
             },
             /**
              * 添加行
@@ -221,8 +189,7 @@
             },
             inputVerify() {
                 let verify = true
-                let hierarchy_column = this.hierarchy_column
-                if (hierarchy_column === '') {
+                if (this.hierarchy_column === '') {
                     this.$message({ type: 'info', message: '未选择分层字段' })
                     return false
                 }

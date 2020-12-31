@@ -676,6 +676,7 @@ export function autoSaveGraph() {
         case 2:// 个人场景查询
             data.executeStatus = getExecuteDetail()
             data.graphType = 3
+            data.publicType = 0
             break
         case 3:// 公共场景查询
             data.executeStatus = 3
@@ -685,7 +686,6 @@ export function autoSaveGraph() {
         case 4:// 模型图形
             data.executeStatus = getExecuteDetail()
             data.modelSql = graphIndexVue.curModelSql// 临时将模型SQL语句绑在数据串中
-            data.nodeData = JSON.stringify(newNodeData)
             break
     }
     saveGraphInterface(data).then(response => {

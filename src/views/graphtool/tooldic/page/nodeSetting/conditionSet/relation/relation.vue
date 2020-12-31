@@ -32,7 +32,7 @@
                                         <label class="col-sm-6 control-label">关联关系：</label>
                                         <div class="col-sm-6">
                                             <el-select v-model="joinType" @change="changeType">
-                                                <el-option v-for="joinTypeObj in joinTypeArr" :value="joinTypeObj.value" :label="joinTypeObj.name">{{ joinTypeObj.name }}</el-option>
+                                                <el-option v-for="joinTypeObj in joinTypeArr" :key="joinTypeObj.value" :value="joinTypeObj.value" :label="joinTypeObj.name">{{ joinTypeObj.name }}</el-option>
                                             </el-select>
                                         </div>
                                     </div>
@@ -64,7 +64,7 @@
                                 <div v-if="showJoinArea" class="form-group">
                                     <div class="col-sm-8">
                                         <el-select v-model="comper" @change="changeCopare">
-                                            <el-option v-for="obj in comperArr" :value="obj.value" :label="obj.name">{{ obj.name }}</el-option>
+                                            <el-option v-for="obj in comperArr" :key="obj.value" :value="obj.value" :label="obj.name">{{ obj.name }}</el-option>
                                         </el-select>
                                     </div>
                                 </div>
@@ -233,7 +233,7 @@
                             message = `第${i + 1}行的输出字段超过30个字符的长度限制，请修改`
                             break;
                         }
-                        if(!verifyReg(newColumnName)){
+                        if(!verifyReg(disColumnName)){
                             verify = false
                             message = `第${i + 1}行的输出字段中含有特殊字符或以数字开头，请修改`
                             break;
@@ -268,12 +268,10 @@
     .tstext{
         padding-left: 5px;
     }
-    td>.form-group{
-        margin-bottom: 0;
-    }
     .table > tbody > tr > td{
         font-size: 13px;
         color: #4B4B4B;
+        line-height: 36px;
     }
     .table > thead > tr > th {
         background-color: #5886B2;
