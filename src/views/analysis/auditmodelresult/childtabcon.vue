@@ -231,7 +231,7 @@
     </el-row>
     <div style="height: 450px;" v-if="this.preLength==this.myIndex+1||myFlag">
       <div align='center' style='font-weight:lighter ;font-size:15px' v-if="afterAddChartsWithNoConfigure">请选择图表</div>
-      <div align='center' style='font-weight:lighter ;font-size:15px' v-if="isHaveCharts">该模型暂无图标</div>
+      <div align='center' style='font-weight:lighter ;font-size:15px' v-if="isHaveCharts">该模型暂无图表</div>
       <mtEditor v-loading="chartLoading" v-if="afterResult" :key="chartPreview" ref='chart1' :data='result' :chart-config='nowChartJson' :preview="true"></mtEditor>
     </div>
   </div>
