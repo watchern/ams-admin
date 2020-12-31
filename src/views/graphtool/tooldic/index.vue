@@ -841,7 +841,7 @@
                             }
                         }, 'json')
                     } else {						// 业务权限环境
-                        initTableTip(obj.$store.getters.datauserid,obj.$store.getters.scenecode).then(response => {
+                        initTableTip().then(response => {
                             if (response.data == null) {
                                 obj.loading.destroy()
                                 this.$message.error('资源树列表加载出错')

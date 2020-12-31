@@ -546,11 +546,10 @@
                 initVariable()
                 initEvent()
                 initParamTree()
+                debugger
                 this.executeLoading = true
                 this.loadText = '正在初始化数据表...'
-                const datauserid = this.$store.getters.datauserid
-                const sceneCode = this.$store.getters.scenecode
-                initTableTip(datauserid,sceneCode).then((result) => {
+                initTableTip().then((result) => {
                     initTableTree(result)
                     var relTableMap = {}
                     var expTableMap = {}
