@@ -546,11 +546,10 @@
                 initVariable()
                 initEvent()
                 initParamTree()
-                debugger
                 this.executeLoading = true
                 this.loadText = '正在初始化数据表...'
                 const datauserid = this.$store.getters.datauserid
-                const sceneCode = this.$store.getters.datausername
+                const sceneCode = this.$store.getters.scenecode
                 initTableTip(datauserid,sceneCode).then((result) => {
                     initTableTree(result)
                     var relTableMap = {}
@@ -826,7 +825,7 @@
                     obj.businessField = 'sqleditor'
                     obj.modelResultSavePathId = this.modelResultSavePathId
                     obj.datauserid = this.$store.getters.datauserid
-                    obj.sceneCode = this.$store.getters.datausername
+                    obj.sceneCode = this.$store.getters.scenecode
                     if (!obj.isExistParam) {
                         this.executeLoading = true
                         this.loadText = '正在获取SQL信息...'
