@@ -16,13 +16,13 @@
                 <div class="filter_cell_header" style="display:flex;justify-content:center;align-items:center;">
                     <label>条件&nbsp;</label>
                     <el-select v-model="select_cz" @change="selectCzChange" style="width: 120px;" >
-                        <el-option v-for="selectCzObj in selectCzArr" :value="selectCzObj.value" :label="selectCzObj.name">{{ selectCzObj.name }}</el-option>
+                        <el-option v-for="selectCzObj in selectCzArr" :key="selectCzObj.value" :value="selectCzObj.value" :label="selectCzObj.name">{{ selectCzObj.name }}</el-option>
                     </el-select>
                 </div>
                 <div class="filter_cell_header" style="display:flex;justify-content:center;align-items:center;">
                     <label>筛选对象&nbsp;</label>
                     <el-select v-model="compareObj" :disabled="compareObjDisabled" @change="compareObjChange" style="width: 150px;">
-                        <el-option v-for="compare in compareArr" :value="compare.value" :label="compare.name">{{ compare.name }}</el-option>
+                        <el-option v-for="compare in compareArr" :key="compare.value" :value="compare.value" :label="compare.name">{{ compare.name }}</el-option>
                     </el-select>
                     <el-input v-if="showConnValue" v-model="conn_value" style="width: 200px;margin-left: 10px;" />
                     <div v-if="!showConnValue" id="compareColumn" style="margin-left: 10px;">
@@ -64,6 +64,7 @@
 </template>
 
 <script>
+    // import { removeJcCssfile, addJsFile } from "@/api/analysis/common"
     export default {
         name: 'FilterSet',
         data() {
@@ -103,6 +104,15 @@
         mounted() {
             this.init()
         },
+        // created() {
+        //     // 引入公用CSS、JS
+        //     addJsFile('/lib/UUID/UUIDGenerator.js','UUIDGenerator')
+        //     this.init()
+        // },
+        // beforeDestroy() {
+        //     //销毁公用CSS、JS
+        //     removeJcCssfile("UUIDGenerator.js","js")
+        // },
         methods: {
             init() {
                 const graph = this.$parent.graph

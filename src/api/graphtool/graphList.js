@@ -323,12 +323,38 @@ async function replaceModelSqlByParams(sql, paramArr) {
 
 /**
  * 对比SQL语句是否发生变化
- * @param data
+ * @param data 新旧SQL语句
  */
 export function compareSql(data){
     return request({
         baseURL: baseURL,
         url: '/graphCt/compareSql',
+        method: 'post',
+        params: data
+    })
+}
+
+/**
+ * 查询场景查询图形下的数据节点数量
+ * @param data 图形UUID
+ */
+export function searchGraphNodes(data){
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/searchGraphNodes',
+        method: 'post',
+        params: data
+    })
+}
+
+/**
+ * 根据节点ID获取当前节点的基本信息和所有参数信息
+ * @param data 图形UUID和节点ID
+ */
+export function getScreenGraphInfo(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/getScreenGraphInfo',
         method: 'post',
         params: data
     })
