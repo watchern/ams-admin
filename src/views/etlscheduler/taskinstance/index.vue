@@ -135,6 +135,14 @@
           style="margin-top:10px"
         >
           <el-col
+            v-for="log in logs[0]"
+            :key="log.taskLogUuid"
+            :label="log.taskLogUuid"
+            :style="{color: logColorObj[log.status].color}"
+          >
+            {{ log.logTime +' '+ log.logMessage }}
+          </el-col>
+          <el-col
             v-for="log in logs[task.taskCode]"
             :key="log.taskLogUuid"
             :label="log.taskLogUuid"
