@@ -1971,6 +1971,11 @@ export function startExecuteSql(data) {
  * @param {*} data 要执行的数据
  */
 export function getExecuteTask(data) {
+  const dataUserId = store.getters.datauserid
+  const sceneCode = store.getters.scenecode
+  debugger;
+  data.userId = dataUserId;
+  data.sceneCode = sceneCode;
   return request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/getExecuteTask',
