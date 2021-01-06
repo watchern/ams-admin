@@ -26,14 +26,13 @@
                     "nodeData":null,
                     "publicType":1,//默认是个人场景查询
                     "screenQueryNodeArr":[],
-                    "treeNodeData":this.treeNodeData
-                },
-                treeNodeData:null
+                    "treeNodeData":null
+                }
             }
         },
         methods: {
             refreshGraphList(node) { // 根据点击的图形树节点刷新列表数据
-                this.treeNodeData = node
+                this.screenParam.treeNodeData = node
                 this.rightType = "graphList"
                 // 处理列表界面的删除按钮是否显示
                 if (node.type === 'screenGraphType') { // 场景查询图形

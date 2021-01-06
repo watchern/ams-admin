@@ -146,6 +146,14 @@ module.exports = {
         pathRewrite: {
           '^/psbcaudit_auditobj/': '/psbcaudit_auditobj/'
         }
+      },
+      '/datamax-server/': {
+        timeout: 1800000,
+        target: process.env.AMSDATAMAX_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/datamax-server/': '/'
+        }
       }
     }
   },
