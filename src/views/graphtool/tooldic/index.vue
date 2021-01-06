@@ -968,7 +968,7 @@
                     data.graphType = 1
                     saveGraphInterface(data).then(response => {
                         callBack(this,response,'图形保存成功','图形保存失败')
-                    }).catch( error => {})
+                    }).catch( () => {})
                 }else{//场景查询图形
                     data.graphType = 3
                     if(this.openGraphType === 2){//个人场景查询图形
@@ -979,7 +979,7 @@
                     }
                     createScreenQuery(data).then( response => {
                         callBack(this,response,'场景查询图形保存成功','场景查询图形保存失败')
-                    }).catch( error => {})
+                    }).catch( () => {})
                 }
             },
             searchZtree() {
@@ -1007,7 +1007,7 @@
                     this.loading.destroy()
                     this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false, 'hasTime': true })
                     viewNodeData({ nodeObjs: JSON.stringify(this.resultTableArr), openType: this.openType, websocketBatchId: this.websocketBatchId }).then()
-                        .catch( error => {
+                        .catch( () => {
                             this.loading.destroy()
                         })
                 }

@@ -91,7 +91,7 @@
                     this.total = resp.data.total
                     this.dataList = resp.data.records
                     this.listLoading = false
-                }).catch( error => {
+                }).catch( () => {
                     this.listLoading = false
                 })
             },
@@ -182,7 +182,7 @@
                     }).catch( () => {
                         this.$message.error(this.$t('message.delete.fail'))
                     })
-                }).catch( error => {})
+                }).catch( () => {})
             },
             share() {
                 let selectObj = this.$refs.graphListTable.selection
@@ -196,7 +196,7 @@
                         this.$message({ type: 'success', message: '图形分享成功' })
                         // 刷新图形树（主要刷新我的分析图形节点数据）
                         this.$emit('refreshGraphTree')
-                    }).catch( error => {})
+                    }).catch( () => {})
                 }
             },
             cancelShare() {
@@ -209,7 +209,7 @@
                     this.getGraphList()
                     // 刷新图形树（主要刷新我的分析图形节点数据）
                     this.$emit('refreshGraphTree')
-                }).catch( error => {})
+                }).catch( () => {})
             },
             run() {
                 this.pageLoading = true
@@ -235,7 +235,7 @@
                             this.$parent.$parent.rightType = "runGraph"
                         }
                     }
-                }).catch( error =>{
+                }).catch( () =>{
                     this.pageLoading = false
                 })
             },

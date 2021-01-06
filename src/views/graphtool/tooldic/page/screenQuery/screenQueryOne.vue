@@ -8,10 +8,10 @@
                             <label>{{filter.paramName}}</label>
                         </el-col>
                         <el-col :span="6">
-                            <div ref="selectParamScreen" :index="ind" v-if="filter.inputType === 'lineinp'" :id="filter.id" :title="filter.title"class="xm-select-demo"></div>
+                            <div ref="selectParamScreen" :index="ind" v-if="filter.inputType === 'lineinp'" :id="filter.id" :title="filter.title" class="xm-select-demo"></div>
                             <el-input ref="paramOptionScreen" :index="ind" v-if="filter.inputType === 'textinp'" :title="filter.title" v-model="filter.value" class="textParam"></el-input>
                             <el-date-picker ref="paramOptionScreen" :index="ind"  v-if="filter.inputType === 'timeinp'" :title="filter.title" type="date" placeholder="选择日期" v-model="filter.value" style="width: 100%;"></el-date-picker>
-                            <div ref="selectTreeParamScreen" :index="ind" v-if="filter.inputType === 'treeinp'" :id="filter.id" :title="filter.title"class="xm-select-demo"></div>
+                            <div ref="selectTreeParamScreen" :index="ind" v-if="filter.inputType === 'treeinp'" :id="filter.id" :title="filter.title" class="xm-select-demo"></div>
                         </el-col>
                         <el-col :span="1" v-show="filter.allowedNull">
                             <div style="color: red;display: inline-block;font-weight: bold;font-size: 20px;">*</div>
@@ -64,13 +64,6 @@
                 <el-button type="primary" @click="executeParamCallBack">保存</el-button>
             </div>
         </el-dialog>
-        <el-dialog v-if="nodeParamDialogVisible" :visible.sync="nodeParamDialogVisible" title="前置节点参数设置" :close-on-press-escape="autoCloseDialog" :close-on-click-modal="autoCloseDialog" width="600px">
-            <InputParams ref="inputParams" :nodeData="allNodeData" :nodeIdArr="executeNodeIdArr"/>
-            <div slot="footer">
-                <el-button @click="nodeParamDialogVisible = false">取消</el-button>
-                <el-button type="primary" @click="executeParamCallBack">保存</el-button>
-            </div>
-        </el-dialog>
     </div>
 </template>
 
@@ -78,10 +71,9 @@
     import InputParams from '@/views/graphtool/tooldic/page/inputParams/inputParams.vue'
     import ChildTabCons from "@/views/analysis/auditmodelresult/childtabcon"
     import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams,
-        getScreenGraphInfo,dealReplaceParamSq,getScreenExecuteSql,selectScreenQueryData,dealReplaceParamSql } from '@/api/graphtool/graphList'
+        getScreenGraphInfo,getScreenExecuteSql,selectScreenQueryData,dealReplaceParamSql } from '@/api/graphtool/graphList'
     import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
     import { getPreNodesNotDatasource } from '@/views/graphtool/tooldic/js/common'
-    import * as commonJs from "@/views/graphtool/tooldic/js/common";
     export default {
         name: "screenQueryOne",
         components:{ InputParams, ChildTabCons },
@@ -145,121 +137,128 @@
                 try {
                     //获取图形节点的所有参数信息
                     let response = await findParamsAndModelRelParams()
-                    if (response.data == null || response.data.isError) {
-                        this.$message.error(response.data.message)
-                    } else {
-                        this.paramsArr = response.data.paramList// 定义所有母参信息数组
-                        //先根据节点ID获取当前节点的基本信息和所有参数信息
-                        response = await getScreenGraphInfo({"graphUuid": this.screenParam.graphUuid, "nodeId": nodeId})
-                        if (response.data == null || response.data.isError) {
-                            this.$message.error(`获取节点${nodeName}的信息失败`)
-                            return;
-                        }
-                        if (typeof response.data.graphObj === "undefined" || response.data.graphObj == null) {
-                            this.$message.error(`获取图形${this.screenParam.graphName}的信息失败`)
-                            return;
-                        }
-                        if (typeof response.data.nodeObj === "undefined" || response.data.nodeObj == null) {
-                            this.$message.error(`获取节点${nodeName}的信息失败`)
-                            return;
-                        }
-                        this.allNodeData = JSON.parse(response.data.graphObj.nodeData)
-                        //获取当前节点所有数据
-                        let curNodeData = JSON.parse(response.data.nodeObj.nodeData)
-                        this.curOptType = curNodeData.nodeInfo.optType;//获取当前节点的类型
-                        //刷新数据分层节点的下标
-                        if (this.curOptType === "layering" && this.allNodeData[nodeId].setting) {
-                            if(typeof this.screenParam.layering_index === 'undefined'){//默认加载第一个分层区间，否则为自主选择的分层区间
-                                this.screenParam.layering_index = 0
+                    if (response.data == null){
+                        this.$message.error("查询条件信息获取失败")
+                    }else {
+                        if (response.data.isError) {
+                            this.$message.error(response.data.message)
+                        } else {
+                            this.paramsArr = response.data.paramList// 定义所有母参信息数组
+                            //先根据节点ID获取当前节点的基本信息和所有参数信息
+                            response = await getScreenGraphInfo({
+                                "graphUuid": this.screenParam.graphUuid,
+                                "nodeId": nodeId
+                            })
+                            if (response.data == null || response.data.isError) {
+                                this.$message.error(`获取节点${nodeName}的信息失败`)
+                                return;
                             }
-                            this.allNodeData[nodeId].setting.index = this.screenParam.layering_index
-                        }
-                        //组装列表字段数组
-                        let columnsInfo = curNodeData.columnsInfo
-                        for (let i = 0; i < columnsInfo.length; i++) {
-                            if (columnsInfo[i].isOutputColumn === 1) {
-                                this.columnInfoArr.push(columnsInfo[i])
-                                if (this.curOptType === "change") {//如果是数据转码，则需追加一列（未转码前的列名称，即“XX_原字段”）
-                                    let tableData = curNodeData.setting.tableData//获取转码配置
-                                    let tanscodeColumnArr = Object.keys(tableData)//获取转码字段数组
-                                    for (let j = 0; j < tanscodeColumnArr.length; j++) {
-                                        if (tanscodeColumnArr[j] === columnsInfo[i].columnName) {
-                                            this.colNames.push(columnsInfo[i].newColumnName + "_原字段")
+                            if (typeof response.data.graphObj === "undefined" || response.data.graphObj == null) {
+                                this.$message.error(`获取图形${this.screenParam.graphName}的信息失败`)
+                                return;
+                            }
+                            if (typeof response.data.nodeObj === "undefined" || response.data.nodeObj == null) {
+                                this.$message.error(`获取节点${nodeName}的信息失败`)
+                                return;
+                            }
+                            this.allNodeData = JSON.parse(response.data.graphObj.nodeData)
+                            //获取当前节点所有数据
+                            let curNodeData = JSON.parse(response.data.nodeObj.nodeData)
+                            this.curOptType = curNodeData.nodeInfo.optType;//获取当前节点的类型
+                            //刷新数据分层节点的下标
+                            if (this.curOptType === "layering" && this.allNodeData[nodeId].setting) {
+                                if (typeof this.screenParam.layering_index === 'undefined') {//默认加载第一个分层区间，否则为自主选择的分层区间
+                                    this.screenParam.layering_index = 0
+                                }
+                                this.allNodeData[nodeId].setting.index = this.screenParam.layering_index
+                            }
+                            //组装列表字段数组
+                            let columnsInfo = curNodeData.columnsInfo
+                            for (let i = 0; i < columnsInfo.length; i++) {
+                                if (columnsInfo[i].isOutputColumn === 1) {
+                                    this.columnInfoArr.push(columnsInfo[i])
+                                    if (this.curOptType === "change") {//如果是数据转码，则需追加一列（未转码前的列名称，即“XX_原字段”）
+                                        let tableData = curNodeData.setting.tableData//获取转码配置
+                                        let tanscodeColumnArr = Object.keys(tableData)//获取转码字段数组
+                                        for (let j = 0; j < tanscodeColumnArr.length; j++) {
+                                            if (tanscodeColumnArr[j] === columnsInfo[i].columnName) {
+                                                this.colNames.push(columnsInfo[i].newColumnName + "_原字段")
+                                                break
+                                            }
+                                        }
+                                    } else {
+                                        this.colNames.push(columnsInfo[i].newColumnName)
+                                    }
+                                }
+                            }
+                            //组织colModel对象
+                            Array.from(this.colNames, item => this.colModel.push({
+                                'headerName': item,
+                                'field': item,
+                                'pinned': 'center'
+                            }))
+                            //获取参数配置信息
+                            let paramsSetting = curNodeData.paramsSetting
+                            let isError = false
+                            let message = ""
+                            if (curNodeData.hasParam) {//如果当前节点设置了参数，则拼接参数html元素代码
+                                this.queryFilter = true
+                                this.paramSql = paramsSetting.sql//获取参数的SQL语句
+                                this.arr = paramsSetting.arr//获取设置的参数数组
+                                let moduleParamArr = []//母参数数组（去重用）
+                                for (let j = 0; j < this.arr.length; j++) {//循环节点上绑定的参数（复制参数）
+                                    let copyParamObj = {};//定义复制参数的对象
+                                    for (let m = 0; m < this.paramsArr.length; m++) {//循环所有母版参数
+                                        let moduleParamId = this.paramsArr[m].ammParamUuid
+                                        if (moduleParamId === this.arr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) {//匹配复制参数的母版参数ID
+                                            copyParamObj = $.extend(true, {}, this.paramsArr[m])
+                                            if (this.arr[j].defaultVal) {
+                                                copyParamObj.defaultVal = this.arr[j].defaultVal
+                                            }
+                                            moduleParamArr.push(moduleParamId)
                                             break
                                         }
                                     }
-                                } else {
-                                    this.colNames.push(columnsInfo[i].newColumnName)
-                                }
-                            }
-                        }
-                        //组织colModel对象
-                        Array.from(this.colNames, item => this.colModel.push({
-                            'headerName': item,
-                            'field': item,
-                            'pinned': 'center'
-                        }))
-                        //获取参数配置信息
-                        let paramsSetting = curNodeData.paramsSetting
-                        let isError = false
-                        let message = ""
-                        if (curNodeData.hasParam) {//如果当前节点设置了参数，则拼接参数html元素代码
-                            this.queryFilter = true
-                            this.paramSql = paramsSetting.sql//获取参数的SQL语句
-                            this.arr = paramsSetting.arr//获取设置的参数数组
-                            let moduleParamArr = []//母参数数组（去重用）
-                            for (let j = 0; j < this.arr.length; j++) {//循环节点上绑定的参数（复制参数）
-                                let copyParamObj = {};//定义复制参数的对象
-                                for (let m = 0; m < this.paramsArr.length; m++) {//循环所有母版参数
-                                    let moduleParamId = this.paramsArr[m].ammParamUuid
-                                    if (moduleParamId === this.arr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) {//匹配复制参数的母版参数ID
-                                        copyParamObj = $.extend(true, {}, this.paramsArr[m])
-                                        if (this.arr[j].defaultVal) {
-                                            copyParamObj.defaultVal = this.arr[j].defaultVal
-                                        }
-                                        moduleParamArr.push(moduleParamId)
-                                        break
+                                    if (Object.keys(copyParamObj).length === 0) {
+                                        continue
                                     }
+                                    let queryFilterObj = {
+                                        "paramName": copyParamObj.paramName,
+                                        "description": '（参数说明：无）',
+                                        "inputType": copyParamObj.inputType//参数类型
+                                    }
+                                    if (typeof copyParamObj.description !== 'undefined' && copyParamObj.description != null) {
+                                        queryFilterObj.description = '（参数说明：' + copyParamObj.description + '）'
+                                    }
+                                    let returnObj = await this.initParamHtml(copyParamObj, queryFilterObj, this.selectNum, this.selectTreeNum)
+                                    if (typeof returnObj.selectNum !== 'undefined') {
+                                        this.selectNum = returnObj.selectNum
+                                        queryFilterObj.selectNum = returnObj.selectNum
+                                    }
+                                    if (typeof returnObj.selectTreeNum !== 'undefined') {
+                                        this.selectTreeNum = returnObj.selectTreeNum
+                                        queryFilterObj.selectTreeNum = returnObj.selectTreeNum
+                                    }
+                                    if (returnObj.isError) {
+                                        this.$message.error(returnObj.message)
+                                        return
+                                    } else {
+                                        queryFilterObj = {...queryFilterObj, ...returnObj.setParamObj}
+                                    }
+                                    this.queryFilterArr.push(queryFilterObj)
                                 }
-                                if (Object.keys(copyParamObj).length === 0) {
-                                    continue
-                                }
-                                let queryFilterObj = {
-                                    "paramName": copyParamObj.paramName,
-                                    "description": '（参数说明：无）',
-                                    "inputType": copyParamObj.inputType//参数类型
-                                }
-                                if (typeof copyParamObj.description !== 'undefined' && copyParamObj.description != null) {
-                                    queryFilterObj.description = '（参数说明：' + copyParamObj.description + '）'
-                                }
-                                let returnObj = await this.initParamHtml(copyParamObj, queryFilterObj, this.selectNum, this.selectTreeNum)
-                                if (typeof returnObj.selectNum !== 'undefined') {
-                                    this.selectNum = returnObj.selectNum
-                                    queryFilterObj.selectNum = returnObj.selectNum
-                                }
-                                if (typeof returnObj.selectTreeNum !== 'undefined') {
-                                    this.selectTreeNum = returnObj.selectTreeNum
-                                    queryFilterObj.selectTreeNum = returnObj.selectTreeNum
-                                }
-                                if (returnObj.isError) {
-                                    this.$message.error(returnObj.message)
-                                    return
-                                } else {
-                                    queryFilterObj = {...queryFilterObj, ...returnObj.setParamObj}
-                                }
-                                this.queryFilterArr.push(queryFilterObj)
+                                this.$nextTick(() => {
+                                    //初始化文本框、下拉列表、下拉树
+                                    this.initParamInputAndSelect();
+                                })
+                                this.screenLoading = false
+                            } else {
+                                this.screenLoading = false
+                                this.initQuery = true
                             }
-                            this.$nextTick( () => {
-                                //初始化文本框、下拉列表、下拉树
-                                this.initParamInputAndSelect();
-                            })
-                            this.screenLoading = false
-                        } else {
-                            this.screenLoading = false
-                            this.initQuery = true
-                        }
-                        if (isError) {
-                            this.$message.error(message);
+                            if (isError) {
+                                this.$message.error(message);
+                            }
                         }
                     }
                 }catch (e) {
@@ -291,7 +290,10 @@
                 let associatedParamIdArr = []// 受当前参数影响的被关联参数ID集合
                 let paramSql = paramObj.paramChoice.optionsSql//拉列表或下拉树的SQL语句
                 obj.setParamObj.title = paramObj.paramChoice.allowedNull === 0 ? '不可为空' : '可为空'
-                obj.setParamObj.allowedNull = paramObj.paramChoice.allowedNull === 0 ? true : false
+                obj.setParamObj.allowedNull = false
+                if(paramObj.paramChoice.allowedNull === 0) {
+                    obj.setParamObj.allowedNull = true
+                }
                 let hasSql = false// 下拉列表或下拉树是非SQL方式或者是SQL方式但值为空
                 switch (obj.setParamObj.inputType) {
                     case 'lineinp':// 下拉列表
@@ -310,17 +312,22 @@
                                 hasSql = true// 下拉列表是SQL方式
                                 if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
                                     const response = await executeParamSql(paramSql)
-                                    if(response.data == null || response.data.isError){
+                                    if(response.data == null){
                                         obj.isError = true
-                                        obj.message = '获取参数【' + paramObj.paramName + '】的值的失败，原因：' + response.data.message
-                                    } else {
-                                        let e = response.data
-                                        if (e.valueList && e.valueList.length > 0) {
-                                            for (let k = 0; k < e.valueList.length; k++) {
-                                                dataArr.push({
-                                                    'name': e.valueList[k].paramName,
-                                                    'value': e.valueList[k].paramValue
-                                                })
+                                        obj.message = `获取参数【${paramObj.paramName}】的值的失败`
+                                    }else {
+                                        if (response.data.isError) {
+                                            obj.isError = true
+                                            obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
+                                        } else {
+                                            let e = response.data
+                                            if (e.valueList && e.valueList.length > 0) {
+                                                for (let k = 0; k < e.valueList.length; k++) {
+                                                    dataArr.push({
+                                                        'name': e.valueList[k].paramName,
+                                                        'value': e.valueList[k].paramValue
+                                                    })
+                                                }
                                             }
                                         }
                                     }
@@ -380,14 +387,19 @@
                             hasSql = true
                             if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
                                 const response = await getSelectTreeData(paramSql)
-                                if (response.data == null || response.data.isError) {
+                                if(response.data == null){
                                     obj.isError = true
-                                    obj.message = '获取参数【' + paramObj.paramName + '】的值的失败，原因：' + response.data.message
-                                } else {
-                                    if(response.data.result && response.data.result.length > 0){
-                                        dataArr = paramCommonJs.organizeSelectTreeData(response.data.result)
-                                    }else{
-                                        dataArr = []
+                                    obj.message = `获取参数【${paramObj.paramName}】的值的失败`
+                                }else {
+                                    if (response.data.isError) {
+                                        obj.isError = true
+                                        obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
+                                    } else {
+                                        if(response.data.result && response.data.result.length > 0){
+                                            dataArr = paramCommonJs.organizeSelectTreeData(response.data.result)
+                                        }else{
+                                            dataArr = []
+                                        }
                                     }
                                 }
                             }
@@ -435,11 +447,8 @@
                         let selectSetting = {
                             el: `#${divId}`,
                             filterable: true,
-                            filterMethod: function (val, item, index, prop) {
-                                if (val === item.value) { // 把value相同的搜索出来
-                                    return true
-                                }
-                                if (item.name && item.name.indexOf(val) > -1) { // 名称中包含的搜索出来
+                            filterMethod: function (val, item) {
+                                if (val === item.value || (item.name && item.name.indexOf(val) > -1)) { // 把value相同的搜索出来或者把名称中包含的搜索出来
                                     return true
                                 }
                                 return false// 不知道的就不管了
@@ -710,7 +719,7 @@
              * @description 当前参数选中值时调用
              * @author JL
              */
-            selectHide(idStr, ind, paramId, associatedParamIdArr) {
+            selectHide(idStr, ind, associatedParamIdArr) {
                 let nodeId = this.screenParam.nodeData.nodeInfo.nodeId
                 let selectXs = xmSelect.get(idStr + ind + nodeId, true)// 获取当前下拉框的实体对象
                 let selectedObj = selectXs.getValue()// 获取选中的参数值
@@ -727,7 +736,7 @@
                 param.nodeName = this.screenParam.nodeData.nodeInfo.nodeName
                 param.websocketUuid = webSocketUuid
                 this.$parent.$parent.$parent.$parent.webSocketUuid = webSocketUuid
-                selectScreenQueryData(param).then().catch( error => {
+                selectScreenQueryData(param).then().catch( () => {
                     this.$parent.$parent.$parent.$parent.screenListLoading = false
                 })
             },
@@ -1013,7 +1022,7 @@
                                         this.pageInit(curSql);
                                         this.settingObj.initSql = curSql;
                                     }
-                                }).catch( error => {
+                                }).catch( () => {
                                     this.$parent.$parent.$parent.$parent.screenListLoading = false
                                 })
                             }else{
@@ -1022,7 +1031,7 @@
                             }
                         }
                     }
-                }).catch( error => {
+                }).catch( () => {
                     this.$parent.$parent.$parent.$parent.screenListLoading = false
                 })
             },
@@ -1051,6 +1060,7 @@
                 this.initExecuteSql();
             },
             dealData(type){
+                console.log(type)
                 this.$message({'type':'info','message':'别急哈，在集成呢……'})
             },
         }

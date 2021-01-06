@@ -162,7 +162,10 @@
                 let associatedParamIdArr = []// 受当前参数影响的被关联参数ID集合
                 let paramSql = paramObj.paramChoice.optionsSql//拉列表或下拉树的SQL语句
                 obj.setParamObj.title = paramObj.paramChoice.allowedNull === 0 ? '不可为空' : '可为空'
-                obj.setParamObj.allowedNull = paramObj.paramChoice.allowedNull === 0 ? true : false
+                obj.setParamObj.allowedNull = false
+                if(paramObj.paramChoice.allowedNull === 0) {
+                    obj.setParamObj.allowedNull = true
+                }
                 let hasSql = false// 下拉列表或下拉树是非SQL方式或者是SQL方式但值为空
                 switch (obj.setParamObj.inputType) {
                     case 'lineinp':// 下拉列表
@@ -181,17 +184,22 @@
                                 hasSql = true// 下拉列表是SQL方式
                                 if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
                                     const response = await executeParamSql(paramSql)
-                                    if(response.data == null || response.data.isError){
+                                    if(response.data == null){
                                         obj.isError = true
-                                        obj.message = '获取参数【' + paramObj.paramName + '】的值的失败，原因：' + response.data.message
-                                    } else {
-                                        let e = response.data
-                                        if (e.valueList && e.valueList.length > 0) {
-                                            for (let k = 0; k < e.valueList.length; k++) {
-                                                dataArr.push({
-                                                    'name': e.valueList[k].paramName,
-                                                    'value': e.valueList[k].paramValue
-                                                })
+                                        obj.message = `获取参数【${paramObj.paramName}】的值的失败`
+                                    }else {
+                                        if (response.data.isError) {
+                                            obj.isError = true
+                                            obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
+                                        } else {
+                                            let e = response.data
+                                            if (e.valueList && e.valueList.length > 0) {
+                                                for (let k = 0; k < e.valueList.length; k++) {
+                                                    dataArr.push({
+                                                        'name': e.valueList[k].paramName,
+                                                        'value': e.valueList[k].paramValue
+                                                    })
+                                                }
                                             }
                                         }
                                     }
@@ -255,14 +263,19 @@
                             hasSql = true
                             if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
                                 const response = await getSelectTreeData(paramSql)
-                                if (response.data == null || response.data.isError) {
+                                if(response.data == null){
                                     obj.isError = true
-                                    obj.message = '获取参数【' + paramObj.paramName + '】的值的失败，原因：' + response.data.message
-                                } else {
-                                    if(response.data.result && response.data.result.length > 0){
-                                        dataArr = paramCommonJs.organizeSelectTreeData(response.data.result)
-                                    }else{
-                                        dataArr = []
+                                    obj.message = `获取参数【${paramObj.paramName}】的值的失败`
+                                }else {
+                                    if (response.data.isError) {
+                                        obj.isError = true
+                                        obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
+                                    } else {
+                                        if(response.data.result && response.data.result.length > 0){
+                                            dataArr = paramCommonJs.organizeSelectTreeData(response.data.result)
+                                        }else{
+                                            dataArr = []
+                                        }
                                     }
                                 }
                             }
@@ -321,11 +334,8 @@
                         let selectSetting = {
                             el: `#${divId}`,
                             filterable: true,
-                            filterMethod: function (val, item, index, prop) {
-                                if (val === item.value) { // 把value相同的搜索出来
-                                    return true
-                                }
-                                if (item.name && item.name.indexOf(val) > -1) { // 名称中包含的搜索出来
+                            filterMethod: function (val, item) {
+                                if (val === item.value || (item.name && item.name.indexOf(val) > -1)) { // 把value相同的搜索出来或把名称中包含的搜索出来
                                     return true
                                 }
                                 return false// 不知道的就不管了
@@ -602,7 +612,7 @@
              * @description 当前参数选中值时调用
              * @author JL
              */
-            selectHide(idStr, ind, paramId, associatedParamIdArr) {
+            selectHide(idStr, ind, associatedParamIdArr) {
                 let selectXs = xmSelect.get(idStr + ind, true)// 获取当前下拉框的实体对象
                 let selectedObj = selectXs.getValue()// 获取选中的参数值
                 if (selectedObj && selectedObj.length > 0) {
