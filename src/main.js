@@ -92,11 +92,13 @@ import VueQriously from 'vue-qriously'
 import baseConfig from 'ams-datamax/src/config/config'
 import clipboard from 'clipboard'
 import axios from 'axios'
+import dataV from '@jiaminghi/data-view'
 import VueAxios from 'vue-axios'
 Vue.use(VueAxios, axios)
 Vue.prototype.$clipboard = clipboard
 Vue.prototype.$ajax = axios
 Vue.use(iview)
+Vue.use(dataV)
 Vue.use(VueQriously)
 Vue.mixin({
   data () {
