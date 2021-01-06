@@ -1,6 +1,6 @@
 <template>
   <div>
-    <indicatorAnalysis></indicatorAnalysis>
+    <indicatorAnalysis>  </indicatorAnalysis>
   </div>
 </template>
 <script>
