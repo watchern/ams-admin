@@ -60,6 +60,11 @@ const analysisRouter = {
       path: 'screenList',
       name: '主题展示列表',
       component: () => import('ams-datamax/src/components/screenList')
+    },
+    {
+      path: 'indicatoranalysis',
+      name: '指标分析',
+      component: () => import('@/views/analysis/indicatoranalysis/index')
     }
   ]
 }
