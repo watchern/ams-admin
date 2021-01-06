@@ -1,5 +1,4 @@
 /** When your routing table is too long, you can split it into small modules **/
-
 const analysisRouter = {
   path: '/analysis',
   name: '审计分析',
@@ -56,6 +55,11 @@ const analysisRouter = {
       path: 'modelresultdetailshow',
       name: '模型详细结果展现',
       component: () => import('@/views/analysis/auditmodelresult/modelresultdetailshow')
+    },
+    {
+      path: 'screenList',
+      name: '主题展示列表',
+      component: () => import('ams-datamax/src/components/screenList')
     }
   ]
 }
