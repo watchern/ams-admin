@@ -764,7 +764,7 @@ export default {
           if (result.data.parammModelRel.length == 0) {
             let obj = null
             //没有参数，判断是图形化还是sql编辑器模型
-            if(result.data.graphUuid != null){
+            if(result.data.graphUuid != null && result.data.graphUuid != ''){
               //调用图形化接口找到sql
               obj = {
                 sqls: result.data.modelSql,

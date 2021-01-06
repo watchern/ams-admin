@@ -320,7 +320,7 @@ function getNotExecuteNode(curCellId, arr) {
  * @param curCellId 当前节点的ID
  * @param arr 前置所有节点的ID集合
  * */
-function getPreNodesNotDatasource(nodeData, curCellId, arr) {
+export function getPreNodesNotDatasource(nodeData, curCellId, arr) {
     var parentIds = nodeData[curCellId].parentIds
     if (parentIds.length > 0) {
         for (var i = 0; i < parentIds.length; i++) {

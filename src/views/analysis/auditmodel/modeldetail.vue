@@ -463,7 +463,6 @@ export default {
       this.loadTableCol(currentNode.id)
       this.form.relationObjectName = currentNode.label
       this.form.relationObjectUuid = currentNode.id
-      debugger
       this.dataTableTree = false
 
     },

@@ -1973,7 +1973,6 @@ export function startExecuteSql(data) {
 export function getExecuteTask(data) {
   const dataUserId = store.getters.datauserid
   const sceneCode = store.getters.scenecode
-  debugger;
   data.userId = dataUserId;
   data.sceneCode = sceneCode;
   return request({

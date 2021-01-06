@@ -1,5 +1,5 @@
 <template>
-    <div ref="screenMainContain" class="tree-list-container">
+    <div ref="screenMainContain" class="tree-list-container" v-loading="screenListLoading">
         <el-row>
             <el-col>
                 <el-page-header @back="toScreenList" :content="curScreenGraphName"></el-page-header>
@@ -10,7 +10,7 @@
                 <el-tab-pane v-for="item in tabArr" :key="item.id" :name="item.name">
                     <span slot="label">{{item.title}}
                         <el-tooltip content="选择区间" placement="bottom" v-if="item.optType === 'layering'">
-                            <i class="el-icon-s-tools" title="选择区间" @click="showLayingDialog"></i>
+                            <i class="el-icon-s-tools" title="选择区间" @click="showLayingDialog(item.name)"></i>
                         </el-tooltip>
                     </span>
                     <ScreenQueryOne v-show="item.isShow" ref="screenQueryOne" :screenParam="item.screenParam"/>
@@ -53,7 +53,7 @@
         components:{ScreenQueryOne},
         data(){
             return{
-                // screenLoading: true,
+                screenListLoading: false,
                 curScreenGraphName:'',
                 tabsName:'tab0',//默认打开第一个页签
                 tabArr:[],
@@ -65,13 +65,15 @@
                 clickModal:false,
                 layeringRangeArr:[],
                 curRangeIndex:'',
-                sqlValue:''
+                sqlValue:'',
+                webSocketUuid:''
             }
         },
         props:['screenParam'],
         mounted(){
             this.curScreenGraphName = `当前场景查询名称：${this.screenParam.graphName}`
             this.init()
+            this.initWebsocket()
         },
         methods:{
             init(){
@@ -94,9 +96,43 @@
                             "graphName":this.screenParam.graphName,
                             "nodeData":nodeData,
                             "publicType":this.screenParam.publicType,
-                            "treeNodeData":this.screenParam.treeNodeData
+                            "treeNodeData":this.screenParam.treeNodeData,
                         }
                     });
+                }
+            },
+            initWebsocket(){
+                let $this = this
+                let loginUserUuid = this.$store.state.user.id
+                const webSocketPath = `${process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET}${loginUserUuid}ScreenQuery`
+                // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
+                this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
+                // 发送消息
+                this.webSocket.onmessage = function(event) {
+                    const dataObj = JSON.parse(event.data)// 接收到返回结果
+                    var executeSQLObj = dataObj.executeSQL
+                    if (executeSQLObj.customParam[0] === $this.webSocketUuid) {//匹配结果集
+                        let tabInd = $this.tabArr.findIndex( item => item.isShow === true)
+                        if(tabInd > -1){
+                            $this.screenListLoading = false
+                            if(executeSQLObj.state === "2"){//执行成功，展示当前操作的结果集
+                                if($this.$refs.screenQueryOne[tabInd].queryFilter){
+                                    $this.$refs.screenQueryOne[tabInd].activeName = '2'
+                                }
+                                $this.$refs.screenQueryOne[tabInd].showTableResult = true
+                                $this.$refs.screenQueryOne[tabInd].$nextTick(() => {
+                                    $this.$refs.screenQueryOne[tabInd].$refs.resultTable.initData(null,dataObj)
+                                    $this.$refs.screenQueryOne[tabInd].isQuery = true
+                                })
+                            }else{
+                                $this.$refs.screenQueryOne[tabInd].$message.error(`查询结果集失败：${executeSQLObj.msg}`)
+                            }
+                        }
+                    }
+                }
+                // 通信失败
+                this.webSocket.onerror = function(event) {
+                    $this.$message.error('数据请求失败')
                 }
             },
             clickTab(){
@@ -113,21 +149,25 @@
             changeRange(index){
                 this.sqlValue = this.curNodeData.nodeInfo.nodeSqlArr[index]
             },
-            showLayingDialog(){
-                this.layeringDialogVisible = true
-                this.$nextTick( () => {
-                    let areaArr = this.curNodeData.nodeInfo.areaArr
-                    this.layeringRangeArr = []
-                    for(var j=0; j<areaArr.length; j++) {
-                        this.layeringRangeArr.push({
-                            "index":j,
-                            "name":areaArr[j]
-                        })
-                    }
-                    this.curRangeIndex = 0
-                    this.sqlValue = this.curNodeData.nodeInfo.nodeSqlArr[0]
-                })
-
+            showLayingDialog(curTabsName){
+                if(curTabsName !== this.curTabsName){
+                    this.curTabsName = curTabsName
+                    this.clickTab()
+                }else{
+                    this.layeringDialogVisible = true
+                    this.$nextTick( () => {
+                        let areaArr = this.curNodeData.nodeInfo.areaArr
+                        this.layeringRangeArr = []
+                        for(let j=0; j<areaArr.length; j++) {
+                            this.layeringRangeArr.push({
+                                "index":j,
+                                "name":areaArr[j]
+                            })
+                        }
+                        this.curRangeIndex = 0
+                        this.sqlValue = this.curNodeData.nodeInfo.nodeSqlArr[0]
+                    })
+                }
             },
             layerNodeCallBack(){
                 let tab = this.tabArr.find( item => item.name === this.tabsName)

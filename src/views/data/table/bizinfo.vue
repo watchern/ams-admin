@@ -149,7 +149,7 @@ export default {
         bizAttrUuid: undefined,
         attrName: '',
         attrCode: '',
-        describe: ''
+        describtion: ''
       }
     }
   }
