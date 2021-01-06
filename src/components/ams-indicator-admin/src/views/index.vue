@@ -5836,7 +5836,7 @@ var del = "删除";
 var see = "查看";
 
 </script>
-<style>
+<style scoped>
 .left-side {
   box-shadow: rgba(63, 68, 77, 0.07) 15px 0px 15px 0px;
 }
@@ -6078,4 +6078,4 @@ span.title{
   text-align: center;
   background: white;
 }
-</style>
+</stylesssss>
