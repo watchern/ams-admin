@@ -56,6 +56,11 @@ const analysisRouter = {
       path: 'modelresultdetailshow',
       name: '模型详细结果展现',
       component: () => import('@/views/analysis/auditmodelresult/modelresultdetailshow')
+    },
+    {
+      path: 'indicatoranalysis',
+      name: '指标分析',
+      component: () => import('@/views/analysis/indicatoranalysis/index')
     }
   ]
 }
