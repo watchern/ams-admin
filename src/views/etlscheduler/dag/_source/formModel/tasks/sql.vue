@@ -79,6 +79,7 @@
     <m-list-box>
       <div slot="text">自定义参数</div>
       <div slot="content">
+        <span v-if="!localParams.length && isDetails" class="paramtext">无</span>
         <m-local-params
           ref="refLocalParams"
           :udp-list="localParams"
@@ -89,6 +90,7 @@
     <m-list-box>
       <div slot="text">前置sql</div>
       <div slot="content">
+        <span v-if="!preStatements.length && isDetails" class="paramtext">无</span>
         <m-statement-list
           ref="refPreStatements"
           :statement-list="preStatements"
@@ -99,6 +101,7 @@
     <m-list-box>
       <div slot="text">后置sql</div>
       <div slot="content">
+        <span v-if="!postStatements.length && isDetails" class="paramtext">无</span>
         <m-statement-list
           ref="refPostStatements"
           :statement-list="postStatements"
@@ -239,7 +242,6 @@ export default {
     // // read tasks from cache
     // if (!_.some(this.store.state.dag.cacheTasks, { id: this.createNodeId }) &&
     //   this.router.history.currentRoute.name !== 'processinstance') {
-
     if (!_.some(this.store.state.dag.cacheTasks, { id: this.createNodeId })) {
       this._getReceiver()
     }
@@ -469,15 +471,14 @@ export default {
 }
 </script>
 <style lang="scss" rel="stylesheet/scss">
-
 .cm-s-mdn-like .CodeMirror-gutters { background: #f8f8f8; border-left: 6px solid #353a43; color: #333; }
-
-.requiredIcon {
-  color: #ff0000;
-  padding-right: 4px;
-}
 .propwidth{
   width:500px
+}
+.paramtext {
+	font-size: 14px;
+  color: #777;
+  line-height: 32px;
 }
 </style>
 

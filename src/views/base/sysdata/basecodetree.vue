@@ -1,5 +1,5 @@
 <template>
-  <div class="centerDiv">
+  <div class="centerDiv" >
     <el-card class="box-card">
       <div class="text item treeDiv">
         <el-tree
@@ -93,7 +93,7 @@ export default {
         this.pageQueryTree.condition = Object.assign({}, this.objCode)
         loadchildnodeOne(this.pageQueryTree).then(resp => {
           var jsonStr = JSON.stringify(resp.data.records)
-          console.log(jsonStr)
+          // console.log(jsonStr)
           // eslint-disable-next-line no-eval
           var label = eval('(' + jsonStr + ')')
           resolve(label)
@@ -134,7 +134,9 @@ export default {
 </script>
 
 <style  scoped>
-.treeDiv {
-  height: 600px;
+.box-card{
+  height: calc(93.3vh);
+  border-radius: 10px;
+  overflow: auto;
 }
 </style>

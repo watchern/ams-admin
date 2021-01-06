@@ -1,134 +1,115 @@
 <template>
-  <div>
-    <form class="layui-form" action="">
-      <div class="layui-form-item">
-        <div class="layui-input-block radioDiv">
-          <div>
-            <input type="radio" name="samCounts" value="samCount" checked><span>样本量（个）抽样</span>
-            <input id="samCount_samCount" type="number" name="username" autocomplete="off" placeholder="请输入样本数量" class="layui-input" min="1" step="10">
-          </div>
-          <div>
-            <input type="radio" name="samCounts" value="proportion"><span>比例（%）抽样</span>
-            <input id="proportion_samCount" type="number" autocomplete="off" placeholder="请输入样本数量比例" class="layui-input" min="1" max="100" step="5">
-          </div>
-          <div>
-            <input type="radio" name="samCounts" value="preN"><span>前N个抽样</span>
-            <input id="preN_samCount" type="number" autocomplete="off" placeholder="请输入数量" class="layui-input" min="1">
-          </div>
-          <div>
-            <input type="radio" name="samCounts" value="eqCountSample"><span>等距抽样</span>
-            <input id="eqCountSample_samCount" type="number" autocomplete="off" placeholder="请输入样本步长" class="layui-input" min="1">
-          </div>
-          <!--<div>-->
-          <!--<input type="radio" name="samCounts" value="simpleRom" checked><span>简单随机抽样</span>-->
-          <!--</div>-->
+    <div style="height: 600px;">
+        <div style="padding: 50px 0 0 180px;">
+            <el-row>
+                <el-col :span="6">
+                    <el-radio v-model="radioVal" label="samCount">样本量（个）抽样</el-radio>
+                </el-col>
+                <el-col :span="10">
+                    <el-input type="number" placeholder="请输入样本数量" min="1" step="10" v-model="samCount"></el-input>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="6">
+                    <el-radio v-model="radioVal" label="proportion" >比例（%）抽样</el-radio>
+                </el-col>
+                <el-col :span="10">
+                    <el-input type="number" placeholder="请输入样本数量比例" min="1" max="100" step="5" v-model="proportion"></el-input>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="6">
+                    <el-radio v-model="radioVal" label="preNumber" >前N个抽样</el-radio>
+                </el-col>
+                <el-col :span="10">
+                    <el-input type="number" placeholder="请输入数量" min="1" v-model="preNumber"></el-input>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="6">
+                    <el-radio v-model="radioVal" label="eqCountSample" >等距抽样</el-radio>
+                </el-col>
+                <el-col :span="10">
+                    <el-input type="number" placeholder="请输入样本步长" min="1" v-model="eqCountSample"></el-input>
+                </el-col>
+            </el-row>
+                <!--<el-row>-->
+                    <!--<el-col :span="6">-->
+                        <!--<el-radio v-model="radioVal" label="simpleRom">简单随机抽样</el-radio>-->
+                    <!--</el-col>-->
+                <!--</el-row>-->
         </div>
-      </div>
-    </form>
-  </div>
+    </div>
 </template>
 
 <script>
-var nodeData
-export default {
-  name: 'DataSampleDrawnSet',
-  mounted() {
-    this.init()
-  },
-  methods: {
-    init() {
-      const graph = this.$parent.graph
-      nodeData = graph.nodeData[graph.curCell.id]
-      if (nodeData.isSet) {
-        var obj = nodeData.setting
-        if (obj.radioValue && obj.radioValue !== '') {
-          $("input[type='radio'][name='samCounts'][value=" + obj.radioValue + ']').attr('checked', true)
-          $('#' + obj.radioValue + '_samCount').val(obj.samCountVal)
+    export default {
+        name: 'DataSampleDrawnSet',
+        data(){
+            return {
+                nodeData:null,
+                setting:null,
+                radioVal:'samCount',
+                samCount:null,
+                proportion:null,
+                preNumber:null,
+                eqCountSample:null,
+                radioMap:{
+                    "samCount":"样本量（个）抽样",
+                    "proportion":"比例（%）抽样",
+                    "preNumber":"前N个抽样",
+                    "eqCountSample":"等距抽样"
+                }
+            }
+        },
+        mounted() {
+            this.init()
+        },
+        methods: {
+            init() {
+                const graph = this.$parent.graph
+                this.nodeData = graph.nodeData[graph.curCell.id]
+                if (this.nodeData.isSet) {
+                    this.radioVal = this.nodeData.setting.radioValue
+                    this[this.radioVal] = this.nodeData.setting.samCountVal
+                }
+            },
+            inputVerify() {
+                let verify = true
+                let value = this[this.radioVal]
+                if(value == null || isNaN(value)){
+                    verify = false
+                    this.$message.error(`【${this.radioMap[this.radioVal]}】项未输入正确的数值`)
+                }else{
+                    if(Number(value) === 0){
+                        verify = false
+                        this.$message.error(`【${this.radioMap[this.radioVal]}】项可输入最小值应为1`)
+                    }else{
+                        if(this.radioVal === "proportion" && Number(value) > 100){
+                            verify = false
+                            this.$message.error(`【${this.radioMap[this.radioVal]}】项可输入最大值应为100`)
+                        }
+                    }
+                }
+                return verify
+            },
+            saveSetting() {
+                this.nodeData.setting = {
+                    "radioValue":this.radioVal,// 样本类型
+                    "samCountVal":this[this.radioVal]// 样本值
+                }
+            }
         }
-      }
     }
-  }
-}
-
-var obj = {}
-/**
-     * 设置位置
-     **/
-$('.radioDiv').css({ 'margin-left': function() {
-  var set_width = ($(document).width() - 500) / 2 + 'px'
-  return set_width
-}, 'margin-top': '20px' })
-
-/**
-     * 反显
-     */
-
-/**
-     *  保存数据
-     */
-function saveSetting() {
-  var radioValue = $("input[name='samCounts']:checked").val()// 获得当前选中的radio
-  var samCountVal = ''
-  if (radioValue !== '') {
-    samCountVal = $('#' + radioValue + '_samCount').val()
-  }
-  obj.radioValue = radioValue // 样本类型
-  obj.samCountVal = samCountVal// 样本值
-  nodeData.setting = obj
-}
-
-/**
-     * 转化整形
-     */
-$("input[id$='_samCount']").blur(function() {
-  var samCountVal = $(this).val()
-  if (typeof samCountVal !== 'undefined' && samCountVal !== '') {
-    $(this).val(Math.round(samCountVal))
-  }
-  if (this.id === 'proportion_samCount' && samCountVal > 100) { // 比例框
-    $(this).val(100)
-  }
-})
-
-// 页面输入项的校验(或空配置校验)
-function inputVerify() {
-  $("input[type='number']").css('border', '1px solid #e6e6e6')
-  var verify = true
-  $("input[name='samCounts']").each(function(i, v) {
-    if ($(this).is(':checked')) {
-      var nextVal = $("input[type='number']:eq(" + i + ')').val()
-      if (nextVal === '') {
-        $("input[type='number']:eq(" + i + ')').css('border', '1px solid red')
-        verify = false
-        return false
-      }
-    }
-  })
-  if (!verify) {
-    alertMsg('提示', '未输入需抽样的数值！', 'info')
-  }
-  return verify
-}
 </script>
 
 <style scoped type="text/css">
-    .layui-input{
-        display: inline;
-        width: 300px;
-        padding-left: 10px;
-        margin-left: 10px;
-        height: 28px;
-        float:right;
-        margin-right:50px;
+    .el-row{
+        padding: 10px 0;
     }
-    .radioDiv{
-        width:520px;
-    }
-    .radioDiv span{
-        line-height: 35px;
-        margin-left: 9px;
-    }
-    form{
-        background: none;
+    .el-col{
+        text-align:right;
+        padding-right: 20px;
+        line-height: 36px;
     }
 </style>

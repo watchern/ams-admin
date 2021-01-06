@@ -103,7 +103,6 @@ export default {
        */
     _onUp: _.debounce(function() {
       this.loadingIndex = this.loadingIndex - 3
-      console.log('_onUp')
       this._editorOff()
 
       this._getViewResources()
@@ -116,7 +115,6 @@ export default {
        */
     _onDown: _.debounce(function() {
       this.loadingIndex = this.loadingIndex + 3
-      console.log('_onDown')
       this._editorOff()
 
       this._getViewResources()

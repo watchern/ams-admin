@@ -97,47 +97,64 @@ const statusType = [{
   label: '无'
 },
 {
-  value: 'G_WATTING',
-  code: 'G_WATTING',
+  // seriesIndex :'6',
+  // dataIndex :'6',
+  value: 'G_WAITTING',
+  code: 'G_WAITTING',
   label: '等待中',
   color: 'rgb(255,186,0)'
 },
 {
+  // seriesIndex :'7',
+  // dataIndex :'7',
   value: 'G_WAITTING_FILE',
   code: 'G_WAITTING_FILE',
   label: '等待文件',
   color: 'rgb(212,130,101)'
 },
 {
+  // seriesIndex :'5',
+  // dataIndex :'5',
   value: 'G_WAITTING_DEPEND',
   code: 'G_WAITTING_DEPEND',
   label: '等待依赖',
   color: 'rgb(189,162,154)'
 },
 {
+  // seriesIndex :'3',
+  // dataIndex :'3',
   value: 'G_RUNNING_EXEUTION',
   code: 'G_RUNNING_EXEUTION',
   label: '执行中',
   color: 'rgb(97,160,168)'
 },
 {
+  // seriesIndex :'2',
+  // dataIndex :'2',
   value: 'G_PAUSE',
   code: 'G_PAUSE',
   label: '暂停',
   color: 'rgb(234,126,83)'
 },
 {
+  // seriesIndex :'0',
+  // dataIndex :'0',
   value: 'G_CANCEL',
   code: 'G_CANCEL',
   label: '已取消',
   color: 'rgb(110,112,116)'
 },
 {
+  // seriesIndex :'4',
+  // dataIndex :'4',
   value: 'G_SUCCESS',
   code: 'G_SUCCESS',
   label: '执行完成',
   color: 'rgb(145,202,140)'
-}, {
+},
+{
+  // seriesIndex :'1',
+  // dataIndex :'1',
   value: 'G_FAILURE',
   code: 'G_FAILURE',
   label: '执行失败',

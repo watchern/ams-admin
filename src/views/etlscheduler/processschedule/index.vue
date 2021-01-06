@@ -12,6 +12,7 @@
         <el-button type="primary" class="oper-btn start" :disabled="startStatus" title="启用" @click="handleUse()" />
         <el-button type="primary" class="oper-btn pause" :disabled="stopStatus" title="停用" @click="handleStop()" />
         <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length !== 1" title="复制" @click="copyData()" />
+        <el-button type="primary" class="oper-btn start" :disabled="stopStatus" title="立即运行" @click="handleRun()" />
         <el-upload
           multiple
           class="upload-demo"
@@ -38,7 +39,6 @@
       :data="list"
       border
       fit
-      highlight-current-row
       style="width: 100%"
       height="calc(100vh - 300px)"
       max-height="calc(100vh - 300px)"
@@ -78,18 +78,19 @@
         <template v-if="scope.row.distinctParamList!=null && scope.row.distinctParamList.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(taskParam,$index) in scope.row.distinctParamList" :key="$index">
-              <label class="col-md-4">
-                {{ taskParam.name }}:
-              </label>
-              <div class="col-md-8">
+              <el-col :span="8">
+                <label>
+                  {{ taskParam.name }}:
+                </label>
+              </el-col>
+              <el-col :span="16">
                 {{ taskParam.value }}
-              </div>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
               <el-link :underline="false" type="primary">查看参数</el-link>
             </div>
-
           </el-popover>
         </template>
       </el-table-column>
@@ -102,12 +103,16 @@
         <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
-              <label class="col-md-2">
-                [{{ dependTask.dateValueName }}]
-              </label>
-              <label class="col-md-10" align="right">
-                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
-              </label>
+              <el-col :span="4">
+                <label>
+                  [{{ dependTask.dateValueName }}]
+                </label>
+              </el-col>
+              <el-col :span="20">
+                <label align="right">
+                  {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+                </label>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -124,7 +129,7 @@
         :formatter="formatStatus"
       />
       <el-table-column
-        label="最新修改人"
+        label="最近修改人"
         width="150px"
         align="center"
         prop="updateUserName"
@@ -152,8 +157,9 @@
         :model="temp"
         class="detail-form"
         label-position="right"
-        style="max-height:60vh; overflow:auto;"
+        style="height:62vh; overflow:auto;"
       >
+
         <el-form-item label="任务名称" prop="scheduleName">
           <el-input
             v-model="temp.scheduleName"
@@ -161,28 +167,79 @@
             :placeholder="disableUpdate === true ? '' : '请输入任务名称'"
           />
         </el-form-item>
-        <!-- 查询任务流程 -->
-        <el-form-item label="任务流程" prop="processDefinitionId">
-          <el-select
-            v-model="temp.processDefinitionId"
-            :disabled="disableUpdate"
-            :filterable="true"
-            :remote="false"
-            :remote-method="remoteMethod"
-            reserve-keyword
-            :placeholder="disableUpdate === true ? '' : '请选择任务流程'"
-            :loading="loading"
-            @change="changeProcess(temp.processDefinitionId)"
-            @focus="remote"
-          >
-            <el-option
-              v-for="item in options"
-              :key="item.processDefinitionUuid"
-              :label="item.name"
-              :value="item.processDefinitionUuid"
-            />
-          </el-select>
-        </el-form-item>
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="调度开始时间" prop="startTime">
+              <el-date-picker
+                v-model="temp.startTime"
+                :picker-options="startTime"
+                style="width:100%"
+                type="date"
+                props="startTime"
+                :placeholder="disableUpdate === true ? '' : '请选择开始时间'"
+                :disabled="disableUpdate"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11" :offset="2">
+            <el-form-item label="调度结束时间" prop="endTime">
+              <!-- <el-col class="line" :span="1">-</el-col> -->
+              <el-date-picker
+                v-model="temp.endTime"
+                :picker-options="endTime"
+                type="date"
+                prop="endTime"
+                style="width:100%"
+                :placeholder="disableUpdate === true ? '' : '请选择结束时间'"
+                :disabled="disableUpdate"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="11">
+            <!-- 查询任务流程 -->
+            <el-form-item label="任务流程" prop="processDefinitionId">
+              <el-select
+                v-model="temp.processDefinitionId"
+                :disabled="disableUpdate"
+                :filterable="true"
+                style="width:100%"
+                :remote="false"
+                :remote-method="remoteMethod"
+                reserve-keyword
+                :placeholder="disableUpdate === true ? '' : '请选择任务流程'"
+                :loading="loading"
+                @change="changeProcess(temp.processDefinitionId)"
+                @focus="remote-method"
+              >
+                <el-option
+                  v-for="item in options"
+                  :key="item.processDefinitionUuid"
+                  :label="item.name"
+                  :value="item.processDefinitionUuid"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="11" :offset="2">
+            <el-form-item label="作业周期" prop="crontab">
+              <el-select
+                v-model="temp.crontab"
+                style="width:100%;"
+                :placeholder="disableUpdate === true ? '' : '请选择作业周期'"
+                :disabled="disableUpdate"
+              >
+                <el-option
+                  v-for="item in crontabFormat"
+                  :key="item.codeDesc"
+                  :label="item.codeName"
+                  :value="item.codeDesc"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item
           v-for="(item, $index) in distinctParamList"
           :key="$index"
@@ -195,43 +252,7 @@
             @blur="changeParamValue(item.value, item.name)"
           />
         </el-form-item>
-        <el-form-item label="作业周期范围" prop="startTime">
-          <el-col :span="8">
-            <el-date-picker
-              v-model="temp.startTime"
-              :picker-options="startTime"
-              type="date"
-              prop="startTime"
-              :placeholder="disableUpdate === true ? '' : '请选择开始时间'"
-              :disabled="disableUpdate"
-            />
-          </el-col>
-          <el-col class="line" :span="1">-</el-col>
-          <el-col :span="8">
-            <el-date-picker
-              v-model="temp.endTime"
-              :picker-options="endTime"
-              type="date"
-              :placeholder="disableUpdate === true ? '' : '请选择结束时间'"
-              :disabled="disableUpdate"
-            />
-          </el-col>
-        </el-form-item>
 
-        <el-form-item label="作业周期" prop="crontab">
-          <el-select
-            v-model="temp.crontab"
-            :placeholder="disableUpdate === true ? '' : '请选择作业周期'"
-            :disabled="disableUpdate"
-          >
-            <el-option
-              v-for="item in crontabFormat"
-              :key="item.codeDesc"
-              :label="item.codeName"
-              :value="item.codeDesc"
-            />
-          </el-select>
-        </el-form-item>
         <!-- 添加任务依赖 -->
         <!-- temp.dependTaskInfoList!=null && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList -->
         <!-- <el-form-item v-if="dialogStatus === 'create' || dialogStatus === 'update' || (dialogStatus === 'show' && temp.dependTaskInfoList && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList )"> -->
@@ -252,9 +273,10 @@
                       class="add-dep"
                       @click="!isDetails && _addDep()"
                     >
+                      <!-- :class="{'oper-btn add': iconDisable}" -->
                       <em
                         v-if="!isLoading"
-                        :class="{'oper-btn add': iconDisable}"
+                        class="oper-btn add"
                         data-toggle="tooltip"
                         :disable="disableAddStatus"
                         title="添加"
@@ -270,7 +292,7 @@
                     v-if="dependTaskList!=null && dependTaskList.length>0"
                     @click="!isDetails && _setGlobalRelation()"
                   >
-                  <!-- {{ relation === "AND" ? "且" : "或" }} -->
+                    <!-- {{ relation === "AND" ? "且" : "或" }} -->
                   </span>
                   <div
                     v-for="(el, $index) in dependTaskList"
@@ -283,7 +305,7 @@
                       v-if="el.dependItemList.length"
                       @click="!isDetails && _setRelation($index)"
                     >
-                    <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
+                      <!-- {{ el.relation === "AND" ? "且" : "或" }} -->
                     </span>
 
                     <!-- :depend-item-list="dependTaskList[0].dependItemList" -->
@@ -333,7 +355,7 @@
 
     <!-- 下载流程模板弹框 -->
     <el-dialog title="下载流程模板" :visible.sync="dialogFormVisible1">
-      <el-form label-position="right">
+      <el-form label-position="right" class="detail-form">
         <!-- 查询任务流程 -->
         <el-form-item label="任务流程" prop="downProcessDefinitionId">
           <el-select
@@ -344,7 +366,7 @@
             placeholder="请选择任务流程"
             :remote-method="remoteMethod"
             :loading="loading"
-            class="propwidth"
+            style="width:100%"
           >
             <el-option
               v-for="item in options"
@@ -358,6 +380,117 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible1 = false">取 消</el-button>
         <el-button type="primary" @click="exportFile()">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 立即执行弹框 -->
+    <el-dialog
+      title="调度执行"
+      :visible.sync="runDialogFormVisible"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        ref="runForm"
+        :rules="runRules"
+        label-position="right"
+        class="detail-form"
+        :model="runParams"
+      >
+        <el-form-item
+          label="调度名称"
+          prop="scheduleName"
+        >
+          <el-input
+            v-model="runParams.scheduleName"
+            :disabled="true"
+          />
+        </el-form-item>
+        <el-row>
+          <el-col :span="11">
+            <el-form-item
+              label="失败策略"
+              prop="failureStrategyEnum"
+            >
+              <el-select
+                v-model="runParams.failureStrategyEnum"
+                placeholder="请选择选择失败策略"
+                style="width:100%;"
+              >
+                <el-option
+                  label="继续"
+                  :value="'CONTINUE'"
+                />
+                <el-option
+                  label="结束"
+                  :value="'END'"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="11" :offset="2">
+            <el-form-item
+              label="优先级"
+              prop="processInstancePriorityEnum"
+            >
+              <el-select
+                v-model="runParams.processInstancePriorityEnum"
+                style="width:100%;"
+              >
+                <el-option
+                  v-for="(item,$index) in priorityList"
+                  :key="$index"
+                  :value="item.code"
+                  :label="item.name"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-form-item
+          label="是否补数"
+          prop="checked"
+        >
+          <el-checkbox v-model="runParams.checked">是</el-checkbox>
+        </el-form-item>
+        <el-form-item
+          v-if="runParams.checked"
+          label="执行方式"
+          prop="runModeEnum"
+        >
+          <el-select
+            v-model="runParams.runModeEnum"
+            placeholder="请选择选择执行方式"
+            style="width:100%"
+          >
+            <el-option
+              label="串行执行"
+              :value="'RUN_MODE_SERIAL'"
+            />
+            <el-option
+              label="并行执行"
+              :value="'RUN_MODE_PARALLEL'"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="runParams.checked"
+          label="调度时间"
+          prop="cronTime"
+        >
+          <el-date-picker
+            v-model="runParams.cronTime"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            style="width:100%"
+          /></el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="runDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="runSchedule()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -381,13 +514,15 @@ import {
   stopScheduleStatus,
   getByScheduleId,
   copy,
-  queryProcessLike
+  queryProcessLike,
+  startProcessInstance
 } from '@/api/etlscheduler/processschedule'
 import { getById } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
 // import { crontabExpression } from './common.js'
 import { getDictList } from '@/utils'
-// import _ from lodash
+import { mapMutations } from 'vuex'
+import store from '@/store'
 
 export default {
   name: 'Dependence',
@@ -403,6 +538,7 @@ export default {
   },
   data() {
     return {
+      store,
       downProcessDefinitionId: null,
       disableAddStatus: false,
       // 开始时间大于今天
@@ -465,18 +601,19 @@ export default {
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
-        { label: '任务名称', name: 'scheduleName', type: 'text', value: '' },
-        { label: '状态', name: 'status', type: 'select',
-          data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }], default: '0' },
+        { label: '调度名称', name: 'scheduleName', type: 'text', value: '' },
+        { label: '调度状态', name: 'status', type: 'select',
+          data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }] },
         {
           label: '流程名称',
           name: 'processDefinitionId',
           type: 'select',
           data: []
-        },
-        { label: '模糊查询', name: 'keyword',
-          type: 'fuzzyText'
         }
+        // ,
+        // { label: '模糊查询', name: 'keyword',
+        //   type: 'fuzzyText'
+        // }
       ],
       // 格式化参数列表
       formatMap: {
@@ -486,10 +623,32 @@ export default {
           null: '停用'
         }
       },
+      priorityList: [
+        {
+          code: 'HIGHEST',
+          name: '最高'
+        },
+        {
+          code: 'HIGH',
+          name: '高'
+        },
+        {
+          code: 'MEDIUM',
+          name: '中'
+        },
+        {
+          code: 'LOW',
+          name: '低'
+        },
+        {
+          code: 'LOWEST',
+          name: '最低'
+        }
+      ],
       pageQuery: {
         condition: {},
         pageNo: 1,
-        pageSize: 10,
+        pageSize: 20,
         sortBy: 'desc',
         sortName: 'updateTime'
       },
@@ -515,9 +674,26 @@ export default {
         startTimeSpilt: null,
         endTimeSpilt: null
       },
+      runParams: {
+        scheduleName: null,
+        checked: false,
+        processScheduleUuid: null,
+        // 失败策略
+        failureStrategyEnum: 'CONTINUE',
+        // 是否补数
+        isSupply: null,
+        // 执行方式
+        commandTypeEnum: null,
+        runModeEnum: 'RUN_MODE_SERIAL',
+        // 流程优先级
+        processInstancePriorityEnum: 'MEDIUM',
+        // 调度时间字符串
+        cronTime: ''
+      },
       selections: [],
       dialogFormVisible: false,
       dialogFormVisible1: false,
+      runDialogFormVisible: false,
       dialogVisible2: false,
       dialogStatus: '',
       textMap: {
@@ -534,7 +710,8 @@ export default {
             required: true,
             message: '请填写调度任务名称',
             trigger: 'change'
-          }
+          },
+          { max: 20, message: '调度任务名称在20个字符之内', trigger: 'change' }
         ],
         processDefName: [
           {
@@ -546,7 +723,7 @@ export default {
         crontab: [
           {
             required: true,
-            message: '请填写作业周期',
+            message: '请选择作业周期',
             trigger: 'change'
           }
         ],
@@ -560,7 +737,14 @@ export default {
         startTime: [
           {
             required: true,
-            message: '请填写开始执行日期',
+            message: '请选择开始执行日期',
+            trigger: 'change'
+          }
+        ],
+        endTime: [
+          {
+            required: true,
+            message: '请选择结束执行日期',
             trigger: 'change'
           }
         ],
@@ -568,6 +752,37 @@ export default {
           {
             required: true,
             message: '请输入参数值',
+            trigger: 'change'
+          },
+          { max: 50, message: '参数值在50个字符之内', trigger: 'change' }
+        ]
+      },
+      runRules: {
+        failureStrategyEnum: [
+          {
+            required: true,
+            message: '请选择失败策略',
+            trigger: 'change'
+          }
+        ],
+        processInstancePriorityEnum: [
+          {
+            required: true,
+            message: '请选择优先级',
+            trigger: 'change'
+          }
+        ],
+        cronTime: [
+          {
+            required: true,
+            message: '请选择调度时间',
+            trigger: 'change'
+          }
+        ],
+        runModeEnum: [
+          {
+            required: true,
+            message: '请选择执行方式',
             trigger: 'change'
           }
         ]
@@ -597,7 +812,6 @@ export default {
       },
       // 这里是关键，代表递归监听 demo 的变化
       deep: true
-
     },
     // 监听selections集合
     selections() {
@@ -631,9 +845,17 @@ export default {
       }
     },
     dependTaskList(e) {
-      setTimeout(() => {
+      if (this.dependTaskList === null || !this.dependTaskList.length > 0 || this.dependTaskList[0] === null) {
         this.isLoading = false
-      }, 600)
+      } else if (this.dependTaskList !== null) {
+        if (this.dependTaskList[0].dependItemList === null) {
+          this.isLoading = false
+        } else {
+          this.isLoading = true
+        }
+      } else {
+        this.isLoading = true
+      }
     },
     cacheDependence(val) {
       this.$emit('on-cache-dependent', val)
@@ -671,6 +893,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('monitor', ['setScheduleDetail']),
     // 修改参数
     changeParamValue(value, name) {
       if (value === '') {
@@ -692,6 +915,7 @@ export default {
       this.temp = Object.assign({}, rowdata) // copy obj
       this.dialogStatus = 'show'
       this.dialogFormVisible = true
+      this.setScheduleDetail(true)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -736,7 +960,7 @@ export default {
         copy(r.processSchedulesUuid).then(() => {
           this.getList()
           this.$notify({
-            title: '成功',
+            title: this.$t('message.title'),
             message: '复制成功',
             type: 'success',
             duration: 2000,
@@ -747,7 +971,7 @@ export default {
     },
     _addDep() {
       if (!this.isLoading) {
-        this.isLoading = true
+        // this.isLoading = true
         if (this.dependTaskList == null || this.dependTaskList.length === 0) {
           this.disableAddStatus = false
           this.dependTaskList = [{
@@ -820,7 +1044,10 @@ export default {
     },
     getList(query) {
       this.listLoading = true
-      if (query) this.pageQuery.condition = query
+      if (query) {
+        this.pageQuery.condition = query
+        this.pageQuery.pageNo = 1
+      }
       listByPage(this.pageQuery).then((resp) => {
         this.total = resp.data.total
         this.list = resp.data.records
@@ -836,6 +1063,24 @@ export default {
       this.pageQuery.sortBy = order
       this.pageQuery.sortName = prop
       this.handleFilter()
+    },
+    resetRunParams() {
+      this.runParams = {
+        checked: false,
+        scheduleName: null,
+        processScheduleUuid: null,
+        // 失败策略
+        failureStrategyEnum: 'CONTINUE',
+        // 是否补数
+        isSupply: null,
+        // 执行方式
+        commandTypeEnum: null,
+        runModeEnum: 'RUN_MODE_SERIAL',
+        // 流程优先级
+        processInstancePriorityEnum: 'MEDIUM',
+        // 调度时间字符串
+        cronTime: ''
+      }
     },
     resetTemp() {
       this.temp = {
@@ -857,7 +1102,39 @@ export default {
         endTime: null
       }
     },
-    //新增
+    // 立即执行
+    handleRun() {
+      this.runDialogFormVisible = true
+      this.resetRunParams()
+      const temp = Object.assign({}, this.selections[0])
+      this.runParams.scheduleName = temp.scheduleName
+      this.runParams.processScheduleUuid = temp.processSchedulesUuid
+      this.$nextTick(() => {
+        this.$refs['runForm'].clearValidate()
+      })
+    },
+    runSchedule() {
+      this.$refs['runForm'].validate((valid) => {
+        if (valid) {
+          this.runParams.checked === true ? this.runParams.commandTypeEnum = 'COMPLEMENT_DATA' : this.runParams.commandTypeEnum = 'START_PROCESS'
+          this.runParams.checked === true ? this.runParams.isSupply = true : this.runParams.isSupply = false
+          this.runParams.cronTime ? this.runParams.cronTime = this.runParams.cronTime.join(',') : this.runParams.cronTime = ''
+          const tempData = Object.assign({}, this.runParams)
+          startProcessInstance(tempData).then(() => {
+            this.getList()
+            this.$notify({
+              title: this.$t('message.title'),
+              message: '运行成功',
+              type: 'success',
+              duration: 2000,
+              position: 'bottom-right'
+            })
+          })
+          this.runDialogFormVisible = false
+        }
+      })
+    },
+    // 新增
     handleCreate() {
       this.iconDisable = true
       this.disableUpdate = false
@@ -868,6 +1145,7 @@ export default {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
+      this.setScheduleDetail(false)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -876,7 +1154,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (this.flag === false) {
           this.$notify({
-            title: '失败',
+            title: this.$t('message.title'),
             message: '请输入参数值',
             type: 'error',
             duration: 3000,
@@ -898,8 +1176,8 @@ export default {
               this.getList()
               this.dialogFormVisible = false
               this.$notify({
-                title: '成功',
-                message: '创建成功',
+                title: this.$t('message.title'),
+                message: this.$t('message.insert.success'),
                 type: 'success',
                 duration: 2000,
                 position: 'bottom-right'
@@ -924,6 +1202,7 @@ export default {
       this.temp = Object.assign({}, this.selections[0]) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      this.setScheduleDetail(false)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -937,7 +1216,7 @@ export default {
     updateData() {
       if (this.flag === false) {
         this.$notify({
-          title: '失败',
+          title: this.$t('message.title'),
           message: '请输入参数值',
           type: 'error',
           duration: 3000,
@@ -956,8 +1235,8 @@ export default {
               this.list.splice(index, 1, this.temp)
               this.dialogFormVisible = false
               this.$notify({
-                title: '成功',
-                message: '更新成功',
+                title: this.$t('message.title'),
+                message: this.$t('message.update.success'),
                 type: 'success',
                 duration: 2000,
                 position: 'bottom-right'
@@ -968,19 +1247,26 @@ export default {
       }
     },
     handleDelete() {
-      var ids = []
-      this.selections.forEach((r, i) => {
-        ids.push(r.processSchedulesUuid)
-      })
-      del(ids.join(',')).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => {
+          ids.push(r.processSchedulesUuid)
         })
+        del(ids.join(',')).then(() => {
+          this.getList()
+          this.$notify({
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      }).catch(() => {
       })
     },
     handleUse() {
@@ -991,7 +1277,7 @@ export default {
       startScheduleStatus(ids.join(','), 1).then((res) => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '启用成功',
           type: 'success',
           duration: 2000,
@@ -1001,19 +1287,26 @@ export default {
     },
     // 停用
     handleStop() {
-      var ids = []
-      this.selections.forEach((r, i) => {
-        ids.push(r.processSchedulesUuid)
-      })
-      stopScheduleStatus(ids.join(','), 0).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '停用成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm('确定要停用吗？', this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => {
+          ids.push(r.processSchedulesUuid)
         })
+        stopScheduleStatus(ids.join(','), 0).then(() => {
+          this.getList()
+          this.$notify({
+            title: this.$t('message.title'),
+            message: '停用成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      }).catch(() => {
       })
     },
     // 下载模板
@@ -1030,7 +1323,6 @@ export default {
     },
     // 上传文件，获取文件流
     handleFileChange(file) {
-      // console.log(file)
       this.file = file.raw
     },
     handleRemove(file, fileList) {
@@ -1066,7 +1358,7 @@ export default {
         if (res.data.code === 2501) {
           this.getList()
           this.$notify({
-            title: '失败',
+            title: this.$t('message.title'),
             message: res.data.msg,
             type: 'error',
             duration: 2000,
@@ -1075,7 +1367,7 @@ export default {
         } else {
           this.getList()
           this.$notify({
-            title: '成功',
+            title: this.$t('message.title'),
             message: '导入成功',
             type: 'success',
             duration: 5000,
@@ -1091,16 +1383,28 @@ export default {
     formatCron(row, column) {
       const date = row[column.property]
       var onJsonDate = new Date(row.startTime)
-      var onTime = onJsonDate.toLocaleDateString()
+      var onTimeList = onJsonDate.toLocaleDateString().split('/')
+      for (var i = 0; i < onTimeList.length; i++) {
+        if (onTimeList[i] < 10) {
+          onTimeList[i] = '0' + onTimeList[i]
+        }
+        var onTime = onTimeList[0] + '-' + onTimeList[1] + '-' + onTimeList[2]
+      }
       var stopJsonDate = new Date(row.endTime)
-      var stopTime = stopJsonDate.toLocaleDateString()
+      var stopTimeList = stopJsonDate.toLocaleDateString().split('/')
+      for (var k = 0; k < stopTimeList.length; k++) {
+        if (stopTimeList[k] < 10) {
+          stopTimeList[k] = '0' + stopTimeList[k]
+        }
+        var stopTime = stopTimeList[0] + '-' + stopTimeList[1] + '-' + stopTimeList[2]
+      }
       var message = ''
       this.crontabFormat.forEach((r, i) => {
         if (date === r.codeDesc) {
           message = r.codeName
         }
       })
-      return onTime + '-' + stopTime + ' ' + message
+      return onTime + '~' + stopTime + ' ' + message
     }
   }
 }
@@ -1227,9 +1531,9 @@ export default {
       }
     }
   }
-  .buttonText {
-    color: #409eff;
-  }
+  // .buttonText {
+    // color: #409eff;
+  // }
   .el-popover{
     width: 60%;
     overflow: auto;
@@ -1238,9 +1542,9 @@ export default {
     position: static;
 
   }
-  .deleteIcon{
+  // .deleteIcon{
     // position: relative;
     // left: 460px;
     // bottom: 115px;
-  }
+  // }
 </style>

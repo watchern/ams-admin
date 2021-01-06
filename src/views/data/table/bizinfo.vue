@@ -51,7 +51,7 @@
             </el-table-column>
           </el-table>
         </el-form>
-        <el-button v-if="openType !== 'showTable'" style="float:right;margin-top:20px" @click="saveTable()">保存</el-button>
+        <el-button v-if="openType !== 'showTable'" type="primary" style="float:right;margin-top:20px" @click="saveTable()">保存</el-button>
       </div>
     </div>
   </div>
@@ -101,17 +101,19 @@ export default {
   },
   methods: {
     initTable(tableId) {
-      listByPage(this.pageQuery).then(resp => {
-        this.bizJson = resp.data.records
-      })
-      this.isShow = true
-      getTableCol(tableId).then(resp => {
-        this.temp.colMetas = resp.data
-      })
-      getTableInfo(tableId).then(resp => {
-        this.temp = resp.data
-        this.isTrueInput = true
-      })
+      if (this.openType !== 'addTable') {
+        listByPage(this.pageQuery).then(resp => {
+          this.bizJson = resp.data.records
+        })
+        this.isShow = true
+        getTableCol(tableId).then(resp => {
+          this.temp.colMetas = resp.data
+        })
+        getTableInfo(tableId).then(resp => {
+          this.temp = resp.data
+          this.isTrueInput = true
+        })
+      }
     },
     seleteTransCode(ruleId) {
       this.dialogStatus = 'select'
@@ -147,7 +149,7 @@ export default {
         bizAttrUuid: undefined,
         attrName: '',
         attrCode: '',
-        describe: ''
+        describtion: ''
       }
     }
   }

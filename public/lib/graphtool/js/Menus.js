@@ -492,7 +492,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt) {
 		this.addMenuItems(menu, ['selectVertices', 'selectEdges', 'selectAll','-','undo', 'redo', 'pasteHere'], null, evt);
 	} else {
 		var commonMenu = [];
-		if(cell.vertex == 1) {
+		if(cell.vertex) {
 			var nodeMenus = this.createNodeMenus(cell.nodeType,cell.id);
 			this.addMenuItems(menu, nodeMenus, null, evt);
 			if(graph.canEditor){
@@ -618,11 +618,11 @@ EditorUi.prototype.createMenus = function() {
 Menus.prototype.createNodeMenus = function(nodeType,nodeId) {
 	var menuArr = [];
 	if(graph.canEditor === false){//如果当前图形不可编辑
-		if(nodeType == "datasource"){
+		if(nodeType === "datasource"){
 			return ["previewNodeData", "showCurNodeSQL"];
-		}else if(nodeType == "newNullNode"){
+		}else if(nodeType === "newNullNode"){
 			return ["executeNode","executeToNode","cancelExecute","previewNodeData", "showCurNodeSQL"];
-		}else if(nodeType == "barChart"){
+		}else if(nodeType === "barChart"){
 			return ["barChartSet"];
 		}else{
 			return ["showCurNodeSQL"];
@@ -631,7 +631,7 @@ Menus.prototype.createNodeMenus = function(nodeType,nodeId) {
 	switch (nodeType) {
 		//数据库表
 		case "datasource":
-            menuArr = ["previewNodeData", "showCurNodeSQL","markCenterOutput","reName"];
+            menuArr = ["previewNodeData", "showCurNodeSQL","markCenterOutput","markFinalOutput","reName"];
 			break;
 		//结果表
 		case "newNullNode":
@@ -681,7 +681,7 @@ Menus.prototype.createNodeMenus = function(nodeType,nodeId) {
 			menuArr = ["barChartSet","reSetOptProperty","reName"];
 			break;
 	}
-	if(graph.nodeData[nodeId].hasParam && graph.openGraphType != "1"){//如果当前图形不是普通图形（是场景查询图形或模型图形）且当前节点有参数
+	if(graph.nodeData[nodeId].hasParam){//如果当前图形有参数
 		menuArr.push("-");
         menuArr.push("modifyParam");
 	}

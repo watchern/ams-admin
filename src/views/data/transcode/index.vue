@@ -32,7 +32,7 @@
       <el-table-column label="规则描述" prop="ruleDesc" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog v-if="dialogFormVisible" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -55,18 +55,43 @@
           <el-button v-if="temp.ruleType === 1" type="primary" size="mini" class="el_header_button" style="margin-right: 20px;float: left;" @click="exSql()">执行SQL</el-button>
           <el-input v-model="temp.sqlContent" type="textarea" style="width:500px" />
         </el-form-item>
-        <el-row>
-          <el-col span="12">
-            <el-form-item v-if="temp.ruleType === 1" label="真实值" prop="codeValue" style="width:200px">
-              <el-input v-model="temp.codeValue" />
-            </el-form-item>
-          </el-col>
-          <el-col span="12">
-            <el-form-item v-if="temp.ruleType === 1" label="显示值" prop="transValue" style="width:200px">
-              <el-input v-model="temp.transValue" />
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-table v-if="temp.ruleType === 1" :data="sqlRule">
+          <el-table-column prop="codeValue" label="真实值">
+            <template slot-scope="scope">
+              <el-select ref="codeValue" v-model="scope.row.codeValue" placeholder="请选择真实值">
+                <el-option
+                  v-for="(name, index) in colsJson"
+                  :key="index"
+                  :label="name"
+                  :value="name"
+                />
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column prop="transValue" label="显示值">
+            <template slot-scope="scope">
+              <el-select ref="transValue" v-model="scope.row.transValue" placeholder="请选择显示值">
+                <el-option
+                  v-for="(name, index) in colsJson"
+                  :key="index"
+                  :label="name"
+                  :value="name"
+                />
+              </el-select>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 执行预览弹窗 -->
+        <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
+          <el-row>
+            <el-col>
+              <childTabs ref="childTabs" :pre-value="executeSQLList" use-type="previewTable" />
+            </el-col>
+          </el-row>
+          <span slot="footer">
+            <el-button type="primary" @click="previewVisible = false">关闭</el-button>
+          </span>
+        </el-dialog>
       </el-form>
       <el-upload
         v-if="temp.ruleType === 2"
@@ -123,18 +148,24 @@
 </template>
 
 <script>
+import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, save, update, del, selectOne } from '@/api/data/transCode'
+import { listByPage, save, update, del, selectOne, previewSql } from '@/api/data/transCode'
 import QueryField from '@/components/Ace/query-field/index'
 import XLSX from 'xlsx'
 export default {
-  components: { Pagination, QueryField },
+  components: { Pagination, QueryField, childTabs },
   // eslint-disable-next-line vue/require-prop-types
   data() {
     return {
       selectType: 'handleSelectionChangeOne',
       transColRelsData: [],
+      previewVisible: false,
       // table下动态绑定的值
+      sqlRule: [{
+        codeValue: null,
+        transValue: null
+      }],
       tableInput: {
         transColRels: {
           codeValue: null,
@@ -145,6 +176,8 @@ export default {
       tableKey: 'transRuleUuid',
       list: null,
       total: 0,
+      executeSQLList: [],
+      arrSql: {},
       listLoading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
@@ -165,8 +198,14 @@ export default {
         ruleName: '',
         ruleType: '',
         ruleDesc: '',
-        transColRels: []
+        codeValue: '',
+        transValue: '',
+        transColRels: [{
+          codeValue: null,
+          transValue: null
+        }]
       },
+      colsJson: [],
       selections: [],
       dialogFormVisible: false,
       dialogStatus: '',
@@ -205,7 +244,7 @@ export default {
       }
     },
     formatTag(row, column) {
-      return row.ruleType === '1' ? 'SQL语句' : '手动输入'
+      return row.ruleType === 1 ? 'SQL语句' : '手动输入'
     },
     // 动态添加一行
     lineAdd(index, ipTable) {
@@ -261,8 +300,20 @@ export default {
         transRuleUuid: undefined,
         ruleName: '',
         ruleType: 1,
-        ruleDesc: ''
+        ruleDesc: '',
+        codeValue: '',
+        transValue: '',
+        transColRels: [{
+          codeValue: null,
+          transValue: null
+        }]
       }
+    },
+    resetSqlRule() {
+      this.sqlRule = [{
+        codeValue: null,
+        transValue: null
+      }]
     },
     // 打开新增内容
     handleCreate() {
@@ -291,9 +342,14 @@ export default {
       }
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.transColRels = this.transColRelsData
+          if (this.temp.ruleType === 2) {
+            this.temp.transColRels = this.transColRelsData
+          } else {
+            this.temp.transColRels = this.sqlRule
+          }
           save(this.temp).then(() => {
             this.getList()
+            this.previewVisible = false
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -307,14 +363,38 @@ export default {
       })
     },
     exSql() {
+      var transCodeObj = {}
+      transCodeObj.sqlContent = this.temp.sqlContent
+      previewSql(transCodeObj).then(res => {
+        this.transCodeShow = true
+        this.colsJson = res.data.columnNames
+        this.executeSQLList = res.data.executeTask.executeSQL
+        this.arrSql = res.data
+        this.previewVisible = true
+        this.$nextTick(() => {
+          this.$refs.childTabs.loadTableData(this.arrSql)
+        })
+      })
     },
     handleUpdate() {
       var rulObj = Object.assign({}, this.selections[0]) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       selectOne(rulObj).then(res => {
+        this.resetTemp()
         this.temp = res.data
-        this.transColRelsData = res.data.transColRels
+        if (this.temp.ruleType === 1) {
+          this.colsJson = []
+          this.colsJson.push(this.temp.transColRels[0].transValue)
+          this.colsJson.push(this.temp.transColRels[0].codeValue)
+          this.sqlRule = res.data.transColRels
+          this.temp.transColRels = []
+          this.transColRelsData = []
+        } else {
+          this.colsJson = []
+          this.resetSqlRule()
+          this.transColRelsData = res.data.transColRels
+        }
         // 添加最后一行输入行为可编辑，按钮设为添加
         var temporaryObj = this.tableInput.transColRels
         temporaryObj.start = '0'
@@ -335,10 +415,20 @@ export default {
       }
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          // if (this.temp.ruleType === 2) {
+          //   this.temp.transColRels = this.transColRelsData
+          // }
+          if (this.temp.ruleType === 1) {
+            this.temp.transColRels = this.sqlRule
+          } else {
+            this.temp.sqlContent = ''
+            this.temp.transColRels = this.transColRelsData
+          }
           var tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
             const index = this.list.findIndex(v => v.transRuleUuid === this.temp.transRuleUuid)
             this.list.splice(index, 1, this.temp)
+            this.previewVisible = false
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -354,14 +444,21 @@ export default {
     handleDelete() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r) })
-      del(ids).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm('确定删除该转码规则?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        del(ids).then(() => {
+          this.getList()
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         })
       })
     },

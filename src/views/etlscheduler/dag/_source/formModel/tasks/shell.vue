@@ -18,7 +18,7 @@
         </div>
       </div>
     </m-list-box>
-    <m-list-box>
+    <m-list-box v-if="false">
       <div slot="text">资源</div>
       <div slot="content" class="propwidth">
         <treeselect v-model="resourceList" :multiple="true" :options="options" :normalizer="normalizer" :disabled="isDetails" :value-consists-of="valueConsistsOf" placeholder="请选择资源">
@@ -40,6 +40,7 @@
     <m-list-box>
       <div slot="text">自定义参数</div>
       <div slot="content">
+        <span v-if="!localParams.length && isDetails" class="paramtext">无</span>
         <m-local-params
           ref="refLocalParams"
           :udp-list="localParams"
@@ -69,7 +70,8 @@ export default {
   components: { mLocalParams, mListBox, Treeselect },
   mixins: [disabledState],
   props: {
-    backfillItem: Object
+    backfillItem: Object,
+    createNodeId: String
   },
   data() {
     return {
@@ -133,7 +135,6 @@ export default {
   },
   created() {
     const item = this.store.state.dag.resourcesListS
-    console.log('o.params.resourceList' + JSON.stringify(this.store.state.dag.resourcesListS))
     this.diGuiTree(item)
     this.options = item
     const o = this.backfillItem
@@ -141,7 +142,9 @@ export default {
     // Non-null objects represent backfill
     if (!_.isEmpty(o)) {
       this.rawScript = o.params.rawScript || ''
-
+      if (document.getElementById(this.createNodeId) !== null) {
+        document.getElementById(this.createNodeId).classList.add('jtk-tasks-active')
+      }
       // backfill resourceList
       const backResource = o.params.resourceList || []
       const resourceList = o.params.resourceList || []
@@ -171,6 +174,9 @@ export default {
       if (localParams.length) {
         this.localParams = localParams
       }
+    }
+    if (!_.some(this.store.state.dag.cacheTasks, { id: this.createNodeId })) {
+      // this._getReceiver()
     }
   },
   mounted() {
@@ -374,30 +380,35 @@ export default {
 .propwidth{
   width:500px
 }
-  .scriptModal {
-    .ans-modal-box-content-wrapper {
-      width: 90%;
-      .ans-modal-box-close {
-        right: -12px;
-        top: -16px;
-        color: #fff;
-      }
+.scriptModal {
+  .ans-modal-box-content-wrapper {
+    width: 90%;
+    .ans-modal-box-close {
+      right: -12px;
+      top: -16px;
+      color: #fff;
     }
   }
-  .ans-modal-box-close {
-    z-index: 100;
-  }
-  .ans-modal-box-max {
-    position: absolute;
-    right: -12px;
-    top: -16px;
-  }
-  .vue-treeselect--disabled {
-    .vue-treeselect__control {
-      background-color: #ecf3f8;
-      .vue-treeselect__single-value {
-        color: #6d859e;
-      }
+}
+.ans-modal-box-close {
+  z-index: 100;
+}
+.ans-modal-box-max {
+  position: absolute;
+  right: -12px;
+  top: -16px;
+}
+.vue-treeselect--disabled {
+  .vue-treeselect__control {
+    background-color: #ecf3f8;
+    .vue-treeselect__single-value {
+      color: #6d859e;
     }
   }
+}
+.paramtext {
+font-size: 14px;
+color: #777;
+line-height: 32px;
+}
 </style>

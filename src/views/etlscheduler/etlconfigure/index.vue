@@ -1,9 +1,9 @@
 <template>
   <el-tabs type="border-card" style="background:transparent!important;height:100%;">
-    <el-tab-pane label="参数管理"><etl-param-field /></el-tab-pane>
-    <el-tab-pane label="数据源管理"><etl-data-source /></el-tab-pane>
+    <el-tab-pane label="参数管理"><etl-param-field style="padding-top:0px" /></el-tab-pane>
+    <el-tab-pane label="数据源管理"><etl-data-source style="padding-top:0px" /></el-tab-pane>
     <!-- <el-tab-pane label="文件目录管理"><etl-file-directory /></el-tab-pane> -->
-    <el-tab-pane label="数据资源管理"><etl-data-resource /></el-tab-pane>
+    <el-tab-pane label="数据资源管理"><etl-data-resource style="padding-top:0px" /></el-tab-pane>
     <!-- <el-tab-pane label="服务器管理">服务器管理</el-tab-pane> -->
     <!-- <el-tab-pane label="文件上传"><etl-file-upload /></el-tab-pane> -->
     <!-- <el-tab-pane label="hdfs文件管理"><etl-file-resource /></el-tab-pane> -->
@@ -30,7 +30,6 @@ export default {
 .el-tabs{
   padding: 0;
 }
-
 /* .el-tabs--border-card > .el-tabs__content {
     padding: 0px!important;
 } */

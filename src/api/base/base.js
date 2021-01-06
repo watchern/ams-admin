@@ -49,14 +49,53 @@ export function listByPageRemind(data) {
   })
 }
 
-export function updateRemind(data) {
+export function updateRemind(id) {
   return request({
     baseURL: baseURL,
-    url: '/remindController/update',
+    url:`/remindController/update/${id}`,
     method: 'put',
     // params 以formData格式传递  后台用RequestParam
     // 直接加data以json格式传递  后台用RequestBody
+  })
+}
+
+// /**
+//  * 获取单个系统异常信息
+//  * @param {*} data
+//  */
+// export function getReadErrorLog(id) {
+//   return request({
+//     baseURL: baseURL,
+//     url: `/logSysErrorController/getErrorLog/${id}`,
+//     method: 'get',
+//   })
+// }
+
+export function getUnReadRemind(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/remindController/getUnReadRemind',
+    method: 'get',
     params: data
   })
 }
 
+export function getRemindByDescTime(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/remindController/getRemindByDescTime/5',
+    method: 'get',
+    params: data
+  })
+}
+
+
+export function updateReminds(ids) {
+  return request({
+    baseURL: baseURL,
+    url: `/remindController/updateReminds/${ids}`,
+    method: 'put',
+    // params 以formData格式传递  后台用RequestParam
+    // 直接加data以json格式传递  后台用RequestBody
+  })
+}

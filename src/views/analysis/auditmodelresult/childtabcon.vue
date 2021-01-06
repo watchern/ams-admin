@@ -15,67 +15,71 @@
       </span>
     </el-dialog>
     <el-row v-if="myFlag">
-       <div align="right">
-      <el-button
-        :disabled="modelRunResultBtnIson.exportBtn"
-        type="primary"
-        @click="exportExcel"
-        class="oper-btn export-2"
-      ></el-button>
-      <el-button
-        style="display: none"
-        :disabled="modelRunResultBtnIson.chartDisplayBtn"
-        type="primary"
-        class="oper-btn chart"
-        ></el-button
-      >
-      <el-button
-        style="display: none"
-        :disabled="modelRunResultBtnIson.associatedBtn"
-        type="primary"
-        @click="getValues"
-        class="oper-btn refresh"
-      ></el-button>
-      <el-button
-        style="display: none"
-        :disabled="modelRunResultBtnIson.disassociateBtn"
-        type="primary"
-        @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
-        >移除关联</el-button
-      >
-      <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn search"
-        ></el-button
-      >
-      <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
-        >重置</el-button -->
-      <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn again-2"
-        ></el-button
-      >
-      <el-button
-        class="oper-btn link"
-        :disabled="modelRunResultBtnIson.modelDetailAssBtn"
-        v-if="modelDetailButtonIsShow"
-        type="primary"
-        @click="openModelDetail"
-        ></el-button
-      >
-       </div>
-    </el-row>
-    <el-row v-if="modelResultButtonIsShow" style="display: flex">
-      <!-- 2.1前台导出，双向绑定数据 -->
-      <downloadExcel :data="tableData" :fields="json_fields" :name="excelName">
+      <div align="right">
         <el-button
           type="primary"
-          @click="modelResultExport"
-          class="oper-btn export-2"
+          @click="sendToOA()"
+          class="oper-btn share"
+          title="发送到作业平台"
         ></el-button>
-      </downloadExcel>
-      <el-button type="primary" title="图表展示" class="oper-btn chart"></el-button>
+        <el-button
+          :disabled="modelRunResultBtnIson.exportBtn"
+          type="primary"
+          @click="exportExcel"
+          class="oper-btn export-2"
+          title="导出"
+        ></el-button>
+        <el-button
+          :disabled="modelRunResultBtnIson.chartDisplayBtn"
+          type="primary"
+          class="oper-btn chart"
+          @click="chartShowIsSee = true"
+          title="图表展示"
+        ></el-button>
+        <el-button
+          style="display: none"
+          :disabled="modelRunResultBtnIson.disassociateBtn"
+          type="primary"
+          @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
+          title="移除关联"
+          >移除关联</el-button
+        >
+        <el-button
+          :disabled="false"
+          type="primary"
+          @click="queryConditionSetting"
+          class="oper-btn search"
+          title="查询设置"
+        ></el-button>
+        <el-button
+          type="primary"
+          class="oper-btn refresh"
+          :disabled="modelRunResultBtnIson.associatedBtn"
+          @click="addDetailRel('qwer1', '项目11')"
+          title="关联项目"
+        ></el-button>
+        <el-button
+          :disabled="false"
+          type="primary"
+          @click="reSet"
+          class="oper-btn again-2"
+          title="重置"
+        ></el-button>
+        <el-button
+          class="oper-btn link"
+          :disabled="modelRunResultBtnIson.modelDetailAssBtn"
+          v-if="modelDetailButtonIsShow"
+          type="primary"
+          @click="openModelDetail"
+          title="查询关联"
+        ></el-button>
+      </div>
     </el-row>
+
     <ag-grid-vue
       v-if="isSee"
       v-loading="isLoading"
-      style="height: 200px"
+      style="height:200px"
       class="table ag-theme-balham"
       :column-defs="columnDefs"
       :row-data="rowData"
@@ -96,16 +100,41 @@
       :limit.sync="pageQuery.pageSize"
       @pagination="initData(nowSql)"
     />
-    <el-pagination
-      v-if="modelResultPageIsSee"
-      :current-page="page"
-      :page-sizes="[10, 20, 30, 50]"
-      :page-size="limit"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total1"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
+    <el-row>
+      <el-col :span="22">
+        <div v-if="modelResultPageIsSee">
+          共<span class="paging-z">{{ rowData.length }}</span
+          >条
+        </div>
+      </el-col>
+      <el-col :span="2">
+        <el-row v-if="modelResultButtonIsShow" style="display: flex">
+          <!-- 2.1前台导出，双向绑定数据 -->
+          <downloadExcel
+            :data="tableData"
+            :fields="json_fields"
+            :name="excelName"
+            class="thechard-z"
+            v-if="this.preLength==this.myIndex+1"
+          >
+            <el-button
+              type="primary"
+              @click="modelResultExport"
+              class="oper-btn export-2"
+              title="导出"
+            ></el-button>
+          </downloadExcel>
+          <!-- <el-button
+            v-if="this.preLength==this.myIndex+1"
+            type="primary"
+            title="图表展示"
+            class="oper-btn chart"
+            @click="openChartDialog"
+          ></el-button> -->
+        </el-row>
+      </el-col>
+    </el-row>
+    <!-- modelResultPageIsSee -->
     <el-dialog
       title="模型详细关联"
       :visible.sync="modelDetailDialogIsShow"
@@ -150,6 +179,61 @@
         >
       </span>
     </el-dialog>
+       <el-dialog
+      title="提示"
+      :visible.sync="chartShowIsSee"
+      width="90%"
+      :fullscreen="true"
+      :append-to-body="true"
+    >
+      <mtEditor
+        ref="chart"
+        :data="result"
+        :v-if="chartShowIsSee"
+        :chart-config="nowChartJson"
+        :key="chartPreview"
+      ></mtEditor>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="chartShowIsSee = false">取 消</el-button>
+        <el-button
+          v-if="useType == 'sqlEditor' ||  useType == 'modelRunResult'? true: false"
+          type="primary"
+          @click="chartSaveOrUpdate=='save'?saveChart():updateChart()"
+          >保 存</el-button
+        >
+      </span>
+    </el-dialog>
+    <el-row>
+      <div align="right" v-if="this.preLength==this.myIndex+1||myFlag">
+        <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" style="width:40px;height:40px" @click="changeChart(item.id)" :key="key"/>
+           <el-button
+              v-if="useType=='sqlEditor'||myFlag"
+              type="primary"
+              @click="openChartDialog"
+              class="oper-btn add"
+              title="添加图表"
+            ></el-button>
+             <el-button
+              v-if="useType=='sqlEditor'||myFlag"
+              type="primary"
+              @click="openEditChartDialog"
+              class="oper-btn edit"
+              title="修改图标"
+            ></el-button>
+             <el-button
+              v-if="useType=='sqlEditor'||myFlag"
+              type="primary"
+              @click="deleteChart"
+              class="oper-btn delete"
+              title="删除图表"
+            ></el-button>
+      </div>
+    </el-row>
+    <div style="height: 450px;" v-if="this.preLength==this.myIndex+1||myFlag">
+      <div align='center' style='font-weight:lighter ;font-size:15px' v-if="afterAddChartsWithNoConfigure">请选择图表</div>
+      <div align='center' style='font-weight:lighter ;font-size:15px' v-if="isHaveCharts">该模型暂无图表</div>
+      <mtEditor v-loading="chartLoading" v-if="afterResult" :key="chartPreview" ref='chart1' :data='result' :chart-config='nowChartJson' :preview="true"></mtEditor>
+    </div>
   </div>
 </template>
 
@@ -171,15 +255,26 @@ import {
   selectConditionShow,
   selectModel,
   findParamModelRelByModelUuid,
-  replaceParam
+  replaceParam,
+  batchCoverAddResultDetailProjectRel,
+  addModelChartSetup,
+  getModelChartSetup,
+  updateModelChartSetup,
+  deleteModelChartSetup,
+  sendToOA
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
 import myQueryBuilder from "@/views/analysis/auditmodelresult/myquerybuilder";
 import { string } from "jszip/lib/support";
-import { startExecuteSql } from "@/api/analysis/sqleditor/sqleditor";
+import {
+  startExecuteSql,
+  getExecuteTask,
+} from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
+import mtEditor from "ams-datamax";
+import "iview/dist/styles/iview.css";
 
 export default {
   name: "childTabCon",
@@ -190,6 +285,7 @@ export default {
     myQueryBuilder,
     childtabscopy,
     downloadExcel: JsonExcel,
+    mtEditor,
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -199,14 +295,28 @@ export default {
         }
       });
     },
+    nowChartJson () {
+        this.chartPreview = !this.chartPreview
+      }
   },
   /**
    * 模型运行结果使用变量：nowtable：表示模型结果表对象   modelUuid：根据modelUUid进行表格渲染，只有主表用渲染  useType=modelRunResult 表示是模型运行结果所用
    * sql编辑器模型结果使用变量：useType=sqlEditor 表示是sql编辑器模型结果所用  prePersonalVal：每一个prePersonalVal对应一个childtabcon组件，后续会触发父组件chidltabs中的loadTableData方法来根据prePersonalVal进行aggrid数据的展现
    */
-  props: ["nowtable", "modelUuid", "useType", "prePersonalVal"],
+  props: [
+    "nowtable",
+    "modelUuid",
+    "useType",
+    "prePersonalVal",
+    "resultSpiltObjects",
+    "modelId",
+    "preLength",
+    "myIndex",
+    "chartModelUuid"
+  ],
   data() {
     return {
+      chartPreview: true,
       dialogVisible: false,
       // 定义ag-grid列
       columnDefs: [],
@@ -218,6 +328,7 @@ export default {
         pageSize: 20,
       },
       total: 0,
+      imgBaseCode:'',
       myFlag: false, // 用来判断主表界面有按钮，辅表界面没有按钮，为true是主表，为false是辅表
       selectRows: [], //用于存放多选框选中的数据
       detailTable: [], //存放关联详细表
@@ -231,9 +342,7 @@ export default {
       nextValue: [], // 存放模型结果后传进来的值
       modelResultData: [], // 用来存放模型结果数据
       modelResultColumnNames: [], // 用来存放模型结果的列名
-      limit: 10, // //模型结果前台分页的初始一页有多少条数据属性
       total1: null, // 模型结果前台分页的total属性
-      page: 1, // 模型结果前台分页的当前页属性
       isSee: true, // 当输入sql错误和结果集为0的时候不显示aggrid表格
       errorMessage: "", // 存放模型结果错误消息
       modelResultPageIsSee: false, // 模型结果分页是否可见
@@ -260,10 +369,21 @@ export default {
         modelDetailAssBtn: true,
       },
       dynamicSelect: [], //实时存储多选框勾选中的数据
+      chartShowIsSee: false,
+      result: {},   //给myeditor传的数据
+      chartSaveOrUpdate: "", //判断图标是保存还是更新操作
+      nowChartJson: undefined, //存储当前正在显示的图表的json
+      modelChartSetups:[],  //用于存储添加的多个图标，用于图表返显功能
+      chartConfigs:[],   //用于存储当前模型的图表config   （myeditor组件的chart-config属性）chartConfigs
+      afterResult:false,  //等result数据赋值完以后再初始化返显的charts组件
+      chartLoading:true,  //图表加载的loading
+      afterAddChartsWithNoConfigure:false,
+      isHaveCharts:false //判断该模型是否有图表
     };
   },
   mounted() {
     this.getRenderTableData();
+    this.chartReflexion();
   },
   methods: {
     rowChange() {
@@ -331,22 +451,72 @@ export default {
      * 关联项目
      */
     addDetailRel(projectId, projctName) {
+      this.getValues();
       selectByRunResultTableUUid(this.nowtable.runResultTableUuid).then(
         (resp) => {
           this.detailTable = resp.data;
           var resultDetailProjectRels = [];
           if (resp.data.length == 0) {
             // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果没有值则直接关联
-            selectPrimaryKeyByTableName().then(
-              (resp) => {
-                this.primaryKey = resp.data;
+            selectPrimaryKeyByTableName().then((resp) => {
+              this.primaryKey = resp.data;
+              for (var i = 0; i < this.selectRows.length; i++) {
+                var resultDetailProjectRel = {
+                  resultDetailProjectRelId: "",
+                  runResultTableUuid: this.nowtable.runResultTableUuid,
+                  runTaskRelUuid: this.nowtable.runTaskRelUuid,
+                  projectId: projectId,
+                  resultDetailId: this.selectRows[i][
+                    this.primaryKey.toLowerCase()
+                  ],
+                  projectName: projctName,
+                };
+                resultDetailProjectRels.push(resultDetailProjectRel);
+              }
+              batchSaveResultDetailProjectRel(resultDetailProjectRels).then(
+                (resp) => {
+                  if (resp.data == true) {
+                    this.$message({
+                      type: "success",
+                      message: "关联项目成功!",
+                    });
+                  } else {
+                    this.$message({
+                      type: "error",
+                      message: "关联项目失败!",
+                    });
+                  }
+                }
+              );
+            });
+          } else {
+            // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果有值则要判断是否关联过该主键，如果添加过就不能重复关联
+            var resultDetailProjectRels = [];
+            var related = [];
+            selectPrimaryKeyByTableName().then((resp) => {
+              this.primaryKey = resp.data;
+              for (var i = 0; i < this.selectRows.length; i++) {
+                for (var j = 0; j < this.detailTable.length; j++) {
+                  if (
+                    this.selectRows[i][this.primaryKey.toLowerCase()] ==
+                    this.detailTable[j].resultDetailId
+                  ) {
+                    related.push(
+                      this.selectRows[i][this.primaryKey.toLowerCase()]
+                    );
+                  }
+                }
+              }
+              if (related.length == 0) {
                 for (var i = 0; i < this.selectRows.length; i++) {
                   var resultDetailProjectRel = {
                     resultDetailProjectRelId: "",
                     runResultTableUuid: this.nowtable.runResultTableUuid,
                     runTaskRelUuid: this.nowtable.runTaskRelUuid,
                     projectId: projectId,
-                    resultDetailId: this.selectRows[i][this.primaryKey],
+                    resultDetailId: this.selectRows[i][
+                      this.primaryKey.toLowerCase()
+                    ],
                     projectName: projctName,
                   };
                   resultDetailProjectRels.push(resultDetailProjectRel);
@@ -366,68 +536,49 @@ export default {
                     }
                   }
                 );
-              }
-            );
-          } else {
-            // 根据当前运行结果表查看运行结果详细与项目关联表里有没有值，如果有值则要判断是否关联过该主键，如果添加过就不能重复关联
-            var resultDetailProjectRels = [];
-            var related = [];
-            selectPrimaryKeyByTableName().then(
-              (resp) => {
-                this.primaryKey = resp.data;
+              } else {
+                var resultDetailProjectRels1 = [];
                 for (var i = 0; i < this.selectRows.length; i++) {
-                  for (var j = 0; j < this.detailTable.length; j++) {
-                    if (
-                      this.selectRows[i][this.primaryKey] ==
-                      this.detailTable[j].resultDetailId
-                    ) {
-                      related.push(this.selectRows[i][this.primaryKey]);
-                    }
-                  }
+                  var resultDetailProjectRel = {
+                    resultDetailProjectRelId: "",
+                    runResultTableUuid: this.nowtable.runResultTableUuid,
+                    runTaskRelUuid: this.nowtable.runTaskRelUuid,
+                    projectId: projectId,
+                    resultDetailId: this.selectRows[i][
+                      this.primaryKey.toLowerCase()
+                    ],
+                    projectName: projctName,
+                  };
+                  resultDetailProjectRels1.push(resultDetailProjectRel);
                 }
-                if (related.length == 0) {
-                  for (var i = 0; i < this.selectRows.length; i++) {
-                    var resultDetailProjectRel = {
-                      resultDetailProjectRelId: "",
-                      runResultTableUuid: this.nowtable.runResultTableUuid,
-                      runTaskRelUuid: this.nowtable.runTaskRelUuid,
-                      projectId: projectId,
-                      resultDetailId: this.selectRows[i][this.primaryKey],
-                      projectName: projctName,
-                    };
-                    resultDetailProjectRels.push(resultDetailProjectRel);
-                  }
-                  batchSaveResultDetailProjectRel(resultDetailProjectRels).then(
-                    (resp) => {
-                      if (resp.data == true) {
-                        this.$message({
-                          type: "success",
-                          message: "关联项目成功!",
-                        });
+                batchCoverAddResultDetailProjectRel(
+                  resultDetailProjectRels1
+                ).then((resp) => {
+                  if (resp.data == true) {
+                    var str = "";
+                    for (var i = 0; i < related.length; i++) {
+                      if (i != related.length - 1) {
+                        str += related[i] + " , ";
                       } else {
-                        this.$message({
-                          type: "error",
-                          message: "关联项目失败!",
-                        });
+                        str += related[i];
                       }
                     }
-                  );
-                } else {
-                  var str = "";
-                  for (var i = 0; i < related.length; i++) {
-                    if (i != related.length - 1) {
-                      str += related[i] + ",";
-                    } else {
-                      str += related[i];
-                    }
+                    this.$message({
+                      type: "success",
+                      message:
+                        "关联成功！ 其中 " +
+                        str +
+                        " 为主键的结果以前关联的项目被覆盖",
+                    });
+                  } else {
+                    this.$message({
+                      type: "error",
+                      message: "关联失败!",
+                    });
                   }
-                  this.$message({
-                    type: "info",
-                    message: "关联失败，因为其中" + str + "已经关联",
-                  });
-                }
+                });
               }
-            );
+            });
           }
         }
       );
@@ -452,11 +603,14 @@ export default {
     // 单元格点击事件
     onCellClicked(cell) {},
     initData(sql, nextValue) {
+      this.result = {}
       if (this.useType == "modelRunResult") {
         this.isLoading = true;
         // 当当前表是主表的时候myFlag赋值为true
         if (this.nowtable.tableType == 1) {
           this.myFlag = true;
+        }else{
+          this.chartLoading = false
         }
         var colNames = [];
         var col = [];
@@ -465,124 +619,214 @@ export default {
         if (typeof sql !== "string") {
           sql = "undefined";
         }
-        selectTable(this.pageQuery, sql).then((resp) => {
-          if (resp.data.records[0].result.length == 0) {
-            this.isLoading = false;
-          }
-          this.total = resp.data.total;
-          this.dataArray = resp.data.records[0].result;
-          this.queryData = resp.data.records[0].columnInfo;
-          // 将返回对象的所有属性，按顺序提取出来，用于后续生成ag-grid列信息
-          for (const key in resp.data.records[0].result[0]) {
-            colNames.push(key);
-          }
-          // 生成ag-grid列信息
-          if (this.modelUuid != undefined) {
-              var rowColom = {
-                        headerName: 'onlyuuid',
-                        field: 'onlyuuid',
-                        checkboxSelection: true
-                      }
-           col.push(rowColom)
-            for (var i = 0; i < colNames.length; i++) {
-              loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
-                if (
-                  this.modelOutputColumn[j].outputColumnName.toLowerCase() ==
-                  colNames[i]
-                ) {
-                  if (this.modelOutputColumn[j].isShow == 1) {
-                    if (i == 0) {
-                      var rowColom = {
-                        headerName: this.modelOutputColumn[j].columnAlias,
-                        field: colNames[i]
-                      };
-                    } else {
-                      var rowColom = {
-                        headerName: this.modelOutputColumn[j].columnAlias,
-                        field: colNames[i],
-                      };
-                    }
-                    col.push(rowColom);
-                  } else {
-                    if (i == 0) {
-                      var rowColom = {
-                        headerName: colNames[i],
-                        field: colNames[i],
-                        checkboxSelection: true,
-                      };
-                    } else {
-                      var rowColom = {
-                        headerName: colNames[i],
-                        field: colNames[i],
-                      };
-                    }
-                    col.push(rowColom);
-                  }
-                  break loop;
-                }
-              }
+        selectTable(this.pageQuery, sql, this.resultSpiltObjects).then(
+          (resp) => {
+            var column = resp.data.records[0].columns;
+            var columnToUppercase = []
+            for(var i = 1;i<column.length;i++){
+              columnToUppercase.push(column[i].toUpperCase())
             }
-          } else {
-            for (var i = 0; i < colNames.length; i++) {
-              if (i == 0) {
-                var rowColom = {
-                  headerName: colNames[i],
-                  field: colNames[i],
-                  checkboxSelection: true,
-                };
-              } else {
-                var rowColom = {
-                  headerName: colNames[i],
-                  field: colNames[i],
-                };
-              }
-              col.push(rowColom);
-            }
-          }
-          if (this.modelUuid != undefined) {
-            // 生成ag-frid表格数据
+            this.result.column = columnToUppercase;
+            var chartData = [];
             for (var i = 0; i < resp.data.records[0].result.length; i++) {
-              da.push(resp.data.records[0].result[i]);
+              var eachChartData = [];
+              for (var j = 1; j < column.length; j++) {
+                eachChartData.push(resp.data.records[0].result[i][column[j]]);
+              }
+              chartData.push(eachChartData);
             }
-            for (var i = 0; i < da.length; i++) {
-              for (var j = 0; j < colNames.length; j++) {
-                for (var k = 0; k < this.modelOutputColumn.length; k++) {
+            this.result.data = chartData;
+            var columnInfo = resp.data.records[0].columnInfo.columnList;
+            var columnType = [];
+            for (var i = 1; i < columnInfo.length; i++) {
+              //number,varchar,time,float
+              var type = "";
+              if (
+                columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1
+              ) {
+                type = "varchar";
+              } else if (
+                columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") !=
+                  -1 ||
+                columnInfo[i].columnType.toUpperCase().indexOf("INT") != -1
+              ) {
+                type = "number";
+              } else if (
+                columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") !=
+                  -1 ||
+                columnInfo[i].columnType.toUpperCase().indexOf("DATE") != -1
+              ) {
+                type = "time";
+              } else if (
+                columnInfo[i].columnType.toUpperCase().indexOf("FLOAT") != -1
+              ) {
+                type = "float";
+              }
+              columnType.push(type);
+            }
+            this.result.columnType = columnType;
+            this.afterResult = true
+            if (resp.data.records[0].result.length == 0) {
+              this.isLoading = false;
+            }
+            this.total = resp.data.total;
+            this.dataArray = resp.data.records[0].result;
+            this.queryData = resp.data.records[0].columnInfo;
+            colNames = resp.data.records[0].columns
+            // 生成ag-grid列信息
+            if (this.modelUuid != undefined) {
+              var onlyFlag = false
+              for (var i = 0; i < colNames.length; i++) {
+                loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
                   if (
-                    this.modelOutputColumn[k].outputColumnName.toLowerCase() ==
-                    colNames[j]
+                    this.modelOutputColumn[j].outputColumnName.toLowerCase() ==
+                    colNames[i]
                   ) {
-                    if (this.modelOutputColumn[k].dataCoding != undefined) {
-                      var a = da[i][colNames[j]];
-                      da[i][colNames[j]] = this.dataCoding[
-                        this.modelOutputColumn[k].dataCoding
-                      ][a];
+                    if(onlyFlag==false){
+                      var rowColom = {
+                      headerName: "onlyuuid",
+                      field: "onlyuuid",
+                      checkboxSelection: true,
+                    };
+                    col.push(rowColom);
+                      onlyFlag = true
+                    }
+                    if (this.modelOutputColumn[j].isShow == 1) {
+                      if (i == 0) {
+                        var rowColom = {
+                          headerName: this.modelOutputColumn[j].columnAlias,
+                          field: colNames[i],
+                        };
+                      } else {
+                        var rowColom = {
+                          headerName: this.modelOutputColumn[j].columnAlias,
+                          field: colNames[i],
+                        };
+                      }
+                      col.push(rowColom);
+                    } else {
+                      if (i == 0) {
+                        var rowColom = {
+                          headerName: colNames[i],
+                          field: colNames[i],
+                          checkboxSelection: true,
+                        };
+                      } else {
+                        var rowColom = {
+                          headerName: colNames[i],
+                          field: colNames[i],
+                        };
+                      }
+                      col.push(rowColom);
+                    }
+                    break loop;
+                  }
+                }
+              }
+            } else {
+              for (var i = 0; i < colNames.length; i++) {
+                if (i == 0) {
+                  var rowColom = {
+                    headerName: colNames[i],
+                    field: colNames[i],
+                    checkboxSelection: true,
+                  };
+                } else {
+                  var rowColom = {
+                    headerName: colNames[i],
+                    field: colNames[i],
+                  };
+                }
+                col.push(rowColom);
+              }
+            }
+            if (this.modelUuid != undefined) {
+              // 生成ag-frid表格数据
+              for (var i = 0; i < resp.data.records[0].result.length; i++) {
+                da.push(resp.data.records[0].result[i]);
+              }
+              for (var i = 0; i < da.length; i++) {
+                for (var j = 0; j < colNames.length; j++) {
+                  for (var k = 0; k < this.modelOutputColumn.length; k++) {
+                    if (
+                      this.modelOutputColumn[
+                        k
+                      ].outputColumnName.toLowerCase() == colNames[j]
+                    ) {
+                      if (this.modelOutputColumn[k].dataCoding != undefined) {
+                        var a = da[i][colNames[j]];
+                        da[i][colNames[j]] = this.dataCoding[
+                          this.modelOutputColumn[k].dataCoding
+                        ][a];
+                      }
                     }
                   }
                 }
               }
-            }
-          } else {
-            // 生成ag-frid表格数据
-            for (var i = 0; i < resp.data.records[0].result.length; i++) {
-              da.push(resp.data.records[0].result[i]);
+            } else {
+              // 生成ag-frid表格数据
+              for (var i = 0; i < resp.data.records[0].result.length; i++) {
+                da.push(resp.data.records[0].result[i]);
+              }
             }
           }
-        });
+        );
         this.columnDefs = col;
         this.rowData = da;
-      } else if (this.useType == "sqlEditor") {
+      } else if (
+        this.useType == "sqlEditor" ||
+        this.useType == "modelPreview"
+      ) {
         this.loading = true;
         this.nextValue = nextValue;
         var col = [];
         var rowData = [];
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           if (this.nextValue.executeSQL.state == "2") {
-            if(this.nextValue.executeSQL.type=='SELECT'){
+            if (this.nextValue.executeSQL.type == "SELECT") {
               //todo 增加sql类型判断
               if (true) {
                 this.modelResultButtonIsShow = true;
                 this.modelResultPageIsSee = true;
                 this.modelResultData = this.nextValue.result;
+                this.result.column = this.nextValue.columnNames;
+                var columnTypes1 = this.nextValue.columnTypes;
+                var columnType = [];
+                for (var i = 0; i < columnTypes1.length; i++) {
+                  var type = "";
+                  if (columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1) {
+                    type = "varchar";
+                  } else if (
+                    columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 ||
+                    columnTypes1[i].toUpperCase().indexOf("INT") != -1
+                  ) {
+                    type = "number";
+                  } else if (
+                    columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ||
+                    columnTypes1[i].toUpperCase().indexOf("DATE") != -1
+                  ) {
+                    type = "time";
+                  } else if (
+                    columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1
+                  ) {
+                    type = "float";
+                  }
+                  columnType.push(type);
+                }
+                var resultData = this.nextValue.result;
+                this.result.columnType = columnType;
+                var chartData = [];
+                for (var i = 0; i < resultData.length; i++) {
+                  var eachChartData = [];
+                  for (var j = 0; j < this.nextValue.columnNames.length; j++) {
+                    eachChartData.push(
+                      resultData[i][this.nextValue.columnNames[j]]
+                    );
+                  }
+                  chartData.push(eachChartData);
+                }
+                this.result.data = chartData;
+                this.rowData = this.modelResultData;
                 this.modelResultColumnNames = this.nextValue.columnNames;
                 for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
                   var rowColom = {
@@ -598,15 +842,14 @@ export default {
                   rowData.push(this.nextValue.result[k]);
                 }
                 this.columnDefs = col;
-                this.getList();
               }
-            }else {
+              this.afterResult = true
+            } else {
               this.isSee = false;
               this.modelResultPageIsSee = false;
               this.modelResultButtonIsShow = false;
               this.errorMessage = this.nextValue.executeSQL.msg;
             }
-
           } else if (this.nextValue.executeSQL.state == "3") {
             this.isSee = false;
             this.modelResultPageIsSee = false;
@@ -615,7 +858,7 @@ export default {
           }
           this.isLoading = false;
         }
-      }else if (this.useType == "previewTable"){
+      } else if (this.useType == "previewTable") {
         this.loading = true;
         this.nextValue = nextValue;
         var col = [];
@@ -626,6 +869,44 @@ export default {
             if (true) {
               this.modelResultPageIsSee = true;
               this.modelResultData = this.nextValue.result;
+              this.result.column = this.nextValue.columnNames;
+              var columnTypes1 = this.nextValue.columnTypes;
+              var columnType = [];
+              for (var i = 0; i < columnTypes1.length; i++) {
+                var type = "";
+                if (columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1) {
+                  type = "varchar";
+                } else if (
+                  columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 ||
+                  columnTypes1[i].toUpperCase().indexOf("INT") != -1
+                ) {
+                  type = "number";
+                } else if (
+                  columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ||
+                  columnTypes1[i].columnType.toUpperCase().indexOf("DATE") != -1
+                ) {
+                  type = "time";
+                } else if (
+                  columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1
+                ) {
+                  type = "float";
+                }
+                columnType.push(type);
+              }
+              var resultData = this.nextValue.result;
+              this.result.columnType = columnType;
+              var chartData = [];
+              for (var i = 0; i < resultData.length; i++) {
+                var eachChartData = [];
+                for (var j = 0; j < this.nextValue.columnNames.length; j++) {
+                  eachChartData.push(
+                    resultData[i][this.nextValue.columnNames[j]]
+                  );
+                }
+                chartData.push(eachChartData);
+              }
+              this.result.data = chartData;
+              this.rowData = this.modelResultData;
               this.modelResultColumnNames = this.nextValue.columnNames;
               for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
                 var rowColom = {
@@ -641,7 +922,6 @@ export default {
                 rowData.push(this.nextValue.result[k]);
               }
               this.columnDefs = col;
-              this.getList();
             }
           } else if (this.nextValue.executeSQL.state == "3") {
             this.isSee = false;
@@ -651,8 +931,9 @@ export default {
           }
           this.isLoading = false;
         }
-      }else if (this.useType == "graph"){
+      } else if (this.useType == "graph") {
         this.loading = true;
+        this.modelResultButtonIsShow = true;
         this.nextValue = nextValue;
         var col = [];
         var rowData = [];
@@ -662,6 +943,44 @@ export default {
             if (true) {
               this.modelResultPageIsSee = true;
               this.modelResultData = this.nextValue.result;
+              this.result.column = this.nextValue.columnNames;
+              var columnTypes1 = this.nextValue.columnTypes;
+              var columnType = [];
+              for (var i = 0; i < columnTypes1.length; i++) {
+                var type = "";
+                if (columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1) {
+                  type = "varchar";
+                } else if (
+                  columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 ||
+                  columnTypes1[i].toUpperCase().indexOf("INT") != -1
+                ) {
+                  type = "number";
+                } else if (
+                  columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ||
+                  columnTypes1[i].toUpperCase().indexOf("DATE") != -1
+                ) {
+                  type = "time";
+                } else if (
+                  columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1
+                ) {
+                  type = "float";
+                }
+                columnType.push(type);
+              }
+              var resultData = this.nextValue.result;
+              this.result.columnType = columnType;
+              var chartData = [];
+              for (var i = 0; i < resultData.length; i++) {
+                var eachChartData = [];
+                for (var j = 0; j < this.nextValue.columnNames.length; j++) {
+                  eachChartData.push(
+                    resultData[i][this.nextValue.columnNames[j]]
+                  );
+                }
+                chartData.push(eachChartData);
+              }
+              this.result.data = chartData;
+              this.rowData = this.modelResultData;
               this.modelResultColumnNames = this.nextValue.columnNames;
               for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
                 var rowColom = {
@@ -677,7 +996,6 @@ export default {
                 rowData.push(this.nextValue.result[k]);
               }
               this.columnDefs = col;
-              this.getList();
             }
           } else if (this.nextValue.executeSQL.state == "3") {
             this.isSee = false;
@@ -731,7 +1049,8 @@ export default {
           for (var i = 0; i < this.conditionShowData[0].length; i++) {
             for (var j = 0; j < this.conditionShowData[0][i].length; j++) {
               if (
-                params.data[this.primaryKey.toLowerCase()] == this.conditionShowData[0][i][j]
+                params.data[this.primaryKey.toLowerCase()] ==
+                this.conditionShowData[0][i][j]
               ) {
                 this.isLoading = false;
                 return {
@@ -757,56 +1076,34 @@ export default {
             this.nowtable.resultTableName
           ).then((resp) => {
             this.conditionShowData = resp.data;
-            selectPrimaryKeyByTableName().then(
-              (resp) => {
-                this.primaryKey = resp.data;
-                selectModel(this.modelUuid).then((resp) => {
-                  this.modelDetailRelation = resp.data.modelDetailRelation;
-                  this.modelOutputColumn = resp.data.modelOutputColumn;
-                  var datacodes = [];
-                  for (var i = 0; i < this.modelOutputColumn.length; i++) {
-                    if (this.modelOutputColumn[i].dataCoding != undefined) {
-                      datacodes.push(this.modelOutputColumn[i].dataCoding);
-                    }
+            selectPrimaryKeyByTableName().then((resp) => {
+              this.primaryKey = resp.data;
+              selectModel(this.modelUuid).then((resp) => {
+                this.modelDetailRelation = resp.data.modelDetailRelation;
+                this.modelOutputColumn = resp.data.modelOutputColumn;
+                var datacodes = [];
+                for (var i = 0; i < this.modelOutputColumn.length; i++) {
+                  if (this.modelOutputColumn[i].dataCoding != undefined) {
+                    datacodes.push(this.modelOutputColumn[i].dataCoding);
                   }
-                  if (datacodes.length > 0) {
-                    getTransMap(datacodes.join(",")).then((resp) => {
-                      this.dataCoding = resp.data;
-                    });
-                  }
-                  //调用方法
-                  this.initData();
-                  if (this.modelDetailRelation.length > 0) {
-                    this.modelDetailButtonIsShow = true;
-                  }
-                });
-              }
-            );
+                }
+                if (datacodes.length > 0) {
+                  getTransMap(datacodes.join(",")).then((resp) => {
+                    this.dataCoding = resp.data;
+                  });
+                }
+                //调用方法
+                this.initData();
+                if (this.modelDetailRelation.length > 0) {
+                  this.modelDetailButtonIsShow = true;
+                }
+              });
+            });
           });
         } else {
           this.initData();
         }
       }
-    },
-    // 处理数据
-    getList() {
-      // es6过滤得到满足搜索条件的展示数据list
-      this.rowData = this.modelResultData.filter(
-        (item, index) =>
-          index < this.page * this.limit &&
-          index >= this.limit * (this.page - 1)
-      );
-      this.total1 = this.modelResultData.length;
-    },
-    // 当每页数量改变
-    handleSizeChange(val) {
-      this.limit = val;
-      this.getList();
-    },
-    // 当当前页改变
-    handleCurrentChange(val) {
-      this.page = val;
-      this.getList();
     },
     /**
      * 点击详细打开dialog效果
@@ -838,7 +1135,7 @@ export default {
       var objectName = "";
       var detailConfig = null;
       for (var i = 0; i < this.modelDetailRelation.length; i++) {
-        if ((this.value == this.modelDetailRelation[i].relationObjectUuid)) {
+        if (this.value == this.modelDetailRelation[i].relationObjectUuid) {
           relationType = this.modelDetailRelation[i].relationType;
           objectName = this.modelDetailRelation[i].relationObjectName;
           detailConfig = this.modelDetailRelation[i].modelDetailConfig;
@@ -872,14 +1169,16 @@ export default {
           }
           selectModel(this.value).then((resp) => {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-            const obj = { sqls: sql,businessField:'modelresultdetail' };
-            startExecuteSql(obj).then((resp) => {
-              if (!resp.data.isError) {
+            const obj = { sqls: sql, businessField: "modelresultdetail" };
+            getExecuteTask(obj)
+              .then((resp) => {
                 this.currentExecuteSQL = resp.data.executeSQLList;
-              } else {
+                //界面渲染完成之后开始执行sql,将sql送入调度
+                startExecuteSql(resp.data).then((result) => {});
+              })
+              .catch((result) => {
                 this.$message({ type: "info", message: "执行失败" });
-              }
-            });
+              });
           });
         });
       } else if (relationType == 2) {
@@ -889,10 +1188,15 @@ export default {
         for (var i = 0; i < detailConfig.length; i++) {
           var eachFilter = detailConfig[i].relFilterValue;
           loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
-            if (eachFilter.indexOf(this.modelOutputColumn[j].outputColumnName) > -1) {
+            if (
+              eachFilter.indexOf(this.modelOutputColumn[j].outputColumnName) >
+              -1
+            ) {
               eachFilter = eachFilter.replace(
                 this.modelOutputColumn[j].outputColumnName,
-                selectRowData[0][this.modelOutputColumn[j].outputColumnName.toLowerCase()]
+                selectRowData[0][
+                  this.modelOutputColumn[j].outputColumnName.toLowerCase()
+                ]
               );
               break loop;
             }
@@ -904,14 +1208,23 @@ export default {
           }
         }
         sql = sql + filterSql;
-        const obj = { sqls: sql,businessField:'modelresultdetail' };
-        startExecuteSql(obj).then((resp) => {
-          if (!resp.data.isError) {
+        const obj = { sqls: sql, businessField: "modelresultdetail" };
+        getExecuteTask(obj)
+          .then((resp) => {
             this.currentExecuteSQL = resp.data.executeSQLList;
-          } else {
+            //界面渲染完成之后开始执行sql,将sql送入调度
+            startExecuteSql(resp.data).then((result) => {});
+          })
+          .catch((result) => {
             this.$message({ type: "info", message: "执行失败" });
-          }
-        });
+          });
+        // startExecuteSql(obj).then((resp) => {
+        //   if (!resp.data.isError) {
+        //     this.currentExecuteSQL = resp.data.executeSQLList;
+        //   } else {
+        //     this.$message({ type: "info", message: "执行失败" });
+        //   }
+        // });
       }
       this.modelDetailDialogIsShow = false;
       this.modelDetailModelResultDialogIsShow = true;
@@ -945,10 +1258,13 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-/*      const webSocketPath =
+      /*      const webSocketPath =
         "ws://localhost:8086/analysis/websocket?" +
         this.$store.getters.personuuid;*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid+'modelresultdetail';
+      const webSocketPath =
+        process.env.VUE_APP_ANALYSIS_WEB_SOCKET +
+        this.$store.getters.personuuid +
+        "modelresultdetail";
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接
@@ -967,6 +1283,236 @@ export default {
       // 通信失败
       this.webSocket.onerror = function (event) {};
     },
+    /**
+     * sql编辑器保存图标
+     */
+    saveChart(){
+      this.isHaveCharts = false
+      this.afterAddChartsWithNoConfigure = false
+      this.chartShowIsSee = false;
+        var chartJson = this.$refs.chart.getChartConfig();
+        this.chartConfigs.push(chartJson)
+        this.nowChartJson = chartJson
+        var modelUuid = this.nowtable.runResultTableUuid==undefined?this.chartModelUuid:this.nowtable.runTaskRelUuid
+        var modelChartSetup = {
+          chartJson: JSON.stringify(chartJson),
+          modelUuid: modelUuid,
+        };
+        this.modelChartSetups.push(modelChartSetup)
+        addModelChartSetup(modelChartSetup).then((resp) => {
+          if (resp.data) {
+            this.$notify({
+              title: this.$t("提示"),
+              message: this.$t("添加图标成功"),
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          }
+        });
+    },
+    /**
+     * 修改图标方法
+     */
+    updateChart(){
+      this.chartShowIsSee = false;
+      var chartJson = this.$refs.chart.getChartConfig();
+      for(var i = 0;i<this.chartConfigs.length;i++){
+        if(this.nowChartJson.id == this.chartConfigs[i].id){
+          this.chartConfigs.splice(i,1)
+          break
+        }
+      }
+      this.chartConfigs.push(chartJson)
+      if(this.modelChartSetups.length!=0){
+        var modelChartSetup = {}
+        for(var i =0;i<this.modelChartSetups.length;i++){
+           var charjson= JSON.parse(this.modelChartSetups[i].chartJson)
+           if(charjson.id==this.nowChartJson.id){
+             modelChartSetup = this.modelChartSetups[i]
+             modelChartSetup.chartJson = JSON.stringify(chartJson)
+             break
+           }
+        }
+      updateModelChartSetup(modelChartSetup).then((resp) => {
+          if (resp.data) {
+            this.$notify({
+              title: this.$t("提示"),
+              message: this.$t("修改成功"),
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          }
+        });
+      }else{
+              this.$notify({
+              title: this.$t("提示"),
+              message: this.$t("修改成功"),
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+      }
+    },
+    /**
+     * 获取参数返显的数据
+     */
+    chartReflexion() {
+      this.chartConfigs = []
+      this.modelChartSetups = []
+      if(this.nowtable.runResultTableUuid!=undefined){
+        getModelChartSetup(this.nowtable.runTaskRelUuid).then((resp) => {
+          console.log(this.nowtable)
+              if (resp.data.isError == true) {
+            //做保存操作
+            this.chartSaveOrUpdate = "save";
+          } else {
+            //做修改操作
+            this.modelChartSetups = resp.data.modelChartSetups;
+            for(var i = 0;i<this.modelChartSetups.length;i++){
+              this.chartConfigs.push(JSON.parse(this.modelChartSetups[i].chartJson))
+            }
+            this.nowChartJson = this.chartConfigs[0]
+            this.chartSaveOrUpdate = "update";
+          }
+          if(this.chartConfigs.length==0){
+            this.isHaveCharts = true
+          }
+          this.chartLoading = false
+        });
+      }else{
+         if (this.modelUuid != undefined) {
+        getModelChartSetup(this.modelUuid).then((resp) => {
+          if (resp.data.isError == true) {
+            //做保存操作
+            this.chartSaveOrUpdate = "save";
+          } else {
+            //做修改操作
+            this.modelChartSetups = resp.data.modelChartSetups;
+            for(var i = 0;i<this.modelChartSetups.length;i++){
+              this.chartConfigs.push(JSON.parse(this.modelChartSetups[i].chartJson))
+            }
+            this.nowChartJson = this.chartConfigs[0]
+            this.chartSaveOrUpdate = "update";
+          }
+          if(this.chartConfigs.length==0){
+            this.isHaveCharts = true
+          }
+          this.chartLoading = false
+        });
+      } else if (this.modelId != undefined) {
+        getModelChartSetup(this.modelId).then((resp) => {
+          if (resp.data.isError == true) {
+            //做保存操作
+            this.chartSaveOrUpdate = "save";
+          } else {
+              //做修改操作
+            this.modelChartSetups = resp.data.modelChartSetups;
+            for(var i = 0;i<this.modelChartSetups.length;i++){
+              this.chartConfigs.push(JSON.parse(this.modelChartSetups[i].chartJson))
+            }
+            this.nowChartJson = this.chartConfigs[0]
+            this.chartSaveOrUpdate = "update";
+          }
+          if(this.chartConfigs.length==0){
+            this.isHaveCharts = true
+          }
+          this.chartLoading = false
+        });
+      }
+      }
+     
+    },
+    /**
+     * 打开添加图标的dialog
+     */
+    openChartDialog(){
+      this.afterAddChartsWithNoConfigure = true
+      this.chartSaveOrUpdate = 'save'
+      this.nowChartJson = undefined
+      this.chartShowIsSee = true
+    },
+    /**
+     * 点击小图表的时候大图标切换方法
+     */
+    changeChart(chartId){
+      this.afterAddChartsWithNoConfigure = false
+      var chartConfigs = this.chartConfigs
+      for(var i = 0;i<chartConfigs.length;i++){
+        if(chartId==chartConfigs[i].id){
+          this.nowChartJson = chartConfigs[i]
+          break
+        }
+      }
+    },
+    /**
+     * 打开修改图表的dialog
+     */
+    openEditChartDialog(){
+      this.chartSaveOrUpdate = 'update'
+      this.chartShowIsSee = true
+    },
+    /**
+     * 删除图标
+     */
+    deleteChart(){
+      for(var i = 0;i<this.chartConfigs.length;i++){
+        if(this.nowChartJson.id == this.chartConfigs[i].id){
+          this.chartConfigs.splice(i,1)
+          break
+        }
+      }
+      if(this.modelChartSetups.length!=0){
+        var modelChartSetupUuid = {}
+        for(var i =0;i<this.modelChartSetups.length;i++){
+           var charjson= JSON.parse(this.modelChartSetups[i].chartJson)
+           if(charjson.id==this.nowChartJson.id){
+             modelChartSetupUuid = this.modelChartSetups[i].chartSetupUuid
+             break
+           }
+        }
+      deleteModelChartSetup(modelChartSetupUuid).then((resp) => {
+          if (resp.data) {
+            this.$notify({
+              title: this.$t("提示"),
+              message: this.$t("删除成功"),
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          }
+        });
+      }else{
+              this.$notify({
+              title: this.$t("提示"),
+              message: this.$t("删除成功"),
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+      }
+      if(this.chartConfigs.length!=0){
+        this.nowChartJson = this.chartConfigs[0]
+      }else{
+        this.nowChartJson = undefined
+        this.isHaveCharts = true
+      }
+    },
+
+    sendToOA() {
+      var runTaskRelUuid =  this.nowtable.runTaskRelUuid;
+      const dataUserId = this.$store.getters.datauserid
+      const dataUserName = this.$store.getters.datausername
+      sendToOA(runTaskRelUuid, dataUserId, dataUserName).then(resp=>{
+        this.$message({
+          type: "success",
+          message: "发送成功!",
+        });
+      })
+
+
+    },
   },
 };
 </script>
@@ -974,5 +1520,15 @@ export default {
 .itxst {
   margin: 10px;
   text-align: left;
+}
+.thechard-z {
+  margin-right: 15px;
+}
+.paging-z {
+  font-weight: bold;
+  color: rgb(52, 57, 66);
+  margin: 0 5px;
+  font-size: 16px;
+  line-height: 16px;
 }
 </style>

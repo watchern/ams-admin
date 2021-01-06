@@ -1,180 +1,210 @@
 <template>
-  <div class="process-state-count-model">
-    <div v-show="!msg">
-      <div v-spin="isSpin" class="data-area">
-        <div class="col-md-7">
-          <div id="process-state-pie" style="height:260px;margin-top: 20px;" />
-        </div>
-        <div class="col-md-5">
-          <div class="table-small-model">
-            <table>
-              <tr>
-                <th width="40">编号</th>
-                <th width="40">数量</th>
-                <th width="40">状态</th>
-              </tr>
-              <tr v-for="(item,$index) in processStateList" :key="$index">
-                <td><span>{{ $index+1 }}</span></td>
-                <td><span><a href="javascript:" :class="searchParams.projectId ?'links':''" @click="handleProcess(item.key)">{{ item.value }}</a></span></td>
-                <td><span class="ellipsis" style="width: 98%;" :title="item.key">{{ item.key }}</span></td>
-              </tr>
-            </table>
+  <!-- <div class="process-state-count-model"> -->
+  <div v-show="!msg">
+    <div v-spin="isSpin" class="data-area">
+      <el-row>
+        <el-col :span="14">
+          <div id="process-state-pie" style="height: 240px;margin-top:30px" />
+        </el-col>
+        <el-col :offset="2" :span="8">
+          <div
+            v-for="(item, $index) in processStateList"
+            :key="$index"
+            class="piedetails item"
+          >
+            <el-row>
+              <el-col :span="14">
+                <span class="ellipsis" :title="item.key">
+                  {{ item.key }}</span>
+                <span><a
+                  href="javascript:"
+                  @click="handleProcess(item.key)"
+                >（{{ item.value }}）</a></span>
+              </el-col>
+              <el-col :span="10">
+                <span class="percentage">{{ item.percent }}</span>
+              </el-col>
+            </el-row>
           </div>
-        </div>
-      </div>
-    </div>
-    <div v-show="msg">
-      <m-no-data v-if="msg" :msg="msg" :height="430" />
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
 <script>
 import _ from 'lodash'
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import { pie } from './chartConfig'
 import Chart from '@/components/etl/ana-charts'
-import mNoData from '@/components/etl/noData/noData'
+// import mNoData from '@/components/etl/noData/noData'
 // stateType,
 import { statusType } from './common'
+import store from '@/store'
 export default {
   name: 'ProcessStateCount',
   props: {
     searchParams: Object
+    // ,
+    // refresh: {
+    //   type: Function,
+    //   default: null
+    // }
   },
   data() {
     return {
+      store,
+      currentDate: new Date(),
       isSpin: true,
       msg: '',
-      processStateList: []
+      processStateList: [],
+      statusName: null
     }
   },
   methods: {
     ...mapActions('projects', ['getProcessStateCount']),
-    _goProcess(name) {
-      this.$router.push({
-        name: 'projects-instance-list',
-        query: {
-          // stateType: _.find(stateType, ['label', name])['code'],
-          stateType: _.find(statusType, ['label', name])['code'],
+    ...mapMutations('monitor', ['setProcessStatus', 'setProcessStartTime', 'setProcessEndTime', 'setProcessGroupExecutionStatusType']),
+    // _goProcess(name) {
+    //   this.$router.push({
+    //     name: 'projects-instance-list',
+    //     query: {
+    //       // stateType: _.find(stateType, ['label', name])['code'],
+    //       stateType: _.find(statusType, ['label', name])['code'],
 
-          // startDate: this.searchParams.startDate,
-          // endDate: this.searchParams.endDate
-          startTimeStart: this.searchParams.startTimeStart,
-          startTimeEnd: this.searchParams.startTimeEnd
-        }
-      })
-    },
-    // 带着状态和开始结束时间进行页面的跳转，跳转到流程实例页面
+    //       // startDate: this.searchParams.startDate,
+    //       // endDate: this.searchParams.endDate
+    //       startTimeStart: this.searchParams.startTimeStart,
+    //       startTimeEnd: this.searchParams.startTimeEnd
+    //     }
+    //   })
+    // },
+    // 带着状态和开始结束时间进行页面参数传递到流程实例页面
     handleProcess(name) {
-      this.$router.push({ path: '/etlscheduler/processinstance', name: 'processinstance', params: {
-        // status: JSON.stringify(_.find(stateType, ['label', name]).value),
-        status: JSON.stringify(_.find(statusType, ['label', name]).value),
-        startTimeStart: this.searchParams.startTimeStart,
-        startTimeEnd: this.searchParams.startTimeEnd
-      }})
+      this.setProcessGroupExecutionStatusType(_.find(statusType, ['label', name]).value)
+      this.setProcessStartTime(this.searchParams.startTimeStart)
+      this.setProcessEndTime(this.searchParams.startTimeEnd)
+      this.statusName = name
+      // this.refresh()
+      this.$emit('refresh')
+      // this.$router.push({
+      //   path: '/etlscheduler/processinstance',
+      //   name: 'processinstance',
+      //   params: {
+      //     // status: JSON.stringify(_.find(stateType, ['label', name]).value),
+      //     // groupExecutionStatus: _.find(statusType, ['label', name]).value,
+      //     // startTimeStart: this.searchParams.startTimeStart,
+      //     // startTimeEnd: this.searchParams.startTimeEnd
+      //     groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+      //     startTimeStart: this.store.state.monitor.processStartTime,
+      //     startTimeEnd: this.store.state.monitor.processEndTime
+      //   }
+      // })
     },
     _handleProcessState(res) {
       const data = res.data.taskCountDtos
-      this.processStateList = _.map(data, v => {
+      // const successStatus = null
+      this.processStateList = _.map(data, (v) => {
         return {
           // key: _.find(stateType, ['code', v.taskStateType])['label'],
+          code: _.find(statusType, ['code', v.taskStateType])['code'],
           key: _.find(statusType, ['code', v.taskStateType])['label'],
-
+          percent: v.percentDesc,
           value: v.count,
-          itemStyle: { color: _.find(statusType, ['code', v.taskStateType])['color'] }
+          itemStyle: {
+            color: _.find(statusType, ['code', v.taskStateType])['color']
+          }
         }
       })
-      const myChart = Chart.pie('#process-state-pie', this.processStateList, { title: '' })
+      const myChart = Chart.pie('#process-state-pie', this.processStateList, {
+        title: ''
+      })
       myChart.echart.setOption(pie)
-      // 首页不允许跳转
-      if (this.searchParams.projectId) {
-        myChart.echart.on('click', e => {
-          this._goProcess(e.data.name)
+      myChart.echart.dispatchAction({
+        type: 'highlight',
+        seriesIndex: 0,
+        name: this.statusName
+      })
+      myChart.echart.on('mouseover', (v) => {
+        if (v.name !== this.statusName) {
+          myChart.echart.dispatchAction({
+            type: 'hideTip',
+            seriesIndex: 0,
+            name: this.statusName
+          })
+          myChart.echart.dispatchAction({
+            type: 'downplay',
+            seriesIndex: 0,
+            name: this.statusName
+          })
+        }
+      })
+      myChart.echart.on('mouseout', (v) => {
+        myChart.echart.dispatchAction({
+          type: 'showTip',
+          seriesIndex: 0,
+          name: this.statusName
         })
-      }
+        myChart.echart.dispatchAction({
+          type: 'highlight',
+          seriesIndex: 0,
+          name: this.statusName
+        })
+      })
+      // // 首页不允许跳转
+      // if (this.searchParams.projectId) {
+      myChart.echart.on('click', (e) => {
+        this.handleProcess(e.data.name)
+      })
+      // }
     }
   },
   computed: {},
   watch: {
-    'searchParams': {
+    searchParams: {
       deep: true,
       immediate: true,
       handler(o) {
         this.isSpin = true
-        this.getProcessStateCount(o).then(res => {
-          this.processStateList = []
-          this._handleProcessState(res)
-          this.isSpin = false
-        }).catch(e => {
-          // this.msg = e.msg || 'error'
-          this.isSpin = false
-        })
+        this.getProcessStateCount(o)
+          .then((res) => {
+            this.processStateList = []
+            this._handleProcessState(res)
+            this.isSpin = false
+          })
+          .catch((e) => {
+            // this.msg = e.msg || 'error'
+            this.isSpin = false
+          })
       }
     }
   },
-  beforeCreate() {
-  },
+  beforeCreate() {},
   created() {
+    this.statusName = '执行完成'
   },
-  beforeMount() {
-  },
-  mounted() {
-  },
-  beforeUpdate() {
-  },
-  updated() {
-  },
-  beforeDestroy() {
-  },
-  destroyed() {
-  },
-  components: { mNoData }
+  beforeMount() {},
+  mounted() {},
+  beforeUpdate() {},
+  updated() {},
+  beforeDestroy() {},
+  destroyed() {}
+  // , components: { mNoData }
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
-  .process-state-count-model {
-
+<style scoped lang="scss">
+.piedetails {
+  margin: 10px 15px;
+  .ellipsis {
+    color: #333;
+    font-weight: bold;
   }
-  .table-small-model {
-  padding: 0 10px;
-  table {
-    width: 100%;
-    tr{
-      // background: #edf1f5;
-      th,td {
-        padding-left: 8px;
-      }
-      th {
-        height: 36px;
-        line-height: 38px;
-        font-size: 12px;
-        font-weight: bold;
-        color: #333;
-        border-bottom: 2px solid #ECEDEC;
-      }
-      td {
-        height: 32px;
-        line-height: 32px;
-        border-bottom: 1px solid #ECEDEC;
-        span {
-          font-size: 12px;
-          color: #333;
-        }
-        .links {
-          color:#2d8cf0;
-        }
-      }
-      &:hover {
-        td {
-          background: #ddecff;
-        }
-      }
-    }
+  .percentage {
+    font-size: 14px;
+    color: #333;
   }
-  a{
-     color:#2d8cf0;
+  a {
+    color: #409eff;
+    font-size: 14px;
   }
 }
-
 </style>

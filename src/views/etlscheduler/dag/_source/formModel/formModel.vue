@@ -47,7 +47,7 @@
         </div>
 
         <!-- task Node -->
-        <div class="clearfix list">
+        <div v-if="false" class="clearfix list">
           <div class="text-box">
             <span style="color: red;">*</span>
             <span>节点编码</span></div>
@@ -186,6 +186,7 @@
         <m-shell
           v-if="taskType === 'SHELL'"
           ref="SHELL"
+          :create-node-id="id"
           :backfill-item="backfillItem"
           @on-params="_onParams"
           @on-cache-params="_onCacheParams"
@@ -203,7 +204,7 @@
                 :autosize="{minRows:2}"
                 type="textarea"
                 :disabled="isDetails"
-                placeholder="请输入描述"
+                :placeholder="isDetails===true?'':'请输入描述'"
                 autocomplete="off"
                 class="propwidth"
               />
@@ -218,16 +219,24 @@
         style="background: #fff;"
       >
         <x-button
+          v-if="!isDetails"
           type="text"
           @click="close()"
         > 取消 </x-button>
         <x-button
+          v-if="isDetails"
+          type="primary"
+          class="btnclass"
+          @click="close()"
+        >关闭</x-button>
+        <x-button
+          v-if="!isDetails"
           type="primary"
           class="btnclass"
           :loading="spinnerLoading"
           :disabled="isDetails"
           @click="ok()"
-        >{{ spinnerLoading ? 'Loading...' : '确认添加' }} </x-button>
+        >{{ spinnerLoading ? 'Loading...' : '保存' }} </x-button>
       </div>
     </div>
   </div>
@@ -380,7 +389,7 @@ export default {
         this.$message.warning(`新创建子工作流还未执行，不能进入子工作流`)
         return
       }
-      // if (this.router.history.current.name === 'projects-instance-details') {
+      // if (this.router.history.current.name === 'instancedetails') {
       const a = false
       if (a) {
         const stateId = $(`#${this.id}`).attr('data-state-id') || null
@@ -408,7 +417,6 @@ export default {
      */
     _onParams(o) {
       this.params = Object.assign({}, o)
-      console.log(this.params)
     },
 
     _onCacheParams(o) {
@@ -451,10 +459,10 @@ export default {
         this.$message.warning(`请输入名称（必填）`)
         return false
       }
-      if (!_.trim(this.taskCode)) {
-        this.$message.warning(`请输入节点编码（必填）`)
-        return false
-      }
+      // if (!_.trim(this.taskCode)) {
+      //   this.$message.warning(`请输入节点编码（必填）`)
+      //   return false
+      // }
       if (!_.trim(this.errorType)) {
         this.$message.warning(`请选择出错策略（必填）`)
         return false

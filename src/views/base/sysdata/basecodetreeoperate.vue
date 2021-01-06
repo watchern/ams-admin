@@ -1,45 +1,67 @@
 <template>
   <div>
     <div class="title-div">
-      <span>操作</span>
+      <span class="title">操作</span>
     </div>
     <div>
-      <el-form :model="formCodeData" :rules="rules" label-width="150px">
+      <el-form 
+        ref="dataForm"
+        :model="formCodeData" 
+        :rules="rules" 
+        class="detail-form">
         <el-row>
-          <el-col :span="12">
-            <el-form-item label="类型名称" prop="codeName" label-width="150px">
-              <el-input v-model="formCodeData.codeName" class="input" />
-            </el-form-item>
-            <el-form-item v-if="show=false" label="uuid" prop="codeUuid">
-              <el-input v-model="formCodeData.codeUuid" class="input" />
-            </el-form-item>
+          <el-col :span="11">
+          <el-form-item 
+            label="类型名称" 
+            prop="codeName" >
+            <el-input 
+              v-model="formCodeData.codeName" 
+              class="input" />
+          </el-form-item>
+            <el-form-item 
+              v-if="show=false" 
+              label="uuid" 
+              prop="codeUuid">
+              <el-input 
+                v-model="formCodeData.codeUuid" 
+                placeholder="请输入数字"
+                class="input" />
+          </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="类型编码" prop="codeValue" label-width="150px">
-              <el-input
+          <el-col :span="11" :offset="2">
+          <el-form-item 
+              label="类型编码" 
+              prop="codeValue" >
+            <el-input
                 v-model="formCodeData.codeValue"
                 placeholder="请输入4-10位的数字"
                 class="input"
                 @change="number()"
               />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="排序号" prop="codeIndex" label-width="150px">
-              <el-input
-                v-model="formCodeData.codeIndex"
-                placeholder="请输入数字"
-                class="input"
-                @change="number()"
-              />
-            </el-form-item>
+          </el-form-item>
           </el-col>
         </el-row>
         <el-row>
-          <el-form-item label="类型描述" prop="codeDesc" label-width="150px">
-            <el-input v-model="formCodeData.codeDesc" type="textarea" />
+          <el-col :span="11">
+          <el-form-item 
+            label="排序号" 
+            prop="codeIndex" >
+            <el-input
+              v-model="formCodeData.codeIndex"
+              placeholder="请输入数字"
+              class="input"
+              @change="number()"
+            />
           </el-form-item>
+          </el-col>
         </el-row>
+          <el-form-item 
+            label="类型描述" 
+            prop="codeDesc" >
+            <el-input 
+              v-model="formCodeData.codeDesc" 
+              type="textarea" />
+          </el-form-item>
       </el-form>
     </div>
   </div>
@@ -117,6 +139,9 @@ export default {
         dataSortUuid: '',
         delTag: ''
       }
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     // 添加
     saveCedeData(sortUuid, parentCodeUuid) {
@@ -125,7 +150,7 @@ export default {
         this.formCodeData.codeName === null ||
         this.formCodeData.codeName === ''
       ) {
-        this.common.alertMsg(2, '请输入类型名称')
+        this.$message.warning(`请输入类型名称(必填)`)
         return false
       }
       if (
@@ -133,7 +158,7 @@ export default {
         this.formCodeData.codeValue === null ||
         this.formCodeData.codeValue === ''
       ) {
-        this.common.alertMsg(2, '请输入类型编码')
+        this.$message.warning(`请输入类型编码(必填)`)
         return false
       }
       if (
@@ -141,7 +166,7 @@ export default {
         this.formCodeData.codeDesc === null ||
         this.formCodeData.codeDesc === ''
       ) {
-        this.common.alertMsg(2, '请输入类型描述')
+        this.$message.warning(`请输入类型描述(必填)`)
         return false
       }
       if (
@@ -149,7 +174,7 @@ export default {
         this.formCodeData.codeIndex === null ||
         this.formCodeData.codeIndex === ''
       ) {
-        this.common.alertMsg(2, '请输入排序号')
+        this.$message.warning(`请输入排序号(必填)`)
         return false
       }
       if (sortUuid === '' || sortUuid === null || sortUuid === undefined) {
@@ -178,7 +203,7 @@ export default {
         this.formCodeData.codeName === null ||
         this.formCodeData.codeName === ''
       ) {
-        this.common.alertMsg(2, '请输入类型名称')
+        this.$message.warning(`请输入类型名称(必填)`)
         return false
       }
       if (
@@ -186,7 +211,7 @@ export default {
         this.formCodeData.codeDesc === null ||
         this.formCodeData.codeDesc === ''
       ) {
-        this.common.alertMsg(2, '请输入类型描述')
+        this.$message.warning(`请输入类型描述(必填)`)
         return false
       }
       if (
@@ -194,7 +219,7 @@ export default {
         this.formCodeData.codeIndex === null ||
         this.formCodeData.codeIndex === ''
       ) {
-        this.common.alertMsg(2, '请输入排序号')
+        this.$message.warning(`请输入排序号(必填)`)
         return false
       }
       this.$confirm(
@@ -235,8 +260,14 @@ export default {
   text-align: left;
 }
 .input {
-  width: 52%;
+  width: 100%;
   float: left;
 }
+.title {
+  font-family: PingFangSC-Medium;
+  font-size: 14px;
+  color: #42444d;
+  font-weight: 600;
+}
 </style>
-12
+

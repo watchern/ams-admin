@@ -4,9 +4,11 @@
       <div slot="header" class="clearfix">
         <span class="title">查询结构列表</span>
       </div>
+      
       <div>
         <el-table
           ref="multipleTable"
+          height = "calc(93.9vh - 450px)"
           :data="tableData"
           tooltip-effect="dark"
           border
@@ -18,17 +20,20 @@
           <el-table-column prop="codeValue" :label="dataSortName+'类型编码'" width="180" />
           <el-table-column prop="codeDesc" :label="dataSortName+'类型描述'" />
         </el-table>
+        <div class="divBtn" style="float:right;padding:20px 0 0 0">
+            <el-button v-if="this.editTag!=1" type="primary" class="oper-btn add" size="mini" title="添加" @click="saveCodeData"></el-button>
+            <el-button v-if="this.editTag!=1" type="primary" class="oper-btn again-2" size="mini" title="刷新" @click="resetForm"></el-button>
+            <el-button v-if="this.editTag!=1" type="primary" class="oper-btn edit" size="mini" :disabled="handleSelectionChange.length !== 1" title="修改" @click="editCodeData"></el-button>
+            <el-button v-if="this.editTag!=1" type="danger" class="oper-btn delete" size="mini" :disabled="handleSelectionChange.length === 0" title="删除" @click="delCodeData"></el-button>
+            <!-- <el-button type="primary" size="mini" @click="returnList">返回</el-button> -->
+          </div>
         <div class="operate-div">
           <BaseCodeTreeOperate
             ref="baseCodeOperate"
             :code-operate="seleteLengthData"
             @closeMain="query"
           />
-          <div class="divBtn">
-            <el-button v-if="this.editTag!=1" type="primary" icon="el-icon-add-location" size="mini" @click="saveCodeData">添加</el-button>
-            <el-button v-if="this.editTag!=1" type="primary" icon="el-icon-zoom-in" size="mini" @click="resetForm">重置</el-button>
-            <el-button v-if="this.editTag!=1" type="primary" icon="el-icon-edit" size="mini" :disabled="handleSelectionChange.length !== 1" @click="editCodeData">修改</el-button>
-            <el-button v-if="this.editTag!=1" type="danger" icon="el-icon-delete" size="mini" :disabled="handleSelectionChange.length === 0" @click="delCodeData">删除</el-button>
+          <div class="divBtn" style="float:right">
             <el-button type="primary" size="mini" @click="returnList">返回</el-button>
           </div>
         </div>
@@ -125,16 +130,22 @@ export default {
         })
         return false
       }
-      var ids = []
-      this.seleteLengthData.forEach((r, i) => { ids.push(r) })
-      delSecond(ids).then(() => {
-        this.query()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'),{
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.seleteLengthData.forEach((r, i) => { ids.push(r) })
+        delSecond(ids).then(() => {
+          this.query()
+          this.$notify({
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         })
       })
     },
@@ -161,6 +172,11 @@ export default {
 </script>
 
 <style scoped>
+.box-card{
+  height: calc(93.3vh);
+  border-radius: 10px;
+  overflow: auto;
+}
 .operate-div {
   margin-top: 20px;
 }

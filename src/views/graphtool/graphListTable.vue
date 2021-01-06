@@ -1,5 +1,5 @@
 <template>
-    <div class="tree-list-container">
+    <div class="tree-list-container" v-loading="pageLoading">
         <div class="filter-container">
             <QueryField ref="queryfield" :form-data="queryFields" @submit="getGraphList" />
         </div>
@@ -40,10 +40,10 @@
             <el-table-column v-if="type === 'shareToGraphType'" label="接收人" prop="sharedPersonName" />
         </el-table>
         <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getGraphList" />
-        <el-dialog v-if="initPreviewGraph" :destroy-on-close="true" :append-to-body="true" :visible.sync="initPreviewGraph" title="图形详情信息" width="600px">
+        <el-dialog v-if="initPreviewGraph" :destroy-on-close="true" :append-to-body="true" :visible.sync="initPreviewGraph" title="查看图形" width="600px">
             <PreviewGraph :graph-uuid="graphUuid" />
             <div slot="footer">
-                <el-button @click="initPreviewGraph=false">关闭</el-button>
+                <el-button type="primary" @click="initPreviewGraph=false">关闭</el-button>
             </div>
         </el-dialog>
     </div>
@@ -52,7 +52,7 @@
 <script>
     import QueryField from '@/components/Ace/query-field/index'
     import Pagination from '@/components/Pagination/index'
-    import { getGrapgListByType, deleteGraphInfoById, shareGraph, cancelShareGraph } from '@/api/graphtool/graphList'
+    import { getGrapgListByType, deleteGraphInfoById, shareGraph, cancelShareGraph, searchGraphNodes } from '@/api/graphtool/graphList'
     import PreviewGraph from '@/views/graphtool/previewGraph'
     export default {
         name: 'GraphListTable',
@@ -61,6 +61,7 @@
             return {
                 tableKey: 'graphTable',
                 listLoading: true,
+                pageLoading:false,
                 type: 'privateGraphType', // 默认加载个人图形
                 queryFields: [
                     { label: '图形名称', name: 'graphName', type: 'fuzzyText', value: '' },
@@ -98,6 +99,8 @@
                     this.total = resp.data.total
                     this.dataList = resp.data.records
                     this.listLoading = false
+                }).catch( error => {
+                    this.listLoading = false
                 })
             },
             listSelectChange(selection){
@@ -123,13 +126,26 @@
                 this.initPreviewGraph = true
             },
             add() {
-                window.open('/#/graphtool/tooldic?openGraphType=1&openType=2', '_blank')
-                // let url = '/graphtool/tooldic?openGraphType=1&openType=2'
-                // this.$router.replace({path: url});
+                let currentNode = this.$parent.$parent.$refs.graphTree.$refs.tree.getCurrentNode()
+                let openGraphType = 1;//默认打开的是个人图形
+                switch (currentNode.id) {
+                    case "personScreenGraph"://个人场景查询图形
+                        openGraphType = 2
+                        break;
+                    case "screenGraph"://场景查询图形
+                        openGraphType = 3
+                        break;
+                }
+                this.$store.commit('aceState/setRightFooterTags', {
+                    type: 'active',
+                    val: {
+                        name: '新增图形',
+                        path: `/graphtool/tooldic?openGraphType=${openGraphType}&openType=2`
+                    }
+                })
             },
             edit() {
                 let selectObj = this.$refs.graphListTable.selection
-                let url = '/#/graphtool/tooldic'
                 let graphType = selectObj[0].graphType
                 let publicType = selectObj[0].publicType
                 let urlParamStr = ''
@@ -143,25 +159,38 @@
                 } else { // 个人图形、他人分享图形
                     urlParamStr = "?graphUuid=" + selectObj[0].graphUuid + "&openGraphType=1&openType=2";
                 }
-                window.open(url + urlParamStr,"_blank");
+                this.$store.commit('aceState/setRightFooterTags', {
+                    type: 'active',
+                    val: {
+                        name: selectObj[0].graphName,
+                        path: `/graphtool/tooldic${urlParamStr}`
+                    }
+                })
             },
             deleteGraph() {
                 let selectObj = this.$refs.graphListTable.selection
-                this.$confirm('确定删除图形?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning',
-                    center: true
+                this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'),{
+                    confirmButtonText: this.$t('confirm.okBtn'),
+                    cancelButtonText: this.$t('confirm.cancelBtn'),
+                    type: 'warning'
                 }).then(() => {
                     let obj = this.getUuidsANdNames(selectObj)
-                    deleteGraphInfoById(obj).then(response => {
-                        this.$message({ type: 'success', message: '删除成功!' })
+                    deleteGraphInfoById(obj.graphUuids).then(response => {
+                        this.$notify({
+                            title: this.$t('message.title'),
+                            message: this.$t('message.delete.success'),
+                            type: 'success',
+                            duration: 2000,
+                            position: 'bottom-right'
+                        })
                         this.listSelectChange([])
                         this.getGraphList()
                         // 刷新图形树
                         this.$emit('refreshGraphTree')
+                    }).catch( () => {
+                        this.$message.error(this.$t('message.delete.fail'))
                     })
-                })
+                }).catch( error => {})
             },
             share() {
                 let selectObj = this.$refs.graphListTable.selection
@@ -175,7 +204,7 @@
                         this.$message({ type: 'success', message: '图形分享成功' })
                         // 刷新图形树（主要刷新我的分析图形节点数据）
                         this.$emit('refreshGraphTree')
-                    })
+                    }).catch( error => {})
                 }
             },
             cancelShare() {
@@ -188,17 +217,46 @@
                     this.getGraphList()
                     // 刷新图形树（主要刷新我的分析图形节点数据）
                     this.$emit('refreshGraphTree')
-                })
+                }).catch( error => {})
             },
             run() {
-                this.$message({ type: 'info', message: '等待模块集成' })
+                this.pageLoading = true
+                // this.$message({ type: 'info', message: '等待模块集成' })
+                let selectObj = this.$refs.graphListTable.selection
+                let graphUuid = selectObj[0].graphUuid
+                let graphName = selectObj[0].graphName
+                //查询该场景查询下的数据节点数量
+                searchGraphNodes({"graphUuid":graphUuid,"graphName":graphName}).then( response => {
+                    this.pageLoading = false
+                    if(response.data == null || response.data.isError){
+                        this.$message.error("获取图形节点信息时出错")
+                    }else{
+                        let nodeList = response.data.nodeList;
+                        if(nodeList.length === 0){
+                            this.$message({"type":"info","message":"您选择的场景查询图形暂无数据节点"})
+                        }else{
+                            this.$parent.$parent.screenParam.graphUuid = graphUuid
+                            this.$parent.$parent.screenParam.graphName = graphName
+                            this.$parent.$parent.screenParam.publicType = selectObj[0].publicType
+                            this.$parent.$parent.screenParam.nodeData = nodeList[0].extMap.nodeData
+                            // window.parent.clickScreenGraph(id,escape(encodeURIComponent($(rowData.graphName).html())),e[0],$(document).height());
+                            this.$parent.$parent.screenParam.screenQueryNodeArr = nodeList;
+                            this.$parent.$parent.rightType = "runGraph"
+                            // var src = contextPath + "/graphCommon/toScreenQueryAll?graphId=" + id + "&graphName=" + escape(encodeURIComponent($(rowData.graphName).html())) + "&publicType=" + rowData.publicType;
+                            // var dom = "<iframe style='width: 100%;height:"+$(document).height()+"px;border:none;' src='"+ src + "'></iframe>";
+                            // window.parent.$("#commonIframe").html(dom);
+                        }
+                    }
+                }).catch( error =>{
+                    this.pageLoading = false
+                })
             },
             /**
              * 根据选中的列表数据获取图形UUID和名称串
              * @param selectObj 列表数据
              * @return
              */
-            getUuidsANdNames(selectObj) {
+            getUuidsANdNames(selectObj){
                 let graphUuids = ''; let graphNames = ''
                 for (let i = 0; i < selectObj.length; i++) {
                     let curUuid = selectObj[i].graphUuid

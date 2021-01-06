@@ -29,7 +29,6 @@
       max-height="800"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
-
     >
       <el-table-column
         type="selection"
@@ -224,7 +223,10 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      if (query) this.pageQuery.condition = query
+      if (query) {
+        this.pageQuery.condition = query
+        this.pageQuery.pageNo = 1
+      }
       listByPage(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records
@@ -263,8 +265,8 @@ export default {
             this.getList()
             this.dialogFormVisible = false
             this.$notify({
-              title: '成功',
-              message: '创建成功',
+              title: this.$t('message.title'),
+              message: this.$t('message.insert.success'),
               type: 'success',
               duration: 2000,
               position: 'bottom-right'
@@ -290,8 +292,8 @@ export default {
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
             this.$notify({
-              title: '成功',
-              message: '更新成功',
+              title: this.$t('message.title'),
+              message: this.$t('message.update.success'),
               type: 'success',
               duration: 2000,
               position: 'bottom-right'
@@ -306,8 +308,8 @@ export default {
       del(ids.join(',')).then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
-          message: '删除成功',
+          title: this.$t('message.title'),
+          message: this.$t('message.delete.success'),
           type: 'success',
           duration: 2000,
           position: 'bottom-right'

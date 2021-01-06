@@ -340,7 +340,6 @@ export default {
     setMemo(obj) {
       this.memoValue = obj.length;
       this.currentData = obj;
-      // console.log(this.currentData)
     },
     selectData() {
       this.dialogFormVisible = true;
@@ -793,7 +792,7 @@ a.open:hover {
   width: 20px;
   height: 20px;
   position: absolute;
-  top: 6px;
+  top: 2px;
   left: -46px;
   font-size: 22px;
   color: #babce5;
@@ -839,7 +838,7 @@ a.open:hover {
   color: #ffffff;
   font-size: 22px;
   float: left;
-  margin: 5px 20px 0 0px;
+  margin: 2px 20px 0 0px;
   cursor: pointer;
 }
 .btn-div .iconYY1 {
@@ -848,7 +847,7 @@ a.open:hover {
   color: #babce5;
   font-size: 15px;
   float: left;
-  margin: 9px 20px 0 0px;
+  margin: 7px 20px 0 0px;
   cursor: pointer;
 }
 </style>

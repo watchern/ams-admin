@@ -48,3 +48,21 @@ export function preview(data) {
   })
 }
 
+export function nextUpload(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/nextUpload`,
+    method: 'post',
+    data
+  })
+}
+
+export function importTable(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/importTable`,
+    method: 'post',
+    data
+  })
+}
+

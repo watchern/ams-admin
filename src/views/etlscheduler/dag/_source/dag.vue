@@ -30,7 +30,7 @@
       <div class="dag-toolbar">
         <div class="assist-btn">
           <!--
-            :disabled="$route.name !== 'projects-instance-details'" -->
+            :disabled="$route.name !== 'instancedetails'" -->
           <x-button
             style="vertical-align: middle; display:none"
             data-toggle="tooltip"
@@ -49,7 +49,7 @@
             data-container="body"
             type="primary"
             size="xsmall"
-            :disabled="$route.name !== 'projects-instance-details'"
+            :disabled="$route.name !== 'instancedetails'"
             icon="ans-icon-arrow-circle-right"
             @click="_toggleParam"
           />
@@ -60,12 +60,14 @@
             class="copy-name"
             :data-clipboard-text="name"
             @click="_copyName"
-          ><em
+          >
+          <!-- <em
             class="ans-icon-copy"
             data-container="body"
             data-toggle="tooltip"
             title="复制名称"
-          /></span>
+          /> -->
+          </span>
         </div>
         <div class="save-btn">
           <div
@@ -89,25 +91,34 @@
               />
             </a>
           </div>
-          <!-- <x-button
-            v-if="(type === 'instance' || 'definition') && urlParam.id !=undefined"
-            v-tooltip.light="格式化DAG"
+          <!--size="xsmall"
             type="primary"
+            v-tooltip.light="格式化DAG"
+            -->
+          <x-button
+            v-if="(type === 'instance' || 'definition') && urlParam.id !=undefined && isDetails"
             icon="ans-icon-triangle-solid-right"
-            size="xsmall"
             data-container="body"
+            type="text"
+            class="ans-btn-text"
             style="vertical-align: middle;"
+            title="格式化流程图"
             @click="dagAutomaticLayout"
-          /> -->
+          />
+          <!--  v-tooltip.light=""
+            size="xsmall"
+            type="primary"
+            刷新DAG状态
+           -->
           <x-button
             v-if="type === 'instance'"
-            v-tooltip.light="刷新DAG状态"
             data-container="body"
             style="vertical-align: middle;"
             icon="ans-icon-refresh"
-            type="primary"
             :loading="isRefresh"
-            size="xsmall"
+            type="text"
+            class="ans-btn-text"
+            title="刷新流程实例状态"
             @click="!isRefresh && _refresh()"
           />
           <x-button
@@ -154,7 +165,7 @@
 
     <m-udp :dialog-form-visible="dialogFormVisible" @onUdp="onUdp" @onClose="onClose" />
   </div>
-</template>d
+</template>
 <script>
 import _ from 'lodash'
 import dag0 from './dag'
@@ -289,7 +300,7 @@ export default {
       const clipboard = new Clipboard(`.copy-name`)
       clipboard.on('success', e => {
         this.$notify({
-          title: '提示',
+          title: this.$t('message.title'),
           message: `复制成功`,
           type: 'success',
           duration: 2000,
@@ -318,9 +329,16 @@ export default {
           const idArr = allNodesId()
           const titleTpl = (item, desc) => {
             const $item = _.filter(taskList, v => v.name === item.name)[0]
-            return `<div style="text-align: left">名称：${$item.name}</br>状态：${desc}</br>类型：${$item.taskType}</br>host：${$item.host || '-'}</br>重试次数：${$item.retryTimes}</br>提交时间：${formatDate($item.submitTime)}</br>开始时间：${formatDate($item.startTime)}</br>结束时间：${$item.endTime ? formatDate($item.endTime) : '-'}</br></div>`
+            return `名称：      ${$item.name}
+状态：      ${desc}
+类型：      ${$item.taskType}
+host：      ${$item.host || '-'}
+重试次数：${$item.retryTimes}
+提交时间：${formatDate($item.submitTime)}
+开始时间：${formatDate($item.startTime)}
+结束时间：${$item.endTime ? formatDate($item.endTime) : '-'}`
+            // return `<div style="text-align: left">名称：${$item.name}</br>状态：${desc}</br>类型：${$item.taskType}</br>host：${$item.host || '-'}</br>重试次数：${$item.retryTimes}</br>提交时间：${formatDate($item.submitTime)}</br>开始时间：${formatDate($item.startTime)}</br>结束时间：${$item.endTime ? formatDate($item.endTime) : '-'}</br></div>`
           }
-
           // remove tip state dom
           $('.w').find('.state-p').html('')
 
@@ -332,7 +350,8 @@ export default {
                 let depState = ''
                 taskList.forEach(item => {
                   if (item.name === v1.name) {
-                    depState = item.state
+                    // depState = item.state
+                    depState = item.groupExecutionStatus
                   }
                 })
                 dom.attr('data-state-id', v1.stateId)
@@ -340,10 +359,18 @@ export default {
                 dom.attr('data-dependent-depState', depState)
                 state.append(`<strong class="${v1.icoUnicode} ${v1.isSpin ? 'as as-spin' : ''}" style="color:${v1.color}" data-toggle="tooltip" data-html="true" data-container="body"></strong>`)
                 state.find('strong').attr('title', titleTpl(v2, v1.desc))
+                // state.append(titleTpl2(v2, v1.desc))
+                // state.find('strong').mouseover(function() {
+                //   state.find('div').css('display', 'block')
+                // })
+                // state.find('strong').mouseout(function() {
+                //   state.find('div').css('display', 'none')
+                // })
               }
             })
           })
-          if (state === 'PAUSE' || state === 'STOP' || state === 'FAILURE' || this.state === 'SUCCESS') {
+          // if (state === 'PAUSE' || state === 'STOP' || state === 'FAILURE' || this.state === 'SUCCESS') {
+          if (state === 'G_PAUSE' || state === 'G_CANCEL' || state === 'G_FAILURE' || this.state === 'G_SUCCESS') {
             // Manual refresh does not regain large json
             if (isReset) {
               findComponentDownward(this.$root, `${this.type}-details`)._reset()
@@ -420,7 +447,7 @@ export default {
                */
               this[this.type === 'instance' ? 'updateInstance' : 'updateDefinition'](this.urlParam.id).then(res => {
                 this.$notify({
-                  title: '提示',
+                  title: this.$t('message.title'),
                   message: res.msg,
                   type: 'success',
                   duration: 2000,
@@ -446,7 +473,7 @@ export default {
               // New
               this.saveDAGchart().then(res => {
                 this.$notify({
-                  title: '提示',
+                  title: this.$t('message.title'),
                   message: res.msg,
                   type: 'success',
                   duration: 2000,
@@ -469,7 +496,11 @@ export default {
       })
     },
     returnDefinition() {
-      this.$router.push('/etlscheduler/processdefinition')
+      if (this.type === 'instance') {
+        this.$router.push('/etlscheduler/taskmonitor')
+      } else {
+        this.$router.push('/etlscheduler/processdefinition')
+      }
     },
     _verifConditions(value) {
       const tasks = value
@@ -548,7 +579,7 @@ export default {
         setTimeout(() => {
           this.isRefresh = false
           this.$notify({
-            title: '提示',
+            title: this.$t('message.title'),
             message: `刷新状态成功`,
             type: 'success',
             duration: 2000,
@@ -637,9 +668,17 @@ export default {
              * @param fromThis
              */
             cacheTaskInfo({ item, fromThis }) {
+              // // 给选中的元素添加class
+              if (document.getElementById(item.id) !== null) {
+                document.getElementById(item.id).classList.add('jtk-tasks-active')
+              }
               self.cacheTasks(item)
             },
             close({ item, flag, fromThis }) {
+              // 给选中的元素移除class
+              if (document.getElementById(item.id) !== null) {
+                document.getElementById(item.id).classList.remove('jtk-tasks-active')
+              }
               self.addTasks(item)
               // Edit status does not allow deletion of nodes
               if (flag) {
@@ -766,6 +805,6 @@ export default {
 .ans-btn-primary[disabled],.ans-btn-primary[disabled]:hover {
 	color: #fff;
 	background-color: #c6cfd6;
-	border-color: #c6cfd6;
+  border-color: #c6cfd6;
 }
 </style>

@@ -211,5 +211,32 @@ export default {
     tagsView: '开启 Tags-View',
     fixedHeader: '固定 Header',
     sidebarLogo: '侧边栏 Logo'
+  },
+  // 基础确认框文案
+  confirm: {
+    title: '提示',
+    okBtn: '确定',
+    cancelBtn: '取消',
+    delete: '确定删除吗？'
+  },
+  // 基本操作提示文案
+  message: {
+    title: '消息',
+    default: {
+      success: '操作成功',
+      fail: '操作失败'
+    },
+    insert: {
+      success: '新增成功',
+      fail: '新增失败'
+    },
+    update: {
+      success: '修改成功',
+      fail: '修改失败'
+    },
+    delete: {
+      success: '删除成功',
+      fail: '删除失败'
+    }
   }
 }

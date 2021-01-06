@@ -81,10 +81,10 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
-      
     >
       <el-table-column
         type="selection"
@@ -115,7 +115,7 @@
         prop="description"
       />
       <el-table-column
-        label="最新修改人"
+        label="最近修改人"
         align="center"
         prop="updateUserName"
       />
@@ -138,7 +138,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, del, updateDefinitionStatus } from '@/api/etlscheduler/processdefinition'
+import { listByPage, del, disableDefinitionStatus, enableDefinitionStatus } from '@/api/etlscheduler/processdefinition'
 import QueryField from '@/components/Ace/query-field/index'
 import axios from 'axios'
 
@@ -153,7 +153,7 @@ export default {
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '流程名称', name: 'name', type: 'text', value: '' },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
+        // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '流程状态', name: 'status', type: 'select',
           data: [{ name: '启用', value: '1' }, { name: '停用', value: '0' }],
@@ -169,11 +169,11 @@ export default {
         }
       },
       pageQuery: {
-        condition: null,
+        condition: {},
         pageNo: 1,
         pageSize: 20,
-        sortBy: 'asc',
-        sortName: 'create_time'
+        sortBy: 'desc',
+        sortName: 'updateTime'
       },
       temp: {
         processDefinitionUuid: null
@@ -231,7 +231,10 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      if (query) this.pageQuery.condition = query
+      if (query) {
+        this.pageQuery.condition = query
+        this.pageQuery.pageNo = 1
+      }
       listByPage(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records
@@ -264,10 +267,10 @@ export default {
     handleStart() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
-      updateDefinitionStatus(ids.join(','), 1).then(() => {
+      enableDefinitionStatus(ids.join(',')).then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '启用成功',
           type: 'success',
           duration: 2000,
@@ -306,7 +309,7 @@ export default {
         downloadBlob(res.data, 'process_' + new Date().getTime())
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '下载成功',
           type: 'success',
           duration: 2000,
@@ -317,23 +320,30 @@ export default {
       })
     },
     handleStop() {
-      var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
-      updateDefinitionStatus(ids.join(','), 0).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '停用成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm('此操作将停用相关的调度任务, 是否继续?', this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => { ids.push(r.processDefinitionUuid) })
+        disableDefinitionStatus(ids.join(',')).then(() => {
+          this.getList()
+          this.$notify({
+            title: this.$t('message.title'),
+            message: '停用成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         })
+      }).catch(() => {
       })
     },
     handleDelete() {
-      this.$confirm('此操作将删除相关的调度任务, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('此操作将删除相关的调度任务, 是否继续?', this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
         type: 'warning'
       }).then(() => {
         var ids = []
@@ -341,20 +351,20 @@ export default {
         del(ids.join(',')).then(() => {
           this.getList()
           this.$notify({
-            title: '成功',
-            message: '删除成功',
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
             type: 'success',
             duration: 2000,
             position: 'bottom-right'
           })
         })
       }).catch(() => {
-        this.$notify({
-          title: '消息',
-          message: '已取消删除',
-          duration: 2000,
-          position: 'bottom-right'
-        })
+        // this.$notify({
+        //   title: '消息',
+        //   message: '已取消删除',
+        //   duration: 2000,
+        //   position: 'bottom-right'
+        // })
       })
     },
     handleSelectionChange(val) {
@@ -366,7 +376,6 @@ export default {
     },
     // 上传文件，获取文件流
     handleFileChange(file) {
-      // console.log(file)
       this.file = file.raw
     },
     handleRemove(file, fileList) {
@@ -403,7 +412,7 @@ export default {
       }).then((res) => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '导入成功',
           type: 'success',
           duration: 2000,
@@ -418,8 +427,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-.buttonText{
-  color: #409eff;
-}
-</style>

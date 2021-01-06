@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 const baseURL = '/graphtool'
 const dataUrl = '/data'
+const analysisUrl = '/analysis'
 
 /**
  * 获取图形树
@@ -42,14 +43,13 @@ export function getGraphInfoById(id) {
 
 /**
  * 根据图形UUID删除图形
- * @param data 参数1：图形UUID串，以逗号分隔；参数2：图形名称串，以中文顿号分隔
+ * @param ids 图形UUID串，以逗号分隔
  */
-export function deleteGraphInfoById(data) {
+export function deleteGraphInfoById(ids) {
   return request({
     baseURL: baseURL,
-    url: `/graphCt/delete`,
-    method: 'delete',
-    params: data
+    url: `/graphCt/delete/${ids}`,
+    method: 'delete'
   })
 }
 
@@ -98,7 +98,7 @@ export function getTableCol(tableMetaUuid) {
 
 /**
  * 图形保存
- * @param data 图形对象
+ * @param data 图形对象信息
  * @returns {AxiosPromise}
  */
 export function saveGraphInterface(data) {
@@ -108,6 +108,19 @@ export function saveGraphInterface(data) {
     method: 'post',
     data
   })
+}
+
+/**
+ * 保存场景查询图形
+ * @param data 图形对象信息
+ */
+export function createScreenQuery(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/createScreenQuery',
+        method: 'post',
+        data
+    })
 }
 
 /**
@@ -166,27 +179,13 @@ export function importGraphXml(formData) {
 }
 
 /**
- * 删除执行节点信息
+ * 删除图形执行缓冲表的数据
  */
 export function deleteExecuteNodes(ids) {
     return request({
         baseURL: baseURL,
         url: `/graphExecuteNode/delete/${ids}`,
         method: 'get',
-    })
-}
-
-
-/**
- * 检测当前节点中结果表之前是否被创建过，若创建过则给删除标志为true
- */
-export function checkTableName(data) {
-    return request({
-        baseURL: baseURL,
-        url: '/graphCt/checkTableName',
-        method: 'post',
-        params:data,
-        async: false
     })
 }
 
@@ -199,6 +198,18 @@ export function executeNodeSql(data) {
         url: '/graphCt/executeNodeSql',
         method: 'post',
         data,
+    })
+}
+
+/**
+ * 执行全部节点
+ */
+export function executeAllNodeSql(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/executeAllNodeSql',
+        method: 'post',
+        data
     })
 }
 
@@ -238,6 +249,113 @@ export function getMaxMinColumn(data) {
     })
 }
 
+/**
+ * 将原SQL与参数SQL进行拼接
+ * @param data
+ */
+export function dealReplaceParamSql(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/dealReplaceParamSql',
+        method: 'post',
+        params:data,
+    })
+}
 
+/**
+ * 获取所有母版参数集合以及模型用到的参数集合
+ */
+export function findParamsAndModelRelParams() {
+    return request({
+        baseURL: analysisUrl,
+        url: '/paramController/findParamsAndModelRelParams',
+        method: 'post'
+    })
+}
 
+/**
+ * 执行当前参数SQL语句
+ * @param {*} data   SQL语句
+ */
+export function executeParamSql(data) {
+    return request({
+        baseURL: analysisUrl,
+        url: '/paramController/executeParamSql',
+        method: 'post',
+        async:false,
+        data
+    })
+}
 
+/**
+ * 查询下拉树参数SQL的结果集
+ * @param {*} sqlValue sql语句
+ */
+export function getSelectTreeData(sqlValue) {
+    const data = {
+        sqlValue: sqlValue
+    }
+    return request({
+        baseURL: analysisUrl,
+        url: '/paramController/getSelectTreeData',
+        method: 'post',
+        data
+    })
+}
+
+/**
+ * 替换参数SQL语句
+ * @param sql sql语句
+ * @param paramArr 参数Json字符串
+ */
+async function replaceModelSqlByParams(sql, paramArr) {
+    const data = {
+        sqlValue: sql,
+        paramConditions: paramArr
+    }
+    return await request({
+        baseURL: analysisUrl,
+        url: '/paramController/replaceSqlByAllowedNull',
+        method: 'post',
+        data
+    })
+}
+
+/**
+ * 对比SQL语句是否发生变化
+ * @param data 新旧SQL语句
+ */
+export function compareSql(data){
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/compareSql',
+        method: 'post',
+        params: data
+    })
+}
+
+/**
+ * 查询场景查询图形下的数据节点数量
+ * @param data 图形UUID
+ */
+export function searchGraphNodes(data){
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/searchGraphNodes',
+        method: 'post',
+        params: data
+    })
+}
+
+/**
+ * 根据节点ID获取当前节点的基本信息和所有参数信息
+ * @param data 图形UUID和节点ID
+ */
+export function getScreenGraphInfo(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/getScreenGraphInfo',
+        method: 'post',
+        params: data
+    })
+}

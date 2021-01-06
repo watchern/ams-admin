@@ -1,55 +1,42 @@
 <template>
     <div>
-        <form class="form-horizontal" style="background-color:rgba(0,0,0,0) !important;">
-            <div class="col-sm-12">
-                <div class="control-label col-sm-2 label1">节点名称</div>
-                <div class="form-element col-sm-3">
-                    <input id="node_name" type="text" name="node_name" class="form-control sea_text">
-                </div>
-                <div class="form-element col-sm-1">
-                    <span style="color: red;font-weight:bold;font-size: 20px;">*</span>
-                </div>
-                <div class="control-label col-sm-2 label1">执行状态</div>
-                <div class="form-element col-sm-3">
-                    <input id="nodeExcuteStatus_hid" type="text" style="display: none" name="nodeExcuteStatus_hid" class="form-control sea_text">
-                    <input id="nodeExcuteStatus" type="text" readonly="readonly" name="nodeExcuteStatus" class="form-control sea_text">
-                </div>
-            </div>
-            <div class="col-sm-12">
-                <div class="control-label col-sm-2 label1">
-                    是否保存数据
-                </div>
-                <div class="control-label col-sm-4 label1" style="text-align: left !important;">
-                    <input id="isSaveData" type="checkbox" class="form-control" @click="saveData" style="width: 20px;height: 20px;display: inline;">
-                    <span class="dataTableNameDiv" style="color: red;position: absolute;">【结果表显示名称：当前登录人名称_输入的结果表名称XXX_当前时间】</span>
-                </div>
-                <div class="control-label col-sm-2 dataTableNameDiv label1">
-                    结果表名称
-                </div>
-                <div class="form-element col-sm-3 dataTableNameDiv">
-                    <input id="dataTableName" type="text" class="form-control">
-                </div>
-                <div class="form-element col-sm-1 dataTableNameDiv">
-                    <span style="color: red;font-weight:bold;font-size: 20px;">*</span>
-                </div>
-            </div>
-            <div class="col-sm-12">
-                <div class="control-label col-sm-2 label1">备注</div>
-                <div class="form-element col-sm-9">
-                    <textarea id="nodeDescription" name="nodeDescription" class="form-control" autocomplete="off" placeholder="请输入" rows="3" />
-                </div>
-            </div>
-        </form>
+        <el-form>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="节点名称" prop="graphName">
+                        <el-input v-model="node_name"/>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="执行状态" prop="graphName">
+                        <el-input v-model="nodeExcuteStatus" :disabled="statusDisabled"/>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-form-item label="节点备注" prop="graphName">
+                    <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 5}" placeholder="请输入内容" v-model="nodeDescription"></el-input>
+                </el-form-item>
+            </el-row>
+        </el-form>
     </div>
 </template>
 
 <script>
-    var nodeData, nodeInfo
     export default {
         name: 'BasicSetting',
         mounted() {
             this.init()
-            window.basicInfoVerify = this.basicInfoVerify
+            // window.basicInfoVerify = this.basicInfoVerify
+        },
+        data(){
+            return{
+                nodeData:null,
+                node_name:'',
+                nodeExcuteStatus:'',
+                statusDisabled:true,
+                nodeDescription:''
+            }
         },
         methods: {
             init() {
@@ -59,10 +46,9 @@
                  * 获得上移节点字段列已经选择的信息字段
                  */
                 let graph = this.$parent.graph
-                nodeData = graph.nodeData[graph.curCell.id]
-                nodeInfo = nodeData.nodeInfo
+                this.nodeData = graph.nodeData[graph.curCell.id]
                 let columnsInfoPre = this.$parent.columnsInfoPre
-                var parentIds = nodeData.parentIds
+                var parentIds = this.nodeData.parentIds
                 if (parentIds.length > 0) {
                     for (let i = 0; i < parentIds.length; i++) {
                         var parent_node = graph.nodeData[parentIds[i]] // one parent
@@ -87,40 +73,40 @@
                 }
                 this.init_basic()
             },
-            saveData() {
-                if ($('#isSaveData').is(':checked')) {
-                    $('.dataTableNameDiv').css("visibility","visible")
-                    var dataTableName = $('#dataTableName').val()
-                    if (dataTableName === '') {
-                        $('#dataTableName').val(nodeInfo.nodeName + '结果表')
-                    }
-                } else {
-                    $('.dataTableNameDiv').css("visibility","hidden")
-                    $('#isSaveDataTitle').hide()
-                }
-            },
+            // saveData() {
+            //     if ($('#isSaveData').is(':checked')) {
+            //         $('.dataTableNameDiv').css("visibility","visible")
+            //         var dataTableName = $('#dataTableName').val()
+            //         if (dataTableName === '') {
+            //             $('#dataTableName').val(this.nodeInfo.nodeName + '结果表')
+            //         }
+            //     } else {
+            //         $('.dataTableNameDiv').css("visibility","hidden")
+            //         $('#isSaveDataTitle').hide()
+            //     }
+            // },
             init_basic: function() {
-                $('#node_name').val(nodeInfo.nodeName)
-                $('.dataTableNameDiv').css("visibility","hidden")
-                if (nodeInfo.isCreateTable && nodeInfo.isCreateTable === 1) {
-                    $('#isSaveData').attr('checked', 'checked')
-                    $('#dataTableName').val(nodeInfo.userTableName)
-                    $('.dataTableNameDiv').css("visibility","visible")
-                } else {
-                    $('#isCreateTable').icheck('unchecked')
-                }
-                $('#nodeExcuteStatus').val(this.conversion(nodeInfo.nodeExcuteStatus)).css('readonly', 'readonly')
-                $('#nodeDescription').text(typeof nodeInfo.nodeDescription === 'undefined' ? '' : nodeInfo.nodeDescription)
+                this.node_name = this.nodeData.nodeInfo.nodeName
+                // $('.dataTableNameDiv').css("visibility","hidden")
+                // if (this.nodeInfo.isCreateTable && this.nodeInfo.isCreateTable === 1) {
+                //     $('#isSaveData').attr('checked', 'checked')
+                //     $('#dataTableName').val(this.nodeInfo.userTableName)
+                //     $('.dataTableNameDiv').css("visibility","visible")
+                // } else {
+                //     $('#isCreateTable').icheck('unchecked')
+                // }
+                this.nodeExcuteStatus = this.conversion(this.nodeData.nodeInfo.nodeExcuteStatus)
+                this.nodeDescription = typeof this.nodeData.nodeInfo.nodeDescription === 'undefined' ? '' : this.nodeData.nodeInfo.nodeDescription
             },
             save_base: function() {
-                if ($('#isSaveData').is(':checked')) {
-                    nodeInfo.isCreateTable = 1
-                    nodeInfo.userTableName = $('#dataTableName').val()
-                } else {
-                    nodeInfo.isCreateTable = 0
-                }
-                nodeInfo.nodeName = $('#node_name').val()
-                nodeInfo.nodeDescription = $('#nodeDescription').val()
+                // if ($('#isSaveData').is(':checked')) {
+                //     this.nodeInfo.isCreateTable = 1
+                //     this.nodeInfo.userTableName = $('#dataTableName').val()
+                // } else {
+                //     this.nodeInfo.isCreateTable = 0
+                // }
+                this.nodeData.nodeInfo.nodeName = this.node_name
+                this.nodeData.nodeInfo.nodeDescription = this.nodeDescription
             },
             conversion: function(exe_type) {
                 if (typeof exe_type === 'undefined') {
@@ -145,42 +131,35 @@
                 }
             },
             basicInfoVerify() {
-                var node_name = $('#node_name').val()
-                var isSaveData = $('#isSaveData').prop('checked')
-                var dataTableName = $('#dataTableName').val()
-                var nameContainArr = ['`', '~', '!', '@', '%', '^', '&', '*', '(', ')', '）', '+', '/', '-']
+                let node_name = this.node_name
+                // var isSaveData = $('#isSaveData').prop('checked')
+                // var dataTableName = $('#dataTableName').val()
+                // var nameContainArr = ['`', '~', '!', '@', '%', '^', '&', '*', '(', ')', '）', '+', '/', '-']
                 if (node_name === '') {
-                    alertMsg('提示', '请输入节点名称', 'info')
+                    this.$message({ type: 'warning', message: '请输入节点名称' })
                     return false
                 }
-                if (isSaveData && dataTableName === '') {
-                    alertMsg('提示', '请输入结果表名称', 'info')
-                    return false
-                }
-                var hasSpecailChar = false
-                var specailChar = ''
-                for (var i = 0; i < nameContainArr.length; i++) {
-                    specailChar = nameContainArr[i]
-                    if (dataTableName.indexOf(specailChar) > 0) {
-                        hasSpecailChar = true
-                        break
-                    }
-                }
-                if (hasSpecailChar) {
-                    alertMsg('提示', "结果表名称不能含有特殊字符“<span style='color: red;font-weight: bold;font-size: 20px;'>" + specailChar + '</span>”', 'info')
-                    return false
-                }
+                // if (isSaveData && dataTableName === '') {
+                //     alertMsg('提示', '请输入结果表名称', 'info')
+                //     return false
+                // }
+                // var hasSpecailChar = false
+                // var specailChar = ''
+                // for (var i = 0; i < nameContainArr.length; i++) {
+                //     specailChar = nameContainArr[i]
+                //     if (dataTableName.indexOf(specailChar) > 0) {
+                //         hasSpecailChar = true
+                //         break
+                //     }
+                // }
+                // if (hasSpecailChar) {
+                //     alertMsg('提示', "结果表名称不能含有特殊字符“<span style='color: red;font-weight: bold;font-size: 20px;'>" + specailChar + '</span>”', 'info')
+                //     return false
+                // }
                 return true
             }
         }
     }
-
-
-    // function saveNotOutput() {
-    //     basicObj.save_base()
-    //     saveSetting()
-    //     nodeData.isSet = true
-    // }
 </script>
 
 <style scoped type="text/css">

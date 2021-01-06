@@ -36,7 +36,7 @@
           @select-all="modelTableSelectEvent"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column label="模型名称" width="100px" align="left" prop="modelName">
+          <el-table-column label="模型名称" width="300px" align="center" prop="modelName">
             <template slot-scope="scope">
               <el-link type="primary" @click="selectModelDetail(scope.row.modelUuid)">{{ scope.row.modelName }}</el-link>
             </template>
@@ -57,33 +57,17 @@
       >
         <!--增加参数输入组件-->
         <el-collapse v-model="activeNames">
-          <!-- <el-collapse-item name="1" v-if="item.isExistParam" class="item-y" v-show="isShow"> -->
-          <!-- <template slot="title"><div class="panel-font-size">参数输入区域</div></template> -->
-          <el-row v-if="item.isExistParam" v-show="isShow" name="1" class="item-y">
-            <el-col :span="22">
-              <paramDraw :ref="item.name + 'param'" :my-id="item.name" />
-              <span class="iconfont iconoper-search-2 icon-search" />
-              <el-button type="primary" class="btn-show1" @click="queryModel(item.name);Toggle1()">查询结果</el-button>
-            </el-col>
-            <!-- <el-col :span="2">
-                <el-button type="primary" @click="queryModel(item.name)">查询</el-button>
-              </el-col> -->
-          </el-row>
-          <!-- </el-collapse-item> -->
-
           <el-collapse-item name="2" class="content-y">
-            <!-- <template slot="title"><div class="panel-font-size">结果展示区域</div></template> -->
             <!--增加结果组件-->
             <el-row>
               <div @click="Toggle1()">
                 <el-col :span="24" class="row-all">
-                  <childTabs :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="sqlEditor" />
+                  <childTabs :modelId="modelId"  :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="modelPreview" />
                 </el-col>
               </div>
               <el-col :span="2">
-                <el-button v-if="item.isExistParam" type="primary" class="btn-show" @click="Toggle()">
-                  <span class="iconfont iconoper-search" />
-                  查询
+                <el-button v-if="item.isExistParam" type="primary" class="btn-show" @click="loadParamDraw(item.name)">
+                  <span class="iconfont iconoper-search" />查询
                 </el-button>
               </el-col>
             </el-row>
@@ -101,7 +85,7 @@
       </div>
     </el-dialog>
     <el-dialog v-if="dialogFormVisible" title="请输入参数" :visible.sync="dialogFormVisible" :append-to-body="true">
-      <paramDraw ref="paramDrawRef" :my-id="paramDrawUuid" />
+      <paramDraw v-if="dialogFormVisible" ref="paramDrawRef" :my-id="paramDrawUuid" />
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
         <el-button type="primary" @click="replaceNodeParam">确定</el-button>
@@ -130,19 +114,19 @@
 </template>
 <script>
 import { findModel, saveModel, deleteModel, shareModel, selectModel, updateModel, updateModelBasicInfo, exportModel, setModelSession } from '@/api/analysis/auditmodel'
+import {deleteGraphInfoById} from '@/api/graphtool/graphList'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import EditModel from '@/views/analysis/auditmodel/editmodel'
 import { getOneDict } from '@/utils/index'
 import childTabs from '@/views/analysis/auditmodelresult/childtabs'
-import { startExecuteSql } from '@/api/analysis/sqleditor/sqleditor'
+import {getExecuteTask, startExecuteSql} from '@/api/analysis/sqleditor/sqleditor'
 import crossrangeParam from '@/views/analysis/modelparam/crossrangeparam'
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
-import { replaceNodeParam, replaceCrossrangeNodeParam } from '@/api/analysis/auditparam'
+import { replaceNodeParam } from '@/api/analysis/auditparam'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 import personTree from '@/components/publicpersontree/index'
-import Cookies from 'js-cookie'
 export default {
   name: 'ModelListTable',
   components: { Pagination, QueryField, EditModel, ModelFolderTree, childTabs, crossrangeParam, paramDraw, modelshoppingcart, personTree },
@@ -179,6 +163,7 @@ export default {
       editableTabs: [],
       // 已经正在预览的模型
       modelPreview: [],
+      //记录每次生成参数渲染界面的唯一编号
       paramDrawUuid: '',
       // 记录模型是否首次运行  如果非首次运行则不重复加载参数
       modelRunTaskList: {},
@@ -195,8 +180,8 @@ export default {
       // 当前预览模型参数和sql
       currentPreviewModelParamAndSql: {},
       queryFields: [
-        { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: '' },
-        { label: '审计事项', name: 'auditItemName', type: 'fuzzyText' },
+        { label: '模型名称', name: 'modelName', type: 'fuzzyText', value: ''},
+        { label: '审计事项', name: 'auditItemName', type: 'fuzzyText', value: ''},
         { label: '风险等级', name: 'riskLevelUuid', type: 'select',
           data: [{ name: '高', value: '002002001' }, { name: '中', value: '002002002' }, { name: '低', value: '002002003' }],
           default: '-1' }
@@ -224,7 +209,12 @@ export default {
         pageSize: 20
       },
       // 人员选择
-      dialogFormVisiblePersonTree: false
+      dialogFormVisiblePersonTree: false,
+      modelId:'',
+      //当前界面运行的所有模型的配置 包含sql以及参数
+      currentRunModelAllConfig:{},
+      //当前模型是否运行过
+      currentModelIsRun:false
     }
   },
   computed: {
@@ -234,18 +224,17 @@ export default {
     dialogFormVisible(value) {
       this.$nextTick(function() {
         if (value) {
-          this.$refs.paramDrawRef.initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', this.paramDrawUuid)
+          this.$refs.paramDrawRef.initParamHtmlSS(
+            this.currentPreviewModelParamAndSql.sqlValue,
+            this.currentPreviewModelParamAndSql.paramObj,
+            '请输入参数',
+            this.paramDrawUuid,
+            "sqlEditor")
         }
       })
     },
     editableTabs() {
-      this.$nextTick(function() {
-        // 页签添加完成后初始化新界面的参数
-        if (this.currentPreviewModelParamAndSql.paramObj != undefined) {
-          this.$refs.[this.currentPreviewModelParamAndSql.modelUuid + 'param'][0]
-            .initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', this.currentPreviewModelParamAndSql.modelUuid)
-        }
-      })
+
     }
   },
   created() {
@@ -312,17 +301,31 @@ export default {
     dateFormatter(row, column) {
       const datetime = row.createTime
       if (datetime) {
-        var dateMat = new Date(datetime)
-        var year = dateMat.getFullYear()
-        var month = dateMat.getMonth() + 1
-        var day = dateMat.getDate()
-        var hh = dateMat.getHours()
-        var mm = dateMat.getMinutes()
-        var ss = dateMat.getSeconds()
-        var timeFormat = year + '-' + month + '-' + day + ' ' + hh + ':' + mm + ':' + ss
-        return timeFormat
+        let dateMat = new Date(datetime)
+        let year = dateMat.getFullYear()
+        let month = dateMat.getMonth() + 1
+        let day = dateMat.getDate()
+        let hours = dateMat.getHours()
+        let minutes = dateMat.getMinutes()
+        let second = dateMat.getSeconds()
+        if (month.toString().length == 1) {
+          month = "0" + month
+        }
+        if (day.toString().length == 1) {
+          day = "0" + day
+        }
+        if (hours.toString().length == 1) {
+          hours = "0" + hours
+        }
+        if (minutes.toString().length == 1) {
+          minutes = "0" + minutes
+        }
+        if(second.toString().length == 1){
+          second = "0" + second
+        }
+        var d = year + "-" + month + "-" + day + " " + hours + ":" + minutes+ ":" + second;
+        return d;
       }
-      return ''
     },
     /**
      * 格式化模型类型
@@ -535,6 +538,15 @@ export default {
       }).then(() => {
         deleteModel(selectObj).then(result => {
           if (result.code == 0) {
+            //删除成功  同时删除图形化模型
+            if(result.data != null){
+              for(let i = 0;i < result.data.length;i++){
+                //如果包含图形化模型则同时删除图形化模型
+                if(result.data[i].graphUuid != null){
+                  deleteGraphInfoById(result.data[i].graphUuid)
+                }
+              }
+            }
             this.getList(this.query)
             this.$emit('refreshTree')
             this.$notify({
@@ -728,7 +740,9 @@ export default {
       })
     },
     previewModel() {
+      this.currentModelIsRun = false
       var selectObj = this.$refs.modelListTable.selection
+      this.modelId = selectObj[0].modelUuid
       if (selectObj == undefined || selectObj.length === 0) {
         this.$message({ type: 'info', message: '请先选择要预览的模型!' })
         return
@@ -748,20 +762,25 @@ export default {
         this.$emit('loadingSet',false,"");
         if (result.code == 0) {
           if (result.data.parammModelRel.length == 0) {
-            const obj = {
-              sqls: result.data.sqlValue,
-              modelUuid: selectObj[0].modelUuid,
-              businessField: 'modellisttable'
-            }
-            this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
-            startExecuteSql(obj).then((result) => {
-              this.$emit('loadingSet',false,"");
-              if (!result.data.isError) {
-                this.addTab(selectObj[0], false, result.data.executeSQLList)
-              } else {
-                this.$message({ type: 'info', message: '执行失败' })
+            let obj = null
+            //没有参数，判断是图形化还是sql编辑器模型
+            if(result.data.graphUuid != null && result.data.graphUuid != ''){
+              //调用图形化接口找到sql
+              obj = {
+                sqls: result.data.modelSql,
+                modelUuid: selectObj[0].modelUuid,
+                businessField: 'modellisttable'
               }
-            })
+              this.executeSql(obj,selectObj,false)
+            }
+            else{
+              obj = {
+                sqls: result.data.sqlValue,
+                modelUuid: selectObj[0].modelUuid,
+                businessField: 'modellisttable'
+              }
+              this.executeSql(obj,selectObj,false)
+            }
           } else {
             const paramObj = []
             for (let i = 0; i < result.data.parammModelRel.length; i++) {
@@ -781,6 +800,30 @@ export default {
         } else {
           this.$message({ type: 'error', message: '获取模型信息失败' })
         }
+      })
+    },
+    /**
+     *执行sql
+     * @param obj 执行对象  包含sql、模型编号、业务编号
+     * @param selectObj 界面选中元素
+     * @param isExistParam 是否存在参数
+     */
+    executeSql(obj,selectObj,isExistParam){
+      this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
+      getExecuteTask(obj).then((result) => {
+        this.$emit('loadingSet',false,"");
+        this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
+        this.addTab(selectObj[0], isExistParam, result.data.executeSQLList)
+        //界面渲染完成之后开始执行sql,将sql送入调度
+        startExecuteSql(result.data).then((result) => {
+          this.executeLoading = false;
+          this.loadText = ""
+        }).catch((result) => {
+          this.executeLoading = false;
+        });
+      }).catch((result) => {
+        this.$message({ type: 'info', message: '执行失败' })
+        this.$emit('loadingSet',false,"");
       })
     },
     /**
@@ -829,34 +872,35 @@ export default {
      */
     replaceNodeParam() {
       var selectObj = this.$refs.modelListTable.selection
-      var obj = replaceNodeParam(this.paramDrawUuid)
-      if (!obj.verify) {
-        this.$message({ type: 'info', message: obj.message })
-        return
-      }
-      obj.sqls = obj.sql
-      obj.modelUuid = selectObj[0].modelUuid
-      obj.businessField = 'modellisttable'
-      // 合并参数 将输入的值替换到当前界面
-      this.currentPreviewModelParamAndSql.paramObj = obj.paramsArr
-      // this.mergeParamObj(obj.paramsArr)
-      startExecuteSql(obj).then((result) => {
-        this.dialogFormVisible = false
-        if (!result.data.isError) {
-          this.addTab(selectObj[0], true, result.data.executeSQLList)
-          // 记录当前模型的执行任务列表，为了在结果页再次执行时与之前的数据对应
-          this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
-        } else {
-          this.$message({ type: 'error', message: '执行失败:' + result.data.message})
+      if(!this.currentModelIsRun){
+        var obj = replaceNodeParam(this.paramDrawUuid,"sqlEditor")
+        if (!obj.verify) {
+          this.$message({ type: 'info', message: obj.message })
+          return
         }
-      })
+        obj.sqls = obj.sql
+        obj.modelUuid = selectObj[0].modelUuid
+        obj.businessField = 'modellisttable'
+        // 合并参数 将输入的值替换到当前界面
+        this.currentPreviewModelParamAndSql.paramObj = obj.paramsArr
+        this.dialogFormVisible = false
+        let runModelConfig = {
+          sqlValue:this.currentPreviewModelParamAndSql.sqlValue,
+          paramObj:obj.paramsArr
+        }
+        this.currentRunModelAllConfig[selectObj[0].modelUuid] = runModelConfig
+        this.executeSql(obj,selectObj,true)
+      }
+      else{
+        this.queryModel(this.paramDrawUuid)
+      }
     },
     /**
      * 参数界面点击查询按钮
      * @param modelUuid 模型编号
      */
     queryModel(modelUuid) {
-      var obj = replaceNodeParam(modelUuid)
+      var obj = replaceNodeParam(this.paramDrawUuid,"sqlEditor")
       if (!obj.verify) {
         this.$message({ type: 'info', message: obj.message })
         return
@@ -867,14 +911,23 @@ export default {
       obj.businessField = 'modellisttable'
       // 重置数据展现界面数据
       this.$refs.[modelUuid][0].reSetTable()
-      startExecuteSql(obj).then((result) => {
-        this.dialogFormVisible = false
-        if (!result.data.isError) {
-
-        } else {
-          this.$message({ type: 'info', message: '执行失败' + result.data.message })
-        }
-      })
+      //设置新的参数信息
+      let runModelConfig = {
+        sqlValue:this.currentRunModelAllConfig[modelUuid].sqlValue,
+        paramObj:obj.paramsArr
+      }
+      this.currentRunModelAllConfig[modelUuid] = runModelConfig
+      this.dialogFormVisible = false
+      this.$emit('loadingSet',true,"正在执行...");
+      getExecuteTask(obj).then((result) => {
+        this.$emit('loadingSet',false,"");
+        //界面渲染完成之后开始执行sql,将sql送入调度
+        startExecuteSql(result.data).then((result) => {
+        })
+      }).catch((result) => {
+        this.$message({ type: 'info', message: '执行失败' })
+        this.$emit('loadingSet',false,"");
+      });
     },
     /**
      * 获取模型列表选中的数据
@@ -910,6 +963,13 @@ export default {
           this.$message({ type: 'error', message: '查看模型详细失败' })
         }
       })
+    },
+    loadParamDraw(modelUuid){
+      this.currentModelIsRun = true
+      this.paramDrawUuid = modelUuid
+      this.currentPreviewModelParamAndSql.sqlValue = this.currentRunModelAllConfig[modelUuid].sqlValue
+      this.currentPreviewModelParamAndSql.paramObj = this.currentRunModelAllConfig[modelUuid].paramObj
+      this.dialogFormVisible = true
     }
   }
 }
@@ -972,4 +1032,5 @@ export default {
 .table{
   height: 450px !important;
 }
+
 </style>

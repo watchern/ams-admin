@@ -23,8 +23,8 @@
       fit
       highlight-current-row
       style="width: 100%;"
-      height="calc(100vh - 320px)"
-      max-height="calc(100vh - 320px)"
+      height="calc(100vh - 350px)"
+      max-height="calc(100vh - 350px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -33,7 +33,7 @@
         width="55"
       />
       <el-table-column
-        label="系统名称"
+        label="资源名称"
         prop="dataResourceName"
       >
         <template slot-scope="scope">
@@ -42,13 +42,13 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="系统编码"
+        label="资源编码"
         width="300px"
         align="center"
         prop="dataResourceCode"
       />
       <el-table-column
-        label="系统描述"
+        label="资源描述"
         prop="dataResourceDesc"
       />
       <el-table-column
@@ -79,34 +79,34 @@
         class="detail-form"
       >
         <el-form-item
-          label="系统名称"
+          label="资源名称"
           prop="dataResourceName"
         >
           <el-input
             v-model="temp.dataResourceName"
             :disabled="disableUpdate"
-            :placeholder="disableUpdate === true ? '' : '请输入系统名称'"
+            :placeholder="disableUpdate === true ? '' : '请输入资源名称'"
           />
         </el-form-item>
         <el-form-item
-          label="系统编码"
+          label="资源编码"
           prop="dataResourceCode"
         >
           <el-input
             v-model="temp.dataResourceCode"
             :disabled="disableUpdate"
-            :placeholder="disableUpdate === true ? '' : '请输入系统编码'"
+            :placeholder="disableUpdate === true ? '' : '请输入资源编码'"
           />
         </el-form-item>
         <el-form-item
-          label="系统描述"
+          label="资源描述"
           prop="dataResourceDesc"
         >
           <el-input
             v-model="temp.dataResourceDesc"
             type="textarea"
             :disabled="disableUpdate"
-            :placeholder="disableUpdate === true ? '' : '请输入系统描述'"
+            :placeholder="disableUpdate === true ? '' : '请输入资源描述'"
           />
         </el-form-item>
       </el-form>
@@ -131,11 +131,13 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, save, update, del } from '@/api/etlscheduler/dataresource'
 import QueryField from '@/components/Ace/query-field/index'
+import store from '@/store'
 
 export default {
   components: { Pagination, QueryField },
   data() {
     return {
+      store,
       tableKey: 'dataResourceUuid',
       list: null,
       total: 0,
@@ -145,8 +147,8 @@ export default {
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '资源编码', name: 'dataResourceCode', type: 'text', value: '' },
-        { label: '资源名称', name: 'dataResourceName', type: 'text', value: '' },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
+        { label: '资源名称', name: 'dataResourceName', type: 'text', value: '' }
+        // ,{ label: '模糊查询', name: 'keyword', type: 'fuzzyText' }
       ],
       pageQuery: {
         condition: {},
@@ -171,9 +173,11 @@ export default {
       },
       dialogPvVisible: false,
       rules: {
-        dataResourceName: [{ required: true, message: '请填写资源名称', trigger: 'change' }],
-        dataResourceDesc: [{ max: 100, message: '请填写资源描述', trigger: 'change' }],
-        dataResourceCode: [{ required: true, message: '请填写资源编码', trigger: 'change' }]
+        dataResourceName: [{ required: true, message: '请填写资源名称', trigger: 'change' },
+          { max: 20, message: '资源名称在20个字符之内', trigger: 'change' }],
+        dataResourceDesc: [{ max: 500, message: '资源描述在500个字符之内', trigger: 'change' }],
+        dataResourceCode: [{ required: true, message: '请填写资源编码', trigger: 'change' },
+          { max: 20, message: '资源编码在20个字符之内', trigger: 'change' }]
       },
       downloadLoading: false
     }
@@ -194,9 +198,11 @@ export default {
     },
     getList(query) {
       this.listLoading = true
-      if (query) this.pageQuery.condition = query
+      if (query) {
+        this.pageQuery.condition = query
+        this.pageQuery.pageNo = 1
+      }
       listByPage(this.pageQuery).then(resp => {
-        // console.log(resp.data)
         this.total = resp.data.total
         this.list = resp.data.records
         this.listLoading = false
@@ -237,8 +243,8 @@ export default {
             this.getList()
             this.dialogFormVisible = false
             this.$notify({
-              title: '成功',
-              message: '创建成功',
+              title: this.$t('message.title'),
+              message: this.$t('message.insert.success'),
               type: 'success',
               duration: 2000,
               position: 'bottom-right'
@@ -267,8 +273,8 @@ export default {
             this.getList()
             this.dialogFormVisible = false
             this.$notify({
-              title: '成功',
-              message: '更新成功',
+              title: this.$t('message.title'),
+              message: this.$t('message.update.success'),
               type: 'success',
               duration: 2000,
               position: 'bottom-right'
@@ -278,17 +284,30 @@ export default {
       })
     },
     handleDelete() {
-      var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.dataResourceUuid) })
-      del(ids.join(',')).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
+      this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => { ids.push(r.dataResourceUuid) })
+        del(ids.join(',')).then(() => {
+          this.getList()
+          this.$notify({
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         })
+      }).catch(() => {
+        // this.$notify({
+        //   title: '消息',
+        //   message: '已取消删除',
+        //   duration: 2000,
+        //   position: 'bottom-right'
+        // })
       })
     },
     handleSelectionChange(val) {

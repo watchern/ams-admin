@@ -23,7 +23,7 @@
         <el-dialog v-if="initPreviewGraph" :destroy-on-close="true" :append-to-body="true" :visible.sync="initPreviewGraph" title="图形详情信息" width="600px">
             <PreviewGraph :graph-uuid="graphUuid" />
             <div slot="footer">
-                <el-button @click="initPreviewGraph=false">关闭</el-button>
+                <el-button type="primary" @click="initPreviewGraph=false">关闭</el-button>
             </div>
         </el-dialog>
     </div>

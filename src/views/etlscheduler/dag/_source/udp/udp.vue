@@ -1,5 +1,4 @@
 <template>
-  <!-- <div > -->
   <el-dialog :append-to-body="true" :title="isCreate===true?'新增流程' :'修改流程'" style="margin-bottom: 60px;" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
     <el-form
       :model="temp"
@@ -18,6 +17,19 @@
         />
       </el-form-item>
       <el-form-item
+        label="流程状态"
+        prop="status"
+      >
+        <el-select v-model="temp.status" placeholder="请选择状态" style="width:100%">
+          <el-option
+            v-for="(model,$index) in statusList"
+            :key="$index"
+            :value="model.value"
+            :label="model.label"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item
         label="排序号"
         prop="orderNo"
       >
@@ -26,19 +38,6 @@
           :disabled="isDetails"
           placeholder="请输入排序号(选填)"
         />
-      </el-form-item>
-      <el-form-item
-        label="流程状态"
-        prop="status"
-      >
-        <el-select v-model="temp.status" placeholder="请选择状态">
-          <el-option
-            v-for="(model,$index) in statusList"
-            :key="$index"
-            :value="model.value"
-            :label="model.label"
-          />
-        </el-select>
       </el-form-item>
       <el-form-item
         label="参数描述"
@@ -57,7 +56,6 @@
       <el-button type="primary" @click="ok()">保存</el-button>
     </div>
   </el-dialog>
-  <!-- </div> -->
 </template>
 <script>
 import _ from 'lodash'
@@ -80,8 +78,10 @@ export default {
       },
 
       rules: {
-        name: [{ required: true, message: '请填写参数名', trigger: 'change' }],
-        status: [{ required: true, message: '请选择参数状态', trigger: 'change' }],
+        name: [{ required: true, message: '请填写流程名称', trigger: 'change' },
+          { max: 20, message: '流程名称在20个字符之内', trigger: 'change' }],
+        status: [{ required: true, message: '请选择流程状态', trigger: 'change' }],
+        description: [{ max: 500, message: '流程描述在500个字符之内', trigger: 'change' }],
         orderNo: [{ type: 'number', message: '排序号必须为数字值', trigger: 'change' }]
       },
       statusList: [{ label: '停用', value: `0` }, { label: '启用', value: `1` }],
@@ -150,92 +150,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" rel="stylesheet/scss">
-// .el-dialog__header {
-// 	font-weight: bold;
-// 	line-height: 24px;
-// 	font-size: 18px;
-// 	color: #303133;
-//   padding-left: 0px;
-//   padding-top: 0px;
-//   margin-bottom: 10px;
-// }
-.ans-btn-text:hover {
-	color: #252d39;
-}
-.btnclass ,.btnclass:hover{
-  background: #353a43;
-  border-color: hsl(219, 12%, 24%);
-  font-weight: bold;
-  color: #c8ff8c;
-  margin-right: 10px;
-}
-.ans-btn-primary[disabled],.ans-btn-primary[disabled]:hover {
-	color: #fff;
-	background-color: #c6cfd6;
-	border-color: #c6cfd6;
-}
-.titleText{
-  width:13%;
-  display:inline-block;
-}
-.inputcss{
-  width:32vw;
-  padding-left: 1vw;
-}
-.udp-model {
-  width: 624px;
-  min-height: 420px;
-  background: #fff;
-  border-radius: 3px;
-  padding: 20px 0;
-  position: relative;
-  .contpi-boxt {
-    max-height: 600px;
-    overflow-y: scroll;
-    padding: 0 20px;
-  }
-  .title {
-    line-height: 36px;
-    padding-bottom: 10px;
-    span {
-      font-size: 16px;
-      color: #333;
-    }
-  }
-  .bottom {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    text-align: right;
-    height: 56px;
-    line-height: 56px;
-    border-top: 1px solid #dcdedc;
-    background: #fff;
-    .submit {
-      padding-right: 20px;
-      margin-top: -4px;
-    }
-    .lint-pt {
-      position: absolute;
-      left: 20px;
-      top: -2px;
-      > label {
-        font-weight: normal;
-      }
-    }
-  }
-  .content {
-    padding-bottom: 50px;
-    .user-def-params-model {
-      .add {
-        a {
-          color: #0097e0;
-        }
-      }
-    }
-  }
-}
-</style>

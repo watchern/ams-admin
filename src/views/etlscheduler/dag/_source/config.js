@@ -125,91 +125,156 @@ const runningType = [{
  * @isSpin is loading (Need to execute the code block to write if judgment)
  */
 const tasksState = {
-  SUBMITTED_SUCCESS: {
-    id: 0,
-    desc: '提交成功',
-    color: '#A9A9A9',
-    icoUnicode: 'ans-icon-dot-circle',
-    isSpin: false
-  },
-  RUNNING_EXEUTION: {
+  G_WAITTING: {
     id: 1,
-    desc: 'Executing',
-    color: '#0097e0',
-    icoUnicode: 'ans-icon-gear',
-    isSpin: true
-  },
-  READY_PAUSE: {
-    id: 2,
-    desc: '准备暂停',
-    color: '#07b1a3',
-    icoUnicode: 'ans-icon-pause-solid',
+    desc: '等待中',
+    color: '#E6A23C',
+    icoUnicode: 'ans-icon-sand-circle',
     isSpin: false
   },
-  PAUSE: {
+  G_WAITTING_FILE: {
+    id: 2,
+    desc: '等待文件中',
+    color: '#E6A23C',
+    icoUnicode: 'ans-icon-pen',
+    isSpin: false
+  },
+  G_WAITTING_DEPEND: {
     id: 3,
+    desc: '等待依赖中',
+    color: '#E6A23C',
+    icoUnicode: 'ans-icon-dependence',
+    isSpin: false
+  },
+  G_PAUSE: {
+    id: 4,
     desc: '暂停',
     color: '#057c72',
     icoUnicode: 'ans-icon-pause',
     isSpin: false
   },
-  READY_STOP: {
-    id: 4,
-    desc: '准备停止',
-    color: '#FE0402',
-    icoUnicode: 'ans-icon-coin',
-    isSpin: false
-  },
-  STOP: {
+  G_RUNNING_EXEUTION: {
     id: 5,
-    desc: '停止',
-    color: '#e90101',
-    icoUnicode: 'ans-icon-stop',
+    desc: '执行中',
+    color: '#0097e0',
+    icoUnicode: 'ans-icon-gear',
     isSpin: false
   },
-  FAILURE: {
+  G_CANCEL: {
     id: 6,
-    desc: '失败',
-    color: '#000000',
+    desc: '已取消',
+    color: '#07b1a3',
+    icoUnicode: 'ans-icon-pause-solid',
+    isSpin: false
+  },
+  G_FAILURE: {
+    id: 7,
+    desc: '执行失败',
+    color: '#ff0000',
     icoUnicode: 'ans-icon-fail-empty',
     isSpin: false
   },
-  SUCCESS: {
-    id: 7,
-    desc: '成功',
-    color: '#33cc00',
+  G_SUCCESS: {
+    id: 8,
+    desc: '执行成功',
+    color: '#67C23A',
     icoUnicode: 'ans-icon-success-empty',
     isSpin: false
   },
-  NEED_FAULT_TOLERANCE: {
-    id: 8,
-    desc: '需要容错',
-    color: '#FF8C00',
-    icoUnicode: 'ans-icon-pen',
-    isSpin: false
-  },
-  KILL: {
+  G_STOP: {
     id: 9,
-    desc: 'kill',
-    color: '#a70202',
-    icoUnicode: 'ans-icon-minus-circle-empty',
-    isSpin: false
-  },
-  WAITTING_THREAD: {
-    id: 10,
-    desc: '等待线程',
-    color: '#912eed',
-    icoUnicode: 'ans-icon-sand-clock',
-    isSpin: false
-  },
-  WAITTING_DEPEND: {
-    id: 11,
-    desc: '等待依赖',
-    color: '#5101be',
-    icoUnicode: 'ans-icon-dependence',
+    desc: '停止',
+    color: '#0097e0',
+    icoUnicode: 'ans-icon-gear',
     isSpin: false
   }
 }
+// const tasksState = {
+//   SUBMITTED_SUCCESS: {
+//     id: 0,
+//     desc: '提交成功',
+//     color: '#A9A9A9',
+//     icoUnicode: 'ans-icon-dot-circle',
+//     isSpin: false
+//   },
+//   RUNNING_EXEUTION: {
+//     id: 1,
+//     desc: 'Executing',
+//     color: '#0097e0',
+//     icoUnicode: 'ans-icon-gear',
+//     isSpin: true
+//   },
+//   READY_PAUSE: {
+//     id: 2,
+//     desc: '准备暂停',
+//     color: '#07b1a3',
+//     icoUnicode: 'ans-icon-pause-solid',
+//     isSpin: false
+//   },
+//   PAUSE: {
+//     id: 3,
+//     desc: '暂停',
+//     color: '#057c72',
+//     icoUnicode: 'ans-icon-pause',
+//     isSpin: false
+//   },
+//   READY_STOP: {
+//     id: 4,
+//     desc: '准备停止',
+//     color: '#FE0402',
+//     icoUnicode: 'ans-icon-coin',
+//     isSpin: false
+//   },
+//   STOP: {
+//     id: 5,
+//     desc: '停止',
+//     color: '#e90101',
+//     icoUnicode: 'ans-icon-stop',
+//     isSpin: false
+//   },
+//   FAILURE: {
+//     id: 6,
+//     desc: '失败',
+//     color: '#000000',
+//     icoUnicode: 'ans-icon-fail-empty',
+//     isSpin: false
+//   },
+//   SUCCESS: {
+//     id: 7,
+//     desc: '成功',
+//     color: '#33cc00',
+//     icoUnicode: 'ans-icon-success-empty',
+//     isSpin: false
+//   },
+//   NEED_FAULT_TOLERANCE: {
+//     id: 8,
+//     desc: '需要容错',
+//     color: '#FF8C00',
+//     icoUnicode: 'ans-icon-pen',
+//     isSpin: false
+//   },
+//   KILL: {
+//     id: 9,
+//     desc: 'kill',
+//     color: '#a70202',
+//     icoUnicode: 'ans-icon-minus-circle-empty',
+//     isSpin: false
+//   },
+//   WAITTING_THREAD: {
+//     id: 10,
+//     desc: '等待线程',
+//     color: '#912eed',
+//     icoUnicode: 'ans-icon-sand-clock',
+//     isSpin: false
+//   },
+//   WAITTING_DEPEND: {
+//     id: 11,
+//     desc: '等待依赖',
+//     color: '#5101be',
+//     icoUnicode: 'ans-icon-dependence',
+//     isSpin: false
+//   }
+// }
 
 /**
  * Node type

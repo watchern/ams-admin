@@ -54,9 +54,11 @@ export default {
   },
   methods: {
     initBasicInfo(tableId) {
-      getBasicInfo(tableId).then(resp => {
-        this.temp = resp.data
-      })
+      if (this.openType !== 'addTable') {
+        getBasicInfo(tableId).then(resp => {
+          this.temp = resp.data
+        })
+      }
     }
   }
 }

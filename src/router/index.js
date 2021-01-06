@@ -47,29 +47,14 @@ const AmsRoutes = [
         component: () => import('@/views/base/frameto')
     },
     {
-        path: '/graphtool/tooldic',
-        name: '图形化工具',
-        component: () => import('@/views/graphtool/tooldic/index')
-    },
-    {
-        path: '/graphtool/tooldic/nodeSetting',
-        name: '图形化工具节点配置',
-        component: () => import('@/views/graphtool/tooldic/page/nodeSetting/nodeSetting')
-    },
-    {
-        path: '/graphtool/tooldic/groupCount',
-        name: '图形化工具分组汇总节点配置',
-        component: () => import('@/views/graphtool/tooldic/page/nodeSetting/conditionSet/groupCount/groupCount')
-    },
-    {
-        path: '/graphtool/tooldic/relation',
-        name: '图形化工具数据关联节点配置',
-        component: () => import('@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/relation')
-    },
-    {
-        path: '/graphtool/tooldic/transcodeDetail',
-        name: '图形化工具数据转码节点转码详情',
-        component: () => import('@/views/graphtool/tooldic/page/nodeSetting/conditionSet/transcode/transcodeDetail')
+        path: '/datamining',
+        name: '数据挖掘',
+        component: () => import('@/portal/default/index'),
+        children: [{
+          path: '/datamining/index',
+          name: '数据挖掘',
+          component: () => import('@/views/datamining/index')
+        }]
     },
     dataRouter,
     baseRouter,

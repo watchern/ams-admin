@@ -1,5 +1,7 @@
 import request from '@/utils/request'
-import { deleteModel } from '@/api/analysis/auditmodel'
+import { compareSql } from '@/api/graphtool/graphList'
+const CodeMirror = require('@/components/ams-codemirror/lib/codemirror')
+import store from '@/store'
 const analysisUrl = '/analysis'
 const dataUrl = '/data'
 /**
@@ -68,7 +70,11 @@ var columnIconPath = '../../images/ico/column.png'
  * @type {string}
  */
 var tableIconPath = '../../images/ico/table_1.png'
-
+/**
+ * 视图图标路径
+ * @type {string}
+ */
+var viewIconPath = '../../images/ico/view.png'
 /**
  * 参数对象
  * @type {{}}
@@ -101,12 +107,54 @@ var sqlDraftObj
  * 存储数据表
  */
 var tableTreeData = []
+
+/**
+ * 记录sql编辑器是否被修改
+ * @type {boolean}
+ */
+var isUpdate = false
+
+/**
+ * 是否第一次加载
+ * @type {number}
+ */
+var isFirst = 0
+
+let sqlEditorVue = null
+
+export const sendSqlEditorVue = ( (this_) => {
+    sqlEditorVue = this_
+})
+
+/**
+ * 获取参数树
+ */
+export function getParamsTree() {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ParamFolderController/getParamsTree',
+    method: 'get'
+  })
+}
+
+/**
+ * 获取参数树节点的子孙节点
+ */
+export function getFolderAndParams(dataParam) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/paramController/getFolderAndParams',
+    method: 'get',
+    params: dataParam
+  })
+}
+
 /**
  * 初始化界面托拉拽事件
  */
 export function initDragAndDrop() {
   // 实现左右拖拽改变大小
-  var container = document.getElementById('container') //整个窗口
+  var container = document.getElementById('container') // 整个窗口
   var pathname = window.location.pathname
   var img = document.getElementById('iconImg')
   if (pathname.match('page')) {
@@ -118,24 +166,23 @@ export function initDragAndDrop() {
   var leftPart = document.getElementById('leftPart')
   var rightContent = document.getElementById('rightPart')
   var vertical = document.getElementById('vertical')
-  var left_min = container.clientWidth*0.2
-  var right_max = rightContent.offsetWidth*0.5
+  // var left_min = container.clientWidth*0.2
+  // var right_max = rightContent.offsetWidth*0.5
   var iT = 0
   vertical.onmousedown = function(e) {
     var disX = (e || event).clientX
-    vertical.left = vertical.offsetLeft
+    the_left_all()
     document.onmousemove = function(e) {
-      var e = e || window.event;
+      var e = e || window.event
       var tarnameb = e.target || e.srcElement
       vertical.style.margin = 0
       iT = (e || event).clientX
-      if(iT < left_min){iT = left_min}
-      else if(iT > container.clientWidth*.85){iT = container.clientWidth*.85}
-      vertical.style.left = iT - 134 +'px'
-      leftPart.style.width = iT - 126 - 15 + 'px'
-      rightContent.style.width = parseInt(container.clientWidth - iT + 134 -63) + 'px'
+      // if(iT < left_min){iT = left_min}
+      // else if(iT > container.clientWidth*.85){iT = container.clientWidth*.85}
+      vertical.style.left = iT - 80 - tz_path + 'px'
+      leftPart.style.width = iT - 86 - tz_path + 'px'
+      rightContent.style.width = parseInt(container.clientWidth - iT + 76 + tz_path) + 'px'
       return false
-
     }
     document.onmouseup = function() {
       document.onmousemove = null
@@ -146,84 +193,82 @@ export function initDragAndDrop() {
     return false
   }
 
-  //单击侧边按钮收起左边栏
+  // 单击侧边按钮收起左边栏
   function tree_zy_zhan() {
-    if(tree_shuju == false && tree_canshu == false && tree_sql == false){
-      $("#leftPart").stop(true).animate({"width":203},300)
-      $("#vertical").delay(300).fadeIn(100).css("left",11.9+"%")
-      $("#rightPart").stop(true).animate({"width":1150,"left":0},300)
-      $("#sidebar").css("border-right",1+"px"+" solid"+" #5E6572")
+    if (tree_shuju == false && tree_canshu == false && tree_sql == false) {
+      $('#leftPart').stop(true).animate({ 'width': 203 }, 300)
+      $('#vertical').delay(300).fadeIn(100).css('left', 11.5 + '%')
+      $('#rightPart').stop(true).animate({ 'width': 1562, 'left': 0 }, 300)
+      $('#sidebar').css('border-right', 1 + 'px' + ' solid' + ' rgb(206,208,212)')
     }
   }
 
   function tree_zy_zhanhe() {
-    if(tree_shuju == false && tree_canshu == false && tree_sql == false){
-      $("#vertical").fadeOut(100)
-      $("#leftPart").delay(100).stop(true).animate({"width":0},300)
-      $("#rightPart").delay(100).stop(true).animate({"width":1350,"left":15},300)
-      $("#sidebar").css("border","none")
+    if (tree_shuju == false && tree_canshu == false && tree_sql == false) {
+      $('#vertical').fadeOut(100)
+      $('#leftPart').delay(100).stop(true).animate({ 'width': 0 }, 300)
+      $('#rightPart').delay(100).stop(true).animate({ 'width': 1752, 'left': 15 }, 300)
+      $('#sidebar').css('border', 'none')
     }
   }
 
-  function tree_zy_all(){
-    $("#sidebar div").removeClass("add-sidiv")
-    $("#dataTree").fadeOut(0)
-    $("#paramTree").fadeOut(0)
-    $("#sqlFunTree").fadeOut(0)
+  function tree_zy_all() {
+    $('#sidebar div').removeClass('add-sidiv')
+    $('.left-dataTree').fadeOut(0)
+    $('.left-paramTree').fadeOut(0)
+    $('.left-sqlFunTree').fadeOut(0)
     tree_shuju = false
     tree_canshu = false
     tree_sql = false
   }
-  //分别显示隐藏三个表
+  // 分别显示隐藏三个表
   var tree_shuju = true
   var tree_canshu = false
   var tree_sql = false
-  $("#paramTree").fadeOut(300)
-  $("#sqlFunTree").fadeOut(300)
-  $(".unfold-shuju").on("click",function(){
-    if(tree_shuju == true){
-      $("#dataTree").fadeOut(300)
-      $(this).removeClass("add-sidiv")
+  $('.left-paramTree').fadeOut(300)
+  $('.left-sqlFunTree').fadeOut(300)
+  $('.unfold-shuju').on('click', function() {
+    if (tree_shuju == true) {
+      $('.left-dataTree').fadeOut(300)
+      $(this).removeClass('add-sidiv')
       tree_shuju = false
       tree_zy_zhanhe()
-    }else if(tree_shuju == false){
+    } else if (tree_shuju == false) {
       tree_zy_zhan()
       tree_zy_all()
-      $("#dataTree").fadeIn(300)
-      $(this).addClass("add-sidiv")
+      $('.left-dataTree').fadeIn(300)
+      $(this).addClass('add-sidiv')
       tree_shuju = true
     }
   })
-  $(".unfold-canshu").on("click",function(){
-    if(tree_canshu == true){
-      $("#paramTree").fadeOut(300)
-      $(this).removeClass("add-sidiv")
+  $('.unfold-canshu').on('click', function() {
+    if (tree_canshu == true) {
+      $('.left-paramTree').fadeOut(300)
+      $(this).removeClass('add-sidiv')
       tree_canshu = false
       tree_zy_zhanhe()
-    }else if(tree_canshu == false){
+    } else if (tree_canshu == false) {
       tree_zy_zhan()
       tree_zy_all()
-      $("#paramTree").fadeIn(300)
-      $(this).addClass("add-sidiv")
+      $('.left-paramTree').fadeIn(300)
+      $(this).addClass('add-sidiv')
       tree_canshu = true
     }
   })
-  $(".unfold-sql").on("click",function(){
-    if(tree_sql == true){
-      $("#sqlFunTree").fadeOut(300)
-      $(this).removeClass("add-sidiv")
+  $('.unfold-sql').on('click', function() {
+    if (tree_sql == true) {
+      $('.left-sqlFunTree').fadeOut(300)
+      $(this).removeClass('add-sidiv')
       tree_sql = false
       tree_zy_zhanhe()
-    }else if(tree_sql == false){
+    } else if (tree_sql == false) {
       tree_zy_zhan()
       tree_zy_all()
-      $("#sqlFunTree").fadeIn(300)
-      $(this).addClass("add-sidiv")
+      $('.left-sqlFunTree').fadeIn(300)
+      $(this).addClass('add-sidiv')
       tree_sql = true
     }
   })
-
-
 
   // 实现上下拖拽改变大小
   var rightPart = document.getElementById('rightPart')
@@ -243,8 +288,8 @@ export function initDragAndDrop() {
       iT > maxT && (iT = maxT)
       var cmWrap = $('.CodeMirror-wrap')[0]
       horizontal.style.top = topPart.style.height = iT + 'px'
-      cmWrap.style.height = iT - 21 + 'px'
-      bottomPart.style.height = rightPart.clientHeight - iT -20 + 'px'
+      cmWrap.style.height = iT - 37 + 'px'
+      bottomPart.style.height = rightPart.clientHeight - iT - 11 + 'px'
       if (grids) {
         grids.style.height = rightPart.clientHeight - iT - 197 + 'px'
       }
@@ -273,6 +318,8 @@ export function initVariable() {
   paramIdDivArr = []
   modelChartSetup = {}
   sqlDraftObj = undefined
+  isFirst = 0
+  isUpdate = false
 }
 /**
  * 初始化事件
@@ -292,38 +339,43 @@ export function initEvent() {
  * @param relTableMap 智能提示的表对象
  * @returns {CodeMirror.EditorFromTextArea}
  */
-export function initSQLEditor(textarea, relTableMap,expTableMap) {
+export function initSQLEditor(textarea, relTableMap, expTableMap) {
   // 初始化CodeMirror
   var editor = CodeMirror.fromTextArea(textarea, {
     mode: 'text/x-mssql',
     theme: 'idea',
-    indentWithTabs: true,   //带字符表得缩进
-    lineNumbers: true,      //线条数量
-    lineWrapping: true,     //线条包装
-    smartIndent: true,      //智能缩进
-    autofocus: true,        //自动对齐
-    matchBrackets: true,    //开启括号匹配
-    styleActiveLine: false, //样式激活线
-    hintOptions: {          //选项
+    indentWithTabs: true, // 带字符表得缩进
+    lineNumbers: true, // 线条数量
+    lineWrapping: true, // 线条包装
+    smartIndent: true, // 智能缩进
+    autofocus: true, // 自动对齐
+    matchBrackets: true, // 开启括号匹配
+    styleActiveLine: false, // 样式激活线
+    hintOptions: { // 选项
       tables: relTableMap,
       tablesTitle: expTableMap
     }
   })
   // 输入时事件cursorActivity
-  editor.on('cursorActivity', function(cm) { //光标活动
+  editor.on('cursorActivity', function(cm) { // 光标活动
     if (cm.curOp.focus === false) {
       initHint(editor)
     }
     $('span').removeClass('errorHighlight')
   })
-  editor.on('beforeChange', function(instance, changeObj) { //改变之前
-    if (changeObj.origin === 'paste' && isFirstPaste) { //第一次粘贴？？？
-      cursor = editor.getCursor()   //获取光标
-      checkSqlText = editor.getRange({ ch: 0, line: cursor.line }, { ch: cursor.ch, line: cursor.line })//光标范围
+  editor.on('beforeChange', function(instance, changeObj) { // 改变之前
+    if (changeObj.origin === 'paste' && isFirstPaste) { // 第一次粘贴？？？
+      cursor = editor.getCursor() // 获取光标
+      checkSqlText = editor.getRange({ ch: 0, line: cursor.line }, { ch: cursor.ch, line: cursor.line })// 光标范围
       isFirstPaste = false
     }
   })
   editor.on('change', function(instance, changeObj) {
+    // 如果第一次加载不做任何校验
+    if (isFirst != 0) {
+      isUpdate = true
+    }
+    isFirst++
     if (!changeObj.origin) {
       return
     }
@@ -357,7 +409,7 @@ export function initSQLEditor(textarea, relTableMap,expTableMap) {
       var hasPaste = false
       for (var i = 0; i < paramObj.arr.length; i++) {
         if (changeText.indexOf(paramObj.arr[i].id) != -1) { // 如果粘贴的是已含有的参数
-          var copyParamId = new UUIDGenerator().id
+          var copyParamId = getUuid()
           var id = '{#' + copyParamId + '#}'
           var name = paramObj.arr[i].name
           var obj = {
@@ -382,7 +434,9 @@ export function initSQLEditor(textarea, relTableMap,expTableMap) {
   editor.setSize('auto', ($(document).height() * 0.5 - 40) + 'px')
   editorObj = editor
   $('.CodeMirror-scroll').focus()
-  editor.setSize('auto','84.5%');
+  editor.setSize('auto', '88%')
+  // sql编辑器颜色 为了不影响公共样式
+  $('.CodeMirror-scroll:eq(0)').css('background-color', 'rgb(237, 241, 245)')
 }
 
 /**
@@ -397,9 +451,14 @@ export function initHint(editor) {
   // 获取用户当前的编辑器中的编写的代码
   var cur = editor.getCursor()
   var words = editor.getTokenAt(cur).string
-  var shieldString = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', ' ', ',', '-', '_', '=', '+', '-', '/', ';']
+  var shieldString = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')',
+    ' ', ',', '-', '_', '=', '+', '-', '/', ';', '{', '}','\'','\'\'','\'\'\'','|','\\','<','>']
   // 如果用户输入空格，则退回
   if ($.trim(words) === '') {
+    return
+  }
+  //判断是否拖拽参数进来，如果是拖拽参数进来则不显示
+  if(words.indexOf("{#") != -1 && words.indexOf("#}") != -1){
     return
   }
   if (shieldString.indexOf(words) != -1) {
@@ -531,10 +590,9 @@ export function initTableTree(result) {
                 // 处理拿回来的数据 处理成列表
                 const columns = []
                 for (let i = 0; i < result.data.length; i++) {
-                  if(result.data[i].chnName === "" || result.data[i].chnName == null || result.data[i].chnName == undefined){
+                  if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
                     columns.push(result.data[i].colName)
-                  }
-                  else{
+                  } else {
                     columns.push(result.data[i].chnName)
                   }
                 }
@@ -592,7 +650,7 @@ export function initTableTree(result) {
       }
     }
   }
-/*  const params = { sceneCode: 'auditor', dataUserId: userId }
+  /*  const params = { sceneCode: 'auditor', dataUserId: userId }
   // 调用后台获取数据表数据
   request({
     baseURL: dataUrl,
@@ -600,31 +658,36 @@ export function initTableTree(result) {
     method: 'post',
     params: params
   }).then(result => {*/
-    // 设置图标
-    for (let i = 0; i < result.data.length; i++) {
-      if (result.data[i].type === 'table') {
-        result.data[i].icon = tableIconPath
-        result.data[i].isParent = true
-      }
+  // 设置图标
+  for (let i = 0; i < result.data.length; i++) {
+    if (result.data[i].type === 'table') {
+      result.data[i].icon = tableIconPath
+      result.data[i].isParent = true
+    } else if (result.data[i].type === 'view') {
+      result.data[i].icon = viewIconPath
+      result.data[i].isParent = true
+    } else if (result.data[i].type === 'folder') {
+      result.data[i].isParent = true
     }
-    result.data.push({
-      'id': 'ROOT',
-      'pid': null,
-      'name': '所有数据',
-      'displayName': '所有数据',
-      'type': 'ROOT',
-      'isParent': true,
-      'open': true,
-      'level': 0
-    })
-    tableTreeData = result.data
-    zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
- // })
+  }
+  result.data.push({
+    'id': 'ROOT',
+    'pid': null,
+    'name': '所有数据',
+    'displayName': '所有数据',
+    'type': 'ROOT',
+    'isParent': true,
+    'open': true,
+    'level': 0
+  })
+  tableTreeData = result.data
+  zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
+  // })
 }
 /**
  * 执行create语句后刷新左侧树
  */
-export function refushTableTree(treeNodes){
+export function refushTableTree(treeNodes) {
   var setting = {
     // 异步加载
     data: {
@@ -709,10 +772,9 @@ export function refushTableTree(treeNodes){
                 // 处理拿回来的数据 处理成列表
                 const columns = []
                 for (let i = 0; i < result.data.length; i++) {
-                  if(result.data[i].chnName === "" || result.data[i].chnName == null || result.data[i].chnName == undefined){
+                  if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
                     columns.push(result.data[i].colName)
-                  }
-                  else{
+                  } else {
                     columns.push(result.data[i].chnName)
                   }
                 }
@@ -770,53 +832,70 @@ export function refushTableTree(treeNodes){
       }
     }
   }
-  if(treeNodes!= undefined && treeNodes.length > 0){
+  if (treeNodes != undefined && treeNodes.length > 0) {
     tableTreeData = tableTreeData.concat(treeNodes)
     zTreeObj = $.fn.zTree.init($('#dataTree'), setting, tableTreeData)
-    for(var i = 0; i < treeNodes.length;i++){
-      //添加sql编辑器智能提示
-      CodeMirror.tableColMapping[treeNodes[i].name] = [];
-      //重新加载表与列的关系
-      editorObj.options.hintOptions.tables[treeNodes[i].name] = [];
+    for (var i = 0; i < treeNodes.length; i++) {
+      // 添加sql编辑器智能提示
+      CodeMirror.tableColMapping[treeNodes[i].name] = []
+      // 重新加载表与列的关系
+      editorObj.options.hintOptions.tables[treeNodes[i].name] = []
     }
   }
-
 }
 
 /**
  * 删除表或试图后删除左侧树
  * @param dropTableArr 删除的表
  */
-export function dropTable(dropTableArr){
-  if(dropTableArr != undefined && dropTableArr.length > 0){
-    for(var k = 0; k<dropTableArr.length; k++){
-      var dropedNode = zTreeObj.getNodesByParam("name", dropTableArr[k], null)[0];
-      zTreeObj.removeNode(dropedNode);
-      //删除智能提示
-      delete CodeMirror.tableColMapping[dropTableArr[k]];
-      //清除表与列的关系
-      delete editorObj.options.hintOptions.tables[dropTableArr[k]];
+export function dropTable(dropTableArr) {
+  if (dropTableArr != undefined && dropTableArr.length > 0) {
+    for (var k = 0; k < dropTableArr.length; k++) {
+      var dropedNode = zTreeObj.getNodesByParam('name', dropTableArr[k], null)[0]
+      zTreeObj.removeNode(dropedNode)
+      // 删除智能提示
+      delete CodeMirror.tableColMapping[dropTableArr[k]]
+      // 清除表与列的关系
+      delete editorObj.options.hintOptions.tables[dropTableArr[k]]
     }
   }
 }
-//表单最大化
+
+var max_left = 0
+var max_width = 0
+var tz_path = 0
+// 实时获取最左侧主菜单栏的宽度
+function the_left_all() {
+  var leftcard = document.getElementsByClassName('left-menu')[0]
+  var offleftcard = leftcard.style.width
+  if (offleftcard == 120 + 'px') {
+    max_left = 125
+    max_width = 93
+    tz_path = 55
+  } else if (offleftcard == 64 + 'px') {
+    max_left = 70
+    max_width = 96
+    tz_path = 0
+  }
+}
+
+// 表单最大化
 var maxormin = true
 export function maxOpenOne() {
-  if(maxormin == true){
-    $("#drag").hide(100)
-    $("#iconImg").css("display","none")
-    $("#iconImg-huifu").css("display","block")
-    $("#bottomPart").css({"position":"fixed","width":93+"%","left":125,"top":0,"height":100+"%"})
-    $(".data-show").css("margin-top",0)
-    $(".ag-theme-balham").css("height",650)
+  the_left_all()
+  if (maxormin == true) {
+    $('#drag').hide(100)
+    $('#iconImg').css('display', 'none')
+    $('#iconImg-huifu').css('display', 'block')
+    $('#bottomPart').css({ 'position': 'fixed', 'width': max_width + '%', 'left': max_left, 'top': 0, 'height': 96 + '%', 'z-index': 1000 })
+    $('.ag-theme-balham').css('height', 550)
     maxormin = false
-  }else if(maxormin == false){
-    $("#drag").show(100)
-    $("#iconImg").css("display","block")
-    $("#iconImg-huifu").css("display","none")
-    $(".data-show").css("margin-top",45)
-    $("#bottomPart").css({"position":"static","left":0,"width":100+"%","height":100+"%"})
-    $(".ag-theme-balham").css("height",200)
+  } else if (maxormin == false) {
+    $('#drag').show(100)
+    $('#iconImg').css('display', 'block')
+    $('#iconImg-huifu').css('display', 'none')
+    $('#bottomPart').css({ 'position': 'static', 'left': 0, 'width': 100 + '%', 'height': 100 + '%', 'z-index': 100 })
+    $('.ag-theme-balham').css('height', 200)
     maxormin = true
   }
 }
@@ -870,10 +949,10 @@ export function initParamTree() {
         }
         var cursor = editorObj.getCursor()
         /* 新修改 star*/
-        var copyParamId = new UUIDGenerator().id
+        var copyParamId = getUuid()
         var id = '{#' + copyParamId + '#}'
         editorObj.replaceRange(id, cursor, cursor)
-        var dom = $("<button disabled class='divEditorBtn' style='color: white;background-color:#409eff' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
+        var dom = $("<button type='button' class='divEditorBtn' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
         var endCursor = { ch: cursor.ch + id.length, line: cursor.line, sticky: null }
         editorObj.markText(cursor, endCursor, {
           replacedWith: dom,
@@ -939,11 +1018,7 @@ export function initParamTree() {
       }
     }
   }
-  request({
-    baseURL: analysisUrl,
-    url: '/ParamFolderController/getParamsTree',
-    method: 'get'
-  }).then(result => {
+  getParamsTree().then(result => {
     if (result.data.isError) {
 
     } else {
@@ -952,6 +1027,7 @@ export function initParamTree() {
   })
 }
 
+$('.ag-theme-balham .ag-header-row').css('background-color', 'white')
 
 /**
  * 数据表树拖拽事件
@@ -968,15 +1044,17 @@ function onDrop(event, treeId, treeNodes) {
     return
   }
   var cursor = editorObj.getCursor()
-  dragOne(treeNodes[0]['name'], cursor, cursor)
+  dragOne(treeNodes[0]['name'] + " ", cursor, cursor)
 }
 
 /**
  * 初始化智能提示的数据表
  * @returns {AxiosPromise}
  */
-export function initTableTip(userId) {
-  const params = { sceneCode: 'auditor', dataUserId: userId }
+export function initTableTip() {
+  const dataUserId = store.getters.datauserid
+  const sceneCode = store.getters.scenecode
+  const params = { sceneCode: sceneCode, dataUserId: dataUserId }
   // 调用后台获取数据表数据
   return request({
     baseURL: dataUrl,
@@ -1002,9 +1080,9 @@ function showRMenu(type, containerId, menuId, x, y) {
   if (h_ < $('#' + menuId).height()) {
     y = y - $('#' + menuId).height()
   }
-  if (w_ < $('#' + menuId).width()) {
+ /* if (w_ < $('#' + menuId).width()) {
     x = $('#' + containerId).width() - $('#' + menuId).width()
-  }
+  }*/
   $('#' + menuId + ' ul').show()
   $('#' + menuId).css({ 'top': y + 'px', 'left': x + 'px', 'visibility': 'visible' })
   $('body').bind('mousedown', { 'menuId': menuId }, onBodyMouseDown)
@@ -1130,12 +1208,7 @@ function loadParamChildrenNodes(treeNode) {
     'level': treeNode.level
   }
   dataParam.isPersonalParam = getRootNodeType(treeNode, paramZtree)
-  request({
-    baseURL: analysisUrl,
-    url: '/paramController/getFolderAndParams',
-    method: 'get',
-    params: dataParam
-  }).then(result => {
+  getFolderAndParams(dataParam).then(result => {
     paramZtree.removeChildNodes(treeNode)
     paramZtree.addNodes(treeNode, result.data)
   })
@@ -1402,7 +1475,7 @@ function replaceCopyParam(paramObj) {
         var startCursor = { ch: ch, line: b, sticky: null }
         var endCursor = { ch: ch + arr[a].id.length, line: b, sticky: null }
         editorObj.replaceRange(arr[a].id, startCursor, endCursor)// 替换复制的参数的ID
-        var dom = $("<button class='divEditorBtn' id='" + arr[a].id + "'>" + arr[a].name + '</buttonn>').get(0)
+        var dom = $("<button type='button' class='divEditorBtn' id='" + arr[a].id + "'>" + arr[a].name + '</buttonn>').get(0)
         editorObj.markText(startCursor, endCursor, {
           replacedWith: dom,
           className: 'paramBlock'
@@ -1500,7 +1573,7 @@ function replaceParam(paramObj) {
         var text = editorObj.getLine(b)// 获取当前行的内容
         indexArr = getIndexArr(text, arr[a].id, 0, indexArr)// 获取某行内容中参数id字符串出现的位置数组
         for (var i = 0; i < indexArr.length; i++) { // 第三层循环获取出来的字符串数组
-          var dom = $("<button class='divEditorBtn' id='" + arr[a].id + "'>" + arr[a].name + '</buttonn>').get(0)
+          var dom = $("<button type='button' class='divEditorBtn' id='" + arr[a].id + "'>" + arr[a].name + '</buttonn>').get(0)
           var startCursor = { ch: indexArr[i], line: b, sticky: null }
           var endCursor = { ch: indexArr[i] + arr[a].id.length, line: b, sticky: null }
           editorObj.markText(startCursor, endCursor, {
@@ -1666,15 +1739,14 @@ export function getSelectSql(menuId) {
         params: { tableMetaUuid: tableMetaUuid }
       }).then(result => {
         if (result.data == undefined || result.data == null) {
-          return;
+          return
         } else {
           if (result.data && result.data.length > 0) {
-            var columns = [];
-            for(var i = 0;i < result.data.length;i++){
-              if(result.data[i].chnName == "" || result.data[i].chnName == null || result.data[i].chnName == undefined){
+            var columns = []
+            for (var i = 0; i < result.data.length; i++) {
+              if (result.data[i].chnName == '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
                 columns.push(result.data[i].colName)
-              }
-              else{
+              } else {
                 columns.push(result.data[i].chnName)
               }
             }
@@ -1812,7 +1884,7 @@ export function getSql() {
 }
 
 // 校验sql 只返回true或者false
-export function verifySql() {
+export async function verifySql() {
   var selText = editorObj.getSelection()
   if ($.trim(selText) === '') {
     selText = editorObj.getValue()
@@ -1824,7 +1896,7 @@ export function verifySql() {
     }
   }
   var data = { sqls: selText }
-  return request({
+  return await request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/checkSql',
     method: 'post',
@@ -1836,8 +1908,8 @@ export function verifySql() {
  * 执行SQL
  */
 export function executeSQL() {
-  //显示最大化按钮
-  $(".max-size").show()
+  // 显示最大化按钮
+  $('.max-size').show()
   // 这是存放参数的数组
   var arr = new Array()
   var selText = editorObj.getSelection()
@@ -1893,6 +1965,24 @@ export function startExecuteSql(data) {
     data
   })
 }
+
+/**
+ * 获取执行任务
+ * @param {*} data 要执行的数据
+ */
+export function getExecuteTask(data) {
+  const dataUserId = store.getters.datauserid
+  const sceneCode = store.getters.scenecode
+  data.userId = dataUserId;
+  data.sceneCode = sceneCode;
+  return request({
+    baseURL: analysisUrl,
+    url: '/SQLEditorController/getExecuteTask',
+    method: 'post',
+    data
+  })
+}
+
 /**
  * 编辑模型
  * @param sql 要编辑的sql
@@ -1904,12 +1994,13 @@ export function editorSql(sql, paramObjOne) {
   replaceParam(paramObjOne)
 }
 
-export function refreshCodeMirror(){
-  //修复sql编辑区多次加载界面错位情况，手动刷新codeMirror
+export function refreshCodeMirror() {
+  // 修复sql编辑区多次加载界面错位情况，手动刷新codeMirror
   setTimeout(() => {
-    editorObj.refresh();
-  },1);//让编辑器每次在调用的时候进行自动刷新
-  $("#sql").click()
+    editorObj.refresh()
+  }, 1)// 让编辑器每次在调用的时候进行自动刷新
+  // $('#sql').click()
+    $(sqlEditorVue.$refs.sql).click()
 }
 
 /**
@@ -1925,8 +2016,77 @@ export function getColumnSqlInfo(data) {
   })
 }
 
+/**
+ * 获取是否被修改
+ * @returns {boolean}
+ */
+export function getIsUpdate() {
+  return isUpdate
+}
 
+/**
+ * 设置sql的被修改状态
+ * @param value true或false
+ */
+export function setIsUpdate(value) {
+  isUpdate = value
+}
 
+export function getUuid() {
+  var s = []
+  var hexDigits = '0123456789abcdef'
+  for (var i = 0; i < 32; i++) {
+    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
+  }
+  s[14] = '4' // bits 12-15 of the time_hi_and_version field to 0010
+  s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1) // bits 6-7 of the clock_seq_hi_and_reserved to 01
+  s[8] = s[13] = s[18] = s[23]
+  var uuid = s.join('')
+  return uuid
+}
 
+/**
+ * 根据登录人的Uuid查询此人有没有默认的模型结果保存路径
+ */
+export function getDefaultSqlEditorLocationByPersonUuid() {
+  return request({
+    baseURL: analysisUrl,
+    url: '/defaultSqlLocation/getByPersonUuid',
+    method: 'get'
+  })
+}
 
+/**
+ * 保存当前登录人在sql编辑器所选择的默认执行路径方便下次使用
+ * @param data  对象
+ * @returns {AxiosPromise}
+ */
+export function saveSqlEditorExecuteDefaultPath(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/defaultSqlLocation/save',
+    method: 'post',
+    data
+  })
+}
 
+export async function getGraphSaveInfo(){
+    var returnObj = {
+        "isError":false,
+        "message":"",
+        "sql":editorObj.getValue(),
+        "isChange":false
+    };
+    //检查SQL语句是否发生变化
+    const response = await compareSql({"oldSql":sqlEditorVue.sqlValue,"newSql":returnObj.sql})
+    if(response.data == null|| response.data.isError){
+        returnObj.isError = true;
+        returnObj.message = "检测SQL语句是否改变发生错误";
+    }else{
+        if(response.data.isChange){
+            returnObj.message = "系统检查到SQL语句已发生改变，可能会影响已配置的参数信息";
+        }
+        returnObj.isChange = response.data.isChange;
+    }
+    return returnObj;
+}

@@ -20,7 +20,7 @@
         <div class="resizeBR"></div>
         <div class="resizeLB"></div>
         <div class="content">
-          <el-aside>
+          <el-aside style="width:100%">
             <el-tree class="el-tree-rewrite" ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
               <span slot-scope="{ node, data }" class="custom-tree-node">
                 <span>
@@ -38,9 +38,9 @@
               </span>
 
             </el-tree>
-              <div class="custom-tree-caidan">
-                <img class="custom-save" :src="imgCus2" @click="save"/>
-                <img class="custom-close" :src="imgCus1" @click="closeWinfrom" />
+              <div class="custom-tree-caidan ">
+                <img class="custom-save" :src="imgCus2" @click="save" style="cursor:pointer"/>
+                <img class="custom-close" :src="imgCus1" @click="closeWinfrom" style="cursor:pointer"/>
               </div>
               <div class="custom-tree-shangla">
                 <img class="custom-shouqi"  :src="imgCus3" @click="customup"/>
@@ -78,9 +78,9 @@
             </el-form-item>
           </el-row>
           <el-row>
-            <el-col :span="8">
+            <el-col :span="9">
               <el-form-item label="风险等级" prop="riskLevelUuid">
-                  <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级">
+                  <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级"  style="width:67%">
                     <el-option
                       v-for="state in riskLeve"
                       :key="state.codeValue"
@@ -90,9 +90,9 @@
                   </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="9">
               <el-form-item label="模型类型" prop="modelType">
-                <el-select v-model="form.modelType" placeholder="请选择模型类型" @change="modelTypeChangeEvent">
+                <el-select v-model="form.modelType" placeholder="请选择模型类型" style="width:67%">
                   <el-option
                     v-for="state in modelTypeData"
                     :key="state.codeValue"
@@ -121,9 +121,10 @@
       </div>
       <div ref="modelDesign" class="display div-width">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
-          <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id">
-            <SQLEditor @getSqlObj="getSqlObj" v-if="state.id=='002003001'" ref="SQLEditor"
-                       :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel" class="sql-editor" />
+          <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" style="width: 100%" id="graphDiv">
+            <SQLEditor :modelUuid='form.modelUuid' @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
+                       :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel" :locationUuid="form.locationUuid" :locationName="form.locationName"  class="sql-editor"/>
+            <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2" v-if="state.id==graphEditorStr"></graph>
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
@@ -131,13 +132,13 @@
         </el-form>
       </div>
       <div ref="paramDefaultValue" class="display default-value">
-        <p class="p-div">拖拽改变参数展示顺序</p>
+        <messageTips type="info" message="拖拽改变参数展示顺序"></messageTips>
         <div id="paramList">
-          <paramShow ref="apple"></paramShow>
+          <paramShow ref="apple" v-if="paramShowVIf"></paramShow>
         </div>
       </div>
       <div ref="modelResultOutputCol" class="display default-value">
-        <p class="p-div">注意：只显示最后的结果列</p>
+        <messageTips type="error" message="只显示最后的结果列"></messageTips>
         <div class="model-result-output-col">
           <el-table ref="columnData" :data="columnData" class="div-width" >
             <el-table-column prop="outputColumnName" label="输出列名" width="180" />
@@ -244,13 +245,16 @@ import { getBusinessAttribute, saveModel, updateModel } from '@/api/analysis/aud
 import VRuntimeTemplate from 'v-runtime-template'
 import paramShow from "@/views/analysis/modelparam/paramshow";
 import { getDictList } from '@/utils/index'
+import { getUuid } from '@/api/analysis/common'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import SelectTransCode from '@/views/data/table/transcodeselect'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
+import graph from '@/views/graphtool/tooldic/index'
+import messageTips from '@/views/analysis/auditmodel/message'
 // import func from 'vue-temp/vue-editor-bridge'
 export default {
   name: 'EditModel',
-  components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode },
+  components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode,graph,messageTips },
   props: ['openValue'],
   data() {
     return {
@@ -277,15 +281,15 @@ export default {
         },
         {
           id: '5',
-          label: '模型详细',
+          label: '模型关联',
           type: 'relInfo',
           children: []
         },
-        {
-          id: '6',
-          label: '模型图表',
-          type: 'chartConfig'
-        },
+        // {
+        //   id: '6',
+        //   label: '模型图表',
+        //   type: 'chartConfig'
+        // },
         {
           id: '7',
           label: '模型条件',
@@ -299,6 +303,8 @@ export default {
       },
       //是否显示审计事项树
       auditItemTree:false,
+      sqlEditorStr:'002003001',//sql编辑器编码
+      graphEditorStr:'002003002',//图形化编码
       //是否显示保存取消按钮
       isShowBtn:true,
       //打开sql编辑器时给sql编辑器传值，告诉sql编辑器是从模型编辑界面进来的
@@ -311,6 +317,7 @@ export default {
       columnData: [],
       //实体对象
       form: {
+        modelUuid:'',
         modelName: '',
         modelFolderUuid: '',
         modelFolderName: '',
@@ -320,7 +327,10 @@ export default {
         paramConditions: '',
         sqlValue: '',
         auditItemName:'',
-        modelType:''
+        modelType:'',  //002003001审计模型编号  002003002图形化编号
+        locationName:'',
+        locationUuid:'',
+        graphUuid:''
       },
       //参数模型关联对象
       parammModelRel: {},
@@ -347,6 +357,7 @@ export default {
       sqlEditorParamObj: {},
       //添加模型详细树时候的索引
       modelDetailIndex: 0,
+      paramShowVIf:true,
       editorModelLoading:false,
       //风险等级
       riskLeve: [],
@@ -366,6 +377,10 @@ export default {
       formName:"",
       //操作对象
       operationObj:{},
+      //图形化的列信息，比较列是否相同
+      graphColumnInfo:null,
+      //sql编辑器界面返回来的参数
+      sqlEditorParam:null,
       basicInfoRules: {
         modelName: [
           { type: 'string', required: true, message: '请输入模型名称', trigger: 'blur' }
@@ -397,9 +412,18 @@ export default {
       this.$nextTick(function() {
         this.handleNodeClick(newChild)
       })
+    },
+    paramShowVIf(newChild){
+      this.$nextTick(function() {
+        if(newChild){
+          this.$refs.apple.createParamTableHtml(true,this.sqlEditorParam , true);
+        }
+      })
     }
   },
   created() {
+    //设置一个默认的模型编号
+    this.form.modelUuid = getUuid()
     this.operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
   },
   mounted() {
@@ -412,6 +436,7 @@ export default {
       this.displayData(model)
       this.formName = "修改模型"
     }
+
     // 如果为2则反显要显示的数据
     if (this.operationObj.operationType == 3) {
       this.isUpdate = true
@@ -451,6 +476,7 @@ export default {
       // 初始化审计事项
       this.modelTypeData = getDictList('002003')
     },
+
     /**
      * 点击之后切换页签
      * @param data 点击的数据
@@ -474,6 +500,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'block'
+        this.modelTypeChangeEvent(this.form.modelType)
       } else if (data.type == 'paramDefaultValue') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -490,6 +517,10 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.modelResultOutputCol.style.display = 'block'
+        if(this.form.modelType === "002003002"){
+          //说明是图形化模型，从图形化组件里获取列信息
+          this.getGraphObj()
+        }
       } else if (data.type == 'relInfo') {
         this.$refs.basicInfo.style.display = 'none'
         this.$refs.modelDesign.style.display = 'none'
@@ -545,7 +576,10 @@ export default {
     /**
      * 获取当前界面的模型对象
      */
-    getModelObj() {
+    async getModelObj() {
+      let allVer = true
+      let paramDefaultValue;
+      let columnData = this.$refs.columnData.data
       // region 校验基本信息
       let basicInfoVerResult = false
       this.$refs['basicInfoForm'].validate((valid) => {
@@ -563,25 +597,72 @@ export default {
         return null
       }
       // endregion
-      // region 校验sql语句
-      let modelDesignVerResult = false
-      this.$refs['modelDesignForm'].validate((valid) => {
-        if (valid) {
-          modelDesignVerResult = valid
+      if(this.$refs.SQLEditor != undefined){
+        // region 校验sql语句
+        let modelDesignVerResult = false
+        this.$refs['modelDesignForm'].validate((valid) => {
+          if (valid) {
+            modelDesignVerResult = valid
+            message = "请先编写SQL"
+          }
+        })
+        let message = ""
+        if(this.$refs.SQLEditor[0].getSQLIsUpdate()){
+          modelDesignVerResult = false
+          message = "请先执行或校验SQL"
         }
-      })
-      if (!modelDesignVerResult) {
-        // 自动选中指定树节点
+        if (!modelDesignVerResult) {
+          // 自动选中指定树节点
+          this.handleNodeClick({
+            id: '2',
+            label: '模型设计',
+            type: 'modelDesign'
+          }, null)
+          this.$message({ type: 'info', message: message})
+          return null
+        }
+        // endregion
+        //获取SQL编辑器参数对象 到下边去处理
+        if(this.sqlEditorParamObj.arr.length != 0){
+          paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
+          if(!paramDefaultValue.verify){
+            this.$message({ type: 'info', message: paramDefaultValue.message})
+            return null
+          }
+        }
+      }
+      else if(this.$refs.graph != undefined){
+        // todo 获取图形化参数对象  到下边去处理
+        paramDefaultValue = this.$refs.graph[0].getParamsArr()
+        //处理模型结果固定输出列
+        //说明选择了图形化并且没有输出列，自动获取，如果获取不到则返回并给予提示
+        if(columnData.length == 0 && this.form.modelType == "002003002"){
+          let graphObjResult = this.getGraphObj()
+          if(!graphObjResult){
+            return null
+          }
+          else{
+            //获取完图形化的列信息之后重新赋值 因为这个时候界面没渲染完成，因此直接从数据里拿
+            columnData = this.columnData
+            //拿到列之后图形化就可以保存了，调用图形化的保存方法
+            await this.$refs.graph[0].saveModelGraph().then(result => {
+              this.form.graphUuid = result.graphUuid
+            });
+          }
+        }
+      }
+      else{
+        allVer = false
         this.handleNodeClick({
           id: '2',
           label: '模型设计',
           type: 'modelDesign'
         }, null)
+      }
+      if(!allVer){
         return null
       }
-      // endregion
       // region 处理模型结果固定输出列数据
-      const columnData = this.$refs.columnData.data
       let columnOrder = 0
       for (let i = 0; i < columnData.length; i++) {
         if (columnData[i].isShow == undefined) {
@@ -593,13 +674,9 @@ export default {
       // endregion
       // region 处理参数数据
       // 获取到参数的默认值，是个JSON，将JSON存入到数据库  以便下次反显时使用
-      if(this.sqlEditorParamObj.arr.length != 0){
-        let paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
-        if(!paramDefaultValue.verify){
-          this.$message({ type: 'info', message: paramDefaultValue.message})
-          return null
-        }
-        //拿到默认值后组织成后台数据库的格式
+      //拿到默认值后组织成后台数据库的格式
+      
+      if(paramDefaultValue != undefined && paramDefaultValue.length != 0){
         const paramData = paramDefaultValue.paramSettingArr
         let newParamData = []
         for (let i = 0; i < paramData.length; i++) {
@@ -657,7 +734,10 @@ export default {
         return null
       }
       this.form.resultFilterShow = resultFilterShow
-      // endregion
+      //region 获取sql编辑器那边所选中的保存路径
+
+      //endregion
+      // endregionalert
       return this.form
     },
     /**
@@ -686,7 +766,11 @@ export default {
       // 初始化默认参数
       // 初始化参数默认值界面界面
       if(returnObj.params.length != 0){
-        this.$refs.apple.createParamTableHtml(true, returnObj.params, true);
+        this.paramShowVIf = true
+        this.sqlEditorParam = returnObj.params
+      }
+      else{
+        this.paramShowVIf = false
       }
       this.sqlEditorParamObj = {arr:returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
       // region 初始化固定列
@@ -705,9 +789,81 @@ export default {
       this.modelOriginalTable = sqlObj.modelOriginalTable
       // 处理图表JSON
       this.modelChartSetup = sqlObj.modelChartSetup
+      this.form.locationName = returnObj.locationName
+      this.form.locationUuid = returnObj.locationUuid
+    },
+    /**
+     *获取图形化对象
+     */
+    getGraphObj(){
+      //如果没有选择任何类型则不加载
+      if(this.form.modelType === ''){
+        return
+      }
+      if(this.$refs.graph === undefined){
+        return
+      }
+      //获取图形化列信息
+      const returnObj = this.$refs.graph[0].getResultColumnInfo()
+      //判断旧的图形化信息是否为空  如果不为空则说明是二次加载，判断是否一致，如果不一致则重新加载
+      if(this.graphColumnInfo != null){
+        let contrastResult = this.contrastGraphColumnInfo(returnObj)
+        //如果为true说明结果列相同，不需要重新加载
+        if(contrastResult){
+          return false
+        }
+      }
+      //如果对象为空则直接返回
+      if (returnObj == undefined) {
+        return false
+      }
+      if(returnObj.isError == true){
+        this.$message({ type: 'info', message:returnObj.message })
+        return false
+      }
+      //region 初始化模型结果固定输出列
+      const columnData = []
+      for (let i = 0; i < returnObj.finalTable.columnNameArr.length; i++) {
+        const columnDataObj = {
+          outputColumnName: returnObj.finalTable.columnNameArr[i],
+          columnType: returnObj.finalTable.columnTypeArr[i]
+        }
+        columnData.push(columnDataObj)
+      }
+      //endregion
+      // region初始化默认参数
+      // 初始化参数默认值界面界面
+      let params = this.$refs.graph[0].getParamsArr()
+      if(params.length != 0){
+        this.paramShowVIf = true
+        this.sqlEditorParam = params
+      }
+      else{
+        this.paramShowVIf = false
+      }
+      //endregion
+      this.graphColumnInfo = returnObj
+      this.columnData = columnData
+      //直接获取图形化编号
+      this.form.sqlValue = ""
+      return true
+    },
+    /**
+     *对比本次图形化和之前的列信息，比对是否一致，如果一直择不加载，不一致则加载
+     * @param returnObj 要对比的图形化列信息对象
+     */
+    contrastGraphColumnInfo(returnObj){
+      let oldColumnNameArr = this.graphColumnInfo.finalTable.columnNameArr
+      let newColumnNameArr = returnObj.finalTable.columnNameArr
+      if(oldColumnNameArr.sort().toString() === newColumnNameArr.sort().toString()){
+        return true
+      }
+      return false
     },
     /**
      *相互转换param数据格式
+     * @param paramObj 参数对象
+     * @param type 1、获取sql编辑器时候需要的
      */
     changeParamDataFormat(paramObj, type) {
       if (paramObj == undefined || paramObj == null) {
@@ -794,7 +950,8 @@ export default {
      */
     displaySQL(returnObj) {
       let sql = returnObj.sqlValue
-      const arrPram = returnObj.params
+      //2020年12月17日 10:11:52  ZhangSiWeiG 去掉自动加载 因为界面样式渲染问题
+      /*const arrPram = returnObj.params
       let sqlStr = returnObj.sqlValue
       //初始化sql编辑器
       this.modelTypeObj = []
@@ -805,8 +962,11 @@ export default {
         this.modelTypeObj.push(obj)
       }
       else if(this.form.modelType == "002003002"){
-        this.$message({ type: 'info', message: "暂时不支持图形化模型"})
-      }
+        let obj = {
+          id:'002003002'
+        }
+        this.modelTypeObj.push(obj)
+      }*/
       $('#sqlValueView').html(sql)
     },
     /**
@@ -814,9 +974,10 @@ export default {
      */
     createDetail(treeNode,data) {
       if (this.columnData.length == 0) {
-        this.$message({ type: 'info', message: '请先编写SQL!' })
+        this.$message({ type: 'info', message: '请先编写SQL，若已经编写则请执行或校验SQL!' })
         return
       }
+      $("#drag").css("width",115)
       ++this.modelDetailIndex
       const newChild = {
         id: 'rel' + this.modelDetailIndex,
@@ -842,6 +1003,7 @@ export default {
         this.$message({ type: 'info', message: '请先编写SQL!' })
         return
       }
+      $("#drag").css("width",115)
       ++this.modelFilterShowIndex
       const newChild = {
         id: 'filterShow' + this.modelFilterShowIndex,
@@ -971,6 +1133,7 @@ export default {
     displayData(model) {
       // region 处理模型结果列
       const columnData = []
+
       for (let i = 0; i < model.modelOutputColumn.length; i++) {
         const columnDataObj = {
           outputColumnName: model.modelOutputColumn[i].columnName,
@@ -1002,11 +1165,17 @@ export default {
       // endregion
       // region 反显参数默认值
       if(returnObj.params.arr.length != 0){
-        this.$refs.apple.createParamTableHtml(true, displayParamObj, true);
+        this.$refs.apple.createParamTableHtml(true, displayParamObj, true,'参数展示');
       }
       // endregion
       // region 模型结果输出列
       this.columnData = model.modelOutputColumn
+      if(this.form.modelType === this.graphEditorStr){
+        this.graphColumnInfo = {finalTable:{columnNameArr:[]}}
+        for(let i = 0;i < this.columnData.length;i++){
+          this.graphColumnInfo.finalTable.columnNameArr.push(this.columnData[i].outputColumnName)
+        }
+      }
       // endregion
       // region 反显关联详细
       var treeNodeDetail = this.treeNodeData[4]
@@ -1068,9 +1237,9 @@ export default {
      */
     modelTypeChangeEvent(vId){
       this.modelTypeObj = []
-      if(vId == "002003001"){
+      if(vId === this.sqlEditorStr){
         let obj = {
-          id:'002003001'
+          id:this.sqlEditorStr
         }
         this.modelTypeObj.push(obj)
         //
@@ -1081,8 +1250,16 @@ export default {
         // }
         // this.handleNodeClick(obj2)
       }
-      if(vId == "002003002"){
-        this.$message({ type: 'info', message: "暂时不支持图形化模型"})
+      if(vId == this.graphEditorStr){
+        let obj = {
+          id:this.graphEditorStr
+        }
+        this.modelTypeObj.push(obj)
+        this.$nextTick( () => {
+          $("#graphDiv").css({"height":function (){
+              return $(this).parent().parent().height()
+            }})
+        })
       }
     },
     /**
@@ -1107,8 +1284,8 @@ export default {
     /**
      * 保存模型
      */
-    save() {
-      var modelObj = this.getModelObj()
+    async save() {
+      let modelObj = await this.getModelObj()
       if (modelObj == null) {
         return
       }
@@ -1146,6 +1323,7 @@ export default {
           }
         })
       }
+      //}
     },
     initEvent() {
       var oDrag = document.getElementById('drag')
@@ -1359,9 +1537,9 @@ export default {
 .drag {
   position: absolute;
   z-index: 1000;
-  top: 40px;
-  left: 85%;
-  width: 127px;
+  top: 30px;
+  left: 92%;
+  width: 95px;
   background: #FFFFFF;
   border-radius: 5px;
   box-shadow: 0px 3px 8px 7px #00000015;
@@ -1398,39 +1576,39 @@ export default {
 
 .el-tree-rewrite{
   background: #fff;
-  width: 127px;
+  width: 100%;
 }
 
 .custom-tree-node{
   position: relative;
-  left: 14px;
+  left: -2px;
   font-size: 13px;
   color: #353A43;
 }
 
 .custom-tree-caidan{
   border-top: 1px solid #f0f0f0;
-  width: 127px;
+  width: 100%;
   margin-top: 5px;
-  padding-left: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 12px;
 }
 
 .custom-tree-caidan img{
   width: 20px;
   height: 20px;
-  margin-left: 15px;
-  margin-top: 10px;
+  margin: 10px 0 0 0px;
 }
 .custom-tree-shangla{
   border-top: 1px solid #f0f0f0;
   margin-top: 5px;
-  width: 127px;
+  width: 100%;
   height: 10px;
-  text-align: center;
-}
-.custom-tree-shangla img{
-  position: relative;
-  top: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 .custom-xiala{
   transform: rotate(180deg);
@@ -1460,5 +1638,9 @@ export default {
   text-align: justify;
   line-height: 36px;
   padding: 10px;
+}
+
+.content{
+  overflow: hidden;
 }
 </style>

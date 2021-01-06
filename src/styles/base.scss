@@ -211,3 +211,39 @@ table th{
     color: #606266!important;
     background-color: #ffffff!important;
 }
+
+#app .ag-row-odd{
+  background-color: rgb(242,245,248);
+}
+#app .ag-row{
+  border-width: 0;
+}
+#app .ag-row-selected{
+  background-color: #b7e4ff;
+}
+#app  .ag-row-hover{
+  background-color: #ecf0f1;
+}
+#app .ag-header-row{
+  background: white;
+}
+#app .ag-header-container{
+  background: white;
+}
+#app .ag-header{
+  border-top: solid 2px #ededed;
+  border-bottom: 0;
+}
+#app .ag-root{
+  border: 0;
+}
+#app .ag-root-wrapper{
+  border: 0;
+}
+.el-tabs--border-card>.el-tabs__content{
+  padding: 15px 0 0 0;
+}
+.ag-theme-balham .ag-header-cell-label .ag-header-cell-text{
+  color: #102033;
+  font-weight: bold;
+}

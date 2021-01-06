@@ -10,14 +10,15 @@
     <el-row>
       <el-col align="right">
         <el-button type="primary" :disabled="selections.length === 0" title="删除" class="oper-btn delete" @click="delData" />
-        <el-button type="primary" class="oper-btn iconoper-cancel" :disabled="selections.length !== 1" title="复制" @click="copyResource" />
-        <el-button type="primary" class="oper-btn iconoper-publish" title="移动" :disabled="clickData===null" @click="movePath" />
-        <el-button type="primary" class="oper-btn edit" title="重命名" :disabled="selections.length !== 1" @click="renameResource" />
-        <el-button type="primary" class="oper-btn add" title="新增表" :disabled="selections.length !== 1" @click="add" />
+        <el-button type="primary" class="oper-btn copy" :disabled="selections.length !== 1" title="复制" @click="copyResource" />
+        <el-button type="primary" class="oper-btn move" title="移动" :disabled="selections.length === 0" @click="movePath" />
+        <el-button type="primary" class="oper-btn rename" title="重命名" :disabled="selections.length !== 1" @click="renameResource" />
+        <el-button type="primary" class="oper-btn add" title="新增表" :disabled="clickData.type == 'table'" @click="add" />
+        <el-button type="primary" class="oper-btn add-folder" title="导入表" :disabled="clickData.type == 'table'" @click="uploadTable" />
         <el-button type="primary" class="oper-btn add-folder" title="新增文件夹" :disabled="clickData.type == 'table'" @click="createFolder" />
-        <el-button type="primary" class="oper-btn  iconmenu-2" title="表结构维护" :disabled="selections.length !== 1" @click="add" />
-        <el-button type="primary" class="oper-btn  iconmenu-1" title="表结构展示" :disabled="selections.length !== 1" @click="showTable" />
-        <el-button type="primary" class="oper-btn iconoper-show" title="预览" :disabled="infoFlag" @click="preview()" />
+        <el-button type="primary" class="oper-btn  edit" title="表结构维护" :disabled="selections.length !== 1" @click="update" />
+        <el-button type="primary" class="oper-btn  detail" title="表结构展示" :disabled="selections.length !== 1" @click="showTable" />
+        <el-button type="primary" class="oper-btn search" title="预览" :disabled="infoFlag" @click="preview" />
       </el-col>
     </el-row>
     <el-table
@@ -65,17 +66,77 @@
       </span>
     </el-dialog>
     <!-- 弹窗3 -->
+    <el-dialog v-if="uploadVisible" :visible.sync="uploadVisible" width="800px">
+      <el-row>
+        <el-col>
+          <directory-file-upload v-if="uploadStep === 1" @fileuploadname="fileuploadname" />
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col>
+          <el-form
+            v-if="uploadStep === 1"
+            ref="dataForm"
+            :rules="uploadRules"
+            :model="uploadtemp"
+            label-position="right"
+            style="width: 750px;"
+          >
+            <el-form-item label="导入表名称：(若导入数据为TXT数据需用','分割,列信息用换行即可)" prop="tbName">
+              <el-input v-model="uploadtemp.tbName" label="请输入表名称" />
+            </el-form-item>
+            <el-form-item prop="tableFileName">
+              <el-input v-model="uploadtemp.tableFileName" hidden disabled />
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col>
+          <el-table v-if="uploadStep === 2" :data="uploadtempInfo.colMetas" height="600px">
+            <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
+              <template slot-scope="scope" show-overflow-tooltip>
+                <el-input v-model="scope.row.colName" style="width:90%;" />
+              </template>
+            </el-table-column>
+            <el-table-column prop="dataType" label="数据类型">
+              <template slot-scope="scope">
+                <el-select ref="dataType" v-model="scope.row.dataType" filterable style="width:90%" placeholder="请选择数据类型">
+                  <el-option
+                    v-for="item in options"
+                    :key="item"
+                    :label="item"
+                    :value="item"
+                  />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column prop="dataLength" label="数据长度" show-overflow-tooltip>
+              <template slot-scope="scope" show-overflow-tooltip>
+                <el-input v-model="scope.row.dataLength" style="width:90%;" />
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+      </el-row>
+      <span slot="footer">
+        <el-button v-if="uploadStep === 1" type="primary" @click="nextImport">下一步</el-button>
+        <el-button v-if="uploadStep === 2" type="primary" @click="importTable">导入</el-button>
+        <el-button type="primary" @click="uploadVisible = false">关闭</el-button>
+      </span>
+    </el-dialog>
+    <!-- 弹窗4 -->
     <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="800px">
       <el-row>
         <el-col>
-          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :open-type="openType" :tab-show.sync="tabShow" />
+          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" />
         </el-col>
       </el-row>
       <span slot="footer">
         <el-button type="primary" @click="tableShowVisible = false">关闭</el-button>
       </span>
     </el-dialog>
-    <!-- 弹窗4 -->
+    <!-- 弹窗5 -->
     <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
       <el-row>
         <el-col>
@@ -89,12 +150,14 @@
   </div>
 </template>
 <script>
+import directoryFileUpload from '@/views/data/tableupload'
+import { getSqlType } from '@/api/data/table-info'
 import tabledatatabs from '@/views/data/table/tabledatatabs'
 import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import QueryField from '@/components/Ace/query-field/index'
 import { getArrLength } from '@/utils'
-import { deleteDirectory, copyTable, renameResource, movePath, preview } from '@/api/data/directory'
+import { deleteDirectory, copyTable, renameResource, movePath, preview, nextUpload, importTable } from '@/api/data/directory'
 import { saveFolder } from '@/api/data/folder'
 import dataTree from '@/views/data/role-res/data-tree'
 import { mapState } from 'vuex'
@@ -107,7 +170,7 @@ export default {
     })
   },
   // eslint-disable-next-line vue/order-in-components
-  components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs },
+  components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs, directoryFileUpload },
   // eslint-disable-next-line vue/order-in-components
   data() {
     return {
@@ -156,7 +219,7 @@ export default {
         orderNum: 0,
         fullPath: null
       },
-      clickData: { type: '' },
+      clickData: { id: '', type: '' },
       clickNode: {},
       clickFullPath: [],
       allList: [],
@@ -177,6 +240,19 @@ export default {
       previewVisible: false,
       tableShowVisible: false,
       moveTreeVisible: false,
+      uploadVisible: false,
+      uploadtemp: {
+        tbName: '',
+        tableFileName: '',
+        folderUuid: ''
+      },
+      uploadRules: {
+        tbName: [{ required: true, message: '请填写导入表名称', trigger: 'change' }]
+      },
+      // 导入步骤
+      uploadStep: 1,
+      uploadtempInfo: [],
+      options: [],
       textMap: {
         updateFolder: '重命名文件夹',
         updateTable: '重命名表',
@@ -195,6 +271,9 @@ export default {
     // this.getList(this.data, this.node, this.tree)this.$refs.childTabs.loadTableData(this.arrSql)
   },
   methods: {
+    fileuploadname(data) {
+      this.uploadtemp.tableFileName = data
+    },
     formatTableType(row, column) {
       return row.type === 'table' ? '数据表' : '文件夹'
     },
@@ -204,7 +283,7 @@ export default {
       this.selections.forEach((r, i) => {
         if (r.type === 'folder') {
           if (r.extMap.folderType === 'virtual') {
-            this.$message({ type: 'info', message: '该文件为系统文件夹不允许重命名!' })
+            this.$message({ type: 'info', message: '该文件为系统文件夹不允许删除!' })
             return
           }
           var foldObj = this.allList.filter(obj => { return obj.label === r.label })
@@ -216,13 +295,20 @@ export default {
         }
         ids.push(r)
       })
-      deleteDirectory(ids).then(() => {
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 5000,
-          position: 'bottom-right'
+      this.$confirm('确定删除该资源?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        deleteDirectory(ids).then(() => {
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 5000,
+            position: 'bottom-right'
+          })
         })
       })
       this.$emit('remove', this.selections, this.clickNode)
@@ -259,6 +345,58 @@ export default {
       })
       this.resourceForm.resourceName = ''
       this.folderFormVisible = false
+    },
+    // 执行下一步 读取文件列信息
+    nextImport() {
+      this.uploadtemp.folderUuid = this.clickData.id
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          nextUpload(this.uploadtemp).then(res => {
+            getSqlType().then(resp => {
+              this.options = resp.data
+            })
+            this.uploadStep = 2
+            this.uploadtempInfo = res.data
+          })
+        }
+      })
+    },
+    // 执行create后导入功能
+    importTable() {
+      importTable(this.uploadtempInfo).then(res => {
+        this.uploadVisible = false
+        if (res.data.resCode === true) {
+          debugger
+          console.log(res.data.importTable.tableMetaUuid)
+          var childData = {
+            id: res.data.importTable.tableMetaUuid,
+            label: res.data.importTable.displayTbName,
+            pid: res.data.importTable.folderUuid,
+            type: 'table',
+            extMap: {
+              accessType: ['FETCH_TABLE_DATA', 'BASIC_PRIV'],
+              createTime: res.data.importTable.createTime,
+              tableName: res.data.importTable.tbName,
+              tbSizeByte: 0,
+              tblType: 'T'
+            }
+          }
+          // 添加节点
+          this.$emit('append-node', childData, this.clickNode)
+          this.$notify({
+            title: '成功',
+            message: res.data.msg,
+            type: 'success',
+            duration: 5000,
+            position: 'bottom-right'
+          })
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.msg
+          })
+        }
+      })
     },
     // 不允许重命名系统文件夹
     renameResource() {
@@ -339,6 +477,27 @@ export default {
       this.folderFormVisible = false
       this.$emit('refresh')
     },
+    // 新增表
+    add() {
+      this.openType = 'addTable'
+      this.tableShowVisible = true
+      this.tabShow = 'column'
+      this.tableId = '1'
+    },
+    // 上传表
+    uploadTable() {
+      this.uploadtemp = {}
+      this.uploadtempInfo = []
+      this.uploadStep = 1
+      this.uploadVisible = true
+    },
+    // 表结构维护
+    update() {
+      this.openType = 'updateTable'
+      this.tableShowVisible = true
+      this.tabShow = 'column'
+      this.tableId = this.selections[0].id
+    },
     // 得到分页列表
     getListSelect(query) {
       if (query) {
@@ -352,8 +511,8 @@ export default {
     },
     // 初始化列表页面
     getList(data, node, tree) {
-      console.log(data)
       this.clickData = data
+      console.log(data)
       this.clickNode = node
       this.clickFullPath = []
       this.clickFullPath.push(data.label)
@@ -434,6 +593,7 @@ export default {
     preview() {
       preview(this.selections[0]).then(res => {
         this.executeSQLList = res.data.executeTask.executeSQL
+        debugger
         this.arrSql = res.data
         this.previewVisible = true
         this.$nextTick(() => {
@@ -446,9 +606,6 @@ export default {
       this.pageQuery.sortBy = order
       this.pageQuery.sortName = prop
       this.handleFilter()
-    },
-    add() {
-      alert(1)
     },
     handleCreate() {
       this.resetTemp()

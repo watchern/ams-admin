@@ -18,7 +18,6 @@
       max-height="800"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
-      
     >
       <el-table-column
         label="文件名称"
@@ -53,7 +52,7 @@
         @pagination="getList"
       />
     </el-table>
-    </div>
+  </div>
 </template>
 
 <script>
@@ -88,7 +87,8 @@ export default {
       titleMsg: {},
       type: null,
       startTimeStart: null,
-      startTimeEnd: null
+      startTimeEnd: null,
+      value: '11111'
     }
   },
   watch: {
@@ -109,7 +109,10 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
-      if (query) this.pageQuery.condition = query
+      if (query) {
+        this.pageQuery.condition = query
+        this.pageQuery.pageNo = 1
+      }
       datafileStatisticsListBySys(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records
@@ -144,21 +147,6 @@ export default {
 	color: #409eff;
   font-size: 22px;
   cursor: pointer;
-  }
-  .logcol{
-  font-size: 24px;
-	font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
-	font-weight: 700;
-	font-style: normal;
-	font-size: 18px;
-	color: #676A6C;
-  }
-  .logtype{
-	font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
-	font-weight: 700;
-	font-style: normal;
-  color: #3f3a3a;
-  padding: 5px 0px;
   }
   .el-select{
   /* display: inline-flex !important; */

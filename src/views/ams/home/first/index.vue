@@ -17,22 +17,29 @@
       <div class="right flex a-end j-center flex-column">
         <div class="top-card flex a-start j-start flex-row">
           <div class="top-card-left flex-shrink  flex a-center j-center">
-            <img src="../../../../assets/Ace/image/logo.png" class="img">
+            <img src="../../../../assets/Ace/image/c2.png" class="img">
           </div>
           <div class="top-card-right">
-            <div class="title">审计新平台公告栏</div>
-            <div class="des">为提供更好的服务，6月27日凌晨进行系统升级维护，届时相关业务可能会造成局部中断，系统升级对您造成的不便，敬请谅解。</div>
+            <div class="title">待办事项</div>
+            <div class="des" v-for="(item,index) in TopTodo">
+              <span>{{item.text}}</span>
+              <span v-if="item.icon" :style="{color:item.iconColor}" class="icon">{{ item.icon }}</span>
+            </div>
+            <div class=""></div>
           </div>
         </div>
         <div class="bottom-card flex a-center j-between flex-row">
-          <div v-for="(item,index) in cardList" :key="index" class="card flex a-start j-center flex-column" :style="{background:item.bg}">
-            <div class="img-box flex a-center j-center" :style="{background:item.cardBg}">
+          <div v-for="(item,index) in cardList" :key="index" class="top-card flex a-start j-start flex-row" :style="{background:item.bg}">
+            <div class="top-card-left flex-shrink  flex a-center j-center" :style="{background:item.cardBg}">
               <img :src="item.img" class="img">
             </div>
-            <div class="title">{{ item.title }}</div>
-            <div v-for="(text,index) in item.des" :key="index" class="line">
-              <span>{{ text.text }}</span>
-              <span v-if="text.icon" :style="{color:text.iconColor}" class="icon">{{ text.icon }}</span>
+            <div class="top-card-right">
+              <div class="title">{{ item.title }}</div>
+              <div v-for="(text,index) in item.des" :key="index" class="line">
+                <span @click="toDoJump(text.index)" class="notes-text">{{ text.text }}</span>
+                <span v-if="text.icon" :style="{color:text.iconColor,width:text.width}" class="icon">{{ text.icon }}</span>
+              </div>
+              <span class="card-more" @click="moreJump">更多</span>
             </div>
           </div>
         </div>
@@ -43,7 +50,7 @@
         <div class="title">我的项目</div>
         <div class="des flex a-center j-start flex-row">
           <div class="count-font">
-            <animate-number from="1" to="1" class="count-font" />/<animate-number from="1" to="9"class="count-font" />
+            <animate-number from="1" to="1" class="count-font" />/<animate-number from="1" to="9" class="count-font" />
           </div>
           <div class="right">
             <div class="p1">#2020公司信贷业务专项审计</div>
@@ -63,47 +70,35 @@
         <div class="btn">查看此项目的详情</div>
       </div>
     </div>
+    <el-dialog
+      :visible.sync="dialogFormVisible"
+      top = "10vh"
+      title="消息详情"
+      width="50%"
+      v-model="this.PopUpContent"
+      >
+      <span class="visible-span">消息标题</span>
+      <p class="visible-p1">{{this.PopUpContent[0].text}}</p >
+      <span class="visible-span">消息内容</span>
+      <p class="visible-p2">{{this.PopUpContent[0].content}}</p >
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import { getRemindByDescTime, updateRemind } from '@/api/base/base'
 export default {
   data() {
     return {
       cardList: [
         {
           img: require('../../../../assets/Ace/image/c1.png'),
-          title: '预警监控',
+          title: '提醒事项',
           bg: '#EDF1F5',
           cardBg: '#353A43',
-          des: [
-            {
-              text: '住房消费贷客户年龄不合规',
-              iconColor: '#D81020',
-              icon: '+'
-            },
-            {
-              text: '个人贷款担保不良贷款客户 ',
-              icon: '-'
-            }
-          ]
+          path:'',
+          des: []
         },
-        {
-          img: require('../../../../assets/Ace/image/c2.png'),
-          title: '待办事项',
-          bg: '#ffffff',
-          cardBg: '#ffffff',
-          des: [
-            {
-              text: '薪酬考核审计立项申请',
-              iconColor: '#D81020',
-              icon: 'New'
-            },
-            {
-              text: '#2020审计发现整改专项审计 '
-            }
-          ]
-        }
       ],
       boxList: [
         {
@@ -128,8 +123,66 @@ export default {
           label: 'Sun',
           value: 8
         }
-      ]
+      ],
+      TopTodo: [
+        {
+          text: '暂无待办事项',
+          iconColor: '#D81020',
+          icon: '',
+          url:'',
+          title:'',
+          content:''
+        },
+        {
+          text: '',
+          iconColor: '#D81020',
+          icon: '',
+          url:''
+        },
+        {
+          text: '',
+          iconColor: '#D81020',
+          icon: '',
+          url:''
+        },
+        {
+          text: '',
+          iconColor: '#D81020',
+          icon: '',
+          url:''
+        },
+        {
+          text: '',
+          iconColor: '#D81020',
+          icon: '',
+          url:''
+        },
+      ],
+      dialogFormVisible: false,
+      PopUpContent:[{
+        text:'',
+        content:''
+      }]
     }
+  },
+  mounted() {
+    getRemindByDescTime().then(resp => {
+      this.cardList[0].des = []
+      for(let i=0;i<5;i++){
+        this.cardList[0].des.push({
+          text:resp.data.records[i].remindTitle,
+          iconColor: '#D81020',
+          icon: '',
+          url:resp.data.records[i].modeUrl,
+          content:resp.data.records[i].remindContent,
+          index:i,
+          Uuid:resp.data.records[i].remindUuid
+        })
+        if(resp.data.records[i].readStatus === 0){
+          this.cardList[0].des[i].icon = ' NEW'
+        }
+      }
+    })
   },
   methods: {
     formatter(num) {
@@ -137,7 +190,37 @@ export default {
     },
     formatter1(num) {
       return num.toFixed(1)
-    }
+    },
+    activeTags(item) {
+      this.$store.commit('aceState/setRightFooterTags', {
+        type: item.type,
+        val: item.val
+      })
+    },
+    toDoJump(data){
+      if(this.cardList[0].des[data].url == null){
+        this.dialogFormVisible = true
+        this.PopUpContent=[]
+        this.PopUpContent.push({
+          text: this.cardList[0].des[data].text,
+          content:this.cardList[0].des[data].content
+        })
+      }else{
+        this.$router.push({ path:this.cardList[0].des[data].url})
+      }
+      updateRemind(this.cardList[0].des[data].Uuid)
+      location.reload()
+    },
+    moreJump(){
+      // this.activeTags({
+      //   type: 'active',
+      //   val: {val:this.cardList[1].path , name:'提醒'}
+      // })
+      this.$router.push({ path: '/base/remind'})
+    },
+    // handleClose(done) {
+    //   done();
+    // }
   }
 }
 </script>
@@ -223,7 +306,7 @@ export default {
         border-radius: 25.2px;
         padding: 27px;
         width: 479px;
-        height: 188px;
+        //height: 188px;
         &-left{
           background: #FFFFFF;
           border: 1px solid #D8D8D8;
@@ -262,50 +345,52 @@ export default {
       .bottom-card{
         width: 479px;
         margin-top: 33px;
-        .left-card{
-          background: #EDF1F5;
-        }
-        .right-card{
-          background: #FFFFFF;
-        }
-        .card{
-          box-shadow: 17px 17px 34px 0 rgba(0,0,0,0.10);
-          border-radius: 25.2px;
-          width: 227px;
-          height: 242px;
-          padding: 27px 20px 27px 27px;
-          .img-box{
-            background: #FFFFFF;
-            border: 1px solid #D8D8D8;
-            border-radius: 12.6px;
-            width: 67px;
-            height: 67px;
-            .img{
-              width: 30px;
-              height: 30px;
-              object-fit: cover;
-            }
-          }
-          .title{
-            font-family: PingFangSC-Regular;
-            font-size: 20.16px;
-            color: #333333;
-            line-height: 26.88px;
-            margin: 18px 0;
-          }
-          .line{
-            font-family: PingFangSC-Regular;
-            font-size: 13.5px;
-            color: rgba(21,21,21,0.50);
-            letter-spacing: 0;
-            text-align: justify;
-            line-height: 22px;
-            .icon{
-              display: inline-block;
-              margin-left: 4px;
-            }
-          }
-        }
+        position: relative;
+        //.left-card{
+        //  background: #EDF1F5;
+        //}
+        //.right-card{
+        //  background: #FFFFFF;
+        //}
+        //.card{
+        //  position: relative;
+        //  box-shadow: 17px 17px 34px 0 rgba(0,0,0,0.10);
+        //  border-radius: 25.2px;
+        //  width: 479px;
+        //  //height: 242px;
+        //  padding: 27px 20px 27px 27px;
+        //  .img-box{
+        //    background: #FFFFFF;
+        //    border: 1px solid #D8D8D8;
+        //    border-radius: 12.6px;
+        //    width: 67px;
+        //    height: 67px;
+        //    .img{
+        //      width: 30px;
+        //      height: 30px;
+        //      object-fit: cover;
+        //    }
+        //  }
+        //  .title{
+        //    font-family: PingFangSC-Regular;
+        //    font-size: 20.16px;
+        //    color: #333333;
+        //    line-height: 26.88px;
+        //    margin: 18px 0;
+        //  }
+        //  .line{
+        //    font-family: PingFangSC-Regular;
+        //    font-size: 13.5px;
+        //    color: rgba(21,21,21,0.50);
+        //    letter-spacing: 0;
+        //    text-align: justify;
+        //    line-height: 22px;
+        //    .icon{
+        //      display: inline-block;
+        //      margin-left: 4px;
+        //    }
+        //  }
+        //}
       }
     }
   }
@@ -389,5 +474,48 @@ export default {
       border-bottom-right-radius: 100px;
     }
   }
+}
+.card-more{
+  position: absolute;
+  right:20px;
+  bottom:5px;
+  font-family: PingFangSC-Regular;
+  font-size: 13.5px;
+  color: #1890ff;
+  letter-spacing: 0;
+  text-align: justify;
+  line-height: 22px;
+  cursor:pointer;
+}
+.visible-span{
+    width: 95%;
+    margin: 2.5% 2.5% .5%;
+    display: inline-block;
+    font-size: 24px;
+}
+.visible-p1{
+    width: 95%;
+    margin:.5% 2.5% 2.5%;
+  padding: 10px;
+  border: 1px solid #ddfdff;
+  font-size: 16px;border-radius: 6px;
+  display: inline-block;
+  height: 40px;
+  overflow: auto;
+}
+.visible-p2{
+    width: 95%;
+    margin:.5% 2.5% 2.5%;
+  padding: 10px;
+  border: 1px solid #ddfdff;
+  font-size: 16px;border-radius: 6px;
+  display: inline-block;
+  line-height: 27px;
+  height: 400px;
+  overflow: auto;
+}
+.notes-text{
+  line-height:25px;
+  cursor: pointer;
 }
 </style>

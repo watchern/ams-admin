@@ -7,7 +7,6 @@
         @submit="getList"
       />
     </div>
-    
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -17,7 +16,8 @@
       :data="list"
       border
       highlight-current-row
-      max-height="800"
+      height="calc(100vh - 280px)"
+      max-height="calc(100vh - 280px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -29,14 +29,14 @@
         label="所属系统"
         width="150px"
         align="center"
-        prop="dataResourceCode"
+        prop="dataResourceName"
       />
       <el-table-column
         label="文件名称"
         prop="fullPath"
       />
       <el-table-column
-        label="对应表"
+        label="表名称"
         prop="odsTableName"
       />
       <el-table-column
@@ -73,11 +73,17 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage } from '@/api/etlscheduler/datafile'
 import QueryField from '@/components/Ace/query-field/index'
+import store from '@/store'
+import dayjs from 'dayjs'
 
 export default {
   components: { Pagination, QueryField },
+  props: {
+    searchParams: Object
+  },
   data() {
     return {
+      store,
       tableKey: 'dataFileUuid',
       list: null,
       total: 0,
@@ -93,7 +99,7 @@ export default {
       queryFields: [
         { label: '文件名称', name: 'fullPath', type: 'text', value: '' },
         { label: '表名称', name: 'odsTableName', type: 'text', value: '' },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
+        // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         {
           label: '接收状态', name: 'status', type: 'select',
           data: [{ name: '已接收', value: '1' }, { name: '未接收', value: '0' }]
@@ -116,14 +122,30 @@ export default {
       selections: []
     }
   },
+  watch: {
+    searchParams: {
+      deep: true,
+      immediate: true,
+      handler() {
+        this.queryDefault = {
+          startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
+          startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
+        }
+        this.queryFields[3].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
+        this.getList(this.queryDefault)
+      }
+    }
+  },
   created() {
     this.getList()
   },
   methods: {
     getList(query) {
       this.listLoading = true
-      console.log('query:' + JSON.stringify(query))
-      if (query) this.pageQuery.condition = query
+      if (query) {
+        this.pageQuery.condition = query
+        this.pageQuery.pageNo = 1
+      }
       listByPage(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records

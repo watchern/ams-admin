@@ -12,13 +12,12 @@ export default {
 }
 </script>
 <style>
-.el-tab-pane{
-  background: transparent;
-}
 .el-tabs{
   padding: 0;
 }
-
+.el-tab-pane{
+  background: transparent;
+}
 /* .el-tabs--border-card > .el-tabs__content {
     padding: 0px!important;
 } */

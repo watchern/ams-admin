@@ -17,7 +17,11 @@
         </template>
       </el-table-column>
       <el-table-column label="创建时间" prop="taskCreateTime" :formatter="formatCreateTime" />
-      <el-table-column label="进度" prop="taskPercent" width="300px" align="center" />
+      <el-table-column label="进度" prop="taskPercent" width="200px">
+        <template slot-scope="scope">
+          <el-progress :text-inside="true" :percentage="scope.row.taskPercent" :stroke-width="18" />
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -84,7 +88,7 @@ export default {
      */
     getWebSocket() {
       var userId = this.$store.getters.personuuid
-      const wsuri = process.env.VUE_APP_BASE_WEB_SOCKET + userId // 连接地址，可加参数
+      const wsuri = process.env.VUE_APP_BASE_WEB_SOCKET + userId + 'systemTask'// 连接地址，可加参数// 连接地址，可加参数
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(wsuri) // 建立与服务端的连接
       // 当服务端打开连接
@@ -95,6 +99,8 @@ export default {
         func1(event)
       }
       const func2 = function func3(val) {
+        debugger
+        console.log(val)
         this.list = JSON.parse(val.data)
         this.list.forEach(r => {
           var createTime = new Date(r.taskCreateTime).valueOf()
@@ -102,25 +108,25 @@ export default {
           if (createTime !== undefined && taskEstimatedTime !== undefined) {
             var timestamp = Date.parse(new Date())
             var percent = (timestamp - createTime) / (taskEstimatedTime - createTime)
-            if (r.taskStatus === '1') {
-              percent = '100%'
+            if (r.taskStatus === '2' || r.taskStatus === '3') {
+              percent = 100
             } else {
               if (percent < 1) {
-                percent = (percent * 100).toFixed(2) + '%'
+                percent = Number((percent * 100).toFixed(2))
               } else {
-                percent = '99.99%'
+                percent = 99.99
               }
             }
             r.taskPercent = percent
           }
           var html = ''
-          if (r.taskStatus === '1') {
+          if (r.taskStatus === '2' || r.taskStatus === '3') {
             html = "<span  class='el-icon-success' />"
           }
-          if (r.taskStatus === '2') {
+          if (r.taskStatus === '1') {
             html = '<span  class="el-icon-loading" />'
           }
-          if (r.taskStatus === '3') {
+          if (r.taskStatus === '0') {
             html = '<span  class="el-icon-error" />'
           }
           r.taskStatus = html

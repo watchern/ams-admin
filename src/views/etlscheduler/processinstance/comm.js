@@ -105,7 +105,7 @@ const statusListComm = [{
 
 const statusComm = [
   {
-    value: 'G_WATTING',
+    value: 'G_WAITTING',
     label: '等待中',
     unicode: 'el-icon-s-help',
     color: '#f9be0a'
@@ -233,7 +233,7 @@ const statuSelect = [{
 // 查询状态的下拉框
 const statuSelectList = [
   {
-    value: 'G_WATTING',
+    value: 'G_WAITTING',
     name: '等待中'
   },
   {
@@ -262,9 +262,6 @@ const statuSelectList = [
   }, {
     value: 'G_FAILURE',
     name: '执行失败'
-  }, {
-    value: 'G_OTHER',
-    name: '其它'
   }
 ]
 // 命令的类型
@@ -272,7 +269,7 @@ const commandTypeObj = {
   0: '开启新流程',
   1: '从当前节点开启新流程',
   2: '重启容错流程',
-  3: '重启补数流程',
+  3: '恢复暂停的流程',
   4: '从失败任务节点启动流程',
   5: '补数',
   6: '启动调度任务',

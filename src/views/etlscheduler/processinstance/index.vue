@@ -30,10 +30,18 @@
         <!-- 启动 -->
         <el-button
           type="primary"
-          title="启动"
+          title="恢复暂停的流程"
           class="oper-btn start"
           :disabled="startStatus"
           @click="handleStart()"
+        />
+        <!-- 失败的恢复 -->
+        <el-button
+          type="primary"
+          title="失败流程从失败任务节点启动"
+          class="oper-btn start"
+          :disabled="failStatus"
+          @click="handleFailStart()"
         />
         <!-- 重新运行 -->
         <el-button
@@ -61,8 +69,8 @@
       :data="list"
       border
       highlight-current-row
-      height="calc(100vh - 300px)"
-      max-height="calc(100vh - 300px)"
+      height="calc(100vh - 350px)"
+      max-height="calc(100vh - 350px)"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -81,7 +89,7 @@
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
               <el-tag>
-                <a target="_blank" class="buttonText" @click="handleTasksLogs(scope.row)">
+                <a target="_blank" @click="handleTasksLogs(scope.row)">
                   <!-- 遍历statusList，更改不同状态的任务实例的图标和颜色-->
                   <i
                     :class="statusObj[scope.row.status].unicode"
@@ -104,7 +112,12 @@
       <el-table-column
         label="流程实例名称"
         prop="name"
-      />
+        align="center"
+      >
+        <template slot-scope="scope">
+          <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processInstanceUuid)">{{ scope.row.name }}</el-link>
+        </template>
+      </el-table-column>
       <!-- <el-table-column
         label="流程名称"
         width="130px"
@@ -120,12 +133,14 @@
           <!-- 任务参数使用图标进行显示 -->
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="taskParam in scope.row.distinctParamList" :key="taskParam.value">
-              <label class="col-md-2">
-                {{ taskParam.name }}:
-              </label>
-              <div class="col-md-10">
+              <el-col :span="8">
+                <label>
+                  {{ taskParam.name }}:
+                </label>
+              </el-col>
+              <el-col :span="16">
                 {{ taskParam.value }}
-              </div>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -143,12 +158,16 @@
         <template v-if="scope.row.dependTaskInfoList!=null && scope.row.dependTaskInfoList.length>0 && scope.row.dependTaskInfoList[0].dependItemList" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row v-for="(dependTask,$index) in scope.row.dependTaskInfoList[0].dependItemList" :key="$index">
-              <label class="col-md-2">
-                [{{ dependTask.dateValueName }}]
-              </label>
-              <label class="col-md-10" align="right">
-                {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
-              </label>
+              <el-col :span="4">
+                <label>
+                  [{{ dependTask.dateValueName }}]
+                </label>
+              </el-col>
+              <el-col :span="20" align="right">
+                <label>
+                  {{ dependTask.scheduleName }} - {{ dependTask.depTasksName }}
+                </label>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
@@ -189,8 +208,6 @@
       />
       <el-table-column
         label="当前环节"
-        width="120px"
-        align="center"
         prop="nowTask"
       />
     </el-table>
@@ -227,7 +244,7 @@
         <el-button
           type="primary"
           @click="taskSkip()"
-        >确定</el-button>
+        >保存</el-button>
       </div>
     </el-dialog>
     <!-- 显示任务日志的dialog -->
@@ -242,8 +259,8 @@
           <el-collapse-item title="准备执行" name="pre">
             <el-card style="padding-bottom: 3%;">
               <!-- <el-col class="logtype">
-          日志详情：
-        </el-col> -->
+                日志详情：
+              </el-col> -->
               <el-col
                 style="margin-top:10px"
               >
@@ -265,8 +282,8 @@
           <el-timeline-item
             v-for="(task,$index) in logTasks"
             :key="task.id"
-            :icon="taskslogsList[task.id] != null ? 'el-icon-more': null"
-            :color="taskslogsList[task.id] != null ? '#0bbd87' : null"
+            :icon="taskslogsList[task.id] != null ? statusObj[taskslogsList[task.id].status].unicode: null"
+            :color="taskslogsList[task.id] != null ? statusObj[taskslogsList[task.id].status].color : null"
             size="large"
           >
             <!-- value和name一致，默认展开 -->
@@ -303,13 +320,19 @@
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findPrepLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
-// statuSelectList, statusComm
-import { commandTypeObj, colorList, statusListComm, statuSelect } from './comm.js'
+// statuSelectList, statuSelect, statusComm
+import { commandTypeObj, colorList, statusListComm, statuSelectList } from './comm.js'
+import store from '@/store'
+import dayjs from 'dayjs'
 
 export default {
   components: { Pagination, QueryField },
+  props: {
+    searchParams: Object
+  },
   data() {
     return {
+      store,
       tableKey: 'processInstanceUuid',
       list: null,
       total: 0,
@@ -318,21 +341,22 @@ export default {
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '流程实例名称', name: 'name', type: 'text', value: '' },
-        { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
-        {
-          label: '流程状态', name: 'status', type: 'select',
-          data: statuSelect
-        },
+        // { label: '模糊查询', name: 'keyword', type: 'fuzzyText' },
         // {
-        //   label: '流程状态', name: 'groupExecutionStatus', type: 'select',
-        //   data: statuSelectList
+        //   label: '流程状态', name: 'status', type: 'select',
+        //   data: statuSelect
         // },
-        { label: '开始运行时间范围', name: 'startTime', type: 'timePeriod', value: '' }
+        {
+          label: '运行状态', name: 'groupExecutionStatus', type: 'select',
+          data: statuSelectList, value: []
+        },
+        { label: '开始运行时间', name: 'startTime', type: 'timePeriod', value: '' }
       ],
       // 格式化参数列表
       formatMap: {
         commandType: commandTypeObj
       },
+      taskInstanceMap: {},
       statusObj: {},
       logColorObj: {},
       pageQuery: {
@@ -407,6 +431,7 @@ export default {
       skipStatus: true,
       pusStatus: true,
       startStatus: true,
+      failStatus: true,
       reStartStatus: true,
       doneStatus: true,
       logTasks: null,
@@ -418,13 +443,40 @@ export default {
     }
   },
   watch: {
+    // searchParams() {
+    //   // this.store.state.monitor.processStartTime
+    //   // startTimeStart: this.store.state.monitor.processStartTime,
+    //   //   startTimeEnd: this.store.state.monitor.processEndTime
+    //   this.queryDefault = {
+    //     groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+    //     startTimeStart: this.store.state.monitor.processStartTime,
+    //     startTimeEnd: this.store.state.monitor.processEndTime
+    //   }
+    //   this.getList(this.queryDefault)
+    // },
+    searchParams: {
+      deep: true,
+      immediate: true,
+      handler() {
+        this.queryDefault = {
+          groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+          startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
+          startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
+        }
+        this.queryFields[1].value = this.queryDefault.groupExecutionStatus
+        this.queryFields[2].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
+        this.getList(this.queryDefault)
+      }
+    },
     selections() {
       // 终态数组
       const alreadyStatuses = [6, 7, 8]
       // 可以取消状态数组
-      const waitStatuses = [1, 2, 3, 4, 5]
+      const waitStatuses = [2, 3, 4, 40]
       // 执行和启用以外的状态
-      const otherStatuses = [1, 2, 3, 6, 7, 8]
+      // const otherStatuses = [1, 2, 6, 7, 8, 40, 50, 80, 90]
+      // 可以暂停的状态
+      const stopStatuses = [3, 4, 41, 32]
       // 选择1条数据
       if (this.selections.length === 1) {
         this.selections.forEach((r, i) => {
@@ -436,18 +488,23 @@ export default {
           if (waitStatuses.indexOf(r.status) >= 0) {
             this.doneStatus = false
           }
+          // 判断状态是否在可以暂停的状态数组中
+          if (stopStatuses.indexOf(r.status) >= 0) {
+            this.pusStatus = false
+          }
           switch (r.status) {
-            // 判断状态是否为执行中,如果是执行中，暂停按钮可用
-            case 4:
-              this.pusStatus = false
-              break
+            // // 判断状态是否为执行中,如果是执行中，暂停按钮可用
+            // case 4:
+            //   this.pusStatus = false
+            //   break
             // 判断状态是否为暂停中,如果是暂停中，执行按钮可用
             case 5:
               this.startStatus = false
               break
-            // 判断状态是否为执行失败中,如果是执行失败中，重新运行按钮可用
+            // 判断状态是否为执行失败中,如果是执行失败中，重新运行按钮可用，执行按钮可用，失败运行的执行按钮可用
             case 8:
               this.reStartStatus = false
+              this.failStatus = false
               break
             default:
               break
@@ -458,6 +515,7 @@ export default {
         this.skipStatus = true
         // 其它按钮取消禁用
         this.startStatus = false
+        this.failStatus = false
         this.pusStatus = false
         this.doneStatus = false
         this.reStartStatus = false
@@ -466,22 +524,24 @@ export default {
           if (waitStatuses.indexOf(r.status) < 0) {
             this.doneStatus = true
           }
-          // 遍历选择的数组判断状态，如果是有状态不是执行失败的，重新执行按钮不可用
+          // 遍历选择的数组判断状态，如果是有状态不是执行失败的，重新执行按钮不可用，失败运行的执行按钮不可用
           if (r.status !== 8) {
             this.reStartStatus = true
+            this.failStatus = true
           }
           // 遍历选择的数组判断状态，如果是有状态不是执行中的，启用按钮不可用
-          if (r.status === 4 || otherStatuses.indexOf(r.status) >= 0) {
+          if (r.status !== 5) {
             this.startStatus = true
           }
-          // 遍历选择的数组判断状态，如果是有状态不是暂停中的，启用按钮不可用
-          if (r.status === 5 || otherStatuses.indexOf(r.status) >= 0) {
+          // 遍历选择的数组判断状态，如果是有状态不是暂停中的，停用按钮不可用
+          if (stopStatuses.indexOf(r.status) < 0) {
             this.pusStatus = true
           }
         })
       } else {
         this.skipStatus = true
         this.startStatus = true
+        this.failStatus = true
         this.pusStatus = true
         this.doneStatus = true
         this.reStartStatus = true
@@ -498,11 +558,19 @@ export default {
     colorList.forEach((r, i) => {
       this.logColorObj[r['value']] = r
     })
-    if (this.$route.params instanceof Object) {
-      this.queryDefault = this.$route.params
-    }
+    // if (this.$route.params instanceof Object) {
+    //   // this.queryDefault = this.$route.params
+    //   this.queryDefault = { groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+    //     startTimeStart: this.store.state.monitor.processStartTime,
+    //     startTimeEnd: this.store.state.monitor.processEndTime }
+    // }
+
+    // this.queryDefault = {
+    //   groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
+    //   startTimeStart: this.store.state.monitor.processStartTime,
+    //   startTimeEnd: this.store.state.monitor.processEndTime }
     // this.getList(this.queryDefault)
-    this.getList()
+    // this.getList()
   },
   methods: {
     colorFilter(value) {
@@ -517,12 +585,19 @@ export default {
     },
     getList(query) {
       this.listLoading = true
-      if (query) this.pageQuery.condition = query
+      if (query) {
+        this.pageQuery.condition = query
+        this.pageQuery.pageNo = 1
+      }
       listByPage(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records
         this.listLoading = false
       })
+    },
+    handleView(processInstanceUuid) {
+      // 查看详情的页面跳转,传递状态为1为查看
+      this.$router.push(`/etlscheduler/instance/${processInstanceUuid}`)
     },
     handleFilter() {
       this.pageQuery.pageNo = 1
@@ -541,20 +616,20 @@ export default {
         return
       }
       // 获取任务环节
-      getTaskLink(data.processInstanceUuid).then(resp => {
-        this.logTasks = resp.data
-      })
-      // 获取任务日志
-      findTaskLogs(data.processInstanceUuid).then(resp => {
-        this.logs = resp.data
+      getTaskLink(data.processInstanceUuid).then(res => {
+        this.logTasks = res.data
+        // 获取任务日志
+        findTaskLogs(data.processInstanceUuid).then(respon => {
+          this.logs = respon.data
+        })
+        // 获取调度实例已运行的环节
+        findTaskInstanceById(data.processInstanceUuid).then(respons => {
+          this.taskslogsList = respons.data
+        })
       })
       // 获取非环节执行任务日志
-      findPrepLogs(data.processInstanceUuid).then(resp => {
-        this.prepLogs = resp.data
-      })
-      // 获取调度实例已运行的环节
-      findTaskInstanceById(data.processInstanceUuid).then(resp => {
-        this.taskslogsList = resp.data
+      findPrepLogs(data.processInstanceUuid).then(respo => {
+        this.prepLogs = respo.data
       })
       this.logDialogFromVisible = true
     },
@@ -590,7 +665,7 @@ export default {
         this.list.splice(index, 1, this.temp)
         this.dialogFormVisible = false
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '设置跳过环节成功成功',
           type: 'success',
           duration: 2000,
@@ -615,7 +690,7 @@ export default {
       execute(ids.join(','), 'PAUSE').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '暂停成功',
           type: 'success',
           duration: 2000,
@@ -623,14 +698,29 @@ export default {
         })
       })
     },
-    // 启动
+    // 暂停的启动
     handleStart() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
-      execute(ids.join(','), 'START_UP').then(() => {
+      execute(ids.join(','), 'RECOVER_SUSPENDED_PROCESS').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
+          message: '恢复运行成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      })
+    },
+    // 失败的启动
+    handleFailStart() {
+      var ids = []
+      this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
+      execute(ids.join(','), 'START_FAILURE_TASK_PROCESS').then(() => {
+        this.getList()
+        this.$notify({
+          title: this.$t('message.title'),
           message: '启用成功',
           type: 'success',
           duration: 2000,
@@ -645,7 +735,7 @@ export default {
       execute(ids.join(','), 'REPEAT_RUNNING').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '重新运行成功',
           type: 'success',
           duration: 2000,
@@ -660,7 +750,7 @@ export default {
       execute(ids.join(','), 'CANCEL').then(() => {
         this.getList()
         this.$notify({
-          title: '成功',
+          title: this.$t('message.title'),
           message: '取消成功',
           type: 'success',
           duration: 2000,
@@ -729,5 +819,14 @@ export default {
 	font-weight: 700;
 	font-style: normal;
 	color: #888888;
+  }
+  .el-timeline-item__node--large {
+	left: -2px;
+	width: 20px !important;
+	height: 20px !important;
+  }
+  .el-timeline-item__icon {
+	color: #fff;
+	font-size: 20px !important;
   }
 </style>

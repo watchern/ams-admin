@@ -43,9 +43,9 @@
         <span class="label-open" @click="isShowToolsList=!isShowToolsList">
           <i class="el-icon-s-grid" />
         </span>
-        <span class="label-wang">{{ userInfo.name }}</span>
+        <span class="label-wang" @click="isShowSettingList=!isShowSettingList" >{{ userInfo.name }}</span>
         <!-- <i class="shrink-btn icon iconfont iconright-1" @click="isShrink=false" /> -->
-        <i class="setting-btn icon iconfont iconmenu-2" @mouseover="isShowSettingList=true" />
+        <i class="setting-btn icon iconfont iconmenu-2 setting-btn-Upright"  @click="widthChange" />
       </div>
     </template>
     <template v-else>
@@ -88,14 +88,15 @@
         <div
           class="label-open flex a-center j-start flex-row"
           @click="isShowToolsList=!isShowToolsList"
+
         >
           <i class="el-icon-s-grid" />
           <span>More tools</span>
         </div>
         <div class="footer-btns flex a-center j-between flex-row">
-          <span class="label-wang">{{ userInfo.name }}</span>
           <!-- <i class="shrink-btn icon iconfont iconleft-1" @click="isShrink=false" /> -->
-          <i class="setting-btn icon iconfont iconmenu-2" @mouseover="isShowSettingList=true" />
+          <i class="setting-btn icon iconfont iconmenu-2 setting-btn-right" @click="widthChange" />
+          <span class="label-wang"  @click="isShowSettingList=!isShowSettingList">{{ userInfo.name }}</span>
         </div>
       </div>
     </template>
@@ -111,7 +112,7 @@
       </div>
     </transition>
     <transition name="setting-fade">
-      <div v-if="isShowSettingList" class="setting-list absolute" @mouseover="isShowSettingList=true" @mouseleave="isShowSettingList=false">
+      <div v-if="isShowSettingList" class="setting-list absolute" @click="isShowSettingList=!isShowSettingList" @mouseleave="isShowSettingList=false">
         <div class="setting-list-content">
           <div
             v-for="(item,index) in settingList"
@@ -131,9 +132,11 @@
         </div>
       </div>
     </transition>
-    <div v-if="isShowToolsList" class="tools-list" :style="{left:isShrink?'64px':'120px'}">
-      <tools-template />
-    </div>
+    <transition name="showAnimation">
+      <div v-if="isShowToolsList" class="tools-list" :style="{left:isShrink?'64px':'120px'}">
+        <tools-template @func="showWith"/>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -141,6 +144,8 @@
 import { getUserRes } from '@/api/user'
 import MenuTree from './menu-tree/index.vue'
 import { cacheDict } from '@/api/base/sys-dict'
+import { getUnReadRemind } from '@/api/base/base'
+import { querySystemTask } from '@/api/base/systemtask'
 export default {
   components: { MenuTree },
   data() {
@@ -149,6 +154,7 @@ export default {
         name: this.$store.getters.name
       },
       currentIndex: -1,
+      websocket: null,
       isShowTreeList: false,
       scrollTop: false,
       isShowSettingList: false,
@@ -160,8 +166,8 @@ export default {
         {
           icon: '',
           name: '提醒事项',
-          count: 20,
-          method: this.logout
+          count: 0,
+          method: this.logoutRemind
         },
         {
           icon: '',
@@ -188,6 +194,9 @@ export default {
       }
       const appid = this.applications[this.currentIndex].id
       return this.menugroup[appid]
+    },
+    getPersonUuid(){
+      return this.$store.getters.personuuid;
     }
     // isShowTreeList(){
     //   return this.$store.state.aceState.isShowTreeList
@@ -202,6 +211,19 @@ export default {
     },
     currentIndex() {
       this.currentIndexChange()
+    },
+    getPersonUuid(newv, oldv){
+      if(newv && newv!=''){
+        this.webSocket = this.getWebSocket(newv)
+      }
+
+    }
+  },
+  created() {
+    // 页面刚进入时开启长连接
+    this.init();
+    if(this.getPersonUuid){
+      this.webSocket = this.getWebSocket(this.getPersonUuid)
     }
   },
   mounted() {
@@ -245,9 +267,65 @@ export default {
       .catch(error => {
         console.error(error)
       })
+    getUnReadRemind().then(resp => {
+      if(resp.data <= 99 ) {
+        this.settingList[0].count = resp.data
+      }else{
+        this.settingList[0].count = '···'
+      }
+    })
   },
-
   methods: {
+    init() {
+      querySystemTask().then(resp => {
+      })
+    },
+   /* initWebSocket() {
+      this.webSocket = this.getWebSocket()
+    },*/
+    /**
+     *
+     * 使用说明：
+     * 1、WebSocket客户端通过回调函数来接收服务端消息。例如：webSocket.onmessage
+     * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
+     */
+    getWebSocket(personuuid) {
+      const wsuri = process.env.VUE_APP_BASE_WEB_SOCKET + personuuid + 'systemTask'// 连接地址，可加参数
+      // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
+      this.webSocket = new WebSocket(wsuri) // 建立与服务端的连接
+      // 当服务端打开连接
+      this.webSocket.onopen = function(event) {
+      }
+      // 发送消息
+      this.webSocket.onmessage = function(event) {
+        func1(event)
+      }
+      const func2 = function func3(val) {
+        var dataObj = JSON.parse(val.data)
+        if (dataObj.taskStatus === '2' || dataObj.taskStatus === 2) {
+          let html = ''
+          if (dataObj.taskUrl !== undefined && dataObj.taskUrl !== '') {
+            html = '<a style="font-style: normal;color: #17e1e1;text-decoration: underline;cursor: pointer;" href="/#' + dataObj.taskUrl + '" id="messageTrack">' + dataObj.taskName + '</a>'
+          } else {
+            html = '<span style="font-style: normal;color: #17e1e1;text-decoration: underline;cursor: pointer;" id="messageTrack">' + dataObj.taskName + '</span>'
+          }
+          this.$notify({
+            dangerouslyUseHTMLString: true,
+            title: '已完成',
+            message: html,
+            type: 'success',
+            duration: 15000,
+            position: 'bottom-right'
+          })
+        }
+      }
+      const func1 = func2.bind(this)
+      // this.webSocket.onclose = function(event) {
+      // }
+      // 通信失败
+      this.webSocket.onerror = function(event) {
+      }
+    },
     currentIndexChange() {
       // const dis = this.isShrink ? 110 : 120
       // this.$nextTick(() => {
@@ -307,6 +385,17 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    logoutRemind(){
+      this.$router.push({ path:'/base/remind'})
+    },
+    showWith(obj){
+      this.isShowToolsList = obj
+    },
+    widthChange(){
+      this.isShrink = !this.isShrink
+    },
+    reminderAutomaticRefresh(){
     }
   }
 }
@@ -636,12 +725,31 @@ export default {
   transition: all 0.6s
 }
 .slide-fade-enter,.slide-fade-leave-to {
-  transform: translateX(-30px);
   opacity: 0;
 }
 .setting-btn{
   font-size: 20px;
   color:#ffffff;
   cursor:pointer;
+}
+.showAnimation-enter-active, .showAnimation-leave-active {
+  transition: all .5s;
+}
+.showAnimation-enter, .showAnimation-leave-to {
+  opacity: 0;
+}
+
+.setting-fade-enter-active, .setting-fade-leave-active {
+  transition: all .5s;
+}
+.setting-fade-enter, .setting-fade-leave-to {
+  opacity: 0;
+}
+.setting-btn-right{
+  margin-left:16px;
+  margin-right:15px;
+}
+.setting-btn-Upright{
+  transform:rotate(90deg) ;
 }
 </style>

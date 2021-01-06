@@ -652,8 +652,7 @@ EditorUi = function(editor, container, lightbox) {
               if(e.data == null){
                   isCreateTableNodeError = true;
                   $("ul.layui-tab-title li:eq(1)").click();
-                  $("#sysInfoArea").html("获取数据表【" + cell.value + "】信息失败,无法创建数据表节点");
-                  $("#sysInfoArea").css({"color":"red"});
+                  $("#sysInfoArea").html("获取数据表【" + cell.value + "】信息失败,无法创建数据表节点").css({"color":"red"});
                   nodeExcuteStatus = 4;//执行失败
               }else{
                   let columnsInfo = [];
@@ -701,11 +700,13 @@ EditorUi.prototype.sidebarWidth = 240;
 
 EditorUi.prototype.resultHeight = 335;
 
-EditorUi.prototype.resultContentHeight = 185;
+EditorUi.prototype.resultContentHeight = 225;
 
 EditorUi.prototype.scrollBarHeight = 0;
 
 EditorUi.prototype.detailContainerWidth = 300;
+
+EditorUi.prototype.leftMenuWidth = 0;//系统右侧区域距离左侧菜单栏的边距
 /**
  * Specifies the width of the format panel. Default is 240.
  */
@@ -1716,7 +1717,6 @@ EditorUi.prototype.updateActionStates = function() {
 	this.actions.get('selectEdges').setEnabled(unlocked);
 	this.actions.get('selectAll').setEnabled(unlocked);
 	this.actions.get('selectNone').setEnabled(unlocked);
-
 	this.updatePasteActionStates();
 };
 
@@ -1728,51 +1728,47 @@ EditorUi.prototype.refresh = function(sizeDidChange) {
 	var h = this.container.clientHeight;
 
 	if(mxClient.IS_IOS && !window.navigator.standalone) {
-		if(window.innerHeight != document.documentElement.clientHeight) {
+		if(window.innerHeight !== document.documentElement.clientHeight) {
 			window.scrollTo(0, 0);
 		}
 	}
-
-	var dw = document.body.clientWidth;
-    this.hsplitPosition = typeof this.hsplitPosition != "undefined" ? this.hsplitPosition : 240;
-	var effHsplitPosition = Math.max(0, Math.min(this.hsplitPosition, dw - this.splitSize - 20));
-	if(this.sidebarContainer) {
-		this.sidebarContainer.style.width = effHsplitPosition + 'px';
-	}
-	this.sidebarContainer.style.height = (h - 14) + "px";
-	this.detailContainer.style.height = this.sidebarContainer.style.height;
-	this.container.style.left = effHsplitPosition + this.splitSize + 'px';
-	this.hsplit.style.left = effHsplitPosition + 'px';
-	this.vsplit.style.width = this.diagramContainer.style.width;
-	if(this.toolbarContainer != null) {
-		this.toolbarContainer.style.left = this.diagramContainer.style.left;
-	}
+    var dw = this.graphToolDiv.clientWidth;
+    this.hsplitPosition = typeof this.hsplitPosition !== "undefined" ? this.hsplitPosition : this.sidebarWidth;
+    var effHsplitPosition = Math.max(0, Math.min(this.hsplitPosition, dw - this.splitSize - 20));
+    if(this.sidebarContainer) {
+        this.sidebarContainer.style.width = effHsplitPosition + 'px';
+    }
+    this.sidebarContainer.style.height = h + "px";
+    this.container.style.width = ($(this.graphToolDiv).width() - this.hsplitPosition - this.detailContainerWidth - this.splitSize) + "px";
+    this.vsplit.style.left = $(this.sidebarContainer).width() + $(this.graphToolDiv).offset().left + this.splitSize + "px";
+    this.vsplit.style.width = ($(this.graphToolDiv).width() - this.hsplitPosition - this.detailContainerWidth - this.splitSize) + "px";
+    this.detailContainer.style.height = this.sidebarContainer.style.height;
+    this.detailContainer.style.bottom = this.sidebarContainer.style.height;
+    this.container.style.left = (effHsplitPosition + this.splitSize) + 'px';
+    this.hsplit.style.left = effHsplitPosition + "px";
 };
 /**
  * Refreshes the viewport.
  */
 EditorUi.prototype.refreshv = function(sizeDidChange) {
-	var w = this.resultContainer.clientWidth;
-	var h = this.resultContainer.clientHeight;
-	//距底部距离
-	var effVsplitPosition = Math.max(1, Math.min(this.vsplitPosition, w - this.splitSize - 100));
-	var toolPosition = this.container.clientHeight - this.toolbarContainer.clientHeight;
-	effVsplitPosition = effVsplitPosition < toolPosition ? effVsplitPosition: toolPosition;
-	this.resultContainer.style.height = effVsplitPosition + "px";
-	this.resultContainer.children[0].style.height = effVsplitPosition + "px";
-	this.diagramContainer.style.bottom = effVsplitPosition + this.splitSize + 'px';
-	this.vsplit.style.bottom = effVsplitPosition + 'px';
-	this.tableArea.style.height = (effVsplitPosition - 60) + "px";
-	this.sysInfoArea.style.height = (effVsplitPosition - 60) + "px";
-	this.outLineArea.style.height = (effVsplitPosition - 60) + "px";
-	//this.mapContainer.style.bottom = effVsplitPosition + this.scrollBarHeight + "px";
+    var h = document.documentElement.clientHeight;
+    //距底部距离
+    var effVsplitPosition = Math.max(1, Math.min(this.vsplitPosition, h - 200));
+    var toolPosition = this.container.clientHeight - this.toolbarContainer.clientHeight;
+    effVsplitPosition = effVsplitPosition < toolPosition ? effVsplitPosition: toolPosition;
+    this.resultContainer.style.height = effVsplitPosition - 45 + "px";
+    this.diagramContainer.style.bottom = effVsplitPosition + this.splitSize - 45 + 'px';
+    this.vsplit.style.bottom = effVsplitPosition + 'px';
+    this.tableArea.style.height = (effVsplitPosition - 110) + "px";
+    this.sysInfoArea.style.height = (effVsplitPosition - 110) + "px";
+    this.outLineArea.style.height = (effVsplitPosition - 110) + "px";
 }
 
 /**
  * 创建和初始化.
  */
 EditorUi.prototype.createDivs = function() {
-	var h = this.container.clientHeight;
+    this.graphToolDiv = document.getElementById("graphToolDiv");
 	this.sidebarContainer = document.getElementById("accordion");
 	this.toolbarContainer = document.getElementById("geToolbarContainer");
 	this.diagramContainer = document.getElementById("geDiagramContainer");
@@ -1782,34 +1778,31 @@ EditorUi.prototype.createDivs = function() {
 	this.tableArea = document.getElementById("tableArea");
 	this.sysInfoArea = document.getElementById("sysInfoArea");
 	this.outLineArea = document.getElementById("outLineArea");
-	this.hsplit = this.createDiv('geHsplit');
-	this.vsplit = this.createDiv('geVsplit');
-	
-	if(typeof this.sidebarContainer !== "undefined") {
-		this.sidebarContainer.style.width = this.sidebarWidth + "px";
-	}
-	if(typeof this.resultContainer !== "undefined") {
-		this.resultContainer.style.height = this.resultHeight + "px";
-	} else {
-		this.resultHeight = 0;
-	}
-	
-	this.container.style.left = this.sidebarWidth + this.splitSize + "px";
-	this.container.style.right = this.detailContainerWidth + "px";
-	this.diagramContainer.style.bottom = this.resultHeight + "px";
+    this.hsplit = document.getElementById("geHsplit");
+    this.vsplit = document.getElementById("geVsplit");
+    this.leftMenuWidth = $(this.graphToolDiv).offset().left;
+    var h = $(this.graphToolDiv).height() - this.toolbarHeight + 10;
+    this.sidebarContainer.style.width = this.sidebarWidth + "px";
+    this.resultContainer.style.height = this.resultHeight - 45 + "px";
+    this.toolbarContainer.style.width = $(this.graphToolDiv).width() + "px";
+	this.container.style.left = (this.sidebarWidth + this.splitSize) + "px";
+	this.container.style.right = (this.detailContainerWidth + 15) + "px";
+    this.container.style.width = ($(this.graphToolDiv).width() - this.sidebarWidth - this.splitSize - this.detailContainerWidth) + "px";
+    this.container.style.height = h + "px";
+	this.diagramContainer.style.bottom = this.resultHeight - 45 + "px";
 	this.detailContainer.style.width = this.detailContainerWidth + "px";
-//	this.changeDataSource.style.left = (this.sidebarWidth - 40) + "px";
-// 	this.hsplit.setAttribute('title', mxResources.get('collapseExpand'));
 	this.hsplit.style.width = this.splitSize + "px";
-	this.hsplit.style.left = this.sidebarWidth + "px";
-    this.hsplit.style.top = (this.toolbarHeight - 10) + "px";
+    this.hsplit.style.bottom = h + "px";
     this.hsplit.style.height = h + "px";
-	// this.vsplit.setAttribute('title', mxResources.get('collapseExpand'));
+    this.hsplit.style.left = this.sidebarWidth + "px";
+    this.vsplit.style.width = ($(this.graphToolDiv).width() - this.sidebarWidth - this.splitSize - this.detailContainerWidth) + "px";
 	this.vsplit.style.height = this.splitSize + "px";
 	this.vsplit.style.bottom = this.resultHeight + "px";
-	this.tableArea.style.height = this.resultContentHeight + "px";
-	this.sysInfoArea.style.height = this.resultContentHeight + "px";
-	this.outLineArea.style.height = this.resultContentHeight + "px";
+    this.vsplit.style.left = this.sidebarWidth + $(this.graphToolDiv).offset().left + this.splitSize + "px";
+	this.tableArea.style.height = this.resultContentHeight+ "px";
+	this.sysInfoArea.style.height = this.resultContentHeight+ "px";
+	this.outLineArea.style.height = this.resultContentHeight+ "px";
+
 };
 
 /**
@@ -1833,8 +1826,6 @@ EditorUi.prototype.createUi = function() {
 	
 	// HSplit
 	if(this.hsplit != null) {
-		document.body.appendChild(this.hsplit);
-
 		this.addSplitHandler(this.hsplit, true, 0, mxUtils.bind(this, function(value) {
 			var wh = w - this.sidebarWidth - this.splitSize - 500;
 			if(value < wh && value > this.sidebarWidth){
@@ -1845,8 +1836,6 @@ EditorUi.prototype.createUi = function() {
 	}
 	// VSplit
 	if(this.vsplit != null) {
-		this.container.appendChild(this.vsplit);
-
 		this.addSplitHandler(this.vsplit, false, 0, mxUtils.bind(this, function(value) {
 			if(value > 150){
                 this.vsplitPosition = value;
@@ -1882,30 +1871,23 @@ EditorUi.prototype.addSplitHandler = function(elt, horizontal, dx, onChange) {
 	var initial = null;
 	var ignoreClick = true;
 	var last = null;
-
+    var $this = this;
 	// Disables built-in pan and zoom in IE10 and later
 	if(mxClient.IS_POINTER) {
 		elt.style.touchAction = 'none';
 	}
 
 	var getValue = mxUtils.bind(this, function() {
-		var result = parseInt(((horizontal) ? elt.style.left : elt.style.bottom));
-
-		// Takes into account hidden footer
-		if(!horizontal) {
-			result = result + dx;
-		}
-
-		return result;
+		return parseInt(((horizontal) ? (elt.style.left) : elt.style.bottom));
 	});
 
 	function moveHandler(evt) {
 		if(start != null) {
 			var pt = new mxPoint(mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+			// var w = Number($this.sidebarContainer.style.width.split("px")[0]);
 			onChange(Math.max(0, initial + ((horizontal) ? (pt.x - start.x) : (start.y - pt.y)) - dx));
-			mxEvent.consume(evt);
-
-			if(initial != getValue()) {
+            mxEvent.consume(evt);
+			if(initial !== getValue()) {
 				ignoreClick = true;
 				last = null;
 			}
@@ -2530,30 +2512,35 @@ EditorUi.prototype.resetHistory = function(){
 var topAreaHide = false;
 var leftAreaHide = false;
 var rightAreaHide = false;
-var old_toolbar_height,old_leftArea_offsetLeft,old_rightArea_width;
+var old_toolbar_height,old_leftArea_width,old_rightArea_width;
 /**
  * 工具栏的折叠与展开
  */
 EditorUi.prototype.toolBarH_S = function() {
+    var detailContainer = $("#detailContainer");
+    var accordion = $("#accordion");
+    var graphContainer = $("#graphContainer");
+    var geHsplit = $("#geHsplit");
+    var geToolbarContainer = $("#geToolbarContainer");
     if(topAreaHide){
-        $(".menu").show();
+        $("#geToolbarContainer>.menu").show();
         $("#H_S_Menu>ul>li:eq(0)").html("折叠上方区域");
 		$("#geToolbarContainer").height(old_toolbar_height + "px");
-        $("#detailContainer").height(($("#detailContainer").height() - old_toolbar_height + 20) + "px");
-        $("#accordion").height(($("#accordion").height() - old_toolbar_height + 20) + "px");
-        $("#geDiagramContainer").css("top",$("#geDiagramContainer").position().top + old_toolbar_height - 20);
-        $(".geHsplit").css("top",old_toolbar_height);
+        detailContainer.css({"height":(detailContainer.height() - 90) + "px","bottom": (detailContainer.height() - 90) + "px"});
+        accordion.css({"height":(accordion.height() - 90) + "px"});
+        graphContainer.css({"height":(graphContainer.height() - 90) + "px"});
+        geHsplit.css({"height":(geHsplit.height() - 90) + "px","bottom": (geHsplit.height() - 90) + "px"});
         this.toolbarHeight = 120;
         topAreaHide = false;
     }else{
-        old_toolbar_height = $("#geToolbarContainer").height();
-        $(".menu").hide();
+        old_toolbar_height = geToolbarContainer.height();
+        $("#geToolbarContainer>.menu").hide();
         $("#H_S_Menu>ul>li:eq(0)").html("展开上方区域");
-        $("#geToolbarContainer").height("20px");
-        $("#detailContainer").height(($("#detailContainer").height() + old_toolbar_height - 20) + "px");
-        $("#accordion").height(($("#accordion").height() + old_toolbar_height - 20) + "px");
-        $("#geDiagramContainer").css("top",$("#geDiagramContainer").position().top - old_toolbar_height + 20);
-        $(".geHsplit").css("top",20);
+        geToolbarContainer.height("20px");
+        detailContainer.css({"height":(detailContainer.height() + 90) + "px","bottom": (detailContainer.height() + 90) + "px"});
+        accordion.css({"height":(accordion.height() + 90) + "px"});
+        graphContainer.css({"height":(graphContainer.height() + 90) + "px"});
+        geHsplit.css({"height":(geHsplit.height() + 90) + "px","bottom": (geHsplit.height() + 90) + "px"});
         this.toolbarHeight = 30;
         topAreaHide = true;
     }
@@ -2563,19 +2550,26 @@ EditorUi.prototype.toolBarH_S = function() {
 * 左侧资源树的折叠与展开
 */
 EditorUi.prototype.leftAreaH_S = function() {
+    var accordion = $("#accordion");
+    var geHsplit = $("#geHsplit");
+    var geVsplit = $("#geVsplit");
+    var graphContainer = $("#graphContainer");
+    var left = graphContainer.position().left;
     if(leftAreaHide){
-        $("#accordion").show();
-        $(".geHsplit").show();
+        accordion.show();
+        geHsplit.show();
         $("#H_S_Menu>ul>li:eq(1)").html("折叠左侧区域");
-        $("#graphContainer").css("left",old_leftArea_offsetLeft);
-        this.hsplitPosition = old_leftArea_offsetLeft - this.splitSize;
+        graphContainer.css({"width":(graphContainer.width() - old_leftArea_width - this.splitSize) + "px","left":old_leftArea_width + this.splitSize + "px"});
+        geVsplit.css({"width":(geVsplit.width() - old_leftArea_width - this.splitSize) + "px","left":(left + old_leftArea_width + this.splitSize) + "px"});
+        this.hsplitPosition = old_leftArea_width + this.splitSize;
         leftAreaHide = false;
     }else{
-        old_leftArea_offsetLeft = $("#graphContainer").position().left;
-        $("#accordion").hide();
-        $(".geHsplit").hide();
+        old_leftArea_width = accordion.width();
+        accordion.hide();
+        geHsplit.hide();
         $("#H_S_Menu>ul>li:eq(1)").html("展开左侧区域");
-        $("#graphContainer").css("left",0);
+        graphContainer.css({"width":(graphContainer.width() + old_leftArea_width + this.splitSize) + "px","left":"0"});
+        geVsplit.css({"width":(geVsplit.width() + old_leftArea_width + this.splitSize) + "px","left":(left - old_leftArea_width - this.splitSize) + "px"});
         this.hsplitPosition = 0;
         leftAreaHide = true;
     }
@@ -2585,16 +2579,22 @@ EditorUi.prototype.leftAreaH_S = function() {
  * 右侧所使用资源树的折叠与展开
  */
 EditorUi.prototype.rightAreaH_S = function() {
+    var detailContainer = $("#detailContainer");
+    var geVsplit = $("#geVsplit");
+    var graphContainer = $("#graphContainer");
+    var left = graphContainer.position().left;
     if(rightAreaHide){
-        $("#detailContainer").show();
+        detailContainer.show();
         $("#H_S_Menu>ul>li:eq(2)").html("折叠右侧区域");
-        $("#graphContainer").css("right",old_rightArea_width);
+        graphContainer.css({"width":(graphContainer.width() - old_rightArea_width) + "px","right":(old_rightArea_width + 15) + "px"});
+        geVsplit.css({"width":(geVsplit.width() - old_rightArea_width) + "px"});
         rightAreaHide = false;
     }else{
-        old_rightArea_width = $("#detailContainer").width();
-        $("#detailContainer").hide();
+        old_rightArea_width = detailContainer.width();
+        detailContainer.hide();
         $("#H_S_Menu>ul>li:eq(2)").html("展开右侧区域");
-        $("#graphContainer").css("right",0);
+        graphContainer.css({"width":(graphContainer.width() + old_rightArea_width) + "px","right":"14px"});
+        geVsplit.css({"width":(geVsplit.width() + old_rightArea_width) + "px"});
         rightAreaHide = true;
     }
 };
@@ -2622,28 +2622,28 @@ var iconDrag = function(treeNode) {
 		graph.curCell = cell;
 		var historyNodeName = "拖入【" + treeNode.name + "】";
 		//节点预执行，获取节点所含字段
-		if("datasource" == cell.nodeType) {
-      graph.nodeData[cell.id]["treeNodeId"] = treeNode.id;
-      //获取拖入表的信息
-			graph.isCreateTableNodeError = graph.preExeGetFields(cell,treeNode);
-			//如果有错误，创建表节点失败
-      if(graph.isCreateTableNodeError){
-        //先放入旧的操作数组
-        graph.oldOptArr.push({"optType":"drag","optArr":[{"id":cell.id,"nodeData":graph.nodeData[cell.id]}]});
-        //然后再执行撤销操作，顺便从旧的操作数组中移除记录
-        ownerEditor.editor.undoManager.undo();
-        //从graph的历史纪录中移除此次记录
-        ownerEditor.editor.undoManager.history.pop();
-        delete graph.isCreateTableNodeError;
-				return;
-      }
-			//判断该节点是否是复制节点
-			if($.inArray(treeNode.name,valArr) > -1){
-				setDataSourceCopyIcon(cell.id);
-				graph.nodeData[cell.id].isCopy = true;
-			}
-			historyNodeName = "拖入表【" + treeNode.name + "】";
-		}
+        if("datasource" === cell.nodeType) {
+            graph.nodeData[cell.id]["treeNodeId"] = treeNode.id;
+            //获取拖入表的信息
+            graph.isCreateTableNodeError = graph.preExeGetFields(cell,treeNode);
+            //如果有错误，创建表节点失败
+            if(graph.isCreateTableNodeError){
+                //先放入旧的操作数组
+                graph.oldOptArr.push({"optType":"drag","optArr":[{"id":cell.id,"nodeData":graph.nodeData[cell.id]}]});
+                //然后再执行撤销操作，顺便从旧的操作数组中移除记录
+                ownerEditor.editor.undoManager.undo();
+                //从graph的历史纪录中移除此次记录
+                ownerEditor.editor.undoManager.history.pop();
+                delete graph.isCreateTableNodeError;
+                return;
+            }
+            //判断该节点是否是复制节点
+            if($.inArray(treeNode.name,valArr) > -1){
+                setDataSourceCopyIcon(cell.id);
+                graph.nodeData[cell.id].isCopy = true;
+            }
+            historyNodeName = "拖入表【" + treeNode.name + "】";
+        }
 		graph.oldOptArr.push({"optType":"drag","optArr":[{"id":cell.id,"nodeData":graph.nodeData[cell.id]}]});
 		//刷新所使用资源树
 		refrashResourceZtree(cell.id, treeNode.name, cell.nodeType);
@@ -2668,9 +2668,6 @@ var iconDrag = function(treeNode) {
 		case "comparison":
 		case "change":
 		case "union":
-		case "intersect":
-		case "exclude":
-		case "barChart":
 		case "sql":
 		case "newNullNode":
 		case "relation":

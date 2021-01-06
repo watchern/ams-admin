@@ -25,10 +25,10 @@
               >
               </el-date-picker>
             </div>
-            模型结果保存在 : {{ path }}
-            <a @click="modelResultSavePathDialog = true" style="color: #409eff"
+            <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;cursor: pointer;" @click="modelResultSavePathDialog = true">{{ path }}</label>
+<!--            <a @click="modelResultSavePathDialog = true" style="color: #409eff"
               >编辑</a
-            >
+            >-->
           </div>
         </el-header>
         <el-main>
@@ -49,6 +49,7 @@
               :scene-code="sceneCode"
               :tree-type="treeType"
               @node-click="handleClick"
+              style="height: 500px;overflow-y: scroll"
             />
             <span slot="footer" class="dialog-footer">
               <el-button @click="modelResultSavePathDialog = false"
@@ -80,6 +81,10 @@ export default {
   },
   created() {
     this.initDialog();
+    this.tempPath = "根路径";
+    this.tempId = this.$store.getters.datauserid
+    this.modelResultSavePathId = this.$store.getters.datauserid
+    this.path = "当前执行模型保存路径:根路径"
   },
   components: {
     paramDraw,
@@ -106,7 +111,7 @@ export default {
       sceneCode: "auditor",
       treeType: "save",
       path: "",
-      modelResultSavePathId: "",
+      modelResultSavePathId: '',
       tempPath: "",
       nodeType: "",
       tempId: "",
@@ -139,10 +144,17 @@ export default {
             );
           }
         }
+        let sql = "";
+        if(this.detailModels[i].modelType == "002003001"){
+          sql = this.detailModels[i].sqlValue
+        }
+        if(this.detailModels[i].modelType == "002003002"){
+          sql = this.detailModels[i].modelSql
+        }
         this.$refs.paramassembly[i].initParamHtmlSS(
-          this.detailModels[i].sqlValue,
-          paramArr,
+          sql, paramArr,
           this.detailModels[i].modelName + "参数",
+          this.detailModels[i].modelUuid + "2",
           this.detailModels[i].modelUuid + "2"
         );
       }
@@ -154,7 +166,7 @@ export default {
       var replaceInfo = [];
       for (var i = 0; i < this.detailModels.length; i++) {
         replaceInfo.push(
-          replaceNodeParam(this.detailModels[i].modelUuid + "2")
+          replaceNodeParam(this.detailModels[i].modelUuid + "2",this.detailModels[i].modelUuid + "2")
         );
       }
       var obj = {
@@ -178,11 +190,10 @@ export default {
       this.tempPath = data.label;
       this.tempId = data.id;
       this.nodeType = data.type;
-      console.log(data, node, tree);
     },
     modelResultSavePathDetermine() {
       if (this.nodeType == "folder") {
-        this.path = this.tempPath;
+        this.path = "当前执行模型保存路径:" + this.tempPath;
         this.modelResultSavePathId = this.tempId;
         this.modelResultSavePathDialog = false;
       } else if(this.nodeType == ""){

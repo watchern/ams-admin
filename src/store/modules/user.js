@@ -1,16 +1,23 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+import { onAccessSystem } from '@/utils/permission'
 import { cacheDict } from '@/api/base/sys-dict'
-
+import { getAllScene, getSceneInst } from '@/api/data/scene'
+import Cookies from 'js-cookie'
 const state = {
+  ext: "xxxx",
   token: getToken(),
   name: '',
   avatar: '',
   introduction: '',
   roles: [],
   id: '',
-  code: ''
+  code: '',
+  scenecode: '',
+  scenename: '',
+  datauserid: '',
+  datausername: ''
 }
 
 const mutations = {
@@ -37,6 +44,18 @@ const mutations = {
   },
   SET_CODE: (state, code) => {
     state.code = code
+  },
+  SET_SCENECODE: (state, scenecode) => {
+    state.scenecode = scenecode
+  },
+  SET_SCENENAME: (state, scenename) => {
+    state.scenename = scenename
+  },
+  SET_DATAUSERID: (state, datauserid) => {
+    state.datauserid = datauserid
+  },
+  SET_DATAUSERNAME: (state, datausername) => {
+    state.datausername = datausername
   }
 }
 
@@ -49,26 +68,66 @@ const actions = {
         const { data } = response
         commit('SET_ID', data.personUuid)
         commit('SET_NAME', data.username)
-        commit('SET_TOKEN', data.personUuid)
         commit('SET_CODE', data.userid)
-        setToken(data.personUuid)
-        resolve()
         var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
         if (sysDict == null) {
           cacheDict().then(resp => {
             sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
           })
         }
+        /*登录时设置场景编码和实例*/
+        var sceneCode = 'auditor';
+        var dataUserId = data.userid;
+        getSceneInst(sceneCode, dataUserId).then(resp => {
+          var dataUserName = resp.data.dataUserName;
+          var sceneName = resp.data.sceneName;
+          commit('SET_SCENECODE', sceneCode)
+          commit('SET_SCENENAME', sceneName)
+          commit('SET_DATAUSERID', dataUserId)
+          commit('SET_DATAUSERNAME', dataUserName)
+        });
+
+
+        /*getAllScene().then(res => {
+          var sceneCode = res.data[0].sceneCode;
+          var sceneName = res.data[0].sceneName;
+          commit('SET_SCENECODE', sceneCode)
+          commit('SET_SCENENAME', sceneName)
+          commit('SET_DATAUSERID', data.userid)
+          commit('SET_DATAUSERNAME', data.username)
+          sessionStorage.setItem('sceneCode', res.data[0].sceneCode);
+          sessionStorage.setItem('sceneName', res.data[0].sceneName);
+          sessionStorage.setItem('dataUserId', data.userid);
+          sessionStorage.setItem('dataUserName', data.username);*/
+          //this.$store.dispatch('user/saveScene', sceneCode, "项目场景", prjcode, personuuid, prjname);
+         /* saveSession({
+            sceneCode: res.data[0].sceneCode,
+            sceneName :res.data[0].sceneName,
+            dataUserId: data.userid,
+            dataUserName: data.username
+          });
+        })
+        */
+        resolve()
       }).catch(error => {
         reject(error)
       })
     })
   },
 
-  // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      //console.log(state);
+     /* var personuuid = state.id;
+      if(personuuid == "" || personuuid == null){
+        personuuid = Cookies.get("PERSONUUID")
+      }
+      if(personuuid == "" || personuuid == null){
+        personuuid = window.location.hash.replace('#/base/sso?param=', '').split(",")[0];
+        Cookies.set("PERSONUUID", personuuid)
+      }*/
+
+      getInfo().then(response => {
         const { data } = response
         if (!data) {
           reject('Verification failed, please Login again.')
@@ -78,12 +137,26 @@ const actions = {
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
-        if (id != null) commit('SET_ID', id)
-        if (roles != null) commit('SET_ROLES', roles)
+        commit('SET_ID', id)
+        commit('SET_ROLES', roles)
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         commit('SET_INTRODUCTION', introduction)
         commit('SET_CODE', personcode)
+
+        if(state.scenecode == "" || state.scenecode == null){
+
+          var sceneCode = 'auditor';
+          var dataUserId = personcode;
+          getSceneInst(sceneCode, dataUserId).then(resp => {
+            var dataUserName = resp.data.dataUserName;
+            var sceneName = resp.data.sceneName;
+            commit('SET_SCENECODE', sceneCode)
+            commit('SET_SCENENAME', sceneName)
+            commit('SET_DATAUSERID', dataUserId)
+            commit('SET_DATAUSERNAME', dataUserName)
+          });
+        }
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -114,6 +187,16 @@ const actions = {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
       removeToken()
+      resolve()
+    })
+  },
+
+  saveScene({ commit }, payload) {
+    return new Promise(resolve => {
+      commit('SET_SCENECODE', payload.sceneCode)
+      commit('SET_SCENENAME', payload.sceneName)
+      commit('SET_DATAUSERID', payload.dataUserId)
+      commit('SET_DATAUSERNAME', payload.dataUserName)
       resolve()
     })
   }

@@ -1,26 +1,9 @@
 <template>
-  <div>
-    <form class="form-horizontal" >
-      <div class="col-sm-12" id="zzzzz-zy">
-        <div :id="myId+'1'" class="panel-group">
-          <div class="panel panel-default">
-            <el-collapse v-model="activeName" accordion>
-              <el-collapse-item :title="accordionName" name="1">
-                <!-- <a
-                  data-toggle="collapse"
-                  :data-parent="'#'+myId+'1'"
-                  :href="'#'+myId+'collapse'"
-                ></a> -->
-                <div :id="myId+'collapse'" class="panel-collapse collapse in">
-                  <div :id="myId" class="panel-body" style="padding: 10px 0"></div>
-                </div>
-              </el-collapse-item>
-            </el-collapse>
-          </div>
+    <div :id="myId+'1'">
+        <div :id="myId+'collapse'">
+          <div :id="myId" style="padding: 10px 0"></div>
         </div>
-      </div>
-    </form>
-  </div>
+    </div>
 </template>
 <script>
 import { initParamHtml } from "@/api/analysis/auditparam";
@@ -38,10 +21,10 @@ export default {
     /**
      * 初始化参数渲染界面
      */
-    initParamHtmlSS(sql, paramsArr, name, id) {
+    initParamHtmlSS(sql, paramsArr, name, id,serviceInfo) {
       this.accordionName = name
       this.paramsArr = paramsArr
-      initParamHtml(sql, paramsArr, name, id);
+      initParamHtml(sql, paramsArr, name, id,serviceInfo);
     },
   },
 };

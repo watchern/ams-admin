@@ -17,7 +17,6 @@
         <Item v-for="(val,index) in item.children" :key="index" :item="val" @close="close(val)" />
       </ul>
     </template>
-
   </li>
 </template>
 
@@ -33,7 +32,8 @@ export default {
   },
   data() {
     return {
-      isOpen: false
+      isOpen: false,
+      theIndex:1
     }
   },
   methods: {
@@ -55,13 +55,34 @@ export default {
           }
         })
       }
+
+      let arry = []
+      let lstimeIn = []
+      // console.log(item.path)
+      if(localStorage.getItem('userid')){
+        arry = JSON.parse(localStorage.getItem('userid'))
+      }
+      if(arry.length == 0 && item.path !== ''){
+        arry.push({id:item.name,v:this.theIndex,p:item.path})
+      }
+      for(let i = 0 ; i < arry.length-1 ; i++){
+        if(item.name == arry[i].id){
+          arry[i].v = arry[i].v+1
+        }
+        lstimeIn.push(arry[i].id)
+      }
+      if(lstimeIn.indexOf(item.name) && item.path !== ''){
+        arry.push({id:item.name,v:this.theIndex,p:item.path})
+      }
+      localStorage.setItem('userid',JSON.stringify(arry))
+
+
       this.$emit('close', {
         isOpen: this.isOpen,
         index: this.index,
         isCloseTree: isCloseTree
       })
-    }
-
+    },
   }
 }
 </script>

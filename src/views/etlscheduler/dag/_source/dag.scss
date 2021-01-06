@@ -71,7 +71,7 @@
   }
 
   .icos-SHELL {
-    background: url("../img/toolbar_SHELL.png") no-repeat 50% 50%;
+    background: url("../img/shell.png") no-repeat 50% 50%;
   }
 
   .icos-JAVA {
@@ -163,6 +163,8 @@
 
         >.name {
           padding-left: 6px;
+          margin-top:-20px;
+          display: inline-block;
           vertical-align: middle;
         }
 
