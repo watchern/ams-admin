@@ -22,7 +22,7 @@
       <el-col :span="12">
         <el-card class="box-card" shadow="always">
           <div slot="header" class="clearfix" style="text-align:right; ">
-            <time class="time">{{ time | formatDate }}</time>
+            <time class="time">更新时间：{{ time | formatDate }}</time>
             <!-- <span>卡片名称</span> -->
             <span class="el-icon-refresh-left refreshspan" @click="refresh()" />
           </div>
@@ -83,7 +83,7 @@
         <el-card class="box-card" shadow="always">
           <div slot="header" class="clearfix" style="text-align: right;">
             <!-- <span>卡片名称</span> -->
-            <time class="time">{{ time | formatDate }}</time>
+            <time class="time">更新时间：{{ time | formatDate }}</time>
             <span class="el-icon-refresh-left refreshspan" @click="refresh()" />
           </div>
           <m-process-state-count :search-params="searchParams" @refresh="_datepicker()" />
