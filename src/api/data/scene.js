@@ -6,7 +6,7 @@ const controllerName = 'scene'
 export function listByPage(data) {
   return request({
     baseURL: baseURL,
-    url: '/scene/listByPage',
+    url: `/${controllerName}/listByPage`,
     method: 'post',
     data
   })
@@ -54,7 +54,6 @@ export function getAllScene() {
   })
 }
 
-
 export function getSceneInst(sceneCode, sceneInst) {
   return request({
     baseURL: baseURL,
@@ -62,7 +61,7 @@ export function getSceneInst(sceneCode, sceneInst) {
     method: 'get'
   })
 }
-/*export function saveSession(data) {
+/* export function saveSession(data) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/saveSession`,
@@ -70,6 +69,4 @@ export function getSceneInst(sceneCode, sceneInst) {
     data
   })
 }*/
-
-
 
