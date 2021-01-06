@@ -36,7 +36,7 @@
           @select-all="modelTableSelectEvent"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column label="模型名称" width="300px" align="center" prop="modelName">
+          <el-table-column label="模型名称" width="300px"  prop="modelName">
             <template slot-scope="scope">
               <el-link type="primary" @click="selectModelDetail(scope.row.modelUuid)">{{ scope.row.modelName }}</el-link>
             </template>
