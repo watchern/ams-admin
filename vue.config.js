@@ -76,6 +76,13 @@ module.exports = {
           '^/analysis/': '/'
         }
       },
+      '/indicator/': {
+        target: process.env.AMSINDICATOR_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/indicator/': '/'
+        }
+      },
       '/graphtool/': {
         target: process.env.AMSGRAPHTOOL_API,
         changeOrigin: true,
