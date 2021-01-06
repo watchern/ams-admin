@@ -1,18 +1,17 @@
 <template>
     <div ref="inputParamContent" style="height: 400px;overflow-y: auto;">
         <el-collapse accordion v-model="activeName">
-            <el-collapse-item v-for="(nodeParamInfo,index) in nodeParamInfoArr" :title="nodeParamInfo.nodeName" :name="nodeParamInfo.curInd" :index="index" ref="nodeParam">
+            <el-collapse-item v-for="(nodeParamInfo,index) in nodeParamInfoArr" :key="nodeParamInfo.nodeId" :title="nodeParamInfo.nodeName" :name="nodeParamInfo.curInd" :index="index" ref="nodeParam">
                 <div style="min-height: 290px;overflow-y: auto;" >
-                    <el-row v-for="(paramInfo,ind) in nodeParamInfo.paramInfoArr">
+                    <el-row v-for="(paramInfo,ind) in nodeParamInfo.paramInfoArr" :key="ind">
                         <el-col :span="7" style="line-height:36px;padding-right: 10px;text-align: right;">
-                            <!--<label :title="paramInfo.description">{{paramInfo.paramName}}</label>-->
                             <el-tooltip :content="paramInfo.description" placement="bottom">
                                 <label>{{paramInfo.paramName}}</label>
                             </el-tooltip>
                         </el-col>
                         <el-col :span="15">
                             <div ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title" :nodeId="nodeParamInfo.nodeId" class="xm-select-demo"></div>
-                            <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.value"></el-input>
+                            <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.value" class="textParam"></el-input>
                             <el-date-picker ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.value" style="width: 100%;"></el-date-picker>
                             <div ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title" :nodeId="nodeParamInfo.nodeId" class="xm-select-demo"></div>
                         </el-col>
@@ -41,7 +40,7 @@
                 loading:null
             }
         },
-        props:["graph","nodeIdArr"],
+        props:["nodeData","nodeIdArr"],
         created(){
             addJsFile('/lib/layui/xm-select.js','xm-select')
         },
@@ -66,8 +65,8 @@
                     }
                     let nodeParamObj = {}// 节点与参数配置绑定的对象
                     for (let i = 0; i < this.nodeIdArr.length; i++) {
-                        let hasParam = this.graph.nodeData[this.nodeIdArr[i]].hasParam// 是否有参数
-                        let paramsSetting = this.graph.nodeData[this.nodeIdArr[i]].paramsSetting
+                        let hasParam = this.nodeData[this.nodeIdArr[i]].hasParam// 是否有参数
+                        let paramsSetting = this.nodeData[this.nodeIdArr[i]].paramsSetting
                         if (hasParam && paramsSetting && paramsSetting.arr && paramsSetting.arr.length !== 0) {
                             let copyParamArr = []// 定义所有参数的对象数组（已去重）
                             let arr = paramsSetting.arr// 获取设置的参数数组
@@ -96,7 +95,7 @@
                         let nodeParamInfoObj = {
                             "curInd": j,
                             "nodeId": curNodeId,
-                            "nodeName": `【${this.graph.nodeData[curNodeId].nodeInfo.nodeName}】节点`,
+                            "nodeName": `【${this.nodeData[curNodeId].nodeInfo.nodeName}】节点`,
                             "paramInfoArr": [],
                         }
                         if (j === 0) {
@@ -630,7 +629,7 @@
                         let index = nodeParamDom[i].$attrs.index
                         let nodeName = this.nodeParamInfoArr[index].nodeName// 当前节点的名称
                         let nodeId = this.nodeParamInfoArr[index].nodeId// 当前节点的ID
-                        let paramsSetting = this.graph.nodeData[nodeId].paramsSetting// 获取当前节点得参数配置信息
+                        let paramsSetting = this.nodeData[nodeId].paramsSetting// 获取当前节点得参数配置信息
                         let replaceParamSql = paramsSetting.sql// 获取参数的SQL语句
                         let arr = paramsSetting.arr// 参数数组
                         // 先去除已存在的value值
@@ -787,7 +786,7 @@
                         if (paramNum !== 0) { // 第一步，先判断是否有必填的参数没有输入值
                             returnObj.verify = false
                             returnObj.message += nodeName + '含有未输入值的参数项，请重新输入<br/>'
-                            delete this.graph.nodeData[nodeId].replaceParamSql
+                            delete this.nodeData[nodeId].replaceParamSql
                             break
                         } else {
                             // 第二步，判断设置长度值文本框输入的值是否满足条件
@@ -809,7 +808,7 @@
                             } else {
                                 if (hasAllowedNullParam) { // 如果存在可为空的参数并且为空值，走后台进行空参替换
                                     const response = await replaceModelSqlByParams(replaceParamSql, JSON.stringify(arr))
-                                    if(response.data.isError){// 出错后replaceParamSql的值会在后台置为空
+                                    if(response.data == null || response.data.isError){// 出错后replaceParamSql的值会在后台置为空
                                         returnObj.verify = false
                                         returnObj.message = nodeName + '替换空值参数时出错'
                                     }else{
@@ -826,7 +825,7 @@
                                             }
                                         }
                                     }
-                                    this.graph.nodeData[nodeId].replaceParamSql = replaceParamSql
+                                    this.nodeData[nodeId].replaceParamSql = replaceParamSql
                                 } else {
                                     break
                                 }

@@ -3,13 +3,13 @@
         <el-collapse v-model="activeName" accordion v-if="queryFilter">
             <el-collapse-item name="1" title="查询条件">
                 <div :style="collapseStyle">
-                    <el-row v-for="(filter,ind) in queryFilterArr">
+                    <el-row v-for="(filter,ind) in queryFilterArr" :key="ind">
                         <el-col :span="4" style="line-height:36px;padding-right: 10px;text-align: right;">
                             <label>{{filter.paramName}}</label>
                         </el-col>
                         <el-col :span="6">
                             <div ref="selectParamScreen" :index="ind" v-if="filter.inputType === 'lineinp'" :id="filter.id" :title="filter.title"class="xm-select-demo"></div>
-                            <el-input ref="paramOptionScreen" :index="ind" v-if="filter.inputType === 'textinp'" :title="filter.title" v-model="filter.value"></el-input>
+                            <el-input ref="paramOptionScreen" :index="ind" v-if="filter.inputType === 'textinp'" :title="filter.title" v-model="filter.value" class="textParam"></el-input>
                             <el-date-picker ref="paramOptionScreen" :index="ind"  v-if="filter.inputType === 'timeinp'" :title="filter.title" type="date" placeholder="选择日期" v-model="filter.value" style="width: 100%;"></el-date-picker>
                             <div ref="selectTreeParamScreen" :index="ind" v-if="filter.inputType === 'treeinp'" :id="filter.id" :title="filter.title"class="xm-select-demo"></div>
                         </el-col>
@@ -35,31 +35,60 @@
                         <el-button type="primary" @click="dealData('groupCount')">分组统计</el-button>
                     </el-col>
                 </el-row>
+                <el-row>
+                    <ChildTabCons ref="resultTable" use-type="graph" :nowtable="resultInfo" :prePersonalVal="resultInfo" v-if="showTableResult"/>
+                </el-row>
             </el-collapse-item>
         </el-collapse>
-        <el-row v-if="!queryFilter">
-            <el-col :span="10">
-                <el-button type="primary" @click="dealData('filter')">筛选</el-button>
-                <el-button type="primary" @click="dealData('sort')">排序</el-button>
-                <el-button type="primary" @click="dealData('groupCount')">分组统计</el-button>
-            </el-col>
-            <el-col :span="10" style="float: right;text-align: right;padding-right: 30px;">
-                <el-button v-show="!initQuery" type="primary" @click="queryData">查询</el-button>
-                <el-button v-show="initQuery" type="primary" @click="initQueryData">初始化查询</el-button>
-                <el-button type="primary" @click="resetQuery">清空</el-button>
-            </el-col>
-        </el-row>
+        <div v-if="!queryFilter">
+            <el-row>
+                <el-col :span="10">
+                    <el-button type="primary" @click="dealData('filter')">筛选</el-button>
+                    <el-button type="primary" @click="dealData('sort')">排序</el-button>
+                    <el-button type="primary" @click="dealData('groupCount')">分组统计</el-button>
+                </el-col>
+                <el-col :span="10" style="float: right;text-align: right;padding-right: 30px;">
+                    <el-button v-show="!initQuery" type="primary" @click="queryData">查询</el-button>
+                    <el-button v-show="initQuery" type="primary" @click="initQueryData">初始化查询</el-button>
+                    <el-button type="primary" @click="resetQuery">清空</el-button>
+                </el-col>
+            </el-row>
+            <el-row>
+                <ChildTabCons ref="resultTable" use-type="graph" :nowtable="resultInfo" :prePersonalVal="resultInfo" v-if="showTableResult"/>
+            </el-row>
+        </div>
+        <el-dialog v-if="nodeParamDialogVisible" :visible.sync="nodeParamDialogVisible" title="前置节点参数设置" :close-on-press-escape="autoCloseDialog" :close-on-click-modal="autoCloseDialog" width="600px">
+            <InputParams ref="inputParams" :nodeData="allNodeData" :nodeIdArr="executeNodeIdArr"/>
+            <div slot="footer">
+                <el-button @click="nodeParamDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="executeParamCallBack">保存</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog v-if="nodeParamDialogVisible" :visible.sync="nodeParamDialogVisible" title="前置节点参数设置" :close-on-press-escape="autoCloseDialog" :close-on-click-modal="autoCloseDialog" width="600px">
+            <InputParams ref="inputParams" :nodeData="allNodeData" :nodeIdArr="executeNodeIdArr"/>
+            <div slot="footer">
+                <el-button @click="nodeParamDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="executeParamCallBack">保存</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
-    import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams,getScreenGraphInfo } from '@/api/graphtool/graphList'
+    import InputParams from '@/views/graphtool/tooldic/page/inputParams/inputParams.vue'
+    import ChildTabCons from "@/views/analysis/auditmodelresult/childtabcon"
+    import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams,
+        getScreenGraphInfo,dealReplaceParamSq,getScreenExecuteSql,selectScreenQueryData,dealReplaceParamSql } from '@/api/graphtool/graphList'
     import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
+    import { getPreNodesNotDatasource } from '@/views/graphtool/tooldic/js/common'
+    import * as commonJs from "@/views/graphtool/tooldic/js/common";
     export default {
         name: "screenQueryOne",
+        components:{ InputParams, ChildTabCons },
         data() {
             return {
-                screenLoading: false,
+                screenLoading: true,
+                loginUserUuid:'',//当前登录人的UUID
                 screenStyle: '',
                 collapseStyle:'',
                 settingObj: {
@@ -78,25 +107,31 @@
                 sql: '',//当前节点的查询SQL语句
                 paramSql: '',//当前节点的参数SQL语句
                 dataParamSql: '',//当前列表数据的查询条件
+                curReplaceParamSql:'',//当前节点的参数SQL
                 columnInfoArr: [],//显示的列信息集合
                 isQuery: false,//是否查询过结果
                 isInitTable: false,//是否重新加载数据表
                 selectNum: 0, //定义查询条件为下拉列表的参数个数
                 selectTreeNum: 0,//定义查询条件为下拉树的参数个数
                 allNodeData: {}, //当前图形的所有节点的数据
+                executeNodeIdArr:[],//当前节点的前置节点ID集合
                 curOptType: '',//当前节点的类型
                 rsCurPage: {},//当前分页对象的部分信息（包括当前页码、当前每页显示条数）
-                loginUserId:'',
+                loginUserId:'',//当前登录人的ID
                 queryFilterArr:[],//查询条件集合
                 queryFilter:false,
                 activeName:'1',
-                changeTable:0,
-                initQuery:false
+                changeTable:0,//是否改变过查询结果
+                initQuery:false,//是否有结果集
+                resultInfo:null,//查询结果集的数据信息
+                showTableResult:false,//是否展示查询结果列表
+                autoCloseDialog:false,
+                nodeParamDialogVisible:false
             }
         },
         props: ['screenParam'],
         mounted() {
-            this.init();
+            this.init()
         },
         methods: {
             async init() {
@@ -104,6 +139,7 @@
                 this.screenStyle = `width:100%;height:${height}px;overflow-y:auto;`
                 this.collapseStyle = `width:100%;height:${height - 130}px;overflow-y:auto;`
                 this.loginUserId = this.$store.state.user.code
+                this.loginUserUuid = this.$store.state.user.id
                 let nodeId = this.screenParam.nodeData.nodeInfo.nodeId
                 let nodeName = this.screenParam.nodeData.nodeInfo.nodeName
                 try {
@@ -133,6 +169,9 @@
                         this.curOptType = curNodeData.nodeInfo.optType;//获取当前节点的类型
                         //刷新数据分层节点的下标
                         if (this.curOptType === "layering" && this.allNodeData[nodeId].setting) {
+                            if(typeof this.screenParam.layering_index === 'undefined'){//默认加载第一个分层区间，否则为自主选择的分层区间
+                                this.screenParam.layering_index = 0
+                            }
                             this.allNodeData[nodeId].setting.index = this.screenParam.layering_index
                         }
                         //组装列表字段数组
@@ -679,233 +718,313 @@
                     selectXs.setValue([])// 清空选中值
                 }
             },
-            /**
-             * 替换参数
-             * @return {{verify: boolean, message: string}}
-             * @author JL
-             */
-            async replaceNodeParam() {
-                let returnObj = {
-                    'verify': true, // 校验是否通过
-                    'message': ''// 提示信息
+            pageInit(sql){
+                this.resultInfo = {"id":this.screenParam.nodeData.nodeInfo.nodeId,"name":this.screenParam.nodeData.nodeInfo.nodeName}
+                let param = {"sql":sql}
+                let webSocketUuid = new UUIDGenerator().id
+                param.graphName = this.screenParam.graphName
+                param.nodeId = this.screenParam.nodeData.nodeInfo.nodeId
+                param.nodeName = this.screenParam.nodeData.nodeInfo.nodeName
+                param.websocketUuid = webSocketUuid
+                this.$parent.$parent.$parent.$parent.webSocketUuid = webSocketUuid
+                selectScreenQueryData(param).then().catch( error => {
+                    this.$parent.$parent.$parent.$parent.screenListLoading = false
+                })
+            },
+            async queryData() {
+                if (this.changeTable === 1){
+                    this.isInitTable = true
+                    this.changeTable = 0
+                }else{
+                    this.isInitTable = false
                 }
-                // 循环所有节点
-                let nodeParamDom = this.$refs.nodeParam
-                if(nodeParamDom && nodeParamDom.length > 0){
-                    for(let i=0; i<nodeParamDom.length; i++){
-                        let filterArr = []// 参数条件的数组，包含参数ID和参数值
-                        let paramNum = 0// 记录参数不允许为空却未输入值的参数数量
-                        let hasAllowedNullParam = false// 本次查询是否含有可为空的参数条件
-                        let index = nodeParamDom[i].$attrs.index
-                        let nodeName = this.nodeParamInfoArr[index].nodeName// 当前节点的名称
-                        let nodeId = this.nodeParamInfoArr[index].nodeId// 当前节点的ID
-                        let paramsSetting = this.graph.nodeData[nodeId].paramsSetting// 获取当前节点得参数配置信息
-                        let replaceParamSql = paramsSetting.sql// 获取参数的SQL语句
-                        let arr = paramsSetting.arr// 参数数组
-                        // 先去除已存在的value值
-                        for (let k = 0; k < arr.length; k++) {
-                            if (typeof arr[k].value !== 'undefined') {
-                                delete arr[k].value
-                            }
+                let filterArr = []//参数条件的数组，包含参数ID和参数值，也只存储输了值的参数
+                let paramNum = 0//记录参数不允许为空却未输入值的参数数量
+                let hasAllowedNullParam = false//本次查询是否含有可为空的参数条件
+                let queryFilterObj = null
+                //先去除已存在的value值
+                for(let i=0; i<this.arr.length; i++){
+                    if(typeof this.arr[i].value !== "undefined"){
+                        delete this.arr[i].value;
+                    }
+                }
+                let paramOptionScreen = this.$refs.paramOptionScreen
+                if(paramOptionScreen && paramOptionScreen.length > 0){
+                    for(let j=0; j<paramOptionScreen.length; j++){
+                        let index = paramOptionScreen[j].$attrs.index
+                        queryFilterObj = this.queryFilterArr[index]
+                        let moduleParamId = queryFilterObj.dataId// 母参数ID
+                        let allowedNull = typeof queryFilterObj.dataAllowedNull !== 'undefined' ? queryFilterObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
+                        let paramValue = queryFilterObj.value
+                        let obj = {
+                            'moduleParamId': moduleParamId,
+                            'paramValue': $.trim(paramValue), // 处理可能存在的空格
+                            'allowedNull': '0'
                         }
-                        let paramInfoArr = this.nodeParamInfoArr[index].paramInfoArr
-                        let queryFilterObj = null
-                        // 获取参数查询条件（文本框）
-                        let paramOptionDom = this.$refs.paramOption
-                        if(paramOptionDom && paramOptionDom.length > 0){
-                            for(let j=0; j<paramOptionDom.length; j++){
-                                // $(nodeParamDom[i]).find('.paramOption').each(function() {
-                                let index = paramOptionDom[j].getAttribute("index")
-                                queryFilterObj = paramInfoArr[index]
-                                let moduleParamId = queryFilterObj.dataId// 母参数ID
-                                let allowedNull = typeof queryFilterObj.dataAllowedNull !== 'undefined' ? queryFilterObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
-                                let paramValue = queryFilterObj.value
-                                let obj = {
-                                    'moduleParamId': moduleParamId,
-                                    'paramValue': $.trim(paramValue), // 处理可能存在的空格
-                                    'allowedNull': '0'
-                                }
-                                if (allowedNull === '1') { // 允许为空
-                                    obj.allowedNull = '1'
-                                    if (paramValue === '') {
-                                        hasAllowedNullParam = true
-                                        for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
-                                            if (arr[w].moduleParamId === moduleParamId) {
-                                                arr[w]['value'] = ''
-                                            }
-                                        }
-                                    }
-                                    filterArr.push(obj)
-                                } else { // 不允许为空
-                                    if (paramValue !== '') {
-                                        filterArr.push(obj)
-                                    } else {
-                                        paramNum++
+                        if (allowedNull === '1') { // 允许为空
+                            obj.allowedNull = '1'
+                            if (paramValue === '') {
+                                hasAllowedNullParam = true
+                                for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                                    if (arr[w].moduleParamId === moduleParamId) {
+                                        arr[w]['value'] = ''
                                     }
                                 }
                             }
-                        }
-                        // 获取参数查询条件（下拉列表）
-                        let selectParamScreenDom = this.$refs.selectParamScreen
-                        if(selectParamScreenDom && selectParamScreenDom.length > 0){
-                            for(let n=0; n<selectParamScreenDom.length; n++){
-                                let index = selectParamScreenDom[n].getAttribute("index")
-                                queryFilterObj = paramInfoArr[index]
-                                let moduleParamId = queryFilterObj.dataId// 母参数ID
-                                let allowedNull = typeof queryFilterObj.dataAllowedNull !== 'undefined' ? queryFilterObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
-                                let choiceType = queryFilterObj.dataChoiceType// 当前参数是多选还是单选：0：多选，1、单选
-                                let selectParamScreenXs = xmSelect.get('#selectParamScreen' + queryFilterObj.selectNum, true)// 获取下拉列表参数的单实例
-                                let paramSelectedObj = selectParamScreenXs.getValue()// 获取选中的参数值名称
-                                let obj = {
-                                    'moduleParamId': moduleParamId,
-                                    'paramValue': '',
-                                    'allowedNull': '0'
-                                }
-                                if (allowedNull === '1') { // 允许为空
-                                    obj.allowedNull = '1'
-                                    if (paramSelectedObj.length === 0) { // 未选择值
-                                        hasAllowedNullParam = true
-                                        for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
-                                            if (arr[w].moduleParamId === moduleParamId) {
-                                                arr[w]['value'] = ''
-                                            }
-                                        }
-                                    } else {
-                                        if (choiceType === '1') { // 单选
-                                            obj.paramValue = paramSelectedObj[0].value
-                                        } else {
-                                            for (let j = 0; j < paramSelectedObj.length; j++) { // 多值，以'','',……形式展现
-                                                obj.paramValue += "'" + paramSelectedObj[j].value + "',"
-                                            }
-                                            obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
-                                        }
-                                    }
-                                    filterArr.push(obj)
-                                } else { // 不允许为空
-                                    if (paramSelectedObj.length !== 0) {
-                                        if (choiceType === '1') { // 单选
-                                            obj.paramValue = paramSelectedObj[0].value
-                                        } else {
-                                            for (let j = 0; j < paramSelectedObj.length; j++) { // 多值，以'','',……形式展现
-                                                obj.paramValue += "'" + paramSelectedObj[j].value + "',"
-                                            }
-                                            obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
-                                        }
-                                        filterArr.push(obj)
-                                    } else {
-                                        paramNum++
-                                    }
-                                }
+                            filterArr.push(obj)
+                        } else { // 不允许为空
+                            if (paramValue !== '') {
+                                filterArr.push(obj)
+                            } else {
+                                paramNum++
                             }
                         }
+                    }
+                }
+                // 获取参数查询条件（下拉列表）
+                let selectParamScreen = this.$refs.selectParamScreen
+                if(selectParamScreen && selectParamScreen.length > 0){
+                    for(let n=0; n<selectParamScreen.length; n++){
+                        let index = selectParamScreen[n].getAttribute("index")
+                        queryFilterObj = this.queryFilterArr[index]
+                        let moduleParamId = queryFilterObj.dataId// 母参数ID
+                        let allowedNull = typeof queryFilterObj.dataAllowedNull !== 'undefined' ? queryFilterObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
+                        let choiceType = queryFilterObj.dataChoiceType// 当前参数是多选还是单选：0：多选，1、单选
+                        let selectParamXs = xmSelect.get(`#selectParamScreen${queryFilterObj.selectNum}${this.screenParam.nodeData.nodeInfo.nodeId}`, true)// 获取下拉列表参数的单实例
+                        let paramSelectedObj = selectParamXs.getValue()// 获取选中的参数值名称
+                        let obj = {
+                            'moduleParamId': moduleParamId,
+                            'paramValue': '',
+                            'allowedNull': '0'
+                        }
+                        if (allowedNull === '1') { // 允许为空
+                            obj.allowedNull = '1'
+                            if (paramSelectedObj.length === 0) { // 未选择值
+                                hasAllowedNullParam = true
+                                for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                                    if (arr[w].moduleParamId === moduleParamId) {
+                                        arr[w]['value'] = ''
+                                    }
+                                }
+                            } else {
+                                if (choiceType === '1') { // 单选
+                                    obj.paramValue = paramSelectedObj[0].value
+                                } else {
+                                    for (let j = 0; j < paramSelectedObj.length; j++) { // 多值，以'','',……形式展现
+                                        obj.paramValue += "'" + paramSelectedObj[j].value + "',"
+                                    }
+                                    obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
+                                }
+                            }
+                            filterArr.push(obj)
+                        } else { // 不允许为空
+                            if (paramSelectedObj.length !== 0) {
+                                if (choiceType === '1') { // 单选
+                                    obj.paramValue = paramSelectedObj[0].value
+                                } else {
+                                    for (let j = 0; j < paramSelectedObj.length; j++) { // 多值，以'','',……形式展现
+                                        obj.paramValue += "'" + paramSelectedObj[j].value + "',"
+                                    }
+                                    obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
+                                }
+                                filterArr.push(obj)
+                            } else {
+                                paramNum++
+                            }
+                        }
+                    }
+                }
 
-                        // 获取参数查询条件（下拉树）
-                        let selectTreeParamScreenDom = this.$refs.selectTreeParamScreen
-                        if(selectTreeParamScreenDom && selectTreeParamScreenDom.length > 0) {
-                            for (let m = 0; m < selectTreeParamScreenDom.length; m++) {
-                                let index = selectTreeParamScreenDom[m].getAttribute("index")
-                                queryFilterObj = paramInfoArr[index]
-                                let moduleParamId = queryFilterObj.dataId// 母参数ID
-                                let allowedNull = typeof queryFilterObj.dataAllowedNull !== 'undefined' ? queryFilterObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
-                                let choiceType = queryFilterObj.dataChoiceType// 当前参数是多选还是单选：0：多选，1、单选
-                                let selectTreeParamScreenXs = xmSelect.get('#selectTreeParamScreen' + queryFilterObj.selectTreeNum, true)// 获取下拉树参数的单实例
-                                let paramSelectedObj = selectTreeParamScreenXs.getValue()// 获取选中的参数值名称
-                                let obj = {
-                                    'moduleParamId': moduleParamId,
-                                    'paramValue': '',
-                                    'allowedNull': '0'
+                // 获取参数查询条件（下拉树）
+                let selectTreeParamScreen = this.$refs.selectTreeParamScreen
+                if(selectTreeParamScreen && selectTreeParamScreen.length > 0) {
+                    for (let m = 0; m < selectTreeParamScreen.length; m++) {
+                        let index = selectTreeParamScreen[m].getAttribute("index")
+                        queryFilterObj = this.queryFilterArr[index]
+                        let moduleParamId = queryFilterObj.dataId// 母参数ID
+                        let allowedNull = typeof queryFilterObj.dataAllowedNull !== 'undefined' ? queryFilterObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
+                        let choiceType = queryFilterObj.dataChoiceType// 当前参数是多选还是单选：0：多选，1、单选
+                        let selectTreeParamXs = xmSelect.get(`#selectTreeParamScreen${queryFilterObj.selectTreeNum}${this.screenParam.nodeData.nodeInfo.nodeId}`, true)// 获取下拉树参数的单实例
+                        let paramSelectedObj = selectTreeParamXs.getValue()// 获取选中的参数值名称
+                        let obj = {
+                            'moduleParamId': moduleParamId,
+                            'paramValue': '',
+                            'allowedNull': '0'
+                        }
+                        if (allowedNull === '1') { // 允许为空
+                            obj.allowedNull = '1'
+                            if (paramSelectedObj.length === 0) { // 未选择值
+                                hasAllowedNullParam = true
+                                for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
+                                    if (arr[w].moduleParamId === moduleParamId) {
+                                        arr[w]['value'] = ''
+                                    }
                                 }
-                                if (allowedNull === '1') { // 允许为空
-                                    obj.allowedNull = '1'
-                                    if (paramSelectedObj.length === 0) { // 未选择值
-                                        hasAllowedNullParam = true
-                                        for (let w = 0; w < arr.length; w++) { // 遍历当前节点绑定的参数，给每个参数绑定空值
-                                            if (arr[w].moduleParamId === moduleParamId) {
-                                                arr[w]['value'] = ''
-                                            }
-                                        }
-                                    } else {
-                                        if (choiceType === '1') { // 单选
-                                            obj.paramValue = paramSelectedObj[0].value
-                                        } else {
-                                            for (let b = 0; b < paramSelectedObj.length; b++) { // 多值，以'','',……形式展现
-                                                obj.paramValue += "'" + paramSelectedObj[b].value + "',"
-                                            }
-                                            obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
-                                        }
+                            } else {
+                                if (choiceType === '1') { // 单选
+                                    obj.paramValue = paramSelectedObj[0].value
+                                } else {
+                                    for (let b = 0; b < paramSelectedObj.length; b++) { // 多值，以'','',……形式展现
+                                        obj.paramValue += "'" + paramSelectedObj[b].value + "',"
                                     }
-                                    filterArr.push(obj)
-                                } else { // 不允许为空
-                                    if (paramSelectedObj.length !== 0) {
-                                        if (choiceType === '1') { // 单选
-                                            obj.paramValue = paramSelectedObj[0].value
-                                        } else {
-                                            for (let b = 0; b < paramSelectedObj.length; b++) { // 多值，以'','',……形式展现
-                                                obj.paramValue += "'" + paramSelectedObj[b].value + "',"
-                                            }
-                                            obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
-                                        }
-                                        filterArr.push(obj)
-                                    } else {
-                                        paramNum++
-                                    }
+                                    obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
                                 }
                             }
+                            filterArr.push(obj)
+                        } else { // 不允许为空
+                            if (paramSelectedObj.length !== 0) {
+                                if (choiceType === '1') { // 单选
+                                    obj.paramValue = paramSelectedObj[0].value
+                                } else {
+                                    for (let b = 0; b < paramSelectedObj.length; b++) { // 多值，以'','',……形式展现
+                                        obj.paramValue += "'" + paramSelectedObj[b].value + "',"
+                                    }
+                                    obj.paramValue = obj.paramValue.substring(0, obj.paramValue.length - 1)
+                                }
+                                filterArr.push(obj)
+                            } else {
+                                paramNum++
+                            }
                         }
-                        if (paramNum !== 0) { // 第一步，先判断是否有必填的参数没有输入值
-                            returnObj.verify = false
-                            returnObj.message += nodeName + '含有未输入值的参数项，请重新输入<br/>'
-                            delete this.graph.nodeData[nodeId].replaceParamSql
-                            break
-                        } else {
-                            // 第二步，判断设置长度值文本框输入的值是否满足条件
-                            let textParamLen = $(nodeParamDom[i]).find('.textParam').length
-                            for (let t = 0; t < textParamLen; t++) {
-                                let textParam = $(nodeParamDom[i]).find('.textParam:eq(' + t + ')')
-                                let index = textParam.attr("index")
-                                queryFilterObj = paramInfoArr[index]
+                    }
+                }
+                if(paramNum !== 0){//第一步，先判断是否有必填的参数没有输入值
+                    this.$message({'type':'warning','message':'查询条件含有空值项，请重新输入'})
+                }else{
+                    //第二步，判断设置长度值文本框输入的值是否满足条件
+                    let verify = true;
+                    let message = "";
+                    if(paramOptionScreen && paramOptionScreen.length > 0){
+                        for(let g=0; g<paramOptionScreen.length; g++) {
+                            if($(paramOptionScreen[g]).hasClass("textParam")){
+                                let index = paramOptionScreen[g].$attrs.index
+                                queryFilterObj = this.queryFilterArr[index]
                                 let dataLength = queryFilterObj.dataDatalength// 获取参数值长度
                                 let paramName = queryFilterObj.dataName// 获取参数名称
                                 if (typeof dataLength !== 'undefined' && queryFilterObj.value.length !== parseInt(dataLength)) { // 如果该参数有长度限制且默认值不等于设置的长度值
-                                    returnObj.verify = false
-                                    returnObj.message += nodeName + '的参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
-                                    break
-                                }
-                            }
-                            if (!returnObj.verify) {
-                                break
-                            } else {
-                                if (hasAllowedNullParam) { // 如果存在可为空的参数并且为空值，走后台进行空参替换
-                                    const response = await replaceModelSqlByParams(replaceParamSql, JSON.stringify(arr))
-                                    if(response.data.isError){// 出错后replaceParamSql的值会在后台置为空
-                                        returnObj.verify = false
-                                        returnObj.message = nodeName + '替换空值参数时出错'
-                                    }else{
-                                        replaceParamSql = response.data.sql
-                                    }
-                                }
-                                if (replaceParamSql !== '') {
-                                    // 替换参数SQL中的ID（多值怎么替换？）
-                                    for (let x = 0; x < filterArr.length; x++) { // 遍历所有母参数信息
-                                        let moduleParamId = filterArr[x].moduleParamId
-                                        for (let a = 0; a < arr.length; a++) { // 遍历当前节点绑定的参数
-                                            if (arr[a].moduleParamId === moduleParamId) {
-                                                replaceParamSql = replaceParamSql.replace(arr[a].id, filterArr[x].paramValue)// 将参数SQL中的参数ID替换为输入得值
-                                            }
-                                        }
-                                    }
-                                    this.graph.nodeData[nodeId].replaceParamSql = replaceParamSql
-                                } else {
+                                    verify = false
+                                    message = `查询条件【${paramName}】输入值的长度与设置的长度值【${parseInt(dataLength)}】不相等`
                                     break
                                 }
                             }
                         }
                     }
+                    if(!verify){
+                        this.$message(({'type':'warning','message':message}))
+                    }else {
+                        this.curReplaceParamSql = this.paramSql;
+                        if (hasAllowedNullParam) {//如果存在可为空的参数并且为空值，走后台进行空参替换
+                            const response = await replaceModelSqlByParams(replaceParamSql, JSON.stringify(arr))
+                            if(response.data == null || response.data.isError){// 出错后replaceParamSql的值会在后台置为空
+                                this.$message.error("替换空值参数时出错")
+                            }else{
+                                this.curReplaceParamSql = response.data.sql
+                            }
+                        }
+                        if (this.curReplaceParamSql !== "") {
+                            for (var j = 0; j < filterArr.length; j++) {//遍历所有母参数信息
+                                var moduleParamId = filterArr[j].moduleParamId;
+                                for (var k = 0; k < this.arr.length; k++) {//遍历当前节点绑定的参数
+                                    if (this.arr[k].moduleParamId === moduleParamId) {
+                                        this.curReplaceParamSql = this.curReplaceParamSql.replace(this.arr[k].id, filterArr[j].paramValue);//将参数SQL中的参数ID替换为输入得值
+                                    }
+                                }
+                            }
+                            this.initExecuteSql();
+                        }
+                    }
                 }
-                return returnObj
             },
-            queryData() {
-                this.$message({'type':'info','message':'别急哈，在集成呢……'})
+            /**
+             * 初始化当前节点的查询SQL语句
+             */
+            initExecuteSql(){
+                let nodeId = this.screenParam.nodeData.nodeInfo.nodeId
+                //根据当前节点获取它的前置所有节点的ID集合（不包括原表）
+                this.executeNodeIdArr = getPreNodesNotDatasource(this.allNodeData,nodeId,[]);//此处不包含当前节点
+                let checkParam = false// 默认没有参数节点
+                for (let i = 0; i < this.executeNodeIdArr.length; i++) {
+                    let hasParam = this.allNodeData[this.executeNodeIdArr[i]].hasParam// 是否有参数
+                    let paramsSetting = this.allNodeData[this.executeNodeIdArr[i]].paramsSetting// 参数设置信息
+                    if (hasParam && paramsSetting && paramsSetting.arr && paramsSetting.arr.length !== 0) {
+                        checkParam = true
+                        break
+                    }
+                }
+                if(checkParam){
+                    this.nodeParamDialogVisible = true
+                    this.$nextTick( () => {
+                        this.$refs.inputParams.createParamNodeHtml()
+                    })
+                }else{
+                    this.executeNodeIdArr.push(nodeId)
+                    //如果是数据分层节点，需添加当前选中的区间结果表的节点ID，目的是为了在数据分层的节点数组中根据结果表的下表获取相应的信息
+                    if(this.curOptType === "layering"){
+                        let childrenIds = this.allNodeData[nodeId].childrenIds
+                        if(typeof childrenIds !== 'undefined' && childrenIds.length > 0 && typeof childrenIds[this.screenParam.layering_index] !== 'undefined'){
+                            this.executeNodeIdArr.push(childrenIds[this.screenParam.layering_index])
+                        }
+                    }
+                    this.getScreenExecuteSql();
+                }
+            },
+            async executeParamCallBack(){
+                let returnVal = await this.$refs.inputParams.replaceNodeParam()
+                if (returnVal.verify) {
+                    this.nodeParamDialogVisible = false
+                    this.executeNodeIdArr.push(this.screenParam.nodeData.nodeInfo.nodeId)
+                    this.getScreenExecuteSql();
+                } else {
+                    this.$refs.inputParams.$message({'type':'warning', 'message':returnVal.message})
+                }
+            },
+            /**
+             * 重根据前置所有节点信息组装当前节点的查询SQL语句
+             */
+            getScreenExecuteSql(){
+                this.$parent.$parent.$parent.$parent.screenListLoading = true
+                let param = {"nodeData":JSON.stringify(this.allNodeData),"nodeIdList":this.executeNodeIdArr}
+                getScreenExecuteSql(param).then( response => {
+                    if(response.data.isError){
+                        this.$parent.$parent.$parent.$parent.screenListLoading = false
+                        this.$message.error("初始化查询SQL语句失败")
+                    }else{
+                        let curNodeData = response.data.dealNodeData
+                        let nodeId = this.screenParam.nodeData.nodeInfo.nodeId
+                        let optType = curNodeData[nodeId].nodeInfo.optType
+                        if(optType === "layering"){
+                            var selectSqlNotViewTableArr = curNodeData[nodeId].nodeInfo.selectSqlNotViewTableArr
+                            this.sql = selectSqlNotViewTableArr[this.screenParam.layering_index]
+                        }else{
+                            this.sql = curNodeData[nodeId].nodeInfo.selectSqlNotViewTable
+                        }
+                        if(this.sql === ""){
+                            this.$parent.$parent.$parent.$parent.screenListLoading = false
+                            this.$message.error("初始化查询SQL语句失败")
+                        }else{
+                            if(this.curReplaceParamSql !== ''){
+                                let paramData = {"sql":this.sql,"replaceParamSql":this.curReplaceParamSql,"optType":this.curOptType}
+                                dealReplaceParamSql(paramData).then( res => {
+                                    if(res.data == null || res.data.isError){// 出错后replaceParamSql的值会在后台置为空
+                                        this.$message.error("获取结果集数据出错：结果集SQL执行失败")
+                                    }else{
+                                        let curSql = res.data.dealSql
+                                        this.sql = curSql
+                                        this.pageInit(curSql);
+                                        this.settingObj.initSql = curSql;
+                                    }
+                                }).catch( error => {
+                                    this.$parent.$parent.$parent.$parent.screenListLoading = false
+                                })
+                            }else{
+                                this.pageInit(this.sql);
+                                this.settingObj.initSql = this.sql;
+                            }
+                        }
+                    }
+                }).catch( error => {
+                    this.$parent.$parent.$parent.$parent.screenListLoading = false
+                })
             },
             /**
              * 重置查询条件
@@ -916,13 +1035,20 @@
                         item.value = ''
                     }
                     if(typeof item.id !== "undefined"){//下拉列表和下拉树
-                        let selectXs = xmSelect.get(`#${item.id}`, true);
+                        let selectXs = xmSelect.get(`#${item.id}`, true)
                         selectXs.setValue([]);
                     }
                 })
             },
             initQueryData(){
-                this.$message({'type':'info','message':'别急哈，在集成呢……'})
+                if (this.changeTable === 1) {
+                    this.isInitTable = true
+                    this.changeTable = 0
+                } else {
+                    this.isInitTable = false;
+                }
+                this.curReplaceParamSql = ''
+                this.initExecuteSql();
             },
             dealData(type){
                 this.$message({'type':'info','message':'别急哈，在集成呢……'})

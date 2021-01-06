@@ -11,14 +11,6 @@
                 <el-button v-if="type === 'privateGraphType'" type="primary" class="oper-btn share" @click="share" :disabled="shareGraphBtn"/>
                 <el-button v-if="type === 'shareToGraphType'" type="primary" class="oper-btn cancelshare" @click="cancelShare" :disabled="cancelShareGraphBtn"/>
                 <el-button v-if="type.toLowerCase().indexOf('screengraphtype') > -1" type="primary" class="oper-btn start" @click="run" :disabled="runGraphBtn"/>
-            <!--<el-dropdown v-if="type !== 'sharedGraphType'" placement="bottom" trigger="click" style="margin-left: 10px;">-->
-                <!--<el-button type="primary" class="oper-btn more" />-->
-                <!--<el-dropdown-menu slot="dropdown">-->
-                    <!--<el-dropdown-item v-if="type === 'privateGraphType'" @click.native="share">分享</el-dropdown-item>-->
-                    <!--<el-dropdown-item v-if="type === 'shareToGraphType'" @click.native="cancelShare">取消分享</el-dropdown-item>-->
-                    <!--<el-dropdown-item v-if="type.toLowerCase().indexOf('screengraphtype') > -1" @click.native="run">运行</el-dropdown-item>-->
-                <!--</el-dropdown-menu>-->
-            <!--</el-dropdown>-->
             </el-col>
         </el-row>
         <el-table :key="tableKey" ref="graphListTable" v-loading="listLoading" height="500" :data="dataList" border fit highlight-current-row
@@ -239,12 +231,8 @@
                             this.$parent.$parent.screenParam.graphName = graphName
                             this.$parent.$parent.screenParam.publicType = selectObj[0].publicType
                             this.$parent.$parent.screenParam.nodeData = nodeList[0].extMap.nodeData
-                            // window.parent.clickScreenGraph(id,escape(encodeURIComponent($(rowData.graphName).html())),e[0],$(document).height());
                             this.$parent.$parent.screenParam.screenQueryNodeArr = nodeList;
                             this.$parent.$parent.rightType = "runGraph"
-                            // var src = contextPath + "/graphCommon/toScreenQueryAll?graphId=" + id + "&graphName=" + escape(encodeURIComponent($(rowData.graphName).html())) + "&publicType=" + rowData.publicType;
-                            // var dom = "<iframe style='width: 100%;height:"+$(document).height()+"px;border:none;' src='"+ src + "'></iframe>";
-                            // window.parent.$("#commonIframe").html(dom);
                         }
                     }
                 }).catch( error =>{

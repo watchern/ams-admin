@@ -258,7 +258,7 @@ export function dealReplaceParamSql(data) {
         baseURL: baseURL,
         url: '/graphCt/dealReplaceParamSql',
         method: 'post',
-        params:data,
+        data,
     })
 }
 
@@ -357,5 +357,32 @@ export function getScreenGraphInfo(data) {
         url: '/graphCt/getScreenGraphInfo',
         method: 'post',
         params: data
+    })
+}
+
+
+/**
+ * 获取场景查询执行的SQL语句
+ * @param data 所有节点信息和执行节点的ID集合
+ */
+export function getScreenExecuteSql(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/getScreenExecuteSql',
+        method: 'post',
+        data
+    })
+}
+
+/**
+ * 获取场景查询执行的SQL语句后的结果集
+ * @param data 节点的SELECT查询语句、图形名称、节点名称、websocket唯一标识
+ */
+export function selectScreenQueryData(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/selectScreenQueryData',
+        method: 'post',
+        data
     })
 }
