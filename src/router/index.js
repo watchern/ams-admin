@@ -13,7 +13,12 @@ const AmsRoutes = [
     {
         path: '/',
         redirect: '/ams/first'
-    }, {
+    },
+    {
+      path: '/screenEditor',
+      component: () => import('ams-datamax/src/components/screenEditor')
+    }
+    , {
         path: '/ams/assembly',
         component: () => import('@/views/ams/assembly/index')
     },

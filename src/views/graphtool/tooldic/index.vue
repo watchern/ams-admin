@@ -197,23 +197,6 @@
                         <div class="layui-tab-item layui-show"><div id="outLineArea" ref="outLineArea" /></div>
                     </div>
                 </div>
-                <!--<el-tabs v-model="activeTabName" @tab-click="layuiTabClickLi">-->
-                <!--<el-tab-pane label="数据结果集" name="tableArea">-->
-                <!--<div id="tableArea">-->
-                <!--<div v-for="result in resultTableArr" id="dataShow" class="data-show">-->
-                <!--<ChildTabs ref="childTabsRef" :key="result.nodeId"/>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</el-tab-pane>-->
-                <!--<el-tab-pane label="执行信息" name="sysInfoArea">-->
-                <!--<div id="sysInfoArea"></div>-->
-                <!--</el-tab-pane>-->
-                <!--<el-tab-pane label="缩略图" name="outLineArea">-->
-                <!--<template>-->
-                <!--<div id="outLineArea"></div>-->
-                <!--</template>-->
-                <!--</el-tab-pane>-->
-                <!--</el-tabs>-->
             </div>
         </div>
         <div id="detailContainer" class="panel-group">
@@ -381,7 +364,7 @@
             </div>
         </el-dialog>
         <el-dialog v-if="nodeParamDialogVisible" :visible.sync="nodeParamDialogVisible" title="设置执行参数" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
-            <InputParams ref="inputParams" :graph="graph" :nodeIdArr="executeNodeIdArr"/>
+            <InputParams ref="inputParams" :nodeData="graph.nodeData" :nodeIdArr="executeNodeIdArr"/>
             <div slot="footer">
                 <el-button @click="nodeParamDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="setExecuteParamCallBack">保存</el-button>
@@ -876,7 +859,7 @@
                 }
             },
             initWebSocKet() {
-                const $this = this
+                var $this = this
                 const webSocketPath = process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET + this.loginUserUuid + 'GRAPH'
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
@@ -985,7 +968,7 @@
                     data.graphType = 1
                     saveGraphInterface(data).then(response => {
                         callBack(this,response,'图形保存成功','图形保存失败')
-                    }).catch( error => {})
+                    }).catch( () => {})
                 }else{//场景查询图形
                     data.graphType = 3
                     if(this.openGraphType === 2){//个人场景查询图形
@@ -996,7 +979,7 @@
                     }
                     createScreenQuery(data).then( response => {
                         callBack(this,response,'场景查询图形保存成功','场景查询图形保存失败')
-                    }).catch( error => {})
+                    }).catch( () => {})
                 }
             },
             searchZtree() {
@@ -1024,7 +1007,7 @@
                     this.loading.destroy()
                     this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false, 'hasTime': true })
                     viewNodeData({ nodeObjs: JSON.stringify(this.resultTableArr), openType: this.openType, websocketBatchId: this.websocketBatchId }).then()
-                        .catch( error => {
+                        .catch( () => {
                             this.loading.destroy()
                         })
                 }
