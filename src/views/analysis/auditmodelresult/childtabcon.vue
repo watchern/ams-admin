@@ -1520,6 +1520,7 @@ export default {
 .itxst {
   margin: 10px;
   text-align: left;
+  overflow: auto;
 }
 .thechard-z {
   margin-right: 15px;

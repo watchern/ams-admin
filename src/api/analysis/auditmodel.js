@@ -240,12 +240,18 @@ export function findModelList(data){
  * 添加运行任务和运行关联表
  * @param {*} data 运行任务对象
  */
-export function addRunTaskAndRunTaskRel(data){
-  const dataUserId = store.getters.datauserid
-  const sceneCode = store.getters.scenecode
-  debugger;
-  data.sceneCode = sceneCode;
-  data.dataUserId = dataUserId;
+export function addRunTaskAndRunTaskRel(data,dataUserId,sceneCode){
+  const dataUserId1 = ''
+  const sceneCode1 = ''
+  if(dataUserId!=undefined && sceneCode!=undefined){
+    dataUserId1 = dataUserId
+    sceneCode1 = sceneCode
+  }else{
+     dataUserId1 = store.getters.datauserid
+     sceneCode1 = store.getters.scenecode
+  }
+  data.sceneCode = sceneCode1;
+  data.dataUserId = dataUserId1;
   return request({
     baseURL: analysisUrl,
     url: '/RunTaskController/addRunTaskAndRunTaskRel',
