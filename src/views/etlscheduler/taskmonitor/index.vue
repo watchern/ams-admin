@@ -356,7 +356,7 @@ export default {
   }
 }
 </script>
-<style scope lang="scss">
+<style scoped lang="scss">
 .all {
   padding: 10px 0px;
 }

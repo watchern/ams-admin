@@ -130,7 +130,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .uploader-example .uploader-list {
     max-height: 440px;
     overflow: auto;

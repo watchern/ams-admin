@@ -39,7 +39,6 @@
     "ag-grid-community": "^23.2.1",
     "ag-grid-vue": "^23.2.1",
     "ams-datamax": "^1.0.1",
-    "ams-indicator-admin": "^1.0.0",
     "ans-ui": "^1.1.9",
     "autoprefixer": "^7.1.2",
     "axios": "0.18.1",
@@ -126,7 +125,6 @@
     "node-sass": "^4.13.1",
     "postcss": "^8.2.2",
     "postcss-import": "^11.0.0",
-    "postcss-import": "^13.0.0",
     "sass-loader": "^10.1.0",
     "vue-template-compiler": "2.6.10"
   },
