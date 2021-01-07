@@ -1,7 +1,7 @@
 <template>
   <div class="tree-list-container">
     <div class="tree">
-      <el-row>
+      <!-- <el-row>
         <el-col>
           <el-select v-model="currentSceneUuid" placeholder="请选择">
             <el-option
@@ -12,10 +12,10 @@
             />
           </el-select>
         </el-col>
-      </el-row>
+      </el-row> -->
       <el-row style="margin-top:20px">
         <el-col>
-          <dataTree v-if="isTreeShow" ref="dataTree" :data-user-id="personcode" :scene-code="currentSceneUuid" @node-click="nodeclick" />
+          <dataTree v-if="isTreeShow" ref="dataTree" :data-user-id="directyDataUserId" :scene-code="directySceneCode" @node-click="nodeclick" />
         </el-col>
       </el-row>
     </div>
@@ -28,19 +28,19 @@
 <script>
 import dataTree from '@/views/data/role-res/data-tree'
 import BaseDirectoryList from '@/views/data/directory/directorylist'
-import { getAllScene } from '@/api/data/scene'
 
 export default {
   // eslint-disable-next-line vue/order-in-components
   components: { dataTree, BaseDirectoryList },
-  // eslint-disable-next-line vue/order-in-components
+  // eslint-disable-next-line vue/require-prop-types
+  props: ['dataUserId', 'sceneCode'],
   data() {
     return {
-      sceneCode: 'auditor',
       allScene: [],
       currentSceneUuid: this.$store.getters.scenecode,
-      isTreeShow: true,
-      personcode: this.$store.state.user.code
+      directyDataUserId: this.$store.state.user.code,
+      directySceneCode: 'auditor',
+      isTreeShow: true
     }
   },
   computed: {
@@ -48,24 +48,20 @@ export default {
       return this.allScene.filter(e => { return e.sceneCode === this.currentSceneUuid })[0]
     }
   },
-  watch: {
-    currentSceneUuid: {
-      // 深度监听，可监听到对象、数组的变化
-      handler(val, oldVal) {
-        this.currentSceneUuid = val
-        this.$store.state.user.scenecode = val
-        this.$store.state.user.scenename = this.allScene.filter(e => { return e.sceneCode === this.currentSceneUuid })[0].sceneName
-        this.reload()
-      }
-    },
-    deep: true
-  },
   created() {
-    getAllScene().then(resp => {
-      this.allScene = resp.data
-    })
+    this.initDirectory()
   },
   methods: {
+    initDirectory() {
+      debugger
+      console.log(this.dataUserId)
+      if (typeof (this.dataUserId) !== undefined) {
+        this.directyDataUserId = this.dataUserId
+      }
+      if (typeof (this.sceneCode) !== undefined) {
+        this.directySceneCode = this.sceneCode
+      }
+    },
     reload() {
       this.isTreeShow = false
       this.isRouterAlive = false

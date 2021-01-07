@@ -14,7 +14,7 @@
         <el-button type="primary" class="oper-btn move" title="移动" :disabled="selections.length === 0" @click="movePath" />
         <el-button type="primary" class="oper-btn rename" title="重命名" :disabled="selections.length !== 1" @click="renameResource" />
         <el-button type="primary" class="oper-btn add" title="新增表" :disabled="clickData.type == 'table'" @click="add" />
-        <el-button type="primary" class="oper-btn add-folder" title="导入表" :disabled="clickData.type == 'table'" @click="uploadTable" />
+        <el-button type="primary" class="oper-btn export" title="导入表" :disabled="clickData.type == 'table'" @click="uploadTable" />
         <el-button type="primary" class="oper-btn add-folder" title="新增文件夹" :disabled="clickData.type == 'table'" @click="createFolder" />
         <el-button type="primary" class="oper-btn  edit" title="表结构维护" :disabled="selections.length !== 1" @click="update" />
         <el-button type="primary" class="oper-btn  detail" title="表结构展示" :disabled="selections.length !== 1" @click="showTable" />
@@ -275,6 +275,9 @@ export default {
       this.uploadtemp.tableFileName = data
     },
     formatTableType(row, column) {
+      if (row.type === '') {
+        return ''
+      }
       return row.type === 'table' ? '数据表' : '文件夹'
     },
     // 删除资源
@@ -438,7 +441,6 @@ export default {
       this.moveTreeVisible = true
     },
     movePathSave() {
-      debugger
       var ids = []
       this.selections.forEach((r, i) => {
         r.pid = this.moveSelect.id
@@ -640,6 +642,9 @@ export default {
     },
     // 将字节数转换成大小
     formatTableSize(limit) {
+      if (limit === '') {
+        return ''
+      }
       if (limit === undefined) {
         limit = 0
       }

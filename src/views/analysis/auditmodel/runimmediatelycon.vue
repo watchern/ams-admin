@@ -82,7 +82,7 @@ export default {
   created() {
     this.initDialog();
     this.tempPath = "根路径";
-    if(this.dataUserId!='undefined'){
+    if(this.dataUserId!=undefined){
       this.tempId = this.dataUserId
       this.modelResultSavePathId = this.dataUserId
       this.personCode = this.dataUserId

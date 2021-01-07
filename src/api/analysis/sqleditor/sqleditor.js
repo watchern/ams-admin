@@ -1054,7 +1054,7 @@ function onDrop(event, treeId, treeNodes) {
 export function initTableTip(dataUserId,scenecode) {
   var dataUserId1 = ''
   var sceneCode1 = ''
-  if(dataUserId!='undefined' && scenecode!='undefined'){
+  if(dataUserId!=undefined && scenecode!=undefined){
     dataUserId1 = dataUserId
     sceneCode1 = scenecode
   }else{
@@ -1980,11 +1980,7 @@ export function startExecuteSql(data) {
 export function getExecuteTask(data,dataUserId,sceneCode) {
   var dataUserId1 = ''
   var sceneCode1 = ''
-  if(dataUserId==undefined && sceneCode==undefined){
-    dataUserId = 'undefined'
-    sceneCode = 'undefined'
-  }
-  if(dataUserId!='undefined' && sceneCode!='undefined'){
+  if(dataUserId!=undefined && sceneCode!=undefined){
     dataUserId1 = dataUserId
     sceneCode1 = sceneCode
   }else{
