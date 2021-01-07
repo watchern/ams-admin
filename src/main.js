@@ -16,8 +16,8 @@ Vue.use(VueAnimateNumber)
 import '@/directive/Ace/scroll.js'
 import components from '@/components/Ace/index'
 
-//import '../src/components/ams-indicator-admin/src/styles/element-variables.scss'
-//import '../src/components/ams-indicator-admin/src/styles/index.scss' // global css
+import '../src/components/ams-indicator-admin/src/styles/element-variables.scss'
+import '../src/components/ams-indicator-admin/src/styles/index.scss' // global css
 Vue.use(components)
 // Ace end
 
@@ -93,8 +93,8 @@ import baseConfig from 'ams-datamax/src/config/config'
 import clipboard from 'clipboard'
 import axios from 'axios'
 import dataV from '@jiaminghi/data-view'
-import VueAxios from 'vue-axios'
-Vue.use(VueAxios, axios)
+//import VueAxios from 'vue-axios'
+//Vue.use(VueAxios, axios)
 Vue.prototype.$clipboard = clipboard
 Vue.prototype.$ajax = axios
 Vue.use(iview)
