@@ -46,6 +46,14 @@ export function initSceneTree(grpUuid) {
   })
 }
 
+export function getAllGropSelect(sceneCode) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/getAllGropSelect?sceneCode=${sceneCode}`,
+    method: 'post'
+  })
+}
+
 export function getAllScene() {
   return request({
     baseURL: baseURL,
