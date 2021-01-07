@@ -1052,8 +1052,8 @@ function onDrop(event, treeId, treeNodes) {
  * @returns {AxiosPromise}
  */
 export function initTableTip(dataUserId,scenecode) {
-  const dataUserId1 = ''
-  const sceneCode1 = ''
+  var dataUserId1 = ''
+  var sceneCode1 = ''
   if(dataUserId!=undefined && scenecode!=undefined){
     dataUserId1 = dataUserId
     sceneCode1 = scenecode
@@ -1978,8 +1978,8 @@ export function startExecuteSql(data) {
  * @param {*} data 要执行的数据
  */
 export function getExecuteTask(data,dataUserId,sceneCode) {
-  const dataUserId1 = ''
-  const sceneCode1 = ''
+  var dataUserId1 = ''
+  var sceneCode1 = ''
   if(dataUserId!=undefined && sceneCode!=undefined){
     dataUserId1 = dataUserId
     sceneCode1 = sceneCode

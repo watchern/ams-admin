@@ -241,8 +241,8 @@ export function findModelList(data){
  * @param {*} data 运行任务对象
  */
 export function addRunTaskAndRunTaskRel(data,dataUserId,sceneCode){
-  const dataUserId1 = ''
-  const sceneCode1 = ''
+  var dataUserId1 = ''
+  var sceneCode1 = ''
   if(dataUserId!=undefined && sceneCode!=undefined){
     dataUserId1 = dataUserId
     sceneCode1 = sceneCode
