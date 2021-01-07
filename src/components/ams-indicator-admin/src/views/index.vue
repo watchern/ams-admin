@@ -6,17 +6,13 @@
           <el-tabs tab-position="left" style="height: 100%;">
             <el-tab-pane>
               <span slot="label" class="tab-indicator"><i class="el-icon-s-marketing"></i>指标</span>
-              <div class="tab-pane fade in active" id="targetFolder">
                 <el-input v-model="searchAnalysis" id="search" placeholder="搜索"></el-input>
                 <tree :nodes="inTreeNodes" :setting="inTreeSetting" @onCreated="inTreeCreate"/>
-              </div>
             </el-tab-pane>
             <el-tab-pane>
               <span slot="label" class="tab-common"><i class="el-icon-s-grid"></i>常用分析</span>
-              <div id="analysis" class="tab-pane fade">
                 <el-input v-model="searchAnalysis" id="searchAnalysis" placeholder="搜索"></el-input>
                 <tree :nodes="commonTreeNodes" :setting="commonTreeSetting" @onCreated="commonTreeCreate"/>
-              </div>
             </el-tab-pane>
           </el-tabs>
           <div class="side-footer">
