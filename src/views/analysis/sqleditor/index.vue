@@ -339,7 +339,13 @@
     export default {
         name: 'SQLEditor',
         components: { sqlDraftList, childTabs, paramDraw, dataTree },
-        props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName","modelUuid",'dataUserId','sceneCode'],
+        props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName","modelUuid",'dataUserId','sceneCode1'],
+        created(){
+            if(this.dataUserId!='undefined' && this.sceneCode1!='undefined'){
+                this.personCode = this.dataUserId
+                this.sceneCode = this.sceneCode1
+            }  
+        },
         data() {
             return {
                 sqlDraftForm: {
@@ -549,7 +555,7 @@
                 initParamTree()
                 this.executeLoading = true
                 this.loadText = '正在初始化数据表...'
-                initTableTip(this.dataUserId,this.sceneCode).then((result) => {
+                initTableTip(this.dataUserId,this.sceneCode1).then((result) => {
                     initTableTree(result)
                     var relTableMap = {}
                     var expTableMap = {}
@@ -826,7 +832,7 @@
                     if (!obj.isExistParam) {
                         this.executeLoading = true
                         this.loadText = '正在获取SQL信息...'
-                        getExecuteTask(obj,this.dataUserId,this.sceneCode).then((result) => {
+                        getExecuteTask(obj,this.dataUserId,this.sceneCode1).then((result) => {
                             this.executeLoading = false
                             this.loadText = ''
                             lastSqlIndex = result.data.lastSqlIndex
@@ -872,7 +878,7 @@
                 obj.sqls = obj.sql
                 obj.businessField = 'sqleditor'
                 this.executeLoading = true
-                getExecuteTask(obj,this.dataUserId,this.sceneCode).then((result) => {
+                getExecuteTask(obj,this.dataUserId,this.sceneCode1).then((result) => {
                     this.executeLoading = false
                     this.loadText = ''
                     lastSqlIndex = result.data.lastSqlIndex
