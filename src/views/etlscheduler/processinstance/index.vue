@@ -30,10 +30,18 @@
         <!-- 启动 -->
         <el-button
           type="primary"
-          title="启动"
+          title="恢复暂停的流程"
           class="oper-btn start"
           :disabled="startStatus"
           @click="handleStart()"
+        />
+        <!-- 失败的恢复 -->
+        <el-button
+          type="primary"
+          title="失败流程从失败任务节点启动"
+          class="oper-btn start"
+          :disabled="failStatus"
+          @click="handleFailStart()"
         />
         <!-- 重新运行 -->
         <el-button
@@ -423,6 +431,7 @@ export default {
       skipStatus: true,
       pusStatus: true,
       startStatus: true,
+      failStatus: true,
       reStartStatus: true,
       doneStatus: true,
       logTasks: null,
@@ -492,10 +501,10 @@ export default {
             case 5:
               this.startStatus = false
               break
-            // 判断状态是否为执行失败中,如果是执行失败中，重新运行按钮可用，执行按钮可用
+            // 判断状态是否为执行失败中,如果是执行失败中，重新运行按钮可用，执行按钮可用，失败运行的执行按钮可用
             case 8:
               this.reStartStatus = false
-              this.startStatus = false
+              this.failStatus = false
               break
             default:
               break
@@ -506,6 +515,7 @@ export default {
         this.skipStatus = true
         // 其它按钮取消禁用
         this.startStatus = false
+        this.failStatus = false
         this.pusStatus = false
         this.doneStatus = false
         this.reStartStatus = false
@@ -514,12 +524,13 @@ export default {
           if (waitStatuses.indexOf(r.status) < 0) {
             this.doneStatus = true
           }
-          // 遍历选择的数组判断状态，如果是有状态不是执行失败的，重新执行按钮不可用
+          // 遍历选择的数组判断状态，如果是有状态不是执行失败的，重新执行按钮不可用，失败运行的执行按钮不可用
           if (r.status !== 8) {
             this.reStartStatus = true
+            this.failStatus = true
           }
           // 遍历选择的数组判断状态，如果是有状态不是执行中的，启用按钮不可用
-          if (r.status !== 5 && r.status !== 8) {
+          if (r.status !== 5) {
             this.startStatus = true
           }
           // 遍历选择的数组判断状态，如果是有状态不是暂停中的，停用按钮不可用
@@ -530,6 +541,7 @@ export default {
       } else {
         this.skipStatus = true
         this.startStatus = true
+        this.failStatus = true
         this.pusStatus = true
         this.doneStatus = true
         this.reStartStatus = true
@@ -686,11 +698,26 @@ export default {
         })
       })
     },
-    // 启动
+    // 暂停的启动
     handleStart() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
-      execute(ids.join(','), 'START_UP').then(() => {
+      execute(ids.join(','), 'RECOVER_SUSPENDED_PROCESS').then(() => {
+        this.getList()
+        this.$notify({
+          title: this.$t('message.title'),
+          message: '恢复运行成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      })
+    },
+    // 失败的启动
+    handleFailStart() {
+      var ids = []
+      this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
+      execute(ids.join(','), 'START_FAILURE_TASK_PROCESS').then(() => {
         this.getList()
         this.$notify({
           title: this.$t('message.title'),

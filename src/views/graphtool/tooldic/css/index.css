@@ -117,10 +117,7 @@ div.rightMenu ul li:hover {
 }
 #resourceZtree,#historyZtree{
     margin:0;
-    padding: 10px 0 0 10px;
-    position: relative;
-    top: 0;
-    left: 0;
+    padding: 10px;
     overflow: auto;
     height:100%;
 }

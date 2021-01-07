@@ -29,7 +29,7 @@
       <el-table-column label="业务属性名称" width="300px" align="center" prop="attrName" />
       <el-table-column label="业务属性编码" width="300px" align="center" prop="attrCode" />
       <el-table-column label="创建时间" width="300px" align="center" prop="createTime" />
-      <el-table-column label="描述" prop="describe" />
+      <el-table-column label="描述" prop="describtion" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
@@ -48,8 +48,8 @@
           <el-form-item label="业务属性编码" prop="attrCode">
             <el-input v-model="temp.attrCode" />
           </el-form-item>
-          <el-form-item label="描述" prop="describe">
-            <el-input v-model="temp.describe" type="textarea" />
+          <el-form-item label="描述" prop="describtion">
+            <el-input v-model="temp.describtion" type="textarea" />
           </el-form-item>
         </el-form>
       </template>
@@ -94,7 +94,7 @@ export default {
         bizAttrUuid: undefined,
         attrName: '',
         attrCode: '',
-        describe: ''
+        describtion: ''
       },
       selections: [],
       dialogFormVisible: false,
@@ -107,7 +107,7 @@ export default {
       rules: {
         attrName: [{ required: true, message: '请填写业务属性名称', trigger: 'change' }],
         attrCode: [{ required: true, message: '请填写业务属性编码', trigger: 'change' }],
-        describe: [{ max: 100, message: '长度不得超过100', trigger: 'change' }]
+        describtion: [{ max: 100, message: '长度不得超过100', trigger: 'change' }]
       },
       downloadLoading: false
     }
@@ -140,7 +140,7 @@ export default {
         bizAttrUuid: undefined,
         attrName: '',
         attrCode: '',
-        describe: ''
+        describtion: ''
       }
     },
     add() {

@@ -2194,6 +2194,7 @@ export function getParamSettingArr(paramArr,serviceInfo) {
     }
     returnObj.paramSettingArr.push(obj)
   }
+  
   return returnObj
 }
 
@@ -2616,7 +2617,7 @@ export function createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
             $.inArray(moduleParamId, moduleParamArr) == -1
           ) {
             // 匹配复制参数的母版参数ID    paramObj.defaultVal
-            if(paramList[k].dataType!='date'){
+            if(paramList[k].dataType!='date' && paramList[k].defaultVal!=''){
               paramList[k].defaultVal = JSON.stringify(paramList[k].defaultVal)
             }
             var returnObj = initParamHtml_Common(paramList[k])

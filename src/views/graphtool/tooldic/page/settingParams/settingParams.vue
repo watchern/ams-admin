@@ -75,13 +75,13 @@
                 </div>
             </div>
             <div id="setParam" class="tab-pane fade">
-                <div class="col-sm-8" style="margin-left: 16.666%;">
+                <div class="col-sm-10" style="margin-left: 8.33%;">
                     <span style="color: red;line-height: 35px;height: 30px;">注：可通过上下拖动行对参数进行排序设置</span>
                     <table id="setParamTable" class="table table-bordered">
                         <thead>
                         <tr>
-                            <th align="center">参数名称</th>
-                            <th align="center" width="400px">默认值设置</th>
+                            <th align="center" width="200px">参数名称</th>
+                            <th align="center" width="300px">默认值设置</th>
                             <th align="center">参数说明</th>
                         </tr>
                         </thead>
@@ -95,12 +95,7 @@
                                     <el-input :title="setParamObj.title" class='paramOption paramTr' v-model="setParamObj.value"></el-input>
                                 </td>
                                 <td v-if="setParamObj.inputType === 'timeinp'" ref="dataParam">
-                                    <div class='input-group date form_date' data-date-format='yyyy-mm-dd' data-link-format='yyyy-mm-dd' :title="setParamObj.title">
-                                        <input class='form-control paramOption paramTr' readonly type='text' v-model="setParamObj.value"/>
-                                        <span class='input-group-addon' style='width: auto;'>
-                                            <span class='glyphicon glyphicon-remove'></span>
-                                        </span>
-                                    </div>
+                                    <el-date-picker style="width: 100%;" :title="setParamObj.title" class='paramOption paramTr' type="date" placeholder="选择日期" v-model="setParamObj.value"></el-date-picker>
                                 </td>
                                 <td v-if="setParamObj.inputType === 'treeinp'" ref="selectTreeParam">
                                     <div :id="setParamObj.id" :title="setParamObj.title" class='xm-select-demo paramTr'></div>
@@ -209,12 +204,10 @@
         color: #1D7030;
         font-weight: 500;
     }
-    td>.form-group{
-        margin-bottom: 0;
-    }
     .table > tbody > tr > td{
         font-size: 13px;
         color: #4B4B4B;
+        line-height: 36px;
     }
     .table > thead > tr > th {
         background-color: #5886B2;

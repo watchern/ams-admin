@@ -36,7 +36,7 @@
           @select-all="modelTableSelectEvent"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column label="模型名称" width="300px" align="center" prop="modelName">
+          <el-table-column label="模型名称" width="300px"  prop="modelName">
             <template slot-scope="scope">
               <el-link type="primary" @click="selectModelDetail(scope.row.modelUuid)">{{ scope.row.modelName }}</el-link>
             </template>
@@ -278,6 +278,7 @@ export default {
         }
       }
       const func2 = function func3(val) {
+        debugger
         const dataObj = JSON.parse(val.data)
         /*        if(this.currentPreviewModelParamAndSql.paramObj != undefined){
           this.$refs.[dataObj.modelUuid + 'param'][0].
@@ -501,7 +502,9 @@ export default {
         return
       }
       this.editModelTitle = '修改模型'
+      this.$emit('loadingSet',true,"正在获取模型信息...");
       selectModel(selectObj[0].modelUuid).then(result => {
+        this.$emit('loadingSet',false,"");
         if (result.code == 0) {
           var operationObj = {
             operationType: 2,
@@ -764,7 +767,7 @@ export default {
           if (result.data.parammModelRel.length == 0) {
             let obj = null
             //没有参数，判断是图形化还是sql编辑器模型
-            if(result.data.graphUuid != null){
+            if(result.data.graphUuid != null && result.data.graphUuid != ''){
               //调用图形化接口找到sql
               obj = {
                 sqls: result.data.modelSql,
@@ -941,7 +944,9 @@ export default {
      */
     selectModelDetail(modelUuid) {
       this.isUpdate = true
+      this.$emit('loadingSet',true,"正在获取模型信息...");
       selectModel(modelUuid).then(result => {
+        this.$emit('loadingSet',false,"");
         if (result.code == 0) {
           this.editModelTitle = result.data.modelName + '详细'
           var operationObj = {

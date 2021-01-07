@@ -98,7 +98,7 @@ export function getTableCol(tableMetaUuid) {
 
 /**
  * 图形保存
- * @param data 图形对象
+ * @param data 图形对象信息
  * @returns {AxiosPromise}
  */
 export function saveGraphInterface(data) {
@@ -108,6 +108,19 @@ export function saveGraphInterface(data) {
     method: 'post',
     data
   })
+}
+
+/**
+ * 保存场景查询图形
+ * @param data 图形对象信息
+ */
+export function createScreenQuery(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/createScreenQuery',
+        method: 'post',
+        data
+    })
 }
 
 /**
@@ -245,7 +258,7 @@ export function dealReplaceParamSql(data) {
         baseURL: baseURL,
         url: '/graphCt/dealReplaceParamSql',
         method: 'post',
-        params:data,
+        data,
     })
 }
 
@@ -310,7 +323,7 @@ async function replaceModelSqlByParams(sql, paramArr) {
 
 /**
  * 对比SQL语句是否发生变化
- * @param data
+ * @param data 新旧SQL语句
  */
 export function compareSql(data){
     return request({
@@ -318,5 +331,58 @@ export function compareSql(data){
         url: '/graphCt/compareSql',
         method: 'post',
         params: data
+    })
+}
+
+/**
+ * 查询场景查询图形下的数据节点数量
+ * @param data 图形UUID
+ */
+export function searchGraphNodes(data){
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/searchGraphNodes',
+        method: 'post',
+        params: data
+    })
+}
+
+/**
+ * 根据节点ID获取当前节点的基本信息和所有参数信息
+ * @param data 图形UUID和节点ID
+ */
+export function getScreenGraphInfo(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/getScreenGraphInfo',
+        method: 'post',
+        params: data
+    })
+}
+
+
+/**
+ * 获取场景查询执行的SQL语句
+ * @param data 所有节点信息和执行节点的ID集合
+ */
+export function getScreenExecuteSql(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/getScreenExecuteSql',
+        method: 'post',
+        data
+    })
+}
+
+/**
+ * 获取场景查询执行的SQL语句后的结果集
+ * @param data 节点的SELECT查询语句、图形名称、节点名称、websocket唯一标识
+ */
+export function selectScreenQueryData(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/selectScreenQueryData',
+        method: 'post',
+        data
     })
 }

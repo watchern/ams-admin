@@ -1,7 +1,6 @@
 import { deleteExecuteNodes, executeNodeSql, executeAllNodeSql } from '@/api/graphtool/graphList'
 import * as validateJs from '@/views/graphtool/tooldic/js/validate'
 import { updateResourceZtreeNodeName } from '@/views/graphtool/tooldic/js/index'
-let hL = null
 let graphIndexVue = null
 let graph = null
 export var sendGraphIndexVue = (_this) => {
@@ -69,75 +68,87 @@ export function saveNodeSetting() {
         return true
     }
     let saveNodeSettingFun = function() {
-        // 变更当前节点的配置状态信息
-        graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 1
-        graph.nodeData[curNodeId].isSet = true
-        graph.nodeData[curNodeId].setting.settingId = new UUIDGenerator().id
-        changeNodeIcon(1, true, curNodeId)
-        graph.cellLabelChanged(graph.curCell, graph.nodeData[curNodeId].nodeInfo.nodeName, null)
-        // 自动生成节点和线，start
-        graph.getModel().beginUpdate()
-        try {
-            var nodeType = graph.nodeData[curNodeId].nodeInfo.optType
-            // 判断当前节点是否已经生成【结果表】节点
-            var y = graph.curCell.geometry.y				// 纵向坐标位置
-            if (nodeType === 'layering') {				// 数据分层节点特殊处理
-                if (childrenIds.length > 0) {					// 如果有已经生成的结果表，则先删除已有的结果表
-                    var cells = []
-                    for (var i = 0; i < childrenIds.length; i++) {
-                        cells.push(graph.model.getCell(childrenIds[i]))
-                    }
-                    if (cells.length > 0) {
-                        graph.setSelectionCells(cells)
-                        deleteCells(true)
-                        // 对应删除右侧所使用资源树上的节点
-                        deleteResourceZtreeNode(childrenIds)
-                    }
-                }
-                var newTableArr = []; var newSqlArr = []; var areaArr = []
-                var resultTableNameArr = graph.nodeData[curNodeId].nodeInfo.resultTableNameArr
-                var nodeSqlArr = graph.nodeData[curNodeId].nodeInfo.nodeSqlArr
-                var colName = graph.nodeData[curNodeId].setting.hierarchy_column
-                var layeringArr = graph.nodeData[curNodeId].setting.hierarchy_map
-                for (var j = 0; j < layeringArr.length; j++) {
-                    var name = colName + '【' + layeringArr[j].c_col_1 + '至' + layeringArr[j].c_col_2 + '】'
-                    areaArr.push('字段【' + colName + '】：' + layeringArr[j].c_col_1 + '至' + layeringArr[j].c_col_2)
-                    autoCreateNode(y + j * 130, j, name)
-                    if (resultTableNameArr.length === 0) {
-                        newTableArr.push('')
-                        newSqlArr.push('')
-                        continue
-                    }
-                    if (j <= resultTableNameArr.length - 1) {
-                        newTableArr[j] = resultTableNameArr[j]
-                        newSqlArr[j] = nodeSqlArr[j]
-                    } else {
-                        newTableArr.push('')
-                        newSqlArr.push('')
-                    }
-                }
-                graph.nodeData[curNodeId].nodeInfo.resultTableNameArr = newTableArr.slice()
-                graph.nodeData[curNodeId].nodeInfo.nodeSqlArr = newSqlArr.slice()
-                graph.nodeData[curNodeId].nodeInfo.areaArr = areaArr
-            } else {
-                if (childrenIds.length === 0 && nodeType !== 'barChart') {			// 自定义图形不生成结果表
-                    autoCreateNode(y)
-                }
-            }
-        } finally {
-            graph.getModel().endUpdate()
-        }
-        // 自动生成节点和线，end
-        if (childrenIds.length > 0) {
-            changeNodeInfo(curNodeId, false)
-        }
-        // 记录执行操作的操作痕迹
-        refrashHistoryZtree('配置【' + graph.curCell.value + '】节点')
-        // 自动保存图形化
-        autoSaveGraph()
         graphIndexVue.nodeSettingDialogVisible = false
-        //自动执行
-        autoExcute(curNodeId)
+        graphIndexVue.$nextTick( () => {
+            // 变更当前节点的配置状态信息
+            graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 1
+            graph.nodeData[curNodeId].isSet = true
+            graph.nodeData[curNodeId].setting.settingId = new UUIDGenerator().id
+            changeNodeIcon(1, true, curNodeId)
+            graph.cellLabelChanged(graph.curCell, graph.nodeData[curNodeId].nodeInfo.nodeName, null)
+            // 自动生成节点和线，start
+            graph.getModel().beginUpdate()
+            try {
+                let nodeType = graph.nodeData[curNodeId].nodeInfo.optType
+                // 判断当前节点是否已经生成【结果表】节点
+                let y = graph.curCell.geometry.y				// 纵向坐标位置
+                if (nodeType === 'layering') {				// 数据分层节点特殊处理
+                    if (childrenIds.length > 0) {					// 如果有已经生成的结果表，则先删除已有的结果表
+                        let cells = []
+                        for (var i = 0; i < childrenIds.length; i++) {
+                            cells.push(graph.model.getCell(childrenIds[i]))
+                        }
+                        if (cells.length > 0) {
+                            graph.setSelectionCells(cells)
+                            deleteCells(true)
+                            // 对应删除右侧所使用资源树上的节点
+                            deleteResourceZtreeNode(childrenIds)
+                        }
+                    }
+                    let newTableArr = []
+                    let newSqlArr = []
+                    let newSelectSqlArr = []
+                    let areaArr = []
+                    let resultTableNameArr = graph.nodeData[curNodeId].nodeInfo.resultTableNameArr
+                    let nodeSqlArr = graph.nodeData[curNodeId].nodeInfo.nodeSqlArr
+                    let selectSqlNotViewTableArr = graph.nodeData[curNodeId].nodeInfo.selectSqlNotViewTableArr
+                    let colName = graph.nodeData[curNodeId].setting.hierarchy_column
+                    let layeringArr = graph.nodeData[curNodeId].setting.hierarchy_map
+                    for (var j = 0; j < layeringArr.length; j++) {
+                        var name = colName + '【' + layeringArr[j].c_col_1 + '至' + layeringArr[j].c_col_2 + '】'
+                        areaArr.push('字段【' + colName + '】：' + layeringArr[j].c_col_1 + '至' + layeringArr[j].c_col_2)
+                        autoCreateNode(y + j * 130, j, name)
+                        if (resultTableNameArr.length === 0) {
+                            newTableArr.push('')
+                            newSqlArr.push('')
+                            newSelectSqlArr.push('')
+                            continue
+                        }
+                        if (j <= resultTableNameArr.length - 1) {
+                            newTableArr[j] = resultTableNameArr[j]
+                            newSqlArr[j] = nodeSqlArr[j]
+                            newSelectSqlArr[j] = selectSqlNotViewTableArr[j]
+                        } else {
+                            newTableArr.push('')
+                            newSqlArr.push('')
+                            newSelectSqlArr.push('')
+                        }
+                    }
+                    graph.nodeData[curNodeId].nodeInfo.resultTableNameArr = newTableArr.slice()
+                    graph.nodeData[curNodeId].nodeInfo.nodeSqlArr = newSqlArr.slice()
+                    graph.nodeData[curNodeId].nodeInfo.selectSqlNotViewTableArr = newSelectSqlArr.slice()
+                    graph.nodeData[curNodeId].nodeInfo.areaArr = areaArr
+                } else {
+                    if (childrenIds.length === 0 && nodeType !== 'barChart') {			// 自定义图形不生成结果表
+                        autoCreateNode(y)
+                    }
+                }
+            } catch (e) {
+                console.info(e)
+            }finally {
+                graph.getModel().endUpdate()
+            }
+            // 自动生成节点和线，end
+            if (childrenIds.length > 0) {
+                changeNodeInfo(curNodeId, false)
+            }
+            // 记录执行操作的操作痕迹
+            refrashHistoryZtree('配置【' + graph.curCell.value + '】节点')
+            // 自动保存图形化
+            autoSaveGraph()
+            //自动执行
+            autoExcute(curNodeId)
+        })
     }
     let childrenIds = graph.nodeData[curNodeId].childrenIds.slice()
     if (childrenIds.length > 0) {
@@ -309,7 +320,7 @@ function getNotExecuteNode(curCellId, arr) {
  * @param curCellId 当前节点的ID
  * @param arr 前置所有节点的ID集合
  * */
-function getPreNodesNotDatasource(nodeData, curCellId, arr) {
+export function getPreNodesNotDatasource(nodeData, curCellId, arr) {
     var parentIds = nodeData[curCellId].parentIds
     if (parentIds.length > 0) {
         for (var i = 0; i < parentIds.length; i++) {

@@ -520,12 +520,11 @@ export function inputVerify() {
 
 // 保存节点的配置信息
 export function saveNodeInfo() {
+    if(!groupCountVue.vilidata_simple()){
+        return
+    }
     let curColumnsInfo = []// 当前的输出列信息集合
     let countData = []// 汇总字段配置信息
-    let newColumnNameArr = []
-    let isExsist = false// 是否有相同的输出字段名称
-    let checkedNum = 0// 选中输出列的数量
-    let exsistMessage = ''
     for(let i=0; i<groupCountVue.columnItems.length; i++){
         let columnInfo = {...{}, ...groupCountVue.columnItems[i].columnInfo}
         const newColumnName = groupCountVue.columnItems[i].newColumnName
@@ -533,23 +532,12 @@ export function saveNodeInfo() {
             columnInfo.isOutputColumn = 1
             columnInfo.checked = true
             columnInfo.newColumnName = newColumnName
-            checkedNum++
         }else{
             columnInfo.checked = false
             columnInfo.isOutputColumn = 0
         }
         columnInfo.oldColumnName = columnInfo.oldColumnName || columnInfo.columnName;//将原字段存储一份
         columnInfo.columnName = groupCountVue.columnItems[i].columnName
-        //校验输出列是否重复
-        if(groupCountVue.columnItems[i].checked){
-            const curIndex = newColumnNameArr.findIndex(item => item === newColumnName)
-            if (curIndex > -1) {
-                isExsist = true
-                exsistMessage = `第${curIndex + 1}行与第${i + 1}行的输出字段重复！请修改`
-                break;
-            }
-            newColumnNameArr.push(newColumnName)
-        }
         if (typeof groupCountVue.columnItems[i].sign !== "undefined") { // 汇总字段的输出列数据行
             // 组织汇总列的字段配置信息
             columnInfo.isCount = true
@@ -565,14 +553,6 @@ export function saveNodeInfo() {
             columnInfo.isCount = false
         }
         curColumnsInfo.push(columnInfo)
-    }
-    if (checkedNum === 0) {
-        groupCountVue.$message({"type":"warning","message":"请选择输出字段"})
-        return false
-    }
-    if (isExsist) {
-        groupCountVue.$message({"type":"warning","message":exsistMessage})
-        return false
     }
     nodeData.setting.countData = countData
     nodeData.setting.groupData = groupCountVue.groupTransfer.getData()// 获取已分组字段数组

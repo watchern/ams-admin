@@ -76,6 +76,13 @@ module.exports = {
           '^/analysis/': '/'
         }
       },
+      '/indicator/': {
+        target: process.env.AMSINDICATOR_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/indicator/': '/'
+        }
+      },
       '/graphtool/': {
         target: process.env.AMSGRAPHTOOL_API,
         changeOrigin: true,
@@ -138,6 +145,14 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/psbcaudit_auditobj/': '/psbcaudit_auditobj/'
+        }
+      },
+      '/datamax-server/': {
+        timeout: 1800000,
+        target: process.env.AMSDATAMAX_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/datamax-server/': '/'
         }
       }
     }

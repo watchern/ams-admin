@@ -144,6 +144,7 @@
             v-model="temp.status"
             :placeholder="disableUpdate === true ? '' : '请选择参数状态'"
             :disabled="disableUpdate"
+            style="width:100%"
           >
             <el-option
               label="启用"

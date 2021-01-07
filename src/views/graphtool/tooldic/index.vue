@@ -197,23 +197,6 @@
                         <div class="layui-tab-item layui-show"><div id="outLineArea" ref="outLineArea" /></div>
                     </div>
                 </div>
-                <!--<el-tabs v-model="activeTabName" @tab-click="layuiTabClickLi">-->
-                <!--<el-tab-pane label="数据结果集" name="tableArea">-->
-                <!--<div id="tableArea">-->
-                <!--<div v-for="result in resultTableArr" id="dataShow" class="data-show">-->
-                <!--<ChildTabs ref="childTabsRef" :key="result.nodeId"/>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</el-tab-pane>-->
-                <!--<el-tab-pane label="执行信息" name="sysInfoArea">-->
-                <!--<div id="sysInfoArea"></div>-->
-                <!--</el-tab-pane>-->
-                <!--<el-tab-pane label="缩略图" name="outLineArea">-->
-                <!--<template>-->
-                <!--<div id="outLineArea"></div>-->
-                <!--</template>-->
-                <!--</el-tab-pane>-->
-                <!--</el-tabs>-->
             </div>
         </div>
         <div id="detailContainer" class="panel-group">
@@ -234,15 +217,15 @@
             <div class="tab-content">
                 <div id="graphInfo" role="tabpanel" class="tab-pane active">
                     <div style="margin-top: 15px;height: 40px;line-height: 40px;">
-                        <label for="graphName_show" class="col-sm-2 control-label" style="text-align: right;">名称</label>
+                        <label class="col-sm-2 control-label" style="text-align: right;">名称</label>
                         <div class="col-sm-10">
-                            <input id="graphName_show" type="text" class="form-control" autocomplete="off" placeholder="名称" readonly>
+                            <input v-model="graphName_show" type="text" class="form-control" autocomplete="off" placeholder="名称" readonly>
                         </div>
                     </div>
                     <div style="margin-top: 10px;">
-                        <label for="description_show" class="col-sm-2 control-label" style="text-align: right;">描述</label>
+                        <label class="col-sm-2 control-label" style="text-align: right;">描述</label>
                         <div class="col-sm-10">
-                            <textarea id="description_show" class="form-control" placeholder="描述" style="resize:none;min-height:100px;max-height:300px;" readonly />
+                            <textarea v-model="description_show" class="form-control" placeholder="描述" style="resize:none;min-height:100px;max-height:300px;" readonly />
                         </div>
                     </div>
                 </div>
@@ -381,7 +364,7 @@
             </div>
         </el-dialog>
         <el-dialog v-if="nodeParamDialogVisible" :visible.sync="nodeParamDialogVisible" title="设置执行参数" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
-            <InputParams ref="inputParams" :graph="graph" :nodeIdArr="executeNodeIdArr"/>
+            <InputParams ref="inputParams" :nodeData="graph.nodeData" :nodeIdArr="executeNodeIdArr"/>
             <div slot="footer">
                 <el-button @click="nodeParamDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="setExecuteParamCallBack">保存</el-button>
@@ -442,7 +425,7 @@
     import SqlEditor from '@/views/analysis/sqleditor/index.vue'
     // 引入后端接口的相关方法
     import { removeJcCssfile, addCssFile, addJsFile } from "@/api/analysis/common"
-    import { getGraphInfoById, getTableCol, viewNodeData, saveGraphInterface } from '@/api/graphtool/graphList'
+    import { getGraphInfoById, getTableCol, viewNodeData, saveGraphInterface, createScreenQuery } from '@/api/graphtool/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
     // 引入前段JS的相关方法
     import * as commonJs from '@/views/graphtool/tooldic/js/common'
@@ -477,6 +460,8 @@
                 hasManagerRole: false, // 是否觉有管理员权限（只在开发环境下会用到，用以对左侧资源树的表进行分类）
                 graphName: '',
                 description: '',
+                graphName_show:'',
+                description_show:'',
                 graphUuid: this.graphUuidParam, // 打开图形的ID
                 openGraphType: this.openGraphTypeParam, // 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
                 openType: this.openTypeParam, // 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
@@ -512,7 +497,9 @@
                 sqlEditorCurSql:'',//SQL编辑器的SQL语句
                 sqlEditorDialogVisible:false,
                 sqlEditorWidth:'',
-                sqlEditorStyle:''
+                sqlEditorStyle:'',
+                curModelSql: '',// 用来临时存储打开模型图形时的模型SQL语句
+                isSearchExpand:false// 左侧资源树搜索功能的变量
             }
         },
         created() {
@@ -562,7 +549,7 @@
                 this.loginUserCode = this.$store.state.user.code
                 const roleArr = this.$store.state.user.roles
                 const screenManager = 'screenManager'// 场景查询管理员角色
-                if (roleArr.includes(screenManager)) {
+                if (roleArr && roleArr.includes(screenManager)) {
                     this.hasManagerRole = true
                 }
             },
@@ -590,6 +577,8 @@
                 window.autoSaveGraph = indexJs.autoSaveGraph
                 window.nodeRemark = indexJs.nodeRemark
                 window.deleteResourceZtreeNode = indexJs.deleteResourceZtreeNode
+                window.undoResourceZtreeNode = indexJs.undoResourceZtreeNode
+                window.redoResourceZtreeNode = indexJs.redoResourceZtreeNode
                 window.modifyParam = indexJs.modifyParam
                 window.alertMsg = function (title,msg,type){
                     $this.$message({ type : type, message : msg})
@@ -668,8 +657,8 @@
                 }, function() {
                     $this.$refs.graphToolDiv.innerHTML = '<center style="margin-top:10%;">加载资源文件出错</center>'
                 })
-                if (this.openGraphType === 3) {
-                    if (this.hasManagerRole === false) {
+                if (this.openGraphType === 3) {//当打开公共场景查询图形时
+                    if (this.hasManagerRole === false) {//如果没有场景查询管理员权限，则图形不可编辑
                         this.canEditor = false
                     }
                     // 此请求不需要做ID校验
@@ -837,7 +826,7 @@
                             }
                         }, 'json')
                     } else {						// 业务权限环境
-                        initTableTip(obj.$store.getters.datauserid,obj.$store.getters.datausername).then(response => {
+                        initTableTip().then(response => {
                             if (response.data == null) {
                                 obj.loading.destroy()
                                 this.$message.error('资源树列表加载出错')
@@ -870,7 +859,7 @@
                 }
             },
             initWebSocKet() {
-                const $this = this
+                var $this = this
                 const webSocketPath = process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET + this.loginUserUuid + 'GRAPH'
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
@@ -957,25 +946,41 @@
                     'graphName': this.graphName,
                     'description': this.description,
                     'graphXml': xml,
-                    'graphType': this.openGraphType,
                     'nodeData': JSON.stringify(graph.nodeData) // 各个节点的配置信息
                 }
                 if (this.saveGraphType === 'saveGraph') {
                     data.graphUuid = this.graphUuid
                 }
-                saveGraphInterface(data).then(response => {
-                    this.graphFormVisible = false
+                let callBack = function(vueObj,response,msg_success,msg_error){
+                    vueObj.graphFormVisible = false
                     if (response.data == null) {
-                        this.$message.error({ message: '图形保存失败' })
+                        vueObj.$message.error({ message: msg_error })
                     } else {
-                        this.graphUuid = response.data
-                        if (this.saveGraphType === 'saveGraph') {
-                            $('#graphName_show').val(this.graphName)
-                            $('#description_show').val(this.description)
+                        vueObj.graphUuid = response.data
+                        if (vueObj.saveGraphType === 'saveGraph') {
+                            vueObj.graphName_show = vueObj.graphName
+                            vueObj.description_show = vueObj.description
                         }
-                        this.$message({ type: 'info', message: '图形保存成功' })
+                        vueObj.$message({ type: 'info', message: msg_success })
                     }
-                })
+                }
+                if(this.openGraphType === 1){//个人图形
+                    data.graphType = 1
+                    saveGraphInterface(data).then(response => {
+                        callBack(this,response,'图形保存成功','图形保存失败')
+                    }).catch( () => {})
+                }else{//场景查询图形
+                    data.graphType = 3
+                    if(this.openGraphType === 2){//个人场景查询图形
+                        data.publicType = 0
+                    }else{//公共场景查询图形
+                        data.publicType = 1
+                        data.executeStatus = 3// 未执行
+                    }
+                    createScreenQuery(data).then( response => {
+                        callBack(this,response,'场景查询图形保存成功','场景查询图形保存失败')
+                    }).catch( () => {})
+                }
             },
             searchZtree() {
                 indexJs.searchZtree()
@@ -1002,7 +1007,7 @@
                     this.loading.destroy()
                     this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false, 'hasTime': true })
                     viewNodeData({ nodeObjs: JSON.stringify(this.resultTableArr), openType: this.openType, websocketBatchId: this.websocketBatchId }).then()
-                        .catch( error => {
+                        .catch( () => {
                             this.loading.destroy()
                         })
                 }

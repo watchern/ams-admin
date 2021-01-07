@@ -94,7 +94,7 @@
             <el-table-column type="index" label="序号" width="50" align="center" />
             <el-table-column label="筛选器名称" prop="filterName" />
             <el-table-column label="IN值SQL" prop="inValueSql" show-overflow-tooltip />
-            <el-table-column label="描述" prop="describe" show-overflow-tooltip />
+            <el-table-column label="描述" prop="describtion" show-overflow-tooltip />
             <el-table-column label="操作" align="center" min-width="100">
               <template slot-scope="scope">
                 <el-button type="primary" title="预览" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.inValueSql)" />
@@ -119,8 +119,8 @@
                 <el-form-item label="IN值SQL" prop="inValueSql">
                   <el-input v-model="tempFilter.inValueSql" type="textarea" :rows="5" />
                 </el-form-item>
-                <el-form-item label="描述" prop="describe">
-                  <el-input v-model="tempFilter.describe" type="textarea" :rows="4" />
+                <el-form-item label="描述" prop="describtion">
+                  <el-input v-model="tempFilter.describtion" type="textarea" :rows="4" />
                 </el-form-item>
                 <el-form-item label="关联业务属性" prop="bizAttrUuid">
                   <el-select ref="bizAttrUuid" v-model="tempFilter.bizAttrUuid" placeholder="请选择业务属性">
@@ -217,7 +217,7 @@ export default {
         sceneUuid: undefined,
         sceneName: '',
         sceneCode: '',
-        describe: ''
+        describtion: ''
       },
       tempGrp: {
         sceneGrpUuid: undefined,
@@ -228,7 +228,7 @@ export default {
       tempFilter: {
         sceneGrpUuid: undefined,
         inValueSql: '',
-        describe: '',
+        describtion: '',
         bizAttrUuid: ''
       },
       selections: [],
@@ -258,7 +258,7 @@ export default {
       rulesFilter: {
         filterName: [{ required: true, message: '请填写筛选器名称', trigger: 'change' }],
         inValueSql: [{ required: true, message: '请填写IN值SQL', trigger: 'change' }],
-        describe: [{ required: true, message: '请填写描述', trigger: 'change' }],
+        describtion: [{ required: true, message: '请填写描述', trigger: 'change' }],
         bizAttrUuid: [{ required: true, message: '请选择业务属性', trigger: 'change' }]
       },
       downloadLoading: false
@@ -389,7 +389,7 @@ export default {
         bizAttrUuid: '',
         filterName: '',
         inValueSql: '',
-        describe: ''
+        describtion: ''
       }
     },
     // 打开创建用户组窗口
