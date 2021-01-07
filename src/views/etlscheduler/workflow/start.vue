@@ -352,7 +352,7 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
+<style scoped lang="scss" rel="stylesheet/scss">
 .start-process-model {
   width: 860px;
   min-height: 300px;
