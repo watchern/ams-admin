@@ -236,3 +236,6 @@ td>.form-group{
 [class*="col-"]{
     padding: 0 5px;
 }
+>>> .ztree>li>a.curSelectedNode{
+    background-color: #edf6ff;
+}

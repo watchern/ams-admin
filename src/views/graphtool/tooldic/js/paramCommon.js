@@ -273,18 +273,23 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
                     hasSql = true// 下拉列表是SQL方式
                     if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
                         executeParamSql(paramSql).then( response => {
-                            if(response.data == null || response.data.isError){
+                            if(response.data == null){
                                 obj.isError = true
-                                obj.message = '获取参数【' + paramObj.paramName + '】的值的失败，原因：' + response.data.message
-                            } else {
-                                let e = response.data
-                                if (e.valueList && e.valueList.length > 0) {
-                                    for (let k = 0; k < e.valueList.length; k++) {
-                                        var paramObj = {
-                                            'name': e.valueList[k].paramName,
-                                            'value': e.valueList[k].paramValue
+                                obj.message = `获取参数【${paramObj.paramName}】的值的失败`
+                            }else {
+                                if (response.data.isError) {
+                                    obj.isError = true
+                                    obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
+                                } else {
+                                    let e = response.data
+                                    if (e.valueList && e.valueList.length > 0) {
+                                        for (let k = 0; k < e.valueList.length; k++) {
+                                            var paramObj = {
+                                                'name': e.valueList[k].paramName,
+                                                'value': e.valueList[k].paramValue
+                                            }
+                                            dataArr.push(paramObj)
                                         }
-                                        dataArr.push(paramObj)
                                     }
                                 }
                             }
@@ -405,14 +410,19 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
                 if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
                     const request = getSelectTreeData(paramSql)
                     request.then( response => {
-                        if (response.data == null || response.data.isError) {
+                        if(response.data == null){
                             obj.isError = true
-                            obj.message = '获取参数【' + paramObj.paramName + '】的值的失败，原因：' + response.data.message
-                        } else {
-                            if(response.data.result && response.data.result.length > 0){
-                                dataArr = organizeSelectTreeData(response.data.result)
-                            }else{
-                                dataArr = []
+                            obj.message = `获取参数【${paramObj.paramName}】的值的失败`
+                        }else {
+                            if (response.data.isError) {
+                                obj.isError = true
+                                obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
+                            } else {
+                                if(response.data.result && response.data.result.length > 0){
+                                    dataArr = organizeSelectTreeData(response.data.result)
+                                }else{
+                                    dataArr = []
+                                }
                             }
                         }
                     }).catch(function () {
