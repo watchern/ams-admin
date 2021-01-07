@@ -59,18 +59,6 @@ export function updateRemind(id) {
   })
 }
 
-// /**
-//  * 获取单个系统异常信息
-//  * @param {*} data
-//  */
-// export function getReadErrorLog(id) {
-//   return request({
-//     baseURL: baseURL,
-//     url: `/logSysErrorController/getErrorLog/${id}`,
-//     method: 'get',
-//   })
-// }
-
 export function getUnReadRemind(data) {
   return request({
     baseURL: baseURL,
