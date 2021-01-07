@@ -205,11 +205,11 @@ export default {
           text: this.cardList[0].des[data].text,
           content:this.cardList[0].des[data].content
         })
+        location.reload()
       }else{
         this.$router.push({ path:this.cardList[0].des[data].url})
       }
       updateRemind(this.cardList[0].des[data].Uuid)
-      location.reload()
     },
     moreJump(){
       // this.activeTags({

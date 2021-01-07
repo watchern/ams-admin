@@ -1409,7 +1409,7 @@ export default {
   }
 }
 </script>
-<style lang="scss" rel="stylesheet/scss">
+<style scoped lang="scss" rel="stylesheet/scss">
   .el-tag {
     background-color: transparent;
     border-color: transparent;

@@ -24,7 +24,7 @@
               :key="index"
               class="box"
               :class="[currentIndex===index && 'box-active']"
-              @mouseenter="selectMenu(item,index)"
+              @click="selectMenu(item,index)"
             >
               <div class="img" :style="[getStyle(item.img)]" />
             </div>
@@ -67,7 +67,7 @@
               :key="index"
               class="box flex a-center j-center flex-column"
               :class="[currentIndex===index && 'box-active']"
-              @mouseenter="selectMenu(item,index)"
+              @click="selectMenu(item,index)"
             >
               <div class="img" :style="[getStyle(item.img)]" />
               <div class="name">{{ item.name }}</div>

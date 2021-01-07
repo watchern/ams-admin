@@ -36,7 +36,7 @@
           @select-all="modelTableSelectEvent"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column label="模型名称" width="300px" align="center" prop="modelName">
+          <el-table-column label="模型名称" width="300px"  prop="modelName">
             <template slot-scope="scope">
               <el-link type="primary" @click="selectModelDetail(scope.row.modelUuid)">{{ scope.row.modelName }}</el-link>
             </template>
@@ -76,7 +76,7 @@
         </el-collapse>
       </el-tab-pane>
     </el-tabs>
-    <modelshoppingcart v-show="isShowShoppingCart" ref="modelShoppingCartRef" />
+    <modelshoppingcart :data-user-id='dataUserId' :scene-code='sceneCode' v-show="isShowShoppingCart" ref="modelShoppingCartRef" />
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
       <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
@@ -130,7 +130,7 @@ import personTree from '@/components/publicpersontree/index'
 export default {
   name: 'ModelListTable',
   components: { Pagination, QueryField, EditModel, ModelFolderTree, childTabs, crossrangeParam, paramDraw, modelshoppingcart, personTree },
-  props: ['power'],
+  props: ['power','dataUserId','sceneCode'],
   data() {
     return {
       isShow: false,
@@ -278,6 +278,7 @@ export default {
         }
       }
       const func2 = function func3(val) {
+        debugger
         const dataObj = JSON.parse(val.data)
         /*        if(this.currentPreviewModelParamAndSql.paramObj != undefined){
           this.$refs.[dataObj.modelUuid + 'param'][0].
@@ -485,7 +486,7 @@ export default {
         type: 'active',
         val: {
           name: '新增模型',
-          path: '/analysis/editorModel'
+          path: '/analysis/editorModel?dataUserId='+this.dataUserId+'&sceneCode='+this.sceneCode
         }
       })
     },
@@ -501,7 +502,9 @@ export default {
         return
       }
       this.editModelTitle = '修改模型'
+      this.$emit('loadingSet',true,"正在获取模型信息...");
       selectModel(selectObj[0].modelUuid).then(result => {
+        this.$emit('loadingSet',false,"");
         if (result.code == 0) {
           var operationObj = {
             operationType: 2,
@@ -514,7 +517,7 @@ export default {
             type: 'active',
             val: {
               name: '修改模型',
-              path: '/analysis/editorModel'
+              path: '/analysis/editorModel?dataUserId='+this.dataUserId+'&sceneCode='+this.sceneCode
             }
           })
         } else {
@@ -810,7 +813,7 @@ export default {
      */
     executeSql(obj,selectObj,isExistParam){
       this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
-      getExecuteTask(obj).then((result) => {
+      getExecuteTask(obj,this.dataUserId,this.sceneCode).then((result) => {
         this.$emit('loadingSet',false,"");
         this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
         this.addTab(selectObj[0], isExistParam, result.data.executeSQLList)
@@ -919,7 +922,7 @@ export default {
       this.currentRunModelAllConfig[modelUuid] = runModelConfig
       this.dialogFormVisible = false
       this.$emit('loadingSet',true,"正在执行...");
-      getExecuteTask(obj).then((result) => {
+      getExecuteTask(obj,this.dataUserId,this.sceneCode).then((result) => {
         this.$emit('loadingSet',false,"");
         //界面渲染完成之后开始执行sql,将sql送入调度
         startExecuteSql(result.data).then((result) => {
@@ -941,7 +944,9 @@ export default {
      */
     selectModelDetail(modelUuid) {
       this.isUpdate = true
+      this.$emit('loadingSet',true,"正在获取模型信息...");
       selectModel(modelUuid).then(result => {
+        this.$emit('loadingSet',false,"");
         if (result.code == 0) {
           this.editModelTitle = result.data.modelName + '详细'
           var operationObj = {
@@ -1028,6 +1033,7 @@ export default {
 }
 .row-all{
   height: 650px;
+  overflow: auto;
 }
 .table{
   height: 450px !important;

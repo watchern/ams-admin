@@ -23,7 +23,7 @@ export default {
   components: { etlParamField, etlDataResource, etlDataSource }
 }
 </script>
-<style>
+<style scoped>
 .el-tab-pane{
   background: transparent;
 }
