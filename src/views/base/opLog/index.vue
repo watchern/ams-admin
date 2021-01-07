@@ -6,7 +6,6 @@
       :form-data="queryFields"
       @submit="getList" />
     </div>
-    <!-- <div style="height:70%;overflow:hidden"> -->
     <el-table 
     :key="tableKey" 
     v-loading="listLoading" 
@@ -28,7 +27,6 @@
       <el-table-column label="操作信息" prop="opInfo"/>
       <el-table-column label="操作时间" prop="opTime" align="center"/>
     </el-table>
-    <!-- </div> -->
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
   </div>
 </template>
