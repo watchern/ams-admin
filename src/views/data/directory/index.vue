@@ -55,10 +55,10 @@ export default {
     initDirectory() {
       debugger
       console.log(this.dataUserId)
-      if (typeof (this.dataUserId) !== undefined) {
+      if (typeof (this.dataUserId) !== 'undefined') {
         this.directyDataUserId = this.dataUserId
       }
-      if (typeof (this.sceneCode) !== undefined) {
+      if (typeof (this.sceneCode) !== 'undefined') {
         this.directySceneCode = this.sceneCode
       }
     },
