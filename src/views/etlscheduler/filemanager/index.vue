@@ -508,7 +508,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
   .uploader-example {
     /* width: 90%; */
     /* padding: 15px; */

@@ -48,6 +48,6 @@ export default {
   components: { mList, mListConstruction, mSpin, mNoData }
 }
 </script>
-<style lang="scss" rel="stylesheet/scss">
+<style scoped lang="scss" rel="stylesheet/scss">
   @import "./servers";
 </style>

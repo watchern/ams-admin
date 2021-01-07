@@ -111,7 +111,7 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
+<style scoped lang="scss" rel="stylesheet/scss">
   .zookeeper-list {
     .state {
       text-align: center;
