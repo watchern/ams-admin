@@ -341,7 +341,7 @@
         components: { sqlDraftList, childTabs, paramDraw, dataTree },
         props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName","modelUuid",'dataUserId','sceneCode1'],
         created(){
-            if(this.dataUserId!='undefined' && this.sceneCode1!='undefined'){
+            if(this.dataUserId!=undefined && this.sceneCode1!=undefined){
                 this.personCode = this.dataUserId
                 this.sceneCode = this.sceneCode1
             }  

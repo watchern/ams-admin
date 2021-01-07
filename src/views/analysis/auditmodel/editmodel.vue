@@ -258,8 +258,8 @@ export default {
   props: ['openValue'],
   data() {
     return {
-      dataUserId:'undefined',
-      sceneCode:'undefined',
+      dataUserId:undefined,
+      sceneCode:undefined,
       treeNodeData: [
         {
           id: '1',
@@ -427,8 +427,14 @@ export default {
     //设置一个默认的模型编号
     this.form.modelUuid = getUuid()
     this.operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
-    this.dataUserId = this.$route.query.dataUserId
-    this.sceneCode = this.$route.query.sceneCode
+    if(this.$route.query.dataUserId!='undefined' && this.$route.query.sceneCode!='undefined'){
+        this.dataUserId = this.$route.query.dataUserId
+        this.sceneCode = this.$route.query.sceneCode
+
+    }else{
+       this.dataUserId = undefined
+       this.sceneCode = undefined
+    }
   },
   mounted() {
     this.initEvent()
