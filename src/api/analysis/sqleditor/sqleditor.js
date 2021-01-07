@@ -1051,10 +1051,17 @@ function onDrop(event, treeId, treeNodes) {
  * 初始化智能提示的数据表
  * @returns {AxiosPromise}
  */
-export function initTableTip() {
-  const dataUserId = store.getters.datauserid
-  const sceneCode = store.getters.scenecode
-  const params = { sceneCode: sceneCode, dataUserId: dataUserId }
+export function initTableTip(dataUserId,scenecode) {
+  var dataUserId1 = ''
+  var sceneCode1 = ''
+  if(dataUserId!='undefined' && scenecode!='undefined'){
+    dataUserId1 = dataUserId
+    sceneCode1 = scenecode
+  }else{
+    dataUserId1 = store.getters.datauserid
+    sceneCode1 = store.getters.scenecode
+  }
+  const params = { sceneCode: sceneCode1, dataUserId: dataUserId1 }
   // 调用后台获取数据表数据
   return request({
     baseURL: dataUrl,
@@ -1970,11 +1977,22 @@ export function startExecuteSql(data) {
  * 获取执行任务
  * @param {*} data 要执行的数据
  */
-export function getExecuteTask(data) {
-  const dataUserId = store.getters.datauserid
-  const sceneCode = store.getters.scenecode
-  data.userId = dataUserId;
-  data.sceneCode = sceneCode;
+export function getExecuteTask(data,dataUserId,sceneCode) {
+  var dataUserId1 = ''
+  var sceneCode1 = ''
+  if(dataUserId==undefined && sceneCode==undefined){
+    dataUserId = 'undefined'
+    sceneCode = 'undefined'
+  }
+  if(dataUserId!='undefined' && sceneCode!='undefined'){
+    dataUserId1 = dataUserId
+    sceneCode1 = sceneCode
+  }else{
+    dataUserId1 = store.getters.datauserid
+    sceneCode1 = store.getters.scenecode
+  }
+  data.userId = dataUserId1;
+  data.sceneCode = sceneCode1;
   return request({
     baseURL: analysisUrl,
     url: '/SQLEditorController/getExecuteTask',

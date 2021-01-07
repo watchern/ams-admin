@@ -357,13 +357,13 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-.all {
+>>>.all {
   padding: 10px 0px;
 }
-.el-card__body {
+>>>.el-card__body {
   padding: 10px;
 }
-.el-card__header {
+>>>.el-card__header {
   padding: 0;
 }
 .iconstyle{

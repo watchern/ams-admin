@@ -188,9 +188,7 @@
                     <div class="layui-tab-content">
                         <div class="layui-tab-item">
                             <div id="tableArea">
-                                <!--<div v-for="result in resultTableArr" v-if="showTableResult" class="data-show">-->
-                                    <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="resultTableArr" v-if="showTableResult"/>
-                                <!--</div>-->
+                                <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="resultTableArr" v-if="showTableResult"/>
                             </div>
                         </div>
                         <div class="layui-tab-item"><div id="sysInfoArea" /></div>
@@ -425,7 +423,7 @@
     import SqlEditor from '@/views/analysis/sqleditor/index.vue'
     // 引入后端接口的相关方法
     import { removeJcCssfile, addCssFile, addJsFile } from "@/api/analysis/common"
-    import { getGraphInfoById, getTableCol, viewNodeData, saveGraphInterface, createScreenQuery } from '@/api/graphtool/graphList'
+    import { getGraphInfoById, viewNodeData, saveGraphInterface, createScreenQuery } from '@/api/graphtool/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
     // 引入前段JS的相关方法
     import * as commonJs from '@/views/graphtool/tooldic/js/common'
@@ -1007,8 +1005,10 @@
                     this.loading.destroy()
                     this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false, 'hasTime': true })
                     viewNodeData({ nodeObjs: JSON.stringify(this.resultTableArr), openType: this.openType, websocketBatchId: this.websocketBatchId }).then()
-                        .catch( () => {
+                        .catch( error => {
                             this.loading.destroy()
+                            $('#sysInfoArea').html("<p style='color: red;'>" + error + "</p>")
+                            this.layuiTabClickLi(1)
                         })
                 }
             },

@@ -1,11 +1,6 @@
 <template>
     <div style="padding: 20px 20px 0;height: 600px;">
         <el-row>
-            <el-col>
-                <span style="color:red;">{{ preNodeName }}</span>
-            </el-col>
-        </el-row>
-        <el-row>
             <el-col :span="8">
                 <label>筛选字段&nbsp;</label>
                 <el-select v-model="select_colms" filterable @change="setSelectColms">
@@ -94,7 +89,7 @@
         name: 'FilterSet',
         data() {
             return {
-                nodeData: null,
+                allColumnArr: [],
                 zTreeObj_Filter: null,
                 connType: 'and',
                 quotes: true,
@@ -103,7 +98,6 @@
                 showConnValue: true,
                 selectColms: [],
                 select_colms: '',
-                preNodeName: '',
                 select_cz: '',
                 selectCzArr: [{ value: '=', name: '等于' },
                     { value: '!=', name: '不等于' },
@@ -125,29 +119,21 @@
                 showMoreVal: false
             }
         },
+        props:['columnInfoArr','nodes'],
         mounted() {
-            this.init()
+            this.initSetting()
         },
         methods: {
-            init() {
-                const graph = this.$parent.graph
-                this.nodeData = graph.nodeData[graph.curCell.id]
-                const parentIds = this.nodeData.parentIds
-                const isSet = this.nodeData.isSet// 判断当前节点是否已经设置
-                const parent_node = graph.nodeData[parentIds[0]] // one parent
-                this.preNodeName = '【上级节点名称：' + parent_node.nodeInfo.nodeName + '】'
-                Array.from(this.$parent.columnsInfoPre, item => {
+            initSetting(){
+                const settingFilter = this.initZtreeSetting()
+                this.zTreeObj_Filter = $.fn.zTree.init($(this.$refs.filterZtree), settingFilter, this.nodes);
+                Array.from(this.columnInfoArr, item => {
                     const newColumnName = item.newColumnName
                     const displayName = `${newColumnName}(${item.columnType})`
                     this.selectColms.push({ newColumnName, displayName })
                     this.compareColumnArr.push({ newColumnName, displayName })
+                    this.allColumnArr.push(newColumnName)
                 })
-                const settingFilter = this.initZtreeSetting()
-                if (isSet) {
-                    this.zTreeObj_Filter = $.fn.zTree.init($(this.$refs.filterZtree), settingFilter, this.nodeData.setting.nodes)
-                } else {
-                    this.zTreeObj_Filter = $.fn.zTree.init($(this.$refs.filterZtree), settingFilter, [])
-                }
             },
             setSelectColms(val) {
                 this.select_colms = val
@@ -304,12 +290,21 @@
              * 	保存setting
              */
             saveSetting() {
-                var nodes = this.zTreeObj_Filter.getNodes()
-                this.nodeData.isSet = true
-                this.nodeData.setting.nodes = nodes
+                let whereObj = {
+                    "whereStr" : "",
+                    "hasWhere" : true,
+                    "columnArr" : this.allColumnArr
+                };
+                let curNodes = this.zTreeObj_Filter.getNodes()
+                if(curNodes && curNodes.length > 0){
+                    Array.from(curNodes, item => whereObj.whereStr += " " + item.name)
+                }
+                whereObj.whereStr = " WHERE " + whereObj.whereStr
+                whereObj.setting = curNodes
+                return whereObj
             },
             // 页面输入项的校验(或空配置校验)
-            inputVerify() {
+            verifySetting() {
                 var nodes = this.zTreeObj_Filter.getNodes()
                 if (typeof nodes === 'undefined' || (typeof nodes !== 'undefined' && nodes.length === 0)) {
                     this.$message({'type':'warning','message':'未设置筛选条件'})

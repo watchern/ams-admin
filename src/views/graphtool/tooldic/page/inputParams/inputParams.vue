@@ -29,6 +29,7 @@
     import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams  } from '@/api/graphtool/graphList'
     import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
     import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
+    import {organizeSelectTreeData} from "@/views/graphtool/tooldic/js/paramCommon";
     export default {
         name: 'InputParams',
         data(){
@@ -57,11 +58,16 @@
                     this.loading = $(this.$refs.inputParamContent).mLoading({ 'text': '正在初始化数据，请稍后……', 'hasCancel': false })
                     let paramsArr = []// 定义所有母参信息数组
                     const response = await findParamsAndModelRelParams()
-                    if (response.data == null || response.data.isError) {
-                        this.$message.error(response.data.message)
+                    if(response.data == null){
+                        this.$message.error('获取参数信息失败')
                         return
-                    } else {
-                        paramsArr = response.data.paramList// 定义所有母参信息数组
+                    }else {
+                        if (response.data.isError) {
+                            this.$message.error(response.data.message)
+                            return
+                        } else {
+                            paramsArr = response.data.paramList// 定义所有母参信息数组
+                        }
                     }
                     let nodeParamObj = {}// 节点与参数配置绑定的对象
                     for (let i = 0; i < this.nodeIdArr.length; i++) {
@@ -654,8 +660,7 @@
                         let paramOptionDom = this.$refs.paramOption
                         if(paramOptionDom && paramOptionDom.length > 0){
                             for(let j=0; j<paramOptionDom.length; j++){
-                                // $(nodeParamDom[i]).find('.paramOption').each(function() {
-                                let index = paramOptionDom[j].getAttribute("index")
+                                let index = paramOptionDom[j].$attrs.index
                                 paramInfoObj = paramInfoArr[index]
                                 let moduleParamId = paramInfoObj.dataId// 母参数ID
                                 let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空

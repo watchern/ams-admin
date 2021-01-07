@@ -122,7 +122,7 @@
       <div ref="modelDesign" class="display div-width">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" style="width: 100%" id="graphDiv">
-            <SQLEditor :modelUuid='form.modelUuid' @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
+            <SQLEditor :data-user-id='dataUserId' :scene-code1='sceneCode' :modelUuid='form.modelUuid' @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel" :locationUuid="form.locationUuid" :locationName="form.locationName"  class="sql-editor"/>
             <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2" v-if="state.id==graphEditorStr"></graph>
           </div>
@@ -258,6 +258,8 @@ export default {
   props: ['openValue'],
   data() {
     return {
+      dataUserId:'undefined',
+      sceneCode:'undefined',
       treeNodeData: [
         {
           id: '1',
@@ -425,6 +427,8 @@ export default {
     //设置一个默认的模型编号
     this.form.modelUuid = getUuid()
     this.operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
+    this.dataUserId = this.$route.query.dataUserId
+    this.sceneCode = this.$route.query.sceneCode
   },
   mounted() {
     this.initEvent()

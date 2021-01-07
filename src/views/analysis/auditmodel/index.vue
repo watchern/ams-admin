@@ -3,10 +3,9 @@
     <!--模型分类树-->
     <el-container>
       <el-aside class="tree-side">
-        <span class="spacetitle">当前空间：{{datausername}}</span>
         <ModelFolderTree ref="modelFolderTree" :power="power" @refreshModelList="refreshModelList" />
       </el-aside>
-      <ModelListTable ref="modelListTable" :power="power" @loadingSet="loadingSet" @refreshTree="refreshTree" />
+      <ModelListTable :data-user-id='dataUserId' :scene-code='sceneCode' ref="modelListTable" :power="power" @loadingSet="loadingSet" @refreshTree="refreshTree" />
     </el-container>
   </div>
 </template>
@@ -20,7 +19,7 @@ export default {
       return this.$store.getters.datausername;
     }
   },
-  props:['power'],
+  props:['power','dataUserId','sceneCode'],
   data() {
     return {
       //dataSpaceName: sessionStorage.getItem("dataUserName"),

@@ -38,7 +38,7 @@
                                     <a data-toggle="collapse" data-parent="#countAccordion" href="#countCollapse">汇总设置</a>
                                 </h4>
                             </div>
-                            <div id="countCollapse" class="panel-collapse collapse in">
+                            <div id="countCollapse" class="panel-collapse collapse">
                                 <div class="panel-body">
                                     <table id="countTable" class="table table-striped">
                                         <thead>
@@ -128,8 +128,7 @@
                 isDisabled:false,
                 columnData:[],// 穿梭框中加载的字段数据数组集合
                 columnsInfo:[],// 所有输出列信息
-                groupTransfer:null,// 分组的穿梭框对象
-                a:null
+                groupTransfer:null// 分组的穿梭框对象
             }
         },
         props:['graph'],
@@ -242,5 +241,8 @@
     .table > thead > tr > th {
         background-color: #5886B2;
         color: #ECF0F5;
+    }
+    .panel-body{
+        padding: 10px 0;
     }
 </style>

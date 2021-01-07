@@ -11,7 +11,7 @@ export default {
   components: { etlResourceStatistics, etlDataFileStatistics }
 }
 </script>
-<style>
+<style scoped>
 .el-tabs{
   padding: 0;
 }

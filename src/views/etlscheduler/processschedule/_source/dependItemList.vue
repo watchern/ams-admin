@@ -471,7 +471,7 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
+<style scoped lang="scss" rel="stylesheet/scss">
 .ans-select .inner-input .input-element {
 	color: #606266;
 	cursor: pointer;

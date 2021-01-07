@@ -4,18 +4,18 @@
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="节点名称" prop="graphName">
-                        <el-input v-model="node_name"/>
+                        <el-input v-model="node_name" style="width: 90%;"/>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="执行状态" prop="graphName">
-                        <el-input v-model="nodeExcuteStatus" :disabled="statusDisabled"/>
+                        <el-input v-model="nodeExcuteStatus" style="width: 90%;" :disabled="statusDisabled"/>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
                 <el-form-item label="节点备注" prop="graphName">
-                    <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 5}" placeholder="请输入内容" v-model="nodeDescription"></el-input>
+                    <el-input type="textarea" style="width: 95%;" :autosize="{ minRows: 3, maxRows: 5}" placeholder="请输入内容" v-model="nodeDescription"></el-input>
                 </el-form-item>
             </el-row>
         </el-form>
