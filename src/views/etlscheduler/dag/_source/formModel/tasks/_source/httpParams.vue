@@ -215,7 +215,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss">
 .user-def-params-model {
   .select-listpp {
     margin-bottom: 6px;

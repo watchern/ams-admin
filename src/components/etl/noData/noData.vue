@@ -18,7 +18,7 @@
   }
 </script>
 
-<style scoped lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss">
   .no-data-model {
     position: relative;
     width: calc(100%);

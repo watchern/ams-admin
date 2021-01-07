@@ -25,7 +25,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss">
   .affirm-model {
     .popup-model  {
       .top-p {

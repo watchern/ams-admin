@@ -1006,7 +1006,7 @@ export default {
   }
 }
 </script>
-<style scoped lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss">
   .requiredIcon {
     color: #ff0000;
     padding-right: 4px;

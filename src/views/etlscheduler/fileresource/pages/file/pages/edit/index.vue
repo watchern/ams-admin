@@ -174,7 +174,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss">
   .file-edit-content {
     width: 100%;
     background: #fff;

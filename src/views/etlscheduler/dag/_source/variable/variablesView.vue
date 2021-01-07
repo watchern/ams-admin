@@ -141,7 +141,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss">
 .variable-model {
   padding: 10px;
   padding-bottom: 5px;

@@ -27,7 +27,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss">
   .progress-bar-model {
     position: relative;
     margin-right: 46px;

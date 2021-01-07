@@ -161,7 +161,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss">
   .dependence-model {
     margin-top: -10px;
     .dep-opt {

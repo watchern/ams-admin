@@ -787,7 +787,7 @@ host：      ${$item.host || '-'}
 }
 </script>
 
-<style scoped lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss">
 @import "./dag";
 .btnclass ,.btnclass:hover{
   background: #353a43;

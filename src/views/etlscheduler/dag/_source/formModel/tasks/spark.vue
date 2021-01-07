@@ -567,7 +567,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss">
   .spark-model {
     .list-box-4p {
       .list {

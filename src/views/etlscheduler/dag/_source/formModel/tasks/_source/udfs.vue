@@ -94,7 +94,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss">
 .udfs-model {
   .add-udfs {
     color: #0097e0;

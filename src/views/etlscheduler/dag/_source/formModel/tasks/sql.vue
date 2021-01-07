@@ -470,7 +470,7 @@ export default {
   }
 }
 </script>
-<style scoped lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss">
 .cm-s-mdn-like .CodeMirror-gutters { background: #f8f8f8; border-left: 6px solid #353a43; color: #333; }
 .propwidth{
   width:500px
