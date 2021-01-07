@@ -44,37 +44,22 @@
           </div>
         </div>
       </div>
-      <div class="newest-item">
-        <div class="title-label">最新项目</div>
-        <div class="newest-item-box">
-          <div class="newest-item-box-title">我的项目</div>
-          <div class="newest-item-box-content flex a-center j-start flex-row">
-            <div class="content-left">
-              <animate-number from="1" to="1" class="num" />/
-              <animate-number from="1" to="9" class="num" />
-            </div>
-            <div class="content-right">
-              <div class="right-p1">#公司信贷业务专项审计</div>
-              <div class="right-p2">2020-04-06</div>
-            </div>
-          </div>
-        </div>
-      </div>
+
       <div class="newest-item">
         <div class="title-label">执行任务</div>
         <div class="newest-item-box">
           <div>
             <ul>
-              <li v-for="(item , index) in list.slice(0,5)" :key="index">
+              <li v-for="(item , index) in list" :key="index">
                 <span style="color:#eaeaea;font-size:10px" class="tools-box-name" v-text="item.taskName" />
                 <div style="float:right;margin-right:60px">
-                  <span v-if="item.taskStatus == 1" style="color:#eaeaea" class="el-icon-success" />
-                  <span v-if="item.taskStatus == 2" style="color:#eaeaea" class="el-icon-loading" />
+                  <span v-if="item.taskStatus == 2" style="color:#eaeaea" class="el-icon-success" />
+                  <span v-if="item.taskStatus == 1" style="color:#eaeaea" class="el-icon-loading" />
                   <span v-if="item.taskStatus == 3" style="color:#eaeaea" class="el-icon-error" />
                 </div>
               </li>
             </ul>
-            <span type="primary" style="color:#4e6ef2;float:right;bottom:-22px;font-size:10px" @click="moreTask">更多</span>
+            <span type="primary" style="color:#4e6ef2;float:right;bottom:-22px;font-size:10px;" @click="moreTask">更多</span>
           </div>
         </div>
       </div>
@@ -514,7 +499,7 @@ export default {
         func1(event)
       }
       const func2 = function func3(val) {
-        this.list = JSON.parse(val.data)
+        this.list = JSON.parse(val.data).slice(0, 5)
       }
       const func1 = func2.bind(this)
       this.webSocket.onclose = function(event) {
