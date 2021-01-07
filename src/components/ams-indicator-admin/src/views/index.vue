@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
     <el-container>
-      <el-aside class="left-side" width="300px">
+      <el-aside class="left-side" width="300px" height="748px">
         <el-scrollbar>
-          <el-tabs tab-position="left" style="height: 50%;">
+          <el-tabs tab-position="left" style="height: 100%;">
             <el-tab-pane>
               <span slot="label" class="tab-indicator"><i class="el-icon-s-marketing"></i>指标</span>
               <div class="tab-pane fade in active" id="targetFolder">
@@ -20,15 +20,8 @@
             </el-tab-pane>
           </el-tabs>
           <div class="side-footer">
-            <el-button v-if="isInManager != 'true' && isOrgManager != 'true'" type="primary"><i
-              class="el-icon-edit"></i></el-button>
-            <el-dropdown v-if="isInManager == 'true' || isOrgManager == 'true'">
-              <el-button class="el-dropdown-link" type="primary"><i class="el-icon-edit"></i></el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="nativeIndicatrixDesign">原生指标设计</el-dropdown-item>
-                <el-dropdown-item @click.native="addDeriveIn">派生指标设计</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <el-button type="primary" style="margin: 5px;float: left;margin-left: 9px;" size="mini" @click="nativeIndicatrixDesign">原</el-button>
+            <el-button type="primary" size="mini" @click="addDeriveIn">派</el-button>
           </div>
         </el-scrollbar>
       </el-aside>
@@ -84,12 +77,16 @@
             <a href="#" class="collapse-set-btn J_slidedown_btn">展开</a>
           </div>
         </div>
-
         <div id="dataView" v-for="(dataObj,index) in dataList">
           <div class="aaa">
             <span class="title">{{dataObj.measureName}}</span>
             <div style="height: 620px;overflow-y:scroll">
-              <mtEditor :ref='dataObj.id' :data='dataObj.data'></mtEditor>
+              <div v-if="dataObj.chartConfig != undefined">
+                <mtEditor :ref="dataObj.id" :data='dataObj.data' :chart-config='dataObj.chartConfig'></mtEditor>
+              </div>
+              <div v-else>
+                <mtEditor :ref="dataObj.id" :data='dataObj.data'></mtEditor>
+              </div>
             </div>
           </div>
         </div>
@@ -111,11 +108,11 @@
         </li>
       </ul>
     </div>-->
-    <div id="dimMenu" class="menuDemo">
+<!--    <div id="dimMenu" class="menuDemo">
       <ul class="dropdown-menu">
         <li id="dimFilter"><a tabindex="-1" href="#" onclick="dimFilterBtn()">筛选器</a></li>
       </ul>
-    </div>
+    </div>-->
     <el-dialog :title="deriveInType===2?'派生指标':'临时指标'" v-if="dialogAddderiveinVisible"
                :visible.sync="dialogAddderiveinVisible">
       <addderivein @closeAddderiveinDialog="closeAddderiveinDialog" v-if="dialogAddderiveinVisible" :type="deriveInType" :addType="addDeriveInType"
@@ -345,7 +342,8 @@ export default {
       dialogDesignVisible: false,
       //当前鼠标移入指标树节点的最父级节点
       currentInMeasureTreeParentNode: null,
-      searchAnalysis:''
+      searchAnalysis:'',
+      currentLoading:null
     }
   },
   watch: {
@@ -426,8 +424,9 @@ export default {
       }
       const func2 = function func3(val) {
         let result = {column:val.columnNames,columnType:val.columnTypes,data:val.result}
-        let data = {id:this.getuuid(),data:result,measureName:val.measureName}
+        let data = {id:val.analysisRegionId,data:result,measureName:val.measureName,chartConfig:val.chartConfig}
         this.dataList.push(data)
+        this.currentLoading.close()
         //在这里可以拿到this
       }
       const func1 = func2.bind(this)
@@ -2976,14 +2975,16 @@ export default {
      */
     saveAnalysisOne() {
       var that = this;
-      var objSupAnalysis = {
-        analysisList: this.analysisList
-      };
+
       this.$confirm('是否保存常用分析“{0}”？'.format(this.oftenAnalysisName), '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        this.handleChartConfig()
+        var objSupAnalysis = {
+          analysisList: this.analysisList
+        };
         var inRegionStyle = $("#inRegion").html();
         var dimRegionStyle = $("#dimAnalysisRegion").html();
         var mapping = JSON.stringify(that.inRegionAndDimRegionMapping);
@@ -3034,7 +3035,10 @@ export default {
       var inRegionStyle = $("#inRegion").html();
       var dimRegionStyle = $("#dimAnalysisRegion").html();
       var mapping = JSON.stringify(this.inRegionAndDimRegionMapping);
+      let that = this
       //整理叠加分析的对象
+      //获取当前界面分析对象的图表配置
+      this.handleChartConfig()
       var objSupAnalysis = {
         analysisList: this.analysisList
       };
@@ -3056,7 +3060,6 @@ export default {
         mapping: mapping
       };
       var url = this.contextUrl + "/InOftenindicators/insertSelective";
-      var that = this;
       $.post(url, {inOftenindicators: JSON.stringify(data)}, function (res) {
         if (res.state == false) {
           that.$message(res.message);
@@ -3083,6 +3086,17 @@ export default {
         });*/
       this.oftenAnalysisId = "";
       this.oftenAnalysisName = "";
+    },
+    /**
+     *  处理图表置
+     */
+    handleChartConfig(){
+      //获取当前界面分析对象的图表配置
+      for(let i = 0;i < this.analysisList.length;i++){
+        if(this.$refs.[this.analysisList[i].id] != undefined && this.$refs.[this.analysisList[i].id].length != 0){
+          this.analysisList[i].chartConfig = this.$refs.[this.analysisList[i].id][0].getChartConfig()
+        }
+      }
     },
     /**
      * 共享派生指标
@@ -4351,6 +4365,7 @@ export default {
      * @param analysisRegionId 分析区编号
      */
     filterBtn(obj, analysisRegionId) {
+      return
       this.dimTriangleClick.analysisRegionId = analysisRegionId;
       this.dimTriangleClick.inId = event.srcElement.parentElement.id;
       this.dimTriangleClick.dimName = $(obj).attr("name");
@@ -4607,7 +4622,7 @@ export default {
     queryData() {
       this.uuidArr = new Array();
       this.uuidName = new Array();
-      this.dataList = new Array();
+      this.dataList = [];
       //验证列表里是否有指标和维度
       var result = this.queryVer();
       if (result.state == false) {
@@ -4627,9 +4642,9 @@ export default {
           i++;
         });
         if (i > 1) {
-          that.supQuery(value.objInList, value.objDimList, value.id + "data");
+          that.supQuery(value.objInList, value.objDimList, value.id + "data",value.chartConfig);
         } else {
-          that.bingLieQuery(value.objInList, value.objDimList, value.id + "data");
+          that.bingLieQuery(value.objInList, value.objDimList, value.id + "data",value.chartConfig);
         }
       });
     },
@@ -4768,11 +4783,13 @@ export default {
      * @param objInList 指标列表
      * @param objDimList 维度列表
      * @param analysisRegionId 分析区编号
+     * @param chartConfig 图表配置
      */
-    supQuery(objInList, objDimList, analysisRegionId) {
+    supQuery(objInList, objDimList, analysisRegionId,chartConfig) {
       var that = this;
       var url = this.contextUrl + "/indicatrixAnalysis/supAnalysis";
       let loadingInstance = Loading.service({fullscreen: true});
+      this.currentLoading = loadingInstance
       var newInList = [];
       //取出每个分析区的第一个指标并删除，用该指标与其他指标进行组织sql
       $.each(objInList, function (num, inMeasure) {
@@ -4805,9 +4822,8 @@ export default {
             name = value.measureName;
             logName += value.measureName + ",";
           });
-          loadingInstance.close();
-          that.executeSql(res.executeSQLList,logName)
-          loadingInstance.close();
+          let newAnalysisRegionId = analysisRegionId.substring(0,analysisRegionId.length - 4)
+          that.executeSql(res.executeSQLList,logName,newAnalysisRegionId,chartConfig)
         },
         error: function (res) {
           if (res.state == false) {
@@ -4825,10 +4841,11 @@ export default {
      * @param objDimList 维度列表
      * @param analysisRegionId 分析区编号
      */
-    bingLieQuery(objInList, objDimList, analysisRegionId) {
+    bingLieQuery(objInList, objDimList, analysisRegionId,chartConfig) {
       var that = this;
       var url = this.contextUrl + "/indicatrixAnalysis/getInData";
       let loadingInstance = Loading.service({fullscreen: true,text:"正在执行SQL,请稍候..."});
+      this.currentLoading = loadingInstance
       var indicatrixObj = null;
       $.each(objInList, function (num, value) {
         if (value == null) {
@@ -4847,8 +4864,8 @@ export default {
             that.$message("分析出错，" + res.message, {time: 30000, btn: ['知道了']});
             return;
           }
-          loadingInstance.close();
-          that.executeSql(res.executeSQLList,indicatrixObj.measureName)
+          let newAnalysisRegionId = analysisRegionId.substring(0,analysisRegionId.length-4)
+          that.executeSql(res.executeSQLList,indicatrixObj.measureName,newAnalysisRegionId,chartConfig)
         },
         error: function (res) {
           if (res.state == false) {
@@ -4864,10 +4881,20 @@ export default {
      *  执行任务
      * @param executeSQLList 任务列表
      * @param measureName 指标名称
+     * @param analysisRegionId 分析区编号
+     * @param chartConfig 图表配置
      */
-    executeSql(executeSQLList,measureName){
+    executeSql(executeSQLList,measureName,analysisRegionId,chartConfig){
       let url = this.contextUrl + "/indicatrixAnalysis/executeSql";
-      let data = {executeSQLList:executeSQLList,webSocketUuid:this.currentPageWebSocketUuid + this.currentPageWebSocketBusinessId,measureName:measureName}
+      let data = {
+        executeSQLList:executeSQLList,
+        webSocketUuid:this.currentPageWebSocketUuid + this.currentPageWebSocketBusinessId,
+        measureName:measureName,
+        analysisRegionId:analysisRegionId
+      }
+      if(chartConfig != undefined){
+        data.chartConfig = chartConfig
+      }
       $.ajax({
         type: "post",
         url: url,
@@ -4920,6 +4947,7 @@ export default {
       this.oftenAnalysisId = "";
       this.oftenAnalysisName = "";
       this.dataMap = new Map();
+      this.dataList = []
       //循环指标区与维度区的映射
       $.each(this.inRegionAndDimRegionMapping, function (num, value) {
         if (num == 0) {//第一个数组不清除，因为是默认的，直接清除div下边的指标和维度
@@ -5837,51 +5865,53 @@ var see = "查看";
 
 </script>
 <style scoped>
-.left-side {
+>>>.left-side {
   box-shadow: rgba(63, 68, 77, 0.07) 15px 0px 15px 0px;
 }
 
-.left-side .el-tabs__active-bar {
+>>>.left-side .el-tabs__active-bar {
   background-color: transparent;
 }
 
-.left-side .el-tabs__nav-scroll {
+>>>.left-side .el-tabs__nav-scroll {
+  border-radius:25px;
+  height:92%;
   background: #f6f6f6;
 }
 
-.left-side i {
+>>>.left-side i {
   padding: 5px;
 }
 
-.left-side .el-tabs__header {
+>>>.left-side .el-tabs__header {
   position: fixed;
 }
 
-.left-side .el-tabs__content {
-  margin-left: 40px !important;
+>>>.left-side .el-tabs__content {
+  margin-left: 40px
 }
 
-.el-tabs__item.is-active {
+>>>.el-tabs__item.is-active {
   background: #ffffff;
   border-top: 2px solid #dfe4ed;
   border-bottom: 2px solid #dfe4ed;
 }
 
-.side-footer {
+>>>.side-footer {
   width: 38px;
-  height: 40px;
+/*  height: 40px;*/
   bottom: 50px;
   position: fixed;
-  padding: 4px 0px;
-  left: 67px;
+  padding: 82px 0px;
+/*  left: 67px;*/
 }
 
-.side-footer .el-button {
+>>>.side-footer .el-button {
   padding: 0px;
   font-size: 20px;
 }
 
-.tab-indicator {
+>>>.tab-indicator {
   writing-mode: tb-rl;
   -webkit-writing-mode: vertical-rl;
   padding: 10px 0px;
@@ -5890,7 +5920,7 @@ var see = "查看";
   color: #9B4C4C;
 }
 
-.tab-common {
+>>>.tab-common {
   writing-mode: tb-rl;
   -webkit-writing-mode: vertical-rl;
   padding: 10px 0px;
@@ -5899,18 +5929,16 @@ var see = "查看";
   color: #514559;
 }
 
-.el-tabs__item {
+>>>.el-tabs__item {
   padding: 0px;
   height: auto;
 }
 
-.pull-right {
+>>>.pull-right {
   float: right;
 }
 
-/*tags-select*/
-
-.tag-select {
+>>>.tag-select {
   font-size: 0;
   display: inline-block;
   height: 21px;
@@ -5924,11 +5952,11 @@ var see = "查看";
   padding: 0 4px;
 }
 
-.tag-select:hover {
+>>>.tag-select:hover {
   border-color: #9D9D9D;
 }
 
-.tag-select i {
+>>>.tag-select i {
   display: inline-block;
   width: 16px;
   height: 16px;
@@ -5938,44 +5966,48 @@ var see = "查看";
   font-style: normal;
 }
 
-.tag-select i.icon-close {
+>>>.tag-select i.icon-close {
   background-image: url("../styles/icons/close.png");
   border-right: 1px solid #DCE6ED;
   padding-left: 4px;
+  float: left;
+  margin-top: 3px;
 }
 
-.tag-select i.icon-edit {
+>>>.tag-select i.icon-edit {
   background-image: url("../styles/icons/icon-tools-3.png");
   border-right: 1px solid #DCE6ED;
   padding-left: 4px;
 }
 
-.tag-select i.icon-down {
+>>>.tag-select i.icon-down {
   background-image: url("../styles/icons/sanjiao.png");
+  float: right;
+  margin-top: 3px;
 }
 
-.tag-select i.icon-filter {
+>>>.tag-select i.icon-filter {
   background-image: url("../styles/icons/filter.png");
 }
 
-.tag-select i.icon-clock {
+>>>.tag-select i.icon-clock {
   margin-top: -2px;
   background-image: url("../styles/icons/linshi.png");
 }
 
-.tag-select i.icon-add {
+>>>.tag-select i.icon-add {
   color: #9C9C9C;
   line-height: 15px;
 }
 
-.tag-info.active > span {
+>>>.tag-info.active > span {
   font-family: PingFangSC-Regular;
   font-size: 12px;
   color: #759EEC;
   letter-spacing: 0;
 }
 
-.tag-select span {
+>>>.tag-select span {
   display: inline-block;
   height: 21px;
   font-family: PingFangSC-Regular;
@@ -5985,35 +6017,35 @@ var see = "查看";
   min-width: 50px;
 }
 
-.tag-select i, .tag-select span {
+>>>.tag-select i, .tag-select span {
   vertical-align: middle;
 }
 
-.tag-default {
+>>>.tag-default {
   background: #BDBDBD;
 }
 
-.tag-info {
+>>>.tag-info {
   background: #E1E9F8;
 }
 
-.tag-warning {
+>>>.tag-warning {
   background: #FBD694;
   box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
   border-radius: 15px !important;
 }
 
-.tag-default span,
-.tag-warning span,
-.tag-info span {
+>>>.tag-default span,
+>>>.tag-warning span,
+>>>.tag-info span {
   color: #434343;
 }
 
-.tag-ouline {
+>>>.tag-ouline {
   background-color: #fff;
 }
 
-.tag-warning.tag-ouline {
+>>>.tag-warning.tag-ouline {
   color: #FCCC77;
   border-color: #FCCC77;
   border-style: solid;
@@ -6022,54 +6054,54 @@ var see = "查看";
   border-radius: 15px !important;
 }
 
-.tag-warning.tag-ouline:hover {
+>>>.tag-warning.tag-ouline:hover {
   border-style: dashed;
 }
 
-.tag-warning.active > span {
+>>>.tag-warning.active > span {
   font-family: PingFangSC-Regular;
   font-size: 12px;
   color: #F3A71F;
   letter-spacing: 0;
 }
 
-.tag-warning.active .icon-clock {
+>>>.tag-warning.active .icon-clock {
   background-image: url("../styles/icons/linshiweidu.png");
 }
 
-.tag-gray {
+>>>.tag-gray {
   background-color: #edeef2;
   padding-top: 0;
   padding-bottom: 0;
 }
 
-.tag-gray .icon-down {
+>>>.tag-gray .icon-down {
   border-left: 1px solid #e8e9ec;
   border-right: 1px solid #e8e9ec;
   background-image: url("../styles/icons/icon-down-blue.png") !important;
 }
 
-.tag-gray span {
+>>>.tag-gray span {
   color: #3d84c8;
 }
 
-.tag-gray:hover,
-.tag-info:hover,
-.tag-info.active {
+>>>.tag-gray:hover,
+>>>.tag-info:hover,
+>>>.tag-info.active {
   border-color: #749EEC;
 }
 
-.tag-warning:hover,
-.tag-warning.active {
+>>>.tag-warning:hover,
+>>>.tag-warning.active {
   border-style: dashed;
 }
-div.aaa{
+>>>div.aaa{
   width:100%;
   height:100%;
   padding:5px 30px;
   border:2px solid #CCCCCC;
 }
-span.title{
+>>>span.title{
   display:block;
   width:100px;
   height:30px;
@@ -6078,4 +6110,5 @@ span.title{
   text-align: center;
   background: white;
 }
-</stylesssss>
+
+</style>

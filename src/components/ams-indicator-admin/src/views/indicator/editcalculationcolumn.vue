@@ -300,19 +300,19 @@ export default {
   }
 }
 </script>
-<style>
-    label {
+<style scoped>
+>>>label {
         display: inline-block;
         width: 100px;
         text-align: right;
     }
-    .selected{
+>>>.selected{
         background-color: #3d80c4;
         padding: 3px;
         color: #FFF;
         border: 1px solid #FFF;
     }
-    ul li{
+>>>ul li{
         list-style: none;
         margin：0:auto;
     }

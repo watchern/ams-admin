@@ -554,6 +554,7 @@ export default {
         this.$refs.relInfo.style.display = 'none'
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'none'
+        debugger
         if (this.$refs.[data.id][0] != undefined) {
           this.$refs.[data.id][0].style.display = 'block'
         }
@@ -675,7 +676,7 @@ export default {
       // region 处理参数数据
       // 获取到参数的默认值，是个JSON，将JSON存入到数据库  以便下次反显时使用
       //拿到默认值后组织成后台数据库的格式
-      
+
       if(paramDefaultValue != undefined && paramDefaultValue.length != 0){
         const paramData = paramDefaultValue.paramSettingArr
         let newParamData = []

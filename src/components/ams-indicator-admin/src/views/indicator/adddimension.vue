@@ -246,8 +246,8 @@ export default {
   }
 }
 </script>
-<style>
-    label {
+<style scoped>
+>>>label {
         display: inline-block;
         width: 100px;
         text-align: right;

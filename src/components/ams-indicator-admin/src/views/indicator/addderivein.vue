@@ -897,14 +897,14 @@ export default {
   }
 }
 </script>
-<style>
-    .selected{
+<style scoped>
+    >>>.selected{
         background-color: #3d80c4;
         padding: 3px;
         color: #FFF;
         border: 1px solid #FFF;
     }
-    .left-tree{
+    >>>.left-tree{
         width:200px;
         padding-top:30px;
     }
