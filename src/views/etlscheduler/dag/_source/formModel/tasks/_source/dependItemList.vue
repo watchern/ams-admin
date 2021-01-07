@@ -366,7 +366,7 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
+<style scoped lang="scss" rel="stylesheet/scss">
 .dep-list-model {
   position: relative;
   min-height: 32px;

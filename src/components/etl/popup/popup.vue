@@ -69,7 +69,7 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
+<style scoped lang="scss" rel="stylesheet/scss">
 .btnclass ,.btnclass:hover{
   background: #353a43;
   border-color: hsl(219, 12%, 24%);

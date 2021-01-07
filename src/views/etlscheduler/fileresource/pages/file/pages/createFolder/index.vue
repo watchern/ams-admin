@@ -122,7 +122,7 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
+<style scoped lang="scss" rel="stylesheet/scss">
   .resource-create-model {
     padding: 30px;
   }

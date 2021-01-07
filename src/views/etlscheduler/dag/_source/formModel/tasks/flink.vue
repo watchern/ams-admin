@@ -515,7 +515,7 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
+<style scoped lang="scss" rel="stylesheet/scss">
   .flink-model {
     .list-box-4p {
       .list {

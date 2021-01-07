@@ -23,7 +23,7 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
+<style scoped lang="scss" rel="stylesheet/scss">
 .content-title {
       height: 0;
       border-radius: 3px 3px 0 0;

@@ -80,7 +80,7 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
+<style scoped lang="scss" rel="stylesheet/scss">
   .main-layout-box {
     &.toggle {
       padding-left: 0;

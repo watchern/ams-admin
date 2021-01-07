@@ -109,7 +109,7 @@ export default {
   }
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .starting-params-dag-index {
   .box {
     padding: 5px 10px 10px;

@@ -146,7 +146,7 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
+<style scoped lang="scss" rel="stylesheet/scss">
 .statement-list-model {
   .select-listpp {
     margin-bottom: 6px;

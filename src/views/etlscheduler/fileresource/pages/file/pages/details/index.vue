@@ -200,7 +200,7 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
+<style scoped lang="scss" rel="stylesheet/scss">
   .file-details-content {
     width: 100%;
     background: #fff;
