@@ -1556,12 +1556,12 @@ export default {
 .drag {
   position: absolute;
   z-index: 1000;
-  top: 30px;
-  left: 92%;
+  top: 35px;
+  right: 35px;
   width: 95px;
-  background: #FFFFFF;
-  border-radius: 5px;
-  box-shadow: 0px 3px 8px 7px #00000015;
+  background: #F2F2F2;
+  border-radius: 15px;
+  font-weight:bold;
 }
 
 #drag .title {
@@ -1594,7 +1594,7 @@ export default {
 
 
 .el-tree-rewrite{
-  background: #fff;
+  background: #F2F2F2;
   width: 100%;
 }
 
