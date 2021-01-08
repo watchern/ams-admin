@@ -813,6 +813,14 @@ export default {
     executeSql(obj,selectObj,isExistParam){
       this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
       getExecuteTask(obj,this.dataUserId,this.sceneCode).then((result) => {
+        debugger
+        if(result.data.isError){
+        this.$message({
+              type: "error",
+              message: result.data.message,
+         });
+         this.$emit('loadingSet',false,"");
+        }else{
         this.$emit('loadingSet',false,"");
         this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
         this.addTab(selectObj[0], isExistParam, result.data.executeSQLList)
@@ -823,9 +831,7 @@ export default {
         }).catch((result) => {
           this.executeLoading = false;
         });
-      }).catch((result) => {
-        this.$message({ type: 'info', message: '执行失败' })
-        this.$emit('loadingSet',false,"");
+        }
       })
     },
     /**
@@ -922,14 +928,19 @@ export default {
       this.dialogFormVisible = false
       this.$emit('loadingSet',true,"正在执行...");
       getExecuteTask(obj,this.dataUserId,this.sceneCode).then((result) => {
+        if(result.data.isError){
+        this.$message({
+              type: "error",
+              message: result.data.message,
+         });
+         this.$emit('loadingSet',false,"");
+        }else{
         this.$emit('loadingSet',false,"");
         //界面渲染完成之后开始执行sql,将sql送入调度
         startExecuteSql(result.data).then((result) => {
         })
-      }).catch((result) => {
-        this.$message({ type: 'info', message: '执行失败' })
-        this.$emit('loadingSet',false,"");
-      });
+        }
+      })
     },
     /**
      * 获取模型列表选中的数据

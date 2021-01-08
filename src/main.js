@@ -226,7 +226,6 @@ Vue.prototype.getCharBetweenString = function(str) {
   var guuidReg = /\((.+?)\)/g;
   var guuid = str.match(guuidReg);
   guuid = JSON.stringify(guuid).replace("[\"(","").replace(")\"]","");
-  //alert(JSON.stringify(guuid));
   return guuid;
 }
 
