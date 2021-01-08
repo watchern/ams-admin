@@ -72,7 +72,6 @@
               </el-col>
             </el-row>
           </el-collapse-item>
-
         </el-collapse>
       </el-tab-pane>
     </el-tabs>

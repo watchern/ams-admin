@@ -21,6 +21,15 @@ export function renameResource(data) {
   })
 }
 
+export function addTable(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/addTable`,
+    method: 'post',
+    data
+  })
+}
+
 export function deleteDirectory(data) {
   return request({
     baseURL: baseURL,
