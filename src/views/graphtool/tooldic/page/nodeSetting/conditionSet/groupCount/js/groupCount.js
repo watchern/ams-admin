@@ -45,13 +45,12 @@ export function init() {
             if (countData.length > 0) { // 如果有汇总字段
                 // 反显汇总字段的配置
                 for (let k = 0; k < countData.length; k++) {
-                    groupCountVue.countTrNum = k
-                    groupCountVue.items.push({ 'id': groupCountVue.countTrNum})
+                    groupCountVue.items.push({ 'id': k})
                 }
                 groupCountVue.$nextTick(() => {
                     for (let m = 0; m < countData.length; m++) {
-                        initCountSelectData(groupCountVue.countTrNum)
-                        groupCountVue.countTrNum = groupCountVue.countTrNum + 1
+                        initCountSelectData(m)
+                        groupCountVue.countTrNum = m + 1
                         var chooseColumnXs = xmSelect.get(`#searchName${m}` , true)// 获取当前行中汇总字段名称的单实例
                         var initCountColumnData = JSON.parse(JSON.stringify(groupCountVue.columnData))// 复制全局汇总字段的数组变量的值
                         initCountColumnData.unshift({ 'name': '请选择', 'value': '', 'type': '' })

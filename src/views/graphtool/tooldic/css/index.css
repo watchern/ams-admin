@@ -176,7 +176,7 @@ p{
     position: relative;
     cursor:col-resize;
     background-color:#e5e5e5;
-    background-image:url('../images/graphicon/thumb_vertical.png');
+    background-image:url('../images/icon/thumb_vertical.png');
     background-repeat:no-repeat;
     background-position:center center;
 }
@@ -185,7 +185,7 @@ p{
     font-size:1pt;
     cursor:row-resize;
     background-color:#e5e5e5;
-    background-image:url('../images/graphicon/thumb_horz.png');
+    background-image:url('../images/icon/thumb_horz.png');
     background-repeat:no-repeat;
     background-position:center center;
 }
@@ -235,4 +235,7 @@ td>.form-group{
 }
 [class*="col-"]{
     padding: 0 5px;
+}
+>>> .ztree>li>a.curSelectedNode{
+    background-color: #edf6ff;
 }

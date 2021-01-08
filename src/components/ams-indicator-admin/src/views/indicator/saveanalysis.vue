@@ -241,6 +241,7 @@ export default {
       }
       this.$emit('addAnalistsNode',analysisName,this.pbScopeUuid,this.ZtreeId)
       this.$emit('initCommonlyAnalysisZtree')
+      this.closeDialog()
     }
   }
 }

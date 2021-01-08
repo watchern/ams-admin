@@ -42,6 +42,7 @@
 </template>
 
 <script>
+    import '@/components/ams-loading/css/loading.css'
     import {getTransCodeList} from '@/api/data/transCode'
     import TranscodeDetail from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/transcode/transcodeDetail.vue'
     export default {

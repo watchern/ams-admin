@@ -122,7 +122,7 @@
       <div ref="modelDesign" class="display div-width">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" style="width: 100%" id="graphDiv">
-            <SQLEditor :data-user-id='dataUserId' :scene-code='sceneCode' :modelUuid='form.modelUuid' @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
+            <SQLEditor :data-user-id='dataUserId' :scene-code1='sceneCode' :modelUuid='form.modelUuid' @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel" :locationUuid="form.locationUuid" :locationName="form.locationName"  class="sql-editor"/>
             <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2" v-if="state.id==graphEditorStr"></graph>
           </div>
@@ -132,13 +132,21 @@
         </el-form>
       </div>
       <div ref="paramDefaultValue" class="display default-value">
-        <messageTips type="info" message="拖拽改变参数展示顺序"></messageTips>
+        <div style="font-size: 20px">
+          模型参数
+          <el-tooltip class="item" effect="dark" content="拖拽改变参数展示顺序" placement="top-start">
+            <i class="el-icon-info"/></el-tooltip>
+        </div>
         <div id="paramList">
           <paramShow ref="apple" v-if="paramShowVIf"></paramShow>
         </div>
       </div>
       <div ref="modelResultOutputCol" class="display default-value">
-        <messageTips type="error" message="只显示最后的结果列"></messageTips>
+        <div style="font-size: 20px">
+          模型结果
+          <el-tooltip class="item" effect="dark" content="只显示最后的结果列" placement="top-start">
+          <i class="el-icon-info"/></el-tooltip>
+        </div>
         <div class="model-result-output-col">
           <el-table ref="columnData" :data="columnData" class="div-width" >
             <el-table-column prop="outputColumnName" label="输出列名" width="180" />
@@ -427,8 +435,14 @@ export default {
     //设置一个默认的模型编号
     this.form.modelUuid = getUuid()
     this.operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
-    this.dataUserId = this.$route.query.dataUserId
-    this.sceneCode = this.$route.query.sceneCode
+    if(this.$route.query.dataUserId!='undefined' && this.$route.query.sceneCode!='undefined'){
+        this.dataUserId = this.$route.query.dataUserId
+        this.sceneCode = this.$route.query.sceneCode
+
+    }else{
+       this.dataUserId = undefined
+       this.sceneCode = undefined
+    }
   },
   mounted() {
     this.initEvent()
@@ -558,6 +572,7 @@ export default {
         this.$refs.relInfo.style.display = 'none'
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'none'
+        debugger
         if (this.$refs.[data.id][0] != undefined) {
           this.$refs.[data.id][0].style.display = 'block'
         }
@@ -679,7 +694,7 @@ export default {
       // region 处理参数数据
       // 获取到参数的默认值，是个JSON，将JSON存入到数据库  以便下次反显时使用
       //拿到默认值后组织成后台数据库的格式
-      
+
       if(paramDefaultValue != undefined && paramDefaultValue.length != 0){
         const paramData = paramDefaultValue.paramSettingArr
         let newParamData = []
@@ -1541,12 +1556,12 @@ export default {
 .drag {
   position: absolute;
   z-index: 1000;
-  top: 30px;
-  left: 92%;
+  top: 35px;
+  right: 35px;
   width: 95px;
-  background: #FFFFFF;
-  border-radius: 5px;
-  box-shadow: 0px 3px 8px 7px #00000015;
+  background: #F2F2F2;
+  border-radius: 15px;
+  font-weight:bold;
 }
 
 #drag .title {
@@ -1579,7 +1594,7 @@ export default {
 
 
 .el-tree-rewrite{
-  background: #fff;
+  background: #F2F2F2;
   width: 100%;
 }
 

@@ -82,24 +82,8 @@ export function cancelShareGraph(data) {
 }
 
 /**
- * 获取数据表列信息
- * @param tableMetaUuid 数据表ID
- * @returns {AxiosPromise}
- */
-export function getTableCol(tableMetaUuid) {
-  return request({
-    baseURL: dataUrl,
-    url: '/tableMeta/getCols',
-    method: 'post',
-    async: false, // 默认同步
-    params: { tableMetaUuid: tableMetaUuid }
-  })
-}
-
-/**
  * 图形保存
  * @param data 图形对象信息
- * @returns {AxiosPromise}
  */
 export function saveGraphInterface(data) {
   return request({
@@ -308,12 +292,12 @@ export function getSelectTreeData(sqlValue) {
  * @param sql sql语句
  * @param paramArr 参数Json字符串
  */
-async function replaceModelSqlByParams(sql, paramArr) {
+export function replaceModelSqlByParams(sql, paramArr) {
     const data = {
         sqlValue: sql,
         paramConditions: paramArr
     }
-    return await request({
+    return request({
         baseURL: analysisUrl,
         url: '/paramController/replaceSqlByAllowedNull',
         method: 'post',

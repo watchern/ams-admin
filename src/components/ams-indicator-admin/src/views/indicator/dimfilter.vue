@@ -413,7 +413,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
     .query-builder .rules-group-header .group-conditions .btn.readonly:not(.active), .query-builder .rules-group-header .group-conditions input[name$='_cond'] {
         width: auto;
         height: auto;

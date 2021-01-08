@@ -57,6 +57,11 @@ const dataRouter = {
       path: 'formula',
       name: '指标计算公式维护',
       component: () => import('@/views/data/formula/index')
+    },
+    {
+      path: 'project',
+      name: '项目空间',
+      component: () => import('@/views/data/project/index')
     }
   ]
 }

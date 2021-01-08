@@ -45,8 +45,8 @@
             :append-to-body="true"
           >
             <data-tree
-              :data-user-id="dataUserId==undefined?personCode:dataUserId"
-              :scene-code="sceneCode1==undefined?sceneCode:sceneCode1"
+              :data-user-id="dataUserId=='undefined'?personCode:dataUserId"
+              :scene-code="sceneCode1=='undefined'?sceneCode:sceneCode1"
               :tree-type="treeType"
               @node-click="handleClick"
               style="height: 500px;overflow-y: scroll"
@@ -85,6 +85,7 @@ export default {
     if(this.dataUserId!=undefined){
       this.tempId = this.dataUserId
       this.modelResultSavePathId = this.dataUserId
+      this.personCode = this.dataUserId
     }else{
       this.tempId = this.$store.getters.datauserid
       this.modelResultSavePathId = this.$store.getters.datauserid

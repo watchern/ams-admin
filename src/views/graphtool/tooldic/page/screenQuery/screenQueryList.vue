@@ -1,5 +1,5 @@
 <template>
-    <div ref="screenMainContain" class="tree-list-container" v-loading="screenListLoading">
+    <div ref="screenMainContain" class="tree-list-container" v-loading="screenListLoading" element-loading-text="数据加载中">
         <el-row>
             <el-col>
                 <el-page-header @back="toScreenList" :content="curScreenGraphName"></el-page-header>

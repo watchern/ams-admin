@@ -243,7 +243,7 @@ export function findModelList(data){
 export function addRunTaskAndRunTaskRel(data,dataUserId,sceneCode){
   var dataUserId1 = ''
   var sceneCode1 = ''
-  if(dataUserId!=undefined && sceneCode!=undefined){
+  if(typeof dataUserId!='undefined' &&typeof sceneCode!='undefined'){
     dataUserId1 = dataUserId
     sceneCode1 = sceneCode
   }else{

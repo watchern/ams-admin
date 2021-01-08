@@ -220,19 +220,23 @@
                 //查询该场景查询下的数据节点数量
                 searchGraphNodes({"graphUuid":graphUuid,"graphName":graphName}).then( response => {
                     this.pageLoading = false
-                    if(response.data == null || response.data.isError){
+                    if(response.data == null){
                         this.$message.error("获取图形节点信息时出错")
-                    }else{
-                        let nodeList = response.data.nodeList;
-                        if(nodeList.length === 0){
-                            this.$message({"type":"info","message":"您选择的场景查询图形暂无数据节点"})
-                        }else{
-                            this.$parent.$parent.screenParam.graphUuid = graphUuid
-                            this.$parent.$parent.screenParam.graphName = graphName
-                            this.$parent.$parent.screenParam.publicType = selectObj[0].publicType
-                            this.$parent.$parent.screenParam.nodeData = nodeList[0].extMap.nodeData
-                            this.$parent.$parent.screenParam.screenQueryNodeArr = nodeList;
-                            this.$parent.$parent.rightType = "runGraph"
+                    }else {
+                        if (response.data.isError) {
+                            this.$message.error("获取图形节点信息时出错")
+                        } else {
+                            let nodeList = response.data.nodeList;
+                            if (nodeList.length === 0) {
+                                this.$message({"type": "info", "message": "您选择的场景查询图形暂无数据节点"})
+                            } else {
+                                this.$parent.$parent.screenParam.graphUuid = graphUuid
+                                this.$parent.$parent.screenParam.graphName = graphName
+                                this.$parent.$parent.screenParam.publicType = selectObj[0].publicType
+                                this.$parent.$parent.screenParam.nodeData = nodeList[0].extMap.nodeData
+                                this.$parent.$parent.screenParam.screenQueryNodeArr = nodeList;
+                                this.$parent.$parent.rightType = "runGraph"
+                            }
                         }
                     }
                 }).catch( () =>{
