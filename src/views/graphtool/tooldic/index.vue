@@ -613,7 +613,7 @@
                 }
                 const $this = this
                 // 点击操作节点，显示说明信息
-                $('#graphToolDiv .iconText').click(function(i, v) {
+                $(this.$refs.graphToolDiv).find('.iconText').click(function(i, v) {
                     const optType = $(this).parent().attr('data-type')
                     if ($.inArray(optType, $this.optTypeArr) > -1) {
                         indexJs.nodeRemark(optType)
