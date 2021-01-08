@@ -21,9 +21,9 @@
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
         <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
-        <i v-if="data.type==='table' && data.extMap.tblType==='T'" class="el-icon-tickets" style="color:#409EFF" />
-        <i v-if="data.type==='table' && data.extMap.tblType==='V'" class="el-icon-search" style="color:#409EFF" />
-        <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
+        <i v-if="data.type==='table' && data.extMap.tblType==='T'  && treeType==='common'" class="el-icon-tickets" style="color:#409EFF" />
+        <i v-if="data.type==='table' && data.extMap.tblType==='V' && treeType==='common'"  class="el-icon-search" style="color:#409EFF" />
+        <i v-if="data.type==='column' && treeType==='common'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
         <span :title="data.title">{{ node.label }}</span>
       </span>
     </MyElTree>

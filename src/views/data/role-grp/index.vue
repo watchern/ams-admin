@@ -111,6 +111,7 @@ export default {
   data() {
     return {
       roleUuid: this.$route.params.roleUuid,
+      paramSceneCode: this.$route.params.sceneCode,
       allScene: [],
       // currentScene: {},
       currentSceneUuid: '',
@@ -145,6 +146,15 @@ export default {
     getAllScene().then(resp => {
       this.allScene = resp.data
       if (this.allScene.length > 0) this.currentSceneUuid = this.allScene[0].sceneUuid
+      //根据param设置默认scene
+      console.log("设置默认scene  "+this.paramSceneCode);
+      if(this.paramSceneCode){
+        this.allScene.forEach(s=>{
+          if(this.paramSceneCode===s.sceneCode){
+            this.currentSceneUuid = s.sceneUuid;
+          }
+        })
+      }
     })
     getRoleGrp(this.roleUuid).then(resp => {
       this.tableData = resp.data

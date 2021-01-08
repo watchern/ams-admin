@@ -1,5 +1,5 @@
 <template>
-    <div id="graphToolDiv" ref="graphToolDiv" style="width: 100%;height: 100%;">
+    <div id="graphToolDiv" ref="graphToolDiv" style="width: 100%;height: 100%;overflow-y: hidden;">
         <div id="geToolbarContainer" class="geToolbarContainer">
             <div class="graphMenu" style="width: 235px !important;padding-left: 20px !important;">
                 <div class="menuTit">
@@ -411,6 +411,9 @@
     </div>
 </template>
 <script>
+    import '@/components/ams-graphtool/styles/grapheditor.css'
+    import '@/components/ams-loading/css/loading.css'
+    require("@/components/ams-graphtool/framework/sanitizer/sanitizer.min.js")
     // 引入子组件
     import Help from '@/views/graphtool/tooldic/page/funEventVue/help.vue'
     import GraphListExport from '@/views/graphtool/tooldic/page/funEventVue/graphListExport.vue'
@@ -610,7 +613,7 @@
                 }
                 const $this = this
                 // 点击操作节点，显示说明信息
-                $('#graphToolDiv .iconText').click(function(i, v) {
+                $(this.$refs.graphToolDiv).find('.iconText').click(function(i, v) {
                     const optType = $(this).parent().attr('data-type')
                     if ($.inArray(optType, $this.optTypeArr) > -1) {
                         indexJs.nodeRemark(optType)

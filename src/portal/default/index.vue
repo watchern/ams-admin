@@ -61,7 +61,8 @@ export default {
   }
 }
 .home-left{
-  z-index:20201111;
+  //z-index:20201111;
+  z-index: 1999
 }
 .home-right{
   background: #eaeaea url('style/images/bg.png') no-repeat left center fixed;

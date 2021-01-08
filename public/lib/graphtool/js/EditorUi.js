@@ -6,7 +6,7 @@ EditorUi = function(editor, container, lightbox) {
 	this.destroyFunctions = [];
 	this.editor = editor || new Editor();
 	this.container = container || document.getElementById("graphContainer");
-	
+
 	var graph = this.editor.graph;
 	/*-----graph.lightbox = lightbox;*/
 
@@ -27,7 +27,7 @@ EditorUi = function(editor, container, lightbox) {
 
 	// 创建用户界面行为
 	this.actions = new Actions(this);
-	
+
 	this.menus = this.createMenus();
 	this.createDivs();
 	this.createUi();
@@ -202,7 +202,7 @@ EditorUi = function(editor, container, lightbox) {
 				}
 			};
 
-			mxEvent.addListener(graph.cellEditor.textarea, 'input', updateCssHandler)
+			mxEvent.addListener(graph.cellEditor.textarea, 'input', updateCssHandler);
 			mxEvent.addListener(graph.cellEditor.textarea, 'touchend', updateCssHandler);
 			mxEvent.addListener(graph.cellEditor.textarea, 'mouseup', updateCssHandler);
 			mxEvent.addListener(graph.cellEditor.textarea, 'keyup', updateCssHandler);
@@ -635,7 +635,7 @@ EditorUi = function(editor, container, lightbox) {
 	this.editor.resetGraph();
 	this.init();
 	this.open();
-	
+
 	//节点预执行，获取节点所含字段
 	graph.preExeGetFields = function(cell,treeNode) {
       var isCreateTableNodeError = false;
@@ -648,29 +648,30 @@ EditorUi = function(editor, container, lightbox) {
               "tableMetaUuid": treeNode.id
           },
           success: function(e) {
-              let nodeExcuteStatus = 3;//默认执行成功
+              var nodeExcuteStatus = 3;//默认执行成功
               if(e.data == null){
                   isCreateTableNodeError = true;
                   $("ul.layui-tab-title li:eq(1)").click();
                   $("#sysInfoArea").html("获取数据表【" + cell.value + "】信息失败,无法创建数据表节点").css({"color":"red"});
                   nodeExcuteStatus = 4;//执行失败
               }else{
-                  let columnsInfo = [];
-                  let nodeSql = "SELECT";
-                  for(let i=0; i<e.data.length; i++){
-                      let columnName = e.data[i].colName;
-                      let columnType = e.data[i].dataType;
-                      let columnLength = e.data[i].dataLength;
-                      let isOutputColumn = 1;
-                      let newColumnName = e.data[i].colName;
-                      columnsInfo.push({columnName,columnType,columnLength,isOutputColumn,newColumnName});
+                  var columnsInfo = [];
+                  var nodeSql = "SELECT";
+                  for(var i=0; i<e.data.length; i++){
+                      var columnName = e.data[i].colName;
+                      columnsInfo.push({
+                          "columnName":columnName,
+                          "columnType":e.data[i].dataType,
+                          "columnLength":e.data[i].dataLength,
+                          "isOutputColumn":1,
+                          "newColumnName":columnName});
                       if(i === e.data.length-1){
-                          nodeSql = `${nodeSql}${columnName}`;
+                          nodeSql += columnName;
                       }else{
-                          nodeSql = `${nodeSql} ${columnName},`;
+                          nodeSql += " " + columnName + ",";
                       }
                   }
-                  nodeSql = `${nodeSql} FROM ${treeNode.name}`;
+                  nodeSql += " FROM " + treeNode.name;
                   graph.nodeData[cell.id].nodeInfo.nodeSql = nodeSql;
                   graph.nodeData[cell.id].columnsInfo = columnsInfo;
               }
@@ -1333,7 +1334,7 @@ EditorUi.prototype.canUndo = function() {
 };
 
 /**
- * 
+ *
  */
 EditorUi.prototype.getEditBlankXml = function() {
 	return mxUtils.getXml(this.editor.getGraphXml());
@@ -1688,7 +1689,7 @@ EditorUi.prototype.updateActionStates = function() {
 
 	// Updates action states
 	var actions = ['cut', 'copy', 'delete'
-		/*'toFront', 'toBack',*/ 
+		/*'toFront', 'toBack',*/
 	];
 
 	for(var i = 0; i < actions.length; i++) {
@@ -1823,7 +1824,7 @@ EditorUi.prototype.createUi = function() {
 		this.toolbarContainer.appendChild(this.toolbar.container);
 		this.container.appendChild(this.toolbarContainer);
 	}
-	
+
 	// HSplit
 	if(this.hsplit != null) {
 		this.addSplitHandler(this.hsplit, true, 0, mxUtils.bind(this, function(value) {
@@ -1843,7 +1844,7 @@ EditorUi.prototype.createUi = function() {
 			this.refreshv();
 		}));
 	}
-	
+
 };
 
 /**
