@@ -132,13 +132,21 @@
         </el-form>
       </div>
       <div ref="paramDefaultValue" class="display default-value">
-        <messageTips type="info" message="拖拽改变参数展示顺序"></messageTips>
+        <div style="font-size: 20px">
+          模型参数
+          <el-tooltip class="item" effect="dark" content="拖拽改变参数展示顺序" placement="top-start">
+            <i class="el-icon-info"/></el-tooltip>
+        </div>
         <div id="paramList">
           <paramShow ref="apple" v-if="paramShowVIf"></paramShow>
         </div>
       </div>
       <div ref="modelResultOutputCol" class="display default-value">
-        <messageTips type="error" message="只显示最后的结果列"></messageTips>
+        <div style="font-size: 20px">
+          模型结果
+          <el-tooltip class="item" effect="dark" content="只显示最后的结果列" placement="top-start">
+          <i class="el-icon-info"/></el-tooltip>
+        </div>
         <div class="model-result-output-col">
           <el-table ref="columnData" :data="columnData" class="div-width" >
             <el-table-column prop="outputColumnName" label="输出列名" width="180" />
@@ -1548,12 +1556,12 @@ export default {
 .drag {
   position: absolute;
   z-index: 1000;
-  top: 30px;
-  left: 92%;
+  top: 35px;
+  right: 35px;
   width: 95px;
-  background: #FFFFFF;
-  border-radius: 5px;
-  box-shadow: 0px 3px 8px 7px #00000015;
+  background: #F2F2F2;
+  border-radius: 15px;
+  font-weight:bold;
 }
 
 #drag .title {
@@ -1586,7 +1594,7 @@ export default {
 
 
 .el-tree-rewrite{
-  background: #fff;
+  background: #F2F2F2;
   width: 100%;
 }
 
