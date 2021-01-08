@@ -833,6 +833,13 @@
                         this.executeLoading = true
                         this.loadText = '正在获取SQL信息...'
                         getExecuteTask(obj,this.dataUserId,this.sceneCode1).then((result) => {
+                            if(result.data.isError){
+                         this.$message({
+                            type: "error",
+                            message: result.data.message,
+                            });
+                            this.executeLoading = false
+                            }else{
                             this.executeLoading = false
                             this.loadText = ''
                             lastSqlIndex = result.data.lastSqlIndex
@@ -848,8 +855,7 @@
                             }).catch((result) => {
                                 this.executeLoading = false
                             })
-                        }).catch((result) => {
-                            this.executeLoading = false
+                            }
                         })
                     } else {
                         this.openParamDraw(obj)
@@ -879,6 +885,13 @@
                 obj.businessField = 'sqleditor'
                 this.executeLoading = true
                 getExecuteTask(obj,this.dataUserId,this.sceneCode1).then((result) => {
+                    if(result.data.isError){
+                    this.$message({
+                        type: "error",
+                        message: result.data.message,
+                    });
+                    this.executeLoading = false
+                    }else{
                     this.executeLoading = false
                     this.loadText = ''
                     lastSqlIndex = result.data.lastSqlIndex
@@ -894,8 +907,7 @@
                     }).catch((result) => {
                         this.executeLoading = false
                     })
-                }).catch((result) => {
-                    this.executeLoading = false
+                    }
                 })
                 /*      startExecuteSql(obj).then((result) => {
                   if (!result.data.isError) {
