@@ -45,8 +45,8 @@
             :append-to-body="true"
           >
             <data-tree
-              :data-user-id="personCode"
-              :scene-code="sceneCode"
+              :data-user-id="dataUserId=='undefined'?personCode:dataUserId"
+              :scene-code="sceneCode1=='undefined'?sceneCode:sceneCode1"
               :tree-type="treeType"
               @node-click="handleClick"
               style="height: 500px;overflow-y: scroll"
@@ -82,8 +82,14 @@ export default {
   created() {
     this.initDialog();
     this.tempPath = "根路径";
-    this.tempId = this.$store.getters.datauserid
-    this.modelResultSavePathId = this.$store.getters.datauserid
+    if(this.dataUserId!=undefined){
+      this.tempId = this.dataUserId
+      this.modelResultSavePathId = this.dataUserId
+      this.personCode = this.dataUserId
+    }else{
+      this.tempId = this.$store.getters.datauserid
+      this.modelResultSavePathId = this.$store.getters.datauserid
+    }
     this.path = "当前执行模型保存路径:根路径"
   },
   components: {
@@ -117,7 +123,7 @@ export default {
       tempId: "",
     };
   },
-  props: ["models", "timing"],
+  props: ["models", "timing",'dataUserId','sceneCode1'],
   methods: {
     /**
      * 初始化dialog

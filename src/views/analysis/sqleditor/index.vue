@@ -128,9 +128,10 @@
                             :key="result.id"
                             :pre-value="currentExecuteSQL"
                             use-type="sqlEditor"
-                            style="width: 101.5%"
+                            style="width: 101.5%;overflow:auto;height:450px;"
                             :chartModelUuid='modelUuid'
                             :modelId='modelUuid'
+                            id="childTabs1"
                         />
                     </div>
                 </div>
@@ -338,7 +339,13 @@
     export default {
         name: 'SQLEditor',
         components: { sqlDraftList, childTabs, paramDraw, dataTree },
-        props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName","modelUuid"],
+        props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName","modelUuid",'dataUserId','sceneCode1'],
+        created(){
+            if(this.dataUserId!=undefined && this.sceneCode1!=undefined){
+                this.personCode = this.dataUserId
+                this.sceneCode = this.sceneCode1
+            }  
+        },
         data() {
             return {
                 sqlDraftForm: {
@@ -548,7 +555,7 @@
                 initParamTree()
                 this.executeLoading = true
                 this.loadText = '正在初始化数据表...'
-                initTableTip().then((result) => {
+                initTableTip(this.dataUserId,this.sceneCode1).then((result) => {
                     initTableTree(result)
                     var relTableMap = {}
                     var expTableMap = {}
@@ -825,7 +832,7 @@
                     if (!obj.isExistParam) {
                         this.executeLoading = true
                         this.loadText = '正在获取SQL信息...'
-                        getExecuteTask(obj).then((result) => {
+                        getExecuteTask(obj,this.dataUserId,this.sceneCode1).then((result) => {
                             this.executeLoading = false
                             this.loadText = ''
                             lastSqlIndex = result.data.lastSqlIndex
@@ -871,7 +878,7 @@
                 obj.sqls = obj.sql
                 obj.businessField = 'sqleditor'
                 this.executeLoading = true
-                getExecuteTask(obj).then((result) => {
+                getExecuteTask(obj,this.dataUserId,this.sceneCode1).then((result) => {
                     this.executeLoading = false
                     this.loadText = ''
                     lastSqlIndex = result.data.lastSqlIndex

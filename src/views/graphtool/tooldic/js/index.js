@@ -1482,7 +1482,6 @@ export async function saveModelGraph(){
                                         }else{
                                             selectSql = dealSqlResponse.data.dealSql
                                         }
-                                        // selectSql = `${selectSql} WHERE ${newNodeData[parentIds[0]].paramsSetting.sql}`
                                         let arr = newNodeData[parentIds[0]].paramsSetting.arr
                                         for(let t=0; t<arr.length; t++){
                                             modelParamIdArr.push(arr[t].copyParamId);

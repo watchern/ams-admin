@@ -65,7 +65,7 @@
 
 <script>
 import { getSqlType, getColsInfo } from '@/api/data/table-info'
-import { getExecuteTask } from '@/api/analysis/sqleditor/sqleditor'
+import { addTable } from '@/api/data/directory'
 export default {
   // eslint-disable-next-line vue/require-prop-types
   props: ['tableId', 'openType', 'forderId'],
@@ -156,37 +156,47 @@ export default {
     },
     // 保存基本信息
     saveTable() {
-      var sql = 'create table ' + this.tempTable.tableName + ' (' + '\n'
+      // var sql = 'create table ' + this.tempTable.tableName + ' (' + '\n'
       // var tableComments = '\n'
       // if (this.tempTable.tableComment !== null) {
       //   tableComments = tableComments + '\n' + 'comment on table ' + this.tempTable.tableName + ' is ' + "'" + this.tempTable.tableComment + "';"
       // }
+      // for (let index = 0; index < this.temp.length; index++) {
+      //   const r = this.temp[index]
+      //   if (r.isNullable === 0) {
+      //     r.isNullable = 'NULL'
+      //   } else {
+      //     r.isNullable = 'NOT NULL'
+      //   }
+      //   if (r.dataLength !== '') {
+      //     r.dataType = r.dataType + '(' + r.dataLength + ') '
+      //   }
+      //   if (r.colComment !== '') {
+      //     tableComments = tableComments + '\n' + 'comment on column ' + this.tempTable.tableName + '.' + r.colName + ' is ' + "'" + r.colComment + "';"
+      //   }
+      //   if (index < this.temp.length - 1) {
+      //     sql = sql + r.colName + ' ' + r.dataType + ' ' + r.isNullable + ',' + '\n'
+      //   } else {
+      //     sql = sql + r.colName + ' ' + r.dataType + ' ' + r.isNullable + '  )'
+      //   }
+      // }
+      // sql = sql + tableComments
+      // var sqlObj = {}
+      // sqlObj.sql = sql
+      // sqlObj.tableName = this.tempTable.tableName
+      // sqlObj.modelResultSavePathId = this.forderId
       for (let index = 0; index < this.temp.length; index++) {
         const r = this.temp[index]
-        if (r.isNullable === 0) {
-          r.isNullable = 'NULL'
-        } else {
-          r.isNullable = 'NOT NULL'
-        }
         if (r.dataLength !== '') {
-          r.dataType = r.dataType + '(' + r.dataLength + ') '
-        }
-        // if (r.colComment !== '') {
-        //   tableComments = tableComments + '\n' + 'comment on column ' + this.tempTable.tableName + '.' + r.colName + ' is ' + "'" + r.colComment + "';"
-        // }
-        if (index < this.temp.length - 1) {
-          sql = sql + r.colName + ' ' + r.dataType + ' ' + r.isNullable + ',' + '\n'
-        } else {
-          sql = sql + r.colName + ' ' + r.dataType + ' ' + r.isNullable + '  );'
+          r.dataLength = parseInt(r.dataLength)
         }
       }
-      // sql = sql + tableComments
-      var sqlObj = {}
-      sqlObj.sqls = sql
-      sqlObj.isExistParam = false
-      sqlObj.businessField = 'createResourceTable'
-      sqlObj.modelResultSavePathId = this.forderId
-      getExecuteTask(sqlObj).then((result) => {
+      const addObj = {}
+      addObj.colMetas = this.temp
+      addObj.folderUuid = this.forderId
+      addObj.tbName = this.tempTable.tableName
+      addObj.tbComment = this.tempTable.tbComment
+      addTable(addObj).then((result) => {
         this.$notify({
           title: '成功',
           message: '创建成功',

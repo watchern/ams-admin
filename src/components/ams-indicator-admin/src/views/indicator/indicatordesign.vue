@@ -1072,32 +1072,32 @@ export default {
   }
 }
 </script>
-<style>
-    .border-table{
+<style scoped>
+>>>.border-table{
         width:100%;
         line-height: 30px;
     }
-    .td-hidden{
+>>>.td-hidden{
         display:none;
     }
-    .border-table-td-select{
+>>>.border-table-td-select{
         background-color: #e8f4ff!important;
         color: #46a6ff!important;
     }
-    a{
+>>>a{
         cursor:pointer;
         text-decoration:underline;
         color: #46a6ff
     }
-    .analysisRegionSelected{
+>>>.analysisRegionSelected{
         cursor: pointer;
         box-shadow: 0px 0px 10px 0px rgb(115, 163, 228), 0px 0px 1px 1px rgba(0, 0, 0, 0.09), 0px 0px 10px 1px rgba(0, 0, 0, 0.06);
     }
-    .page-col-2{
+>>>.page-col-2{
         background: hsla(0,0%,41.6%,.08627450980392157);
         border-radius: 15.5px;
     }
-    .page-col-3{
+>>>.page-col-3{
         background: hsla(0,0%,41.6%,.08627450980392157);
         border-radius: 15.5px;
     }
