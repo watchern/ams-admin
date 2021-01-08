@@ -42,6 +42,7 @@
 </template>
 
 <script>
+    import '@/components/ams-loading/css/loading.css'
     import {getMaxMinColumn} from '@/api/graphtool/graphList'
     export default {
         name: 'HierarchyDataSet',

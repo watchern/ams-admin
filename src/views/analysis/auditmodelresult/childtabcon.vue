@@ -115,7 +115,7 @@
             :fields="json_fields"
             :name="excelName"
             class="thechard-z"
-            v-if="this.preLength==this.myIndex+1"
+            v-if="this.preLength==this.myIndex+1 && this.useType!=='sqlEditor'"
           >
             <el-button
               type="primary"
@@ -596,9 +596,6 @@ export default {
     onGridReady(params) {
       // 获取gridApi
       this.gridApi = params.api;
-      this.columnApi = params.columnApi;
-      // 这时就可以通过gridApi调用ag-grid的传统方法了
-      this.gridApi.sizeColumnsToFit();
     },
     // 单元格点击事件
     onCellClicked(cell) {},

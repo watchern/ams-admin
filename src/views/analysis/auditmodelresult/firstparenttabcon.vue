@@ -56,7 +56,7 @@
               @click="sendToOA()"
               :disabled="selected1.length !== 1"
               class="oper-btn share"
-              title="结果共享"
+              title="结果分配"
             ></el-button>
             <el-button
               type="primary"
@@ -1086,6 +1086,7 @@ export default {
      * 结果总条数格式化
      */
     dataCountFormatter(row) {
+      debugger
       var tables = row.runResultTables;
       var dataCount = 0;
       for (var i = 0; i < tables.length; i++) {

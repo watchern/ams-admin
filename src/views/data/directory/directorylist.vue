@@ -129,7 +129,7 @@
     <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="800px">
       <el-row>
         <el-col>
-          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" />
+          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" />
         </el-col>
       </el-row>
       <span slot="footer">
@@ -369,8 +369,6 @@ export default {
       importTable(this.uploadtempInfo).then(res => {
         this.uploadVisible = false
         if (res.data.resCode === true) {
-          debugger
-          console.log(res.data.importTable.tableMetaUuid)
           var childData = {
             id: res.data.importTable.tableMetaUuid,
             label: res.data.importTable.displayTbName,
@@ -548,7 +546,7 @@ export default {
         return
       }
       this.dialogStatus = 'createFolder'
-      this.typeLabel = '重命名文件夹名称'
+      this.typeLabel = '新建文件夹名称'
       this.resourceForm.resourceName = ''
       this.folderFormVisible = true
     },
@@ -635,6 +633,9 @@ export default {
         this.saveFlag = true
         this.infoFlag = true
       }
+    },
+    appendnode(childData, parentNode) {
+      this.$emit('append-node', childData, this.clickNode)
     },
     getSortClass: function(key) {
       const sort = this.pageQuery.sort

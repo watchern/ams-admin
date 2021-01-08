@@ -3,7 +3,7 @@
         <div id="container" v-loading="executeLoading" :element-loading-text="loadText">
             <div id="sidebar">
                 <div class="unfold-shuju add-sidiv"><img :src="shuju"><span>数据表</span></div>
-                <div class="unfold-canshu"><img :src="canshu"><span>参数</span></div>
+                <div class="unfold-canshu" v-if="callType!='graphModel'"><img :src="canshu"><span>参数</span></div>
                 <div class="unfold-sql"><img :src="sql"><span>函数</span></div>
             </div>
             <div id="leftPart" class="left-part">
@@ -339,7 +339,7 @@
     export default {
         name: 'SQLEditor',
         components: { sqlDraftList, childTabs, paramDraw, dataTree },
-        props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName","modelUuid",'dataUserId','sceneCode1'],
+        props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName","modelUuid",'dataUserId','sceneCode1','callType'],
         created(){
             if(this.dataUserId!=undefined && this.sceneCode1!=undefined){
                 this.personCode = this.dataUserId

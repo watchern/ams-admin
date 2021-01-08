@@ -9,8 +9,8 @@
     >
       <!-- 加一个固定页签 -->
       <el-tab-pane
-        name="模型运行结果"
-        label="模型运行结果"
+        name="模型结果列表"
+        label="模型结果列表"
       ><firstParentTabCon @addtab="addTab" /></el-tab-pane>
       <el-tab-pane
         v-for="item in editableTabs"
@@ -41,7 +41,7 @@ export default {
   },
   data() {
     return {
-      editableTabsValue: '模型运行结果', //第一个大页签的名称
+      editableTabsValue: '模型结果列表', //第一个大页签的名称
       editableTabs: [], //存放每一个页签对象
       tabIndex: 0, //语句记录页签个数
       mainTable: {}, //运行结果表主表对象
@@ -75,7 +75,7 @@ export default {
             if (nextTab) {
               activeName = nextTab.name
             } else {
-              activeName = '模型运行结果'
+              activeName = '模型结果列表'
             }
           }
         })
