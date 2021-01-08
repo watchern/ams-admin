@@ -6,13 +6,13 @@
           <animate-number from="01" to="9" :formatter="formatter" class="num" />
           <span class="text absolute">我的项目</span>
         </div>
-        <div class="calendar-wrap flex a-center j-center flex-row relative">
-          <div v-for="(item,index) in boxList" :key="index" class="box flex a-center j-center flex-column" :class="[index===3 && 'box-active']">
-            <div class="label">{{ item.label }}</div>
-            <div class="value">{{ item.value }}</div>
-          </div>
-          <img src="../../../../assets/Ace/image/enlarge.png" class="enlarge absolute">
-        </div>
+<!--        <div class="calendar-wrap flex a-center j-center flex-row relative">-->
+<!--          <div v-for="(item,index) in boxList" :key="index" class="box flex a-center j-center flex-column" :class="[index===3 && 'box-active']">-->
+<!--            <div class="label">{{ item.label }}</div>-->
+<!--            <div class="value">{{ item.value }}</div>-->
+<!--          </div>-->
+<!--          <img src="../../../../assets/Ace/image/enlarge.png" class="enlarge absolute">-->
+<!--        </div>-->
       </div>
       <div class="right flex a-end j-center flex-column">
         <div class="top-card flex a-start j-start flex-row">
@@ -25,8 +25,8 @@
               <span>{{item.text}}</span>
               <span v-if="item.icon" :style="{color:item.iconColor}" class="icon">{{ item.icon }}</span>
             </div>
-            <div class=""></div>
           </div>
+          <span class="card-more" @click="toDoSomeJump">更多</span>
         </div>
         <div class="bottom-card flex a-center j-between flex-row">
           <div v-for="(item,index) in cardList" :key="index" class="top-card flex a-start j-start flex-row" :style="{background:item.bg}">
@@ -46,28 +46,29 @@
       </div>
     </div>
     <div class="bottom flex a-center j-start flex-row">
-      <div class="line1 line flex a-start j-center flex-column">
-        <div class="title">我的项目</div>
+      <div class="line1 line flex a-start j-center flex-column" style="flex-basis:80px">
+        <div class="count-font">
+          <animate-number from="1" to="1" class="count-font" />/<animate-number from="1" to="9" class="count-font" />
+        </div>
+      </div>
+      <div class="line1 line flex a-center j-center flex-column" style="flex-basis:530px">
+        <div class="title-bottom-top">我的项目</div>
         <div class="des flex a-center j-start flex-row">
-          <div class="count-font">
-            <animate-number from="1" to="1" class="count-font" />/<animate-number from="1" to="9" class="count-font" />
-          </div>
-          <div class="right">
+          <div class="right-name right">
             <div class="p1">#2020公司信贷业务专项审计</div>
-            <div class="p2">2020-04-06</div>
           </div>
         </div>
       </div>
       <div class="line2 line flex a-center j-center flex-column">
-        <div class="title">资金投入/玩</div>
-        <animate-number from="0.1" to="72.4" :formatter="formatter1" class="count-font" />
+        <div class="title-bottom">项目状态</div>
+        <div class="date">执行中</div>
       </div>
       <div class="line3 line flex a-center j-center flex-column">
-        <div class="title">人力投入/位</div>
-        <animate-number from="1" to="36" class="count-font" />
+        <div class="title-bottom">立项日期</div>
+        <div class="date">2020-04-06</div>
       </div>
       <div class="line4 line flex a-center j-center flex1">
-        <div class="btn">查看此项目的详情</div>
+        <div class="btn" @click="projectDetails">查看此项目的详情</div>
       </div>
     </div>
     <el-dialog
@@ -100,30 +101,30 @@ export default {
           des: []
         },
       ],
-      boxList: [
-        {
-          label: 'Mon',
-          value: 2
-        }, {
-          label: 'Tue',
-          value: 3
-        }, {
-          label: 'Wed',
-          value: 4
-        }, {
-          label: 'Thu',
-          value: 5
-        }, {
-          label: 'Fri',
-          value: 6
-        }, {
-          label: 'Sat',
-          value: 7
-        }, {
-          label: 'Sun',
-          value: 8
-        }
-      ],
+      // boxList: [
+      //   {
+      //     label: 'Mon',
+      //     value: 2
+      //   }, {
+      //     label: 'Tue',
+      //     value: 3
+      //   }, {
+      //     label: 'Wed',
+      //     value: 4
+      //   }, {
+      //     label: 'Thu',
+      //     value: 5
+      //   }, {
+      //     label: 'Fri',
+      //     value: 6
+      //   }, {
+      //     label: 'Sat',
+      //     value: 7
+      //   }, {
+      //     label: 'Sun',
+      //     value: 8
+      //   }
+      // ],
       TopTodo: [
         {
           text: '暂无待办事项',
@@ -132,31 +133,7 @@ export default {
           url:'',
           title:'',
           content:''
-        },
-        {
-          text: '',
-          iconColor: '#D81020',
-          icon: '',
-          url:''
-        },
-        {
-          text: '',
-          iconColor: '#D81020',
-          icon: '',
-          url:''
-        },
-        {
-          text: '',
-          iconColor: '#D81020',
-          icon: '',
-          url:''
-        },
-        {
-          text: '',
-          iconColor: '#D81020',
-          icon: '',
-          url:''
-        },
+        }
       ],
       dialogFormVisible: false,
       PopUpContent:[{
@@ -183,6 +160,9 @@ export default {
         }
       }
     })
+    // executionProjectAgent().then(resp => {
+    //   console.log(resp)
+    // })
   },
   methods: {
     formatter(num) {
@@ -218,9 +198,12 @@ export default {
       // })
       this.$router.push({ path: '/base/remind'})
     },
-    // handleClose(done) {
-    //   done();
-    // }
+    toDoSomeJump(){
+      this.$router.push({ path: '/base/frameto?url=/psbcaudit/homepage/todoInfoTabList'})
+    },
+    projectDetails(){
+      this.$router.push({ path: '/base/frameto?url=/psbcaudit_pmrs/plPrj/prjProjectToEnd'})
+    }
   }
 }
 </script>
@@ -306,6 +289,7 @@ export default {
         border-radius: 25.2px;
         padding: 27px;
         width: 479px;
+        position: relative;
         //height: 188px;
         &-left{
           background: #FFFFFF;
@@ -425,12 +409,16 @@ export default {
       padding-left: 30px;
       width: 40%;
       .right{
-        margin-left: 23px;
         .p1{
           font-family: PingFangSC-Regular;
-          font-size: 18px;
+          font-size: 24px;
           color: #ffffff;
-          line-height: 32px;
+          line-height: 70px;
+          width: 520px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          text-align:center;
         }
         .p2{
           font-family: PingFangSC-Semibold;
@@ -517,5 +505,29 @@ export default {
 .notes-text{
   line-height:25px;
   cursor: pointer;
+}
+.title-bottom{
+  font-size:18px;
+  font-family: PingFangSC-Semibold;
+  color: rgba(255,255,255,0.50);
+  text-align: center;
+  line-height: 24px;
+}
+.title-bottom-top{
+  font-size:18px;
+  font-family: PingFangSC-Semibold;
+  color: rgba(255,255,255,0.50);
+  text-align: center;
+  line-height: 24px;
+}
+.date{
+  font-family: BebasNeue;
+  font-size: 30px;
+  color: #fff;
+  height: 60px;
+  line-height: 70px;
+}
+.right{
+  height:60px;
 }
 </style>
