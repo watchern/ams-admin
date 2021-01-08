@@ -42,8 +42,8 @@
                 </div>
                 <div id="rightPart" class="col-sm-10" style="overflow:hidden;width: calc(100% - 230px);height: 565px;">
                     <textarea id="settingParamsSql" ref="settingParamsSql" style="width: 100%;height: 565px;"></textarea>
-                    <div id="operators" style="height:270px;width:100%;padding:15px 0 0 30px;">
-                        <div style="width: 260px;float: left;">
+                    <div id="operators" style="height:270px;width:100%;padding-top:15px;">
+                        <div style="width: 240px;float: left;">
                             <button type="button" class="btn btn-primary" title="小于" value="<" @click="operatorsFun('<')">&lt;</button>
                             <button type="button" class="btn btn-primary" title="大于" value=">" @click="operatorsFun('>')">&gt;</button>
                             <button type="button" class="btn btn-primary" title="等于" value="=" @click="operatorsFun('=')">=</button>
@@ -62,7 +62,7 @@
                             <button type="button" class="btn btn-primary" title="不为空值" value="is not null" @click="operatorsFun('is not null')">is not null</button>
                             <button type="button" class="btn btn-primary" title="介于…之间" value="between and" @click="operatorsFun('between and')">between and</button>
                         </div>
-                        <div style="float: left;width:calc(100% - 260px);height: 100%;">
+                        <div style="float: left;width:calc(100% - 240px);height: 100%;">
                             <p>注：1、多值参数一般只应用于【in】条件</p>
                             <p style="text-indent: 2em;">2、【in】条件中的参数不需要编写单引号，非【in】条件的参数需编写单引号，</p>
                             <p style="text-indent: 4em;">例：客户名称='<button class="paramBtn">单值参数X</button>' and 客户号 in(<button class="paramBtn">多值参数Y</button>)</p>

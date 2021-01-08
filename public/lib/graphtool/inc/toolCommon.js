@@ -1,9 +1,4 @@
-var layer;
-layui.use('layer', function() {
-    layer = layui.layer;
-});
-
-//获取layer.open的url参数
+//获取url参数
 function getParams(){
     var url = window.location.href;
     url = url.split("?")[1];
@@ -63,291 +58,306 @@ String.prototype.endWith = function(endStr){
     return (d>=0 && this.lastIndexOf(endStr) === d);
 };
 
-(function(global, factory) {
-    (global.TableGrid = factory());
-}
-(
-    this,
-    (function() {
-        'use strict';
-        // 构造函数
-        var TableGrid = function() {
-            this.initGridData = initGridData;
-            this.reloadGridData = reloadGridData;
-            this._url = _url;
-            this.setSelection = setSelection;
-            this.getCell = getCell;
-            this.getReccount = getReccount;
-            this.getSelectedValues = getSelectedValues;
-            this.getSelectedData = getSelectedData;
-            this.getAllData = getAllData;
-            this.setGroupHeaders = setHeaders;
-            this.setFrozenColumn = setFrozenColumns;
-            this.addRowData = addRowData;
-            this.getRowData = getRowData;
-            this.getGridTable = getGridTable;
-        };
-        var gridTable;
-        var queryForm;
-        var _url;
-        var postParamMap = {};
-        var gridTableMap = {};
-        var settingMap = {};
-        var initGridData = function(option) {
-            settingMap[option.tableId] = option;
-            var setting = settingMap[option.tableId];
-            setting.width = setting.width ? setting.width : $(".table-view").width();
-            setting.height = setting.height ? setting.height : 570;
-            setting.datatype = "local";
-            //公共加载jqgride方法时 异步加载有遮罩  默认不传参数则时同步加载 无法显示遮罩
-            if(typeof setting.tableAsync === "undefined"){//默认为true
-                setting.tableAsync = true;
-            }
-            gridTable = $("#" + setting.tableId);
-            gridTableMap[option.tableId] = gridTable;
-            queryForm = $("#" + setting.queryFormId);
-            if (setting.queryFormId
-                && setting.queryFormId !== ""
-                && (typeof (setting.params) === "undefined" || setting.params === "")) {
-                postParamMap[option.tableId] = queryForm.serializeJson();
-            }
-            if (setting.params
-                && setting.params !== ""
-                && (typeof (setting.queryFormId) === "undefined" || setting.queryFormId === "")) {
-                postParamMap[option.tableId] = setting.params;
-            }
-            if (setting.params && setting.params !== ""
-                && setting.queryFormId
-                && setting.queryFormId !== "") {
-                postParamMap[option.tableId] = $.extend(queryForm.serializeJson(), setting.params);
-            }
-            gridTable.jqGrid(setting);
-            _url = setting.tableUrl;
-            gridTable.jqGrid("clearGridData");
-            loadTable(setting.tableId);
-        };
+/* Author：mingyuhisoft@163.com
+ * Github:https://github.com/imingyu/jquery.mloading
+ * Npm:npm install jquery.mloading.js
+ * Date：2016-7-4
+ * @remark 调用对象既可以是某个容器，也可以是body或者是html(例：$("xxx").mLoading()或者$("body").mLoading()或者$("html").mLoading())
+ */
+var plsInc;
+;(function (root, factory) {
+    'use strict';
 
-        var getGridTable = function () {
-            return gridTable;
-        };
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        factory(require('jquery'),root);
+    } if(typeof define ==="function"){
+        if(define.cmd){
+            define(function(require, exports, module){
+                var $ = require("jquery");
+                factory($,root);
+            });
+        }else{
+            define(["jquery"],function($){
+                factory($,root);
+            });
+        }
+    }else {
+        factory(root.jQuery,root);
+    }
+} (typeof window !=="undefined" ? window : this, function ($, root, undefined) {
+    'use strict';
+    if(!$){
+        $ = root.jQuery || null;
+    }
+    if(!$){
+        throw new TypeError("必须引入jquery库方可正常使用！");
+    }
 
-        var loadTable = function(tableId) {
-            var setting = settingMap[tableId];
-            var gridTable = gridTableMap[tableId];
-            //公共加载jqgride方法时 异步加载有遮罩  默认不传参数则时同步加载 无法显示遮罩
-            if(typeof setting.tableAsync === "undefined" || setting.tableAsync === false || setting.tableAsync === "false"){
-                setting.tableAsync = false;
+    var arraySlice = Array.prototype.slice,
+        comparison=function (obj1,obj2) {
+            var result=true;
+            for(var pro in obj1){
+                if(obj1[pro] !== obj2[obj1]){
+                    result=true;
+                    break;
+                }
+            }
+            return result;
+        }
+
+    function MLoading(dom,options) {
+        options = options||{};
+        this.dom = dom;
+        this.options = $.extend(true,{},MLoading.defaultOptions,options);
+        this.curtain = null;
+        this.render().show();
+    }
+    MLoading.prototype = {
+        constructor:MLoading,
+        initElement:function () {
+            var dom = this.dom,
+                ops = this.options;
+            var curtainElement = dom.children(".mloading"),
+                bodyElement = curtainElement.children('.mloading-body'),
+                barElement = bodyElement.children('.mloading-bar'),
+                iconElement = barElement.children('.mloading-icon'),
+                textElement = barElement.find(".mloading-text");
+            if (curtainElement.length == 0) {
+                curtainElement = $('<div class="mloading"></div>');
+                dom.append(curtainElement);
+            }
+            if (bodyElement.length == 0) {
+                bodyElement = $('<div class="mloading-body"></div>');
+                curtainElement.append(bodyElement);
+            }
+            if (barElement.length == 0) {
+                barElement = $('<div class="mloading-bar"></div>');
+                bodyElement.append(barElement);
+            }
+            if (iconElement.length == 0) {
+                var _iconElement=document.createElement(ops.iconTag);
+                iconElement = $(_iconElement);
+                iconElement.addClass("mloading-icon");
+                barElement.append(iconElement);
+            }
+            if (textElement.length == 0) {
+                textElement = $('<span class="mloading-text"></span>');
+                barElement.append(textElement);
+            }
+            if($(".mloading-bar").find("a").length==0 && ops.hasCancel){
+                barElement.append("<a href='javascript:void(0)' onclick='cLoading()' style='text-decoration:none'>取消</a>");
+            }
+            if(typeof(Worker)!="undefined" && ops.hasTime){//计时
+                ops.s = ops.m = ops.h = 0;
+                var interval = setInterval(function() {
+                    if (ops.hasTime) {
+                        ops.s++;
+                        if (ops.s > 59) {
+                            ops.s = 0;
+                            ops.m = ops.m + 1;
+                        }
+                        if (ops.m > 59) {
+                            ops.m = 0;
+                            ops.h = ops.h + 1;
+                        }
+                        var timeStr = "";
+                        if (ops.h > 0) {
+                            timeStr += ops.h + "时";
+                        }
+                        if (ops.m > 0) {
+                            timeStr += ops.m + "分";
+                        }
+                        if (ops.s > 0) {
+                            timeStr += ops.s + "秒";
+                        }
+                        textElement.html(ops.text + timeStr);
+                    }else{
+                        clearInterval(interval);
+                    }
+                },1000);
+            }
+            this.curtainElement = curtainElement;
+            this.bodyElement = bodyElement;
+            this.barElement = barElement;
+            this.iconElement = iconElement;
+            this.textElement = textElement;
+            return this;
+        },
+        render:function () {
+            var dom = this.dom,
+                ops = this.options;
+            this.initElement();
+            if(dom.is("html") || dom.is("body")){
+                this.curtainElement.addClass("mloading-full");
             }else{
-                setting.tableAsync = true;
-            }
-            var $this = typeof setting.loadDivId === "undefined" ? $("body") : $("#" + setting.loadDivId);
-            //加载数据时添加遮罩 -吕贺 2019-10-25
-            var load = $this.mLoading({text:"正在加载数据,请稍后……",hasCancel:false});
-            $.ajax({
-                url : _url,
-                method : "post",
-                dataType : "json",
-                data : postParamMap[tableId],
-                async : setting.tableAsync,
-                success : function(data, textStatus, jqXHR) {
-                    //加载数据完毕关闭遮罩 -吕贺 2019-10-25
-                    load.hide();
-                    data = data.body ? data.body : data;
-                    if(typeof data.pagination === "undefined" || typeof data.result === "undefined"){
-                        alertMsg("提示","数据表加载数据出错","error");
-                        return;
-                    }
-                    if(typeof data.pagination !== "undefined"){
-                        if($("#"+tableId+"Count")[0]){//应用于多个表格的分页的情况
-                            $("#"+tableId+"Count").html(data.pagination.dataCount);
-                            if(data.pagination.dataCount === 0 && typeof data.result !== "undefined"){
-                                $("#"+tableId+"Count").html(data.result.length);
-                            }
-                        }else{//应用于单个表格的分页
-                            $(".table-row-span").html(data.pagination.dataCount);
-                        }
-                        initPage(data.pagination.pageNum, data.pagination.dataCount, data.pagination.pageSize,setting.tableId);
-                    }
-                    if (typeof data.result !== "undefined"){
-                        if(data.result.length === 0 && !setting.noShowData){//是否不展示暂无数据提示
-                            mergerNoData(setting);
-                        }
-                        for (var i = 0; i <= data.result.length; i++) {
-                            gridTable.jqGrid('addRowData', i + 1, data.result[i]);
-                        }
-                    }
-                },
-                error : function(data, textStatus) {
-                    //加载数据完毕关闭遮罩 -吕贺 2019-10-25
-                    load.hide();
-                    alertMsg("提示", "load data error:" + textStatus, "error");
-                }
-            });
-        };
-
-        var reloadGridData = function(pageNum, pageSize, otherParams,tableId) {
-            var gridTable = gridTableMap[tableId];
-            var postParam = postParamMap[tableId];
-            postParam = queryForm.serializeJson();
-            postParam.pageNum = pageNum;
-            postParam.pageSize = pageSize;
-            $.extend(true, postParam, otherParams);
-            gridTable.jqGrid("clearGridData");
-            postParamMap[tableId] = postParam;
-            loadTable(tableId);
-        };
-
-        var getSelectedIds = function() {
-            // 获取多选到的id集合
-            return gridTable.getGridParam("selarrrow");
-        };
-
-        // chenfei 设置row行是选中的, row是行号，0，1，2，3
-        var setSelection = function(row){
-            gridTable.jqGrid("setSelection", row);
-        };
-        // chenfei 获取指定单元格的值，row是行号，col是列名称
-        var getCell = function(row,col){
-            return gridTable.getCell(row, col);
-        };
-        // chenfei 获取行数
-        var getReccount = function(){
-            return gridTable.getGridParam("reccount");
-        };
-
-        var getSelectedValues = function(key) {
-            // 获取多选到的id集合
-            var ids = gridTable.jqGrid("getGridParam", "selarrrow");
-            // 遍历访问这个集合
-            var selectObjs = new Array()
-            $(ids).each(function(index, id) {
-                // 由id获得对应数据行
-                var row = gridTable.jqGrid('getRowData', id);
-                selectObjs.push(row[key]);
-            });
-            return selectObjs;
-        };
-
-        var getSelectedData = function() {
-            // 获取多选到的id集合
-            var ids = gridTable.jqGrid("getGridParam", "selarrrow");
-            // 遍历访问这个集合
-            var selectObjs = new Array()
-            $(ids).each(function(index, id) {
-                // 由id获得对应数据行
-                var row = gridTable.jqGrid('getRowData', id);
-                selectObjs.push(row);
-            });
-            return selectObjs;
-        };
-
-        var getAllData = function() {
-            var rows = gridTable.getGridParam("reccount");
-            var rowIds = gridTable.getDataIDs();
-            var arrayData = new Array();
-            if (rowIds.length > 0) {
-                for (var i = 0; i < rowIds.length; i++) {
-                    //rowData=obj.getRowData(rowid);//这里rowid=rowIds[i];
-                    arrayData.push(gridTable.getRowData(rowIds[i]));
+                this.curtainElement.removeClass("mloading-full");
+                if(!dom.hasClass("mloading-container")){
+                    dom.addClass("mloading-container");
                 }
             }
-            return arrayData;
-        };
-
-        var initPage = function(currentPage, dataCount, pageSize,tableId) {
-            var setting = settingMap[tableId];
-            if (!setting.pageId || setting.pageId == null
-                || setting.pageId === '') {
-                return;
+            if(ops.mask){
+                this.curtainElement.addClass("mloading-mask");
+            }else{
+                this.curtainElement.removeClass("mloading-mask");
             }
-            layui.use([ 'laypage', 'layer' ], function() {
-                var laypage = layui.laypage;
-                var objSetting = {
-                    elem : setting.pageId,
-                    count : dataCount,
-                    limit : pageSize,
-                    skin : '#5886B2',
-                    curr : currentPage,
-                    layout: ['prev', 'page', 'next','skip'],
-                    jump : function(obj, first) {
-                        if (!first) {
-                            if(setting.params && setting.params !== ""){
-                                reloadGridData(obj.curr,obj.limit,setting.params,tableId);
-                            }else{
-                                reloadGridData(obj.curr,obj.limit,null,tableId);
-                            }
-                        }
-                    }
-                };
-                if(setting.limits){//可使用true，也可使用定义的数组值（例：[15, 30, 50, 100, 300, 500]）
-                    objSetting.layout.push("limit");
-                    objSetting.limits = (setting.limits.length > 0) ? setting.limits : [15, 30, 50, 100, 300, 500, 1000];
+            if(ops.content!="" && typeof ops.content!="undefined"){
+                if(ops.html){
+                    this.bodyElement.html(ops.content);
+                }else{
+                    this.bodyElement.text(ops.content);
                 }
-                laypage.render(objSetting);
-            });
-        };
-
-        var setHeaders = function (groupHearders) {
-            gridTable.jqGrid('setGroupHeaders', {
-                useColSpanStyle: true,
-                groupHeaders:groupHearders
-            });
-        };
-
-        var setFrozenColumns = function () {
-            //设置冻结列生效
-            gridTable.jqGrid('setFrozenColumns');
-        };
-
-        var addRowData = function (rowid,data, position, srcrowid ) {
-            gridTable.jqGrid('addRowData', rowid, data, position, srcrowid);
-        };
-
-        var getRowData = function (rowid) {
-            if (typeof rowid === "undefined") {
-                gridTable.jqGrid('getRowData');
+            }else{
+                this.iconElement.attr("src",ops.icon);
+                if(ops.html){
+                    this.textElement.html(ops.text);
+                }else{
+                    this.textElement.text(ops.text);
+                }
             }
-            gridTable.jqGrid('getRowData', rowid);
+            return this;
+        },
+        setOptions:function (options) {
+            options = options||{};
+            var oldOptions = this.options;
+            this.options = $.extend(true,{},this.options,options);
+            if(!comparison(oldOptions,this.options)) this.render();
+        },
+        show:function () {
+            var dom = this.dom,
+                ops = this.options,
+                barElement = this.barElement;
+            this.curtainElement.addClass("active");
+            barElement.css({
+                "marginTop":"-"+barElement.outerHeight()/2+"px",
+                "marginLeft":"-"+barElement.outerWidth()/2+"px"
+            });
+            return this;
+        },
+        hide:function () {
+            var dom = this.dom,
+                ops = this.options;
+            if(ops.hasTime){//关闭计时
+                ops.hasTime = false;
+            }
+            $(".mloading").removeClass("active");
+            if(!dom.is("html") && !dom.is("body")){
+                dom.removeClass("mloading-container");
+            }
+            $(".mloading-bar").find("a").remove();
+            return this;
+        },
+        destroy:function () {
+            var dom = this.dom,
+                ops = this.options;
+            if(ops.hasTime){//关闭计时
+                ops.hasTime = false;
+            }
+            this.curtainElement.remove();
+            if(!dom.is("html") && !dom.is("body")){
+                dom.removeClass("mloading-container");
+            }
+            dom.removeData(MLoading.dataKey);
+            return this;
+        }
+    };
+    MLoading.dataKey="MLoading";
+    MLoading.defaultOptions = {
+        text:"数据加载中，请稍后......",
+        iconTag:"img",
+        icon:"data:image/gif;base64,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",
+        html:false,
+        hasCancel:true,//是否有取消事件
+        hasTime:false,//是否计时
+        content:"",//设置content后，text和icon设置将无效
+        mask:true//是否显示遮罩（半透明背景）
+    };
+    $.fn.mLoading = function (options) {
+        var ops={}, funName="", funArgs=[];
+        if(typeof options==="object"){
+            ops = options;
+        }else if(typeof options ==="string"){
+            funName = options;
+            funArgs = arraySlice.call(arguments).splice(0,1);
+        }
+        this.each(function (i,element) {
+            var dom = $(element);
+            plsInc = dom.data(MLoading.dataKey);
+            if(!plsInc){
+                plsInc = new MLoading(dom,ops);
+            }
+            if(funName){
+                var fun = plsInc[funName];
+                if(typeof fun==="function"){
+                    fun.apply(plsInc,funArgs);
+                }
+            }
+            if(typeof options !== "undefined" && options.text !== ""){
+                dom.children().find(".mloading-body>.mloading-bar").css({
+                    "background": "#fff",
+                    "box-shadow":"0 1px 2px rgba(0, 0, 0, 0.27)",
+                    "border-radius": "7px"
+                });
+            }
+        });
+        return plsInc;
+    }
+}));
 
-        };
-        return TableGrid;
-    })));
+function cLoading(){
+    if(plsInc){
+        plsInc.hide();
+    }
+}
 
 
 /**
- * 暂无数据时合并所有列
- * @param	setting	表格的配置对象
+ *
+ * @Description: UUID生成器
+ *
  */
-function mergerNoData(setting){
-    var colModel = setting.colModel;
-    var mergerColumnNameArr = [];			//需要合并的列的name属性的数组（不是label属性数组）
-    var leftColumnName = "", b = false;				//保留的列name
-    if(colModel && colModel.length > 0){
-        var obj = {};
-        for(var j=0;j<colModel.length;j++){
-            obj[colModel[j].name] = "";
-            if(!colModel[j].hidden){
-                if(!b && !colModel[j].formatter){
-                    leftColumnName = colModel[j].name;
-                    b = true;
-                }else{
-                    mergerColumnNameArr.push(colModel[j].name);
-                }
-            }
-        }
-        $("#" +setting.tableId).jqGrid('addRowData', 1, obj);
-        for(var i=0;i<mergerColumnNameArr.length;i++){
-            $("#" +setting.tableId).setCell(1, mergerColumnNameArr[i], '', {"display" : "none"});
-        }
-        var len = mergerColumnNameArr.length + 1;
-        if(setting.rownumbers){
-            $("#" +setting.tableId).setCell(1, "rn", '', {"display" : "none"});
-            len++;
-        }
-        if(setting.multiselect){
-            $("#" +setting.tableId).setCell(1, "cb", '', {"display" : "none"});
-            len++;
-        }
-        $("#" + setting.tableId).setCell(1, leftColumnName, '暂无数据', {"text-align" : "center"}, {"colspan" : len});
+var UUIDGenerator = function(){
+    this.id = this.createUUID();
+}
+
+UUIDGenerator.prototype.valueOf = function(){ return this.id; }
+UUIDGenerator.prototype.toString = function(){ return this.id; }
+
+UUIDGenerator.prototype.createUUID = function(){
+    var dg = new Date(1582, 10, 15, 0, 0, 0, 0);
+    var dc = new Date();
+    var t = dc.getTime() - dg.getTime();
+    var tl = this.getIntegerBits(t,0,31);
+    var tm = this.getIntegerBits(t,32,47);
+    var thv = this.getIntegerBits(t,48,59) + '1';
+    var csar = this.getIntegerBits(this.rand(4095),0,7);
+    var csl = this.getIntegerBits(this.rand(4095),0,7);
+    var n = this.getIntegerBits(this.rand(8191),0,7) +
+        this.getIntegerBits(this.rand(8191),8,15) +
+        this.getIntegerBits(this.rand(8191),0,7) +
+        this.getIntegerBits(this.rand(8191),8,15) +
+        this.getIntegerBits(this.rand(8191),0,15);
+    return tl + tm  + thv  + csar + csl + n;
+}
+
+UUIDGenerator.prototype.getIntegerBits = function(val,start,end){
+    var base16 = this.returnBase(val,16);
+    var quadArray = new Array();
+    var quadString = '';
+    var i = 0;
+    for(i=0;i<base16.length;i++){
+        quadArray.push(base16.substring(i,i+1));
     }
+    for(i=Math.floor(start/4);i<=Math.floor(end/4);i++){
+        if(!quadArray[i] || quadArray[i] == '') quadString += '0';
+        else quadString += quadArray[i];
+    }
+    return quadString;
+}
+
+UUIDGenerator.prototype.returnBase = function(number, base){
+    return (number).toString(base).toUpperCase();
+}
+
+UUIDGenerator.prototype.rand = function(max){
+    return Math.floor(Math.random() * (max + 1));
 }
