@@ -48,6 +48,7 @@
               </div>
               <div class="tag-right-con" id="dimRegion">
                 <div class="row table-view-caption pull-right">
+                  <el-button type="primary" size="mini" @click="test">测试</el-button>
                   <el-button type="primary" size="mini" @click="queryData">查询</el-button>
                   <el-button type="primary" size="mini" @click="clearAnalysis">清空</el-button>
                   <el-button type="primary" size="mini" @click="saveChangYongAnalysis">保存为常用分析</el-button>
@@ -73,17 +74,20 @@
             <a href="#" class="collapse-set-btn J_slidedown_btn">展开</a>
           </div>
         </div>
-        <div id="dataView" v-for="(dataObj,index) in dataList">
-          <div class="aaa">
-            <span class="title">{{dataObj.measureName}}</span>
-            <div style="height: 620px;overflow-y:scroll">
-              <div v-if="dataObj.chartConfig != undefined">
-                <mtEditor :ref="dataObj.id" :data='dataObj.data' :chart-config='dataObj.chartConfig'></mtEditor>
+        <div id="dataView">
+          <div class="recommendPage" style="height: 620px;overflow-y:scroll">
+            <el-menu default-active="0" class="el-menu-demo" mode="horizontal">
+              <div v-for="(dataObj,indexI) in dataList">
+                <el-menu-item :index=indexI @click="jump(indexI)">{{dataObj.measureName}}</el-menu-item>
               </div>
-              <div v-else>
-                <mtEditor :ref="dataObj.id" :data='dataObj.data'></mtEditor>
-              </div>
-            </div>
+            </el-menu>
+            <swiper :options="swiperOption" ref="mySwiper">
+                <swiper-slide v-for="(dataObj,index) in dataList">
+                  <mtEditor :ref="dataObj.id" :data='dataObj.data' v-if="dataObj.chartConfig != undefined" :chart-config='dataObj.chartConfig'></mtEditor>
+                  <mtEditor :ref="dataObj.id" :data='dataObj.data' v-else :chart-config='dataObj.chartConfig'></mtEditor>
+                </swiper-slide>
+              <div class="swiper-pagination" slot="pagination"></div>
+            </swiper>
           </div>
         </div>
       </el-main>
@@ -143,6 +147,8 @@ import $ from 'jquery'
 import {Loading} from 'element-ui';
 import {fuzzySearch} from '../lib/ztree/ext/fuzzysearch.js'
 import { Message } from 'element-ui'
+import { swiper, swiperSlide } from "vue-awesome-swiper";
+import "swiper/dist/css/swiper.css";
 export default {
   name: 'index',
   components: {
@@ -152,7 +158,7 @@ export default {
     dimfilter: resolve => require(["../views/indicator/dimfilter.vue"], resolve),
     saveanalysis: resolve => require(["../views/indicator/saveanalysis.vue"], resolve),
     indicatordesign: resolve => require(["../views/indicator/indicatordesign.vue"], resolve),
-    mtEditor
+    mtEditor,swiper, swiperSlide
   },
   data() {
     return {
@@ -339,7 +345,15 @@ export default {
       //当前鼠标移入指标树节点的最父级节点
       currentInMeasureTreeParentNode: null,
       searchAnalysis:'',
-      currentLoading:null
+      currentLoading:null,
+      swiperOption: {
+        loop: false,
+        observer: true,
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true, //允许分页点击跳转
+        }
+      }
     }
   },
   watch: {
@@ -5845,6 +5859,12 @@ export default {
     },
     getCurrentLogin(){
       return this.currentLoginUser;
+    },
+    jump(index){
+      this.$refs.mySwiper.swiper.slideTo(index, 500, false);//切换到第一个slide，速度为0.5秒
+    },
+    test(){
+
     }
   }
 }
@@ -6091,12 +6111,6 @@ var see = "查看";
 >>>.tag-warning.active {
   border-style: dashed;
 }
->>>div.aaa{
-  width:100%;
-  height:100%;
-  padding:5px 30px;
-  border:2px solid #CCCCCC;
-}
 >>>span.title{
   display:block;
   width:100px;
@@ -6106,5 +6120,31 @@ var see = "查看";
   text-align: center;
   background: white;
 }
-
+>>>.recommendPage .swiper-container{
+  position: relative;
+  width: 67vw;
+  height: 85vh;
+/*  width: 100%;
+  height: 100%;*/
+}
+>>>.recommendPage .swiper-container .swiper-slide{
+  width: 100%;
+  font-size: 16px;
+  text-align: center;
+}
+>>>div.aaa{
+  width:100%;
+  height:100%;
+  padding:5px 30px;
+  border:2px solid #CCCCCC;
+}
+>>>.ivu-layout-content{
+  width:650px;
+}
+>>>.el-menu-item {
+  float: left;
+  height: 60px;
+  line-height: 60px;
+  margin: 0;
+}
 </style>
