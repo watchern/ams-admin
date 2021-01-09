@@ -363,7 +363,7 @@ export default {
       })
     },
     openFilterPanel(roleUuid) {
-      getSceneFilter(roleUuid).then(resp => {
+      getSceneFilter(roleUuid, this.sceneCode).then(resp => {
         console.log(resp.data)
         resp.data.forEach(f => {
           f.roleUuid = (f.roleUuid != null)
