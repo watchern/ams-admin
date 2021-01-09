@@ -32,19 +32,35 @@
         </div>
       </div>
       <div class="left flex-shrink flex a-center j-center flex-column">
-        <swiper :options="swiperOption" ref="mySwiper">
+        <swiper :options="swiperOption" ref="mySwiper" :autoplay="5000">
           <swiper-slide>
-            <div class="day-wrap flex a-center j-center relative">
-              <animate-number from="00" :to="this.projectDetails.length" :formatter="formatter" class="num" />
-              <span class="text absolute">我的项目</span>
+            <div class="day-wrap relative">
+<!--              <animate-number from="00" :to="this.myProjectIn[0].lengthIn" :formatter="formatter" class="num" />-->
+<!--              <span class="text absolute">我的项目</span>-->
+              <div class="showDetailedIn">
+                <span style="background-color:rgb(81,69,89)">{{showDetailedData.TAKEPROJECTCOUNT}}</span>
+                参与项目数
+              </div>
+              <div class="showDetailedIn">
+                <span style="background-color:rgb(81,69,89)">{{showDetailedData.FINDPROBLEMCOUNT}}</span>
+                发现问题数量
+              </div>
+              <div class="showDetailedOut">
+                <span style="background-color:rgb(131,132,158)">{{showDetailedData.TAKECHIEFJUDGECOUNT}}</span>
+                担任主审次数
+              </div>
+              <div class="showDetailedOut">
+                <span style="background-color:rgb(69,86,89)">{{showDetailedData.WORKCOUNT}}</span>
+                项目工作天数
+              </div>
             </div>
           </swiper-slide>
           <swiper-slide>
-            <img :src="linshiImg1" style="width: 100%"/>
+            <img :src="linshiImg1" style="width: 100%;margin-top: 40px"/>
           </swiper-slide>
           <swiper-slide>
-            <img :src="linshiImg2" style="width: 100%" />
-          </swiper-slide>
+            <img :src="linshiImg2" style="width: 100%;margin-top: 40px" />
+          </swiper-slide >
           <div class="swiper-pagination" slot="pagination"></div>
         </swiper>
 
@@ -182,14 +198,7 @@ export default {
           content:''
         }
       ],
-      projectDetails: [
-        {
-          name: '暂无项目',
-          time: '--',
-          status: '--',
-          lengthIn: 1
-        }
-      ],
+      projectDetails: [],
       myProjectIn: [],
       dialogFormVisible: false,
       PopUpContent:[{
@@ -198,15 +207,27 @@ export default {
       }],
       projectAnimation: true,
       swiperOption: {
-        loop: false,
-        observer: true,
+        loop: true,
+        autoplay :{
+          delay: 2000,
+          stopOnLastSlide: true,
+          /* 触摸滑动后是否继续轮播 */
+          disableOnInteraction: false
+        },
+        stopOnLastSlide: true,
         pagination: {
           el: ".swiper-pagination",
-          clickable: true, //允许分页点击跳转
+          clickable: true //允许分页点击跳转
         }
       },
       linshiImg1:require('../../../../assets/Ace/image/firstcercle.png'),
-      linshiImg2:require('../../../../assets/Ace/image/firsttable.png')
+      linshiImg2:require('../../../../assets/Ace/image/firsttable.png'),
+      showDetailedData: {
+        FINDPROBLEMCOUNT:12,
+        WORKCOUNT:0,
+        TAKECHIEFJUDGECOUNT:14,
+        TAKEPROJECTCOUNT:15
+      }
     }
   },
   mounted() {
@@ -227,20 +248,32 @@ export default {
         }
       }
     })
-    // let query1 = {runTaskUuid:null}
-    // query1.runTaskUuid = '1'
-    // this.pageQuery.condition = query1;
-    // getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
-    //   this.warningMatters = resp.data.records;
-    //   console.log(resp.data.records)
-    // })
+    let query1 = {runTaskUuid:null}
+    query1.runTaskUuid = '1'
+    this.pageQuery.condition = query1;
+    getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
+      this.warningMatters = resp.data.records;
+      console.log(resp.data.records)
+      for(let i=0;i<5;i++){
+        this.cardList[1].des.push({
+          // text:resp.data.records[i].remindTitle,
+          // iconColor: '#D81020',
+          // icon: '',
+          // url:resp.data.records[i].modeUrl,
+          // content:resp.data.records[i].remindContent,
+          // index:i,
+          // Uuid:resp.data.records[i].remindUuid
+        })
+        if(resp.data.records[i].readStatus === 0){
+          this.cardList[0].des[i].icon = ' NEW'
+        }
+      }
+    })
     axios.get('/psbcaudit/homepage/loadTodoInfo').then(resp =>{
-      console.log(resp)
       if (resp.data !== '') {
         this.TopTodo = resp.data
       }
     })
-    this.myProject(0)
     axios.get('/psbcaudit/homepage/loadPrjInfo').then(resp =>{
       if (resp.data.prjList.length > 0) {
         this.projectDetails = []
@@ -255,6 +288,12 @@ export default {
           }
         this.myProject(0)
       }
+    })
+    // axios.get('/psbcaudit/homepage/hasCount').then(resp =>{
+    //   console.log(resp)
+    // })
+    var mySwiper = new Swiper('.swiper-container',{
+      autoplay : 5000,
     })
   },
   methods: {
@@ -359,7 +398,7 @@ export default {
       flex: 1;
       height: 100%;
       .day-wrap{
-        width: 470px;
+        width: 100%;
         height: 450px;
         background: url("../../../../assets/Ace/image/bg-home@2x.png") no-repeat center center;
         background-size:465px 443px;
@@ -729,5 +768,55 @@ export default {
   width: 100%;
   font-size: 16px;
   text-align: center;
+}
+.showDetailedIn{
+  width:40%;
+  height:20%;
+  margin-top:30%;
+  display:inline-block;
+  font-size: 24px;
+  margin-right: 2.5%;
+  text-align: left;
+  margin-left: 2.5%;
+}
+.showDetailedOut{
+  width:40%;
+  height:20%;
+  margin-bottom:20%;
+  display:inline-block;
+  font-size: 24px;
+  margin-right: 2.5%;
+  text-align: left;
+  margin-left: 2.5%;
+}
+.showDetailedIn span{
+  display: inline-block;
+  width:60px;
+  height:60px;
+  border-radius:100%;
+  background-color:#888;
+  float: left;
+  line-height: 60px;
+  margin-top: -12px;
+  text-align: center;
+  margin-right:10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+}
+.showDetailedOut span{
+  display: inline-block;
+  width:60px;
+  height:60px;
+  border-radius:100%;
+  background-color:#888;
+  float: left;
+  line-height: 60px;
+  margin-top: -12px;
+  text-align: center;
+  margin-right:10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
 }
 </style>
