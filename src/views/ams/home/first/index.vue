@@ -40,10 +40,10 @@
             </div>
           </swiper-slide>
           <swiper-slide>
-            <img :src="linshiImg1" />
+            <img :src="linshiImg1" style="width: 100%"/>
           </swiper-slide>
           <swiper-slide>
-            <img :src="linshiImg2" />
+            <img :src="linshiImg2" style="width: 100%" />
           </swiper-slide>
           <div class="swiper-pagination" slot="pagination"></div>
         </swiper>
@@ -105,7 +105,7 @@
 import { getRemindByDescTime, updateRemind } from '@/api/base/base'
 import { getRunTaskRelByPage } from "@/api/analysis/auditmodelresult"
 import { swiper, swiperSlide } from "vue-awesome-swiper";
-// import "swiper/dist/css/swiper.css";
+import "swiper/dist/css/swiper.css";
 import axios from 'axios'
 import mtEditor from "ams-datamax";
 export default {
@@ -721,7 +721,7 @@ export default {
 }
 .swiper-container{
   position: relative;
-  width: 25vw;
+  width: 30vw;
   height: 75vh;
   padding-top: 15vh;
 }
