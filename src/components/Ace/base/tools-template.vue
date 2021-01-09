@@ -6,7 +6,7 @@
         <span class="label">More tools</span>
       </div>
       <div class="lately-use">
-        <div class="title-label">最近使用</div>
+        <div class="title-label">常用功能</div>
         <div class="lately-use-box flex a-center j-start flex-row">
           <div
             v-for="(item,index) in latelyBdInList"
@@ -54,10 +54,8 @@
                 <span v-if="item.taskStatus == 2" style="color:#eaeaea" class="el-icon-success" />
                 <span v-if="item.taskStatus == 1" style="color:#eaeaea" class="el-icon-loading" />
                 <span v-if="item.taskStatus == 3" style="color:#eaeaea" class="el-icon-error" />
-                <span style="color:#eaeaea;font-size:11px;margin-left:30px" class="tools-box-name" v-text="item.taskEstimatedTime" />
-                <div style="float:right;margin-right:80px;text-align:left">
-                  <span style="color:#eaeaea;font-size:11px;margin-left:10px" class="tools-box-name" v-text="item.taskName" />
-                </div>
+                <span style="color:#eaeaea;font-size:11px;padding:2px" class="tools-box-name" v-text="item.taskEstimatedTime" />
+                <span style="color:#eaeaea;font-size:11px;padding:2px;cursor:pointer;" class="tools-box-name" @click="toUrl(item.taskUrl)" v-text="item.taskName" />
               </li>
             </ul>
             <span type="primary" style="color:#4e6ef2;float:right;bottom:-22px;font-size:10px;cursor:pointer;" @click="moreTask">更多</span>
@@ -481,6 +479,11 @@ export default {
         path: '/base/querytask'
       })
     },
+    toUrl(url) {
+      this.$router.push({
+        path: url
+      })
+    },
     /**
      *
      * 使用说明：
@@ -503,7 +506,7 @@ export default {
         this.list = JSON.parse(val.data).slice(0, 5)
         this.list.forEach(element => {
           var taskEstimatedTime = new Date(element.taskEstimatedTime)
-          element.taskEstimatedTime = taskEstimatedTime.getFullYear() + '-' + (taskEstimatedTime.getMonth() + 1) + '-' + taskEstimatedTime.getDate() + '-' + taskEstimatedTime.getHours() + ':' + taskEstimatedTime.getMinutes() + ':' + taskEstimatedTime.getSeconds()    
+          element.taskEstimatedTime = taskEstimatedTime.getFullYear() + '-' + (taskEstimatedTime.getMonth() + 1) + '-' + taskEstimatedTime.getDate() + '-' + taskEstimatedTime.getHours() + ':' + taskEstimatedTime.getMinutes() + ':' + taskEstimatedTime.getSeconds()
         })
       }
       const func1 = func2.bind(this)

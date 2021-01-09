@@ -19,6 +19,13 @@
             class="list flex a-center j-between flex-column"
           >
             <div
+              ref="navDom"
+              class="box"
+              @click="selectMenuIn()"
+            >
+              <img class="img" :src="workbenchImg" />
+            </div>
+            <div
               v-for="(item,index) in applications"
               ref="navDom"
               :key="index"
@@ -43,7 +50,7 @@
         <span class="label-open" @click="isShowToolsList=!isShowToolsList">
           <i class="el-icon-s-grid" />
         </span>
-        <span class="label-wang" @click="isShowSettingList=!isShowSettingList" >{{ userInfo.name }}</span>
+        <span class="label-wang" @click="isShowSettingList=!isShowSettingList" >{{ userInfo.name }}<i class="label-wang-in" v-if="isThereReminder"></i></span>
         <!-- <i class="shrink-btn icon iconfont iconright-1" @click="isShrink=false" /> -->
         <i class="setting-btn icon iconfont iconmenu-2 setting-btn-Upright"  @click="widthChange" />
       </div>
@@ -61,6 +68,14 @@
             @click="action('prev')"
           />
           <div v-scroll-top="scrollTop" class="list flex a-center j-between flex-column">
+            <div
+              ref="navDom"
+              class="box flex a-center j-center flex-column"
+              @click="selectMenuIn()"
+            >
+              <img class="img" :src="workbenchImg" />
+              <div class="name">工作台</div>
+            </div>
             <div
               v-for="(item,index) in applications"
               ref="navDom"
@@ -96,7 +111,7 @@
         <div class="footer-btns flex a-center j-between flex-row">
           <!-- <i class="shrink-btn icon iconfont iconleft-1" @click="isShrink=false" /> -->
           <i class="setting-btn icon iconfont iconmenu-2 setting-btn-right" @click="widthChange" />
-          <span class="label-wang"  @click="isShowSettingList=!isShowSettingList">{{ userInfo.name }}</span>
+          <span class="label-wang"  @click="isShowSettingList=!isShowSettingList">{{ userInfo.name }}<i class="label-wang-in" v-if="isThereReminder"></i></span>
         </div>
       </div>
     </template>
@@ -169,19 +184,21 @@ export default {
           count: 0,
           method: this.logoutRemind
         },
-        {
-          icon: '',
-          name: '后台跑批',
-          count: 15,
-          method: this.logout
-        },
+        // {
+        //   icon: '',
+        //   name: '后台跑批',
+        //   count: 15,
+        //   method: this.logout
+        // },
         {
           icon: '',
           name: '退出登陆',
           method: this.logout
         }
       ],
-      applications: []
+      applications: [],
+      workbenchImg: require('../style/images/icon0.png'),
+      isThereReminder: false
     }
   },
   computed: {
@@ -272,6 +289,9 @@ export default {
         this.settingList[0].count = resp.data
       }else{
         this.settingList[0].count = '···'
+      }
+      if (resp.data !== 0) {
+        this.isThereReminder = true
       }
     })
   },
@@ -396,6 +416,12 @@ export default {
       this.isShrink = !this.isShrink
     },
     reminderAutomaticRefresh(){
+    },
+    selectMenuIn(){
+      this.$store.commit('aceState/setRightFooterTags', {
+        type: 'closeAll',
+        val: ''
+      })
     }
   }
 }
@@ -437,7 +463,7 @@ export default {
       }
       .list {
         margin: 10px 0;
-        max-height: 320px;
+        max-height: 415px;
         overflow-y: auto;
         &::-webkit-scrollbar {
           width: 0;
@@ -507,6 +533,7 @@ export default {
       }
     }
     .label-wang {
+      position: relative;
       margin-right: 14px;
     }
     .label-open {
@@ -604,12 +631,13 @@ export default {
     &-title {
       font-family: PingFangSC-Regular;
       font-size: 15px;
-      color: #d70010;
+      color: #fff;
       letter-spacing: 0.88px;
       line-height: 40px;
       height: 40px;
       padding: 0 10px;
       border-bottom: 1px solid #363a43;
+      font-weight: bolder;
     }
   }
   .top {
@@ -671,6 +699,7 @@ export default {
     background: #484f5c;
     padding: 5px;
     cursor: pointer;
+    position: relative;
   }
   .bottom {
     font-size: 20px;
@@ -751,5 +780,14 @@ export default {
 }
 .setting-btn-Upright{
   transform:rotate(90deg) ;
+}
+.label-wang-in{
+  position:absolute;
+  top: -5px;
+  right: -5px;
+  width:10px;
+  height:10px;
+  border-radius:100%;
+  background-color:red;
 }
 </style>

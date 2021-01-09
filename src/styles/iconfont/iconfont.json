@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "349042",
+      "name": "table",
+      "font_class": "table",
+      "unicode": "ecee",
+      "unicode_decimal": 60654
+    },
+    {
+      "icon_id": "10789842",
+      "name": "查看表格-预览数据_操作_jurassic",
+      "font_class": "view",
+      "unicode": "e6cd",
+      "unicode_decimal": 59085
+    },
+    {
       "icon_id": "15429679",
       "name": "资产处理管理 goods/ppe/archivesHandle",
       "font_class": "oper-processing",

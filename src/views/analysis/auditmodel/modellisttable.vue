@@ -712,11 +712,17 @@ export default {
     shareModel() {
       // 获取选中的人员
       // 循环组织对象添加数据
+      var userId = this.$store.getters.personuuid
       var selectObj = this.$refs.modelListTable.selection
       const modelShareRelList = []
+      let verResult = true
       const persons = this.$refs.personTree.getSelectValue()
       for (let i = 0; i < selectObj.length; i++) {
         for (let j = 0; j < persons.length; j++) {
+          if(persons[j].personuuid === userId){
+            verResult = false
+            break
+          }
           const obj = {
             modelUuid: selectObj[i].modelUuid,
             belongUuid: persons[j].personuuid,
@@ -724,6 +730,10 @@ export default {
           }
           modelShareRelList.push(obj)
         }
+      }
+      if(!verResult){
+        this.$message({ type: 'info', message: '不能共享给自己!' })
+        return
       }
       shareModel(modelShareRelList).then(result => {
         if (result.code == 0) {

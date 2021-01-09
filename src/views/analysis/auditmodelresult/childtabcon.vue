@@ -45,12 +45,12 @@
             title="图表展示"
           ></el-button>
           <el-button
-            style="display: none"
             :disabled="modelRunResultBtnIson.disassociateBtn"
             type="primary"
-            @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
+             class="oper-btn move"
+            @click="removeRelated()"
             title="移除关联"
-          >移除关联</el-button
+            ></el-button
           >
           <el-button
             :disabled="false"
@@ -63,9 +63,10 @@
             type="primary"
             class="oper-btn refresh"
             :disabled="modelRunResultBtnIson.associatedBtn"
-            @click="addDetailRel('qwer1', '项目11')"
+            @click="openProjectDialog"
             title="关联项目"
           ></el-button>
+          <!-- addDetailRel('qwer1', '项目11') -->
           <el-button
             :disabled="false"
             type="primary"
@@ -83,10 +84,11 @@
           ></el-button>
         </div>
       </el-row>
+
       <ag-grid-vue
         v-if="isSee"
         v-loading="isLoading"
-        style="height:69vh"
+        style="height:200px"
         class="table ag-theme-balham"
         :column-defs="columnDefs"
         :row-data="rowData"
@@ -111,36 +113,36 @@
         <el-col :span="22">
           <div v-if="modelResultPageIsSee">
             共<span class="paging-z">{{ rowData.length }}</span
-          >条
-        </div>
-      </el-col>
-      <el-col :span="2">
-        <el-row v-if="modelResultButtonIsShow" style="display: flex">
-          <!-- 2.1前台导出，双向绑定数据 -->
-          <downloadExcel
-            :data="tableData"
-            :fields="json_fields"
-            :name="excelName"
-            class="thechard-z"
-            v-if="this.preLength==this.myIndex+1 && this.useType!=='sqlEditor'"
-          >
-            <el-button
+            >条
+          </div>
+        </el-col>
+        <el-col :span="2">
+          <el-row v-if="modelResultButtonIsShow" style="display: flex">
+            <!-- 2.1前台导出，双向绑定数据 -->
+            <downloadExcel
+              :data="tableData"
+              :fields="json_fields"
+              :name="excelName"
+              class="thechard-z"
+              v-if="this.preLength==this.myIndex+1 && this.useType!=='sqlEditor'"
+            >
+              <el-button
+                type="primary"
+                @click="modelResultExport"
+                class="oper-btn export-2"
+                title="导出"
+              ></el-button>
+            </downloadExcel>
+            <!-- <el-button
+              v-if="this.preLength==this.myIndex+1"
               type="primary"
-              @click="modelResultExport"
-              class="oper-btn export-2"
-              title="导出"
-            ></el-button>
-          </downloadExcel>
-          <!-- <el-button
-            v-if="this.preLength==this.myIndex+1"
-            type="primary"
-            title="图表展示"
-            class="oper-btn chart"
-            @click="openChartDialog"
-          ></el-button> -->
-        </el-row>
-      </el-col>
-    </el-row>
+              title="图表展示"
+              class="oper-btn chart"
+              @click="openChartDialog"
+            ></el-button> -->
+          </el-row>
+        </el-col>
+      </el-row>
     </el-row>
     <!-- modelResultPageIsSee -->
     <el-dialog
@@ -161,7 +163,7 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="modelDetailDialogIsShow = false">取 消</el-button>
         <el-button type="primary" @click="modelDetailCetermine"
-        >确 定</el-button
+          >确 定</el-button
         >
       </span>
     </el-dialog>
@@ -178,16 +180,16 @@
       />
       <span slot="footer" class="dialog-footer">
         <el-button @click="modelDetailModelResultDialogIsShow = false"
-        >取 消</el-button
+          >取 消</el-button
         >
         <el-button
           type="primary"
           @click="modelDetailModelResultDialogIsShow = false"
-        >确 定</el-button
+          >确 定</el-button
         >
       </span>
     </el-dialog>
-    <el-dialog
+       <el-dialog
       title="提示"
       :visible.sync="chartShowIsSee"
       width="90%"
@@ -207,7 +209,7 @@
           v-if="useType == 'sqlEditor' ||  useType == 'modelRunResult'? true: false"
           type="primary"
           @click="chartSaveOrUpdate=='save'?saveChart():updateChart()"
-        >保 存</el-button
+          >保 存</el-button
         >
       </span>
     </el-dialog>
@@ -227,30 +229,39 @@
             >
           </span>
         </el-dialog>
-    <el-row>
+    <el-row v-if="!chartSwitching">
+      <el-row>
       <div align="right" v-if="this.preLength==this.myIndex+1||myFlag">
         <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" style="width:40px;height:40px" @click="changeChart(item.id)" :key="key"/>
-           <el-button
-              v-if="useType=='sqlEditor'||myFlag"
-              type="primary"
-              @click="openChartDialog"
-              class="oper-btn add"
-              title="添加图表"
-            ></el-button>
-             <el-button
-              v-if="useType=='sqlEditor'||myFlag"
-              type="primary"
-              @click="openEditChartDialog"
-              class="oper-btn edit"
-              title="修改图标"
-            ></el-button>
-             <el-button
-              v-if="useType=='sqlEditor'||myFlag"
-              type="primary"
-              @click="deleteChart"
-              class="oper-btn delete"
-              title="删除图表"
-            ></el-button>
+        <img
+          src="./imgs/deletein.png"
+          v-if="useType=='sqlEditor'||myFlag"
+          type="primary"
+          @click="deleteChart"
+          class="delete-pos"
+          title="删除图表"
+        />
+        <img
+          src="./imgs/change.png"
+          v-if="useType=='sqlEditor'||myFlag"
+          type="primary"
+          @click="openEditChartDialog"
+          class="change-pos"
+          title="修改图标"
+        />
+        <el-button
+          v-if="useType=='sqlEditor'||myFlag"
+          type="primary"
+          @click="openChartDialog"
+          class="oper-btn add"
+          title="添加图表"
+        ></el-button>
+        <el-button
+          type="primary"
+          class="oper-btn excel"
+          @click="chartSwitching = true"
+          title="上方表格展示"
+        ></el-button>
       </div>
     </el-row>
     <div style="height: 450px;" v-if="this.preLength==this.myIndex+1||myFlag">
@@ -258,48 +269,7 @@
       <div align='center' style='font-weight:lighter ;font-size:15px' v-if="isHaveCharts">该模型暂无图表</div>
       <mtEditor v-loading="chartLoading" v-if="afterResult" :key="chartPreview" ref='chart1' :data='result' :chart-config='nowChartJson' :preview="true"></mtEditor>
     </div>
-    <el-row v-if="!chartSwitching">
-      <el-row>
-        <div align="right" v-if="this.preLength==this.myIndex+1||myFlag" style="position:relative;">
-          <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" class="chartStyle" @click="changeChart(item.id)" :key="key"/>
-          <img
-            src="./imgs/deletein.png"
-            v-if="useType=='sqlEditor'||myFlag"
-            type="primary"
-            @click="deleteChart"
-            class="delete-pos"
-            title="删除图表"
-          />
-          <img
-            src="./imgs/change.png"
-            v-if="useType=='sqlEditor'||myFlag"
-            type="primary"
-            @click="openEditChartDialog"
-            class="change-pos"
-            title="修改图标"
-          />
-          <el-button
-            v-if="useType=='sqlEditor'||myFlag"
-            type="primary"
-            @click="openChartDialog"
-            class="oper-btn add"
-            title="添加图表"
-          ></el-button>
-          <el-button
-            v-if="useType=='sqlEditor'||myFlag"
-            type="primary"
-            class="oper-btn excel"
-            @click="chartSwitching = true"
-            title="上方表格展示"
-          ></el-button>
-        </div>
-      </el-row>
-      <div style="height: 74vh;" v-if="this.preLength==this.myIndex+1||myFlag">
-        <div align='center' style='font-weight:lighter ;font-size:15px' v-if="afterAddChartsWithNoConfigure">请选择图表</div>
-        <div align='center' style='font-weight:lighter ;font-size:15px' v-if="isHaveCharts">该模型暂无图表</div>
-        <mtEditor v-loading="chartLoading" v-if="afterResult" :key="chartPreview" ref='chart1' :data='result' :chart-config='nowChartJson' :preview="true"></mtEditor>
-      </div>
-    </el-row>
+  </el-row>
   </div>
 </template>
 
@@ -365,8 +335,8 @@ export default {
       });
     },
     nowChartJson () {
-      this.chartPreview = !this.chartPreview
-    }
+        this.chartPreview = !this.chartPreview
+      }
   },
   /**
    * 模型运行结果使用变量：nowtable：表示模型结果表对象   modelUuid：根据modelUUid进行表格渲染，只有主表用渲染  useType=modelRunResult 表示是模型运行结果所用
@@ -449,7 +419,7 @@ export default {
       afterAddChartsWithNoConfigure:false,
       isHaveCharts:false, //判断该模型是否有图表
       projectDialogIsSee:false,   //用来控制项目dialog显示
-      chartSwitching:true //显示表格或图
+      chartSwitching: true  //控制表格与图表切换
     };
   },
   mounted() {
@@ -578,7 +548,7 @@ export default {
                   projectId: projectId,
                   resultDetailId: this.selectRows[i][
                     this.primaryKey.toLowerCase()
-                    ],
+                  ],
                   projectName: projctName,
                 };
                 resultDetailProjectRels.push(resultDetailProjectRel);
@@ -626,7 +596,7 @@ export default {
                     projectId: projectId,
                     resultDetailId: this.selectRows[i][
                       this.primaryKey.toLowerCase()
-                      ],
+                    ],
                     projectName: projctName,
                   };
                   resultDetailProjectRels.push(resultDetailProjectRel);
@@ -656,7 +626,7 @@ export default {
                     projectId: projectId,
                     resultDetailId: this.selectRows[i][
                       this.primaryKey.toLowerCase()
-                      ],
+                    ],
                     projectName: projctName,
                   };
                   resultDetailProjectRels1.push(resultDetailProjectRel);
@@ -754,13 +724,13 @@ export default {
                 type = "varchar";
               } else if (
                 columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") !=
-                -1 ||
+                  -1 ||
                 columnInfo[i].columnType.toUpperCase().indexOf("INT") != -1
               ) {
                 type = "number";
               } else if (
                 columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") !=
-                -1 ||
+                  -1 ||
                 columnInfo[i].columnType.toUpperCase().indexOf("DATE") != -1
               ) {
                 type = "time";
@@ -791,11 +761,11 @@ export default {
                   ) {
                     if(onlyFlag==false){
                       var rowColom = {
-                        headerName: "onlyuuid",
-                        field: "onlyuuid",
-                        checkboxSelection: true,
-                      };
-                      col.push(rowColom);
+                      headerName: "onlyuuid",
+                      field: "onlyuuid",
+                      checkboxSelection: true,
+                    };
+                    col.push(rowColom);
                       onlyFlag = true
                     }
                     if (this.modelOutputColumn[j].isShow == 1) {
@@ -1626,7 +1596,7 @@ export default {
 .itxst {
   margin: 10px;
   text-align: left;
-  overflow: auto;
+  /* overflow: auto; */
 }
 .thechard-z {
   margin-right: 15px;
