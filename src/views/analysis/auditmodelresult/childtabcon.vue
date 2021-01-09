@@ -19,7 +19,7 @@
         type="primary"
         class="oper-btn excel"
         @click="chartSwitching = false"
-        :style="{position:(myFlag?'absolute':'relative')}"
+        :style="{position:(myFlag?'absolute':'relative'),zIndex:10}"
         title="下方图表展示"
       ></el-button>
       <el-row v-if="myFlag">
@@ -83,7 +83,6 @@
           ></el-button>
         </div>
       </el-row>
-    </el-row>
       <ag-grid-vue
         v-if="isSee"
         v-loading="isLoading"
@@ -141,6 +140,7 @@
           ></el-button> -->
         </el-row>
       </el-col>
+    </el-row>
     </el-row>
     <!-- modelResultPageIsSee -->
     <el-dialog
