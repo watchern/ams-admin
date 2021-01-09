@@ -19,7 +19,7 @@
       @check-change="handleNodeClick1"
       :show-checkbox="
         this.publicModel === 'editorModel' ||
-        this.publicModel === 'relationModel'
+        this.publicModel === 'relationModel' || this.publicModel === 'publicModel'
           ? true
           : false
       "
