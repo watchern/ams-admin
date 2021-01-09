@@ -56,11 +56,11 @@ const analysisRouter = {
       name: '模型详细结果展现',
       component: () => import('@/views/analysis/auditmodelresult/modelresultdetailshow')
     },
-    {
-      path: 'screenList',
-      name: '主题展示列表',
-      component: () => import('ams-datamax/src/components/screenList')
-    },
+    // {
+    //   path: 'screenList',
+    //   name: '主题展示列表',
+    //   component: () => import('ams-datamax/src/components/screenList')
+    // },
     {
       path: 'indicatoranalysis',
       name: '指标分析',
