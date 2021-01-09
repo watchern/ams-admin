@@ -21,16 +21,19 @@
         <div class="resizeLB"></div>
         <div class="content">
           <el-aside style="width:100%">
-            <el-tree class="el-tree-rewrite" ref="tree" :data="treeNodeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
+            <el-tree class="el-tree-rewrite" ref="tree" :data="treeNodeData" :props="defaultProps"
+                     :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">
               <span slot-scope="{ node, data }" class="custom-tree-node">
                 <span>
                   {{ node.label }}
                 </span>
                 <span v-if="data.type=='relInfo'">
-                  <el-button type="text" title="添加关联详细" size="mini" @click.stop="() => createDetail(node,data)"><i class="el-icon-circle-plus-outline"/></el-button>
+                  <el-button type="text" title="添加关联详细" size="mini" @click.stop="() => createDetail(node,data)"><i
+                    class="el-icon-circle-plus-outline"/></el-button>
                 </span>
                 <span v-if="data.type=='filterShow'">
-                  <el-button type="text" title="添加条件显示" size="mini" @click.stop="() => createFilterShow(node,data)"><i class="el-icon-circle-plus-outline"/></el-button>
+                  <el-button type="text" title="添加条件显示" size="mini" @click.stop="() => createFilterShow(node,data)"><i
+                    class="el-icon-circle-plus-outline"/></el-button>
                 </span>
                 <span v-if="data.type=='relDetail' || data.type=='filterShowNode'">
                   <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-delete"/></el-button>
@@ -38,14 +41,14 @@
               </span>
 
             </el-tree>
-              <div class="custom-tree-caidan ">
-                <img class="custom-save" :src="imgCus2" @click="save" style="cursor:pointer"/>
-                <img class="custom-close" :src="imgCus1" @click="closeWinfrom" style="cursor:pointer"/>
-              </div>
-              <div class="custom-tree-shangla">
-                <img class="custom-shouqi"  :src="imgCus3" @click="customup"/>
-                <img class="custom-xiala" :src="imgCus3" @click="customdown" />
-              </div>
+            <div class="custom-tree-caidan ">
+              <img class="custom-save" :src="imgCus2" @click="save" style="cursor:pointer"/>
+              <img class="custom-close" :src="imgCus1" @click="closeWinfrom" style="cursor:pointer"/>
+            </div>
+            <div class="custom-tree-shangla">
+              <img class="custom-shouqi" :src="imgCus3" @click="customup"/>
+              <img class="custom-xiala" :src="imgCus3" @click="customdown"/>
+            </div>
           </el-aside>
         </div>
       </div>
@@ -54,25 +57,27 @@
           <el-row>
             <el-col :span="15">
               <el-form-item label="模型名称" prop="modelName">
-                <el-input v-model="form.modelName" />
+                <el-input v-model="form.modelName"/>
               </el-form-item>
             </el-col>
           </el-row>
-            <el-row>
-              <el-form-item label="业务分类">
-                <el-col :span="15">
-                  <el-input v-model="form.modelFolderUuid" class="display" :disabled="true" />
-                  <el-input v-model="form.modelFolderName" :disabled="true" />
-                </el-col>
-                <el-col :span="2"><el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true">选择</el-button></el-col>
-                <el-col :span="2"></el-col>
-              </el-form-item>
-            </el-row>
+          <el-row>
+            <el-form-item label="业务分类">
+              <el-col :span="15">
+                <el-input v-model="form.modelFolderUuid" class="display" :disabled="true"/>
+                <el-input v-model="form.modelFolderName" :disabled="true"/>
+              </el-col>
+              <el-col :span="2">
+                <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true">选择</el-button>
+              </el-col>
+              <el-col :span="2"></el-col>
+            </el-form-item>
+          </el-row>
           <el-row>
             <el-form-item label="审计事项" prop="auditItemUuid">
               <el-col :span="15">
-                <el-input v-model="form.auditItemUuid" class="display" :disabled="true" />
-                <el-input v-model="form.auditItemName" :disabled="true" />
+                <el-input v-model="form.auditItemUuid" class="display" :disabled="true"/>
+                <el-input v-model="form.auditItemName" :disabled="true"/>
               </el-col>
               <el-button @click="showAuditItemTree">选择</el-button>
             </el-form-item>
@@ -80,14 +85,14 @@
           <el-row>
             <el-col :span="9">
               <el-form-item label="风险等级" prop="riskLevelUuid">
-                  <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级"  style="width:67%">
-                    <el-option
-                      v-for="state in riskLeve"
-                      :key="state.codeValue"
-                      :value="state.codeValue"
-                      :label="state.codeName"
-                    />
-                  </el-select>
+                <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级" style="width:67%">
+                  <el-option
+                    v-for="state in riskLeve"
+                    :key="state.codeValue"
+                    :value="state.codeValue"
+                    :label="state.codeName"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="9">
@@ -106,14 +111,14 @@
           <el-row>
             <el-col :span="15">
               <el-form-item label="审计思路">
-                <el-input v-model="form.auditIdeas" type="textarea" />
+                <el-input v-model="form.auditIdeas" type="textarea"/>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="15">
               <el-form-item label="参数条件">
-                <el-input v-model="form.paramConditions" type="textarea" />
+                <el-input v-model="form.paramConditions" type="textarea"/>
               </el-form-item>
             </el-col>
           </el-row>
@@ -121,10 +126,14 @@
       </div>
       <div ref="modelDesign" class="display div-width">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
-          <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" style="width: 100%" id="graphDiv">
-            <SQLEditor :data-user-id='dataUserId' :scene-code1='sceneCode' :modelUuid='form.modelUuid' @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
-                       :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel" :locationUuid="form.locationUuid" :locationName="form.locationName"  class="sql-editor"/>
-            <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2" v-if="state.id==graphEditorStr"></graph>
+          <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" style="width: 100%"
+               id="graphDiv">
+            <SQLEditor :data-user-id='dataUserId' :scene-code1='sceneCode' :modelUuid='form.modelUuid'
+                       @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
+                       :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel"
+                       :locationUuid="form.locationUuid" :locationName="form.locationName" class="sql-editor"/>
+            <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2"
+                   v-if="state.id==graphEditorStr"></graph>
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
@@ -145,21 +154,21 @@
         <div style="font-size: 20px">
           模型结果
           <el-tooltip class="item" effect="dark" content="只显示最后的结果列" placement="top-start">
-          <i class="el-icon-info"/></el-tooltip>
+            <i class="el-icon-info"/></el-tooltip>
         </div>
         <div class="model-result-output-col">
-          <el-table ref="columnData" :data="columnData" class="div-width" >
-            <el-table-column prop="outputColumnName" label="输出列名" width="180" />
+          <el-table ref="columnData" :data="columnData" class="div-width">
+            <el-table-column prop="outputColumnName" label="输出列名" width="180"/>
             <el-table-column prop="dataCoding" label="数据转码" width="180">
               <template slot-scope="scope">
-                <SelectTransCode ref="SelectTransCode" :transuuid.sync="scope.row.dataCoding" />
+                <SelectTransCode ref="SelectTransCode" :transuuid.sync="scope.row.dataCoding"/>
               </template>
             </el-table-column>
             <el-table-column prop="columnName" label="是否显示" width="80">
               <template slot-scope="scope">
                 <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1" :disabled="isBanEdit">
-                  <el-option label="是" :value="1" />
-                  <el-option label="否" :value="0" />
+                  <el-option label="是" :value="1"/>
+                  <el-option label="否" :value="0"/>
                 </el-select>
               </template>
             </el-table-column>
@@ -177,7 +186,7 @@
             </el-table-column>
             <el-table-column prop="columnName" label="别名" width="180">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" :disabled="isBanEdit" />
+                <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" :disabled="isBanEdit"/>
               </template>
             </el-table-column>
             <!--          <el-table-column prop="columnType" label="字段类型标记" width="180">
@@ -198,14 +207,17 @@
         </div>
       </div>
       <div ref="relInfo" class="display default-value">
-        <p class="words">在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
+        <p class="words">
+          在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
           用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。
           通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。</p>
         <!--<el-button @click="createDetail">新建</el-button>-->
       </div>
       <div id="modelDetailDiv">
-        <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id" class="display default-value">
-          <ModelDetail ref="child" :operationtype="operationObj.operationType" :columns="columnData" :data="modelDetail.data" :tree-id="modelDetail.id" @updateTreeNode="updateTreeNode" />
+        <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id"
+             class="display default-value">
+          <ModelDetail ref="child" :operationtype="operationObj.operationType" :columns="columnData"
+                       :data="modelDetail.data" :tree-id="modelDetail.id" @updateTreeNode="updateTreeNode"/>
         </div>
       </div>
       <div ref="chartConfig" class="display default-value">
@@ -219,12 +231,15 @@
         <!--<el-button @click="createFilterShow">新建</el-button>-->
       </div>
       <div ref="filterShowDiv">
-        <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id" class="display default-value">
-          <ModelFilterShow ref="modelFilterSHowChild" :operationtype="operationObj.operationType" :columns="columnData" :data="filterShow.data" :tree-id="filterShow.id" @updateTreeNode="updateTreeNode" />
+        <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id"
+             class="display default-value">
+          <ModelFilterShow ref="modelFilterSHowChild" :operationtype="operationObj.operationType" :columns="columnData"
+                           :data="filterShow.data" :tree-id="filterShow.id" @updateTreeNode="updateTreeNode"/>
         </div>
       </div>
     </el-container>
-    <el-dialog v-if="auditItemTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="auditItemTree" title="请选择审计事项" width="80%">
+    <el-dialog v-if="auditItemTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="auditItemTree"
+               title="请选择审计事项" width="80%">
       <AuditItemTree ref="auditItemTreeRef"></AuditItemTree>
       <div slot="footer">
         <el-button type="primary" @click="getAuditItem">确定</el-button>
@@ -232,7 +247,7 @@
       </div>
     </el-dialog>
     <el-dialog v-if="modelFolderTreeDialog" :visible.sync="modelFolderTreeDialog" title="选择业务分类" width="50%">
-      <ModelFolderTree ref="modelFolderTree" public-model="editorModel" />
+      <ModelFolderTree ref="modelFolderTree" public-model="editorModel"/>
       <div slot="footer">
         <el-button type="primary" @click="setBusinessFolder">确定</el-button>
         <el-button @click="modelFolderTreeDialog=false">取消</el-button>
@@ -249,11 +264,11 @@ import ModelDetail from '@/views/analysis/auditmodel/modeldetail'
 import ModelFilterShow from '@/views/analysis/auditmodel/modelfiltershow'
 import SQLEditor from '@/views/analysis/sqleditor/index'
 import AuditItemTree from '@/views/analysis/auditmodel/auditItemtree'
-import { getBusinessAttribute, saveModel, updateModel } from '@/api/analysis/auditmodel'
+import {getBusinessAttribute, saveModel, updateModel} from '@/api/analysis/auditmodel'
 import VRuntimeTemplate from 'v-runtime-template'
 import paramShow from "@/views/analysis/modelparam/paramshow";
-import { getDictList } from '@/utils/index'
-import { getUuid } from '@/api/analysis/common'
+import {getDictList} from '@/utils/index'
+import {getUuid} from '@/api/analysis/common'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import SelectTransCode from '@/views/data/table/transcodeselect'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
@@ -262,12 +277,24 @@ import messageTips from '@/views/analysis/auditmodel/message'
 // import func from 'vue-temp/vue-editor-bridge'
 export default {
   name: 'EditModel',
-  components: {modelshoppingcart, ModelDetail, ModelFilterShow, VRuntimeTemplate, SQLEditor,AuditItemTree,paramShow,ModelFolderTree,SelectTransCode,graph,messageTips },
+  components: {
+    modelshoppingcart,
+    ModelDetail,
+    ModelFilterShow,
+    VRuntimeTemplate,
+    SQLEditor,
+    AuditItemTree,
+    paramShow,
+    ModelFolderTree,
+    SelectTransCode,
+    graph,
+    messageTips
+  },
   props: ['openValue'],
   data() {
     return {
-      dataUserId:undefined,
-      sceneCode:undefined,
+      dataUserId: undefined,
+      sceneCode: undefined,
       treeNodeData: [
         {
           id: '1',
@@ -312,22 +339,22 @@ export default {
         label: 'label'
       },
       //是否显示审计事项树
-      auditItemTree:false,
-      sqlEditorStr:'002003001',//sql编辑器编码
-      graphEditorStr:'002003002',//图形化编码
+      auditItemTree: false,
+      sqlEditorStr: '002003001',//sql编辑器编码
+      graphEditorStr: '002003002',//图形化编码
       //是否显示保存取消按钮
-      isShowBtn:true,
+      isShowBtn: true,
       //打开sql编辑器时给sql编辑器传值，告诉sql编辑器是从模型编辑界面进来的
-      editorModel:"editorModel",
+      editorModel: "editorModel",
       //是否禁止编辑
-      isBanEdit:false,
+      isBanEdit: false,
       //是否显示模型分类树
-      modelFolderTreeDialog:false,
+      modelFolderTreeDialog: false,
       //列数据
       columnData: [],
       //实体对象
       form: {
-        modelUuid:'',
+        modelUuid: '',
         modelName: '',
         modelFolderUuid: '',
         modelFolderName: '',
@@ -336,11 +363,11 @@ export default {
         auditIdeas: '',
         paramConditions: '',
         sqlValue: '',
-        auditItemName:'',
-        modelType:'',  //002003001审计模型编号  002003002图形化编号
-        locationName:'',
-        locationUuid:'',
-        graphUuid:''
+        auditItemName: '',
+        modelType: '',  //002003001审计模型编号  002003002图形化编号
+        locationName: '',
+        locationUuid: '',
+        graphUuid: ''
       },
       //参数模型关联对象
       parammModelRel: {},
@@ -367,12 +394,12 @@ export default {
       sqlEditorParamObj: {},
       //添加模型详细树时候的索引
       modelDetailIndex: 0,
-      paramShowVIf:true,
-      editorModelLoading:false,
+      paramShowVIf: true,
+      editorModelLoading: false,
       //风险等级
       riskLeve: [],
       //模型类型
-      modelTypeData:[],
+      modelTypeData: [],
       //添加条件显示时候树的索引
       modelFilterShowIndex: 0,
       //模型历史表数组
@@ -382,51 +409,51 @@ export default {
       //当前选中树节点
       currentSelectTreeNode: null,
       //模型类型数组
-      modelTypeObj:[],
+      modelTypeObj: [],
       //关闭窗体时候用的窗体名
-      formName:"",
+      formName: "",
       //操作对象
-      operationObj:{},
+      operationObj: {},
       //图形化的列信息，比较列是否相同
-      graphColumnInfo:null,
+      graphColumnInfo: null,
       //sql编辑器界面返回来的参数
-      sqlEditorParam:null,
+      sqlEditorParam: null,
       basicInfoRules: {
         modelName: [
-          { type: 'string', required: true, message: '请输入模型名称', trigger: 'blur' }
+          {type: 'string', required: true, message: '请输入模型名称', trigger: 'blur'}
         ],
         auditItemUuid: [
-          { required: true, message: '请选择审计事项', trigger: 'change' }
+          {required: true, message: '请选择审计事项', trigger: 'change'}
         ],
         riskLevelUuid: [
-          { type: 'string', required: true, message: '请选择风险等级', trigger: 'change' }
+          {type: 'string', required: true, message: '请选择风险等级', trigger: 'change'}
         ],
-        modelType: [{ type: 'string', required: true, message: '请选择模型类型', trigger: 'change' }
+        modelType: [{type: 'string', required: true, message: '请选择模型类型', trigger: 'change'}
         ]
       },
       modelDesignRules: {
-        sqlValue: [{ type: 'string', required: true, message: '请选择输入模型SQL', trigger: 'blur' }]
+        sqlValue: [{type: 'string', required: true, message: '请选择输入模型SQL', trigger: 'blur'}]
       },
-      imgCus1:require("@/views/analysis/auditmodel/imgs/close.png"),
-      imgCus2:require("@/views/analysis/auditmodel/imgs/save.png"),
-      imgCus3:require("@/views/analysis/auditmodel/imgs/opentop.png")
+      imgCus1: require("@/views/analysis/auditmodel/imgs/close.png"),
+      imgCus2: require("@/views/analysis/auditmodel/imgs/save.png"),
+      imgCus3: require("@/views/analysis/auditmodel/imgs/opentop.png")
     }
   },
   watch: {
     newRelInfoValue(newChild) {
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         this.handleNodeClick(newChild)
       })
     },
     newFilterShowValue(newChild) {
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         this.handleNodeClick(newChild)
       })
     },
-    paramShowVIf(newChild){
-      this.$nextTick(function() {
-        if(newChild){
-          this.$refs.apple.createParamTableHtml(true,this.sqlEditorParam , true);
+    paramShowVIf(newChild) {
+      this.$nextTick(function () {
+        if (newChild) {
+          this.$refs.apple.createParamTableHtml(true, this.sqlEditorParam, true);
         }
       })
     }
@@ -435,13 +462,13 @@ export default {
     //设置一个默认的模型编号
     this.form.modelUuid = getUuid()
     this.operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
-    if(this.$route.query.dataUserId!='undefined' && this.$route.query.sceneCode!='undefined'){
-        this.dataUserId = this.$route.query.dataUserId
-        this.sceneCode = this.$route.query.sceneCode
+    if (this.$route.query.dataUserId != 'undefined' && this.$route.query.sceneCode != 'undefined') {
+      this.dataUserId = this.$route.query.dataUserId
+      this.sceneCode = this.$route.query.sceneCode
 
-    }else{
-       this.dataUserId = undefined
-       this.sceneCode = undefined
+    } else {
+      this.dataUserId = undefined
+      this.sceneCode = undefined
     }
   },
   mounted() {
@@ -465,8 +492,7 @@ export default {
       this.isShowBtn = false
       //禁用所有界面可编辑元素
       this.isBanEdit = true
-    }
-    else{
+    } else {
       this.formName = "新增模型"
     }
   },
@@ -476,18 +502,21 @@ export default {
      */
     initData(operationObj) {
       // 初始化模型分类数据
-      if(operationObj.folderId != ""){
+      if (operationObj.folderId != "") {
         this.form.modelFolderUuid = operationObj.folderId
         this.form.modelFolderName = operationObj.folderName
       }
       // 初始化业务字段列表
-      getBusinessAttribute().then(result=>{
-        if(result.data != null){
+      getBusinessAttribute().then(result => {
+        if (result.data != null) {
           this.businessColumnSelect = result.data
         }
       })
       // 初始化字段类型
-      const columnTypeSelect = [{ uuid: 'int', name: '数值' }, { uuid: 'varchar', name: '字符串' }, { uuid: 'date', name: '日期' }, { uuid: 'money', name: '金额' }]
+      const columnTypeSelect = [{uuid: 'int', name: '数值'}, {uuid: 'varchar', name: '字符串'}, {
+        uuid: 'date',
+        name: '日期'
+      }, {uuid: 'money', name: '金额'}]
       this.columnTypeSelect = columnTypeSelect
       // 初始化风险等级
       this.riskLeve = getDictList('002002')
@@ -535,7 +564,7 @@ export default {
         this.$refs.modelFilterShowParent.style.display = 'none'
         this.$refs.relInfo.style.display = 'none'
         this.$refs.modelResultOutputCol.style.display = 'block'
-        if(this.form.modelType === "002003002"){
+        if (this.form.modelType === "002003002") {
           //说明是图形化模型，从图形化组件里获取列信息
           this.getGraphObj()
         }
@@ -615,7 +644,7 @@ export default {
         return null
       }
       // endregion
-      if(this.$refs.SQLEditor != undefined){
+      if (this.$refs.SQLEditor != undefined) {
         // region 校验sql语句
         let modelDesignVerResult = false
         this.$refs['modelDesignForm'].validate((valid) => {
@@ -625,7 +654,7 @@ export default {
           }
         })
         let message = ""
-        if(this.$refs.SQLEditor[0].getSQLIsUpdate()){
+        if (this.$refs.SQLEditor[0].getSQLIsUpdate()) {
           modelDesignVerResult = false
           message = "请先执行或校验SQL"
         }
@@ -636,40 +665,45 @@ export default {
             label: '模型设计',
             type: 'modelDesign'
           }, null)
-          this.$message({ type: 'info', message: message})
+          this.$message({type: 'info', message: message})
           return null
         }
         // endregion
         //获取SQL编辑器参数对象 到下边去处理
-        if(this.sqlEditorParamObj.arr.length != 0){
+        if (this.sqlEditorParamObj.arr.length != 0) {
           paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
-          if(!paramDefaultValue.verify){
-            this.$message({ type: 'info', message: paramDefaultValue.message})
+          if (!paramDefaultValue.verify) {
+            this.$message({type: 'info', message: paramDefaultValue.message})
             return null
           }
         }
-      }
-      else if(this.$refs.graph != undefined){
-        // todo 获取图形化参数对象  到下边去处理
+      } else if (this.$refs.graph != undefined) {
+        // 获取图形化参数对象  到下边去处理
         paramDefaultValue = this.$refs.graph[0].getParamsArr()
         //处理模型结果固定输出列
         //说明选择了图形化并且没有输出列，自动获取，如果获取不到则返回并给予提示
-        if(columnData.length == 0 && this.form.modelType == "002003002"){
+        if (this.form.modelType == "002003002") {
+          let saveResult = true
           let graphObjResult = this.getGraphObj()
-          if(!graphObjResult){
+          if (!graphObjResult) {
             return null
-          }
-          else{
+          } else {
             //获取完图形化的列信息之后重新赋值 因为这个时候界面没渲染完成，因此直接从数据里拿
             columnData = this.columnData
             //拿到列之后图形化就可以保存了，调用图形化的保存方法
             await this.$refs.graph[0].saveModelGraph().then(result => {
+              if(result.isError){
+                saveResult = false
+                this.$message({type: 'error', message: result.message})
+              }
               this.form.graphUuid = result.graphUuid
             });
+            if(!saveResult){
+              return null
+            }
           }
         }
-      }
-      else{
+      } else {
         allVer = false
         this.handleNodeClick({
           id: '2',
@@ -677,7 +711,7 @@ export default {
           type: 'modelDesign'
         }, null)
       }
-      if(!allVer){
+      if (!allVer) {
         return null
       }
       // region 处理模型结果固定输出列数据
@@ -694,16 +728,16 @@ export default {
       // 获取到参数的默认值，是个JSON，将JSON存入到数据库  以便下次反显时使用
       //拿到默认值后组织成后台数据库的格式
 
-      if(paramDefaultValue != undefined && paramDefaultValue.length != 0){
+      if (paramDefaultValue != undefined && paramDefaultValue.length != 0) {
         const paramData = paramDefaultValue.paramSettingArr
         let newParamData = []
         for (let i = 0; i < paramData.length; i++) {
           var obj = {
-            ammParamUuid:paramData[i].copyParamId,
-            resourceType:1,
-            paramValue:JSON.stringify(paramData[i]),
-            paramSort:paramData[i].sort,
-            moduleParamId:paramData[i].moduleParamId
+            ammParamUuid: paramData[i].copyParamId,
+            resourceType: 1,
+            paramValue: JSON.stringify(paramData[i]),
+            paramSort: paramData[i].sort,
+            moduleParamId: paramData[i].moduleParamId
           }
           newParamData.push(obj)
         }
@@ -719,7 +753,7 @@ export default {
           modelDetailRelation.push(modelDetailObj)
         } else {
           verModelDetail = false
-          const treeNode = { id: modelDetailObj.treeId, type: 'relDetail' }
+          const treeNode = {id: modelDetailObj.treeId, type: 'relDetail'}
           this.handleNodeClick(treeNode, null)
           break
         }
@@ -743,7 +777,7 @@ export default {
         if (filterShowObj.verResult == undefined) {
           resultFilterShow.push(filterShowObj)
         } else {
-          const treeNode = { id: filterShowObj.treeId, type: 'filterShowNode' }
+          const treeNode = {id: filterShowObj.treeId, type: 'filterShowNode'}
           this.handleNodeClick(treeNode, null)
           resultFilterResult = false
         }
@@ -783,14 +817,13 @@ export default {
       this.form.sqlValue = sqlObj.sqlValue
       // 初始化默认参数
       // 初始化参数默认值界面界面
-      if(returnObj.params.length != 0){
+      if (returnObj.params.length != 0) {
         this.paramShowVIf = true
         this.sqlEditorParam = returnObj.params
-      }
-      else{
+      } else {
         this.paramShowVIf = false
       }
-      this.sqlEditorParamObj = {arr:returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
+      this.sqlEditorParamObj = {arr: returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
       // region 初始化固定列
       const columnData = []
       for (let i = 0; i < sqlObj.column.length; i++) {
@@ -813,31 +846,31 @@ export default {
     /**
      *获取图形化对象
      */
-    getGraphObj(){
+    getGraphObj() {
       //如果没有选择任何类型则不加载
-      if(this.form.modelType === ''){
+      if (this.form.modelType === '') {
         return
       }
-      if(this.$refs.graph === undefined){
+      if (this.$refs.graph === undefined) {
         return
       }
       //获取图形化列信息
       const returnObj = this.$refs.graph[0].getResultColumnInfo()
       //判断旧的图形化信息是否为空  如果不为空则说明是二次加载，判断是否一致，如果不一致则重新加载
-      if(this.graphColumnInfo != null){
-        let contrastResult = this.contrastGraphColumnInfo(returnObj)
-        //如果为true说明结果列相同，不需要重新加载
-        if(contrastResult){
+      if (this.graphColumnInfo != null) {
+        //如果对象为空则直接返回
+        if (returnObj == undefined) {
           return false
         }
-      }
-      //如果对象为空则直接返回
-      if (returnObj == undefined) {
-        return false
-      }
-      if(returnObj.isError == true){
-        this.$message({ type: 'info', message:returnObj.message })
-        return false
+        if (returnObj.isError == true) {
+          this.$message({type: 'info', message: returnObj.message})
+          return false
+        }
+        let contrastResult = this.contrastGraphColumnInfo(returnObj)
+        //如果为true说明结果列相同，不需要重新加载
+        if (contrastResult) {
+          return true
+        }
       }
       //region 初始化模型结果固定输出列
       const columnData = []
@@ -852,11 +885,10 @@ export default {
       // region初始化默认参数
       // 初始化参数默认值界面界面
       let params = this.$refs.graph[0].getParamsArr()
-      if(params.length != 0){
+      if (params.length != 0) {
         this.paramShowVIf = true
         this.sqlEditorParam = params
-      }
-      else{
+      } else {
         this.paramShowVIf = false
       }
       //endregion
@@ -870,10 +902,10 @@ export default {
      *对比本次图形化和之前的列信息，比对是否一致，如果一直择不加载，不一致则加载
      * @param returnObj 要对比的图形化列信息对象
      */
-    contrastGraphColumnInfo(returnObj){
+    contrastGraphColumnInfo(returnObj) {
       let oldColumnNameArr = this.graphColumnInfo.finalTable.columnNameArr
       let newColumnNameArr = returnObj.finalTable.columnNameArr
-      if(oldColumnNameArr.sort().toString() === newColumnNameArr.sort().toString()){
+      if (oldColumnNameArr.sort().toString() === newColumnNameArr.sort().toString()) {
         return true
       }
       return false
@@ -903,7 +935,7 @@ export default {
         return params
       } else if (type == 2) {
         // 参数界面编辑对象转SQL编辑器参数对象
-        var returnObj = { 'arr': [] }
+        var returnObj = {'arr': []}
         for (let b = 0; b < paramObj.length; b++) {
           const id = '{#' + paramObj[b].ammParamUuid + '#}'
           const name = paramObj[b].paramName
@@ -938,12 +970,12 @@ export default {
       }
       return returnObj
     },
-    closeWinfrom(){
-      this.$store.commit('aceState/setRightFooterTags',{
-        type:'close',
-        val:{
-          name:this.formName,
-          path:'/analysis/editorModel'
+    closeWinfrom() {
+      this.$store.commit('aceState/setRightFooterTags', {
+        type: 'close',
+        val: {
+          name: this.formName,
+          path: '/analysis/editorModel'
         }
       })
     },
@@ -990,12 +1022,12 @@ export default {
     /**
      * 创建模型详细
      */
-    createDetail(treeNode,data) {
+    createDetail(treeNode, data) {
       if (this.columnData.length == 0) {
-        this.$message({ type: 'info', message: '请先编写SQL，若已经编写则请执行或校验SQL!' })
+        this.$message({type: 'info', message: '请先编写SQL，若已经编写则请执行或校验SQL!'})
         return
       }
-      $("#drag").css("width",115)
+      $("#drag").css("width", 115)
       ++this.modelDetailIndex
       const newChild = {
         id: 'rel' + this.modelDetailIndex,
@@ -1004,11 +1036,11 @@ export default {
         pid: 5,
         type: 'relDetail'
       }
-      if(data == undefined){
+      if (data == undefined) {
         data = this.$refs.tree.getCurrentNode()
       }
       data.children.push(newChild)
-      this.modelDetails.push({ id: 'rel' + this.modelDetailIndex, data: [] })
+      this.modelDetails.push({id: 'rel' + this.modelDetailIndex, data: []})
       this.newRelInfoValue = newChild
       //添加完成之后更改div高度
       this.$refs.dragDiv.style.height = this.$refs.dragDiv.style.height + 20
@@ -1016,12 +1048,12 @@ export default {
     /**
      * 创建过滤条件显示
      */
-    createFilterShow(treeNode,data) {
+    createFilterShow(treeNode, data) {
       if (this.columnData.length == 0) {
-        this.$message({ type: 'info', message: '请先编写SQL!' })
+        this.$message({type: 'info', message: '请先编写SQL!'})
         return
       }
-      $("#drag").css("width",115)
+      $("#drag").css("width", 115)
       ++this.modelFilterShowIndex
       const newChild = {
         id: 'filterShow' + this.modelFilterShowIndex,
@@ -1029,11 +1061,11 @@ export default {
         children: [],
         type: 'filterShowNode'
       }
-      if(data == undefined){
+      if (data == undefined) {
         data = this.$refs.tree.getCurrentNode()
       }
       data.children.push(newChild)
-      this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex, data: [] })
+      this.filterShows.push({id: 'filterShow' + this.modelFilterShowIndex, data: []})
       this.newFilterShowValue = newChild
       this.$refs.dragDiv.style.height = this.$refs.dragDiv.style.height + 20
     },
@@ -1168,8 +1200,8 @@ export default {
       // region 反显SQL显示
       //组织参数默认值等数据，用于sql反显以及参数默认值反显
       let displayParamObj = []
-      for(let i = 0;i < model.parammModelRel.length;i++){
-        if(model.parammModelRel[i].paramValue === ""){
+      for (let i = 0; i < model.parammModelRel.length; i++) {
+        if (model.parammModelRel[i].paramValue === "") {
           continue
         }
         displayParamObj.push(JSON.parse(model.parammModelRel[i].paramValue))
@@ -1182,15 +1214,15 @@ export default {
       returnObj.sqlValue = this.form.sqlValue
       // endregion
       // region 反显参数默认值
-      if(returnObj.params.arr.length != 0){
-        this.$refs.apple.createParamTableHtml(true, displayParamObj, true,'参数展示');
+      if (returnObj.params.arr.length != 0) {
+        this.$refs.apple.createParamTableHtml(true, displayParamObj, true, '参数展示');
       }
       // endregion
       // region 模型结果输出列
       this.columnData = model.modelOutputColumn
-      if(this.form.modelType === this.graphEditorStr){
-        this.graphColumnInfo = {finalTable:{columnNameArr:[]}}
-        for(let i = 0;i < this.columnData.length;i++){
+      if (this.form.modelType === this.graphEditorStr) {
+        this.graphColumnInfo = {finalTable: {columnNameArr: []}}
+        for (let i = 0; i < this.columnData.length; i++) {
           this.graphColumnInfo.finalTable.columnNameArr.push(this.columnData[i].outputColumnName)
         }
       }
@@ -1208,7 +1240,7 @@ export default {
         }
         // 添加树节点
         treeNodeDetail.children.push(newChild)
-        this.modelDetails.push({ id: 'rel' + this.modelDetailIndex, data: model.modelDetailRelation[i] })
+        this.modelDetails.push({id: 'rel' + this.modelDetailIndex, data: model.modelDetailRelation[i]})
       }
       // endregion
       // region 反显图表配置
@@ -1228,7 +1260,7 @@ export default {
           type: 'filterShowNode'
         }
         treeNodeFilterShow.children.push(newChild)
-        this.filterShows.push({ id: 'filterShow' + this.modelFilterShowIndex, data: model.resultFilterShow[i] })
+        this.filterShows.push({id: 'filterShow' + this.modelFilterShowIndex, data: model.resultFilterShow[i]})
       }
       // endregion
       this.displaySQL(returnObj)
@@ -1236,13 +1268,13 @@ export default {
     /**
      *显示审计事项树
      */
-    showAuditItemTree(){
+    showAuditItemTree() {
       this.auditItemTree = true
     },
     /**
      * 获取审计事项
      */
-    getAuditItem(){
+    getAuditItem() {
       let tree = this.$refs.auditItemTreeRef.getTree()
       let currentNode = tree.getCheckedNodes()[0]
       this.form.auditItemUuid = currentNode.id
@@ -1253,11 +1285,11 @@ export default {
      *根据选择的数据加载指定sql编辑界面
      * @param vId  002003001审计模型编号  002003002图形化编号
      */
-    modelTypeChangeEvent(vId){
+    modelTypeChangeEvent(vId) {
       this.modelTypeObj = []
-      if(vId === this.sqlEditorStr){
+      if (vId === this.sqlEditorStr) {
         let obj = {
-          id:this.sqlEditorStr
+          id: this.sqlEditorStr
         }
         this.modelTypeObj.push(obj)
         //
@@ -1268,32 +1300,33 @@ export default {
         // }
         // this.handleNodeClick(obj2)
       }
-      if(vId == this.graphEditorStr){
+      if (vId == this.graphEditorStr) {
         let obj = {
-          id:this.graphEditorStr
+          id: this.graphEditorStr
         }
         this.modelTypeObj.push(obj)
-        this.$nextTick( () => {
-          $("#graphDiv").css({"height":function (){
+        this.$nextTick(() => {
+          $("#graphDiv").css({
+            "height": function () {
               return $(this).parent().parent().height()
-            }})
+            }
+          })
         })
       }
     },
     /**
      * 设置业务分类
      */
-    setBusinessFolder(){
+    setBusinessFolder() {
       let selectNode = this.$refs.modelFolderTree.getSelectNode()
-      if(selectNode.id == undefined){
-        this.$message({ type: 'info', message: "请选择业务分类"})
+      if (selectNode.id == undefined) {
+        this.$message({type: 'info', message: "请选择业务分类"})
         return
       }
-      if(selectNode.pid == 0 || selectNode.pid == null || selectNode.pid == undefined){
-        this.$message({ type: 'info', message: '不允许建立在根目录' })
+      if (selectNode.pid == 0 || selectNode.pid == null || selectNode.pid == undefined) {
+        this.$message({type: 'info', message: '不允许建立在根目录'})
         return
-      }
-      else{
+      } else {
         this.form.modelFolderUuid = selectNode.id
         this.form.modelFolderName = selectNode.label
         this.modelFolderTreeDialog = false
@@ -1313,15 +1346,15 @@ export default {
           this.editorModelLoading = false
           if (result.code === 0) {
             this.$notify({
-              title:'提示',
-              message:'新增成功',
-              type:'success',
-              duration:2000,
-              position:'bottom-right'
+              title: '提示',
+              message: '新增成功',
+              type: 'success',
+              duration: 2000,
+              position: 'bottom-right'
             });
             this.closeWinfrom()
           } else {
-            this.$message({ type: 'error', message: '新增模型失败!' })
+            this.$message({type: 'error', message: '新增模型失败!'})
           }
         })
       } else {
@@ -1329,15 +1362,15 @@ export default {
           this.editorModelLoading = false
           if (result.code === 0) {
             this.$notify({
-              title:'提示',
-              message:'修改成功',
-              type:'success',
-              duration:2000,
-              position:'bottom-right'
+              title: '提示',
+              message: '修改成功',
+              type: 'success',
+              duration: 2000,
+              position: 'bottom-right'
             });
             this.closeWinfrom()
           } else {
-            this.$message({ type: 'error', message: '修改模型失败!' })
+            this.$message({type: 'error', message: '修改模型失败!'})
           }
         })
       }
@@ -1365,8 +1398,8 @@ export default {
       this.resize(oDrag, oT, false, true, true, false)
       this.resize(oDrag, oR, false, false, false, true)
       this.resize(oDrag, oB, false, false, true, false)
-/*      oDrag.style.left = (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
-      oDrag.style.top = (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'*/
+      /*      oDrag.style.left = (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
+            oDrag.style.top = (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'*/
     },
     drag(oDrag, handle) {
       var disY = 0
@@ -1377,11 +1410,11 @@ export default {
       var oClose = this.byClass('close', oDrag)[0]
       handle = handle || oDrag
       handle.style.cursor = 'move'
-      handle.onmousedown = function(event) {
+      handle.onmousedown = function (event) {
         var event = event || window.event
         disX = event.clientX - oDrag.offsetLeft
         disY = event.clientY - oDrag.offsetTop
-        document.onmousemove = function(event) {
+        document.onmousemove = function (event) {
           var event = event || window.event
           var iL = event.clientX - disX
           var iT = event.clientY - disY
@@ -1395,7 +1428,7 @@ export default {
           oDrag.style.top = iT + 'px'
           return false
         }
-        document.onmouseup = function() {
+        document.onmouseup = function () {
           document.onmousemove = null
           document.onmouseup = null
           this.releaseCapture && this.releaseCapture()
@@ -1404,7 +1437,7 @@ export default {
         return false
       }
       //最大化按钮
-      oMax.onclick = function() {
+      oMax.onclick = function () {
         oDrag.style.top = oDrag.style.left = 0
         oDrag.style.width = document.documentElement.clientWidth - 2 + 'px'
         oDrag.style.height = document.documentElement.clientHeight - 2 + 'px'
@@ -1412,7 +1445,7 @@ export default {
         oRevert.style.display = 'block'
       }
       //还原按钮
-      oRevert.onclick = function() {
+      oRevert.onclick = function () {
         oDrag.style.width = this.dragMinWidth + 'px'
         oDrag.style.height = this.dragMinHeight + 'px'
         oDrag.style.left = (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
@@ -1421,29 +1454,29 @@ export default {
         oMax.style.display = 'block'
       }
       //最小化按钮
-      oMin.onclick = oClose.onclick = function() {
+      oMin.onclick = oClose.onclick = function () {
         oDrag.style.display = 'none'
         var oA = document.createElement('a')
         oA.className = 'open'
         oA.href = 'javascript:;'
         oA.title = '还原'
         document.body.appendChild(oA)
-        oA.onclick = function() {
+        oA.onclick = function () {
           oDrag.style.display = 'block'
           document.body.removeChild(this)
           this.onclick = null
         }
       }
       //阻止冒泡
-      oMin.onmousedown = oMax.onmousedown = oClose.onmousedown = function(event) {
-        this.onfocus = function() {
+      oMin.onmousedown = oMax.onmousedown = oClose.onmousedown = function (event) {
+        this.onfocus = function () {
           this.blur()
         };
         (event || window.event).cancelBubble = true
       }
     },
     resize(oParent, handle, isLeft, isTop, lockX, lockY) {
-      handle.onmousedown = function(event) {
+      handle.onmousedown = function (event) {
         var event = event || window.event
         var disX = event.clientX - handle.offsetLeft
         var disY = event.clientY - handle.offsetTop
@@ -1451,7 +1484,7 @@ export default {
         var iParentLeft = oParent.offsetLeft
         var iParentWidth = oParent.offsetWidth
         var iParentHeight = oParent.offsetHeight
-        document.onmousemove = function(event) {
+        document.onmousemove = function (event) {
           var event = event || window.event
           var iL = event.clientX - disX
           var iT = event.clientY - disY
@@ -1470,31 +1503,31 @@ export default {
           if ((isLeft && iW == this.dragMinWidth) || (isTop && iH == this.dragMinHeight)) document.onmousemove = null
           return false
         }
-        document.onmouseup = function() {
+        document.onmouseup = function () {
           document.onmousemove = null
           document.onmouseup = null
         }
         return false
       }
     },
-    byId: function(id) {
+    byId: function (id) {
       return typeof id === 'string' ? document.getElementById(id) : id
     },
-    byClass: function(sClass, oParent) {
+    byClass: function (sClass, oParent) {
       var aClass = []
       var reClass = new RegExp('(^| )' + sClass + '( |$)')
       var aElem = this.byTagName('*', oParent)
       for (var i = 0; i < aElem.length; i++) reClass.test(aElem[i].className) && aClass.push(aElem[i])
       return aClass
     },
-    byTagName: function(elem, obj) {
+    byTagName: function (elem, obj) {
       return (obj || document).getElementsByTagName(elem)
     },
-    customclose: function(){
+    customclose: function () {
       var oDrag = document.getElementById('drag')
       oDrag.style.display = 'none'
     },
-    customup:function(){
+    customup: function () {
       var oSpan = document.getElementsByClassName('el-tree')[0]
       var oDown = document.getElementsByClassName('custom-xiala')[0]
       var oUp = document.getElementsByClassName('custom-shouqi')[0]
@@ -1502,7 +1535,7 @@ export default {
       oUp.style.display = 'none'
       oDown.style.display = 'inline-block'
     },
-    customdown:function(){
+    customdown: function () {
       var oSpan = document.getElementsByClassName('el-tree')[0]
       var oDown = document.getElementsByClassName('custom-xiala')[0]
       var oUp = document.getElementsByClassName('custom-shouqi')[0]
@@ -1514,42 +1547,42 @@ export default {
 }
 </script>
 <style scoped>
-.sql-editor{
+.sql-editor {
   height: 842px;
   /* overflow-y:scroll */
 }
 
-.display{
+.display {
   display: none;
 
 }
 
-.div-width{
-  width:100%;
+.div-width {
+  width: 100%;
 }
 
-.el-container{
+.el-container {
   border: 1px solid #eee
 }
 
-.div-btn{
+.div-btn {
   margin-top: -3%;
   float: right;
   position: relative;
 }
 
-.p-div{
-  color:red;
-  font-size:large;
+.p-div {
+  color: red;
+  font-size: large;
 }
 
-.model-result-output-col{
+.model-result-output-col {
   height: 650px;
   overflow-y: scroll;
 }
 
-.default-value{
-  margin-left:20px;
+.default-value {
+  margin-left: 20px;
 }
 
 .drag {
@@ -1560,7 +1593,7 @@ export default {
   width: 95px;
   background: #F2F2F2;
   border-radius: 15px;
-  font-weight:bold;
+  font-weight: bold;
 }
 
 #drag .title {
@@ -1592,19 +1625,19 @@ export default {
 }
 
 
-.el-tree-rewrite{
+.el-tree-rewrite {
   background: #F2F2F2;
   width: 100%;
 }
 
-.custom-tree-node{
+.custom-tree-node {
   position: relative;
   left: -2px;
   font-size: 13px;
   color: #353A43;
 }
 
-.custom-tree-caidan{
+.custom-tree-caidan {
   border-top: 1px solid #f0f0f0;
   width: 100%;
   margin-top: 5px;
@@ -1614,12 +1647,13 @@ export default {
   padding: 0 12px;
 }
 
-.custom-tree-caidan img{
+.custom-tree-caidan img {
   width: 20px;
   height: 20px;
   margin: 10px 0 0 0px;
 }
-.custom-tree-shangla{
+
+.custom-tree-shangla {
   border-top: 1px solid #f0f0f0;
   margin-top: 5px;
   width: 100%;
@@ -1628,28 +1662,29 @@ export default {
   align-items: center;
   justify-content: space-around;
 }
-.custom-xiala{
+
+.custom-xiala {
   transform: rotate(180deg);
   display: none;
 }
 
-#drag .custom-tree-node span:first-child{
-  width:56px;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-  overflow:hidden;
+#drag .custom-tree-node span:first-child {
+  width: 56px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
   display: inline-block;
 }
 
-#drag span{
+#drag span {
   float: left;
 }
 
-.words{
+.words {
   width: 1000px;
   /* height: 200px; */
   margin: 50px 0 0 50px;
-  box-shadow: 0 0 9px 5px rgba(0,0,0,.15);
+  box-shadow: 0 0 9px 5px rgba(0, 0, 0, .15);
   border-radius: 8px;
   font-size: 20px;
   color: #70747a;
@@ -1658,7 +1693,7 @@ export default {
   padding: 10px;
 }
 
-.content{
+.content {
   overflow: hidden;
 }
 </style>
