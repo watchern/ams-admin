@@ -43,7 +43,7 @@
             <span>节点自检状态</span>
           </th>
         </tr>
-        <tr v-for="(item, $index) in list" :key="$index">
+        <tr v-for="(item, $index) in list" :key="$index" align="center">
           <td>
             <span>{{ $index + 1 }}</span>
           </td>
