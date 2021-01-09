@@ -283,38 +283,41 @@ export default {
     // 删除资源
     delData() {
       var ids = []
+      var flag = true
       this.selections.forEach((r, i) => {
         if (r.type === 'folder') {
           if (r.extMap.folderType === 'virtual') {
             this.$message({ type: 'info', message: '该文件为系统文件夹不允许删除!' })
-            return
+            flag = false
           }
           var foldObj = this.allList.filter(obj => { return obj.label === r.label })
           var objTotal = getArrLength(foldObj[0].children)
           if (objTotal > 0) {
             this.$message({ type: 'info', message: '删除失败！文件夹：' + foldObj[0].label + '不为空无法删除' })
-            return
+            flag = false
           }
         }
         ids.push(r)
       })
-      this.$confirm('确定删除该资源?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true
-      }).then(() => {
-        deleteDirectory(ids).then(() => {
-          this.$notify({
-            title: '成功',
-            message: '删除成功',
-            type: 'success',
-            duration: 5000,
-            position: 'bottom-right'
+      if (flag) {
+        this.$confirm('确定删除该资源?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          deleteDirectory(ids).then(() => {
+            this.$notify({
+              title: '成功',
+              message: '删除成功',
+              type: 'success',
+              duration: 5000,
+              position: 'bottom-right'
+            })
+            this.$emit('remove', this.selections, this.clickNode)
           })
         })
-      })
-      this.$emit('remove', this.selections, this.clickNode)
+      }
     },
     // 复制资源(只允许复制数据表，不允许复制文件夹)
     copyResource() {
@@ -426,7 +429,6 @@ export default {
           newNode = newNode.parent
         }
       }
-      // this.moveSelect = pathArr.reverse().join('/')
       this.moveSelect = data
     },
     movePath() {
