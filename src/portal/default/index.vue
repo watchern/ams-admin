@@ -44,9 +44,13 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" scoped >
 .home{
-  height: 100vh;
+  height: 98vh;
+  background: #fff url('style/images/bg.png') no-repeat left center fixed;
+  background-size: 82%;
+  background-position-x: -130px;
+  background-position-y: 2px;
   &-left{
     height: 100vh;
   }
@@ -72,7 +76,7 @@ export default {
   background-size: cover;
 }
 .home-right-content{
-  overflow: auto;
+  overflow: hidden;
   width: calc(100% - 24px);
   height: calc(100% - 32px);
   border-radius: 30px;

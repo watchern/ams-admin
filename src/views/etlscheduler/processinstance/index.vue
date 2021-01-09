@@ -112,7 +112,6 @@
       <el-table-column
         label="流程实例名称"
         prop="name"
-        align="center"
       >
         <template slot-scope="scope">
           <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processInstanceUuid)">{{ scope.row.name }}</el-link>
