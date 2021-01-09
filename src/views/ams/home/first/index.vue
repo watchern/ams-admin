@@ -212,6 +212,7 @@ export default {
         this.TopTodo = resp.data
       }
     })
+    this.myProject(0)
     axios.get('/psbcaudit/homepage/loadPrjInfo').then(resp =>{
       if (resp.data.prjList.length > 0) {
         this.projectDetails = []
