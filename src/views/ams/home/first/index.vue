@@ -32,10 +32,22 @@
         </div>
       </div>
       <div class="left flex-shrink flex a-center j-center flex-column">
-        <div class="day-wrap flex a-center j-center relative">
-          <animate-number from="00" :to="this.projectDetails.length" :formatter="formatter" class="num" />
-          <span class="text absolute">我的项目</span>
-        </div>
+        <swiper :options="swiperOption" ref="mySwiper">
+          <swiper-slide>
+            <div class="day-wrap flex a-center j-center relative">
+              <animate-number from="00" :to="this.projectDetails.length" :formatter="formatter" class="num" />
+              <span class="text absolute">我的项目</span>
+            </div>
+          </swiper-slide>
+          <swiper-slide>
+            <img :src="linshiImg1" />
+          </swiper-slide>
+          <swiper-slide>
+            <img :src="linshiImg2" />
+          </swiper-slide>
+          <div class="swiper-pagination" slot="pagination"></div>
+        </swiper>
+
         <!--        <div class="calendar-wrap flex a-center j-center flex-row relative">-->
         <!--          <div v-for="(item,index) in boxList" :key="index" class="box flex a-center j-center flex-column" :class="[index===3 && 'box-active']">-->
         <!--            <div class="label">{{ item.label }}</div>-->
@@ -92,8 +104,14 @@
 <script>
 import { getRemindByDescTime, updateRemind } from '@/api/base/base'
 import { getRunTaskRelByPage } from "@/api/analysis/auditmodelresult"
+import { swiper, swiperSlide } from "vue-awesome-swiper";
+// import "swiper/dist/css/swiper.css";
 import axios from 'axios'
+import mtEditor from "ams-datamax";
 export default {
+  components: {
+    mtEditor,swiper, swiperSlide
+  },
   data() {
     return {
       resultSpiltObjects:{},
@@ -178,7 +196,17 @@ export default {
         text:'',
         content:''
       }],
-      projectAnimation: true
+      projectAnimation: true,
+      swiperOption: {
+        loop: false,
+        observer: true,
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true, //允许分页点击跳转
+        }
+      },
+      linshiImg1:require('../../../../assets/Ace/image/firstcercle.png'),
+      linshiImg2:require('../../../../assets/Ace/image/firsttable.png')
     }
   },
   mounted() {
@@ -690,5 +718,16 @@ export default {
     top: -38px;
     left:5%;
   }
+}
+.swiper-container{
+  position: relative;
+  width: 25vw;
+  height: 75vh;
+  padding-top: 15vh;
+}
+.swiper-container .swiper-slide{
+  width: 100%;
+  font-size: 16px;
+  text-align: center;
 }
 </style>
