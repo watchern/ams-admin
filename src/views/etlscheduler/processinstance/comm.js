@@ -53,11 +53,17 @@ const statusListComm = [{
   unicode: 'el-icon-error',
   color: 'red'
 },
+// {
+//   value: 9,
+//   name: '停止',
+//   unicode: 'el-icon-remove',
+//   color: '#909399'
+// },
 {
   value: 9,
-  name: '停止',
-  unicode: 'el-icon-remove',
-  color: '#909399'
+  name: '已取消',
+  unicode: 'el-icon-circle-close',
+  color: '#ff0000'
 },
 {
   value: 31,
@@ -209,8 +215,12 @@ const statuSelect = [{
   name: '执行失败',
   value: '8'
 },
+// {
+//   name: '停止',
+//   value: '9'
+//   },
 {
-  name: '停止',
+  name: '已取消',
   value: '9'
 },
 {
