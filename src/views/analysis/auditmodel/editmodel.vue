@@ -572,7 +572,6 @@ export default {
         this.$refs.relInfo.style.display = 'none'
         this.$refs.chartConfig.style.display = 'none'
         this.$refs.modelFilterShowParent.style.display = 'none'
-        debugger
         if (this.$refs.[data.id][0] != undefined) {
           this.$refs.[data.id][0].style.display = 'block'
         }
