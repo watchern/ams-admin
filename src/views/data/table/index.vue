@@ -14,6 +14,7 @@
             :load="loadNode2"
             lazy
             :filter-node-method="filterNode"
+            :default-expanded-keys="['ROOT']"
             class="filter-tree"
             highlight-current="true"
             node-key="id"
