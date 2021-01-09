@@ -1,19 +1,6 @@
 <template>
   <div class="home w100 h100 flex a-center j-start flex-column">
     <div class="top flex a-center j-between flex-row flex1 flex-shrink ">
-      <div class="left flex-shrink flex a-center j-center flex-column">
-        <div class="day-wrap flex a-center j-center relative">
-          <animate-number from="01" to="9" :formatter="formatter" class="num" />
-          <span class="text absolute">我的项目</span>
-        </div>
-<!--        <div class="calendar-wrap flex a-center j-center flex-row relative">-->
-<!--          <div v-for="(item,index) in boxList" :key="index" class="box flex a-center j-center flex-column" :class="[index===3 && 'box-active']">-->
-<!--            <div class="label">{{ item.label }}</div>-->
-<!--            <div class="value">{{ item.value }}</div>-->
-<!--          </div>-->
-<!--          <img src="../../../../assets/Ace/image/enlarge.png" class="enlarge absolute">-->
-<!--        </div>-->
-      </div>
       <div class="right flex a-end j-center flex-column">
         <div class="top-card flex a-start j-start flex-row">
           <div class="top-card-left flex-shrink  flex a-center j-center">
@@ -22,14 +9,14 @@
           <div class="top-card-right">
             <div class="title">待办事项</div>
             <div class="des" v-for="(item,index) in TopTodo">
-              <span>{{item.text}}</span>
+              <span style="color:#000">{{item.name}}</span>
               <span v-if="item.icon" :style="{color:item.iconColor}" class="icon">{{ item.icon }}</span>
             </div>
           </div>
           <span class="card-more" @click="toDoSomeJump">更多</span>
         </div>
         <div class="bottom-card flex a-center j-between flex-row">
-          <div v-for="(item,index) in cardList" :key="index" class="top-card flex a-start j-start flex-row" :style="{background:item.bg}">
+          <div v-for="(item,index) in cardList" :key="index" class="top-card flex j-start flex-row" :style="{background:item.bg}">
             <div class="top-card-left flex-shrink  flex a-center j-center" :style="{background:item.cardBg}">
               <img :src="item.img" class="img">
             </div>
@@ -44,32 +31,48 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="bottom flex a-center j-start flex-row">
-      <div class="line1 line flex a-start j-center flex-column" style="flex-basis:80px">
-        <div class="count-font">
-          <animate-number from="1" to="1" class="count-font" />/<animate-number from="1" to="9" class="count-font" />
+      <div class="left flex-shrink flex a-center j-center flex-column">
+        <div class="day-wrap flex a-center j-center relative">
+          <animate-number from="00" :to="this.projectDetails.length" :formatter="formatter" class="num" />
+          <span class="text absolute">我的项目</span>
         </div>
+        <!--        <div class="calendar-wrap flex a-center j-center flex-row relative">-->
+        <!--          <div v-for="(item,index) in boxList" :key="index" class="box flex a-center j-center flex-column" :class="[index===3 && 'box-active']">-->
+        <!--            <div class="label">{{ item.label }}</div>-->
+        <!--            <div class="value">{{ item.value }}</div>-->
+        <!--          </div>-->
+        <!--          <img src="../../../../assets/Ace/image/enlarge.png" class="enlarge absolute">-->
+        <!--        </div>-->
       </div>
-      <div class="line1 line flex a-center j-center flex-column" style="flex-basis:530px">
-        <div class="title-bottom-top">我的项目</div>
-        <div class="des flex a-center j-start flex-row">
-          <div class="right-name right">
-            <div class="p1">#2020公司信贷业务专项审计</div>
+    </div>
+    <div class="bottom-father" v-for="(item, index) in myProjectIn">
+      <div class="bottom bottom-animate flex a-center j-start flex-row" :key="projectAnimation">
+        <div class="line1 line flex a-start j-center flex-column" style="flex-basis:80px;">
+          <div class="count-font" style="cursor:pointer;">
+            <span class="count-font">{{ item.theIndex + 1 }}</span>/<animate-number :from="0" :to="item.lengthIn" class="count-font" />
           </div>
         </div>
+        <div class="line1 line flex a-center j-center flex-column">
+          <div class="title-bottom-top">我的项目</div>
+          <div class="des flex a-center j-start flex-row">
+            <div class="right-name right">
+              <div class="p1">{{ item.name }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="line2 line flex a-center j-center flex-column">
+          <div class="title-bottom">项目状态</div>
+          <div class="date">执行中</div>
+        </div>
+        <div class="line3 line flex a-center j-center flex-column">
+          <div class="title-bottom">立项时间</div>
+          <div class="date">{{ item.time }}</div>
+        </div>
+        <div class="line4 line flex a-center j-center flex1">
+          <div class="btn" @click="projectDetailsIn(item.idProject)">查看此项目的详情</div>
+        </div>
       </div>
-      <div class="line2 line flex a-center j-center flex-column">
-        <div class="title-bottom">项目状态</div>
-        <div class="date">执行中</div>
-      </div>
-      <div class="line3 line flex a-center j-center flex-column">
-        <div class="title-bottom">立项日期</div>
-        <div class="date">2020-04-06</div>
-      </div>
-      <div class="line4 line flex a-center j-center flex1">
-        <div class="btn" @click="projectDetails">查看此项目的详情</div>
-      </div>
+      <div class="bottom-after" @click="toTheNext(item.theIndex)"><i class="el-icon-arrow-down"></i></div>
     </div>
     <el-dialog
       :visible.sync="dialogFormVisible"
@@ -88,14 +91,25 @@
 
 <script>
 import { getRemindByDescTime, updateRemind } from '@/api/base/base'
+import { getRunTaskRelByPage } from "@/api/analysis/auditmodelresult"
+import axios from 'axios'
 export default {
   data() {
     return {
+      resultSpiltObjects:{},
       cardList: [
         {
-          img: require('../../../../assets/Ace/image/c1.png'),
+          img: require('../../../../assets/Ace/image/提醒.png'),
           title: '提醒事项',
           bg: '#EDF1F5',
+          cardBg: '#353A43',
+          path:'',
+          des: []
+        },
+        {
+          img: require('../../../../assets/Ace/image/c1.png'),
+          title: '审计预警',
+          bg: '#fff',
           cardBg: '#353A43',
           path:'',
           des: []
@@ -135,11 +149,36 @@ export default {
           content:''
         }
       ],
+      pageQuery: {
+        condition: null,
+        pageNo: 1,
+        pageSize: 5,
+      },
+      warningMatters: [
+        {
+          text: '暂无预警事项',
+          iconColor: '#D81020',
+          icon: '',
+          url:'',
+          title:'',
+          content:''
+        }
+      ],
+      projectDetails: [
+        {
+          name: '暂无项目',
+          time: '--',
+          status: '--',
+          lengthIn: 1
+        }
+      ],
+      myProjectIn: [],
       dialogFormVisible: false,
       PopUpContent:[{
         text:'',
         content:''
-      }]
+      }],
+      projectAnimation: true
     }
   },
   mounted() {
@@ -160,9 +199,34 @@ export default {
         }
       }
     })
-    // executionProjectAgent().then(resp => {
-    //   console.log(resp)
+    // let query1 = {runTaskUuid:null}
+    // query1.runTaskUuid = '1'
+    // this.pageQuery.condition = query1;
+    // getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
+    //   this.warningMatters = resp.data.records;
+    //   console.log(resp.data.records)
     // })
+    axios.get('/psbcaudit/homepage/loadTodoInfo').then(resp =>{
+      console.log(resp)
+      if (resp.data !== '') {
+        this.TopTodo = resp.data
+      }
+    })
+    axios.get('/psbcaudit/homepage/loadPrjInfo').then(resp =>{
+      if (resp.data.prjList.length > 0) {
+        this.projectDetails = []
+          for (let i = 0;i < resp.data.prjList.length; i++) {
+            this.projectDetails.push({
+              name: resp.data.prjList[i].prjName,
+              time: resp.data.prjList[i].createTime,
+              lengthIn: resp.data.prjList.length,
+              idProject: resp.data.prjList[i].projectUUID,
+              idPlan: resp.data.prjList[i].planUUID
+            })
+          }
+        this.myProject(0)
+      }
+    })
   },
   methods: {
     formatter(num) {
@@ -199,17 +263,63 @@ export default {
       this.$router.push({ path: '/base/remind'})
     },
     toDoSomeJump(){
-      this.$router.push({ path: '/base/frameto?url=/psbcaudit/homepage/todoInfoTabList'})
+      this.$router.push({ path: '/base/frameto?url=psbcaudit/todoInfo/todoInfoList'})
     },
-    projectDetails(){
+    projectDetailsIn(){
       this.$router.push({ path: '/base/frameto?url=/psbcaudit_pmrs/plPrj/prjProjectToEnd'})
+    },
+    displayItem(data){
+      let thisItem = document.getElementsByClassName('bottom')
+      for (let i = 0; i < thisItem.length; i++) {
+        thisItem[i].style.zIndex = 1
+      }
+      thisItem[data].style.zIndex = 10
+    },
+    action(data, index){
+      if (data === 'before') {
+        if ((index + 1) === 4) {
+          index = -1
+        }
+        this.displayItem(index + 1)
+      } else if (data === 'next') {
+        if ((index - 1) === -1) {
+          index = 4
+        }
+        this.displayItem(index - 1)
+      }
+    },
+    myProject (data) {
+      this.myProjectIn = []
+      let somedata
+      if (data === this.projectDetails.length-1) {
+        somedata = 0
+      } else {
+        somedata = data + 1
+      }
+      this.myProjectIn.push({
+        name: this.projectDetails[data].name,
+        time: this.projectDetails[data].time,
+        lengthIn: this.projectDetails.length,
+        idProject: this.projectDetails[data].idProject,
+        idPlan: this.projectDetails[data].idPlan,
+        next: this.projectDetails[somedata].name,
+        theIndex: data
+      })
+    },
+    toTheNext (data) {
+      let tt = data + 1
+      if (tt === this.projectDetails.length) {
+        tt = 0
+      }
+      this.myProject(tt)
+      this.projectAnimation = !this.projectAnimation
     }
   }
 }
 </script>
 <style lang="scss" scoped>
 .home{
-  background: #FFFFFF;
+  //background: #FFFFFF;
   padding-bottom: 12px;
   .top{
     // background: grey;
@@ -290,7 +400,8 @@ export default {
         padding: 27px;
         width: 479px;
         position: relative;
-        //height: 188px;
+        margin:5px;
+        height: 218px;
         &-left{
           background: #FFFFFF;
           border: 1px solid #D8D8D8;
@@ -384,9 +495,12 @@ export default {
     background: #353A43;
     box-shadow: 10px 10px 20px 0 rgba(0,0,0,0.10);
     border-radius: 15px;
-    position: relative;
+    position: absolute;
+    top: -38px;
+    left:5%;
     margin-bottom: 12px;
     margin-top: 20px;
+    user-select:none;
     .line3,.line2{
       width: 20%;
     }
@@ -407,7 +521,7 @@ export default {
     }
     .line1{
       padding-left: 30px;
-      width: 40%;
+      width: 30%;
       .right{
         .p1{
           font-family: PingFangSC-Regular;
@@ -448,18 +562,6 @@ export default {
           height: 60px;
           line-height: 60px;
         }
-    }
-    &::after{
-      content: '';
-      display: block;
-      width: 90%;
-      height: 12px;
-      background: #0F1F32;
-      position: absolute;
-      bottom: -12px;
-      left: 5%;
-      border-bottom-left-radius: 100px;
-      border-bottom-right-radius: 100px;
     }
   }
 }
@@ -505,6 +607,9 @@ export default {
 .notes-text{
   line-height:25px;
   cursor: pointer;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .title-bottom{
   font-size:18px;
@@ -529,5 +634,60 @@ export default {
 }
 .right{
   height:60px;
+}
+.bottom-father{
+  height: 106px;
+  width: 100%;
+  position: relative;
+  bottom:-12px;
+  margin-bottom: 12px;
+  margin-top: 20px;
+}
+.top-card-right{
+  table-layout: fixed;
+  width: 81px;
+}
+.bottom-after{
+  content: '';
+  display: block;
+  width: 86%;
+  height: 18px;
+  background: #0F1F32;
+  border-bottom-left-radius: 100px;
+  border-bottom-right-radius: 100px;
+  position:absolute;
+  bottom:0;
+  left:7%;
+  color: #fff;
+  text-align:center;
+}
+.bottom-animate{
+  animation: booani 0.6s linear forwards;
+}
+@keyframes booani {
+  0%{
+    width:0;
+    height:0;
+    top: 15px;
+    left:50%;
+  }
+  30%{
+    height: 80px;
+    width: 85%;
+    top: -25px;
+    left:7.5%;
+  }
+  80%{
+    height: 130px;
+    width: 100%;
+    top: -60px;
+    left:0%;
+  }
+  100%{
+    height: 106px;
+    width: 90%;
+    top: -38px;
+    left:5%;
+  }
 }
 </style>
