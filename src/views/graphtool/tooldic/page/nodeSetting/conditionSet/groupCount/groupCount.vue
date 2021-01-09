@@ -193,14 +193,14 @@
                             message = `第${i + 1}行的输出字段的内容含有特殊字符或以数字开头，请修改`
                             break;
                         }
-                        const curIndex = vili_column.findIndex(item => item === curNewColumnName)
-                        if (curIndex > -1) {
+                        const curIndex = vili_column.findIndex(item => item.newColumnName === curNewColumnName)
+                        if (curIndex > -1 && vili_column[curIndex].checked) {
                             verify = false
                             message = `第${curIndex + 1}行与第${i + 1}行的输出字段的内容重复，请修改`
                             break;
                         }
                     }
-                    vili_column.push(this.columnItems[i].newColumnName)
+                    vili_column.push({"checked":this.columnItems[i].checked,"newColumnName":this.columnItems[i].newColumnName})
                 }
                 if (!verify) {
                     this.$message({ type: 'warning', message: message })
