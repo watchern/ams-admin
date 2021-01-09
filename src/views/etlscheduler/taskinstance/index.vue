@@ -52,7 +52,6 @@
       </el-table-column>
       <el-table-column
         label="任务实例名称"
-        align="center"
         prop="name"
       />
       <el-table-column

@@ -719,7 +719,7 @@ export default {
             message: '请填写调度任务名称',
             trigger: 'change'
           },
-          { max: 20, message: '调度任务名称在20个字符之内', trigger: 'change' }
+          { max: 100, message: '调度任务名称在100个字符之内', trigger: 'change' }
         ],
         processDefName: [
           {

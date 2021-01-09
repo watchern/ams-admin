@@ -344,7 +344,7 @@
             if(this.dataUserId!=undefined && this.sceneCode1!=undefined){
                 this.personCode = this.dataUserId
                 this.sceneCode = this.sceneCode1
-            }  
+            }
         },
         data() {
             return {
@@ -1164,7 +1164,7 @@
         width: 80px;
         position: relative;
         right: 0;
-        top: 1%;
+        top: 4%;
         float: right;
         display: none;
         z-index: 201;
