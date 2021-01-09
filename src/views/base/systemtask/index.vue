@@ -99,8 +99,6 @@ export default {
         func1(event)
       }
       const func2 = function func3(val) {
-        debugger
-        console.log(val)
         this.list = JSON.parse(val.data)
         this.list.forEach(r => {
           var createTime = new Date(r.taskCreateTime).valueOf()

@@ -42,7 +42,7 @@ const dataRouter = {
       name: '表关联关系维护',
       component: () => import('@/views/data/tblrel/index')
     }, {
-      path: 'role',
+      path: 'role/:sceneCode',
       name: '数据角色维护',
       component: () => import('@/views/data/role/index')
     }, {
@@ -50,7 +50,7 @@ const dataRouter = {
       name: '数据角色维护-角色资源绑定',
       component: () => import('@/views/data/role-res/index')
     }, {
-      path: 'roleGrp/:roleUuid',
+      path: 'roleGrp/:roleUuid/:sceneCode',
       name: '数据角色维护-角色用户组绑定',
       component: () => import('@/views/data/role-grp/index')
     }, {

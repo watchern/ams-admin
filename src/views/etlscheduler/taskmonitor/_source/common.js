@@ -26,10 +26,15 @@ const stateType = [{
   code: 'READY_STOP',
   label: '准备停止'
 },
+// {
+//   value: 9,
+//   code: 'STOP',
+//   label: '停止'
+// },
 {
   value: 9,
   code: 'STOP',
-  label: '停止'
+  label: '已取消'
 },
 // {
 //   code: 'FAILURE',

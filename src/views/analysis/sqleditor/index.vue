@@ -3,7 +3,7 @@
         <div id="container" v-loading="executeLoading" :element-loading-text="loadText">
             <div id="sidebar">
                 <div class="unfold-shuju add-sidiv"><img :src="shuju"><span>数据表</span></div>
-                <div class="unfold-canshu"><img :src="canshu"><span>参数</span></div>
+                <div class="unfold-canshu" v-if="callType!='graphModel'"><img :src="canshu"><span>参数</span></div>
                 <div class="unfold-sql"><img :src="sql"><span>函数</span></div>
             </div>
             <div id="leftPart" class="left-part">
@@ -339,12 +339,12 @@
     export default {
         name: 'SQLEditor',
         components: { sqlDraftList, childTabs, paramDraw, dataTree },
-        props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName","modelUuid",'dataUserId','sceneCode1'],
+        props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName","modelUuid",'dataUserId','sceneCode1','callType'],
         created(){
             if(this.dataUserId!=undefined && this.sceneCode1!=undefined){
                 this.personCode = this.dataUserId
                 this.sceneCode = this.sceneCode1
-            }  
+            }
         },
         data() {
             return {
@@ -833,6 +833,13 @@
                         this.executeLoading = true
                         this.loadText = '正在获取SQL信息...'
                         getExecuteTask(obj,this.dataUserId,this.sceneCode1).then((result) => {
+                            if(result.data.isError){
+                         this.$message({
+                            type: "error",
+                            message: result.data.message,
+                            });
+                            this.executeLoading = false
+                            }else{
                             this.executeLoading = false
                             this.loadText = ''
                             lastSqlIndex = result.data.lastSqlIndex
@@ -848,8 +855,7 @@
                             }).catch((result) => {
                                 this.executeLoading = false
                             })
-                        }).catch((result) => {
-                            this.executeLoading = false
+                            }
                         })
                     } else {
                         this.openParamDraw(obj)
@@ -879,6 +885,13 @@
                 obj.businessField = 'sqleditor'
                 this.executeLoading = true
                 getExecuteTask(obj,this.dataUserId,this.sceneCode1).then((result) => {
+                    if(result.data.isError){
+                    this.$message({
+                        type: "error",
+                        message: result.data.message,
+                    });
+                    this.executeLoading = false
+                    }else{
                     this.executeLoading = false
                     this.loadText = ''
                     lastSqlIndex = result.data.lastSqlIndex
@@ -894,8 +907,7 @@
                     }).catch((result) => {
                         this.executeLoading = false
                     })
-                }).catch((result) => {
-                    this.executeLoading = false
+                    }
                 })
                 /*      startExecuteSql(obj).then((result) => {
                   if (!result.data.isError) {
@@ -1152,7 +1164,7 @@
         width: 80px;
         position: relative;
         right: 0;
-        top: 1%;
+        top: 4%;
         float: right;
         display: none;
         z-index: 201;

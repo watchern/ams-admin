@@ -52,7 +52,7 @@
           @click="modelResultOpenDialog()"
           :disabled="buttonIson.resultShareBtn"
           class="oper-btn share"
-          title="结果共享"
+          title="结果分配"
         ></el-button>
         <el-button
           type="primary"

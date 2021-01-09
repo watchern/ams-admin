@@ -52,7 +52,6 @@
       </el-table-column>
       <el-table-column
         label="任务实例名称"
-        align="center"
         prop="name"
       />
       <el-table-column
@@ -120,38 +119,40 @@
       :visible.sync="logDialogFromVisible"
       :close-on-click-modal="false"
     >
-      <el-col class="logtype">
-        {{ task!=null ? task.name : null }}
-      </el-col>
-      <el-col v-if="task != null" class="logtype" style="font-size: 13px;color:#888888">
-        耗时 {{ task != null ? task.time: 0+'秒' }}
-      </el-col>
-      <el-card style="padding-bottom: 3%;margin-top:10px">
-        <!-- <el-col class="logtype">
+      <div style="max-height:60vh; overflow:auto;margin-top:3%;">
+        <el-col class="logtype">
+          {{ task!=null ? task.name : null }}
+        </el-col>
+        <el-col v-if="task != null" class="logtype" style="font-size: 13px;color:#888888">
+          耗时 {{ task != null ? task.time: 0+'秒' }}
+        </el-col>
+        <el-card style="padding-bottom: 3%;margin-top:10px">
+          <!-- <el-col class="logtype">
           日志详情：
         </el-col> -->
-        <el-col
-          v-if="logs!=null"
-          style="margin-top:10px"
-        >
           <el-col
-            v-for="log in logs[0]"
-            :key="log.taskLogUuid"
-            :label="log.taskLogUuid"
-            :style="{color: logColorObj[log.status].color}"
+            v-if="logs!=null"
+            style="margin-top:10px"
           >
-            {{ log.logTime +' '+ log.logMessage }}
+            <el-col
+              v-for="log in logs[0]"
+              :key="log.taskLogUuid"
+              :label="log.taskLogUuid"
+              :style="{color: logColorObj[log.status].color}"
+            >
+              {{ log.logTime +' '+ log.logMessage }}
+            </el-col>
+            <el-col
+              v-for="log in logs[task.taskCode]"
+              :key="log.taskLogUuid"
+              :label="log.taskLogUuid"
+              :style="{color: logColorObj[log.status].color}"
+            >
+              {{ log.logTime +' '+ log.logMessage }}
+            </el-col>
           </el-col>
-          <el-col
-            v-for="log in logs[task.taskCode]"
-            :key="log.taskLogUuid"
-            :label="log.taskLogUuid"
-            :style="{color: logColorObj[log.status].color}"
-          >
-            {{ log.logTime +' '+ log.logMessage }}
-          </el-col>
-        </el-col>
-      </el-card>
+        </el-card>
+      </div>
       <div slot="footer">
         <el-button type="primary" @click="logDialogFromVisible = false">关闭</el-button>
       </div>

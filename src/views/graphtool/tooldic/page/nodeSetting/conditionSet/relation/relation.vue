@@ -211,7 +211,7 @@
                     this.checkAll = false
                 }
             },
-            vilidata_simple(index) {
+            vilidata_simple() {
                 const checkedIndex = this.items.findIndex(n => n.checked === true)
                 if (checkedIndex < 0) {
                     this.$message({ type: 'warning', message: '请选择输出字段' })
