@@ -48,7 +48,9 @@ export default {
 .home{
   height: 98vh;
   background: #fff url('style/images/bg.png') no-repeat left center fixed;
-  background-size:100%;
+  background-size: 82%;
+  background-position-x: -130px;
+  background-position-y: 2px;
   &-left{
     height: 100vh;
   }
