@@ -429,7 +429,6 @@ export default {
           newNode = newNode.parent
         }
       }
-      // this.moveSelect = pathArr.reverse().join('/')
       this.moveSelect = data
     },
     movePath() {
