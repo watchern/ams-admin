@@ -30,6 +30,15 @@ export function addTable(data) {
   })
 }
 
+export function updateTable(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/updateTable`,
+    method: 'post',
+    data
+  })
+}
+
 export function deleteDirectory(data) {
   return request({
     baseURL: baseURL,

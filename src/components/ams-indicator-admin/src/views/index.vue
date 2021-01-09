@@ -16,8 +16,16 @@
             </el-tab-pane>
           </el-tabs>
           <div class="side-footer">
-            <el-button type="primary" style="margin: 5px;float: left;margin-left: 9px;" size="mini" @click="nativeIndicatrixDesign">原</el-button>
-            <el-button type="primary" size="mini" @click="addDeriveIn">派</el-button>
+            <el-dropdown v-if="isInManager == 'true' || isOrgManager == 'true'">
+              <el-button style="border-color: aliceblue" class="el-dropdown-link" type="primary"><li class="dib">
+                <span style="font-size: 30px;color: #C0C0C0;background: ghostwhite;" class="icon iconfont">&#xe606;</span></li></el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="nativeIndicatrixDesign">原生指标设计</el-dropdown-item>
+                <el-dropdown-item @click.native="addDeriveIn">派生指标设计</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+<!--            <el-button type="primary" style="margin: 5px;float: left;margin-left: 9px;" size="mini" @click="nativeIndicatrixDesign">原</el-button>
+            <el-button type="primary" size="mini" @click="addDeriveIn">派</el-button>-->
           </div>
         </el-scrollbar>
       </el-aside>
@@ -48,7 +56,6 @@
               </div>
               <div class="tag-right-con" id="dimRegion">
                 <div class="row table-view-caption pull-right">
-                  <el-button type="primary" size="mini" @click="test">测试</el-button>
                   <el-button type="primary" size="mini" @click="queryData">查询</el-button>
                   <el-button type="primary" size="mini" @click="clearAnalysis">清空</el-button>
                   <el-button type="primary" size="mini" @click="saveChangYongAnalysis">保存为常用分析</el-button>
@@ -1550,10 +1557,10 @@ export default {
       }
 
       if (treeNode.iconSkin === 'ztree_4') {
-        aObj.append(editStr3);
+        //aObj.append(editStr3);
       }
       if (treeNode.iconSkin === 'ztree_5') {
-        aObj.append(editStr1);
+        //aObj.append(editStr1);
       }
     },
     /**
@@ -5862,9 +5869,6 @@ export default {
     },
     jump(index){
       this.$refs.mySwiper.swiper.slideTo(index, 500, false);//切换到第一个slide，速度为0.5秒
-    },
-    test(){
-
     }
   }
 }
@@ -5918,7 +5922,7 @@ var see = "查看";
 /*  height: 40px;*/
   bottom: 50px;
   position: fixed;
-  padding: 82px 0px;
+  padding: 82px 3px;
 /*  left: 67px;*/
 }
 
@@ -6146,5 +6150,8 @@ var see = "查看";
   height: 60px;
   line-height: 60px;
   margin: 0;
+}
+>>>.el-tabs--left .el-tabs__nav-wrap.is-left::after{
+  height:92%
 }
 </style>
