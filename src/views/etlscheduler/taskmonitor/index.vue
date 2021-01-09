@@ -277,7 +277,7 @@ export default {
     this.searchParams.startTimeStart = dayjs().format('YYYY-MM-DD')
     this.searchParams.startTimeEnd = dayjs().format('YYYY-MM-DD')
     this.value1 = [dayjs().format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')]
-    this.setProcessGroupExecutionStatusType('G_SUCCESS')
+    this.setProcessGroupExecutionStatusType('')
     this.setProcessStartTime(this.searchParams.startTimeStart)
     this.setProcessEndTime(this.searchParams.startTimeEnd)
     // 获取任务的总耗时
@@ -337,6 +337,7 @@ export default {
       this.searchParams.startTimeStart = this.value1[0]
       this.searchParams.startTimeEnd = this.value1[1]
       this.searchParams.statusType = this.store.state.monitor.processGroupExecutionStatusType
+      this.searchParams.statusType = null
       this.setProcessStartTime(this.searchParams.startTimeStart)
       this.setProcessEndTime(this.searchParams.startTimeEnd)
       this.tabname = 'processinstance'
