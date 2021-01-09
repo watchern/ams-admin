@@ -121,6 +121,7 @@ export default {
   components: { Pagination, QueryField },
   data() {
     return {
+      sceneCode: this.$route.params.sceneCode,
       startDatePicker: this.beginDate(),
       endDatePicker: this.processDate(),
       tableKey: 'dataRoleUuid',
@@ -350,8 +351,9 @@ export default {
     },
     authentic() {
       var roleUuid = this.selections[0].dataRoleUuid
+      var sceneCode = this.sceneCode;
       this.$router.push({
-        path: '/data/roleGrp/' + roleUuid
+        path: `/data/roleGrp/${roleUuid}/${sceneCode}`
       })
     },
     bindRes() {

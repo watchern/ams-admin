@@ -463,9 +463,9 @@
                 description: '',
                 graphName_show:'',
                 description_show:'',
-                graphUuid: this.graphUuidParam, // 打开图形的ID
-                openGraphType: this.openGraphTypeParam, // 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
-                openType: this.openTypeParam, // 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
+                graphUuid: '', // 打开图形的ID
+                openGraphType: '', // 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
+                openType: '', // 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
                 loading: null, // 遮罩层对象
                 searchZtreeContent: '',
                 webSocket: null,
@@ -537,14 +537,20 @@
         },
         methods: {
             init() {
-                if (typeof this.graphUuid === 'undefined' || this.graphUuid == null) {
+                if (typeof getParams().graphUuid === 'undefined') {
+                    this.graphUuid = this.graphUuidParam
+                }else{
                     this.graphUuid = getParams().graphUuid
                 }
-                if (typeof this.openGraphType === 'undefined' || this.openGraphType == null) {
-                    this.openGraphType = getParams().openGraphType ? Number(getParams().openGraphType) : 1
+                if (typeof getParams().openGraphType === 'undefined') {
+                    this.openGraphType = Number(this.openGraphTypeParam)
+                }else{
+                    this.openGraphType = Number(getParams().openGraphType)
                 }
-                if (typeof this.openType === 'undefined' || this.openType == null) {
-                    this.openType = getParams().openType ? Number(getParams().openType) : 2
+                if (typeof getParams().openType === 'undefined') {
+                    this.openType = Number(this.openTypeParam)
+                }else{
+                    this.openType = Number(getParams().openType)
                 }
                 this.loginUserUuid = this.$store.state.user.id
                 this.loginUserCode = this.$store.state.user.code
@@ -613,7 +619,7 @@
                 }
                 const $this = this
                 // 点击操作节点，显示说明信息
-                $('#graphToolDiv .iconText').click(function(i, v) {
+                $(this.$refs.graphToolDiv).find('.iconText').click(function(i, v) {
                     const optType = $(this).parent().attr('data-type')
                     if ($.inArray(optType, $this.optTypeArr) > -1) {
                         indexJs.nodeRemark(optType)

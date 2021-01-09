@@ -113,35 +113,34 @@
           <div v-if="modelResultPageIsSee">
             共<span class="paging-z">{{ rowData.length }}</span
           >条
-          </div>
-        </el-col>
-        <el-col :span="2">
-          <el-row v-if="modelResultButtonIsShow" style="display: flex">
-            <!-- 2.1前台导出，双向绑定数据 -->
-            <downloadExcel
-              :data="tableData"
-              :fields="json_fields"
-              :name="excelName"
-              class="thechard-z"
-              v-if="this.preLength==this.myIndex+1"
-            >
-              <el-button
-                type="primary"
-                @click="modelResultExport"
-                class="oper-btn export-2"
-                title="导出"
-              ></el-button>
-            </downloadExcel>
-            <!-- <el-button
-              v-if="this.preLength==this.myIndex+1"
+        </div>
+      </el-col>
+      <el-col :span="2">
+        <el-row v-if="modelResultButtonIsShow" style="display: flex">
+          <!-- 2.1前台导出，双向绑定数据 -->
+          <downloadExcel
+            :data="tableData"
+            :fields="json_fields"
+            :name="excelName"
+            class="thechard-z"
+            v-if="this.preLength==this.myIndex+1 && this.useType!=='sqlEditor'"
+          >
+            <el-button
               type="primary"
-              title="图表展示"
-              class="oper-btn chart"
-              @click="openChartDialog"
-            ></el-button> -->
-          </el-row>
-        </el-col>
-      </el-row>
+              @click="modelResultExport"
+              class="oper-btn export-2"
+              title="导出"
+            ></el-button>
+          </downloadExcel>
+          <!-- <el-button
+            v-if="this.preLength==this.myIndex+1"
+            type="primary"
+            title="图表展示"
+            class="oper-btn chart"
+            @click="openChartDialog"
+          ></el-button> -->
+        </el-row>
+      </el-col>
     </el-row>
     <!-- modelResultPageIsSee -->
     <el-dialog

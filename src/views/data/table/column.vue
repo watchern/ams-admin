@@ -196,28 +196,42 @@ export default {
       addObj.folderUuid = this.forderId
       addObj.tbName = this.tempTable.tableName
       addObj.tbComment = this.tempTable.tbComment
-      addTable(addObj).then((result) => {
-        this.$notify({
-          title: '成功',
-          message: '创建成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
-        })
+      addTable(addObj).then((res) => {
+        debugger
+        if (res.data.status === '500') {
+          this.$notify({
+            title: '失败',
+            message: res.data.msg,
+            type: 'error',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        } else {
+          this.$notify({
+            title: '成功',
+            message: '新建表成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+          var childData = {
+            id: res.data.successTable.tableMetaUuid,
+            label: res.data.successTable.displayTbName,
+            pid: res.data.successTable.folderUuid,
+            type: 'table',
+            extMap: {
+              accessType: ['FETCH_TABLE_DATA', 'BASIC_PRIV'],
+              createTime: res.data.successTable.createTime,
+              tableName: res.data.successTable.tbName,
+              tbSizeByte: 0,
+              tblType: 'T'
+            }
+          }
+          // 添加节点
+          this.$emit('append-node', childData, this.clickNode)
+        }
       }).catch((result) => {
-        this.executeLoading = false
       })
-      // saveTableCols(sql).then(() => {
-      //   this.getList()
-      //   this.dialogFormVisible = false
-      //   this.$notify({
-      //     title: '成功',
-      //     message: '创建成功',
-      //     type: 'success',
-      //     duration: 2000,
-      //     position: 'bottom-right'
-      //   })
-      // })
     },
     updateTable() {
       var newColumn = this.arrRemoveMix(this.temp, this.tempColumn)
@@ -230,6 +244,7 @@ export default {
       var alter = ''
       // 删除字段sql
       var drop = ''
+      // eslint-disable-next-line no-unused-vars
       var sql = 'ALTER TABLE ' + this.tempTable.tableName + ' (' + '\n'
       for (let index = 0; index < newColumn.length; index++) {
         const r = newColumn[index]
@@ -275,7 +290,6 @@ export default {
         }
       }
       sql = modify + add + drop + alter
-      console.log(sql)
     },
     arrRemoveMix(arr1, arr2) {
       return this.filterData(this.arrayDifference(arr1, arr2))
