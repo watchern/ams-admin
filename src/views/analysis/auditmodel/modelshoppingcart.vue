@@ -597,7 +597,7 @@ body {
   position: absolute;
   z-index: 1000;
   bottom: 100px;
-  right: 100px;
+  right: 15px;
   width: 155px;
   height: 34px;
   background: #353a43;

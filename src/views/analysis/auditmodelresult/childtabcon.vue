@@ -37,12 +37,12 @@
           title="图表展示"
         ></el-button>
         <el-button
-          style="display: none"
           :disabled="modelRunResultBtnIson.disassociateBtn"
           type="primary"
-          @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
+           class="oper-btn move"
+          @click="removeRelated()"
           title="移除关联"
-          >移除关联</el-button
+          ></el-button
         >
         <el-button
           :disabled="false"
@@ -55,9 +55,10 @@
           type="primary"
           class="oper-btn refresh"
           :disabled="modelRunResultBtnIson.associatedBtn"
-          @click="addDetailRel('qwer1', '项目11')"
+          @click="openProjectDialog"
           title="关联项目"
         ></el-button>
+        <!-- addDetailRel('qwer1', '项目11') -->
         <el-button
           :disabled="false"
           type="primary"
@@ -203,6 +204,22 @@
         >
       </span>
     </el-dialog>
+            <el-dialog
+          title="请选择项目"
+          :visible.sync="projectDialogIsSee"
+          width="40%"
+        >
+          <userProject
+            v-if="projectDialogIsSee"
+            ref="userproject"
+          ></userProject>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="projectDialogIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="determineProject"
+              >确 定</el-button
+            >
+          </span>
+        </el-dialog>
     <el-row>
       <div align="right" v-if="this.preLength==this.myIndex+1||myFlag">
         <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" style="width:40px;height:40px" @click="changeChart(item.id)" :key="key"/>
@@ -246,6 +263,7 @@ import { AgGridVue } from "ag-grid-vue";
 import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";
 import childtabscopy from "@/views/analysis/auditmodelresult/childtabscopy";
+import userProject from "@/views/base/userproject/index";
 import {
   selectTable,
   selectByRunResultTableUUid,
@@ -261,7 +279,8 @@ import {
   getModelChartSetup,
   updateModelChartSetup,
   deleteModelChartSetup,
-  sendToOA
+  sendToOA,
+  getResultRelProject
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
@@ -286,6 +305,7 @@ export default {
     childtabscopy,
     downloadExcel: JsonExcel,
     mtEditor,
+    userProject
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -378,7 +398,8 @@ export default {
       afterResult:false,  //等result数据赋值完以后再初始化返显的charts组件
       chartLoading:true,  //图表加载的loading
       afterAddChartsWithNoConfigure:false,
-      isHaveCharts:false //判断该模型是否有图表
+      isHaveCharts:false, //判断该模型是否有图表
+      projectDialogIsSee:false   //用来控制项目dialog显示
     };
   },
   mounted() {
@@ -429,11 +450,18 @@ export default {
       });
     },
     /**
-     * 移除关联犯法
+     * 移除关联方法
      * resultDetailProjectRelId:  resultDetailProjectRel表的主键
      */
-    removeRelated(resultDetailProjectRelId) {
-      removeResultDetailProjectRel(resultDetailProjectRelId).then((resp) => {
+    removeRelated() {
+      this.getValues()
+      console.log(this.selectRows)
+      var onlyuuids = []
+      for(var i = 0;i<this.selectRows.length;i++){
+        onlyuuids.push(this.selectRows[i].onlyuuid)
+      }
+      var resultDetailProjectRelIds = onlyuuids.join(',')
+      removeResultDetailProjectRel(resultDetailProjectRelIds).then((resp) => {
         if (resp.data == true) {
           this.$message({
             type: "success",
@@ -446,6 +474,38 @@ export default {
           });
         }
       });
+    },
+    openProjectDialog(){
+            getResultRelProject(this.nowtable.runTaskRelUuid).then(resp=>{
+        if(resp.data.length==0){
+          this.projectDialogIsSee = true;
+       }else{
+          this.$message({
+            message: "模型结果已经关联项目，详细结果就不能再关联",
+          });
+        }
+      })   
+    },
+        /**
+     * 选择项目后点击dialog的确定按钮触发
+     */
+    determineProject() {
+      var projects = this.$refs.userproject.getSelectValue();
+        if (projects.length === 0) {
+          this.$message({
+            message: "请选择要关联的项目",
+          });
+        } else if (projects.length === 1) {
+          this.addDetailRel(
+            projects[0].PRJ_PROJECT_UUID,
+            projects[0].PRJ_NAME
+          );
+          this.projectDialogIsSee = false;
+        } else {
+          this.$message({
+            message: "只能关联一个项目",
+          });
+        }
     },
     /**
      * 关联项目
@@ -1360,7 +1420,6 @@ export default {
       this.modelChartSetups = []
       if(this.nowtable.runResultTableUuid!=undefined){
         getModelChartSetup(this.nowtable.runTaskRelUuid).then((resp) => {
-          console.log(this.nowtable)
               if (resp.data.isError == true) {
             //做保存操作
             this.chartSaveOrUpdate = "save";
