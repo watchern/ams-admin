@@ -141,6 +141,7 @@ export default {
     filterText(val) {
       this.$refs['A' + this.grpUuid].filter(val)
     }
+
   },
   created() {
     getAllScene().then(resp => {
@@ -155,15 +156,15 @@ export default {
           }
         })
       }
-      this.$nextTick(()=>{
-        //this.$refs.eltab.$emit("input", "ad55cee61a76ad1ebb98f127187685f6");
-        document.getElementById('tab-'+this.tableData[0].sceneGrpUuid).click();
-      })
-
     })
     getRoleGrp(this.roleUuid).then(resp => {
       this.tableData = resp.data
     })
+  },
+  mounted(){
+    setTimeout(()=>{
+      document.getElementById('tab-'+this.currentScene.groups[0].sceneGrpUuid).click();
+    }, 1000)
   },
   methods: {
     filterNode(value, data) {
