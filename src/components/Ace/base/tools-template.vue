@@ -6,7 +6,7 @@
         <span class="label">More tools</span>
       </div>
       <div class="lately-use">
-        <div class="title-label">最近使用</div>
+        <div class="title-label">常用功能</div>
         <div class="lately-use-box flex a-center j-start flex-row">
           <div
             v-for="(item,index) in latelyBdInList"
@@ -506,7 +506,7 @@ export default {
         this.list = JSON.parse(val.data).slice(0, 5)
         this.list.forEach(element => {
           var taskEstimatedTime = new Date(element.taskEstimatedTime)
-          element.taskEstimatedTime = taskEstimatedTime.getFullYear() + '-' + (taskEstimatedTime.getMonth() + 1) + '-' + taskEstimatedTime.getDate() + '-' + taskEstimatedTime.getHours() + ':' + taskEstimatedTime.getMinutes() + ':' + taskEstimatedTime.getSeconds()    
+          element.taskEstimatedTime = taskEstimatedTime.getFullYear() + '-' + (taskEstimatedTime.getMonth() + 1) + '-' + taskEstimatedTime.getDate() + '-' + taskEstimatedTime.getHours() + ':' + taskEstimatedTime.getMinutes() + ':' + taskEstimatedTime.getSeconds()
         })
       }
       const func1 = func2.bind(this)
