@@ -17,7 +17,12 @@ const AmsRoutes = [
     {
       path: '/screenEditor',
       component: () => import('ams-datamax/src/components/screenEditor')
-    }
+    },
+    {
+      path: '/modelresulthandle',
+      name: '模型结果处理',
+      component: () => import('@/views/analysis/modelresulthandle/index')
+    },
     , {
         path: '/ams/assembly',
         component: () => import('@/views/ams/assembly/index')
