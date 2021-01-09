@@ -21,7 +21,7 @@ import createSql from '@/views/data/table/createsql'
 import bizInfo from '@/views/data/table/bizinfo'
 import tablerelation from '@/views/data/table/tablerelation'
 export default {
-  components: { basicInfo, column, constraint, indexSql, createSql, bizInfo, tablerelation },
+  components: { basicInfo, column, createSql, bizInfo, tablerelation },
   // eslint-disable-next-line vue/require-prop-types
   props: ['tableId', 'tabShow', 'openType', 'forderId'],
   data() {

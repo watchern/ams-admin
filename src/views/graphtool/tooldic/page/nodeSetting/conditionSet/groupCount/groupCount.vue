@@ -166,7 +166,7 @@
             delCountTr(index, event) {
                 groupCountJs.delCountTr(index)
             },
-            vilidata_simple(index) {
+            vilidata_simple() {
                 const checkedIndex = this.columnItems.findIndex(n => n.checked === true)
                 if (checkedIndex < 0) {
                     this.$message({ type: 'warning', message: '请选择输出字段' })
@@ -177,7 +177,7 @@
                 let message = ''
                 for (let i = 0; i < this.columnItems.length; i++) {
                     if (this.columnItems[i].checked) {
-                        const curNewColumnName = this.columnItems[index].newColumnName
+                        const curNewColumnName = this.columnItems[i].newColumnName
                         if($.trim(curNewColumnName) === ""){
                             verify = false
                             message = `第${i + 1}行的输出字段的内容不能为空值，请修改`
