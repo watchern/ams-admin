@@ -56,8 +56,8 @@ const statusListComm = [{
 {
   value: 9,
   name: '停止',
-  unicode: 'el-icon-video-pause',
-  color: '#409eff'
+  unicode: 'el-icon-remove',
+  color: '#909399'
 },
 {
   value: 31,
