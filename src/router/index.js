@@ -17,6 +17,16 @@ const AmsRoutes = [
     {
       path: '/screenEditor',
       component: () => import('ams-datamax/src/components/screenEditor')
+    },
+    {
+      name: 'canvasPreview',
+      path: '/canvasPreview',
+      component: () => import('ams-datamax/src/components/canvasPreview')
+    },
+    {
+      name: 'screenOp',
+      path: '/screenOp',
+      component: () => import('ams-datamax/src/components/screenOp')
     }
     , {
         path: '/ams/assembly',
