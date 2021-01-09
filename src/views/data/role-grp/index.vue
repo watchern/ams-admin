@@ -2,7 +2,7 @@
   <div class="page-container">
     <el-row :gutter="5">
       <el-col :span="8">
-        <el-select v-model="currentSceneUuid" placeholder="请选择">
+        <el-select v-model="currentSceneUuid" placeholder="请选择" style="display: none" >
           <el-option
             v-for="scene in allScene"
             :key="scene.sceneUuid"
@@ -10,7 +10,7 @@
             :value="scene.sceneUuid"
           />
         </el-select>
-        <el-tabs v-model="grpUuid" @tab-click="tabClick">
+        <el-tabs v-model="grpUuid" @tab-click="tabClick" ref="eltab">
           <el-tab-pane v-for="grp in currentScene.groups" :key="grp.sceneGrpUuid" :label="grp.grpName" :name="grp.sceneGrpUuid">
             <el-input
               v-model="filterText"
@@ -155,6 +155,11 @@ export default {
           }
         })
       }
+      this.$nextTick(()=>{
+        //this.$refs.eltab.$emit("input", "ad55cee61a76ad1ebb98f127187685f6");
+        document.getElementById('tab-'+this.tableData[0].sceneGrpUuid).click();
+      })
+
     })
     getRoleGrp(this.roleUuid).then(resp => {
       this.tableData = resp.data
@@ -227,6 +232,7 @@ export default {
     },
 
     tabClick(tab, event) {
+      debugger;
       if (!this.currentTreeData) {
         var grpUuid = tab.paneName
         this.treeLoading = true

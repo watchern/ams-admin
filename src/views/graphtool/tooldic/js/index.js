@@ -1405,7 +1405,7 @@ export async function saveModelGraph(){
             if(response.data != null){
                 if(response.data.isError){
                     isError = true
-                    message = '模型设计校验图形未通过'
+                    message = '模型设计校验图形未通过：存在运行出错的节点'
                 }else{
                     //改变当前图形节点的信息
                     nodeCallBack(lineNodeIdArr, response.data.nodeData)

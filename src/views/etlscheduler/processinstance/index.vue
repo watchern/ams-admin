@@ -595,7 +595,6 @@ export default {
       })
     },
     handleView(processInstanceUuid) {
-      // 查看详情的页面跳转,传递状态为1为查看
       this.$router.push(`/etlscheduler/instance/${processInstanceUuid}`)
     },
     handleFilter() {
