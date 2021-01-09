@@ -23,6 +23,16 @@ const AmsRoutes = [
       name: '模型结果处理',
       component: () => import('@/views/analysis/modelresulthandle/index')
     },
+    {
+      name: 'canvasPreview',
+      path: '/canvasPreview',
+      component: () => import('ams-datamax/src/components/canvasPreview')
+    },
+    {
+      name: 'screenOp',
+      path: '/screenOp',
+      component: () => import('ams-datamax/src/components/screenOp')
+    }
     , {
         path: '/ams/assembly',
         component: () => import('@/views/ams/assembly/index')

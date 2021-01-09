@@ -91,6 +91,19 @@ export function rmResultRelProjectlr(data) {
 }
 
 /**
+ * 根据RunTaskRelUuid查询该结果有无关联项目
+ * @param {*} data 
+ */
+export function getResultRelProject(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ResultRelProjectController/getResultRelProject',
+    method: 'get',
+    params:{RunTaskRelUuid:data}
+  })
+}
+
+/**
  * 添加结果共享
  * @param data 运行结果共享对象
  */
@@ -429,3 +442,5 @@ export function deleteModelChartSetup(data) {
     data
   })
 }
+
+
