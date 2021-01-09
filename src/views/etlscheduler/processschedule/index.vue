@@ -252,6 +252,14 @@
             @blur="changeParamValue(item.value, item.name)"
           />
         </el-form-item>
+        <el-form-item label="任务描述" prop="scheduleDesc">
+          <el-input
+            v-model="temp.scheduleDesc"
+            :placeholder="disableUpdate === true ? '' : '请输入任务描述'"
+            type="textarea"
+            :disabled="disableUpdate"
+          />
+        </el-form-item>
 
         <!-- 添加任务依赖 -->
         <!-- temp.dependTaskInfoList!=null && temp.dependTaskInfoList.length>0 && temp.dependTaskInfoList[0].dependItemList -->
