@@ -11,7 +11,7 @@
     >
       <el-table-column label="任务名称" align="center" prop="taskName">
         <template slot-scope="scope">
-          <span style="font-size:11px;padding:2px;cursor:pointer;" class="tools-box-name" @click="toUrl(scope.row.taskUrl)" v-text="scope.row.taskName" />
+          <span style="cursor:pointer;" class="tools-box-name" @click="toUrl(scope.row.taskUrl)" v-text="scope.row.taskName" />
         </template>
       </el-table-column>
       <el-table-column label="所属模块" prop="taskType" />
