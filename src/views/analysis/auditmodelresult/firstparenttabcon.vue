@@ -596,9 +596,13 @@ export default {
         return "";
       } else {
         var sql = JSON.parse(row.settingInfo).sql;
+        if(sql==null){
+          return ''
+        }else{
         sql = sql.substring(0, 10);
         sql = sql + "...";
         return sql;
+        }
       }
     },
     runMessageFormatter(row, column) {
@@ -606,7 +610,7 @@ export default {
         return "";
       } else {
         var runMessage = row.runMessage;
-        runMessage = runMessage.substring(0, 10);
+        runMessage = runMessage.substring(0, 4);
         runMessage = runMessage + "...";
         return runMessage;
       }
