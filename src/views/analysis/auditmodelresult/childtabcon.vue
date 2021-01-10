@@ -17,7 +17,7 @@
     <el-row v-if="chartSwitching" style="position:relative">
       <el-button
         type="primary"
-        class="oper-btn excel"
+        class="oper-btn chart"
         @click="chartSwitching = false"
         :style="{position:(myFlag?'absolute':'relative'),zIndex:10}"
         title="下方图表展示"
@@ -232,7 +232,7 @@
     <el-row v-if="!chartSwitching">
       <el-row>
       <div align="right" v-if="this.preLength==this.myIndex+1||myFlag">
-        <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" style="width:40px;height:40px" @click="changeChart(item.id)" :key="key"/>
+        <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" style="width:24px;height:24px;margin-right:8px" @click="changeChart(item.id)" :key="key"/>
         <img
           src="./imgs/deletein.png"
           v-if="useType=='sqlEditor'||myFlag"
