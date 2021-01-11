@@ -1,6 +1,7 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 import request from '@/utils/request'
+import store from '@/store'
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../../mode/sql/sql"));
@@ -162,31 +163,31 @@ import request from '@/utils/request'
     if (columns && columns.columns && columns.columns.length!==0){
       columns = columns.columns;
     }else{
-      //todo 在这请求后台
+      // 在这请求后台
       if(table != ""){
-        var dataUserId = sessionStorage.getItem('dataUserId')
+        var dataUserId = store.getters.datauserid
             //拿到信息获取表列
-          request({
-            baseURL: "/data",
-            url: '/tableMeta/getColsInfoByName',
-            method: 'get',
-            params: { tableName: table,dataUserId:dataUserId}
-          }).then(result=>{
-            if (result.data != null) {
-              // 处理拿回来的数据 处理成列表
-              var columnsArr = []
-              for (var i = 0; i < result.data.length; i++) {
-                if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
-                  columnsArr.push(result.data[i].colName)
-                } else {
-                  columnsArr.push(result.data[i].chnName)
-                }
+        request({
+          baseURL: "/data",
+          url: '/tableMeta/getColsInfoByName',
+          method: 'get',
+          params: { tableName: table,dataUserId:dataUserId}
+        }).then(result=>{
+          if (result.data != null) {
+            // 处理拿回来的数据 处理成列表
+            var columnsArr = []
+            for (var i = 0; i < result.data.length; i++) {
+              if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
+                columnsArr.push(result.data[i].colName)
+              } else {
+                columnsArr.push(result.data[i].chnName)
               }
-              CodeMirror.tableColMapping[table] = columnsArr;
-              editor.options.hintOptions.tables[table] = columnsArr;
-              columns = columnsArr;
             }
-          })
+            CodeMirror.tableColMapping[table] = columnsArr;
+            editor.options.hintOptions.tables[table] = columnsArr;
+            columns = columnsArr;
+          }
+        })
       }
     }
 
