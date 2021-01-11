@@ -1259,7 +1259,7 @@ export default {
       }
     },
     handleDelete() {
-      this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'), {
+      this.$confirm('此操作将删除相关的实例, 是否继续?', this.$t('confirm.title'), {
         confirmButtonText: this.$t('confirm.okBtn'),
         cancelButtonText: this.$t('confirm.cancelBtn'),
         type: 'warning'
