@@ -49,9 +49,10 @@
       </el-col>
 
       <el-col :span="15">
-        <div>已选择的用户组</div>
-        <el-button @click="setExpireDate">设置使用期限</el-button>
-        <el-button @click="removeGrp">删除</el-button>
+        <el-col align="right" style=" padding-top: 4px;padding-right:50px">
+          <el-button type="primary" title="设置使用期限" class="oper-btn edit" :disabled="selections.length !== 1" @click="setExpireDate" />
+          <el-button type="primary" title="删除" class="oper-btn delete" :disabled="selections.length === 0" @click="removeGrp" />
+        </el-col>
         <el-table
           key="colMetaUuid"
           v-loading="listLoading"

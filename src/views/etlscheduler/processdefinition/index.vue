@@ -341,7 +341,7 @@ export default {
       })
     },
     handleDelete() {
-      this.$confirm('此操作将删除相关的调度任务, 是否继续?', this.$t('confirm.title'), {
+      this.$confirm('此操作将删除相关的调度任务和实例, 是否继续?', this.$t('confirm.title'), {
         confirmButtonText: this.$t('confirm.okBtn'),
         cancelButtonText: this.$t('confirm.cancelBtn'),
         type: 'warning'

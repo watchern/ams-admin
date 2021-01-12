@@ -1,5 +1,5 @@
 <template>
-  <div class="tools-template w100 h100 relative">
+  <div class="tools-template w100 h100 relative" @click="callback">
     <div class="tools-content h100 relative">
       <div class="title text-white">
         <i class="el-icon-s-grid" />
@@ -465,7 +465,7 @@ export default {
           path: this.latelyPathList[index]
         }
       })
-      this.$emit('func',false)
+      // this.$emit('func',false)
     },
     init() {
       querySystemTask().then(resp => {
@@ -515,6 +515,9 @@ export default {
       // 通信失败
       this.webSocket.onerror = function(event) {
       }
+    },
+    callback() {
+      this.$emit('func',false)
     }
   }
 }
