@@ -30,7 +30,7 @@ export default {
   },
   methods: {
     ...mapMutations('dag', ['setIsDetails', 'resetParams']),
-    ...mapActions('dag', ['getProcessList', 'getProjectList', 'getResourcesList', 'getInstancedetail', 'getResourcesListJar']),
+    ...mapActions('dag', ['getProcessList', 'getProjectList', 'getResourcesList', 'getInstancedetail', 'getResourcesListJar', 'getClassList']),
     ...mapActions('security', ['getTenantList', 'getWorkerGroupsAll']),
     /**
      * init
@@ -47,6 +47,7 @@ export default {
         // this.getProcessList(),
         // get project
         this.getProjectList(),
+        this.getClassList(),
         // get resources
         this.getResourcesList(),
         // get jar
