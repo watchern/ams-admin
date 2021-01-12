@@ -24,7 +24,7 @@
             <!-- relationProject('4534532', '项目5') -->
             <el-button
               type="primary"
-              @click="RemoverelationProject('asdasdasdas')"
+              @click="RemoverelationProject()"
               :disabled="buttonIson.DisassociateBtn"
               class="oper-btn move"
               title="移除项目关联"
@@ -43,20 +43,20 @@
               @click="openResultSplitDialog"
               title="结果拆分"
             ></el-button>
-            <!-- <el-button
+            <el-button
               type="primary"
               @click="modelResultOpenDialog()"
               :disabled="buttonIson.resultShareBtn"
               class="oper-btn share"
               title="结果共享"
-            ></el-button>-->
-            <el-button
+            ></el-button>
+            <!-- <el-button
               type="primary"
               @click="sendToOA()"
               :disabled="selected1.length !== 1"
               class="oper-btn share"
               title="结果分配"
-            ></el-button>
+            ></el-button> -->
             <el-button
               type="primary"
               @click="exportExcel"
@@ -596,9 +596,13 @@ export default {
         return "";
       } else {
         var sql = JSON.parse(row.settingInfo).sql;
+        if(sql==null){
+          return ''
+        }else{
         sql = sql.substring(0, 10);
         sql = sql + "...";
         return sql;
+        }
       }
     },
     runMessageFormatter(row, column) {
@@ -606,7 +610,7 @@ export default {
         return "";
       } else {
         var runMessage = row.runMessage;
-        runMessage = runMessage.substring(0, 10);
+        runMessage = runMessage.substring(0, 4);
         runMessage = runMessage + "...";
         return runMessage;
       }
@@ -1102,15 +1106,17 @@ export default {
       this.listLoading = true;
       var runTaskRelUuids = [];
       var personUuids = [];
+      var personNames = []
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
+        personNames.push(selectedNode[i].cnname);
       }
       for (var i = 0; i < this.selected1.length; i++) {
         runTaskRelUuids.push(this.selected1[i].runTaskRelUuid);
       }
       if (personUuids.length > 0) {
-        insertRunResultShare(runTaskRelUuids, personUuids).then((resp) => {
+        insertRunResultShare(runTaskRelUuids, personUuids,personNames).then((resp) => {
           this.listLoading = false;
           if (resp.data == true) {
             this.$message({

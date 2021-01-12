@@ -170,9 +170,10 @@ tr::-webkit-scrollbar,
 th::-webkit-scrollbar,
 div::-webkit-scrollbar,
 .scrollbar::-webkit-scrollbar{
-    width: 2px;
-    height: 2px;
+    width: 10px;
+    height: 10px;
     background-color: transparent;
+    z-index: 2147483647;
 }
 /*滚动条的轨道*/
 textarea::-webkit-scrollbar-track,
