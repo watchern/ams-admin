@@ -79,15 +79,15 @@
                 let value = this[this.radioVal]
                 if(value == null || isNaN(value)){
                     verify = false
-                    this.$message.error(`【${this.radioMap[this.radioVal]}】项未输入正确的数值`)
+                    this.$message({'type': 'warning','message': `【${this.radioMap[this.radioVal]}】项未输入正确的数值`})
                 }else{
                     if(Number(value) === 0){
                         verify = false
-                        this.$message.error(`【${this.radioMap[this.radioVal]}】项可输入最小值应为1`)
+                        this.$message({'type': 'warning','message': `【${this.radioMap[this.radioVal]}】项可输入最小值应为1`})
                     }else{
                         if(this.radioVal === "proportion" && Number(value) > 100){
                             verify = false
-                            this.$message.error(`【${this.radioMap[this.radioVal]}】项可输入最大值应为100`)
+                            this.$message({'type': 'warning','message': `【${this.radioMap[this.radioVal]}】项可输入最大值应为100`})
                         }
                     }
                 }
