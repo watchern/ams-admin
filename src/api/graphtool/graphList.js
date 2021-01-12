@@ -1,6 +1,5 @@
 import request from '@/utils/request'
 const baseURL = '/graphtool'
-const dataUrl = '/data'
 const analysisUrl = '/analysis'
 
 /**
@@ -68,16 +67,29 @@ export function shareGraph(data) {
 }
 
 /**
+ * 获取当前图形的被分享人
+ * @param graphUuid 图形UUID
+ */
+export function selectSharedPerson(graphUuid){
+    return request({
+        baseURL: baseURL,
+        url: `/graphShare/selectSharedPerson/${graphUuid}`,
+        method: 'post'
+    })
+}
+
+/**
  * 取消分享图形
  * @param data 参数1：图形UUID；参数2：图形名称
  * 参数3：被分享人员UUID串，以逗号分隔；参数4：被分享人员名称串，以顿号分隔
+ * 参数5：是否全部取消被分享人的信息
  */
 export function cancelShareGraph(data) {
   return request({
     baseURL: baseURL,
     url: `/graphShare/cancelShareGraph`,
     method: 'post',
-    params: data
+    data
   })
 }
 
