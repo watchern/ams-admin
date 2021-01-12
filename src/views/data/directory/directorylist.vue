@@ -84,9 +84,6 @@
             <el-form-item label="导入表名称：(若导入数据为TXT数据需用','分割,列信息用换行即可)" prop="tbName">
               <el-input v-model="uploadtemp.tbName" label="请输入表名称" />
             </el-form-item>
-            <el-form-item prop="tableFileName">
-              <el-input v-model="uploadtemp.tableFileName" hidden disabled />
-            </el-form-item>
           </el-form>
         </el-col>
       </el-row>
