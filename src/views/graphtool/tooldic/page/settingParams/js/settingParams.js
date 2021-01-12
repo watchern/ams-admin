@@ -568,62 +568,67 @@ export function initSetting() {
         }
         // 第四步：获取数据库所有母参数信息
         findParamsAndModelRelParams().then( response => {
-            if(response.data == null || response.data.isError){
+            if(response.data == null){
                 load.hide()
-                settingVue.$message.error({ message: response.data.message})
-            }else{
-                let paramList = response.data.paramList// 定义所有母参信息数组
-                // 第五步：找出有效参数集合中未配置的参数,并追加TR行
-                let moduleParamArr = []// 存储已匹配的母版参数集合
-                for (let j = 0; j < paramArr.length; j++) { // 遍历有效的参数集合
-                    let hasExist = false
-                    for(let i=0; i<settingVue.setParamArr.length; i++){
-                        if(settingVue.setParamArr[i].dataModuleParamId === paramArr[j].moduleParamId){
-                            hasExist = true
-                            break
-                        }
-                    }
-                    if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && hasExist) { // 过滤掉有效参数集合中已经配置过的参数
-                        continue
-                    }
-                    if ($.inArray(paramArr[j].moduleParamId, moduleParamArr) > -1) { // 过滤掉有效参数集合中母参重复的复制参数
-                        continue
-                    }
-                    let setParamObj = {dataModuleParamId:paramArr[j].moduleParamId,name:paramArr[j].name,}
-                    for (let k = 0; k < paramList.length; k++) { // 循环所有母版参数
-                        let moduleParamId = paramList[k].ammParamUuid
-                        let paramObj = {...{}, ...paramList[k]}
-                        if (moduleParamId === paramArr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
-                            setParamObj.inputType = paramObj.inputType//参数类型
-                            //设置默认值
-                            if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
-                                paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
-                                setParamObj.value = paramArr[j].defaultVal
-                                paramObj.defaultVal = paramArr[j].defaultVal
-                            }
-                            let returnObj = paramCommonJs.getSettingParamArr(paramObj,setParamObj)
-                            if (!returnObj.isError) {
-                                setParamObj = returnObj.setParamObj
-                            }else{
-                                settingVue.$message.error({message:returnObj.message})
-                            }
-                            moduleParamArr.push(moduleParamId)
-                            if (typeof paramObj.description !== 'undefined' && paramObj.description != null) {
-                                setParamObj.description = paramObj.description
-                            }
-                            settingVue.setParamArr.push(setParamObj)
-                            break
-                        }
-                    }
-                }
-                $(settingVue.$refs.setParamTbody).sortable().disableSelection()
-                settingVue.$nextTick( () => {
-                    // 第六步：统一初始化参数的html（文本框、下拉列表、下拉树），并反显已配置参数的信息（包括默认值和排序值）
-                    initParam(paramArr, hasSetParamIdArr)
-                    // 第七步：刷新SQL值，将已编写的SQL赋值给sql
-                    settingVue.sql = settingVue.editor.getValue()
+                settingVue.$message.error('获取参数信息失败')
+            }else {
+                if (response.data.isError) {
                     load.hide()
-                })
+                    settingVue.$message.error({message: response.data.message})
+                } else {
+                    let paramList = response.data.paramList// 定义所有母参信息数组
+                    // 第五步：找出有效参数集合中未配置的参数,并追加TR行
+                    let moduleParamArr = []// 存储已匹配的母版参数集合
+                    for (let j = 0; j < paramArr.length; j++) { // 遍历有效的参数集合
+                        let hasExist = false
+                        for (let i = 0; i < settingVue.setParamArr.length; i++) {
+                            if (settingVue.setParamArr[i].dataModuleParamId === paramArr[j].moduleParamId) {
+                                hasExist = true
+                                break
+                            }
+                        }
+                        if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && hasExist) { // 过滤掉有效参数集合中已经配置过的参数
+                            continue
+                        }
+                        if ($.inArray(paramArr[j].moduleParamId, moduleParamArr) > -1) { // 过滤掉有效参数集合中母参重复的复制参数
+                            continue
+                        }
+                        let setParamObj = {dataModuleParamId: paramArr[j].moduleParamId, name: paramArr[j].name,}
+                        for (let k = 0; k < paramList.length; k++) { // 循环所有母版参数
+                            let moduleParamId = paramList[k].ammParamUuid
+                            let paramObj = {...{}, ...paramList[k]}
+                            if (moduleParamId === paramArr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
+                                setParamObj.inputType = paramObj.inputType//参数类型
+                                //设置默认值
+                                if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
+                                    paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
+                                    setParamObj.value = paramArr[j].defaultVal
+                                    paramObj.defaultVal = paramArr[j].defaultVal
+                                }
+                                let returnObj = paramCommonJs.getSettingParamArr(paramObj, setParamObj)
+                                if (!returnObj.isError) {
+                                    setParamObj = returnObj.setParamObj
+                                } else {
+                                    settingVue.$message.error({message: returnObj.message})
+                                }
+                                moduleParamArr.push(moduleParamId)
+                                if (typeof paramObj.description !== 'undefined' && paramObj.description != null) {
+                                    setParamObj.description = paramObj.description
+                                }
+                                settingVue.setParamArr.push(setParamObj)
+                                break
+                            }
+                        }
+                    }
+                    $(settingVue.$refs.setParamTbody).sortable().disableSelection()
+                    settingVue.$nextTick(() => {
+                        // 第六步：统一初始化参数的html（文本框、下拉列表、下拉树），并反显已配置参数的信息（包括默认值和排序值）
+                        initParam(paramArr, hasSetParamIdArr)
+                        // 第七步：刷新SQL值，将已编写的SQL赋值给sql
+                        settingVue.sql = settingVue.editor.getValue()
+                        load.hide()
+                    })
+                }
             }
         })
     } catch (e) {

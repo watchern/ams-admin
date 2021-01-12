@@ -101,6 +101,8 @@
       :append-to-body="true"
     >
       <runimmediatelycon
+        :data-user-id='dataUserId'
+        :scene-code1='sceneCode'
         v-if="runimmediatelyIsSee"
         ref="modelsetting"
         :timing="false"
@@ -118,6 +120,8 @@
       :append-to-body="true"
     >
       <runimmediatelycon
+        :data-user-id='dataUserId'
+        :scene-code1='sceneCode'
         v-if="timingExecutionIsSee"
         ref="modelsetting"
         :timing="true"
@@ -143,6 +147,7 @@ import { getOneDict } from "@/utils";
 import runimmediatelycon from "@/views/analysis/auditmodel/runimmediatelycon";
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 export default {
+  props:['dataUserId','sceneCode'],
   components: {
     runimmediatelycon,
   },
@@ -482,7 +487,7 @@ export default {
             locationUuid: modelResultSavePathId,
             runTaskRels: runTaskRels
           };
-          addRunTaskAndRunTaskRel(runTask).then((resp) => {
+          addRunTaskAndRunTaskRel(runTask,this.dataUserId,this.sceneCode).then((resp) => {
             if (resp.data == true) {
               this.$notify({
                 title: "提示",
@@ -552,7 +557,7 @@ export default {
             runTaskRels: runTaskRels,
             locationUuid: modelResultSavePathId,
           };
-          addRunTaskAndRunTaskRel(runTask).then((resp) => {
+          addRunTaskAndRunTaskRel(runTask,this.dataUserId,this.sceneCode).then((resp) => {
             if (resp.data == true) {
               this.$notify({
                 title: "提示",
@@ -592,7 +597,7 @@ body {
   position: absolute;
   z-index: 1000;
   bottom: 100px;
-  right: 100px;
+  right: 15px;
   width: 155px;
   height: 34px;
   background: #353a43;

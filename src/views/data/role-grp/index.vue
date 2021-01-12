@@ -2,7 +2,7 @@
   <div class="page-container">
     <el-row :gutter="5">
       <el-col :span="8">
-        <el-select v-model="currentSceneUuid" placeholder="请选择">
+        <el-select v-model="currentSceneUuid" placeholder="请选择" style="display: none" >
           <el-option
             v-for="scene in allScene"
             :key="scene.sceneUuid"
@@ -10,7 +10,7 @@
             :value="scene.sceneUuid"
           />
         </el-select>
-        <el-tabs v-model="grpUuid" @tab-click="tabClick">
+        <el-tabs v-model="grpUuid" @tab-click="tabClick" ref="eltab">
           <el-tab-pane v-for="grp in currentScene.groups" :key="grp.sceneGrpUuid" :label="grp.grpName" :name="grp.sceneGrpUuid">
             <el-input
               v-model="filterText"
@@ -111,6 +111,7 @@ export default {
   data() {
     return {
       roleUuid: this.$route.params.roleUuid,
+      paramSceneCode: this.$route.params.sceneCode,
       allScene: [],
       // currentScene: {},
       currentSceneUuid: '',
@@ -140,15 +141,30 @@ export default {
     filterText(val) {
       this.$refs['A' + this.grpUuid].filter(val)
     }
+
   },
   created() {
     getAllScene().then(resp => {
       this.allScene = resp.data
       if (this.allScene.length > 0) this.currentSceneUuid = this.allScene[0].sceneUuid
+      //根据param设置默认scene
+      console.log("设置默认scene  "+this.paramSceneCode);
+      if(this.paramSceneCode){
+        this.allScene.forEach(s=>{
+          if(this.paramSceneCode===s.sceneCode){
+            this.currentSceneUuid = s.sceneUuid;
+          }
+        })
+      }
     })
     getRoleGrp(this.roleUuid).then(resp => {
       this.tableData = resp.data
     })
+  },
+  mounted(){
+    setTimeout(()=>{
+      document.getElementById('tab-'+this.currentScene.groups[0].sceneGrpUuid).click();
+    }, 1000)
   },
   methods: {
     filterNode(value, data) {
@@ -217,6 +233,7 @@ export default {
     },
 
     tabClick(tab, event) {
+      debugger;
       if (!this.currentTreeData) {
         var grpUuid = tab.paneName
         this.treeLoading = true

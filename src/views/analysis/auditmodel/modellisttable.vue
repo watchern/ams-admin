@@ -7,7 +7,7 @@
         </div>
         <el-row v-if="power!='warning'" type="flex" class="row-bg">
           <el-col align="right">
-            <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn detail" @click="previewModel" />
+            <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn start" @click="previewModel" />
             <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />
             <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel" />
             <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete" @click="deleteModel" />
@@ -72,11 +72,10 @@
               </el-col>
             </el-row>
           </el-collapse-item>
-
         </el-collapse>
       </el-tab-pane>
     </el-tabs>
-    <modelshoppingcart v-show="isShowShoppingCart" ref="modelShoppingCartRef" />
+    <modelshoppingcart :data-user-id='dataUserId' :scene-code='sceneCode' v-show="isShowShoppingCart" ref="modelShoppingCartRef" />
     <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
       <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
@@ -130,7 +129,7 @@ import personTree from '@/components/publicpersontree/index'
 export default {
   name: 'ModelListTable',
   components: { Pagination, QueryField, EditModel, ModelFolderTree, childTabs, crossrangeParam, paramDraw, modelshoppingcart, personTree },
-  props: ['power'],
+  props: ['power','dataUserId','sceneCode'],
   data() {
     return {
       isShow: false,
@@ -278,7 +277,6 @@ export default {
         }
       }
       const func2 = function func3(val) {
-        debugger
         const dataObj = JSON.parse(val.data)
         /*        if(this.currentPreviewModelParamAndSql.paramObj != undefined){
           this.$refs.[dataObj.modelUuid + 'param'][0].
@@ -486,7 +484,7 @@ export default {
         type: 'active',
         val: {
           name: '新增模型',
-          path: '/analysis/editorModel'
+          path: '/analysis/editorModel?dataUserId='+this.dataUserId+'&sceneCode='+this.sceneCode
         }
       })
     },
@@ -517,7 +515,7 @@ export default {
             type: 'active',
             val: {
               name: '修改模型',
-              path: '/analysis/editorModel'
+              path: '/analysis/editorModel?dataUserId='+this.dataUserId+'&sceneCode='+this.sceneCode
             }
           })
         } else {
@@ -579,13 +577,7 @@ export default {
         this.$message({ type: 'info', message: '请先选择要发布的模型!' })
         return
       }
-      this.$confirm('是否确定将选中的模型发布到公共模型下?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.treeSelectShow = true
-      })
+      this.treeSelectShow = true
     },
     /**
      *撤销发布
@@ -617,12 +609,18 @@ export default {
      * 修改要发布的模型
      */
     updatePublicModel() {
-      const selectNode = this.$refs.modelFolderTree.getSelectNode()
-      var selectObj = this.$refs.modelListTable.selection
-      for (let i = 0; i < selectObj.length; i++) {
-        selectObj[i].modelFolderUuid = selectNode.id
-      }
-      this.updateModelBasicInfo(selectObj, '发布')
+      this.$confirm('是否确定将选中的模型发布到公共模型下?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+           const selectNode = this.$refs.modelFolderTree.getSelectNode()
+           var selectObj = this.$refs.modelListTable.selection
+           for (let i = 0; i < selectObj.length; i++) {
+             selectObj[i].modelFolderUuid = selectNode.id
+           }
+           this.updateModelBasicInfo(selectObj, '发布')
+      })
     },
     /**
      * 修改模型基本信息
@@ -714,11 +712,17 @@ export default {
     shareModel() {
       // 获取选中的人员
       // 循环组织对象添加数据
+      var userId = this.$store.getters.personuuid
       var selectObj = this.$refs.modelListTable.selection
       const modelShareRelList = []
+      let verResult = true
       const persons = this.$refs.personTree.getSelectValue()
       for (let i = 0; i < selectObj.length; i++) {
         for (let j = 0; j < persons.length; j++) {
+          if(persons[j].personuuid === userId){
+            verResult = false
+            break
+          }
           const obj = {
             modelUuid: selectObj[i].modelUuid,
             belongUuid: persons[j].personuuid,
@@ -726,6 +730,10 @@ export default {
           }
           modelShareRelList.push(obj)
         }
+      }
+      if(!verResult){
+        this.$message({ type: 'info', message: '不能共享给自己!' })
+        return
       }
       shareModel(modelShareRelList).then(result => {
         if (result.code == 0) {
@@ -813,7 +821,14 @@ export default {
      */
     executeSql(obj,selectObj,isExistParam){
       this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
-      getExecuteTask(obj).then((result) => {
+      getExecuteTask(obj,this.dataUserId,this.sceneCode).then((result) => {
+        if(result.data.isError){
+        this.$message({
+              type: "error",
+              message: result.data.message,
+         });
+         this.$emit('loadingSet',false,"");
+        }else{
         this.$emit('loadingSet',false,"");
         this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
         this.addTab(selectObj[0], isExistParam, result.data.executeSQLList)
@@ -824,9 +839,7 @@ export default {
         }).catch((result) => {
           this.executeLoading = false;
         });
-      }).catch((result) => {
-        this.$message({ type: 'info', message: '执行失败' })
-        this.$emit('loadingSet',false,"");
+        }
       })
     },
     /**
@@ -922,15 +935,20 @@ export default {
       this.currentRunModelAllConfig[modelUuid] = runModelConfig
       this.dialogFormVisible = false
       this.$emit('loadingSet',true,"正在执行...");
-      getExecuteTask(obj).then((result) => {
+      getExecuteTask(obj,this.dataUserId,this.sceneCode).then((result) => {
+        if(result.data.isError){
+        this.$message({
+              type: "error",
+              message: result.data.message,
+         });
+         this.$emit('loadingSet',false,"");
+        }else{
         this.$emit('loadingSet',false,"");
         //界面渲染完成之后开始执行sql,将sql送入调度
         startExecuteSql(result.data).then((result) => {
         })
-      }).catch((result) => {
-        this.$message({ type: 'info', message: '执行失败' })
-        this.$emit('loadingSet',false,"");
-      });
+        }
+      })
     },
     /**
      * 获取模型列表选中的数据
@@ -1033,6 +1051,7 @@ export default {
 }
 .row-all{
   height: 650px;
+  overflow: auto;
 }
 .table{
   height: 450px !important;

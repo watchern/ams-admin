@@ -14,7 +14,7 @@
         <el-button type="primary" class="oper-btn move" title="移动" :disabled="selections.length === 0" @click="movePath" />
         <el-button type="primary" class="oper-btn rename" title="重命名" :disabled="selections.length !== 1" @click="renameResource" />
         <el-button type="primary" class="oper-btn add" title="新增表" :disabled="clickData.type == 'table'" @click="add" />
-        <el-button type="primary" class="oper-btn add-folder" title="导入表" :disabled="clickData.type == 'table'" @click="uploadTable" />
+        <el-button type="primary" class="oper-btn export" title="导入表" :disabled="clickData.type == 'table'" @click="uploadTable" />
         <el-button type="primary" class="oper-btn add-folder" title="新增文件夹" :disabled="clickData.type == 'table'" @click="createFolder" />
         <el-button type="primary" class="oper-btn  edit" title="表结构维护" :disabled="selections.length !== 1" @click="update" />
         <el-button type="primary" class="oper-btn  detail" title="表结构展示" :disabled="selections.length !== 1" @click="showTable" />
@@ -129,7 +129,7 @@
     <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="800px">
       <el-row>
         <el-col>
-          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" />
+          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" />
         </el-col>
       </el-row>
       <span slot="footer">
@@ -275,43 +275,49 @@ export default {
       this.uploadtemp.tableFileName = data
     },
     formatTableType(row, column) {
+      if (row.type === '') {
+        return ''
+      }
       return row.type === 'table' ? '数据表' : '文件夹'
     },
     // 删除资源
     delData() {
       var ids = []
+      var flag = true
       this.selections.forEach((r, i) => {
         if (r.type === 'folder') {
           if (r.extMap.folderType === 'virtual') {
             this.$message({ type: 'info', message: '该文件为系统文件夹不允许删除!' })
-            return
+            flag = false
           }
           var foldObj = this.allList.filter(obj => { return obj.label === r.label })
           var objTotal = getArrLength(foldObj[0].children)
           if (objTotal > 0) {
             this.$message({ type: 'info', message: '删除失败！文件夹：' + foldObj[0].label + '不为空无法删除' })
-            return
+            flag = false
           }
         }
         ids.push(r)
       })
-      this.$confirm('确定删除该资源?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true
-      }).then(() => {
-        deleteDirectory(ids).then(() => {
-          this.$notify({
-            title: '成功',
-            message: '删除成功',
-            type: 'success',
-            duration: 5000,
-            position: 'bottom-right'
+      if (flag) {
+        this.$confirm('确定删除该资源?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          deleteDirectory(ids).then(() => {
+            this.$notify({
+              title: '成功',
+              message: '删除成功',
+              type: 'success',
+              duration: 5000,
+              position: 'bottom-right'
+            })
+            this.$emit('remove', this.selections, this.clickNode)
           })
         })
-      })
-      this.$emit('remove', this.selections, this.clickNode)
+      }
     },
     // 复制资源(只允许复制数据表，不允许复制文件夹)
     copyResource() {
@@ -366,8 +372,6 @@ export default {
       importTable(this.uploadtempInfo).then(res => {
         this.uploadVisible = false
         if (res.data.resCode === true) {
-          debugger
-          console.log(res.data.importTable.tableMetaUuid)
           var childData = {
             id: res.data.importTable.tableMetaUuid,
             label: res.data.importTable.displayTbName,
@@ -425,7 +429,6 @@ export default {
           newNode = newNode.parent
         }
       }
-      // this.moveSelect = pathArr.reverse().join('/')
       this.moveSelect = data
     },
     movePath() {
@@ -438,7 +441,6 @@ export default {
       this.moveTreeVisible = true
     },
     movePathSave() {
-      debugger
       var ids = []
       this.selections.forEach((r, i) => {
         r.pid = this.moveSelect.id
@@ -546,7 +548,7 @@ export default {
         return
       }
       this.dialogStatus = 'createFolder'
-      this.typeLabel = '重命名文件夹名称'
+      this.typeLabel = '新建文件夹名称'
       this.resourceForm.resourceName = ''
       this.folderFormVisible = true
     },
@@ -634,12 +636,18 @@ export default {
         this.infoFlag = true
       }
     },
+    appendnode(childData, parentNode) {
+      this.$emit('append-node', childData, this.clickNode)
+    },
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
     },
     // 将字节数转换成大小
     formatTableSize(limit) {
+      if (limit === '') {
+        return ''
+      }
       if (limit === undefined) {
         limit = 0
       }

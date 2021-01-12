@@ -41,7 +41,8 @@ export function del(ids) {
 export function getById(id) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/getById/${id}`,
-    method: 'get'
+    url: `/${controllerName}/getById`,
+    method: 'get',
+    params: { id: id }
   })
 }

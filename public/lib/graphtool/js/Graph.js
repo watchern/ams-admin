@@ -835,12 +835,12 @@ Graph.prototype.defaultPageVisible = true;
 Graph.prototype.lightbox = false;
 
 /**
- * 
+ *
  */
 Graph.prototype.defaultPageBackgroundColor = '#ffffff';
 
 /**
- * 
+ *
  */
 Graph.prototype.defaultPageBorderColor = '#ffffff';
 
@@ -965,7 +965,7 @@ Graph.prototype.init = function(container) {
  * Implements zoom and offset via CSS transforms. This is currently only used
  * in read-only as there are fewer issues with the mxCellState not being scaled
  * and translated.
- * 
+ *
  * KNOWN ISSUES TO FIX:
  * - Apply CSS transforms to HTML labels in IE11
  */
@@ -994,7 +994,7 @@ Graph.prototype.init = function(container) {
 
 	/**
 	 * Function: getCellAt
-	 * 
+	 *
 	 * Needs to modify original method for recursive call.
 	 */
 	Graph.prototype.getCellAt = function(x, y, parent, vertices, edges, ignoreFn) {
@@ -1008,7 +1008,7 @@ Graph.prototype.init = function(container) {
 
 	/**
 	 * Function: getScaledCellAt
-	 * 
+	 *
 	 * Overridden for recursion.
 	 */
 	Graph.prototype.getScaledCellAt = function(x, y, parent, vertices, edges, ignoreFn) {
@@ -1049,7 +1049,7 @@ Graph.prototype.init = function(container) {
 
 	/**
 	 * Function: repaint
-	 * 
+	 *
 	 * Updates the highlight after a change of the model or view.
 	 */
 	mxCellHighlight.prototype.getStrokeWidth = function(state) {
@@ -1064,7 +1064,7 @@ Graph.prototype.init = function(container) {
 
 	/**
 	 * Function: getGraphBounds
-	 * 
+	 *
 	 * Overrides getGraphBounds to use bounding box from SVG.
 	 */
 	mxGraphView.prototype.getGraphBounds = function() {
@@ -1084,7 +1084,7 @@ Graph.prototype.init = function(container) {
 
 	/**
 	 * Function: viewStateChanged
-	 * 
+	 *
 	 * Overrides to bypass full cell tree validation.
 	 * TODO: Check if this improves performance
 	 */
@@ -1100,7 +1100,7 @@ Graph.prototype.init = function(container) {
 
 	/**
 	 * Function: validate
-	 * 
+	 *
 	 * Overrides validate to normalize validation view state and pass
 	 * current state to CSS transform.
 	 */
@@ -1130,7 +1130,7 @@ Graph.prototype.init = function(container) {
 
 	/**
 	 * Function: updateCssTransform
-	 * 
+	 *
 	 * Zooms out of the graph by <zoomFactor>.
 	 */
 	Graph.prototype.updateCssTransform = function() {
@@ -1311,7 +1311,7 @@ Graph.prototype.isBlankLink = function(href) {
 };
 
 /**
- * 
+ *
  */
 Graph.prototype.isRelativeUrl = function(url) {
 	return url != null && !this.absoluteUrlPattern.test(url) &&
@@ -1664,7 +1664,7 @@ Graph.prototype.formatDate = function(date, mask, utc) {
 };
 
 /**
- * 
+ *
  */
 Graph.prototype.createLayersDialog = function() {
 //	var div = document.createElement('div');
@@ -2275,13 +2275,13 @@ Graph.prototype.isCellConnectable = function(cell) {
 
 /**
  * Function: selectAll
- * 
+ *
  * Selects all children of the given parent cell or the children of the
  * default parent if no parent is specified. To select leaf vertices and/or
  * edges use <selectCells>.
- * 
+ *
  * Parameters:
- * 
+ *
  * parent - Optional <mxCell> whose children should be selected.
  * Default is <defaultParent>.
  */
@@ -2295,14 +2295,14 @@ Graph.prototype.selectAll = function(parent) {
 
 /**
  * Function: selectCells
- * 
+ *
  * Selects all vertices and/or edges depending on the given boolean
  * arguments recursively, starting at the given parent or the default
  * parent if no parent is specified. Use <selectAll> to select all cells.
  * For vertices, only cells with no children are selected.
- * 
+ *
  * Parameters:
- * 
+ *
  * vertices - Boolean indicating if vertices should be selected.
  * edges - Boolean indicating if edges should be selected.
  * parent - Optional <mxCell> that acts as the root of the recursion.
@@ -2318,12 +2318,12 @@ Graph.prototype.selectCells = function(vertices, edges, parent) {
 
 /**
  * Function: getSwimlaneAt
- * 
+ *
  * Returns the bottom-most swimlane that intersects the given point (x, y)
  * in the cell hierarchy that starts at the given parent.
- * 
+ *
  * Parameters:
- * 
+ *
  * x - X-coordinate of the location to be checked.
  * y - Y-coordinate of the location to be checked.
  * parent - <mxCell> that should be used as the root of the recursion.
@@ -2377,7 +2377,7 @@ Graph.prototype.zoom = function(factor, center) {
 
 /**
  * Function: zoomIn
- * 
+ *
  * Zooms into the graph by <zoomFactor>.
  */
 Graph.prototype.zoomIn = function() {
@@ -2393,7 +2393,7 @@ Graph.prototype.zoomIn = function() {
 
 /**
  * Function: zoomOut
- * 
+ *
  * Zooms out of the graph by <zoomFactor>.
  */
 Graph.prototype.zoomOut = function() {
@@ -2652,7 +2652,7 @@ HoverIcons.prototype.refreshTarget = new mxImage((mxClient.IS_SVG) ? 'data:image
 HoverIcons.prototype.tolerance = (mxClient.IS_TOUCH) ? 6 : 0;
 
 /**
- * 
+ *
  */
 HoverIcons.prototype.init = function() {
 	this.arrowUp = this.createArrow(this.triangleUp, mxResources.get('plusTooltip'));
@@ -2753,14 +2753,14 @@ HoverIcons.prototype.init = function() {
 						//重置位移
 						var transform = $lastFo.attr("transform");//translate(740,313)
 						var translate = transform.replace("transform(", "").replace(")", "").split(",");
-						
+
 						translate[0] = $last.parent().find("rect").attr("x");
 						$lastFo.attr("transform", "translate(" + translate[0] + "," + translate[1] + ")");
 						$lastFo.children().children().css("width", "99px");
 					}
 				}
 			} catch(e) {}
-			
+
 			//------------------连接线的被指向节点start------------------
 			//当前操作节点或连线对象
 			if(this.graph.getSelectionCell() && this.graph.getSelectionCell().edge){
@@ -2769,7 +2769,7 @@ HoverIcons.prototype.init = function() {
 				}
 			}
 			//------------------连接线的被指向节点end------------------
-			
+
 			var evt = me.getEvent();
 			var pt = mxUtils.convertPoint(this.graph.container, mxEvent.getClientX(evt), mxEvent.getClientY(evt))
 
@@ -2800,7 +2800,7 @@ HoverIcons.prototype.init = function() {
 };
 
 /**
- * 
+ *
  */
 HoverIcons.prototype.isResetEvent = function(evt, allowShift) {
 	return mxEvent.isAltDown(evt) || (this.activeArrow == null && mxEvent.isShiftDown(evt)) ||
@@ -2836,7 +2836,7 @@ HoverIcons.prototype.createConnetionBtn = function(img, tooltip) {
 	}
 	arrow.style.position = 'absolute';
 	arrow.style.cursor = this.cssCursor;
-	
+
 	//直线
 	mxEvent.addGestureListeners(arrow, mxUtils.bind(this, function(evt) {
 		if(this.currentState != null && !this.isResetEvent(evt)) {
@@ -2924,7 +2924,7 @@ HoverIcons.prototype.createArrow = function(img, tooltip) {
 };
 
 /**
- * 
+ *
  */
 HoverIcons.prototype.resetActiveArrow = function() {
 	if(this.activeArrow != null) {
@@ -2934,7 +2934,7 @@ HoverIcons.prototype.resetActiveArrow = function() {
 };
 
 /**
- * 
+ *
  */
 HoverIcons.prototype.getDirection = function() {
 	var dir = mxConstants.DIRECTION_EAST;
@@ -2951,7 +2951,7 @@ HoverIcons.prototype.getDirection = function() {
 };
 
 /**
- * 
+ *
  */
 HoverIcons.prototype.visitNodes = function(visitor) {
 	for(var i = 0; i < this.elts.length; i++) {
@@ -2962,7 +2962,7 @@ HoverIcons.prototype.visitNodes = function(visitor) {
 };
 
 /**
- * 
+ *
  */
 HoverIcons.prototype.removeNodes = function() {
 	this.visitNodes(function(elt) {
@@ -3066,7 +3066,7 @@ HoverIcons.prototype.click = function(state, dir, me) {
 };
 
 /**
- * 
+ *
  */
 HoverIcons.prototype.reset = function(clearTimeout) {
 	clearTimeout = (clearTimeout == null) ? true : clearTimeout;
@@ -3083,7 +3083,7 @@ HoverIcons.prototype.reset = function(clearTimeout) {
 };
 
 /**
- * 
+ *
  */
 HoverIcons.prototype.repaint = function() {
 	this.bbox = null;
@@ -3092,7 +3092,7 @@ HoverIcons.prototype.repaint = function() {
 		// Checks if cell was deleted
 		this.currentState = this.getState(this.currentState);
 
-		// Cell was deleted	
+		// Cell was deleted
 		if(this.currentState != null &&
 			this.graph.model.isVertex(this.currentState.cell) &&
 			this.graph.isCellConnectable(this.currentState.cell)) {
@@ -3134,7 +3134,7 @@ HoverIcons.prototype.repaint = function() {
 			this.arrowDown.style.left = Math.round(this.currentState.getCenterX() - this.triangleUp.width / 2 - this.tolerance + this.graph.getGridSizePadding()) + 'px';
 			this.arrowDown.style.top = Math.round(bds.y + bds.height - this.tolerance) + 'px';
 			mxUtils.setOpacity(this.arrowDown, 100);
-			
+
 			this.arrowLeft.style.left = Math.round(bds.x - this.triangleLeft.width - this.tolerance) + 'px';
 			this.arrowLeft.style.top = this.arrowRight.style.top;
 			mxUtils.setOpacity(this.arrowLeft, this.inactiveOpacity);
@@ -3209,7 +3209,7 @@ HoverIcons.prototype.repaint = function() {
 };
 
 /**
- * 
+ *
  */
 HoverIcons.prototype.computeBoundingBox = function() {
 	var bbox = (!this.graph.model.isEdge(this.currentState.cell)) ? mxRectangle.fromRectangle(this.currentState) : null;
@@ -3230,7 +3230,7 @@ HoverIcons.prototype.computeBoundingBox = function() {
 };
 
 /**
- * 
+ *
  */
 HoverIcons.prototype.getState = function(state) {
 	if(state != null) {
@@ -3257,7 +3257,7 @@ HoverIcons.prototype.getState = function(state) {
 };
 
 /**
- * 
+ *
  */
 HoverIcons.prototype.update = function(state, x, y) {
 	if(!this.graph.connectionArrowsEnabled) {
@@ -3315,7 +3315,7 @@ HoverIcons.prototype.update = function(state, x, y) {
 };
 
 /**
- * 
+ *
  */
 HoverIcons.prototype.setCurrentState = function(state) {
 	if(state.style['portConstraint'] != 'eastwest') {
@@ -3706,7 +3706,7 @@ HoverIcons.prototype.setCurrentState = function(state) {
 	/**
 	 * Adds custom stencils defined via shape=stencil(value) style. The value is a base64 encoded, compressed and
 	 * URL encoded XML definition of the shape according to the stencil definition language of mxGraph.
-	 * 
+	 *
 	 * Needs to be in this file to make sure its part of the embed client code. Also the check for ZLib is
 	 * different than for the Editor code.
 	 */
@@ -4029,7 +4029,7 @@ if(typeof mxVertexHandler != 'undefined') {
 
 		/**
 		 * Function: isCellLocked
-		 * 
+		 *
 		 * Returns true if the given cell does not allow new connections to be created.
 		 * This implementation returns false.
 		 */
@@ -4038,7 +4038,7 @@ if(typeof mxVertexHandler != 'undefined') {
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Graph.prototype.defaultVertexStyle = {};
 
@@ -4120,7 +4120,7 @@ if(typeof mxVertexHandler != 'undefined') {
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Graph.prototype.importGraphModel = function(node, dx, dy, crop) {
 			dx = (dx != null) ? dx : 0;
@@ -4738,7 +4738,7 @@ if(typeof mxVertexHandler != 'undefined') {
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Graph.prototype.getFreeInsertPoint = function() {
 			var view = this.view;
@@ -4815,7 +4815,7 @@ if(typeof mxVertexHandler != 'undefined') {
 		};*/
 
 		/**
-		 * 
+		 *
 		 */
 		Graph.prototype.getAbsoluteUrl = function(url) {
 			if(url != null && this.isRelativeUrl(url)) {
@@ -5146,7 +5146,7 @@ if(typeof mxVertexHandler != 'undefined') {
 		};
 
 		/**
-		 * 
+		 *
 		 * @param cell
 		 * @returns {Boolean}
 		 */
@@ -5162,12 +5162,12 @@ if(typeof mxVertexHandler != 'undefined') {
 
 		/**
 		 * Function: distributeCells
-		 * 
+		 *
 		 * Distribuets the centers of the given cells equally along the available
 		 * horizontal or vertical space.
-		 * 
+		 *
 		 * Parameters:
-		 * 
+		 *
 		 * horizontal - Boolean that specifies the direction of the distribution.
 		 * cells - Optional array of <mxCells> to be distributed. Edges are ignored.
 		 */
@@ -5248,7 +5248,7 @@ if(typeof mxVertexHandler != 'undefined') {
 
 		/**
 		 * Translates this point by the given vector.
-		 * 
+		 *
 		 * @param {number} dx X-coordinate of the translation.
 		 * @param {number} dy Y-coordinate of the translation.
 		 */
@@ -5291,7 +5291,7 @@ if(typeof mxVertexHandler != 'undefined') {
 
 		/**
 		 * Translates this point by the given vector.
-		 * 
+		 *
 		 * @param {number} dx X-coordinate of the translation.
 		 * @param {number} dy Y-coordinate of the translation.
 		 */
@@ -5308,7 +5308,7 @@ if(typeof mxVertexHandler != 'undefined') {
 
 		/**
 		 * Translates this point by the given vector.
-		 * 
+		 *
 		 * @param {number} dx X-coordinate of the translation.
 		 * @param {number} dy Y-coordinate of the translation.
 		 */
@@ -5691,27 +5691,25 @@ if(typeof mxVertexHandler != 'undefined') {
 			}
 
 			// Helper function to shorten strings
-			function short(str, max) {
-				if(str.length > max) {
-					str = str.substring(0, Math.round(max / 2)) + '...' +
-						str.substring(str.length - Math.round(max / 4));
-				}
-
-				return str;
-			};
-
-			var a = document.createElement('a');
-			a.setAttribute('rel', this.linkRelation);
-			a.setAttribute('href', this.getAbsoluteUrl(link));
-			a.setAttribute('title', short((this.isCustomLink(link)) ?
-				this.getLinkTitle(link) : link, 80));
+			// var short = function (str, max) {
+			// 	if(str.length > max) {
+			// 		str = str.substring(0, Math.round(max / 2)) + '...' +
+			// 			str.substring(str.length - Math.round(max / 4));
+			// 	}
+			// 	return str;
+			// };
+            var curLink = (this.isCustomLink(link)) ? this.getLinkTitle(link) : link;
+			var a = document.createElement("a");
+			a.setAttribute("rel", this.linkRelation);
+			a.setAttribute("href", this.getAbsoluteUrl(link));
+			a.setAttribute("title", this.shortFun(curLink, 80));
 
 			if(this.linkTarget != null) {
 				a.setAttribute('target', this.linkTarget);
 			}
 
 			// Adds shortened label to link
-			mxUtils.write(a, short(label, 40));
+			mxUtils.write(a, this.shortFun(label, 40));
 
 			// Handles custom links
 			if(this.isCustomLink(link)) {
@@ -5723,6 +5721,14 @@ if(typeof mxVertexHandler != 'undefined') {
 
 			return a;
 		};
+
+        Graph.prototype.shortFun = function (str, max) {
+            if(str.length > max) {
+                str = str.substring(0, Math.round(max / 2)) + '...' +
+                    str.substring(str.length - Math.round(max / 4));
+            }
+            return str;
+        };
 
 		/**
 		 * Customized graph for touch devices.

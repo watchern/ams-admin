@@ -1,5 +1,5 @@
 <template>
-    <div ref="screenTableMain" :style="screenStyle" v-loading="screenLoading">
+    <div ref="screenTableMain" :style="screenStyle" v-loading="screenLoading" element-loading-text="数据加载中">
         <el-collapse v-model="activeName" accordion v-if="queryFilter">
             <el-collapse-item name="1" title="查询条件">
                 <div :style="collapseStyle">
@@ -21,8 +21,8 @@
                         </el-col>
                         <el-col :span="4" v-show="ind === 0" style="text-align: center;">
                             <el-button v-show="!initQuery" type="primary" @click="queryData">查询</el-button>
+                            <el-button v-show="!initQuery" type="primary" @click="resetQuery">清空</el-button>
                             <el-button v-show="initQuery" type="primary" @click="initQueryData">初始化查询</el-button>
-                            <el-button type="primary" @click="resetQuery">清空</el-button>
                         </el-col>
                     </el-row>
                 </div>
@@ -49,8 +49,8 @@
                 </el-col>
                 <el-col :span="10" style="float: right;text-align: right;padding-right: 30px;">
                     <el-button v-show="!initQuery" type="primary" @click="queryData">查询</el-button>
+                    <el-button v-show="!initQuery" type="primary" @click="resetQuery">清空</el-button>
                     <el-button v-show="initQuery" type="primary" @click="initQueryData">初始化查询</el-button>
-                    <el-button type="primary" @click="resetQuery">清空</el-button>
                 </el-col>
             </el-row>
             <el-row>
@@ -64,19 +64,31 @@
                 <el-button type="primary" @click="executeParamCallBack">保存</el-button>
             </div>
         </el-dialog>
+        <el-dialog v-if="dataDealDialogVisible" :visible.sync="dataDealDialogVisible" :title="dataDealDialogTitle" :close-on-press-escape="autoCloseDialog" :close-on-click-modal="autoCloseDialog" width="1000px">
+            <ScreenQueryFilter ref="dataDealScreen" v-if="dataDealType === 'filter'" :columnInfoArr="columnInfoArr" :nodes="settingObj.filterSetting"/>
+            <ScreenQuerySort ref="dataDealScreen" v-if="dataDealType === 'sort'" :columnInfoArr="columnInfoArr" :setting="settingObj.sortSetting"/>
+            <ScreenQueryGroupCount ref="dataDealScreen" v-if="dataDealType === 'groupCount'" :columnInfoArr="columnInfoArr" :setting="settingObj.groupCountSetting"/>
+            <div slot="footer">
+                <el-button @click="dataDealDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="dealDataCallBack">保存</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     import InputParams from '@/views/graphtool/tooldic/page/inputParams/inputParams.vue'
     import ChildTabCons from "@/views/analysis/auditmodelresult/childtabcon"
+    import ScreenQueryFilter from '@/views/graphtool/tooldic/page/screenQuery/screenQuery_filter.vue'
+    import ScreenQuerySort from '@/views/graphtool/tooldic/page/screenQuery/screenQuery_sort.vue'
+    import ScreenQueryGroupCount from '@/views/graphtool/tooldic/page/screenQuery/screenQuery_groupCount.vue'
     import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams,
         getScreenGraphInfo,getScreenExecuteSql,selectScreenQueryData,dealReplaceParamSql } from '@/api/graphtool/graphList'
     import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
     import { getPreNodesNotDatasource } from '@/views/graphtool/tooldic/js/common'
     export default {
         name: "screenQueryOne",
-        components:{ InputParams, ChildTabCons },
+        components:{ InputParams, ChildTabCons, ScreenQueryFilter, ScreenQuerySort, ScreenQueryGroupCount },
         data() {
             return {
                 screenLoading: true,
@@ -94,15 +106,12 @@
                 },
                 paramsArr: [],//系统所有参数集合
                 arr: [],//当前节点绑定的所有参数集合
-                colNames: [],//表格的列数组
-                colModel: [],//表格的colModel对象
                 sql: '',//当前节点的查询SQL语句
                 paramSql: '',//当前节点的参数SQL语句
                 dataParamSql: '',//当前列表数据的查询条件
                 curReplaceParamSql:'',//当前节点的参数SQL
                 columnInfoArr: [],//显示的列信息集合
                 isQuery: false,//是否查询过结果
-                isInitTable: false,//是否重新加载数据表
                 selectNum: 0, //定义查询条件为下拉列表的参数个数
                 selectTreeNum: 0,//定义查询条件为下拉树的参数个数
                 allNodeData: {}, //当前图形的所有节点的数据
@@ -113,12 +122,14 @@
                 queryFilterArr:[],//查询条件集合
                 queryFilter:false,
                 activeName:'1',
-                changeTable:0,//是否改变过查询结果
                 initQuery:false,//是否有结果集
                 resultInfo:null,//查询结果集的数据信息
                 showTableResult:false,//是否展示查询结果列表
                 autoCloseDialog:false,
-                nodeParamDialogVisible:false
+                nodeParamDialogVisible:false,
+                dataDealDialogVisible:false,
+                dataDealDialogTitle:'',
+                dataDealType:''
             }
         },
         props: ['screenParam'],
@@ -173,30 +184,12 @@
                                 this.allNodeData[nodeId].setting.index = this.screenParam.layering_index
                             }
                             //组装列表字段数组
-                            let columnsInfo = curNodeData.columnsInfo
-                            for (let i = 0; i < columnsInfo.length; i++) {
-                                if (columnsInfo[i].isOutputColumn === 1) {
-                                    this.columnInfoArr.push(columnsInfo[i])
-                                    if (this.curOptType === "change") {//如果是数据转码，则需追加一列（未转码前的列名称，即“XX_原字段”）
-                                        let tableData = curNodeData.setting.tableData//获取转码配置
-                                        let tanscodeColumnArr = Object.keys(tableData)//获取转码字段数组
-                                        for (let j = 0; j < tanscodeColumnArr.length; j++) {
-                                            if (tanscodeColumnArr[j] === columnsInfo[i].columnName) {
-                                                this.colNames.push(columnsInfo[i].newColumnName + "_原字段")
-                                                break
-                                            }
-                                        }
-                                    } else {
-                                        this.colNames.push(columnsInfo[i].newColumnName)
-                                    }
+                            var columnsInfo = curNodeData.columnsInfo;
+                            Array.from(curNodeData.columnsInfo, item => {
+                                if(item.isOutputColumn === 1){
+                                    this.columnInfoArr.push(item);
                                 }
-                            }
-                            //组织colModel对象
-                            Array.from(this.colNames, item => this.colModel.push({
-                                'headerName': item,
-                                'field': item,
-                                'pinned': 'center'
-                            }))
+                            })
                             //获取参数配置信息
                             let paramsSetting = curNodeData.paramsSetting
                             let isError = false
@@ -728,6 +721,9 @@
                 }
             },
             pageInit(sql){
+                if(this.$parent.$parent.$parent.$parent.screenListLoading === false){
+                    this.$parent.$parent.$parent.$parent.screenListLoading = true
+                }
                 this.resultInfo = {"id":this.screenParam.nodeData.nodeInfo.nodeId,"name":this.screenParam.nodeData.nodeInfo.nodeName}
                 let param = {"sql":sql}
                 let webSocketUuid = new UUIDGenerator().id
@@ -741,12 +737,6 @@
                 })
             },
             async queryData() {
-                if (this.changeTable === 1){
-                    this.isInitTable = true
-                    this.changeTable = 0
-                }else{
-                    this.isInitTable = false
-                }
                 let filterArr = []//参数条件的数组，包含参数ID和参数值，也只存储输了值的参数
                 let paramNum = 0//记录参数不允许为空却未输入值的参数数量
                 let hasAllowedNullParam = false//本次查询是否含有可为空的参数条件
@@ -1050,19 +1040,53 @@
                 })
             },
             initQueryData(){
-                if (this.changeTable === 1) {
-                    this.isInitTable = true
-                    this.changeTable = 0
-                } else {
-                    this.isInitTable = false;
-                }
                 this.curReplaceParamSql = ''
                 this.initExecuteSql();
             },
             dealData(type){
-                console.log(type)
-                this.$message({'type':'info','message':'别急哈，在集成呢……'})
+                if(!this.isQuery){
+                    this.$message({'type':'warning','message':'尚无结果数据，只能对查询的结果数据进行设置'})
+                    return
+                }
+                this.dataDealType = type
+                //先获取当前列表的所有查询条件
+                switch (type) {
+                    case "filter"://过滤设置
+                        this.dataDealDialogTitle = "筛选设置";
+                        break;
+                    case "sort"://排序设置
+                        this.dataDealDialogTitle = "排序设置";
+                        break;
+                    case "groupCount"://分组统计设置
+                        this.dataDealDialogTitle = "分组统计设置";
+                        break;
+                }
+                this.dataDealDialogVisible = true
             },
+            dealDataCallBack(){
+                let verify = this.$refs.dataDealScreen.verifySetting()
+                if(verify){
+                    let whereObj = this.$refs.dataDealScreen.saveSetting()
+                    if((whereObj.hasWhere && whereObj.whereStr !== "") || !whereObj.hasWhere){//有where条件并且条件不为空的，或者没有where条件的
+                        switch (this.dataDealType) {
+                            case "filter"://过滤设置
+                                this.settingObj.filterSetting = whereObj.setting;
+                                break;
+                            case "sort"://排序设置
+                                this.settingObj.sortSetting = whereObj.setting;
+                                break;
+                            case "groupCount"://分组统计设置
+                                this.settingObj.groupCountSetting = whereObj.setting;
+                                break;
+                        }
+                        this.dataDealDialogVisible = false
+                        this.sql = `SELECT ${whereObj.columnArr.join(",")} FROM (${this.settingObj.initSql}) ${whereObj.whereStr}`
+                        this.pageInit(this.sql);
+                    }else{
+                        this.$refs.dataDealScreen.$message.error("配置条件为空，不可保存");
+                    }
+                }
+            }
         }
     }
     </script>

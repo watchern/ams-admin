@@ -1,55 +1,12 @@
 <template>
   <div class="page-container">
     <el-row>
-      <el-col :span="4">
-        <el-input
-          v-model="filterText1"
-          placeholder="输入关键字进行过滤"
-        />
-        <!--<el-select defaultFirstOption="true" @change="handleSelectChange" :value="selectValue">
-          <el-option label="显示所有" value="all"></el-option>
-          <el-option label="只显示未注册" value="noPart"></el-option>
-          <el-option label="只显示已注册" value="yesPart"></el-option>
-        </el-select>-->
-        <div class="tree-container">
-          <MyElTree
-            ref="tree1"
-            :props="props"
-            :load="loadNode1"
-            lazy
-            :filter-node-method="filterNode"
-            class="filter-tree"
-            show-checkbox
-          >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
-              <i v-if="data.type==='USER'" class="el-icon-menu" style="color:#409EFF" />
-              <i v-if="data.type==='TABLE'" class="el-icon-tickets" style="color:#409EFF" />
-              <i v-if="data.type==='COLUMN'" class="el-icon-s-ticket" style="color:#409EFF" />
-              <span>{{ node.label }}</span>
-            </span>
-          </MyElTree>
-        </div>
-
-      </el-col>
-      <el-col :span="1" style="width: 40px padding-top: 10%">
-        <div class="transfer-center">
-          <p class="transfer-center-item">
-            <el-button
-              type="primary"
-              :disabled="fromDisabled"
-              circle
-              icon="el-icon-arrow-right"
-              @click="asyncTable"
-            />
-          </p>
-        </div>
-      </el-col>
       <el-col :span="5">
         <el-input
           v-model="filterText2"
           placeholder="输入关键字进行过滤"
         />
-
+        <el-link class="select-link" type="primary" @click="registTable">注册资源</el-link>
         <div class="tree-container">
           <MyElTree
             ref="tree2"
@@ -57,6 +14,7 @@
             :load="loadNode2"
             lazy
             :filter-node-method="filterNode"
+            :default-expanded-keys="['ROOT']"
             class="filter-tree"
             highlight-current="true"
             node-key="id"
@@ -96,10 +54,43 @@
           </MyElTree>
         </div>
       </el-col>
-      <el-col :span="14">
+      <el-col :span="14" style="margin-left: 50px;">
         <tabledatatabs v-if="divInfo" ref="tabledatatabs" open-type="tableRegister" :table-id="tableId" :tab-show.sync="tabShow" />
       </el-col>
     </el-row>
+    <el-dialog :title="'选择注册表'" :visible.sync="registTableFlag" width="600px">
+      <el-input
+        v-model="filterText1"
+        placeholder="输入关键字进行过滤"
+      />
+      <!--<el-select defaultFirstOption="true" @change="handleSelectChange" :value="selectValue">
+          <el-option label="显示所有" value="all"></el-option>
+          <el-option label="只显示未注册" value="noPart"></el-option>
+          <el-option label="只显示已注册" value="yesPart"></el-option>
+        </el-select>-->
+      <div class="tree-container">
+        <MyElTree
+          ref="tree1"
+          :props="props"
+          :load="loadNode1"
+          lazy
+          :filter-node-method="filterNode"
+          class="filter-tree"
+          show-checkbox
+        >
+          <span slot-scope="{ node, data }" class="custom-tree-node">
+            <i v-if="data.type==='USER'" class="el-icon-menu" style="color:#409EFF" />
+            <i v-if="data.type==='TABLE'" class="el-icon-tickets" style="color:#409EFF" />
+            <i v-if="data.type==='COLUMN'" class="el-icon-s-ticket" style="color:#409EFF" />
+            <span>{{ node.label }}</span>
+          </span>
+        </MyElTree>
+      </div>
+      <span slot="footer">
+        <el-button @click="folderFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="flagSelectTable">保存</el-button>
+      </span>
+    </el-dialog>
     <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="600px">
       <el-form ref="folderForm" :model="folderForm" label-width="80px">
         <el-form-item label="文件夹名称" label-width="120px">
@@ -120,6 +111,7 @@ import MyElTree from '@/components/Ace/tree/src/tree.vue'
 import { listUnCached, getDataTreeNode, saveTable, delTable } from '@/api/data/table-info'
 import { saveFolder, updateFolder, delFolder } from '@/api/data/folder'
 import { commonNotify } from '@/utils'
+import { debug } from 'leancloud-storage'
 
 export default {
   components: { MyElTree, tabledatatabs },
@@ -127,6 +119,7 @@ export default {
     return {
       tabShow: 'basicinfo',
       tableId: '',
+      registTableFlag: false,
       divInfo: false,
       filterText1: null,
       filterText2: null,
@@ -208,6 +201,49 @@ export default {
         getDataTreeNode(node.data.id).then(resp => {
           resolve(resp.data)
         })
+      }
+    },
+    registTable() {
+      var ckFolder = this.$refs.tree2.getCurrentNode()
+      if (!ckFolder || ckFolder.type !== 'FOLDER') {
+        this.$notify(commonNotify({ type: 'warning', message: '请选中文件夹' }))
+        return false
+      }
+      this.registTableFlag = true
+    },
+    flagSelectTable() {
+      var ckFolder = this.$refs.tree2.getCurrentNode()
+      if (!ckFolder || ckFolder.type !== 'FOLDER') {
+        this.$notify(commonNotify({ type: 'warning', message: '请选中文件夹' }))
+        return false
+      } else {
+        var ckTbs = this.$refs.tree1.getCheckedNodes()
+        ckTbs.filter(tb => {
+          return tb.type === 'TABLE'
+        }).forEach(node => {
+          const tableForm = {
+            tableMetaUuid: node.id,
+            displayTbName: node.label,
+            dbName: node.pid,
+            tbName: node.label,
+            folderUuid: ckFolder.id
+          }
+          saveTable(tableForm).then(resp => {
+            var childData = {
+              disable: false,
+              id: tableForm.tableMetaUuid,
+              label: tableForm.tbName,
+              leaf: true,
+              pid: ckFolder.id,
+              showCheckbox: true,
+              type: 'TABLE'
+            }
+            this.$refs.tree2.remove(childData)
+            this.$refs.tree2.append(childData, ckFolder)
+            this.$notify(commonNotify({ type: 'success', message: `表<${node.label}>成功同步成功！` }))
+          })
+        })
+        this.registTableFlag = false
       }
     },
     nodeClick(data, node, tree) {
@@ -292,43 +328,6 @@ export default {
     handleSelectChange(val) {
 
     },
-    asyncTable() {
-      var ckTbs = this.$refs.tree1.getCheckedNodes()
-      var ckFolder = this.$refs.tree2.getCurrentNode()
-      if (ckTbs.length === 0) {
-        this.$notify(commonNotify({ type: 'warning', message: '请勾选左侧表' }))
-        return false
-      }
-      if (!ckFolder || ckFolder.type !== 'FOLDER') {
-        this.$notify(commonNotify({ type: 'warning', message: '请选中文件夹' }))
-        return false
-      }
-      ckTbs.filter(tb => {
-        return tb.type === 'TABLE'
-      }).forEach(node => {
-        const tableForm = {
-          tableMetaUuid: node.id,
-          displayTbName: node.label,
-          dbName: node.pid,
-          tbName: node.label,
-          folderUuid: ckFolder.id
-        }
-        saveTable(tableForm).then(resp => {
-          var childData = {
-            disable: false,
-            id: tableForm.tableMetaUuid,
-            label: tableForm.tbName,
-            leaf: true,
-            pid: ckFolder.id,
-            showCheckbox: true,
-            type: 'TABLE'
-          }
-          this.$refs.tree2.remove(childData)
-          this.$refs.tree2.append(childData, ckFolder)
-          this.$notify(commonNotify({ type: 'success', message: `表<${node.label}>成功同步成功！` }))
-        })
-      })
-    },
     removeTable() {
       var ids = this.$refs.tree2.getCheckedKeys()
       delTable(ids.join(',')).then(resp => {
@@ -356,6 +355,10 @@ export default {
   left:45%;
   height: 95%;
 }
+.select-link {
+  margin-top: 10px;
+  cursor:pointer;
+  }
 </style>
 
 <style lang="scss">

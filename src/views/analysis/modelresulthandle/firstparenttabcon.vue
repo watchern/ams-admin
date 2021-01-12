@@ -12,13 +12,12 @@
         </div>
       </el-header>
       <el-main>
-        <div align="right" style="width: 57%">
+        <div align="right" style="width: 92%">
           <el-row>
             <el-button
               :disabled="false"
               type="primary"
               size="small"
-              @click=""
               title="处理"
               class="oper-btn processing"
               @click="handleResult"
@@ -28,7 +27,7 @@
               type="primary"
               @click="deleteRunTaskRel"
               class="oper-btn delete"
-              title="删除"
+              title="如果选中的结果有项目关联，则删除的是关联的项目，如果没有则不能删除"
             ></el-button>
           </el-row>
         </div>
@@ -45,7 +44,7 @@
           @selection-change="handleSelectionChange"
           height="450px"
         >
-          <el-table-column type="selection" width="55" />
+          <el-table-column type="selection" width="55px" />
           <el-table-column
             label="模型名称"
             width="300px"

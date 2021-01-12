@@ -17,9 +17,9 @@
         <el-form-item label="表名称" prop="tableName">
           <el-input v-model="tempTable.tableName" />
         </el-form-item>
-        <el-form-item v-if="openType !== 'addTable'" label="新建表注释" prop="tableComment">
+        <!-- <el-form-item v-if="openType !== 'addTable'" label="新建表注释" prop="tableComment">
           <el-input v-model="tempTable.tableComment" />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
     </template>
     <el-table :data="temp" height="600px" @selection-change="handleSelectionChange">
@@ -53,19 +53,19 @@
           <el-radio v-model="scope.row.isNullable" :disabled="openType === 'showTable' || openType === 'tableRegister'" :label="1" @click.native.prevent="clickitem(scope.$index,1)"><span /></el-radio>
         </template>
       </el-table-column>
-      <el-table-column v-if="openType !== 'addTable'" prop="colComment" label="注释" show-overflow-tooltip>
+      <!-- <el-table-column v-if="openType !== 'addTable'" prop="colComment" label="注释" show-overflow-tooltip>
         <template slot-scope="scope" show-overflow-tooltip>
           <el-input v-model="scope.row.colComment" :disabled="openType === 'showTable' || openType === 'tableRegister'" style="width:90%;" />
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
-    <el-button v-if="openType !== 'showTable' || openType !== 'tableRegister'" type="primary" style="float:right;margin-top:20px" @click="openType==='addTable'?saveTable():updateTable()">保存</el-button>
+    <el-button v-if="openType !== 'showTable' && openType !== 'tableRegister'" type="primary" style="float:right;margin-top:20px" @click="openType==='addTable'?saveTable():updateTable()">保存</el-button>
   </div>
 </template>
 
 <script>
 import { getSqlType, getColsInfo } from '@/api/data/table-info'
-import { getExecuteTask } from '@/api/analysis/sqleditor/sqleditor'
+import { addTable, updateTable } from '@/api/data/directory'
 export default {
   // eslint-disable-next-line vue/require-prop-types
   props: ['tableId', 'openType', 'forderId'],
@@ -75,6 +75,7 @@ export default {
       selections: [],
       sqlType: {},
       temp: [],
+      tableObj: [],
       tempColumn: [],
       tempTable: {}
     }
@@ -90,8 +91,10 @@ export default {
       if (this.openType !== 'addTable') {
         getColsInfo(tableId).then(resp => {
           // 返回两个新的数组
-          this.tempColumn = resp.data.slice()
-          this.temp = JSON.parse(JSON.stringify(resp.data))
+          this.tableObj = resp.data
+          this.tempTable.tableName = resp.data.displayTbName
+          this.tempColumn = resp.data.colMetas.slice()
+          this.temp = JSON.parse(JSON.stringify(resp.data.colMetas))
         })
       }
     },
@@ -156,58 +159,81 @@ export default {
     },
     // 保存基本信息
     saveTable() {
-      var sql = 'create table ' + this.tempTable.tableName + ' (' + '\n'
+      // var sql = 'create table ' + this.tempTable.tableName + ' (' + '\n'
       // var tableComments = '\n'
       // if (this.tempTable.tableComment !== null) {
       //   tableComments = tableComments + '\n' + 'comment on table ' + this.tempTable.tableName + ' is ' + "'" + this.tempTable.tableComment + "';"
       // }
+      // for (let index = 0; index < this.temp.length; index++) {
+      //   const r = this.temp[index]
+      //   if (r.isNullable === 0) {
+      //     r.isNullable = 'NULL'
+      //   } else {
+      //     r.isNullable = 'NOT NULL'
+      //   }
+      //   if (r.dataLength !== '') {
+      //     r.dataType = r.dataType + '(' + r.dataLength + ') '
+      //   }
+      //   if (r.colComment !== '') {
+      //     tableComments = tableComments + '\n' + 'comment on column ' + this.tempTable.tableName + '.' + r.colName + ' is ' + "'" + r.colComment + "';"
+      //   }
+      //   if (index < this.temp.length - 1) {
+      //     sql = sql + r.colName + ' ' + r.dataType + ' ' + r.isNullable + ',' + '\n'
+      //   } else {
+      //     sql = sql + r.colName + ' ' + r.dataType + ' ' + r.isNullable + '  )'
+      //   }
+      // }
+      // sql = sql + tableComments
+      // var sqlObj = {}
+      // sqlObj.sql = sql
+      // sqlObj.tableName = this.tempTable.tableName
+      // sqlObj.modelResultSavePathId = this.forderId
       for (let index = 0; index < this.temp.length; index++) {
         const r = this.temp[index]
-        if (r.isNullable === 0) {
-          r.isNullable = 'NULL'
-        } else {
-          r.isNullable = 'NOT NULL'
-        }
         if (r.dataLength !== '') {
-          r.dataType = r.dataType + '(' + r.dataLength + ') '
-        }
-        // if (r.colComment !== '') {
-        //   tableComments = tableComments + '\n' + 'comment on column ' + this.tempTable.tableName + '.' + r.colName + ' is ' + "'" + r.colComment + "';"
-        // }
-        if (index < this.temp.length - 1) {
-          sql = sql + r.colName + ' ' + r.dataType + ' ' + r.isNullable + ',' + '\n'
-        } else {
-          sql = sql + r.colName + ' ' + r.dataType + ' ' + r.isNullable + '  );'
+          r.dataLength = parseInt(r.dataLength)
         }
       }
-      // sql = sql + tableComments
-      var sqlObj = {}
-      sqlObj.sqls = sql
-      sqlObj.isExistParam = false
-      sqlObj.businessField = 'createResourceTable'
-      sqlObj.modelResultSavePathId = this.forderId
-      getExecuteTask(sqlObj).then((result) => {
-        this.$notify({
-          title: '成功',
-          message: '创建成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
-        })
+      const addObj = {}
+      addObj.colMetas = this.temp
+      addObj.folderUuid = this.forderId
+      addObj.tbName = this.tempTable.tableName
+      addObj.tbComment = this.tempTable.tbComment
+      addTable(addObj).then((res) => {
+        if (res.data.status === '500') {
+          this.$notify({
+            title: '失败',
+            message: res.data.msg,
+            type: 'error',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        } else {
+          this.$notify({
+            title: '成功',
+            message: '新建表成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+          var childData = {
+            id: res.data.successTable.tableMetaUuid,
+            label: res.data.successTable.displayTbName,
+            pid: res.data.successTable.folderUuid,
+            type: 'table',
+            extMap: {
+              accessType: ['FETCH_TABLE_DATA', 'BASIC_PRIV'],
+              createTime: res.data.successTable.createTime,
+              tableName: res.data.successTable.tbName,
+              tbSizeByte: 0,
+              tblType: 'T'
+            }
+          }
+          // 添加节点
+          this.$emit('append-node', childData, this.clickNode)
+        }
       }).catch((result) => {
-        this.executeLoading = false
       })
-      // saveTableCols(sql).then(() => {
-      //   this.getList()
-      //   this.dialogFormVisible = false
-      //   this.$notify({
-      //     title: '成功',
-      //     message: '创建成功',
-      //     type: 'success',
-      //     duration: 2000,
-      //     position: 'bottom-right'
-      //   })
-      // })
     },
     updateTable() {
       var newColumn = this.arrRemoveMix(this.temp, this.tempColumn)
@@ -220,7 +246,8 @@ export default {
       var alter = ''
       // 删除字段sql
       var drop = ''
-      var sql = 'ALTER TABLE ' + this.tempTable.tableName + ' (' + '\n'
+      // eslint-disable-next-line no-unused-vars
+      var sql = 'ALTER TABLE "' + this.tableObj.tbName + '" ' + '\n'
       for (let index = 0; index < newColumn.length; index++) {
         const r = newColumn[index]
         if (typeof r.colMetaUuid === 'undefined') {
@@ -232,24 +259,24 @@ export default {
           if (r.dataLength !== '') {
             r.dataType = r.dataType + '(' + r.dataLength + ') '
           }
-          add = add + 'ADD ( "' + r.colName + '" ' + r.dataType + ' ' + r.isNullable + ' ) ;' + '\n'
+          add = add + 'ADD ( "' + r.colName + '" ' + r.dataType + ' ' + r.isNullable + ' ) ' + '\n'
         } else {
           var oldCol = oldColumn.filter(obj => { return obj.colMetaUuid === r.colMetaUuid })
           var reNameArr = oldColumn.filter(obj => { return obj.colName === r.colName })
           if (r.isNullable === 0) {
             r.isNullable = 'NULL'
           } else {
-            r.isNullable = 'NOT NULL'
+            r.isNullable = ' '
           }
           if (r.dataLength !== '') {
             r.dataType = r.dataType + '(' + r.dataLength + ') '
           }
           // 如果初始表列id在最终保存修改中找不到,说明该列已经重命名
           if (reNameArr.length === 0) {
-            alter = alter + 'ALTER TABLE "' + this.tempTable.tableName + '" RENAME COLUMN"' + oldCol[0].colName + '" TO "' + r.colName + '";' + '\n'
-            modify = modify + 'MODIFY ( "' + oldCol[0].colName + '" ' + r.dataType + ' ' + r.isNullable + ' ) ;' + '\n'
+            alter = alter + 'ALTER TABLE "' + this.tableObj.tbName + '" RENAME COLUMN"' + oldCol[0].colName + '" TO "' + r.colName + '"' + '\n'
+            modify = modify + 'MODIFY ( "' + oldCol[0].colName + '" ' + r.dataType + ' ' + r.isNullable + ' ) ' + '\n'
           } else {
-            modify = modify + 'MODIFY ( "' + r.colName + '" ' + r.dataType + ' ' + r.isNullable + ' ) ;' + '\n'
+            modify = modify + 'MODIFY ( "' + r.colName + '" ' + r.dataType + ' ' + r.isNullable + ' ) ' + '\n'
           }
         }
       }
@@ -260,12 +287,28 @@ export default {
           var dropArr = newColumn.filter(obj => { return obj.colMetaUuid === r.colMetaUuid })
           // 如果初始表列id在最终保存修改中找不到,说明该列已经被删除
           if (dropArr.length === 0) {
-            drop = drop + 'ALTER TABLE "' + this.tempTable.tableName + '" DROP("' + r.colName + '");' + '\n'
+            drop = drop + 'ALTER TABLE "' + this.tableObj.tbName + '" DROP("' + r.colName + '")' + '\n'
           }
         }
       }
-      sql = modify + add + drop + alter
-      console.log(sql)
+      if (modify + add === '') {
+        sql = drop + '\n' + alter
+      } else {
+        sql = sql + modify + add + drop + '\n' + alter
+      }
+      const addObj = {}
+      addObj.sql = sql
+      addObj.tbName = this.tempTable.tableName
+      updateTable(addObj).then((res) => {
+        this.$notify({
+          title: '成功',
+          message: '新建表成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      }).catch((result) => {
+      })
     },
     arrRemoveMix(arr1, arr2) {
       return this.filterData(this.arrayDifference(arr1, arr2))

@@ -1,10 +1,9 @@
 <template>
-  <div>
     <div style="width: 100%;height:auto;padding-left:50px;">
       <p style="height:30px;line-height: 30px;color: red;">注：已排序字段列表中，可通过拖动行改变字段的显示顺序</p>
-      <div id="group2" class="demo-transfer twotransfer" style="width: 400px;float: left;margin-top:10px;" />
+      <div id="toSortList" ref="toSortList" class="demo-transfer twotransfer" style="width: 400px;float: left;margin-top:10px;" />
       <div style="float: left;width: 450px; height: 500px;margin-top:10px;background-color: #fff;border:1px solid #E6E6E6;overflow-y: auto">
-        <table id="col_table_col" class="table_auto">
+        <table class="table_auto">
           <thead>
             <tr>
               <td width="80px">
@@ -14,7 +13,7 @@
               <td width="200px">排序方式</td>
             </tr>
           </thead>
-          <tbody>
+          <tbody ref="colTableColTbody">
             <tr v-for="(sortObj,index) in sortColumnArr" :id="sortObj.value">
               <td>
                 <el-checkbox :key="sortObj.value" v-model="sortObj.checked" @change="checkBoxChange(index)" />
@@ -29,7 +28,6 @@
         </table>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -41,7 +39,7 @@ export default {
       selectAll: false,
       sortColumnArr: [],
       columnData: [],
-      group_transfer: null
+      sort_transfer: null
     }
   },
   mounted() {
@@ -52,7 +50,7 @@ export default {
       const graph = this.$parent.graph
       this.nodeData = graph.nodeData[graph.curCell.id]
       const columnsInfoPre = this.$parent.columnsInfoPre
-      const $this = this
+      let $this = this
       layui.use('transfer', function() {
         const transfer = layui.transfer
         const reload_value = []
@@ -72,20 +70,16 @@ export default {
             }
           }
         } else {					// 未配置过,字段信息来自父节点
-          var columnsInfo = columnsInfoPre
-          for (var i = 0; i < columnsInfo.length; i++) {
-            var obj = { 'value': columnsInfo[i].newColumnName, 'title': columnsInfo[i].newColumnName }
-            $this.columnData.push(obj)
-          }
+            Array.from(columnsInfoPre, item => $this.columnData.push({ 'value': item.newColumnName, 'title': item.newColumnName }))
         }
         // 显示搜索框
-        var height = 500
-        $this.group_transfer = transfer.render({
-          elem: '#group2',
+        const height = 500
+        $this.sort_transfer = transfer.render({
+          elem: '#toSortList',
           data: $this.columnData,
           title: ['待选择排序字段', ''],
           showSearch: true,
-          id: 'group2key',
+          id: 'toSortListKey',
           height: height,
           width: 300,
           onchange: function(data, index) {
@@ -97,16 +91,16 @@ export default {
           }
         })
         if (isSet) {
-          transfer.reload('group2key', {
+          transfer.reload('toSortListKey', {
             title: ['待选择排序字段', ''],
             value: reload_value,
             showSearch: true
           })
         }
-        $('#group2').find(".layui-transfer-box[data-index='1']").hide()
+        $($this.$refs.toSortList).find(".layui-transfer-box[data-index='1']").hide()
         $('ul.layui-transfer-data').css('height', height - 93)
       })
-      $('#col_table_col>tbody').sortable().disableSelection()
+      $(this.$refs.colTableColTbody).sortable().disableSelection()
     },
     add_tr(data) {
       const $this = this
@@ -138,7 +132,7 @@ export default {
     },
     handleCheckAllChange(checked) {
       Array.from(this.sortColumnArr, (n) => n.checked = checked)
-      const column = this.group_transfer.getData()
+      const column = this.sort_transfer.getData()
       const value = []
       $(column).each(function(index) {
         this.checked = checked
@@ -147,7 +141,7 @@ export default {
       this.reloadTransfer(value)
     },
     checkBoxChange(index) {
-      const data = this.group_transfer.getData()
+      const data = this.sort_transfer.getData()
       const value = []
       let count = 0
       for (var i = 0; i < data.length; i++) {
@@ -182,13 +176,13 @@ export default {
     },
     reloadTransfer(value) {
       if (typeof value !== 'undefined') {
-        this.group_transfer.reload({
+        this.sort_transfer.reload({
           value: value
         })
       } else {
-        this.group_transfer.reload({})
+        this.sort_transfer.reload({})
       }
-      $('#group2').find(".layui-transfer-box[data-index='1']").hide()
+      $(this.$refs.toSortList).find(".layui-transfer-box[data-index='1']").hide()
     }
   }
 }

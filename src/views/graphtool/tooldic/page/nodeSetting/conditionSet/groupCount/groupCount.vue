@@ -38,7 +38,7 @@
                                     <a data-toggle="collapse" data-parent="#countAccordion" href="#countCollapse">汇总设置</a>
                                 </h4>
                             </div>
-                            <div id="countCollapse" class="panel-collapse collapse in">
+                            <div id="countCollapse" class="panel-collapse collapse">
                                 <div class="panel-body">
                                     <table id="countTable" class="table table-striped">
                                         <thead>
@@ -128,8 +128,7 @@
                 isDisabled:false,
                 columnData:[],// 穿梭框中加载的字段数据数组集合
                 columnsInfo:[],// 所有输出列信息
-                groupTransfer:null,// 分组的穿梭框对象
-                a:null
+                groupTransfer:null// 分组的穿梭框对象
             }
         },
         props:['graph'],
@@ -167,7 +166,7 @@
             delCountTr(index, event) {
                 groupCountJs.delCountTr(index)
             },
-            vilidata_simple(index) {
+            vilidata_simple() {
                 const checkedIndex = this.columnItems.findIndex(n => n.checked === true)
                 if (checkedIndex < 0) {
                     this.$message({ type: 'warning', message: '请选择输出字段' })
@@ -178,7 +177,7 @@
                 let message = ''
                 for (let i = 0; i < this.columnItems.length; i++) {
                     if (this.columnItems[i].checked) {
-                        const curNewColumnName = this.columnItems[index].newColumnName
+                        const curNewColumnName = this.columnItems[i].newColumnName
                         if($.trim(curNewColumnName) === ""){
                             verify = false
                             message = `第${i + 1}行的输出字段的内容不能为空值，请修改`
@@ -194,14 +193,14 @@
                             message = `第${i + 1}行的输出字段的内容含有特殊字符或以数字开头，请修改`
                             break;
                         }
-                        const curIndex = vili_column.findIndex(item => item === curNewColumnName)
-                        if (curIndex > -1) {
+                        const curIndex = vili_column.findIndex(item => item.newColumnName === curNewColumnName)
+                        if (curIndex > -1 && vili_column[curIndex].checked) {
                             verify = false
                             message = `第${curIndex + 1}行与第${i + 1}行的输出字段的内容重复，请修改`
                             break;
                         }
                     }
-                    vili_column.push(this.columnItems[i].newColumnName)
+                    vili_column.push({"checked":this.columnItems[i].checked,"newColumnName":this.columnItems[i].newColumnName})
                 }
                 if (!verify) {
                     this.$message({ type: 'warning', message: message })
@@ -242,5 +241,8 @@
     .table > thead > tr > th {
         background-color: #5886B2;
         color: #ECF0F5;
+    }
+    .panel-body{
+        padding: 10px 0;
     }
 </style>

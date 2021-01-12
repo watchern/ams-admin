@@ -20,8 +20,8 @@
     <!-- 监控总览/饼图 -->
     <el-row style="height: 320px;" :gutter="15">
       <el-col :span="12">
-        <el-card class="box-card" shadow="always">
-          <div slot="header" class="clearfix" style="text-align:right; ">
+        <el-card class="boxcard" shadow="always">
+          <div slot="header" class="clearfix" style="text-align:right;">
             <time class="time">更新时间：{{ time | formatDate }}</time>
             <!-- <span>卡片名称</span> -->
             <span class="el-icon-refresh-left refreshspan" @click="refresh()" />
@@ -80,7 +80,7 @@
         </el-card>
       </el-col>
       <el-col :span="12">
-        <el-card class="box-card" shadow="always">
+        <el-card class="boxcard" shadow="always">
           <div slot="header" class="clearfix" style="text-align: right;">
             <!-- <span>卡片名称</span> -->
             <time class="time">更新时间：{{ time | formatDate }}</time>
@@ -277,7 +277,7 @@ export default {
     this.searchParams.startTimeStart = dayjs().format('YYYY-MM-DD')
     this.searchParams.startTimeEnd = dayjs().format('YYYY-MM-DD')
     this.value1 = [dayjs().format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')]
-    this.setProcessGroupExecutionStatusType('G_SUCCESS')
+    this.setProcessGroupExecutionStatusType('')
     this.setProcessStartTime(this.searchParams.startTimeStart)
     this.setProcessEndTime(this.searchParams.startTimeEnd)
     // 获取任务的总耗时
@@ -337,6 +337,7 @@ export default {
       this.searchParams.startTimeStart = this.value1[0]
       this.searchParams.startTimeEnd = this.value1[1]
       this.searchParams.statusType = this.store.state.monitor.processGroupExecutionStatusType
+      this.searchParams.statusType = null
       this.setProcessStartTime(this.searchParams.startTimeStart)
       this.setProcessEndTime(this.searchParams.startTimeEnd)
       this.tabname = 'processinstance'
@@ -393,7 +394,8 @@ export default {
   font-size: 20px;
   cursor: pointer;
   margin: 0 10px 0 0;
-  height:40px;line-height:40px
+  height:40px;
+  line-height:40px;
 }
 .bottom {
   font-size: 20px;
@@ -402,7 +404,7 @@ export default {
 .time {
   margin: 0 20px 0 0;
 }
-.box-card{
+.boxcard{
   height: 320px;
 }
 tr{

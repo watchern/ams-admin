@@ -9,7 +9,11 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="任务名称" align="center" prop="taskName" />
+      <el-table-column label="任务名称" align="center" prop="taskName">
+        <template slot-scope="scope">
+          <span style="cursor:pointer;" class="tools-box-name" @click="toUrl(scope.row.taskUrl)" v-text="scope.row.taskName" />
+        </template>
+      </el-table-column>
       <el-table-column label="所属模块" prop="taskType" />
       <el-table-column label="任务状态" prop="taskStatus">
         <template slot-scope="scope">
@@ -53,6 +57,11 @@ export default {
     },
     initWebSocket() {
       this.webSocket = this.getWebSocket()
+    },
+    toUrl(url) {
+      this.$router.push({
+        path: url
+      })
     },
     // formatTaskPercent(row, column) {
     //   // 拼接日期规格为YYYY-MM-DD hh:mm:ss
@@ -99,8 +108,6 @@ export default {
         func1(event)
       }
       const func2 = function func3(val) {
-        debugger
-        console.log(val)
         this.list = JSON.parse(val.data)
         this.list.forEach(r => {
           var createTime = new Date(r.taskCreateTime).valueOf()

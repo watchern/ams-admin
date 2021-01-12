@@ -1,5 +1,5 @@
 <template>
-    <div id="graphToolDiv" ref="graphToolDiv" style="width: 100%;height: 100%;">
+    <div id="graphToolDiv" ref="graphToolDiv" style="width: 100%;height: 100%;overflow-y: hidden;">
         <div id="geToolbarContainer" class="geToolbarContainer">
             <div class="graphMenu" style="width: 235px !important;padding-left: 20px !important;">
                 <div class="menuTit">
@@ -188,9 +188,7 @@
                     <div class="layui-tab-content">
                         <div class="layui-tab-item">
                             <div id="tableArea">
-                                <!--<div v-for="result in resultTableArr" v-if="showTableResult" class="data-show">-->
-                                    <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="resultTableArr" v-if="showTableResult"/>
-                                <!--</div>-->
+                                <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="resultTableArr" v-if="showTableResult"/>
                             </div>
                         </div>
                         <div class="layui-tab-item"><div id="sysInfoArea" /></div>
@@ -413,6 +411,9 @@
     </div>
 </template>
 <script>
+    import '@/components/ams-graphtool/styles/grapheditor.css'
+    import '@/components/ams-loading/css/loading.css'
+    require("@/components/ams-graphtool/framework/sanitizer/sanitizer.min.js")
     // 引入子组件
     import Help from '@/views/graphtool/tooldic/page/funEventVue/help.vue'
     import GraphListExport from '@/views/graphtool/tooldic/page/funEventVue/graphListExport.vue'
@@ -425,7 +426,7 @@
     import SqlEditor from '@/views/analysis/sqleditor/index.vue'
     // 引入后端接口的相关方法
     import { removeJcCssfile, addCssFile, addJsFile } from "@/api/analysis/common"
-    import { getGraphInfoById, getTableCol, viewNodeData, saveGraphInterface, createScreenQuery } from '@/api/graphtool/graphList'
+    import { getGraphInfoById, viewNodeData, saveGraphInterface, createScreenQuery } from '@/api/graphtool/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
     // 引入前段JS的相关方法
     import * as commonJs from '@/views/graphtool/tooldic/js/common'
@@ -462,9 +463,9 @@
                 description: '',
                 graphName_show:'',
                 description_show:'',
-                graphUuid: this.graphUuidParam, // 打开图形的ID
-                openGraphType: this.openGraphTypeParam, // 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
-                openType: this.openTypeParam, // 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
+                graphUuid: '', // 打开图形的ID
+                openGraphType: '', // 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
+                openType: '', // 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
                 loading: null, // 遮罩层对象
                 searchZtreeContent: '',
                 webSocket: null,
@@ -536,14 +537,20 @@
         },
         methods: {
             init() {
-                if (typeof this.graphUuid === 'undefined' || this.graphUuid == null) {
+                if (typeof getParams().graphUuid === 'undefined') {
+                    this.graphUuid = this.graphUuidParam
+                }else{
                     this.graphUuid = getParams().graphUuid
                 }
-                if (typeof this.openGraphType === 'undefined' || this.openGraphType == null) {
-                    this.openGraphType = getParams().openGraphType ? Number(getParams().openGraphType) : 1
+                if (typeof getParams().openGraphType === 'undefined') {
+                    this.openGraphType = Number(this.openGraphTypeParam)
+                }else{
+                    this.openGraphType = Number(getParams().openGraphType)
                 }
-                if (typeof this.openType === 'undefined' || this.openType == null) {
-                    this.openType = getParams().openType ? Number(getParams().openType) : 2
+                if (typeof getParams().openType === 'undefined') {
+                    this.openType = Number(this.openTypeParam)
+                }else{
+                    this.openType = Number(getParams().openType)
                 }
                 this.loginUserUuid = this.$store.state.user.id
                 this.loginUserCode = this.$store.state.user.code
@@ -612,7 +619,7 @@
                 }
                 const $this = this
                 // 点击操作节点，显示说明信息
-                $('#graphToolDiv .iconText').click(function(i, v) {
+                $(this.$refs.graphToolDiv).find('.iconText').click(function(i, v) {
                     const optType = $(this).parent().attr('data-type')
                     if ($.inArray(optType, $this.optTypeArr) > -1) {
                         indexJs.nodeRemark(optType)
@@ -1007,8 +1014,10 @@
                     this.loading.destroy()
                     this.loading = $('#tableArea').mLoading({ 'text': '数据请求中，请稍后……', 'hasCancel': false, 'hasTime': true })
                     viewNodeData({ nodeObjs: JSON.stringify(this.resultTableArr), openType: this.openType, websocketBatchId: this.websocketBatchId }).then()
-                        .catch( () => {
+                        .catch( error => {
                             this.loading.destroy()
+                            $('#sysInfoArea').html("<p style='color: red;'>" + error + "</p>")
+                            this.layuiTabClickLi(1)
                         })
                 }
             },
