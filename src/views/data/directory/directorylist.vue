@@ -27,8 +27,7 @@
       :data="temp"
       border
       fit
-      highlight-current-row
-      style="width: 100%;"
+      style="width: 100%;height:500px;overflow: auto;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
