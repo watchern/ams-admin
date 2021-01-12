@@ -253,9 +253,9 @@ export default {
     this.pageQuery.condition = query1;
     getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
       this.warningMatters = resp.data.records;
-      console.log(resp.data.records)
-      for(let i=0;i<5;i++){
-        this.cardList[1].des.push({
+      // console.log(resp.data.records)
+      // for(let i=0;i<5;i++){
+        // this.cardList[1].des.push({
           // text:resp.data.records[i].remindTitle,
           // iconColor: '#D81020',
           // icon: '',
@@ -263,11 +263,11 @@ export default {
           // content:resp.data.records[i].remindContent,
           // index:i,
           // Uuid:resp.data.records[i].remindUuid
-        })
-        if(resp.data.records[i].readStatus === 0){
-          this.cardList[0].des[i].icon = ' NEW'
-        }
-      }
+        // })
+        // if(resp.data.records[i].readStatus === 0){
+        //   this.cardList[0].des[i].icon = ' NEW'
+        // }
+      // }
     })
     axios.get('/psbcaudit/homepage/loadTodoInfo').then(resp =>{
       if (resp.data !== '') {
@@ -289,11 +289,8 @@ export default {
         this.myProject(0)
       }
     })
-    // axios.get('/psbcaudit/homepage/hasCount').then(resp =>{
-    //   console.log(resp)
-    // })
-    var mySwiper = new Swiper('.swiper-container',{
-      autoplay : 5000,
+    axios.get('/psbcaudit/homepage/hasCount').then(resp =>{
+      console.log(resp)
     })
   },
   methods: {

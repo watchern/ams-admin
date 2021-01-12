@@ -357,12 +357,12 @@ export default {
       this.uploadtemp.folderUuid = this.clickData.id
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          nextUpload(this.uploadtemp).then(res => {
-            getSqlType().then(resp => {
-              this.options = resp.data
+          getSqlType().then(resp => {
+            this.options = resp.data
+            nextUpload(this.uploadtemp).then(res => {
+              this.uploadStep = 2
+              this.uploadtempInfo = res.data
             })
-            this.uploadStep = 2
-            this.uploadtempInfo = res.data
           })
         }
       })

@@ -71,13 +71,12 @@ export default {
   data() {
     return {
       temp: {
-        orderNo: '',
+        orderNo: null,
         status: null,
         syncDefine: true,
         description: '',
         name: ''
       },
-
       rules: {
         name: [{ required: true, message: '请填写流程名称', trigger: 'change' },
           { max: 100, message: '流程名称在100个字符之内', trigger: 'change' }],
@@ -87,7 +86,7 @@ export default {
         // 为数字且非必填
         orderNo: [{
           validator: (rule, value, callback) => {
-            if (value !== '') {
+            if (value !== '' && value !== null) {
               if ((/^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/).test(value) === false) {
                 callback(new Error('排序号必须为大于0的数字'))
               } else {
