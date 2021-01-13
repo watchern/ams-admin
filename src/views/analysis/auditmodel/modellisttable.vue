@@ -770,6 +770,7 @@ export default {
       this.$emit('loadingSet',true,"正在读取模型信息...");
       // 获取模型信息，判断是否存在参数，如果存在参数则弹出输入参数界面，否则直接送入后台执行
       selectModel(selectObj[0].modelUuid).then(result => {
+        debugger
         this.$emit('loadingSet',false,"");
         if (result.code == 0) {
           if (result.data.parammModelRel.length == 0) {

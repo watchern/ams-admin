@@ -25,6 +25,9 @@
             </div>
         </el-footer>
     </el-container>
+  <el-dialog append-to-body title="查看数据" v-if="seeSqlDataDialog" :visible.sync="seeSqlDataDialog" >
+    <seeSqlData :seeDataSql="seeDataSql"/>
+  </el-dialog>
 </el-container>
 </template>
 <script>
@@ -42,26 +45,29 @@ import 'codemirror/mode/vue/vue.js'
 
 export default {
   name: 'edittemdim',
-  props: ['nowAnalysisRegionId','nowDimAnalysisRegionId','dimId','dimDivId','analysisList'],
+  props: ['nowAnalysisRegionId','nowDimAnalysisRegionId','dimId','dimDivId','analysisList','addTempDimAnalysisRegionId'],
   components: {
+    seeSqlData: resolve => require(["../../views/indicator/seesqldata.vue"], resolve),
   },
   data() {
     return {
-        /**
-         * CodeMirror对象
-         * @type {null}
-         */
-        editor: null,
-        /**
-         * 修改时存储临时指标对象
-         */
-        editData: {},
-        form: {
-            dimName: '',
-            code: '',
-            dimMemo: ''
-        },
-        dimList: []
+      /**
+       * CodeMirror对象
+       * @type {null}
+       */
+      editor: null,
+      /**
+       * 修改时存储临时指标对象
+       */
+      editData: {},
+      form: {
+          dimName: '',
+          code: '',
+          dimMemo: ''
+      },
+      dimList: [],
+      seeSqlDataDialog:false,
+      seeDataSql:''
     }
   },
   mounted() {
@@ -222,42 +228,46 @@ export default {
      * 查看数据
      */
     seeSqlData() {
-        var name = $("#dimName").val()
-        var sql = this.editor.getValue()
-        var uuid = this.getuuid()
-        var data = {
-            dimensionName:name,
-            columnName:sql,
-            dimMemo:dimMemo,
-            filterType:'',
-            values:[],
-            id:uuid,
-            custom:name,
-            filter:'',
-            filterJson:'',
-            yesNolevel:false,
-            level:0,
-            yesNoTem:true,
-            dimAnalysisRegionId:this.nowDimAnalysisRegionId,
-            analysisRegionId:this.nowAnalysisRegionId
+      let that = this
+      var name = this.form.dimName
+      var sql = this.editor.getValue()
+      var uuid = this.getuuid()
+      var data = {
+          dimensionName:this.form.dimName,
+          columnName:sql,
+          dimMemo:this.form.dimMemo,
+          filterType:'',
+          values:[],
+          id:uuid,
+          custom:this.form.dimName,
+          filter:'',
+          filterJson:'',
+          yesNolevel:false,
+          level:0,
+          yesNoTem:true,
+          dimAnalysisRegionId:this.nowDimAnalysisRegionId,
+          analysisRegionId:this.nowAnalysisRegionId
+      }
+      var objInList
+      var objDimList = []
+      objDimList.push(data)
+      $.each(this.analysisList, function (num, value) {
+          if (value == null) {
+              return
+          }
+          if(value.id == that.addTempDimAnalysisRegionId){
+              objInList = value.objInList
+          }
+      })
+      var url = this.contextUrl + "/indicatrixAnalysis/getColData"
+      $.post(url,{inMeasures:JSON.stringify(objInList),listDim:JSON.stringify(objDimList),dimId:uuid,columnName:name},function (res) {
+        if(res.isError){
+          that.$message({type:'info',message:res.message})
+          return
         }
-        var objInList
-        var objDimList = []
-        objDimList.push(data)
-        $.each(this.analysisList, function (num, value) {
-            if (value == null) {
-                return
-            }
-            if(value.id == analysisRegionId){
-                objInList = value.objInList
-            }
-        })
-        var url = this.contextUrl + "/indicatrixAnalysis/getColData"
-        $.post(url,{inMeasures:JSON.stringify(objInList),listDim:JSON.stringify(objDimList),dimId:uuid,columnName:name},function (res) {
-            var formUrl = "../../content/indicatrixAnalysis/seeTemDimData.html"
-            sessionStorage.setItem("temDimResult",JSON.stringify(res))
-            //TODO 查看数据结果
-        },"json")
+        that.seeDataSql = res.sql
+        that.seeSqlDataDialog = true
+      },"json")
     },
 
     /**

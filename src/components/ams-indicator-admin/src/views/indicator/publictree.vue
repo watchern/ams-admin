@@ -19,7 +19,10 @@ export default {
         pubInTreeNodes: null,
         pubInTreeSetting: null,
         isOrgManager: sessionStorage.getItem('isOrgManager'),
-        isInManager: sessionStorage.getItem('isInManager')
+        isInManager: sessionStorage.getItem('isInManager'),
+        treePathId:'',
+        treePathName:''
+
     }
   },
   mounted() {
@@ -79,9 +82,9 @@ export default {
      * 确定按钮
      */
     enter(e, treeId, treeNode) {
-        var treePathArr = this.getzTreePath(treeNode,"","");
-        var treePathId = treePathArr[0];
-        var treePathName = treePathArr[1];
+        this.getzTreePath(treeNode,"","");
+        var treePathId = this.treePathId;
+        var treePathName = this.treePathName;
         treePathId = treePathId.substring(0,treePathId.length - 1);
         treePathName = treePathName.substring(0,treePathName.length - 1);
         if(treeNode.level == 0){
@@ -101,14 +104,22 @@ export default {
      * @param treeNode
      * @returns {string}
      */
-    getzTreePath(treeNode,treePathId,treePathName) {
-        var pNode = this.pubInTree.getNodesByParam("id", treeNode.pid, null);
-        treePathName += treeNode.name + "/";
-        treePathId += treeNode.id + ",";
-        if (pNode.length != 0) {
-            this.getzTreePath(pNode);
-        }
-        return [treePathId,treePathName];
+    getzTreePath(treeNode) {
+      if(treeNode.level == 0){
+        this.treePathName += treeNode.name + "/";
+        this.treePathId += treeNode.id + ",";
+        return
+      }
+      let newNode = treeNode.getParentNode()
+      if(newNode != undefined){
+        this.treePathName += treeNode.name + "/";
+        this.treePathId += treeNode.id + ",";
+        this.getzTreePath(newNode);
+      }
+      else{
+        this.treePathName += treeNode.name + "/";
+        this.treePathId += treeNode.id + ",";
+      }
     },
     auditorHideNodes(){
         if(this.isInManager != "true"){
