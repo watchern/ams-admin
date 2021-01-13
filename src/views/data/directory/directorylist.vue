@@ -560,8 +560,6 @@ export default {
     },
     // 保存新建文件夹
     createFolderSave() {
-      alert(this.currentSceneUuid)
-      debugger
       if (this.currentSceneUuid !== 'auditor') {
         this.resourceForm.personCode = this.directyDataUserId
       }
