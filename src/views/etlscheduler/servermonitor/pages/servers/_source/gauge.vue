@@ -9,11 +9,11 @@
   </div>
 </template>
 <script>
-import echarts from 'echarts'
+import echarts from 'echarts/lib/echarts'
 import gaugeOption from './gaugeOption'
 
 export default {
-  name: 'Gauge',
+  name: 'gauge',
   components: {},
   props: {
     id: String,
