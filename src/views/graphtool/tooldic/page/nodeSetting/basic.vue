@@ -132,30 +132,10 @@
             },
             basicInfoVerify() {
                 let node_name = this.node_name
-                // var isSaveData = $('#isSaveData').prop('checked')
-                // var dataTableName = $('#dataTableName').val()
-                // var nameContainArr = ['`', '~', '!', '@', '%', '^', '&', '*', '(', ')', '）', '+', '/', '-']
                 if (node_name === '') {
                     this.$message({ type: 'warning', message: '请输入节点名称' })
                     return false
                 }
-                // if (isSaveData && dataTableName === '') {
-                //     alertMsg('提示', '请输入结果表名称', 'info')
-                //     return false
-                // }
-                // var hasSpecailChar = false
-                // var specailChar = ''
-                // for (var i = 0; i < nameContainArr.length; i++) {
-                //     specailChar = nameContainArr[i]
-                //     if (dataTableName.indexOf(specailChar) > 0) {
-                //         hasSpecailChar = true
-                //         break
-                //     }
-                // }
-                // if (hasSpecailChar) {
-                //     alertMsg('提示', "结果表名称不能含有特殊字符“<span style='color: red;font-weight: bold;font-size: 20px;'>" + specailChar + '</span>”', 'info')
-                //     return false
-                // }
                 return true
             }
         }
