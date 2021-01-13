@@ -13,7 +13,7 @@ export function data_filter(type, name, nodeName) {
     var curNodeId = graph.curCell.id
     var obj = validateJs.verifyPreNodes(type, curNodeId)
     if (obj.isError) {
-        this.$message({ type: 'info', message: obj.message })
+        this.$message.error(obj.message)
         return
     }
     if (!validateJs.settingVerify(type)) {
@@ -586,7 +586,7 @@ function autoExcute(curNodeId) {
                 graph.curCell = cell
                 executeNode()
             } else {
-                graphIndexVue.$message.error({ message: '自动获取执行节点出错，请手动选择节点执行' })
+                graphIndexVue.$message.error('自动获取执行节点出错，请手动选择节点执行')
             }
         }).catch( ()=> {})
     }
@@ -1527,7 +1527,7 @@ export function reName() {
 export function reNameCallBack() {
     const newVal = graphIndexVue.reNameObj.value
     if (newVal === '') {
-        graphIndexVue.$message({"type":"info","message":`${graphIndexVue.reNameObj.name}不能为空`})
+        graphIndexVue.$message({"type":"warning","message":`${graphIndexVue.reNameObj.name}不能为空`})
         return
     }
     const oldName = graph.curCell.value
@@ -1603,7 +1603,13 @@ export function reSetOptProperty() {
             }
         }
         autoSaveGraph()
-        graphIndexVue.$message({ type: 'success', message: '节点配置已清除' })
+        graphIndexVue.$notify({
+            title: graphIndexVue.$t('message.title'),
+            message: graphIndexVue.$t('节点配置已清除'),
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+        })
     }).catch( ()=> {})
 }
 

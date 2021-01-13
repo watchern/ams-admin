@@ -690,7 +690,7 @@ export function autoSaveGraph() {
     }
     saveGraphInterface(data).then(response => {
         if (!response.data) {
-            graphIndexVue.$message({ type: 'info', message: '自动保存图形失败' })
+            graphIndexVue.$message.error('自动保存图形失败')
         } else {
             graphIndexVue.graphUuid = response.data
         }
@@ -1229,7 +1229,7 @@ export function importGraph(data) {
     var val = $('#importGraphInp').val()
     if (val !== '') {
         if (val.split('.')[1] !== 'xml') {
-            graphIndexVue.$message({ type: 'info', message: '导入的文件仅支持xml格式' })
+            graphIndexVue.$message({ type: 'warning', message: '导入的文件仅支持xml格式' })
         }else{
             let graphType = (graph.openGraphType === 2 || graph.openGraphType === 3) ? 3 : 1
             let formData = new FormData()
@@ -1239,14 +1239,14 @@ export function importGraph(data) {
             importGraphXml(formData).then( response => {
                 loading.destroy()
                 if(response.data){
-                    graphIndexVue.$message({ type: 'info', message: '文件导入成功' })
+                    graphIndexVue.$notify({ title: '提示', message: '文件导入成功', position: 'bottom-right' })
                 }else{
-                    graphIndexVue.$message({ type: 'info', message: '导入时解析文件出错' })
+                    graphIndexVue.$message.error('导入时解析文件出错')
                 }
             })
         }
     }else{
-        graphIndexVue.$message({ type: 'info', message: '未选择待上传的文件' })
+        graphIndexVue.$message({ type: 'warning', message: '未选择待上传的文件' })
     }
 }
 
@@ -1267,14 +1267,14 @@ export function exportGraphBack(param) {
         if(response.data){
             progressDownLoad('/graphtool/graphCt/downLoadXml', fileName, {fileName: fileName}, function() {
                 loading.destroy()
-                graphIndexVue.$message({ type: 'info', message: '图形文件下载成功' })
+                graphIndexVue.$notify({ title: '提示', message: '图形文件下载成功', position: 'bottom-right' })
             }, function() {
                 loading.destroy()
-                graphIndexVue.$message({ type: 'info', message: '图形文件下载失败' })
+                graphIndexVue.$message.error('图形文件下载失败')
             }, function() {})
         }else{
             loading.destroy()
-            graphIndexVue.$message({ type: 'info', message: '图形导出失败' })
+            graphIndexVue.$message.error('图形导出失败')
         }
     })
 }
@@ -1282,7 +1282,7 @@ export function exportGraphBack(param) {
 // 前进
 export function next() {
     if (graph.canEditor === false) {
-        graphIndexVue.$message({ type: 'info', message: '当前图形您没有【恢复】操作的权限' })
+        graphIndexVue.$message({ type: 'warning', message: '当前图形您没有【恢复】操作的权限' })
         return
     }
     ownerEditor.redo()
@@ -1291,7 +1291,7 @@ export function next() {
 // 后退
 export function back() {
     if (graph.canEditor === false) {
-        graphIndexVue.$message({ type: 'info', message: '当前图形您没有【撤销】操作的权限' })
+        graphIndexVue.$message({ type: 'warning', message: '当前图形您没有【撤销】操作的权限' })
         return
     }
     ownerEditor.undo()
@@ -1625,7 +1625,7 @@ export function showParamNodeList(){
             $(graphIndexVue.$refs.nodeParamToby).sortable().disableSelection()
         })
     }else{
-        graphIndexVue.$message({ type: 'info', message: '暂无可设置参数的节点' })
+        graphIndexVue.$message({ type: 'warning', message: '暂无可设置参数的节点' })
     }
     //弹框显示节点的参数配置列表，end
 }
@@ -1722,7 +1722,7 @@ export function settingParamsCallBack() {
         // 获取弹出层的参数配置
         let returnObj = graphIndexVue.$refs.settingParams.getParamsSetting()
         if (!returnObj.verify) {
-            graphIndexVue.$message({ type: 'info', message: returnObj.message })
+            graphIndexVue.$message({ type: 'warning', message: returnObj.message })
         } else {
             let nodeId = graphIndexVue.sp_nodeId
             let nodeParamItem = graphIndexVue.nodeParamArr.find(item => item.nodeId === nodeId)
@@ -1739,7 +1739,7 @@ export function settingParamsCallBack() {
                     nodeParamItem.hasParamSet = false
                 }
                 let nodeName = graph.nodeData[nodeId].nodeInfo.nodeName
-                graphIndexVue.$message({ type: 'warning', message: '节点【' + nodeName + '】参数设置不正确，不对参数配置信息进行保存' })
+                graphIndexVue.$message({ type: 'warning', message: `节点【${nodeName}】参数设置不正确，不对参数配置信息进行保存` })
                 delete graph.nodeData[nodeId].hasParam;
                 delete graph.nodeData[nodeId].paramsSetting;
                 delete graphIndexVue.nodeParamRelArr[nodeId]

@@ -20,7 +20,7 @@
       </el-row>
     </div>
     <div class="divContent">
-      <BaseDirectoryList ref="listData" @append-node="appendnode" @remove="remove" @refresh="refresh" />
+      <BaseDirectoryList ref="listData" :data-user-id="directyDataUserId" :scene-code="directySceneCode" @append-node="appendnode" @remove="remove" @refresh="refresh" />
     </div>
   </div>
 </template>
@@ -53,8 +53,6 @@ export default {
   },
   methods: {
     initDirectory() {
-      debugger
-      console.log(this.dataUserId)
       if (typeof (this.dataUserId) !== 'undefined') {
         this.directyDataUserId = this.dataUserId
       }

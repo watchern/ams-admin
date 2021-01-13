@@ -59,7 +59,7 @@ const dataRouter = {
       component: () => import('@/views/data/formula/index')
     },
     {
-      path: 'project',
+      path: 'workspace/:sceneCode',
       name: '项目空间',
       component: () => import('@/views/data/project/index')
     }
