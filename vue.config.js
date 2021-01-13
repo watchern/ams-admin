@@ -19,9 +19,9 @@ const name = defaultSettings.title || 'Audit Manage System' // page title
 const port = process.env.port || 8070 // dev port
 
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
-// const productionGzipExtensions = ['html','js', 'css']
-// 代码压缩优化
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+// // 代码压缩优化
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+require('events').EventEmitter.defaultMaxListeners = 0
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
@@ -174,14 +174,25 @@ module.exports = {
     },
     // gzip压缩
     plugins: [
+      // const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i
+      // config.resolve.alias.set('@', resolve('src'))
+      // config.plugin('compressionPlugin')
+      //   .use(new CompressionPlugin({
+      //     filename: '[path].gz[query]',
+      //     algorithm: 'gzip',
+      //     test: productionGzipExtensions,
+      //     threshold: 10240,
+      //     minRatio: 0.8,
+      //     deleteOriginalAssets: false
+      //   }))
       new CompressionWebpackPlugin({
         filename: '[path].gz[query]',
         algorithm: 'gzip',
-        test: /\.(js|css|html)(\?.*)?$/i,
+        test: /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i,
         threshold: 10240, // 对超过10k的数据进行压缩
         minRatio: 0.8, // 只有压缩率小于这个值的资源才会被处理
-        deleteOriginalAssets: true // 删除原文件
-        // deleteOriginalAssets: false // 删除原文件
+        // deleteOriginalAssets: true // 删除原文件
+        deleteOriginalAssets: false // 删除原文件
       })
       // ,
       // new UglifyJsPlugin({
@@ -213,9 +224,6 @@ module.exports = {
     // when there are many pages, it will cause too many meaningless requests
     config.plugins.delete('prefetch')
 
-
-
-
     // set svg-sprite-loader
     config.module
       .rule('svg')
@@ -232,8 +240,6 @@ module.exports = {
         symbolId: 'icon-[name]'
       })
       .end()
-
-
     config
       .when(process.env.NODE_ENV !== 'development',
         config => {
@@ -271,19 +277,6 @@ module.exports = {
             })
           // https:// webpack.js.org/configuration/optimization/#optimizationruntimechunk
           config.optimization.runtimeChunk('single')
-
-          // const CompressionPlugin = require('compression-webpack-plugin')
-          // const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i
-          // config.resolve.alias.set('@', resolve('src'))
-          // config.plugin('compressionPlugin')
-          //   .use(new CompressionPlugin({
-          //     filename: '[path].gz[query]',
-          //     algorithm: 'gzip',
-          //     test: productionGzipExtensions,
-          //     threshold: 10240,
-          //     minRatio: 0.8,
-          //     deleteOriginalAssets: false
-          //   }))
         }
       )
   }
