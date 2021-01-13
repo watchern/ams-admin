@@ -18,6 +18,11 @@ const name = defaultSettings.title || 'Audit Manage System' // page title
 // const port = process.env.port || 9527 // dev port
 const port = process.env.port || 8070 // dev port
 
+const CompressionWebpackPlugin = require('compression-webpack-plugin')
+const productionGzipExtensions = ['html','js', 'css']
+// 代码压缩优化
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
   /**
@@ -30,8 +35,8 @@ module.exports = {
   publicPath: './',
   outputDir: 'dist',
   assetsDir: 'static',
-  lintOnSave: false,
-  // lintOnSave: process.env.NODE_ENV === 'development',
+  // lintOnSave: false,
+  lintOnSave: process.env.NODE_ENV === 'development',
   runtimeCompiler: true,
   productionSourceMap: false,
   devServer: {
@@ -157,15 +162,76 @@ module.exports = {
       }
     }
   },
-  configureWebpack: {
+  configureWebpack:{
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
+    // Object.assign(config, {
     name: name,
     resolve: {
       alias: {
         '@': resolve('src')
       }
-    }
+    },
+    // gzip压缩
+    plugins: [
+      new CompressionWebpackPlugin({
+        filename: '[path].gz[query]',
+        algorithm: 'gzip',
+        test: /\.(js|css|html)(\?.*)?$/i,
+        threshold: 10240, // 对超过10k的数据进行压缩
+        minRatio: 0.8, // 只有压缩率小于这个值的资源才会被处理
+        deleteOriginalAssets: true // 删除原文件
+        // deleteOriginalAssets: false // 删除原文件
+      })
+      // ,
+      // new UglifyJsPlugin({
+      //     uglifyOptions: {
+      //       //生产环境自动删除console
+      //       compress: {
+      //         // warnings: false, // 若打包错误，则注释这行
+      //         drop_debugger: true,
+      //         drop_console: true,
+      //         pure_funcs: ['console.log']
+      //       }
+      //     },
+      //     sourceMap: false,
+      //     parallel: true
+      //   })
+    ]
+    // }
+    // )
+
+    // gzip压缩
+    // const productionGzipExtensions = ['html', 'js', 'css']
+    // config.plugins.push(
+    //   new CompressionWebpackPlugin({
+    //     filename: '[path].gz[query]',
+    //     algorithm: 'gzip',
+    //     test: new RegExp(
+    //       '\\.(' + productionGzipExtensions.join('|') + ')$'
+    //     ),
+    //     threshold: 10240, // 只有大小大于该值的资源会被处理 10240
+    //     minRatio: 0.8, // 只有压缩率小于这个值的资源才会被处理
+    //     deleteOriginalAssets: true // 删除原文件
+    //   })
+    // )
+    //
+    // // 代码压缩优化
+    // config.plugins.push(
+    //   new UglifyJsPlugin({
+    //     uglifyOptions: {
+    //       //生产环境自动删除console
+    //       compress: {
+    //         warnings: false, // 若打包错误，则注释这行
+    //         drop_debugger: true,
+    //         drop_console: true,
+    //         pure_funcs: ['console.log']
+    //       }
+    //     },
+    //     sourceMap: false,
+    //     parallel: true
+    //   })
+    // )
   },
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload
@@ -180,6 +246,9 @@ module.exports = {
 
     // when there are many pages, it will cause too many meaningless requests
     config.plugins.delete('prefetch')
+
+
+
 
     // set svg-sprite-loader
     config.module
@@ -197,6 +266,7 @@ module.exports = {
         symbolId: 'icon-[name]'
       })
       .end()
+
 
     config
       .when(process.env.NODE_ENV !== 'development',
