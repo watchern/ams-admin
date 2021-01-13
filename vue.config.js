@@ -21,7 +21,7 @@ const port = process.env.port || 8070 // dev port
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
 // // 代码压缩优化
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-require('events').EventEmitter.defaultMaxListeners = 0
+// require('events').EventEmitter.defaultMaxListeners = 0
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
