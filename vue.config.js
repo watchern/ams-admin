@@ -180,7 +180,7 @@ module.exports = {
         test: /\.(js|css|html)(\?.*)?$/i,
         threshold: 10240, // 对超过10k的数据进行压缩
         minRatio: 0.8, // 只有压缩率小于这个值的资源才会被处理
-        deleteOriginalAssets: true // 删除原文件
+        deleteOriginalAssets: process.env.NODE_ENV !== 'development' // 删除原文件
         // deleteOriginalAssets: false // 删除原文件
       })
       // ,
