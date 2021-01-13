@@ -43,7 +43,7 @@
                       <div class="tags-order" id="inAnalysisRegionCount">1</div>
                       <div class="tag-select">
                         <i class="icon-add">+</i>
-                        <span onclick="addTempIn(this)" analysisRegion='inAnalysisRegion'>新增临时指标</span>
+                        <span style='margin-top: -5px;' onclick="addTempIn(this)" analysisRegion='inAnalysisRegion'>新增临时指标</span>
                       </div>
                       <div class='tags-del'><i class='icon-del' onclick='delAnalysisRegion("inAnalysisRegion")'></i>
                       </div>
@@ -65,7 +65,7 @@
                   <div class="tags-item-con" id="inDimAnalysisRegion">
                     <div class="tag-select">
                       <i class="icon-add">+</i>
-                      <span @click="addTempDim('inAnalysisRegion')">新增临时维度</span>
+                      <span style='margin-top: -5px;' @click="addTempDim('inAnalysisRegion')">新增临时维度</span>
                     </div>
                   </div>
                 </div>
@@ -85,13 +85,18 @@
           <div class="recommendPage" style="height: 620px;overflow-y:scroll">
             <el-menu default-active="0" class="el-menu-demo" mode="horizontal">
               <div v-for="(dataObj,indexI) in dataList">
-                <el-menu-item :index=indexI @click="jump(indexI)">{{dataObj.measureName}}</el-menu-item>
+                <el-menu-item :index="indexI" @click="jump(indexI)">{{dataObj.measureName}}<i :class="dataObj.icon"></i></el-menu-item>
               </div>
             </el-menu>
             <swiper :options="swiperOption" ref="mySwiper">
-                <swiper-slide v-for="(dataObj,index) in dataList">
+<!--                <swiper-slide v-for="(dataObj,index) in dataList">
                   <mtEditor :ref="dataObj.id" :data='dataObj.data' v-if="dataObj.chartConfig != undefined" :chart-config='dataObj.chartConfig'></mtEditor>
                   <mtEditor :ref="dataObj.id" :data='dataObj.data' v-else :chart-config='dataObj.chartConfig'></mtEditor>
+                </swiper-slide>-->
+                <swiper-slide v-for="(dataObj,index) in dataList" v-loading="dataObj.loading" element-loading-text="正在执行SQL,请稍候...">
+                  <mtEditor :ref="dataObj.id" :data='dataObj.data' v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
+                  <mtEditor :ref="dataObj.id" :data='dataObj.data' v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
+                  <div style="color:red;text-align: left" v-else>{{dataObj.message}}</div>
                 </swiper-slide>
               <div class="swiper-pagination" slot="pagination"></div>
             </swiper>
@@ -99,27 +104,20 @@
         </div>
       </el-main>
     </el-container>
-<!--    <div id="inMenu" class="menuDemo">
-      <ul class="dropdown-menu">
-        <li id="inFilter"><a tabindex="-1" href="#" onclick="inFilter()">筛选器</a></li>
-        <li class="dropdown-submenu" onmouseover="showAppointMenu('measure')"><a
-          tabindex="-1" href="#">度量</a>
-          <ul class="dropdown-menu" style="display: none" id="measure">
-            <li id="m_sum"><a onclick="updateInGroup('sum')" tabindex="-1" href="#">合计</a></li>
-            <li id="m_count"><a onclick="updateInGroup('count')" tabindex="-1" href="#">计数</a></li>
-            <li id="m_max"><a onclick="updateInGroup('max')" tabindex="-1" href="#">最大值</a></li>
-            <li id="m_min"><a onclick="updateInGroup('min')" tabindex="-1" href="#">最小值</a></li>
-            <li id="m_avg"><a onclick="updateInGroup('avg')" tabindex="-1" href="#">平均值</a></li>
-            <li id="m_distinct"><a onclick="updateInGroup('distinct')" tabindex="-1" href="#">差异计数</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div>-->
-<!--    <div id="dimMenu" class="menuDemo">
-      <ul class="dropdown-menu">
-        <li id="dimFilter"><a tabindex="-1" href="#" onclick="dimFilterBtn()">筛选器</a></li>
-      </ul>
-    </div>-->
+    <div id="inMenu" class="menuDemo">
+      <el-menu class="el-menu-demo" mode="horizontal">
+        <el-menu-item @click="inFilter()" index="2-1">筛选器</el-menu-item>
+        <el-submenu index="2-2">
+          <template slot="title">度量</template>
+          <el-menu-item @click="updateInGroup('sum')" index="2-2-1">合计</el-menu-item>
+          <el-menu-item @click="updateInGroup('count')" index="2-2-2">计数</el-menu-item>
+          <el-menu-item @click="updateInGroup('max')" index="2-2-3">最大值</el-menu-item>
+          <el-menu-item @click="updateInGroup('min')" index="2-3-3">最小值</el-menu-item>
+          <el-menu-item @click="updateInGroup('avg')" index="2-4-3">平均值</el-menu-item>
+          <el-menu-item @click="updateInGroup('distinct')" index="2-5-3">差异计数</el-menu-item>
+        </el-submenu>
+      </el-menu>
+    </div>
     <el-dialog :title="deriveInType===2?'派生指标':'临时指标'" v-if="dialogAddderiveinVisible"
                :visible.sync="dialogAddderiveinVisible">
       <addderivein @closeAddderiveinDialog="closeAddderiveinDialog" v-if="dialogAddderiveinVisible" :type="deriveInType" :addType="addDeriveInType"
@@ -131,18 +129,34 @@
       <edittemdim @closeEdittemdimDialog="closeEdittemdimDialog" :nowAnalysisRegionId="nowAnalysisRegionId"
                   :nowDimAnalysisRegionId="nowDimAnalysisRegionId" :dimId="dimId" :dimDivId="dimDivId"
                   :analysisList="analysisList" @verTemDimName="verTemDimName" @getInDimList="getInDimList"
-                  @initTemDimToFrom="initTemDimToFrom" @delTemDim="delTemDim"/>
+                  @initTemDimToFrom="initTemDimToFrom" @delTemDim="delTemDim" :addTempDimAnalysisRegionId="addTempDimAnalysisRegionId"/>
     </el-dialog>
-    <el-dialog title="过滤器" v-if="dialogFilterVisible" :visible.sync="dialogFilterVisible">
-      <dimfilter @closeFilterDialog="closeFilterDialog" :columnName="updateInObj.columnName" columnType="string"
-                 :filterJson="nowFilterObj.filterJson" :columnNameCN="updateInObj.columnNameCN"
-                 :analysisRegionId="updateInObj.analysisRegionId" :inId="updateInObj.inId"/>
+    <el-dialog title="维度过滤器" v-if="dialogFilterVisible" :visible.sync="dialogFilterVisible">
+      <dimfilter @closeFilterDialog="closeFilterDialog"
+                 @dimSetFilter="dimSetFilter"
+                 v-if="dialogFilterVisible"
+                 :dimName="dimTriangleClick.dimName"
+                 :dimId="dimTriangleClick.dimId"
+                 :inId="dimTriangleClick.inId"
+                 :sup="dimTriangleClick.sup"
+                 :filterJson="nowFilterObj.filterJson"
+                 :analysisRegionId="dimTriangleClick.analysisRegionId"
+                 columnType="string"
+                 :filter="nowFilterObj.filter"
+                 :filterList="nowFilterObj.filterList"
+                 :analysisList="analysisList"
+                 />
     </el-dialog>
     <el-dialog title="保存常用指标分析" v-if="dialogsSaveAnalysisVisible" :visible.sync="dialogsSaveAnalysisVisible">
       <saveanalysis @closeSaveAnalysisDialog="closeSaveAnalysisDialog" @initCommonlyAnalysisZtree="initCommonlyAnalysisZtree" @addAnalistsNode="addAnalistsNode" :isInManager="isInManager" :isOrgManager="isOrgManager"/>
     </el-dialog>
     <el-dialog title="指标设计" v-if="dialogDesignVisible" :visible.sync="dialogDesignVisible" :fullscreen="true">
       <indicatordesign :currentLoginUser="currentLoginUser"></indicatordesign>
+    </el-dialog>
+    <el-dialog title="指标过滤" :close-on-click-modal="false" v-if="inMeasureFilter" :visible.sync="inMeasureFilter" width="30%">
+      <inmeasurefilter v-if="inMeasureFilter" :filterIn="nowFilterObj.filter" :filterListIn="nowFilterObj.filterList" :analysisListIn="this.analysisList"
+                       :columnName="updateInObj.columnName" columnType="string" :filterJson="nowFilterObj.filterJson" :columnNameCN="updateInObj.columnNameCN"
+      :analysisRegionId="updateInObj.analysisRegionId" :inId="updateInObj.inId" @closeInmeasuerFilter="closeInmeasuerFilter" @inSetFilter="inSetFilter"></inmeasurefilter>
     </el-dialog>
   </div>
 </template>
@@ -156,15 +170,18 @@ import {fuzzySearch} from '../lib/ztree/ext/fuzzysearch.js'
 import { Message } from 'element-ui'
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import "swiper/dist/css/swiper.css";
+import Inmeasurefilter from "@/components/ams-indicator-admin/src/views/indicator/inmeasurefilter";
 export default {
   name: 'index',
   components: {
+    Inmeasurefilter,
     tree: resolve => require(["../lib/ztree/ztree.vue"], resolve),
     addderivein: resolve => require(["../views/indicator/addderivein.vue"], resolve),
     edittemdim: resolve => require(["../views/indicator/edittemdim.vue"], resolve),
     dimfilter: resolve => require(["../views/indicator/dimfilter.vue"], resolve),
     saveanalysis: resolve => require(["../views/indicator/saveanalysis.vue"], resolve),
     indicatordesign: resolve => require(["../views/indicator/indicatordesign.vue"], resolve),
+    inmeasurefilter: resolve => require(["../views/indicator/inmeasurefilter.vue"], resolve),
     mtEditor,swiper, swiperSlide
   },
   data() {
@@ -360,7 +377,9 @@ export default {
           el: ".swiper-pagination",
           clickable: true, //允许分页点击跳转
         }
-      }
+      },
+      addTempDimAnalysisRegionId:'',
+      inMeasureFilter:false
     }
   },
   watch: {
@@ -388,7 +407,6 @@ export default {
     window.delAnalysisRegion = that.delAnalysisRegion
     window.createAnalysisRegion = that.createAnalysisRegion
     window.queryData = that.queryData
-    window.loadLayout = that.loadLayout
     window.clearAnalysis = that.clearAnalysis
     window.saveChangYongAnalysis = that.saveChangYongAnalysis
     window.addTempDim = that.addTempDim
@@ -440,11 +458,33 @@ export default {
         func1(dataObj)
       }
       const func2 = function func3(val) {
-        let result = {column:val.columnNames,columnType:val.columnTypes,data:val.result}
-        let data = {id:val.analysisRegionId,data:result,measureName:val.measureName,chartConfig:val.chartConfig}
-        this.dataList.push(data)
-        this.currentLoading.close()
-        //在这里可以拿到this
+        if(val.executeSQL.state == 2){
+          let result = {column:val.columnNames,columnType:val.columnTypes,data:val.result}
+          let data = {id:val.analysisRegionId,data:result,measureName:val.measureName,chartConfig:val.chartConfig}
+          //根据返回的结果id找到数组里面的数据进行修改
+          for(let i = 0; i < this.dataList.length;i++){
+            //如果相等则修改数据
+            if(this.dataList[i].id == val.analysisRegionId){
+              this.dataList[i].data = result
+              this.dataList[i].loading = false
+              this.dataList[i].isLoad = true
+              this.dataList[i].icon = 'el-icon-check'
+              this.dataList[i].isError = false
+            }
+          }
+        }
+        else{
+          for(let i = 0; i < this.dataList.length;i++){
+            //如果相等则修改数据
+            if(this.dataList[i].id == val.analysisRegionId){
+              this.dataList[i].loading = false
+              this.dataList[i].isLoad = false
+              this.dataList[i].icon = 'el-icon-close'
+              this.dataList[i].message = val.executeSQL.msg
+              this.dataList[i].isError = true
+            }
+          }
+        }
       }
       const func1 = func2.bind(this)
       this.webSocket.onclose = function(event) {}
@@ -2875,11 +2915,12 @@ export default {
      * 添加临时维度
      */
     addTempDim(analysisRegionId) {
+      this.addTempDimAnalysisRegionId = analysisRegionId
       this.dimId = null;
       this.dimDivId = null;
       var that = this;
-      //TODO  根据分析区编号找到分析区下的指标和维度编号
-      //TODO   找到之后将其发送到后台，通过后台找到该维度与该指标关联的列名展示到前台。
+      //  根据分析区编号找到分析区下的指标和维度编号
+      //  找到之后将其发送到后台，通过后台找到该维度与该指标关联的列名展示到前台。
       var obj = this.getAnalysisRegionInAndDim(analysisRegionId);
       if (!obj.success) {
         return;
@@ -2927,8 +2968,8 @@ export default {
      * @param analysisRegionId 分析区编号
      */
     getAnalysisRegionInAndDim(analysisRegionId) {
-      //TODO  根据分析区编号找到分析区下的指标和维度编号
-      //TODO   找到之后将其发送到后台，通过后台找到该维度与该指标关联的列名展示到前台。
+      //  根据分析区编号找到分析区下的指标和维度编号
+      //   找到之后将其发送到后台，通过后台找到该维度与该指标关联的列名展示到前台。
       var obj = {objInList: null, supDimIdList: null, dimAnalysisRegionId: '', success: false};
       var flag = false;
       $.each(this.analysisList, function (num, value) {//找到分析区内的指标和维度编号
@@ -3111,7 +3152,9 @@ export default {
       //获取当前界面分析对象的图表配置
       for(let i = 0;i < this.analysisList.length;i++){
         if(this.$refs.[this.analysisList[i].id] != undefined && this.$refs.[this.analysisList[i].id].length != 0){
-          this.analysisList[i].chartConfig = this.$refs.[this.analysisList[i].id][0].getChartConfig()
+          if(!this.$refs.[this.analysisList[i].id][0].getChartConfig){
+            this.analysisList[i].chartConfig = this.$refs.[this.analysisList[i].id][0].getChartConfig()
+          }
         }
       }
     },
@@ -3338,7 +3381,6 @@ export default {
         async: false,
         dataType: "json",
         success: function (res) {
-          console.log(res);
           if (res == null) {
             that.$message("该指标表被删除，请联系数据管理员。", {time: 30000, btn: ['知道了']});
           }
@@ -3479,7 +3521,7 @@ export default {
       });
       var dom = "<div class=\"tag-select\">\n" +
         "<i class='icon-add'>+</i>" +
-        "<span onclick='addTempDim(\"" + inAnalysisRegionId + "\")'>新增临时维度</span>" +
+        "<span style='margin-top: -5px;' onclick='addTempDim(\"" + inAnalysisRegionId + "\")'>新增临时维度</span>" +
         "</div>";
       $("#" + analysisDimRegionId).append(dom);
       var supDimIdListOne = [];
@@ -3729,7 +3771,7 @@ export default {
         "<div class='tags-order' id='" + InId + "Count" + "' >" + count + "</div>" +
         "<div class='tag-select'>" +
         "<i class='icon-add'>+</i>" +
-        "<span onclick='addTempIn(this)' analysisRegion='" + InId + "'>新增临时指标</span>" +
+        "<span style='margin-top: -5px;' onclick='addTempIn(this)' analysisRegion='" + InId + "'>新增临时指标</span>" +
         "</div>" +
         "<div class='tags-del'><i class='icon-del' onclick='delAnalysisRegion(\"" + InId + "\")'></i></div>" +
         "</div>" +
@@ -3746,7 +3788,7 @@ export default {
       var dimDom = "<div class='tags-item-con' id='" + dimId + "'>" +
         "<div class='tag-select'>" +
         "<i class='icon-add'>+</i>" +
-        "<span onclick='addTempDim(\"" + InId + "\")'>新增临时维度</span>" +
+        "<span style='margin-top: -5px;' onclick='addTempDim(\"" + InId + "\")'>新增临时维度</span>" +
         "</div>" +
         "</div>";
       /*        $.each(this.inRegionAndDimRegionMapping, function(num, value) {//隐藏所有维度分析区
@@ -4382,7 +4424,6 @@ export default {
      * @param analysisRegionId 分析区编号
      */
     filterBtn(obj, analysisRegionId) {
-      return
       this.dimTriangleClick.analysisRegionId = analysisRegionId;
       this.dimTriangleClick.inId = event.srcElement.parentElement.id;
       this.dimTriangleClick.dimName = $(obj).attr("name");
@@ -4411,9 +4452,6 @@ export default {
       var sup = this.dimTriangleClick.sup;
       this.nowFilterObj = this.getDimFilterJson(analysisRegionId, dimId, sup, inId, dimName);
       var columnType = this.getDimColumnType(dimId);
-      sessionStorage.setItem("filter", this.nowFilterObj.filter);
-      sessionStorage.setItem("filterList", this.nowFilterObj.filterList);
-      sessionStorage.setItem("analysisList", JSON.stringify(this.analysisList));
       this.dialogFilterVisible = true;
       $("#dimMenu").hide();
     },
@@ -4422,28 +4460,8 @@ export default {
      * 指标筛选器按钮
      */
     inFilter() {
-      var columnName = this.updateInObj.columnName;
-      var columnNameCN = this.updateInObj.columnNameCN;
-      //alert(columnNameCN)
-      var analysisRegionId = this.updateInObj.analysisRegionId;
-      var inId = this.updateInObj.inId;
-      this.nowFilterObj = this.getInFilterObj(analysisRegionId, inId);
-      sessionStorage.setItem("filterIn", this.nowFilterObj.filter);
-      sessionStorage.setItem("filterListIn", this.nowFilterObj.filterList);
-      sessionStorage.setItem("analysisListIn", JSON.stringify(this.analysisList));
-      var filterJson = this.nowFilterObj.filterJson;
-      var url = "../../content/indicatrixAnalysis/inMeasureFilter.html?columnName={0}&columnType={1}&filterJson={2}&columnNameCN={3}&analysisRegionId={4}&inId={5}&columnNameCN={6}".format(columnName, "string", filterJson, columnNameCN, analysisRegionId, inId, columnNameCN);
-      layer.open({
-        type: 2,
-        title: '筛选器',
-        shadeClose: false,
-        scrollbar: false,
-        shade: [0],
-        resize: false,
-        maxmin: true, //开启最大化最小化按钮
-        area: ['650px', '600px'],
-        content: encodeURI(url)
-      });
+      this.nowFilterObj = this.getInFilterObj(this.updateInObj.analysisRegionId, this.updateInObj.inId);
+      this.inMeasureFilter = true;
       $("#inMenu").hide();
     },
 
@@ -4557,7 +4575,7 @@ export default {
      * @param filterList 过滤条件的list列表  只有常规过滤才有
      * @param dimName 维度名 因增加了拆分 维度编号可能会重复 但用维度名以及维度编号不会重复
      */
-    setFilter(analysisRegionId, filter, inId, dimId, sup, filterJson, filterList, dimName) {
+    dimSetFilter(analysisRegionId, filter, inId, dimId, sup, filterJson, filterList, dimName) {
       var that = this;
       $.each(this.analysisList, function (num, value) {
         if (value == null) {
@@ -4589,7 +4607,6 @@ export default {
         }
       });
       this.queryData();
-      this.loadLayout();
     },
 
     /**
@@ -4631,7 +4648,6 @@ export default {
         }
       });
       this.queryData();
-      this.loadLayout();
     },
     /**
      * 查询数据
@@ -4806,7 +4822,6 @@ export default {
       var that = this;
       var url = this.contextUrl + "/indicatrixAnalysis/supAnalysis";
       let loadingInstance = Loading.service({fullscreen: true});
-      this.currentLoading = loadingInstance
       var newInList = [];
       //取出每个分析区的第一个指标并删除，用该指标与其他指标进行组织sql
       $.each(objInList, function (num, inMeasure) {
@@ -4822,6 +4837,7 @@ export default {
         async: true,
         dataType: "json",
         success: function (res) {
+          loadingInstance.close()
           if (res.state == false) {
             loadingInstance.close();
             that.$message("分析出错，" + res.message, {time: 30000, btn: ['知道了']});
@@ -4840,6 +4856,7 @@ export default {
             logName += value.measureName + ",";
           });
           let newAnalysisRegionId = analysisRegionId.substring(0,analysisRegionId.length - 4)
+          //任务获取之后将菜单加载到界面，然后等待任务返回
           that.executeSql(res.executeSQLList,logName,newAnalysisRegionId,chartConfig)
         },
         error: function (res) {
@@ -4861,8 +4878,7 @@ export default {
     bingLieQuery(objInList, objDimList, analysisRegionId,chartConfig) {
       var that = this;
       var url = this.contextUrl + "/indicatrixAnalysis/getInData";
-      let loadingInstance = Loading.service({fullscreen: true,text:"正在执行SQL,请稍候..."});
-      this.currentLoading = loadingInstance
+      let loadingInstance = Loading.service({fullscreen: true});
       var indicatrixObj = null;
       $.each(objInList, function (num, value) {
         if (value == null) {
@@ -4876,8 +4892,8 @@ export default {
         data: {inMeasure: JSON.stringify(indicatrixObj), listDim: JSON.stringify(objDimList)},
         async: true,
         success: function (res) {
+          loadingInstance.close();
           if (res.state == false) {
-            loadingInstance.close();
             that.$message("分析出错，" + res.message, {time: 30000, btn: ['知道了']});
             return;
           }
@@ -4902,6 +4918,8 @@ export default {
      * @param chartConfig 图表配置
      */
     executeSql(executeSQLList,measureName,analysisRegionId,chartConfig){
+      let dataView = {id:analysisRegionId,measureName:measureName,chartConfig:chartConfig,isLoad:false,loading:true,icon:'el-icon-loading',isError:false}
+      this.dataList.push(dataView)
       let url = this.contextUrl + "/indicatrixAnalysis/executeSql";
       let data = {
         executeSQLList:executeSQLList,
@@ -4964,7 +4982,7 @@ export default {
       this.oftenAnalysisId = "";
       this.oftenAnalysisName = "";
       this.dataMap = new Map();
-      this.dataList = []
+      this.dataList = [];
       //循环指标区与维度区的映射
       $.each(this.inRegionAndDimRegionMapping, function (num, value) {
         if (num == 0) {//第一个数组不清除，因为是默认的，直接清除div下边的指标和维度
@@ -4975,7 +4993,7 @@ export default {
             "                                <div class=\"tags-order\" id=\"inAnalysisRegionCount\" >1</div>" +
             "                                <div class=\"tag-select\">" +
             "                                    <i class=\"icon-add\">+</i>" +
-            "                                    <span onclick=\"addTempIn(this)\" analysisRegion='inAnalysisRegion'>新增临时指标</span>" +
+            "                                    <span style='margin-top: -5px;' onclick=\"addTempIn(this)\" analysisRegion='inAnalysisRegion'>新增临时指标</span>" +
             "                                </div>" +
             "<div class='tags-del'><i class='icon-del' onclick='delAnalysisRegion(\"inAnalysisRegion\")'></i></div>" +
             "</div>";
@@ -5012,9 +5030,6 @@ export default {
         dimAnalysisRegionId: "inDimAnalysisRegion"
       };
       this.inRegionAndDimRegionMapping.push(newMappingRegionObj);
-      //清空图表区域
-      $("#dataView").html("");
-      $("#dataViewTemp").html("");
     },
 
     /**
@@ -5027,39 +5042,6 @@ export default {
       this.inRegionAndDimRegionMapping = JSON.parse(obj.mapping);
       $("#inRegion").html(obj.inRegionStyle);
       $("#dimAnalysisRegion").html(obj.dimRegionStyle);
-      /*//循环后台读取出来的对象
-        $.each(analysisObj, function(num, value) {
-            if (value == null || value == undefined) {
-                return;
-            }
-            //先创建区   一个区对应一个分析对象
-            if (value.id == "inAnalysisRegion") {//如果分析区编号是这个责不创建分析区，直接取指标和维度进行追加
-                $.each(value.objInList,function(num, inMeasure) {
-                    loadInMeasueData(inMeasure.measureType, value.id, inMeasure.inMeasureUuid,false);
-                });
-                addDimStyle(value.objDimList,'inAnalysisRegion','inDimAnalysisRegion');
-            }
-            else {
-                //如果不是初始化的分析区则先将分析区添加进去
-                var inAnalysisRegionId = value.id;
-                var dimAnalysisRegionId = "dimAnalysisRegion" + value.id.replace('inAnalysisRegion', '');
-                createInAnalysisRegion(inAnalysisRegionId, dimAnalysisRegionId);
-                createDimAnalysisRegion(inAnalysisRegionId,dimAnalysisRegionId);
-                //将编号的映射关系存到映射关系数组
-                addMapping(inAnalysisRegionId, dimAnalysisRegionId);
-                //创建完成之后直接显示新创建的维度灰框，其他的全部隐藏
-                switchDim(dimAnalysisRegionId);
-                //创建完成之后在列表里将分析区的编号放进分析列表
-                addAnalysisList(inAnalysisRegionId);
-                //分析区添加完成之后添加指标
-                $.each(value.objInList,function(num, inMeasure) {
-                    loadInMeasueData(inMeasure.measureType, value.id, inMeasure.inMeasureUuid,false);
-                });
-                //循环维度将维度的状态选中
-                addDimStyle(value.objDimList,inAnalysisRegionId,dimAnalysisRegionId);
-            }
-        });*/
-      //this.analysisList = analysisObj;
     },
 
     /**
@@ -5187,7 +5169,6 @@ export default {
       var listDim = JSON.stringify(inDimObj.objDimList);
       if (level == 0) {
         this.queryData();
-        this.loadLayout();
         return;
       }
       var url = this.contextUrl + "/indicatrixAnalysis/getSplitSwitchData";
@@ -5206,7 +5187,6 @@ export default {
           //获取成功之后将拿到的列放入到指定的维度columnName里。
           that.setDimColumnName(analysisRegionId, res.resultObj, dimId, true, level);
           that.queryData();
-          that.loadLayout();
         }
       });
       /*this.uuidArr = new Array();
@@ -5572,188 +5552,6 @@ export default {
     },
 
     /**
-     * 加载界面布局
-     * @param unload 是否从新加载
-     */
-    loadLayout(unload) {
-      var that = this;
-      var selectArr = [];
-      $("input[id^=data-select]").each(function () {
-        selectArr.push($(this).val());
-      });
-      var itemObjRowArr = new Array(2);
-      var itemArr = new Array();
-      var dataShow = "dataShow";
-      if (unload) {
-        $("#dataViewTemp").append($("#dataView").children());
-        $("#dataView").html("");
-        $("div[ditem='true']").each(function () {
-          $("#dataView").append($(this));
-        });
-        $(".main-view-con").html("<div id='" + dataShow + "'></div>");
-      }
-      for (var i = 0; i < this.uuidArr.length; i++) {
-        var itemObjArr0 = $("div[id='table-view_" + this.uuidArr[i] + "'][itemobj='" + this.uuidArr[i] + "']");
-        var itemObjArr1 = $("div[id='chartFrameDiv_" + this.uuidArr[i] + "'][itemobj='" + this.uuidArr[i] + "']");
-        var itemObjArr = new Array();
-        if (itemObjArr0.length > 0) {
-          itemObjArr.push(itemObjArr0[0]);
-        }
-        if (itemObjArr1.length > 0) {
-          itemObjArr.push(itemObjArr1[0]);
-        }
-        var i0Empty = itemObjRowArr[0] == null || typeof (itemObjRowArr[0]) == undefined;
-        var i1Empty = itemObjRowArr[1] == null || typeof (itemObjRowArr[1]) == undefined;
-        var itemObj0 = {
-          "id": $(itemObjArr[0]).attr("id"),
-          "itemobj": $(itemObjArr[0]).attr("itemobj"),
-          "objname": $(itemObjArr[0]).attr("objname")
-        };
-        var itemObj1 = {
-          "id": $(itemObjArr[1]).attr("id"),
-          "itemobj": $(itemObjArr[1]).attr("itemobj"),
-          "objname": $(itemObjArr[1]).attr("objname")
-        };
-        if (itemObjArr.length == 1) {
-          if (i0Empty) {
-            itemObjRowArr[0] = itemObj0;
-            if ((i + 1) == this.uuidArr.length) {
-              itemArr.push(itemObjRowArr);
-            }
-          } else if (i1Empty) {
-            itemObjRowArr[1] = itemObj0;
-            itemArr.push(itemObjRowArr);
-            itemObjRowArr = new Array(2);
-          }
-        } else {
-          if (!i0Empty && !i0Empty) {
-            itemArr.push(itemObjRowArr);
-            itemObjRowArr = new Array(2);
-          }
-          itemObjRowArr[0] = itemObj0;
-          itemObjRowArr[1] = itemObj1;
-          itemArr.push(itemObjRowArr);
-          itemObjRowArr = new Array(2);
-        }
-      }
-      if (itemArr.length == 1) {
-        $("#" + dataShow).height(600 * itemArr.length);
-      } else {
-        $("#" + dataShow).height(400 * itemArr.length);
-      }
-      var xm = $.xmlayout.layout($("#" + dataShow));
-      if (itemArr.length <= 1) {
-        var xmobj = xm.design(itemArr.length, 2, 0, null, [false, true]);
-      } else {
-        var xmobj = xm.design(itemArr.length, 1, 0, null, [false, true]);
-        for (var i = 1; i <= itemArr.length; i++) {
-          xmobj.getData(i + ":1").design(1, 2, 0, null, [false, true]);
-        }
-      }
-      xm.init({
-        data: xm.getData(),//设计的布局结果
-        timer: 1000//放映时间
-      });//初始化布局
-      var panels = xm.getPanels();
-      for (var i = 0; i < panels.length; i++) {
-        xm.disablePanelItem(panels[i], xm.RPID.ZOOM_IN, true);
-        xm.disablePanelItem(panels[i], xm.RPID.ZOOM_OUT, true);
-        xm.disablePanelItem(panels[i], xm.RPID.POPPED_BERTH, true);
-        xm.disablePanelItem(panels[i], xm.RPID.CHANGE_PANEL, true);
-        var itemobj0 = itemArr[parseInt(i / 2)][0]['itemobj'];
-        var itemobj1 = itemArr[parseInt(i / 2)][1] == null ? null : itemArr[parseInt(i / 2)][1]['itemobj'];
-        if (itemArr[parseInt(i / 2)][i % 2] != null && ((itemobj0 == itemobj1 && i % 2 == 0) || itemobj0 != itemobj1)) {
-          var id = itemArr[parseInt(i / 2)][i % 2]['itemobj'];
-          var name = "";
-          var prompt = "";
-          var analysisRegionId = "";
-          $.each(this.uuidName, function (num, value) {
-            if (value.id == id) {
-              name = value.name;
-              prompt = value.prompt;
-              analysisRegionId = value.analysisRegionId;
-            }
-          });
-          var select = "<input type='hidden' id='data-select" + itemArr[parseInt(i / 2)][i % 2]['itemobj'] + "' itemobj='" + itemArr[parseInt(i / 2)][i % 2]['itemobj'] + "' value='1' />";
-          var selectType = "<div class='btn-group btn-group-sm result-type-btn-group' data-toggle='buttons'><button type='button' id='result-type-table" + itemArr[parseInt(i / 2)][i % 2]['itemobj'] + "' class='btn result-type-btn active' onclick='changeChartType(\"" + id + "\",this,0)'><i class='result-type-table'></i></button><button type='button' id='result-type-chart" + itemArr[parseInt(i / 2)][i % 2]['itemobj'] + "' class='btn active result-type-btn' onclick='changeChartType(\"" + id + "\",this,1)' ><i class='result-type-chart'></i></button></div>";
-          var buttonDom = "<a onclick='featuresValue(\"" + id + "\",\"" + name + "\")' style='float: right' class='btn btn-result result-a-btn' title='统计量'><i class='result-img-btn result-img-btn-static' /></a>";
-          var conButtonDom = "<a onclick='addConstantForm(\"" + id + "\",\"" + name + "\",\"" + prompt + "\")' style='float: right' class='btn btn-result result-a-btn' title='常量'><i class='result-img-btn result-img-btn-contains' /></a>";
-          var saveToSpace = "<a onclick='saveToSpace(\"" + id + "\",\"" + name + "\")' style='float: right' class='btn btn-result result-a-btn' title='保存到个人空间'><i class='result-img-btn result-img-btn-save' /></a>";
-          /*var test = "<button onclick='test(\"" + id + "\",\"" + name + "\")' style='float: right' class='btn btn-result'>测试</button>";*/
-          $("div[class^='targ_title']").eq(i).html("<b>" + itemArr[parseInt(i / 2)][i % 2]['objname'] + "</b>" + select + selectType + buttonDom + conButtonDom + saveToSpace);
-        }
-        if (itemArr[parseInt(i / 2)][i % 2] != null) {
-          panels[i].loadElement($("div[id='" + itemArr[parseInt(i / 2)][i % 2]['id'] + "']"));
-        }
-      }
-      dataShowHeight = $("#dataShow").height();
-      for (var i = 0; i < itemArr.length; i++) {
-        if (itemArr[i][0] != null && itemArr[i][1] != null && itemArr[i][0]['itemobj'] == itemArr[i][1]['itemobj']) {
-          $("div[colBorder='true']").eq(i).width(0);
-        }
-      }
-      $(".table-striped").each(function () {
-        $(this).jqGrid("setGridWidth", $("#table-view_" + $(this).attr("id")).width() - 10);
-        if (itemArr.length == 1) {
-          $(this).jqGrid("setGridHeight", 500);
-        } else {
-          $(this).jqGrid("setGridHeight", 300);
-        }
-      });
-      $("div[id^='chartFrameDiv_']").each(function () {
-        var uuid = $(this).attr("itemobj");
-        $(this).parent().parent().find(".fullscreen").attr("id", "fullscreen_chart_" + uuid);
-        $(this).parent().parent().find(".fullscreen").attr("itemobj", uuid);
-
-        if (itemArr.length == 1) {
-          var fullscreen_cw = document.getElementById("chartFrame_" + uuid);
-          $(fullscreen_cw).height(500);
-        } else {
-          var fullscreen_cw = document.getElementById("chartFrame_" + uuid);
-          $(fullscreen_cw).height(300);
-        }
-      });
-
-      $("div[id^='table-view_']").each(function () {
-        var uuid = $(this).attr("itemobj");
-        $(this).parent().parent().find(".fullscreen").attr("id", "fullscreen_table_" + uuid);
-        $(this).parent().parent().find(".fullscreen").attr("itemobj", uuid);
-      });
-
-      $("div[id^='fullscreen_chart_']").on("mousedown", function () {
-        var fullscreen_cw = document.getElementById("chartFrame_" + $(this).attr("itemobj"));
-        var fullScreen = $(this).attr("fullscreen");
-        if (fullScreen == "false") {
-          fullscreen_cw.contentWindow.hideMenu();
-          $(fullscreen_cw).height(350);
-          $("#dataShow").height(dataShowHeight);
-          that.J_slidedown_btnClick();
-        } else {
-          fullscreen_cw.contentWindow.showMenu();
-          $(fullscreen_cw).height(800);
-          $("#dataShow").height(800);
-          that.J_slideup_btnClick();
-        }
-      });
-      $("div[id^='fullscreen_table_']").on("mousedown", function () {
-        var fullScreen = $(this).attr("fullscreen");
-        if (fullScreen == "false") {
-          $("#" + $(this).attr("itemobj")).jqGrid("setGridWidth", $("#table-view_" + $(this).attr("itemobj")).parent().width() - 10);
-          $("#dataShow").height(dataShowHeight);
-          that.J_slidedown_btnClick();
-        } else {
-          $("#" + $(this).attr("itemobj")).jqGrid("setGridWidth", $("#table-view_" + $(this).attr("itemobj")).parent().width() - 10);
-          $("#dataShow").height(800);
-          that.J_slideup_btnClick();
-        }
-      });
-      $("input[id^=data-select]").each(function (i) {
-        $(this).val(selectArr[i]);
-        that.changeBtnType(selectArr[i], $(this).attr("itemobj"));
-      });
-    },
-
-    /**
      * 图表展示方式修改事件
      * @param itemobj divId
      * @param select 选中的类型
@@ -5792,7 +5590,6 @@ export default {
       }
       this.changeBtnType(selectVal, itemobj);
       $("#data-select" + itemobj).val(selectVal);
-      this.loadLayout(true);
     },
 
     changeBtnType(selectVal, itemobj) {
@@ -5859,10 +5656,13 @@ export default {
       this.dialogEdittemdimVisible = false;
     },
     closeFilterDialog() {
-      this.closeFilterDialog = false;
+      this.dialogFilterVisible = false;
     },
     closeSaveAnalysisDialog() {
       this.dialogsSaveAnalysisVisible = false;
+    },
+    closeInmeasuerFilter(){
+      this.inMeasureFilter = false
     },
     getCurrentLogin(){
       return this.currentLoginUser;
@@ -5910,8 +5710,7 @@ var see = "查看";
 >>>.left-side .el-tabs__content {
   margin-left: 40px
 }
-
->>>.el-tabs__item.is-active {
+.el-tabs__item.is-active {
   background: #ffffff;
   border-top: 2px solid #dfe4ed;
   border-bottom: 2px solid #dfe4ed;
@@ -5977,6 +5776,7 @@ var see = "查看";
 }
 
 >>>.tag-select i {
+  margin-top: -6px;
   display: inline-block;
   width: 16px;
   height: 16px;
@@ -5998,6 +5798,7 @@ var see = "查看";
   background-image: url("../styles/icons/icon-tools-3.png");
   border-right: 1px solid #DCE6ED;
   padding-left: 4px;
+  margin-top:-8px;
 }
 
 >>>.tag-select i.icon-down {
@@ -6153,5 +5954,11 @@ var see = "查看";
 }
 >>>.el-tabs--left .el-tabs__nav-wrap.is-left::after{
   height:92%
+}
+.el-submenu__title{
+  border-bottom: 2px solid transparent;
+}
+.is-active{
+  border-bottom: 2px solid #ffffff;
 }
 </style>
