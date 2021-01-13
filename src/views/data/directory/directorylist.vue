@@ -125,7 +125,7 @@
     <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="800px">
       <el-row>
         <el-col>
-          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" />
+          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" @table-show="tableshow" />
         </el-col>
       </el-row>
       <span slot="footer">
@@ -647,6 +647,9 @@ export default {
     },
     appendnode(childData, parentNode) {
       this.$emit('append-node', childData, this.clickNode)
+    },
+    tableshow(show) {
+      this.tableShowVisible = show
     },
     getSortClass: function(key) {
       const sort = this.pageQuery.sort

@@ -22,10 +22,12 @@
             @node-click="nodeClick"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node">
-              <i v-if="data.id==='ROOT'" class="el-icon-s-home" style="color:#409EFF" />
-              <i v-if="data.type==='FOLDER'" class="el-icon-folder" style="color:#409EFF" />
-              <i v-if="data.type==='TABLE'" class="el-icon-tickets" style="color:#409EFF" />
-              <i v-if="data.type==='COLUMN'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
+              <i v-if="data.id==='ROOT'" class="el-icon-s-home" />
+              <i v-if="data.type==='FOLDER'" class="el-icon-folder" />
+              <i v-if="data.type==='TABLE'">
+                <span class="icon iconfont" style="padding-right: 3px;vertical-align: bottom;">&#xecee;</span>
+              </i>
+              <i v-if="data.type==='COLUMN'" class="el-icon-c-scale-to-original" />
               <span>{{ node.label }}</span>
               <span style="margin-left: 10px">
                 <!--添加： 根节点以及手工维护的节点-->
