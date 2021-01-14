@@ -25,7 +25,9 @@ export default {
   data() {
     return {
       // loading
-      isLoading: true
+      isLoading: true,
+      // 状态为编辑还是查看
+      isDetails: false
     }
   },
   methods: {
@@ -39,6 +41,9 @@ export default {
       this.isLoading = true
       // Initialization parameters
       this.resetParams()
+      if (this.$route.params.status === '1' || this.$route.params.status === 1) {
+        this.isDetails = true
+      }
       // Promise Get node needs data
       Promise.all([
         // Process instance details
@@ -56,14 +61,15 @@ export default {
         this.getWorkerGroupsAll(),
         this.getTenantList()
       ]).then((data) => {
-        const item = data[0]
-        let flag = false
-        if (item.state !== 'WAITTING_THREAD' && item.state !== 'SUCCESS' && item.state !== 'PAUSE' && item.state !== 'FAILURE' && item.state !== 'STOP') {
-          flag = true
-        } else {
-          flag = false
-        }
-        this.setIsDetails(flag)
+        // const item = data[0]
+        // let flag = false
+        // if (item.state !== 'WAITTING_THREAD' && item.state !== 'SUCCESS' && item.state !== 'PAUSE' && item.state !== 'FAILURE' && item.state !== 'STOP') {
+        //   flag = true
+        // } else {
+        //   flag = false
+        // }
+        // this.setIsDetails(flag)
+        this.setIsDetails(this.isDetails)
         this.isLoading = false
 
         // Whether to pop up the box?

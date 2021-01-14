@@ -13,7 +13,6 @@
         placeholder="prop"
         :maxlength="180"
         style="width: 120px;display: none;"
-        @on-blur="_verifProp()"
       />
       <x-input
         v-model="paramList[$index].propName"
@@ -21,13 +20,14 @@
         type="text"
         placeholder="propName"
         :maxlength="180"
-        style="width: 170px;"
+        :style="inputStyle"
+        :title="paramList[$index].propName"
         @on-blur="_verifProp()"
       />
       <template v-if="hide">
         <x-input
           v-model="paramList[$index].propType"
-          style="width: 170px;"
+          :style="inputStyle"
           :disabled="true"
           @change="_handleTypeChanged"
         />
@@ -45,6 +45,7 @@
         v-model="paramList[$index].paramUuid"
         :disabled="isDetails"
         filterable
+        :add-title="true"
         placeholder="关联参数"
         :maxlength="256"
         :style="inputStyle"
@@ -55,8 +56,20 @@
           :key="model.paramUuid"
           :value="model.paramUuid"
           :label="model.paramName"
+          :title="model.paramName"
         />
       </x-select>
+      <x-input
+        v-if="routerType === 'instance'"
+        v-model="paramList[$index].value"
+        :disabled="isDetails"
+        type="text"
+        placeholder="参数值"
+        :maxlength="256"
+        :style="inputStyle"
+        :title="paramList[$index].value"
+        @on-blur="_verifProp()"
+      />
     </div>
   </div>
 </template>
@@ -65,6 +78,8 @@ import _ from 'lodash'
 import { directList, typeList } from './commcon'
 import disabledState from '@/components/etl/mixin/disabledState'
 import { listByPage, getById } from '@/api/etlscheduler/paramfield'
+import store from '@/store'
+
 export default {
   name: 'JavaParams',
   components: {},
@@ -72,6 +87,7 @@ export default {
   props: {
     udpList: Array,
     // hide direct/type
+    routerType: String,
     hide: {
       type: Boolean,
       default: true
@@ -79,6 +95,7 @@ export default {
   },
   data() {
     return {
+      store,
       // Direct data Custom parameter type support IN
       directList: directList,
       // Type data Custom parameter type support OUT
@@ -89,12 +106,15 @@ export default {
       localParamsIndex: null,
       paramListS: [],
       paramList: [],
-      paramListIndex: null
+      paramListIndex: null,
+      paramInstanceList: [],
+      paramMap: {}
     }
   },
   computed: {
     inputStyle() {
-      return `width:${this.hide ? 160 : 256}px`
+      return `width: ${this.routerType === 'instance' ? 125 : 167}px`
+      // return `width:${this.hide ? 160 : 256}px`
     }
   },
   watch: {
@@ -104,12 +124,25 @@ export default {
     }
   },
   created() {
-    this.paramList = this.udpList
     const query = { 'pageNo': 1,
       'pageSize': 1000 }
     listByPage(query).then(resp => {
       this.paramListS = resp.data.records
     })
+    if (this.routerType === 'instance') {
+      this.paramInstanceList = this.store.state.dag.processInstanceDetail.distinctParamList
+      this.paramInstanceList.forEach((r, i) => {
+        this.paramMap[r.param.paramUuid] = r
+      })
+      this.udpList.forEach((r, i) => {
+        this.paramInstanceList.forEach((j, k) => {
+          if (r.paramUuid === j.param.paramUuid) {
+            r.value = j.value
+          }
+        })
+      })
+    }
+    this.paramList = this.udpList
   },
   mounted() {
   },
