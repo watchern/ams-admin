@@ -19,10 +19,10 @@
       </el-form-item>
 
       <el-form-item v-if="searchBar == '0'">
-<!--        <el-button type="primary" @click="onSubmit">查询</el-button>-->
-<!--        <el-button type="primary" @click="clearAll">清空</el-button>-->
-        <img :src="searchFor" @click="onSubmit" class="someimgin"/>
-        <img :src="resetFor" @click="clearAll" class="someimgin"/>
+        <el-button type="primary" @click="onSubmit">查询</el-button>
+        <el-button type="primary" @click="clearAll">清空</el-button>
+<!--        <img :src="searchFor" @click="onSubmit" class="someimgin"/>-->
+<!--        <img :src="resetFor" @click="clearAll" class="someimgin"/>-->
       </el-form-item>
 
       <el-form-item v-if="searchBar == '1'" class="full-search">
@@ -167,9 +167,8 @@ export default {
 <style lang="scss" scoped>
   .query-field{
     height: 45px;
-    float: left;
-    position: relative;
-    z-index:1000;
+    position: absolute;
+    z-index:500;
   }
   /*.el-form--inline .el-form-item {*/
     /*margin-right: 30px;*/
