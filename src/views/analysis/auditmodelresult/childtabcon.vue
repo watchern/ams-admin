@@ -24,12 +24,12 @@
       ></el-button>
       <el-row v-if="myFlag">
         <div align="right">
-          <el-button
+          <!--<el-button
             type="primary"
             @click="sendToOA()"
             class="oper-btn share"
             title="发送到作业平台"
-          ></el-button>
+          ></el-button>-->
           <el-button
             :disabled="modelRunResultBtnIson.exportBtn"
             type="primary"
@@ -1576,7 +1576,7 @@ export default {
       }
     },
 
-    sendToOA() {
+    /*sendToOA() {
       var runTaskRelUuid =  this.nowtable.runTaskRelUuid;
       const dataUserId = this.$store.getters.datauserid
       const dataUserName = this.$store.getters.datausername
@@ -1588,7 +1588,7 @@ export default {
       })
 
 
-    },
+    },*/
   },
 };
 </script>
