@@ -168,6 +168,8 @@ export default {
   .query-field{
     height: 45px;
     float: left;
+    position: relative;
+    z-index:1000;
   }
   /*.el-form--inline .el-form-item {*/
     /*margin-right: 30px;*/
