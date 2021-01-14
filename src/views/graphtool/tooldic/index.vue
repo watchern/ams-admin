@@ -614,7 +614,7 @@
             },
             initGraph() {
                 if (!mxClient.isBrowserSupported()) {
-                    this.$message({ type: 'info', message: '您的浏览器不支持图形设计。请更换浏览器' })
+                    this.$message.error('您的浏览器不支持图形设计。请更换浏览器')
                     return
                 }
                 const $this = this
@@ -683,7 +683,7 @@
              * @param graphUuid 图形ID
              */
             loadGraph(graphUuid) {
-                this.loading = $('body').mLoading({ 'text': '正在加载，请稍后……', 'hasCancel': false })// 遮罩层对象
+                this.loading = $(this.$refs.graphToolDiv).mLoading({ 'text': '正在加载，请稍后……', 'hasCancel': false })// 遮罩层对象
                 getGraphInfoById(graphUuid).then(response => {
                     if (response.data == null) {
                         this.loading.destroy()
@@ -929,10 +929,10 @@
                 this.saveGraphType = type
                 var str = type === 'saveGraph' ? '保存' : '另存为'
                 if (this.canEditor === false) {
-                    this.$message({ type: 'info', message: '当前图形您没有【' + str + '】操作的权限' })
+                    this.$message({ type: 'warning', message: `当前图形您没有【${str}】操作的权限` })
                 } else {
                     if (Object.keys(this.graph.nodeData).length === 0) {
-                        this.$message({ type: 'info', message: '当前图形无节点数据，不可保存' })
+                        this.$message({ type: 'warning', message: '当前图形无节点数据，不可保存' })
                     } else {
                         this.graphFormVisible = true
                         this.graphFormTitle = `${str}图形`
@@ -941,7 +941,7 @@
             },
             getGraphFormInfo() {
                 if ($.trim(this.graphName) === '') {
-                    this.$message({ type: 'info', message: '请输入图形名称' })
+                    this.$message({ type: 'warning', message: '请输入图形名称' })
                     return
                 }
                 const encoder = new mxCodec()
@@ -961,14 +961,19 @@
                 let callBack = function(vueObj,response,msg_success,msg_error){
                     vueObj.graphFormVisible = false
                     if (response.data == null) {
-                        vueObj.$message.error({ message: msg_error })
+                        vueObj.$message.error(msg_error)
                     } else {
                         vueObj.graphUuid = response.data
                         if (vueObj.saveGraphType === 'saveGraph') {
                             vueObj.graphName_show = vueObj.graphName
                             vueObj.description_show = vueObj.description
                         }
-                        vueObj.$message({ type: 'info', message: msg_success })
+                        vueObj.$notify({
+                            title: vueObj.$t('message.title'),
+                            message: vueObj.$t(msg_success),
+                            type: 'success',
+                            duration: 2000,
+                            position: 'bottom-right'})
                     }
                 }
                 if(this.openGraphType === 1){//个人图形
@@ -1096,7 +1101,7 @@
                 if (this.showGraphListType === 'open') { // 打开方法
                     const returnObj = this.$refs.graphListExport.getChooseGraph()
                     if (returnObj.isError) {
-                        this.$message({ type: 'info', message: returnObj.message })
+                        this.$message({ type: 'warning', message: returnObj.message })
                     } else {
                         this.graphListDialogVisible = false
                         this.$nextTick(() => {
@@ -1122,7 +1127,7 @@
                 } else { // this.showGraphListType === 'export'，图形导出方法
                     const returnObj = this.$refs.graphListExport.getChooseGraphs()
                     if (returnObj.isError) {
-                        this.$message({ type: 'info', message: returnObj.message })
+                        this.$message({ type: 'warning', message: returnObj.message })
                     } else {
                         this.graphListDialogVisible = false
                         indexJs.exportGraphBack(returnObj)

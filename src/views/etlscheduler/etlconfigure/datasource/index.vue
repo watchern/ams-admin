@@ -423,20 +423,30 @@ export default {
       }
     },
     getDbType(value) {
-      if (value === 'POSTGRESQL') {
-        this.showdDatabase = true
-      } else {
-        this.showdDatabase = false
+      // if (value === 'ORACLE' && this.dialogStatus === 'create') {
+      //   this.showConnectType = true
+      //   this.datasource.connectType = 'ORACLE_SERVICE_NAME'
+      // } else if (value === 'ORACLE' && this.dialogStatus !== 'create') {
+      //   this.showConnectType = true
+      // } else {
+      //   this.showConnectType = false
+      // }
+      this.showdDatabase = false
+      this.showConnectType = false
+      switch (value) {
+        case 'POSTGRESQL':
+          this.showdDatabase = true
+          break
+        case 'ORACLE':
+          this.showConnectType = true
+          if (this.dialogStatus === 'create') {
+            this.datasource.connectType = 'ORACLE_SERVICE_NAME'
+          }
+          break
+        default:
+          break
       }
 
-      if (value === 'ORACLE' && this.dialogStatus === 'create') {
-        this.showConnectType = true
-        this.datasource.connectType = 'ORACLE_SERVICE_NAME'
-      } else if (value === 'ORACLE' && this.dialogStatus !== 'create') {
-        this.showConnectType = true
-      } else {
-        this.showConnectType = false
-      }
       // Set default port for each type datasource Set default port for each type datasource 为每个类型数据源设置默认端口
       this._setDefaultValues(value)
 

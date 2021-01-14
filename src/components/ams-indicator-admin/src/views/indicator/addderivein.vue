@@ -1,7 +1,7 @@
 <template>
     <el-container>
         <el-aside class="left-tree">
-            <input type="text" class="form-control" id="search" placeholder="搜索">
+            <el-input id="searchAddIn" v-model="inMeasureSearch" placeholder="搜索"></el-input>
             <div class="panel panel-default">
                 <div class="panel-body" style="height: 500px;overflow-y: auto">
                     <tree :nodes="inTreeNodes" :setting="inTreeSetting" @onCreated="inTreeCreate"/>
@@ -102,6 +102,7 @@ export default {
         inTree: null,
         inTreeNodes: null,
         inTreeSetting: null,
+        inMeasureSearch:'',
         /**
          * CodeMirror对象
          * @type {null}
@@ -170,8 +171,7 @@ export default {
         var that = this
         this.inTree = inTree
         this.inTree.expandAll(true)
-        fuzzySearch(this.inTree,'#search',null,false)
-
+        fuzzySearch(this.inTree,'#searchAddIn',null,false)
         var node = this.inTree.getNodes() //可以获取所有的父节点
         var nodes = this.inTree.transformToArray(node) //获取树所有节点
         for(var i = 0;i < nodes.length; i++){

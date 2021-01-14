@@ -11,7 +11,7 @@
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="图形类型" prop="graphType">
-                        <el-select v-model="formData.graphType" :disabled="true">
+                        <el-select v-model="formData.graphType" :disabled="true" style="width: 100%">
                             <el-option label="个人图形" :value="1" />
                             <el-option label="他人分享图形" :value="2" />
                             <el-option label="场景查询图形" :value="3" />
@@ -20,9 +20,9 @@
                         </el-select>
                     </el-form-item>
                 </el-col>
-                <el-col :span="12">
+                <el-col :span="12" style="padding-left: 10px;">
                     <el-form-item label="执行状态" prop="executeStatus">
-                        <el-select v-model="formData.executeStatus" :disabled="true">
+                        <el-select v-model="formData.executeStatus" :disabled="true" style="width: 100%">
                             <el-option label="全部执行" :value="1" />
                             <el-option label="部分执行" :value="2" />
                             <el-option label="未执行" :value="3" />

@@ -65,7 +65,7 @@
             getTransCodeList().then(response => {
                 loading.destroy();
                 if (response.data == null) {
-                    this.$message.error({ message: '转码规则数据获取失败' })
+                    this.$message.error('转码规则数据获取失败')
                 } else {
                     this.ruleArr = response.data
                     this.$nextTick(() => {
@@ -173,7 +173,7 @@
                     }
                 }
                 if (!verify) {
-                    this.$message.error({ message: '同一个字段不能选择多个转码规则' })
+                    this.$message.error('同一个字段不能选择多个转码规则')
                 }
                 return verify
             }

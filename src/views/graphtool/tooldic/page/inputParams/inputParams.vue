@@ -671,7 +671,7 @@
                                     'paramValue': $.trim(paramValue), // 处理可能存在的空格
                                     'allowedNull': '0'
                                 }
-                                if (allowedNull === '1') { // 允许为空
+                                if (allowedNull === 1) { // 允许为空
                                     obj.allowedNull = '1'
                                     if (paramValue === '') {
                                         hasAllowedNullParam = true
@@ -707,7 +707,7 @@
                                     'paramValue': '',
                                     'allowedNull': '0'
                                 }
-                                if (allowedNull === '1') { // 允许为空
+                                if (allowedNull === 1) { // 允许为空
                                     obj.allowedNull = '1'
                                     if (paramSelectedObj.length === 0) { // 未选择值
                                         hasAllowedNullParam = true
@@ -762,7 +762,7 @@
                                     'paramValue': '',
                                     'allowedNull': '0'
                                 }
-                                if (allowedNull === '1') { // 允许为空
+                                if (allowedNull === 1) { // 允许为空
                                     obj.allowedNull = '1'
                                     if (paramSelectedObj.length === 0) { // 未选择值
                                         hasAllowedNullParam = true
