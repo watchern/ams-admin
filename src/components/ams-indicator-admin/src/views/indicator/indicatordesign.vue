@@ -705,11 +705,12 @@ export default {
           }
           var url = that.contextUrl + "/InCalculationColumn/deleteByPrimaryKey"
           $.post(url, {inCalculationColumnUuid: calculationColId}, function (res) {
+            debugger
             if (res.state == false) {
               that.$message(res.message)
               return
             }
-            that.getAllColumn(this.dmTableUuid)
+            that.getAllColumn(that.dmTableUuid)
           }, "json")
         }).catch(() => {
         })

@@ -85,14 +85,10 @@
           <div class="recommendPage" style="height: 620px;overflow-y:scroll">
             <el-menu default-active="0" class="el-menu-demo" mode="horizontal">
               <div v-for="(dataObj,indexI) in dataList">
-                <el-menu-item :index="indexI" @click="jump(indexI)">{{dataObj.measureName}}<i :class="dataObj.icon"></i></el-menu-item>
+                <el-menu-item :index="indexI.toString()" @click="jump(indexI)">{{dataObj.measureName}}<i :class="dataObj.icon"></i></el-menu-item>
               </div>
             </el-menu>
             <swiper :options="swiperOption" ref="mySwiper">
-<!--                <swiper-slide v-for="(dataObj,index) in dataList">
-                  <mtEditor :ref="dataObj.id" :data='dataObj.data' v-if="dataObj.chartConfig != undefined" :chart-config='dataObj.chartConfig'></mtEditor>
-                  <mtEditor :ref="dataObj.id" :data='dataObj.data' v-else :chart-config='dataObj.chartConfig'></mtEditor>
-                </swiper-slide>-->
                 <swiper-slide v-for="(dataObj,index) in dataList" v-loading="dataObj.loading" element-loading-text="正在执行SQL,请稍候...">
                   <mtEditor :ref="dataObj.id" :data='dataObj.data' v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
                   <mtEditor :ref="dataObj.id" :data='dataObj.data' v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
