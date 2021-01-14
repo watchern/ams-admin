@@ -1,4 +1,4 @@
-import echarts from 'echarts'
+import echarts from 'echarts/lib/echarts'
 import Chart from '../index'
 
 export default class Base {

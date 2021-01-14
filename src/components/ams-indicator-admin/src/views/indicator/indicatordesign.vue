@@ -35,7 +35,9 @@
                 </div>
                 <div class="table-view m-b-20">
                     <table id="gridTableIn" class="border-table">
+                      <tr><td>指标名称</td><td>指标类型</td><td>聚合方式</td><td>关联列</td><td>来源表</td><td>指标说明</td></tr>
                     </table>
+                  <div style="text-align: center" id="dimIn">暂无数据</div>
                 </div>
             </el-row>
             <el-row>
@@ -45,7 +47,10 @@
                     <el-button type="primary" size="mini" @click="getAllDim">查看所有维度</el-button>
                 </div>
                 <div class="table-view m-b-20" >
-                    <table id="gridTableDim" class="border-table"></table>
+                    <table id="gridTableDim" class="border-table">
+                      <tr><td>维度名称</td><td>维度类型</td><td>关联列</td><td>来源表</td><td>维度说明</td></tr>
+                    </table>
+                  <div style="text-align: center" id="dimZan">暂无数据</div>
                 </div>
             </el-row>
         </el-col>
@@ -466,6 +471,12 @@ export default {
         $.post(url, {tableId: tableId}, function (res) {
             that.inCount = res.body.result.length
             //循环数据
+          if(res.body.result != 0){
+            $("#dimIn").html("")
+          }
+          else{
+            $("#dimIn").html("暂无数据")
+          }
             $.each(res.body.result, function (num, value) {
                 var uuid = that.getuuid()
                 var domTr = "<tr id='" + uuid + "'check='false' onclick='tableColOnClick(this,\"gridTableIn\")'></tr>"
@@ -528,6 +539,12 @@ export default {
         $.post(url, {tableId: tableId}, function (res) {
             that.dimCount = res.body.result.length
             //循环数据
+            if(res.body.result != 0){
+              $("#dimZan").html("")
+            }
+            else{
+              $("#dimZan").html("暂无数据")
+            }
             $.each(res.body.result, function (num, value) {
                 var uuid = that.getuuid()
                 var domTr = "<tr id='" + uuid + "'check='false' onclick='tableColOnClick(this,\"gridTableDim\")'></tr>"

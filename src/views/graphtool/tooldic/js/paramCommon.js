@@ -253,7 +253,6 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
     let associatedParamIdArr = []// 受当前参数影响的被关联参数ID集合
     let paramSql = paramObj.paramChoice.optionsSql//拉列表或下拉树的SQL语句
     obj.setParamObj.title = paramObj.paramChoice.allowedNull === 0 ? '不可为空' : '可为空'
-    // obj.setParamObj.allowedNull = paramObj.paramChoice.allowedNull === 0 ? true : false
     let hasSql = false// 下拉列表或下拉树是非SQL方式或者是SQL方式但值为空
     switch (obj.setParamObj.inputType) {
         case 'lineinp':// 下拉列表

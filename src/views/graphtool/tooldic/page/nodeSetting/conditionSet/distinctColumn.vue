@@ -70,7 +70,7 @@
             inputVerify() {
                 var verify = true
                 if (this.transfer1.getData().length === 0) {
-                    this.$message({ type: 'info', message: '已选择去重字段列表不能为空' })
+                    this.$message({ type: 'warning', message: '已选择去重字段列表不能为空' })
                     verify = false
                 }
                 return verify
