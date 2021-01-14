@@ -53,11 +53,11 @@ export function del(ids) {
   })
 }
 // 修改对象
-export function update(data) {
+export function updateProcessInstance(data) {
   return request({
     baseURL: baseURL,
     url: '/processInstance/update',
-    method: 'put',
+    method: 'post',
     data
   })
 }

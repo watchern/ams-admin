@@ -44,6 +44,7 @@
         <m-local-params
           ref="refLocalParams"
           :udp-list="localParams"
+          :router-type="routerType"
           @on-local-params="_onLocalParams"
         />
       </div>
@@ -71,7 +72,8 @@ export default {
   mixins: [disabledState],
   props: {
     backfillItem: Object,
-    createNodeId: String
+    createNodeId: String,
+    routerType: String
   },
   data() {
     return {

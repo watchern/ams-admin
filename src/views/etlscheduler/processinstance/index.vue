@@ -19,6 +19,14 @@
           icon="el-icon-remove-outline"
           @click="handleSkipTask()"
         />
+        <!-- 修改 -->
+        <el-button
+          type="primary"
+          class="oper-btn edit"
+          title="修改"
+          :disabled="selections.length !== 1 || reStartStatus"
+          @click="handleUpdate()"
+        />
         <!-- 暂停 -->
         <el-button
           type="primary"
@@ -599,7 +607,12 @@ export default {
       })
     },
     handleView(processInstanceUuid) {
-      this.$router.push(`/etlscheduler/instance/${processInstanceUuid}`)
+      // 1为查看
+      this.$router.push(`/etlscheduler/instance/${processInstanceUuid}/1`)
+    },
+    handleUpdate() {
+      const temp = Object.assign({}, this.selections[0])
+      this.$router.push(`/etlscheduler/instance/${temp.processInstanceUuid}/0`)
     },
     handleFilter() {
       this.pageQuery.pageNo = 1

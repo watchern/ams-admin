@@ -1,6 +1,7 @@
 <template>
-  <el-dialog :append-to-body="true" :title="isCreate===true?'新增流程' :'修改流程'" style="margin-bottom: 60px;" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
+  <el-dialog :append-to-body="true" :title="routerType === 'instance'? '修改流程实例':isCreate===true?'新增流程' :'修改流程'" style="margin-bottom: 60px;" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
     <el-form
+      v-if="routerType !== 'instance'"
       ref="dataForm"
       :model="temp"
       :rules="rules"
@@ -52,6 +53,25 @@
         />
       </el-form-item>
     </el-form>
+    <el-form
+      v-if="routerType === 'instance'"
+      ref="dataForm"
+      :model="temp"
+      :rules="instanceRules"
+      label-position="right"
+      class="detail-form"
+    >
+      <el-form-item
+        label="流程实例名称"
+        prop="name"
+      >
+        <el-input
+          v-model="temp.name"
+          :disabled="isDetails"
+          placeholder="请输入名称(必填)"
+        />
+      </el-form-item>
+    </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="close()">取消</el-button>
       <el-button type="primary" @click="ok()">保存</el-button>
@@ -66,16 +86,21 @@ export default {
   name: 'Udp',
   mixins: [disabledState],
   props: {
-    dialogFormVisible: Boolean
+    dialogFormVisible: Boolean,
+    routerType: String
   },
   data() {
     return {
       temp: {
         orderNo: null,
         status: null,
-        syncDefine: true,
+        syncDefine: false,
         description: '',
         name: ''
+      },
+      instanceRules:{
+        name: [{ required: true, message: '请填写流程实例名称', trigger: 'change' },
+          { max: 100, message: '流程名称在100个字符之内', trigger: 'change' }]
       },
       rules: {
         name: [{ required: true, message: '请填写流程名称', trigger: 'change' },
