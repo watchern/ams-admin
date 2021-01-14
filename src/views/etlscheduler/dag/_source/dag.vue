@@ -163,7 +163,7 @@
       </div>
     </div>
 
-    <m-udp :dialog-form-visible="dialogFormVisible" @onUdp="onUdp" @onClose="onClose" />
+    <m-udp :dialog-form-visible="dialogFormVisible" :router-type="type" @onUdp="onUdp" @onClose="onClose" />
   </div>
 </template>
 <script>
@@ -454,10 +454,14 @@ host：      ${$item.host || '-'}
                   position: 'bottom-right'
                 })
                 this.spinnerLoading = false
-                this.$router.push('/etlscheduler/processdefinition')
+                if (this.type === 'instance') {
+                  this.$router.push('/etlscheduler/taskmonitor')
+                } else {
+                  this.$router.push('/etlscheduler/processdefinition')
+                }
                 // resolve()
               }).catch(e => {
-                this.$message.error(e.msg || '')
+                // this.$message.error(e.msg || '')
                 this.spinnerLoading = false
                 // this.$router.push('/etlscheduler/processdefinition')
                 reject(e)
@@ -698,7 +702,9 @@ host：      ${$item.host || '-'}
             self: self,
             preNode: preNode,
             rearList: rearList,
-            instanceId: this.$route.params.id
+            instanceId: this.$route.params.id,
+            // 自定义参数显示
+            type: this.type
           }
         })
       })
