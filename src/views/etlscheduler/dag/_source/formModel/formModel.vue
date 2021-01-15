@@ -171,6 +171,7 @@
           ref="SQL"
           :create-node-id="id"
           :backfill-item="backfillItem"
+          :router-type="type"
           @on-params="_onParams"
           @on-cache-params="_onCacheParams"
         />
@@ -179,6 +180,7 @@
           ref="JAVA"
           :create-node-id="id"
           :backfill-item="backfillItem"
+          :router-type="type"
           @on-params="_onParams"
           @on-cache-params="_onCacheParams"
         />
@@ -188,6 +190,7 @@
           ref="SHELL"
           :create-node-id="id"
           :backfill-item="backfillItem"
+          :router-type="type"
           @on-params="_onParams"
           @on-cache-params="_onCacheParams"
         />
@@ -272,7 +275,8 @@ export default {
     preNode: Array,
     rearList: Array,
     // instanceId: Number
-    instanceId: String
+    instanceId: String,
+    type: String
   },
   data() {
     return {

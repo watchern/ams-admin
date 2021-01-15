@@ -8,15 +8,15 @@
     </div>
      </el-aside>
      <el-container>
-     <el-header style="width: 60%">
+     <el-header>
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
         @submit="getLikeList"
       />
     </el-header>
-    <el-main>
-    <div align="right" style="width: 53%">
+    <el-main style="width:77.5vw;">
+    <div align="right">
       <el-row>
         <el-button
           type="primary"
@@ -74,7 +74,6 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       height="450px"
-      style="overflow-x: scroll; width: 53%"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column
