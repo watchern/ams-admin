@@ -184,7 +184,6 @@ export default {
           schemaName = node.data.id
         } else if (node.level == 2) {
           var nodePath = this.$refs.tree2.getNodePath(node)
-          debugger
           schemaName = nodePath[1].id
           tableName = node.data.label
         }
