@@ -19,12 +19,12 @@ export function selectLikePageVoHandle(data) {
  * 根据运行结果表查询真实表
  * @param {*} data pageQuery对象
  */
-export function selectTableHandle(data, filterSql) {
+export function selectTableHandle(data, filterSql,projectUuid) {
   return request({
     baseURL: analysisUrl,
     url: '/modelResultHandle/selectTableHandle',
     method: 'post',
-    data: {basePageParam:data,filterSql:filterSql}
+    data: {basePageParam:data,filterSql:filterSql,projectUuid:projectUuid}
   })
 }
 

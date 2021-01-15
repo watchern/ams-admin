@@ -68,7 +68,7 @@
                 <el-input v-model="form.modelFolderName" :disabled="true"/>
               </el-col>
               <el-col :span="2">
-                <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true">选择</el-button>
+                <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true" type="primary">选择</el-button>
               </el-col>
               <el-col :span="2"></el-col>
             </el-form-item>
@@ -79,7 +79,7 @@
                 <el-input v-model="form.auditItemUuid" class="display" :disabled="true"/>
                 <el-input v-model="form.auditItemName" :disabled="true"/>
               </el-col>
-              <el-button @click="showAuditItemTree">选择</el-button>
+              <el-button @click="showAuditItemTree" type="primary">选择</el-button>
             </el-form-item>
           </el-row>
           <el-row>
@@ -253,10 +253,10 @@
         <el-button @click="modelFolderTreeDialog=false">取消</el-button>
       </div>
     </el-dialog>
-    <!-- <div ref="btnDivRef" class="div-btn" v-show="isShowBtn">
-      <el-button type="primary" @click="save">保存</el-button>
-      <el-button @click="closeWinfrom">取消</el-button>
-    </div> -->
+<!--     <div ref="btnDivRef" class="div-btn" v-show="isShowBtn">-->
+<!--      <el-button type="primary" @click="save">保存</el-button>-->
+<!--      <el-button @click="closeWinfrom">取消</el-button>-->
+<!--    </div>-->
   </div>
 </template>
 <script>
@@ -481,7 +481,7 @@ export default {
       this.displayData(model)
       this.formName = "修改模型"
     }
-
+    debugger
     // 如果为2则反显要显示的数据
     if (this.operationObj.operationType == 3) {
       this.isUpdate = true
@@ -492,8 +492,6 @@ export default {
       this.isShowBtn = false
       //禁用所有界面可编辑元素
       this.isBanEdit = true
-    } else {
-      this.formName = "新增模型"
     }
   },
   methods: {
@@ -972,6 +970,7 @@ export default {
       return returnObj
     },
     closeWinfrom() {
+      debugger
       this.$store.commit('aceState/setRightFooterTags', {
         type: 'close',
         val: {

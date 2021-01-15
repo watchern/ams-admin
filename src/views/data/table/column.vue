@@ -2,8 +2,8 @@
   <div class="app-container">
     <el-row>
       <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'" align="right">
-        <el-button type="primary" size="mini" class="oper-btn iconoper-export" title="上移" @click="upTheCol()" />
-        <el-button type="primary" size="mini" class="oper-btn iconoper-import" title="下移" @click="downTheCol()" />
+        <!-- <el-button type="primary" size="mini" class="oper-btn iconoper-export" title="上移" @click="upTheCol()" />
+        <el-button type="primary" size="mini" class="oper-btn iconoper-import" title="下移" @click="downTheCol()" /> -->
         <el-button type="primary" size="mini" class="oper-btn add" title="添加" @click="addCol()" />
         <el-button type="primary" size="mini" class="oper-btn edit" title="复制" :disabled="selections.length !== 1" @click="copyCol()" />
         <el-button type="danger" size="mini" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="delCol()" />

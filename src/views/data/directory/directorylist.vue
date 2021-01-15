@@ -604,7 +604,6 @@ export default {
     preview() {
       preview(this.selections[0]).then(res => {
         this.executeSQLList = res.data.executeTask.executeSQL
-        debugger
         this.arrSql = res.data
         this.previewVisible = true
         this.$nextTick(() => {
