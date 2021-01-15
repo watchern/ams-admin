@@ -481,7 +481,6 @@ export default {
       this.displayData(model)
       this.formName = "修改模型"
     }
-    debugger
     // 如果为2则反显要显示的数据
     if (this.operationObj.operationType == 3) {
       this.isUpdate = true
@@ -970,7 +969,6 @@ export default {
       return returnObj
     },
     closeWinfrom() {
-      debugger
       this.$store.commit('aceState/setRightFooterTags', {
         type: 'close',
         val: {
