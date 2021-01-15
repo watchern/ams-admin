@@ -11,8 +11,8 @@
           />
         </div>
       </el-header>
-      <el-main>
-        <div align="right" style="width: 64%">
+      <el-main style="width: 91.8vw">
+        <div align="right">
           <el-row>
             <el-button
               type="primary"
@@ -77,7 +77,6 @@
           @sort-change="sortChange"
           @selection-change="handleSelectionChange"
           height="450px"
-          style="overflow-x: scroll; width: 64%"
         >
           <el-table-column type="selection" width="55" />
           <el-table-column
