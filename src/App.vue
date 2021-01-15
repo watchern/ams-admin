@@ -11,4 +11,7 @@ export default {
 </script>
 <style>
 @import url('assets/Ace/css/index.css');
+.el-loading-mask{
+  z-index: 1998;
+}
 </style>
