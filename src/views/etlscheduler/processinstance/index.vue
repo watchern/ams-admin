@@ -19,6 +19,14 @@
           icon="el-icon-remove-outline"
           @click="handleSkipTask()"
         />
+        <!-- 修改 -->
+        <el-button
+          type="primary"
+          class="oper-btn edit"
+          title="修改"
+          :disabled="selections.length !== 1 || reStartStatus"
+          @click="handleUpdate()"
+        />
         <!-- 暂停 -->
         <el-button
           type="primary"
@@ -58,7 +66,10 @@
           class="oper-btn cancel"
           :disabled="doneStatus"
           @click="handleCancel()"
-        /></el-col>
+        />
+        <!-- 删除 -->
+        <el-button type="primary" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="handleDelete()" />
+      </el-col>
     </el-row>
     <el-table
       :key="tableKey"
@@ -317,7 +328,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findPrepLogs, findTaskInstanceById } from '@/api/etlscheduler/processinstance'
+import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findPrepLogs, findTaskInstanceById, del } from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
 // statuSelectList, statuSelect, statusComm
 import { commandTypeObj, colorList, statusListComm, statuSelectList } from './comm.js'
@@ -475,7 +486,8 @@ export default {
       // 执行和启用以外的状态
       // const otherStatuses = [1, 2, 6, 7, 8, 40, 50, 80, 90]
       // 可以暂停的状态
-      const stopStatuses = [3, 4, 41, 32]
+      // const stopStatuses = [3, 4, 41, 32]
+      const stopStatuses = [4, 41]
       // 选择1条数据
       if (this.selections.length === 1) {
         this.selections.forEach((r, i) => {
@@ -595,7 +607,12 @@ export default {
       })
     },
     handleView(processInstanceUuid) {
-      this.$router.push(`/etlscheduler/instance/${processInstanceUuid}`)
+      // 1为查看
+      this.$router.push(`/etlscheduler/instance/${processInstanceUuid}/1`)
+    },
+    handleUpdate() {
+      const temp = Object.assign({}, this.selections[0])
+      this.$router.push(`/etlscheduler/instance/${temp.processInstanceUuid}/0`)
     },
     handleFilter() {
       this.pageQuery.pageNo = 1
@@ -755,6 +772,26 @@ export default {
           position: 'bottom-right'
         })
       })
+    },
+    handleDelete() {
+      this.$confirm('此操作将删除相关的任务实例, 是否继续?', this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        var ids = []
+        this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
+        del(ids.join(',')).then(() => {
+          this.getList()
+          this.$notify({
+            title: this.$t('message.title'),
+            message: this.$t('message.delete.success'),
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      }).catch(() => { })
     },
     handleSelectionChange(val) {
       this.selections = val

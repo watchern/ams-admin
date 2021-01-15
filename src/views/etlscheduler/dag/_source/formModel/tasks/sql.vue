@@ -83,6 +83,7 @@
         <m-local-params
           ref="refLocalParams"
           :udp-list="localParams"
+          :router-type="routerType"
           @on-udpData="_onUdpData"
         />
       </div>
@@ -122,7 +123,6 @@ import mStatementList from './_source/statementList'
 import disabledState from '@/components/etl/mixin/disabledState'
 import codemirror from '@/components/etl/file/codemirror'
 import $ from 'jquery'
-
 let editor
 
 export default {
@@ -133,7 +133,8 @@ export default {
   props: {
     backfillItem: Object,
     // createNodeId: Number
-    createNodeId: String
+    createNodeId: String,
+    routerType: String
   },
   data() {
     return {

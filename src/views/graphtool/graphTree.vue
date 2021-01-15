@@ -21,11 +21,6 @@
           <i class="el-icon-folder" />
           <span :title="node.name">{{ node.label }}</span>
         </span>
-          <!--<span v-if="data.type=='folder'">-->
-          <!--<el-button type="text" size="mini" class="tree-line-btn" @click.stop="() => setSelectTreeNode(node,data,1)"><svg-icon icon-class="icon-add-1" /></el-button>-->
-          <!--<el-button type="text" size="mini" class="tree-line-btn" @click.stop="() => setSelectTreeNode(node, data,2)"><svg-icon icon-class="icon-edit-1" /></el-button>-->
-          <!--<el-button type="text" size="mini" class="tree-line-btn" @click.stop="() => deleteFolder(node, data)"><svg-icon icon-class="icon-delete-1" /></el-button>-->
-          <!--</span>-->
       </span>
         </MyElTree>
     </div>

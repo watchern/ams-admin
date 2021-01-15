@@ -2,8 +2,8 @@
   <div class="app-container">
     <el-row>
       <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'" align="right">
-        <el-button type="primary" size="mini" class="oper-btn iconoper-export" title="上移" @click="upTheCol()" />
-        <el-button type="primary" size="mini" class="oper-btn iconoper-import" title="下移" @click="downTheCol()" />
+        <!-- <el-button type="primary" size="mini" class="oper-btn iconoper-export" title="上移" @click="upTheCol()" />
+        <el-button type="primary" size="mini" class="oper-btn iconoper-import" title="下移" @click="downTheCol()" /> -->
         <el-button type="primary" size="mini" class="oper-btn add" title="添加" @click="addCol()" />
         <el-button type="primary" size="mini" class="oper-btn edit" title="复制" :disabled="selections.length !== 1" @click="copyCol()" />
         <el-button type="danger" size="mini" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="delCol()" />
@@ -75,9 +75,11 @@ export default {
       selections: [],
       sqlType: {},
       temp: [],
-      tableObj: [],
+      tempIndex: 0,
       tempColumn: [],
-      tempTable: {}
+      oldName: '',
+      show: false,
+      tempTable: { tableName: '' }
     }
   },
   created() {
@@ -91,8 +93,12 @@ export default {
       if (this.openType !== 'addTable') {
         getColsInfo(tableId).then(resp => {
           // 返回两个新的数组
-          this.tableObj = resp.data
+          this.oldName = resp.data.displayTbName
           this.tempTable.tableName = resp.data.displayTbName
+          resp.data.colMetas.forEach(e => {
+            this.tempIndex++
+            e.tempIndex = this.tempIndex
+          })
           this.tempColumn = resp.data.colMetas.slice()
           this.temp = JSON.parse(JSON.stringify(resp.data.colMetas))
         })
@@ -135,6 +141,8 @@ export default {
       newObj.dataType = 'VARCHAR2'
       newObj.dataLength = ''
       newObj.isNullable = 0
+      this.tempIndex++
+      newObj.tempIndex = this.tempIndex
       newObj.colComment = ''
       this.temp.splice(this.temp.length, 0, newObj)
     },
@@ -159,35 +167,6 @@ export default {
     },
     // 保存基本信息
     saveTable() {
-      // var sql = 'create table ' + this.tempTable.tableName + ' (' + '\n'
-      // var tableComments = '\n'
-      // if (this.tempTable.tableComment !== null) {
-      //   tableComments = tableComments + '\n' + 'comment on table ' + this.tempTable.tableName + ' is ' + "'" + this.tempTable.tableComment + "';"
-      // }
-      // for (let index = 0; index < this.temp.length; index++) {
-      //   const r = this.temp[index]
-      //   if (r.isNullable === 0) {
-      //     r.isNullable = 'NULL'
-      //   } else {
-      //     r.isNullable = 'NOT NULL'
-      //   }
-      //   if (r.dataLength !== '') {
-      //     r.dataType = r.dataType + '(' + r.dataLength + ') '
-      //   }
-      //   if (r.colComment !== '') {
-      //     tableComments = tableComments + '\n' + 'comment on column ' + this.tempTable.tableName + '.' + r.colName + ' is ' + "'" + r.colComment + "';"
-      //   }
-      //   if (index < this.temp.length - 1) {
-      //     sql = sql + r.colName + ' ' + r.dataType + ' ' + r.isNullable + ',' + '\n'
-      //   } else {
-      //     sql = sql + r.colName + ' ' + r.dataType + ' ' + r.isNullable + '  )'
-      //   }
-      // }
-      // sql = sql + tableComments
-      // var sqlObj = {}
-      // sqlObj.sql = sql
-      // sqlObj.tableName = this.tempTable.tableName
-      // sqlObj.modelResultSavePathId = this.forderId
       for (let index = 0; index < this.temp.length; index++) {
         const r = this.temp[index]
         if (r.dataLength !== '') {
@@ -198,7 +177,6 @@ export default {
       addObj.colMetas = this.temp
       addObj.folderUuid = this.forderId
       addObj.tbName = this.tempTable.tableName
-      addObj.tbComment = this.tempTable.tbComment
       addTable(addObj).then((res) => {
         if (res.data.status === '500') {
           this.$notify({
@@ -211,7 +189,7 @@ export default {
         } else {
           this.$notify({
             title: '成功',
-            message: '新建表成功',
+            message: '新建表成功！',
             type: 'success',
             duration: 2000,
             position: 'bottom-right'
@@ -230,124 +208,165 @@ export default {
             }
           }
           // 添加节点
+          this.$emit('table-show', this.show)
           this.$emit('append-node', childData, this.clickNode)
         }
       }).catch((result) => {
       })
     },
     updateTable() {
-      var newColumn = this.arrRemoveMix(this.temp, this.tempColumn)
-      var oldColumn = this.arrRemoveMix(this.tempColumn, this.temp)
-      // 修改字段类型sql
-      var modify = ''
-      // 新增字段sql
-      var add = ''
-      // 重命名字段sql
-      var alter = ''
-      // 删除字段sql
-      var drop = ''
-      // eslint-disable-next-line no-unused-vars
-      var sql = 'ALTER TABLE "' + this.tableObj.tbName + '" ' + '\n'
-      for (let index = 0; index < newColumn.length; index++) {
-        const r = newColumn[index]
-        if (typeof r.colMetaUuid === 'undefined') {
-          if (r.isNullable === 0) {
-            r.isNullable = 'NULL'
-          } else {
-            r.isNullable = 'NOT NULL'
-          }
-          if (r.dataLength !== '') {
-            r.dataType = r.dataType + '(' + r.dataLength + ') '
-          }
-          add = add + 'ADD ( "' + r.colName + '" ' + r.dataType + ' ' + r.isNullable + ' ) ' + '\n'
+      const newTableObj = {}
+      newTableObj.tableMetaUuid = this.tableId
+      newTableObj.colMetas = this.temp
+      newTableObj.tbName = this.tempTable.tableName
+      newTableObj.tbComment = this.tempTable.tbComment
+      const oldTableObj = {}
+      oldTableObj.tableMetaUuid = this.tableId
+      oldTableObj.colMetas = this.tempColumn
+      oldTableObj.tbName = this.oldName
+      oldTableObj.tbComment = this.tempTable.tbComment
+      var obj = {}
+      obj.newTableObj = newTableObj
+      obj.oldTableObj = oldTableObj
+      updateTable(obj).then((res) => {
+        if (res.data.status === '500') {
+          this.$message({ type: 'info', message: '修改失败！' + res.data.msg })
         } else {
-          var oldCol = oldColumn.filter(obj => { return obj.colMetaUuid === r.colMetaUuid })
-          var reNameArr = oldColumn.filter(obj => { return obj.colName === r.colName })
-          if (r.isNullable === 0) {
-            r.isNullable = 'NULL'
-          } else {
-            r.isNullable = ' '
-          }
-          if (r.dataLength !== '') {
-            r.dataType = r.dataType + '(' + r.dataLength + ') '
-          }
-          // 如果初始表列id在最终保存修改中找不到,说明该列已经重命名
-          if (reNameArr.length === 0) {
-            alter = alter + 'ALTER TABLE "' + this.tableObj.tbName + '" RENAME COLUMN"' + oldCol[0].colName + '" TO "' + r.colName + '"' + '\n'
-            modify = modify + 'MODIFY ( "' + oldCol[0].colName + '" ' + r.dataType + ' ' + r.isNullable + ' ) ' + '\n'
-          } else {
-            modify = modify + 'MODIFY ( "' + r.colName + '" ' + r.dataType + ' ' + r.isNullable + ' ) ' + '\n'
-          }
+          // 修改成功后重新给页面复制
+          this.oldName = res.data.sussessTable.tbName
+          this.tempTable.tableName = res.data.sussessTable.tbName
+          res.data.sussessTable.colMetas.forEach(e => {
+            this.tempIndex = 0
+            this.tempIndex++
+            e.tempIndex = this.tempIndex
+          })
+          this.tempColumn = res.data.sussessTable.colMetas.slice()
+          this.temp = JSON.parse(JSON.stringify(res.data.sussessTable.colMetas))
+          this.$notify({
+            title: '成功',
+            message: '修改表结构成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
         }
-      }
-
-      for (let index = 0; index < oldColumn.length; index++) {
-        const r = oldColumn[index]
-        if (typeof r.colMetaUuid !== 'undefined') {
-          var dropArr = newColumn.filter(obj => { return obj.colMetaUuid === r.colMetaUuid })
-          // 如果初始表列id在最终保存修改中找不到,说明该列已经被删除
-          if (dropArr.length === 0) {
-            drop = drop + 'ALTER TABLE "' + this.tableObj.tbName + '" DROP("' + r.colName + '")' + '\n'
-          }
-        }
-      }
-      if (modify + add === '') {
-        sql = drop + '\n' + alter
-      } else {
-        sql = sql + modify + add + drop + '\n' + alter
-      }
-      const addObj = {}
-      addObj.sql = sql
-      addObj.tbName = this.tempTable.tableName
-      updateTable(addObj).then((res) => {
-        this.$notify({
-          title: '成功',
-          message: '新建表成功',
-          type: 'success',
-          duration: 2000,
-          position: 'bottom-right'
-        })
+        this.$emit('table-show', this.show)
       }).catch((result) => {
       })
-    },
-    arrRemoveMix(arr1, arr2) {
-      return this.filterData(this.arrayDifference(arr1, arr2))
-    },
-    arrayDifference(a, b) { // 差集 a - b
-      const clone = a.slice(0) // clone = a
-      for (let i = 0; i < b.length; i++) {
-        const temp = b[i]
-        for (var j = 0; j < clone.length; j++) {
-          // eslint-disable-next-line eqeqeq
-          if (this.isObjectValueEqual(temp, clone[j])) {
-            clone.splice(j, 1) // remove clone[j]
-          }
-        }
-      }
-      return clone
-    },
-    filterData(array) { // 去重
-      return Array.from(new Set(array))
-    },
-    // 判断两个对象的值是否都相同
-    isObjectValueEqual(a, b) {
-      // 取对象a和b的属性名
-      var aProps = Object.getOwnPropertyNames(a)
-      var bProps = Object.getOwnPropertyNames(b)
-      // 判断属性名的length是否一致
-      if (aProps.length !== bProps.length) {
-        return false
-      }
-      // 循环取出属性名，再判断属性值是否一致
-      for (var i = 0; i < aProps.length; i++) {
-        var propName = aProps[i]
-        if (propName !== '__ob__') {
-          if (a[propName] !== b[propName]) {
-            return false
-          }
-        }
-      }
-      return true
+      // var newColumn = this.arrRemoveMix(this.temp, this.tempColumn)
+      // var oldColumn = this.arrRemoveMix(this.tempColumn, this.temp)
+      // console.log(newColumn)
+      // console.log(oldColumn)
+      // // 修改字段类型sql
+      // var modify = ''
+      // // 新增字段sql
+      // var add = ''
+      // // 重命名字段sql
+      // var alter = ''
+      // // 删除字段sql
+      // var drop = ''
+      // // eslint-disable-next-line no-unused-vars
+      // var sql = 'ALTER TABLE "' + this.tableObj.tbName + '" ' + '\n'
+      // for (let index = 0; index < newColumn.length; index++) {
+      //   const r = newColumn[index]
+      //   if (typeof r.colMetaUuid === 'undefined') {
+      //     if (r.isNullable === 0) {
+      //       r.isNullable = 'NULL'
+      //     } else {
+      //       r.isNullable = 'NOT NULL'
+      //     }
+      //     if (r.dataLength !== '') {
+      //       r.dataType = r.dataType + '(' + r.dataLength + ') '
+      //     }
+      //     add = add + 'ADD ( "' + r.colName + '" ' + r.dataType + ' ' + r.isNullable + ' ) ' + '\n'
+      //   } else {
+      //     var oldCol = oldColumn.filter(obj => { return obj.colMetaUuid === r.colMetaUuid })
+      //     var reNameArr = oldColumn.filter(obj => { return obj.colName === r.colName })
+      //     if (r.isNullable === 0) {
+      //       r.isNullable = 'NULL'
+      //     } else {
+      //       r.isNullable = ' '
+      //     }
+      //     if (r.dataLength !== '') {
+      //       r.dataType = r.dataType + '(' + r.dataLength + ') '
+      //     }
+      //     // 如果初始表列id在最终保存修改中找不到,说明该列已经重命名
+      //     if (reNameArr.length === 0) {
+      //       alter = alter + 'ALTER TABLE "' + this.tableObj.tbName + '" RENAME COLUMN"' + oldCol[0].colName + '" TO "' + r.colName + '"' + '\n'
+      //       modify = modify + 'MODIFY ( "' + oldCol[0].colName + '" ' + r.dataType + ' ' + r.isNullable + ' ) ' + '\n'
+      //     } else {
+      //       modify = modify + 'MODIFY ( "' + r.colName + '" ' + r.dataType + ' ' + r.isNullable + ' ) ' + '\n'
+      //     }
+      //   }
+      // }
+
+      // for (let index = 0; index < oldColumn.length; index++) {
+      //   const r = oldColumn[index]
+      //   if (typeof r.colMetaUuid !== 'undefined') {
+      //     var dropArr = newColumn.filter(obj => { return obj.colMetaUuid === r.colMetaUuid })
+      //     // 如果初始表列id在最终保存修改中找不到,说明该列已经被删除
+      //     if (dropArr.length === 0) {
+      //       drop = drop + 'ALTER TABLE "' + this.tableObj.tbName + '" DROP("' + r.colName + '")' + '\n'
+      //     }
+      //   }
+      // }
+      // if (modify + add === '') {
+      //   sql = drop + '\n' + alter
+      // } else {
+      //   sql = sql + modify + add + drop + '\n' + alter
+      // }
+      // const addObj = {}
+      // addObj.sql = sql
+      // addObj.tbName = this.tempTable.tableName
+      // updateTable(addObj).then((res) => {
+      //   this.$notify({
+      //     title: '成功',
+      //     message: '新建表成功',
+      //     type: 'success',
+      //     duration: 2000,
+      //     position: 'bottom-right'
+      //   })
+      // }).catch((result) => {
+      // })
     }
+    // arrRemoveMix(arr1, arr2) {
+    //   return this.filterData(this.arrayDifference(arr1, arr2))
+    // },
+    // arrayDifference(a, b) { // 差集 a - b
+    //   const clone = a.slice(0) // clone = a
+    //   for (let i = 0; i < b.length; i++) {
+    //     const temp = b[i]
+    //     for (var j = 0; j < clone.length; j++) {
+    //       // eslint-disable-next-line eqeqeq
+    //       if (this.isObjectValueEqual(temp, clone[j])) {
+    //         clone.splice(j, 1) // remove clone[j]
+    //       }
+    //     }
+    //   }
+    //   return clone
+    // },
+    // filterData(array) { // 去重
+    //   return Array.from(new Set(array))
+    // },
+    // 判断两个对象的值是否都相同
+    // isObjectValueEqual(a, b) {
+    //   // 取对象a和b的属性名
+    //   var aProps = Object.getOwnPropertyNames(a)
+    //   var bProps = Object.getOwnPropertyNames(b)
+    //   // 判断属性名的length是否一致
+    //   if (aProps.length !== bProps.length) {
+    //     return false
+    //   }
+    //   // 循环取出属性名，再判断属性值是否一致
+    //   for (var i = 0; i < aProps.length; i++) {
+    //     var propName = aProps[i]
+    //     if (propName !== '__ob__') {
+    //       if (a[propName] !== b[propName]) {
+    //         return false
+    //       }
+    //     }
+    //   }
+    //   return true
+    // }
   }}
 </script>

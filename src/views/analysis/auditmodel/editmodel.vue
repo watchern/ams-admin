@@ -813,6 +813,7 @@ export default {
         modelOriginalTable: modelOriginalTable
       }
       this.form.sqlValue = sqlObj.sqlValue
+      this.form.graphUuid = ""
       // 初始化默认参数
       // 初始化参数默认值界面界面
       if (returnObj.params.length != 0) {

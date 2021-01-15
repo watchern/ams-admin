@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div v-if="isShow">
-      <div class="detail-form">
+      <div>
         <el-form
           ref="dataForm"
           :model="temp"
@@ -13,24 +13,20 @@
             <el-input v-model="temp.chnName" style="width:60%;" :disabled="openType === 'showTable'" />
           </el-form-item>
           列业务信息：
-          <el-table :data="temp.colMetas" height="200">
-            <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
-              <template slot-scope="scope" show-overflow-tooltip>
-                <el-tooltip effect="dark" :content="scope.row.colName" placement="top">
-                  <el-input v-model="scope.row.colName" style="width:90%;" :disabled="openType === 'showTable'" />
-                </el-tooltip>
+          <el-table :data="temp.colMetas" height="400px">
+            <el-table-column prop="colName" label="字段名称">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.colName" style="width:90%;" :disabled="openType === 'showTable'" />
               </template>
             </el-table-column>
-            <el-table-column prop="chnName" label="汉化名称" show-overflow-tooltip>
+            <el-table-column prop="chnName" label="汉化名称">
               <template slot-scope="scope">
-                <el-tooltip effect="dark" :content="scope.row.chnName" placement="top">
-                  <el-input v-model="scope.row.chnName" style="width:90%;" :disabled="openType === 'showTable'" />
-                </el-tooltip>
+                <el-input v-model="scope.row.chnName" style="width:90%;" :disabled="openType === 'showTable'" />
               </template>
             </el-table-column>
             <el-table-column prop="bizAttrUuid" label="业务标签">
               <template slot-scope="scope">
-                <el-select ref="bizAttrUuid" v-model="scope.row.bizAttrUuid" style="width:90%" placeholder="请选择业务属性" :disabled="openType === 'showTable'">
+                <el-select ref="bizAttrUuid" v-model="scope.row.bizAttrUuid" clearable style="width:90%" :disabled="openType === 'showTable'">
                   <el-option
                     v-for="item in bizJson"
                     :key="item.bizAttrUuid"

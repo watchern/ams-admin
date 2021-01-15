@@ -310,7 +310,7 @@ export default {
      * 设置文件夹的路径以及id和名称
      */
     setFolderIdAndName(treeId, treeName, path, pathName,pbScopeUuids) {
-        this.form.folderName = pathName
+        this.form.folderName = treeName
         this.clickTreeId = treeId
         this.pbScopeUuid = pbScopeUuids
         this.treePath = path

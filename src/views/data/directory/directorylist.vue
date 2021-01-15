@@ -27,8 +27,7 @@
       :data="temp"
       border
       fit
-      highlight-current-row
-      style="width: 100%;"
+      style="width: 100%;height:500px;overflow: auto;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -59,7 +58,7 @@
     </el-dialog>
     <!-- 弹窗2 -->
     <el-dialog :visible.sync="moveTreeVisible" width="600px">
-      <dataTree v-if="personcode!==''" ref="dataTree" :data-user-id="personcode" :scene-code="sceneCode" :tree-type="treeType" @node-click="nodeclick" />
+      <dataTree v-if="personcode!==''" ref="dataTree" :data-user-id="personcode" :scene-code="currentSceneUuid" :tree-type="treeType" @node-click="nodeclick" />
       <span slot="footer">
         <el-button @click="moveTreeVisible = false">取消</el-button>
         <el-button type="primary" @click="movePathSave()">保存</el-button>
@@ -84,9 +83,6 @@
           >
             <el-form-item label="导入表名称：(若导入数据为TXT数据需用','分割,列信息用换行即可)" prop="tbName">
               <el-input v-model="uploadtemp.tbName" label="请输入表名称" />
-            </el-form-item>
-            <el-form-item prop="tableFileName">
-              <el-input v-model="uploadtemp.tableFileName" hidden disabled />
             </el-form-item>
           </el-form>
         </el-col>
@@ -129,7 +125,7 @@
     <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="800px">
       <el-row>
         <el-col>
-          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" />
+          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" @table-show="tableshow" />
         </el-col>
       </el-row>
       <span slot="footer">
@@ -171,16 +167,17 @@ export default {
   },
   // eslint-disable-next-line vue/order-in-components
   components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs, directoryFileUpload },
-  // eslint-disable-next-line vue/order-in-components
+  // eslint-disable-next-line vue/require-prop-types
+  props: ['dataUserId', 'sceneCode'],
   data() {
     return {
       saveFlag: true,
       infoFlag: true,
-      dataUserId: this.$store.getters.personcode,
+      currentSceneUuid: 'auditor',
+      directyDataUserId: this.$store.state.user.code,
       openType: '',
       // 移动树节点展示
       tableKey: 'id',
-      sceneCode: 'auditor',
       treeType: 'save', // common:正常的权限树   save:用于保存数据的文件夹树
       tableId: '',
       typeLabel: '',
@@ -268,9 +265,17 @@ export default {
   //   }
   // },
   created() {
-    // this.getList(this.data, this.node, this.tree)this.$refs.childTabs.loadTableData(this.arrSql)
+    this.initDirectory()
   },
   methods: {
+    initDirectory() {
+      if (typeof (this.dataUserId) !== 'undefined') {
+        this.directyDataUserId = this.dataUserId
+      }
+      if (typeof (this.sceneCode) !== 'undefined') {
+        this.currentSceneUuid = this.sceneCode
+      }
+    },
     fileuploadname(data) {
       this.uploadtemp.tableFileName = data
     },
@@ -357,12 +362,13 @@ export default {
       this.uploadtemp.folderUuid = this.clickData.id
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          nextUpload(this.uploadtemp).then(res => {
-            getSqlType().then(resp => {
-              this.options = resp.data
+          getSqlType().then(resp => {
+            this.options = resp.data
+            nextUpload(this.uploadtemp).then(res => {
+              this.uploadStep = 2
+              this.uploadtempInfo = res.data
+              
             })
-            this.uploadStep = 2
-            this.uploadtempInfo = res.data
           })
         }
       })
@@ -554,6 +560,9 @@ export default {
     },
     // 保存新建文件夹
     createFolderSave() {
+      if (this.currentSceneUuid !== 'auditor') {
+        this.resourceForm.personCode = this.directyDataUserId
+      }
       this.resourceForm.parentFolderUuid = this.clickData.id
       this.resourceForm.fullPath = this.clickFullPath.reverse().join('/')
       this.resourceForm.folderName = this.resourceForm.resourceName
@@ -595,7 +604,6 @@ export default {
     preview() {
       preview(this.selections[0]).then(res => {
         this.executeSQLList = res.data.executeTask.executeSQL
-        debugger
         this.arrSql = res.data
         this.previewVisible = true
         this.$nextTick(() => {
@@ -638,6 +646,9 @@ export default {
     },
     appendnode(childData, parentNode) {
       this.$emit('append-node', childData, this.clickNode)
+    },
+    tableshow(show) {
+      this.tableShowVisible = show
     },
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
