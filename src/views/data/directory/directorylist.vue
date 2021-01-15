@@ -561,7 +561,7 @@ export default {
     // 保存新建文件夹
     createFolderSave() {
       if (this.currentSceneUuid !== 'auditor') {
-        this.resourceForm.personCode = this.directyDataUserId
+        this.resourceForm.sceneInstUuid = this.directyDataUserId
       }
       this.resourceForm.parentFolderUuid = this.clickData.id
       this.resourceForm.fullPath = this.clickFullPath.reverse().join('/')
