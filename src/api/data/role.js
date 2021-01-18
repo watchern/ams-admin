@@ -39,10 +39,10 @@ export function del(ids) {
 }
 
 /* 维护角色下的filter*/
-export function getSceneFilter(roleUuid) {
+export function getSceneFilter(roleUuid, sceneCode) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/getSceneFilter?roleUuid=${roleUuid}`,
+    url: `/${controllerName}/getSceneFilter?roleUuid=${roleUuid}&sceneCode=${sceneCode}`,
     method: 'get'
   })
 }

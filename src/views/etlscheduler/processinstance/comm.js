@@ -53,11 +53,17 @@ const statusListComm = [{
   unicode: 'el-icon-error',
   color: 'red'
 },
+// {
+//   value: 9,
+//   name: '停止',
+//   unicode: 'el-icon-remove',
+//   color: '#909399'
+// },
 {
   value: 9,
-  name: '停止',
-  unicode: 'el-icon-video-pause',
-  color: '#409eff'
+  name: '已取消',
+  unicode: 'el-icon-circle-close',
+  color: '#ff0000'
 },
 {
   value: 31,
@@ -209,8 +215,12 @@ const statuSelect = [{
   name: '执行失败',
   value: '8'
 },
+// {
+//   name: '停止',
+//   value: '9'
+//   },
 {
-  name: '停止',
+  name: '已取消',
   value: '9'
 },
 {
@@ -273,7 +283,7 @@ const commandTypeObj = {
   4: '从失败任务节点启动流程',
   5: '补数',
   6: '启动调度任务',
-  7: '重复运行',
+  7: '重新运行',
   8: '暂停流程',
   9: '取消',
   10: '重新运行等待线程流程',

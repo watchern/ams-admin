@@ -37,7 +37,8 @@ export default {
     return {
       tabShow: 'directory',
       divInfo: false,
-      sceneCode: 'project',
+      //sceneCode: 'project',
+      sceneCode: this.$route.params.sceneCode,
       allProject: [],
       projectSelect: '',
       dataUserId: '',

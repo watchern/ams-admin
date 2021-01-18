@@ -82,7 +82,7 @@
                     }
                 }
                 if (this.pre_str_column.length === 0) {
-                    this.$message({ type: 'info', message: '上一节点的表或视图暂无可分层的字段' })
+                    this.$message({ type: 'warning', message: '上一节点的表或视图暂无可分层的字段' })
                 } else {
                     let isRoleTable = false //上级节点的表是否需要走权限
                     let optType = parent_node.nodeInfo.optType
@@ -99,7 +99,7 @@
                         }
                     }
                     if (parent_node.nodeInfo.resultTableName === '') {
-                        this.$message({ type: 'info', message: '请先执行上一节点' })
+                        this.$message({ type: 'warning', message: '请先执行上一节点' })
                     } else {
                         /**
                          * 获得上一节点执行结果的选择字段的最大值和最小值
@@ -195,12 +195,12 @@
             inputVerify() {
                 let verify = true
                 if (this.hierarchy_column === '') {
-                    this.$message({ type: 'info', message: '未选择分层字段' })
+                    this.$message({ type: 'warning', message: '未选择分层字段' })
                     return false
                 }
                 let obj = this.items.find( item => item.c_col_1 === '' || item.c_col_2 === '')
                 if(typeof obj !== "undefined"){
-                    this.$message({ type: 'info', message: '分层区间的输入值不能为空' })
+                    this.$message({ type: 'warning', message: '分层区间的输入值不能为空' })
                     verify = false
                     return false
                 }

@@ -102,7 +102,7 @@
     >
       <runimmediatelycon
         :data-user-id='dataUserId'
-        :scene-code1='sceneCode'
+        :scene-code='sceneCode'
         v-if="runimmediatelyIsSee"
         ref="modelsetting"
         :timing="false"
@@ -597,7 +597,7 @@ body {
   position: absolute;
   z-index: 1000;
   bottom: 100px;
-  right: 100px;
+  right: 15px;
   width: 155px;
   height: 34px;
   background: #353a43;

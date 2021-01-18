@@ -15,8 +15,31 @@ const AmsRoutes = [
         redirect: '/ams/first'
     },
     {
+      path: '/screenList',
+      component: () => import('ams-datamax/src/components/screenList')
+    },
+    {
+      path: 'publicScreenList',
+      component: () => import('ams-datamax/src/components/bigScreen/admin/publicScreenList')
+    },
+    {
       path: '/screenEditor',
       component: () => import('ams-datamax/src/components/screenEditor')
+    },
+    {
+      path: '/modelresulthandle',
+      name: '模型结果处理',
+      component: () => import('@/views/analysis/modelresulthandle/index')
+    },
+    {
+      name: 'canvasPreview',
+      path: '/canvasPreview',
+      component: () => import('ams-datamax/src/components/canvasPreview')
+    },
+    {
+      name: 'screenOp',
+      path: '/screenOp',
+      component: () => import('ams-datamax/src/components/screenOp')
     }
     , {
         path: '/ams/assembly',

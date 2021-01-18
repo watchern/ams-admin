@@ -122,7 +122,7 @@
                         <!-- <div id="iconImg-save" class="iconImg" @click="outTable"></div>
                         <div id="iconImg-table" class="iconImg"></div> -->
                     </div>
-                    <div v-for="result in resultShow" id="dataShow" class="data-show">
+                    <div v-for="result in resultShow" id="dataShow" class="data-show" v-if="isExecuteError">
                         <childTabs
                             ref="childTabsRef"
                             :key="result.id"
@@ -134,6 +134,15 @@
                             id="childTabs1"
                         />
                     </div>
+                  <div v-if="!isExecuteError" class="data-show">
+                    <el-tabs type="border-card">
+                      <el-tab-pane label='错误信息'>
+                        <el-card class="box-card" style="height: 100px" align="center">
+                          <div style='font-weight:lighter ;font-size:15px'>{{ errorMessage }}</div>
+                        </el-card>
+                      </el-tab-pane>
+                    </el-tabs>
+                  </div>
                 </div>
             </div>
             <div id="vertical"> <div /> </div>
@@ -344,10 +353,12 @@
             if(this.dataUserId!=undefined && this.sceneCode1!=undefined){
                 this.personCode = this.dataUserId
                 this.sceneCode = this.sceneCode1
-            }  
+            }
         },
         data() {
             return {
+              errorMessage:'',
+              isExecuteError:true,
                 sqlDraftForm: {
                     sqlDraftUuid: '',
                     draftTitle: '',
@@ -832,14 +843,13 @@
                     if (!obj.isExistParam) {
                         this.executeLoading = true
                         this.loadText = '正在获取SQL信息...'
-                        getExecuteTask(obj,this.dataUserId,this.sceneCode1).then((result) => {
+                        getExecuteTask(obj,this.dataUserId,this.sceneCode1).then((result) => {    //在这如果报错就加一个新页签，如果不报错就显示我的
                             if(result.data.isError){
-                         this.$message({
-                            type: "error",
-                            message: result.data.message,
-                            });
+                          this.isExecuteError = false
+                          this.errorMessage = result.data.message
                             this.executeLoading = false
                             }else{
+                              this.isExecuteError = true
                             this.executeLoading = false
                             this.loadText = ''
                             lastSqlIndex = result.data.lastSqlIndex
@@ -1164,7 +1174,7 @@
         width: 80px;
         position: relative;
         right: 0;
-        top: 1%;
+        top: 4%;
         float: right;
         display: none;
         z-index: 201;

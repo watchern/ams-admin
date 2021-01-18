@@ -88,6 +88,7 @@
         <m-java-params
           ref="refjavaParams"
           :udp-list="localParams"
+          :router-type="routerType"
           @on-udpData="_onUdpDatapar"
         />
       </div>
@@ -110,7 +111,8 @@ export default {
   props: {
     backfillItem: Object,
     // createNodeId: Number
-    createNodeId: String
+    createNodeId: String,
+    routerType: String
   },
   data() {
     return {

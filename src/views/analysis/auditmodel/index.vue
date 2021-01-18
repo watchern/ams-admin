@@ -5,7 +5,7 @@
       <el-aside class="tree-side">
         <ModelFolderTree ref="modelFolderTree" :power="power" @refreshModelList="refreshModelList" />
       </el-aside>
-      <ModelListTable :data-user-id='dataUserId' :scene-code='sceneCode' ref="modelListTable" :power="power" @loadingSet="loadingSet" @refreshTree="refreshTree" />
+      <ModelListTable :data-user-id='thisDataUserId' :scene-code='thisSceneCode' ref="modelListTable" :power="power" @loadingSet="loadingSet" @refreshTree="refreshTree" />
     </el-container>
   </div>
 </template>
@@ -17,6 +17,12 @@ export default {
   computed:{
     datausername(){
       return this.$store.getters.datausername;
+    },
+    thisDataUserId(){
+      return this.dataUserId ? this.dataUserId:this.$store.getters.datauserid;
+    },
+    thisSceneCode(){
+      return this.sceneCode ? this.sceneCode:this.$store.getters.scenecode;
     }
   },
   props:['power','dataUserId','sceneCode'],

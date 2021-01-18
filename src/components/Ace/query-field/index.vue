@@ -1,6 +1,10 @@
 <template>
   <div class="query-field">
     <el-form :inline="true" :model="query" label-position="bottom">
+      <div class="switch-btn">
+        <img :src="this.switchImg" @click="onSwitchWith">
+      </div>
+
       <el-form-item v-for="fd in formData" v-if="searchBar == '0'" :label="fd.label">
         <el-input v-if="fd.type==='text'" v-model="query[fd.name]" />
         <el-input v-if="fd.type==='fuzzyText'" v-model="query[fd.name]" placeholder="模糊查询" />
@@ -17,11 +21,9 @@
       <el-form-item v-if="searchBar == '0'">
         <el-button type="primary" @click="onSubmit">查询</el-button>
         <el-button type="primary" @click="clearAll">清空</el-button>
+<!--        <img :src="searchFor" @click="onSubmit" class="someimgin"/>-->
+<!--        <img :src="resetFor" @click="clearAll" class="someimgin"/>-->
       </el-form-item>
-
-      <div class="switch-btn">
-        <img :src="this.switchImg" @click="onSwitchWith">
-      </div>
 
       <el-form-item v-if="searchBar == '1'" class="full-search">
         <el-input v-model="query['keyword']" placeholder="查询">
@@ -49,8 +51,8 @@ export default {
       query: {},
       searchBar: '0',
       switchImg: '',
-      searchBar: '0',
-      switchImg: ''
+      searchFor: require('../../Ace/query-field/搜索.png'),
+      resetFor: require('../../Ace/query-field/重置.png')
       /*      inquire:[
         {
           text: 'test',
@@ -130,7 +132,7 @@ export default {
       return this.query
     },
     onSubmit() {
-      
+
       // return
       this.$emit('submit', this.query)
     },
@@ -164,7 +166,9 @@ export default {
 </script>
 <style lang="scss" scoped>
   .query-field{
-    height: 81px;
+    height: 45px;
+    position: absolute;
+    z-index:500;
   }
   /*.el-form--inline .el-form-item {*/
     /*margin-right: 30px;*/
@@ -182,9 +186,21 @@ export default {
   }
   .switch-btn{
     margin-top:3px;
-    float: right;
+    float: left;
+    margin-right:10px;
   }
   .img-icon{
     margin-right:5px;
+  }
+  .someimgin{
+    height: 35px;
+    padding: 4px;
+    border-radius: 100%;
+    border: 1px solid #000;
+    margin-right: 8px;
+    cursor: pointer;
+  }
+  .someimgin:hover{
+    background: #ececec;
   }
 </style>

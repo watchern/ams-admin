@@ -3,7 +3,7 @@
   <div class="app-container">
     <el-container>
       <el-header>
-        <div class="filter-container" >
+        <div class="filter-container">
           <QueryField
             ref="queryfield"
             :form-data="queryFields"
@@ -11,25 +11,24 @@
           />
         </div>
       </el-header>
-      <el-main>
-        <div align="right" style="width: 64%">
+      <el-main style="width: 91.8vw">
+        <div align="right">
           <el-row>
             <el-button
-            v-if="false"
               type="primary"
-              @click="relationProject('4534532', '项目5')"
+              @click="openProjectDialog"
               :disabled="buttonIson.AssociatedBtn"
               class="oper-btn refresh"
               title="关联项目"
             ></el-button>
+            <!-- relationProject('4534532', '项目5') -->
             <el-button
-              v-if="false"
               type="primary"
-              @click="RemoverelationProject('asdasdasdas')"
+              @click="RemoverelationProject()"
               :disabled="buttonIson.DisassociateBtn"
+              class="oper-btn move"
               title="移除项目关联"
-              >移除项目关联</el-button
-            >
+            ></el-button>
             <el-button
               :disabled="buttonIson.deleteBtn"
               type="primary"
@@ -44,20 +43,20 @@
               @click="openResultSplitDialog"
               title="结果拆分"
             ></el-button>
-           <!-- <el-button
+            <el-button
               type="primary"
               @click="modelResultOpenDialog()"
               :disabled="buttonIson.resultShareBtn"
               class="oper-btn share"
               title="结果共享"
-            ></el-button>-->
-            <el-button
+            ></el-button>
+            <!-- <el-button
               type="primary"
               @click="sendToOA()"
               :disabled="selected1.length !== 1"
               class="oper-btn share"
               title="结果分配"
-            ></el-button>
+            ></el-button> -->
             <el-button
               type="primary"
               @click="exportExcel"
@@ -78,7 +77,6 @@
           @sort-change="sortChange"
           @selection-change="handleSelectionChange"
           height="450px"
-          style="overflow-x: scroll; width: 64%"
         >
           <el-table-column type="selection" width="55" />
           <el-table-column
@@ -178,8 +176,8 @@
           >
             <template slot-scope="scope">
               <el-link type="primary" @click="selectSql(scope.row)">{{
-                  settingInfoSqlFormatter(scope.row)
-                }}</el-link>
+                settingInfoSqlFormatter(scope.row)
+              }}</el-link>
             </template>
           </el-table-column>
           <el-table-column
@@ -194,7 +192,13 @@
             prop="runMessage"
             align="center"
             width="200px"
-          />
+          >
+            <template slot-scope="scope">
+              <el-link type="primary" @click="selectrunMessage(scope.row)">{{
+                runMessageFormatter(scope.row)
+              }}</el-link>
+            </template>
+          </el-table-column>
           <el-table-column
             label="关联项目"
             prop="projectName"
@@ -303,6 +307,22 @@
             >
           </span>
         </el-dialog>
+        <el-dialog
+          title="请选择项目"
+          :visible.sync="projectDialogIsSee"
+          width="40%"
+        >
+          <userProject
+            v-if="projectDialogIsSee"
+            ref="userproject"
+          ></userProject>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="projectDialogIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="determineProject"
+              >确 定</el-button
+            >
+          </span>
+        </el-dialog>
         <pagination
           v-show="total > 0"
           :total="total"
@@ -319,6 +339,15 @@
       width="50%"
     >
       <el-input disabled type="textarea" :rows="15" v-model="sqlInfo">
+      </el-input>
+    </el-dialog>
+    <el-dialog
+      v-if="runMessageInfoDialog"
+      :visible.sync="runMessageInfoDialog"
+      title="运行信息"
+      width="50%"
+    >
+      <el-input disabled type="textarea" :rows="15" v-model="runMessageInfo">
       </el-input>
     </el-dialog>
   </div>
@@ -339,7 +368,7 @@ import {
   selectByRunResultTableUUids,
   getDataAfterResultSpiltToRelateProject,
   addCoverResultRelProject,
-  sendToOA
+  sendToOA,
 } from "@/api/analysis/auditmodelresult";
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 import QueryField from "@/components/Ace/query-field/index";
@@ -349,10 +378,17 @@ import runimmediatelycon from "@/views/analysis/auditmodel/runimmediatelycon";
 import axios from "axios";
 import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
+import userProject from "@/views/base/userproject/index";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 import personTree from "@/components/publicpersontree/index";
 export default {
-  components: { Pagination, QueryField, runimmediatelycon, personTree },
+  components: {
+    Pagination,
+    QueryField,
+    runimmediatelycon,
+    personTree,
+    userProject,
+  },
   data() {
     return {
       tableKey: "errorUuid",
@@ -383,13 +419,14 @@ export default {
       selected1: [], // 存储表格中选中的数据
       buttonIson: {
         AssociatedBtn: true,
-        DisassociateBtn: false,
+        DisassociateBtn: true,
         deleteBtn: true,
         resultSplitBtn: true,
         resultShareBtn: true,
         exportBtn: false,
       },
-      sqlInfoDialog:false,
+      sqlInfoDialog: false,
+      runMessageInfoDialog: false,
       setDateTime: "",
       nowRunTaskRel: null,
       //单次/多次/周期执行的周期开始结束时间 执行时间选择配置
@@ -411,12 +448,29 @@ export default {
       resultSpiltedRunResultRel: [], //存储进行结果拆分的模型任务关联对象
       resultSpiltObjects: {}, //存储点击结果拆分要传往后台的数据
       resultShareDialogIsSee: false, //点击模型结果关联按钮控制人员dialog显示
+      projectDialogIsSee: false, //关联项目dialog是否可见
     };
   },
   created() {
     this.getLikeList();
   },
   methods: {
+    openProjectDialog() {
+      var flag = true;
+      for (var i = 0; i < this.selected1.length; i++) {
+        if (this.selected1[i].runStatus != 3) {
+          flag = false;
+          break;
+        }
+      }
+      if(flag){
+        this.projectDialogIsSee = true;
+      }else{
+        this.$message({
+            message: "未运行成功的结果不能关联项目",
+         });
+      }
+    },
     /**
      * 导出方法
      */
@@ -541,9 +595,23 @@ export default {
         return "";
       } else {
         var sql = JSON.parse(row.settingInfo).sql;
+        if(sql==null){
+          return ''
+        }else{
         sql = sql.substring(0, 10);
         sql = sql + "...";
         return sql;
+        }
+      }
+    },
+    runMessageFormatter(row, column) {
+      if (row.runMessage == null) {
+        return "";
+      } else {
+        var runMessage = row.runMessage;
+        runMessage = runMessage.substring(0, 4);
+        runMessage = runMessage + "...";
+        return runMessage;
       }
     },
     /**
@@ -649,7 +717,7 @@ export default {
     handleSelectionChange(val) {
       if (val.length <= 0) {
         this.buttonIson.AssociatedBtn = true;
-        this.buttonIson.DisassociateBtn = false;
+        this.buttonIson.DisassociateBtn = true;
         this.buttonIson.deleteBtn = true;
         this.buttonIson.resultSplitBtn = true;
         this.buttonIson.resultShareBtn = true;
@@ -867,6 +935,28 @@ export default {
         });
     },
     /**
+     * 选择项目后点击dialog的确定按钮触发
+     */
+    determineProject() {
+      var projects = this.$refs.userproject.getSelectValue();
+
+        if (projects.length === 0) {
+          this.$message({
+            message: "请选择要关联的项目",
+          });
+        } else if (projects.length === 1) {
+          this.relationProject(
+            projects[0].PRJ_PROJECT_UUID,
+            projects[0].PRJ_NAME
+          );
+          this.projectDialogIsSee = false;
+        } else {
+          this.$message({
+            message: "只能关联一个项目",
+          });
+        }
+    },
+    /**
      * 关联项目按钮触发
      */
     relationProject(projectId, projctName) {
@@ -887,30 +977,30 @@ export default {
               }
             }
           }
-              selectPrimaryKeyByTableName().then((resp) => {
-                var primaryKey = resp.data;
-                getDataAfterResultSpiltToRelateProject(
-                  this.resultSpiltObjects,
-                  projectId,
-                  projctName,
-                  selectRunTaskRelUuid
-                ).then((resp) => {
-                  if (resp.data == true) {
-                    this.listLoading = false;
-                    this.getLikeList();
-                    this.$message({
-                      type: "success",
-                      message: "关联成功!",
-                    });
-                  } else {
-                    this.listLoading = false;
-                    this.$message({
-                      type: "error",
-                      message: "关联失败!",
-                    });
-                  }
+          selectPrimaryKeyByTableName().then((resp) => {
+            var primaryKey = resp.data;
+            getDataAfterResultSpiltToRelateProject(
+              this.resultSpiltObjects,
+              projectId,
+              projctName,
+              selectRunTaskRelUuid
+            ).then((resp) => {
+              if (resp.data == true) {
+                this.listLoading = false;
+                this.getLikeList();
+                this.$message({
+                  type: "success",
+                  message: "关联成功!",
                 });
-              });
+              } else {
+                this.listLoading = false;
+                this.$message({
+                  type: "error",
+                  message: "关联失败!",
+                });
+              }
+            });
+          });
         } else {
           this.listLoading = true;
           var resultRelPro = [];
@@ -986,8 +1076,14 @@ export default {
     /**
      * 移除项目关联
      */
-    RemoverelationProject(resultRelProjectUuid) {
-      rmResultRelProjectlr(resultRelProjectUuid).then((resp) => {
+    RemoverelationProject() {
+      var ids = [];
+      for (var i = 0; i < this.selected1.length; i++) {
+        ids.push(this.selected1[i].runTaskRelUuid);
+      }
+      var resultRelProjectUuids = ids.join(",");
+      rmResultRelProjectlr(resultRelProjectUuids).then((resp) => {
+        console.log(resp.data);
         if (resp.data == true) {
           this.getLikeList();
           this.$message({
@@ -1009,15 +1105,17 @@ export default {
       this.listLoading = true;
       var runTaskRelUuids = [];
       var personUuids = [];
+      var personNames = []
       var selectedNode = this.$refs.orgPeopleTree.getSelectValue();
       for (var i = 0; i < selectedNode.length; i++) {
         personUuids.push(selectedNode[i].personuuid);
+        personNames.push(selectedNode[i].cnname);
       }
       for (var i = 0; i < this.selected1.length; i++) {
         runTaskRelUuids.push(this.selected1[i].runTaskRelUuid);
       }
       if (personUuids.length > 0) {
-        insertRunResultShare(runTaskRelUuids, personUuids).then((resp) => {
+        insertRunResultShare(runTaskRelUuids, personUuids,personNames).then((resp) => {
           this.listLoading = false;
           if (resp.data == true) {
             this.$message({
@@ -1086,7 +1184,6 @@ export default {
      * 结果总条数格式化
      */
     dataCountFormatter(row) {
-      debugger
       var tables = row.runResultTables;
       var dataCount = 0;
       for (var i = 0; i < tables.length; i++) {
@@ -1287,23 +1384,29 @@ export default {
         this.sqlInfoDialog = true;
       }
     },
+    selectrunMessage(row) {
+      if (row.runMessage == null) {
+        return "";
+      } else {
+        var runMessage = row.runMessage;
+        this.runMessageInfo = runMessage;
+        this.runMessageInfoDialog = true;
+      }
+    },
     modelResultOpenDialog() {
       this.resultShareDialogIsSee = true;
     },
     sendToOA() {
-      const dataUserId = this.$store.getters.datauserid
-      const dataUserName = this.$store.getters.datausername
-      var runTaskRelUuid =  this.selected1[0].runTaskRelUuid;
-      sendToOA(runTaskRelUuid, dataUserId, dataUserName).then(resp=>{
+      const dataUserId = this.$store.getters.datauserid;
+      const dataUserName = this.$store.getters.datausername;
+      var runTaskRelUuid = this.selected1[0].runTaskRelUuid;
+      sendToOA(runTaskRelUuid, dataUserId, dataUserName).then((resp) => {
         this.$message({
           type: "success",
           message: "发送成功!",
         });
-      })
-
-
+      });
     },
-
   },
 };
 </script>

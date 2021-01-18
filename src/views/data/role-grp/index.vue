@@ -2,7 +2,7 @@
   <div class="page-container">
     <el-row :gutter="5">
       <el-col :span="8">
-        <el-select v-model="currentSceneUuid" placeholder="请选择">
+        <el-select v-model="currentSceneUuid" placeholder="请选择" style="display: none" >
           <el-option
             v-for="scene in allScene"
             :key="scene.sceneUuid"
@@ -10,7 +10,7 @@
             :value="scene.sceneUuid"
           />
         </el-select>
-        <el-tabs v-model="grpUuid" @tab-click="tabClick">
+        <el-tabs v-model="grpUuid" @tab-click="tabClick" ref="eltab">
           <el-tab-pane v-for="grp in currentScene.groups" :key="grp.sceneGrpUuid" :label="grp.grpName" :name="grp.sceneGrpUuid">
             <el-input
               v-model="filterText"
@@ -49,9 +49,10 @@
       </el-col>
 
       <el-col :span="15">
-        <div>已选择的用户组</div>
-        <el-button @click="setExpireDate">设置使用期限</el-button>
-        <el-button @click="removeGrp">删除</el-button>
+        <el-col align="right" style=" padding-top: 4px;padding-right:50px">
+          <el-button type="primary" title="设置使用期限" class="oper-btn edit" :disabled="selections.length !== 1" @click="setExpireDate" />
+          <el-button type="primary" title="删除" class="oper-btn delete" :disabled="selections.length === 0" @click="removeGrp" />
+        </el-col>
         <el-table
           key="colMetaUuid"
           v-loading="listLoading"
@@ -141,6 +142,7 @@ export default {
     filterText(val) {
       this.$refs['A' + this.grpUuid].filter(val)
     }
+
   },
   created() {
     getAllScene().then(resp => {
@@ -159,6 +161,11 @@ export default {
     getRoleGrp(this.roleUuid).then(resp => {
       this.tableData = resp.data
     })
+  },
+  mounted(){
+    setTimeout(()=>{
+      document.getElementById('tab-'+this.currentScene.groups[0].sceneGrpUuid).click();
+    }, 1000)
   },
   methods: {
     filterNode(value, data) {

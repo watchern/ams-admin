@@ -37,24 +37,24 @@ export function edgeVerify(curSelCell) {
       removeCellsHistory(curSelCell)
       return false
     } else if (nextNode.length > 1 && curSelCell.source.nodeType !== 'layering') { // 除了数据分层，其他的节点有且只有一个出去的线
-      alertMsg('提示', '最多连接一个结果表', 'info')
+      alertMsg('提示', '最多连接一个结果表', 'warning')
       removeCellsHistory(curSelCell)
       return false
     }
   }
   if ('filter,sort,sample,layering,groupCount,delRepeat,change,customizeChart'.indexOf(curSelCell.target.nodeType) > -1 && preNode.length > 1) {
     // 数据筛选、数据排序、数据抽样、数据分层、分组汇总、数据去重、数据转码入1出1
-    alertMsg('提示', '最多连接 1 个节点', 'info')
+    alertMsg('提示', '最多连接 1 个节点', 'warning')
     removeCellsHistory(curSelCell)
     return false
   }
   if ('intersect,exclude,union'.indexOf(curSelCell.target.nodeType) > -1 && preNode.length > 2) { // 数据合并、数据交集与数据补集入2出1
-    alertMsg('提示', '最多连接 2 个节点', 'info')
+    alertMsg('提示', '最多连接 2 个节点', 'warning')
     removeCellsHistory(curSelCell)
     return false
   }
   if ('barChart'.indexOf(curSelCell.source.nodeType) > -1 && preNode.length > 0) { // 自定义图形入1出0
-    alertMsg('提示', '自定义图形只能作为末级节点', 'info')
+    alertMsg('提示', '自定义图形只能作为末级节点', 'warning')
     removeCellsHistory(curSelCell)
     return false
   }
@@ -64,7 +64,7 @@ export function edgeVerify(curSelCell) {
       removeCellsHistory(curSelCell)
       return false
     } else if (preNode.length > 1) {		// 入1出n（数据频次分析的结果表入1出0）
-      alertMsg('提示', '结果表只有一个来源节点', 'info')
+      alertMsg('提示', '结果表只有一个来源节点', 'warning')
       removeCellsHistory(curSelCell)
       return false
     }
@@ -72,7 +72,7 @@ export function edgeVerify(curSelCell) {
   if (curSelCell.source.nodeType === 'newNullNode') {
     var resultPreNodes = curSelCell.source.getSourceNodes()
     if (resultPreNodes.length > 0 && resultPreNodes[0].nodeType === 'comparison' && preNode.length > 0) { // 数据频次分析产生的结果表不能有出去的线
-      alertMsg('提示', '数据频次分析产生的结果表只能作为末级节点', 'info')
+      alertMsg('提示', '数据频次分析产生的结果表只能作为末级节点', 'warning')
       removeCellsHistory(curSelCell)
       return false
     }
@@ -176,7 +176,7 @@ function verifyPreNode(curNodeId) {
     if (parentNodeData.nodeInfo.optType === 'sql') {					// 如果前置节点是SQL查询器节点
       // 判断SQL查询器节点是否已执行
       if (parentNodeData.nodeInfo.nodeExcuteStatus !== 3) {				// 未执行
-        alertMsg('错误', '前置节点“SQL查询器”生成的SQL语句未执行', 'error')
+        alertMsg('错误', '前置节点【SQL查询器】生成的SQL语句未执行', 'warning')
         verify = false
         break
       }
@@ -200,12 +200,12 @@ function verifyPreNode(curNodeId) {
         }
       }
       if (columnsInfo.length === count && columnsInfo.length !== 0) {
-        alertMsg('提示', '前置节点未配置输出列', 'error')
+        alertMsg('提示', '前置节点未配置输出列', 'warning')
         verify = false
         break
       }
       if (columnsInfo.length === 0) {
-        alertMsg('提示', '前置节点无输出列，需执行前置节点', 'error')
+        alertMsg('提示', '前置节点无输出列，需执行前置节点', 'warning')
         verify = false
         break
       }
@@ -223,12 +223,12 @@ export function executeVerify() {
   // 校验当前节点是否关联前置节点
   var parentNodes = graph.curCell.getSourceNodes()
   if (parentNodes.length === 0) {
-    alertMsg('提示', '请关联一个前置节点', 'info')
+    alertMsg('提示', '请关联一个前置节点', 'warning')
     return false
   }
   // 校验其前置节点是否有正在执行的
   if (!verifyExecuting(graph.curCell.id, true)) {
-    alertMsg('提示', '待执行的节点中存在正在执行的节点，请稍后……', 'info')
+    alertMsg('提示', '待执行的节点中存在正在执行的节点，请稍后……', 'warning')
     return false
   }
   return true

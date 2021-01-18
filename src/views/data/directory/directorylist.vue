@@ -27,8 +27,7 @@
       :data="temp"
       border
       fit
-      highlight-current-row
-      style="width: 100%;"
+      style="width: 100%;height:500px;overflow: auto;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -59,7 +58,7 @@
     </el-dialog>
     <!-- 弹窗2 -->
     <el-dialog :visible.sync="moveTreeVisible" width="600px">
-      <dataTree v-if="personcode!==''" ref="dataTree" :data-user-id="personcode" :scene-code="sceneCode" :tree-type="treeType" @node-click="nodeclick" />
+      <dataTree v-if="personcode!==''" ref="dataTree" :data-user-id="personcode" :scene-code="currentSceneUuid" :tree-type="treeType" @node-click="nodeclick" />
       <span slot="footer">
         <el-button @click="moveTreeVisible = false">取消</el-button>
         <el-button type="primary" @click="movePathSave()">保存</el-button>
@@ -84,9 +83,6 @@
           >
             <el-form-item label="导入表名称：(若导入数据为TXT数据需用','分割,列信息用换行即可)" prop="tbName">
               <el-input v-model="uploadtemp.tbName" label="请输入表名称" />
-            </el-form-item>
-            <el-form-item prop="tableFileName">
-              <el-input v-model="uploadtemp.tableFileName" hidden disabled />
             </el-form-item>
           </el-form>
         </el-col>
@@ -129,7 +125,7 @@
     <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="800px">
       <el-row>
         <el-col>
-          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" />
+          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" @table-show="tableshow" />
         </el-col>
       </el-row>
       <span slot="footer">
@@ -171,16 +167,17 @@ export default {
   },
   // eslint-disable-next-line vue/order-in-components
   components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs, directoryFileUpload },
-  // eslint-disable-next-line vue/order-in-components
+  // eslint-disable-next-line vue/require-prop-types
+  props: ['dataUserId', 'sceneCode'],
   data() {
     return {
       saveFlag: true,
       infoFlag: true,
-      dataUserId: this.$store.getters.personcode,
+      currentSceneUuid: 'auditor',
+      directyDataUserId: this.$store.state.user.code,
       openType: '',
       // 移动树节点展示
       tableKey: 'id',
-      sceneCode: 'auditor',
       treeType: 'save', // common:正常的权限树   save:用于保存数据的文件夹树
       tableId: '',
       typeLabel: '',
@@ -268,9 +265,17 @@ export default {
   //   }
   // },
   created() {
-    // this.getList(this.data, this.node, this.tree)this.$refs.childTabs.loadTableData(this.arrSql)
+    this.initDirectory()
   },
   methods: {
+    initDirectory() {
+      if (typeof (this.dataUserId) !== 'undefined') {
+        this.directyDataUserId = this.dataUserId
+      }
+      if (typeof (this.sceneCode) !== 'undefined') {
+        this.currentSceneUuid = this.sceneCode
+      }
+    },
     fileuploadname(data) {
       this.uploadtemp.tableFileName = data
     },
@@ -283,38 +288,41 @@ export default {
     // 删除资源
     delData() {
       var ids = []
+      var flag = true
       this.selections.forEach((r, i) => {
         if (r.type === 'folder') {
           if (r.extMap.folderType === 'virtual') {
             this.$message({ type: 'info', message: '该文件为系统文件夹不允许删除!' })
-            return
+            flag = false
           }
           var foldObj = this.allList.filter(obj => { return obj.label === r.label })
           var objTotal = getArrLength(foldObj[0].children)
           if (objTotal > 0) {
             this.$message({ type: 'info', message: '删除失败！文件夹：' + foldObj[0].label + '不为空无法删除' })
-            return
+            flag = false
           }
         }
         ids.push(r)
       })
-      this.$confirm('确定删除该资源?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true
-      }).then(() => {
-        deleteDirectory(ids).then(() => {
-          this.$notify({
-            title: '成功',
-            message: '删除成功',
-            type: 'success',
-            duration: 5000,
-            position: 'bottom-right'
+      if (flag) {
+        this.$confirm('确定删除该资源?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          deleteDirectory(ids).then(() => {
+            this.$notify({
+              title: '成功',
+              message: '删除成功',
+              type: 'success',
+              duration: 5000,
+              position: 'bottom-right'
+            })
+            this.$emit('remove', this.selections, this.clickNode)
           })
         })
-      })
-      this.$emit('remove', this.selections, this.clickNode)
+      }
     },
     // 复制资源(只允许复制数据表，不允许复制文件夹)
     copyResource() {
@@ -354,12 +362,13 @@ export default {
       this.uploadtemp.folderUuid = this.clickData.id
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          nextUpload(this.uploadtemp).then(res => {
-            getSqlType().then(resp => {
-              this.options = resp.data
+          getSqlType().then(resp => {
+            this.options = resp.data
+            nextUpload(this.uploadtemp).then(res => {
+              this.uploadStep = 2
+              this.uploadtempInfo = res.data
+              
             })
-            this.uploadStep = 2
-            this.uploadtempInfo = res.data
           })
         }
       })
@@ -426,7 +435,6 @@ export default {
           newNode = newNode.parent
         }
       }
-      // this.moveSelect = pathArr.reverse().join('/')
       this.moveSelect = data
     },
     movePath() {
@@ -552,6 +560,9 @@ export default {
     },
     // 保存新建文件夹
     createFolderSave() {
+      if (this.currentSceneUuid !== 'auditor') {
+        this.resourceForm.sceneInstUuid = this.directyDataUserId
+      }
       this.resourceForm.parentFolderUuid = this.clickData.id
       this.resourceForm.fullPath = this.clickFullPath.reverse().join('/')
       this.resourceForm.folderName = this.resourceForm.resourceName
@@ -593,7 +604,6 @@ export default {
     preview() {
       preview(this.selections[0]).then(res => {
         this.executeSQLList = res.data.executeTask.executeSQL
-        debugger
         this.arrSql = res.data
         this.previewVisible = true
         this.$nextTick(() => {
@@ -636,6 +646,9 @@ export default {
     },
     appendnode(childData, parentNode) {
       this.$emit('append-node', childData, this.clickNode)
+    },
+    tableshow(show) {
+      this.tableShowVisible = show
     },
     getSortClass: function(key) {
       const sort = this.pageQuery.sort

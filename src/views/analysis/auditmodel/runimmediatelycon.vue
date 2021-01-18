@@ -45,8 +45,8 @@
             :append-to-body="true"
           >
             <data-tree
-              :data-user-id="dataUserId=='undefined'?personCode:dataUserId"
-              :scene-code="sceneCode1=='undefined'?sceneCode:sceneCode1"
+              :data-user-id="dataUserId"
+              :scene-code="sceneCode"
               :tree-type="treeType"
               @node-click="handleClick"
               style="height: 500px;overflow-y: scroll"
@@ -114,7 +114,6 @@ export default {
       },
       modelResultSavePathDialog: false,
       personCode: this.$store.state.user.code,
-      sceneCode: "auditor",
       treeType: "save",
       path: "",
       modelResultSavePathId: '',
@@ -123,7 +122,7 @@ export default {
       tempId: "",
     };
   },
-  props: ["models", "timing",'dataUserId','sceneCode1'],
+  props: ["models", "timing",'dataUserId','sceneCode'],
   methods: {
     /**
      * 初始化dialog

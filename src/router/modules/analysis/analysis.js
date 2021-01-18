@@ -58,8 +58,13 @@ const analysisRouter = {
     },
     {
       path: 'screenList',
-      name: '主题展示列表',
+      name: '主题展示配置',
       component: () => import('ams-datamax/src/components/screenList')
+    },
+    {
+      path: 'publicScreenList',
+      name: '主题展示',
+      component: () => import('ams-datamax/src/components/bigScreen/admin/publicScreenList')
     },
     {
       path: 'indicatoranalysis',

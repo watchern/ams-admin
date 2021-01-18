@@ -8,7 +8,6 @@
       name: "sso",
       created() {
         var sceneCode = "project";
-        debugger;
         var params = this.$route.query.param.split(",");
         var personuuid = params[0];
         var prjcode = params[1];

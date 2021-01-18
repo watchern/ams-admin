@@ -8,12 +8,12 @@
                 <el-button v-if="type === 'privateGraphType' || type === 'personScreenGraphType'" type="primary" class="oper-btn add" @click="add"/>
                 <el-button v-if="type !== 'shareToGraphType'" type="primary" class="oper-btn edit" @click="edit" :disabled="editGraphBtn"/>
                 <el-button v-if="showDelBtn" type="primary" class="oper-btn delete" @click="deleteGraph" :disabled="deleteGraphBtn"/>
-                <el-button v-if="type === 'privateGraphType'" type="primary" class="oper-btn share" @click="share" :disabled="shareGraphBtn"/>
+                <el-button v-if="type === 'privateGraphType'" type="primary" class="oper-btn share" @click="personTreeDialogVisible = true" :disabled="shareGraphBtn"/>
                 <el-button v-if="type === 'shareToGraphType'" type="primary" class="oper-btn cancelshare" @click="cancelShare" :disabled="cancelShareGraphBtn"/>
                 <el-button v-if="type.toLowerCase().indexOf('screengraphtype') > -1" type="primary" class="oper-btn start" @click="run" :disabled="runGraphBtn"/>
             </el-col>
         </el-row>
-        <el-table :key="tableKey" ref="graphListTable" v-loading="listLoading" height="500" :data="dataList" border fit highlight-current-row
+        <el-table key="graphTable" ref="graphListTable" v-loading="listLoading" height="500" :data="dataList" border fit highlight-current-row
                   @select="listSelectChange" @select-all="listSelectChange">
             <el-table-column type="selection" width="55" />
             <el-table-column label="图形名称" align="left" prop="graphName">
@@ -38,35 +38,54 @@
                 <el-button type="primary" @click="initPreviewGraph=false">关闭</el-button>
             </div>
         </el-dialog>
+        <el-dialog v-if="personTreeDialogVisible" title="请选择分享人员" :visible.sync="personTreeDialogVisible" :close-on-press-escape="false" :close-on-click-modal="false" width="800px">
+            <PersonTree ref="personTree" />
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="personTreeDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="shareGraph">保存</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog v-if="sharedPersonDialogVisible" title="选择人员" :visible.sync="sharedPersonDialogVisible" :close-on-press-escape="false" :close-on-click-modal="false" width="600px">
+            <el-table key="sharedPersonTable" ref="sharedPersonListTable" v-loading="personListLoading" height="400" :data="personDataList" border fit highlight-current-row>
+                <el-table-column type="selection" width="55" />
+                <el-table-column label="被分享人名称" align="center" prop="sharedPersonName"/>
+                <el-table-column label="被分享时间" align="center" prop="sharedTime" :formatter="dateFormatter" />
+            </el-table>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="sharedPersonDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="cancelShareGraphBack">保存</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     import QueryField from '@/components/Ace/query-field/index'
     import Pagination from '@/components/Pagination/index'
-    import { getGrapgListByType, deleteGraphInfoById, shareGraph, cancelShareGraph, searchGraphNodes } from '@/api/graphtool/graphList'
     import PreviewGraph from '@/views/graphtool/previewGraph'
+    import PersonTree from '@/components/publicpersontree/index'
+    import { getGrapgListByType, deleteGraphInfoById, shareGraph, cancelShareGraph, searchGraphNodes, selectSharedPerson } from '@/api/graphtool/graphList'
     export default {
         name: 'GraphListTable',
-        components: { QueryField, Pagination, PreviewGraph },
+        components: { QueryField, Pagination, PreviewGraph, PersonTree },
         data() {
             return {
-                tableKey: 'graphTable',
                 listLoading: true,
                 pageLoading:false,
+                personListLoading:true,
                 type: 'privateGraphType', // 默认加载个人图形
                 queryFields: [
                     { label: '图形名称', name: 'graphName', type: 'fuzzyText', value: '' },
                     { label: '执行状态', name: 'executeStatus', type: 'select', default: '-1',
-                        data: [{ name: '全部执行', value: 1 }, { name: '部分执行', value: 2 }, { name: '未执行', value: 3 }] }
-                ],
+                data: [{ name: '全部执行', value: 1 }, { name: '部分执行', value: 2 }, { name: '未执行', value: 3 }] }],
                 pageQuery: {
                     condition: null,
                     pageNo: 1,
                     pageSize: 20
                 },
                 total: 0,
-                dataList: null,
+                dataList: [],
+                personDataList:[],
                 initPreviewGraph: false,
                 graphUuid: '',
                 showDelBtn: true,
@@ -76,6 +95,8 @@
                 shareGraphBtn:true,
                 cancelShareGraphBtn:true,
                 runGraphBtn:true,
+                personTreeDialogVisible:false,
+                sharedPersonDialogVisible:false
             }
         },
         mounted() {
@@ -185,35 +206,95 @@
                 }).catch( () => {})
             },
             share() {
-                let selectObj = this.$refs.graphListTable.selection
+                this.personTreeDialogVisible = true
+            },
+            shareGraph(){
+                const personArr = this.$refs.personTree.getSelectValue()
+                let personUuids = []
+                let personNames = []
+                if(personArr.length === 0){
+                    this.$refs.personTree.$message({'type':'warning','message':'请选择人员'})
+                }else{
+                    Array.from(personArr, item => {
+                        personUuids.push(item.personuuid)
+                        personNames.push(item.cnname)
+                    })
+                }
                 let curPersonUuid = this.$store.getters.personuuid
-                let personObj = { personUuids: '2c91808573e740e001744d54e2800005', personNames: '张闯1' }// 模拟选择的人员结果信息，待集成方法
+                let personObj = { personUuids: personUuids.join(","), personNames: personNames.join("、") }
                 if (personObj.personUuids.indexOf(curPersonUuid) > -1) {
                     this.$message({ type: 'warning', message: '不可将个人图形分享给自己' })
                 } else {
+                    this.pageLoading = true
+                    let selectObj = this.$refs.graphListTable.selection
                     let graphObj = this.getUuidsANdNames(selectObj)// 获取选择的图形信息
+                    this.personTreeDialogVisible = false
                     shareGraph({ ...graphObj, ...personObj }).then(response => {
-                        this.$message({ type: 'success', message: '图形分享成功' })
+                        this.pageLoading = false
+                        this.$notify({
+                            title: this.$t('message.title'),
+                            message: this.$t('图形分享成功'),
+                            type: 'success',
+                            duration: 2000,
+                            position: 'bottom-right'
+                        })
                         // 刷新图形树（主要刷新我的分析图形节点数据）
                         this.$emit('refreshGraphTree')
                     }).catch( () => {})
                 }
             },
             cancelShare() {
-                let selectObj = this.$refs.graphListTable.selection
-                let graphObj = { graphUuid: selectObj[0].graphUuid, graphName: selectObj[0].graphName }
-                let personObj = { personUuids: '2c91808573e740e001744d54e2800005', personNames: '张闯1' }// 模拟选择的人员结果信息，待集成方法
-                cancelShareGraph({ ...graphObj, ...personObj }).then(response => {
-                    this.$message({ type: 'success', message: '成功取消已分享图形' })
-                    this.listSelectChange([])
-                    this.getGraphList()
-                    // 刷新图形树（主要刷新我的分析图形节点数据）
-                    this.$emit('refreshGraphTree')
+                this.$confirm(this.$t('确认取消分享？'), this.$t('提示'),{
+                    confirmButtonText: this.$t('confirm.okBtn'),
+                    cancelButtonText: this.$t('confirm.cancelBtn'),
+                    type: 'warning'
+                }).then(() => {
+                    let selectObj = this.$refs.graphListTable.selection
+                    this.sharedPersonDialogVisible = true
+                    this.$nextTick( () => {
+                        selectSharedPerson(selectObj[0].graphUuid).then( response => {
+                            this.personDataList = response.data
+                            this.personListLoading = false
+                        }).catch( () => {
+                            this.personListLoading = false
+                        })
+                    })
                 }).catch( () => {})
+            },
+            cancelShareGraphBack(){
+                let selection = this.$refs.sharedPersonListTable.selection
+                if(selection.length === 0){
+                    this.$message({'type':'warning','message':'请选择人员'})
+                }else{
+                    this.sharedPersonDialogVisible = false
+                    this.pageLoading = true
+                    let selectObj = this.$refs.graphListTable.selection
+                    let graphObj = { graphUuid: selectObj[0].graphUuid, graphName: selectObj[0].graphName }
+                    let personUuids = []
+                    let personNames = []
+                    Array.from(selection, item => {
+                        personUuids.push(item.sharedPersonUuid)
+                        personNames.push(item.sharedPersonName)
+                    })
+                    let personObj = { personUuids: personUuids.join(","), personNames: personNames.join("、")}
+                    cancelShareGraph({ ...graphObj, ...personObj }).then(response => {
+                        this.pageLoading = false
+                        this.$notify({
+                            title: this.$t('message.title'),
+                            message: this.$t('取消分享成功'),
+                            type: 'success',
+                            duration: 2000,
+                            position: 'bottom-right'
+                        })
+                        this.listSelectChange([])
+                        this.getGraphList()
+                        // 刷新图形树（主要刷新我的分析图形节点数据）
+                        this.$emit('refreshGraphTree')
+                    }).catch( () => {})
+                }
             },
             run() {
                 this.pageLoading = true
-                // this.$message({ type: 'info', message: '等待模块集成' })
                 let selectObj = this.$refs.graphListTable.selection
                 let graphUuid = selectObj[0].graphUuid
                 let graphName = selectObj[0].graphName
@@ -228,7 +309,7 @@
                         } else {
                             let nodeList = response.data.nodeList;
                             if (nodeList.length === 0) {
-                                this.$message({"type": "info", "message": "您选择的场景查询图形暂无数据节点"})
+                                this.$message({"type": "warning", "message": "您选择的场景查询图形暂无数据节点"})
                             } else {
                                 this.$parent.$parent.screenParam.graphUuid = graphUuid
                                 this.$parent.$parent.screenParam.graphName = graphName
@@ -263,7 +344,7 @@
                 }
                 return { graphUuids, graphNames }
             },
-            graphTypeFormatter(row, column) {
+            graphTypeFormatter() {
                 let str = ''
                 switch (this.type) {
                     case 'screenGraphType':
@@ -282,23 +363,9 @@
                         str = '我的分享图形'
                         break
                 }
-                // let graphType = row.graphType;
-                // let publicType = row.publicType;
-                // switch (graphType) {
-                //     case 1:
-                //         str = "个人图形";
-                //         break;
-                //     case 3:
-                //         if(publicType === 1){
-                //            str = "场景查询";
-                //         }else{
-                //             str = "个人场景查询";
-                //         }
-                //         break;
-                // }
                 return str
             },
-            stasusFormatter(row, column) {
+            stasusFormatter(row) {
                 let executeStatus = row.executeStatus
                 let str = ''
                 switch (executeStatus) {
@@ -314,8 +381,11 @@
                 }
                 return str
             },
-            dateFormatter(row, column) {
+            dateFormatter(row) {
                 let datetime = row.createTime
+                if(this.sharedPersonDialogVisible){
+                    datetime = row.sharedTime
+                }
                 let timeStr = ''
                 if (datetime && datetime.trim().length > 0) {
                     let dateMat = new Date(datetime)

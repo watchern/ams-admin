@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-col v-if="openType!== 'showTable'" align="right">
+      <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'" align="right">
         <el-button type="primary" size="mini" class="oper-btn add" title="添加" @click="addCol()" />
         <el-button type="danger" size="mini" class="oper-btn delete" title="删除" :disabled="selections.length === 0" @click="delCol()" />
       </el-col>
@@ -95,7 +95,7 @@
       </el-dialog>
     </el-table>
     <div slot="footer">
-      <el-button type="primary" style="float:right;margin-top:20px" @click="saveTableRelation">保存</el-button>
+      <el-button v-if="openType !== 'showTable' && openType !== 'tableRegister'" type="primary" style="float:right;margin-top:20px" @click="saveTableRelation">保存</el-button>
     </div>
   </div>
 </template>
@@ -177,9 +177,9 @@ export default {
         })
       })
       getColsInfo(tableId).then(resp => {
-        this.colNames = resp.data
+        this.colNames = resp.data.colMetas
         var columObjs = []
-        resp.data.forEach(r => {
+        resp.data.colMetas.forEach(r => {
           var columObj = {}
           columObj.columnType = r.dataType
           columObj.columnName = r.colName
@@ -240,8 +240,8 @@ export default {
         tempItem.relationTableName = currentNode.label
         tempItem.relationTableId = currentNode.id
         getColsInfo(currentNode.id).then(resp => {
-          tempItem.relationCols = resp.data
-          resp.data.forEach(r => {
+          tempItem.relationCols = resp.data.colMetas
+          resp.data.colMetas.forEach(r => {
             var columObj = {}
             columObj.columnType = r.dataType
             columObj.outputColumnName = r.colName

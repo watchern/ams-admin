@@ -151,7 +151,7 @@ const etlschedulerRouter = {
       }
     },
     {
-      path: 'instance/:id',
+      path: 'instance/:id/:status',
       name: 'instancedetails',
       component: resolve => require(['@/views/etlscheduler/processinstance/instance/index'], resolve),
       meta: {

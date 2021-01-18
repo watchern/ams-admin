@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1392555",
+      "name": "表格",
+      "font_class": "oper-customfield",
+      "unicode": "e665",
+      "unicode_decimal": 58981
+    },
+    {
+      "icon_id": "7956371",
+      "name": "帮助",
+      "font_class": "oper-help",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
       "icon_id": "15429679",
       "name": "资产处理管理 goods/ppe/archivesHandle",
       "font_class": "oper-processing",

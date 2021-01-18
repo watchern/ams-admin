@@ -18,7 +18,7 @@
               <el-col :span="20">
                 <el-input v-model="form.filterValue" :disabled="true" />
               </el-col>
-              <el-button @click="showQueryBuilder">设置</el-button>
+              <el-button @click="showQueryBuilder" type="primary">设置</el-button>
             </el-form-item>
           </el-row>
           <el-row>

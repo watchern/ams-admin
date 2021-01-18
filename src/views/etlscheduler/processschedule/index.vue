@@ -12,7 +12,7 @@
         <el-button type="primary" class="oper-btn start" :disabled="startStatus" title="启用" @click="handleUse()" />
         <el-button type="primary" class="oper-btn pause" :disabled="stopStatus" title="停用" @click="handleStop()" />
         <el-button type="primary" class="oper-btn" icon="el-icon-document-copy" :disabled="selections.length !== 1" title="复制" @click="copyData()" />
-        <el-button type="primary" class="oper-btn start" :disabled="stopStatus" title="立即运行" @click="handleRun()" />
+        <el-button type="primary" class="oper-btn start" :disabled="runStatus" title="立即运行" @click="handleRun()" />
         <el-upload
           multiple
           class="upload-demo"
@@ -582,6 +582,7 @@ export default {
       stopStatus: true,
       editStatus: true,
       deleteStatus: true,
+      runStatus: true,
       // 添加依赖
       relation: 'AND',
       dependTaskList: [],
@@ -719,7 +720,7 @@ export default {
             message: '请填写调度任务名称',
             trigger: 'change'
           },
-          { max: 20, message: '调度任务名称在20个字符之内', trigger: 'change' }
+          { max: 100, message: '调度任务名称在100个字符之内', trigger: 'change' }
         ],
         processDefName: [
           {
@@ -827,6 +828,7 @@ export default {
         this.startStatus = false
         this.stopStatus = false
         this.editStatus = true
+        this.runStatus = true
         this.selections.forEach((r, i) => {
           if (r.status === 1) {
             this.startStatus = true
@@ -846,8 +848,10 @@ export default {
         this.selections.forEach((r, i) => {
           if (r.status === 0) {
             this.editStatus = false
+            this.runStatus = true
           } else if (r.status === 1) {
             this.editStatus = true
+            this.runStatus = false
           }
         })
       }
@@ -1255,7 +1259,7 @@ export default {
       }
     },
     handleDelete() {
-      this.$confirm(this.$t('confirm.delete'), this.$t('confirm.title'), {
+      this.$confirm('此操作将删除相关的实例, 是否继续?', this.$t('confirm.title'), {
         confirmButtonText: this.$t('confirm.okBtn'),
         cancelButtonText: this.$t('confirm.cancelBtn'),
         type: 'warning'

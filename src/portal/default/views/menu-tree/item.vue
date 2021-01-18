@@ -13,7 +13,7 @@
           :class="[isOpen && 'icon-open text-white']"
         />
       </div>
-      <ul v-if="item.children && item.children.length && isOpen" class="ul-temp">
+      <ul v-show="item.children && item.children.length && isOpen" class="ul-temp">
         <Item v-for="(val,index) in item.children" :key="index" :item="val" @close="close(val)" />
       </ul>
     </template>
@@ -42,10 +42,10 @@ export default {
     },
     close(item) {
       let isCloseTree = false
-      if (!item.children) {
-        isCloseTree = true
-      }
-      if (item.path && item.path !== '') {
+      // if (!item.children) {
+      //   isCloseTree = true
+      // }
+      if (item.path && item.path !== '' && this.item.path!=='') {
         this.$router.push({ path: this.item.path })
         this.$store.commit('aceState/setRightFooterTags', {
           type: 'active',

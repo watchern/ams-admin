@@ -52,14 +52,16 @@
       </el-table-column>
       <el-table-column
         label="任务实例名称"
-        align="center"
         prop="name"
       />
       <el-table-column
         label="流程实例名称"
-        align="center"
         prop="processInstanceName"
-      />
+      >
+        <template slot-scope="scope">
+          <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processInstanceId)">{{ scope.row.processInstanceName }}</el-link>
+        </template>
+      </el-table-column>
       <el-table-column
         label="任务类型"
         align="center"
@@ -346,6 +348,10 @@ export default {
       //   return colorList.length - 1
       // }
       // return index2 - 1
+    },
+    handleView(processInstanceUuid) {
+      // 1为查看
+      this.$router.push(`/etlscheduler/instance/${processInstanceUuid}/1`)
     },
     getList(query) {
       this.listLoading = true

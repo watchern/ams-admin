@@ -53,7 +53,7 @@
         <el-row>
             <div style="height: 400px;">
                 <el-col :span="16">
-                    <div style="border: 1px solid gray;height: 400px;">
+                    <div style="border: 1px solid gray;height: 400px;overflow: auto;">
                         <ul ref="filterZtree" class="ztree"/>
                     </div>
                 </el-col>
@@ -192,7 +192,7 @@
                             }
                             return rootNode
                         },
-                        beforeDrop: function(treeId, treeNodes, targetNode, moveType) { // 只允许同级之间移动
+                        beforeDrop: function(treeId, treeNodes, targetNode) { // 只允许同级之间移动
                             var isSameLevel = true
                             var targetLevel = targetNode.level
                             for (var i = 0; i < treeNodes.length; i++) {
@@ -203,7 +203,7 @@
                             }
                             return isSameLevel
                         },
-                        onDrop: function(event, treeId, treeNodes, targetNode, moveType) {
+                        onDrop: function() {
                             // 先对选择的节点进行排序
                             var nodes = vueObj.zTreeObj_Filter.getNodes()
                             for (var i = 0; i < nodes.length; i++) {
@@ -406,7 +406,7 @@
                             if (parentNodes && parentNodes.length > 0) {
                                 var curChildrenNodes = parentNodes[0].children
                                 var curName = ''
-                                $(parentNodes[0].children).each(function(i) {
+                                $(parentNodes[0].children).each(function() {
                                     curName += ' ' + this.name
                                 })
                                 parentNodes[0].name = curName
@@ -420,7 +420,7 @@
                             return
                         }
                         var isChildNode = false
-                        $(sele_nodes).each(function(index) {
+                        $(sele_nodes).each(function() {
                             if (this.pId != null && typeof this.pId !== 'undefined') {
                                 isChildNode = true
                             }

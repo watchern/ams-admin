@@ -1,12 +1,12 @@
 <template>
-  <div class="tools-template w100 h100 relative">
+  <div class="tools-template w100 h100 relative" @click="callback">
     <div class="tools-content h100 relative">
       <div class="title text-white">
         <i class="el-icon-s-grid" />
         <span class="label">More tools</span>
       </div>
       <div class="lately-use">
-        <div class="title-label">最近使用</div>
+        <div class="title-label">常用功能</div>
         <div class="lately-use-box flex a-center j-start flex-row">
           <div
             v-for="(item,index) in latelyBdInList"
@@ -51,15 +51,14 @@
           <div>
             <ul>
               <li v-for="(item , index) in list" :key="index">
-                <span style="color:#eaeaea;font-size:10px" class="tools-box-name" v-text="item.taskName" />
-                <div style="float:right;margin-right:60px">
-                  <span v-if="item.taskStatus == 2" style="color:#eaeaea" class="el-icon-success" />
-                  <span v-if="item.taskStatus == 1" style="color:#eaeaea" class="el-icon-loading" />
-                  <span v-if="item.taskStatus == 3" style="color:#eaeaea" class="el-icon-error" />
-                </div>
+                <span v-if="item.taskStatus == 2" style="color:#eaeaea" class="el-icon-success" />
+                <span v-if="item.taskStatus == 1" style="color:#eaeaea" class="el-icon-loading" />
+                <span v-if="item.taskStatus == 3" style="color:#eaeaea" class="el-icon-error" />
+                <span style="color:#eaeaea;font-size:11px;padding:2px" class="tools-box-name" v-text="item.taskEstimatedTime" />
+                <span style="color:#eaeaea;font-size:11px;padding:2px;cursor:pointer;" class="tools-box-name" @click="toUrl(item.taskUrl)" v-text="item.taskName" />
               </li>
             </ul>
-            <span type="primary" style="color:#4e6ef2;float:right;bottom:-22px;font-size:10px;" @click="moreTask">更多</span>
+            <span type="primary" style="color:#4e6ef2;float:right;bottom:-22px;font-size:10px;cursor:pointer;" @click="moreTask">更多</span>
           </div>
         </div>
       </div>
@@ -466,7 +465,7 @@ export default {
           path: this.latelyPathList[index]
         }
       })
-      this.$emit('func',false)
+      // this.$emit('func',false)
     },
     init() {
       querySystemTask().then(resp => {
@@ -478,6 +477,11 @@ export default {
     moreTask() {
       this.$router.push({
         path: '/base/querytask'
+      })
+    },
+    toUrl(url) {
+      this.$router.push({
+        path: url
       })
     },
     /**
@@ -500,6 +504,10 @@ export default {
       }
       const func2 = function func3(val) {
         this.list = JSON.parse(val.data).slice(0, 5)
+        this.list.forEach(element => {
+          var taskEstimatedTime = new Date(element.taskEstimatedTime)
+          element.taskEstimatedTime = taskEstimatedTime.getFullYear() + '-' + (taskEstimatedTime.getMonth() + 1) + '-' + taskEstimatedTime.getDate() + '-' + taskEstimatedTime.getHours() + ':' + taskEstimatedTime.getMinutes() + ':' + taskEstimatedTime.getSeconds()
+        })
       }
       const func1 = func2.bind(this)
       this.webSocket.onclose = function(event) {
@@ -507,6 +515,9 @@ export default {
       // 通信失败
       this.webSocket.onerror = function(event) {
       }
+    },
+    callback() {
+      this.$emit('func',false)
     }
   }
 }
@@ -649,7 +660,7 @@ export default {
           box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
           border-radius: 8px;
           width: 136px;
-          height: 90px;
+          height: 80px;
           padding: 0 14px;
           margin-top: 11px;
           &:not(:nth-child(3n)) {
@@ -673,11 +684,12 @@ export default {
     .newest-item {
       width: 426px;
       &-box {
+        height: 140px;
         margin-top: 20px;
         border: 1px solid #454c58;
         box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
         border-radius: 8px;
-        padding: 13px 40px;
+        padding: 10px 20px;
         &-title {
           font-family: PingFangSC-Regular;
           font-size: 14px;

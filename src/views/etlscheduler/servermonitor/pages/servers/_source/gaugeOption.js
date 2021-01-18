@@ -1,4 +1,3 @@
-import echarts from 'echarts'
 export default function(value) {
   return {
     series: [
@@ -12,40 +11,6 @@ export default function(value) {
           show: false,
           lineStyle: { // Property linestyle controls line style
             color: [
-              [ 0.5, new echarts.graphic.LinearGradient(0, 0, 1, 0, [{ // eslint-disable-line
-                offset: 1,
-                color: '#1CAD52'// 50% Color in place
-              }, {
-                offset: 0.8,
-                color: '#1CAD52'// 40% Color in place
-              }], false)], // 100% Color in place
-              [ 0.7, new echarts.graphic.LinearGradient(0, 0, 1, 0, [{ // eslint-disable-line
-                offset: 1,
-                color: '#FFC539'// 70% Color in place
-              }, {
-                offset: 0.8,
-                color: '#FEEC49'// 66% Color in place
-              }, {
-                offset: 0,
-                color: '#C7DD6B'// 50% Color in place
-              }], false)],
-              [ 0.9, new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ // eslint-disable-line
-                offset: 1,
-                color: '#E75F25' // 90% Color in place
-              }, {
-                offset: 0.8,
-                color: '#FE951E' // 86% Color in place
-              }, {
-                offset: 0,
-                color: '#FFC539' // 70% Color in place
-              }], false)],
-              [1, new echarts.graphic.LinearGradient(0, 0, 0, 1, [ { // eslint-disable-line
-                offset: 0.2,
-                color: '#E75F25' // 92% Color in place
-              }, {
-                offset: 0,
-                color: '#D9452C' // 90% Color in place
-              }], false)]
             ],
             width: 10
           }

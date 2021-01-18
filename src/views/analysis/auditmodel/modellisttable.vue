@@ -7,7 +7,7 @@
         </div>
         <el-row v-if="power!='warning'" type="flex" class="row-bg">
           <el-col align="right">
-            <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn detail" @click="previewModel" />
+            <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn start" @click="previewModel" />
             <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />
             <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel" />
             <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete" @click="deleteModel" />
@@ -277,7 +277,6 @@ export default {
         }
       }
       const func2 = function func3(val) {
-        debugger
         const dataObj = JSON.parse(val.data)
         /*        if(this.currentPreviewModelParamAndSql.paramObj != undefined){
           this.$refs.[dataObj.modelUuid + 'param'][0].
@@ -578,13 +577,7 @@ export default {
         this.$message({ type: 'info', message: '请先选择要发布的模型!' })
         return
       }
-      this.$confirm('是否确定将选中的模型发布到公共模型下?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.treeSelectShow = true
-      })
+      this.treeSelectShow = true
     },
     /**
      *撤销发布
@@ -616,12 +609,18 @@ export default {
      * 修改要发布的模型
      */
     updatePublicModel() {
-      const selectNode = this.$refs.modelFolderTree.getSelectNode()
-      var selectObj = this.$refs.modelListTable.selection
-      for (let i = 0; i < selectObj.length; i++) {
-        selectObj[i].modelFolderUuid = selectNode.id
-      }
-      this.updateModelBasicInfo(selectObj, '发布')
+      this.$confirm('是否确定将选中的模型发布到公共模型下?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+           const selectNode = this.$refs.modelFolderTree.getSelectNode()
+           var selectObj = this.$refs.modelListTable.selection
+           for (let i = 0; i < selectObj.length; i++) {
+             selectObj[i].modelFolderUuid = selectNode.id
+           }
+           this.updateModelBasicInfo(selectObj, '发布')
+      })
     },
     /**
      * 修改模型基本信息
@@ -713,11 +712,17 @@ export default {
     shareModel() {
       // 获取选中的人员
       // 循环组织对象添加数据
+      var userId = this.$store.getters.personuuid
       var selectObj = this.$refs.modelListTable.selection
       const modelShareRelList = []
+      let verResult = true
       const persons = this.$refs.personTree.getSelectValue()
       for (let i = 0; i < selectObj.length; i++) {
         for (let j = 0; j < persons.length; j++) {
+          if(persons[j].personuuid === userId){
+            verResult = false
+            break
+          }
           const obj = {
             modelUuid: selectObj[i].modelUuid,
             belongUuid: persons[j].personuuid,
@@ -725,6 +730,10 @@ export default {
           }
           modelShareRelList.push(obj)
         }
+      }
+      if(!verResult){
+        this.$message({ type: 'info', message: '不能共享给自己!' })
+        return
       }
       shareModel(modelShareRelList).then(result => {
         if (result.code == 0) {
@@ -761,6 +770,7 @@ export default {
       this.$emit('loadingSet',true,"正在读取模型信息...");
       // 获取模型信息，判断是否存在参数，如果存在参数则弹出输入参数界面，否则直接送入后台执行
       selectModel(selectObj[0].modelUuid).then(result => {
+        debugger
         this.$emit('loadingSet',false,"");
         if (result.code == 0) {
           if (result.data.parammModelRel.length == 0) {
@@ -813,7 +823,6 @@ export default {
     executeSql(obj,selectObj,isExistParam){
       this.$emit('loadingSet',true,"正在运行模型'" + selectObj[0].modelName +  "',请稍候");
       getExecuteTask(obj,this.dataUserId,this.sceneCode).then((result) => {
-        debugger
         if(result.data.isError){
         this.$message({
               type: "error",
