@@ -123,9 +123,11 @@
       <el-table-column
         label="流程实例名称"
         prop="name"
+        :show-overflow-tooltip="true"
       >
         <template slot-scope="scope">
-          <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processInstanceUuid)">{{ scope.row.name }}</el-link>
+          <span class="tablespan" @click="handleView(scope.row.processInstanceUuid)">{{ scope.row.name }}</span>
+          <!-- <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processInstanceUuid)">{{ scope.row.name }}</el-link> -->
         </template>
       </el-table-column>
       <!-- <el-table-column
@@ -834,6 +836,10 @@ export default {
 </script>
 
 <style scoped>
+  .tablespan{
+    color: #46a6ff;
+    cursor: pointer;
+  }
   .el-tag {
 	background-color: transparent;
 	border-color: transparent;
