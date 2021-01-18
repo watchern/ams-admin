@@ -234,7 +234,6 @@ export default {
     },
 
     tabClick(tab, event) {
-      debugger;
       if (!this.currentTreeData) {
         var grpUuid = tab.paneName
         this.treeLoading = true

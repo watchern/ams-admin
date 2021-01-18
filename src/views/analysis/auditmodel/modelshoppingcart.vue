@@ -102,7 +102,7 @@
     >
       <runimmediatelycon
         :data-user-id='dataUserId'
-        :scene-code1='sceneCode'
+        :scene-code='sceneCode'
         v-if="runimmediatelyIsSee"
         ref="modelsetting"
         :timing="false"

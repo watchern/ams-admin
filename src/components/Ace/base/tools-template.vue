@@ -1,5 +1,5 @@
 <template>
-  <div class="tools-template w100 h100 relative" @click="callback">
+  <div class="tools-template w100 h100 relative" id="tool">
     <div class="tools-content h100 relative">
       <div class="title text-white">
         <i class="el-icon-s-grid" />
@@ -11,25 +11,51 @@
           <div
             v-for="(item,index) in latelyBdInList"
             :key="index"
-            class="use-box flex a-center j-center"
-            id="use-zy"
+            class="use-box flex a-center j-center use-zy"
             @click="theRouting(index)"
             :style='{background:item.bg}'
           >
             <img :src="item.image" />
           </div>
-
         </div>
         <div class="lately-use-box flex a-center j-start flex-row">
           <div v-for="(item,index) in latelyUseList"
                :key="index"
-               class="use-box flex a-center j-center"
-               id="use-zyt"
+               class="use-box flex a-center j-center use-zyt"
           >
             <span style="font-size:14px"> {{ item }} </span>
           </div>
         </div>
-
+        <div class="title-label" style="margin-top: 15px">自定义快捷菜单</div>
+        <div class="lately-use-box flex a-center j-start flex-row">
+          <div
+            v-for="(item,index) in latelyFastList"
+            :key="index"
+            class="use-box flex a-center j-center use-zy"
+            @click="theRouting(index)"
+            :style='{background:item.bg}'
+          >
+            <img :src="item.image" />
+          </div>
+          <div
+            class="use-box flex a-center j-center use-zy"
+            @click="dialogVisible = true"
+            :style='{background:"rgb(81, 69, 89)"}'
+          >
+            <img src="../../Ace/base/accessIcon/zidingyi.png" />
+          </div>
+        </div>
+        <div class="lately-use-box flex a-center j-start flex-row">
+          <div v-for="(item,index) in latelyFastList"
+               :key="index"
+               class="use-box flex a-center j-center use-zyt"
+          >
+            <span style="font-size:14px"> {{ item }} </span>
+          </div>
+          <div class="use-box flex a-center j-center use-zyt">
+            <span style="font-size:14px"> 维护 </span>
+          </div>
+        </div>
       </div>
       <div class="other-tools">
         <div class="title-label">其他工具</div>
@@ -80,16 +106,73 @@
 <!--      <span class="msg">Helpful and short message.</span>-->
 <!--      <i class="el-icon-close icon-close" @click="isShowInfoBox=false" />-->
 <!--    </div>-->
+    <div class="tools-right" @click="callback">
+    </div>
+    <div class="tools-center" v-if="dialogVisible">
+      <el-collapse class="tools-menu-small">
+        <el-collapse-item title="审计作业">
+          <el-tree
+            :data="menugroup['402883817586fc2a017586fd9e1a0001']"
+            show-checkbox
+            default-expand-all
+            node-key="id"
+            ref="tree1"
+            highlight-current
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="审计分析">
+          <el-tree
+            :data="menugroup['4028838175880ded01758835b393006b']"
+            show-checkbox
+            default-expand-all
+            node-key="id"
+            ref="tree2"
+            highlight-current
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="审计资源">
+          <el-tree
+            :data="menugroup['4028838175880ded01758816610b001a']"
+            show-checkbox
+            default-expand-all
+            node-key="id"
+            ref="tree3"
+            highlight-current
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="系统配置">
+          <el-tree
+            :data="menugroup['4028838175880ded01758828366f0046']"
+            show-checkbox
+            default-expand-all
+            node-key="id"
+            ref="tree4"
+            highlight-current
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+      </el-collapse>
+      <el-button @click="getCheckedNodes" type="primary">保 存</el-button>
+      <el-button @click="dialogVisible = false">取 消</el-button>
+    </div>
   </div>
 </template>
 
 <script>
 import { querySystemTask } from '@/api/base/systemtask'
+import { getUserRes } from '@/api/user'
+import { saveQuickMenuList, getQuickMenuList} from "@/api/base/quickmenu";
 export default {
   data() {
     return {
       websocket: null,
       list: {},
+      applications: [],
+      menugroup: [],
+      dialogVisible: false,
       isShowInfoBox: true,
       otherToolsList: [
         {
@@ -411,7 +494,12 @@ export default {
         }
       ],
       latelyInImgList:[],
-      latelyBdInList:[]
+      latelyBdInList:[],
+      latelyFastList:[],
+      defaultProps: {
+        children: 'children',
+        label: 'label'
+      }
     }
   },
   created() {
@@ -454,6 +542,52 @@ export default {
     for(let i =0; i<this.latelyInImgList.length; i++){
       this.latelyBdInList.push({image:this.latelyInImgList[i].image,bg:this.latelyBackList[i].bg})
     }
+    getUserRes()
+      .then(response => {
+        response.data.application.forEach((app, index) => {
+          // 设置左侧应用栏数据
+          this.applications.push({
+            name: app.name,
+            id: app.id
+          })
+        })
+        response.data.menugroup.forEach(grp => {
+          const children = []
+          grp.menuList.forEach(menu => {
+            children.push({
+              label: menu.name,
+              id: menu.id,
+              path: this.getCleanSrc(menu.src)
+            })
+          })
+          if (!this.menugroup[grp.appuuid]) {
+            this.menugroup[grp.appuuid] = []
+          }
+          this.menugroup[grp.appuuid].push({
+            label: grp.name,
+            path: grp.navurl,
+            children: children
+          })
+        })
+      })
+      .catch(error => {
+        console.error(error)
+      })
+    getQuickMenuList().then(res => {
+      for (let i=0; i<3; i++) {
+        for (let n=0; n<this.latelyImgList.length; n++) {
+          if (this.latelyImgList[n].name === res[i].name) {
+            this.latelyFastList.push({
+              id: res[i].id,
+              name: res[i].name,
+              path: res[i].path,
+              image: this.latelyInImgList[i].image,
+              bg: this.latelyBackList[i].bg
+            })
+          }
+        }
+      }
+    })
   },
   methods: {
     theRouting(index){
@@ -518,22 +652,62 @@ export default {
     },
     callback() {
       this.$emit('func',false)
+    },
+    getCleanSrc(src) {
+      if (src.indexOf('&resUUID') !== -1) {
+        src = src.split('&resUUID')[0]
+      } else if (src.indexOf('?resUUID') !== -1) {
+        src = src.split('?resUUID')[0]
+      }
+      return src
+    },
+    getCheckedNodes() {
+      let allThing = []
+      for (let i=0;i<this.$refs.tree1.getCheckedNodes().length;i++) {
+        allThing.push({
+          id: this.$refs.tree1.getCheckedNodes()[i].id,
+          name: this.$refs.tree1.getCheckedNodes()[i].label,
+          path: this.$refs.tree1.getCheckedNodes()[i].path
+        })
+      }
+      for (let i=0;i<this.$refs.tree2.getCheckedNodes().length;i++) {
+        allThing.push({
+          id: this.$refs.tree2.getCheckedNodes()[i].id,
+          name: this.$refs.tree2.getCheckedNodes()[i].label,
+          path: this.$refs.tree2.getCheckedNodes()[i].path
+        })
+      }
+      for (let i=0;i<this.$refs.tree3.getCheckedNodes().length;i++) {
+        allThing.push({
+          id: this.$refs.tree3.getCheckedNodes()[i].id,
+          name: this.$refs.tree3.getCheckedNodes()[i].label,
+          path: this.$refs.tree3.getCheckedNodes()[i].path
+        })
+      }
+      for (let i=0;i<this.$refs.tree4.getCheckedNodes().length;i++) {
+        allThing.push({
+          id: this.$refs.tree4.getCheckedNodes()[i].id,
+          name: this.$refs.tree4.getCheckedNodes()[i].label,
+          path: this.$refs.tree4.getCheckedNodes()[i].path
+        })
+      }
+      saveQuickMenuList(allThing)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-#use-zy{
-  width:18%;
-  height:18%;
-  margin:8px 5px 2px 5px;
-  padding:28px;
+#tool .use-zy{
+  width: 18%;
+  height: 27px;
+  margin: 8px 5px 2px 5px;
+  padding: 25px;
 }
-#use-zy img{
+#tool .use-zy img{
   width:100%
 }
-#use-zyt{
+#tool .use-zyt{
   width:18%;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -591,7 +765,7 @@ export default {
     border-radius: 1px 46px 1px 1px;
     width: 510px;
     padding: 25px 20px;
-
+    float: left;
     overflow: hidden;
     .btns-wrap {
       right: 9px;
@@ -729,5 +903,27 @@ export default {
   {
     0%{width:0px}100%{width: 510px;}
   }
+}
+.tools-right{
+  float: right;
+  height: 100%;
+  width: 70%;
+}
+.tools-center{
+  position: absolute;
+  width: 300px;
+  max-height: 94vh;
+  box-shadow: 0 0 20px 0 #888;
+  z-index:10000;
+  top: 30px;
+  left: 520px;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 10px;
+  overflow: hidden;
+}
+.tools-menu-small{
+  max-height: 88vh;
+  overflow: auto;
 }
 </style>

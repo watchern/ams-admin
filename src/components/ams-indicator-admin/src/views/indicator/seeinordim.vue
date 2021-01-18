@@ -110,7 +110,7 @@ export default {
       var url = this.contextUrl + "/InDimension/getAllDimension";
       $.post(url,{},function (res) {
         if(res.isError == true){
-          that.$message({type:"info",text:res.message})
+          that.$message({type:"info",message:res.message})
           return
         }
         that.tableDimData = res.result
@@ -121,7 +121,7 @@ export default {
       var url = this.contextUrl + "/InMeasure/getAllInAndCal";
       $.post(url, {}, function (res) {
         if(res.isError == true){
-          that.$message({type:"info",text:res.message})
+          that.$message({type:"info",message:res.message})
           return
         }
         that.tableInData = res.result

@@ -4,11 +4,9 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import Element from 'element-ui'
-import { Loading } from 'element-ui';
 import './styles/element-variables.scss'
 import './styles/index.scss' // global css
 Vue.use(Element)
-Vue.use(Loading, {zIndex: 1998})
 Vue.config.productionTip = false
 
 //region 日志公共参数

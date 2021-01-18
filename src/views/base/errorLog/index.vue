@@ -9,7 +9,7 @@
       <el-table-column label="操作用户"  width="100px" align="center" prop="opUserName" />
       <el-table-column label="操作IP"   width="160px" align="center" prop="opIp" />
       <el-table-column label="异常类"   prop="opClass" />
-      <el-table-column label="异常方法"  width="300px" prop="opMethod" />
+      <el-table-column label="异常方法"  width="200px" prop="opMethod" />
       <el-table-column label="异常时间"  width="300px" prop="logTime" align="center"/>
       <el-table-column label="异常信息"  
         width="300px" 
