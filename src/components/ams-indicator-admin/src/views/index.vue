@@ -90,8 +90,24 @@
             </el-menu>
             <swiper :options="swiperOption" ref="mySwiper">
                 <swiper-slide v-for="(dataObj,index) in dataList" v-loading="dataObj.loading" element-loading-text="正在执行SQL,请稍候...">
-                  <mtEditor :ref="dataObj.id" :data='dataObj.data' v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
-                  <mtEditor :ref="dataObj.id" :data='dataObj.data' v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
+                  <div class="btn-div"  v-if="dataObj.isError == false">
+                    <div :class="dataObj.btnChartClass" :ref="dataObj.id + 'btnChart'"><span class="icon iconfont iconfont-div" @click="switchDivStyle(dataObj.id + 'btnChart',dataObj.id)">&#xe6d8;</span></div>
+                    <div :class="dataObj.btnTableClass" :ref="dataObj.id + 'btnTable'"><span class="icon iconfont iconfont-div" @click="switchDivStyle(dataObj.id + 'btnTable',dataObj.id)">&#xecee;</span></div>
+                  </div>
+                  <ag-grid-vue
+                    v-show=dataObj.isShowTable
+                    :ref="dataObj.id + 'table'" v-if="dataObj.isLoad == true && dataObj.isError == false"
+                    style="height:75%"
+                    class="table ag-theme-balham"
+                    :column-defs="dataObj.data.columnDefs"
+                    :row-data="dataObj.data.data"
+                    rowMultiSelectWithClick="true"
+                    :enable-col-resize="true"
+                    row-selection="multiple"
+                    row-height="40"
+                  />
+                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
+                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
                   <div style="color:red;text-align: left" v-else>{{dataObj.message}}</div>
                 </swiper-slide>
               <div class="swiper-pagination" slot="pagination"></div>
@@ -157,6 +173,11 @@
   </div>
 </template>
 <script>
+// 引入样式文件
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-balham.css";
+// 引入ag-grid-vue
+import { AgGridVue } from "ag-grid-vue";
 import request from '@/utils/request'
 import 'iview/dist/styles/iview.css'
 import mtEditor from 'ams-datamax'
@@ -178,7 +199,7 @@ export default {
     saveanalysis: resolve => require(["../views/indicator/saveanalysis.vue"], resolve),
     indicatordesign: resolve => require(["../views/indicator/indicatordesign.vue"], resolve),
     inmeasurefilter: resolve => require(["../views/indicator/inmeasurefilter.vue"], resolve),
-    mtEditor,swiper, swiperSlide
+    mtEditor,swiper, swiperSlide,AgGridVue
   },
   data() {
     return {
@@ -455,7 +476,13 @@ export default {
       }
       const func2 = function func3(val) {
         if(val.executeSQL.state == 2){
-          let result = {column:val.columnNames,columnType:val.columnTypes,data:val.result}
+          let columnDefs = []
+          for(let i = 0; i < val.columnNames.length;i++){
+            let obj =  {headerName: val.columnNames[i], field: val.columnNames[i],width:300}
+            columnDefs.push(obj)
+          }
+          let result = {column:val.columnNames,columnType:val.columnTypes,data:val.result,columnDefs:columnDefs}
+          //处理aggrid的列信息
           let data = {id:val.analysisRegionId,data:result,measureName:val.measureName,chartConfig:val.chartConfig}
           //根据返回的结果id找到数组里面的数据进行修改
           for(let i = 0; i < this.dataList.length;i++){
@@ -4833,12 +4860,6 @@ export default {
         async: true,
         dataType: "json",
         success: function (res) {
-          loadingInstance.close()
-          if (res.state == false) {
-            loadingInstance.close();
-            that.$message("分析出错，" + res.message, {time: 30000, btn: ['知道了']});
-            return;
-          }
           //开始组织指标数据
           var inMeasureUuid = that.getuuid();
           var name = "";
@@ -4851,16 +4872,28 @@ export default {
             name = value.measureName;
             logName += value.measureName + ",";
           });
+          loadingInstance.close()
+          if (res.isError == true) {
+            let dataView = {
+              id:analysisRegionId,
+              measureName:name,
+              chartConfig:chartConfig,
+              isLoad:false,
+              loading:false,
+              icon:'el-icon-close',
+              isError:true,
+              message:"分析出错，" + res.message}
+            that.dataList.push(dataView)
+            return;
+          }
           let newAnalysisRegionId = analysisRegionId.substring(0,analysisRegionId.length - 4)
           //任务获取之后将菜单加载到界面，然后等待任务返回
           that.executeSql(res.executeSQLList,logName,newAnalysisRegionId,chartConfig)
         },
         error: function (res) {
-          if (res.state == false) {
             loadingInstance.close();
             that.$message("分析出错，" + res.message, {time: 30000, btn: ['知道了']});
             return;
-          }
         }
       });
     },
@@ -4889,8 +4922,17 @@ export default {
         async: true,
         success: function (res) {
           loadingInstance.close();
-          if (res.state == false) {
-            that.$message("分析出错，" + res.message, {time: 30000, btn: ['知道了']});
+          if (res.isError == true) {
+            let dataView = {
+              id:analysisRegionId,
+              measureName:indicatrixObj.measureName,
+              chartConfig:chartConfig,
+              isLoad:false,
+              loading:false,
+              icon:'el-icon-close',
+              isError:true,
+              message:"分析出错，" + res.message}
+            that.dataList.push(dataView)
             return;
           }
           let newAnalysisRegionId = analysisRegionId.substring(0,analysisRegionId.length-4)
@@ -4914,7 +4956,8 @@ export default {
      * @param chartConfig 图表配置
      */
     executeSql(executeSQLList,measureName,analysisRegionId,chartConfig){
-      let dataView = {id:analysisRegionId,measureName:measureName,chartConfig:chartConfig,isLoad:false,loading:true,icon:'el-icon-loading',isError:false}
+      let dataView = {id:analysisRegionId,measureName:measureName,chartConfig:chartConfig,isLoad:false,
+        loading:true,icon:'el-icon-loading',isError:false,isShowTable:true,isShowChart:false,btnChartClass:'el-btn-no-color',btnTableClass:'el-btn-color'}
       this.dataList.push(dataView)
       let url = this.contextUrl + "/indicatrixAnalysis/executeSql";
       let data = {
@@ -5665,6 +5708,27 @@ export default {
     },
     jump(index){
       this.$refs.mySwiper.swiper.slideTo(index, 500, false);//切换到第一个slide，速度为0.5秒
+    },
+    switchDivStyle(refId,analysisRegionId){
+      //根据返回的结果id找到数组里面的数据进行修改
+      for(let i = 0; i < this.dataList.length;i++){
+        //如果相等则修改数据
+        if(this.dataList[i].id == analysisRegionId){
+          if(refId.indexOf("btnTable") != -1){
+            this.dataList[i].isShowTable = true
+            this.dataList[i].isShowChart = false
+            this.dataList[i].btnChartClass = 'el-btn-no-color'
+            this.dataList[i].btnTableClass = 'el-btn-color'
+          }
+          else if(refId.indexOf("btnChart") != -1){
+            this.dataList[i].isShowTable = false
+            this.dataList[i].isShowChart = true
+            this.dataList[i].btnChartClass = 'el-btn-color'
+            this.dataList[i].btnTableClass = 'el-btn-no-color'
+          }
+        }
+      }
+      //根据分析区编号找到分析区的对象，修改分析区对象的属性值改变现实表格还是图表，同时修改div样式
     }
   }
 }
@@ -5956,5 +6020,53 @@ var see = "查看";
 }
 .is-active{
   border-bottom: 2px solid #ffffff;
+}
+>>>.el-btn-no-color{
+  width: 44px;
+  float: right;
+  border: solid 1px #E0E0E0;
+  height: 29px;
+  margin: 2px;
+  cursor: pointer;
+}
+>>>.el-btn-color{
+  background: aliceblue;
+  width: 44px;
+  float: right;
+  border: solid 1px #E0E0E0;
+  height: 29px;
+  margin: 2px;
+  cursor: pointer;
+}
+>>>.btn-div{
+  margin: 1px;
+  height: 36px;
+}
+>>>.iconfont-div{
+  margin-left: 10px;
+  font-size: 22px;
+  margin-top: -3px;
+  float: left;
+}
+>>>.background-color{
+  background-color: aliceblue;
+}
+>>>.ag-header-cell{
+  background-color: #f8f8f9;
+}
+>>>.ag-header-viewport{
+  border-bottom: 1px solid #e6e6e6;
+}
+#app .app-container>>>.ag-row-odd{
+  background: #fff;
+  border-bottom: 1px solid #e6e6e6;
+  border-top: 1px solid #e6e6e6;
+}
+#app .app-container>>>.ag-root{
+  border: 1px solid #e6e6e6;
+}
+.app-container>>>.ag-theme-balham .ag-cell{
+  line-height: 40px;
+  text-align: left;
 }
 </style>
