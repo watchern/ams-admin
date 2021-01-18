@@ -24,12 +24,12 @@
       ></el-button>
       <el-row v-if="myFlag">
         <div align="right">
-          <el-button
+          <!--<el-button
             type="primary"
             @click="sendToOA()"
             class="oper-btn share"
             title="发送到作业平台"
-          ></el-button>
+          ></el-button>-->
           <el-button
             :disabled="modelRunResultBtnIson.exportBtn"
             type="primary"
@@ -88,10 +88,11 @@
       <ag-grid-vue
         v-if="isSee"
         v-loading="isLoading"
-        style="height:200px"
+        :style="this.useType==='sqlEditor'?'height:32vh':'height:59vh'"
         class="table ag-theme-balham"
         :column-defs="columnDefs"
         :row-data="rowData"
+        rowMultiSelectWithClick="true"
         :enable-col-resize="true"
         row-selection="multiple"
         :get-row-style="this.renderTable"
@@ -112,7 +113,7 @@
       <el-row>
         <el-col :span="22">
           <div v-if="modelResultPageIsSee">
-            共<span class="paging-z">{{ rowData.length }}</span
+            共<span class="paging-z" title="只显示前10000条数据">{{ rowData.length }}</span
             >条
           </div>
         </el-col>
@@ -371,7 +372,6 @@ export default {
       myFlag: false, // 用来判断主表界面有按钮，辅表界面没有按钮，为true是主表，为false是辅表
       selectRows: [], //用于存放多选框选中的数据
       detailTable: [], //存放关联详细表
-      primaryKey: "", // 保存每个表中的主键，因为每个表的主键都不一样，所以得根据表明查出来
       dataArray: [], // 保存当前表格中的数据
       queryData: [], // 保存列信息，用来传给子组件(queryBuilder组件)
       queryJson: {}, // 用来储存由子组件传过来的 queryBuilder 的 Json数据
@@ -475,7 +475,6 @@ export default {
      */
     removeRelated() {
       this.getValues()
-      console.log(this.selectRows)
       var onlyuuids = []
       for(var i = 0;i<this.selectRows.length;i++){
         onlyuuids.push(this.selectRows[i].onlyuuid)
@@ -781,20 +780,6 @@ export default {
                         };
                       }
                       col.push(rowColom);
-                    } else {
-                      if (i == 0) {
-                        var rowColom = {
-                          headerName: colNames[i],
-                          field: colNames[i],
-                          checkboxSelection: true,
-                        };
-                      } else {
-                        var rowColom = {
-                          headerName: colNames[i],
-                          field: colNames[i],
-                        };
-                      }
-                      col.push(rowColom);
                     }
                     break loop;
                   }
@@ -851,9 +836,10 @@ export default {
         this.columnDefs = col;
         this.rowData = da;
       } else if (
-        this.useType == "sqlEditor" ||
-        this.useType == "modelPreview"
-      ) {
+        this.useType == "sqlEditor"
+      ){
+        this.getIntoModelResultDetail(nextValue)
+       }else if( this.useType == "modelPreview"){
         this.loading = true;
         this.nextValue = nextValue;
         var col = [];
@@ -861,7 +847,6 @@ export default {
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           if (this.nextValue.executeSQL.state == "2") {
             if (this.nextValue.executeSQL.type == "SELECT") {
-              //todo 增加sql类型判断
               if (true) {
                 this.modelResultButtonIsShow = true;
                 this.modelResultPageIsSee = true;
@@ -903,24 +888,66 @@ export default {
                   chartData.push(eachChartData);
                 }
                 this.result.data = chartData;
-                this.rowData = this.modelResultData;
+                // this.rowData = this.modelResultData;
                 this.modelResultColumnNames = this.nextValue.columnNames;
-                for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
-                  var rowColom = {
-                    headerName: this.nextValue.columnNames[j],
-                    field: this.nextValue.columnNames[j],
-                    width: "180",
-                  };
-                  var key = this.nextValue.columnNames[j];
-                  var value = this.nextValue.result[j];
-                  col.push(rowColom);
-                }
-                for (var k = 0; k < this.nextValue.result.length; k++) {
-                  rowData.push(this.nextValue.result[k]);
-                }
-                this.columnDefs = col;
+                selectModel(this.modelId).then((resp) => {
+                  var modelOutputColumn = resp.data.modelOutputColumn
+                  var datacodes = [];
+                  for (var i = 0; i <modelOutputColumn.length; i++) {
+                    if (modelOutputColumn[i].dataCoding != undefined) {
+                      datacodes.push(modelOutputColumn[i].dataCoding);
+                    }
+                  }
+                  for (var j = 0; j < this.nextValue.columnNames.length; j++) {
+                    var rowColom = {}
+                    for (var n = 0;n<modelOutputColumn.length;n++){
+                      if (modelOutputColumn[n].outputColumnName ==
+                        this.nextValue.columnNames[j]){
+                        if (modelOutputColumn[n].isShow == 1) {
+                          rowColom = {
+                            headerName: modelOutputColumn[n].columnAlias,
+                            field: this.nextValue.columnNames[j],
+                            width: "180",
+                          };
+                        }
+                      }
+                    }
+                    if (rowColom.field!=undefined){
+                      col.push(rowColom);
+                    }
+                  }
+                  if (datacodes.length > 0) {
+                    for (var k = 0; k < this.nextValue.result.length; k++) {
+                      rowData.push(this.nextValue.result[k]);
+                    }
+                    getTransMap(datacodes.join(",")).then((resp) => {
+                      var dataCoding = resp.data;
+                      for (var i = 0; i < resultData.length; i++) {
+                        for (var j = 0; j < this.nextValue.columnNames.length; j++) {
+                          for (var k = 0; k < modelOutputColumn.length; k++) {
+                              if(modelOutputColumn[k].outputColumnName == this.nextValue.columnNames[j]){
+                                if (modelOutputColumn[k].dataCoding != undefined) {
+                                  var a = rowData[i][this.nextValue.columnNames[j]];
+                                  rowData[i][this.nextValue.columnNames[j]] = dataCoding[
+                                    modelOutputColumn[k].dataCoding
+                                    ][a];
+                                }
+                              }
+                          }
+                        }
+                      }
+                      this.rowData = rowData
+                    });
+                  }else {
+                    for (var k = 0; k < this.nextValue.result.length; k++) {
+                      rowData.push(this.nextValue.result[k]);
+                    }
+                    this.rowData = rowData
+                  }
+                  this.columnDefs = col;
+                  this.afterResult = true
+                })
               }
-              this.afterResult = true
             } else {
               this.isSee = false;
               this.modelResultPageIsSee = false;
@@ -936,88 +963,25 @@ export default {
           this.isLoading = false;
         }
       } else if (this.useType == "previewTable") {
-        this.loading = true;
-        this.nextValue = nextValue;
-        var col = [];
-        var rowData = [];
-        if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
-          if (this.nextValue.executeSQL.state == "2") {
-            //todo 增加sql类型判断
-            if (true) {
-              this.modelResultPageIsSee = true;
-              this.modelResultData = this.nextValue.result;
-              this.result.column = this.nextValue.columnNames;
-              var columnTypes1 = this.nextValue.columnTypes;
-              var columnType = [];
-              for (var i = 0; i < columnTypes1.length; i++) {
-                var type = "";
-                if (columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1) {
-                  type = "varchar";
-                } else if (
-                  columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 ||
-                  columnTypes1[i].toUpperCase().indexOf("INT") != -1
-                ) {
-                  type = "number";
-                } else if (
-                  columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ||
-                  columnTypes1[i].columnType.toUpperCase().indexOf("DATE") != -1
-                ) {
-                  type = "time";
-                } else if (
-                  columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1
-                ) {
-                  type = "float";
-                }
-                columnType.push(type);
-              }
-              var resultData = this.nextValue.result;
-              this.result.columnType = columnType;
-              var chartData = [];
-              for (var i = 0; i < resultData.length; i++) {
-                var eachChartData = [];
-                for (var j = 0; j < this.nextValue.columnNames.length; j++) {
-                  eachChartData.push(
-                    resultData[i][this.nextValue.columnNames[j]]
-                  );
-                }
-                chartData.push(eachChartData);
-              }
-              this.result.data = chartData;
-              this.rowData = this.modelResultData;
-              this.modelResultColumnNames = this.nextValue.columnNames;
-              for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
-                var rowColom = {
-                  headerName: this.nextValue.columnNames[j],
-                  field: this.nextValue.columnNames[j],
-                  width: "180",
-                };
-                var key = this.nextValue.columnNames[j];
-                var value = this.nextValue.result[j];
-                col.push(rowColom);
-              }
-              for (var k = 0; k < this.nextValue.result.length; k++) {
-                rowData.push(this.nextValue.result[k]);
-              }
-              this.columnDefs = col;
-            }
-          } else if (this.nextValue.executeSQL.state == "3") {
-            this.isSee = false;
-            this.modelResultPageIsSee = false;
-            this.modelResultButtonIsShow = false;
-            this.errorMessage = this.nextValue.executeSQL.msg;
-          }
-          this.isLoading = false;
-        }
+        this.getIntoModelResultDetail(nextValue)
       } else if (this.useType == "graph") {
-        this.loading = true;
-        this.modelResultButtonIsShow = true;
-        this.nextValue = nextValue;
-        var col = [];
-        var rowData = [];
-        if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
-          if (this.nextValue.executeSQL.state == "2") {
+        this.getIntoModelResultDetail(nextValue)
+      }
+    },
+    /**
+     * 显示模型结果详细提取公共代码
+     * */
+    getIntoModelResultDetail(nextValue){
+      this.loading = true;
+      this.nextValue = nextValue;
+      var col = [];
+      var rowData = [];
+      if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
+        if (this.nextValue.executeSQL.state == "2") {
+          if (this.nextValue.executeSQL.type == "SELECT") {
             //todo 增加sql类型判断
             if (true) {
+              this.modelResultButtonIsShow = true;
               this.modelResultPageIsSee = true;
               this.modelResultData = this.nextValue.result;
               this.result.column = this.nextValue.columnNames;
@@ -1025,7 +989,7 @@ export default {
               var columnType = [];
               for (var i = 0; i < columnTypes1.length; i++) {
                 var type = "";
-                if (columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1) {
+                if (columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 || columnTypes1[i].toUpperCase().indexOf("CHAR") != -1) {
                   type = "varchar";
                 } else if (
                   columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 ||
@@ -1074,14 +1038,20 @@ export default {
               }
               this.columnDefs = col;
             }
-          } else if (this.nextValue.executeSQL.state == "3") {
+            this.afterResult = true
+          } else {
             this.isSee = false;
             this.modelResultPageIsSee = false;
             this.modelResultButtonIsShow = false;
             this.errorMessage = this.nextValue.executeSQL.msg;
           }
-          this.isLoading = false;
+        } else if (this.nextValue.executeSQL.state == "3") {
+          this.isSee = false;
+          this.modelResultPageIsSee = false;
+          this.modelResultButtonIsShow = false;
+          this.errorMessage = this.nextValue.executeSQL.msg;
         }
+        this.isLoading = false;
       }
     },
     // 点击查询按钮触发事件
@@ -1576,7 +1546,7 @@ export default {
       }
     },
 
-    sendToOA() {
+    /*sendToOA() {
       var runTaskRelUuid =  this.nowtable.runTaskRelUuid;
       const dataUserId = this.$store.getters.datauserid
       const dataUserName = this.$store.getters.datausername
@@ -1588,7 +1558,7 @@ export default {
       })
 
 
-    },
+    },*/
   },
 };
 </script>

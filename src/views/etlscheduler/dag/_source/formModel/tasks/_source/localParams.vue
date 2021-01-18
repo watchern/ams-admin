@@ -13,6 +13,7 @@
         placeholder="参数名(必填)"
         :maxlength="256"
         :style="inputStyle"
+        :title="localParamsList[$index].prop"
         @on-blur="_verifProp()"
       />
       <!-- <template v-if="hide">
@@ -57,6 +58,7 @@
         v-model="localParamsList[$index].paramUuid"
         :disabled="isDetails"
         filterable
+        :add-title="true"
         placeholder="关联参数"
         :maxlength="256"
         :style="inputStyle"
@@ -67,8 +69,20 @@
           :key="model.paramUuid"
           :value="model.paramUuid"
           :label="model.paramName"
+          :title="model.paramName"
         />
       </x-select>
+      <x-input
+        v-if="routerType === 'instance'"
+        v-model="localParamsList[$index].value"
+        :title="localParamsList[$index].value"
+        :disabled="isDetails"
+        type="text"
+        placeholder="参数值"
+        :maxlength="256"
+        :style="inputStyle"
+        @on-blur="_verifProp()"
+      />
       <span v-if="!isDetails" class="lt-add">
         <a
           href="javascript:"
@@ -127,12 +141,15 @@ import _ from 'lodash'
 import { directList, typeList } from './commcon'
 import disabledState from '@/components/etl/mixin/disabledState'
 import { listByPage, getById } from '@/api/etlscheduler/paramfield'
+import store from '@/store'
+
 export default {
   name: 'UserDefParams',
   components: {},
   mixins: [disabledState],
   props: {
     udpList: Array,
+    routerType: String,
     // hide direct/type
     hide: {
       type: Boolean,
@@ -141,6 +158,7 @@ export default {
   },
   data() {
     return {
+      store,
       // Direct data Custom parameter type support IN
       directList: directList,
       // Type data Custom parameter type support OUT
@@ -149,12 +167,15 @@ export default {
       localParamsList: [],
       // Current execution index
       localParamsIndex: null,
-      paramListS: []
+      paramListS: [],
+      paramInstanceList: [],
+      paramMap: {}
     }
   },
   computed: {
     inputStyle() {
-      return `width:${this.hide ? 250 : 262}px`
+      return `width: ${this.routerType === 'instance' ? 167 : 250}px`
+      // return `width:${this.hide ? 250 : 262}px`
     }
   },
   watch: {
@@ -164,12 +185,29 @@ export default {
     }
   },
   created() {
-    this.localParamsList = this.udpList
     const query = { 'pageNo': 1,
       'pageSize': 1000 }
     listByPage(query).then(resp => {
       this.paramListS = resp.data.records
     })
+    if (this.routerType === 'instance') {
+      this.paramInstanceList = this.store.state.dag.processInstanceDetail.distinctParamList
+      this.paramInstanceList.forEach((r, i) => {
+        this.paramMap[r.param.paramUuid] = r
+      })
+      this.udpList.forEach((r, i) => {
+        this.paramInstanceList.forEach((j, k) => {
+          if (r.paramUuid === j.param.paramUuid) {
+            r.value = j.value
+          }
+        })
+      })
+    } else {
+      this.udpList.forEach((r, i) => {
+        r.value = ''
+      })
+    }
+    this.localParamsList = this.udpList
   },
   mounted() {
   },

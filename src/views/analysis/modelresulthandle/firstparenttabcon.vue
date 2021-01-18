@@ -11,8 +11,8 @@
           />
         </div>
       </el-header>
-      <el-main>
-        <div align="right" style="width: 92%">
+      <el-main style="width: 92vw">
+        <div align="right">
           <el-row>
             <el-button
               :disabled="false"
@@ -280,8 +280,6 @@ export default {
     };
   },
   created() {
-    //判断是不是从项目进来的 如果从项目进来则走项目的权限
-    // todo 梁瑞
     let params = this.getQueryString();
     if (params.projectUuid != undefined) {
       this.projectUuid = params.projectUuid;
@@ -341,6 +339,7 @@ export default {
      * modelName是选中的模型的名字
      */
     getResultTables(val, modelName, modelUuid, runStatus, resultSpiltObjects) {
+      debugger
       if (runStatus == 3) {
         var assistTables = [];
         var mainTable = null;
@@ -359,7 +358,8 @@ export default {
           mainTable,
           modelName,
           modelUuid,
-          resultSpiltObjects
+          resultSpiltObjects,
+          this.projectUuid
         );
       } else {
         this.$message({

@@ -350,7 +350,8 @@ export default {
       // return index2 - 1
     },
     handleView(processInstanceUuid) {
-      this.$router.push(`/etlscheduler/instance/${processInstanceUuid}`)
+      // 1为查看
+      this.$router.push(`/etlscheduler/instance/${processInstanceUuid}/1`)
     },
     getList(query) {
       this.listLoading = true

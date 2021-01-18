@@ -103,7 +103,7 @@ export default {
     state.description = (payload && payload.description) || ''
     // TODO
     state.status = (payload && payload.status) || ''
-    state.orderNo = (payload && payload.orderNo) || ''
+    state.orderNo = (payload && payload.orderNo) || null
     state.timeout = (payload && payload.timeout) || 0
     state.tenantId = (payload && payload.tenantId) || -1
     state.processListS = (payload && payload.processListS) || []
