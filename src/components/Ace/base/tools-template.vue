@@ -26,10 +26,10 @@
             <span style="font-size:14px"> {{ item }} </span>
           </div>
         </div>
-        <div class="title-label">自定义快捷菜单</div>
+        <div class="title-label" style="margin-top: 15px">自定义快捷菜单</div>
         <div class="lately-use-box flex a-center j-start flex-row">
           <div
-            v-for="(item,index) in latelyBdInList"
+            v-for="(item,index) in latelyFastList"
             :key="index"
             class="use-box flex a-center j-center use-zy"
             @click="theRouting(index)"
@@ -46,7 +46,7 @@
           </div>
         </div>
         <div class="lately-use-box flex a-center j-start flex-row">
-          <div v-for="(item,index) in latelyUseList"
+          <div v-for="(item,index) in latelyFastList"
                :key="index"
                class="use-box flex a-center j-center use-zyt"
           >
@@ -164,7 +164,7 @@
 <script>
 import { querySystemTask } from '@/api/base/systemtask'
 import { getUserRes } from '@/api/user'
-import {cacheDict} from "@/api/base/sys-dict";
+import { saveQuickMenuList, getQuickMenuList} from "@/api/base/quickmenu";
 export default {
   data() {
     return {
@@ -495,6 +495,7 @@ export default {
       ],
       latelyInImgList:[],
       latelyBdInList:[],
+      latelyFastList:[],
       defaultProps: {
         children: 'children',
         label: 'label'
@@ -572,6 +573,21 @@ export default {
       .catch(error => {
         console.error(error)
       })
+    getQuickMenuList().then(res => {
+      for (let i=0; i<3; i++) {
+        for (let n=0; n<this.latelyImgList.length; n++) {
+          if (this.latelyImgList[n].name === res[i].name) {
+            this.latelyFastList.push({
+              id: res[i].id,
+              name: res[i].name,
+              path: res[i].path,
+              image: this.latelyInImgList[i].image,
+              bg: this.latelyBackList[i].bg
+            })
+          }
+        }
+      }
+    })
   },
   methods: {
     theRouting(index){
@@ -675,6 +691,7 @@ export default {
           path: this.$refs.tree4.getCheckedNodes()[i].path
         })
       }
+      saveQuickMenuList(allThing)
     }
   }
 }
