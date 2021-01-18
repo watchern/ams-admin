@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="kongxi">
     <p style="color: silver; font-size: large">———————————————————————————</p>
     <queryBuilder ref="queryBuilder" v-model="queryJson" :rules="queryRules" />
   </div>
@@ -164,3 +164,26 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+ .kongxi{
+   overflow-y: auto;
+   overflow-x:hidden;
+   max-height: 60vh;
+ }
+ .kongxi>>>.form-control{
+   margin-left: 10px;
+ }
+ .kongxi>>>.btn{
+   margin-left: 10px;
+ }
+ .kongxi>>>.el-input__inner{
+   margin-left: 10px;
+ }
+ .kongxi>>>.match-type-container{
+   padding: 0px 15px 0 0 ;
+ }
+ .kongxi>>>.form-group{
+   margin-top: 8px;
+ }
+</style>

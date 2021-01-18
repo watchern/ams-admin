@@ -255,6 +255,7 @@ export default {
     "useType",
     "prePersonalVal",
     "resultSpiltObjects",
+    "projectUuid"
   ],
   data() {
     return {
@@ -543,7 +544,7 @@ export default {
         if (typeof sql !== "string") {
           sql = "undefined";
         }
-        selectTableHandle(this.pageQuery, sql).then(
+        selectTableHandle(this.pageQuery, sql,this.projectUuid).then(
           (resp) => {
             var column = resp.data.records[0].columns
             this.result.column = column

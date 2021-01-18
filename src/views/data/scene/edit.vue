@@ -33,11 +33,24 @@
           @sort-change="sortChange"
           @selection-change="handleSelectionChange"
         >
-          <el-table-column type="index" label="序号" width="50" align="center" />
-          <el-table-column label="组名称" prop="grpName" />
-          <el-table-column label="组代码" prop="grpCode" />
-          <el-table-column label="组用户来源SQL" prop="grpSql" show-overflow-tooltip />
-          <el-table-column label="创建时间" prop="createTime" :formatter="formatCreateTime" />
+          <el-table-column type="index" label="序号" width="50px" align="center" />
+          <el-table-column label="组名称" prop="grpName" width="200px" />
+          <el-table-column label="组代码" prop="grpCode" width="200px" />
+          <el-table-column label="组用户来源SQL" width="500px" align="center" prop="grpSql">
+            <template v-if="scope.row.grpSql!=null && scope.row.grpSql.length>0" slot-scope="scope">
+              <el-popover trigger="hover" placement="top" width="500">
+                <el-row>
+                  <el-col :span="24">
+                    {{ scope.row.grpSql }}
+                  </el-col>
+                </el-row>
+                <div slot="reference" class="name-wrapper">
+                  <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+                  <el-link :underline="false" type="primary">查看组用户来源SQL</el-link>
+                </div>
+              </el-popover>
+            </template>
+          </el-table-column>
           <el-table-column label="操作" align="center" min-width="100">
             <template slot-scope="scope">
               <el-button type="primary" class="oper-btn detail" title="预览" size="mini" @click="selectFilterOne(scope.row.sceneGrpUuid)" />
@@ -75,7 +88,7 @@
       </template>
       <el-row>
         <el-col style="height :260px;margin-top:150px">
-          <span>维护业务场景下数据筛选器：</span>
+          <span class="midText">维护业务场景下数据筛选器：</span>
           <el-row>
             <el-col align="right">
               <el-button type="primary" title="新增" size="mini" class="oper-btn add" @click="handleCreateFilter()" />
@@ -91,10 +104,38 @@
             @sort-change="sortChangeFilter"
             @selection-change="handleSelectionChangeFilter"
           >
-            <el-table-column type="index" label="序号" width="50" align="center" />
-            <el-table-column label="筛选器名称" prop="filterName" />
-            <el-table-column label="IN值SQL" prop="inValueSql" show-overflow-tooltip />
-            <el-table-column label="描述" prop="describtion" show-overflow-tooltip />
+            <el-table-column type="index" label="序号" width="50px" align="center" />
+            <el-table-column label="筛选器名称" prop="filterName" width="200px" />
+            <el-table-column label="描述" width="200px" prop="describtion">
+              <template v-if="scope.row.describtion!=null && scope.row.describtion.length>0" slot-scope="scope">
+                <el-popover trigger="hover" placement="top" width="500">
+                  <el-row>
+                    <el-col :span="24">
+                      {{ scope.row.describtion }}
+                    </el-col>
+                  </el-row>
+                  <div slot="reference" class="name-wrapper">
+                    <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+                    <el-link :underline="false" type="primary">查看描述</el-link>
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
+            <el-table-column label="IN值SQL" width="500px" align="center" prop="inValueSql">
+              <template v-if="scope.row.inValueSql!=null && scope.row.inValueSql.length>0" slot-scope="scope">
+                <el-popover trigger="hover" placement="top" width="500">
+                  <el-row>
+                    <el-col :span="24">
+                      {{ scope.row.inValueSql }}
+                    </el-col>
+                  </el-row>
+                  <div slot="reference" class="name-wrapper">
+                    <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+                    <el-link :underline="false" type="primary">查看IN值SQL</el-link>
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" align="center" min-width="100">
               <template slot-scope="scope">
                 <el-button type="primary" title="预览" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.inValueSql)" />
@@ -554,3 +595,10 @@ export default {
   }
 }
 </script>
+<style scoped lang="scss" rel="stylesheet/scss">
+
+  .midText{
+  color:#4bc0f0;
+  }
+</style>
+

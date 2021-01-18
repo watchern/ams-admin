@@ -512,7 +512,7 @@ export function initTableTree(result) {
       key: {
         checked: 'isChecked',
         name: 'name',
-        title: 'displayName'
+        title: 'name'
       },
       // 设置数据格式
       simpleData: {
@@ -681,6 +681,7 @@ export function initTableTree(result) {
     'level': 0
   })
   tableTreeData = result.data
+  debugger
   zTreeObj = $.fn.zTree.init($('#dataTree'), setting, result.data)
   // })
 }

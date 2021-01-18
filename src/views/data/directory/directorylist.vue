@@ -561,7 +561,7 @@ export default {
     // 保存新建文件夹
     createFolderSave() {
       if (this.currentSceneUuid !== 'auditor') {
-        this.resourceForm.personCode = this.directyDataUserId
+        this.resourceForm.sceneInstUuid = this.directyDataUserId
       }
       this.resourceForm.parentFolderUuid = this.clickData.id
       this.resourceForm.fullPath = this.clickFullPath.reverse().join('/')
@@ -604,7 +604,6 @@ export default {
     preview() {
       preview(this.selections[0]).then(res => {
         this.executeSQLList = res.data.executeTask.executeSQL
-        debugger
         this.arrSql = res.data
         this.previewVisible = true
         this.$nextTick(() => {
