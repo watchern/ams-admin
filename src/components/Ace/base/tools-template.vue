@@ -108,7 +108,7 @@
 <!--    </div>-->
     <div class="tools-right" @click="callback">
     </div>
-    <div class="tools-center" v-if="dialogVisible">
+    <div class="tools-center" v-show="dialogVisible">
       <el-collapse class="tools-menu-small">
         <el-collapse-item title="审计作业">
           <el-tree
@@ -727,8 +727,9 @@ export default {
             }
           }
         })
-        this.dialogVisible = false
       })
+      this.dialogVisible = false
+      console.log(this.dialogVisible)
     },
     ifFather(data) {
       if (data.children) {
