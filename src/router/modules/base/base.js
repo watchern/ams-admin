@@ -49,7 +49,7 @@ const baseRouter = {
     },
     {
       path: 'helpDocument',
-      name: '系统操作日志',
+      name: '系统帮助',
       component: () => import('@/views/base/helpDocument/index')
     }
   ]
