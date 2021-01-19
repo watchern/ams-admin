@@ -577,7 +577,6 @@ export default {
         console.error(error)
       })
     getQuickMenuList().then(res => {
-      console.log(res)
       for (let i=0; i<3; i++) {
         for (let n=0; n<this.latelyImgList.length; n++) {
           if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
@@ -705,8 +704,31 @@ export default {
           quickMenuPath: this.$refs.tree4.getCheckedNodes()[i].path
         })
       }
-      saveQuickMenuList(allThing)
-      this.dialogVisible = false
+      saveQuickMenuList(allThing).then(resp => {
+        if(resp.code != 0){
+          this.$message({
+            type: 'error',
+            message: '保存失败!'
+          })
+          return
+        }
+        this.getQuickMenuList().then(res => {
+          for (let i=0; i<3; i++) {
+            for (let n=0; n<this.latelyImgList.length; n++) {
+              if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
+                this.latelyFastList.push({
+                  id: res.data[i].quickMenuId,
+                  name: res.data[i].quickMenuName,
+                  path: res.data[i].quickMenuPath,
+                  image: this.latelyImgList[i].image,
+                  bg: this.latelyBackList[i].bg
+                })
+              }
+            }
+          }
+        })
+        this.dialogVisible = false
+      })
     },
     ifFather(data) {
       if (data.children) {
