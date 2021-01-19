@@ -42,9 +42,9 @@ export default {
     },
     close(item) {
       let isCloseTree = false
-      // if (!item.children) {
-      //   isCloseTree = true
-      // }
+      if (!item.children) {
+        isCloseTree = true
+      }
       if (item.path && item.path !== '' && this.item.path!=='') {
         this.$router.push({ path: this.item.path })
         this.$store.commit('aceState/setRightFooterTags', {
@@ -55,7 +55,6 @@ export default {
           }
         })
       }
-
       let arry = []
       let lstimeIn = []
       // console.log(item.path)
