@@ -27,7 +27,7 @@
           </div>
         </div>
         <div class="title-label" style="margin-top: 15px">自定义快捷菜单</div>
-        <div class="lately-use-box flex a-center j-start flex-row" :key="quickRefresh.top">
+        <div class="lately-use-box flex a-center j-start flex-row">
           <div
             v-for="(item,index) in latelyFastList"
             :key="index"
@@ -45,7 +45,7 @@
             <img src="../../Ace/base/accessIcon/zidingyi.png" />
           </div>
         </div>
-        <div class="lately-use-box flex a-center j-start flex-row" :key="quickRefresh.bottom">
+        <div class="lately-use-box flex a-center j-start flex-row">
           <div v-for="(item,index) in latelyFastList"
                :key="index"
                class="use-box flex a-center j-center use-zyt"
@@ -581,7 +581,7 @@ export default {
         console.error(error)
       })
     getQuickMenuList().then(res => {
-      for (let i=0; i<3; i++) {
+      for (let i=0; i<res.data.length; i++) {
         for (let n=0; n<this.latelyImgList.length; n++) {
           if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
             this.latelyFastList.push({
@@ -716,7 +716,8 @@ export default {
           })
           return
         }
-        this.getQuickMenuList().then(res => {
+        this.latelyFastList = []
+        getQuickMenuList().then(res => {
           for (let i=0; i<3; i++) {
             for (let n=0; n<this.latelyImgList.length; n++) {
               if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
@@ -732,8 +733,6 @@ export default {
           }
         })
       })
-      this.quickRefresh.top = !this.quickRefresh.top
-      this.quickRefresh.bottom = !this.quickRefresh.bottom
       this.dialogVisible = false
     },
     ifFather(data) {
