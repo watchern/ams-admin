@@ -32,7 +32,7 @@
             v-for="(item,index) in latelyFastList"
             :key="index"
             class="use-box flex a-center j-center use-zy"
-            @click="theRouting(index)"
+            @click="theRoutingIn(item)"
             :style='{background:item.bg}'
           >
             <img :src="item.image" />
@@ -50,7 +50,7 @@
                :key="index"
                class="use-box flex a-center j-center use-zyt"
           >
-            <span style="font-size:14px"> {{ item }} </span>
+            <span style="font-size:14px"> {{ item.name }} </span>
           </div>
           <div class="use-box flex a-center j-center use-zyt">
             <span style="font-size:14px"> 维护 </span>
@@ -165,7 +165,7 @@
 <script>
 import { querySystemTask } from '@/api/base/systemtask'
 import { getUserRes } from '@/api/user'
-import { saveQuickMenuList, getQuickMenuList} from "@/api/base/quickmenu";
+import { saveQuickMenuList, getQuickMenuList } from '@/api/base/quickmenu'
 export default {
   data() {
     return {
@@ -577,14 +577,15 @@ export default {
         console.error(error)
       })
     getQuickMenuList().then(res => {
+      console.log(res)
       for (let i=0; i<3; i++) {
         for (let n=0; n<this.latelyImgList.length; n++) {
-          if (this.latelyImgList[n].name === res[i].quickMenuName) {
+          if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
             this.latelyFastList.push({
-              id: res[i].quickMenuId,
-              name: res[i].quickMenuName,
-              path: res[i].quickMenuPath,
-              image: this.latelyInImgList[i].image,
+              id: res.data[i].quickMenuId,
+              name: res.data[i].quickMenuName,
+              path: res.data[i].quickMenuPath,
+              image: this.latelyImgList[i].image,
               bg: this.latelyBackList[i].bg
             })
           }
@@ -603,6 +604,16 @@ export default {
         }
       })
       // this.$emit('func',false)
+    },
+    theRoutingIn(item){
+      this.$router.push({ path: item.path })
+      this.$store.commit('aceState/setRightFooterTags', {
+        type: 'active',
+        val: {
+          name: item.name,
+          path: item.path
+        }
+      })
     },
     init() {
       querySystemTask().then(resp => {
