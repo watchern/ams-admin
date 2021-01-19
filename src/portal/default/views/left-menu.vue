@@ -95,6 +95,7 @@
           />
         </div>
       </div>
+      <span class="somehelp">?</span>
       <div class="bottom-open flex a-center j-end flex-column">
         <div class="search-box flex a-center j-start flex-row">
           <input type="text" name="search" class="search-input" placeholder="Search">
@@ -790,5 +791,19 @@ export default {
   height:10px;
   border-radius:100%;
   background-color:red;
+}
+.somehelp{
+  position: absolute;
+  top: 688px;
+  right: 25px;
+  background-color: #aab5c8;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  border-radius: 100%;
+  font-weight: bolder;
+  cursor: pointer;
 }
 </style>
