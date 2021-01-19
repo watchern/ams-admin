@@ -1,6 +1,6 @@
 import {getParamsTree, getFolderAndParams} from '@/api/analysis/sqleditor/sqleditor'
 import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
-import { findParamsAndModelRelParams } from '@/api/graphtool/graphList'
+import { findParamsAndModelRelParams } from '@/api/graphtool/apiJs/graphList'
 let CodeMirror = require("@/components/ams-codemirror/lib/codemirror")
 // 节点树、参数树的对象
 let nodeZtreeObj, paramZtreeObj

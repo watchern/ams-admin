@@ -43,7 +43,7 @@
 
 <script>
     import '@/components/ams-loading/css/loading.css'
-    import {getMaxMinColumn} from '@/api/graphtool/graphList'
+    import {getMaxMinColumn} from '@/api/graphtool/apiJs/graphList'
     export default {
         name: 'HierarchyDataSet',
         data() {

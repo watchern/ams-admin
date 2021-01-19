@@ -379,8 +379,8 @@
         }
     }
 </script>
-<style scoped src="@/components/ams-basic/css/common.css"></style>
-<style scoped src="@/components/ams-basic/css/accordion.css"></style>
+<style scoped src="@/api/graphtool/css/common.css"></style>
+<style scoped src="@/api/graphtool/css/accordion.css"></style>
 <style scoped>
     #countTable{
         margin-left: 80px;

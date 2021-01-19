@@ -53,7 +53,6 @@
                             <button type="button" class="btn btn-primary" title="与" value="and" @click="operatorsFun('and')">and</button>
                             <button type="button" class="btn btn-primary" title="或" value="or" @click="operatorsFun('or')">or</button>
                             <button type="button" class="btn btn-primary" title="空值" value="is null" @click="operatorsFun('is null')">is null</button><br><br>
-                            <!--<button type="button" class="btn btn-primary" title="逗号" value="," @click="operatorsFun(',')">,</button>-->
                             <button type="button" class="btn btn-primary" title="模糊匹配" value="like" @click="operatorsFun('like')">like</button>
                             <button type="button" class="btn btn-primary" title="包含" value="in" @click="operatorsFun('in')">in</button>
                             <button type="button" class="btn btn-primary" title="左括号" value="(" @click="operatorsFun('(')">(</button>
@@ -187,8 +186,8 @@
 <style scoped src="@/components/ams-codemirror/theme/idea.css"></style>
 <style scoped src="@/components/ams-codemirror/addon/hint/show-hint.css"></style>
 <style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
-<style scoped src="@/components/ams-basic/css/accordion.css"></style>
-<style scoped src="@/components/ams-basic/css/common.css"></style>
+<style scoped src="@/api/graphtool/css/accordion.css"></style>
+<style scoped src="@/api/graphtool/css/common.css"></style>
 <style scoped type="text/css">
     div#operators button{
         margin-left:5px;
