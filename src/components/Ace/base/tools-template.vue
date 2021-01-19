@@ -114,10 +114,10 @@
           <el-tree
             :data="menugroup['402883817586fc2a017586fd9e1a0001']"
             show-checkbox
-            default-expand-all
             node-key="id"
             ref="tree1"
             highlight-current
+            :check-strictly="defaultProps.checkStrictly"
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
@@ -125,10 +125,10 @@
           <el-tree
             :data="menugroup['4028838175880ded01758835b393006b']"
             show-checkbox
-            default-expand-all
             node-key="id"
             ref="tree2"
             highlight-current
+            :check-strictly="defaultProps.checkStrictly"
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
@@ -136,10 +136,10 @@
           <el-tree
             :data="menugroup['4028838175880ded01758816610b001a']"
             show-checkbox
-            default-expand-all
             node-key="id"
             ref="tree3"
             highlight-current
+            :check-strictly="defaultProps.checkStrictly"
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
@@ -147,11 +147,11 @@
           <el-tree
             :data="menugroup['4028838175880ded01758828366f0046']"
             show-checkbox
-            default-expand-all
             node-key="id"
             ref="tree4"
             highlight-current
             @check=""
+            :check-strictly="defaultProps.checkStrictly"
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
@@ -499,7 +499,9 @@ export default {
       latelyFastList:[],
       defaultProps: {
         children: 'children',
-        label: 'label'
+        label: 'label',
+        disabled: this.ifFather,
+        checkStrictly: true
       }
     }
   },
@@ -693,6 +695,14 @@ export default {
         })
       }
       saveQuickMenuList(allThing)
+      this.dialogVisible = false
+    },
+    ifFather(data) {
+      if (data.children) {
+        return true
+      }else{
+        return false
+      }
     }
   }
 }
