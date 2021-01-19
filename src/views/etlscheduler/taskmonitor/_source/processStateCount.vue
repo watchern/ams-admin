@@ -114,8 +114,6 @@ export default {
           }
         }
       })
-      console.log('----------')
-      console.log(this.processStateList)
       const myChart = Chart.pie('#process-state-pie', this.processStateList, {
         title: ''
       })
