@@ -164,7 +164,7 @@
 <script>
 import { querySystemTask } from '@/api/base/systemtask'
 import { getUserRes } from '@/api/user'
-import { saveQuickMenuList, getQuickMenuList} from "@/api/base/quickmenu";
+import { saveQuickMenuList, getQuickMenuList } from '@/api/base/quickmenu'
 export default {
   data() {
     return {
