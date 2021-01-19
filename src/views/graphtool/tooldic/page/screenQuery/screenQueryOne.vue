@@ -83,7 +83,7 @@
     import ScreenQuerySort from '@/views/graphtool/tooldic/page/screenQuery/screenQuery_sort.vue'
     import ScreenQueryGroupCount from '@/views/graphtool/tooldic/page/screenQuery/screenQuery_groupCount.vue'
     import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams,
-        getScreenGraphInfo,getScreenExecuteSql,selectScreenQueryData,dealReplaceParamSql } from '@/api/graphtool/graphList'
+        getScreenGraphInfo,getScreenExecuteSql,selectScreenQueryData,dealReplaceParamSql } from '@/api/graphtool/apiJs/graphList'
     import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
     import { getPreNodesNotDatasource } from '@/views/graphtool/tooldic/js/common'
     export default {

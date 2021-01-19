@@ -52,18 +52,20 @@
                 if (parentIds.length > 0) {
                     for (let i = 0; i < parentIds.length; i++) {
                         var parent_node = graph.nodeData[parentIds[i]] // one parent
-                        var resourceTableName = '"' + parent_node.nodeInfo.nodeName + '"'
+                        var nodeName = '"' + parent_node.nodeInfo.nodeName + '"'
                         if (parent_node && parent_node.nodeInfo.optType === 'newNullNode' && !parent_node.isSet) {		// 如果前置节点为结果表且该结果表未配置
                             var pre_parentIds = parent_node.parentIds
                             if (pre_parentIds && pre_parentIds.length > 0) {
                                 parent_node = graph.nodeData[pre_parentIds[0]]
-                                resourceTableName = '"' + parent_node.nodeInfo.nodeName + '"_' + resourceTableName
+                                nodeName = '"' + parent_node.nodeInfo.nodeName + '"_' + nodeName
                             }
                         }
+                        var resourceTableName = parent_node.nodeInfo.resultTableName
                         var filter_columnsInfoPre = JSON.parse(JSON.stringify(parent_node.columnsInfo))// 这时上级节点一定是已经配置完成
                         for (let j = 0; j < filter_columnsInfoPre.length; j++) {
                             if (filter_columnsInfoPre[j].isOutputColumn) {
-                                filter_columnsInfoPre[j].rtn = resourceTableName
+                                filter_columnsInfoPre[j].rtn = nodeName
+                                filter_columnsInfoPre[j].resourceTableName = resourceTableName
                                 filter_columnsInfoPre[j].nodeId = parent_node.nodeInfo.nodeId
                                 filter_columnsInfoPre[j].nullNodeId = parentIds[i]
                                 columnsInfoPre.push(filter_columnsInfoPre[j])

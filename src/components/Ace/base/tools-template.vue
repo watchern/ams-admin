@@ -151,11 +151,12 @@
             node-key="id"
             ref="tree4"
             highlight-current
+            @check=""
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
       </el-collapse>
-      <el-button @click="getCheckedNodes" type="primary">保 存</el-button>
+      <el-button @click="getCheckedNodes" type="primary" class="btn-tree">保 存</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
     </div>
   </div>
@@ -576,11 +577,11 @@ export default {
     getQuickMenuList().then(res => {
       for (let i=0; i<3; i++) {
         for (let n=0; n<this.latelyImgList.length; n++) {
-          if (this.latelyImgList[n].name === res[i].name) {
+          if (this.latelyImgList[n].name === res[i].quickMenuName) {
             this.latelyFastList.push({
-              id: res[i].id,
-              name: res[i].name,
-              path: res[i].path,
+              id: res[i].quickMenuId,
+              name: res[i].quickMenuName,
+              path: res[i].quickMenuPath,
               image: this.latelyInImgList[i].image,
               bg: this.latelyBackList[i].bg
             })
@@ -665,30 +666,30 @@ export default {
       let allThing = []
       for (let i=0;i<this.$refs.tree1.getCheckedNodes().length;i++) {
         allThing.push({
-          id: this.$refs.tree1.getCheckedNodes()[i].id,
-          name: this.$refs.tree1.getCheckedNodes()[i].label,
-          path: this.$refs.tree1.getCheckedNodes()[i].path
+          quickMenuId: this.$refs.tree1.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree1.getCheckedNodes()[i].label,
+          quickMenuPath: this.$refs.tree1.getCheckedNodes()[i].path
         })
       }
       for (let i=0;i<this.$refs.tree2.getCheckedNodes().length;i++) {
         allThing.push({
-          id: this.$refs.tree2.getCheckedNodes()[i].id,
-          name: this.$refs.tree2.getCheckedNodes()[i].label,
-          path: this.$refs.tree2.getCheckedNodes()[i].path
+          quickMenuId: this.$refs.tree2.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree2.getCheckedNodes()[i].label,
+          quickMenuPath: this.$refs.tree2.getCheckedNodes()[i].path
         })
       }
       for (let i=0;i<this.$refs.tree3.getCheckedNodes().length;i++) {
         allThing.push({
-          id: this.$refs.tree3.getCheckedNodes()[i].id,
-          name: this.$refs.tree3.getCheckedNodes()[i].label,
-          path: this.$refs.tree3.getCheckedNodes()[i].path
+          quickMenuId: this.$refs.tree3.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree3.getCheckedNodes()[i].label,
+          quickMenuPath: this.$refs.tree3.getCheckedNodes()[i].path
         })
       }
       for (let i=0;i<this.$refs.tree4.getCheckedNodes().length;i++) {
         allThing.push({
-          id: this.$refs.tree4.getCheckedNodes()[i].id,
-          name: this.$refs.tree4.getCheckedNodes()[i].label,
-          path: this.$refs.tree4.getCheckedNodes()[i].path
+          quickMenuId: this.$refs.tree4.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree4.getCheckedNodes()[i].label,
+          quickMenuPath: this.$refs.tree4.getCheckedNodes()[i].path
         })
       }
       saveQuickMenuList(allThing)
@@ -923,7 +924,10 @@ export default {
   overflow: hidden;
 }
 .tools-menu-small{
-  max-height: 88vh;
+  max-height: 86vh;
   overflow: auto;
+}
+.btn-tree{
+  margin: 10px 80px 0 22px;
 }
 </style>
