@@ -46,6 +46,11 @@ const baseRouter = {
       path: 'sso',
       name: '跳转',
       component: () => import('@/views/base/sso')
+    },
+    {
+      path: 'helpDocument',
+      name: '系统操作日志',
+      component: () => import('@/views/base/helpDocument/index')
     }
   ]
 }
