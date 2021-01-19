@@ -27,7 +27,7 @@
           </div>
         </div>
         <div class="title-label" style="margin-top: 15px">自定义快捷菜单</div>
-        <div class="lately-use-box flex a-center j-start flex-row">
+        <div class="lately-use-box flex a-center j-start flex-row" :key="quickRefresh.top">
           <div
             v-for="(item,index) in latelyFastList"
             :key="index"
@@ -45,7 +45,7 @@
             <img src="../../Ace/base/accessIcon/zidingyi.png" />
           </div>
         </div>
-        <div class="lately-use-box flex a-center j-start flex-row">
+        <div class="lately-use-box flex a-center j-start flex-row" :key="quickRefresh.bottom">
           <div v-for="(item,index) in latelyFastList"
                :key="index"
                class="use-box flex a-center j-center use-zyt"
@@ -502,6 +502,10 @@ export default {
         label: 'label',
         disabled: this.ifFather,
         checkStrictly: true
+      },
+      quickRefresh: {
+        top: true,
+        bottom: false
       }
     }
   },
@@ -728,8 +732,9 @@ export default {
           }
         })
       })
+      this.quickRefresh.top = !this.quickRefresh.top
+      this.quickRefresh.bottom = !this.quickRefresh.bottom
       this.dialogVisible = false
-      console.log(this.dialogVisible)
     },
     ifFather(data) {
       if (data.children) {
