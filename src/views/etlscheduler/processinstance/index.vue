@@ -810,7 +810,7 @@ export default {
           // this.alreadyTasks = resp.data
           findTaskInstanceById(this.temp.processInstanceUuid).then(respons => {
             this.taskInstances = respons.data
-            if(respons.data === null || respons.data === {} || respons.data === ''){
+            if (respons.data === null || respons.data === {} || respons.data === '') {
               this.dialogRepeatFormVisible = false
               return
             }
@@ -819,7 +819,7 @@ export default {
                 r.taskInstanceUuid = this.taskInstances[r.id].taskInstanceUuid
               }
             })
-            this.alreadyTasks = _.filter(resp.data,x => x.taskInstanceUuid)
+            this.alreadyTasks = _.filter(resp.data, x => x.taskInstanceUuid)
             this.dialogRepeatFormVisible = true
           })
         })
@@ -839,13 +839,13 @@ export default {
       })
     },
     // 从指定环节重新运行
-    repeatInstance(){
+    repeatInstance() {
       const temp = Object.assign({}, this.selections[0])
-      repeatProcess(temp.processInstanceUuid,this.repeatTaskId).then(() => {
+      repeatProcess(temp.processInstanceUuid, this.repeatTaskId).then(() => {
         this.getList()
         this.$notify({
           title: this.$t('message.title'),
-          message: '重新运行成功',
+          message: '指定环节重新运行成功',
           type: 'success',
           duration: 2000,
           position: 'bottom-right'
