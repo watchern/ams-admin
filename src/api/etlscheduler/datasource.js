@@ -64,3 +64,11 @@ export function verifyDSName(name) {
     method: 'get'
   })
 }
+
+export function kerberosStartupState() {
+  return request({
+    baseURL: baseURL,
+    url: `/datasource/kerberos-startup-state`,
+    method: 'get'
+  })
+}

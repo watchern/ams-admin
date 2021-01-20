@@ -32,7 +32,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top" width="500">
+          <el-popover trigger="hover" placement="top" width="200">
             <p style="text-align:center" :style="{color: statusObj[scope.row.status].color}"><strong>{{ statusObj[scope.row.status].name }}</strong></p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
@@ -57,9 +57,11 @@
       <el-table-column
         label="流程实例名称"
         prop="processInstanceName"
+        :show-overflow-tooltip="true"
       >
         <template slot-scope="scope">
-          <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processInstanceId)">{{ scope.row.processInstanceName }}</el-link>
+          <span class="tablespan" @click="handleView(scope.row.processInstanceId)">{{ scope.row.processInstanceName }}</span>
+          <!-- <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processInstanceId)">{{ scope.row.processInstanceName }}</el-link> -->
         </template>
       </el-table-column>
       <el-table-column
@@ -412,11 +414,14 @@ export default {
 	color: #676A6C;
   } */
   .logtype{
-	font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
-	font-weight: 700;
-	font-style: normal;
-  color: #3f3a3a;
-  padding: 5px 0px;
+    font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+    font-weight: 700;
+    font-style: normal;
+    color: #3f3a3a;
+    padding: 5px 0px;
   }
-
+  .tablespan{
+    color: #46a6ff;
+    cursor: pointer;
+  }
 </style>
