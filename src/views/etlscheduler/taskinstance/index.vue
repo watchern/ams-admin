@@ -32,7 +32,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top" width="500">
+          <el-popover trigger="hover" placement="top" width="200">
             <p style="text-align:center" :style="{color: statusObj[scope.row.status].color}"><strong>{{ statusObj[scope.row.status].name }}</strong></p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">

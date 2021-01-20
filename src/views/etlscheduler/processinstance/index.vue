@@ -95,7 +95,7 @@
         width="80px"
       >
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top" width="500">
+          <el-popover trigger="hover" placement="top" width="200">
             <p style="text-align:center" :style="{color: statusObj[scope.row.status].color}"><strong>{{ statusObj[scope.row.status].name }}</strong></p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
@@ -322,8 +322,8 @@
           <el-timeline-item
             v-for="(task,$index) in logTasks"
             :key="task.id"
-            :icon="taskslogsList[task.id] != null ? statusObj[taskslogsList[task.id].status].unicode: null"
-            :color="taskslogsList[task.id] != null ? statusObj[taskslogsList[task.id].status].color : null"
+            :icon="taskslogsList[task.id] != null && taskslogsList[task.id].flag === 1 ? statusObj[taskslogsList[task.id].status].unicode: null"
+            :color="taskslogsList[task.id] != null && taskslogsList[task.id].flag === 1 ? statusObj[taskslogsList[task.id].status].color : null"
             size="large"
           >
             <!-- value和name一致，默认展开 -->
@@ -682,6 +682,7 @@ export default {
         // 获取调度实例已运行的环节
         findTaskInstanceById(data.processInstanceUuid).then(respons => {
           this.taskslogsList = respons.data
+          console.log(this.taskslogsList)
         })
       })
       // 获取非环节执行任务日志
