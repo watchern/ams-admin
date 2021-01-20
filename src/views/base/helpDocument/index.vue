@@ -1,186 +1,202 @@
 <template>
   <div class="page-container">
-    <div class="filter-container">
-      <QueryField 
-      ref="queryfield" 
-      :form-data="queryFields"
-      @submit="getList" />
+    <div class="page-left">
+      <el-collapse class="tools-menu-small" v-model="activeName" accordion>
+        <el-collapse-item title="审计作业" name="1">
+          <el-tree
+            :data="moremenugroup['402883817586fc2a017586fd9e1a0001']"
+            node-key="id"
+            show-checkbox
+            :check-strictly="defaultProps.checkStrictly"
+            @check-change="handleCheckChange"
+            ref="tree"
+            highlight-current
+            v-if="activeName === '1'"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="审计分析" name="2">
+          <el-tree
+            :data="moremenugroup['4028838175880ded01758835b393006b']"
+            node-key="id"
+            show-checkbox
+            :check-strictly="defaultProps.checkStrictly"
+            @check-change="handleCheckChange"
+            ref="tree"
+            highlight-current
+            v-if="activeName === '2'"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="审计资源" name="3">
+          <el-tree
+            :data="moremenugroup['4028838175880ded01758816610b001a']"
+            node-key="id"
+            show-checkbox
+            :check-strictly="defaultProps.checkStrictly"
+            @check-change="handleCheckChange"
+            ref="tree"
+            highlight-current
+            v-if="activeName === '3'"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="系统配置" name="4">
+          <el-tree
+            :data="moremenugroup['4028838175880ded01758828366f0046']"
+            node-key="id"
+            show-checkbox
+            :check-strictly="defaultProps.checkStrictly"
+            @check-change="handleCheckChange"
+            ref="tree"
+            highlight-current
+            v-if="activeName === '4'"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+      </el-collapse>
     </div>
-		<el-row>
-			<el-col align="right">
-				<el-button type="primary" class="oper-btn add" title="添加帮助文档"  @click="handleAdd()" />
-				<el-button type="primary" class="oper-btn edit" title="修改" @click="handleUpdate()" />
-				<el-button type="primary" class="oper-btn delete" title="删除" @click="" />
-			</el-col>
-		</el-row>
-		<el-table 
-			:key="tableKey" 
-			v-loading="listLoading" 
-			:data="list" 
-			border 
-			fit 
-			height="500px"
-			highlight-current-row 
-			style="width: 100%; top: 80px" 
-			@sort-change="sortChange" 
-			@selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" />
-      <el-table-column label="菜单id"  align="center" prop="menuId" />
-      <el-table-column label="菜单名称" align="center" prop="menuName" />
-      <el-table-column label="菜单地址"  align="center" prop="menuPath" />
-      <el-table-column label="帮助文档"  prop="helpDocument" />
-    </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-		<el-dialog title="添加" :visible.sync="addDialogVisible" width="30%">
-      <el-form>
-        <el-form-item label="菜单id">
-          <el-input v-model="temp.menuId"/>
-        </el-form-item>
-      </el-form>
-			<el-form>
-        <el-form-item label="菜单名称">
-          <el-input v-model="temp.menuName" />
-        </el-form-item>
-      </el-form>
-			<el-form>
-        <el-form-item label="菜单地址">
-          <el-input v-model="temp.menuPath" />
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="addDialogVisible = false">关 闭</el-button>
-        <el-button type="primary" @click="addHelpDocument(temp)">进入编辑</el-button>
-      </span>
-    </el-dialog>
+    <div class="mytuieditor">
+      <wangeditor
+        :content="richText"
+        @retrieveData="retrieveData"
+        ref="wangeditor"
+      />
+      <button @click="linshixianshi">保存</button>
+    </div>
+    <div id="linshi"></div>
 	</div>
 </template>
 <script>
-import { listByPageHelpDocument } from '@/api/base/helpdocument'
-import QueryField from '@/components/Ace/query-field/index'
-import Pagination from '@/components/Pagination/index'
+import wangeditor from "../../../components/Ace/help-function/wangeditor.vue"
+import { getUserRes } from '@/api/user'
 export default {
-  components: { Pagination, QueryField },
+  components: { wangeditor },
   data() {
     return {
-      tableKey: 'errorUuid',
-      list: null,
-      total: 0,
-			listLoading: false,
-			addDialogVisible : false,
-      queryFields: [
-        { label: '菜单名称', name: 'menuName', type: 'fuzzyText' },
-        { label: '菜单地址', name: 'menuPath', type: 'fuzzyText' },
-        { label: '操作时间范围', name: 'helpDocumentTime', type: 'timePeriod' }
-      ],
-      // selectedRowVal:0,
-      tableOptions: {
-        columnDefs: [
-          {
-            headerName: '',
-            checkboxSelection: true,
-            headerCheckboxSelection: true,
-            width: 30,
-            pinned: 'left',
-            display: false
-          },
-          {
-            field: 'helpDocumentUuid',
-            hide: true
-          },
-          {
-            headerName: '菜单id',
-            field: 'menuId',
-            pinned: 'left',
-            filter: 'agTextColumnFilter'
-          },
-          {
-            headerName: '菜单名称',
-            field: 'menuName',
-            pinned: 'left'
-          },
-          {
-            headerName: '菜单地址',
-            field: 'menuPath',
-            pinned: 'left'
-          },
-          {
-            headerName: '帮助文档',
-            field: 'helpDocument',
-            pinned: 'left'
-          }
-        ]
+      // 左侧数据块
+      applications: [],
+      // 各菜单内容
+      menugroup: [],
+      moremenugroup: [],
+      // 左侧树数据
+      defaultProps: {
+        children: 'children',
+        label: 'label',
+        checkStrictly: true,
+        disabled: this.ifFather,
       },
-      formStyle: {
-        width: '700px',
-        height: '400px'
-      },
-      temp: {
-        helpDocumentUuid: '',
-        menuId: '',
-        menuName: '',
-        menuPath: '',
-        helpDocument: '',
-      },
-      pageQuery: {
-        condition: {},
-        pageNo: 1,
-        pageSize: 20,
-      }
+      // 富文本数据
+      richText: '<p>123213</p>',
+      // 激活菜单
+      activeName: '1'
     }
   },
   computed: {
-
   },
   created() {
-    this.getList()
 	},
-  methods: {
-    getList(query) {
-      this.listLoading = true
-      if (query) {
-        this.pageQuery.condition = query
-        this.pageQuery.pageNo = 1
-      }
-      listByPageHelpDocument(this.pageQuery).then(resp => {
-				console.log(resp)
-        this.total = resp.data.total
-        this.list = resp.data.records
-        this.listLoading = false
+  mounted() {
+    getUserRes()
+      .then(response => {
+        response.data.application.forEach((app, index) => {
+          // 设置左侧应用栏数据
+          this.applications.push({
+            name: app.name,
+            id: app.id
+          })
+        })
+        response.data.menugroup.forEach(grp => {
+          const children = []
+          grp.menuList.forEach(menu => {
+            children.push({
+              label: menu.name,
+              id: menu.id,
+              path: this.getCleanSrc(menu.src)
+            })
+          })
+          if (!this.menugroup[grp.appuuid]) {
+            this.menugroup[grp.appuuid] = []
+          }
+          this.menugroup[grp.appuuid].push({
+            label: grp.name,
+            path: grp.navurl,
+            children: children
+          })
+        })
+        this.moremenugroup = this.menugroup
       })
-    },
-    handleSelectionChange(val) {
-      this.selections = val
-    },
-    handleFilter() {
-      this.pageQuery.pageNo = 1
-      this.getList()
-    },
-    sortChange(data) {
-      const { prop, order } = data
-      this.pageQuery.sortBy = order
-      this.pageQuery.sortName = prop
-      this.handleFilter()
-    },
-    resetQuery() {
-      this.query = {
-        condition: {
-					menuId: '',
-					menuName: '',
-					menuPath: '',
-					helpDocument: ''
-        }
+      .catch(error => {
+        console.error(error)
+      })
+  },
+  methods: {
+    getCleanSrc(src) {
+      if (src.indexOf('&resUUID') !== -1) {
+        src = src.split('&resUUID')[0]
+      } else if (src.indexOf('?resUUID') !== -1) {
+        src = src.split('?resUUID')[0]
       }
-		},
-		handleAdd () {
-			this.addDialogVisible = true;
-		},
-		addHelpDocument (temp) {
-			console.log(temp)
-		},
-		handleUpdate () {
-			this.temp = Object.assign({}, this.selections[0])
-			console.log(this.temp)
-		}
+      return src
+    },
+    linshixianshi() {
+      this.$refs.wangeditor.displayIn();
+    },
+    retrieveData(html) {
+      let saveData = []
+      saveData.push({
+        menuId: this.$refs.tree.getCheckedNodes()[0].id,
+        menuName: this.$refs.tree.getCheckedNodes()[0].label,
+        menuPath: this.$refs.tree.getCheckedNodes()[0].path,
+        menuDocument: html
+      })
+      console.log(saveData)
+      document.getElementById('linshi').innerHTML = html
+    },
+    handleCheckChange (data, checked, indeterminate) {
+      if (checked) {
+        this.$refs.tree.setCheckedNodes([data]);
+      }
+    },
+    ifFather(data) {
+      if (data.children) {
+        return true
+      }else{
+        return false
+      }
+    }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .page-container{
+    width:100%;
+    height:100%;
+    overflow: hidden;
+    position: relative;
+  }
+  .page-left{
+    width: 15vw;
+    height: 100%;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 10px;
+    float: left;
+    overflow: auto;
+  }
+  .mytuieditor{
+    margin-top: 40px;
+    float:left;
+    width: 75vw;
+  }
+  #linshi{
+    position:absolute;
+    width:200px;
+    height:200px;
+    bottom:0;
+    left:0;
+    background:#ccc;
+    overflow:auto;
+  }
+</style>

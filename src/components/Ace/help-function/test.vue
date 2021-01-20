@@ -29,7 +29,7 @@ export default {
           el: document.querySelector("#editorSection"),
           initialEditType: "markdown",
           previewStyle: "vertical",
-          height: "600px",
+          height: "92vh",
           initialValue: this.content
         });
         this.tuieditor.getHtml();

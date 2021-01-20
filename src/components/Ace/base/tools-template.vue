@@ -735,6 +735,7 @@ export default {
       })
       this.dialogVisible = false
     },
+    // 父节点不可选
     ifFather(data) {
       if (data.children) {
         return true
