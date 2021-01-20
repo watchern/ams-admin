@@ -123,9 +123,11 @@
       <el-table-column
         label="流程实例名称"
         prop="name"
+        :show-overflow-tooltip="true"
       >
         <template slot-scope="scope">
-          <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processInstanceUuid)">{{ scope.row.name }}</el-link>
+          <span class="tablespan" @click="handleView(scope.row.processInstanceUuid)">{{ scope.row.name }}</span>
+          <!-- <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processInstanceUuid)">{{ scope.row.name }}</el-link> -->
         </template>
       </el-table-column>
       <!-- <el-table-column
@@ -257,6 +259,34 @@
         >保存</el-button>
       </div>
     </el-dialog>
+    <!-- 指定环节重新运行的dialog -->
+    <el-dialog
+      :visible.sync="dialogRepeatFormVisible"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        ref="dataForm"
+        label-position="right"
+        label-width="140px"
+        class="detail-form"
+        style="width: 700px; margin-left:50px;"
+      >
+        <el-radio-group v-model="repeatTaskId">
+          <el-radio
+            v-for="task in alreadyTasks"
+            :key="task.taskInstanceUuid"
+            :label="task.taskInstanceUuid"
+          >{{ task.name }}</el-radio>
+        </el-radio-group>
+      </el-form>
+      <div slot="footer">
+        <el-button @click="dialogRepeatFormVisible = false">取消</el-button>
+        <el-button
+          type="primary"
+          @click="repeatInstance()"
+        >确定</el-button>
+      </div>
+    </el-dialog>
     <!-- 显示任务日志的dialog -->
     <el-dialog
       :visible.sync="logDialogFromVisible"
@@ -328,7 +358,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findPrepLogs, findTaskInstanceById, del } from '@/api/etlscheduler/processinstance'
+import { listByPage, skipTask, execute, getTaskLink, findTaskLogs, findPrepLogs, findTaskInstanceById, del, repeatProcess } from '@/api/etlscheduler/processinstance'
 import QueryField from '@/components/Ace/query-field/index'
 // statuSelectList, statuSelect, statusComm
 import { commandTypeObj, colorList, statusListComm, statuSelectList } from './comm.js'
@@ -430,14 +460,21 @@ export default {
         nowTask: null
       },
       selections: [],
+      dialogRepeatFormVisible: false,
       dialogFormVisible: false,
       logDialogFromVisible: false,
       dialogStatus: '',
       dialogPvVisible: false,
       downloadLoading: false,
+      // 所有的环节
       tasks: null,
+      // 已经运行的环节
+      alreadyTasks: null,
       checkedTask: null,
+      // 跳过环节的Id
       checkedTaskId: '',
+      // 重新运行的环节的UUID
+      repeatTaskId: '',
       skipStatus: true,
       pusStatus: true,
       startStatus: true,
@@ -447,6 +484,7 @@ export default {
       logTasks: null,
       logs: null,
       taskslogsList: null,
+      taskInstances: null,
       schedule: null,
       nowTask: null,
       prepLogs: null
@@ -512,6 +550,9 @@ export default {
             case 5:
               this.startStatus = false
               break
+            case 7:
+              this.reStartStatus = false
+              break
             // 判断状态是否为执行失败中,如果是执行失败中，重新运行按钮可用，执行按钮可用，失败运行的执行按钮可用
             case 8:
               this.reStartStatus = false
@@ -522,14 +563,15 @@ export default {
           }
         })
       } else if (this.selections.length > 1) { // 选择多条数据
-        // 跳过按钮禁用
+        // 跳过、重新运行按钮禁用
         this.skipStatus = true
+        this.reStartStatus = true
         // 其它按钮取消禁用
         this.startStatus = false
         this.failStatus = false
         this.pusStatus = false
         this.doneStatus = false
-        this.reStartStatus = false
+        // this.reStartStatus = false
         this.selections.forEach((r, i) => {
           // 遍历选择的数组判断状态，如果是有状态不是等待状态的，取消按钮不可用
           if (waitStatuses.indexOf(r.status) < 0) {
@@ -537,7 +579,7 @@ export default {
           }
           // 遍历选择的数组判断状态，如果是有状态不是执行失败的，重新执行按钮不可用，失败运行的执行按钮不可用
           if (r.status !== 8) {
-            this.reStartStatus = true
+            // this.reStartStatus = true
             this.failStatus = true
           }
           // 遍历选择的数组判断状态，如果是有状态不是执行中的，启用按钮不可用
@@ -745,18 +787,71 @@ export default {
     },
     // 重新运行
     handleReStart() {
-      var ids = []
-      this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
-      execute(ids.join(','), 'REPEAT_RUNNING').then(() => {
+      this.$confirm('是否指定环节重新运行?', this.$t('confirm.title'), {
+        confirmButtonText: '指定',
+        cancelButtonText: '不指定',
+        type: 'warning'
+      }).then(() => {
+        this.repeatTaskId = ''
+        this.temp = Object.assign({}, this.selections[0])
+        // 如果已有跳过的环节进行反写
+        if (this.temp.skipInfo !== null && this.temp.skipInfo !== '') {
+          var checkedTasks = JSON.parse(this.temp.skipInfo)
+          this.checkedTask = checkedTasks[0]
+          this.checkedTaskId = this.checkedTask.id
+        }
+        // 判断调度实例的json是否为空，为空的话，不显示弹框
+        if (this.temp.processInstanceJson === null || this.temp.processInstanceJson === '') {
+          this.dialogRepeatFormVisible = false
+          return
+        }
+        // 获取任务环节
+        getTaskLink(this.temp.processInstanceUuid).then(resp => {
+          // this.alreadyTasks = resp.data
+          findTaskInstanceById(this.temp.processInstanceUuid).then(respons => {
+            this.taskInstances = respons.data
+            if (respons.data === null || respons.data === {} || respons.data === '') {
+              this.dialogRepeatFormVisible = false
+              return
+            }
+            resp.data.forEach((r, i) => {
+              if (this.taskInstances[r.id]) {
+                r.taskInstanceUuid = this.taskInstances[r.id].taskInstanceUuid
+              }
+            })
+            this.alreadyTasks = _.filter(resp.data, x => x.taskInstanceUuid)
+            this.dialogRepeatFormVisible = true
+          })
+        })
+      }).catch(() => {
+        var ids = []
+        this.selections.forEach((r, i) => { ids.push(r.processInstanceUuid) })
+        execute(ids.join(','), 'REPEAT_RUNNING').then(() => {
+          this.getList()
+          this.$notify({
+            title: this.$t('message.title'),
+            message: '重新运行成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      })
+    },
+    // 从指定环节重新运行
+    repeatInstance() {
+      const temp = Object.assign({}, this.selections[0])
+      repeatProcess(temp.processInstanceUuid, this.repeatTaskId).then(() => {
         this.getList()
         this.$notify({
           title: this.$t('message.title'),
-          message: '重新运行成功',
+          message: '指定环节重新运行成功',
           type: 'success',
           duration: 2000,
           position: 'bottom-right'
         })
       })
+      this.dialogRepeatFormVisible = false
     },
     // 取消
     handleCancel() {
@@ -834,6 +929,10 @@ export default {
 </script>
 
 <style scoped>
+  .tablespan{
+    color: #46a6ff;
+    cursor: pointer;
+  }
   .el-tag {
 	background-color: transparent;
 	border-color: transparent;
