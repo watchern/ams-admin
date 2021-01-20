@@ -132,7 +132,7 @@ export default {
       return this.query
     },
     onSubmit() {
-
+      
       // return
       this.$emit('submit', this.query)
     },

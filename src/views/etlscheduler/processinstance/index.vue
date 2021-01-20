@@ -363,7 +363,6 @@ import QueryField from '@/components/Ace/query-field/index'
 // statuSelectList, statuSelect, statusComm
 import { commandTypeObj, colorList, statusListComm, statuSelectList } from './comm.js'
 import store from '@/store'
-import dayjs from 'dayjs'
 
 export default {
   components: { Pagination, QueryField },
@@ -508,8 +507,10 @@ export default {
       handler() {
         this.queryDefault = {
           groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
-          startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
-          startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
+          startTimeStart: this.store.state.monitor.processStartTime,
+          startTimeEnd: this.store.state.monitor.processEndTime
+          // startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
+          // startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
         }
         this.queryFields[1].value = this.queryDefault.groupExecutionStatus
         this.queryFields[2].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
@@ -637,6 +638,7 @@ export default {
       return (colorList || []).findIndex((item) => item.value === value)
     },
     getList(query) {
+      console.log(query)
       this.listLoading = true
       if (query) {
         this.pageQuery.condition = query
@@ -682,7 +684,6 @@ export default {
         // 获取调度实例已运行的环节
         findTaskInstanceById(data.processInstanceUuid).then(respons => {
           this.taskslogsList = respons.data
-          console.log(this.taskslogsList)
         })
       })
       // 获取非环节执行任务日志
