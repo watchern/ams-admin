@@ -56,19 +56,20 @@
             </div>
           </el-col>
         </el-row>
-        <div class="col-md-12" style="margin-top:20px;">
+        <div v-if="item.dbType === 'ORACLE'" class="col-md-12" style="margin-top:20px;">
           <div class="db-title">
             <span>PGA内存状态</span>
           </div>
         </div>
-        <el-row :gutter="40">
+        <el-row v-if="item.dbType === 'ORACLE'" :gutter="40">
           <el-col :span="8">
             <div class="text-num-model text">
               <div class="title">
                 <span>PGA内存使用率</span>
               </div>
               <div class="value-p">
-                <strong :style="{color:color[5]}" style="font-size:70px">{{ (item.sumPgaUsedMem/item.sumPgaAllocMem*100).toFixed(1) + '%' }}</strong>
+                <strong v-if="item.sumPgaAllocMem === 0" :style="{color:color[5]}" style="font-size:70px">0%</strong>
+                <strong v-if="item.sumPgaAllocMem !== 0" :style="{color:color[5]}" style="font-size:70px">{{ (item.sumPgaUsedMem/item.sumPgaAllocMem*100).toFixed(1) + '%' }}</strong>
               </div>
               <div class="text-1">PGA内存使用率</div>
               <div style="text-align:center;margin-bottom:10px;">

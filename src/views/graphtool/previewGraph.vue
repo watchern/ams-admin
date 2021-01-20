@@ -66,7 +66,7 @@
 </template>
 
 <script>
-    import { getGraphInfoById } from '@/api/graphtool/graphList'
+    import { getGraphInfoById } from '@/api/graphtool/apiJs/graphList'
     export default {
         name: 'PreviewGraph',
         props: ['graphUuid'],

@@ -1,4 +1,4 @@
-import { deleteExecuteNodes, executeNodeSql, executeAllNodeSql } from '@/api/graphtool/graphList'
+import { deleteExecuteNodes, executeNodeSql, executeAllNodeSql } from '@/api/graphtool/apiJs/graphList'
 import * as validateJs from '@/views/graphtool/tooldic/js/validate'
 import { updateResourceZtreeNodeName } from '@/views/graphtool/tooldic/js/index'
 let graphIndexVue = null
@@ -48,26 +48,36 @@ export function saveNodeSetting() {
                 $(graphIndexVue.$refs.nodeSetting.$refs.myTab).find('li:eq(1)>a').click()
                 return false
             }
-            if (!graphIndexVue.$refs.nodeSetting.saveNodeInfo()) {
-                return false
-            }
+            // if (!graphIndexVue.$refs.nodeSetting.saveNodeInfo()) {
+            //     return false
+            // }
         } else {
             if (!graphIndexVue.$refs.nodeSetting.$refs.conditionSet.inputVerify()) {
                 $(graphIndexVue.$refs.nodeSetting.$refs.myTab).find('li:eq(1)>a').click()
                 return false
             }
-            if (type === 'comparison') {		// 频次分析没有输出列，特殊处理
-                graphIndexVue.$refs.nodeSetting.$refs.conditionSet.saveNotOutput()
-            } else {
-                if (!graphIndexVue.$refs.nodeSetting.$refs.outputColumnVueRef.outputVerify()) {
+            if (type !== 'comparison' && !graphIndexVue.$refs.nodeSetting.$refs.outputColumnVueRef.outputVerify()) {
+            //     graphIndexVue.$refs.nodeSetting.$refs.conditionSet.saveNotOutput()
+            // } else {
+            //     if (!graphIndexVue.$refs.nodeSetting.$refs.outputColumnVueRef.outputVerify()) {
                     return false
-                }
-                graphIndexVue.$refs.nodeSetting.saveGraphNodeSetting()
+                // }
+                // graphIndexVue.$refs.nodeSetting.saveGraphNodeSetting()
             }
         }
         return true
     }
     let saveNodeSettingFun = function() {
+        let type = graphIndexVue.sp_optType
+        if (type === 'relation' || type === 'groupCount') {
+            graphIndexVue.$refs.nodeSetting.saveNodeInfo()
+        }else{
+            if (type === 'comparison') {
+                graphIndexVue.$refs.nodeSetting.$refs.conditionSet.saveNotOutput()
+            } else {
+                graphIndexVue.$refs.nodeSetting.saveGraphNodeSetting()
+            }
+        }
         graphIndexVue.nodeSettingDialogVisible = false
         graphIndexVue.$nextTick( () => {
             // 变更当前节点的配置状态信息

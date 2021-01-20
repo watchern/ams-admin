@@ -81,6 +81,15 @@ export function execute(ids, executeType) {
   })
 }
 
+// 重新执行流程实例
+export function repeatProcess (ids, startTaskIds) { 
+  return request({
+    baseURL: baseURL,
+    url: `/processInstance/repeatProcess/${ids}/${startTaskIds}`,
+    method: 'post'
+  })
+}
+
 // 查询所有任务环节
 export function getTaskLink(id) {
   return request({

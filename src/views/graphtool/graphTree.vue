@@ -28,7 +28,7 @@
 
 <script>
     import MyElTree from '@/components/Ace/tree/src/tree.vue'
-    import { getGraphTrees } from '@/api/graphtool/graphList'
+    import { getGraphTrees } from '@/api/graphtool/apiJs/graphList'
     export default {
         name: 'GraphTree',
         components: { MyElTree },
@@ -56,7 +56,7 @@
         methods: {
             filterNode(value, data) {
                 if (!value) return true
-                return data.label.indexOf(value) !== -1
+                return data.label.indexOf(value) > -1
             },
             initGraphTree() {
                 getGraphTrees().then(response => {

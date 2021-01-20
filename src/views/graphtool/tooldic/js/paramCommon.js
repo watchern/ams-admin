@@ -1,4 +1,4 @@
-import { executeParamSql,getSelectTreeData } from '@/api/graphtool/graphList'
+import { executeParamSql,getSelectTreeData } from '@/api/graphtool/apiJs/graphList'
 /**
  * 组织下拉树数据（只用于参数）
  * @param result 待组织的数据（有效列：C_CODE,C_NAME,P_CODE）
