@@ -718,7 +718,7 @@ export default {
         }
         this.latelyFastList = []
         getQuickMenuList().then(res => {
-          for (let i=0; i<3; i++) {
+          for (let i=0; i<res.data.length; i++) {
             for (let n=0; n<this.latelyImgList.length; n++) {
               if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
                 this.latelyFastList.push({
@@ -735,6 +735,7 @@ export default {
       })
       this.dialogVisible = false
     },
+    // 父节点不可选
     ifFather(data) {
       if (data.children) {
         return true

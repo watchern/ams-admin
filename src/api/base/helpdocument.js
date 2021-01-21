@@ -13,13 +13,12 @@ export function getByMenuId(id) {
       method: 'get',
       // params 以formData格式传递  后台用RequestParam
       // 直接加data以json格式传递  后台用RequestBody
-      data
     })
 }
 
 /**
  * 保存
- * @param data 
+ * @param data
  * @returns {返回查询后的数据}
  */
 export function saveHelpDocument(data) {
@@ -35,7 +34,7 @@ export function saveHelpDocument(data) {
 
 /**
  * 修改
- * @param data 
+ * @param data
  * @returns {返回查询后的数据}
  */
 export function updateHelpDocument(data) {
