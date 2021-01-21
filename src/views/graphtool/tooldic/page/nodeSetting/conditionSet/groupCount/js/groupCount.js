@@ -251,11 +251,9 @@ function initCountSelectData(trNum) {
         radio: true,
         clickClose: true,
         filterable: true,
-        filterMethod: function(val, item, index, prop) {
-            if (val === item.value) { // 把value相同的搜索出来
-                return true
-            }
-            if (item.name && item.name.indexOf(val) > -1) { // 名称中包含的搜索出来
+        filterMethod: function(val, item) {
+            //把value相同的搜索出来或把名称中包含的搜索出来
+            if (val === item.value || (item.name && item.name.indexOf(val) > -1)) {
                 return true
             }
             return false// 不知道的就不管了
@@ -318,11 +316,9 @@ function initCountSelectData(trNum) {
         el: '#searchType' + trNum,
         radio: true,
         clickClose: true,
-        filterMethod: function(val, item, index, prop) {
-            if (val === item.value) { // 把value相同的搜索出来
-                return true
-            }
-            if (item.name && item.name.indexOf(val) > -1) { // 名称中包含的搜索出来
+        filterMethod: function(val, item) {
+            //把value相同的搜索出来或把名称中包含的搜索出来
+            if (val === item.value || (item.name && item.name.indexOf(val) > -1)) {
                 return true
             }
             return false// 不知道的就不管了

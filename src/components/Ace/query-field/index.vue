@@ -21,8 +21,8 @@
       <el-form-item v-if="searchBar == '0'">
         <el-button type="primary" @click="onSubmit">查询</el-button>
         <el-button type="primary" @click="clearAll">清空</el-button>
-<!--        <img :src="searchFor" @click="onSubmit" class="someimgin"/>-->
-<!--        <img :src="resetFor" @click="clearAll" class="someimgin"/>-->
+        <!--        <img :src="searchFor" @click="onSubmit" class="someimgin"/>-->
+        <!--        <img :src="resetFor" @click="clearAll" class="someimgin"/>-->
       </el-form-item>
 
       <el-form-item v-if="searchBar == '1'" class="full-search">
@@ -77,9 +77,9 @@ export default {
           if (fd.type === 'timePeriod') {
             this.$set(this.query, fd.name + 'Start', null)
             this.$set(this.query, fd.name + 'End', null)
-            // 示例fd.value = '2020-12-02,2020-12-04'
-            if (fd.value && fd.value !== null && fd.value !== '') {
-              const valueTime = fd.value.split(',')
+            // 示例fd.value = ['2020-12-02','2020-12-04']
+            if (fd.value && fd.value !== null && fd.value instanceof Array) {
+              const valueTime = fd.value
               if (valueTime.length === 2) {
                 this.query[fd.name + 'Start'] = valueTime[0]
                 this.query[fd.name + 'End'] = valueTime[1]
@@ -106,8 +106,8 @@ export default {
         this.$set(this.query, fd.name + 'Start', null)
         this.$set(this.query, fd.name + 'End', null)
         // 示例fd.value = '2020-12-02,2020-12-04'
-        if (fd.value && fd.value !== null && fd.value !== '') {
-          const valueTime = fd.value.split(',')
+        if (fd.value && fd.value !== null && fd.value instanceof Array) {
+          const valueTime = fd.value
           if (valueTime.length === 2) {
             this.query[fd.name + 'Start'] = valueTime[0]
             this.query[fd.name + 'End'] = valueTime[1]
@@ -132,7 +132,6 @@ export default {
       return this.query
     },
     onSubmit() {
-      
       // return
       this.$emit('submit', this.query)
     },
