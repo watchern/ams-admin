@@ -48,21 +48,13 @@ export function saveNodeSetting() {
                 $(graphIndexVue.$refs.nodeSetting.$refs.myTab).find('li:eq(1)>a').click()
                 return false
             }
-            // if (!graphIndexVue.$refs.nodeSetting.saveNodeInfo()) {
-            //     return false
-            // }
         } else {
             if (!graphIndexVue.$refs.nodeSetting.$refs.conditionSet.inputVerify()) {
                 $(graphIndexVue.$refs.nodeSetting.$refs.myTab).find('li:eq(1)>a').click()
                 return false
             }
             if (type !== 'comparison' && !graphIndexVue.$refs.nodeSetting.$refs.outputColumnVueRef.outputVerify()) {
-            //     graphIndexVue.$refs.nodeSetting.$refs.conditionSet.saveNotOutput()
-            // } else {
-            //     if (!graphIndexVue.$refs.nodeSetting.$refs.outputColumnVueRef.outputVerify()) {
-                    return false
-                // }
-                // graphIndexVue.$refs.nodeSetting.saveGraphNodeSetting()
+                return false
             }
         }
         return true
@@ -1721,9 +1713,9 @@ export async function sqlNodeEdit_callBack() {
         graphIndexVue.$refs.sqlEditor.$message({"type":"warning", "message":returnObj.message})
     } else {
         if ($.trim(returnObj.sql) !== '') {
-            if (graph.openGraphType === 1) { // 如果是普通个人图形
-                callFun(returnObj)
-            } else { // 如果是场景查询图形和模型图形
+            // if (graph.openGraphType === 1) { // 如果是普通个人图形
+            //     callFun(returnObj)
+            // } else { // 如果是场景查询图形和模型图形
                 if (returnObj.isChange) {
                     graphIndexVue.$refs.sqlEditor.$confirm(`${returnObj.message}，是否继续？`, '提示', {
                         confirmButtonText: '确定',
@@ -1741,7 +1733,7 @@ export async function sqlNodeEdit_callBack() {
                     graph.nodeData[graph.curCell.id].sqlIsChanged = false
                     callFun(returnObj)
                 }
-            }
+            // }
         } else {
             graphIndexVue.$refs.sqlEditor.$message({"type":"warning", "message":"请输入SQL内容"})
         }

@@ -1583,7 +1583,7 @@ export function showParamNodeList(){
     for(let i=0;i<nodeIdArr.length;i++) {
         //当前节点的类型
         let optType = graph.nodeData[nodeIdArr[i]].nodeInfo.optType;
-        if($.inArray(optType,optTypeArr) > -1){//将当前节点加入到数组中
+        if($.inArray(optType,optTypeArr) > -1 && graph.nodeData[nodeIdArr[i]].isSet){//将当前已配置成功的节点加入到数组中
             resultTableNodeIdArr.push(nodeIdArr[i]);
         }
     }
