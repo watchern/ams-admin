@@ -274,9 +274,10 @@ export default {
     statusList.forEach((r, i) => {
       this.statusObj[r['value']] = r
     })
-    this.searchParams.startTimeStart = dayjs().format('YYYY-MM-DD')
-    this.searchParams.startTimeEnd = dayjs().format('YYYY-MM-DD')
-    this.value1 = [dayjs().format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')]
+    // dayjs().format('YYYY-MM-DD')
+    this.searchParams.startTimeStart = new Date(new Date().setHours(0, 0, 0, 0))
+    this.searchParams.startTimeEnd = new Date(new Date().setHours(0, 0, 0, 0))
+    this.value1 = [new Date(new Date().setHours(0, 0, 0, 0)), new Date(new Date().setHours(0, 0, 0, 0))]
     this.setProcessGroupExecutionStatusType('')
     this.setProcessStartTime(this.searchParams.startTimeStart)
     this.setProcessEndTime(this.searchParams.startTimeEnd)
@@ -286,8 +287,8 @@ export default {
     // });
     // 获取任务的历时
     taskMonitor({
-      startTimeStart: dayjs().format('YYYY-MM-DD'),
-      startTimeEnd: dayjs().format('YYYY-MM-DD')
+      startTimeStart: new Date(new Date().setHours(0, 0, 0, 0)),
+      startTimeEnd: new Date(new Date().setHours(0, 0, 0, 0))
     }).then((resp) => {
       this.count = resp.data.count
       this.timeConsuming = resp.data.timeConsuming

@@ -171,7 +171,7 @@ import { listByPage, findTaskLogs } from '@/api/etlscheduler/taskinstance'
 import QueryField from '@/components/Ace/query-field/index'
 // statuSelect, statusComm
 import { colorList, statusListComm, statuSelectList } from '@/views/etlscheduler/processinstance/comm.js'
-import dayjs from 'dayjs'
+// import dayjs from 'dayjs'
 import store from '@/store'
 
 export default {
@@ -296,8 +296,8 @@ export default {
       handler() {
         this.queryDefault = {
           groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
-          startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
-          startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
+          startTimeStart: this.store.state.monitor.processStartTime,
+          startTimeEnd: this.store.state.monitor.processEndTime
         }
         this.queryFields[1].value = this.queryDefault.groupExecutionStatus
         this.queryFields[2].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
