@@ -56,20 +56,20 @@
         </el-collapse-item>
       </el-collapse>
     </div>
-    <div class="mytuieditor">
+    <div class="mytuieditor" v-if="refreshRichText">
       <wangeditor
         :content="richText"
         @retrieveData="retrieveData"
         ref="wangeditor"
       />
-      <button @click="linshixianshi">保存</button>
+      <button @click="saveNew">保存</button>
     </div>
-    <div id="linshi"></div>
 	</div>
 </template>
 <script>
 import wangeditor from "../../../components/Ace/help-function/wangeditor.vue"
 import { getUserRes } from '@/api/user'
+import { saveHelpDocument, getByMenuId, updateHelpDocument } from '@/api/base/helpdocument'
 export default {
   components: { wangeditor },
   data() {
@@ -87,9 +87,13 @@ export default {
         disabled: this.ifFather,
       },
       // 富文本数据
-      richText: '<p>123213</p>',
+      richText: '',
       // 激活菜单
-      activeName: '1'
+      activeName: '1',
+      // 刷新富文本编辑器
+      refreshRichText: true,
+      // 保存帮助富文本内容的uuid
+      helpDocumentUuid: ''
     }
   },
   computed: {
@@ -130,6 +134,14 @@ export default {
         console.error(error)
       })
   },
+  watch:{
+    'richText'() {
+        this.refreshRichText = false
+        this.$nextTick(() => {
+          this.refreshRichText = true
+        })
+    }
+  },
   methods: {
     getCleanSrc(src) {
       if (src.indexOf('&resUUID') !== -1) {
@@ -139,7 +151,8 @@ export default {
       }
       return src
     },
-    linshixianshi() {
+    // 保存富文本
+    saveNew() {
       this.$refs.wangeditor.displayIn();
     },
     retrieveData(html) {
@@ -148,16 +161,35 @@ export default {
         menuId: this.$refs.tree.getCheckedNodes()[0].id,
         menuName: this.$refs.tree.getCheckedNodes()[0].label,
         menuPath: this.$refs.tree.getCheckedNodes()[0].path,
-        menuDocument: html
+        helpDocument: html,
+        helpDocumentUuid: this.helpDocumentUuid
       })
-      console.log(saveData)
-      document.getElementById('linshi').innerHTML = html
+      updateHelpDocument(saveData[0])
     },
+    // 单选功能
     handleCheckChange (data, checked, indeterminate) {
       if (checked) {
         this.$refs.tree.setCheckedNodes([data]);
+        // 根据选择的模块显示已编辑的富文本
+        getByMenuId(data.id).then(resp => {
+          if(resp.code === 0 && resp.data !== null){
+            console.log(resp.data)
+            this.richText = resp.data.helpDocument
+            this.helpDocumentUuid = resp.data.helpDocumentUuid
+          } else if (resp.code === 0 && resp.data === null){
+            let saveData = []
+            saveData.push({
+              menuId: this.$refs.tree.getCheckedNodes()[0].id,
+              menuName: this.$refs.tree.getCheckedNodes()[0].label,
+              menuPath: this.$refs.tree.getCheckedNodes()[0].path,
+              helpDocument: ''
+            })
+            saveHelpDocument(saveData[0])
+          }
+        })
       }
     },
+    // 父节点不可选中
     ifFather(data) {
       if (data.children) {
         return true
@@ -189,14 +221,5 @@ export default {
     margin-top: 40px;
     float:left;
     width: 75vw;
-  }
-  #linshi{
-    position:absolute;
-    width:200px;
-    height:200px;
-    bottom:0;
-    left:0;
-    background:#ccc;
-    overflow:auto;
   }
 </style>

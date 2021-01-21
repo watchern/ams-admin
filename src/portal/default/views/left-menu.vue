@@ -95,7 +95,7 @@
           />
         </div>
       </div>
-      <span class="somehelp">?</span>
+      <span class="somehelp" @click="showHelp">?</span>
       <div class="bottom-open flex a-center j-end flex-column">
         <div class="search-box flex a-center j-start flex-row">
           <input type="text" name="search" class="search-input" placeholder="Search">
@@ -153,6 +153,74 @@
         <tools-template @func="showWith"/>
       </div>
     </transition>
+    <el-drawer
+      title="我是标题"
+      :visible.sync="drawer"
+      modal="false"
+      :with-header="false">
+      <span>我来啦!</span>
+    </el-drawer>
+    <div class="page-left" v-if="showHelpWidth">
+      <el-collapse class="tools-menu-small" v-model="activeName" accordion>
+        <el-collapse-item title="审计作业" name="1">
+          <el-tree
+            :data="moremenugroup['402883817586fc2a017586fd9e1a0001']"
+            node-key="id"
+            show-checkbox
+            :check-strictly="defaultProps.checkStrictly"
+            @check-change="handleCheckChange"
+            ref="tree"
+            highlight-current
+            v-if="activeName === '1'"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="审计分析" name="2">
+          <el-tree
+            :data="moremenugroup['4028838175880ded01758835b393006b']"
+            node-key="id"
+            show-checkbox
+            :check-strictly="defaultProps.checkStrictly"
+            @check-change="handleCheckChange"
+            ref="tree"
+            highlight-current
+            v-if="activeName === '2'"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="审计资源" name="3">
+          <el-tree
+            :data="moremenugroup['4028838175880ded01758816610b001a']"
+            node-key="id"
+            show-checkbox
+            :check-strictly="defaultProps.checkStrictly"
+            @check-change="handleCheckChange"
+            ref="tree"
+            highlight-current
+            v-if="activeName === '3'"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="系统配置" name="4">
+          <el-tree
+            :data="moremenugroup['4028838175880ded01758828366f0046']"
+            node-key="id"
+            show-checkbox
+            :check-strictly="defaultProps.checkStrictly"
+            @check-change="handleCheckChange"
+            ref="tree"
+            highlight-current
+            v-if="activeName === '4'"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+      </el-collapse>
+      <el-button @click="showHelpOut">阅读</el-button>
+    </div>
+    <div class="readonlyTo" v-if="showHelpWidth && showHelpHeight">
+      <div @click="showHelpHeight = false" class="readonlyToX">X</div>
+      <div class="readonlyChild" id="readonlyChild"></div>
+    </div>
   </div>
 </template>
 
@@ -162,6 +230,7 @@ import MenuTree from './menu-tree/index.vue'
 import { cacheDict } from '@/api/base/sys-dict'
 import { getUnReadRemind } from '@/api/base/base'
 import { querySystemTask } from '@/api/base/systemtask'
+import {getByMenuId, saveHelpDocument} from '@/api/base/helpdocument'
 export default {
   components: { MenuTree },
   data() {
@@ -178,6 +247,17 @@ export default {
       isShrink: false,
       nowAppName: '',
       menugroup: {},
+      moremenugroup: [],
+      defaultProps: {
+        children: 'children',
+        label: 'name',
+        checkStrictly: true,
+        disabled: this.ifFather,
+      },
+      // 激活菜单
+      activeName: '1',
+      showHelpWidth: false,
+      showHelpHeight: false,
       settingList: [
         {
           icon: '',
@@ -199,7 +279,8 @@ export default {
       ],
       applications: [],
       workbenchImg: require('../style/images/icon0.png'),
-      isThereReminder: false
+      isThereReminder: false,
+      drawer: false
     }
   },
   computed: {
@@ -274,6 +355,7 @@ export default {
             path: grp.navurl,
             children: menuList
           })
+          this.moremenugroup = this.menugroup
         })
         var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
         if (sysDict == null) {
@@ -417,13 +499,38 @@ export default {
     widthChange(){
       this.isShrink = !this.isShrink
     },
-    reminderAutomaticRefresh(){
-    },
     selectMenuIn(){
       this.$store.commit('aceState/setRightFooterTags', {
         type: 'closeAll',
         val: ''
       })
+    },
+    showHelp() {
+      this.showHelpWidth = !this.showHelpWidth
+    },
+    // 父节点不可选中
+    ifFather(data) {
+      if (data.children) {
+        return true
+      }else{
+        return false
+      }
+    },
+    handleCheckChange (data, checked, indeterminate) {
+      if (checked) {
+        this.$refs.tree.setCheckedNodes([data]);
+      }
+    },
+    showHelpOut () {
+      let id = this.$refs.tree.getCheckedNodes()[0].id
+      getByMenuId(id).then(resp => {
+        if(resp.code === 0 && resp.data !== null){
+          document.getElementById('readonlyChild').innerHTML = resp.data.helpDocument
+        } else if (resp.code === 0 && resp.data === null){
+          document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
+        }
+      })
+      this.showHelpHeight = !this.showHelpHeight
     }
   }
 }
@@ -794,7 +901,7 @@ export default {
 }
 .somehelp{
   position: absolute;
-  top: 688px;
+  top: 588px;
   right: 25px;
   background-color: #aab5c8;
   display: inline-block;
@@ -804,6 +911,56 @@ export default {
   line-height: 20px;
   border-radius: 100%;
   font-weight: bolder;
+  cursor: pointer;
+}
+.page-left{
+  position: absolute;
+  top: 200px;
+  right: -250px;
+  width: 240px;
+  height: 600px;
+  background: #fff;
+  padding: 5px;
+  box-shadow: 0 0 10px 0 #000;
+  border-radius: 10px;
+  z-index:1002;
+}
+.tools-menu-small{
+  height: 550px;
+  width: 100%;
+  overflow: auto;
+}
+.readonlyTo{
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: fixed;
+  background-color: rgba(0,0,0,.5);
+  z-index: 1001;
+}
+.readonlyChild{
+  position: absolute;
+  top: 0;
+  right:0;
+  width: 1438px;
+  height: 100%;
+  background-color: #fff;
+  border: 1px solid #000;
+  padding: 15px;
+}
+.readonlyToX{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  background-color: #333;
+  color: #fff;
+  line-height: 20px;
+  text-align: center;
+  z-index: 100;
   cursor: pointer;
 }
 </style>
