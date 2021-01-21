@@ -153,13 +153,6 @@
         <tools-template @func="showWith"/>
       </div>
     </transition>
-    <el-drawer
-      title="我是标题"
-      :visible.sync="drawer"
-      modal="false"
-      :with-header="false">
-      <span>我来啦!</span>
-    </el-drawer>
     <div class="page-left" v-if="showHelpWidth">
       <el-collapse class="tools-menu-small" v-model="activeName" accordion>
         <el-collapse-item title="审计作业" name="1">
@@ -912,6 +905,7 @@ export default {
   border-radius: 100%;
   font-weight: bolder;
   cursor: pointer;
+  display: none;
 }
 .page-left{
   position: absolute;
@@ -960,7 +954,7 @@ export default {
   color: #fff;
   line-height: 20px;
   text-align: center;
-  z-index: 100;
+  z-index: 1001;
   cursor: pointer;
 }
 </style>

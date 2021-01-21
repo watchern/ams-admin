@@ -18,8 +18,9 @@ export function getByMenuId(id) {
 
 /**
  * 保存
- * @param data
+ * @param data 
  * @returns {返回查询后的数据}
+ * 
  */
 export function saveHelpDocument(data) {
   return request({
@@ -34,7 +35,7 @@ export function saveHelpDocument(data) {
 
 /**
  * 修改
- * @param data
+ * @param data 
  * @returns {返回查询后的数据}
  */
 export function updateHelpDocument(data) {
@@ -48,3 +49,18 @@ export function updateHelpDocument(data) {
   })
 }
 
+/**
+ * 根据菜单path查询单个
+ * @param data 查询条件
+ * @returns {返回查询后的数据}
+ */
+export function getHelpByMenuPath(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/helpDocument/getByMenuPath',
+    method: 'post',
+    // params 以formData格式传递  后台用RequestParam
+    // 直接加data以json格式传递  后台用RequestBody
+    data
+  })
+}

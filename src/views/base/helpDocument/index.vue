@@ -164,7 +164,17 @@ export default {
         helpDocument: html,
         helpDocumentUuid: this.helpDocumentUuid
       })
-      updateHelpDocument(saveData[0])
+      updateHelpDocument(saveData[0]).then(resp => {
+        if(resp.code === 0){
+          this.$notify({
+            title: '提示',
+            message: '保存成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        }
+      })
     },
     // 单选功能
     handleCheckChange (data, checked, indeterminate) {
@@ -185,6 +195,9 @@ export default {
               helpDocument: ''
             })
             saveHelpDocument(saveData[0])
+            getByMenuId(data.id).then(resp => {
+              this.helpDocumentUuid = resp.data.helpDocumentUuid
+            })
           }
         })
       }
