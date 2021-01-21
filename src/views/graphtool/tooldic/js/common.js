@@ -553,43 +553,50 @@ export function executeNode_callback(notExecuteNodeIdArr) {
     graphIndexVue.$nextTick(() => {
         executeNodeSql(dataParam).then(response => {
             if (response.data != null) {
-                var historyNodeName = ''
                 $('#sysInfoArea').html(response.data.message)
                 graphIndexVue.layuiTabClickLi(1)
-                // 循环所有节点变更执行状态有变化的节点执行状态信息
-                nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
+                if(response.data.isError){
+                    Array.from(notExecuteNodeIdArr, item => {
+                        changeNodeIcon(4, null, item)
+                    })
+                    deleteExecuteNodes(executeId).then()
+                }else{
+                    // 循环所有节点变更执行状态有变化的节点执行状态信息
+                    nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
+                    // 如果当前节点执行成功，则直接显示结果集
+                    if (graph.nodeData[executeCellId] && graph.nodeData[executeCellId].nodeInfo && graph.nodeData[executeCellId].nodeInfo.nodeExcuteStatus === 3) {
+                        graphIndexVue.layuiTabClickLi(0)
+                        graphIndexVue.showTableResult = false
+                        let nodeId = executeCellId
+                        let nodeName = graph.nodeData[executeCellId].nodeInfo.nodeName
+                        let resultTableName = ''
+                        if (!isSet) {
+                            resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName
+                        } else {
+                            resultTableName = graph.nodeData[executeCellId].nodeInfo.resultTableName
+                        }
+                        let isRoleTable = false
+                        // let resultTableObj = { nodeId, nodeName, resultTableName, isRoleTable }
+                        let optType = graph.nodeData[executeCellId].nodeInfo.optType
+                        if (optType === 'newNullNode') { // 结果表
+                            let midTableStatus = graph.nodeData[executeCellId].nodeInfo.midTableStatus
+                            let resultTableStatus = graph.nodeData[executeCellId].nodeInfo.resultTableStatus
+                            if (midTableStatus === 2 || resultTableStatus === 2) {
+                                isRoleTable = true
+                            }
+                            nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + nodeName
+                        }
+                        graphIndexVue.resultTableArr.push({ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable })
+                        // 预览数据
+                        graphIndexVue.viewData()
+                    }
+                }
+                var historyNodeName = ''
                 // 如果执行的是未配置的结果表
                 if (!isSet) {
                     historyNodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName
                 } else {
                     historyNodeName = graphIndexVue.curCell.value
-                }
-                // 如果当前节点执行成功，则直接显示结果集
-                if (graph.nodeData[executeCellId] && graph.nodeData[executeCellId].nodeInfo && graph.nodeData[executeCellId].nodeInfo.nodeExcuteStatus === 3) {
-                    graphIndexVue.layuiTabClickLi(0)
-                    graphIndexVue.showTableResult = false
-                    let nodeId = executeCellId
-                    let nodeName = graph.nodeData[executeCellId].nodeInfo.nodeName
-                    let resultTableName = ''
-                    if (!isSet) {
-                        resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName
-                    } else {
-                        resultTableName = graph.nodeData[executeCellId].nodeInfo.resultTableName
-                    }
-                    let isRoleTable = false
-                    // let resultTableObj = { nodeId, nodeName, resultTableName, isRoleTable }
-                    let optType = graph.nodeData[executeCellId].nodeInfo.optType
-                    if (optType === 'newNullNode') { // 结果表
-                        let midTableStatus = graph.nodeData[executeCellId].nodeInfo.midTableStatus
-                        let resultTableStatus = graph.nodeData[executeCellId].nodeInfo.resultTableStatus
-                        if (midTableStatus === 2 || resultTableStatus === 2) {
-                            isRoleTable = true
-                        }
-                        nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + nodeName
-                    }
-                    graphIndexVue.resultTableArr.push({ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable })
-                    // 预览数据
-                    graphIndexVue.viewData()
                 }
                 // 记录执行操作
                 refrashHistoryZtree('【' + historyNodeName + '】节点执行完毕')
