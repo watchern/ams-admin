@@ -960,7 +960,7 @@ export default {
   color: #fff;
   line-height: 20px;
   text-align: center;
-  z-index: 100;
+  z-index: 1001;
   cursor: pointer;
 }
 </style>
