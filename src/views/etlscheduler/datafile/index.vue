@@ -130,7 +130,7 @@ export default {
           startTimeStart: this.store.state.monitor.processStartTime,
           startTimeEnd: this.store.state.monitor.processEndTime
         }
-        this.queryFields[3].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
+        this.queryFields[3].value = [this.queryDefault.startTimeStart, this.queryDefault.startTimeEnd]
         this.getList(this.queryDefault)
       }
     }

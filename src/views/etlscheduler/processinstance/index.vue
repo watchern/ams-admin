@@ -363,6 +363,7 @@ import QueryField from '@/components/Ace/query-field/index'
 // statuSelectList, statuSelect, statusComm
 import { commandTypeObj, colorList, statusListComm, statuSelectList } from './comm.js'
 import store from '@/store'
+import _ from 'lodash'
 
 export default {
   components: { Pagination, QueryField },
@@ -513,7 +514,7 @@ export default {
           // startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
         }
         this.queryFields[1].value = this.queryDefault.groupExecutionStatus
-        this.queryFields[2].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
+        this.queryFields[2].value = [this.queryDefault.startTimeStart, this.queryDefault.startTimeEnd]
         this.getList(this.queryDefault)
       }
     },
