@@ -707,7 +707,7 @@ export function saveNodeInfo() {
     if(typeof trDom !== 'undefined' && trDom.length > 0){
         $.each(trDom,function () {
             let index = this.getAttribute("data-index");
-            let columnInfo = relationVue.items[index].columnInfo
+            let columnInfo = {...{},...relationVue.items[index].columnInfo}
             let tableAlias = ''
             let resourceTableName = relationVue.items[index].resourceTableName
             let rtn = relationVue.items[index].rtn

@@ -737,18 +737,16 @@ export function initParamInputAndSelect(pDivId) {
             var selectSetting = {
                 el: '#selectParam' + i, // 此处使用【i】的原因在于每个参数都可能被重复使用，只能通过数量下标来确保【el】唯一
                 filterable: true,
-                filterMethod: function(val, item, index, prop) {
-                    if (val === item.value) { // 把value相同的搜索出来
-                        return true
-                    }
-                    if (item.name && item.name.indexOf(val) != -1) { // 名称中包含的搜索出来
+                filterMethod: function(val, item) {
+                    //把value相同的搜索出来或把名称中包含的搜索出来
+                    if (val === item.value || (item.name && item.name.indexOf(val) > -1)) { // 把value相同的搜索出来
                         return true
                     }
                     return false// 不知道的就不管了
                 },
                 data: dataArr
             }
-            if (choiceType == 1) { // 单选
+            if (choiceType === '1') { // 单选
                 selectSetting.radio = true
                 selectSetting.clickClose = true
             }
@@ -818,7 +816,7 @@ export function initParamInputAndSelect(pDivId) {
             if (typeof defaultVal !== 'undefined') {
                 selectSetting.initValue = JSON.parse(defaultVal)// 初始化默认值
             }
-            if (choiceType == 1) { // 单选
+            if (choiceType === '1') { // 单选
                 selectSetting.radio = true
                 selectSetting.clickClose = true
             } else {
@@ -904,7 +902,7 @@ export function selectShow(dom,idStr, paramId, paramName, sql, choiceType, param
                 if (selectedObjArr && selectedObjArr.length > 0) {
                     var associatedParamCol = paramArr[t].associatedParamCol// 被关联参数值（对应的列名称）
                     var key = paramArr[t].paramValueType === 'realValue' ? 'value' : 'name'// 判断是真实值还是显示值
-                    if (choiceType == 1) { // 单选
+                    if (choiceType === '1') { // 单选
                         sqlWhereStr += ' and ' + associatedParamCol + "='" + selectedObjArr[0][key] + "'"
                     } else { // 多选
                         var valueStr = ''

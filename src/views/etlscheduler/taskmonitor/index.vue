@@ -5,7 +5,7 @@
       <el-col :span="6" :offset="17" align="right">
         <div class="block">
           <el-date-picker
-            v-model="value1"
+            v-model="dateranges"
             type="daterange"
             :clearable="false"
             range-separator="至"
@@ -262,7 +262,7 @@ export default {
           }
         ]
       },
-      value1: null
+      dateranges: null
     }
   },
   // refresh(){
@@ -277,7 +277,7 @@ export default {
     // dayjs().format('YYYY-MM-DD')
     this.searchParams.startTimeStart = new Date(new Date().setHours(0, 0, 0, 0))
     this.searchParams.startTimeEnd = new Date(new Date().setHours(0, 0, 0, 0))
-    this.value1 = [new Date(new Date().setHours(0, 0, 0, 0)), new Date(new Date().setHours(0, 0, 0, 0))]
+    this.dateranges = [new Date(new Date().setHours(0, 0, 0, 0)), new Date(new Date().setHours(0, 0, 0, 0))]
     this.setProcessGroupExecutionStatusType('')
     this.setProcessStartTime(this.searchParams.startTimeStart)
     this.setProcessEndTime(this.searchParams.startTimeEnd)
@@ -335,8 +335,8 @@ export default {
     },
     // 根据时间范围获取任务历时
     _datepicker() {
-      this.searchParams.startTimeStart = this.value1[0]
-      this.searchParams.startTimeEnd = this.value1[1]
+      this.searchParams.startTimeStart = this.dateranges[0]
+      this.searchParams.startTimeEnd = this.dateranges[1]
       this.searchParams.statusType = this.store.state.monitor.processGroupExecutionStatusType
       this.searchParams.statusType = null
       this.setProcessStartTime(this.searchParams.startTimeStart)

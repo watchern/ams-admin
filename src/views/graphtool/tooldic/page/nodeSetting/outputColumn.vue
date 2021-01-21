@@ -239,7 +239,7 @@
                     $.each(trDom,function () {
                         const index = this.getAttribute('data-index')
                         var checked = $this.items[index].checked
-                        var this_column = $this.items[index].columnInfo
+                        var this_column = {...{},...$this.items[index].columnInfo}
                         var old_colum_name = $this.items[index].curColumnName// 之前的newColumnName
                         var re_is_filter_comumn = []
                         $($this.$parent.is_filter_column).each(function () {

@@ -300,7 +300,7 @@ export default {
           startTimeEnd: this.store.state.monitor.processEndTime
         }
         this.queryFields[1].value = this.queryDefault.groupExecutionStatus
-        this.queryFields[2].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
+        this.queryFields[2].value = [this.queryDefault.startTimeStart, this.queryDefault.startTimeEnd]
         this.getList(this.queryDefault)
       }
     }

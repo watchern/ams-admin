@@ -342,7 +342,8 @@
                             el: `#${divId}`,
                             filterable: true,
                             filterMethod: function (val, item) {
-                                if (val === item.value || (item.name && item.name.indexOf(val) > -1)) { // 把value相同的搜索出来或把名称中包含的搜索出来
+                                //把value相同的搜索出来或把名称中包含的搜索出来
+                                if (val === item.value || (item.name && item.name.indexOf(val) > -1)) {
                                     return true
                                 }
                                 return false// 不知道的就不管了
@@ -361,7 +362,7 @@
                             }
                             selectSetting.hide = function () {
                                 if (initDataArr && dataArr.length === 0) {
-                                    let selectXs = xmSelect.get(divId, true)// 获取当前下拉框的实体对象
+                                    let selectXs = xmSelect.get(`#${divId}`, true)// 获取当前下拉框的实体对象
                                     dataArr = selectXs.options.data
                                     initDataArr = false
                                 }
@@ -418,7 +419,7 @@
                             }
                             selectSetting.hide = function() {
                                 if (initDataArr && dataArr.length === 0) {
-                                    let selectXs = xmSelect.get(divId, true)// 获取当前下拉框的实体对象
+                                    let selectXs = xmSelect.get(`#${divId}`, true)// 获取当前下拉框的实体对象
                                     dataArr = selectXs.options.data
                                     initDataArr = false
                                 }

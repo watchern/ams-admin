@@ -218,8 +218,6 @@ function verifyPreNode(curNodeId) {
  * 执行校验
  */
 export function executeVerify() {
-  var curNodeData = graph.nodeData[graph.curCell.id]
-  var nodeExcuteStatus = curNodeData.nodeInfo.nodeExcuteStatus
   // 校验当前节点是否关联前置节点
   var parentNodes = graph.curCell.getSourceNodes()
   if (parentNodes.length === 0) {
