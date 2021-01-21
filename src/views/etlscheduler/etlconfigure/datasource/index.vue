@@ -78,20 +78,24 @@
           <el-popover trigger="hover" placement="top" width="500">
             <!-- <p>{{ scope.row.connectionParams }}</p> -->
             <el-row>
-              <label class="col-md-4">
-                jdbc url:
-              </label>
-              <div class="col-md-8">
+              <el-col :span="4">
+                <label>
+                  jdbc url:
+                </label>
+              </el-col>
+              <el-col :span="20">
                 {{ JSON.parse(scope.row.connectionParams).jdbcUrl }}
-              </div>
+              </el-col>
             </el-row>
             <el-row>
-              <label class="col-md-4">
-                用户名:
-              </label>
-              <div class="col-md-8">
+              <el-col :span="4">
+                <label>
+                  用户名:
+                </label>
+              </el-col>
+              <el-col :span="20">
                 {{ JSON.parse(scope.row.connectionParams).user }}
-              </div>
+              </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
               <el-link :underline="false" type="primary">查看参数</el-link>
@@ -185,6 +189,17 @@
           />
         </el-form-item>
         <el-form-item
+          v-if="!showPrincipal"
+          label="Principal"
+          prop="principal"
+        >
+          <el-input
+            v-model="datasource.principal"
+            :disabled="isDetails"
+            placeholder="请输入Principal(必填)"
+          />
+        </el-form-item>
+        <el-form-item
           label="用户名"
           prop="userName"
         >
@@ -271,7 +286,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { pageList, deleteByIds, verifyDSName, getById } from '@/api/etlscheduler/datasource'
+import { pageList, deleteByIds, verifyDSName, getById, kerberosStartupState } from '@/api/etlscheduler/datasource'
 import QueryField from '@/components/Ace/query-field/index'
 import store from '@/store'
 import { mapActions } from 'vuex'
@@ -357,6 +372,7 @@ export default {
           { max: 20, message: '用户名在20个字符之内', trigger: 'change' }],
         database: [{ required: true, message: '请填写数据库名', trigger: 'change' },
           { pattern: /^[0-9a-zA-Z_]{1,}$/, message: '数据库名称由字母、数字和下划线组成' }],
+        principal: [{ required: true, message: '请填写principal', trigger: 'change' }],
         other: [{ validator: checkOther, trigger: 'change' }]
       },
       downloadLoading: false,
@@ -446,9 +462,16 @@ export default {
         default:
           break
       }
-
       // Set default port for each type datasource Set default port for each type datasource 为每个类型数据源设置默认端口
       this._setDefaultValues(value)
+      kerberosStartupState().then(res => {
+        this.isShowPrincipal = res.data
+        if ((value === 'HIVE' || value === 'SPARK') && this.isShowPrincipal === true) {
+          this.showPrincipal = false
+        } else {
+          this.showPrincipal = true
+        }
+      })
 
       // if ((value === 'HIVE' || value === 'SPARK')) {
       //   this.showPrincipal = true
@@ -457,17 +480,17 @@ export default {
       // }
       // TODOKerberos
       // return new Promise((resolve, reject) => {
-      // this.store.dispatch('datasource/getKerberosStartupState').then(res => {
-      //   this.isShowPrincipal = res
-      //   if ((value === 'HIVE' || value === 'SPARK') && this.isShowPrincipal === true) {
-      //     this.showPrincipal = false
-      //   } else {
-      //     this.showPrincipal = true
-      //   }
-      // }).catch(e => {
-      //   this.$message.error(e.msg || '')
-      //   reject(e)
-      // })
+      //   this.store.dispatch('datasource/getKerberosStartupState').then(res => {
+      //     this.isShowPrincipal = res
+      //     if ((value === 'HIVE' || value === 'SPARK') && this.isShowPrincipal === true) {
+      //       this.showPrincipal = false
+      //     } else {
+      //       this.showPrincipal = true
+      //     }
+      //   }).catch(e => {
+      //     this.$message.error(e.msg || '')
+      //     reject(e)
+      //   })
       // })
     }
   },

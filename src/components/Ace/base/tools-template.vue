@@ -32,7 +32,7 @@
             v-for="(item,index) in latelyFastList"
             :key="index"
             class="use-box flex a-center j-center use-zy"
-            @click="theRouting(index)"
+            @click="theRoutingIn(item)"
             :style='{background:item.bg}'
           >
             <img :src="item.image" />
@@ -50,7 +50,7 @@
                :key="index"
                class="use-box flex a-center j-center use-zyt"
           >
-            <span style="font-size:14px"> {{ item }} </span>
+            <span style="font-size:14px"> {{ item.name }} </span>
           </div>
           <div class="use-box flex a-center j-center use-zyt">
             <span style="font-size:14px"> 维护 </span>
@@ -108,16 +108,16 @@
 <!--    </div>-->
     <div class="tools-right" @click="callback">
     </div>
-    <div class="tools-center" v-if="dialogVisible">
+    <div class="tools-center" v-show="dialogVisible">
       <el-collapse class="tools-menu-small">
         <el-collapse-item title="审计作业">
           <el-tree
             :data="menugroup['402883817586fc2a017586fd9e1a0001']"
             show-checkbox
-            default-expand-all
             node-key="id"
             ref="tree1"
             highlight-current
+            :check-strictly="defaultProps.checkStrictly"
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
@@ -125,10 +125,10 @@
           <el-tree
             :data="menugroup['4028838175880ded01758835b393006b']"
             show-checkbox
-            default-expand-all
             node-key="id"
             ref="tree2"
             highlight-current
+            :check-strictly="defaultProps.checkStrictly"
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
@@ -136,10 +136,10 @@
           <el-tree
             :data="menugroup['4028838175880ded01758816610b001a']"
             show-checkbox
-            default-expand-all
             node-key="id"
             ref="tree3"
             highlight-current
+            :check-strictly="defaultProps.checkStrictly"
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
@@ -147,15 +147,16 @@
           <el-tree
             :data="menugroup['4028838175880ded01758828366f0046']"
             show-checkbox
-            default-expand-all
             node-key="id"
             ref="tree4"
             highlight-current
+            @check=""
+            :check-strictly="defaultProps.checkStrictly"
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
       </el-collapse>
-      <el-button @click="getCheckedNodes" type="primary">保 存</el-button>
+      <el-button @click="getCheckedNodes" type="primary" class="btn-tree">保 存</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
     </div>
   </div>
@@ -164,7 +165,7 @@
 <script>
 import { querySystemTask } from '@/api/base/systemtask'
 import { getUserRes } from '@/api/user'
-import { saveQuickMenuList, getQuickMenuList} from "@/api/base/quickmenu";
+import { saveQuickMenuList, getQuickMenuList } from '@/api/base/quickmenu'
 export default {
   data() {
     return {
@@ -498,7 +499,13 @@ export default {
       latelyFastList:[],
       defaultProps: {
         children: 'children',
-        label: 'label'
+        label: 'label',
+        disabled: this.ifFather,
+        checkStrictly: true
+      },
+      quickRefresh: {
+        top: true,
+        bottom: false
       }
     }
   },
@@ -574,14 +581,14 @@ export default {
         console.error(error)
       })
     getQuickMenuList().then(res => {
-      for (let i=0; i<3; i++) {
+      for (let i=0; i<res.data.length; i++) {
         for (let n=0; n<this.latelyImgList.length; n++) {
-          if (this.latelyImgList[n].name === res[i].name) {
+          if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
             this.latelyFastList.push({
-              id: res[i].id,
-              name: res[i].name,
-              path: res[i].path,
-              image: this.latelyInImgList[i].image,
+              id: res.data[i].quickMenuId,
+              name: res.data[i].quickMenuName,
+              path: res.data[i].quickMenuPath,
+              image: this.latelyImgList[i].image,
               bg: this.latelyBackList[i].bg
             })
           }
@@ -600,6 +607,16 @@ export default {
         }
       })
       // this.$emit('func',false)
+    },
+    theRoutingIn(item){
+      this.$router.push({ path: item.path })
+      this.$store.commit('aceState/setRightFooterTags', {
+        type: 'active',
+        val: {
+          name: item.name,
+          path: item.path
+        }
+      })
     },
     init() {
       querySystemTask().then(resp => {
@@ -665,33 +682,66 @@ export default {
       let allThing = []
       for (let i=0;i<this.$refs.tree1.getCheckedNodes().length;i++) {
         allThing.push({
-          id: this.$refs.tree1.getCheckedNodes()[i].id,
-          name: this.$refs.tree1.getCheckedNodes()[i].label,
-          path: this.$refs.tree1.getCheckedNodes()[i].path
+          quickMenuId: this.$refs.tree1.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree1.getCheckedNodes()[i].label,
+          quickMenuPath: this.$refs.tree1.getCheckedNodes()[i].path
         })
       }
       for (let i=0;i<this.$refs.tree2.getCheckedNodes().length;i++) {
         allThing.push({
-          id: this.$refs.tree2.getCheckedNodes()[i].id,
-          name: this.$refs.tree2.getCheckedNodes()[i].label,
-          path: this.$refs.tree2.getCheckedNodes()[i].path
+          quickMenuId: this.$refs.tree2.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree2.getCheckedNodes()[i].label,
+          quickMenuPath: this.$refs.tree2.getCheckedNodes()[i].path
         })
       }
       for (let i=0;i<this.$refs.tree3.getCheckedNodes().length;i++) {
         allThing.push({
-          id: this.$refs.tree3.getCheckedNodes()[i].id,
-          name: this.$refs.tree3.getCheckedNodes()[i].label,
-          path: this.$refs.tree3.getCheckedNodes()[i].path
+          quickMenuId: this.$refs.tree3.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree3.getCheckedNodes()[i].label,
+          quickMenuPath: this.$refs.tree3.getCheckedNodes()[i].path
         })
       }
       for (let i=0;i<this.$refs.tree4.getCheckedNodes().length;i++) {
         allThing.push({
-          id: this.$refs.tree4.getCheckedNodes()[i].id,
-          name: this.$refs.tree4.getCheckedNodes()[i].label,
-          path: this.$refs.tree4.getCheckedNodes()[i].path
+          quickMenuId: this.$refs.tree4.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree4.getCheckedNodes()[i].label,
+          quickMenuPath: this.$refs.tree4.getCheckedNodes()[i].path
         })
       }
-      saveQuickMenuList(allThing)
+      saveQuickMenuList(allThing).then(resp => {
+        if(resp.code != 0){
+          this.$message({
+            type: 'error',
+            message: '保存失败!'
+          })
+          return
+        }
+        this.latelyFastList = []
+        getQuickMenuList().then(res => {
+          for (let i=0; i<res.data.length; i++) {
+            for (let n=0; n<this.latelyImgList.length; n++) {
+              if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
+                this.latelyFastList.push({
+                  id: res.data[i].quickMenuId,
+                  name: res.data[i].quickMenuName,
+                  path: res.data[i].quickMenuPath,
+                  image: this.latelyImgList[i].image,
+                  bg: this.latelyBackList[i].bg
+                })
+              }
+            }
+          }
+        })
+      })
+      this.dialogVisible = false
+    },
+    // 父节点不可选
+    ifFather(data) {
+      if (data.children) {
+        return true
+      }else{
+        return false
+      }
     }
   }
 }
@@ -923,7 +973,10 @@ export default {
   overflow: hidden;
 }
 .tools-menu-small{
-  max-height: 88vh;
+  max-height: 86vh;
   overflow: auto;
+}
+.btn-tree{
+  margin: 10px 80px 0 22px;
 }
 </style>

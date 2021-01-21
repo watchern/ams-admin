@@ -59,6 +59,7 @@ export default {
       this.initData()
   },
   created() {
+    this.clearData()
   },
   methods: {
     /**
@@ -120,8 +121,7 @@ export default {
                 that.$emit('addInTable',that.tableId)
                 that.$emit('getAllDimension',that.tableId)
                 that.$emit('getAllColumn',that.tableId)
-                var info = "新增了维度:'{0}'".format($("#dimensionName").val())
-                that.addOperLogByParam(that.log_module,that.log_add,that.log_info)
+                that.clearData()
                 that.closeDialog()
             }
             else{
@@ -134,7 +134,6 @@ export default {
      * 编辑维度时反显数据
      */
     initAntiDisplayData() {
-
         var that = this
         var dimUUID= this.dimUUID
         var url = this.contextUrl + "/InDimension/selectByPrimaryKey"
@@ -175,6 +174,7 @@ export default {
             if(res.state == true) {
                 that.$emit('getAllDimension',that.tableId)
                 that.$emit('getAllColumn',that.tableId)
+                that.clearData()
                 that.closeDialog()
             }
             else {
@@ -242,6 +242,15 @@ export default {
              return false
          }
          return true
+    },
+    clearData(){
+      this.form = {
+          dimensionName: '',
+          tableName: '',
+          columnName: '',
+          dimensionMemo: ''
+      }
+      this.editDimDataObj = null
     }
   }
 }

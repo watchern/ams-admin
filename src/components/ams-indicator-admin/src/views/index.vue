@@ -99,6 +99,7 @@
                     :ref="dataObj.id + 'table'" v-if="dataObj.isLoad == true && dataObj.isError == false"
                     style="height:75%"
                     class="table ag-theme-balham"
+                    :get-row-style="(params) => {return setRowColor(params,dataObj.id)}"
                     :column-defs="dataObj.data.columnDefs"
                     :row-data="dataObj.data.data"
                     rowMultiSelectWithClick="true"
@@ -130,7 +131,7 @@
         </el-submenu>
       </el-menu>
     </div>
-    <el-dialog :title="deriveInType===2?'派生指标':'临时指标'" v-if="dialogAddderiveinVisible"
+    <el-dialog :title="deriveInType==='2'?'派生指标':'临时指标'" v-if="dialogAddderiveinVisible" width="70%"
                :visible.sync="dialogAddderiveinVisible">
       <addderivein @closeAddderiveinDialog="closeAddderiveinDialog" v-if="dialogAddderiveinVisible" :type="deriveInType" :addType="addDeriveInType"
                    :nowAnalysisRegionId="nowAnalysisRegionId" :parentUuid="nowParentUuid"
@@ -396,7 +397,10 @@ export default {
         }
       },
       addTempDimAnalysisRegionId:'',
-      inMeasureFilter:false
+      inMeasureFilter:false,
+      //每个分析区所需要展示的过滤条件，里面包含analysisRegionId,条件显示的sql对象
+      analysisRegionFilterShowObj:{}
+      //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilte:''}]}
     }
   },
   watch: {
@@ -4846,13 +4850,21 @@ export default {
       var url = this.contextUrl + "/indicatrixAnalysis/supAnalysis";
       let loadingInstance = Loading.service({fullscreen: true});
       var newInList = [];
+      let filterShow = [];
       //取出每个分析区的第一个指标并删除，用该指标与其他指标进行组织sql
-      $.each(objInList, function (num, inMeasure) {
-        if (inMeasure == null) {
+      $.each(objInList, function (num, indicatrixObj) {
+        if (indicatrixObj == null) {
           return;
         }
-        newInList.push(inMeasure);
+        newInList.push(indicatrixObj);
+        //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilteSql:''}]}
+        //将指标最后生成的列名、条件显示sql记录到对象里，用于后边渲染颜色
+        let indicatorFilter = JSON.parse(indicatrixObj.inFilterShow)
+        let indicatorName = that.updateGroupDisplay(indicatrixObj.measureGroup,indicatrixObj.measureName).replace("(","").replace(")","")
+        filterShow.push({indicatorName:indicatorName,indicatorFilter:indicatorFilter})
       });
+      let newId = analysisRegionId.substring(0,analysisRegionId.length - 4)
+      this.analysisRegionFilterShowObj[newId] = filterShow
       $.ajax({
         type: "post",
         url: url,
@@ -4909,12 +4921,20 @@ export default {
       var url = this.contextUrl + "/indicatrixAnalysis/getInData";
       let loadingInstance = Loading.service({fullscreen: true});
       var indicatrixObj = null;
+      let filterShow = [];
       $.each(objInList, function (num, value) {
         if (value == null) {
           return;
         }
         indicatrixObj = value;
+        //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilteSql:''}]}
+        //将指标最后生成的列名、条件显示sql记录到对象里，用于后边渲染颜色
+        let indicatorFilter = JSON.parse(indicatrixObj.inFilterShow)
+        let indicatorName = that.updateGroupDisplay(indicatrixObj.measureGroup,indicatrixObj.measureName).replace("(","").replace(")","")
+        filterShow.push({indicatorName:indicatorName,indicatorFilter:indicatorFilter})
       });
+      let newId = analysisRegionId.substring(0,analysisRegionId.length - 4)
+      this.analysisRegionFilterShowObj[newId] = filterShow
       $.ajax({
         type: "post",
         url: url,
@@ -4932,7 +4952,7 @@ export default {
               icon:'el-icon-close',
               isError:true,
               message:"分析出错，" + res.message}
-            that.dataList.push(dataView)
+              that.dataList.push(dataView)
             return;
           }
           let newAnalysisRegionId = analysisRegionId.substring(0,analysisRegionId.length-4)
@@ -5729,6 +5749,69 @@ export default {
         }
       }
       //根据分析区编号找到分析区的对象，修改分析区对象的属性值改变现实表格还是图表，同时修改div样式
+    },
+    /**\
+     *
+     *设置背景颜色
+     * @param params aggrid回调参数
+     * @param regionAnalysiId 自定义参数
+     * @returns {undefined|{"background-color": (string), color: *}|{"background-color": *, color: *}}
+     */
+    setRowColor(params,regionAnalysiId){
+      let filterShow = this.analysisRegionFilterShowObj[regionAnalysiId]
+      for(let i = 0; i < filterShow.length;i++){
+        //拿到显示的条件后进行处理，判断当前行的值是否符合条件，如果符合条件则设置颜色等信息
+        //如果是多个指标则取最后一个颜色即可
+        //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilte:''}]}
+        let indicatorName = filterShow[i].indicatorName
+        let indicatorFilter = filterShow[i].indicatorFilter
+        if(indicatorFilter){
+          let result = this.handleData(params.data,indicatorFilter,indicatorName)
+          if(result){
+            return result
+          }
+        }
+      }
+    },
+    /**
+     * 处理数据
+     * @param data 要处理的数据
+     * @param indicatorFilter 过滤条件对象
+     * @param columnName 列名
+     * @returns {{"background-color": (string), color: (string)}}
+     */
+    handleData(data,indicatorFilter,columnName){
+      //这块这么解析不太好，有很多问题，但是暂时想不到好的方式，先用这种方式，
+      //利用空格解析filter
+      let backgroundColor = indicatorFilter.backGroundColor;
+      let fontColor = indicatorFilter.fontColor;
+      let filterSplit = indicatorFilter.sql.split(' ')
+      //数据出来的值
+      let valueOne = data[columnName]
+      //要判断的值
+      let valueTwo = filterSplit[2]
+      //运算符
+      let operator = filterSplit[1]
+      if(valueOne == null || valueTwo == null){
+        return
+      }
+      valueOne = parseFloat(valueOne)
+      valueTwo = parseFloat(valueTwo)
+      if(operator === ">" && valueOne > valueTwo){
+          return {"background-color":backgroundColor,"color":fontColor}
+      }
+      else if(operator === ">=" && valueOne >= valueTwo){
+        return {"background-color":backgroundColor,"color":fontColor}
+      }
+      else if(operator === "<" && valueOne < valueTwo){
+        return {"background-color":backgroundColor,"color":fontColor}
+      }
+      else if(operator === "<=" && valueOne <= valueTwo){
+        return {"background-color":backgroundColor,"color":fontColor}
+      }
+      else if(operator === "=" && valueOne === valueTwo){
+        return {"background-color":backgroundColor,"color":fontColor}
+      }
     }
   }
 }

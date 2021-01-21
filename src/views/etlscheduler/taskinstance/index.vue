@@ -32,7 +32,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top" width="500">
+          <el-popover trigger="hover" placement="top" width="200">
             <p style="text-align:center" :style="{color: statusObj[scope.row.status].color}"><strong>{{ statusObj[scope.row.status].name }}</strong></p>
             <p style="text-align:center">点击查看日志</p>
             <div slot="reference" class="name-wrapper">
@@ -57,9 +57,11 @@
       <el-table-column
         label="流程实例名称"
         prop="processInstanceName"
+        :show-overflow-tooltip="true"
       >
         <template slot-scope="scope">
-          <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processInstanceId)">{{ scope.row.processInstanceName }}</el-link>
+          <span class="tablespan" @click="handleView(scope.row.processInstanceId)">{{ scope.row.processInstanceName }}</span>
+          <!-- <el-link target="_blank" :underline="false" type="primary" @click="handleView(scope.row.processInstanceId)">{{ scope.row.processInstanceName }}</el-link> -->
         </template>
       </el-table-column>
       <el-table-column
@@ -169,7 +171,7 @@ import { listByPage, findTaskLogs } from '@/api/etlscheduler/taskinstance'
 import QueryField from '@/components/Ace/query-field/index'
 // statuSelect, statusComm
 import { colorList, statusListComm, statuSelectList } from '@/views/etlscheduler/processinstance/comm.js'
-import dayjs from 'dayjs'
+// import dayjs from 'dayjs'
 import store from '@/store'
 
 export default {
@@ -294,11 +296,11 @@ export default {
       handler() {
         this.queryDefault = {
           groupExecutionStatus: this.store.state.monitor.processGroupExecutionStatusType,
-          startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
-          startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
+          startTimeStart: this.store.state.monitor.processStartTime,
+          startTimeEnd: this.store.state.monitor.processEndTime
         }
         this.queryFields[1].value = this.queryDefault.groupExecutionStatus
-        this.queryFields[2].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
+        this.queryFields[2].value = [this.queryDefault.startTimeStart, this.queryDefault.startTimeEnd]
         this.getList(this.queryDefault)
       }
     }
@@ -412,11 +414,14 @@ export default {
 	color: #676A6C;
   } */
   .logtype{
-	font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
-	font-weight: 700;
-	font-style: normal;
-  color: #3f3a3a;
-  padding: 5px 0px;
+    font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+    font-weight: 700;
+    font-style: normal;
+    color: #3f3a3a;
+    padding: 5px 0px;
   }
-
+  .tablespan{
+    color: #46a6ff;
+    cursor: pointer;
+  }
 </style>
