@@ -905,6 +905,7 @@ export default {
   border-radius: 100%;
   font-weight: bolder;
   cursor: pointer;
+  display: none;
 }
 .page-left{
   position: absolute;

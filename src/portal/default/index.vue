@@ -118,6 +118,16 @@ export default {
   bottom: 4vh;
   font-size: 20px;
   cursor: pointer;
+  display: none;
+}
+.readonlyTo{
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: fixed;
+  background-color: rgba(0,0,0,.5);
+  z-index: 1001;
 }
 .readonlyChild{
   position: absolute;
