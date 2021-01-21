@@ -410,6 +410,9 @@
 <script>
     import '@/components/ams-graphtool/styles/grapheditor.css'
     import '@/components/ams-loading/css/loading.css'
+    import '@/components/ams-ztree/js/jquery.ztree_new.all.min.js'
+    import '@/components/ams-ztree/js/jquery.ztree.excheck.min.js'
+    import '@/components/ams-ztree/js/jquery.ztree.exhide.min.js'
     require("@/components/ams-graphtool/framework/sanitizer/sanitizer.min.js")
     // 引入子组件
     import Help from '@/views/graphtool/tooldic/page/funEventVue/help.vue'
@@ -495,16 +498,14 @@
                 sqlEditorWidth:'',
                 sqlEditorStyle:'',
                 curModelSql: '',// 用来临时存储打开模型图形时的模型SQL语句
-                isSearchExpand:false// 左侧资源树搜索功能的变量
+                isSearchExpand:false,// 左侧资源树搜索功能的变量
+                curCell:null//当前执行节点的对象
             }
         },
         created() {
             // 引入公用CSS、JS
             addCssFile('/lib/Ztree/css/zTreeStyle/zTreeStyle.css','zTreeStyle')
             addJsFile('/lib/bootstrap/js/bootstrap.min.js','bootstrap.min')
-            addJsFile('/lib/Ztree/js/jquery.ztree_new.all.min.js','jquery.ztree_new.all.min')
-            addJsFile('/lib/Ztree/js/jquery.ztree.excheck.min.js','jquery.ztree.excheck.min')
-            addJsFile('/lib/Ztree/js/jquery.ztree.exhide.min.js','jquery.ztree.exhide.min')
             this.init()
         },
         beforeDestroy() {
@@ -571,6 +572,8 @@
                 window.deleteCells = commonJs.deleteCells
                 window.previewNodeData = commonJs.previewNodeData
                 window.reSetOptProperty = commonJs.reSetOptProperty
+                window.changeUndoNodeInfo = commonJs.changeUndoNodeInfo
+                window.changeRedoNodeInfo = commonJs.changeRedoNodeInfo
             },
             initIndex() {
                 let $this = this

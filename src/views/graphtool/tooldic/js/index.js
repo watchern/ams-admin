@@ -1802,7 +1802,7 @@ export function searchZtree() {
         } else {
             var nodeArr = getAllNodes()
             for (var i = 0; i < nodeArr.length; i++) {
-                if (nodeArr[i].id !== 'bussRootNode' && nodeArr[i].id !== 'bussDataRoot' && nodeArr[i].id !== 'my_space') {
+                if (nodeArr[i].pid) {
                     graphIndexVue.zTreeObj.hideNode(nodeArr[i])
                 }
             }
