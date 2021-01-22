@@ -486,6 +486,7 @@ export default {
         type: 'closeAll',
         val: ''
       })
+      this.$router.push({ path:'/ams/first'})
     },
     showHelp() {
       this.showHelpWidth = !this.showHelpWidth
