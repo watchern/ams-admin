@@ -3,7 +3,7 @@
     <div class="tools-content h100 relative">
       <div class="title text-white">
         <i class="el-icon-s-grid" />
-        <span class="label">More tools</span>
+        <span class="label">更多工具</span>
       </div>
       <div class="lately-use">
         <div class="title-label">常用功能</div>

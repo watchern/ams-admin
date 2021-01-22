@@ -382,3 +382,16 @@ export function selectScreenQueryData(data) {
         data
     })
 }
+
+/**
+ * 校验节点的输出字段是否含有【*】或特殊函数
+ * @param data 所有节点信息集合、当前节点的ID、当前节点的类型、数据源类型
+ */
+export function verifySqlNodeSelectOption(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/verifySqlNodeSelectOption',
+        method: 'post',
+        data
+    })
+}

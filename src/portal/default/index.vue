@@ -6,10 +6,15 @@
     <div class="home-right flex1 h100 flex a-start j-start flex-column">
       <div class="home-right-content flex1 w100">
         <router-view />
+        <i class="el-icon-question seat" @click="getHelp()"></i>
       </div>
       <div v-if="isShowRightFooter" class="home-right-footer flex-shrink w100">
         <RightFooter />
       </div>
+    </div>
+    <div class="readonlyTo" v-if="showHelpHeight">
+      <div @click="showHelpHeight = false" class="readonlyToX">X</div>
+      <div class="readonlyChild" id="readonlyChild"></div>
     </div>
   </div>
 </template>
@@ -17,10 +22,16 @@
 <script>
 import LeftMenu from './views/left-menu'
 import RightFooter from './views/right-footer'
+import { getHelpByMenuPath } from '@/api/base/helpdocument'
 export default {
   components: {
     LeftMenu,
     RightFooter
+  },
+  data () {
+    return {
+      showHelpHeight: false
+    }
   },
   computed: {
     isShowRightFooter() {
@@ -40,6 +51,22 @@ export default {
     window.addEventListener('beforeunload', () => {
       sessionStorage.setItem('store', JSON.stringify(this.$store.state))
     })
+  },
+  methods: {
+    getHelp () {
+      let saveData = []
+      saveData.push({
+        menuPath: this.$route.fullPath
+      })
+      getHelpByMenuPath(saveData[0]).then(resp => {
+        if(resp.code === 0 && resp.data !== null){
+          document.getElementById('readonlyChild').innerHTML = resp.data.helpDocument
+        } else if (resp.code === 0 && resp.data === null){
+          document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
+        }
+      })
+      this.showHelpHeight = !this.showHelpHeight
+    },
   }
 }
 </script>
@@ -84,5 +111,46 @@ export default {
   box-shadow: 3px 0 17px 0 rgba(0,0,0,.1);
   margin: 16px 10px;
   background: #ffffff;
+}
+.seat{
+  position: fixed;
+  right: 2vw;
+  bottom: 6vh;
+  font-size: 24px;
+  cursor: pointer;
+}
+.readonlyTo{
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: fixed;
+  background-color: rgba(0,0,0,.5);
+  z-index: 1001;
+}
+.readonlyChild{
+  position: absolute;
+  top: 0;
+  right:0;
+  width: 1438px;
+  height: 100%;
+  background-color: #fff;
+  border: 1px solid #000;
+  padding: 15px;
+  z-index: 1000;
+}
+.readonlyToX{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  background-color: #333;
+  color: #fff;
+  line-height: 20px;
+  text-align: center;
+  z-index: 1001;
+  cursor: pointer;
 }
 </style>
