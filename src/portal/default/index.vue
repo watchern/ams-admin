@@ -56,7 +56,7 @@ export default {
     getHelp () {
       let saveData = []
       saveData.push({
-        menuPath: this.$route.path
+        menuPath: this.$route.fullPath
       })
       getHelpByMenuPath(saveData[0]).then(resp => {
         if(resp.code === 0 && resp.data !== null){
@@ -66,7 +66,7 @@ export default {
         }
       })
       this.showHelpHeight = !this.showHelpHeight
-    }
+    },
   }
 }
 </script>
@@ -115,10 +115,9 @@ export default {
 .seat{
   position: fixed;
   right: 2vw;
-  bottom: 4vh;
-  font-size: 20px;
+  bottom: 6vh;
+  font-size: 24px;
   cursor: pointer;
-  display: none;
 }
 .readonlyTo{
   width: 100%;
