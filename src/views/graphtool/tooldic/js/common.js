@@ -557,6 +557,7 @@ export function executeNode_callback(notExecuteNodeIdArr) {
                 graphIndexVue.layuiTabClickLi(1)
                 if(response.data.isError){
                     Array.from(notExecuteNodeIdArr, item => {
+                        graph.nodeData[item].nodeInfo.nodeExcuteStatus = 4
                         changeNodeIcon(4, null, item)
                     })
                     deleteExecuteNodes(executeId).then()

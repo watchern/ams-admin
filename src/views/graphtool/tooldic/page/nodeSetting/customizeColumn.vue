@@ -312,7 +312,8 @@
                         "columnType":'',
                         "columnLength":null,
                         "newColumnName":'',
-                        "isOutputColumn":1
+                        "isOutputColumn":1,
+                        "customizeColumn":true
                     }
                 }
                 if($.trim(this.customizeColumnVal).length === 0){

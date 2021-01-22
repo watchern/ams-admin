@@ -1,5 +1,5 @@
 <template>
-    <div @mousemove="initEvent" ref="settingParamDiv" style="overflow-y: auto;height: 600px;" v-loading="settingLoading" element-loading-text="正在初始化数据，请稍后……">
+    <div @mousemove="initEvent" ref="settingParamDiv" style="overflow-y: auto;height: 600px;" v-loading="settingLoading" :element-loading-text="loadText">
         <ul id="myTab" class="nav nav-tabs">
             <li class="active">
                 <a href="#editParam" data-toggle="tab">参数编辑</a>
@@ -125,6 +125,7 @@
                 nodeZtreeObj:null,
                 paramZtreeObj:null,
                 settingLoading:true,
+                loadText:"正在初始化数据，请稍后……",
                 setParamArr :[],
                 paramDivArr:[],// 用来记录参数按钮（因反显时不能全部渲染参数的div元素，因此只能用变量记录）
                 isAdd:Object.keys(this.paramsSetting).length === 0,// 此次操作是新增还是修改

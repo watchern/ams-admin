@@ -666,7 +666,7 @@
                                 paramInfoObj = paramInfoArr[index]
                                 let moduleParamId = paramInfoObj.dataId// 母参数ID
                                 let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
-                                let paramValue = paramInfoObj.value
+                                let paramValue = typeof paramInfoObj.value !== 'undefined' ? paramInfoObj.value : ""
                                 let obj = {
                                     'moduleParamId': moduleParamId,
                                     'paramValue': $.trim(paramValue), // 处理可能存在的空格
@@ -802,7 +802,7 @@
                         }
                         if (paramNum !== 0) { // 第一步，先判断是否有必填的参数没有输入值
                             returnObj.verify = false
-                            returnObj.message += nodeName + '含有未输入值的参数项，请重新输入<br/>'
+                            returnObj.message += nodeName + '含有未输入值的参数项，请重新输入\n'
                             delete this.nodeData[nodeId].replaceParamSql
                             break
                         } else {

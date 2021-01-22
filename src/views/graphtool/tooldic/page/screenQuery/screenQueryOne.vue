@@ -1,5 +1,5 @@
 <template>
-    <div ref="screenTableMain" :style="screenStyle" v-loading="screenLoading" element-loading-text="数据加载中">
+    <div ref="screenTableMain" :style="screenStyle" v-loading="screenLoading" element-loading-text="数据请求中，请稍后……">
         <el-collapse v-model="activeName" accordion v-if="queryFilter">
             <el-collapse-item name="1" title="查询条件">
                 <div :style="collapseStyle">
@@ -139,7 +139,7 @@
         methods: {
             async init() {
                 let height = $(this.$parent.$parent.$parent.$parent.$refs.screenMainContain).height() - 70
-                this.screenStyle = `width:100%;height:${height}px;overflow-y:auto;`
+                this.screenStyle = `width:100%;height:${height + 23}px;overflow-y:auto;`
                 this.collapseStyle = `width:100%;height:${height - 130}px;overflow-y:auto;`
                 this.loginUserId = this.$store.state.user.code
                 this.loginUserUuid = this.$store.state.user.id
@@ -1010,6 +1010,7 @@
                                     }else{
                                         let curSql = res.data.dealSql
                                         this.sql = curSql
+                                        console.log(curSql)
                                         this.pageInit(curSql);
                                         this.settingObj.initSql = curSql;
                                     }
@@ -1090,4 +1091,4 @@
             }
         }
     }
-    </script>
+</script>

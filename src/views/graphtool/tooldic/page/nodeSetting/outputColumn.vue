@@ -196,7 +196,7 @@
                         if (num === columnsInfoArray.length) {
                             isHide = true
                         }
-                        if(columnsInfoArray[column].nodeId === "customizeColumn"){
+                        if(columnsInfoArray[column].customizeColumn){//如果是函数列（自定义字段）
                             if(columnsInfoArray[column].isOutputColumn === 1){
                                 checked = true
                             }
