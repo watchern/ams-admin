@@ -9,10 +9,21 @@
         @submit="getList"
       />
     </div>
+    <!-- <el-row>
+      <el-col align="right">
+        '重新运行任务实例'
+        <el-button
+          type="primary"
+          title="重新运行"
+          class="oper-btn refresh"
+          :disabled="reStartStatus"
+          @click="handleReStart()"
+        />
+      </el-col>
+    </el-row> -->
     <el-table
       :key="tableKey"
       v-loading="listLoading"
-      stripe
       fit
       style="width: 100%;"
       :data="list"
@@ -286,6 +297,7 @@ export default {
       logs: null,
       taskslogsList: null,
       task: null,
+      reStartStatus: true,
       scTime: null
     }
   },
@@ -304,6 +316,14 @@ export default {
         this.getList(this.queryDefault)
       }
     }
+    // ,
+    // selections() {
+    //   if (this.selections.length === 1) {
+    //     if (this.selections[0].status === 7 || this.selections[0].status === 8) { this.reStartStatus = false }
+    //   } else {
+    //     this.reStartStatus = true
+    //   }
+    // }
   },
   created() {
     statusListComm.forEach((r, i) => {
