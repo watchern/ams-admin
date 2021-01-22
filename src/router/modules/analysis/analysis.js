@@ -71,6 +71,12 @@ const analysisRouter = {
       name: '指标分析',
       component: () => import('@/views/analysis/indicatoranalysis/index')
     }
+    ,
+    {
+      path: 'test',
+      name: '指标分析',
+      component: () => import('@/views/analysis/auditwarning/test')
+    }
   ]
 }
 

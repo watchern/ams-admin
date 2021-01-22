@@ -11,6 +11,10 @@ import analysisRouter from './modules/analysis/analysis'
 import graphRouter from './modules/graphtool/graphtool'
 const AmsRoutes = [
     {
+      path: '/test',
+      component: () => import('@/views/analysis/auditwarning/test')
+    },
+    {
         path: '/',
         redirect: '/ams/first'
     },
