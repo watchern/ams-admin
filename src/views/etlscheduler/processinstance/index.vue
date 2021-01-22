@@ -74,7 +74,6 @@
     <el-table
       :key="tableKey"
       v-loading="listLoading"
-      stripe
       fit
       style="width: 100%;"
       :data="list"
