@@ -6,15 +6,18 @@
     <div class="home-right flex1 h100 flex a-start j-start flex-column">
       <div class="home-right-content flex1 w100">
         <router-view />
-        <i class="el-icon-question seat" @click="getHelp()"></i>
+        <el-tooltip content="系统帮助" placement="top" effect="light">
+          <i class="el-icon-question seat" @click="getHelp()"></i>
+        </el-tooltip>
       </div>
       <div v-if="isShowRightFooter" class="home-right-footer flex-shrink w100">
         <RightFooter />
       </div>
     </div>
-    <div class="readonlyTo" v-if="showHelpHeight">
-      <div @click="showHelpHeight = false" class="readonlyToX">X</div>
+    <div class="readonlyTo" v-if="showHelpHeight" v-loading="loading">
       <div class="readonlyChild" id="readonlyChild"></div>
+      <div @click="showHelpHeight = false" class="readonlyToX">X</div>
+      <div class="readonlyClose" @click="showHelpHeight = false"></div>
     </div>
   </div>
 </template>
@@ -30,7 +33,8 @@ export default {
   },
   data () {
     return {
-      showHelpHeight: false
+      showHelpHeight: false,
+      loading: false
     }
   },
   computed: {
@@ -58,14 +62,17 @@ export default {
       saveData.push({
         menuPath: this.$route.fullPath
       })
+      this.loading = true
+      this.showHelpHeight = true
       getHelpByMenuPath(saveData[0]).then(resp => {
         if(resp.code === 0 && resp.data !== null){
           document.getElementById('readonlyChild').innerHTML = resp.data.helpDocument
+          this.loading = false
         } else if (resp.code === 0 && resp.data === null){
           document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
+          this.loading = false
         }
       })
-      this.showHelpHeight = !this.showHelpHeight
     },
   }
 }
@@ -114,8 +121,8 @@ export default {
 }
 .seat{
   position: fixed;
-  right: 2vw;
-  bottom: 6vh;
+  right: 20px;
+  bottom: 24px;
   font-size: 24px;
   cursor: pointer;
 }
@@ -125,19 +132,30 @@ export default {
   top: 0;
   left: 0;
   position: fixed;
-  background-color: rgba(0,0,0,.5);
   z-index: 1001;
+  animation: whiteIn 0.8s forwards;
 }
 .readonlyChild{
   position: absolute;
   top: 0;
   right:0;
-  width: 1438px;
+  width: 75vw;
   height: 100%;
   background-color: #fff;
-  border: 1px solid #000;
   padding: 15px;
-  z-index: 1000;
+  animation: whiteIn 0.8s forwards;
+  overflow: auto;
+}
+@keyframes whiteIn {
+  0%{width:0}
+  100%{width:75vw}
+}
+.readonlyClose{
+  position: absolute;
+  top: 0;
+  left:0;
+  width: calc(100% - 25vw);
+  height: 100%;
 }
 .readonlyToX{
   position: absolute;

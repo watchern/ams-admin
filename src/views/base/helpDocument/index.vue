@@ -62,7 +62,7 @@
         @retrieveData="retrieveData"
         ref="wangeditor"
       />
-      <button @click="saveNew">保存</button>
+      <el-button type="primary" @click="saveNew" style="margin-top:10px">保存</el-button>
     </div>
 	</div>
 </template>
@@ -222,7 +222,7 @@ export default {
     position: relative;
   }
   .page-left{
-    width: 15vw;
+    width: 290px;
     height: 100%;
     background-color: #fff;
     border-radius: 5px;
@@ -231,8 +231,21 @@ export default {
     overflow: auto;
   }
   .mytuieditor{
-    margin-top: 40px;
+    margin:40px 0 0 15px;
     float:left;
-    width: 75vw;
+    width: calc(100vw - 495px);
+    height: calc(100vh - 100px);
+    overflow: auto;
+  }
+  >>>.el-tree {
+    // 不可全选样式
+    .el-tree-node {
+      .is-leaf + .el-checkbox .el-checkbox__inner {
+        display: inline-block;
+      }
+      .el-checkbox .el-checkbox__inner {
+        display: none;
+      }
+    }
   }
 </style>
