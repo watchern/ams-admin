@@ -581,6 +581,7 @@ export default {
         console.error(error)
       })
     getQuickMenuList().then(res => {
+      // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
       for (let i=0; i<res.data.length; i++) {
         for (let n=0; n<this.latelyImgList.length; n++) {
           if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
