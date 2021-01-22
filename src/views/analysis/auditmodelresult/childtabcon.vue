@@ -976,9 +976,13 @@ export default {
       this.nextValue = nextValue;
       var col = [];
       var rowData = [];
+      console.log("-------进入getIntoModelResultDetail");
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
+        console.log(this.prePersonalVal.id +  this.nextValue.executeSQL.id + "-------进入prePersonalVal.id == this.nextValue.executeSQL.id")
         if (this.nextValue.executeSQL.state == "2") {
+          console.log(this.nextValue.executeSQL.state + "-------进入this.nextValue.executeSQL.state 2")
           if (this.nextValue.executeSQL.type == "SELECT") {
+            console.log(this.nextValue.executeSQL.type + "-------进入getIntoModelResultDetail SELECT")
             //todo 增加sql类型判断
             if (true) {
               this.modelResultButtonIsShow = true;

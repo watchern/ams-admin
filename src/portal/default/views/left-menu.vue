@@ -107,7 +107,7 @@
 
         >
           <i class="el-icon-s-grid" />
-          <span>More tools</span>
+          <span>更多工具</span>
         </div>
         <div class="footer-btns flex a-center j-between flex-row">
           <!-- <i class="shrink-btn icon iconfont iconleft-1" @click="isShrink=false" /> -->

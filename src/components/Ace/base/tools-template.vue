@@ -3,7 +3,7 @@
     <div class="tools-content h100 relative">
       <div class="title text-white">
         <i class="el-icon-s-grid" />
-        <span class="label">More tools</span>
+        <span class="label">更多工具</span>
       </div>
       <div class="lately-use">
         <div class="title-label">常用功能</div>
@@ -581,6 +581,7 @@ export default {
         console.error(error)
       })
     getQuickMenuList().then(res => {
+      // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
       for (let i=0; i<res.data.length; i++) {
         for (let n=0; n<this.latelyImgList.length; n++) {
           if (this.latelyImgList[n].name === res.data[i].quickMenuName) {

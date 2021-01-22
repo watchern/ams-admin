@@ -843,6 +843,7 @@ export default {
         this.stopStatus = true
         this.editStatus = true
         this.deleteStatus = true
+        this.runStatus = true
       }
       if (this.selections.length === 1) {
         this.selections.forEach((r, i) => {
