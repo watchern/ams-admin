@@ -925,7 +925,7 @@ export default {
   overflow: auto;
 }
 .readonlyTo{
-  width: 75vw;
+  width: 50vw;
   height: 100%;
   top: 0;
   right: 0;
@@ -937,7 +937,7 @@ export default {
   position: absolute;
   top: 0;
   right:0;
-  width: 75vw;
+  width: 50vw;
   height: 100vh;
   background-color: #fff;
   padding: 15px;
@@ -946,7 +946,7 @@ export default {
 }
 @keyframes whiteIn {
   0%{width:0}
-  100%{width:75vw}
+  100%{width:50vw}
 }
 .readonlyToX{
   position: absolute;
