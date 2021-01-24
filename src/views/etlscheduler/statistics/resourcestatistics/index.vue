@@ -29,11 +29,9 @@
         <el-button type="primary" class="oper-btn excel" title="导出" @click="exportFile" />
       </el-col>
     </el-row>
-  
     <el-table
       :key="tableKey"
       v-loading="listLoading"
-      stripe
       fit
       style="width: 100%;"
       :data="list"
@@ -42,7 +40,6 @@
       max-height="800"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
-      
     >
       <el-table-column
         label="调度日期"

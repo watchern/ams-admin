@@ -1,14 +1,9 @@
 import {getParamsTree, getFolderAndParams} from '@/api/analysis/sqleditor/sqleditor'
 import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
-import { findParamsAndModelRelParams } from '@/api/graphtool/graphList'
+import { findParamsAndModelRelParams,verifySqlNodeSelectOption } from '@/api/graphtool/apiJs/graphList'
 let CodeMirror = require("@/components/ams-codemirror/lib/codemirror")
-// 节点树、参数树的对象
-let nodeZtreeObj, paramZtreeObj
 // let paramManager = false// 是否具有参数管理员权限（默认为false）
 // let developManager = false// 是否具有开发人员权限（默认为false）
-let paramIdsdArr = []// 用来记录已经替换过的参数ID集合（不可去除）
-let isFirstPaste = true// 本次改变内容是否是执行第一次粘贴操作
-let checkSqlText = ''// 当前光标所在行从第0列到光标所在列之间的文本内容
 let settingVue = null
 export const sendSettingVue = ( (_this) => {
     settingVue = _this
@@ -29,24 +24,74 @@ export function init(nodeId) {
  * 初始化节点信息树
  * @param nodeId 节点ID
  */
-function initNodeZtree(nodeId) {
+async function initNodeZtree(nodeId) {
     let isError = false
+    let message = ''
     // 获取节点名称
     let nodeName = settingVue.graph.nodeData[nodeId].nodeInfo.nodeName
     // 获取节点类型
     let optType = settingVue.graph.nodeData[nodeId].nodeInfo.optType
-    if (optType === 'sql' && typeof settingVue.graph.nodeData[nodeId].sqlIsChanged !== 'undefined') {
-        let hasSign = graph.nodeData[nodeId].nodeInfo.hasSign;//SELECT语句的输出列是否含有【*】
-        if(hasSign){
-            let nodeExcuteStatus = settingVue.graph.nodeData[nodeId].nodeInfo.nodeExcuteStatus
-            if (nodeExcuteStatus !== 3 && settingVue.graph.nodeData[nodeId].sqlIsChanged) {
+    let nodeExcuteStatus = settingVue.graph.nodeData[nodeId].nodeInfo.nodeExcuteStatus
+    let flag = false//节点的SQL语句是否含有【*】或者SELECT项中是否含有函数项，目的是为了在树节点在显示时用原字段还是别名
+    let columnsInfo = []//当前节点的输出字段
+    if(nodeExcuteStatus === 3){//当前节点执行成功，直接取标识值
+        flag = graph.nodeData[nodeId].nodeInfo.hasSign
+        columnsInfo = settingVue.graph.nodeData[nodeId].columnsInfo
+    }else{
+        let response = null
+        let param = {"nodeData":JSON.stringify(settingVue.graph.nodeData),"nodeId":nodeId,"optType":optType,"openType":settingVue.graph.openType}
+        let sqlFun = function (response) {
+            if(response.data.isError){
                 isError = true
+                message = `SQL语句解析失败：${response.data.message}`
+            }else{
+                let hasSign = response.data.hasSign//SQL语句的SELECT项是否含有【*】
+                let hasFunOutPut = response.data.hasFunOutPut//SQL语句的SELECT项是否含有特殊函数
+                if(hasSign){//此处只判断是否含有【*】
+                    isError = true
+                    message = `无法解析节点的输出字段信息，请先执行节点`
+                }else{
+                    flag = hasSign || hasFunOutPut
+                    graph.nodeData[nodeId].nodeInfo.hasSign = flag
+                    columnsInfo = response.data.columnsInfo
+                    settingVue.graph.nodeData[nodeId].tempColumnsInfo = response.data.columnsInfo
+                }
             }
+        }
+        //先组装节点的SQL语句并进行解析，获取标识值
+        switch (optType) {
+            case "sql":
+                if(settingVue.graph.nodeData[nodeId].sqlIsChanged){//如果SQL编辑器的SQL语句发生了变化，则重新解析SQL语句
+                    response = await verifySqlNodeSelectOption(param)
+                    sqlFun(response)
+                }else{//若没有发生变化，则使用临时输出列信息
+                    if(typeof settingVue.graph.nodeData[nodeId].tempColumnsInfo !== 'undefined' && settingVue.graph.nodeData[nodeId].tempColumnsInfo.length > 0){
+                        columnsInfo = settingVue.graph.nodeData[nodeId].tempColumnsInfo
+                    }else{
+                        response = await verifySqlNodeSelectOption(param)
+                        sqlFun(response)
+                    }
+                }
+                break
+            case "filter":
+            case "sort":
+            case "layering":
+            case "groupCount":
+            case "delRepeat":
+            case "change":
+            case "relation":
+                response = await verifySqlNodeSelectOption(param)
+                if(response.data.isError){
+                    isError = true
+                    message = `获取节点输出字段信息失败：${response.data.message}`
+                }else{
+                    flag = response.data.hasFunOutPut
+                    columnsInfo = settingVue.graph.nodeData[nodeId].columnsInfo
+                }
+                break
         }
     }
     if (!isError) {
-        // 获取节点的输出字段
-        let columnsInfo = settingVue.graph.nodeData[nodeId].columnsInfo
         let nodeSetting = {
             data: {
                 key: {
@@ -128,56 +173,47 @@ function initNodeZtree(nodeId) {
                 //根据不同节点组织节点名称
                 switch (optType) {
                     case "sql":
-                        var hasSign = graph.nodeData[nodeId].nodeInfo.hasSign;//SELECT语句的输出列是否含有【*】
-                        if(hasSign){//有【*】则使用结果集输出字段进行设参
-                            obj.name = columnsInfo[i].newColumnName;
-                            obj.displayName = columnsInfo[i].newColumnName;
-                        }else{//没有【*】则使用原字段进行设参
-                            obj.name = columnsInfo[i].columnName;
-                            obj.displayName = columnsInfo[i].newColumnName;
-                        }
-                        nodeRoot.children.push(obj);
-                        break;
                     case "filter":
                     case "sort":
                     case "layering":
                     case "groupCount":
                     case "delRepeat":
-                        obj.name = columnsInfo[i].columnName;
-                        obj.displayName = columnsInfo[i].newColumnName;
-                        nodeRoot.children.push(obj);
-                        break;
                     case "change":
-                        obj.name = columnsInfo[i].columnName;
-                        obj.displayName = columnsInfo[i].newColumnName;
-                        if($.inArray(nodeNameArr,obj.name) < 0){//此处是为了去除重复的未被转码的原字段
-                            nodeNameArr.push(obj.name);
-                            nodeRoot.children.push(obj);
+                        if(flag){
+                            obj.name = columnsInfo[i].newColumnName
+                        }else{
+                            obj.name = columnsInfo[i].columnName
                         }
-                        break;
+                        obj.displayName = columnsInfo[i].newColumnName
+                        nodeRoot.children.push(obj)
+                        break
                     case "relation":
-                        obj.name = columnsInfo[i].tableAlias + "." + columnsInfo[i].columnName;
-                        obj.displayName = columnsInfo[i].tableAlias + "." + columnsInfo[i].newColumnName;
-                        nodeRoot.children.push(obj);
-                        break;
+                        if(flag){
+                            obj.name = columnsInfo[i].newColumnName
+                            obj.displayName = columnsInfo[i].newColumnName
+                        }else{
+                            obj.name = columnsInfo[i].tableAlias + "." + columnsInfo[i].columnName
+                            obj.displayName = columnsInfo[i].tableAlias + "." + columnsInfo[i].newColumnName
+                        }
+                        nodeRoot.children.push(obj)
+                        break
                     case "sample":
                     case "union":
-                        obj.name = columnsInfo[i].newColumnName;
-                        obj.displayName = columnsInfo[i].newColumnName;
-                        nodeRoot.children.push(obj);
-                        break;
+                        obj.name = columnsInfo[i].newColumnName
+                        obj.displayName = columnsInfo[i].newColumnName
+                        nodeRoot.children.push(obj)
+                        break
                 }
             }
         }
-        if(nodeRoot.children.length > 0){
-            settingVue.initTreeSuccess = true
-        }
-        nodeZtreeObj = $.fn.zTree.init($('#nodeZtree'), nodeSetting, nodeRoot)
         if (nodeRoot.children.length === 0) {
             settingVue.$message({ type: 'warning', message: '当前节点无可使用输出字段，请重新执行节点' })
+        }else{
+            settingVue.nodeZtreeObj = $.fn.zTree.init($('#nodeZtree'), nodeSetting, nodeRoot)
+            settingVue.initTreeSuccess = true
         }
     } else {
-        settingVue.$message({ type: 'warning', message: 'SQL语句发生改变且节点未执行成功，无法获取节点的输出字段信息' })
+        settingVue.$message.error(message)
     }
 }
 
@@ -272,7 +308,7 @@ function initParamZtree() {
         }
     }
     getParamsTree().then(result => {
-        paramZtreeObj = $.fn.zTree.init($('#paramZtree'), paramSetting,  result.data.paramNode)
+        settingVue.paramZtreeObj = $.fn.zTree.init($('#paramZtree'), paramSetting,  result.data.paramNode)
         // paramManager = result.data.paramManager
         // developManager = result.data.developManager
     })
@@ -286,10 +322,10 @@ function loadParamChildrenNodes(treeNode) {
         'level': treeNode.level,
         'isPersonalParam': false
     }
-    dataParam.isPersonalParam = paramCommonJs.getRootNodeType(treeNode, paramZtreeObj)
+    dataParam.isPersonalParam = paramCommonJs.getRootNodeType(treeNode, settingVue.paramZtreeObj)
     getFolderAndParams(dataParam).then( response => {
-        paramZtreeObj.removeChildNodes(treeNode)
-        paramZtreeObj.addNodes(treeNode, response.data)
+        settingVue.paramZtreeObj.removeChildNodes(treeNode)
+        settingVue.paramZtreeObj.addNodes(treeNode, response.data)
     })
 }
 
@@ -324,10 +360,10 @@ export function initSqlEditor(textarea,heightPx) {
         styleActiveLine: true
     })
     editor.on('beforeChange', function(instance, changeObj) {
-        if (changeObj.origin === 'paste' && isFirstPaste) {
+        if (changeObj.origin === 'paste' && settingVue.isFirstPaste) {
             settingVue.cursor = editor.getCursor()
-            checkSqlText = editor.getRange({ ch: 0, line: settingVue.cursor.line }, { ch: settingVue.cursor.ch, line: settingVue.cursor.line })
-            isFirstPaste = false
+            settingVue.checkSqlText = editor.getRange({ ch: 0, line: settingVue.cursor.line }, { ch: settingVue.cursor.ch, line: settingVue.cursor.line })
+            settingVue.isFirstPaste = false
         }
     })
     editor.on('change', function(instance, changeObj) {
@@ -382,7 +418,7 @@ export function initSqlEditor(textarea,heightPx) {
             if (hasPaste) {
                 replaceCopyParam(settingVue.paramsSetting)
             }
-            isFirstPaste = true
+            settingVue.isFirstPaste = true
         }
     })
     // 设置脚本展示tab的上面编辑器高度
@@ -455,7 +491,7 @@ function replaceCopyParam(paramObj) {
                 if (indexArr.length === 1) { // 复制的参数到新的行时
                     ch = indexArr[0]
                 } else { // indexArr.length > 1（复制参数在当前行时）
-                    if (settingVue.cursor.line === b && checkSqlText.indexOf(oldParamId) < 0) { // 在当前行已有参数前粘贴
+                    if (settingVue.cursor.line === b && settingVue.checkSqlText.indexOf(oldParamId) < 0) { // 在当前行已有参数前粘贴
                         ch = indexArr[0]
                     } else { // 在当前行已有参数后粘贴
                         ch = indexArr[1]
@@ -469,13 +505,13 @@ function replaceCopyParam(paramObj) {
                     replacedWith: dom,
                     className: 'paramBlock'
                 })
-                if (paramIdsdArr.indexOf(arr[a].id) < 0) {
+                if (settingVue.paramIdsdArr.indexOf(arr[a].id) < 0) {
                     let obj = {
                         'id': arr[a].id, // 加上占位符后的复制参数ID
                         'opt': 1// 参数是否生效（不生效是指在当前SQL编辑中已被删除），0、不生效，1、生效
                     }
                     settingVue.paramDivArr.push(obj)
-                    paramIdsdArr.push(arr[a].id)
+                    settingVue.paramIdsdArr.push(arr[a].id)
                 }
             }
         }
@@ -506,18 +542,21 @@ export function initSetting() {
     //判断节点树是否正常加载（防止存在不正确的自定义参数SQL语句）
     if(!settingVue.initTreeSuccess){
         settingVue.setParamArr = []
-        settingVue.$message({ type:"warning", message:'界面未成功初始化数据，配置加载失败'})
+        settingVue.settingLoading = false
         return
     }
-    let load = $(settingVue.$refs.settingParamDiv).mLoading({ 'text': '正在加载配置，请稍后……', 'hasCancel': false })
     try {
+        if(!settingVue.settingLoading){
+            settingVue.loadText = "正在加载参数信息，请稍后……"
+            settingVue.settingLoading = true
+        }
         // 第一步：先判断编辑的参数SQL语句是否有变化
         let oldSql = settingVue.sql// 获取旧SQL语句
         let newSql = settingVue.editor.getValue()// 获取新编辑的SQL
         let hasSetParamIdArr = []// 存放有效参数集合中已配置过得参数集合
         if (settingVue.isAdd) { // 如果是新增
             if (oldSql === newSql) { // 如果SQL无变化
-                load.hide()
+                settingVue.settingLoading = false
                 return
             }
         } else { // 如果是修改
@@ -561,7 +600,7 @@ export function initSetting() {
             }
         }
         if (paramArr.length === 0) {
-            load.hide()
+            settingVue.settingLoading = false
             settingVue.setParamArr = []
             settingVue.$message({ type:"warning", message:'尚未设置参数，无法进行参数配置'})
             return
@@ -569,11 +608,11 @@ export function initSetting() {
         // 第四步：获取数据库所有母参数信息
         findParamsAndModelRelParams().then( response => {
             if(response.data == null){
-                load.hide()
+                settingVue.settingLoading = false
                 settingVue.$message.error('获取参数信息失败')
             }else {
                 if (response.data.isError) {
-                    load.hide()
+                    settingVue.settingLoading = false
                     settingVue.$message.error({message: response.data.message})
                 } else {
                     let paramList = response.data.paramList// 定义所有母参信息数组
@@ -626,13 +665,13 @@ export function initSetting() {
                         initParam(paramArr, hasSetParamIdArr)
                         // 第七步：刷新SQL值，将已编写的SQL赋值给sql
                         settingVue.sql = settingVue.editor.getValue()
-                        load.hide()
+                        settingVue.settingLoading = false
                     })
                 }
             }
         })
     } catch (e) {
-        load.hide()
+        settingVue.settingLoading = false
         console.info(e)
     }
 }
@@ -643,22 +682,6 @@ export function initSetting() {
  * @param hasSetParamIdArr 已配置的复制参数ID集合
  */
 function initParam(paramArr, hasSetParamIdArr) {
-    // 初始化日期插件
-    if ($('.form_date').length > 0) {
-        $('.form_date').each(function(i, v) {
-            let setting = {
-                format: 'yyyy-mm-dd',
-                language: 'zh-CN',
-                todayBtn: true,
-                autoclose: true,
-                todayHighlight: true,
-                startView: 2,
-                showMeridian: true,
-                minView: 2
-            }
-            $(this).datetimepicker(setting)
-        })
-    }
     // 初始化下拉列表
     let $selectParam = settingVue.$refs.selectParam
     if ($selectParam && $selectParam.length > 0) {
@@ -673,18 +696,16 @@ function initParam(paramArr, hasSetParamIdArr) {
             let selectSetting = {
                 el: '#selectParam' + moduleParamId, // 此处不使用【i】的原因在于每个参数都唯一不会重复，故【el】唯一
                 filterable: true,
-                filterMethod: function(val, item, index, prop) {
-                    if (val === item.value) { // 把value相同的搜索出来
-                        return true
-                    }
-                    if (item.name && item.name.indexOf(val) > -1) { // 名称中包含的搜索出来
+                filterMethod: function(val, item) {
+                    //把value相同的搜索出来或把名称中包含的搜索出来
+                    if (val === item.value || (item.name && item.name.indexOf(val) > -1)) {
                         return true
                     }
                     return false// 不知道的就不管了
                 },
                 data: dataArr
             }
-            if (choiceType == 1) { // 单选
+            if (choiceType === '1') { // 单选
                 selectSetting.radio = true
                 selectSetting.clickClose = true
             }
@@ -758,7 +779,7 @@ function initParam(paramArr, hasSetParamIdArr) {
             if(typeof settingVue.setParamArr[index].value !== "undefined" && settingVue.setParamArr[index].value != null){
                 selectSetting.initValue = settingVue.setParamArr[index].value
             }
-            if (choiceType == 1) { // 单选
+            if (choiceType === '1') { // 单选
                 selectSetting.radio = true
                 selectSetting.clickClose = true
             } else { // 多选
@@ -875,7 +896,6 @@ export function getParamsSetting() {
                 defaultValueArr.push(paramSelectedObj[j].value)
             }
             if (defaultValueArr.length > 0) {
-                // $(this).attr('data-value', JSON.stringify(defaultValueArr))
                 settingVue.setParamArr[index].value = defaultValueArr
             }
         }

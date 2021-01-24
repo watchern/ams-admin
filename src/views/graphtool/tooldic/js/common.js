@@ -1,4 +1,4 @@
-import { deleteExecuteNodes, executeNodeSql, executeAllNodeSql } from '@/api/graphtool/graphList'
+import { deleteExecuteNodes, executeNodeSql, executeAllNodeSql } from '@/api/graphtool/apiJs/graphList'
 import * as validateJs from '@/views/graphtool/tooldic/js/validate'
 import { updateResourceZtreeNodeName } from '@/views/graphtool/tooldic/js/index'
 let graphIndexVue = null
@@ -13,7 +13,7 @@ export function data_filter(type, name, nodeName) {
     var curNodeId = graph.curCell.id
     var obj = validateJs.verifyPreNodes(type, curNodeId)
     if (obj.isError) {
-        this.$message.error(obj.message)
+        graphIndexVue.$message.error(obj.message)
         return
     }
     if (!validateJs.settingVerify(type)) {
@@ -48,26 +48,28 @@ export function saveNodeSetting() {
                 $(graphIndexVue.$refs.nodeSetting.$refs.myTab).find('li:eq(1)>a').click()
                 return false
             }
-            if (!graphIndexVue.$refs.nodeSetting.saveNodeInfo()) {
-                return false
-            }
         } else {
             if (!graphIndexVue.$refs.nodeSetting.$refs.conditionSet.inputVerify()) {
                 $(graphIndexVue.$refs.nodeSetting.$refs.myTab).find('li:eq(1)>a').click()
                 return false
             }
-            if (type === 'comparison') {		// 频次分析没有输出列，特殊处理
-                graphIndexVue.$refs.nodeSetting.$refs.conditionSet.saveNotOutput()
-            } else {
-                if (!graphIndexVue.$refs.nodeSetting.$refs.outputColumnVueRef.outputVerify()) {
-                    return false
-                }
-                graphIndexVue.$refs.nodeSetting.saveGraphNodeSetting()
+            if (type !== 'comparison' && !graphIndexVue.$refs.nodeSetting.$refs.outputColumnVueRef.outputVerify()) {
+                return false
             }
         }
         return true
     }
     let saveNodeSettingFun = function() {
+        let type = graphIndexVue.sp_optType
+        if (type === 'relation' || type === 'groupCount') {
+            graphIndexVue.$refs.nodeSetting.saveNodeInfo()
+        }else{
+            if (type === 'comparison') {
+                graphIndexVue.$refs.nodeSetting.$refs.conditionSet.saveNotOutput()
+            } else {
+                graphIndexVue.$refs.nodeSetting.saveGraphNodeSetting()
+            }
+        }
         graphIndexVue.nodeSettingDialogVisible = false
         graphIndexVue.$nextTick( () => {
             // 变更当前节点的配置状态信息
@@ -170,37 +172,6 @@ export function saveNodeSetting() {
         if(verifyFun()){
             saveNodeSettingFun()
         }
-    }
-}
-
-/**
- * 根据不同节点的类型，展示不同的操作说明内容
- * @param obj 点击按钮对象
- * @param type	节点类型
- * */
-function showSettingRemark(obj, type) {
-    if ($(obj).hasClass('system-o-step')) {
-        top.layer.open({
-            id: 'showSettingRemark111',
-            title: '帮助',
-            type: 2,
-            content: contextPathAuditAnalysis + '/systemOperateHelp/show/' + type,
-            area: ['90%', '90%'],
-            skin: 'layui-layer-lan',
-            scrollbar: false,
-            maxmin: true
-        })
-    } else {
-        top.layer.open({
-            id: 'showSettingRemark111',
-            type: 2,
-            title: '帮助',
-            content: 'page/C_Rows_Data/settingRemark.jsp?type=' + type,
-            area: ['600px', '90%'],
-            skin: 'layui-layer-lan',
-            maxmin: true,
-            scrollbar: false
-        })
     }
 }
 
@@ -446,128 +417,6 @@ export function cancelExecute() {
 }
 
 /**
- * 组织所有待执行节点队列中有参数设置的节点的HTML
- * @param nodeIdArr 待执行的节点ID数组
- */
-function createParamNodeHtml(nodeIdArr) {
-    var returnObj = {
-        'isError': false, // 组织过程中是否有错误
-        'message': '', // 提示信息（主要是错误信息）
-        'htmlContent': ''// 组织返回的参数节点的HTML
-        // "paramArr" : []//记录有参数节点的参数设置数组
-    }
-    // 第一层循环只是判断当前待执行节点队列中是否有参数节点
-    var checkParam = false// 默认没有参数节点
-    for (let i = 0; i < nodeIdArr.length; i++) {
-        let hasParam = graph.nodeData[nodeIdArr[i]].hasParam// 是否有参数
-        let paramsSetting = graph.nodeData[nodeIdArr[i]].paramsSetting// 参数设置信息
-        if (hasParam && paramsSetting && paramsSetting.arr && paramsSetting.arr.length !== 0) {
-            checkParam = true
-            break
-        }
-    }
-    if (checkParam) { // 如果有参数节点
-        var paramsArr = []// 定义所有母参信息数组
-        $.ajax({
-            url: contextPath + '/graphEditor/getNodeParams',
-            type: 'post',
-            dataType: 'json',
-            async: false,
-            success: function(e) {
-                if (e.isError) {
-                    returnObj.isError = true
-                    returnObj.message = e.message
-                } else {
-                    paramsArr = e.paramList
-                }
-            },
-            error: function() {
-                returnObj.isError = true
-                returnObj.message = '请求失败，加载参数出错'
-            }
-        })
-        if (returnObj.isError) {
-            return returnObj
-        }
-        var nodeParamObj = {}// 节点与参数配置绑定的对象
-        for (var i = 0; i < nodeIdArr.length; i++) {
-            var hasParam = graph.nodeData[nodeIdArr[i]].hasParam// 是否有参数
-            var paramsSetting = graph.nodeData[nodeIdArr[i]].paramsSetting
-            if (hasParam && paramsSetting && paramsSetting.arr && paramsSetting.arr.length !== 0) {
-                var copyParamArr = []// 定义所有参数的对象数组（已去重）
-                var paramSql = paramsSetting.sql// 获取参数的SQL语句
-                var arr = paramsSetting.arr// 获取设置的参数数组
-                var moduleParamArr = []// 母参数数组（去重用）
-                for (var j = 0; j < arr.length; j++) { // 循环节点上绑定的参数（复制参数）
-                    for (var k = 0; k < paramsArr.length; k++) { // 循环所有母版参数
-                        var moduleParamId = paramsArr[k].ammParamUuid
-                        if (moduleParamId === arr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
-                            if (arr[j].defaultVal) {
-                                paramsArr[k].defaultVal = arr[j].defaultVal
-                            }
-                            copyParamArr.push(paramsArr[k])
-                            moduleParamArr.push(moduleParamId)
-                            break
-                        }
-                    }
-                }
-                if (copyParamArr.length > 0) {
-                    nodeParamObj[nodeIdArr[i]] = copyParamArr
-                }
-            }
-        }
-        returnObj.htmlContent += "<div class='col-sm-12'>"
-        var selectNum = 0// 用于临时记录参数为下拉列表的个数
-        var selectTreeNum = 0// 用于临时记录参数为下拉树的个数
-        var keys = Object.keys(nodeParamObj)// 获取有参数设置的节点的ID集合
-        for (var j = 0; j < keys.length; j++) {
-            var curNodeId = keys[j]
-            var nodeName = graph.nodeData[curNodeId].nodeInfo.nodeName
-            returnObj.htmlContent += "<div class='panel-group nodeParam' id='accordion" + j + "'>" +
-                "<div class='panel panel-default'><div class='panel-heading'><h4 class='panel-title'>" +
-                "<a data-id='" + curNodeId + "' data-toggle='collapse' data-parent='#accordion" + j + "' href='#collapse" + j + "'>【" + nodeName + '】节点</a>' +
-                '</h4></div>'
-            if (j === 0) { // 默认打开第一个节点
-                returnObj.htmlContent += "<div id='collapse" + j + "' class='panel-collapse collapse in'>"
-            } else {
-                returnObj.htmlContent += "<div id='collapse" + j + "' class='panel-collapse collapse'>"
-            }
-            returnObj.htmlContent += "<div class='panel-body' style='padding: 10px 0;'>"
-            // 遍历该节点绑定的所有参数
-            var copyParamArr = nodeParamObj[curNodeId]
-            var paramHtml = ''
-            for (var k = 0; k < copyParamArr.length; k++) {
-                var description = '（参数说明：无）'
-                if (typeof copyParamArr[k].description !== 'undefined') {
-                    description = '（参数说明：' + copyParamArr[k].description + '）'
-                }
-                paramHtml += "<div class='row'><div class='col-sm-12'><div class='form-group'><label class='col-sm-2' style='text-align: right;padding: 10px 7px;'>" + copyParamArr[k].paramName + "&nbsp;&nbsp;</label><div class='col-sm-4'>"
-                var RO = initParamHtml_Common(copyParamArr[k], selectNum, selectTreeNum)
-                if (typeof RO.selectNum !== 'undefined') {
-                    selectNum = RO.selectNum
-                }
-                if (typeof RO.selectTreeNum !== 'undefined') {
-                    selectTreeNum = RO.selectTreeNum
-                }
-                if (RO.isError) {
-                    paramHtml += "</div><label class='col-sm-4'></label></div></div></div>"
-                    returnObj.isError = true
-                    returnObj.message += RO.message + '\n'
-                } else {
-                    paramHtml += RO.htmlContent + RO.spanHtml + "</div><label  class='col-sm-4' style='padding: 10px 7px;'>" + description + '</label></div></div></div>'
-                }
-            }
-            returnObj.htmlContent += paramHtml + '</div></div></div></div>'
-        }
-        returnObj.htmlContent += '</div>'
-        // 删除记录数
-        delete graph.selectNum
-        delete graph.selectTreeNum
-    }
-    return returnObj
-}
-
-/**
  * 自动执行
  */
 function autoExcute(curNodeId) {
@@ -597,7 +446,8 @@ function autoExcute(curNodeId) {
  * @param notExecuteNodeIdArr 所有未执行节点的ID数组
  * */
 export function executeNode(notExecuteNodeIdArr) {
-    var executeCellId = graph.curCell.id
+    graphIndexVue.curCell = {...{},...graph.curCell}
+    var executeCellId = graphIndexVue.curCell.id
     var obj = {
         'verify': true,
         'message': ''
@@ -623,12 +473,6 @@ export function executeNode(notExecuteNodeIdArr) {
     if (notExecuteNodeIdArr.length === 1 && notExecuteNodeIdArr[0] === executeCellId && !isSet && parentIds && parentIds.length > 0) {
         notExecuteNodeIdArr.unshift(parentIds[0])
     }
-    // 处理待执行节点队列数组
-    // obj = dealWithNodeIdArr(notExecuteNodeIdArr)
-    // if (!obj.verify) {
-    //     alertMsg('提示', obj.message, 'info')
-    //     return
-    // }
     let checkParam = false// 默认没有参数节点
     for (let i = 0; i < notExecuteNodeIdArr.length; i++) {
         let hasParam = graph.nodeData[notExecuteNodeIdArr[i]].hasParam// 是否有参数
@@ -643,7 +487,6 @@ export function executeNode(notExecuteNodeIdArr) {
     if(checkParam){
         graphIndexVue.nodeParamDialogVisible = true
         graphIndexVue.$nextTick( () => {
-            // graphIndexVue.$refs.inputParams.nodeIdArr = notExecuteNodeIdArr
             graphIndexVue.$refs.inputParams.createParamNodeHtml()
         })
     }else {
@@ -688,12 +531,12 @@ export function executeNode_callback(notExecuteNodeIdArr) {
             }
         }
     }
-    var executeCellId = graph.curCell.id
+    var executeCellId = graphIndexVue.curCell.id
     // 校验结果表是否有自己的配置信息
     var isSet = graph.nodeData[executeCellId].isSet
     var parentIds = graph.nodeData[executeCellId].parentIds
     // 记录执行操作
-    refrashHistoryZtree('开始执行【' + graph.curCell.value + '】节点')
+    refrashHistoryZtree('开始执行【' + graphIndexVue.curCell.value + '】节点')
     // 自动保存图形化
     autoSaveGraph()
     var executeId = new UUIDGenerator().id
@@ -710,43 +553,51 @@ export function executeNode_callback(notExecuteNodeIdArr) {
     graphIndexVue.$nextTick(() => {
         executeNodeSql(dataParam).then(response => {
             if (response.data != null) {
-                var historyNodeName = ''
                 $('#sysInfoArea').html(response.data.message)
                 graphIndexVue.layuiTabClickLi(1)
-                // 循环所有节点变更执行状态有变化的节点执行状态信息
-                nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
+                if(response.data.isError){
+                    Array.from(notExecuteNodeIdArr, item => {
+                        graph.nodeData[item].nodeInfo.nodeExcuteStatus = 4
+                        changeNodeIcon(4, null, item)
+                    })
+                    deleteExecuteNodes(executeId).then()
+                }else{
+                    // 循环所有节点变更执行状态有变化的节点执行状态信息
+                    nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
+                    // 如果当前节点执行成功，则直接显示结果集
+                    if (graph.nodeData[executeCellId] && graph.nodeData[executeCellId].nodeInfo && graph.nodeData[executeCellId].nodeInfo.nodeExcuteStatus === 3) {
+                        graphIndexVue.layuiTabClickLi(0)
+                        graphIndexVue.showTableResult = false
+                        let nodeId = executeCellId
+                        let nodeName = graph.nodeData[executeCellId].nodeInfo.nodeName
+                        let resultTableName = ''
+                        if (!isSet) {
+                            resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName
+                        } else {
+                            resultTableName = graph.nodeData[executeCellId].nodeInfo.resultTableName
+                        }
+                        let isRoleTable = false
+                        // let resultTableObj = { nodeId, nodeName, resultTableName, isRoleTable }
+                        let optType = graph.nodeData[executeCellId].nodeInfo.optType
+                        if (optType === 'newNullNode') { // 结果表
+                            let midTableStatus = graph.nodeData[executeCellId].nodeInfo.midTableStatus
+                            let resultTableStatus = graph.nodeData[executeCellId].nodeInfo.resultTableStatus
+                            if (midTableStatus === 2 || resultTableStatus === 2) {
+                                isRoleTable = true
+                            }
+                            nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + nodeName
+                        }
+                        graphIndexVue.resultTableArr.push({ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable })
+                        // 预览数据
+                        graphIndexVue.viewData()
+                    }
+                }
+                var historyNodeName = ''
                 // 如果执行的是未配置的结果表
                 if (!isSet) {
                     historyNodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName
                 } else {
-                    historyNodeName = graph.curCell.value
-                }
-                // 如果当前节点执行成功，则直接显示结果集
-                if (graph.nodeData[executeCellId] && graph.nodeData[executeCellId].nodeInfo && graph.nodeData[executeCellId].nodeInfo.nodeExcuteStatus === 3) {
-                    graphIndexVue.layuiTabClickLi(0)
-                    graphIndexVue.showTableResult = false
-                    let nodeId = executeCellId
-                    let nodeName = graph.nodeData[executeCellId].nodeInfo.nodeName
-                    let resultTableName = ''
-                    if (!isSet) {
-                        resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName
-                    } else {
-                        resultTableName = graph.nodeData[executeCellId].nodeInfo.resultTableName
-                    }
-                    let isRoleTable = false
-                    // let resultTableObj = { nodeId, nodeName, resultTableName, isRoleTable }
-                    let optType = graph.nodeData[executeCellId].nodeInfo.optType
-                    if (optType === 'newNullNode') { // 结果表
-                        let midTableStatus = graph.nodeData[executeCellId].nodeInfo.midTableStatus
-                        let resultTableStatus = graph.nodeData[executeCellId].nodeInfo.resultTableStatus
-                        if (midTableStatus === 2 || resultTableStatus === 2) {
-                            isRoleTable = true
-                        }
-                        nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + nodeName
-                    }
-                    graphIndexVue.resultTableArr.push({ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable })
-                    // 预览数据
-                    graphIndexVue.viewData()
+                    historyNodeName = graphIndexVue.curCell.value
                 }
                 // 记录执行操作
                 refrashHistoryZtree('【' + historyNodeName + '】节点执行完毕')
@@ -772,8 +623,9 @@ export function executeToNode() {
         return
     }
     // 从当前执行节点（选中节点）递归查找所有非原表的前置节点集合,start
-    var notExecuteNodeIdArr = [graph.curCell.id]
-    notExecuteNodeIdArr = getPreNodesNotDatasource(graph.nodeData, graph.curCell.id, notExecuteNodeIdArr)
+    graphIndexVue.curCell = {...{},...graph.curCell}
+    var notExecuteNodeIdArr = [graphIndexVue.curCell.id]
+    notExecuteNodeIdArr = getPreNodesNotDatasource(graph.nodeData, graphIndexVue.curCell.id, notExecuteNodeIdArr)
     // 从当前执行节点（选中节点）递归查找所有非原表的前置节点集合,end
     executeNode(notExecuteNodeIdArr)
 }
@@ -873,11 +725,6 @@ export function executeAllNode() {
                     returnObj.message = '当前执行的节点中存在未配置的节点'
                     break
                 }
-                // 处理待执行节点队列数组
-                // returnObj = dealWithNodeIdArr(notExecuteNodeIdArr)
-                // if (!returnObj.verify) {
-                //     break
-                // }
                 allNodeIdArr.push.apply(allNodeIdArr, notExecuteNodeIdArr)
                 var executeId = new UUIDGenerator().id// 生成执行ID
                 notExecuteNodeObject[executeId] = notExecuteNodeIdArr
@@ -948,7 +795,6 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
                     changeNodeIcon(1, null, nodeIdArr[i])
                 }
             } else {
-                // $('ul.layui-tab-title li:eq(1)').click()
                 $('#sysInfoArea').html(response.data.message)
                 // 循环所有节点变更执行状态有变化的节点执行状态信息
                 nodeCallBack(nodeIdArr, JSON.parse(response.data.nodeData), null)
@@ -1036,10 +882,6 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
         let childrenIds = graph.nodeData[executeNodeArr[k]].childrenIds
         let parentIds = graph.nodeData[executeNodeArr[k]].parentIds
         if (nodeExcuteStatus === 3) {
-            // if (optType === 'sql') {					// SQL查询器单独处理SQL语句
-            //     graph.nodeData[executeNodeArr[k]].setting.sql = graph.nodeData[executeNodeArr[k]].nodeInfo.nodeSql
-            //
-            // }
             if (optType !== 'newNullNode') {					// 如果当前节点是操作节点
                 if (optType === 'layering') {					// 如果节点是数据分层，则需特殊处理
                     // 获取当前节点的所有下一级节点
@@ -1129,22 +971,6 @@ function hasNotSetNode(nodeIdArr) {
 }
 
 /**
- * 判断当前执行的节点集合中有没有需要创建表的节点（即保存数据的节点）
- * @param nodeIdArr 待执行节点集合
- */
-function hasCreateTableNode(nodeIdArr) {
-    var result = false
-    for (var i = 0; i < nodeIdArr.length; i++) {
-        var isCreateTable = graph.nodeData[nodeIdArr[i]].nodeInfo.isCreateTable
-        if (isCreateTable === 1) { // 保存数据
-            result = true
-            break
-        }
-    }
-    return result
-}
-
-/**
  * 设置模型最终结果表或中间结果表的图标
  * @param status 是否标记：1、移除标记，2、打标记
  * @param type 标记类型：0、中间结果表标记，1、最终结果表标记
@@ -1175,10 +1001,9 @@ export function setNodeOutputTypeIcon(status, type) {
  * @param	id		需改变的当前节点的ID
  * */
 export function changeNodeIcon(nodeExcuteStatus, isSet, id) {
-    var curCellId = id || graph.curCell.id
-    $('.exestate-mark').each(function(i, v) {
-        if ($(this)[0].getAttribute('nodeId') === curCellId) { // 有两个
-            if (nodeExcuteStatus && nodeExcuteStatus != null) {
+    $('.exestate-mark').each(function(i) {
+        if ($(this)[0].getAttribute('nodeId') === id) { // 有两个
+            if (typeof nodeExcuteStatus !== 'undefined' && nodeExcuteStatus != null) {
                 switch (nodeExcuteStatus) {
                     case 1:		// 未执行
                         $(this).attr('xlink:href', '../../lib/graphtool/images/icon/point_gray.png')
@@ -1234,7 +1059,7 @@ export function lightHeight(curCellId){
         }
     }
     //end
-    if(!curCellId || curCellId == null){
+    if(typeof curCellId === 'undefined' || curCellId == null){
         return;
     }
     graph.highLightList = [];
@@ -1352,169 +1177,6 @@ export function previewNodeData() {
 }
 
 /**
- * 预览数据
- * @param tableName 预览表名称
- * @param optType 节点类型，可为空
- * @param connGraph 是否关联图形化功能菜单
- * @param viewAllData 是否预览全部数据
- * */
-function viewData(tableName, optType, connGraph, viewAllData) {
-    $('ul.layui-tab-title li:eq(0)').click()
-    var load = $('#tableArea').mLoading({ 'hasTime': true })
-    var dataParam = {
-        'tableName': tableName,
-        'openType': graph.openType,
-        'viewAllData': !!viewAllData
-    }
-    $.ajax({
-        url: contextPath + '/graphEditor/viewData',
-        type: 'post',
-        data: dataParam,
-        dataType: 'json',
-        success: function(res) {
-            load.destroy()
-            if (res.isError) {
-                $('ul.layui-tab-title li:eq(1)').click()
-                $('#sysInfoArea').html(res.message)
-                $('#sysInfoArea').css({ 'color': 'red' })
-            } else {
-                $('#exportAllData').show()
-                $('#viewAllData').show()
-                $('#sysInfoArea').html(res.message)
-                $('#sysInfoArea').css({ 'color': '#0DD140' })
-                $('#tableArea').html(handSonTableHtml())
-                var setting = {
-                    'url': contextPath + '/graphEditor/viewData',
-                    'param': dataParam,
-                    'res': res,
-                    'dropDownMenu': true,
-                    'readOnly': true,
-                    'isPage': true,
-                    'contextMenu': true,
-                    'pageUp': true,
-                    'connGraph': connGraph,
-                    'relation': true,
-                    'viewAllData': viewAllData
-                }
-                if (optType && optType !== '') {				// 需特殊处理节点的结果集数据
-                    var columnsSet = []
-                    if (graph.curCell) {
-                        graph.curCellId = graph.curCell.id
-                    }
-                    switch (optType) {
-                        case 'comparison':							// 频次分析
-                            if (res.columnInfo && res.columnInfo.columnList) {
-                                let columnInfo = res.columnInfo.columnList
-                                for (var i = 0; i < columnInfo.length; i++) {
-                                    var obj = {
-                                        'data': columnInfo[i].columnName,
-                                        'readOnly': true
-                                    }
-                                    if (columnInfo[i].columnName === '涉及表数量') {
-                                        obj.renderer = comparisonLink
-                                    } else {
-                                        obj.renderer = 'html'
-                                    }
-                                    columnsSet.push(obj)
-                                }
-                            }
-                            break
-                    }
-                    setting.columnsSet = columnsSet
-                }
-                handSonTableFun(setting)
-                graph.curTableName = tableName
-            }
-        }
-    })
-}
-
-/**
- * 关联表查询
- * @param tableName 表名称
- * */
-function relationTableQueryDialog(tableName) {
-    var relationTableInit = function(tableName) {
-        var tableGridObj = new TableGrid()
-        var setting = {
-            tableId: 'resultTable',
-            tableUrl: contextPath + '/graphEditor/getRightMenuRelationTable',
-            params: { 'tableName': tableName },
-            rownumbers: true,
-            colModel: [
-                {
-                    'label': '原表名',
-                    'name': 'SOURCE_TABLE',
-                    'align': 'center'
-                }, {
-                    'label': '关联表名',
-                    'name': 'TARGET_TABLE',
-                    'align': 'center'
-                }, {
-                    'label': '原表字段',
-                    'name': 'SOURCE_COLUMN',
-                    'align': 'center'
-                }, {
-                    'label': '关联表字段',
-                    'name': 'TARGET_COLUMN',
-                    'align': 'center'
-                }
-            ],
-            scroll: false,
-            height: '100%',
-            width: '100%'
-        }
-        tableGridObj.initGridData(setting)
-    }
-    layer.open({
-        id: 'relationTableQueryDialog',
-        type: 1,
-        title: '关联表查询',
-        content: '<div id="tableArea" class="table-view" style="width:100%;"><table class="table table-striped" id="resultTable"></table></div>',
-        area: ['800px', '400px'],
-        skin: 'layui-layer-lan',
-        resize: false,
-        scrollbar: false,
-        success: function(layero) {
-            relationTableInit(tableName)
-        }
-    })
-}
-
-/**
- * 频次分析的结果集数据添加超链接
- * */
-function comparisonLink(instance, td, row, col, prop, value, cellProperties) {
-    var escaped = Handsontable.helper.stringify(value)
-    var parentIds = graph.nodeData[graph.curCell.id].parentIds
-    var dataTableName = graph.nodeData[parentIds[0]].nodeInfo.dataTableName
-    var cVal = $(td).parent().find('td:eq(0)').html()
-    td.innerHTML = '<a href="javascript:void(0)" onclick="showTableDetail(\'' + dataTableName + '\',\'' + cVal + '\')" style="cursor:point">' + escaped + '</a>'
-    return td
-}
-
-/**
- * 展示频次分析各个表的具体数据
- * */
-function showTableDetail(dataTableName, cVal) {
-    cVal = escape(encodeURIComponent(cVal))
-    layer.open({
-        id: 'analysisDataDetail',
-        type: 2,
-        title: '频次分析数据详情',
-        content: 'page/C_Rows_Data/analysisDetailData.jsp?dataTableName=' + encodeURIComponent(dataTableName) + '&cVal=' + cVal + '&openType=' + graph.openType,
-        area: ['90%', '90%'],
-        skin: 'layui-layer-lan',
-        resize: false,
-        scrollbar: false,
-        btn: ['关闭'],
-        btn1: function(index) {
-            layer.close(index)
-        }
-    })
-}
-
-/**
  * 节点重命名
  * */
 export function reName() {
@@ -1545,25 +1207,6 @@ export function reNameCallBack() {
     // 自动保存图形化
     autoSaveGraph()
     graphIndexVue.nodeReNameDialogVisible = false
-}
-
-/**
- * 重新配置（只有结果表才有该事件）
- * */
-function reSetProperty() {
-    // 初始化节点信息
-    var options = {
-        'id': graph.curCell.id,
-        'name': graph.curCell.value,
-        'type': 'newNullNode'
-    }
-    initNodeData(options, false)
-    // 判断前置节点的执行状态，与其保持一致
-    var parentIds = graph.nodeData[graph.curCell.id].parentIds
-    var nodeExcuteStatus = graph.nodeData[parentIds[0]].nodeInfo.nodeExcuteStatus
-    graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus = nodeExcuteStatus
-    // 重置节点的状态图标
-    changeNodeIcon(nodeExcuteStatus, graph.nodeData[graph.curCell.id].isSet)
 }
 
 /**
@@ -1619,59 +1262,6 @@ export function reSetOptProperty() {
 export function sqlNodeEdit() {
     graphIndexVue.sqlEditorCurSql = graph.nodeData[graph.curCell.id].setting.sql || ''
     graphIndexVue.sqlEditorDialogVisible = true
-    // var curSql = graph.nodeData[graph.curCell.id].setting.sql || ''
-    // window.sessionStorage.setItem('sql', curSql)
-    // layer.open({
-    //     id: 'sqlNodeEdit',
-    //     type: 2,
-    //     title: '我的SQL编辑',
-    //     content: '../sqlEditor/sqlEditor.jsp',
-    //     area: ['100%', '100%'],
-    //     skin: 'layui-layer-lan',
-    //     resize: false,
-    //     scrollbar: false,
-    //     btn: ['确定', '取消'],
-    //     success: function() {
-    //         var link = "<a style='color:#fff;position:absolute;top:13px;right:80px;font-size:15px;' class='open_sql' href='#' title=\"点击查看详细的配置说明\">"
-    //         link += '<img src="images/icon/open_help.png" width="16px" height="16px" style="background-size:100%;vertical-align:inherit;"/>'
-    //         link += '<span style="position: relative;left: 5px;bottom: 2px;">帮助</span></a>'
-    //         $('.layui-layer-title').after(link)
-    //         $('.open_sql').click(function() {
-    //             showSettingRemark('sql')
-    //         })
-    //     },
-    //     btn1: function(index, layero) {
-    //         var returnObj = $(layero).find('iframe')[0].contentWindow.getSaveInfo()
-    //         if (returnObj.isError) {
-    //             alertMsg('提示', returnObj.message, 'info')
-    //         } else {
-    //             if ($.trim(returnObj.sql) !== '') {
-    //                 if (graph.openGraphType === 1) { // 如果是普通个人图形
-    //                     sqlNodeEdit_callBack(returnObj, layero)
-    //                     layer.close(index)
-    //                 } else { // 如果是场景查询图形和模型图形
-    //                     if (returnObj.isChange) {
-    //                         confirmMsg('提示', returnObj.message + '，是否继续？', 'info', function() {
-    //                             graph.nodeData[graph.curCell.id].sqlIsChanged = true
-    //                             graph.nodeData[graph.curCell.id].columnsInfo = []// 若SQL发生改变，则清除当前节点的输出列信息
-    //                             sqlNodeEdit_callBack(returnObj, layero)
-    //                             layer.close(index)
-    //                         }, function() {})
-    //                     } else {
-    //                         graph.nodeData[graph.curCell.id].sqlIsChanged = false
-    //                         sqlNodeEdit_callBack(returnObj, layero)
-    //                         layer.close(index)
-    //                     }
-    //                 }
-    //             } else {
-    //                 alertMsg('提示', '请输入SQL内容', 'info')
-    //             }
-    //         }
-    //     },
-    //     btn2: function(index) {
-    //         layer.close(index)
-    //     }
-    // })
 }
 
 export async function sqlNodeEdit_callBack() {
@@ -1711,9 +1301,9 @@ export async function sqlNodeEdit_callBack() {
         graphIndexVue.$refs.sqlEditor.$message({"type":"warning", "message":returnObj.message})
     } else {
         if ($.trim(returnObj.sql) !== '') {
-            if (graph.openGraphType === 1) { // 如果是普通个人图形
-                callFun(returnObj)
-            } else { // 如果是场景查询图形和模型图形
+            // if (graph.openGraphType === 1) { // 如果是普通个人图形
+            //     callFun(returnObj)
+            // } else { // 如果是场景查询图形和模型图形
                 if (returnObj.isChange) {
                     graphIndexVue.$refs.sqlEditor.$confirm(`${returnObj.message}，是否继续？`, '提示', {
                         confirmButtonText: '确定',
@@ -1731,57 +1321,11 @@ export async function sqlNodeEdit_callBack() {
                     graph.nodeData[graph.curCell.id].sqlIsChanged = false
                     callFun(returnObj)
                 }
-            }
+            // }
         } else {
             graphIndexVue.$refs.sqlEditor.$message({"type":"warning", "message":"请输入SQL内容"})
         }
     }
-
-
-    // var verify = $(layero).find('iframe')[0].contentWindow.verifySql()
-    // // if(!verify.verifyFormat){
-    // // 	alertMsg("提示","SQL语句不合法，验证不通过","warning");
-    // // 	return false;
-    // // }
-    // // 是否保存数据
-    // var ifSaveData = $(layero).find('iframe')[0].contentWindow.$('#ifSaveData')[0]
-    // // 获取用户自定义表名称（只有保存数据时才会有值,否则为“”值）
-    // var tableName = $(layero).find('iframe')[0].contentWindow.$('#dataTableName').val()
-    // // 获取旧的用户自定义的表名称（只有设置过保存数据且保存过节点配置时才会有，否则为“undefined”）
-    // var userTableName = graph.nodeData[graph.curCell.id].nodeInfo.userTableName
-    // if ($(ifSaveData).is(':checked')) {
-    //     graph.nodeData[graph.curCell.id].nodeInfo.isCreateTable = 1
-    //     graph.nodeData[graph.curCell.id].nodeInfo.userTableName = tableName
-    // } else {
-    //     graph.nodeData[graph.curCell.id].nodeInfo.isCreateTable = 0
-    // }
-    // graph.nodeData[graph.curCell.id].isSet = true
-    // graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus = 1
-    // graph.nodeData[graph.curCell.id].nodeInfo.nodeSql = returnObj.sql
-    // graph.nodeData[graph.curCell.id].setting.sql = returnObj.sql
-    // // 更新SQL编辑器的配置状态
-    // changeNodeIcon(1, true, graph.curCell.id)
-    // // 更新结果表的状态
-    // if (verify.verifySelect) {
-    //     if (graph.nodeData[graph.curCell.id].childrenIds.length === 0) {
-    //         graph.getModel().beginUpdate()
-    //         try {
-    //             // 自动生成结果表
-    //             autoCreateNode()
-    //         } finally {
-    //             graph.getModel().endUpdate()
-    //         }
-    //     } else {
-    //         if (returnObj.isChange || (userTableName && userTableName !== tableName)) { // 如果sql值有变化或者改变了用户自定义的结果表名称
-    //             // 更改结果表的状态
-    //             var nodeId = graph.nodeData[graph.curCell.id].childrenIds[0]
-    //             changeNodeInfo(nodeId, true)
-    //         }
-    //     }
-    // }
-    // // 自动保存图形化
-    // autoSaveGraph()
-
 }
 
 /**
@@ -1801,16 +1345,6 @@ export function getDataSourceTable() {
     return dataSourceNodeValArr
 }
 
-/**
- * 保存数据信息
- * @param id
- * @param setting
- */
-function saveGraphData(id, setting) {
-    graph.nodeData[id]['setting'] = setting// save settting
-    graph.nodeData[id]['isSet'] = true
-}
-
 // 判断更改的操作中是否包含节点
 function hadNode(edit) {
     var hadNode = false
@@ -1825,7 +1359,7 @@ function hadNode(edit) {
 }
 
 // 撤销上一步操作，改变节点信息
-function changeUndoNodeInfo(edit, flag) {
+export function changeUndoNodeInfo(edit, flag) {
     if (hadNode(edit)) {
         var valArr = getDataSourceTable()
         var optType = graph.oldOptArr[graph.oldOptArr.length - 1].optType
@@ -2028,7 +1562,6 @@ export function changeRedoNodeInfo(edit, flag) {
 }
 
 export function deleteCells(includeEdges) {
-    // Cancels interactive operations
     graph.escape()
     var cells = graph.getDeletableCells(graph.getSelectionCells())
     var nodeIdArr = []

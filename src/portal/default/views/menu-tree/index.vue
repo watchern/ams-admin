@@ -25,6 +25,7 @@ export default {
         isCloseTree: false
       })
     })
+    console.log(this.list)
   },
   methods: {
     close(item) {

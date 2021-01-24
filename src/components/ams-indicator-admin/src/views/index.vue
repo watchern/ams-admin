@@ -85,17 +85,30 @@
           <div class="recommendPage" style="height: 620px;overflow-y:scroll">
             <el-menu default-active="0" class="el-menu-demo" mode="horizontal">
               <div v-for="(dataObj,indexI) in dataList">
-                <el-menu-item :index="indexI" @click="jump(indexI)">{{dataObj.measureName}}<i :class="dataObj.icon"></i></el-menu-item>
+                <el-menu-item :index="indexI.toString()" @click="jump(indexI)">{{dataObj.measureName}}<i :class="dataObj.icon"></i></el-menu-item>
               </div>
             </el-menu>
             <swiper :options="swiperOption" ref="mySwiper">
-<!--                <swiper-slide v-for="(dataObj,index) in dataList">
-                  <mtEditor :ref="dataObj.id" :data='dataObj.data' v-if="dataObj.chartConfig != undefined" :chart-config='dataObj.chartConfig'></mtEditor>
-                  <mtEditor :ref="dataObj.id" :data='dataObj.data' v-else :chart-config='dataObj.chartConfig'></mtEditor>
-                </swiper-slide>-->
                 <swiper-slide v-for="(dataObj,index) in dataList" v-loading="dataObj.loading" element-loading-text="正在执行SQL,请稍候...">
-                  <mtEditor :ref="dataObj.id" :data='dataObj.data' v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
-                  <mtEditor :ref="dataObj.id" :data='dataObj.data' v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
+                  <div class="btn-div"  v-if="dataObj.isError == false">
+                    <div :class="dataObj.btnChartClass" :ref="dataObj.id + 'btnChart'"><span class="icon iconfont iconfont-div" @click="switchDivStyle(dataObj.id + 'btnChart',dataObj.id)">&#xe6d8;</span></div>
+                    <div :class="dataObj.btnTableClass" :ref="dataObj.id + 'btnTable'"><span class="icon iconfont iconfont-div" @click="switchDivStyle(dataObj.id + 'btnTable',dataObj.id)">&#xecee;</span></div>
+                  </div>
+                  <ag-grid-vue
+                    v-show=dataObj.isShowTable
+                    :ref="dataObj.id + 'table'" v-if="dataObj.isLoad == true && dataObj.isError == false"
+                    style="height:75%"
+                    class="table ag-theme-balham"
+                    :get-row-style="(params) => {return setRowColor(params,dataObj.id)}"
+                    :column-defs="dataObj.data.columnDefs"
+                    :row-data="dataObj.data.data"
+                    rowMultiSelectWithClick="true"
+                    :enable-col-resize="true"
+                    row-selection="multiple"
+                    row-height="40"
+                  />
+                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
+                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
                   <div style="color:red;text-align: left" v-else>{{dataObj.message}}</div>
                 </swiper-slide>
               <div class="swiper-pagination" slot="pagination"></div>
@@ -118,7 +131,7 @@
         </el-submenu>
       </el-menu>
     </div>
-    <el-dialog :title="deriveInType===2?'派生指标':'临时指标'" v-if="dialogAddderiveinVisible"
+    <el-dialog :title="deriveInType==='2'?'派生指标':'临时指标'" v-if="dialogAddderiveinVisible" width="70%"
                :visible.sync="dialogAddderiveinVisible">
       <addderivein @closeAddderiveinDialog="closeAddderiveinDialog" v-if="dialogAddderiveinVisible" :type="deriveInType" :addType="addDeriveInType"
                    :nowAnalysisRegionId="nowAnalysisRegionId" :parentUuid="nowParentUuid"
@@ -161,6 +174,11 @@
   </div>
 </template>
 <script>
+// 引入样式文件
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-balham.css";
+// 引入ag-grid-vue
+import { AgGridVue } from "ag-grid-vue";
 import request from '@/utils/request'
 import 'iview/dist/styles/iview.css'
 import mtEditor from 'ams-datamax'
@@ -182,7 +200,7 @@ export default {
     saveanalysis: resolve => require(["../views/indicator/saveanalysis.vue"], resolve),
     indicatordesign: resolve => require(["../views/indicator/indicatordesign.vue"], resolve),
     inmeasurefilter: resolve => require(["../views/indicator/inmeasurefilter.vue"], resolve),
-    mtEditor,swiper, swiperSlide
+    mtEditor,swiper, swiperSlide,AgGridVue
   },
   data() {
     return {
@@ -379,7 +397,10 @@ export default {
         }
       },
       addTempDimAnalysisRegionId:'',
-      inMeasureFilter:false
+      inMeasureFilter:false,
+      //每个分析区所需要展示的过滤条件，里面包含analysisRegionId,条件显示的sql对象
+      analysisRegionFilterShowObj:{}
+      //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilte:''}]}
     }
   },
   watch: {
@@ -459,7 +480,13 @@ export default {
       }
       const func2 = function func3(val) {
         if(val.executeSQL.state == 2){
-          let result = {column:val.columnNames,columnType:val.columnTypes,data:val.result}
+          let columnDefs = []
+          for(let i = 0; i < val.columnNames.length;i++){
+            let obj =  {headerName: val.columnNames[i], field: val.columnNames[i],width:300}
+            columnDefs.push(obj)
+          }
+          let result = {column:val.columnNames,columnType:val.columnTypes,data:val.result,columnDefs:columnDefs}
+          //处理aggrid的列信息
           let data = {id:val.analysisRegionId,data:result,measureName:val.measureName,chartConfig:val.chartConfig}
           //根据返回的结果id找到数组里面的数据进行修改
           for(let i = 0; i < this.dataList.length;i++){
@@ -4823,13 +4850,21 @@ export default {
       var url = this.contextUrl + "/indicatrixAnalysis/supAnalysis";
       let loadingInstance = Loading.service({fullscreen: true});
       var newInList = [];
+      let filterShow = [];
       //取出每个分析区的第一个指标并删除，用该指标与其他指标进行组织sql
-      $.each(objInList, function (num, inMeasure) {
-        if (inMeasure == null) {
+      $.each(objInList, function (num, indicatrixObj) {
+        if (indicatrixObj == null) {
           return;
         }
-        newInList.push(inMeasure);
+        newInList.push(indicatrixObj);
+        //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilteSql:''}]}
+        //将指标最后生成的列名、条件显示sql记录到对象里，用于后边渲染颜色
+        let indicatorFilter = JSON.parse(indicatrixObj.inFilterShow)
+        let indicatorName = that.updateGroupDisplay(indicatrixObj.measureGroup,indicatrixObj.measureName).replace("(","").replace(")","")
+        filterShow.push({indicatorName:indicatorName,indicatorFilter:indicatorFilter})
       });
+      let newId = analysisRegionId.substring(0,analysisRegionId.length - 4)
+      this.analysisRegionFilterShowObj[newId] = filterShow
       $.ajax({
         type: "post",
         url: url,
@@ -4837,12 +4872,6 @@ export default {
         async: true,
         dataType: "json",
         success: function (res) {
-          loadingInstance.close()
-          if (res.state == false) {
-            loadingInstance.close();
-            that.$message("分析出错，" + res.message, {time: 30000, btn: ['知道了']});
-            return;
-          }
           //开始组织指标数据
           var inMeasureUuid = that.getuuid();
           var name = "";
@@ -4855,16 +4884,28 @@ export default {
             name = value.measureName;
             logName += value.measureName + ",";
           });
+          loadingInstance.close()
+          if (res.isError == true) {
+            let dataView = {
+              id:analysisRegionId,
+              measureName:name,
+              chartConfig:chartConfig,
+              isLoad:false,
+              loading:false,
+              icon:'el-icon-close',
+              isError:true,
+              message:"分析出错，" + res.message}
+            that.dataList.push(dataView)
+            return;
+          }
           let newAnalysisRegionId = analysisRegionId.substring(0,analysisRegionId.length - 4)
           //任务获取之后将菜单加载到界面，然后等待任务返回
           that.executeSql(res.executeSQLList,logName,newAnalysisRegionId,chartConfig)
         },
         error: function (res) {
-          if (res.state == false) {
             loadingInstance.close();
             that.$message("分析出错，" + res.message, {time: 30000, btn: ['知道了']});
             return;
-          }
         }
       });
     },
@@ -4880,12 +4921,20 @@ export default {
       var url = this.contextUrl + "/indicatrixAnalysis/getInData";
       let loadingInstance = Loading.service({fullscreen: true});
       var indicatrixObj = null;
+      let filterShow = [];
       $.each(objInList, function (num, value) {
         if (value == null) {
           return;
         }
         indicatrixObj = value;
+        //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilteSql:''}]}
+        //将指标最后生成的列名、条件显示sql记录到对象里，用于后边渲染颜色
+        let indicatorFilter = JSON.parse(indicatrixObj.inFilterShow)
+        let indicatorName = that.updateGroupDisplay(indicatrixObj.measureGroup,indicatrixObj.measureName).replace("(","").replace(")","")
+        filterShow.push({indicatorName:indicatorName,indicatorFilter:indicatorFilter})
       });
+      let newId = analysisRegionId.substring(0,analysisRegionId.length - 4)
+      this.analysisRegionFilterShowObj[newId] = filterShow
       $.ajax({
         type: "post",
         url: url,
@@ -4893,8 +4942,17 @@ export default {
         async: true,
         success: function (res) {
           loadingInstance.close();
-          if (res.state == false) {
-            that.$message("分析出错，" + res.message, {time: 30000, btn: ['知道了']});
+          if (res.isError == true) {
+            let dataView = {
+              id:analysisRegionId,
+              measureName:indicatrixObj.measureName,
+              chartConfig:chartConfig,
+              isLoad:false,
+              loading:false,
+              icon:'el-icon-close',
+              isError:true,
+              message:"分析出错，" + res.message}
+              that.dataList.push(dataView)
             return;
           }
           let newAnalysisRegionId = analysisRegionId.substring(0,analysisRegionId.length-4)
@@ -4918,7 +4976,8 @@ export default {
      * @param chartConfig 图表配置
      */
     executeSql(executeSQLList,measureName,analysisRegionId,chartConfig){
-      let dataView = {id:analysisRegionId,measureName:measureName,chartConfig:chartConfig,isLoad:false,loading:true,icon:'el-icon-loading',isError:false}
+      let dataView = {id:analysisRegionId,measureName:measureName,chartConfig:chartConfig,isLoad:false,
+        loading:true,icon:'el-icon-loading',isError:false,isShowTable:true,isShowChart:false,btnChartClass:'el-btn-no-color',btnTableClass:'el-btn-color'}
       this.dataList.push(dataView)
       let url = this.contextUrl + "/indicatrixAnalysis/executeSql";
       let data = {
@@ -5669,6 +5728,90 @@ export default {
     },
     jump(index){
       this.$refs.mySwiper.swiper.slideTo(index, 500, false);//切换到第一个slide，速度为0.5秒
+    },
+    switchDivStyle(refId,analysisRegionId){
+      //根据返回的结果id找到数组里面的数据进行修改
+      for(let i = 0; i < this.dataList.length;i++){
+        //如果相等则修改数据
+        if(this.dataList[i].id == analysisRegionId){
+          if(refId.indexOf("btnTable") != -1){
+            this.dataList[i].isShowTable = true
+            this.dataList[i].isShowChart = false
+            this.dataList[i].btnChartClass = 'el-btn-no-color'
+            this.dataList[i].btnTableClass = 'el-btn-color'
+          }
+          else if(refId.indexOf("btnChart") != -1){
+            this.dataList[i].isShowTable = false
+            this.dataList[i].isShowChart = true
+            this.dataList[i].btnChartClass = 'el-btn-color'
+            this.dataList[i].btnTableClass = 'el-btn-no-color'
+          }
+        }
+      }
+      //根据分析区编号找到分析区的对象，修改分析区对象的属性值改变现实表格还是图表，同时修改div样式
+    },
+    /**\
+     *
+     *设置背景颜色
+     * @param params aggrid回调参数
+     * @param regionAnalysiId 自定义参数
+     * @returns {undefined|{"background-color": (string), color: *}|{"background-color": *, color: *}}
+     */
+    setRowColor(params,regionAnalysiId){
+      let filterShow = this.analysisRegionFilterShowObj[regionAnalysiId]
+      for(let i = 0; i < filterShow.length;i++){
+        //拿到显示的条件后进行处理，判断当前行的值是否符合条件，如果符合条件则设置颜色等信息
+        //如果是多个指标则取最后一个颜色即可
+        //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilte:''}]}
+        let indicatorName = filterShow[i].indicatorName
+        let indicatorFilter = filterShow[i].indicatorFilter
+        if(indicatorFilter){
+          let result = this.handleData(params.data,indicatorFilter,indicatorName)
+          if(result){
+            return result
+          }
+        }
+      }
+    },
+    /**
+     * 处理数据
+     * @param data 要处理的数据
+     * @param indicatorFilter 过滤条件对象
+     * @param columnName 列名
+     * @returns {{"background-color": (string), color: (string)}}
+     */
+    handleData(data,indicatorFilter,columnName){
+      //这块这么解析不太好，有很多问题，但是暂时想不到好的方式，先用这种方式，
+      //利用空格解析filter
+      let backgroundColor = indicatorFilter.backGroundColor;
+      let fontColor = indicatorFilter.fontColor;
+      let filterSplit = indicatorFilter.sql.split(' ')
+      //数据出来的值
+      let valueOne = data[columnName]
+      //要判断的值
+      let valueTwo = filterSplit[2]
+      //运算符
+      let operator = filterSplit[1]
+      if(valueOne == null || valueTwo == null){
+        return
+      }
+      valueOne = parseFloat(valueOne)
+      valueTwo = parseFloat(valueTwo)
+      if(operator === ">" && valueOne > valueTwo){
+          return {"background-color":backgroundColor,"color":fontColor}
+      }
+      else if(operator === ">=" && valueOne >= valueTwo){
+        return {"background-color":backgroundColor,"color":fontColor}
+      }
+      else if(operator === "<" && valueOne < valueTwo){
+        return {"background-color":backgroundColor,"color":fontColor}
+      }
+      else if(operator === "<=" && valueOne <= valueTwo){
+        return {"background-color":backgroundColor,"color":fontColor}
+      }
+      else if(operator === "=" && valueOne === valueTwo){
+        return {"background-color":backgroundColor,"color":fontColor}
+      }
     }
   }
 }
@@ -5960,5 +6103,53 @@ var see = "查看";
 }
 .is-active{
   border-bottom: 2px solid #ffffff;
+}
+>>>.el-btn-no-color{
+  width: 44px;
+  float: right;
+  border: solid 1px #E0E0E0;
+  height: 29px;
+  margin: 2px;
+  cursor: pointer;
+}
+>>>.el-btn-color{
+  background: aliceblue;
+  width: 44px;
+  float: right;
+  border: solid 1px #E0E0E0;
+  height: 29px;
+  margin: 2px;
+  cursor: pointer;
+}
+>>>.btn-div{
+  margin: 1px;
+  height: 36px;
+}
+>>>.iconfont-div{
+  margin-left: 10px;
+  font-size: 22px;
+  margin-top: -3px;
+  float: left;
+}
+>>>.background-color{
+  background-color: aliceblue;
+}
+>>>.ag-header-cell{
+  background-color: #f8f8f9;
+}
+>>>.ag-header-viewport{
+  border-bottom: 1px solid #e6e6e6;
+}
+#app .app-container>>>.ag-row-odd{
+  background: #fff;
+  border-bottom: 1px solid #e6e6e6;
+  border-top: 1px solid #e6e6e6;
+}
+#app .app-container>>>.ag-root{
+  border: 1px solid #e6e6e6;
+}
+.app-container>>>.ag-theme-balham .ag-cell{
+  line-height: 40px;
+  text-align: left;
 }
 </style>

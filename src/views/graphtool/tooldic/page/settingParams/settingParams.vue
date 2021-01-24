@@ -1,5 +1,5 @@
 <template>
-    <div @mousemove="initEvent" ref="settingParamDiv" style="overflow-y: auto;height: 600px;">
+    <div @mousemove="initEvent" ref="settingParamDiv" style="overflow-y: auto;height: 600px;" v-loading="settingLoading" :element-loading-text="loadText">
         <ul id="myTab" class="nav nav-tabs">
             <li class="active">
                 <a href="#editParam" data-toggle="tab">参数编辑</a>
@@ -53,7 +53,6 @@
                             <button type="button" class="btn btn-primary" title="与" value="and" @click="operatorsFun('and')">and</button>
                             <button type="button" class="btn btn-primary" title="或" value="or" @click="operatorsFun('or')">or</button>
                             <button type="button" class="btn btn-primary" title="空值" value="is null" @click="operatorsFun('is null')">is null</button><br><br>
-                            <!--<button type="button" class="btn btn-primary" title="逗号" value="," @click="operatorsFun(',')">,</button>-->
                             <button type="button" class="btn btn-primary" title="模糊匹配" value="like" @click="operatorsFun('like')">like</button>
                             <button type="button" class="btn btn-primary" title="包含" value="in" @click="operatorsFun('in')">in</button>
                             <button type="button" class="btn btn-primary" title="左括号" value="(" @click="operatorsFun('(')">(</button>
@@ -123,6 +122,10 @@
         name: 'SettingParams',
         data(){
             return{
+                nodeZtreeObj:null,
+                paramZtreeObj:null,
+                settingLoading:true,
+                loadText:"正在初始化数据，请稍后……",
                 setParamArr :[],
                 paramDivArr:[],// 用来记录参数按钮（因反显时不能全部渲染参数的div元素，因此只能用变量记录）
                 isAdd:Object.keys(this.paramsSetting).length === 0,// 此次操作是新增还是修改
@@ -132,7 +135,10 @@
                 sql:this.paramsSetting.sql ? this.paramsSetting.sql : '',
                 mouseX: -1,
                 mouseY: -1,
-                initTreeSuccess:false//左侧树是否成功加载
+                initTreeSuccess:false,//左侧树是否成功加载
+                paramIdsdArr:[],// 用来记录已经替换过的参数ID集合（不可去除）
+                isFirstPaste:true,// 本次改变内容是否是执行第一次粘贴操作
+                checkSqlText:'',// 当前光标所在行从第0列到光标所在列之间的文本内容
             }
         },
         created(){
@@ -187,8 +193,8 @@
 <style scoped src="@/components/ams-codemirror/theme/idea.css"></style>
 <style scoped src="@/components/ams-codemirror/addon/hint/show-hint.css"></style>
 <style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
-<style scoped src="@/components/ams-basic/css/accordion.css"></style>
-<style scoped src="@/components/ams-basic/css/common.css"></style>
+<style scoped src="@/api/graphtool/css/accordion.css"></style>
+<style scoped src="@/api/graphtool/css/common.css"></style>
 <style scoped type="text/css">
     div#operators button{
         margin-left:5px;

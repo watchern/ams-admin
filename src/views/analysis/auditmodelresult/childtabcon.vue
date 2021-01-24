@@ -88,7 +88,7 @@
       <ag-grid-vue
         v-if="isSee"
         v-loading="isLoading"
-        style="height:200px"
+        :style="this.useType==='sqlEditor'?'height:32vh':'height:59vh'"
         class="table ag-theme-balham"
         :column-defs="columnDefs"
         :row-data="rowData"
@@ -372,7 +372,6 @@ export default {
       myFlag: false, // 用来判断主表界面有按钮，辅表界面没有按钮，为true是主表，为false是辅表
       selectRows: [], //用于存放多选框选中的数据
       detailTable: [], //存放关联详细表
-      primaryKey: "", // 保存每个表中的主键，因为每个表的主键都不一样，所以得根据表明查出来
       dataArray: [], // 保存当前表格中的数据
       queryData: [], // 保存列信息，用来传给子组件(queryBuilder组件)
       queryJson: {}, // 用来储存由子组件传过来的 queryBuilder 的 Json数据
@@ -977,9 +976,13 @@ export default {
       this.nextValue = nextValue;
       var col = [];
       var rowData = [];
+      console.log("-------进入getIntoModelResultDetail");
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
+        console.log(this.prePersonalVal.id +  this.nextValue.executeSQL.id + "-------进入prePersonalVal.id == this.nextValue.executeSQL.id")
         if (this.nextValue.executeSQL.state == "2") {
+          console.log(this.nextValue.executeSQL.state + "-------进入this.nextValue.executeSQL.state 2")
           if (this.nextValue.executeSQL.type == "SELECT") {
+            console.log(this.nextValue.executeSQL.type + "-------进入getIntoModelResultDetail SELECT")
             //todo 增加sql类型判断
             if (true) {
               this.modelResultButtonIsShow = true;
@@ -1024,7 +1027,7 @@ export default {
               this.result.data = chartData;
               this.rowData = this.modelResultData;
               this.modelResultColumnNames = this.nextValue.columnNames;
-              for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
+              for (var j = 0; j < this.nextValue.columnNames.length; j++) {
                 var rowColom = {
                   headerName: this.nextValue.columnNames[j],
                   field: this.nextValue.columnNames[j],

@@ -11,23 +11,51 @@
                 <el-form-item label="指标列">
                     <el-input id="colName" v-model="form.colName" readonly="readonly"></el-input>
                 </el-form-item>
-                <el-form-item label="聚合方式">
-                    <el-select id="group" v-model="form.group" readonly="readonly">
-                        <el-option value="sum" label="总计"></el-option>
-                        <el-option value="count" label="计数"></el-option>
-                        <el-option value="avg" label="平均值"></el-option>
-                        <el-option value="max" label="最大值"></el-option>
-                        <el-option value="min" label="最小值"></el-option>
-                        <el-option value="distinct" label="差异计数"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="所属分类">
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="聚合方式">
+                      <el-select style="width: 100%" id="group" v-model="form.group" readonly="readonly">
+                          <el-option value="sum" label="总计"></el-option>
+                          <el-option value="count" label="计数"></el-option>
+                          <el-option value="avg" label="平均值"></el-option>
+                          <el-option value="max" label="最大值"></el-option>
+                          <el-option value="min" label="最小值"></el-option>
+                          <el-option value="distinct" label="差异计数"></el-option>
+                      </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="所属分类" style="margin-left: 15px">
                     <el-select v-model="form.folderName" placeholder="请选择所属分类" style="width: 100%" ref="folderName">
-                        <el-option :value="form.folderName" :label="form.folderName" style="width: 100%;height:200px;overflow: auto;background-color:#fff">
-                            <publictree :setFolderIdAndName="setFolderIdAndName" :type="2"></publictree>
-                        </el-option>
+                      <el-option :value="form.folderName" :label="form.folderName" style="width: 100%;height:200px;overflow: auto;background-color:#fff">
+                        <publictree :setFolderIdAndName="setFolderIdAndName" :type="2"></publictree>
+                      </el-option>
                     </el-select>
-                </el-form-item>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+                <el-row>
+                  <el-form-item  label="条件显示">
+                    <el-col :span="21">
+                      <el-input readonly="readonly" v-model="form.inFilterShowObj.sql" />
+                    </el-col>
+                    <el-col :span="3">
+                      <el-button style="margin-left: 19px;" type="primary" size="mini" @click="setQueryBuilderRules();setFilterShow()">设置</el-button>
+                    </el-col>
+                  </el-form-item>
+                </el-row>
+                <el-row>
+                  <el-col :span="8">
+                    <el-form-item label="字体颜色">
+                      <Colorpicker v-model="form.inFilterShowObj.fontColor" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="背景色">
+                      <Colorpicker v-model="form.inFilterShowObj.backGroundColor" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
                 <el-form-item label="指标说明">
                     <el-input type="textarea" id="inMemo" v-model="form.inMemo"></el-input>
                 </el-form-item>
@@ -39,9 +67,22 @@
                 <el-button type="primary" @click="closeDialog">取消</el-button>
             </div>
         </el-footer>
+      <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true">
+        <myQueryBuilder
+          v-if="queryBuilderDialogVisible"
+          ref="myQueryBuilder"
+          :columns="queryRules"
+          :data="form.inFilterShowObj.queryBuilderJson"/>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="queryBuilderDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="queryCondition">确定</el-button>
+        </span>
+      </el-dialog>
     </el-container>
 </template>
 <script>
+import Colorpicker from '../../lib/vue-color-picker/packages/color-picker/src/color-picker'
+import myQueryBuilder from "../indicator/myquerybuilder";
 import request from '@/utils/request'
 import $ from 'jquery'
 import { Loading } from 'element-ui'
@@ -49,7 +90,7 @@ export default {
   name: 'addIndicatrix',
   props: ['tableId','tableName','columnId','columnName','inUUID'],
   components: {
-    publictree: resolve => require(["../../views/indicator/publictree.vue"], resolve)
+    publictree: resolve => require(["../../views/indicator/publictree.vue"], resolve),Colorpicker,myQueryBuilder
   },
   data() {
     return {
@@ -59,8 +100,11 @@ export default {
           colName: '',
           folderName: '',
           group: '',
-          inMemo: ''
+          inMemo: '',
+          inFilterShow:'',
+          inFilterShowObj:{queryBuilderJson:{},backGroundColor:'#000000',fontColor:'#000000',sql:''}
         },
+        queryRules:{},
         /**
          * 编辑指标时存储指标的反显数据
          * @type {null}
@@ -94,14 +138,16 @@ export default {
          * 作用域编号
          * @type {string}
          */
-        pbScopeUuid:  ""
+        pbScopeUuid:  "",
+        queryBuilderDialogVisible:false
     }
   },
   mounted() {
-      this.initData();
+
   },
   created() {
-
+    this.clearData()
+    this.initData();
   },
   methods: {
           /**
@@ -111,6 +157,7 @@ export default {
         if (this.inUUID == null) {//判断该id是否为空 如果为空则是新增  反之编辑
             this.form.tableName = this.tableName
             this.form.colName = this.columnName
+            this.setQueryBuilderRules()
         }
         else {
             this.antiDisplayIndicatrixData(this.inUUID);
@@ -147,6 +194,11 @@ export default {
             that.form.group = res.measureGroup
             that.form.folderName = res.folderName
             that.form.inMemo = res.measureMemo
+            if(res.inFilterShow){
+              that.form.inFilterShowObj = JSON.parse(res.inFilterShow)
+            }
+            that.setQueryBuilderRules()
+            //console.log(JSON.parse(res.inFilterShow))
         }, "json")
     },
 
@@ -197,7 +249,8 @@ export default {
             measureAlias: this.form.inName,
             belongOrg: '',
             belongType: this.auditorOrauditorgan,
-            pbScopeUuid: this.pbScopeUuid
+            pbScopeUuid: this.pbScopeUuid,
+            inFilterShow: JSON.stringify(this.form.inFilterShowObj)
         };
         var relData = {
             inColumnrelationUuid: "",
@@ -220,8 +273,7 @@ export default {
                     that.$emit('getAllColumn',that.tableId)
                     that.$emit('addInTable',that.tableId)
                     that.$emit('getAllIndicatrix',that.tableId)
-                    var info = "新增了原生指标:'{0}'，文件夹路径:'{1}'".format(that.form.inName,that.form.folderName);
-                    that.addOperLogByParam(that.log_module,that.log_add,that.log_info);
+                    //保存完成之后清除该界面数据
                     that.closeDialog();
                 }
                 else {
@@ -274,6 +326,7 @@ export default {
         this.editData.measureMemo = this.form.inMemo;
         this.editData.measureAlias = this.form.inName;
         this.editData.measureGroup = this.form.group;
+        this.editData.inFilterShow = JSON.stringify(this.form.inFilterShowObj)
         this.editData.measurePath = this.treePath;
       //因时间报错所以注销时间（时间格式为格林威治时间）
 //        this.editData.createTime = new Date(this.editData.createTime);
@@ -290,6 +343,7 @@ export default {
             if (res.state == true) {
                 that.$emit('getAllIndicatrix',that.tableId)
                 that.$emit('getAllColumn',that.tableId)
+                //保存完成之后清除该界面数据
                 that.closeDialog();
             }
             else {
@@ -304,8 +358,6 @@ export default {
     closeDialog() {
         this.$emit('closeAddIndicatrix')
     },
-
-
     /**
      * 设置文件夹的路径以及id和名称
      */
@@ -315,6 +367,44 @@ export default {
         this.pbScopeUuid = pbScopeUuids
         this.treePath = path
     },
+    queryCondition() {
+      const obj = this.$refs.myQueryBuilder.getSelectSql()
+      this.form.inFilterShowObj.sql = obj.sql
+      this.form.inFilterShowObj.queryBuilderJson = obj.queryJson
+      this.queryBuilderDialogVisible = false
+    },
+    /**
+     * 设置条件显示
+     */
+    setFilterShow(){
+      if(this.form.inName === ""){
+        this.$message("请输入指标名称。");
+        return
+      }
+      this.queryBuilderDialogVisible = true
+    },
+    setQueryBuilderRules(){
+      let queryRules = []
+      const obj = {}
+      obj.columnType = "int"
+      obj.columnName = this.form.inName
+      queryRules.push(obj)
+      this.queryRules.columnList = queryRules
+    },
+    clearData(){
+      this.form = {
+          inName: '',
+          tableName: '',
+          colName: '',
+          folderName: '',
+          group: '',
+          inMemo: '',
+          inFilterShow:'',
+          inFilterShowObj:{queryBuilderJson:{},backGroundColor:'',fontColor:'',sql:''}
+      }
+      this.queryRules = {}
+      this.editData = null
+    }
   }
 }
 </script>
