@@ -26,7 +26,7 @@
 
 <script>
 import '@/components/ams-loading/css/loading.css'
-import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams  } from '@/api/graphtool/graphList'
+import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams  } from '@/api/graphtool/apiJs/graphList'
 import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
 import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
 export default {
