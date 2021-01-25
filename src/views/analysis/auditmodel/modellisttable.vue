@@ -114,7 +114,7 @@
 </template>
 <script>
 import { findModel, saveModel, deleteModel, shareModel, selectModel, updateModel, updateModelBasicInfo, exportModel, setModelSession } from '@/api/analysis/auditmodel'
-import {deleteGraphInfoById} from '@/api/graphtool/graphList'
+import {deleteGraphInfoById} from '@/api/graphtool/apiJs/graphList'
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'

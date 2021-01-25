@@ -10,7 +10,6 @@
     <el-table
       :key="tableKey"
       v-loading="listLoading"
-      stripe
       fit
       style="width: 100%;"
       :data="list"
@@ -74,7 +73,6 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import { listByPage } from '@/api/etlscheduler/datafile'
 import QueryField from '@/components/Ace/query-field/index'
 import store from '@/store'
-import dayjs from 'dayjs'
 
 export default {
   components: { Pagination, QueryField },
@@ -128,10 +126,10 @@ export default {
       immediate: true,
       handler() {
         this.queryDefault = {
-          startTimeStart: dayjs(this.store.state.monitor.processStartTime).format('YYYY-MM-DD'),
-          startTimeEnd: dayjs(this.store.state.monitor.processEndTime).format('YYYY-MM-DD')
+          startTimeStart: this.store.state.monitor.processStartTime,
+          startTimeEnd: this.store.state.monitor.processEndTime
         }
-        this.queryFields[3].value = this.queryDefault.startTimeStart + ',' + this.queryDefault.startTimeEnd
+        this.queryFields[3].value = [this.queryDefault.startTimeStart, this.queryDefault.startTimeEnd]
         this.getList(this.queryDefault)
       }
     }

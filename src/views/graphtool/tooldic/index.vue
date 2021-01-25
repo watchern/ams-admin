@@ -241,14 +241,14 @@
         <el-dialog :visible.sync="helpDialogVisible" title="帮助">
             <Help />
         </el-dialog>
-        <el-dialog v-if="graphListDialogVisible" :visible.sync="graphListDialogVisible" title="选择图形" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal">
+        <el-dialog v-if="graphListDialogVisible" :visible.sync="graphListDialogVisible" title="选择图形" :close-on-press-escape="false" :close-on-click-modal="false">
             <GraphListExport ref="graphListExport" :open-type="openType" />
             <div slot="footer">
                 <el-button @click="graphListDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="getGraphObject">确定</el-button>
             </div>
         </el-dialog>
-        <el-dialog :visible.sync="graphFormVisible" :title="graphFormTitle" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
+        <el-dialog :visible.sync="graphFormVisible" :title="graphFormTitle" :close-on-press-escape="false" :close-on-click-modal="false" width="600px">
             <el-form>
                 <el-row>
                     <el-col>
@@ -260,7 +260,7 @@
                 <el-row>
                     <el-col>
                         <el-form-item label="图形描述" prop="description">
-                            <el-input v-model="description" type="textarea" :autosize="{ minRows: 3, maxRows: 5}" placeholder="请输入内容" />
+                            <el-input v-model="description" type="textarea" resize="none" :autosize="{ minRows: 3, maxRows: 5}" placeholder="请输入内容" />
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -270,7 +270,7 @@
                 <el-button type="primary" @click="getGraphFormInfo">保存</el-button>
             </div>
         </el-dialog>
-        <el-dialog v-if="nodeParamListDialogVisible" :visible.sync="nodeParamListDialogVisible" title="参数节点列表" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal">
+        <el-dialog v-if="nodeParamListDialogVisible" :visible.sync="nodeParamListDialogVisible" title="参数节点列表" :close-on-press-escape="false" :close-on-click-modal="false">
             <div  style="height: 400px;overflow-y: auto;">
                 <table class="table table-bordered">
                     <thead>
@@ -300,7 +300,7 @@
                 <el-button type="primary" @click="showParamNodeListCallBack()">保存</el-button>
             </div>
         </el-dialog>
-        <el-dialog v-if="nodeParamSettingDialogVisible" :visible.sync="nodeParamSettingDialogVisible" title="设置节点参数" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="1000px">
+        <el-dialog v-if="nodeParamSettingDialogVisible" :visible.sync="nodeParamSettingDialogVisible" title="设置节点参数" :close-on-press-escape="false" :close-on-click-modal="false" width="1000px">
             <SettingParams ref="settingParams" :graph="graph" :node-id="sp_nodeId" :params-setting="sp_paramsSetting" />
             <div slot="footer" v-if="initNodeSettingVue">
                 <el-button @click="nodeParamSettingDialogVisible = false">取消</el-button>
@@ -311,13 +311,12 @@
             v-if="nodeSettingDialogVisible"
             :visible.sync="nodeSettingDialogVisible"
             :title="nodeSettingTitle"
-            :close-on-press-escape="pressEscape"
-            :close-on-click-modal="clickModal"
+            :close-on-press-escape="false"
+            :close-on-click-modal="false"
             :before-close="closeNodeSetting"
-            :modal-append-to-body="pressEscape"
-            :destroy-on-close="!pressEscape"
-            width="1000px"
-        >
+            :append-to-body="true"
+            :destroy-on-close="true"
+            width="1000px">
             <NodeSetting v-if="settingType === 'commonSetting'" ref="nodeSetting" :graph="graph" :opt-type="sp_optType" />
             <RelationSetting v-if="settingType === 'relation'" ref="nodeSetting" :graph="graph" />
             <GroupCount v-if="settingType === 'groupCount'" ref="nodeSetting" :graph="graph"/>
@@ -330,22 +329,20 @@
             v-if="sqlEditorDialogVisible"
             :visible.sync="sqlEditorDialogVisible"
             title="SQL编辑器"
-            :close-on-press-escape="pressEscape"
-            :close-on-click-modal="clickModal"
+            :close-on-press-escape="false"
+            :close-on-click-modal="false"
             :width="sqlEditorWidth" top="20px"
-            :modal-append-to-body="clickModal" :style="sqlEditorStyle">
-            <!--width="100%"-->
-            <!--:fullscreen="!clickModal"-->
+            :modal-append-to-body="false" :style="sqlEditorStyle">
             <SqlEditor ref="sqlEditor" callType="graphModel" :sqlValue="sqlEditorCurSql"/>
             <div v-if="graph.canEditor" slot="footer">
                 <el-button @click="sqlEditorDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="sqlNodeEditCallBack()">保存</el-button>
             </div>
         </el-dialog>
-        <el-dialog v-if="viewNodeSqlDialogVisible" :visible.sync="viewNodeSqlDialogVisible" title="查看SQL语句" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
+        <el-dialog v-if="viewNodeSqlDialogVisible" :visible.sync="viewNodeSqlDialogVisible" title="查看SQL语句" :close-on-press-escape="false" :close-on-click-modal="false" width="600px">
             <div style='height: 400px;padding: 20px;'>{{curNodeExecuteSQL}}</div>
         </el-dialog>
-        <el-dialog v-if="nodeReNameDialogVisible" :visible.sync="nodeReNameDialogVisible" title="重命名" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
+        <el-dialog v-if="nodeReNameDialogVisible" :visible.sync="nodeReNameDialogVisible" title="重命名" :close-on-press-escape="false" :close-on-click-modal="false" width="600px">
             <el-form>
                 <el-row>
                     <el-col>
@@ -361,7 +358,7 @@
                 <el-button type="primary" @click="reNameCallBack">保存</el-button>
             </div>
         </el-dialog>
-        <el-dialog v-if="nodeParamDialogVisible" :visible.sync="nodeParamDialogVisible" title="设置执行参数" :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
+        <el-dialog v-if="nodeParamDialogVisible" :visible.sync="nodeParamDialogVisible" title="设置执行参数" :close-on-press-escape="false" :close-on-click-modal="false" width="600px">
             <InputParams ref="inputParams" :nodeData="graph.nodeData" :nodeIdArr="executeNodeIdArr"/>
             <div slot="footer">
                 <el-button @click="nodeParamDialogVisible = false">取消</el-button>
@@ -413,6 +410,9 @@
 <script>
     import '@/components/ams-graphtool/styles/grapheditor.css'
     import '@/components/ams-loading/css/loading.css'
+    import '@/components/ams-ztree/js/jquery.ztree_new.all.min.js'
+    import '@/components/ams-ztree/js/jquery.ztree.excheck.min.js'
+    import '@/components/ams-ztree/js/jquery.ztree.exhide.min.js'
     require("@/components/ams-graphtool/framework/sanitizer/sanitizer.min.js")
     // 引入子组件
     import Help from '@/views/graphtool/tooldic/page/funEventVue/help.vue'
@@ -426,7 +426,7 @@
     import SqlEditor from '@/views/analysis/sqleditor/index.vue'
     // 引入后端接口的相关方法
     import { removeJcCssfile, addCssFile, addJsFile } from "@/api/analysis/common"
-    import { getGraphInfoById, viewNodeData, saveGraphInterface, createScreenQuery } from '@/api/graphtool/graphList'
+    import { getGraphInfoById, viewNodeData, saveGraphInterface, createScreenQuery } from '@/api/graphtool/apiJs/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
     // 引入前段JS的相关方法
     import * as commonJs from '@/views/graphtool/tooldic/js/common'
@@ -450,8 +450,6 @@
                 nodeParamListDialogVisible: false,
                 nodeParamSettingDialogVisible: false,
                 nodeSettingDialogVisible: false,
-                pressEscape: false,
-                clickModal: false,
                 oldGraphData: null, // 用来接收打开的图形全部节点数据信息的对象
                 openType_graph: 2, // 默认打开的当前图形的数据源环境是权限环境
                 createUserId: '', // 当前图形的创建人ID（只使用于验证普通图形）
@@ -500,16 +498,14 @@
                 sqlEditorWidth:'',
                 sqlEditorStyle:'',
                 curModelSql: '',// 用来临时存储打开模型图形时的模型SQL语句
-                isSearchExpand:false// 左侧资源树搜索功能的变量
+                isSearchExpand:false,// 左侧资源树搜索功能的变量
+                curCell:null//当前执行节点的对象
             }
         },
         created() {
             // 引入公用CSS、JS
             addCssFile('/lib/Ztree/css/zTreeStyle/zTreeStyle.css','zTreeStyle')
             addJsFile('/lib/bootstrap/js/bootstrap.min.js','bootstrap.min')
-            addJsFile('/lib/Ztree/js/jquery.ztree_new.all.min.js','jquery.ztree_new.all.min')
-            addJsFile('/lib/Ztree/js/jquery.ztree.excheck.min.js','jquery.ztree.excheck.min')
-            addJsFile('/lib/Ztree/js/jquery.ztree.exhide.min.js','jquery.ztree.exhide.min')
             this.init()
         },
         beforeDestroy() {
@@ -576,6 +572,8 @@
                 window.deleteCells = commonJs.deleteCells
                 window.previewNodeData = commonJs.previewNodeData
                 window.reSetOptProperty = commonJs.reSetOptProperty
+                window.changeUndoNodeInfo = commonJs.changeUndoNodeInfo
+                window.changeRedoNodeInfo = commonJs.changeRedoNodeInfo
             },
             initIndex() {
                 let $this = this
@@ -804,8 +802,7 @@
                                 if ((!treeNode.children || treeNode.children.length === 0) && (treeNode.type === 'datasource' || treeNode.type === 'table' || treeNode.type === 'view')) {
                                     indexJs.getColumnsByTable(treeNode, false, false)
                                 }
-                            },
-                            onDrop: typeof onDrop === 'function' ? onDrop : function() {}
+                            }
                         }
                     }
                     if (obj.canEditor) {
@@ -1210,5 +1207,5 @@
 </script>
 <!--引入图形化工具专用CSS样式-->
 <style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
-<style scoped src="@/components/ams-basic/css/accordion.css"></style>
+<style scoped src="@/api/graphtool/css/accordion.css"></style>
 <style scoped src="@/views/graphtool/tooldic/css/index.css"></style>

@@ -33,14 +33,6 @@ export function init() {
                     showSearch: true
                 })
             }
-            // 初始化汇总字段的输出列行数据（只初始化汇总字段的）
-            for (let i = 0; i < groupCountVue.columnsInfo.length; i++) {
-                if (groupCountVue.columnsInfo[i].isCount) {
-                    const sign = groupCountVue.columnsInfo[i].sign
-                    const countType = groupCountVue.columnsInfo[i].countType
-                    initOutputColumn(groupCountVue.columnsInfo[i], true, sign, countType)
-                }
-            }
             let countData = nodeData.setting.countData// 获取汇总字段的配置数组
             if (countData.length > 0) { // 如果有汇总字段
                 // 反显汇总字段的配置
@@ -125,9 +117,14 @@ export function init() {
 function initGroupTransfer(columnsInfo, transfer) {
     // 循环输出列信息，组织穿梭框所使用的字段数据数组集合
     for (let i = 0; i < columnsInfo.length; i++) {
-        // columnsInfo[i].isCount：第一种是undefined（这种情况是第一次配置该节点）
-        // 第二种是false（这种情况是该节点已经配置过一次，为false的字段信息是可用于分组的字段，同时也是前置节点的所有输出字段）
-        if (!columnsInfo[i].isCount) {
+        if (columnsInfo[i].isCount) {
+            // 初始化汇总字段的输出列行数据（只初始化汇总字段的）
+            const sign = columnsInfo[i].sign
+            const countType = columnsInfo[i].countType
+            initOutputColumn(columnsInfo[i], true, sign, countType)
+        }else{
+            // columnsInfo[i].isCount：第一种是undefined（这种情况是第一次配置该节点）
+            // 第二种是false（这种情况是该节点已经配置过一次，为false的字段信息是可用于分组的字段，同时也是前置节点的所有输出字段）
             // 初始化输出列信息
             initOutputColumn(columnsInfo[i], false, null, null)
             /**
@@ -182,12 +179,17 @@ function initGroupTransfer(columnsInfo, transfer) {
  */
 function initOutputColumn(columnInfo, isCountTr, sign, countType) {
     let columnItem = {
+        "id":groupCountVue.ind,
         "nodeId":columnInfo.nodeId,//所属节点ID
-        "columnInfo":columnInfo,//所有输出字段信息
+        "columnInfo":columnInfo,//当前输出字段信息
         "columnName":nodeData.isSet ? columnInfo.columnName : columnInfo.newColumnName,// 字段名称
         "newColumnName":columnInfo.newColumnName,// 输出字段名称
         "rtn":columnInfo.rtn,
-        "checked":columnInfo.checked
+        "checked":columnInfo.checked,
+        "columnNameTip":'',
+        "isColumnNameTip":false,
+        "rtnTip":'',
+        "isRtnTip":false
     }
     if (isCountTr) { // 如果是汇总配置列的行，则附加唯一标识
         columnItem.sign = sign
@@ -204,7 +206,18 @@ function initOutputColumn(columnInfo, isCountTr, sign, countType) {
             columnItem.columnName = countType.value + "(" + columnInfo.columnName + ")";
         }
     }
+    columnItem.columnNameTip = columnItem.columnName
+    if(getStrBytes(columnItem.columnName) > 20){
+        columnItem.isColumnNameTip = true
+        columnItem.columnNameTip = `${columnItem.columnName.substring(0,20)}...`
+    }
+    columnItem.rtnTip = columnItem.rtn
+    if(getStrBytes(columnItem.rtn) > 26){
+        columnItem.isRtnTip = true
+        columnItem.rtnTip = `${columnItem.rtn.substring(0,26)}...`
+    }
     groupCountVue.columnItems.push(columnItem)
+    groupCountVue.ind++
 }
 
 /**
@@ -238,11 +251,9 @@ function initCountSelectData(trNum) {
         radio: true,
         clickClose: true,
         filterable: true,
-        filterMethod: function(val, item, index, prop) {
-            if (val === item.value) { // 把value相同的搜索出来
-                return true
-            }
-            if (item.name && item.name.indexOf(val) > -1) { // 名称中包含的搜索出来
+        filterMethod: function(val, item) {
+            //把value相同的搜索出来或把名称中包含的搜索出来
+            if (val === item.value || (item.name && item.name.indexOf(val) > -1)) {
                 return true
             }
             return false// 不知道的就不管了
@@ -305,11 +316,9 @@ function initCountSelectData(trNum) {
         el: '#searchType' + trNum,
         radio: true,
         clickClose: true,
-        filterMethod: function(val, item, index, prop) {
-            if (val === item.value) { // 把value相同的搜索出来
-                return true
-            }
-            if (item.name && item.name.indexOf(val) > -1) { // 名称中包含的搜索出来
+        filterMethod: function(val, item) {
+            //把value相同的搜索出来或把名称中包含的搜索出来
+            if (val === item.value || (item.name && item.name.indexOf(val) > -1)) {
                 return true
             }
             return false// 不知道的就不管了
@@ -512,51 +521,53 @@ export function inputVerify() {
     if (groupData.length === 0 && countNum === 0) {
         groupCountVue.$message.error('未设置分组或汇总的字段')
         return false
-    } else {
-        return true
     }
+    if(!groupCountVue.vilidata_simple()){
+        return false
+    }
+    return true
 }
 
 // 保存节点的配置信息
 export function saveNodeInfo() {
-    if(!groupCountVue.vilidata_simple()){
-        return
-    }
     let curColumnsInfo = []// 当前的输出列信息集合
     let countData = []// 汇总字段配置信息
-    for(let i=0; i<groupCountVue.columnItems.length; i++){
-        let columnInfo = {...{}, ...groupCountVue.columnItems[i].columnInfo}
-        const newColumnName = groupCountVue.columnItems[i].newColumnName
-        if(groupCountVue.columnItems[i].checked){
-            columnInfo.isOutputColumn = 1
-            columnInfo.checked = true
-            columnInfo.newColumnName = newColumnName
-        }else{
-            columnInfo.checked = false
-            columnInfo.isOutputColumn = 0
-        }
-        columnInfo.oldColumnName = columnInfo.oldColumnName || columnInfo.columnName;//将原字段存储一份
-        columnInfo.columnName = groupCountVue.columnItems[i].columnName
-        if (typeof groupCountVue.columnItems[i].sign !== "undefined") { // 汇总字段的输出列数据行
-            // 组织汇总列的字段配置信息
-            columnInfo.isCount = true
-            columnInfo.sign = groupCountVue.columnItems[i].sign
-            columnInfo.countType = groupCountVue.columnItems[i].dataCountType
-            countData.push({
-                "columnName":columnInfo.columnName,
-                "columnType":columnInfo.columnType,
-                "countTypeValue":groupCountVue.columnItems[i].dataCountType.value,
-                "newColumnName":newColumnName
-            })
-        } else { // 分组字段的输出列数据行
-            columnInfo.isCount = false
-        }
-        curColumnsInfo.push(columnInfo)
+    let trDom = $(groupCountVue.$refs.outPutTbody).find(".colTr")
+    if(typeof trDom !== 'undefined' && trDom.length > 0){
+        $.each(trDom,function () {
+            const index = parseInt(this.getAttribute("data-index"))
+            let columnInfo = {...{}, ...groupCountVue.columnItems[index].columnInfo}
+            const newColumnName = groupCountVue.columnItems[index].newColumnName
+            if(groupCountVue.columnItems[index].checked){
+                columnInfo.isOutputColumn = 1
+                columnInfo.checked = true
+                columnInfo.newColumnName = newColumnName
+            }else{
+                columnInfo.checked = false
+                columnInfo.isOutputColumn = 0
+            }
+            columnInfo.oldColumnName = columnInfo.oldColumnName || columnInfo.columnName;//将原字段存储一份
+            columnInfo.columnName = groupCountVue.columnItems[index].columnName
+            if (typeof groupCountVue.columnItems[index].sign !== "undefined") { // 汇总字段的输出列数据行
+                // 组织汇总列的字段配置信息
+                columnInfo.isCount = true
+                columnInfo.sign = groupCountVue.columnItems[index].sign
+                columnInfo.countType = groupCountVue.columnItems[index].dataCountType
+                countData.push({
+                    "columnName":columnInfo.columnName,
+                    "columnType":columnInfo.columnType,
+                    "countTypeValue":groupCountVue.columnItems[index].dataCountType.value,
+                    "newColumnName":newColumnName
+                })
+            } else { // 分组字段的输出列数据行
+                columnInfo.isCount = false
+            }
+            curColumnsInfo.push(columnInfo)
+        })
     }
     nodeData.setting.countData = countData
     nodeData.setting.groupData = groupCountVue.groupTransfer.getData()// 获取已分组字段数组
     nodeData.columnsInfo = curColumnsInfo
     nodeData.isSet = true
     groupCountVue.$refs.basicVueRef.save_base()// 保存基础信息
-    return true
 }

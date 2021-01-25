@@ -237,7 +237,8 @@
                     clickClose: true,
                     filterable: true,
                     filterMethod: function(val, item){
-                        if(val === item.value || (item.name && item.name.indexOf(val) > -1)){//把value相同的搜索出来或把名称中包含的搜索出来
+                        //把value相同的搜索出来或把名称中包含的搜索出来
+                        if(val === item.value || (item.name && item.name.indexOf(val) > -1)){
                             return true
                         }
                         return false
@@ -277,7 +278,8 @@
                     radio: true,
                     clickClose: true,
                     filterMethod: function(val, item){
-                        if(val === item.value || (item.name && item.name.indexOf(val) > -1)){//把value相同的搜索出来或把名称中包含的搜索出来
+                        //把value相同的搜索出来或把名称中包含的搜索出来
+                        if(val === item.value || (item.name && item.name.indexOf(val) > -1)){
                             return true;
                         }
                         return false;
@@ -379,8 +381,8 @@
         }
     }
 </script>
-<style scoped src="@/components/ams-basic/css/common.css"></style>
-<style scoped src="@/components/ams-basic/css/accordion.css"></style>
+<style scoped src="@/api/graphtool/css/common.css"></style>
+<style scoped src="@/api/graphtool/css/accordion.css"></style>
 <style scoped>
     #countTable{
         margin-left: 80px;

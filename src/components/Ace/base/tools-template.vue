@@ -1,9 +1,9 @@
 <template>
-  <div class="tools-template w100 h100 relative" @click="callback">
+  <div class="tools-template w100 h100 relative" id="tool">
     <div class="tools-content h100 relative">
       <div class="title text-white">
         <i class="el-icon-s-grid" />
-        <span class="label">More tools</span>
+        <span class="label">更多工具</span>
       </div>
       <div class="lately-use">
         <div class="title-label">常用功能</div>
@@ -11,25 +11,51 @@
           <div
             v-for="(item,index) in latelyBdInList"
             :key="index"
-            class="use-box flex a-center j-center"
-            id="use-zy"
+            class="use-box flex a-center j-center use-zy"
             @click="theRouting(index)"
             :style='{background:item.bg}'
           >
             <img :src="item.image" />
           </div>
-
         </div>
         <div class="lately-use-box flex a-center j-start flex-row">
           <div v-for="(item,index) in latelyUseList"
                :key="index"
-               class="use-box flex a-center j-center"
-               id="use-zyt"
+               class="use-box flex a-center j-center use-zyt"
           >
             <span style="font-size:14px"> {{ item }} </span>
           </div>
         </div>
-
+        <div class="title-label" style="margin-top: 15px">自定义快捷菜单</div>
+        <div class="lately-use-box flex a-center j-start flex-row">
+          <div
+            v-for="(item,index) in latelyFastList"
+            :key="index"
+            class="use-box flex a-center j-center use-zy"
+            @click="theRoutingIn(item)"
+            :style='{background:item.bg}'
+          >
+            <img :src="item.image" />
+          </div>
+          <div
+            class="use-box flex a-center j-center use-zy"
+            @click="dialogVisible = true"
+            :style='{background:"rgb(81, 69, 89)"}'
+          >
+            <img src="../../Ace/base/accessIcon/zidingyi.png" />
+          </div>
+        </div>
+        <div class="lately-use-box flex a-center j-start flex-row">
+          <div v-for="(item,index) in latelyFastList"
+               :key="index"
+               class="use-box flex a-center j-center use-zyt"
+          >
+            <span style="font-size:14px"> {{ item.name }} </span>
+          </div>
+          <div class="use-box flex a-center j-center use-zyt">
+            <span style="font-size:14px"> 维护 </span>
+          </div>
+        </div>
       </div>
       <div class="other-tools">
         <div class="title-label">其他工具</div>
@@ -80,16 +106,74 @@
 <!--      <span class="msg">Helpful and short message.</span>-->
 <!--      <i class="el-icon-close icon-close" @click="isShowInfoBox=false" />-->
 <!--    </div>-->
+    <div class="tools-right" @click="callback">
+    </div>
+    <div class="tools-center" v-show="dialogVisible">
+      <el-collapse class="tools-menu-small">
+        <el-collapse-item title="审计作业">
+          <el-tree
+            :data="menugroup['402883817586fc2a017586fd9e1a0001']"
+            show-checkbox
+            node-key="id"
+            ref="tree1"
+            highlight-current
+            :check-strictly="defaultProps.checkStrictly"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="审计分析">
+          <el-tree
+            :data="menugroup['4028838175880ded01758835b393006b']"
+            show-checkbox
+            node-key="id"
+            ref="tree2"
+            highlight-current
+            :check-strictly="defaultProps.checkStrictly"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="审计资源">
+          <el-tree
+            :data="menugroup['4028838175880ded01758816610b001a']"
+            show-checkbox
+            node-key="id"
+            ref="tree3"
+            highlight-current
+            :check-strictly="defaultProps.checkStrictly"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="系统配置">
+          <el-tree
+            :data="menugroup['4028838175880ded01758828366f0046']"
+            show-checkbox
+            node-key="id"
+            ref="tree4"
+            highlight-current
+            @check=""
+            :check-strictly="defaultProps.checkStrictly"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+      </el-collapse>
+      <el-button @click="getCheckedNodes" type="primary" class="btn-tree">保 存</el-button>
+      <el-button @click="dialogVisible = false">取 消</el-button>
+    </div>
   </div>
 </template>
 
 <script>
 import { querySystemTask } from '@/api/base/systemtask'
+import { getUserRes } from '@/api/user'
+import { saveQuickMenuList, getQuickMenuList } from '@/api/base/quickmenu'
 export default {
   data() {
     return {
       websocket: null,
       list: {},
+      applications: [],
+      menugroup: [],
+      dialogVisible: false,
       isShowInfoBox: true,
       otherToolsList: [
         {
@@ -411,7 +495,18 @@ export default {
         }
       ],
       latelyInImgList:[],
-      latelyBdInList:[]
+      latelyBdInList:[],
+      latelyFastList:[],
+      defaultProps: {
+        children: 'children',
+        label: 'label',
+        disabled: this.ifFather,
+        checkStrictly: true
+      },
+      quickRefresh: {
+        top: true,
+        bottom: false
+      }
     }
   },
   created() {
@@ -454,6 +549,53 @@ export default {
     for(let i =0; i<this.latelyInImgList.length; i++){
       this.latelyBdInList.push({image:this.latelyInImgList[i].image,bg:this.latelyBackList[i].bg})
     }
+    getUserRes()
+      .then(response => {
+        response.data.application.forEach((app, index) => {
+          // 设置左侧应用栏数据
+          this.applications.push({
+            name: app.name,
+            id: app.id
+          })
+        })
+        response.data.menugroup.forEach(grp => {
+          const children = []
+          grp.menuList.forEach(menu => {
+            children.push({
+              label: menu.name,
+              id: menu.id,
+              path: this.getCleanSrc(menu.src)
+            })
+          })
+          if (!this.menugroup[grp.appuuid]) {
+            this.menugroup[grp.appuuid] = []
+          }
+          this.menugroup[grp.appuuid].push({
+            label: grp.name,
+            path: grp.navurl,
+            children: children
+          })
+        })
+      })
+      .catch(error => {
+        console.error(error)
+      })
+    getQuickMenuList().then(res => {
+      // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
+      for (let i=0; i<res.data.length; i++) {
+        for (let n=0; n<this.latelyImgList.length; n++) {
+          if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
+            this.latelyFastList.push({
+              id: res.data[i].quickMenuId,
+              name: res.data[i].quickMenuName,
+              path: res.data[i].quickMenuPath,
+              image: this.latelyImgList[i].image,
+              bg: this.latelyBackList[i].bg
+            })
+          }
+        }
+      }
+    })
   },
   methods: {
     theRouting(index){
@@ -466,6 +608,16 @@ export default {
         }
       })
       // this.$emit('func',false)
+    },
+    theRoutingIn(item){
+      this.$router.push({ path: item.path })
+      this.$store.commit('aceState/setRightFooterTags', {
+        type: 'active',
+        val: {
+          name: item.name,
+          path: item.path
+        }
+      })
     },
     init() {
       querySystemTask().then(resp => {
@@ -518,22 +670,95 @@ export default {
     },
     callback() {
       this.$emit('func',false)
+    },
+    getCleanSrc(src) {
+      if (src.indexOf('&resUUID') !== -1) {
+        src = src.split('&resUUID')[0]
+      } else if (src.indexOf('?resUUID') !== -1) {
+        src = src.split('?resUUID')[0]
+      }
+      return src
+    },
+    getCheckedNodes() {
+      let allThing = []
+      for (let i=0;i<this.$refs.tree1.getCheckedNodes().length;i++) {
+        allThing.push({
+          quickMenuId: this.$refs.tree1.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree1.getCheckedNodes()[i].label,
+          quickMenuPath: this.$refs.tree1.getCheckedNodes()[i].path
+        })
+      }
+      for (let i=0;i<this.$refs.tree2.getCheckedNodes().length;i++) {
+        allThing.push({
+          quickMenuId: this.$refs.tree2.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree2.getCheckedNodes()[i].label,
+          quickMenuPath: this.$refs.tree2.getCheckedNodes()[i].path
+        })
+      }
+      for (let i=0;i<this.$refs.tree3.getCheckedNodes().length;i++) {
+        allThing.push({
+          quickMenuId: this.$refs.tree3.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree3.getCheckedNodes()[i].label,
+          quickMenuPath: this.$refs.tree3.getCheckedNodes()[i].path
+        })
+      }
+      for (let i=0;i<this.$refs.tree4.getCheckedNodes().length;i++) {
+        allThing.push({
+          quickMenuId: this.$refs.tree4.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree4.getCheckedNodes()[i].label,
+          quickMenuPath: this.$refs.tree4.getCheckedNodes()[i].path
+        })
+      }
+      saveQuickMenuList(allThing).then(resp => {
+        if(resp.code != 0){
+          this.$message({
+            type: 'error',
+            message: '保存失败!'
+          })
+          return
+        }
+        this.latelyFastList = []
+        getQuickMenuList().then(res => {
+          for (let i=0; i<res.data.length; i++) {
+            for (let n=0; n<this.latelyImgList.length; n++) {
+              if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
+                this.latelyFastList.push({
+                  id: res.data[i].quickMenuId,
+                  name: res.data[i].quickMenuName,
+                  path: res.data[i].quickMenuPath,
+                  image: this.latelyImgList[i].image,
+                  bg: this.latelyBackList[i].bg
+                })
+              }
+            }
+          }
+        })
+      })
+      this.dialogVisible = false
+    },
+    // 父节点不可选
+    ifFather(data) {
+      if (data.children) {
+        return true
+      }else{
+        return false
+      }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-#use-zy{
-  width:18%;
-  height:18%;
-  margin:8px 5px 2px 5px;
-  padding:28px;
+#tool .use-zy{
+  width: 18%;
+  height: 27px;
+  margin: 8px 5px 2px 5px;
+  padding: 25px;
 }
-#use-zy img{
+#tool .use-zy img{
   width:100%
 }
-#use-zyt{
+#tool .use-zyt{
   width:18%;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -591,7 +816,7 @@ export default {
     border-radius: 1px 46px 1px 1px;
     width: 510px;
     padding: 25px 20px;
-
+    float: left;
     overflow: hidden;
     .btns-wrap {
       right: 9px;
@@ -729,5 +954,30 @@ export default {
   {
     0%{width:0px}100%{width: 510px;}
   }
+}
+.tools-right{
+  float: right;
+  height: 100%;
+  width: 70%;
+}
+.tools-center{
+  position: absolute;
+  width: 300px;
+  max-height: 94vh;
+  box-shadow: 0 0 20px 0 #888;
+  z-index:10000;
+  top: 30px;
+  left: 520px;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 10px;
+  overflow: hidden;
+}
+.tools-menu-small{
+  max-height: 86vh;
+  overflow: auto;
+}
+.btn-tree{
+  margin: 10px 80px 0 22px;
 }
 </style>

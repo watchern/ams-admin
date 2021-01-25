@@ -5,18 +5,18 @@
         </div>
         <el-row>
             <el-col align="right">
-                <el-button v-if="type === 'privateGraphType' || type === 'personScreenGraphType'" type="primary" class="oper-btn add" @click="add"/>
-                <el-button v-if="type !== 'shareToGraphType'" type="primary" class="oper-btn edit" @click="edit" :disabled="editGraphBtn"/>
-                <el-button v-if="showDelBtn" type="primary" class="oper-btn delete" @click="deleteGraph" :disabled="deleteGraphBtn"/>
-                <el-button v-if="type === 'privateGraphType'" type="primary" class="oper-btn share" @click="personTreeDialogVisible = true" :disabled="shareGraphBtn"/>
-                <el-button v-if="type === 'shareToGraphType'" type="primary" class="oper-btn cancelshare" @click="cancelShare" :disabled="cancelShareGraphBtn"/>
-                <el-button v-if="type.toLowerCase().indexOf('screengraphtype') > -1" type="primary" class="oper-btn start" @click="run" :disabled="runGraphBtn"/>
+                <el-button v-if="type === 'privateGraphType' || type === 'personScreenGraphType'" type="primary" title="新增" class="oper-btn add" @click="add"/>
+                <el-button v-if="type !== 'shareToGraphType'" type="primary" class="oper-btn edit" @click="edit" title="修改" :disabled="editGraphBtn"/>
+                <el-button v-if="showDelBtn" type="primary" class="oper-btn delete" @click="deleteGraph" title="删除" :disabled="deleteGraphBtn"/>
+                <el-button v-if="type === 'privateGraphType'" type="primary" class="oper-btn share" title="分享" @click="personTreeDialogVisible = true" :disabled="shareGraphBtn"/>
+                <el-button v-if="type === 'shareToGraphType'" type="primary" class="oper-btn cancelshare" title="取消分享" @click="cancelShare" :disabled="cancelShareGraphBtn"/>
+                <el-button v-if="type.toLowerCase().indexOf('screengraphtype') > -1" type="primary" class="oper-btn start" title="运行" @click="run" :disabled="runGraphBtn"/>
             </el-col>
         </el-row>
         <el-table key="graphTable" ref="graphListTable" v-loading="listLoading" height="500" :data="dataList" border fit highlight-current-row
                   @select="listSelectChange" @select-all="listSelectChange">
             <el-table-column type="selection" width="55" />
-            <el-table-column label="图形名称" align="left" prop="graphName">
+            <el-table-column label="图形名称" align="left" prop="graphName" :show-overflow-tooltip="true">
                 <template slot-scope="scope">
                     <el-link @click.native.prevent="detail(scope.row.graphUuid)" type="primary">
                         {{scope.row.graphName}}
@@ -64,7 +64,7 @@
     import Pagination from '@/components/Pagination/index'
     import PreviewGraph from '@/views/graphtool/previewGraph'
     import PersonTree from '@/components/publicpersontree/index'
-    import { getGrapgListByType, deleteGraphInfoById, shareGraph, cancelShareGraph, searchGraphNodes, selectSharedPerson } from '@/api/graphtool/graphList'
+    import { getGrapgListByType, deleteGraphInfoById, shareGraph, cancelShareGraph, searchGraphNodes, selectSharedPerson } from '@/api/graphtool/apiJs/graphList'
     export default {
         name: 'GraphListTable',
         components: { QueryField, Pagination, PreviewGraph, PersonTree },

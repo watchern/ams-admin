@@ -58,11 +58,11 @@
             <editcalculationcolumn :tableName="dmTableName" :tableId="dmTableUuid" :rawTableName="rawTableName" :calculationColId="calculationColId" @getAllColumn="getAllColumn" @closeCalculationcolumn="closeCalculationcolumn"/>
         </el-dialog>
         <el-dialog append-to-body title="指标" v-if="dialogAddIndicatrixVisible" :visible.sync="dialogAddIndicatrixVisible" >
-            <addindicatrix :tableId="dmTableUuid" :tableName="rawTableName" :columnId="columnId" :columnName="columnName" :inUUID="inMeasureObj.inMeasureUuid"
+            <addindicatrix v-if="dialogAddIndicatrixVisible" :tableId="dmTableUuid" :tableName="rawTableName" :columnId="columnId" :columnName="columnName" :inUUID="inMeasureObj.inMeasureUuid"
                            @addInTable="addInTable" @getAllIndicatrix="getAllIndicatrix" @getAllColumn="getAllColumn" @closeAddIndicatrix="closeAddIndicatrix" />
         </el-dialog>
         <el-dialog append-to-body title="维度" v-if="dialogDimensionVisible" :visible.sync="dialogDimensionVisible" >
-            <adddimension :tableId="dmTableUuid" :tableName="rawTableName" :columnId="columnId" :columnName="columnName" :dimUUID="inDimObj.inDimensionUuid"
+            <adddimension v-if="dialogDimensionVisible" :tableId="dmTableUuid" :tableName="rawTableName" :columnId="columnId" :columnName="columnName" :dimUUID="inDimObj.inDimensionUuid"
                           @addInTable="addInTable" @getAllDimension="getAllDimension" @getAllColumn="getAllColumn" @closeDimension="closeDimension" />
         </el-dialog>
         <el-dialog append-to-body title="关联维度详细" v-if="dialogDimrelcoltabdeailVisible" :visible.sync="dialogDimrelcoltabdeailVisible" >
@@ -705,11 +705,12 @@ export default {
           }
           var url = that.contextUrl + "/InCalculationColumn/deleteByPrimaryKey"
           $.post(url, {inCalculationColumnUuid: calculationColId}, function (res) {
+            debugger
             if (res.state == false) {
               that.$message(res.message)
               return
             }
-            that.getAllColumn(this.dmTableUuid)
+            that.getAllColumn(that.dmTableUuid)
           }, "json")
         }).catch(() => {
         })
@@ -840,6 +841,7 @@ export default {
                 return
             }
             else {
+                that.inMeasureObj.inMeasureUuid = null
                 that.dialogAddIndicatrixVisible = true
             }
         }, "json")
@@ -945,6 +947,7 @@ export default {
                         return
                     }
                     else {
+                        that.inDimObj.inDimensionUuid = null
                         that.dialogDimensionVisible = true
                     }
                 }, "json")

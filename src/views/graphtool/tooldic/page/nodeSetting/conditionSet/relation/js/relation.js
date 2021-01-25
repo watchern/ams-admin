@@ -301,12 +301,6 @@ export function init() {
                         toPort: obj.toPort,
                         compare: '='
                     })
-
-                    // $('#comper').val('=')
-                    // $('#MainPort').val('')
-                    // $('#toPort').val('')
-                    // $('#from').val('')
-                    // $('#to').val('')
                     relationVue.comper = '='
                     relationVue.mainPort = obj.fromPort
                     relationVue.toPort = obj.toPort
@@ -360,9 +354,6 @@ export function init() {
                 keyNames.splice(keyNames.indexOf(e.oldValue.key), 1)
                 $('#form').html('')
                 relationVue.showJoinArea = false
-                // document.getElementById('join2').style.display = 'none'
-                // document.getElementById('select').style.display = 'none'
-                // document.getElementById('join1').style.display = 'none'
             }
             // 节点新增
             else if (e.change === go.ChangedEvent.Insert && e.modelChange === 'nodeDataArray') {
@@ -394,8 +385,20 @@ export function init() {
                 let id = k
                 let resourceTableName = columnsInfo[k].resourceTableName
                 let rtn = columnsInfo[k].rtn
-                let columnInfo = JSON.stringify(columnsInfo[k])
+                let isRtnTip = false
+                let rtnTip = rtn
+                if(getStrBytes(rtn) > 26){
+                    isRtnTip = true
+                    rtnTip = `${rtn.substring(0,26)}...`
+                }
+                const columnInfo = columnsInfo[k]
                 let columnName = columnsInfo[k].columnName
+                let columnNameTip = columnName
+                let isColumnNameTip = false
+                if(getStrBytes(columnName) > 20){
+                    isColumnNameTip = true
+                    columnNameTip = `${columnName.substring(0,20)}...`
+                }
                 let disColumnName = columnsInfo[k].newColumnName
                 let checked = true
                 if(columnsInfo[k].isOutputColumn === 0){
@@ -404,7 +407,7 @@ export function init() {
                         relationVue.checkAll = false
                     }
                 }
-                relationVue.items.push({id,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
+                relationVue.items.push({id,isRtnTip,rtnTip,rtn,columnInfo,columnName,isColumnNameTip,columnNameTip,disColumnName,resourceTableName,checked})
             }
             // 组装输出列的表格,end
         }
@@ -415,6 +418,7 @@ export function init() {
         let offsetY = 0 - height / 2
         let cordinateY = layeY + offsetY
         let combineColumnsInfo = []
+        let idNum = 0
         for (let i = 0; i < cells.length; i++) {
             let curNodeId = cells[i].id
             // 判断前置节点是否为未配置的结果表
@@ -429,6 +433,12 @@ export function init() {
                 resourceTableName = preNodeData.nodeInfo.resultTableName
                 rtn = '"' + preNodeData.nodeInfo.nodeName + '"_' + rtn
                 columnsInfo = preNodeData.columnsInfo
+            }
+            let isRtnTip = false
+            let rtnTip = rtn
+            if(getStrBytes(rtn) > 26){
+                isRtnTip = true
+                rtnTip = `${rtn.substring(0,26)}...`
             }
             // 组装图表和输出列的表格,start
             let cordinateX = i * 100
@@ -456,16 +466,22 @@ export function init() {
             addNodeData(table)
             // 组装图表,end
             // 组装输出列的表格,start
-            let html = ''
             for (let k = 0; k < columnsInfo.length; k++) {
                 if (columnsInfo[k].isOutputColumn === 1) {
                     combineColumnsInfo.push(columnsInfo[k])
-                    let id = k
-                    let columnInfo = JSON.stringify(columnsInfo[k])
+                    let id = idNum
+                    let columnInfo = columnsInfo[k]
                     let columnName = columnsInfo[k].newColumnName
+                    let columnNameTip = columnName
+                    let isColumnNameTip = false
+                    if(getStrBytes(columnName) > 20){
+                        isColumnNameTip = true
+                        columnNameTip = `${columnName.substring(0,20)}...`
+                    }
                     let disColumnName = columnsInfo[k].newColumnName
                     let checked = false
-                    relationVue.items.push({id,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
+                    relationVue.items.push({id,isRtnTip,rtnTip,rtn,columnInfo,columnName,isColumnNameTip,columnNameTip,disColumnName,resourceTableName,checked})
+                    idNum++
                 }
             }
             // 组装输出列的表格,end
@@ -481,9 +497,9 @@ export function init() {
  * @param isAdd 是否是新增操作
  */
 function addLine(obj, isAdd) {
-    var i = indexOfJoin(obj.from)
-    var j = indexOfJoin(obj.to)
-    var idx = Math.max(i, j)
+    const i = indexOfJoin(obj.from)
+    const j = indexOfJoin(obj.to)
+    const idx = Math.max(i, j)
     if (relationVue.join[idx].type === ',') {
         relationVue.join[idx].type = 'INNER JOIN'
     }
@@ -500,33 +516,23 @@ function addLine(obj, isAdd) {
         })
     }
     relationVue.comper = '='
-    // $('#MainPort').val(obj.fromPort)
     relationVue.mainPort = obj.fromPort
-    // $('#toPort').val(obj.toPort)
     relationVue.toPort = obj.toPort
     relationVue.from = obj.from
     relationVue.to = obj.to
-    // $('#from').val(obj.from)
-    // $('#to').val(obj.to)
     relationVue.showJoinArea = true
-    // document.getElementById('join2').style.display = ''
-    // document.getElementById('select').style.display = ''
-    // document.getElementById('join1').style.display = ''
     showJoin(obj)
 }
 
 function addNode(obj) {
     relationVue.join.push(obj)
     relationVue.showJoinArea = false
-    // document.getElementById('join2').style.display = 'none'
-    // document.getElementById('select').style.display = 'none'
-    // document.getElementById('join1').style.display = 'none'
 }
 
 // 查询join里对象的idx
 export function indexOfJoin(tableName) {
-    var idx = -1
-    for (var i = 0; i < relationVue.join.length; i++) {
+    let idx = -1
+    for (let i = 0; i < relationVue.join.length; i++) {
         if (relationVue.join[i].key === tableName || relationVue.join[i].chineseName === tableName) {
             idx = i
             break
@@ -553,7 +559,6 @@ function showJoin(curLine) {
                 }
             }
             relationVue.showTableJoin = true
-            // $("#join").show()
         }
     } catch (e) {}
 }
@@ -590,9 +595,8 @@ function addNodeData(node) {
 }
 function createNewAS(asname) {
     var i = 0
-    var idx = 0
     var db = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-    while (tableNames.indexOf(asname + '_' + db[i]) !== -1) {
+    while (tableNames.indexOf(asname + '_' + db[i]) > -1) {
         if (i >= 26) {
             return 'ml**'
         }
@@ -604,7 +608,7 @@ function createNewAS(asname) {
 function createTableName() {
     var ii = 0
     var db = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-    while (keyNames.indexOf(db[ii]) !== -1) {
+    while (keyNames.indexOf(db[ii]) > -1) {
         if (ii >= 26) {
             return 'ml**'
         }
@@ -645,13 +649,9 @@ function toSql() {
 // 改变右上角表关联字段的选项
 export function changeCopare(val) {
     var fromtab = relationVue.from
-    // var fromtab = $('#from').val()
     var totab = relationVue.to
-    // var totab = $('#to').val()
     var fromPort = relationVue.mainPort
     var toPort = relationVue.toPort
-    // var toPort = $('#toPort').val()
-    // var copare = $('#comper').val()
     var i = indexOfJoin(fromtab)
     var j = indexOfJoin(totab)
     var idx = Math.max(i, j)
@@ -668,8 +668,6 @@ export function changeType() {
     var idx = indexOfJoin(relationVue.slaverTableName)
     relationVue.join[idx].type = relationVue.joinType
     relationVue.showDescription = true
-    // $('#description').show()
-    // $('#description>p').hide()
     $(relationVue.$refs.descriptionP).hide()
     var index = 0
     switch (relationVue.joinType) {
@@ -687,30 +685,15 @@ export function changeType() {
             break
     }
     $(relationVue.$refs.descriptionP[index]).show()
-    // $('#description>p:eq(' + index + ')').show()
 }
 
 // 提交方法
 export function amplify() {
-    // $('#tjHidden').hide()
-    // $('#joins').hide()
-    // $('#fd').hide()
-    // $('#tips').hide()
-    // $('#sx').show()
-    // $('#dateTree').outerHeight($(document).height() * 0.97)
-    // document.getElementById('myDiagramDiv').className = 'col-sm-12'
     relationVue.showRight = false
     relationVue.$refs.myDiagramDiv.style.width = 'calc(100% - 30px)'
     relationVue.myDiagram.makeSvg()
 }
 export function reduce() {
-    // $('#dateTree').outerHeight($(document).height() * 0.585)
-    // $('#tjHidden').show()
-    // $('#joins').show()
-    // $('#fd').show()
-    // $('#tips').show()
-    // $('#sx').hide()
-    // document.getElementById('myDiagramDiv').className = 'col-sm-9'
     relationVue.showRight = true
     relationVue.$refs.myDiagramDiv.style.width = 'calc(100% - 245px)'
     relationVue.myDiagram.makeSvg()
@@ -720,38 +703,32 @@ export function saveNodeInfo() {
     let columnsInfo = []
     let diaGramJson = JSON.parse(relationVue.myDiagram.model.toJson())				// 获取图表的json串
     let nodeDataArray = diaGramJson.nodeDataArray		// 获取节点（图）的数组数据
-    let linkDataArray = diaGramJson.linkDataArray
-    if (linkDataArray.length === 0) {
-        relationVue.$message({ type: 'warning', message: '未设置表间的连接条件' })
-        return false
-    }
-    if (!relationVue.vilidata_simple()) {
-        return false
-    }
-    let colTr = relationVue.$refs.colTr
-    for(let i=0; i<colTr.length; i++){
-        let index = colTr[i].getAttribute("data-index");
-        let columnInfo = JSON.parse(relationVue.items[index].columnInfo)
-        let tableAlias = ''
-        let resourceTableName = relationVue.items[index].resourceTableName
-        let rtn = relationVue.items[index].rtn
-        for (let j = 0; j < nodeDataArray.length; j++) {
-            if (nodeDataArray[j].tableName === resourceTableName) {
-                tableAlias = nodeDataArray[j].key					// 获取来源表名称的别名
-                break
+    let trDom = $(relationVue.$refs.outPutTbody).find(".colTr")
+    if(typeof trDom !== 'undefined' && trDom.length > 0){
+        $.each(trDom,function () {
+            let index = this.getAttribute("data-index");
+            let columnInfo = {...{},...relationVue.items[index].columnInfo}
+            let tableAlias = ''
+            let resourceTableName = relationVue.items[index].resourceTableName
+            let rtn = relationVue.items[index].rtn
+            for (let j = 0; j < nodeDataArray.length; j++) {
+                if (nodeDataArray[j].tableName === resourceTableName) {
+                    tableAlias = nodeDataArray[j].key					// 获取来源表名称的别名
+                    break
+                }
             }
-        }
-        if (relationVue.items[index].checked) {
-            columnInfo.tableAlias = tableAlias
-            columnInfo.isOutputColumn = 1
-        } else {
-            columnInfo.isOutputColumn = 0
-        }
-        columnInfo.columnName = relationVue.items[index].columnName
-        columnInfo.newColumnName = relationVue.items[index].disColumnName
-        columnInfo.resourceTableName = resourceTableName
-        columnInfo.rtn = rtn
-        columnsInfo.push(columnInfo)
+            if (relationVue.items[index].checked) {
+                columnInfo.tableAlias = tableAlias
+                columnInfo.isOutputColumn = 1
+            } else {
+                columnInfo.isOutputColumn = 0
+            }
+            columnInfo.columnName = relationVue.items[index].columnName
+            columnInfo.newColumnName = relationVue.items[index].disColumnName
+            columnInfo.resourceTableName = resourceTableName
+            columnInfo.rtn = rtn
+            columnsInfo.push(columnInfo)
+        })
     }
     // 开始保存节点所有数据信息
     nodeData.setting.sqlEdit = relationVue.myDiagram.model.toJson()
@@ -759,5 +736,4 @@ export function saveNodeInfo() {
     nodeData.columnsInfo = columnsInfo
     relationVue.$refs.basicVueRef.save_base()						// 保存基础信息
     nodeData.isSet = true
-    return true
 }

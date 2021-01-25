@@ -106,7 +106,7 @@
 
         >
           <i class="el-icon-s-grid" />
-          <span>More tools</span>
+          <span>更多工具</span>
         </div>
         <div class="footer-btns flex a-center j-between flex-row">
           <!-- <i class="shrink-btn icon iconfont iconleft-1" @click="isShrink=false" /> -->
@@ -152,6 +152,59 @@
         <tools-template @func="showWith"/>
       </div>
     </transition>
+    <div class="page-left" v-if="showHelpWidth">
+      <el-collapse class="tools-menu-small" v-model="activeName" accordion>
+        <el-collapse-item title="审计作业" name="1">
+          <el-tree
+            :data="moremenugroup['402883817586fc2a017586fd9e1a0001']"
+            node-key="id"
+            @node-click="handleNodeClick"
+            ref="tree"
+            highlight-current
+            v-if="activeName === '1'"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="审计分析" name="2">
+          <el-tree
+            :data="moremenugroup['4028838175880ded01758835b393006b']"
+            node-key="id"
+            @node-click="handleNodeClick"
+            ref="tree"
+            highlight-current
+            v-if="activeName === '2'"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="审计资源" name="3">
+          <el-tree
+            :data="moremenugroup['4028838175880ded01758816610b001a']"
+            node-key="id"
+            @node-click="handleNodeClick"
+            ref="tree"
+            highlight-current
+            v-if="activeName === '3'"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item title="系统配置" name="4">
+          <el-tree
+            :data="moremenugroup['4028838175880ded01758828366f0046']"
+            node-key="id"
+            @node-click="handleNodeClick"
+            ref="tree"
+            highlight-current
+            v-if="activeName === '4'"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+      </el-collapse>
+    </div>
+    <div class="page-close" v-if="showHelpWidth" @click="showHelpWidth = false, showHelpHeight = false"></div>
+    <div class="readonlyTo" v-if="showHelpWidth && showHelpHeight" v-loading="loading">
+      <div @click="showHelpHeight = false" class="readonlyToX">X</div>
+      <div class="readonlyChild" id="readonlyChild"></div>
+    </div>
   </div>
 </template>
 
@@ -161,6 +214,7 @@ import MenuTree from './menu-tree/index.vue'
 import { cacheDict } from '@/api/base/sys-dict'
 import { getUnReadRemind } from '@/api/base/base'
 import { querySystemTask } from '@/api/base/systemtask'
+import {getByMenuId, saveHelpDocument} from '@/api/base/helpdocument'
 export default {
   components: { MenuTree },
   data() {
@@ -177,6 +231,15 @@ export default {
       isShrink: false,
       nowAppName: '',
       menugroup: {},
+      moremenugroup: [],
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
+      // 激活菜单
+      activeName: '1',
+      showHelpWidth: false,
+      showHelpHeight: false,
       settingList: [
         {
           icon: '',
@@ -184,12 +247,11 @@ export default {
           count: 0,
           method: this.logoutRemind
         },
-        // {
-        //   icon: '',
-        //   name: '后台跑批',
-        //   count: 15,
-        //   method: this.logout
-        // },
+        {
+          icon: '',
+          name: '系统帮助',
+          method: this.showHelp
+        },
         {
           icon: '',
           name: '退出登陆',
@@ -198,7 +260,9 @@ export default {
       ],
       applications: [],
       workbenchImg: require('../style/images/icon0.png'),
-      isThereReminder: false
+      isThereReminder: false,
+      drawer: false,
+      loading: false
     }
   },
   computed: {
@@ -273,6 +337,7 @@ export default {
             path: grp.navurl,
             children: menuList
           })
+          this.moremenugroup = this.menugroup
         })
         var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
         if (sysDict == null) {
@@ -405,6 +470,7 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      this.selectMenuIn()
     },
     logoutRemind(){
       this.$router.push({ path:'/base/remind'})
@@ -415,13 +481,40 @@ export default {
     widthChange(){
       this.isShrink = !this.isShrink
     },
-    reminderAutomaticRefresh(){
-    },
     selectMenuIn(){
       this.$store.commit('aceState/setRightFooterTags', {
         type: 'closeAll',
         val: ''
       })
+      this.$router.push({ path:'/ams/first'})
+    },
+    showHelp() {
+      this.showHelpWidth = !this.showHelpWidth
+    },
+    // 父节点不可选中
+    ifFather(data) {
+      if (data.children) {
+        return true
+      }else{
+        return false
+      }
+    },
+    handleNodeClick (data) {
+      if (data.id <= 1000) {
+      } else {
+        this.loading = true
+        this.showHelpHeight = true
+        let id = data.id
+        getByMenuId(id).then(resp => {
+          if(resp.code === 0 && resp.data !== null){
+            document.getElementById('readonlyChild').innerHTML = resp.data.helpDocument
+            this.loading = false
+          } else if (resp.code === 0 && resp.data === null){
+            document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
+            this.loading = false
+          }
+        })
+      }
     }
   }
 }
@@ -789,5 +882,95 @@ export default {
   height:10px;
   border-radius:100%;
   background-color:red;
+}
+.somehelp{
+  position: absolute;
+  top: 588px;
+  right: 25px;
+  background-color: #aab5c8;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  border-radius: 100%;
+  font-weight: bolder;
+  cursor: pointer;
+  display: none;
+}
+.page-left{
+  position: absolute;
+  top: 200px;
+  right: -270px;
+  width: 260px;
+  height: 620px;
+  background: #fff;
+  padding: 15px;
+  box-shadow: 0 0 10px 0 rgba(0,0,0,0.5);
+  border-radius: 10px;
+  z-index:1002;
+}
+.page-close{
+  position:fixed;
+  top: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index:0;
+  background-color: rgba(0,0,0,0.5);
+}
+.tools-menu-small{
+  height: 590px;
+  width: 100%;
+  overflow: auto;
+}
+.readonlyTo{
+  width: 50vw;
+  height: 100%;
+  top: 0;
+  right: 0;
+  position: fixed;
+  z-index: 1001;
+  animation: whiteIn 0.8s forwards;
+}
+.readonlyChild{
+  position: absolute;
+  top: 0;
+  right:0;
+  width: 50vw;
+  height: 100vh;
+  background-color: #fff;
+  padding: 15px;
+  animation: whiteIn 0.8s forwards;
+  overflow: auto;
+}
+@keyframes whiteIn {
+  0%{width:0}
+  100%{width:50vw}
+}
+.readonlyToX{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  background-color: #333;
+  color: #fff;
+  line-height: 20px;
+  text-align: center;
+  z-index: 1001;
+  cursor: pointer;
+}
+>>>.el-tree {
+  // 不可全选样式
+  .el-tree-node {
+    .is-leaf + .el-checkbox .el-checkbox__inner {
+      display: inline-block;
+    }
+    .el-checkbox .el-checkbox__inner {
+      display: none;
+    }
+  }
 }
 </style>

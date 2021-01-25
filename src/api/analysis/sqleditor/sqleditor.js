@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { compareSql } from '@/api/graphtool/graphList'
+import { compareSql } from '@/api/graphtool/apiJs/graphList'
 const CodeMirror = require('@/components/ams-codemirror/lib/codemirror')
 import store from '@/store'
 const analysisUrl = '/analysis'

@@ -13,7 +13,6 @@
 }
 #accordion{
 	position: relative;
-	/*top: 128px;*/
     float: left;
 }
 #geResultContainer {
@@ -38,8 +37,6 @@
 #detailContainer {
 	position: relative;
     float: right;
-	/*right: 14px;*/
-	/*top: 128px;*/
     border-left: 1px solid #E5E5E5;
 }
 .tab-content{
