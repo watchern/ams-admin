@@ -36,6 +36,7 @@ async function initNodeZtree(nodeId) {
     let columnsInfo = []//当前节点的输出字段
     if(nodeExcuteStatus === 3){//当前节点执行成功，直接取标识值
         flag = graph.nodeData[nodeId].nodeInfo.hasSign
+        columnsInfo = settingVue.graph.nodeData[nodeId].columnsInfo
     }else{
         let response = null
         let param = {"nodeData":JSON.stringify(settingVue.graph.nodeData),"nodeId":nodeId,"optType":optType,"openType":settingVue.graph.openType}
@@ -80,7 +81,6 @@ async function initNodeZtree(nodeId) {
             case "change":
             case "relation":
                 response = await verifySqlNodeSelectOption(param)
-                console.log()
                 if(response.data.isError){
                     isError = true
                     message = `获取节点输出字段信息失败：${response.data.message}`
@@ -546,6 +546,10 @@ export function initSetting() {
         return
     }
     try {
+        if(!settingVue.settingLoading){
+            settingVue.loadText = "正在加载参数信息，请稍后……"
+            settingVue.settingLoading = true
+        }
         // 第一步：先判断编辑的参数SQL语句是否有变化
         let oldSql = settingVue.sql// 获取旧SQL语句
         let newSql = settingVue.editor.getValue()// 获取新编辑的SQL
@@ -892,7 +896,6 @@ export function getParamsSetting() {
                 defaultValueArr.push(paramSelectedObj[j].value)
             }
             if (defaultValueArr.length > 0) {
-                // $(this).attr('data-value', JSON.stringify(defaultValueArr))
                 settingVue.setParamArr[index].value = defaultValueArr
             }
         }

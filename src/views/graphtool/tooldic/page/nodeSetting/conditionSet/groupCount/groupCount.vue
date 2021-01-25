@@ -262,6 +262,10 @@
                     this.customizeColumnTitle = '自定义字段'
                     this.curColumnInfo = null
                 }else{//修改设置
+                    if(typeof curColumnInfo.sign !== 'undefined' && curColumnInfo.sign !== ''){
+                        this.$message({'type':'warning','message':'汇总字段不可被修改'})
+                        return
+                    }
                     this.customizeColumnTitle = '修改设置'
                     this.curColumnInfo = curColumnInfo
                 }

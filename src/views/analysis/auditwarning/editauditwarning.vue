@@ -199,7 +199,8 @@
           <!--周期执行时间配置选择end-->
           <!--模型参数配置-->
           <el-form-item label="模型参数配置" v-show="temp.warningType == 1" >
-            <paramDraw v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :myId="domain.modelUuid" :ref="'paramDrawRef'+domain.modelUuid"/>
+<!--            <paramDraw v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :myId="domain.modelUuid" :ref="'paramDrawRef'+domain.modelUuid"/>-->
+            <paramDrawNew v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :ref="'paramDrawRef'+domain.modelUuid" :sql="paramSql[index]" :arr="paramArr[index]"></paramDrawNew>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -240,6 +241,7 @@
 
 <script>
 import SelectModels from '@/views/analysis/auditmodel/index'
+import paramDrawNew from '@/views/analysis/modelparam/paramdrawnew'
 import {findModelsWithParam, getWarningById,supQuery,bingLieQuery,getCommonlyAnalysisListByIds} from '@/api/analysis/auditwarning'
 import {getOneDict} from "@/utils"
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
@@ -250,7 +252,7 @@ import $ from "jquery";
 import {Loading} from "element-ui";
 export default {
   name:"editAuditWarning",
-  components: { SelectModels, paramDraw , dataTree,commonlyAnalysisList},
+  components: { SelectModels, paramDraw , dataTree,commonlyAnalysisList,paramDrawNew},
   props: {
     //操作类型 add添加 update更新 detail详情查看
     option : {
@@ -387,6 +389,8 @@ export default {
       personCode: this.$store.state.user.code,
       sceneCode: "auditor",
       treeType: "save",
+      paramArr:[],
+      paramSql:[]
     }
   },
   created() {
@@ -529,7 +533,10 @@ export default {
           }
           if(model.paramObj && model.paramObj.length > 0){
             this.initedParamModel.push(model)
-            this.$refs["paramDrawRef"+model.modelUuid][0].initParamHtmlSS(model.sqlValue, model.paramObj, model.modelName, model.modelUuid)
+            this.paramSql.push(model.sqlValue)
+            this.paramArr.push(model.paramObj)
+            this.$refs["paramDrawRef"+model.modelUuid][0].createParamNodeHtml(model.modelUuid,model.modelName+' 参数')
+            // this.$refs["paramDrawRef"+model.modelUuid][0].initParamHtmlSS(model.sqlValue, model.paramObj, model.modelName, model.modelUuid)
           }
         }
       })
@@ -687,18 +694,20 @@ export default {
       if(!model){
         return {};
       }
-      let param = replaceNodeParam(model.modelUuid)
-      //模型的参数数组
-      let paramObj = model.paramObj
-      for (let i = 0;i < paramObj.length;i++){
-        for (let j = 0;j < param.paramsArr.length;j++){
-          if(paramObj[i].moduleParamId == param.paramsArr[j].moduleParamId){
-            //如果母参相等说明是同一个参数，将输入的值替换到里面
-            paramObj[i].paramValue = param.paramsArr[j].paramValue
+      // let param = replaceNodeParam(model.modelUuid)
+      this.$refs["paramDrawRef"+model.modelUuid][0].replaceNodeParam(model.modelUuid).then(param=>{
+        //模型的参数数组
+        let paramObj = model.paramObj
+        for (let i = 0;i < paramObj.length;i++){
+          for (let j = 0;j < param.paramsArr.length;j++){
+            if(paramObj[i].moduleParamId == param.paramsArr[j].moduleParamId){
+              //如果母参相等说明是同一个参数，将输入的值替换到里面
+              paramObj[i].paramValue = param.paramsArr[j].paramValue
+            }
           }
         }
-      }
-      return {sql:param.sql,paramsArr:model.paramObj}
+        return {sql:param.sql,paramsArr:model.paramObj}
+      })
     },
 
     //删除模型
