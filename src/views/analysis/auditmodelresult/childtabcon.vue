@@ -456,7 +456,6 @@ export default {
       axios({
         method: "post",
         url: "/analysis/RunResultTableController/exportRunResultMainTable",
-        data: this.dataArray,
         responseType: "blob",
       }).then((res) => {
         const link = document.createElement("a");
@@ -1023,7 +1022,7 @@ export default {
               this.result.data = chartData;
               this.rowData = this.modelResultData;
               this.modelResultColumnNames = this.nextValue.columnNames;
-              for (var j = 0; j <= this.nextValue.columnNames.length; j++) {
+              for (var j = 0; j < this.nextValue.columnNames.length; j++) {
                 var rowColom = {
                   headerName: this.nextValue.columnNames[j],
                   field: this.nextValue.columnNames[j],
