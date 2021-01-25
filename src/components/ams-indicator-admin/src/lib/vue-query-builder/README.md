@@ -6,7 +6,7 @@ Vue版的query builder.
 
 插件本身似乎还是有些bug或者不完善的地方，如若使用还是得拿下来改巴改巴。
 
-```
+``` 
  <vue-query-builder :rules="rules" v-model="output" :labels="labels" @sql="getSql"></vue-query-builder>
 
 ... 省略其他
