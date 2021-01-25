@@ -52,9 +52,6 @@
 </template>
 
 <script>
-    import * as groupCountJs from "@/views/graphtool/tooldic/page/nodeSetting/conditionSet/groupCount/js/groupCount";
-    import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
-    import {addCountTr} from "@/views/graphtool/tooldic/page/nodeSetting/conditionSet/groupCount/js/groupCount";
     export default {
         name: "screenQueryGroupCount",
         data() {
@@ -73,12 +70,6 @@
             }
         },
         props:['columnInfoArr','setting'],
-        created(){
-            addJsFile('/lib/layui/xm-select.js','xm-select')
-        },
-        beforeDestroy() {
-            removeJcCssfile("xm-select.js","js")
-        },
         mounted() {
             this.init()
         },

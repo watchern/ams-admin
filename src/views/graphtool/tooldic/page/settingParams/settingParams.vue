@@ -110,14 +110,13 @@
 </template>
 
 <script>
-    require('@/views/graphtool/tooldic/js/paramCommon.js')
+    require('@/api/graphtool/js/paramCommon.js')
     require('@/components/ams-codemirror/addon/edit/matchbrackets.js')
     require('@/components/ams-codemirror/mode/sql/sql.js')
     require('@/components/ams-codemirror/addon/hint/sql-hint.js')
     require('@/components/ams-codemirror/addon/hint/show-hint.js')
     require('@/components/ams-codemirror/addon/wrap/hardwrap.js')
-    import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
-    import * as settingParams from '@/views/graphtool/tooldic/page/settingParams/js/settingParams'
+    import * as settingParams from '@/api/graphtool/js/settingParams'
     export default {
         name: 'SettingParams',
         data(){
@@ -140,12 +139,6 @@
                 isFirstPaste:true,// 本次改变内容是否是执行第一次粘贴操作
                 checkSqlText:'',// 当前光标所在行从第0列到光标所在列之间的文本内容
             }
-        },
-        created(){
-            addJsFile('/lib/layui/xm-select.js','xm-select')
-        },
-        beforeDestroy() {
-            removeJcCssfile("xm-select.js","js")
         },
         props:["graph","nodeId","paramsSetting"],
         mounted(){

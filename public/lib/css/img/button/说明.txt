@@ -1,8 +1,0 @@
-1.在main.css中76行后加入css.txt中样式。
-2.按钮位置分为三种情况：
-（1）表单页面按钮：例如.kssj-table-lastbigbtn。
-（2）表格小按钮：例如：kssj-table-lastbtn。
-（3）表单input框旁边小按钮统一样式：.kssj-table-my-littlebtn。
-3.案例中引用路径为../img/button/button_draft.png，可据具体情况调整。
-
-如有遗漏，及时沟通。

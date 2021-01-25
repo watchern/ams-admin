@@ -36,7 +36,7 @@
 </template>
 
 <script>
-require('@/views/graphtool/tooldic/js/paramCommon.js')
+require('@/api/graphtool/js/paramCommon.js')
 require('@/components/ams-codemirror/addon/edit/matchbrackets.js')
 require('@/components/ams-codemirror/mode/sql/sql.js')
 require('@/components/ams-codemirror/addon/hint/sql-hint.js')

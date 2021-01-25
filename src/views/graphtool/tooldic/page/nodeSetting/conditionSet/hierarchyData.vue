@@ -33,7 +33,7 @@
                     <td><input v-model="item.c_col_1" type="number" min="1" class="col-1 form-control"/></td>
                     <td align="center" width="100px">至</td>
                     <td><input v-model="item.c_col_2" type="number" min="1" class="col-2 form-control"/></td>
-                    <td width="100px"><img v-if="index > 0" style="width:25px;cursor:pointer;" src="../../../images/delred.png" @click="clickDel(index)"></td>
+                    <td width="100px"><img v-if="index > 0" style="width:25px;cursor:pointer;" src="../../../../../../api/graphtool/images/icon/delred.png" @click="clickDel(index)"></td>
                 </tr>
                 </tbody>
             </table>

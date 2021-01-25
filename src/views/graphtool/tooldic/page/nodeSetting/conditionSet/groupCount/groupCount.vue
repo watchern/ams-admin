@@ -140,9 +140,8 @@
 
 <script>
     import Basic from '@/views/graphtool/tooldic/page/nodeSetting/basic.vue'
-    import CustomizeColumn from '@/views/graphtool/tooldic/page/nodeSetting/customizeColumn'
-    import * as groupCountJs from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/groupCount/js/groupCount'
-    import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
+    import CustomizeColumn from '@/views/graphtool/tooldic/page/nodeSetting/customizeColumn.vue'
+    import * as groupCountJs from '@/api/graphtool/js/groupCount'
     export default {
         name: 'GroupCountSet',
         components: { Basic, CustomizeColumn },
@@ -168,12 +167,6 @@
             }
         },
         props:['graph'],
-        created(){
-            addJsFile('/lib/layui/xm-select.js','xm-select')
-        },
-        beforeDestroy() {
-            removeJcCssfile("xm-select.js","js")
-        },
         mounted() {
             this.nodeData = this.graph.nodeData[this.graph.curCell.id]
             groupCountJs.sendVueObj(this)

@@ -18,8 +18,8 @@
             <div id="filter_jsp" class="tab-pane fade in active">
                 <div id="col10" class="col-sm-12" style="position: relative;background-color: #fff">
                     <div id="myDiagramDiv" ref="myDiagramDiv" class="col-sm-9" style="width:calc(100% - 245px);border: solid 1px #F3F3F3;height:600px;" @mouseover="myDiagramMousemove"></div>
-                    <img v-if="showRight" width="15" height="15" title="画布放大" src="../images/fangda.png" style="z-index:9999;position: relative;top: 10px;right:30px;" @click="amplify">
-                    <img v-if="!showRight" width="15" height="15" title="画布缩小" src="../images/fangda.png" style="z-index:9999;position: relative;right: 0;top: 10px;" @click="reduce">
+                    <img v-if="showRight" width="15" height="15" title="画布放大" src="../../../../../../../api/graphtool/images/icon/fangda.png" style="z-index:9999;position: relative;top: 10px;right:30px;" @click="amplify">
+                    <img v-if="!showRight" width="15" height="15" title="画布缩小" src="../../../../../../../api/graphtool/images/icon/fangda.png" style="z-index:9999;position: relative;right: 0;top: 10px;" @click="reduce">
                     <div v-if="showRight" style="width: 245px;float: right;">
                         <div style="padding: 0px 4px; height: 120px;">
                             <div class="tstext"><span style="font-weight: 800">表连接</span>（显示多个表间的关联关系）</div>
@@ -47,10 +47,10 @@
                         <div style="margin-top:15px;height: 300px;overflow-y: auto;">
                             <div class="tstext"><span style="font-weight: 800">名词解释</span></div>
                             <div v-show="showDescription" style="background: #F7F7F7;overflow-y:auto;height:90%;padding:5px;">
-                                <p ref="descriptionP" style="text-indent: 2em;">左连接：选取关联字段将两张表进行关联，左表的所有数据均显示，右表的数据只显示关联字段值相等的数据，若右表关联结果无数据则补空显示（例：详见右上角【帮助】）</p>
-                                <p ref="descriptionP" style="text-indent: 2em;">右连接：选取关联字段将两张表进行关联，右表的所有数据均显示，左表的数据只显示关联字段值相等的数据，若左表关联结果无数据则补空显示（例：详见右上角【帮助】）</p>
-                                <p ref="descriptionP" style="text-indent: 2em;">内连接：选取关联字段将两张表进行关联，仅显示两张表中关联字段值相等的数据（例：详见右上角【帮助】）</p>
-                                <p ref="descriptionP" style="text-indent: 2em;">外连接：选取关联字段将两张表进行关联，显示出左表和右表关联后的所有数据，但去除重复数据，两表中若无关联数据则补空显示（例：详见右上角【帮助】）</p>
+                                <p ref="descriptionP" style="text-indent: 2em;">左连接：选取关联字段将两张表进行关联，左表的所有数据均显示，右表的数据只显示关联字段值相等的数据，若右表关联结果无数据则补空显示</p>
+                                <p ref="descriptionP" style="text-indent: 2em;">右连接：选取关联字段将两张表进行关联，右表的所有数据均显示，左表的数据只显示关联字段值相等的数据，若左表关联结果无数据则补空显示</p>
+                                <p ref="descriptionP" style="text-indent: 2em;">内连接：选取关联字段将两张表进行关联，仅显示两张表中关联字段值相等的数据</p>
+                                <p ref="descriptionP" style="text-indent: 2em;">外连接：选取关联字段将两张表进行关联，显示出左表和右表关联后的所有数据，但去除重复数据，两表中若无关联数据则补空显示</p>
                             </div>
                         </div>
                         <div style="height: 140px;">
@@ -153,10 +153,10 @@
 </template>
 
 <script>
-    import CustomizeColumn from '@/views/graphtool/tooldic/page/nodeSetting/customizeColumn'
-    require('@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/js/go.js')
+    import CustomizeColumn from '@/views/graphtool/tooldic/page/nodeSetting/customizeColumn.vue'
+    require('@/api/graphtool/js/go.js')
     import Basic from '@/views/graphtool/tooldic/page/nodeSetting/basic.vue'
-    import * as relationJs from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/js/relation'
+    import * as relationJs from '@/api/graphtool/js/relation'
     export default {
         name: 'RelationSetting',
         components: { Basic, CustomizeColumn },
