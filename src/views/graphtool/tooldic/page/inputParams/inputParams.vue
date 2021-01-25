@@ -28,9 +28,7 @@
 <script>
     import '@/components/ams-loading/css/loading.css'
     import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams  } from '@/api/graphtool/apiJs/graphList'
-    import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
-    import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
-    import {organizeSelectTreeData} from "@/views/graphtool/tooldic/js/paramCommon";
+    import * as paramCommonJs from '@/api/graphtool/js/paramCommon'
     export default {
         name: 'InputParams',
         data(){
@@ -43,12 +41,6 @@
             }
         },
         props:["nodeData","nodeIdArr"],
-        created(){
-            addJsFile('/lib/layui/xm-select.js','xm-select')
-        },
-        beforeDestroy() {
-            removeJcCssfile("xm-select.js","js")
-        },
         methods:{
             /**
              * 组织所有待执行节点队列中有参数设置的节点的HTML

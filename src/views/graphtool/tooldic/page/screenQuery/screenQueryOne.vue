@@ -78,14 +78,14 @@
 
 <script>
     import InputParams from '@/views/graphtool/tooldic/page/inputParams/inputParams.vue'
-    import ChildTabCons from "@/views/analysis/auditmodelresult/childtabcon"
+    import ChildTabCons from "@/views/analysis/auditmodelresult/childtabcon.vue"
     import ScreenQueryFilter from '@/views/graphtool/tooldic/page/screenQuery/screenQuery_filter.vue'
     import ScreenQuerySort from '@/views/graphtool/tooldic/page/screenQuery/screenQuery_sort.vue'
     import ScreenQueryGroupCount from '@/views/graphtool/tooldic/page/screenQuery/screenQuery_groupCount.vue'
     import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams,
         getScreenGraphInfo,getScreenExecuteSql,selectScreenQueryData,dealReplaceParamSql } from '@/api/graphtool/apiJs/graphList'
-    import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
-    import { getPreNodesNotDatasource } from '@/views/graphtool/tooldic/js/common'
+    import * as paramCommonJs from '@/api/graphtool/js/paramCommon'
+    import { getPreNodesNotDatasource } from '@/api/graphtool/js/common'
     export default {
         name: "screenQueryOne",
         components:{ InputParams, ChildTabCons, ScreenQueryFilter, ScreenQuerySort, ScreenQueryGroupCount },
