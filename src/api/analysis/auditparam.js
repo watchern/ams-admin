@@ -12,7 +12,7 @@ require("@/components/ams-switch/bootstrap-switch.js")
 import {
   getDictSonList
 } from '@/utils/index'
-import * as paramCommonJs from "@/views/graphtool/tooldic/js/paramCommon";
+import * as paramCommonJs from "@/api/graphtool/js/paramCommon";
 let settingVue = null
 export const sendSettingVue = ( (_this) => {
   settingVue = _this

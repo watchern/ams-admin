@@ -3,17 +3,17 @@
     <el-collapse accordion v-model="activeName">
       <el-collapse-item ref="nodeParam" name="collapse1" :title="collapseTitle">
     <div v-if="hasParam" align='center' style='font-weight:lighter ;font-size:15px' >该模型没有参数</div>
-    <el-row v-for="(paramInfo,ind) in paramInfoArr" :key="ind" >
+    <el-row v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
       <el-col :span="7" style="line-height:36px;padding-right: 10px;text-align: right;">
         <el-tooltip :content="paramInfo.description" placement="bottom">
           <label>{{paramInfo.paramName}}</label>
         </el-tooltip>
       </el-col>
       <el-col :span="15">
-        <div ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title"  class="xm-select-demo"></div>
+        <div ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title"></div>
         <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam"></el-input>
-        <el-date-picker ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.dataDefaultVal" style="width: 100%;"></el-date-picker>
-        <div ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title" class="xm-select-demo"></div>
+        <el-date-picker ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.dataDefaultVal" style="width: 98%;"></el-date-picker>
+        <div ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title"></div>
       </el-col>
       <el-col :span="2" v-show="paramInfo.allowedNull">
         <div style="color: red;display: inline-block;font-weight: bold;font-size: 20px;">*</div>
@@ -27,7 +27,7 @@
 <script>
 import '@/components/ams-loading/css/loading.css'
 import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams  } from '@/api/graphtool/apiJs/graphList'
-import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
+import * as paramCommonJs from '@/api/graphtool/js/paramCommon'
 import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
 export default {
   name: "paramdrawnew",

@@ -34,7 +34,7 @@
                   </el-form-item>
                 </el-col>
               </el-row>
-                <el-row>
+<!--                <el-row>
                   <el-form-item  label="条件显示">
                     <el-col :span="21">
                       <el-input readonly="readonly" v-model="form.inFilterShowObj.sql" />
@@ -55,7 +55,7 @@
                       <Colorpicker v-model="form.inFilterShowObj.backGroundColor" />
                     </el-form-item>
                   </el-col>
-                </el-row>
+                </el-row>-->
                 <el-form-item label="指标说明">
                     <el-input type="textarea" id="inMemo" v-model="form.inMemo"></el-input>
                 </el-form-item>
@@ -67,22 +67,9 @@
                 <el-button type="primary" @click="closeDialog">取消</el-button>
             </div>
         </el-footer>
-      <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true">
-        <myQueryBuilder
-          v-if="queryBuilderDialogVisible"
-          ref="myQueryBuilder"
-          :columns="queryRules"
-          :data="form.inFilterShowObj.queryBuilderJson"/>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="queryBuilderDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="queryCondition">确定</el-button>
-        </span>
-      </el-dialog>
     </el-container>
 </template>
 <script>
-import Colorpicker from '../../lib/vue-color-picker/packages/color-picker/src/color-picker'
-import myQueryBuilder from "../indicator/myquerybuilder";
 import request from '@/utils/request'
 import $ from 'jquery'
 import { Loading } from 'element-ui'
@@ -100,11 +87,8 @@ export default {
           colName: '',
           folderName: '',
           group: '',
-          inMemo: '',
-          inFilterShow:'',
-          inFilterShowObj:{queryBuilderJson:{},backGroundColor:'#000000',fontColor:'#000000',sql:''}
+          inMemo: ''
         },
-        queryRules:{},
         /**
          * 编辑指标时存储指标的反显数据
          * @type {null}
@@ -138,8 +122,7 @@ export default {
          * 作用域编号
          * @type {string}
          */
-        pbScopeUuid:  "",
-        queryBuilderDialogVisible:false
+        pbScopeUuid:  ""
     }
   },
   mounted() {
@@ -157,7 +140,6 @@ export default {
         if (this.inUUID == null) {//判断该id是否为空 如果为空则是新增  反之编辑
             this.form.tableName = this.tableName
             this.form.colName = this.columnName
-            this.setQueryBuilderRules()
         }
         else {
             this.antiDisplayIndicatrixData(this.inUUID);
@@ -194,11 +176,6 @@ export default {
             that.form.group = res.measureGroup
             that.form.folderName = res.folderName
             that.form.inMemo = res.measureMemo
-            if(res.inFilterShow){
-              that.form.inFilterShowObj = JSON.parse(res.inFilterShow)
-            }
-            that.setQueryBuilderRules()
-            //console.log(JSON.parse(res.inFilterShow))
         }, "json")
     },
 
@@ -367,30 +344,6 @@ export default {
         this.pbScopeUuid = pbScopeUuids
         this.treePath = path
     },
-    queryCondition() {
-      const obj = this.$refs.myQueryBuilder.getSelectSql()
-      this.form.inFilterShowObj.sql = obj.sql
-      this.form.inFilterShowObj.queryBuilderJson = obj.queryJson
-      this.queryBuilderDialogVisible = false
-    },
-    /**
-     * 设置条件显示
-     */
-    setFilterShow(){
-      if(this.form.inName === ""){
-        this.$message("请输入指标名称。");
-        return
-      }
-      this.queryBuilderDialogVisible = true
-    },
-    setQueryBuilderRules(){
-      let queryRules = []
-      const obj = {}
-      obj.columnType = "int"
-      obj.columnName = this.form.inName
-      queryRules.push(obj)
-      this.queryRules.columnList = queryRules
-    },
     clearData(){
       this.form = {
           inName: '',
@@ -398,9 +351,7 @@ export default {
           colName: '',
           folderName: '',
           group: '',
-          inMemo: '',
-          inFilterShow:'',
-          inFilterShowObj:{queryBuilderJson:{},backGroundColor:'',fontColor:'',sql:''}
+          inMemo: ''
       }
       this.queryRules = {}
       this.editData = null
