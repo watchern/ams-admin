@@ -137,7 +137,6 @@ export default {
             }
           }
         });
-        that.loading = false
         that.setQueryBuilderColumn()
         if(that.activeName === "filter"){
           that.queryBuilderJson = JSON.parse(that.filterJson)
@@ -145,6 +144,14 @@ export default {
         that.isLoadQueryBuilder = true
         that.loading = false
       },"json");
+/*      var obj = {id:1,name:2,outputColumnName:3};
+      that.inputselectvalue.push(obj)
+      that.setQueryBuilderColumn()
+      if(that.activeName === "filter"){
+        that.queryBuilderJson = JSON.parse(that.filterJson)
+      }
+      that.isLoadQueryBuilder = true
+      that.loading = false*/
     },
     sortNumber(a,b) {
       return a - b;
