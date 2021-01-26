@@ -56,7 +56,7 @@ export default {
       if (this.rule.type === "select") {
         updated_query.value = this.rule.choices[0].value;
       }
-
+  
       if (this.rule.type === "custom-component") {
         updated_query.value = null;
         if (typeof this.rule.default !== "undefined") {
