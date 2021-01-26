@@ -1,14 +1,6 @@
 import request from '@/utils/request'
 
 
-//<link rel="stylesheet" href="/css/all-style.min.css"> 这个没引 不知道干啥用的
-import '@/components/ams-icheck/skins/square/blue.css'
-import '@/components/ams-bootstrap/css/bootstrap.css'
-import '@/components/ams-bootstrap-select/css/bootstrap-select.css'
-import '@/components/ams-switch/bootstrap-switch.css'
-require("@/components/ams-bootstrap/js/bootstrap.min.js")
-require("@/components/ams-bootstrap-select/js/bootstrap-select.cn.min.js")
-require("@/components/ams-switch/bootstrap-switch.js")
 import {
   getDictSonList
 } from '@/utils/index'
