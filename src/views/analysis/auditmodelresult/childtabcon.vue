@@ -456,7 +456,6 @@ export default {
       axios({
         method: "post",
         url: "/analysis/RunResultTableController/exportRunResultMainTable",
-        data: this.dataArray,
         responseType: "blob",
       }).then((res) => {
         const link = document.createElement("a");

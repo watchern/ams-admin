@@ -232,7 +232,8 @@
             :visible.sync="dialogFormVisible"
             :append-to-body="true"
         >
-            <paramDraw v-if="dialogFormVisible" ref="paramDrawRef" :my-id="paramDrawUuid" />
+<!--            <paramDraw v-if="dialogFormVisible" ref="paramDrawRef" :my-id="paramDrawUuid" />-->
+            <paramDrawNew v-if="dialogFormVisible" :sql="this.executeData.sql" :arr="this.executeData.arr" ref="paramDrawRefNew"></paramDrawNew>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">关闭</el-button>
                 <el-button type="primary" @click="replaceNodeParam">确定</el-button>
@@ -251,7 +252,6 @@
     </div>
 </template>
 <script>
-    require('@/components/ams-jqueryValidate/jquery.validate.min.js')
     require('@/components/ams-codemirror/addon/edit/matchbrackets')
     require('@/components/ams-codemirror/addon/selection/active-line')
     require('@/components/ams-codemirror/mode/sql/sql')
@@ -310,6 +310,7 @@
     import { updateDraft } from '@/api/analysis/sqleditor/sqldraft'
     import childTabs from '@/views/analysis/auditmodelresult/childtabs'
     import paramDraw from '@/views/analysis/modelparam/paramdraw'
+    import paramDrawNew from '@/views/analysis/modelparam/paramdrawnew'
     import { replaceNodeParam } from '@/api/analysis/auditparam'
     import dataTree from '@/views/data/role-res/data-tree'
 
@@ -347,7 +348,7 @@
     let lastSqlIndex = -1
     export default {
         name: 'SQLEditor',
-        components: { sqlDraftList, childTabs, paramDraw, dataTree },
+        components: { sqlDraftList, childTabs, paramDraw, dataTree, paramDrawNew },
         props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName","modelUuid",'dataUserId','sceneCode1','callType'],
         created(){
             if(this.dataUserId!=undefined && this.sceneCode1!=undefined){
@@ -432,17 +433,22 @@
         },
         watch: {
             dialogFormVisible(value) {
-                this.$nextTick(function() {
-                    if (value) {
-                        this.$refs.paramDrawRef.initParamHtmlSS(
-                            this.executeData.sql,
-                            this.executeData.arr,
-                            '     ',
-                            this.paramDrawUuid,
-                            'sqlEditor'
-                        )
-                    }
-                })
+                // this.$nextTick(function() {
+                //     if (value) {
+                //         this.$refs.paramDrawRef.initParamHtmlSS(
+                //             this.executeData.sql,
+                //             this.executeData.arr,
+                //             '     ',
+                //             this.paramDrawUuid,
+                //             'sqlEditor'
+                //         )
+                //     }
+                // })
+              this.$nextTick(function() {
+                if (value) {
+                  this.$refs.paramDrawRefNew.createParamNodeHtml(this.paramDrawUuid)
+                }
+              })
             }
         },
         mounted() {
@@ -886,22 +892,23 @@
              * 获取替换参数后的sql  直接直接
              */
             replaceNodeParam() {
-                var obj = replaceNodeParam(this.paramDrawUuid, 'sqlEditor')
+                // var obj = replaceNodeParam(this.paramDrawUuid, 'sqlEditor')
+              this.$refs.paramDrawRefNew.replaceNodeParam(this.paramDrawUuid).then(obj=>{
                 if (!obj.verify) {
-                    this.$message({ type: 'info', message: obj.message })
-                    return
+                  this.$message({ type: 'info', message: obj.message })
+                  return
                 }
                 obj.sqls = obj.sql
                 obj.businessField = 'sqleditor'
                 this.executeLoading = true
                 getExecuteTask(obj,this.dataUserId,this.sceneCode1).then((result) => {
-                    if(result.data.isError){
+                  if(result.data.isError){
                     this.$message({
-                        type: "error",
-                        message: result.data.message,
+                      type: "error",
+                      message: result.data.message,
                     });
                     this.executeLoading = false
-                    }else{
+                  }else{
                     this.executeLoading = false
                     this.loadText = ''
                     lastSqlIndex = result.data.lastSqlIndex
@@ -912,12 +919,12 @@
                     this.resultShow.push({ id: 1 })
                     // 界面渲染完成之后开始执行sql,将sql送入调度
                     startExecuteSql(result.data).then((result) => {
-                        this.executeLoading = false
-                        this.loadText = ''
+                      this.executeLoading = false
+                      this.loadText = ''
                     }).catch((result) => {
-                        this.executeLoading = false
+                      this.executeLoading = false
                     })
-                    }
+                  }
                 })
                 /*      startExecuteSql(obj).then((result) => {
                   if (!result.data.isError) {
@@ -930,6 +937,7 @@
                   }
                 });*/
                 this.dialogFormVisible = false
+              })
             },
             maxOpen() {
                 maxOpenOne()

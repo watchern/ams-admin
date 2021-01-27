@@ -127,6 +127,22 @@ export default {
     color: rgb(150,150,150);
   }
 
+  .form-control{
+    margin-left: 10px;
+  }
+  .btn{
+    margin-left: 10px;
+  }
+  .el-input__inner{
+    margin-left: 10px;
+  }
+  .match-type-container{
+    padding: 0px 15px 0 0 ;
+  }
+  .form-group{
+    margin-top: 8px;
+  }
+
   @media (min-width: 768px) {
     .vue-query-builder .vqb-rule.form-inline .form-group {
       display: block;

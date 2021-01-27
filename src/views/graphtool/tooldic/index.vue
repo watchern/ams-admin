@@ -3,45 +3,45 @@
         <div id="geToolbarContainer" class="geToolbarContainer">
             <div class="graphMenu" style="width: 235px !important;padding-left: 20px !important;">
                 <div class="menuTit">
-                    文件<img v-show="openGraphType !== 4" id="showMoreMenu" src="../tooldic/images/icon/more.png" title="更多" style="width:10px;height:10px;float: right;margin-top:5px;margin-right: 10px;" @click="showMoreMenu">
+                    文件<img v-show="openGraphType !== 4" id="showMoreMenu" src="../../../api/graphtool/images/icon/more.png" title="更多" style="width:10px;height:10px;float: right;margin-top:5px;margin-right: 10px;" @click="showMoreMenu">
                 </div>
                 <div class="menuLi" v-show="openGraphType !== 4">
                     <div class="graphIcon" style="width:70px !important;">
-                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../tooldic/images/icon/new.png" alt="新建">
+                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../../../api/graphtool/images/icon/new.png" alt="新建">
                         <a class="iconText" @click="newGraph">&nbsp;新建</a>
                     </div>
                     <div class="graphIcon" style="width:60px !important;">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/save.png" alt="保存">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/save.png" alt="保存">
                         <a class="iconText" @click="saveGraph('saveGraph')">保存</a>
                     </div>
                     <div class="graphIcon" style="width:70px !important;margin-left: 10px;">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/next.png" alt="前进">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/next.png" alt="前进">
                         <a class="iconText" @click="next">恢复</a>
                     </div>
                     <div class="graphIcon" style="width:70px !important;">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/open.png" alt="打开">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/open.png" alt="打开">
                         <a class="iconText" @click="openGraph">打开</a>
                     </div>
                     <div class="graphIcon" style="width:70px !important;padding-left:6px;">
-                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../tooldic/images/icon/saveAs.png" alt="另存为">
+                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../../../api/graphtool/images/icon/saveAs.png" alt="另存为">
                         <a class="iconText" @click="saveGraph('saveAsGraph')">另存为</a>
                     </div>
                     <div class="graphIcon" style="width:70px !important;">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/back.png" alt="后撤">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/back.png" alt="后撤">
                         <a class="iconText" @click="back">撤销</a>
                     </div>
                 </div>
                 <div class="menuLi" v-show="openGraphType === 4">
                     <div class="graphIcon" style="width:70px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/open.png" alt="打开">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/open.png" alt="打开">
                         <a class="iconText" @click="openGraph">打开</a>
                     </div>
                     <div class="graphIcon" style="width:70px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/next.png" alt="前进">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/next.png" alt="前进">
                         <a class="iconText" @click="next">恢复</a>
                     </div>
                     <div class="graphIcon" style="width:70px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/back.png" alt="后撤">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/back.png" alt="后撤">
                         <a class="iconText" @click="back">撤销</a>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
                 <div class="menuTit">运行</div>
                 <div class="menuLi">
                     <div class="graphIcon" style="width:100px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/run.png" alt="全部运行">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/run.png" alt="全部运行">
                         <a class="iconText" @click="executeAllNode">全部运行</a>
                     </div>
                 </div>
@@ -59,27 +59,27 @@
                 <div class="menuTit">行数据处理</div>
                 <div class="menuLi">
                     <div id="filter" class="graphIcon" data-type="filter">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/filter.png" alt="数据筛选">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/filter.png" alt="数据筛选">
                         <a class="iconText">数据筛选</a>
                     </div>
                     <div id="sort" class="graphIcon" data-type="sort">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/sort.png" alt="数据排序">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/sort.png" alt="数据排序">
                         <a class="iconText">数据排序</a>
                     </div>
                     <div id="sample" class="graphIcon" data-type="sample">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/sample.png" alt="数据抽样">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/sample.png" alt="数据抽样">
                         <a class="iconText">数据抽样</a>
                     </div>
                     <div id="layering" class="graphIcon" data-type="layering">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/layering.png" alt="数据分层">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/layering.png" alt="数据分层">
                         <a class="iconText">数据分层</a>
                     </div>
                     <div id="groupCount" class="graphIcon" data-type="groupCount">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/groupCount.png" alt="分组汇总">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/groupCount.png" alt="分组汇总">
                         <a class="iconText">分组汇总</a>
                     </div>
                     <div id="delRepeat" class="graphIcon" data-type="delRepeat">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/delRepeat.png" alt="数据去重">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/delRepeat.png" alt="数据去重">
                         <a class="iconText">数据去重</a>
                     </div>
                 </div>
@@ -88,11 +88,11 @@
                 <div class="menuTit">列数据处理</div>
                 <div class="menuLi">
                     <div id="comparison" class="graphIcon" data-type="comparison" style="width:130px !important;">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/comparison.png" alt="数据频次分析">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/comparison.png" alt="数据频次分析">
                         <a class="iconText" style="padding-left: 5px;">数据频次分析</a>
                     </div>
                     <div id="change" class="graphIcon" data-type="change">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/change.png" alt="数据转码">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/change.png" alt="数据转码">
                         <a class="iconText" style="padding-left: 5px;">数据转码</a>
                     </div>
                 </div>
@@ -101,11 +101,11 @@
                 <div class="menuTit">表间数据处理</div>
                 <div class="menuLi">
                     <div id="union" class="graphIcon" data-type="union">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/combineSet.png" alt="数据合并">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/combineSet.png" alt="数据合并">
                         <a class="iconText">数据融合</a>
                     </div>
                     <div id="relation" class="graphIcon" data-type="relation">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/relation.png" alt="数据关联">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/relation.png" alt="数据关联">
                         <a class="iconText">数据关联</a>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                 <div class="menuTit">SQL</div>
                 <div class="menuLi">
                     <div class="graphIcon" id="sql" data-type="sql" style="width:110px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/sql.png" alt="SQL查询器"/>
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/sql.png" alt="SQL查询器"/>
                         <a class="iconText">SQL查询器</a>
                     </div>
                 </div>
@@ -123,7 +123,7 @@
                 <div class="menuTit">参数</div>
                 <div class="menuLi" style="">
                     <div id="nodeParamSet" class="graphIcon" data-type="nodeParamSet" style="width:80px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../tooldic/images/icon/param.png" alt="参数">
+                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../../../api/graphtool/images/icon/param.png" alt="参数">
                         <a class="iconText" @click="showParamNodeList">参数</a>
                     </div>
                 </div>
@@ -132,7 +132,7 @@
                 <div class="menuTit">帮助</div>
                 <div class="menuLi" style="">
                     <div id="help" class="graphIcon" data-type="help" style="width:80px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" src="../tooldic/images/icon/help.png" alt="帮助">
+                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/help.png" alt="帮助">
                         <a class="iconText" @click="help">帮助</a>
                     </div>
                 </div>
@@ -182,7 +182,7 @@
                     <!--<button id="viewAllData" class="btn btn-primary" onclick="viewAllData()" style="position: absolute;right: 200px;top: 10px;display:none;">预览全部数据</button>-->
                     <!--<button id="exportAllData" class="btn btn-primary" onclick="exportAllData()" style="position: absolute;right: 100px;top: 10px;display:none;">全部导出</button>-->
                     <!--<div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;display:none;" onclick="maxOpen()">-->
-                    <!--<img class="iconImgGraph" src="../tooldic/images/icon/maximize.png" alt="最大化">-->
+                    <!--<img class="iconImgGraph" src="../../../api/graphtool/images/icon/maximize.png" alt="最大化">-->
                     <!--<span class="iconText">最大化</span>-->
                     <!--</div>-->
                     <div class="layui-tab-content">
@@ -366,35 +366,15 @@
             </div>
         </el-dialog>
         <!-- 右键事件 -->
-        <div id="rootMenu" class="rightMenu">
-            <ul>
-                <li onclick="rootDataRefresh">刷新</li>
-            </ul>
-        </div>
         <div id="rMenu" class="rightMenu">
             <ul>
                 <li @click="viewData(true)">预览数据</li>
-                <!--<li @click="relationTableQuery">关联表查询</li>-->
-                <!--<li @click="editTable_li">修改表结构</li>-->
-                <!--<li @click="dropTable_li">删除表</li>-->
-            </ul>
-        </div>
-        <div id="folderMenu_dev" class="rightMenu">
-            <ul>
-                <li id="addFolder" @click="addFolder()">新建文件夹</li>
-                <li id="eidtFolder" @click="editFolder()">修改文件夹</li>
-                <li id="delFolder" @click="delFolder()">删除文件夹</li>
-                <li id="moveTo" @click="moveTo('folderMenu_dev')">移动至</li>
-                <li id="rootDataRefresh" @click="rootDataRefresh()">刷新</li>
             </ul>
         </div>
         <div id="moreMenu" class="rightMenu">
             <ul>
                 <li @click="importGraph">图形导入</li>
                 <li @click="exportGraph">图形导出</li>
-                <!--<li @click="importData">数据导入</li>-->
-                <!--<li @click="createDegreeModel('saveGraph')">生成风险查证模型</li>-->
-                <!--<li @click="createScreenQuery('saveGraph')">生成场景查询</li>-->
             </ul>
         </div>
         <div id="H_S_Menu" class="rightMenu">
@@ -429,9 +409,9 @@
     import { getGraphInfoById, viewNodeData, saveGraphInterface, createScreenQuery } from '@/api/graphtool/apiJs/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
     // 引入前段JS的相关方法
-    import * as commonJs from '@/views/graphtool/tooldic/js/common'
-    import * as indexJs from '@/views/graphtool/tooldic/js/index'
-    import * as validateJs from '@/views/graphtool/tooldic/js/validate'
+    import * as commonJs from '@/api/graphtool/js/common'
+    import * as indexJs from '@/api/graphtool/js/index'
+    import * as validateJs from '@/api/graphtool/js/validate'
     export default {
         name: 'ToolIndex',
         components: { Help, GraphListExport, ChildTabs, SettingParams, NodeSetting, RelationSetting, InputParams, GroupCount, SqlEditor },
@@ -1208,4 +1188,4 @@
 <!--引入图形化工具专用CSS样式-->
 <style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
 <style scoped src="@/api/graphtool/css/accordion.css"></style>
-<style scoped src="@/views/graphtool/tooldic/css/index.css"></style>
+<style scoped src="@/api/graphtool/css/index.css"></style>
