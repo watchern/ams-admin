@@ -1,5 +1,5 @@
 <template>
-    <div @mousemove="initEvent" ref="settingParamDiv" style="overflow-y: auto;height: 600px;" v-loading="settingLoading" element-loading-text="正在初始化数据，请稍后……">
+    <div @mousemove="initEvent" ref="settingParamDiv" style="overflow-y: auto;height: 600px;" v-loading="settingLoading" :element-loading-text="loadText">
         <ul id="myTab" class="nav nav-tabs">
             <li class="active">
                 <a href="#editParam" data-toggle="tab">参数编辑</a>
@@ -110,14 +110,13 @@
 </template>
 
 <script>
-    require('@/views/graphtool/tooldic/js/paramCommon.js')
+    require('@/api/graphtool/js/paramCommon.js')
     require('@/components/ams-codemirror/addon/edit/matchbrackets.js')
     require('@/components/ams-codemirror/mode/sql/sql.js')
     require('@/components/ams-codemirror/addon/hint/sql-hint.js')
     require('@/components/ams-codemirror/addon/hint/show-hint.js')
     require('@/components/ams-codemirror/addon/wrap/hardwrap.js')
-    import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
-    import * as settingParams from '@/views/graphtool/tooldic/page/settingParams/js/settingParams'
+    import * as settingParams from '@/api/graphtool/js/settingParams'
     export default {
         name: 'SettingParams',
         data(){
@@ -125,6 +124,7 @@
                 nodeZtreeObj:null,
                 paramZtreeObj:null,
                 settingLoading:true,
+                loadText:"正在初始化数据，请稍后……",
                 setParamArr :[],
                 paramDivArr:[],// 用来记录参数按钮（因反显时不能全部渲染参数的div元素，因此只能用变量记录）
                 isAdd:Object.keys(this.paramsSetting).length === 0,// 此次操作是新增还是修改
@@ -139,12 +139,6 @@
                 isFirstPaste:true,// 本次改变内容是否是执行第一次粘贴操作
                 checkSqlText:'',// 当前光标所在行从第0列到光标所在列之间的文本内容
             }
-        },
-        created(){
-            addJsFile('/lib/layui/xm-select.js','xm-select')
-        },
-        beforeDestroy() {
-            removeJcCssfile("xm-select.js","js")
         },
         props:["graph","nodeId","paramsSetting"],
         mounted(){

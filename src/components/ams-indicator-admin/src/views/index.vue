@@ -45,7 +45,10 @@
                         <i class="icon-add">+</i>
                         <span style='margin-top: -5px;' onclick="addTempIn(this)" analysisRegion='inAnalysisRegion'>新增临时指标</span>
                       </div>
-                      <div class='tags-del'><i class='icon-del' onclick='delAnalysisRegion("inAnalysisRegion")'></i>
+                      <div title="设置阈值" class='tags-set'>
+                        <span class="icon iconfont" ref="setValue" style="color:#aeaeae;" onclick="setValue('inAnalysisRegion')">&#xe606;</span>
+                      </div>
+                      <div title="删除分析区" class='tags-del'><i onclick='delAnalysisRegion("inAnalysisRegion")'></i>
                       </div>
                     </div>
                   </div>
@@ -56,6 +59,7 @@
               </div>
               <div class="tag-right-con" id="dimRegion">
                 <div class="row table-view-caption pull-right">
+                  <el-button type="primary" size="mini" @click="test">测试</el-button>
                   <el-button type="primary" size="mini" @click="queryData">查询</el-button>
                   <el-button type="primary" size="mini" @click="clearAnalysis">清空</el-button>
                   <el-button type="primary" size="mini" @click="saveChangYongAnalysis">保存为常用分析</el-button>
@@ -189,6 +193,7 @@ import { Message } from 'element-ui'
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import "swiper/dist/css/swiper.css";
 import Inmeasurefilter from "@/components/ams-indicator-admin/src/views/indicator/inmeasurefilter";
+
 export default {
   name: 'index',
   components: {
@@ -426,6 +431,7 @@ export default {
     window.switchDim = that.switchDim
     window.addTempIn = that.addTempIn
     window.delAnalysisRegion = that.delAnalysisRegion
+    window.setValue = that.setValue
     window.createAnalysisRegion = that.createAnalysisRegion
     window.queryData = that.queryData
     window.clearAnalysis = that.clearAnalysis
@@ -482,7 +488,7 @@ export default {
         if(val.executeSQL.state == 2){
           let columnDefs = []
           for(let i = 0; i < val.columnNames.length;i++){
-            let obj =  {headerName: val.columnNames[i], field: val.columnNames[i],width:300}
+            let obj =  {headerName: val.columnNames[i], field: val.columnNames[i],width:300,cellRenderer:this.changeCellColor}
             columnDefs.push(obj)
           }
           let result = {column:val.columnNames,columnType:val.columnTypes,data:val.result,columnDefs:columnDefs}
@@ -3800,6 +3806,10 @@ export default {
         "<i class='icon-add'>+</i>" +
         "<span style='margin-top: -5px;' onclick='addTempIn(this)' analysisRegion='" + InId + "'>新增临时指标</span>" +
         "</div>" +
+        "<div title=\"设置阈值\" class='tags-set'>\n" +
+        "<span class='icon iconfont' ref='setValue' style='color:#aeaeae;' onclick='setValue(\"" + InId + "\")'>&#xe606;</span>\n" +
+        "</div>"
+        +
         "<div class='tags-del'><i class='icon-del' onclick='delAnalysisRegion(\"" + InId + "\")'></i></div>" +
         "</div>" +
         "</div>";
@@ -4675,6 +4685,11 @@ export default {
         }
       });
       this.queryData();
+    },
+    test(){
+      let json = [{sex:'女',"age":12},{sex:'男',"age":15},{sex:'女',"age":15},{sex:'女',"age":22},{sex:'男',"age":36}]
+      let result = jsonsql.query("select * from json where (sex='女')",json);
+      console.log(result)
     },
     /**
      * 查询数据
@@ -5812,6 +5827,14 @@ export default {
       else if(operator === "=" && valueOne === valueTwo){
         return {"background-color":backgroundColor,"color":fontColor}
       }
+    },
+    setValue(analysisRegionId){
+      alert(analysisRegionId)
+      //this.$refs.setValue.style.color="rgb(61 128 196)"
+    },
+    changeCellColor(params){
+      console.log(params)
+      return params.value
     }
   }
 }

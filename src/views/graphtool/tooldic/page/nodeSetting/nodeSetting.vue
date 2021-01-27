@@ -72,4 +72,4 @@
 </script>
 <!--引入公共CSS样式-->
 <style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
-<style scoped src="@/components/ams-basic/css/common.css"></style>
+<style scoped src="@/api/graphtool/css/common.css"></style>

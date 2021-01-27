@@ -130,7 +130,7 @@ export default {
   width: 100%;
   height: 100%;
   top: 0;
-  left: 0;
+  right: 0;
   position: fixed;
   z-index: 1001;
   animation: whiteIn 0.8s forwards;
@@ -139,23 +139,25 @@ export default {
   position: absolute;
   top: 0;
   right:0;
-  width: 75vw;
+  width: 50vw;
   height: 100%;
   background-color: #fff;
   padding: 15px;
   animation: whiteIn 0.8s forwards;
   overflow: auto;
+  z-index: 100;
 }
 @keyframes whiteIn {
   0%{width:0}
-  100%{width:75vw}
+  100%{width:50vw}
 }
 .readonlyClose{
-  position: absolute;
+  position: fixed;
   top: 0;
-  left:0;
-  width: calc(100% - 25vw);
+  right: 0;
+  width: 100vw;
   height: 100%;
+  background-color: rgba(0,0,0,0.5);
 }
 .readonlyToX{
   position: absolute;
