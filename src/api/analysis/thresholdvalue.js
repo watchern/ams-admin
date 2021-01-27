@@ -85,6 +85,21 @@ export function addThresholdValue(data){
 }
 
 /**
+ * 修改阈值
+ * @param data 数据
+ * @returns {AxiosPromise}
+ */
+export function updateThresholdValue(data){
+  return request({
+    baseURL: analysisUrl,
+    url: '/thresholdValue/updateThresholdValue',
+    method: 'put',
+    data
+  })
+}
+
+
+/**
  * 根据阈值编号查找阈值
  * @param id
  */
