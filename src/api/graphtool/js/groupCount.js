@@ -106,7 +106,7 @@ export function init() {
             groupCountVue.countTrNum = 0
             addCountTr()
         }
-        $(groupCountVue.$refs.outPutTbody).sortable().disableSelection()
+        $(groupCountVue.$refs.outPutTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
     })
 }
 
@@ -186,10 +186,6 @@ function initOutputColumn(columnInfo, isCountTr, sign, countType) {
         "newColumnName":columnInfo.newColumnName,// 输出字段名称
         "rtn":columnInfo.rtn,
         "checked":columnInfo.checked,
-        "columnNameTip":'',
-        "isColumnNameTip":false,
-        "rtnTip":'',
-        "isRtnTip":false
     }
     if (isCountTr) { // 如果是汇总配置列的行，则附加唯一标识
         columnItem.sign = sign
@@ -205,16 +201,6 @@ function initOutputColumn(columnInfo, isCountTr, sign, countType) {
         }else{
             columnItem.columnName = countType.value + "(" + columnInfo.columnName + ")";
         }
-    }
-    columnItem.columnNameTip = columnItem.columnName
-    if(getStrBytes(columnItem.columnName) > 20){
-        columnItem.isColumnNameTip = true
-        columnItem.columnNameTip = `${columnItem.columnName.substring(0,20)}...`
-    }
-    columnItem.rtnTip = columnItem.rtn
-    if(getStrBytes(columnItem.rtn) > 26){
-        columnItem.isRtnTip = true
-        columnItem.rtnTip = `${columnItem.rtn.substring(0,26)}...`
     }
     groupCountVue.columnItems.push(columnItem)
     groupCountVue.ind++
@@ -532,10 +518,10 @@ export function inputVerify() {
 export function saveNodeInfo() {
     let curColumnsInfo = []// 当前的输出列信息集合
     let countData = []// 汇总字段配置信息
-    let trDom = $(groupCountVue.$refs.outPutTbody).find(".colTr")
+    let trDom = groupCountVue.$refs.outPutTable.$refs.bodyWrapper.children[0].children[1].children
     if(typeof trDom !== 'undefined' && trDom.length > 0){
         $.each(trDom,function () {
-            const index = parseInt(this.getAttribute("data-index"))
+            const index = parseInt($(this).find("td:eq(0)>div>div").html()) - 1
             let columnInfo = {...{}, ...groupCountVue.columnItems[index].columnInfo}
             const newColumnName = groupCountVue.columnItems[index].newColumnName
             if(groupCountVue.columnItems[index].checked){

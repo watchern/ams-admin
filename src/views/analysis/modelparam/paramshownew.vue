@@ -36,23 +36,9 @@
 </template>
 
 <script>
-require('@/api/graphtool/js/paramCommon.js')
-require('@/components/ams-codemirror/addon/edit/matchbrackets.js')
-require('@/components/ams-codemirror/mode/sql/sql.js')
-require('@/components/ams-codemirror/addon/hint/sql-hint.js')
-require('@/components/ams-codemirror/addon/hint/show-hint.js')
-require('@/components/ams-codemirror/addon/wrap/hardwrap.js')
-import {addJsFile, removeJcCssfile} from "@/api/analysis/common";
 import * as settingParams from "@/api/analysis/auditparam";
-
 export default {
 name: "paramshownew",
-  created(){
-    addJsFile('/lib/layui/xm-select.js','xm-select')
-  },
-  beforeDestroy() {
-    removeJcCssfile("xm-select.js","js")
-  },
 data(){
   return{
     arr:[],
@@ -76,12 +62,6 @@ data(){
 
 }
 </script>
-<style scoped src="@/components/ams-codemirror/lib/codemirror.css"></style>
-<style scoped src="@/components/ams-codemirror/theme/idea.css"></style>
-<style scoped src="@/components/ams-codemirror/addon/hint/show-hint.css"></style>
-<style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
-<style scoped src="@/components/ams-basic/css/accordion.css"></style>
-<style scoped src="@/components/ams-basic/css/common.css"></style>
 <style scoped type="text/css">
 div#operators button{
   margin-left:5px;

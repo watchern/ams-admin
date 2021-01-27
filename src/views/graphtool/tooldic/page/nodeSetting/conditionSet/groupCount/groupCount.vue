@@ -75,48 +75,29 @@
                             <el-button type="primary" title="说明" class="oper-btn help" @click="helpDialogVisible = true" style="line-height: normal;"/>
                         </el-col>
                     </el-row>
-                    <div ref="outPutTable" style="height: 520px;overflow-y: auto;">
-                        <table id="column_config" class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <th width="5%" style="text-align: center">编号</th>
-                                <th width="27%" style="text-align: center">上一节点名称</th>
-                                <th width="24%" style="text-align: center">字段名称</th>
-                                <th width="24%" style="text-align: center">输出字段名称</th>
-                                <th width="10%" style="text-align: center">输出字段
-                                    <el-checkbox v-model="checkAll" :disabled="isAllDisabled" @change="handleCheckAllChange" style="float: right;"/>
-                                </th>
-                                <th width="10%" style="text-align: center">操作</th>
-                            </tr>
-                            </thead>
-                            <tbody ref="outPutTbody">
-                            <tr v-for="(item,index) in columnItems" class="colTr" :data-index="index">
-                                <td class="text-center">{{ index+1 }}</td>
-                                <td v-if="item.isRtnTip">
-                                    <el-tooltip class="item" effect="dark" :content="item.rtn" placement="top">
-                                        <span>{{ item.rtnTip }}</span>
-                                    </el-tooltip>
-                                </td>
-                                <td v-if="!item.isRtnTip">{{ item.rtn }}</td>
-                                <td v-if="item.isColumnNameTip">
-                                    <el-tooltip class="item" effect="dark" :content="item.columnName" placement="top">
-                                        <span>{{ item.columnNameTip }}</span>
-                                    </el-tooltip>
-                                </td>
-                                <td v-if="!item.isColumnNameTip">{{ item.columnName }}</td>
-                                <td>
-                                    <el-input v-model="item.newColumnName" class="newColumn"></el-input>
-                                </td>
-                                <td class="text-center">
-                                    <el-checkbox :key="item.id" v-model="item.checked" :disabled="isDisabled" @change="checkBoxChange(index)" />
-                                </td>
-                                <td class="text-center">
-                                    <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',item)" title="设置" style="line-height: normal;"/>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <el-table :data="columnItems" border style="width: 100%;" height="520" ref="outPutTable">
+                        <el-table-column type="index" width="60" align="center" :resizable="false"></el-table-column>
+                        <el-table-column label="上一节点名称" width="200" :show-overflow-tooltip="true" prop="rtn" header-align="center" :resizable="false"></el-table-column>
+                        <el-table-column label="字段名称" width="260" :show-overflow-tooltip="true" prop="columnName" header-align="center" :resizable="false"></el-table-column>
+                        <el-table-column label="输出字段名称" width="240" header-align="center" :resizable="false">
+                            <template slot-scope="scope">
+                                <el-input v-model="scope.row.newColumnName"></el-input>
+                            </template>
+                        </el-table-column>
+                        <el-table-column align="center" width="100" :resizable="false">
+                            <template slot="header" slot-scope="scope">
+                                输出字段<el-checkbox v-model="checkAll" :disabled="isAllDisabled" @change="handleCheckAllChange" style="padding-left: 5px;"/>
+                            </template>
+                            <template slot-scope="scope">
+                                <el-checkbox v-model="scope.row.checked" :disabled="isDisabled" @change="checkBoxChange" />
+                            </template>
+                        </el-table-column>
+                        <el-table-column align="center" label="操作" width="80" :resizable="false">
+                            <template slot-scope="scope">
+                                <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" title="设置" style="line-height: normal;"/>
+                            </template>
+                        </el-table-column>
+                    </el-table>
                     <el-dialog :visible.sync="helpDialogVisible" :append-to-body="true" title="说明" width="400px">
                         <div style="height: 260px;padding: 10px;">
                             <p style="text-indent: 2em">（1）如果修改了【输出字段名称】且存在已配置过或执行过的后续节点，则后续节点关于该字段的配置信息会失效</p>
@@ -176,7 +157,7 @@
             handleCheckAllChange(checked){
                 Array.from(this.columnItems, (n) => n.checked = checked)
             },
-            checkBoxChange(index){
+            checkBoxChange(){
                 var chk = 0
                 for (let i = 0; i < this.columnItems.length; i++) {
                     if (this.columnItems[i].checked) {
@@ -267,19 +248,12 @@
             customizeColumnBack(){
                 let returnObj = this.$refs.customizeColumn.saveInfo()
                 if(!returnObj.isError){
+                    this.customizeColumnDialogVisible = false
                     const columnName = returnObj.columnInfo.columnName
-                    let columnNameTip = columnName
-                    let isColumnNameTip = false
-                    if(getStrBytes(columnName) > 20){
-                        isColumnNameTip = true
-                        columnNameTip = `${columnName.substring(0,20)}...`
-                    }
                     let id = null
                     let nodeId = ''
                     let columnInfo = returnObj.columnInfo
                     let rtn = ''
-                    let isRtnTip = false
-                    let rtnTip = rtn
                     let checked = true
                     let newColumnName = returnObj.columnInfo.newColumnName
                     if(this.customizeColumnType === "1"){//自定义字段
@@ -288,24 +262,20 @@
                         rtn = '自定义字段'
                         columnInfo.nodeId = nodeId
                         columnInfo.rtn = rtn
-                        this.columnItems.push({columnName, columnNameTip, isColumnNameTip, columnInfo, rtn, isRtnTip, rtnTip, newColumnName, checked})
+                        this.columnItems.push({id, nodeId, columnName, columnInfo, rtn, newColumnName, checked})
                         this.ind++
                     }else{//修改设置
                         id = this.curColumnInfo.id
                         rtn = this.curColumnInfo.rtn
                         nodeId = this.curColumnInfo.nodeId
-                        if(getStrBytes(rtn) > 26){
-                            isRtnTip = true
-                            rtnTip = `${rtn.substring(0,26)}...`
-                        }
                         columnInfo.nodeId = nodeId
                         columnInfo.rtn = rtn
                         let index = this.columnItems.findIndex( item => item.id === id)
                         if(index > -1){
-                            this.columnItems[index] = {columnName, columnNameTip, isColumnNameTip, columnInfo, rtn, isRtnTip, rtnTip, newColumnName, checked}
+                            this.columnItems.splice(index,1)
+                            this.columnItems.splice(index,1,{id, nodeId, columnName, columnInfo, rtn, newColumnName, checked})
                         }
                     }
-                    this.customizeColumnDialogVisible = false
                 }
             }
         }
@@ -316,18 +286,11 @@
 <style scoped src="@/api/graphtool/css/common.css"></style>
 <style scoped src="@/api/graphtool/css/accordion.css"></style>
 <style scoped>
-    .table > thead > tr > th {
-        background-color: #5886B2;
-        color: #ECF0F5;
-        padding: 3px;
-        vertical-align:middle;
+    >>> .el-table .cell {
+        padding: 0;
     }
-    .table > tbody > tr > td{
-        font-size: 13px;
-        color: #4B4B4B;
-        line-height: 36px;
-        padding: 1px;
-        vertical-align:middle;
+    >>> .el-input__inner {
+        margin: 0;
     }
     #countTable{
         margin-left: 80px;

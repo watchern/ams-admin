@@ -252,7 +252,6 @@
     </div>
 </template>
 <script>
-    require('@/components/ams-jqueryValidate/jquery.validate.min.js')
     require('@/components/ams-codemirror/addon/edit/matchbrackets')
     require('@/components/ams-codemirror/addon/selection/active-line')
     require('@/components/ams-codemirror/mode/sql/sql')

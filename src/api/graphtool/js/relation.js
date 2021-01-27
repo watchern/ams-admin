@@ -385,20 +385,8 @@ export function init() {
                 let id = k
                 let resourceTableName = columnsInfo[k].resourceTableName
                 let rtn = columnsInfo[k].rtn
-                let isRtnTip = false
-                let rtnTip = rtn
-                if(getStrBytes(rtn) > 26){
-                    isRtnTip = true
-                    rtnTip = `${rtn.substring(0,26)}...`
-                }
                 const columnInfo = columnsInfo[k]
                 let columnName = columnsInfo[k].columnName
-                let columnNameTip = columnName
-                let isColumnNameTip = false
-                if(getStrBytes(columnName) > 20){
-                    isColumnNameTip = true
-                    columnNameTip = `${columnName.substring(0,20)}...`
-                }
                 let disColumnName = columnsInfo[k].newColumnName
                 let checked = true
                 if(columnsInfo[k].isOutputColumn === 0){
@@ -407,7 +395,7 @@ export function init() {
                         relationVue.checkAll = false
                     }
                 }
-                relationVue.items.push({id,isRtnTip,rtnTip,rtn,columnInfo,columnName,isColumnNameTip,columnNameTip,disColumnName,resourceTableName,checked})
+                relationVue.items.push({id,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
             }
             // 组装输出列的表格,end
         }
@@ -433,12 +421,6 @@ export function init() {
                 resourceTableName = preNodeData.nodeInfo.resultTableName
                 rtn = '"' + preNodeData.nodeInfo.nodeName + '"_' + rtn
                 columnsInfo = preNodeData.columnsInfo
-            }
-            let isRtnTip = false
-            let rtnTip = rtn
-            if(getStrBytes(rtn) > 26){
-                isRtnTip = true
-                rtnTip = `${rtn.substring(0,26)}...`
             }
             // 组装图表和输出列的表格,start
             let cordinateX = i * 100
@@ -472,15 +454,9 @@ export function init() {
                     let id = idNum
                     let columnInfo = columnsInfo[k]
                     let columnName = columnsInfo[k].newColumnName
-                    let columnNameTip = columnName
-                    let isColumnNameTip = false
-                    if(getStrBytes(columnName) > 20){
-                        isColumnNameTip = true
-                        columnNameTip = `${columnName.substring(0,20)}...`
-                    }
                     let disColumnName = columnsInfo[k].newColumnName
                     let checked = false
-                    relationVue.items.push({id,isRtnTip,rtnTip,rtn,columnInfo,columnName,isColumnNameTip,columnNameTip,disColumnName,resourceTableName,checked})
+                    relationVue.items.push({id,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
                     idNum++
                 }
             }
@@ -703,10 +679,10 @@ export function saveNodeInfo() {
     let columnsInfo = []
     let diaGramJson = JSON.parse(relationVue.myDiagram.model.toJson())				// 获取图表的json串
     let nodeDataArray = diaGramJson.nodeDataArray		// 获取节点（图）的数组数据
-    let trDom = $(relationVue.$refs.outPutTbody).find(".colTr")
+    let trDom = relationVue.$refs.outPutTable.$refs.bodyWrapper.children[0].children[1].children
     if(typeof trDom !== 'undefined' && trDom.length > 0){
         $.each(trDom,function () {
-            let index = this.getAttribute("data-index");
+            const index = parseInt($(this).find("td:eq(0)>div>div").html()) - 1
             let columnInfo = {...{},...relationVue.items[index].columnInfo}
             let tableAlias = ''
             let resourceTableName = relationVue.items[index].resourceTableName
