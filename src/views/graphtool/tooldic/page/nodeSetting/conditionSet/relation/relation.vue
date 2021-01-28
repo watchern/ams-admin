@@ -336,7 +336,7 @@
     >>> .el-collapse-item__wrap{
         border-bottom: unset;
     }
-    >>> .el-row{
+    .el-row{
         padding: 5px 0;
     }
 </style>
