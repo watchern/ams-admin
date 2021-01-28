@@ -1,6 +1,6 @@
 <template>
     <div ref="basicInfo" class="detail-form">
-        <el-form ref="basicInfoForm" :model="formData">
+        <el-form ref="basicInfoForm" :model="formData" class="detail-form">
             <el-row>
                 <el-col>
                     <el-form-item label="图形名称" prop="graphName">

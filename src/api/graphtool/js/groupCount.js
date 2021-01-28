@@ -13,108 +13,90 @@ export const sendVueObj = (_this) => {
 
 // 初始化分组汇总界面
 export function init() {
-    layui.use('transfer', function() {
-        let transfer = layui.transfer
-        // 定义穿梭框的变量
-        if (nodeData.isSet) { // 如果配置过，则反显加载配置信息
-            let groupData = nodeData.setting.groupData
-            groupCountVue.columnsInfo = nodeData.columnsInfo
-            // 初始化分组穿梭框和分组字段（不是已分组字段，是可分组字段）输出列列表
-            initGroupTransfer(groupCountVue.columnsInfo, transfer)
-            if (groupData.length > 0) { // 如果之前设置过分组字段
-                let groupDataValue = []
-                for (let j = 0; j < groupData.length; j++) {
-                    groupDataValue.push(groupData[j].value)
-                }
-                // 加载已分组字段
-                groupCountVue.groupTransfer = transfer.reload('groupSet', {
-                    title: ['待分组字段', '已选分组字段'],
-                    value: groupDataValue,
-                    showSearch: true
-                })
+    if (nodeData.isSet) { // 如果配置过，则反显加载配置信息
+        groupCountVue.columnsInfo = nodeData.columnsInfo
+        // 初始化分组穿梭框和分组字段（不是已分组字段，是可分组字段）输出列列表
+        initGroupTransfer(groupCountVue.columnsInfo)
+        groupCountVue.columnDataValue = nodeData.setting.groupData
+        let countData = nodeData.setting.countData// 获取汇总字段的配置数组
+        if (countData.length > 0) { // 如果有汇总字段
+            // 反显汇总字段的配置
+            for (let k = 0; k < countData.length; k++) {
+                groupCountVue.items.push({ 'id': k})
             }
-            let countData = nodeData.setting.countData// 获取汇总字段的配置数组
-            if (countData.length > 0) { // 如果有汇总字段
-                // 反显汇总字段的配置
-                for (let k = 0; k < countData.length; k++) {
-                    groupCountVue.items.push({ 'id': k})
-                }
-                groupCountVue.$nextTick(() => {
-                    for (let m = 0; m < countData.length; m++) {
-                        initCountSelectData(m)
-                        groupCountVue.countTrNum = m + 1
-                        var chooseColumnXs = xmSelect.get(`#searchName${m}` , true)// 获取当前行中汇总字段名称的单实例
-                        var initCountColumnData = JSON.parse(JSON.stringify(groupCountVue.columnData))// 复制全局汇总字段的数组变量的值
-                        initCountColumnData.unshift({ 'name': '请选择', 'value': '', 'type': '' })
-                        for (let n = 0; n < initCountColumnData.length; n++) { // 设置已汇总字段名称值的选中状态，重新渲染当前行的下拉框
-                            if(countData[m].columnName === countData[m].countTypeValue + "(" + initCountColumnData[n].value + ")"){
-                                initCountColumnData[n].selected = true;
-                                break;
-                            }
+            groupCountVue.$nextTick(() => {
+                for (let m = 0; m < countData.length; m++) {
+                    initCountSelectData(m)
+                    groupCountVue.countTrNum = m + 1
+                    var chooseColumnXs = xmSelect.get(`#searchName${m}` , true)// 获取当前行中汇总字段名称的单实例
+                    var initCountColumnData = JSON.parse(JSON.stringify(groupCountVue.columnData))// 复制全局汇总字段的数组变量的值
+                    initCountColumnData.unshift({ 'name': '请选择', 'value': '', 'type': '' })
+                    for (let n = 0; n < initCountColumnData.length; n++) { // 设置已汇总字段名称值的选中状态，重新渲染当前行的下拉框
+                        if(countData[m].columnName === countData[m].countTypeValue + "(" + initCountColumnData[n].value + ")"){
+                            initCountColumnData[n].selected = true;
+                            break;
                         }
-                        // 重新渲染汇总字段当前行的下拉框
-                        chooseColumnXs.update({
-                            'data': initCountColumnData
-                            // "autoRow" : true
-                        })
-                        var chooseTypeXs = xmSelect.get(`#searchType${m}`, true)// 获取当前行中汇总方式的单实例
-                        // 汇总方式的初始化默认数据数组
-                        var initCountTypeData = [
-                            { 'name': '请选择', 'value': '' },
-                            { 'name': '计数', 'value': 'count' },
-                            { 'name': '求和', 'value': 'sum' },
-                            { 'name': '最大值', 'value': 'max' },
-                            { 'name': '最小值', 'value': 'min' },
-                            { 'name': '平均值', 'value': 'ave' }
-                        ]
-                        for (let c = 0; c < initCountTypeData.length; c++) {
-                            if ($.inArray(countData[m].columnType, typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
-                                switch (initCountTypeData[c].value) {
-                                    case 'sum':
-                                    case 'max':
-                                    case 'min':
-                                    case 'ave':
-                                        initCountTypeData[c].disabled = true
-                                        break
-                                }
-                            }
-                            if (countData[m].countTypeValue === initCountTypeData[c].value) { // 设置已汇总类型的选中状态
-                                initCountTypeData[c].selected = true
-                            }
-                        }
-                        // 重新渲染汇总方式当前行的下拉框
-                        chooseTypeXs.update({
-                            'data': initCountTypeData
-                            // "autoRow" : true
-                        })
-                        groupCountVue.items[m].chooseColumnXs = chooseColumnXs
-                        groupCountVue.items[m].chooseTypeXs = chooseTypeXs
                     }
-                    // 更改输出列的复选框未不可修改的状态
-                    groupCountVue.isAllDisabled = true
-                    groupCountVue.isDisabled = true
-                })
-            } else {
-                groupCountVue.countTrNum = 0
-                addCountTr()
-            }
-            // 判断书否全选
-            checkAll()
+                    // 重新渲染汇总字段当前行的下拉框
+                    chooseColumnXs.update({
+                        'data': initCountColumnData
+                    })
+                    var chooseTypeXs = xmSelect.get(`#searchType${m}`, true)// 获取当前行中汇总方式的单实例
+                    // 汇总方式的初始化默认数据数组
+                    var initCountTypeData = [
+                        { 'name': '请选择', 'value': '' },
+                        { 'name': '计数', 'value': 'count' },
+                        { 'name': '求和', 'value': 'sum' },
+                        { 'name': '最大值', 'value': 'max' },
+                        { 'name': '最小值', 'value': 'min' },
+                        { 'name': '平均值', 'value': 'ave' }
+                    ]
+                    for (let c = 0; c < initCountTypeData.length; c++) {
+                        if ($.inArray(countData[m].columnType, typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
+                            switch (initCountTypeData[c].value) {
+                                case 'sum':
+                                case 'max':
+                                case 'min':
+                                case 'ave':
+                                    initCountTypeData[c].disabled = true
+                                    break
+                            }
+                        }
+                        if (countData[m].countTypeValue === initCountTypeData[c].value) { // 设置已汇总类型的选中状态
+                            initCountTypeData[c].selected = true
+                        }
+                    }
+                    // 重新渲染汇总方式当前行的下拉框
+                    chooseTypeXs.update({
+                        'data': initCountTypeData
+                    })
+                    groupCountVue.items[m].chooseColumnXs = chooseColumnXs
+                    groupCountVue.items[m].chooseTypeXs = chooseTypeXs
+                }
+                // 更改输出列的复选框未不可修改的状态
+                groupCountVue.isAllDisabled = true
+                groupCountVue.isDisabled = true
+            })
         } else {
-            groupCountVue.columnsInfo = groupCountVue.columnsInfoPre // 获取当前节点的前置节点的所有输出列
-            initGroupTransfer(groupCountVue.columnsInfo, transfer)
             groupCountVue.countTrNum = 0
             addCountTr()
         }
-        $(groupCountVue.$refs.outPutTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
-    })
+        // 判断书否全选
+        groupCountVue.checkAllFun()
+    } else {
+        groupCountVue.columnsInfo = groupCountVue.columnsInfoPre // 获取当前节点的前置节点的所有输出列
+        initGroupTransfer(groupCountVue.columnsInfo)
+        groupCountVue.countTrNum = 0
+        addCountTr()
+    }
+    $(groupCountVue.$refs.outPutTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
 }
 
 /**
  * 初始化分组穿梭框
  * @param columnsInfo 输出列信息的数组
  */
-function initGroupTransfer(columnsInfo, transfer) {
+function initGroupTransfer(columnsInfo) {
     // 循环输出列信息，组织穿梭框所使用的字段数据数组集合
     for (let i = 0; i < columnsInfo.length; i++) {
         if (columnsInfo[i].isCount) {
@@ -130,44 +112,16 @@ function initGroupTransfer(columnsInfo, transfer) {
             /**
              * @type {{name: *, value: *, title: *, type: string}}
              * @description name与value属性是为了满足xmSelect插件的数据格式
-             * @description value与title属性是为了满足transfer插件的数据格式
+             * @description pinyin、label、key属性是transfer插件的数据格式
              * @description type是处理数据时需要用到的额外属性
              */
             let name = columnsInfo[i].newColumnName// 读取其输出列名称
             if (nodeData.isSet) { // 如果配置过了，读取其字段名称
                 name = columnsInfo[i].columnName
             }
-            groupCountVue.columnData.push({ 'name': name, 'value': name, 'title': name, 'type': columnsInfo[i].columnType })
+            groupCountVue.columnData.push({ 'name': name, 'value': name, 'pinyin': name, 'label': name, 'key': name, 'type': columnsInfo[i].columnType })
         }
     }
-    // 加载分组穿梭框
-    groupCountVue.groupTransfer = transfer.render({
-        elem: '#group',
-        data: groupCountVue.columnData,
-        height: 340,
-        width: 340,
-        title: ['待分组字段', '已选分组字段'],
-        showSearch: true,
-        id: 'groupSet',
-        onchange: function(data, index) {
-            if(groupCountVue.isAllDisabled){// 如果复选框为禁用状态，当增加或移除分组字段时，实时变更输出列信息
-                groupCountVue.isDisabled = false//目的是先解禁，否则checked状态无法动态改变
-                for (let i = 0; i < data.length; i++) {
-                    let columnItem = groupCountVue.columnItems.find( item => item.columnName === data[i].value)
-                    if(typeof columnItem !== "undefined"){
-                        if (index === 0) { // 增加，选中该分组字段的输出列
-                            columnItem.checked = true
-                        } else { // 移除，取消选中该分组字段的输出列
-                            columnItem.checked = false
-                        }
-                    }
-                }
-                // 检查是否全部选择
-                checkAll()
-                groupCountVue.isDisabled = true
-            }
-        }
-    })
 }
 
 /**
@@ -394,27 +348,25 @@ function initCountSelectData(trNum) {
  */
 function refreshOutputColumn() {
     let countNum = 0// 记录设置汇总字段的数量
-    let groupNum = 0// 记录设置分组字段的数量
-    for(let i=0; i<groupCountVue.columnItems.length; i++){
-        groupCountVue.columnItems[i].checked = false// 先移除每个复选框的选中状态
-        if(typeof groupCountVue.columnItems[i].sign !== "undefined"){// 如果是汇总字段，则设置其为输出列（选中）
-            groupCountVue.columnItems[i].checked = true
+    let groupNum = groupCountVue.columnDataValue.length// 记录设置分组字段的数量
+    Array.from(groupCountVue.columnItems, item => {
+        item.checked = false// 先移除每个复选框的选中状态
+        if(typeof item.sign !== "undefined"){// 如果是汇总字段，则设置其为输出列（选中）
+            item.checked = true
             countNum++
         }
-    }
+    })
     if (countNum > 0) { // 如果设置了汇总字段，则需设置输出列的复选框为disabled
         groupCountVue.isAllDisabled = true
         groupCountVue.isDisabled = true
         // 循环遍历分组字段，自动勾选已分组字段为输出字段
-        const groupData = groupCountVue.groupTransfer.getData()
-        groupNum = groupData.length
-        for (let j = 0; j < groupData.length; j++) {
+        Array.from(groupCountVue.columnDataValue, item => {
             // 遍历所有输出列的行
-            let columnItem = groupCountVue.columnItems.find( item => item.columnName === groupData[j].value)
+            let columnItem = groupCountVue.columnItems.find( n => n.columnName === item)
             if(typeof columnItem !== "undefined"){
                 columnItem.checked = true
             }
-        }
+        })
     } else {
         groupCountVue.isAllDisabled = false
         groupCountVue.isDisabled = false
@@ -470,27 +422,8 @@ export function delCountTr(index) {
     groupCountVue.items.splice(index, 1)
 }
 
-/**
- * 检查是否全选
- */
-function checkAll() {
-    let checkNum = 0
-    for(let i=0; i<groupCountVue.columnItems.length; i++){
-        if(groupCountVue.columnItems[i].checked){
-            checkNum++
-        }
-    }
-    if(checkNum === groupCountVue.columnItems.length){
-        groupCountVue.checkAll = true
-    }else{
-        groupCountVue.checkAll = false
-    }
-}
-
 // 分组汇总的配置验证
 export function inputVerify() {
-    // 获取已分组字段数组
-    const groupData = groupCountVue.groupTransfer.getData()
     // 获取已汇总字段数量
     let countNum = 0
     for(let i=0; i<groupCountVue.items.length; i++){
@@ -504,7 +437,7 @@ export function inputVerify() {
             }
         }
     }
-    if (groupData.length === 0 && countNum === 0) {
+    if (groupCountVue.columnDataValue.length === 0 && countNum === 0) {
         groupCountVue.$message.error('未设置分组或汇总的字段')
         return false
     }
@@ -552,7 +485,7 @@ export function saveNodeInfo() {
         })
     }
     nodeData.setting.countData = countData
-    nodeData.setting.groupData = groupCountVue.groupTransfer.getData()// 获取已分组字段数组
+    nodeData.setting.groupData = groupCountVue.columnDataValue// 获取已分组字段数组
     nodeData.columnsInfo = curColumnsInfo
     nodeData.isSet = true
     groupCountVue.$refs.basicVueRef.save_base()// 保存基础信息
