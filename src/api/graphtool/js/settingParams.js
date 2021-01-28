@@ -158,6 +158,7 @@ async function initNodeZtree(nodeId) {
             'type': 'node',
             'children': []
         }
+        const columnIconPath = require('@/styles/icons/column.png')
         for (let i = 0; i < columnsInfo.length; i++) {
             // 判断当前的输出列数组中是输出字段的（isOutputColumn == 1）
             if (columnsInfo[i].isOutputColumn === 1) {
@@ -168,7 +169,7 @@ async function initNodeZtree(nodeId) {
                     'open': false,
                     'isParent': false,
                     'type': 'column',
-                    'icon': require('@/styles/icons/column.png')
+                    'icon': columnIconPath
                 }
                 //根据不同节点组织节点名称
                 switch (optType) {

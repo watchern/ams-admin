@@ -7,14 +7,14 @@
                         <span style="padding-left: 10px;">字段列表</span>
                     </template>
                     <el-input v-model="searchColumnContent" placeholder="搜索关键字"/>
-                    <ul id="columnZtree" class="ztree" style="height:446px;" />
+                    <ul id="columnZtree" class="ztree" style="height:436px;" />
                 </el-collapse-item>
                 <el-collapse-item name="funZtreeList">
                     <template slot="title">
                         <span style="padding-left: 10px;">函数列表</span>
                     </template>
                     <el-input v-model="searchFunContent" placeholder="搜索关键字"/>
-                    <ul id="funZtree" class="ztree" style="height:446px;" />
+                    <ul id="funZtree" class="ztree" style="height:436px;" />
                 </el-collapse-item>
             </el-collapse>
         </el-col>
@@ -181,6 +181,7 @@
             },
             initColumnZtree(){
                 let idNum = 0
+                const columnIconPath = require('@/styles/icons/column.png')
                 Array.from(this.columnInfoArr, item => {
                     let exsit = false
                     for(let j=0; j<this.rtnArr.length; j++){
@@ -231,7 +232,7 @@
                             "pid" : rootNode.id,
                             "open": false,
                             "children": [],
-                            "icon": require('@/styles/icons/column.png')
+                            "icon": columnIconPath
                         })
                         idNum++
                     }
@@ -412,9 +413,6 @@
     >>> .el-collapse-item__content{
         padding-bottom: 0;
     }
-    .elRow {
-        padding: 7px 0;
-    }
     .item {
         height: 26px;
         line-height: 26px;
@@ -426,10 +424,5 @@
         float: right;
         padding-right: 10px;
         line-height: 30px;
-    }
-    .divStyle {
-        overflow-y: auto;
-        border: 1px solid #DCDFE6;
-        padding: 5px 10px;
     }
 </style>
