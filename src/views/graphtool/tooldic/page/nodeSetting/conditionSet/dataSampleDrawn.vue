@@ -1,5 +1,5 @@
 <template>
-    <div style="height: 600px;">
+    <div style="height: 560px;">
         <div style="padding: 50px 0 0 180px;">
             <el-row>
                 <el-col :span="6">
@@ -67,7 +67,7 @@
         },
         methods: {
             init() {
-                const graph = this.$parent.graph
+                const graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 if (this.nodeData.isSet) {
                     this.radioVal = this.nodeData.setting.radioValue

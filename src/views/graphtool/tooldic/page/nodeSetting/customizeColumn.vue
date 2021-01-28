@@ -43,7 +43,7 @@
                 <el-input ref="customizeColumnInp" type="textarea" resize="none" :autosize="{ minRows: 15, maxRows: 15}" style="font-size: 18px;" v-model="customizeColumnVal"></el-input>
             </el-row>
             <el-row>
-                <el-tag style="height: 36px;"><div v-for="sign in signArr" class="signSpan" @click="inputSign(sign.value)">{{sign.name}}</div></el-tag>
+                <el-tag style="height: 35px;line-height: 35px;"><div v-for="sign in signArr" class="signSpan" @click="inputSign(sign.value)">{{sign.name}}</div></el-tag>
             </el-row>
         </el-col>
     </el-container>
@@ -231,7 +231,7 @@
                             "pid" : rootNode.id,
                             "open": false,
                             "children": [],
-                            "icon": "images/ico/column.png"
+                            "icon": require('@/styles/icons/column.png')
                         })
                         idNum++
                     }
@@ -241,6 +241,14 @@
             initFunZtree(){
                 this.$ajax.get('lib/jsonFile/oracle_Fun.json').then( response => {
                     if(response.data && response.data.length > 0){
+                        const tableIconPath = require('@/styles/icons/function.png')
+                        //json文件的数据格式需保持统一，有且只有两层
+                        Array.from(response.data, item => {
+                            Array.from(item.children, cItem => {
+                                //替换第二层节点的图标
+                                cItem.icon = tableIconPath
+                            })
+                        })
                         this.funRootNodeArr = response.data
                         this.funZtree = $.fn.zTree.init($("#funZtree"), this.initZtreeSetting('funZtree'), response.data)
                     }

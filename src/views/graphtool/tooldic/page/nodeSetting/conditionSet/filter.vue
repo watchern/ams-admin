@@ -1,5 +1,5 @@
 <template>
-    <div style="padding: 20px 20px 0;height: 600px;">
+    <div style="height: 550px;">
         <el-row>
             <el-col>
                 <span style="color:red;">{{ preNodeName }}</span>
@@ -29,9 +29,9 @@
                     <el-option v-for="compare in compareArr" :key="compare.value" :value="compare.value" :label="compare.name">{{ compare.name }}</el-option>
                 </el-select>
             </el-col>
-            <el-col :span="8">
-                <el-input v-if="showConnValue" v-model="conn_value" style="width: 83%;"/>
-                <el-select v-model="compareColumnSel" v-if="!showConnValue" filterable @change="setCompareColumnSel" style="width: 83%;">
+            <el-col :span="8" class="colInp">
+                <el-input v-if="showConnValue" v-model="conn_value" style="width: 78%;"/>
+                <el-select v-model="compareColumnSel" v-if="!showConnValue" filterable @change="setCompareColumnSel" style="width: 78%;">
                     <el-option v-for="compareCol in compareColumnArr" :key="compareCol.newColumnName" :label="compareCol.newColumnName" :value="compareCol.newColumnName">{{ compareCol.displayName }}</el-option>
                 </el-select>
             </el-col>
@@ -51,9 +51,9 @@
             </el-col>
         </el-row>
         <el-row>
-            <div style="height: 400px;">
+            <div style="height: 390px;">
                 <el-col :span="16">
-                    <div style="border: 1px solid gray;height: 400px;overflow: auto;">
+                    <div style="border: 1px solid gray;height: 390px;overflow: auto;">
                         <ul ref="filterZtree" class="ztree"/>
                     </div>
                 </el-col>
@@ -130,13 +130,13 @@
         },
         methods: {
             init() {
-                const graph = this.$parent.graph
+                const graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 const parentIds = this.nodeData.parentIds
                 const isSet = this.nodeData.isSet// 判断当前节点是否已经设置
                 const parent_node = graph.nodeData[parentIds[0]] // one parent
                 this.preNodeName = '【上级节点名称：' + parent_node.nodeInfo.nodeName + '】'
-                Array.from(this.$parent.columnsInfoPre, item => {
+                Array.from(this.$parent.$parent.$parent.columnsInfoPre, item => {
                     const newColumnName = item.newColumnName
                     const displayName = `${newColumnName}(${item.columnType})`
                     this.selectColms.push({ newColumnName, displayName })
@@ -651,13 +651,13 @@
     >>> .el-row {
         margin: 10px 0;
     }
-    .el-col>label {
-        padding-right: 10px;
-    }
     .button-cz {
         margin-left: 20px;
     }
     >>> .ztree>li>a.curSelectedNode{
         background-color: #edf6ff;
+    }
+    >>> .el-input__inner {
+        margin-left: 0;
     }
 </style>

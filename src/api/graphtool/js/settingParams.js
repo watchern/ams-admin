@@ -168,7 +168,7 @@ async function initNodeZtree(nodeId) {
                     'open': false,
                     'isParent': false,
                     'type': 'column',
-                    'icon': '/images/ico/column.png'
+                    'icon': require('@/styles/icons/column.png')
                 }
                 //根据不同节点组织节点名称
                 switch (optType) {
