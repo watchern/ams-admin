@@ -414,7 +414,7 @@ export default {
       //模型类型数组
       modelTypeObj: [],
       //关闭窗体时候用的窗体名
-      formName: "",
+      formName: "新增模型",
       //操作对象
       operationObj: {},
       //图形化的列信息，比较列是否相同
@@ -977,6 +977,7 @@ export default {
       return returnObj
     },
     closeWinfrom() {
+      debugger
       this.$store.commit('aceState/setRightFooterTags', {
         type: 'close',
         val: {
