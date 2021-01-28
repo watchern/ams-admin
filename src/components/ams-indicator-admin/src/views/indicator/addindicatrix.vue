@@ -77,7 +77,7 @@ export default {
   name: 'addIndicatrix',
   props: ['tableId','tableName','columnId','columnName','inUUID'],
   components: {
-    publictree: resolve => require(["../../views/indicator/publictree.vue"], resolve),Colorpicker,myQueryBuilder
+    publictree: resolve => require(["../../views/indicator/publictree.vue"], resolve)
   },
   data() {
     return {

@@ -128,8 +128,8 @@ export default {
       }
     }
     if(this.operationObj.operationType === 2){
-      debugger
       this.thresholdValue = this.operationObj.thresholdValue
+      this.onSelectChange(this.thresholdValue.thresholdValueType)
     }
     else{
       //修改
@@ -140,7 +140,6 @@ export default {
      *select值改变事件
      */
     onSelectChange(value){
-      debugger
       if(value === 1){
         this.isShow.threshValueIsShow = true
         this.isShow.threshValueInfoSetIsShow = false
