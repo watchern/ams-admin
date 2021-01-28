@@ -27,7 +27,7 @@
             <el-input v-model="thresholdValueRelObj.thresholdValueUuid" style="display: none" :disabled="true"/>
             <el-select v-model="thresholdValueRelObj.thresholdValueName" placeholder="请选择">
               <el-option :label="thresholdValueRelObj.thresholdValueName" :value="thresholdValueRelObj.thresholdValueName" style="height: auto">
-                <thresholdvaluetree v-loading="loading" ref="thresholdvaluetree" @thresholdValueClick="setSelectTreeNode"></thresholdvaluetree>
+                <thresholdvaluetree :isShowEdit="false" v-loading="loading" ref="thresholdvaluetree" @thresholdValueClick="setSelectTreeNode"></thresholdvaluetree>
               </el-option>
             </el-select>
           </el-form-item>
@@ -60,8 +60,8 @@
     <el-footer>
       <div style="float: right">
         <el-button type="primary" @click="getSaveObj">确定</el-button>
-        <el-button type="primary" @click="closeDialog">取消</el-button>
-        <el-button type="primary" @click="clearThresholdValue">清除</el-button>
+        <el-button @click="closeDialog">取消</el-button>
+        <el-button @click="clearThresholdValue">清除</el-button>
       </div>
     </el-footer>
   </div>

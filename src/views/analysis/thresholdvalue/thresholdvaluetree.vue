@@ -20,29 +20,31 @@
       @check-change="handleNodeClick1">
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <span> <i :class="data.icon" />{{ node.label }} </span>
-          <el-button
-            title="添加阈值分类"
-            type="text"
-            size="mini"
-            class="tree-line-btn"
-            @click.stop="() => setSelectTreeNode(node, data, 1)"
-          ><svg-icon icon-class="icon-add-1"
-          /></el-button>
-          <el-button
-            title="修改阈值分类"
-            type="text"
-            size="mini"
-            class="tree-line-btn"
-            @click.stop="() => setSelectTreeNode(node, data, 2)"
-          ><svg-icon icon-class="icon-edit-1"
-          /></el-button>
-          <el-button
-            title="删除阈值分类"
-            type="text"
-            size="mini"
-            class="tree-line-btn"
-            @click.stop="() => deleteFolder(node, data)"
-          ><svg-icon icon-class="icon-delete-1"/></el-button>
+          <span v-if="isShowEdit == true">
+            <el-button
+              title="添加阈值分类"
+              type="text"
+              size="mini"
+              class="tree-line-btn"
+              @click.stop="() => setSelectTreeNode(node, data, 1)"
+            ><svg-icon icon-class="icon-add-1"
+            /></el-button>
+            <el-button
+              title="修改阈值分类"
+              type="text"
+              size="mini"
+              class="tree-line-btn"
+              @click.stop="() => setSelectTreeNode(node, data, 2)"
+            ><svg-icon icon-class="icon-edit-1"
+            /></el-button>
+            <el-button
+              title="删除阈值分类"
+              type="text"
+              size="mini"
+              class="tree-line-btn"
+              @click.stop="() => deleteFolder(node, data)"
+            ><svg-icon icon-class="icon-delete-1"/></el-button>
+          </span>
       </span>
     </MyElTree>
     <el-dialog
@@ -70,6 +72,7 @@ import {
 export default {
   name: "Thresholdvaluetree",
   components: { MyElTree },
+  props:['isShowEdit'],
   data() {
     return {
       filterText: null,
