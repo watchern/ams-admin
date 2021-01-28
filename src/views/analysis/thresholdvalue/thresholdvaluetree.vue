@@ -8,6 +8,7 @@
     />
     <MyElTree
       ref="tree"
+      :show-count="true"
       :data="data"
       :props="defaultProps"
       :filter-node-method="filterNode"
@@ -123,9 +124,9 @@ export default {
     deleteThresholdValueData(newData) {
       for (let i = 0; i < newData.children.length; i++) {
         if (newData.children[i].type == "model") {
-          newData.children[i].isShow = false;
+          newData.children[i].isShow = false
         } else {
-          deleteModelData(newData.children[i]);
+          deleteModelData(newData.children[i])
         }
       }
     },
@@ -134,10 +135,11 @@ export default {
      * @param data 树的对象数据 包括子节点
      */
     handleNodeClick(data) {
-      this.selectTreeNode = data;
+      this.selectTreeNode = data
       if (data.type === "model") {
       } else {
-        this.$emit("refreshThresholdvalueList", data);
+        this.$emit("refreshThresholdvalueList", data)
+        this.$emit("thresholdValueClick",data)
       }
     },
     /**

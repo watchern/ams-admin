@@ -171,7 +171,6 @@ export default {
      * @param query 查询条件
      */
     getList(query) {
-      debugger
       if(this.selectTreeNode != null){
         query.thresholdValueFolderUuid = this.selectTreeNode.id
       }
