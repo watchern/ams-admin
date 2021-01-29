@@ -63,18 +63,18 @@ var mouseY
  * 列图标路径
  * @type {string}
  */
-var columnIconPath = '../../images/ico/column.png'
+var columnIconPath = require("@/styles/icons/column.png")
 
 /**
  * 表图标路径
  * @type {string}
  */
-var tableIconPath = '../../images/ico/table_1.png'
+var tableIconPath = require("@/styles/icons/table_1.png")
 /**
  * 视图图标路径
  * @type {string}
  */
-var viewIconPath = '../../images/ico/view.png'
+var viewIconPath =  require("@/styles/icons/view.png")
 /**
  * 参数对象
  * @type {{}}

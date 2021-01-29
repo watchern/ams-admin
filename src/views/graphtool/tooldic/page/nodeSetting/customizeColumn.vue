@@ -1,20 +1,20 @@
 <template>
     <el-container style="width: 100%;height: 600px;overflow-y: auto" v-loading="initLoading">
-        <el-col :span="6" style="border-color: #DCDFE6;border-style:solid;border-width: 0 1px 1px 1px;height: 100%;">
+        <el-col :span="6" style="border-color: #DCDFE6;border-style:solid;border-width: 0 1px 1px 1px;">
             <el-collapse v-model="activeName" accordion >
                 <el-collapse-item name="columnZtreeList">
                     <template slot="title">
                         <span style="padding-left: 10px;">字段列表</span>
                     </template>
                     <el-input v-model="searchColumnContent" placeholder="搜索关键字"/>
-                    <ul id="columnZtree" class="ztree" style="height:446px;" />
+                    <ul id="columnZtree" class="ztree" style="height:436px;margin: 10px 0;" />
                 </el-collapse-item>
                 <el-collapse-item name="funZtreeList">
                     <template slot="title">
                         <span style="padding-left: 10px;">函数列表</span>
                     </template>
                     <el-input v-model="searchFunContent" placeholder="搜索关键字"/>
-                    <ul id="funZtree" class="ztree" style="height:446px;" />
+                    <ul id="funZtree" class="ztree" style="height:436px;margin: 10px 0;" />
                 </el-collapse-item>
             </el-collapse>
         </el-col>
@@ -43,7 +43,7 @@
                 <el-input ref="customizeColumnInp" type="textarea" resize="none" :autosize="{ minRows: 15, maxRows: 15}" style="font-size: 18px;" v-model="customizeColumnVal"></el-input>
             </el-row>
             <el-row>
-                <el-tag style="height: 36px;"><div v-for="sign in signArr" class="signSpan" @click="inputSign(sign.value)">{{sign.name}}</div></el-tag>
+                <el-tag style="height: 35px;line-height: 35px;"><div v-for="sign in signArr" class="signSpan" @click="inputSign(sign.value)">{{sign.name}}</div></el-tag>
             </el-row>
         </el-col>
     </el-container>
@@ -181,6 +181,7 @@
             },
             initColumnZtree(){
                 let idNum = 0
+                const columnIconPath = require('@/styles/icons/column.png')
                 Array.from(this.columnInfoArr, item => {
                     let exsit = false
                     for(let j=0; j<this.rtnArr.length; j++){
@@ -231,7 +232,7 @@
                             "pid" : rootNode.id,
                             "open": false,
                             "children": [],
-                            "icon": "images/ico/column.png"
+                            "icon": columnIconPath
                         })
                         idNum++
                     }
@@ -241,6 +242,14 @@
             initFunZtree(){
                 this.$ajax.get('lib/jsonFile/oracle_Fun.json').then( response => {
                     if(response.data && response.data.length > 0){
+                        const tableIconPath = require('@/styles/icons/function.png')
+                        //json文件的数据格式需保持统一，有且只有两层
+                        Array.from(response.data, item => {
+                            Array.from(item.children, cItem => {
+                                //替换第二层节点的图标
+                                cItem.icon = tableIconPath
+                            })
+                        })
                         this.funRootNodeArr = response.data
                         this.funZtree = $.fn.zTree.init($("#funZtree"), this.initZtreeSetting('funZtree'), response.data)
                     }
@@ -395,17 +404,11 @@
         background-color: #409EFF;
         box-shadow: 3px 3px 5px #409EFF;
     }
-    >>> .ztree {
-        margin: 10px 0;
-    }
     >>> .ztree>li>ul {
         overflow: auto;
     }
     >>> .el-collapse-item__content{
         padding-bottom: 0;
-    }
-    .elRow {
-        padding: 7px 0;
     }
     .item {
         height: 26px;
@@ -418,10 +421,5 @@
         float: right;
         padding-right: 10px;
         line-height: 30px;
-    }
-    .divStyle {
-        overflow-y: auto;
-        border: 1px solid #DCDFE6;
-        padding: 5px 10px;
     }
 </style>

@@ -27,28 +27,6 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-row>
-                      <el-form-item  label="条件显示">
-                        <el-col :span="21">
-                          <el-input readonly="readonly" v-model="form.inFilterShowObj.sql" />
-                        </el-col>
-                        <el-col :span="3">
-                          <el-button style="margin-left: 19px;" type="primary" size="mini" @click="setQueryBuilderRules();setFilterShow()">设置</el-button>
-                        </el-col>
-                      </el-form-item>
-                    </el-row>
-                    <el-row>
-                      <el-col :span="8">
-                        <el-form-item label="字体颜色">
-                          <Colorpicker style="z-index:1000" v-model="form.inFilterShowObj.fontColor" />
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="8">
-                        <el-form-item label="背景色">
-                          <Colorpicker style="z-index:1000" v-model="form.inFilterShowObj.backGroundColor" />
-                        </el-form-item>
-                      </el-col>
-                    </el-row>
                     <el-form-item label="指标公式" id="gongShi">
                         <el-button type="primary" size="mini" @click="appendText('+')">+</el-button>
                         <el-button type="primary" size="mini" @click="appendText('-')">-</el-button>

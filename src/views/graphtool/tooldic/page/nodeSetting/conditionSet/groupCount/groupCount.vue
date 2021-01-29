@@ -1,121 +1,83 @@
 <template>
-    <div style="height: 600px;">
-        <ul id="myTab" class="nav nav-tabs">
-            <li>
-                <a href="#basic" data-toggle="tab">基本信息</a>
-            </li>
-            <li class="active">
-                <a href="#filterSet" data-toggle="tab">条件设置</a>
-            </li>
-            <li>
-                <a href="#outputColumn" data-toggle="tab">输出字段设置</a>
-            </li>
-        </ul>
-        <div id="myTabContent" class="tab-content">
-            <div id="basic" class="tab-pane fade">
+    <div style="height: 600px;overflow-y: auto;">
+        <el-tabs v-model="activeTabName">
+            <el-tab-pane label="基本信息" name="basicInfo">
                 <Basic ref="basicVueRef"/>
+            </el-tab-pane>
+            <el-tab-pane label="条件设置" name="nodeSet">
+                <el-collapse v-model="activeCollapseNames" accordion>
+                    <el-collapse-item title="分组设置" name="groupSet">
+                        <el-transfer filterable filter-placeholder="请输入搜索内容" v-model="columnDataValue" :data="columnData" :titles="['可选字段', '分组字段']" @change="changeGroupData" style="padding-left: 90px;"></el-transfer>
+                    </el-collapse-item>
+                    <el-collapse-item title="汇总设置" name="countSet">
+                        <el-table :data="items" height="450" style="width: 770px;margin-left: 90px;">
+                            <el-table-column label="待汇总字段" width="350" header-align="center">
+                                <template slot-scope="scope">
+                                    <div :id="`searchName${(scope.row.id)}`" class="xm-select-demo"></div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="汇总方式" width="240" header-align="center">
+                                <template slot-scope="scope">
+                                    <div :id="`searchType${(scope.row.id)}`" class="xm-select-demo"></div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add" @click="addCountTr" title="添加行" style="line-height: normal;"/>
+                                    <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete" title="删除行" @click="delCountTr(scope.$index)" style="line-height: normal;"/>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-collapse-item>
+                </el-collapse>
+            </el-tab-pane>
+            <el-tab-pane label="输出字段设置" name="outPutCol">
+                <el-row style="padding-top: 10px;">
+                    <el-col align="right">
+                        <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" style="line-height: normal;"/>
+                        <el-button type="primary" title="说明" class="oper-btn help" @click="helpDialogVisible = true" style="line-height: normal;"/>
+                    </el-col>
+                </el-row>
+                <el-table :data="columnItems" border style="width: 100%;" height="527" ref="outPutTable">
+                    <el-table-column type="index" label="编号" width="60" align="center" :resizable="false"></el-table-column>
+                    <el-table-column label="上一节点名称" width="200" :show-overflow-tooltip="true" prop="rtn" header-align="center" :resizable="false"></el-table-column>
+                    <el-table-column label="字段名称" width="260" :show-overflow-tooltip="true" prop="columnName" header-align="center" :resizable="false"></el-table-column>
+                    <el-table-column label="输出字段名称" width="240" header-align="center" :resizable="false">
+                        <template slot-scope="scope">
+                            <el-input v-model="scope.row.newColumnName"></el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column align="center" width="100" :resizable="false">
+                        <template slot="header" slot-scope="scope">
+                            输出字段<el-checkbox v-model="checkAll" :disabled="isAllDisabled" @change="handleCheckAllChange" style="padding-left: 5px;"/>
+                        </template>
+                        <template slot-scope="scope">
+                            <el-checkbox v-model="scope.row.checked" :disabled="isDisabled" @change="checkBoxChange" />
+                        </template>
+                    </el-table-column>
+                    <el-table-column align="center" label="操作" width="100" :resizable="false">
+                        <template slot-scope="scope">
+                            <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" title="设置" style="line-height: normal;"/>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-tab-pane>
+        </el-tabs>
+        <el-dialog :visible.sync="helpDialogVisible" :append-to-body="true" title="说明" width="400px">
+            <div style="height: 260px;padding: 10px;">
+                <p style="text-indent: 2em">（1）如果修改了【输出字段名称】且存在已配置过或执行过的后续节点，则后续节点关于该字段的配置信息会失效</p>
+                <p style="text-indent: 2em">（2）如果继续使用后续节点，则需重新配置和执行相关节点</p>
+                <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
+                <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
             </div>
-            <div id="filterSet" class="tab-pane fade in active">
-                <div class="col-sm-12" style="padding: 20px;height: 565px;overflow-y: auto;">
-                    <div id="groupAccordion" class="panel-group">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#groupAccordion" href="#groupCollapse">分组设置</a>
-                                </h4>
-                            </div>
-                            <div id="groupCollapse" class="panel-collapse collapse in">
-                                <div class="panel-body">
-                                    <div id="group" class="demo-transfer" style="margin-left: 80px;" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="countAccordion" class="panel-group">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#countAccordion" href="#countCollapse">汇总设置</a>
-                                </h4>
-                            </div>
-                            <div id="countCollapse" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    <table id="countTable" class="table table-striped">
-                                        <thead>
-                                        <tr>
-                                            <th width="350px" style="text-align: center">待汇总字段</th>
-                                            <th width="200px" style="text-align: center">汇总方式</th>
-                                            <th width="200px" style="text-align: center">操作</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="row_add">
-                                        <tr v-for="(item,index) in items" :key="item.id" ref="countTr">
-                                            <td><div :id="`searchName${(item.id)}`" class="xm-select-demo"></div></td>
-                                            <td><div :id="`searchType${(item.id)}`" class="xm-select-demo"></div></td>
-                                            <td v-if="index === 0" align="center">
-                                                <button type="button" class="btn btn-primary" @click="addCountTr">添加行</button>
-                                            </td>
-                                            <td v-if="index !== 0" align="center">
-                                                <button type="button" class="btn btn-primary" @click="delCountTr(index)">删除行</button>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        </el-dialog>
+        <el-dialog v-if="customizeColumnDialogVisible" :visible.sync="customizeColumnDialogVisible" :title="customizeColumnTitle" :close-on-press-escape="false" :close-on-click-modal="false" :append-to-body="true" width="1000px">
+            <CustomizeColumn ref="customizeColumn" :columnInfoArr="columnsInfoPre" :cur-column-info="curColumnInfo" node-type="groupCount"/>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="customizeColumnDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="customizeColumnBack()">保存</el-button>
             </div>
-            <div id="outputColumn" class="tab-pane fade">
-                <div style="width: 98%;margin: 4px 1%">
-                    <el-row style="padding: 10px 0;">
-                        <el-col align="right">
-                            <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" style="line-height: normal;"/>
-                            <el-button type="primary" title="说明" class="oper-btn help" @click="helpDialogVisible = true" style="line-height: normal;"/>
-                        </el-col>
-                    </el-row>
-                    <el-table :data="columnItems" border style="width: 100%;" height="520" ref="outPutTable">
-                        <el-table-column type="index" width="60" align="center" :resizable="false"></el-table-column>
-                        <el-table-column label="上一节点名称" width="200" :show-overflow-tooltip="true" prop="rtn" header-align="center" :resizable="false"></el-table-column>
-                        <el-table-column label="字段名称" width="260" :show-overflow-tooltip="true" prop="columnName" header-align="center" :resizable="false"></el-table-column>
-                        <el-table-column label="输出字段名称" width="240" header-align="center" :resizable="false">
-                            <template slot-scope="scope">
-                                <el-input v-model="scope.row.newColumnName"></el-input>
-                            </template>
-                        </el-table-column>
-                        <el-table-column align="center" width="100" :resizable="false">
-                            <template slot="header" slot-scope="scope">
-                                输出字段<el-checkbox v-model="checkAll" :disabled="isAllDisabled" @change="handleCheckAllChange" style="padding-left: 5px;"/>
-                            </template>
-                            <template slot-scope="scope">
-                                <el-checkbox v-model="scope.row.checked" :disabled="isDisabled" @change="checkBoxChange" />
-                            </template>
-                        </el-table-column>
-                        <el-table-column align="center" label="操作" width="80" :resizable="false">
-                            <template slot-scope="scope">
-                                <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" title="设置" style="line-height: normal;"/>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                    <el-dialog :visible.sync="helpDialogVisible" :append-to-body="true" title="说明" width="400px">
-                        <div style="height: 260px;padding: 10px;">
-                            <p style="text-indent: 2em">（1）如果修改了【输出字段名称】且存在已配置过或执行过的后续节点，则后续节点关于该字段的配置信息会失效</p>
-                            <p style="text-indent: 2em">（2）如果继续使用后续节点，则需重新配置和执行相关节点</p>
-                            <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
-                            <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
-                        </div>
-                    </el-dialog>
-                    <el-dialog v-if="customizeColumnDialogVisible" :visible.sync="customizeColumnDialogVisible" :title="customizeColumnTitle" :close-on-press-escape="false" :close-on-click-modal="false" :append-to-body="true" width="1000px">
-                        <CustomizeColumn ref="customizeColumn" :columnInfoArr="columnsInfoPre" :cur-column-info="curColumnInfo" node-type="groupCount"/>
-                        <div slot="footer" class="dialog-footer">
-                            <el-button @click="customizeColumnDialogVisible = false">取消</el-button>
-                            <el-button type="primary" @click="customizeColumnBack()">保存</el-button>
-                        </div>
-                    </el-dialog>
-                </div>
-            </div>
-        </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -137,14 +99,16 @@
                 columnItems:[],
                 isDisabled:false,
                 columnData:[],// 穿梭框中加载的字段数据数组集合
+                columnDataValue:[],//穿梭框中已选择的字段数据数组集合
                 columnsInfo:[],// 所有输出列信息
-                groupTransfer:null,// 分组的穿梭框对象
                 curColumnInfo:null,
                 helpDialogVisible:false,
                 customizeColumnDialogVisible:false,
                 customizeColumnTitle:'',
                 customizeColumnType:'',
-                ind:0//记录输出字段的唯一标识
+                ind:0,//记录输出字段的唯一标识
+                activeTabName:'nodeSet',
+                activeCollapseNames:['groupSet']
             }
         },
         props:['graph'],
@@ -170,10 +134,41 @@
                     this.checkAll = false
                 }
             },
+            changeGroupData(value, direction, movedKeys){
+                if(this.isAllDisabled){// 如果输出字段的全选复选框为禁用状态，当增加或移除分组字段时，实时变更输出列信息
+                    this.isDisabled = false//目的是先解禁，否则checked状态无法动态改变
+                    Array.from(movedKeys,item => {
+                        let index = this.columnItems.findIndex( n => n.columnName === item)
+                        if(index > -1){
+                            if (direction === 'right') { // 增加，选中该分组字段的输出列
+                                this.columnItems[index].checked = true
+                            } else { // 移除，取消选中该分组字段的输出列
+                                this.columnItems[index].checked = false
+                            }
+                        }
+                    })
+                    // 检查是否全部选择
+                    this.checkAllFun()
+                    this.isDisabled = true
+                }
+            },
+            checkAllFun() {
+                let checkNum = 0
+                for(let i=0; i<this.columnItems.length; i++){
+                    if(this.columnItems[i].checked){
+                        checkNum++
+                    }
+                }
+                if(checkNum === this.columnItems.length){
+                    this.checkAll = true
+                }else{
+                    this.checkAll = false
+                }
+            },
             addCountTr() {
                 groupCountJs.addCountTr()
             },
-            delCountTr(index, event) {
+            delCountTr(index) {
                 groupCountJs.delCountTr(index)
             },
             vilidata_simple() {
@@ -281,28 +276,21 @@
         }
     }
 </script>
-
-<style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
-<style scoped src="@/api/graphtool/css/common.css"></style>
-<style scoped src="@/api/graphtool/css/accordion.css"></style>
 <style scoped>
-    >>> .el-table .cell {
-        padding: 0;
-    }
-    >>> .el-input__inner {
+    >>> .el-tabs__header {
         margin: 0;
     }
-    #countTable{
-        margin-left: 80px;
-        width: 760px;
+    >>> .el-table .cell {
+        padding: 0;
+        display: inline;
     }
-    #countTable>thead>tr>th{
-        border:1px solid #ddd;
+    >>> .el-collapse-item__content{
+        padding: 5px 0;
     }
-    #countTable>tbody>tr>td{
-        border:1px solid #ddd;
+    >>> .el-collapse-item__wrap{
+        border-bottom: unset;
     }
-    .panel-body{
-        padding: 10px 0;
+    >>> .el-transfer-panel{
+        width: 300px;
     }
 </style>

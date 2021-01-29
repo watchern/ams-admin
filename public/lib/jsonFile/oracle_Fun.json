@@ -18,8 +18,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "CONCAT",
@@ -30,8 +29,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "INSTR",
@@ -42,8 +40,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "LENGTH",
@@ -54,8 +51,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "LOWER",
@@ -66,8 +62,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "UPPER",
@@ -78,8 +73,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "LTRIM",
@@ -90,8 +84,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "RTRIM",
@@ -102,8 +95,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "TRIM",
@@ -114,8 +106,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "REPLACE",
@@ -126,8 +117,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "SUBSTR",
@@ -138,8 +128,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			}
 		]
 	},
@@ -162,8 +151,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "CEIL",
@@ -174,8 +162,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "FLOOR",
@@ -186,8 +173,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "MOD",
@@ -198,8 +184,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "EXTRACT",
@@ -210,8 +195,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "TRUNC",
@@ -222,8 +206,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			}
 		]
 	},
@@ -246,8 +229,7 @@
 				"type": "funNode",
 				"isParent": false,
 				"open": false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id": "LAST_DAY",
@@ -258,8 +240,7 @@
 				"type": "funNode",
 				"isParent": false,
 				"open": false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id": "EXTRACT",
@@ -270,8 +251,7 @@
 				"type": "funNode",
 				"isParent": false,
 				"open": false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			}
 		]
 	},
@@ -294,8 +274,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "TO_DATE",
@@ -306,8 +285,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "TO_NUMBER",
@@ -318,8 +296,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			}
 		]
 	},
@@ -342,8 +319,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "SUM",
@@ -354,8 +330,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "MIN",
@@ -366,8 +341,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "MAX",
@@ -378,8 +352,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "COUNT",
@@ -390,8 +363,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			}
 		]
 	},
@@ -414,8 +386,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
+				"children": []
 			},
 			{
 				"id" : "NVL2",
@@ -426,34 +397,7 @@
 				"type" : "funNode",
 				"isParent" : false,
 				"open" : false,
-				"children": [],
-				"icon" : "../../images/ico/function.png"
-			},
-			{
-				"id" : "FOR_LOOP",
-				"pid" : "otherFun",
-				"name" : "FOR_LOOP",
-				"displayName" : "符合基本语法的自定义规则的FOR-LOOP循环语句",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children" : [],
-				"icon" : "../../images/ico/function.png",
-				"content" : "#for_loop_content_start#\t\t\t/*本行不可删除*/\nDECLARE XXX……;\nBEGIN\nFOR i IN 1..1000 LOOP\n#for_loop_main_start#\t\t\t\t/*本行不可删除*/\n\t/*主循环体内的数据操作语言只支持INSERT、UPDATE、DELETE三种*/\n\tINSERT/UPDATE/DELETE XXX……;\n#for_loop_main_end#\t\t\t\t\t/*本行不可删除*/\nEND LOOP;\nEND;\n#for_loop_content_end#\t\t\t\t/*本行不可删除*/"
-			},
-			{
-				"id" : "FOR_LOOP",
-				"pid" : "otherFun",
-				"name" : "FOR_LOOP（多层嵌套）",
-				"displayName" : "符合基本语法的自定义规则的多层FOR-LOOP嵌套循环语句",
-				"level" : 2,
-				"type" : "funNode",
-				"isParent" : false,
-				"open" : false,
-				"children" : [],
-				"icon" : "../../images/ico/function.png",
-				"content" : "#for_loop_content_start#\t\t\t/*本行不可删除*/\nDECLARE XXX……;\nBEGIN\nFOR i IN 1..1000 LOOP\n#for_loop_main_start#\t\t\t\t/*本行不可删除*/\n\t/*主循环体内的数据操作语言只支持INSERT、UPDATE、DELETE三种*/\n\tINSERT/UPDATE/DELETE XXX……;\n\tFOR j IN 1..1000 LOOP\n\t#for_loop_main_start#\t\t\t/*本行不可删除*/\n\t\t/*主循环体内的数据操作语言只支持INSERT、UPDATE、DELETE三种*/\n\t\tINSERT/UPDATE/DELETE XXX……;\n\t#for_loop_main_end#\t\t\t\t/*本行不可删除*/\n\tEND LOOP;\n#for_loop_main_end#\t\t\t\t\t/*本行不可删除*/\nEND LOOP;\nEND;\n#for_loop_content_end#\t\t\t\t/*本行不可删除*/"
+				"children": []
 			}
 		]
 	}

@@ -1,13 +1,13 @@
 <template>
-    <div style="width: 98%;margin: 4px 1%">
-        <el-row style="padding: 10px 0;">
+    <div style="width: 100%;">
+        <el-row style="padding-top: 10px;">
             <el-col align="right">
                 <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" style="line-height: normal;"/>
                 <el-button type="primary" title="说明" class="oper-btn help" @click="helpDialogVisible = true" style="line-height: normal;"/>
             </el-col>
         </el-row>
-        <el-table :data="items" border style="width: 100%;" height="520" ref="outPutTable">
-            <el-table-column type="index" width="60" align="center" :resizable="false"></el-table-column>
+        <el-table :data="items" border style="width: 100%;" height="526" ref="outPutTable">
+            <el-table-column type="index" label="编号" width="60" align="center" :resizable="false"/>
             <el-table-column label="上一节点名称" width="200" :show-overflow-tooltip="true" prop="rtn" header-align="center" :resizable="false"></el-table-column>
             <el-table-column label="字段名称" width="260" :show-overflow-tooltip="true" prop="curColumnName" header-align="center" :resizable="false"></el-table-column>
             <el-table-column label="输出字段名称" width="240" header-align="center" :resizable="false">
@@ -23,7 +23,7 @@
                     <el-checkbox v-model="scope.row.checked" :disabled="isDisabled" @change="checkBoxChange" />
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="操作" width="80" :resizable="false">
+            <el-table-column align="center" label="操作" width="100" :resizable="false">
                 <template slot-scope="scope">
                     <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" title="设置" style="line-height: normal;"/>
                 </template>
@@ -55,7 +55,7 @@
         data() {
             return {
                 nodeData: null,
-                columnsInfoPre: this.$parent.columnsInfoPre,
+                columnsInfoPre: this.$parent.$parent.$parent.columnsInfoPre,
                 re_columnsInfo: '',
                 items: [],
                 isIndeterminate: true,
@@ -74,7 +74,7 @@
         },
         methods: {
             init() {
-                const graph = this.$parent.graph
+                const graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 this.initConfig()
             },
@@ -114,16 +114,17 @@
                     var nullNodeId = this.items[j].nullNodeId
                     if (data && data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
-                            if (data[i].value === this.items[j].curColumnName) {
-                                if (data[i].nodeId === nodeId && hasMoreTable && data[i].nullNodeId === nullNodeId) {
-                                    this.items[j].checked = true
-                                    num++
-                                    break
-                                }
+                            if (data[i] === this.items[j].curColumnName) {
                                 if (!hasMoreTable) {
                                     this.items[j].checked = true
                                     num++
                                     break
+                                }else{
+                                    if (data[i].nodeId === nodeId && data[i].nullNodeId === nullNodeId) {
+                                        this.items[j].checked = true
+                                        num++
+                                        break
+                                    }
                                 }
                             }
                         }
@@ -212,16 +213,8 @@
                         var checked = $this.items[index].checked
                         var this_column = {...{},...$this.items[index].columnInfo}
                         var old_colum_name = $this.items[index].curColumnName// 之前的newColumnName
-                        var re_is_filter_comumn = []
-                        $($this.$parent.is_filter_column).each(function () {
-                            re_is_filter_comumn.push(this.value)
-                        })
-                        if (re_is_filter_comumn.length === 0 || $.inArray(old_colum_name, re_is_filter_comumn) > -1) { // 没有做配置、没有类似去重此功能需求或者配置并且在对勾显示字段的
-                            if (checked) {
-                                this_column.isOutputColumn = 1// is output column
-                            } else {
-                                this_column.isOutputColumn = 0
-                            }
+                        if (checked) {
+                            this_column.isOutputColumn = 1
                         } else {
                             this_column.isOutputColumn = 0
                         }
@@ -234,7 +227,7 @@
                 }
                 this.nodeData.columnsInfo = this_columnInfos
             },
-            find_self_column(columnName, nodeId) { // 是否设置并且含有当前字段
+            find_self_column(columnName) { // 是否设置并且含有当前字段
                 var obj = {
                     flag: false,
                     columnName: columnName,
@@ -322,6 +315,12 @@
                     this.customizeColumnTitle = '自定义字段'
                     this.curColumnInfo = null
                 }else{//修改设置
+                    if (this.nodeData.nodeInfo.optType === 'delRepeat' || this.nodeData.nodeInfo.optType === 'union') {// 分组汇总和数据去重节点的输出字段单独处理
+                        if(curColumnInfo.nodeId !== 'customizeColumn'){
+                            this.$message({'type':'warning','message':'当前字段信息不可被修改'})
+                            return
+                        }
+                    }
                     this.customizeColumnTitle = '修改设置'
                     this.curColumnInfo = curColumnInfo
                 }

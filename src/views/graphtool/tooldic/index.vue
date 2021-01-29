@@ -227,7 +227,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="nodeRemark" role="tabpanel" class="tab-pane">点击操作节点，可查看节点说明信息</div>
+                <div id="nodeRemark" role="tabpanel" class="tab-pane" v-html="nodeRemarkHtml" @click="viewEgEvent"></div>
                 <div id="usedResourceTree" role="tabpanel" class="tab-pane">
                     <ul id="resourceZtree" class="ztree" />
                 </div>
@@ -270,31 +270,20 @@
                 <el-button type="primary" @click="getGraphFormInfo">保存</el-button>
             </div>
         </el-dialog>
-        <el-dialog v-if="nodeParamListDialogVisible" :visible.sync="nodeParamListDialogVisible" title="参数节点列表" :close-on-press-escape="false" :close-on-click-modal="false">
-            <div  style="height: 400px;overflow-y: auto;">
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th style="text-align: center">节点名称</th>
-                        <th style="text-align: center">结果表序号</th>
-                        <th style="text-align: center">操作</th>
-                    </tr>
-                    </thead>
-                    <tbody ref="nodeParamToby">
-                    <tr v-for="(nodeObj,index) in nodeParamArr" ref="paramSetTr" :index="index">
-                        <td align="center">{{ nodeObj.nodeName }}</td>
-                        <td align="center">{{ nodeObj.lineNum }}</td>
-                        <td v-if="nodeObj.hasParamSet" align="center">
-                            <button type="button" class="paramSetting btn btn-primary" @click="settingParam(nodeObj.nodeId,index)">修改参数</button>
-                            <button id="clearBtn" type="button" class="btn btn-primary" style="margin-left: 10px;" @click="clearSettingParam(nodeObj.nodeId,index)">清除参数</button>
-                        </td>
-                        <td v-if="!nodeObj.hasParamSet" align="center">
-                            <button type="button" class="paramSetting btn btn-primary" @click="settingParam(nodeObj.nodeId,index)">设置参数</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+        <el-dialog v-if="nodeParamListDialogVisible" :visible.sync="nodeParamListDialogVisible" title="参数节点列表" :close-on-press-escape="false" :close-on-click-modal="false" width="600px">
+            <el-row style="color: red;line-height: 35px;height: 30px;" v-show="openGraphType === 2 || openGraphType === 3">注：可通过上下拖动行对节点进行排序设置</el-row>
+            <el-table :data="nodeParamArr" height="400" fit ref="nodeParamTable" style="width:100%;">
+                <el-table-column type="index" label="编号" align="center" width="60" :resizable="false"/>
+                <el-table-column prop="nodeName" label="节点名称" header-align="center" :resizable="false"/>
+                <el-table-column prop="lineNum" label="结果表序号" width="100" align="center" :resizable="false"/>
+                <el-table-column label="操作" width="100" align="center" :resizable="false">
+                    <template slot-scope="scope">
+                        <el-button type="primary" v-if="!scope.row.hasParamSet" class="oper-btn setting" @click="settingParam(scope.row.nodeId,scope.$index)" title="设置参数" style="line-height: normal;"/>
+                        <el-button type="primary" v-if="scope.row.hasParamSet" class="oper-btn setting" @click="settingParam(scope.row.nodeId,scope.$index)" title="修改参数" style="line-height: normal;"/>
+                        <el-button type="primary" v-if="scope.row.hasParamSet" class="oper-btn delete" @click="clearSettingParam(scope.row.nodeId,scope.$index)" title="清除参数" style="line-height: normal;"/>
+                    </template>
+                </el-table-column>
+            </el-table>
             <div slot="footer">
                 <el-button @click="nodeParamListDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="showParamNodeListCallBack()">保存</el-button>
@@ -364,6 +353,9 @@
                 <el-button @click="nodeParamDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="setExecuteParamCallBack">保存</el-button>
             </div>
+        </el-dialog>
+        <el-dialog :visible.sync="imageDialogVisible" title="图片示例" width="600px">
+            <el-image :src="imageSrc" fit="contain" style="max-height:600px;"></el-image>
         </el-dialog>
         <!-- 右键事件 -->
         <div id="rMenu" class="rightMenu">
@@ -479,7 +471,10 @@
                 sqlEditorStyle:'',
                 curModelSql: '',// 用来临时存储打开模型图形时的模型SQL语句
                 isSearchExpand:false,// 左侧资源树搜索功能的变量
-                curCell:null//当前执行节点的对象
+                curCell:null,//当前执行节点的对象
+                nodeRemarkHtml:'点击操作节点，可查看节点说明信息',
+                imageDialogVisible:false,
+                imageSrc:''
             }
         },
         created() {
@@ -623,8 +618,6 @@
                     $this.graph.newOptArr = []
                     $this.graph.edgeArr = {}
                     // 缩略图
-                    // var container = document.getElementById('geBackgroundPage')
-                    // var outline = document.getElementById('outLineArea')
                     $this.$refs.outLineArea.style.position = 'absolute'
                     $this.$refs.outLineArea.style.width = '97%'
                     $this.$refs.outLineArea.style.height = '225px'
@@ -1162,6 +1155,15 @@
             },
             sqlNodeEditCallBack(){
                 commonJs.sqlNodeEdit_callBack()
+            },
+            viewEgEvent(event){
+                if(event.target.nodeName === "A" && event.target.className === "viewEg"){//数据关联、数据融合节点查看图片
+                    let type = event.target.getAttribute("data_type")
+                    if(typeof type !== 'undefined'){
+                        this.imageSrc = require(`@/api/graphtool/images/${type}.jpg`)
+                        this.imageDialogVisible = true
+                    }
+                }
             },
             /**
              * 接口：获取节点参数信息

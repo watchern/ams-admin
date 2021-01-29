@@ -76,6 +76,12 @@ const analysisRouter = {
       name: '指标分析',
       component: () => import('@/views/analysis/indicatoranalysis/index')
     }
+    ,
+    {
+      path: 'threadoldvalue',
+      name: '阈值管理',
+      component: () => import('@/views/analysis/thresholdvalue/index')
+    }
   ]
 }
 

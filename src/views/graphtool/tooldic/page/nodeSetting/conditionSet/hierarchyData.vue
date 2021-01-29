@@ -1,5 +1,5 @@
 <template>
-    <div style="height:580px;padding-top: 20px;" ref="hierarchyDataDiv">
+    <div style="height:560px;padding-top: 20px;" ref="hierarchyDataDiv" v-loading="layeringLoading" element-loading-text="正在加载字段的区间值，请稍后……">
         <el-row>
             <el-col :span="5">
                 <p style="color:red;height:30px;line-height: 30px;">注：分层区间数不能超过五个</p>
@@ -14,51 +14,57 @@
                     </el-select>
                 </el-col>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="12" ref="rangeCol" v-if="!rangeTip" style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
                 <span style="height:30px;line-height: 30px;padding-left: 20px;">{{range}}</span>
             </el-col>
+            <el-col :span="12" ref="rangeCol" v-if="rangeTip" style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
+                <el-tooltip class="item" effect="dark" :content="range" placement="bottom">
+                    <span style="height:30px;line-height: 30px;padding-left: 20px;">{{range}}</span>
+                </el-tooltip>
+            </el-col>
         </el-row>
-        <el-row>
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th colspan="5" style="text-align: center;">分层区间列表
-                        <button type="button" class="btn" @click="addRows" style="float: right;color: #000;">增加区间</button>
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="(item,index) in items" :key="item.id">
-                    <td align="right" width="100px">区间</td>
-                    <td><input v-model="item.c_col_1" type="number" min="1" class="col-1 form-control"/></td>
-                    <td align="center" width="100px">至</td>
-                    <td><input v-model="item.c_col_2" type="number" min="1" class="col-2 form-control"/></td>
-                    <td width="100px"><img v-if="index > 0" style="width:25px;cursor:pointer;" src="../../../../../../api/graphtool/images/icon/delred.png" @click="clickDel(index)"></td>
-                </tr>
-                </tbody>
-            </table>
-        </el-row>
+        <el-table :data="items" height="450" style="width: 600px;">
+            <el-table-column label="分层区间" width="500" header-align="center" :resizable="false">
+                <template slot-scope="scope">
+                    <el-col :span="10">
+                        <el-input v-model="scope.row.c_col_1" type="number" min="1"/>
+                    </el-col>
+                    <el-col :span="4">
+                        <div style="height: 36px;line-height: 36px;text-align: center;">至</div>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-input v-model="scope.row.c_col_2" type="number" min="1"/>
+                    </el-col>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="100" align="center" :resizable="false">
+                <template slot-scope="scope">
+                    <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add" @click="addRows" title="增加区间" style="line-height: normal;"/>
+                    <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete" title="删除区间" @click="clickDel(scope.$index)" style="line-height: normal;"/>
+                </template>
+            </el-table-column>
+        </el-table>
     </div>
 </template>
 
 <script>
-    import '@/components/ams-loading/css/loading.css'
     import {getMaxMinColumn} from '@/api/graphtool/apiJs/graphList'
     export default {
         name: 'HierarchyDataSet',
         data() {
             return {
+                layeringLoading:true,
                 nodeData:null,
                 pre_str_column: [],
                 dict_map: [],
                 keyId: 0,
                 items: [{id: this.keyId,c_col_1: '',c_col_2: ''}],
-                loading: null,
                 websocketLayeringId: '',
                 loginUserUuid: '',
                 hierarchy_column:'',
                 hierarchyColumnArr:[],
-                range:''
+                range:'',
+                rangeTip:false
             }
         },
         mounted() {
@@ -67,11 +73,11 @@
         methods: {
             init() {
                 this.loginUserUuid = this.$store.state.user.id
-                let graph = this.$parent.graph
+                let graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 let parentIds = this.nodeData.parentIds
                 let parent_node = graph.nodeData[parentIds[0]]
-                let columnsInfoPre = this.$parent.columnsInfoPre
+                let columnsInfoPre = this.$parent.$parent.$parent.columnsInfoPre
                 let typeArr = ['INTEGER', 'DECIMAL', 'NUMBER', 'FLOAT', 'REAL', 'DATE', 'TIMESTAMP']
                 if (columnsInfoPre.length !== 0) { // 初始化数据源
                     for(let i=0; i<columnsInfoPre.length; i++){
@@ -104,7 +110,6 @@
                         /**
                          * 获得上一节点执行结果的选择字段的最大值和最小值
                          */
-                        this.loading = $(this.$refs.hierarchyDataDiv).mLoading({ 'text': '正在加载字段的区间值，请稍后……', 'hasCancel': false })
                         let dataParam = {
                             'tableName': parent_node.nodeInfo.resultTableName,
                             'openType': graph.openType,
@@ -112,7 +117,7 @@
                             'isRoleTable':isRoleTable
                         }
                         getMaxMinColumn(dataParam).then( response => {
-                            this.loading.destroy()
+                            this.layeringLoading = false
                             if (response.data == null){
                                 this.$message.error('获取数据列的区间值失败')
                             }else {
@@ -137,6 +142,8 @@
                                     }
                                 }
                             }
+                        }).catch( () => {
+                            this.layeringLoading = false
                         })
                     }
                 }
@@ -145,24 +152,29 @@
                 this.hierarchy_column = sel_column
                 this.items = []
                 this.keyId = 0
-                // this.$nextTick( () => {
-                    this.items.push({
-                        id: this.keyId,
-                        c_col_1: '',
-                        c_col_2: ''
-                    })
-                    if (sel_column === '') {
-                        this.range = ''
-                        return
+                this.items.push({
+                    id: this.keyId,
+                    c_col_1: '',
+                    c_col_2: ''
+                })
+                if (sel_column === '') {
+                    this.range = ''
+                    return
+                }
+                var max_value = this.dict_map['max_' + sel_column]
+                var min_value = this.dict_map['min_' + sel_column]
+                if (!isNaN(parseInt(min_value)) && !isNaN(parseInt(max_value))) {
+                    this.range = '【最小值：' + min_value + ' ~ 最大值：' + max_value + '】'
+                } else {
+                    this.range = '【最小值：空  ~  最大值：空】'
+                }
+                this.$nextTick( () => {
+                    let cWidth = this.$refs.rangeCol.$el.clientWidth;
+                    let sWidth = this.$refs.rangeCol.$el.scrollWidth;
+                    if (sWidth > cWidth) { //超过容器宽度
+                        this.rangeTip = true
                     }
-                    var max_value = this.dict_map['max_' + sel_column]
-                    var min_value = this.dict_map['min_' + sel_column]
-                    if (!isNaN(parseInt(min_value)) && !isNaN(parseInt(max_value))) {
-                        this.range = '【最小值：' + min_value + ' ~ 最大值：' + max_value + '】'
-                    } else {
-                        this.range = '【最小值：空  ~  最大值：空】'
-                    }
-                // })
+                })
             },
             /**
              * 添加行
@@ -210,12 +222,3 @@
     }
 
 </script>
-
-<style scoped type="text/css">
-    form {
-        background: #0000;
-    }
-    .caption-btn-group{
-        padding:0;
-    }
-</style>
