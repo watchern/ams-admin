@@ -5115,8 +5115,8 @@ export default {
             "</div>";
           $("#analysisRegion").append(inDom);
           var dimDom = "<div class=\"tags-item-con\" id=\"inDimAnalysisRegion\">" +
-            "<div class='tag-select'>" +
-            "<i class='icon-add'>+</i>" +
+            "<div class='tag-sele0ct'>" +
+            "<i class='icon-add'>+1</i>" +
             "<span onclick='addTempDim(\"" + "inAnalysisRegion" + "\")'>新增临时维度</span>" +
             "</div>" +
             "</div>";

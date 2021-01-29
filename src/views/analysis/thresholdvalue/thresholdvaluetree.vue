@@ -212,14 +212,14 @@ export default {
      * 添加模型分类
      */
     addThresholdValueFolder() {
-      this.form.modelFolderUuid = this.getGuuid();
+      this.form.thresholdValueFolderUuid = this.getGuuid();
       this.form.parentUuid = this.selectTreeNode.id;
       const nodePath = this.$refs.tree.getNodePath(this.selectTreeNode);
       const fullPath = [];
       nodePath.forEach((path) => {
         fullPath.push(path.id);
       });
-      this.form.folderPath = fullPath.join("/") + "/" + this.form.modelFolderUuid;
+      this.form.folderPath = fullPath.join("/") + "/" + this.form.thresholdValueFolderUuid;
       this.form.scope = this.selectTreeNode.extMap.scope;
       addThresholdValueFolder(this.form).then((result) => {
         if (result != null && result.code === 0) {
