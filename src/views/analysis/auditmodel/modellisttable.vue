@@ -9,6 +9,12 @@
           <el-col align="right">
             <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn start" @click="previewModel" />
             <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />
+            <el-dropdown>
+            <el-button type="primary" :disabled="btnState.addBtnState"  @mouseover="mouseOver" @mouseleave="mouseLeave" class="oper-btn add" @click="selectModelTypeDetermine('002003001')" />
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item v-for="state in modelTypeData" :key="state.codeValue" @click.native="selectModelTypeDetermine(state.codeValue)">{{state.codeName}}</el-dropdown-item>
+          </el-dropdown-menu>
+            </el-dropdown>
             <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel" />
             <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete" @click="deleteModel" />
             <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
@@ -110,6 +116,23 @@
     >
       <el-button id="importBtn" plain type="primary">导入</el-button>
     </el-upload>
+    <el-dialog
+      title="请选择模型类型"
+      :visible.sync="addModelIsSee"
+      width="30%">
+      <el-select v-model="selectModelType" placeholder="请选择模型类型" style="width:67%">
+        <el-option
+          v-for="state in modelTypeData"
+          :key="state.codeValue"
+          :value="state.codeValue"
+          :label="state.codeName"
+        />
+      </el-select>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="addModelIsSee = false">取 消</el-button>
+    <el-button type="primary" @click="selectModelTypeDetermine()">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -119,7 +142,7 @@ import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import EditModel from '@/views/analysis/auditmodel/editmodel'
-import { getOneDict } from '@/utils/index'
+import {getDictList, getOneDict} from '@/utils/index'
 import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import {getExecuteTask, startExecuteSql} from '@/api/analysis/sqleditor/sqleditor'
 import crossrangeParam from '@/views/analysis/modelparam/crossrangeparam'
@@ -216,7 +239,10 @@ export default {
       currentRunModelAllConfig:{},
       //当前模型是否运行过
       currentModelIsRun:false,
-      flag:'notModelPreview'  //渲染参数面试判断是不是模型预览调用的，如果是就取第一次输入的值，如果不是就取默认值
+      flag:'notModelPreview',  //渲染参数面试判断是不是模型预览调用的，如果是就取第一次输入的值，如果不是就取默认值
+      addModelIsSee:false,  //点击添加模型按钮的时候触发选择模型类型dialog
+      selectModelType:'', //选择的模型类型
+      modelTypeData:[] //模型类型
     }
   },
   computed: {
@@ -249,8 +275,19 @@ export default {
   },
   mounted() {
     this.initWebSocket()
+    this.initData()
   },
   methods: {
+    mouseOver(){
+
+    },
+    mouseLeave(){
+
+    },
+    initData(){
+      // 初始化审计事项
+      this.modelTypeData = getDictList('002003')
+    },
     Toggle: function() {
       this.isShow = !this.isShow
     },
@@ -495,6 +532,30 @@ export default {
           path: '/analysis/editorModel?dataUserId='+this.dataUserId+'&sceneCode='+this.sceneCode
         }
       })
+    },
+    selectModelTypeDetermine(selectModelType){
+      if (this.selectTreeNode == null) {
+        this.$message({ type: 'info', message: '请选择文件夹后再进行添加' })
+        return;
+      }
+      console.log(this.selectTreeNode)
+      this.addModelIsSee = false
+      let operationObj = { operationType: 1, folderId: '', folderName: '' ,modelType:''}
+      if (this.selectTreeNode != null) {
+        if (this.selectTreeNode.pid == 0 || this.selectTreeNode.pid == null) {
+          this.$message({ type: 'info', message: '不允许建立在根目录' })
+          return
+        }
+        operationObj = { operationType: 1, folderId: this.selectTreeNode.id, folderName: this.selectTreeNode.label,modelType:selectModelType }
+      }
+      sessionStorage.setItem('operationObj', JSON.stringify(operationObj))
+        this.$store.commit('aceState/setRightFooterTags', {
+          type: 'active',
+          val: {
+            name: '新增模型',
+            path: '/analysis/editormodelnew?dataUserId='+this.dataUserId+'&sceneCode='+this.sceneCode
+          }
+        })
     },
     updateModel() {
       this.isUpdate = true
