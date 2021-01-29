@@ -227,7 +227,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="nodeRemark" role="tabpanel" class="tab-pane">点击操作节点，可查看节点说明信息</div>
+                <div id="nodeRemark" role="tabpanel" class="tab-pane" v-html="nodeRemarkHtml" @click="viewEgEvent"></div>
                 <div id="usedResourceTree" role="tabpanel" class="tab-pane">
                     <ul id="resourceZtree" class="ztree" />
                 </div>
@@ -365,6 +365,9 @@
                 <el-button type="primary" @click="setExecuteParamCallBack">保存</el-button>
             </div>
         </el-dialog>
+        <el-dialog :visible.sync="imageDialogVisible" title="图片示例" width="600px">
+            <el-image :src="imageSrc" fit="contain" style="max-height:600px;"></el-image>
+        </el-dialog>
         <!-- 右键事件 -->
         <div id="rMenu" class="rightMenu">
             <ul>
@@ -479,7 +482,10 @@
                 sqlEditorStyle:'',
                 curModelSql: '',// 用来临时存储打开模型图形时的模型SQL语句
                 isSearchExpand:false,// 左侧资源树搜索功能的变量
-                curCell:null//当前执行节点的对象
+                curCell:null,//当前执行节点的对象
+                nodeRemarkHtml:'点击操作节点，可查看节点说明信息',
+                imageDialogVisible:false,
+                imageSrc:''
             }
         },
         created() {
@@ -623,8 +629,6 @@
                     $this.graph.newOptArr = []
                     $this.graph.edgeArr = {}
                     // 缩略图
-                    // var container = document.getElementById('geBackgroundPage')
-                    // var outline = document.getElementById('outLineArea')
                     $this.$refs.outLineArea.style.position = 'absolute'
                     $this.$refs.outLineArea.style.width = '97%'
                     $this.$refs.outLineArea.style.height = '225px'
@@ -1162,6 +1166,15 @@
             },
             sqlNodeEditCallBack(){
                 commonJs.sqlNodeEdit_callBack()
+            },
+            viewEgEvent(event){
+                if(event.target.nodeName === "A" && event.target.className === "viewEg"){//数据关联、数据融合节点查看图片
+                    let type = event.target.getAttribute("data_type")
+                    if(typeof type !== 'undefined'){
+                        this.imageSrc = require(`@/api/graphtool/images/${type}.jpg`)
+                        this.imageDialogVisible = true
+                    }
+                }
             },
             /**
              * 接口：获取节点参数信息

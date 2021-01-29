@@ -52,7 +52,7 @@
 <script>
 import QueryField from '@/components/Ace/query-field/index'
 import Pagination from '@/components/Pagination/index'
-import {findThresholdValueList,addThresholdValue,batchThresholdValueDel,findThresholdValueById} from '@/api/analysis/thresholdvalue'
+import {findThresholdValueList,addThresholdValue,batchThresholdValueDel,findThresholdValueById,updateThresholdValue} from '@/api/analysis/thresholdvalue'
 import EditThresholdValue from '@/views/analysis/thresholdvalue/editthresholdvalue'
 export default {
   name: 'Thresholdvaluelist',
@@ -171,6 +171,9 @@ export default {
      * @param query 查询条件
      */
     getList(query) {
+      if(this.selectTreeNode != null){
+        query.thresholdValueFolderUuid = this.selectTreeNode.id
+      }
       this.listLoading = true
       if (query) {
         this.pageQuery.condition = query
@@ -437,17 +440,31 @@ export default {
         return
       }
       else{
-        addThresholdValue(threshValueObj).then(result=>{
-          if(result.data){
-            //关闭窗口
-            this.dialogFormVisibleEdit = false
-            //刷新列表
-            this.getList(this.query)
-          }
-          else{
-            this.$message({ type: 'error', message:'阈值添加失败' })
-          }
-        })
+        if(!this.isUpdate){
+          addThresholdValue(threshValueObj).then(result=>{
+            if(result.data){
+              //关闭窗口
+              this.dialogFormVisibleEdit = false
+              //刷新列表
+              this.getList(this.query)
+            }
+            else{
+              this.$message({ type: 'error', message:'阈值添加失败' })
+            }
+          })
+        }else{
+          updateThresholdValue(threshValueObj).then(result=>{
+            if(result.data){
+              //关闭窗口
+              this.dialogFormVisibleEdit = false
+              //刷新列表
+              this.getList(this.query)
+            }
+            else{
+              this.$message({ type: 'error', message:'阈值修改失败' })
+            }
+          })
+        }
       }
     }
   }
