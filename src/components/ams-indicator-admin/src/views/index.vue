@@ -5103,17 +5103,20 @@ export default {
           $("#dimAnalysisRegion").html("");
           //$("#inAnalysisRegion").parent().remove();
           var inDom = "<div class=\"tags-item\" id=\"inAnalysisRegion\" analysisRegion='inAnalysisRegion'>" +
-            "                                <div class=\"tags-order\" id=\"inAnalysisRegionCount\" >1</div>" +
-            "                                <div class=\"tag-select\">" +
-            "                                    <i class=\"icon-add\">+</i>" +
-            "                                    <span style='margin-top: -5px;' onclick=\"addTempIn(this)\" analysisRegion='inAnalysisRegion'>新增临时指标</span>" +
-            "                                </div>" +
+            "<div class=\"tags-order\" id=\"inAnalysisRegionCount\" >1</div>" +
+            "<div class=\"tag-select\">" +
+            "<i class=\"icon-add\">+</i>" +
+            "<span style='margin-top: -5px;' onclick=\"addTempIn(this)\" analysisRegion='inAnalysisRegion'>新增临时指标</span>" +
+            "</div>" +
+            "<div title=\"设置阈值\" class='tags-set'>\n" +
+            "<span class=\"icon iconfont\" id=\"setValueinAnalysisRegion\" style=\"color:#aeaeae;\" onclick=\"setValue('inAnalysisRegion')\">&#xe606;</span>\n" +
+            "</div>"+
             "<div class='tags-del'><i class='icon-del' onclick='delAnalysisRegion(\"inAnalysisRegion\")'></i></div>" +
             "</div>";
           $("#analysisRegion").append(inDom);
           var dimDom = "<div class=\"tags-item-con\" id=\"inDimAnalysisRegion\">" +
-            "<div class='tag-select'>" +
-            "<i class='icon-add'>+</i>" +
+            "<div class='tag-sele0ct'>" +
+            "<i class='icon-add'>+1</i>" +
             "<span onclick='addTempDim(\"" + "inAnalysisRegion" + "\")'>新增临时维度</span>" +
             "</div>" +
             "</div>";

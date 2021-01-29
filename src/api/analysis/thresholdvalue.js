@@ -158,32 +158,32 @@ export function handleDataSingleValue(data,thresholdValueRel){
     return
   }
   if(operator === ">" && valueOne > valueTwo){
-    return {"background-color":backgroundColor,"color":fontColor,"title":title}
+    return {"background-color":backgroundColor,"color":fontColor}
   }
   else if(operator === ">=" && valueOne >= valueTwo){
-    return {"background-color":backgroundColor,"color":fontColor,"title":title}
+    return {"background-color":backgroundColor,"color":fontColor}
   }
   else if(operator === "<" && valueOne < valueTwo){
-    return {"background-color":backgroundColor,"color":fontColor,"title":title}
+    return {"background-color":backgroundColor,"color":fontColor}
   }
   else if(operator === "<=" && valueOne <= valueTwo){
-    return {"background-color":backgroundColor,"color":fontColor,"title":title}
+    return {"background-color":backgroundColor,"color":fontColor}
   }
   else if(operator === "=" && valueOne === valueTwo){
-    return {"background-color":backgroundColor,"color":fontColor,"title":title}
+    return {"background-color":backgroundColor,"color":fontColor}
   }
   else if(operator === "like" && valueOne.indexOf(valueTwo) != -1){
-    return {"background-color":backgroundColor,"color":fontColor,"title":title}
+    return {"background-color":backgroundColor,"color":fontColor}
   }
   else if(operator === "notlike" && valueOne.indexOf(valueTwo) == -1){
-    return {"background-color":backgroundColor,"color":fontColor,"title":title}
+    return {"background-color":backgroundColor,"color":fontColor}
   }
   else if(operator === "startswith"){
     //将值1和值2全部转换为字符串类型，因为如果判断开始是或者结尾是的数据只能是字符串类型
     valueTwo = valueTwo.toString()
     valueOne = valueOne.toString()
     if(valueOne.length >= valueTwo.length && valueOne.substring(0,valueTwo.length) === valueTwo){
-      return {"background-color":backgroundColor,"color":fontColor,"title":title}
+      return {"background-color":backgroundColor,"color":fontColor}
     }
   }
   else if(operator === "endingwith"){
@@ -191,7 +191,7 @@ export function handleDataSingleValue(data,thresholdValueRel){
     valueTwo = valueTwo.toString()
     valueOne = valueOne.toString()
     if(valueOne.length >= valueTwo.length && valueOne.substring(valueOne.length - valueTwo.length,valueOne.length) === valueTwo){
-      return {"background-color":backgroundColor,"color":fontColor,"title":title}
+      return {"background-color":backgroundColor,"color":fontColor}
     }
   }
 }
