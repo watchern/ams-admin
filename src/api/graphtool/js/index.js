@@ -1169,9 +1169,11 @@ export function showParamNodeList(){
     }
     if(graphIndexVue.nodeParamArr.length > 0){
         graphIndexVue.nodeParamListDialogVisible = true
-        graphIndexVue.$nextTick( () => {
-            $(graphIndexVue.$refs.nodeParamToby).sortable().disableSelection()
-        })
+        if(graphIndexVue.openGraphType === 2 || graphIndexVue.openGraphType === 3){//只有场景查查询才提供数据行的拖拽排序功能
+            graphIndexVue.$nextTick( () => {
+                $(graphIndexVue.$refs.nodeParamTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
+            })
+        }
     }else{
         graphIndexVue.$message({ type: 'warning', message: '暂无可设置参数的节点' })
     }
@@ -1185,22 +1187,24 @@ export function showParamNodeListCallBack() {
     for(let k=0; k<keyArr.length; k++){
         let nodeId = keyArr[k];
         //匹配设置参数的节点，将参数设置绑定到newGraph中
-        let $paramSetTr = graphIndexVue.$refs.paramSetTr
-        for(let i=0; i<$paramSetTr.length; i++){
-            let index = $paramSetTr[i].getAttribute("index")
-            //进行节点的匹配
-            if(graphIndexVue.nodeParamArr[index].nodeId === nodeId){
-                graph.nodeData[nodeId].nodeInfo.dataSourceType = graph.openType//给当前节点绑定节点的执行数据源环境
-                //获取节点的参数配置信息
-                var paramsSetting = $.extend(true,{},graphIndexVue.nodeParamRelArr[nodeId])
-                if(typeof paramsSetting !== "undefined" && Object.keys(paramsSetting).length > 0){//如果参数设置不为空
-                    //绑定参数设置状态和值
-                    graph.nodeData[nodeId].hasParam = true
-                    graph.nodeData[nodeId].paramsSetting = paramsSetting
-                    graph.nodeData[nodeId].nodeInfo.nodeSort = i
-                    break
+        let paramSetTrDom = graphIndexVue.$refs.nodeParamTable.$refs.bodyWrapper.children[0].children[1].children
+        if(typeof paramSetTrDom !== 'undefined' && paramSetTrDom.length > 0){
+            $.each(function () {
+                let index = parseInt($(this).find("td:eq(0)>div>div").html()) - 1
+                //进行节点的匹配
+                if(graphIndexVue.nodeParamArr[index].nodeId === nodeId){
+                    graph.nodeData[nodeId].nodeInfo.dataSourceType = graph.openType//给当前节点绑定节点的执行数据源环境
+                    //获取节点的参数配置信息
+                    let paramsSetting = $.extend(true,{},graphIndexVue.nodeParamRelArr[nodeId])
+                    if(typeof paramsSetting !== "undefined" && Object.keys(paramsSetting).length > 0){//如果参数设置不为空
+                        //绑定参数设置状态和值
+                        graph.nodeData[nodeId].hasParam = true
+                        graph.nodeData[nodeId].paramsSetting = paramsSetting
+                        graph.nodeData[nodeId].nodeInfo.nodeSort = i
+                        return false
+                    }
                 }
-            }
+            })
         }
     }
     graphIndexVue.nodeParamListDialogVisible = false

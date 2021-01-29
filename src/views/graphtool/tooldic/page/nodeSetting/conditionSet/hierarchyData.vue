@@ -222,8 +222,3 @@
     }
 
 </script>
-<style scoped type="text/css">
-    >>> .el-input__inner{
-        margin-left: 0;
-    }
-</style>

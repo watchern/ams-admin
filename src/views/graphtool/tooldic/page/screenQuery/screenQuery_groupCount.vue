@@ -1,53 +1,30 @@
 <template>
-    <div class="col-sm-12" style="padding: 20px;height: 600px;overflow-y: auto;">
-        <div id="groupAccordion" class="panel-group">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#groupAccordion" href="#groupCollapse">分组设置</a>
-                    </h4>
-                </div>
-                <div id="groupCollapse" class="panel-collapse collapse in">
-                    <div class="panel-body">
-                        <div id="group" class="demo-transfer" style="margin-left: 80px;" />
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="countAccordion" class="panel-group">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#countAccordion" href="#countCollapse">汇总设置</a>
-                    </h4>
-                </div>
-                <div id="countCollapse" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <table id="countTable" class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th width="350px" style="text-align: center">待汇总字段</th>
-                                <th width="200px" style="text-align: center">汇总方式</th>
-                                <th width="200px" style="text-align: center">操作</th>
-                            </tr>
-                            </thead>
-                            <tbody id="row_add">
-                            <tr v-for="(item,index) in items" :key="item.id" ref="countTr">
-                                <td><div :id="`searchName${(item.id)}`" class="xm-select-demo"></div></td>
-                                <td><div :id="`searchType${(item.id)}`" class="xm-select-demo"></div></td>
-                                <td v-if="index === 0" align="center">
-                                    <el-button type="primary" @click="addCountTr">添加行</el-button>
-                                </td>
-                                <td v-if="index !== 0" align="center">
-                                    <el-button type="primary" @click="delCountTr(index)">删除行</el-button>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div style="height: 600px;overflow-y: auto;">
+        <el-collapse v-model="activeCollapseNames" accordion>
+            <el-collapse-item title="分组设置" name="groupSet">
+                <el-transfer filterable filter-placeholder="请输入搜索内容" v-model="columnDataValue" :data="columnData" :titles="['可选字段', '分组字段']" style="padding-left: 90px;"></el-transfer>
+            </el-collapse-item>
+            <el-collapse-item title="汇总设置" name="countSet">
+                <el-table :data="items" height="450" style="width: 770px;margin-left: 90px;">
+                    <el-table-column label="待汇总字段" width="350" header-align="center">
+                        <template slot-scope="scope">
+                            <div :id="`searchName${(scope.row.id)}`" class="xm-select-demo"></div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="汇总方式" width="240" header-align="center">
+                        <template slot-scope="scope">
+                            <div :id="`searchType${(scope.row.id)}`" class="xm-select-demo"></div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="180" align="center">
+                        <template slot-scope="scope">
+                            <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add" @click="addCountTr" title="添加行" style="line-height: normal;"/>
+                            <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete" title="删除行" @click="delCountTr(scope.$index)" style="line-height: normal;"/>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-collapse-item>
+        </el-collapse>
     </div>
 </template>
 
@@ -56,15 +33,15 @@
         name: "screenQueryGroupCount",
         data() {
             return {
-                items: [], // 存放霍总配置的行号
+                activeCollapseNames:['groupSet'],
+                items: [], //存放霍总配置的行号
                 countTrNum: 1,
-                columnData:[],// 穿梭框中加载的字段数据数组集合
+                columnData:[],//穿梭框中加载的字段数据数组集合
+                columnDataValue:[],//穿梭框中已选择的字段数据数组集合
                 allColumnArr:[],//最终输出列名称集合
                 countColumnStrArr:[],//汇总设置输出列名称集合（拼接好了汇总类型的串）
                 countColumnArr:[],//设置汇总字段的名称集合
                 countData:[],//存储汇总设置配置
-                groupTransfer:null,// 分组的穿梭框对象
-                transfer:null,
                 typeArr:["INTEGER","DECIMAL","NUMBER","FLOAT","REAL","DATE","TIMESTAMP"], //可用于统计的字段类型
 
             }
@@ -75,92 +52,75 @@
         },
         methods: {
             init(){
-                let $this = this
-                layui.use('transfer', function() {
-                    //定义穿梭框的变量
-                    $this.transfer = layui.transfer;
-                    if(typeof $this.setting !== "undefined" && ($this.setting.groupData.length !== 0 || $this.setting.countData.length !== 0)){
-                        let groupData = $this.setting.groupData;
-                        //初始化分组穿梭框和分组字段（不是已分组字段，是可分组字段）输出列列表
-                        $this.initGroupTransfer();
-                        if(groupData.length > 0){//如果之前设置过分组字段
-                            let groupDataValue = [];
-                            Array.from(groupData, item => groupDataValue.push(item.value))
-                            //加载已分组字段
-                            $this.groupTransfer = $this.transfer.reload('groupSet', {
-                                title: ['待分组字段', '已选分组字段'],
-                                value: groupDataValue,
-                                showSearch: true
-                            });
+                if(typeof this.setting !== "undefined" && (this.setting.groupData.length !== 0 || this.setting.countData.length !== 0)){
+                    //初始化分组穿梭框和分组字段（不是已分组字段，是可分组字段）输出列列表
+                    this.initGroupTransfer();
+                    this.columnDataValue = this.setting.groupData;
+                    let curCountData = this.setting.countData;//获取汇总字段的配置数组
+                    if(curCountData.length > 0){//如果有汇总字段
+                        //反显汇总字段的配置
+                        for (let j=0; j<curCountData.length; j++) {
+                            this.items.push({ 'id': j})
                         }
-                        let curCountData = $this.setting.countData;//获取汇总字段的配置数组
-                        if(curCountData.length > 0){//如果有汇总字段
-                            //反显汇总字段的配置
-                            for (let j=0; j<curCountData.length; j++) {
-                                $this.items.push({ 'id': j})
-                            }
-                            $this.$nextTick(() => {
-                                for (let m = 0; m < curCountData.length; m++) {
-                                    $this.initCountSelectData(m)
-                                    $this.countTrNum = m + 1
-                                    let chooseColumnXs = xmSelect.get(`#searchName${m}` , true)// 获取当前行中汇总字段名称的单实例
-                                    let initCountColumnData = JSON.parse(JSON.stringify($this.columnData))// 复制全局汇总字段的数组变量的值
-                                    initCountColumnData.unshift({ 'name': '请选择', 'value': '', 'type': '' })
-                                    for (let n = 0; n < initCountColumnData.length; n++) { // 设置已汇总字段名称值的选中状态，重新渲染当前行的下拉框
-                                        if(curCountData[m].columnName === initCountColumnData[n].value){
-                                            initCountColumnData[n].selected = true;
-                                            break;
+                        this.$nextTick(() => {
+                            for (let m = 0; m < curCountData.length; m++) {
+                                this.initCountSelectData(m)
+                                this.countTrNum = m + 1
+                                let chooseColumnXs = xmSelect.get(`#searchName${m}` , true)// 获取当前行中汇总字段名称的单实例
+                                let initCountColumnData = JSON.parse(JSON.stringify(this.columnData))// 复制全局汇总字段的数组变量的值
+                                initCountColumnData.unshift({ 'name': '请选择', 'value': '', 'type': '' })
+                                for (let n = 0; n < initCountColumnData.length; n++) { // 设置已汇总字段名称值的选中状态，重新渲染当前行的下拉框
+                                    if(curCountData[m].columnName === initCountColumnData[n].value){
+                                        initCountColumnData[n].selected = true;
+                                        break;
+                                    }
+                                }
+                                // 重新渲染汇总字段当前行的下拉框
+                                chooseColumnXs.update({
+                                    'data': initCountColumnData
+                                })
+                                let chooseTypeXs = xmSelect.get(`#searchType${m}`, true)// 获取当前行中汇总方式的单实例
+                                // 汇总方式的初始化默认数据数组
+                                let initCountTypeData = [
+                                    { 'name': '请选择', 'value': '' },
+                                    { 'name': '计数', 'value': 'count' },
+                                    { 'name': '求和', 'value': 'sum' },
+                                    { 'name': '最大值', 'value': 'max' },
+                                    { 'name': '最小值', 'value': 'min' },
+                                    { 'name': '平均值', 'value': 'ave' }
+                                ]
+                                initCountTypeData.forEach( item => {
+                                    if ($.inArray(curCountData[m].columnType, this.typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
+                                        switch (item.value) {
+                                            case 'sum':
+                                            case 'max':
+                                            case 'min':
+                                            case 'ave':
+                                                item.disabled = true
+                                                break
                                         }
                                     }
-                                    // 重新渲染汇总字段当前行的下拉框
-                                    chooseColumnXs.update({
-                                        'data': initCountColumnData
-                                        // "autoRow" : true
-                                    })
-                                    let chooseTypeXs = xmSelect.get(`#searchType${m}`, true)// 获取当前行中汇总方式的单实例
-                                    // 汇总方式的初始化默认数据数组
-                                    let initCountTypeData = [
-                                        { 'name': '请选择', 'value': '' },
-                                        { 'name': '计数', 'value': 'count' },
-                                        { 'name': '求和', 'value': 'sum' },
-                                        { 'name': '最大值', 'value': 'max' },
-                                        { 'name': '最小值', 'value': 'min' },
-                                        { 'name': '平均值', 'value': 'ave' }
-                                    ]
-                                    initCountTypeData.forEach( item => {
-                                        if ($.inArray(curCountData[m].columnType, $this.typeArr) < 0) { // 设置不可汇总字段的数据数组（不能写到这个for循环外面）
-                                            switch (item.value) {
-                                                case 'sum':
-                                                case 'max':
-                                                case 'min':
-                                                case 'ave':
-                                                    item.disabled = true
-                                                    break
-                                            }
-                                        }
-                                        if (curCountData[m].countTypeValue === item.value) { // 设置已汇总类型的选中状态
-                                            item.selected = true
-                                        }
-                                    })
-                                    // 重新渲染汇总方式当前行的下拉框
-                                    chooseTypeXs.update({
-                                        'data': initCountTypeData
-                                        // "autoRow" : true
-                                    })
-                                    $this.items[m].chooseColumnXs = chooseColumnXs
-                                    $this.items[m].chooseTypeXs = chooseTypeXs
-                                }
-                            })
-                        }else{
-                            $this.countTrNum = 0
-                            $this.addCountTr()
-                        }
+                                    if (curCountData[m].countTypeValue === item.value) { // 设置已汇总类型的选中状态
+                                        item.selected = true
+                                    }
+                                })
+                                // 重新渲染汇总方式当前行的下拉框
+                                chooseTypeXs.update({
+                                    'data': initCountTypeData
+                                })
+                                this.items[m].chooseColumnXs = chooseColumnXs
+                                this.items[m].chooseTypeXs = chooseTypeXs
+                            }
+                        })
                     }else{
-                        $this.initGroupTransfer()
-                        $this.countTrNum = 0
-                        $this.addCountTr()
+                        this.countTrNum = 0
+                        this.addCountTr()
                     }
-                });
+                }else{
+                    this.initGroupTransfer()
+                    this.countTrNum = 0
+                    this.addCountTr()
+                }
             },
             /**
              * 初始化分组穿梭框
@@ -178,21 +138,11 @@
                         /**
                          * @type {{name: *, value: *, title: *, type: string}}
                          * @description name与value属性是为了满足xmSelect插件的数据格式
-                         * @description value与title属性是为了满足transfer插件的数据格式
+                         * @description pinyin、label、key属性是transfer插件的数据格式
                          * @description type是处理数据时需要用到的额外属性
                          */
-                        this.columnData.push({"name":item.newColumnName,"value":item.newColumnName,"title":item.newColumnName,"type":item.columnType});
+                        this.columnData.push({'name': item.newColumnName, 'value': item.newColumnName, 'pinyin': item.newColumnName, 'label': item.newColumnName, 'key': item.newColumnName, 'type': item.columnType})
                     }
-                })
-                // 加载分组穿梭框
-                this.groupTransfer = this.transfer.render({
-                    elem: '#group',
-                    data: this.columnData,
-                    height:340,
-                    width:340,
-                    title: ['待分组字段', '已选分组字段'],
-                    showSearch: true,
-                    id:"groupSet"
                 })
             },
             /**
@@ -251,12 +201,10 @@
                                 if($.inArray(columnType.toUpperCase(),$this.typeArr) < 0){  //数值或日期类型
                                     chooseTypeXs.update({
                                         data: disableCountData,
-                                        // autoRow: true,
                                     });
                                 }else{
                                     chooseTypeXs.update({
                                         data: countTypeDefaultData,
-                                        // autoRow: true,
                                     });
                                 }
                             }
@@ -307,22 +255,20 @@
                         "groupData": []
                     }
                 }
-                //获取已分组字段数组
-                let groupData = this.groupTransfer.getData()
-                whereObj.setting.groupData = groupData
+                whereObj.setting.groupData = this.columnDataValue
                 let newColumnArr = []
                 if(this.countColumnStrArr.length !== 0){//设置统计字段
-                    if(groupData.length === 0) {//未设置分组字段
+                    if(this.columnDataValue.length === 0) {//未设置分组字段
                         whereObj.columnArr = this.countColumnStrArr
                     }else{//设置分组字段
-                        Array.from(groupData, item => newColumnArr.push(item.name))
+                        Array.from(this.columnDataValue, item => newColumnArr.push(item))
                         whereObj.whereStr = " GROUP BY " + newColumnArr.join(",")
                         whereObj.columnArr = newColumnArr.concat(this.countColumnStrArr)
                         whereObj.colArr = newColumnArr.concat(this.countColumnArr)
                     }
                 }else{
-                    if(groupData.length !== 0) {//设置分组字段
-                        Array.from(groupData, item => newColumnArr.push(item.name))
+                    if(this.columnDataValue.length !== 0) {//设置分组字段
+                        Array.from(this.columnDataValue, item => newColumnArr.push(item))
                         whereObj.whereStr = " ORDER BY " + newColumnArr.join(",")
                     }
                 }
@@ -330,8 +276,6 @@
             },
             //节点输入项的校验(或空配置校验)
             verifySetting() {
-                //获取已分组字段数组
-                let groupData = this.groupTransfer.getData()
                 //获取已统计字段数量
                 let countNum = 0
                 //已统计字段信息
@@ -359,7 +303,7 @@
                         }
                     }
                 }
-                if(groupData.length === 0 && countNum === 0){
+                if(this.columnDataValue.length === 0 && countNum === 0){
                     this.$message({'type':'warning','message':'未设置分组或统计的字段'})
                     return false;
                 }
@@ -372,29 +316,18 @@
         }
     }
 </script>
-<style scoped src="@/api/graphtool/css/common.css"></style>
-<style scoped src="@/api/graphtool/css/accordion.css"></style>
 <style scoped>
-    #countTable{
-        margin-left: 80px;
-        width: 760px;
+    >>> .el-table .cell {
+        padding: 0;
+        display: inline;
     }
-    #countTable>thead>tr>th{
-        border:1px solid #ddd;
+    >>> .el-collapse-item__content{
+        padding: 5px 0;
     }
-    #countTable>tbody>tr>td{
-        border:1px solid #ddd;
+    >>> .el-collapse-item__wrap{
+        border-bottom: unset;
     }
-    .table > tbody > tr > td{
-        font-size: 13px;
-        color: #4B4B4B;
-        line-height: 36px;
-    }
-    .table > thead > tr > th {
-        background-color: #5886B2;
-        color: #ECF0F5;
-    }
-    .panel-body{
-        padding: 10px 0;
+    >>> .el-transfer-panel{
+        width: 300px;
     }
 </style>

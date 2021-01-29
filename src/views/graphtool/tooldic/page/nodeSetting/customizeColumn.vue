@@ -1,20 +1,20 @@
 <template>
     <el-container style="width: 100%;height: 600px;overflow-y: auto" v-loading="initLoading">
-        <el-col :span="6" style="border-color: #DCDFE6;border-style:solid;border-width: 0 1px 1px 1px;height: 100%;">
+        <el-col :span="6" style="border-color: #DCDFE6;border-style:solid;border-width: 0 1px 1px 1px;">
             <el-collapse v-model="activeName" accordion >
                 <el-collapse-item name="columnZtreeList">
                     <template slot="title">
                         <span style="padding-left: 10px;">字段列表</span>
                     </template>
                     <el-input v-model="searchColumnContent" placeholder="搜索关键字"/>
-                    <ul id="columnZtree" class="ztree" style="height:436px;" />
+                    <ul id="columnZtree" class="ztree" style="height:436px;margin: 10px 0;" />
                 </el-collapse-item>
                 <el-collapse-item name="funZtreeList">
                     <template slot="title">
                         <span style="padding-left: 10px;">函数列表</span>
                     </template>
                     <el-input v-model="searchFunContent" placeholder="搜索关键字"/>
-                    <ul id="funZtree" class="ztree" style="height:436px;" />
+                    <ul id="funZtree" class="ztree" style="height:436px;margin: 10px 0;" />
                 </el-collapse-item>
             </el-collapse>
         </el-col>
@@ -403,9 +403,6 @@
         color: #FFFFFF;
         background-color: #409EFF;
         box-shadow: 3px 3px 5px #409EFF;
-    }
-    >>> .ztree {
-        margin: 10px 0;
     }
     >>> .ztree>li>ul {
         overflow: auto;

@@ -648,7 +648,7 @@
 
 </script>
 <style scoped type="text/css">
-    >>> .el-row {
+    .el-row {
         margin: 10px 0;
     }
     .button-cz {
@@ -656,8 +656,5 @@
     }
     >>> .ztree>li>a.curSelectedNode{
         background-color: #edf6ff;
-    }
-    >>> .el-input__inner {
-        margin-left: 0;
     }
 </style>

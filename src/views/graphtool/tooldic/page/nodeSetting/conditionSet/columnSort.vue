@@ -27,11 +27,8 @@
         data() {
             return {
                 nodeData: null,
-                selectAll: false,
-                sortColumnArr: [],
-                columnData: [],
-                columnDataValue:[],
-                sort_transfer: null
+                columnData: [],//所有可排序字段信息
+                columnDataValue:[]//已选排序字段集合
             }
         },
         mounted() {
@@ -45,6 +42,22 @@
                 if (this.nodeData.isSet) {// 配置过,字段信息来自本身节点
                     this.columnData = this.nodeData.setting.columnData
                     this.columnDataValue = this.nodeData.setting.columnDataValue
+                    Array.from(this.columnDataValue, n => {
+                        let index = this.columnData.findIndex(item => item.key === n)
+                        if (index > -1) {
+                            this.columnData[index].showSort = true
+                            this.$nextTick(() => {
+                                let cWidth = this.$refs.sortCol.$el.clientWidth;
+                                let sWidth = this.$refs.sortCol.$el.scrollWidth;
+                                if (sWidth > cWidth) { //超过容器宽度
+                                    let obj = {...{}, ...this.columnData[index]}
+                                    obj.isTip = true
+                                    this.columnData.splice(index, 1)
+                                    this.columnData.splice(index, 1, obj)
+                                }
+                            })
+                        }
+                    })
                 }else{
                     Array.from(columnsInfoPre, item => this.columnData.push({ 'pinyin': item.newColumnName, 'label': item.newColumnName, 'key': item.newColumnName, 'sortType': 'ASC', 'showSort': false}))
                 }
@@ -103,9 +116,6 @@
     >>> .el-transfer-panel:nth-child(3){
         width: 400px;
         height: 500px;
-    }
-    >>> .el-input__inner{
-        margin-left: 0;
     }
     >>> .el-checkbox{
         margin-right: 15px;

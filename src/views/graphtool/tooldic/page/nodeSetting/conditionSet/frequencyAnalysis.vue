@@ -192,10 +192,7 @@
     }
 </script>
 <style scoped type="text/css">
-    >>> .el-row{
+    .el-row{
         padding: 10px 0;
-    }
-    >>> .el-input__inner{
-        margin-left: 0;
     }
 </style>
