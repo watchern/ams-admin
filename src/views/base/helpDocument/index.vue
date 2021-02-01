@@ -56,13 +56,13 @@
         </el-collapse-item>
       </el-collapse>
     </div>
-    <div class="mytuieditor" v-if="refreshRichText">
+    <div class="mytuieditor" v-if="refreshRichText" v-loading="loading">
       <wangeditor
         :content="richText"
         @retrieveData="retrieveData"
         ref="wangeditor"
       />
-      <button @click="saveNew">保存</button>
+      <el-button type="primary" @click="saveNew" style="margin-top:10px">保存</el-button>
     </div>
 	</div>
 </template>
@@ -93,7 +93,9 @@ export default {
       // 刷新富文本编辑器
       refreshRichText: true,
       // 保存帮助富文本内容的uuid
-      helpDocumentUuid: ''
+      helpDocumentUuid: '',
+      // loading
+      loading: false
     }
   },
   computed: {
@@ -179,6 +181,7 @@ export default {
     // 单选功能
     handleCheckChange (data, checked, indeterminate) {
       if (checked) {
+        this.loading = true
         this.$refs.tree.setCheckedNodes([data]);
         // 根据选择的模块显示已编辑的富文本
         getByMenuId(data.id).then(resp => {
@@ -186,6 +189,7 @@ export default {
             console.log(resp.data)
             this.richText = resp.data.helpDocument
             this.helpDocumentUuid = resp.data.helpDocumentUuid
+            this.loading = false
           } else if (resp.code === 0 && resp.data === null){
             let saveData = []
             saveData.push({
@@ -197,6 +201,7 @@ export default {
             saveHelpDocument(saveData[0])
             getByMenuId(data.id).then(resp => {
               this.helpDocumentUuid = resp.data.helpDocumentUuid
+              this.loading = false
             })
           }
         })
@@ -222,7 +227,7 @@ export default {
     position: relative;
   }
   .page-left{
-    width: 15vw;
+    width: 290px;
     height: 100%;
     background-color: #fff;
     border-radius: 5px;
@@ -231,8 +236,21 @@ export default {
     overflow: auto;
   }
   .mytuieditor{
-    margin-top: 40px;
+    margin:40px 0 0 15px;
     float:left;
-    width: 75vw;
+    width: calc(100vw - 495px);
+    height: calc(100vh - 100px);
+    overflow: auto;
+  }
+  >>>.el-tree {
+    // 不可全选样式
+    .el-tree-node {
+      .is-leaf + .el-checkbox .el-checkbox__inner {
+        display: inline-block;
+      }
+      .el-checkbox .el-checkbox__inner {
+        display: none;
+      }
+    }
   }
 </style>

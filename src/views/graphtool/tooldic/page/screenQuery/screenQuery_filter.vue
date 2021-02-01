@@ -48,7 +48,7 @@
         <el-row>
             <div style="height: 400px;">
                 <el-col :span="16">
-                    <div style="border: 1px solid gray;height: 400px;">
+                    <div style="border: 1px solid gray;height: 400px;overflow: auto">
                         <ul ref="filterZtree" class="ztree"/>
                     </div>
                 </el-col>

@@ -95,7 +95,6 @@
           />
         </div>
       </div>
-      <span class="somehelp" @click="showHelp">?</span>
       <div class="bottom-open flex a-center j-end flex-column">
         <div class="search-box flex a-center j-start flex-row">
           <input type="text" name="search" class="search-input" placeholder="Search">
@@ -159,9 +158,7 @@
           <el-tree
             :data="moremenugroup['402883817586fc2a017586fd9e1a0001']"
             node-key="id"
-            show-checkbox
-            :check-strictly="defaultProps.checkStrictly"
-            @check-change="handleCheckChange"
+            @node-click="handleNodeClick"
             ref="tree"
             highlight-current
             v-if="activeName === '1'"
@@ -172,9 +169,7 @@
           <el-tree
             :data="moremenugroup['4028838175880ded01758835b393006b']"
             node-key="id"
-            show-checkbox
-            :check-strictly="defaultProps.checkStrictly"
-            @check-change="handleCheckChange"
+            @node-click="handleNodeClick"
             ref="tree"
             highlight-current
             v-if="activeName === '2'"
@@ -185,9 +180,7 @@
           <el-tree
             :data="moremenugroup['4028838175880ded01758816610b001a']"
             node-key="id"
-            show-checkbox
-            :check-strictly="defaultProps.checkStrictly"
-            @check-change="handleCheckChange"
+            @node-click="handleNodeClick"
             ref="tree"
             highlight-current
             v-if="activeName === '3'"
@@ -198,9 +191,7 @@
           <el-tree
             :data="moremenugroup['4028838175880ded01758828366f0046']"
             node-key="id"
-            show-checkbox
-            :check-strictly="defaultProps.checkStrictly"
-            @check-change="handleCheckChange"
+            @node-click="handleNodeClick"
             ref="tree"
             highlight-current
             v-if="activeName === '4'"
@@ -208,9 +199,9 @@
           </el-tree>
         </el-collapse-item>
       </el-collapse>
-      <el-button @click="showHelpOut">阅读</el-button>
     </div>
-    <div class="readonlyTo" v-if="showHelpWidth && showHelpHeight">
+    <div class="page-close" v-if="showHelpWidth" @click="showHelpWidth = false, showHelpHeight = false"></div>
+    <div class="readonlyTo" v-if="showHelpWidth && showHelpHeight" v-loading="loading">
       <div @click="showHelpHeight = false" class="readonlyToX">X</div>
       <div class="readonlyChild" id="readonlyChild"></div>
     </div>
@@ -243,9 +234,7 @@ export default {
       moremenugroup: [],
       defaultProps: {
         children: 'children',
-        label: 'name',
-        checkStrictly: true,
-        disabled: this.ifFather,
+        label: 'name'
       },
       // 激活菜单
       activeName: '1',
@@ -258,12 +247,11 @@ export default {
           count: 0,
           method: this.logoutRemind
         },
-        // {
-        //   icon: '',
-        //   name: '后台跑批',
-        //   count: 15,
-        //   method: this.logout
-        // },
+        {
+          icon: '',
+          name: '系统帮助',
+          method: this.showHelp
+        },
         {
           icon: '',
           name: '退出登陆',
@@ -273,7 +261,8 @@ export default {
       applications: [],
       workbenchImg: require('../style/images/icon0.png'),
       isThereReminder: false,
-      drawer: false
+      drawer: false,
+      loading: false
     }
   },
   computed: {
@@ -497,6 +486,7 @@ export default {
         type: 'closeAll',
         val: ''
       })
+      this.$router.push({ path:'/ams/first'})
     },
     showHelp() {
       this.showHelpWidth = !this.showHelpWidth
@@ -509,21 +499,22 @@ export default {
         return false
       }
     },
-    handleCheckChange (data, checked, indeterminate) {
-      if (checked) {
-        this.$refs.tree.setCheckedNodes([data]);
+    handleNodeClick (data) {
+      if (data.id <= 1000) {
+      } else {
+        this.loading = true
+        this.showHelpHeight = true
+        let id = data.id
+        getByMenuId(id).then(resp => {
+          if(resp.code === 0 && resp.data !== null){
+            document.getElementById('readonlyChild').innerHTML = resp.data.helpDocument
+            this.loading = false
+          } else if (resp.code === 0 && resp.data === null){
+            document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
+            this.loading = false
+          }
+        })
       }
-    },
-    showHelpOut () {
-      let id = this.$refs.tree.getCheckedNodes()[0].id
-      getByMenuId(id).then(resp => {
-        if(resp.code === 0 && resp.data !== null){
-          document.getElementById('readonlyChild').innerHTML = resp.data.helpDocument
-        } else if (resp.code === 0 && resp.data === null){
-          document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
-        }
-      })
-      this.showHelpHeight = !this.showHelpHeight
     }
   }
 }
@@ -910,38 +901,52 @@ export default {
 .page-left{
   position: absolute;
   top: 200px;
-  right: -250px;
-  width: 240px;
-  height: 600px;
+  right: -270px;
+  width: 260px;
+  height: 620px;
   background: #fff;
-  padding: 5px;
-  box-shadow: 0 0 10px 0 #000;
+  padding: 15px;
+  box-shadow: 0 0 10px 0 rgba(0,0,0,0.5);
   border-radius: 10px;
   z-index:1002;
 }
+.page-close{
+  position:fixed;
+  top: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index:0;
+  background-color: rgba(0,0,0,0.5);
+}
 .tools-menu-small{
-  height: 550px;
+  height: 590px;
   width: 100%;
   overflow: auto;
 }
 .readonlyTo{
-  width: 100%;
+  width: 50vw;
   height: 100%;
   top: 0;
-  left: 0;
+  right: 0;
   position: fixed;
-  background-color: rgba(0,0,0,.5);
   z-index: 1001;
+  animation: whiteIn 0.8s forwards;
 }
 .readonlyChild{
   position: absolute;
   top: 0;
   right:0;
-  width: 1438px;
-  height: 100%;
+  width: 50vw;
+  height: 100vh;
   background-color: #fff;
-  border: 1px solid #000;
   padding: 15px;
+  animation: whiteIn 0.8s forwards;
+  overflow: auto;
+}
+@keyframes whiteIn {
+  0%{width:0}
+  100%{width:50vw}
 }
 .readonlyToX{
   position: absolute;
@@ -956,5 +961,16 @@ export default {
   text-align: center;
   z-index: 1001;
   cursor: pointer;
+}
+>>>.el-tree {
+  // 不可全选样式
+  .el-tree-node {
+    .is-leaf + .el-checkbox .el-checkbox__inner {
+      display: inline-block;
+    }
+    .el-checkbox .el-checkbox__inner {
+      display: none;
+    }
+  }
 }
 </style>

@@ -183,3 +183,8 @@
         }
     }
 </script>
+<style scoped type="text/css">
+    >>> .el-tabs__header{
+        margin: 0 0 5px;
+    }
+</style>

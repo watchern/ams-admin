@@ -1,22 +1,36 @@
 <template>
-  <div id='app'>
-    <Button type='primary' @click='save'>保存</Button>
-    <div style='float: left;width:94%' >
-      <mtEditor ref='chart' :data='result' :chart-config='opNode'></mtEditor>
-    </div>
-
+  <div class="recommendPage">
+    <el-menu default-active="0" class="el-menu-demo" mode="horizontal">
+      <el-menu-item index="0" @click="jump(0)">处理中心</el-menu-item>
+      <el-menu-item index="1" @click="jump(1)">消息中心</el-menu-item>
+    </el-menu>
+    <swiper :options="swiperOption" ref="mySwiper">
+      <swiper-slide>
+        <mtEditor ref='chart' :data='result' :chart-config='opNode'></mtEditor>
+      </swiper-slide>
+      <swiper-slide>
+        <mtEditor ref='chart' :data='result' :chart-config='opNode'></mtEditor>
+      </swiper-slide>
+<!--      <div class="swiper-pagination" slot="pagination"></div>
+      <div class="swiper-button-prev" slot="button-prev"></div>
+      <div class="swiper-button-next" slot="button-next"></div>-->
+    </swiper>
   </div>
 </template>
 
 <script>
+// 引入插件
+import { swiper, swiperSlide } from "vue-awesome-swiper";
+import "swiper/dist/css/swiper.css";
 import mtEditor from 'ams-datamax'
 import 'iview/dist/styles/iview.css'
 export default {
-  name: 'test',
+  name: 'Home',
   components: {
-    mtEditor
+    swiper,
+    swiperSlide, mtEditor
   },
-  data () {
+  data() {
     return {
       result: {
         column: ['编号ID', '省份', '省份代码', '城市', '城市代码', '区县', '区县代码', '日期', '商品分类', '商品编号', '商品条码', '商品名称', '规格', '单位', '产地', '库存状况', '含税价', '零售价', '订购数量', '销售金额', '配送数', '销售数量', '经度', '纬度', '大区'],
@@ -744,17 +758,50 @@ export default {
             }]
           }]
         }
+      },
+      swiperOption: {
+        loop: false,
+        // 显示分页
+/*        pagination: {
+          el: ".swiper-pagination",
+          clickable: true, //允许分页点击跳转
+        },*/
+        // 设置点击箭头
+/*        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev"
+        }*/
       }
+    };
+  },
+  computed: {
+    swiper() {
+      return this.$refs.mySwiper.swiper;
     }
   },
-  methods: {
-    chartEdit () {
-
-    },
-    save () {
-      console.log('------------------------------1')
-      console.log(this.$refs.chart.getChartConfig())
+  mounted() {
+    // current swiper instance
+    // 然后你就可以使用当前上下文内的swiper对象去做你想做的事了
+    console.log("this is current swiper instance object", this.swiper);
+    // this.swiper.slideTo(3, 1000, false);
+  },
+  methods:{
+    jump(index){
+      this.$refs.mySwiper.swiper.slideTo(index, 500, false);//切换到第一个slide，速度为0.5秒
     }
   }
 }
 </script>
+
+<style scoped>
+.recommendPage .swiper-container{
+  position: relative;
+  width: 92vw;
+  height: 85vh;
+}
+.recommendPage .swiper-container .swiper-slide{
+  width: 100%;
+  font-size: 16px;
+  text-align: center;
+}
+</style>

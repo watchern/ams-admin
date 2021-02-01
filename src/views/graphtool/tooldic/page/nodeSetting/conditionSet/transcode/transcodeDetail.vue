@@ -1,6 +1,6 @@
 <template>
     <div style="height: 500px;overflow-y: auto;">
-        <el-form :model="formData">
+        <el-form :model="formData" class="detail-form">
             <el-row>
                 <el-col>
                     <el-form-item label="规则名称">

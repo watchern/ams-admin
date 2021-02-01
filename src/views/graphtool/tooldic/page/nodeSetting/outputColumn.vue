@@ -1,53 +1,34 @@
 <template>
-    <div style="width: 98%;margin: 4px 1%">
-        <el-row style="padding: 10px 0;">
+    <div style="width: 100%;">
+        <el-row style="padding-top: 10px;">
             <el-col align="right">
                 <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" style="line-height: normal;"/>
                 <el-button type="primary" title="说明" class="oper-btn help" @click="helpDialogVisible = true" style="line-height: normal;"/>
             </el-col>
         </el-row>
-        <div ref="outPutTable" style="height: 520px;overflow-y: auto;">
-            <table id="column_config" class="table table-bordered">
-                <thead>
-                <tr>
-                    <th width="5%" style="text-align: center">编号</th>
-                    <th width="27%" style="text-align: center">上一节点名称</th>
-                    <th width="24%" style="text-align: center">字段名称</th>
-                    <th width="24%" style="text-align: center">输出字段名称</th>
-                    <th width="10%" style="text-align: center">输出字段
-                        <el-checkbox v-model="checkAll" :disabled="isAllDisabled" @change="handleCheckAllChange" style="float: right;"/>
-                    </th>
-                    <th width="10%" style="text-align: center">操作</th>
-                </tr>
-                </thead>
-                <tbody ref="outPutTbody">
-                <tr v-for="(item,index) in items" class="colTr" :data-index="index">
-                    <td class="text-center">{{ index+1 }}</td>
-                    <td v-if="item.isRtnTip">
-                        <el-tooltip class="item" effect="dark" :content="item.rtn" placement="top">
-                            <span>{{ item.rtnTip }}</span>
-                        </el-tooltip>
-                    </td>
-                    <td v-if="!item.isRtnTip">{{ item.rtn }}</td>
-                    <td v-if="item.isCurColumnNameTip">
-                        <el-tooltip class="item" effect="dark" :content="item.curColumnName" placement="top">
-                            <span>{{ item.curColumnNameTip }}</span>
-                        </el-tooltip>
-                    </td>
-                    <td v-if="!item.isCurColumnNameTip">{{ item.curColumnName }}</td>
-                    <td>
-                        <el-input v-model="item.disColumnName" class="newColumn"></el-input>
-                    </td>
-                    <td class="text-center">
-                        <el-checkbox :key="item.id" v-model="item.checked" :disabled="isDisabled" @change="checkBoxChange(index)" />
-                    </td>
-                    <td class="text-center">
-                        <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',item)" title="设置" style="line-height: normal;"/>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+        <el-table :data="items" border style="width: 100%;" height="526" ref="outPutTable">
+            <el-table-column type="index" label="编号" width="60" align="center" :resizable="false"/>
+            <el-table-column label="上一节点名称" width="200" :show-overflow-tooltip="true" prop="rtn" header-align="center" :resizable="false"></el-table-column>
+            <el-table-column label="字段名称" width="260" :show-overflow-tooltip="true" prop="curColumnName" header-align="center" :resizable="false"></el-table-column>
+            <el-table-column label="输出字段名称" width="240" header-align="center" :resizable="false">
+                <template slot-scope="scope">
+                    <el-input v-model="scope.row.disColumnName"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column align="center" width="100" :resizable="false">
+                <template slot="header" slot-scope="scope">
+                    输出字段<el-checkbox v-model="checkAll" :disabled="isAllDisabled" @change="handleCheckAllChange" style="padding-left: 5px;"/>
+                </template>
+                <template slot-scope="scope">
+                    <el-checkbox v-model="scope.row.checked" :disabled="isDisabled" @change="checkBoxChange" />
+                </template>
+            </el-table-column>
+            <el-table-column align="center" label="操作" width="100" :resizable="false">
+                <template slot-scope="scope">
+                    <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" title="设置" style="line-height: normal;"/>
+                </template>
+            </el-table-column>
+        </el-table>
         <el-dialog :visible.sync="helpDialogVisible" :append-to-body="true" title="说明" width="400px">
             <div style="height: 260px;padding: 10px;">
                 <p style="text-indent: 2em">（1）如果修改了【输出字段名称】且存在已配置过或执行过的后续节点，则后续节点关于该字段的配置信息会失效</p>
@@ -74,7 +55,7 @@
         data() {
             return {
                 nodeData: null,
-                columnsInfoPre: this.$parent.columnsInfoPre,
+                columnsInfoPre: this.$parent.$parent.$parent.columnsInfoPre,
                 re_columnsInfo: '',
                 items: [],
                 isIndeterminate: true,
@@ -93,7 +74,7 @@
         },
         methods: {
             init() {
-                const graph = this.$parent.graph
+                const graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 this.initConfig()
             },
@@ -133,16 +114,17 @@
                     var nullNodeId = this.items[j].nullNodeId
                     if (data && data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
-                            if (data[i].value === this.items[j].curColumnName) {
-                                if (data[i].nodeId === nodeId && hasMoreTable && data[i].nullNodeId === nullNodeId) {
-                                    this.items[j].checked = true
-                                    num++
-                                    break
-                                }
+                            if (data[i] === this.items[j].curColumnName) {
                                 if (!hasMoreTable) {
                                     this.items[j].checked = true
                                     num++
                                     break
+                                }else{
+                                    if (data[i].nodeId === nodeId && data[i].nullNodeId === nullNodeId) {
+                                        this.items[j].checked = true
+                                        num++
+                                        break
+                                    }
                                 }
                             }
                         }
@@ -161,19 +143,11 @@
                 const columnsInfoArray = isSet ? this.nodeData.columnsInfo : this.columnsInfoPre
                 for (let column = 0; column < columnsInfoArray.length; column++) {
                     const curColumnName = isSet ? columnsInfoArray[column].columnName : columnsInfoArray[column].newColumnName
-                    let curColumnNameTip = curColumnName
-                    let isCurColumnNameTip = false
-                    if(getStrBytes(curColumnName) > 20){
-                        isCurColumnNameTip = true
-                        curColumnNameTip = `${curColumnName.substring(0,20)}...`
-                    }
                     let nodeId = ''
                     let nullNodeId = ''
                     let resourceTableName = ''
                     let columnInfo = ''
                     let rtn = ''
-                    let isRtnTip = false
-                    let rtnTip = rtn
                     let checked = false
                     const id = column
                     let disColumnName = ''
@@ -196,7 +170,7 @@
                         if (num === columnsInfoArray.length) {
                             isHide = true
                         }
-                        if(columnsInfoArray[column].nodeId === "customizeColumn"){
+                        if(columnsInfoArray[column].customizeColumn){//如果是函数列（自定义字段）
                             if(columnsInfoArray[column].isOutputColumn === 1){
                                 checked = true
                             }
@@ -223,34 +197,24 @@
                         rtn = this.columnsInfoPre[column].rtn
                         resourceTableName = this.columnsInfoPre[column].resourceTableName
                     }
-                    if(getStrBytes(rtn) > 26){
-                        isRtnTip = true
-                        rtnTip = `${rtn.substring(0,26)}...`
-                    }
-                    this.items.push({ id, curColumnName, curColumnNameTip, isCurColumnNameTip, nodeId, nullNodeId, columnInfo, rtn, isRtnTip, rtnTip, disColumnName, checked, resourceTableName})
+                    this.items.push({ id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, checked, resourceTableName})
                 }
-                $(this.$refs.outPutTbody).sortable().disableSelection()
+                this.$nextTick( () => {
+                    $(this.$refs.outPutTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
+                })
             },
             get_column() { // 这里保存的是上级节点所有的字段，包括输出字段，（意义：不输出的字段不代表不是该节点的字段，在获取上级节点字段应该进一步筛选师傅是输出字段）
                 let $this = this
                 const this_columnInfos = []
-                let trDom = $(this.$refs.outPutTbody).find(".colTr")
+                let trDom = this.$refs.outPutTable.$refs.bodyWrapper.children[0].children[1].children
                 if(typeof trDom !== 'undefined' && trDom.length > 0){
                     $.each(trDom,function () {
-                        const index = this.getAttribute('data-index')
+                        const index = parseInt($(this).find("td:eq(0)>div>div").html()) - 1
                         var checked = $this.items[index].checked
                         var this_column = {...{},...$this.items[index].columnInfo}
                         var old_colum_name = $this.items[index].curColumnName// 之前的newColumnName
-                        var re_is_filter_comumn = []
-                        $($this.$parent.is_filter_column).each(function () {
-                            re_is_filter_comumn.push(this.value)
-                        })
-                        if (re_is_filter_comumn.length === 0 || $.inArray(old_colum_name, re_is_filter_comumn) > -1) { // 没有做配置、没有类似去重此功能需求或者配置并且在对勾显示字段的
-                            if (checked) {
-                                this_column.isOutputColumn = 1// is output column
-                            } else {
-                                this_column.isOutputColumn = 0
-                            }
+                        if (checked) {
+                            this_column.isOutputColumn = 1
                         } else {
                             this_column.isOutputColumn = 0
                         }
@@ -263,7 +227,7 @@
                 }
                 this.nodeData.columnsInfo = this_columnInfos
             },
-            find_self_column(columnName, nodeId) { // 是否设置并且含有当前字段
+            find_self_column(columnName) { // 是否设置并且含有当前字段
                 var obj = {
                     flag: false,
                     columnName: columnName,
@@ -283,7 +247,7 @@
             handleCheckAllChange(checked) {
                 Array.from(this.items, (n) => n.checked = checked)
             },
-            checkBoxChange(index) {
+            checkBoxChange() {
                 var chk = 0
                 for (let i = 0; i < this.items.length; i++) {
                     if (this.items[i].checked) {
@@ -351,6 +315,12 @@
                     this.customizeColumnTitle = '自定义字段'
                     this.curColumnInfo = null
                 }else{//修改设置
+                    if (this.nodeData.nodeInfo.optType === 'delRepeat' || this.nodeData.nodeInfo.optType === 'union') {// 分组汇总和数据去重节点的输出字段单独处理
+                        if(curColumnInfo.nodeId !== 'customizeColumn'){
+                            this.$message({'type':'warning','message':'当前字段信息不可被修改'})
+                            return
+                        }
+                    }
                     this.customizeColumnTitle = '修改设置'
                     this.curColumnInfo = curColumnInfo
                 }
@@ -359,20 +329,13 @@
             customizeColumnBack(){
                 let returnObj = this.$refs.customizeColumn.saveInfo()
                 if(!returnObj.isError){
+                    this.customizeColumnDialogVisible = false
                     const curColumnName = returnObj.columnInfo.columnName
-                    let curColumnNameTip = curColumnName
-                    let isCurColumnNameTip = false
-                    if(getStrBytes(curColumnName) > 20){
-                        isCurColumnNameTip = true
-                        curColumnNameTip = `${curColumnName.substring(0,20)}...`
-                    }
                     let nodeId = ''
                     let nullNodeId = ''
                     let resourceTableName = ''
                     let columnInfo = returnObj.columnInfo
                     let rtn = ''
-                    let isRtnTip = false
-                    let rtnTip = rtn
                     let checked = true
                     let id = null
                     let disColumnName = returnObj.columnInfo.newColumnName
@@ -382,42 +345,31 @@
                         resourceTableName = 'customizeColumnTempTable'
                         id = this.items.length + 1
                         rtn = '自定义字段'
-                        this.items.push({ id, curColumnName, curColumnNameTip, isCurColumnNameTip, nodeId, nullNodeId, columnInfo, rtn, isRtnTip, rtnTip, disColumnName, checked, resourceTableName})
+                        this.items.push({ id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, checked, resourceTableName})
                     }else{//修改设置
                         id = this.curColumnInfo.id
                         nodeId = this.curColumnInfo.nodeId
                         nullNodeId = this.curColumnInfo.nullNodeId
                         rtn = this.curColumnInfo.rtn
                         resourceTableName = this.curColumnInfo.resourceTableName
-                        if(getStrBytes(rtn) > 26){
-                            isRtnTip = true
-                            rtnTip = `${rtn.substring(0,26)}...`
-                        }
                         let index = this.items.findIndex( item => item.id === this.curColumnInfo.id)
                         if(index > -1){
-                            this.items[index] = {id, curColumnName, curColumnNameTip, isCurColumnNameTip, nodeId, nullNodeId, columnInfo, rtn, isRtnTip, rtnTip, disColumnName, checked, resourceTableName}
+                            this.items.splice(index,1)
+                            this.items.splice(index,1,{id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, checked, resourceTableName})
                         }
                     }
-                    this.customizeColumnDialogVisible = false
                 }
             }
         }
     }
 </script>
 <style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
-<style scoped src="@/components/ams-basic/css/common.css"></style>
+<style scoped src="@/api/graphtool/css/common.css"></style>
 <style scoped type="text/css">
-    .table > thead > tr > th {
-        background-color: #5886B2;
-        color: #ECF0F5;
-        padding: 3px;
-        vertical-align:middle;
+    >>> .el-table .cell {
+        padding: 0;
     }
-    .table > tbody > tr > td{
-        font-size: 13px;
-        color: #4B4B4B;
-        line-height: 36px;
-        padding: 1px;
-        vertical-align:middle;
+    >>> .el-input__inner {
+        margin: 0;
     }
 </style>
