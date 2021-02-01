@@ -86,7 +86,7 @@
           </div>
         </div>
         <div id="dataView">
-          <div class="recommendPage" style="height: 620px;overflow-y:scroll">
+          <div class="recommendPage" style="height: 650px;overflow-y:scroll">
             <el-menu default-active="0" class="el-menu-demo" mode="horizontal">
               <div v-for="(dataObj,indexI) in dataList">
                 <el-menu-item :index="indexI.toString()" @click="jump(indexI)">{{dataObj.measureName}}<i :class="dataObj.icon"></i></el-menu-item>
@@ -95,8 +95,8 @@
             <swiper :options="swiperOption" ref="mySwiper">
                 <swiper-slide v-for="(dataObj,index) in dataList" v-loading="dataObj.loading" element-loading-text="正在执行SQL,请稍候...">
                   <div class="btn-div"  v-if="dataObj.isError == false">
-                    <div :class="dataObj.btnChartClass" :ref="dataObj.id + 'btnChart'"><span class="icon iconfont iconfont-div" @click="switchDivStyle(dataObj.id + 'btnChart',dataObj.id)">&#xe6d8;</span></div>
-                    <div :class="dataObj.btnTableClass" :ref="dataObj.id + 'btnTable'"><span class="icon iconfont icon-oper-table" @click="switchDivStyle(dataObj.id + 'btnTable',dataObj.id)"></span></div>
+                    <div :class="dataObj.btnChartClass" :ref="dataObj.id + 'btnChart'" @click="switchDivStyle(dataObj.id + 'btnChart',dataObj.id)"><span class="icon iconfont" >&#xe6d8;</span></div>
+                    <div :class="dataObj.btnTableClass" :ref="dataObj.id + 'btnTable'" @click="switchDivStyle(dataObj.id + 'btnTable',dataObj.id)"><span class="icon iconfont" >&#xecee;</span></div>
                   </div>
                   <ag-grid-vue
                     v-show=dataObj.isShowTable
@@ -6172,8 +6172,8 @@ var see = "查看";
 }
 >>>.el-menu-item {
   float: left;
-  height: 60px;
-  line-height: 60px;
+  height: 40px;
+  line-height: 40px;
   margin: 0;
 }
 >>>.el-tabs--left .el-tabs__nav-wrap.is-left::after{

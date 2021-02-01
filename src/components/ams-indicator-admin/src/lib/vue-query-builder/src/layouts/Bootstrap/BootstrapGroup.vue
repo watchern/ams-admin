@@ -14,6 +14,7 @@
         </label>
 
         <select
+          style="margin-top: 5px"
           id="vqb-match-type"
           v-model="query.logicalOperator"
           class="form-control"
@@ -113,6 +114,7 @@ export default {
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
   }
   >>>.btn{
+    margin: 5px;
     display: inline-block;
     padding: 6px 12px;
     margin-bottom: 0;
@@ -127,6 +129,8 @@ export default {
     cursor: pointer;
     border: 1px solid transparent;
     border-radius: 4px;
+    margin-top: -3px;
+    margin-left: 9px;
   }
   >>>.close{
     float: right;
@@ -139,5 +143,18 @@ export default {
   }
   >>>.el-input__inner{
     margin-left: 10px;
+  }
+  >>>.form-group{
+    margin-top: 10px;
+  }
+  >>>.form-inline{
+    padding-top: 11px;
+    padding-left: 30px;
+  }
+  >>>.vqb-rule{
+    border-left: 2px solid #8bc34a;
+    margin-top: 15px;
+    background-color: #efefef;
+    height: 60px;
   }
 </style>
