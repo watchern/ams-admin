@@ -1238,7 +1238,7 @@
     }
     >>>.cm-keyword{
       color:#0000C6;
-      font-weight:20px
+      font-weight: bold;
     }
 </style>
 
