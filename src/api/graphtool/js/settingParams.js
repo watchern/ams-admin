@@ -92,7 +92,7 @@ async function initNodeZtree(nodeId) {
         }
     }
     if (!isError) {
-        let nodeSetting = {
+        settingVue.nodeZtreeSetting = {
             data: {
                 key: {
                     checked: 'isChecked',
@@ -147,7 +147,7 @@ async function initNodeZtree(nodeId) {
         }
         // 组织列节点信息
         let nodeRootId = new UUIDGenerator().id
-        let nodeRoot = {
+        settingVue.nodeZtreeRoot = {
             'id': nodeRootId,
             'pid': null,
             'name': nodeName,
@@ -186,7 +186,7 @@ async function initNodeZtree(nodeId) {
                             obj.name = columnsInfo[i].columnName
                         }
                         obj.displayName = columnsInfo[i].newColumnName
-                        nodeRoot.children.push(obj)
+                        settingVue.nodeZtreeRoot.children.push(obj)
                         break
                     case "relation":
                         if(flag){
@@ -196,21 +196,21 @@ async function initNodeZtree(nodeId) {
                             obj.name = columnsInfo[i].tableAlias + "." + columnsInfo[i].columnName
                             obj.displayName = columnsInfo[i].tableAlias + "." + columnsInfo[i].newColumnName
                         }
-                        nodeRoot.children.push(obj)
+                        settingVue.nodeZtreeRoot.children.push(obj)
                         break
                     case "sample":
                     case "union":
                         obj.name = columnsInfo[i].newColumnName
                         obj.displayName = columnsInfo[i].newColumnName
-                        nodeRoot.children.push(obj)
+                        settingVue.nodeZtreeRoot.children.push(obj)
                         break
                 }
             }
         }
-        if (nodeRoot.children.length === 0) {
+        if (settingVue.nodeZtreeRoot.children.length === 0) {
             settingVue.$message({ type: 'warning', message: '当前节点无可使用输出字段，请重新执行节点' })
         }else{
-            settingVue.nodeZtreeObj = $.fn.zTree.init($('#nodeZtree'), nodeSetting, nodeRoot)
+            settingVue.nodeZtreeObj = $.fn.zTree.init($('#nodeZtree'), settingVue.nodeZtreeSetting, [settingVue.nodeZtreeRoot])
             settingVue.initTreeSuccess = true
         }
     } else {
@@ -334,13 +334,13 @@ function loadParamChildrenNodes(treeNode) {
  * 判断拖拽的节点是否在文本域内
  */
 function inArea() {
-    let codeMirrorWrap = $(settingVue.$refs.settingParamDiv).find(".CodeMirror-wrap")
-    let width = codeMirrorWrap.width()
-    let height = codeMirrorWrap.height()
-    if ((settingVue.mouseX < 30) || (settingVue.mouseX > width) || (settingVue.mouseY <= 0) || (settingVue.mouseY > height)) {
+    let event = window.event
+    let codeMirrorScroll = $(settingVue.$refs.settingParamDiv).find('.CodeMirror-scroll')[0]
+    if(event.target === codeMirrorScroll){
+        return true
+    }else{
         return false
     }
-    return true
 }
 
 /**
@@ -539,7 +539,7 @@ function getIndexArr(text, str, index, indexArr) {
 /**
  * 初始化参数配置
  */
-export function initSetting() {
+export async function initSetting() {
     //判断节点树是否正常加载（防止存在不正确的自定义参数SQL语句）
     if(!settingVue.initTreeSuccess){
         settingVue.setParamArr = []
@@ -596,7 +596,6 @@ export function initSetting() {
                 if (num === paramArr.length) { // 如果参数配置行的参数与有效参数集合匹配不上
                     let index = settingVue.setParamArr.findIndex(item => item.dataModuleParamId === moduleParamId)
                     settingVue.setParamArr.splice(index,1)// 则删除当前元素
-                    // $('.setParamTr:eq(' + i + ')').remove()// 则删除当前行
                 }
             }
         }
@@ -607,70 +606,69 @@ export function initSetting() {
             return
         }
         // 第四步：获取数据库所有母参数信息
-        findParamsAndModelRelParams().then( response => {
-            if(response.data == null){
+        const response = await findParamsAndModelRelParams()
+        if(response.data == null){
+            settingVue.settingLoading = false
+            settingVue.$message.error('获取参数信息失败')
+        }else {
+            if (response.data.isError) {
                 settingVue.settingLoading = false
-                settingVue.$message.error('获取参数信息失败')
-            }else {
-                if (response.data.isError) {
-                    settingVue.settingLoading = false
-                    settingVue.$message.error({message: response.data.message})
-                } else {
-                    let paramList = response.data.paramList// 定义所有母参信息数组
-                    // 第五步：找出有效参数集合中未配置的参数,并追加TR行
-                    let moduleParamArr = []// 存储已匹配的母版参数集合
-                    for (let j = 0; j < paramArr.length; j++) { // 遍历有效的参数集合
-                        let hasExist = false
-                        for (let i = 0; i < settingVue.setParamArr.length; i++) {
-                            if (settingVue.setParamArr[i].dataModuleParamId === paramArr[j].moduleParamId) {
-                                hasExist = true
-                                break
-                            }
-                        }
-                        if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && hasExist) { // 过滤掉有效参数集合中已经配置过的参数
-                            continue
-                        }
-                        if ($.inArray(paramArr[j].moduleParamId, moduleParamArr) > -1) { // 过滤掉有效参数集合中母参重复的复制参数
-                            continue
-                        }
-                        let setParamObj = {dataModuleParamId: paramArr[j].moduleParamId, name: paramArr[j].name,}
-                        for (let k = 0; k < paramList.length; k++) { // 循环所有母版参数
-                            let moduleParamId = paramList[k].ammParamUuid
-                            let paramObj = {...{}, ...paramList[k]}
-                            if (moduleParamId === paramArr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
-                                setParamObj.inputType = paramObj.inputType//参数类型
-                                //设置默认值
-                                if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
-                                    paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
-                                    setParamObj.value = paramArr[j].defaultVal
-                                    paramObj.defaultVal = paramArr[j].defaultVal
-                                }
-                                let returnObj = paramCommonJs.getSettingParamArr(paramObj, setParamObj)
-                                if (!returnObj.isError) {
-                                    setParamObj = returnObj.setParamObj
-                                } else {
-                                    settingVue.$message.error({message: returnObj.message})
-                                }
-                                moduleParamArr.push(moduleParamId)
-                                if (typeof paramObj.description !== 'undefined' && paramObj.description != null) {
-                                    setParamObj.description = paramObj.description
-                                }
-                                settingVue.setParamArr.push(setParamObj)
-                                break
-                            }
+                settingVue.$message.error({message: response.data.message})
+            } else {
+                let paramList = response.data.paramList// 定义所有母参信息数组
+                // 第五步：找出有效参数集合中未配置的参数,并追加TR行
+                let moduleParamArr = []// 存储已匹配的母版参数集合
+                for (let j = 0; j < paramArr.length; j++) { // 遍历有效的参数集合
+                    let hasExist = false
+                    for (let i = 0; i < settingVue.setParamArr.length; i++) {
+                        if (settingVue.setParamArr[i].dataModuleParamId === paramArr[j].moduleParamId) {
+                            hasExist = true
+                            break
                         }
                     }
-                    $(settingVue.$refs.setParamTbody).sortable().disableSelection()
-                    settingVue.$nextTick(() => {
-                        // 第六步：统一初始化参数的html（文本框、下拉列表、下拉树），并反显已配置参数的信息（包括默认值和排序值）
-                        initParam(paramArr, hasSetParamIdArr)
-                        // 第七步：刷新SQL值，将已编写的SQL赋值给sql
-                        settingVue.sql = settingVue.editor.getValue()
-                        settingVue.settingLoading = false
-                    })
+                    if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && hasExist) { // 过滤掉有效参数集合中已经配置过的参数
+                        continue
+                    }
+                    if ($.inArray(paramArr[j].moduleParamId, moduleParamArr) > -1) { // 过滤掉有效参数集合中母参重复的复制参数
+                        continue
+                    }
+                    let setParamObj = {dataModuleParamId: paramArr[j].moduleParamId, name: paramArr[j].name,}
+                    for (let k = 0; k < paramList.length; k++) { // 循环所有母版参数
+                        let moduleParamId = paramList[k].ammParamUuid
+                        let paramObj = {...{}, ...paramList[k]}
+                        if (moduleParamId === paramArr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
+                            setParamObj.inputType = paramObj.inputType//参数类型
+                            //设置默认值
+                            if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
+                                paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
+                                setParamObj.value = paramArr[j].defaultVal
+                                paramObj.defaultVal = paramArr[j].defaultVal
+                            }
+                            let returnObj = await paramCommonJs.getSettingParamArr(paramObj, setParamObj)
+                            if (!returnObj.isError) {
+                                setParamObj = returnObj.setParamObj
+                            } else {
+                                settingVue.$message.error({message: returnObj.message})
+                            }
+                            moduleParamArr.push(moduleParamId)
+                            if (typeof paramObj.description !== 'undefined' && paramObj.description != null) {
+                                setParamObj.description = paramObj.description
+                            }
+                            settingVue.setParamArr.push(setParamObj)
+                            break
+                        }
+                    }
                 }
+                $(settingVue.$refs.setParamTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
+                settingVue.$nextTick(() => {
+                    // 第六步：统一初始化参数的html（文本框、下拉列表、下拉树）
+                    initParam()
+                    // 第七步：刷新SQL值，将已编写的SQL赋值给sql
+                    settingVue.sql = settingVue.editor.getValue()
+                    settingVue.settingLoading = false
+                })
             }
-        })
+        }
     } catch (e) {
         settingVue.settingLoading = false
         console.info(e)
@@ -679,20 +677,16 @@ export function initSetting() {
 
 /**
  * 初始化及反显已配置的下拉树和下拉列表的参数（默认值和排序）
- * @param paramArr 待配置的复制参数集合
- * @param hasSetParamIdArr 已配置的复制参数ID集合
  */
-function initParam(paramArr, hasSetParamIdArr) {
-    // 初始化下拉列表
-    let $selectParam = settingVue.$refs.selectParam
-    if ($selectParam && $selectParam.length > 0) {
-        for(let i=0; i<$selectParam.length; i++){
-            let index = Number($selectParam[i].parentNode.getAttribute("index"))
-            let choiceType = settingVue.setParamArr[index].dataChoiceType// 下拉列表的数据是单选还是多选
-            let moduleParamId = settingVue.setParamArr[index].dataId// 母参ID
-            let paramName = settingVue.setParamArr[index].dataName// 母参名称
-            let sql = typeof settingVue.setParamArr[index].dataSql !== "undefined" ? settingVue.setParamArr[index].dataSql : ''// 该参数是否有SQL语句（0否1是）
-            let dataArr = typeof settingVue.setParamArr[index].data !== 'undefined' ? settingVue.setParamArr[index].data : []// 下拉列表数据
+function initParam() {
+    for(let p=0; p<settingVue.setParamArr.length; p++){
+        let setParamObj = settingVue.setParamArr[p]
+        if(setParamObj.inputType === 'lineinp'){// 初始化下拉列表
+            let choiceType = setParamObj.dataChoiceType// 下拉列表的数据是单选还是多选
+            let moduleParamId = setParamObj.dataId// 母参ID
+            let paramName = setParamObj.dataName// 母参名称
+            let sql = typeof setParamObj.dataSql !== "undefined" ? setParamObj.dataSql : ''// 该参数是否有SQL语句（0否1是）
+            let dataArr = typeof setParamObj.data !== 'undefined' ? setParamObj.data : []// 下拉列表数据
             let initDataArr = false// 是否初始化数据
             let selectSetting = {
                 el: '#selectParam' + moduleParamId, // 此处不使用【i】的原因在于每个参数都唯一不会重复，故【el】唯一
@@ -728,26 +722,19 @@ function initParam(paramArr, hasSetParamIdArr) {
                 }
             }
             // 设置默认值
-            if(typeof settingVue.setParamArr[index].value !== "undefined" && settingVue.setParamArr[index].value != null){
-                selectSetting.initValue = settingVue.setParamArr[index].value
+            if(typeof setParamObj.value !== "undefined" && setParamObj.value != null){
+                selectSetting.initValue = setParamObj.value
             }
             xmSelect.render(selectSetting)
-        }
-    }
-    // 初始化下拉树
-    let $selectTreeParam = settingVue.$refs.selectTreeParam
-    if ($selectTreeParam && $selectTreeParam.length > 0) {
-        for(let i=0; i<$selectTreeParam.length; i++){
-            let index = Number($selectTreeParam[i].parentNode.getAttribute("index"))
-            let choiceType = settingVue.setParamArr[index].dataChoiceType// 下拉列表的数据是单选还是多选
-            let moduleParamId = settingVue.setParamArr[index].dataId// 母参ID
-            let paramName = settingVue.setParamArr[index].dataName// 母参名称
-            let sql = typeof settingVue.setParamArr[index].dataSql !== "undefined" ? settingVue.setParamArr[index].dataSql : ''// 该参数是否有SQL语句（0否1是）
-            let dataArr = typeof settingVue.setParamArr[index].data !== 'undefined' ? settingVue.setParamArr[index].data : []// 下拉列表数据
+        }else if(setParamObj.inputType === 'treeinp'){// 初始化下拉树
+            let choiceType = setParamObj.dataChoiceType// 下拉列表的数据是单选还是多选
+            let moduleParamId = setParamObj.dataId// 母参ID
+            let paramName = setParamObj.dataName// 母参名称
+            let sql = typeof setParamObj.dataSql !== "undefined" ? setParamObj.dataSql : ''// 该参数是否有SQL语句（0否1是）
+            let dataArr = typeof setParamObj.data !== 'undefined' ? setParamObj.data : []// 下拉列表数据
             let initDataArr = false// 是否初始化数据
             let selectSetting = {
                 el: '#selectTreeParam' + moduleParamId, // 此处不使用【i】的原因在于每个参数都唯一不会重复，故【el】唯一
-                // autoRow: true,
                 filterable: true,
                 tree: {
                     show: true,
@@ -777,8 +764,8 @@ function initParam(paramArr, hasSetParamIdArr) {
                 }
             }
             // 设置默认值
-            if(typeof settingVue.setParamArr[index].value !== "undefined" && settingVue.setParamArr[index].value != null){
-                selectSetting.initValue = settingVue.setParamArr[index].value
+            if(typeof setParamObj.value !== "undefined" && setParamObj.value != null){
+                selectSetting.initValue = setParamObj.value
             }
             if (choiceType === '1') { // 单选
                 selectSetting.radio = true
@@ -865,60 +852,51 @@ export function getParamsSetting() {
             'arr': []
         }
     }
-    // 验证文本框输入的默认值
-    for(let i=0; i<settingVue.$refs.setParamTr.length; i++){
-        let index = Number(settingVue.$refs.setParamTr[i].parentNode.getAttribute("index"))
-        if(settingVue.setParamArr[index].value !== '' && settingVue.setParamArr[index].inputType === 'textinp'){// 如果当前值不为空且如果是文本框参数（非日期）
-            //验证文本框参数值的长度是否满足
-            let paramName = settingVue.setParamArr[index].dataName// 获取参数名称
-            let dataLength = settingVue.setParamArr[index].dataDataLength// 获取参数值长度
-            // 如果该参数有长度限制且默认值不等于设置的长度值
-            if (typeof dataLength !== 'undefined' && settingVue.setParamArr[index].value.length !== parseInt(dataLength)) {
-                returnObj.verify = false
-                returnObj.message = '参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
-                return false
+    let trDom = settingVue.$refs.setParamTable.$refs.bodyWrapper.children[0].children[1].children
+    if(typeof trDom !== 'undefined' && trDom.length > 0){
+        // 验证文本框输入的默认值
+        $.each(trDom,function () {
+            let index = parseInt($(this).find("td:eq(0)>div>div").html()) - 1
+            if(returnObj.verify){
+                if(settingVue.setParamArr[index].inputType === 'textinp' && typeof settingVue.setParamArr[index].value !== 'undefined' && settingVue.setParamArr[index].value !== ''){
+                    //验证文本框参数值的长度是否满足
+                    let paramName = settingVue.setParamArr[index].dataName// 获取参数名称
+                    let dataLength = settingVue.setParamArr[index].dataDataLength// 获取参数值长度
+                    // 如果该参数有长度限制且默认值不等于设置的长度值
+                    if (typeof dataLength !== 'undefined' && settingVue.setParamArr[index].value.length !== parseInt(dataLength)) {
+                        returnObj.verify = false
+                        returnObj.message = '参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
+                    }
+                }
+                if(settingVue.setParamArr[index].inputType === 'lineinp'){//下拉列表
+                    let moduleParamId = settingVue.setParamArr[index].dataId// 母参ID
+                    let selectParamXs = xmSelect.get('#selectParam' + moduleParamId, true)
+                    let paramSelectedObj = selectParamXs.getValue()// 获取选中的参数值名称
+                    let defaultValueArr = []
+                    for (let j = 0; j < paramSelectedObj.length; j++) {
+                        defaultValueArr.push(paramSelectedObj[j].value)
+                    }
+                    if (defaultValueArr.length > 0) {
+                        settingVue.setParamArr[index].value = defaultValueArr
+                    }
+                }
+                if(settingVue.setParamArr[index].inputType === 'treeinp'){//下拉树
+                    let moduleParamId = settingVue.setParamArr[index].dataId// 母参ID
+                    let selectTreeParamXs = xmSelect.get('#selectTreeParam' + moduleParamId, true)
+                    let paramSelectedObj = selectTreeParamXs.getValue()// 获取选中的参数值名称
+                    let defaultValueArr = []
+                    for (let j = 0; j < paramSelectedObj.length; j++) {
+                        defaultValueArr.push(paramSelectedObj[j].value)
+                    }
+                    if (defaultValueArr.length > 0) {
+                        settingVue.setParamArr[index].value = defaultValueArr
+                    }
+                }
             }
-        }
+        })
     }
     if (!returnObj.verify) {
         return returnObj
-    }
-    // 绑定下拉列表选中的默认值
-    let $selectParam = settingVue.$refs.selectParam
-    if ($selectParam && $selectParam.length > 0) {
-        for (let i = 0; i < $selectParam.length; i++) {
-            // $('.selectParam').each(function(i, v) {
-            let index = Number($selectParam[i].parentNode.getAttribute("index"))
-            let moduleParamId = settingVue.setParamArr[index].dataId// 母参ID
-            let selectParamXs = xmSelect.get('#selectParam' + moduleParamId, true)
-            let paramSelectedObj = selectParamXs.getValue()// 获取选中的参数值名称
-            let defaultValueArr = []
-            for (let j = 0; j < paramSelectedObj.length; j++) {
-                defaultValueArr.push(paramSelectedObj[j].value)
-            }
-            if (defaultValueArr.length > 0) {
-                settingVue.setParamArr[index].value = defaultValueArr
-            }
-        }
-    }
-    // 绑定下拉树选中的默认值
-    let $selectTreeParam = settingVue.$refs.selectTreeParam
-    if ($selectTreeParam && $selectTreeParam.length > 0) {
-        for (let i = 0; i < $selectTreeParam.length; i++) {
-            // $('.selectTreeParam').each(function(i, v) {
-            let index = Number($selectTreeParam[i].parentNode.getAttribute("index"))
-            let moduleParamId = settingVue.setParamArr[index].dataId// 母参ID
-            let selectTreeParamXs = xmSelect.get('#selectTreeParam' + moduleParamId, true)
-            let paramSelectedObj = selectTreeParamXs.getValue()// 获取选中的参数值名称
-            let defaultValueArr = []
-            for (let j = 0; j < paramSelectedObj.length; j++) {
-                defaultValueArr.push(paramSelectedObj[j].value)
-            }
-            if (defaultValueArr.length > 0) {
-                // $(this).attr('data-value', JSON.stringify(defaultValueArr))
-                settingVue.setParamArr[index].value = defaultValueArr
-            }
-        }
     }
     for (let i = 0; i < settingVue.paramDivArr.length; i++) {
         if (settingVue.paramDivArr[i].opt === 1) { // 如果当前参数有效
@@ -929,17 +907,20 @@ export function getParamsSetting() {
                     // 设置该参数的默认值和排序值
                     let defaultVal = ''
                     let sortVal = ''
-                    for(let k=0; k<settingVue.$refs.setParamTr.length; k++){
-                        let index = Number(settingVue.$refs.setParamTr[k].getAttribute("index"))
-                        let moduleParamId = settingVue.setParamArr[index].dataId// 取得当前行绑定的参数ID
-                        // let moduleParamId = $(this).attr('data-id')// 取得当前行绑定的参数ID
-                        if (obj.moduleParamId === moduleParamId) {
-                            if (typeof settingVue.setParamArr[index].value !== 'undefined') {
-                                defaultVal = settingVue.setParamArr[index].value
+                    let trDom = settingVue.$refs.setParamTable.$refs.bodyWrapper.children[0].children[1].children
+                    if(typeof trDom !== 'undefined' && trDom.length > 0){
+                        // 验证文本框输入的默认值
+                        $.each(trDom,function (k) {
+                            let index = parseInt($(this).find("td:eq(0)>div>div").html()) - 1
+                            let moduleParamId = settingVue.setParamArr[index].dataId// 取得当前行绑定的参数ID
+                            if (obj.moduleParamId === moduleParamId) {
+                                if (typeof settingVue.setParamArr[index].value !== 'undefined') {
+                                    defaultVal = settingVue.setParamArr[index].value
+                                }
+                                sortVal = parseInt(k + 1)
+                                return false
                             }
-                            sortVal = parseInt(k + 1)
-                            break
-                        }
+                        })
                     }
                     obj.defaultVal = defaultVal
                     if (sortVal !== '') {

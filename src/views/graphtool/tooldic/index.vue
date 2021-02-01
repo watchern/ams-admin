@@ -270,31 +270,20 @@
                 <el-button type="primary" @click="getGraphFormInfo">保存</el-button>
             </div>
         </el-dialog>
-        <el-dialog v-if="nodeParamListDialogVisible" :visible.sync="nodeParamListDialogVisible" title="参数节点列表" :close-on-press-escape="false" :close-on-click-modal="false">
-            <div  style="height: 400px;overflow-y: auto;">
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th style="text-align: center">节点名称</th>
-                        <th style="text-align: center">结果表序号</th>
-                        <th style="text-align: center">操作</th>
-                    </tr>
-                    </thead>
-                    <tbody ref="nodeParamToby">
-                    <tr v-for="(nodeObj,index) in nodeParamArr" ref="paramSetTr" :index="index">
-                        <td align="center">{{ nodeObj.nodeName }}</td>
-                        <td align="center">{{ nodeObj.lineNum }}</td>
-                        <td v-if="nodeObj.hasParamSet" align="center">
-                            <button type="button" class="paramSetting btn btn-primary" @click="settingParam(nodeObj.nodeId,index)">修改参数</button>
-                            <button id="clearBtn" type="button" class="btn btn-primary" style="margin-left: 10px;" @click="clearSettingParam(nodeObj.nodeId,index)">清除参数</button>
-                        </td>
-                        <td v-if="!nodeObj.hasParamSet" align="center">
-                            <button type="button" class="paramSetting btn btn-primary" @click="settingParam(nodeObj.nodeId,index)">设置参数</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+        <el-dialog v-if="nodeParamListDialogVisible" :visible.sync="nodeParamListDialogVisible" title="参数节点列表" :close-on-press-escape="false" :close-on-click-modal="false" width="600px">
+            <el-row style="color: red;line-height: 35px;height: 30px;" v-show="openGraphType === 2 || openGraphType === 3">注：可通过上下拖动行对节点进行排序设置</el-row>
+            <el-table :data="nodeParamArr" height="400" fit ref="nodeParamTable" style="width:100%;">
+                <el-table-column type="index" label="编号" align="center" width="60" :resizable="false"/>
+                <el-table-column prop="nodeName" label="节点名称" header-align="center" :resizable="false"/>
+                <el-table-column prop="lineNum" label="结果表序号" width="100" align="center" :resizable="false"/>
+                <el-table-column label="操作" width="100" align="center" :resizable="false">
+                    <template slot-scope="scope">
+                        <el-button type="primary" v-if="!scope.row.hasParamSet" class="oper-btn setting" @click="settingParam(scope.row.nodeId,scope.$index)" title="设置参数" style="line-height: normal;"/>
+                        <el-button type="primary" v-if="scope.row.hasParamSet" class="oper-btn setting" @click="settingParam(scope.row.nodeId,scope.$index)" title="修改参数" style="line-height: normal;"/>
+                        <el-button type="primary" v-if="scope.row.hasParamSet" class="oper-btn delete" @click="clearSettingParam(scope.row.nodeId,scope.$index)" title="清除参数" style="line-height: normal;"/>
+                    </template>
+                </el-table-column>
+            </el-table>
             <div slot="footer">
                 <el-button @click="nodeParamListDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="showParamNodeListCallBack()">保存</el-button>

@@ -70,7 +70,6 @@
         </div>
     </div>
 </template>
-
 <script>
     export default {
         name: 'unionDataSet',
@@ -478,11 +477,7 @@
         }
     }
 </script>
-
 <style scoped type="text/css">
-    >>> .el-input__inner{
-        margin-left: 0;
-    }
     .div_table {
         float: left;
         width: 400px;

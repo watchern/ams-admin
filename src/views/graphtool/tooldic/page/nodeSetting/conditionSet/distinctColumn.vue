@@ -64,7 +64,4 @@
     >>> .el-checkbox{
         margin-right: 15px;
     }
-    >>> .el-input__inner{
-        margin-left: 0;
-    }
 </style>
