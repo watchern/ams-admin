@@ -1,4 +1,5 @@
-import echarts from 'echarts/lib/echarts'
+// import echarts from 'echarts/lib/echarts'
+import * as echarts from 'echarts'
 
 import Line from './packages/line'
 import Bar from './packages/bar'
