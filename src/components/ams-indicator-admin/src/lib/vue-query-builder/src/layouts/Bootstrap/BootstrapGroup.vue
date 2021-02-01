@@ -140,6 +140,7 @@ export default {
     color: #000;
     text-shadow: 0 1px 0 #fff;
     opacity: .5;
+    margin-right: 15px;
   }
   >>>.el-input__inner{
     margin-left: 10px;
