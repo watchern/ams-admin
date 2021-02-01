@@ -9,9 +9,9 @@
         @submit="getList"
       />
     </div>
-    <!-- <el-row>
+    <el-row>
       <el-col align="right">
-        '重新运行任务实例'
+        <!-- '重新运行任务实例' -->
         <el-button
           type="primary"
           title="重新运行"
@@ -20,7 +20,7 @@
           @click="handleReStart()"
         />
       </el-col>
-    </el-row> -->
+    </el-row>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -34,10 +34,10 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
-      <!-- <el-table-column
+      <el-table-column
         type="selection"
         align="center"
-      /> -->
+      />
       <el-table-column
         label="运行状态"
         align="center"
@@ -122,6 +122,15 @@
         label="共耗时"
         prop="time"
       />
+      <el-table-column
+        label="有效性"
+        prop="flag"
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.flag == '1' ? "有效" : "无效" }}</span>
+        </template>
+      </el-table-column>
+
     </el-table>
     <pagination
       v-show="total>0"
@@ -178,7 +187,7 @@
 
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { listByPage, findTaskLogs } from '@/api/etlscheduler/taskinstance'
+import { listByPage, findTaskLogs, repeatProcess } from '@/api/etlscheduler/taskinstance'
 import QueryField from '@/components/Ace/query-field/index'
 // statuSelect, statusComm
 import { colorList, statusListComm, statuSelectList } from '@/views/etlscheduler/processinstance/comm.js'
@@ -315,15 +324,17 @@ export default {
         this.queryFields[2].value = [this.queryDefault.startTimeStart, this.queryDefault.startTimeEnd]
         this.getList(this.queryDefault)
       }
+    },
+    selections() {
+      if (this.selections.length === 1) {
+        const temp = Object.assign({}, this.selections[0])
+        if ((this.selections[0].status === 7 || this.selections[0].status === 8) && (temp.flag === '1' || temp.flag === 1)) {
+          this.reStartStatus = false
+        } else { this.reStartStatus = true }
+      } else {
+        this.reStartStatus = true
+      }
     }
-    // ,
-    // selections() {
-    //   if (this.selections.length === 1) {
-    //     if (this.selections[0].status === 7 || this.selections[0].status === 8) { this.reStartStatus = false }
-    //   } else {
-    //     this.reStartStatus = true
-    //   }
-    // }
   },
   created() {
     statusListComm.forEach((r, i) => {
@@ -396,6 +407,20 @@ export default {
       this.pageQuery.sortBy = order
       this.pageQuery.sortName = prop
       this.handleFilter()
+    },
+    // 重新运行
+    handleReStart() {
+      const temp = Object.assign({}, this.selections[0])
+      repeatProcess(temp.processInstanceId, temp.taskInstanceUuid).then(() => {
+        this.getList()
+        this.$notify({
+          title: this.$t('message.title'),
+          message: '重新运行操作成功',
+          type: 'success',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+      })
     },
     // 任务环节弹框显示
     handleTasksLogs(data) {

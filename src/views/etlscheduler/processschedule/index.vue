@@ -24,7 +24,8 @@
           :auto-upload="true"
           :on-change="handleFileChange"
           :show-file-list="false"
-          style="display: inline-block; padding-left: 10px"
+          style="display: inline-block; 
+          padding-left: 10px"
         >
           <el-button type="primary" class="oper-btn export" title="导入" />
         </el-upload>
@@ -1355,6 +1356,11 @@ export default {
     },
     // 自定义上传
     uploadFile() {
+      const loading = this.$loading({
+          lock: true,
+          // spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        })
       const index = this.file.name.lastIndexOf('.')
       const suffix = this.file.name.substr(index + 1)
       // 创建表单对象
@@ -1363,13 +1369,13 @@ export default {
       formData.append('schdeuleFile', this.file)
       formData.append('uploadFileName', 'git')
       formData.append('uploadFileContentType', suffix)
+      var num = Math.random()
       axios({
-        url: '/etlscheduler/schedules/importFiles',
+        url: `/etlscheduler/schedules/importFiles?${num}`,
         method: 'post',
         data: formData
       }).then((res) => {
         if (res.data.code === 2501) {
-          this.getList()
           this.$notify({
             title: this.$t('message.title'),
             message: res.data.msg,
@@ -1377,6 +1383,7 @@ export default {
             duration: 2000,
             position: 'bottom-right'
           })
+          loading.close()
         } else {
           this.getList()
           this.$notify({
@@ -1386,7 +1393,17 @@ export default {
             duration: 5000,
             position: 'bottom-right'
           })
+          loading.close()
         }
+      }).catch(function (error) { // 请求失败处理
+        this.$notify({
+            title: this.$t('message.title'),
+            message: '导入调度时发生异常',
+            type: 'error',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+          loading.close()
       })
     },
     // 格式化表格
