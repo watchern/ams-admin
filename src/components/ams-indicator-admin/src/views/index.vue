@@ -32,7 +32,7 @@
       <el-main>
         <div class="top-collapse-container">
           <div class="top-collapse-con">
-            <div class="toggle-btn J_slideup_btn"><i class="icon-toggle"></i><span>收起</span></div>
+            <div class="toggle-btn J_slideup_btn" @click="packUpClick"><i class="icon-toggle"></i><span>收起</span></div>
             <div class="collapse-panel">
               <div class="tag-left-con">
                 <div class="in-outer-layer" id="inRegion">
@@ -82,11 +82,12 @@
             <div class="slideup-left" id="analysisIn">
               <span>分析个数</span><em id="count">1</em>
             </div>
-            <a href="#" class="collapse-set-btn J_slidedown_btn">展开</a>
+            <a href="#" @click="openDisplay" class="collapse-set-btn J_slidedown_btn">展开</a>
           </div>
         </div>
         <div id="dataView">
-          <div class="recommendPage" style="height: 650px;overflow-y:scroll">
+<!--          style="height: 650px;overflow-y:scroll"-->
+          <div class="recommendPage">
             <el-menu default-active="0" class="el-menu-demo" mode="horizontal">
               <div v-for="(dataObj,indexI) in dataList">
                 <el-menu-item :index="indexI.toString()" @click="jump(indexI)">{{dataObj.measureName}}<i :class="dataObj.icon"></i></el-menu-item>
@@ -101,7 +102,7 @@
                   <ag-grid-vue
                     v-show=dataObj.isShowTable
                     :ref="dataObj.id + 'table'" v-if="dataObj.isLoad == true && dataObj.isError == false"
-                    style="height:75%"
+                    :style="tableHeight"
                     class="table ag-theme-balham"
                     :column-defs="dataObj.data.columnDefs"
                     :row-data="dataObj.data.data"
@@ -414,9 +415,10 @@ export default {
       //设置阈值需要的对象
       setThreasholdValueObj:{},
       chartBoxStyle: {
-        height: '500px',
+        height: '400px',
         width: '100%'
       },
+      tableHeight:"height:60%"
     }
   },
   watch: {
@@ -5893,6 +5895,15 @@ export default {
         }
       }
       $("#setValue" + analysisRegionId).css("color","#aeaeae")
+    },
+    packUpClick(){
+      //更改表格高度
+      this.tableHeight = "height:80%"
+
+    },
+    openDisplay(){
+      //更改表格高度
+      this.tableHeight = "height:60%"
     }
   }
 }
