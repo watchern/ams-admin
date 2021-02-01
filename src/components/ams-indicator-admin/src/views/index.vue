@@ -96,7 +96,7 @@
                 <swiper-slide v-for="(dataObj,index) in dataList" v-loading="dataObj.loading" element-loading-text="正在执行SQL,请稍候...">
                   <div class="btn-div"  v-if="dataObj.isError == false">
                     <div :class="dataObj.btnChartClass" :ref="dataObj.id + 'btnChart'"><span class="icon iconfont iconfont-div" @click="switchDivStyle(dataObj.id + 'btnChart',dataObj.id)">&#xe6d8;</span></div>
-                    <div :class="dataObj.btnTableClass" :ref="dataObj.id + 'btnTable'"><span class="icon iconfont iconfont-div" @click="switchDivStyle(dataObj.id + 'btnTable',dataObj.id)">&#xecee;</span></div>
+                    <div :class="dataObj.btnTableClass" :ref="dataObj.id + 'btnTable'"><span class="icon iconfont icon-oper-table" @click="switchDivStyle(dataObj.id + 'btnTable',dataObj.id)"></span></div>
                   </div>
                   <ag-grid-vue
                     v-show=dataObj.isShowTable
@@ -111,8 +111,8 @@
                     row-selection="multiple"
                     row-height="40"
                   />
-                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
-                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
+                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' :chartBoxStyle="chartBoxStyle" v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
+                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' :chartBoxStyle="chartBoxStyle" v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
                   <div style="color:red;text-align: left" v-else>{{dataObj.message}}</div>
                 </swiper-slide>
               <div class="swiper-pagination" slot="pagination"></div>
@@ -121,7 +121,7 @@
         </div>
       </el-main>
     </el-container>
-    <div id="inMenu" class="menuDemo">
+    <div id="inMenu" class="menuDemo" style="display:none;">
       <el-menu class="el-menu-demo" mode="horizontal">
         <el-menu-item @click="inFilter()" index="2-1">筛选器</el-menu-item>
         <el-submenu index="2-2">
@@ -187,7 +187,7 @@ import "ag-grid-community/dist/styles/ag-theme-balham.css";
 // 引入ag-grid-vue
 import { AgGridVue } from "ag-grid-vue";
 import request from '@/utils/request'
-import 'iview/dist/styles/iview.css'
+//import 'iview/dist/styles/iview.css'
 import mtEditor from 'ams-datamax'
 import $ from 'jquery'
 import {Loading} from 'element-ui';
@@ -412,7 +412,11 @@ export default {
       //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilte:''}]}
       thresholdValueDialog:false,
       //设置阈值需要的对象
-      setThreasholdValueObj:{}
+      setThreasholdValueObj:{},
+      chartBoxStyle: {
+        height: '500px',
+        width: '100%'
+      },
     }
   },
   watch: {
