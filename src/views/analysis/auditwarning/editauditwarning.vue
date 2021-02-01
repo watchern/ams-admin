@@ -634,23 +634,23 @@ export default {
             }
             if (count > 1) {
               let resultObj = supQuery(analysisList[i].objInList, analysisList[i].objDimList)
-              this.handleWarningTaskRel(indicator.inOftenindicatorsUuid,1,resultObj.sql)
+              this.handleWarningTaskRel(indicator.inOftenindicatorsUuid,1,resultObj.sql,analysisList[i].thresholdValueRelObj)
             } else {
                let resultObj = bingLieQuery(analysisList[i].objInList, analysisList[i].objDimList)
-               this.handleWarningTaskRel(indicator.inOftenindicatorsUuid,1,resultObj.sql)
+               this.handleWarningTaskRel(indicator.inOftenindicatorsUuid,1,resultObj.sql,analysisList[i].thresholdValueRelObj)
             }
           }
         }
       }
     },
-    handleWarningTaskRel(sourceUuid,version,sql){
+    handleWarningTaskRel(sourceUuid,version,sql,thresholdValueRel){
       let taskRel = {
         //与审计预警表关联字段
         auditWarningUuid : this.auditWarningSave.auditWarningUuid,
         sourceUuid : sourceUuid,
         //模型版本号
         modelVersion : version,
-        settingInfo : JSON.stringify({sql:sql})
+        settingInfo : JSON.stringify({sql:sql,thresholdValueRel:thresholdValueRel})
       }
       this.auditWarningSave.warningTaskRel.push(taskRel)
     },

@@ -241,4 +241,7 @@ export default {
   font-size: 20px;
   margin: 5px;
 }
+>>>.el-tabs__active-bar{
+  left:6px;
+}
 </style>
