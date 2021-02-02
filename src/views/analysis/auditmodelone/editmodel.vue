@@ -1,129 +1,6 @@
 <template>
   <div class="app-container" v-loading="editorModelLoading">
     <el-container class="el-container">
-<!--      <div id="drag" ref="dragDiv" class="drag">-->
-<!--        <div class="title">-->
-<!--          <h2>···</h2>-->
-<!--          <div style="display:none">-->
-<!--            <a class="min" href="javascript:" title="最小化"></a>-->
-<!--            <a class="max" href="javascript:" title="最大化"></a>-->
-<!--            <a class="revert" href="javascript:" title="还原"></a>-->
-<!--            <a class="close" href="javascript:" title="关闭"></a>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="resizeL"></div>-->
-<!--        <div class="resizeT"></div>-->
-<!--        <div class="resizeR"></div>-->
-<!--        <div class="resizeB"></div>-->
-<!--        <div class="resizeLT"></div>-->
-<!--        <div class="resizeTR"></div>-->
-<!--        <div class="resizeBR"></div>-->
-<!--        <div class="resizeLB"></div>-->
-<!--        <div class="content">-->
-<!--          <el-aside style="width:100%">-->
-<!--            <el-tree class="el-tree-rewrite" ref="tree" :data="treeNodeData" :props="defaultProps"-->
-<!--                     :expand-on-click-node="false" default-expand-all @node-click="handleNodeClick">-->
-<!--              <span slot-scope="{ node, data }" class="custom-tree-node">-->
-<!--                <span>-->
-<!--                  {{ node.label }}-->
-<!--                </span>-->
-<!--                <span v-if="data.type=='relInfo'">-->
-<!--                  <el-button type="text" title="添加关联详细" size="mini" @click.stop="() => createDetail(node,data)"><i-->
-<!--                    class="el-icon-circle-plus-outline"/></el-button>-->
-<!--                </span>-->
-<!--                <span v-if="data.type=='filterShow'">-->
-<!--                  <el-button type="text" title="添加条件显示" size="mini" @click.stop="() => createFilterShow(node,data)"><i-->
-<!--                    class="el-icon-circle-plus-outline"/></el-button>-->
-<!--                </span>-->
-<!--                <span v-if="data.type=='relDetail' || data.type=='filterShowNode'">-->
-<!--                  <el-button type="text" size="mini" @click="() => deleteFolder(node, data)"><i class="el-icon-delete"/></el-button>-->
-<!--                </span>-->
-<!--              </span>-->
-
-<!--            </el-tree>-->
-<!--            <div class="custom-tree-caidan ">-->
-<!--              <img class="custom-save" :src="imgCus2" @click="save" style="cursor:pointer"/>-->
-<!--              <img class="custom-close" :src="imgCus1" @click="closeWinfrom" style="cursor:pointer"/>-->
-<!--            </div>-->
-<!--            <div class="custom-tree-shangla">-->
-<!--              <img class="custom-shouqi" :src="imgCus3" @click="customup"/>-->
-<!--              <img class="custom-xiala" :src="imgCus3" @click="customdown"/>-->
-<!--            </div>-->
-<!--          </el-aside>-->
-<!--        </div>-->
-<!--      </div>-->
-      <div ref="basicInfo" class="display detail-form">
-        <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules" :disabled="isBanEdit">
-          <el-row>
-            <el-col :span="15">
-              <el-form-item label="模型名称" prop="modelName">
-                <el-input v-model="form.modelName"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-form-item label="业务分类">
-              <el-col :span="15">
-                <el-input v-model="form.modelFolderUuid" class="display" :disabled="true"/>
-                <el-input v-model="form.modelFolderName" :disabled="true"/>
-              </el-col>
-              <el-col :span="2">
-                <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true" type="primary">选择</el-button>
-              </el-col>
-              <el-col :span="2"></el-col>
-            </el-form-item>
-          </el-row>
-          <el-row>
-            <el-form-item label="审计事项" prop="auditItemUuid">
-              <el-col :span="15">
-                <el-input v-model="form.auditItemUuid" class="display" :disabled="true"/>
-                <el-input v-model="form.auditItemName" :disabled="true"/>
-              </el-col>
-              <el-button @click="showAuditItemTree" type="primary">选择</el-button>
-            </el-form-item>
-          </el-row>
-          <el-row>
-            <el-col :span="9">
-              <el-form-item label="风险等级" prop="riskLevelUuid">
-                <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级" style="width:67%">
-                  <el-option
-                    v-for="state in riskLeve"
-                    :key="state.codeValue"
-                    :value="state.codeValue"
-                    :label="state.codeName"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="9">
-              <el-form-item label="模型类型" prop="modelType">
-                <el-select v-model="form.modelType" placeholder="请选择模型类型" style="width:67%">
-                  <el-option
-                    v-for="state in modelTypeData"
-                    :key="state.codeValue"
-                    :value="state.codeValue"
-                    :label="state.codeName"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="15">
-              <el-form-item label="审计思路">
-                <el-input v-model="form.auditIdeas" type="textarea"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="15">
-              <el-form-item label="参数条件">
-                <el-input v-model="form.paramConditions" type="textarea"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-      </div>
       <div ref="modelDesign" class="div-width">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
           <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" :class="[modifying===true?'sqlEditorWidth':'sqlEditorParamWidthOn']"
@@ -181,7 +58,7 @@
                   </el-col>
                   <el-col :span="24">
                     <el-form-item label="模型类型" prop="modelType">
-                      <el-select v-model="form.modelType" placeholder="请选择模型类型" style="width:67%">
+                      <el-select disabled v-model="form.modelType" placeholder="请选择模型类型" style="width:67%">
                         <el-option
                           v-for="state in modelTypeData"
                           :key="state.codeValue"
@@ -209,7 +86,7 @@
               </el-form>
             </div>
           </div>
-          <div v-show="useParamDraw" style="width: 50%;float: right;height: 748px">
+          <div class="modelInfoClass" v-show="useParamDraw" style="width: 50%;float: right;height: 748px">
             <div ref="paramDefaultValue" class="default-value">
               <div style="font-size: 20px">
                 模型参数
@@ -217,13 +94,13 @@
                   <i class="el-icon-info"/></el-tooltip>
               </div>
               <div id="paramList">
-                <paramshownew ref="apple" v-if="paramShowVIf"></paramshownew>
+                <paramshownew ref="apple" v-show="paramShowVIf"></paramshownew>
               </div>
             </div>
           </div>
           <div class="modelInfoClass" v-show="resultConfigDraw" style="width: 50%;float: right;height: 748px">
             <el-tabs v-model="activeName" :stretch="true" style="width: 92%">
-              <el-tab-pane label="模型结果" name="first"><div ref="modelResultOutputCol" class="default-value">
+              <el-tab-pane label="模型结果" name="first"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" ref="modelResultOutputCol" class="default-value">
                 <div style="font-size: 20px">
                   模型结果
                   <el-tooltip class="item" effect="dark" content="只显示最后的结果列" placement="top-start">
@@ -265,7 +142,7 @@
                   </el-table>
                 </div>
               </div></el-tab-pane>
-              <el-tab-pane label="模型关联" name="second"><div id="modelDetailDiv">
+              <el-tab-pane label="模型关联" name="second"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" id="modelDetailDiv">
                 <div style="font-size: 20px;margin-left: 3%">
                   模型关联
                   <el-tooltip class="item" effect="dark" content="在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；
@@ -282,7 +159,7 @@
                       <el-button :disabled="modelRelatedButton.delete" type="primary" class="oper-btn delete" @click="deleteModelRelation" />
                     </div>
                   </el-row>
-                  <el-table ref="columnData" :data="modelDetails" class="div-width" style="margin-left: 3%" @selection-change="handleSelectionChange">
+                  <el-table :data="modelDetails" class="div-width" style="margin-left: 3%" @selection-change="handleSelectionChange">
                     <el-table-column
                       type="selection"
                       width="60">
@@ -291,14 +168,33 @@
                     <el-table-column prop="modelDetailMemo" label="描述" width="200"/>
                     <el-table-column prop="relationType" label="关联类型" width="200" :formatter="modelTypeFormatter"/>
                   </el-table>
-<!--                //todo-->
-<!--                <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id"-->
-<!--                     class="display default-value">-->
-<!--                  <ModelDetail style="margin-left: 3%" ref="child" :operationtype="operationObj.operationType" :columns="columnData"-->
-<!--                                @updateTreeNode="updateTreeNode"/>-->
-<!--                </div>-->
               </div></el-tab-pane>
-              <el-tab-pane label="模型条件" name="third">模型条件</el-tab-pane>
+              <el-tab-pane label="模型条件" name="third">
+                <div align='center' v-show="!isExecuteSql" class="notExecuteSqlClass" >执行SQL后才能设置</div>
+                <div v-show="isExecuteSql">
+                <div style="font-size: 20px;margin-left: 3%">
+                  模型条件
+                  <el-tooltip class="item" effect="dark" content="" placement="top-start">
+                    <i class="el-icon-info"/></el-tooltip>
+                </div>
+                <el-row>
+                  <div style="width: 94%" align="right">
+                    <el-button :disabled="thresholdButton.add" type="primary" class="oper-btn add" @click="addthreshold" />
+                    <el-button :disabled="thresholdButton.edit" type="primary" class="oper-btn edit" @click="editthreshold" />
+                    <el-button :disabled="thresholdButton.delete" type="primary" class="oper-btn delete" @click="deleteThreshold" />
+                  </div>
+                </el-row>
+                <el-table :data="threshold" class="div-width" style="margin-left: 3%" @selection-change="handleSelectionChangeThreshold">
+                  <el-table-column
+                    type="selection"
+                    width="60">
+                  </el-table-column>
+                  <el-table-column prop="modelResultColumnName" label="阈值字段" width="200"/>
+                  <el-table-column prop="operator" label="运算符" width="200"/>
+                  <el-table-column prop="thresholdValue.thresholdValueName" label="阈值名称" width="200"/>
+                </el-table>
+                </div>
+              </el-tab-pane>
             </el-tabs>
           </div>
           <div  style="position: absolute;float:right;left: 97%;height: 92%;overflow:hidden;width: 2.5%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"> <!-- v-if="!modifying"  -->
@@ -312,111 +208,6 @@
             <el-input v-model="form.sqlValue" type="textarea"/>
           </el-form-item>
         </el-form>
-      </div>
-<!--      <div ref="paramDefaultValue" class="display default-value">-->
-<!--        <div style="font-size: 20px">-->
-<!--          模型参数-->
-<!--          <el-tooltip class="item" effect="dark" content="拖拽改变参数展示顺序" placement="top-start">-->
-<!--            <i class="el-icon-info"/></el-tooltip>-->
-<!--        </div>-->
-<!--        <div id="paramList">-->
-<!--          &lt;!&ndash;          <paramShow ref="apple" v-if="paramShowVIf"></paramShow>&ndash;&gt;-->
-<!--          <paramshownew ref="apple" v-if="paramShowVIf"></paramshownew>-->
-<!--        </div>-->
-<!--      </div>-->
-      <div ref="modelResultOutputCol" class="display default-value">
-        <div style="font-size: 20px">
-          模型结果
-          <el-tooltip class="item" effect="dark" content="只显示最后的结果列" placement="top-start">
-            <i class="el-icon-info"/></el-tooltip>
-        </div>
-        <div class="model-result-output-col">
-          <el-table ref="columnData" :data="columnData" class="div-width">
-            <el-table-column prop="outputColumnName" label="输出列名" width="180"/>
-            <el-table-column prop="dataCoding" label="数据转码" width="180">
-              <template slot-scope="scope">
-                <SelectTransCode ref="SelectTransCode" :transuuid.sync="scope.row.dataCoding"/>
-              </template>
-            </el-table-column>
-            <el-table-column prop="columnName" label="是否显示" width="80">
-              <template slot-scope="scope">
-                <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1" :disabled="isBanEdit">
-                  <el-option label="是" :value="1"/>
-                  <el-option label="否" :value="0"/>
-                </el-select>
-              </template>
-            </el-table-column>
-            <el-table-column prop="columnName" label="对应业务字段" width="180">
-              <template slot-scope="scope">
-                <el-select v-model="scope.row.businessFieldUuid" value="-1" :disabled="isBanEdit">
-                  <el-option
-                    v-for="state in businessColumnSelect"
-                    :key="state.attrCode"
-                    :value="state.attrCode"
-                    :label="state.attrName"
-                  />
-                </el-select>
-              </template>
-            </el-table-column>
-            <el-table-column prop="columnName" label="别名" width="180">
-              <template slot-scope="scope">
-                <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" :disabled="isBanEdit"/>
-              </template>
-            </el-table-column>
-            <!--          <el-table-column prop="columnType" label="字段类型标记" width="180">
-              <template slot-scope="scope" v-model="scope.row.columnType">
-                {{scope.row.columnType}}
-          &lt;!&ndash;      <el-input v-model="scope.row.columnType" :value="scope.row.outputColumnType"/>
-                <el-select v-model="scope.row.columnType" :value="scope.row.outputColumnType">
-                  <el-option
-                    v-for="state in columnTypeSelect"
-                    :key="state.uuid"
-                    :value="state.uuid"
-                    :label="state.name"
-                  />
-                </el-select>&ndash;&gt;
-              </template>
-            </el-table-column>-->
-          </el-table>
-        </div>
-      </div>
-      <div ref="relInfo" class="display default-value">
-        <p class="words">
-          在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。
-          用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。
-          通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。</p>
-        <!--<el-button @click="createDetail">新建</el-button>-->
-      </div>
-<!--      <div id="modelDetailDiv">-->
-<!--        <div style="font-size: 20px">-->
-<!--          在进行审计分析时，模型执行所生成的结果数据在业务逻辑上可能存着关联关系；而在模型的设计过程中，同样可能需要利用到其他模型的执行结果。因此，为了满足这种模型之间的互相利用、相互辅助的功能需求，系统允许用户对多个模型或sql进行关联。-->
-<!--          用户通过本功能来创建并维护模型间的关联关系，以满足多模型联合执行分析的业务需求。-->
-<!--          通过模型设计器，用户能够为当前的模型建立与其他可访问模型的关联关系，并将其分析结果引入到当前模型设计中。-->
-<!--          <el-tooltip class="item" effect="dark" content="只显示最后的结果列" placement="top-start">-->
-<!--            <i class="el-icon-info"/></el-tooltip>-->
-<!--        </div>-->
-<!--        <div v-for="(modelDetail,index) in modelDetails" :key="modelDetail.id" :ref="modelDetail.id"-->
-<!--             class="display default-value">-->
-<!--          <ModelDetail ref="child" :operationtype="operationObj.operationType" :columns="columnData"-->
-<!--                       :data="modelDetail.data" :tree-id="modelDetail.id" @updateTreeNode="updateTreeNode"/>-->
-<!--        </div>-->
-<!--      </div>-->
-      <div ref="chartConfig" class="display default-value">
-        这是图表配置
-      </div>
-      <div ref="modelFilterShowParent" class="display default-value">
-        <p class="words">条件显示能够根据用户所设定的条件及显示样式，对模型执行结果中满足条件的敏感数据或重要数据进行着色显示，使这些数据变的一目了然，
-          以便审计人员对这些数据进行审计。</p>
-        <p class="words">条件显示设计器以表格的形式列举所有由用户设定的、将被应用于模型执行结果的显示条件及显示样式，用户可通过该列表对各个条件的属性进行快速查看。
-          同时用户也可以对显示条件进行添加、修改、删除</p>
-        <!--<el-button @click="createFilterShow">新建</el-button>-->
-      </div>
-      <div ref="filterShowDiv">
-        <div v-for="(filterShow,index) in filterShows" :key="filterShow.id" :ref="filterShow.id"
-             class="display default-value">
-          <ModelFilterShow ref="modelFilterSHowChild" :operationtype="operationObj.operationType" :columns="columnData"
-                           :data="filterShow.data" :tree-id="filterShow.id" @updateTreeNode="updateTreeNode"/>
-        </div>
       </div>
     </el-container>
     <el-dialog v-if="auditItemTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="auditItemTree"
@@ -437,8 +228,15 @@
     <el-dialog v-if="modelDetailIsSee" :visible.sync="modelDetailIsSee" :title="modelDetailAdd===true?'添加模型关联':'修改模型关联'" width="50%">
       <model-detail ref="child" v-if="modelDetailIsSee" :data="modelDetailAdd===true?{}:editingModelDetail" :operationtype="operationObj.operationType" :columns="columnData"></model-detail>
       <div slot="footer">
-        <el-button type="primary" @click="createDetail">确定</el-button>
+        <el-button type="primary" @click="modelDetailAdd===true?createDetail():editModelRelationDetermine()">确定</el-button>
         <el-button @click="modelDetailIsSee=false">取消</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog v-if="thresholdIsSee" :visible.sync="thresholdIsSee" :title="thresholdAdd===true?'添加模型阈值':'修改模型阈值'" width="50%">
+          <thresholdvaluerel v-if="thresholdIsSee" ref="thresholdChild" :setThreasholdValueObj="setThreasholdValueObj"></thresholdvaluerel>
+      <div slot="footer">
+        <el-button type="primary" @click="thresholdAdd===true?createThreshold():editThresholdDetermine()">确定</el-button>
+        <el-button @click="thresholdIsSee=false">取消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -459,6 +257,7 @@ import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 import graph from '@/views/graphtool/tooldic/index'
 import messageTips from '@/views/analysis/auditmodel/message'
 import paramshownew from "@/views/analysis/modelparam/paramshownew";
+import thresholdvaluerel from "@/views/analysis/auditmodelone/thresholdvaluerelOne";
 // import func from 'vue-temp/vue-editor-bridge'
 export default {
   name: 'EditModel',
@@ -474,7 +273,8 @@ export default {
     SelectTransCode,
     graph,
     messageTips,
-    paramshownew
+    paramshownew,
+    thresholdvaluerel
   },
   props: ['openValue'],
   data() {
@@ -581,12 +381,11 @@ export default {
       filterShows: [],
       //校验规则失败自动跳转用的对象
       newRelInfoValue: {},
-      newFilterShowValue: {},
       //sql编辑器参数对象
       sqlEditorParamObj: {},
       //添加模型详细树时候的索引
       modelDetailIndex: 0,
-      paramShowVIf: true,
+      paramShowVIf: false,
       editorModelLoading: false,
       //风险等级
       riskLeve: [],
@@ -635,36 +434,34 @@ export default {
         two: false,
         three: false
       },
-      modelRelatedButton:{
+      modelRelatedButton:{  //模型关联维护按钮可用控制
         add:false,
         delete:true,
         edit:true
       },
       editingModelDetail:{},
       modelDetailAdd:true,   //判断模型关联是修改还是添加状态
-      selectedModelDetail:[]  //存储选中的模型关联对象
+      selectedModelDetail:[],  //存储选中的模型关联对象
+      threshold:[],
+      thresholdButton:{   //阈值维护按钮可用控制
+        add:false,
+        delete:true,
+        edit:true
+      },
+      thresholdIsSee:false,
+      thresholdAdd:true, //判断模型阈值是修改还是添加状态
+      setThreasholdValueObj:{
+        isDisplay:false ,   //查看是true   其他是false
+        thresholdValueRelObj:{},
+        columns:[]
+      },
+      selectedThreshold:[],
+      isExecuteSql:false
     }
   },
   watch: {
-    newRelInfoValue(newChild) {
-      this.$nextTick(function () {
-        this.handleNodeClick(newChild)
-      })
-    },
-    newFilterShowValue(newChild) {
-      this.$nextTick(function () {
-        this.handleNodeClick(newChild)
-      })
-    },
     paramShowVIf(newChild) {
-      this.$nextTick(function () {
-        if (newChild) {
-          // this.paramShowArr = this.sqlEditorParam
-          // this.$refs.apple.createParamTableHtml(true, this.sqlEditorParam, true);
-          debugger
           this.$refs.apple.initSetting(this.sqlEditorParam)
-        }
-      })
     }
   },
   created() {
@@ -674,6 +471,11 @@ export default {
     if (this.operationObj.modelType!= '' && this.operationObj.modelType!= undefined){
       this.form.modelType = this.operationObj.modelType
       this.modelTypeChangeEvent(this.form.modelType)
+      this.paramShowVIf = true
+    }
+    if (this.operationObj.model != undefined){
+      this.isExecuteSql = true
+      this.modelTypeChangeEvent(this.operationObj.model.modelType)
     }
     if (this.$route.query.dataUserId != 'undefined' && this.$route.query.sceneCode != 'undefined') {
       this.dataUserId = this.$route.query.dataUserId
@@ -688,6 +490,7 @@ export default {
     this.initData(this.operationObj)
     // 如果为2则反显要修改的数据
     if (this.operationObj.operationType == 2) {
+      this.setThreasholdValueObj.isDisplay = true
       this.isUpdate = true
       var model = this.operationObj.model
       this.displayData(model)
@@ -695,6 +498,7 @@ export default {
     }
     // 如果为2则反显要显示的数据
     if (this.operationObj.operationType == 3) {
+      this.setThreasholdValueObj.isDisplay = true
       this.isUpdate = true
       var model = this.operationObj.model
       this.displayData(model)
@@ -706,6 +510,33 @@ export default {
     }
   },
   methods: {
+    editThresholdDetermine(){
+      for (var j = 0 ;j<this.threshold.length; j++){
+        if (this.threshold[j].onlyId===this.setThreasholdValueObj.thresholdValueRelObj.onlyId){
+          this.threshold.splice(j,1,this.setThreasholdValueObj.thresholdValueRelObj)
+        }
+      }
+      this.thresholdIsSee = false
+    },
+    deleteThreshold(){
+      for(var i = 0;i<this.selectedThreshold.length;i++){
+        for (var j = 0 ;j<this.threshold.length; j++){
+          if (this.threshold[j].onlyId===this.selectedThreshold[i].onlyId){
+            this.threshold.splice(j,1)
+          }
+        }
+      }
+    },
+    editthreshold(){
+      this.setThreasholdValueObj.isDisplay = true
+      this.thresholdAdd = false
+      this.thresholdIsSee = true
+    },
+    addthreshold(){
+      this.setThreasholdValueObj.isDisplay = false
+      this.thresholdAdd = true
+      this.thresholdIsSee = true
+    },
     //模型类型格式化
     modelTypeFormatter(val){
       if (val.relationType === 1){
@@ -734,6 +565,23 @@ export default {
       this.editingModelDetail = val[0]
       this.selectedModelDetail = val
     },
+    handleSelectionChangeThreshold(val){
+      if (val.length==0){
+        this.thresholdButton.add = false
+        this.thresholdButton.edit = true
+        this.thresholdButton.delete = true
+      }else if (val.length==1){
+        this.thresholdButton.add = false
+        this.thresholdButton.edit = false
+        this.thresholdButton.delete = false
+      }else if (val.length>1){
+        this.thresholdButton.add = false
+        this.thresholdButton.edit = true
+        this.thresholdButton.delete = false
+      }
+      this.setThreasholdValueObj.thresholdValueRelObj = val[0]
+      this.selectedThreshold = val
+    },
     /**
      * 点击模型关联添加按钮触发方法
      * **/
@@ -756,6 +604,14 @@ export default {
               }
         }
       }
+    },
+    editModelRelationDetermine(){
+        for (var j = 0 ;j<this.modelDetails.length; j++){
+          if (this.modelDetails[j].onlyId===this.editingModelDetail.onlyId){
+            this.modelDetails.splice(j,1,this.editingModelDetail)
+          }
+        }
+      this.modelDetailIsSee = false
     },
     clickModelInfo(){
       if (this.modifying == true && this.modelInfoDraw == true){
@@ -850,103 +706,6 @@ export default {
       // 初始化审计事项
       this.modelTypeData = getDictList('002003')
     },
-
-    /**
-     * 点击之后切换页签
-     * @param data 点击的数据
-     * @param node 树节点
-     */
-    handleNodeClick(data, node) {
-      this.hideModelDetail()
-      if (data.type == 'basicInfo') {
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.modelFilterShowParent.style.display = 'none'
-        this.$refs.basicInfo.style.display = 'block'
-      } else if (data.type == 'modelDesign') {
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.modelFilterShowParent.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'block'
-        this.modelTypeChangeEvent(this.form.modelType)
-      } else if (data.type == 'paramDefaultValue') {
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.modelFilterShowParent.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'block'
-      } else if (data.type == 'modelResultOutputCol') {
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.modelFilterShowParent.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'block'
-        if (this.form.modelType === "002003002") {
-          //说明是图形化模型，从图形化组件里获取列信息
-          this.getGraphObj()
-        }
-      } else if (data.type == 'relInfo') {
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.modelFilterShowParent.style.display = 'none'
-        this.$refs.relInfo.style.display = 'block'
-      } else if (data.type == 'chartConfig') {
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.modelFilterShowParent.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'block'
-      } else if (data.type == 'filterShow') {
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.modelFilterShowParent.style.display = 'block'
-      } else if (data.type == 'relDetail' || data.type == 'filterShowNode') {
-        // 获取指定div
-        this.$refs.basicInfo.style.display = 'none'
-        this.$refs.modelDesign.style.display = 'none'
-        this.$refs.paramDefaultValue.style.display = 'none'
-        this.$refs.modelResultOutputCol.style.display = 'none'
-        this.$refs.relInfo.style.display = 'none'
-        this.$refs.chartConfig.style.display = 'none'
-        this.$refs.modelFilterShowParent.style.display = 'none'
-        if (this.$refs.[data.id][0] != undefined) {
-          this.$refs.[data.id][0].style.display = 'block'
-        }
-      }
-      this.currentSelectTreeNode = data
-    },
-    /**
-     *隐藏模型详细
-     */
-    hideModelDetail() {
-      for (let i = 0; i < this.modelDetails.length; i++) {
-        const id = this.modelDetails[i].id
-        this.$refs.[id][0].style.display = 'none'
-      }
-      for (let i = 0; i < this.filterShows.length; i++) {
-        const id = this.filterShows[i].id
-        this.$refs.[id][0].style.display = 'none'
-      }
-    },
     /**
      * 获取当前界面的模型对象
      */
@@ -962,15 +721,22 @@ export default {
         }
       })
       if (!basicInfoVerResult) {
-        // 自动选中指定树节点
-        this.handleNodeClick({
-          id: '1',
-          label: '基本信息',
-          type: 'basicInfo'
-        }, null)
+       if (this.modifying == true && this.modelInfoDraw == false){
+          this.modifying = true
+          this.useParamDraw = false
+          this.resultConfigDraw = false
+          this.modelInfoDraw = true
+          this.changeBtn.one = true
+          this.changeBtn.two = this.changeBtn.three = false
+        }else {
+          this.useParamDraw = false
+          this.resultConfigDraw = false
+          this.modelInfoDraw = true
+          this.modifying = true
+          this.changeBtn.one = true
+        }
         return null
       }
-      // endregion
       if (this.$refs.SQLEditor != undefined) {
         // region 校验sql语句
         let modelDesignVerResult = false
@@ -984,16 +750,6 @@ export default {
         if (this.$refs.SQLEditor[0].getSQLIsUpdate()) {
           modelDesignVerResult = false
           message = "请先执行或校验SQL"
-        }
-        if (!modelDesignVerResult) {
-          // 自动选中指定树节点
-          this.handleNodeClick({
-            id: '2',
-            label: '模型设计',
-            type: 'modelDesign'
-          }, null)
-          this.$message({type: 'info', message: message})
-          return null
         }
         // endregion
         //获取SQL编辑器参数对象 到下边去处理
@@ -1033,11 +789,6 @@ export default {
         }
       } else {
         allVer = false
-        this.handleNodeClick({
-          id: '2',
-          label: '模型设计',
-          type: 'modelDesign'
-        }, null)
       }
       if (!allVer) {
         return null
@@ -1051,6 +802,7 @@ export default {
         }
       }
       this.form.modelOutputColumn = columnData
+
       // endregion
       // region 处理参数数据
       // 获取到参数的默认值，是个JSON，将JSON存入到数据库  以便下次反显时使用
@@ -1070,6 +822,9 @@ export default {
         }
         this.form.parammModelRel = newParamData
       }
+      for(var i = 0;i<this.modelDetails.length;i++){
+        delete this.modelDetails[i].onlyId
+      }
       this.form.modelDetailRelation = this.modelDetails// 模型关联详细
       // endregion
       // region 处理图表
@@ -1078,26 +833,11 @@ export default {
       // region 模型SQL所用到的表
       this.form.modelOriginalTable = this.modelOriginalTable
       // endregion
-      // region 处理模型条件显示
-      let resultFilterResult = true
-      const resultFilterShow = []
-      for (const i in this.filterShows) {
-        const filterShowObj = this.$refs.modelFilterSHowChild[i].getForm()
-        if (filterShowObj.verResult == undefined) {
-          resultFilterShow.push(filterShowObj)
-        } else {
-          const treeNode = {id: filterShowObj.treeId, type: 'filterShowNode'}
-          this.handleNodeClick(treeNode, null)
-          resultFilterResult = false
-        }
+      for(var i = 0;i<this.threshold.length;i++){
+        delete this.threshold[i].onlyId
       }
-      if (!resultFilterResult) {
-        return null
-      }
-      this.form.resultFilterShow = resultFilterShow
+      this.form.modelThresholdValues = this.threshold
       //region 获取sql编辑器那边所选中的保存路径
-
-      //endregion
       // endregionalert
       return this.form
     },
@@ -1128,8 +868,8 @@ export default {
       // 初始化默认参数
       // 初始化参数默认值界面界面
       if (returnObj.params.length != 0) {
-        this.paramShowVIf = true
         this.sqlEditorParam = returnObj.params
+        this.$refs.apple.initSetting(this.sqlEditorParam)
       } else {
         this.paramShowVIf = false
       }
@@ -1144,8 +884,16 @@ export default {
         columnData.push(columnDataObj)
       }
       // endregion
-      // 列数据
+      // 列数据  todo
       this.columnData = columnData
+      if (this.columnData.length==0){
+        this.isExecuteSql = false
+      }else if (this.columnData.length>0){
+        this.isExecuteSql = true
+      }
+      for (var i = 0;i<columnData.length;i++){
+        this.setThreasholdValueObj.columns.push(columnData[i].outputColumnName)
+      }
       // 模型SQL用到的数据表
       this.modelOriginalTable = sqlObj.modelOriginalTable
       // 处理图表JSON
@@ -1196,14 +944,22 @@ export default {
       // 初始化参数默认值界面界面
       let params = this.$refs.graph[0].getParamsArr()
       if (params.length != 0) {
-        this.paramShowVIf = true
         this.sqlEditorParam = params
+        this.$refs.apple.initSetting(this.sqlEditorParam)
       } else {
         this.paramShowVIf = false
       }
       //endregion
       this.graphColumnInfo = returnObj
       this.columnData = columnData
+      if (this.columnData.length==0){
+        this.isExecuteSql = false
+      }else if (this.columnData.length>0){
+        this.isExecuteSql = true
+      }
+      for (var i = 0;i<columnData.length;i++){
+        this.setThreasholdValueObj.columns.push(columnData[i].outputColumnName)
+      }
       //直接获取图形化编号
       this.form.sqlValue = ""
       return true
@@ -1310,23 +1066,6 @@ export default {
      */
     displaySQL(returnObj) {
       let sql = returnObj.sqlValue
-      //2020年12月17日 10:11:52  ZhangSiWeiG 去掉自动加载 因为界面样式渲染问题
-      /*const arrPram = returnObj.params
-      let sqlStr = returnObj.sqlValue
-      //初始化sql编辑器
-      this.modelTypeObj = []
-      if(this.form.modelType == "002003001"){
-        let obj = {
-          id:'002003001'
-        }
-        this.modelTypeObj.push(obj)
-      }
-      else if(this.form.modelType == "002003002"){
-        let obj = {
-          id:'002003002'
-        }
-        this.modelTypeObj.push(obj)
-      }*/
       $('#sqlValueView').html(sql)
     },
     /**
@@ -1343,29 +1082,15 @@ export default {
         this.modelDetails.push(modelDetailObj)
       }
     },
-    /**
-     * 创建过滤条件显示
-     */
-    createFilterShow(treeNode, data) {
-      if (this.columnData.length == 0) {
-        this.$message({type: 'info', message: '请先编写SQL!'})
-        return
+    createThreshold(){
+      var thresholdObj = this.$refs.thresholdChild.getSaveObj()
+      if (thresholdObj===undefined){
+        this.$message('缺少阈值字段')
+      }else {
+        this.thresholdIsSee = false
+        thresholdObj.onlyId = uuid2()
+        this.threshold.push(thresholdObj)
       }
-      $("#drag").css("width", 115)
-      ++this.modelFilterShowIndex
-      const newChild = {
-        id: 'filterShow' + this.modelFilterShowIndex,
-        label: '条件显示' + this.modelFilterShowIndex,
-        children: [],
-        type: 'filterShowNode'
-      }
-      if (data == undefined) {
-        data = this.$refs.tree.getCurrentNode()
-      }
-      data.children.push(newChild)
-      this.filterShows.push({id: 'filterShow' + this.modelFilterShowIndex, data: []})
-      this.newFilterShowValue = newChild
-      this.$refs.dragDiv.style.height = this.$refs.dragDiv.style.height + 20
     },
     /**
      * 清空界面数据
@@ -1440,57 +1165,24 @@ export default {
       ]
     },
     /**
-     * 删除添加的节点
-     * @param node 树节点
-     * @param data 要删除的节点
-     */
-    deleteFolder(node, data) {
-      const parent = node.parent
-      const children = parent.data.children || parent.data
-      const index = children.findIndex(d => d.id === data.id)
-      children.splice(index, 1)
-      if (data.type === 'relDetail') {
-        for (let i = 0; i < this.modelDetails.length; i++) {
-          const id = this.modelDetails[i].id
-          if (id == data.id) {
-            this.modelDetails.splice(i, 1)
-            break
-          }
-        }
-      } else if (data.type === 'filterShowNode') {
-        for (let i = 0; i < this.filterShows.length; i++) {
-          const id = this.filterShows[i].id
-          if (id === data.id) {
-            this.filterShows.splice(i, 1)
-            break
-          }
-        }
-      }
-    },
-    /**
-     * 修改树节点名称
-     * @param value 要修改的值
-     */
-    updateTreeNode(value) {
-      this.currentSelectTreeNode.label = value
-    },
-    /**
      * 如果是修改模型的话则反显数据
      * @param model 要反显的数据
      */
     displayData(model) {
       // region 处理模型结果列
       const columnData = []
-
       for (let i = 0; i < model.modelOutputColumn.length; i++) {
         const columnDataObj = {
-          outputColumnName: model.modelOutputColumn[i].columnName,
+          outputColumnName: model.modelOutputColumn[i].outputColumnName,
           outputColumnType: model.modelOutputColumn[i].columnType
         }
         columnData.push(columnDataObj)
       }
       // 列数据
       this.columnData = columnData
+      for (var i = 0;i<columnData.length;i++){
+        this.setThreasholdValueObj.columns.push(this.columnData[i].outputColumnName)
+      }
       // endregion
       // region 反显基本信息
       this.form = model
@@ -1513,8 +1205,8 @@ export default {
       // endregion
       // region 反显参数默认值
       if (returnObj.params.arr.length != 0) {
-        this.$refs.apple.initSetting(displayParamObj)
-        // this.$refs.apple.createParamTableHtml(true, displayParamObj, true, '参数展示');
+        this.sqlEditorParam = displayParamObj
+        this.paramShowVIf = true
       }
       // endregion
       // region 模型结果输出列
@@ -1538,17 +1230,9 @@ export default {
       this.modelOriginalTable = model.modelOriginalTable
       // endregion
       // region 反显条件展示
-      var treeNodeFilterShow = this.treeNodeData[6]
-      for (let i = 0; i < model.resultFilterShow.length; i++) {
-        ++this.modelFilterShowIndex
-        const newChild = {
-          id: 'filterShow' + this.modelFilterShowIndex,
-          label: model.resultFilterShow[i].filterName,
-          children: [],
-          type: 'filterShowNode'
-        }
-        treeNodeFilterShow.children.push(newChild)
-        this.filterShows.push({id: 'filterShow' + this.modelFilterShowIndex, data: model.resultFilterShow[i]})
+      for(let i = 0;i<model.modelThresholdValues.length;i++){
+        model.modelThresholdValues[i].onlyId = uuid2()
+        this.threshold.push(model.modelThresholdValues[i])
       }
       // endregion
       this.displaySQL(returnObj)
@@ -1580,13 +1264,6 @@ export default {
           id: this.sqlEditorStr
         }
         this.modelTypeObj.push(obj)
-        //
-        // let obj2= {
-        //   id: '2',
-        //   label: '模型设计',
-        //   type: 'modelDesign'
-        // }
-        // this.handleNodeClick(obj2)
       }
       if (vId == this.graphEditorStr) {
         let obj = {
@@ -1663,173 +1340,6 @@ export default {
         })
       }
       //}
-    },
-    // initEvent() {
-    //   var oDrag = document.getElementById('drag')
-    //   var oTitle = this.byClass('title', oDrag)[0]
-    //   var oL = this.byClass('resizeL', oDrag)[0]
-    //   var oT = this.byClass('resizeT', oDrag)[0]
-    //   var oR = this.byClass('resizeR', oDrag)[0]
-    //   var oB = this.byClass('resizeB', oDrag)[0]
-    //   var oLT = this.byClass('resizeLT', oDrag)[0]
-    //   var oTR = this.byClass('resizeTR', oDrag)[0]
-    //   var oBR = this.byClass('resizeBR', oDrag)[0]
-    //   var oLB = this.byClass('resizeLB', oDrag)[0]
-    //   this.drag(oDrag, oTitle)
-    //   //四角
-    //   this.resize(oDrag, oLT, true, true, false, false)
-    //   this.resize(oDrag, oTR, false, true, false, false)
-    //   this.resize(oDrag, oBR, false, false, false, false)
-    //   this.resize(oDrag, oLB, true, false, false, false)
-    //   //四边
-    //   this.resize(oDrag, oL, true, false, false, true)
-    //   this.resize(oDrag, oT, false, true, true, false)
-    //   this.resize(oDrag, oR, false, false, false, true)
-    //   this.resize(oDrag, oB, false, false, true, false)
-    //   /*      oDrag.style.left = (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
-    //         oDrag.style.top = (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'*/
-    // },
-    // drag(oDrag, handle) {
-    //   var disY = 0
-    //   var disX = 0
-    //   var oMin = this.byClass('min', oDrag)[0]
-    //   var oMax = this.byClass('max', oDrag)[0]
-    //   var oRevert = this.byClass('revert', oDrag)[0]
-    //   var oClose = this.byClass('close', oDrag)[0]
-    //   handle = handle || oDrag
-    //   handle.style.cursor = 'move'
-    //   handle.onmousedown = function (event) {
-    //     var event = event || window.event
-    //     disX = event.clientX - oDrag.offsetLeft
-    //     disY = event.clientY - oDrag.offsetTop
-    //     document.onmousemove = function (event) {
-    //       var event = event || window.event
-    //       var iL = event.clientX - disX
-    //       var iT = event.clientY - disY
-    //       var maxL = document.documentElement.clientWidth - oDrag.offsetWidth
-    //       var maxT = document.documentElement.clientHeight - oDrag.offsetHeight
-    //       iL <= 0 && (iL = 0)
-    //       iT <= 0 && (iT = 0)
-    //       iL >= maxL && (iL = maxL)
-    //       iT >= maxT && (iT = maxT)
-    //       oDrag.style.left = iL + 'px'
-    //       oDrag.style.top = iT + 'px'
-    //       return false
-    //     }
-    //     document.onmouseup = function () {
-    //       document.onmousemove = null
-    //       document.onmouseup = null
-    //       this.releaseCapture && this.releaseCapture()
-    //     }
-    //     this.setCapture && this.setCapture()
-    //     return false
-    //   }
-    //   //最大化按钮
-    //   oMax.onclick = function () {
-    //     oDrag.style.top = oDrag.style.left = 0
-    //     oDrag.style.width = document.documentElement.clientWidth - 2 + 'px'
-    //     oDrag.style.height = document.documentElement.clientHeight - 2 + 'px'
-    //     this.style.display = 'none'
-    //     oRevert.style.display = 'block'
-    //   }
-    //   //还原按钮
-    //   oRevert.onclick = function () {
-    //     oDrag.style.width = this.dragMinWidth + 'px'
-    //     oDrag.style.height = this.dragMinHeight + 'px'
-    //     oDrag.style.left = (document.documentElement.clientWidth - oDrag.offsetWidth) / 2 + 'px'
-    //     oDrag.style.top = (document.documentElement.clientHeight - oDrag.offsetHeight) / 2 + 'px'
-    //     this.style.display = 'none'
-    //     oMax.style.display = 'block'
-    //   }
-    //   //最小化按钮
-    //   oMin.onclick = oClose.onclick = function () {
-    //     oDrag.style.display = 'none'
-    //     var oA = document.createElement('a')
-    //     oA.className = 'open'
-    //     oA.href = 'javascript:;'
-    //     oA.title = '还原'
-    //     document.body.appendChild(oA)
-    //     oA.onclick = function () {
-    //       oDrag.style.display = 'block'
-    //       document.body.removeChild(this)
-    //       this.onclick = null
-    //     }
-    //   }
-    //   //阻止冒泡
-    //   oMin.onmousedown = oMax.onmousedown = oClose.onmousedown = function (event) {
-    //     this.onfocus = function () {
-    //       this.blur()
-    //     };
-    //     (event || window.event).cancelBubble = true
-    //   }
-    // },
-    // resize(oParent, handle, isLeft, isTop, lockX, lockY) {
-    //   handle.onmousedown = function (event) {
-    //     var event = event || window.event
-    //     var disX = event.clientX - handle.offsetLeft
-    //     var disY = event.clientY - handle.offsetTop
-    //     var iParentTop = oParent.offsetTop
-    //     var iParentLeft = oParent.offsetLeft
-    //     var iParentWidth = oParent.offsetWidth
-    //     var iParentHeight = oParent.offsetHeight
-    //     document.onmousemove = function (event) {
-    //       var event = event || window.event
-    //       var iL = event.clientX - disX
-    //       var iT = event.clientY - disY
-    //       var maxW = document.documentElement.clientWidth - oParent.offsetLeft - 2
-    //       var maxH = document.documentElement.clientHeight - oParent.offsetTop - 2
-    //       var iW = isLeft ? iParentWidth - iL : handle.offsetWidth + iL
-    //       var iH = isTop ? iParentHeight - iT : handle.offsetHeight + iT
-    //       isLeft && (oParent.style.left = iParentLeft + iL + 'px')
-    //       isTop && (oParent.style.top = iParentTop + iT + 'px')
-    //       iW < this.dragMinWidth && (iW = this.dragMinWidth)
-    //       iW > maxW && (iW = maxW)
-    //       lockX || (oParent.style.width = iW + 'px')
-    //       iH < this.dragMinHeight && (iH = this.dragMinHeight)
-    //       iH > maxH && (iH = maxH)
-    //       lockY || (oParent.style.height = iH + 'px')
-    //       if ((isLeft && iW == this.dragMinWidth) || (isTop && iH == this.dragMinHeight)) document.onmousemove = null
-    //       return false
-    //     }
-    //     document.onmouseup = function () {
-    //       document.onmousemove = null
-    //       document.onmouseup = null
-    //     }
-    //     return false
-    //   }
-    // },
-    byId: function (id) {
-      return typeof id === 'string' ? document.getElementById(id) : id
-    },
-    byClass: function (sClass, oParent) {
-      var aClass = []
-      var reClass = new RegExp('(^| )' + sClass + '( |$)')
-      var aElem = this.byTagName('*', oParent)
-      for (var i = 0; i < aElem.length; i++) reClass.test(aElem[i].className) && aClass.push(aElem[i])
-      return aClass
-    },
-    byTagName: function (elem, obj) {
-      return (obj || document).getElementsByTagName(elem)
-    },
-    customclose: function () {
-      var oDrag = document.getElementById('drag')
-      oDrag.style.display = 'none'
-    },
-    customup: function () {
-      var oSpan = document.getElementsByClassName('el-tree')[0]
-      var oDown = document.getElementsByClassName('custom-xiala')[0]
-      var oUp = document.getElementsByClassName('custom-shouqi')[0]
-      oSpan.style.display = 'none'
-      oUp.style.display = 'none'
-      oDown.style.display = 'inline-block'
-    },
-    customdown: function () {
-      var oSpan = document.getElementsByClassName('el-tree')[0]
-      var oDown = document.getElementsByClassName('custom-xiala')[0]
-      var oUp = document.getElementsByClassName('custom-shouqi')[0]
-      oSpan.style.display = 'block'
-      oUp.style.display = 'inline-block'
-      oDown.style.display = 'none'
     }
   }
 }
@@ -2017,5 +1527,10 @@ export default {
   height: 20px;
   margin: 25px 0 15px 10px;
   cursor:pointer;
+}
+.notExecuteSqlClass{
+  font-weight:lighter ;
+  font-size:15px;
+  margin-top:50px
 }
 </style>

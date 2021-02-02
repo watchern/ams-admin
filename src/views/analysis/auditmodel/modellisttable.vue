@@ -8,7 +8,7 @@
         <el-row v-if="power!='warning'" type="flex" class="row-bg">
           <el-col align="right">
             <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn start" @click="previewModel" />
-            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />
+<!--            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />-->
             <el-dropdown>
             <el-button type="primary" :disabled="btnState.addBtnState"  @mouseover="mouseOver" @mouseleave="mouseLeave" class="oper-btn add" @click="selectModelTypeDetermine('002003001')" />
           <el-dropdown-menu slot="dropdown">
@@ -16,6 +16,7 @@
           </el-dropdown-menu>
             </el-dropdown>
             <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel" />
+<!--            <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel1" />-->
             <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete" @click="deleteModel" />
             <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
               <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
@@ -534,13 +535,8 @@ export default {
       })
     },
     selectModelTypeDetermine(selectModelType){
-      if (this.selectTreeNode == null) {
-        this.$message({ type: 'info', message: '请选择文件夹后再进行添加' })
-        return;
-      }
-      console.log(this.selectTreeNode)
       this.addModelIsSee = false
-      let operationObj = { operationType: 1, folderId: '', folderName: '' ,modelType:''}
+      let operationObj = { operationType: 1, folderId: '', folderName: '' ,modelType:selectModelType}
       if (this.selectTreeNode != null) {
         if (this.selectTreeNode.pid == 0 || this.selectTreeNode.pid == null) {
           this.$message({ type: 'info', message: '不允许建立在根目录' })
@@ -584,7 +580,42 @@ export default {
             type: 'active',
             val: {
               name: '修改模型',
-              path: '/analysis/editorModel?dataUserId='+this.dataUserId+'&sceneCode='+this.sceneCode
+              path: '/analysis/editormodelnew?dataUserId='+this.dataUserId+'&sceneCode='+this.sceneCode
+            }
+          })
+        } else {
+          this.$message({ type: 'error', message: '修改失败' })
+        }
+      })
+    },
+    updateModel1(){
+      this.isUpdate = true
+      var selectObj = this.$refs.modelListTable.selection
+      if (selectObj.length == 0) {
+        this.$message({ type: 'info', message: '最少选择一个模型!' })
+        return
+      }
+      if (selectObj.length > 1) {
+        this.$message({ type: 'info', message: '只能选择一个模型!' })
+        return
+      }
+      this.editModelTitle = '修改模型'
+      this.$emit('loadingSet',true,"正在获取模型信息...");
+      selectModel(selectObj[0].modelUuid).then(result => {
+        this.$emit('loadingSet',false,"");
+        if (result.code == 0) {
+          var operationObj = {
+            operationType: 2,
+            model: result.data,
+            folderId: '',
+            folderName: ''
+          }
+          sessionStorage.setItem('operationObj', JSON.stringify(operationObj))
+          this.$store.commit('aceState/setRightFooterTags', {
+            type: 'active',
+            val: {
+              name: '修改模型',
+              path: '/analysis/editormodelnew?dataUserId='+this.dataUserId+'&sceneCode='+this.sceneCode
             }
           })
         } else {
@@ -1066,8 +1097,6 @@ export default {
       this.paramDrawUuid = modelUuid
       this.currentPreviewModelParamAndSql.sqlValue = this.currentRunModelAllConfig[modelUuid].sqlValue
       this.currentPreviewModelParamAndSql.paramObj = this.currentRunModelAllConfig[modelUuid].paramObj
-      console.log(this.currentPreviewModelParamAndSql.sqlValue)
-      console.log(this.currentPreviewModelParamAndSql.paramObj)
       this.flag = 'modelPreview'
       this.dialogFormVisible = true
     }

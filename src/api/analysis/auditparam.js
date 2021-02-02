@@ -2327,7 +2327,7 @@ export function initSetting() {
                   setParamObj.value = paramArr[j].defaultVal
                   paramObj.defaultVal = paramArr[j].defaultVal
                 }
-                let returnObj = paramCommonJs.getSettingParamArr(paramObj, setParamObj)
+                let returnObj = getSettingParamArr(paramObj, setParamObj)
                 if (!returnObj.isError) {
                   setParamObj = returnObj.setParamObj
                 } else {
@@ -2539,6 +2539,11 @@ export function getParamsSetting() {
       let paramName = settingVue.setParamArr[index].dataName// 获取参数名称
       let dataLength = settingVue.setParamArr[index].dataDataLength// 获取参数值长度
       // 如果该参数有长度限制且默认值不等于设置的长度值
+      if (settingVue.setParamArr[index].value ==undefined){
+        returnObj.verify = false
+        returnObj.message = '请先设置参数默认值'
+        return returnObj
+      }
       if (typeof dataLength !== 'undefined' && settingVue.setParamArr[index].value.length !== parseInt(dataLength)) {
         returnObj.verify = false
         returnObj.message = '参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
@@ -2587,7 +2592,6 @@ export function getParamsSetting() {
     }
   }
       for (let j = 0; j < settingVue.paramsSetting.length; j++) {
-        debugger
           let obj = settingVue.paramsSetting[j]
           obj.sortVal = 1// 先给每个参数赋值默认排序值为1
           // 设置该参数的默认值和排序值
@@ -2614,5 +2618,170 @@ export function getParamsSetting() {
   // 对参数数组的值按照排序值由小到大得顺序进行排序
   paramCommonJs.sortParamArr(returnObj.paramSettingArr)
   return returnObj
+}
+
+/**
+ * 根据参数类型组织参数的HTML元素
+ * createParamNodeHtml()方法内部调用的方法
+ * @param paramObj 参数对象
+ * @param selectNum 下拉列表参数的个数
+ * @param selectTreeNum 下拉树参数的个数
+ * @param setParamObj 待返回的参数对象
+ */
+export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeNum){
+  let obj = {
+    "selectNum":selectNum,
+    "selectTreeNum":selectTreeNum,
+    "setParamObj":{...{}, ...setParamObj},
+    "isError": false,
+    "message": ""
+  }
+  let dataArr = []// 下拉列表或下拉树的数据的数组
+  let paramArr = []// 影响当前参数的主参集合
+  let associatedParamIdArr = []// 受当前参数影响的被关联参数ID集合
+  let paramSql = paramObj.paramChoice.optionsSql//拉列表或下拉树的SQL语句
+  obj.setParamObj.title = paramObj.paramChoice.allowedNull === 0 ? '不可为空' : '可为空'
+  let hasSql = false// 下拉列表或下拉树是非SQL方式或者是SQL方式但值为空
+  switch (obj.setParamObj.inputType) {
+    case 'lineinp':// 下拉列表
+      if (!paramSql) {// 备选sql为空的情况下 取静态的option值
+        $.each(paramObj.paramChoice.paramOptionsList, function(i, v) {
+          if (v.optionsVal && v.optionsName) {
+            // 组织下拉选项数据
+            var optionObj = {
+              'name': v.optionsName,
+              'value': v.optionsVal
+            }
+            dataArr.push(optionObj)
+          }
+        })
+      } else { // 执行备选sql
+        if (paramSql !== '') {
+          hasSql = true// 下拉列表是SQL方式
+          if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
+            const response = executeParamSql(paramSql)
+            if(response.data == null){
+              obj.isError = true
+              obj.message = `获取参数【${paramObj.paramName}】的值的失败`
+            }else {
+              if (response.data.isError) {
+                obj.isError = true
+                obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
+              } else {
+                let e = response.data
+                if (e.valueList && e.valueList.length > 0) {
+                  for (let k = 0; k < e.valueList.length; k++) {
+                    var paramObj = {
+                      'name': e.valueList[k].paramName,
+                      'value': e.valueList[k].paramValue
+                    }
+                    dataArr.push(paramObj)
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      if(typeof obj.selectNum !== 'undefined' && obj.selectNum != null){
+        obj.setParamObj.id = `selectParam${obj.selectNum}`
+        obj.selectNum++
+      }else{
+        obj.setParamObj.id = `selectParam${paramObj.ammParamUuid}`
+      }
+      obj.setParamObj.dataId = paramObj.ammParamUuid
+      obj.setParamObj.dataName = paramObj.paramName
+      obj.setParamObj.dataChoiceType = paramObj.paramChoice.choiceType
+      if(hasSql){
+        obj.setParamObj.dataSql = paramSql
+        obj.setParamObj.dataParamArr = paramArr
+        obj.setParamObj.dataAssociatedParamIdArr = associatedParamIdArr
+      }
+      if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
+        obj.setParamObj.dataDefaultVal = paramObj.defaultVal
+      }
+      if(dataArr.length > 0){
+        obj.setParamObj.data = dataArr
+      }
+      if(typeof paramObj.paramChoice.allowedNull !== 'undefined' && paramObj.paramChoice.allowedNull != null){
+        obj.setParamObj.dataAllowedNull = paramObj.paramChoice.allowedNull
+      }
+      break
+    case 'textinp':// 文本框
+      if (typeof paramObj.dataLength !== 'undefined' && paramObj.dataLength != null) {
+        obj.setParamObj.title += `,参数值的长度为${paramObj.dataLength}`
+      }
+      obj.setParamObj.dataId = paramObj.ammParamUuid
+      obj.setParamObj.dataName = paramObj.paramName
+      if(typeof paramObj.paramChoice.allowedNull !== 'undefined' && paramObj.paramChoice.allowedNull != null){
+        obj.setParamObj.dataAllowedNull = paramObj.paramChoice.allowedNull
+      }
+      if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
+        obj.setParamObj.dataDefaultVal = paramObj.defaultVal
+      }
+      if(typeof paramObj.dataLength !== 'undefined' && paramObj.dataLength != null){
+        obj.setParamObj.dataDataLength = paramObj.dataLength
+      }
+      break
+    case 'timeinp':// 时间
+      if (paramObj.dataType === 'date') { // 暂时只支持日期，不支持时间段
+        obj.setParamObj.dataId = paramObj.ammParamUuid
+        obj.setParamObj.dataName = paramObj.paramName
+        if(typeof paramObj.paramChoice.allowedNull !== 'undefined' && paramObj.paramChoice.allowedNull != null){
+          obj.setParamObj.dataAllowedNull = paramObj.paramChoice.allowedNull
+        }
+        if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
+          obj.setParamObj.dataDefaultVal = paramObj.defaultVal
+        }
+      }
+      break
+    case 'treeinp':// 下拉树
+      if (paramSql !== '') { // 执行备选SQL
+        hasSql = true
+        if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
+          const response = getSelectTreeData(paramSql)
+          if(response.data == null){
+            obj.isError = true
+            obj.message = `获取参数【${paramObj.paramName}】的值的失败`
+          }else {
+            if (response.data.isError) {
+              obj.isError = true
+              obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
+            } else {
+              if(response.data.result && response.data.result.length > 0){
+                dataArr = organizeSelectTreeData(response.data.result)
+              }else{
+                dataArr = []
+              }
+            }
+          }
+        }
+      }
+      if(typeof obj.selectTreeNum !== 'undefined' && obj.selectTreeNum != null){
+        obj.setParamObj.id = `selectTreeParam${obj.selectTreeNum}`
+        obj.selectTreeNum++
+      }else{
+        obj.setParamObj.id = `selectTreeParam${paramObj.ammParamUuid}`
+      }
+      obj.setParamObj.dataId = paramObj.ammParamUuid
+      obj.setParamObj.dataName = paramObj.paramName
+      obj.setParamObj.dataChoiceType = paramObj.paramChoice.choiceType
+      if(hasSql){
+        obj.setParamObj.dataSql = paramSql
+        obj.setParamObj.dataParamArr = paramArr
+        obj.setParamObj.dataAssociatedParamIdArr = associatedParamIdArr
+      }
+      if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
+        obj.setParamObj.dataDefaultVal = paramObj.defaultVal
+      }
+      if(dataArr.length > 0){
+        obj.setParamObj.data = dataArr
+      }
+      if(typeof paramObj.paramChoice.allowedNull !== 'undefined' && paramObj.paramChoice.allowedNull != null){
+        obj.setParamObj.dataAllowedNull = paramObj.paramChoice.allowedNull
+      }
+      break
+  }
+  return obj
 }
 
