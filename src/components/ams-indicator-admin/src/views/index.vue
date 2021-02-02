@@ -59,7 +59,7 @@
               </div>
               <div class="tag-right-con" id="dimRegion">
                 <div class="row table-view-caption pull-right">
-                  <el-button type="primary" size="mini" @click="test">测试</el-button>
+<!--                  <el-button type="primary" size="mini" @click="test">测试</el-button>-->
                   <el-button type="primary" size="mini" @click="queryData">查询</el-button>
                   <el-button type="primary" size="mini" @click="clearAnalysis">清空</el-button>
                   <el-button type="primary" size="mini" @click="saveChangYongAnalysis">保存为常用分析</el-button>
@@ -85,7 +85,8 @@
             <a href="#" @click="openDisplay" class="collapse-set-btn J_slidedown_btn">展开</a>
           </div>
         </div>
-        <div id="dataView">
+        <div :style="{height:this.tableHeight == 'height:80%'?'calc(100vh - 143px)':'calc(100vh - 292px)'}">
+          <div id="dataView">
 <!--          style="height: 650px;overflow-y:scroll"-->
           <div class="recommendPage">
             <el-menu default-active="0" class="el-menu-demo" mode="horizontal">
@@ -119,6 +120,7 @@
               <div class="swiper-pagination" slot="pagination"></div>
             </swiper>
           </div>
+        </div>
         </div>
       </el-main>
     </el-container>
@@ -415,7 +417,7 @@ export default {
       //设置阈值需要的对象
       setThreasholdValueObj:{},
       chartBoxStyle: {
-        height: '400px',
+        height: '200px',
         width: '100%'
       },
       tableHeight:"height:60%"
@@ -6244,4 +6246,5 @@ var see = "查看";
   line-height: 40px;
   text-align: left;
 }
+#dataView{height: 100%;overflow: auto}
 </style>

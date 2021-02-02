@@ -1240,5 +1240,12 @@
       color:#0000C6;
       font-weight: bold;
     }
+    >>>.cm-atom {
+      color:#0000C6;
+      font-weight: bold;
+    }
+    >>>.el-input {
+      width: 95%;
+    }
 </style>
 
