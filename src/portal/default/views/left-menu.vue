@@ -469,7 +469,7 @@ export default {
     },
     async logout() {
       this.selectMenuIn()
-      localStorage.clear()
+      sessionStorage.clear()
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
