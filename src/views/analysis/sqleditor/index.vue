@@ -261,8 +261,10 @@
     require('@/components/ams-ztree/js/jquery.ztree_new.all.min')
     require('@/components/ams-ztree/js/jquery.ztree.excheck')
     require('@/components/ams-ztree/js/jquery.ztree.exhide')
+
     import '@/components/ams-codemirror/theme/ambiance.css'
     import '@/components/ams-codemirror/lib/codemirror.css'
+
     import '@/components/ams-codemirror/addon/hint/show-hint.css'
     import '@/components/ams-ztree/css/zTreeStyle/zTreeStyle.css'
     import {
@@ -1233,6 +1235,17 @@
     }
     div.rightMenu ul li:hover{
         background: rgb(237, 241, 245);
+    }
+    >>>.cm-keyword{
+      color:#0000C6;
+      font-weight: bold;
+    }
+    >>>.cm-atom {
+      color:#0000C6;
+      font-weight: bold;
+    }
+    >>>.el-input {
+      width: 95%;
     }
 </style>
 

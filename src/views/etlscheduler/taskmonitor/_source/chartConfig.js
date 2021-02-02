@@ -1,5 +1,5 @@
-import { turn } from 'core-js/fn/array'
-import { data } from 'jquery'
+// import { turn } from 'core-js/fn/array'
+// import { data } from 'jquery'
 import _ from 'lodash'
 import {
   tasksState

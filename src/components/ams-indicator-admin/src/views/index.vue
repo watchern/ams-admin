@@ -32,7 +32,7 @@
       <el-main>
         <div class="top-collapse-container">
           <div class="top-collapse-con">
-            <div class="toggle-btn J_slideup_btn"><i class="icon-toggle"></i><span>收起</span></div>
+            <div class="toggle-btn J_slideup_btn" @click="packUpClick"><i class="icon-toggle"></i><span>收起</span></div>
             <div class="collapse-panel">
               <div class="tag-left-con">
                 <div class="in-outer-layer" id="inRegion">
@@ -59,7 +59,7 @@
               </div>
               <div class="tag-right-con" id="dimRegion">
                 <div class="row table-view-caption pull-right">
-                  <el-button type="primary" size="mini" @click="test">测试</el-button>
+<!--                  <el-button type="primary" size="mini" @click="test">测试</el-button>-->
                   <el-button type="primary" size="mini" @click="queryData">查询</el-button>
                   <el-button type="primary" size="mini" @click="clearAnalysis">清空</el-button>
                   <el-button type="primary" size="mini" @click="saveChangYongAnalysis">保存为常用分析</el-button>
@@ -82,11 +82,13 @@
             <div class="slideup-left" id="analysisIn">
               <span>分析个数</span><em id="count">1</em>
             </div>
-            <a href="#" class="collapse-set-btn J_slidedown_btn">展开</a>
+            <a href="#" @click="openDisplay" class="collapse-set-btn J_slidedown_btn">展开</a>
           </div>
         </div>
-        <div id="dataView">
-          <div class="recommendPage" style="height: 620px;overflow-y:scroll">
+        <div :style="{height:this.tableHeight == 'height:80%'?'calc(100vh - 143px)':'calc(100vh - 292px)'}">
+          <div id="dataView">
+<!--          style="height: 650px;overflow-y:scroll"-->
+          <div class="recommendPage">
             <el-menu default-active="0" class="el-menu-demo" mode="horizontal">
               <div v-for="(dataObj,indexI) in dataList">
                 <el-menu-item :index="indexI.toString()" @click="jump(indexI)">{{dataObj.measureName}}<i :class="dataObj.icon"></i></el-menu-item>
@@ -95,13 +97,13 @@
             <swiper :options="swiperOption" ref="mySwiper">
                 <swiper-slide v-for="(dataObj,index) in dataList" v-loading="dataObj.loading" element-loading-text="正在执行SQL,请稍候...">
                   <div class="btn-div"  v-if="dataObj.isError == false">
-                    <div :class="dataObj.btnChartClass" :ref="dataObj.id + 'btnChart'"><span class="icon iconfont iconfont-div" @click="switchDivStyle(dataObj.id + 'btnChart',dataObj.id)">&#xe6d8;</span></div>
-                    <div :class="dataObj.btnTableClass" :ref="dataObj.id + 'btnTable'"><span class="icon iconfont iconfont-div" @click="switchDivStyle(dataObj.id + 'btnTable',dataObj.id)">&#xecee;</span></div>
+                    <div :class="dataObj.btnChartClass" :ref="dataObj.id + 'btnChart'" @click="switchDivStyle(dataObj.id + 'btnChart',dataObj.id)"><span class="icon iconfont" >&#xe6d8;</span></div>
+                    <div :class="dataObj.btnTableClass" :ref="dataObj.id + 'btnTable'" @click="switchDivStyle(dataObj.id + 'btnTable',dataObj.id)"><span class="icon iconfont" >&#xecee;</span></div>
                   </div>
                   <ag-grid-vue
                     v-show=dataObj.isShowTable
                     :ref="dataObj.id + 'table'" v-if="dataObj.isLoad == true && dataObj.isError == false"
-                    style="height:75%"
+                    :style="tableHeight"
                     class="table ag-theme-balham"
                     :column-defs="dataObj.data.columnDefs"
                     :row-data="dataObj.data.data"
@@ -111,17 +113,18 @@
                     row-selection="multiple"
                     row-height="40"
                   />
-                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
-                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
+                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' :chartBoxStyle="chartBoxStyle" v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
+                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' :chartBoxStyle="chartBoxStyle" v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
                   <div style="color:red;text-align: left" v-else>{{dataObj.message}}</div>
                 </swiper-slide>
               <div class="swiper-pagination" slot="pagination"></div>
             </swiper>
           </div>
         </div>
+        </div>
       </el-main>
     </el-container>
-    <div id="inMenu" class="menuDemo">
+    <div id="inMenu" class="menuDemo" style="display:none;">
       <el-menu class="el-menu-demo" mode="horizontal">
         <el-menu-item @click="inFilter()" index="2-1">筛选器</el-menu-item>
         <el-submenu index="2-2">
@@ -187,7 +190,7 @@ import "ag-grid-community/dist/styles/ag-theme-balham.css";
 // 引入ag-grid-vue
 import { AgGridVue } from "ag-grid-vue";
 import request from '@/utils/request'
-import 'iview/dist/styles/iview.css'
+//import 'iview/dist/styles/iview.css'
 import mtEditor from 'ams-datamax'
 import $ from 'jquery'
 import {Loading} from 'element-ui';
@@ -412,7 +415,12 @@ export default {
       //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilte:''}]}
       thresholdValueDialog:false,
       //设置阈值需要的对象
-      setThreasholdValueObj:{}
+      setThreasholdValueObj:{},
+      chartBoxStyle: {
+        height: '200px',
+        width: '100%'
+      },
+      tableHeight:"height:60%"
     }
   },
   watch: {
@@ -5889,6 +5897,15 @@ export default {
         }
       }
       $("#setValue" + analysisRegionId).css("color","#aeaeae")
+    },
+    packUpClick(){
+      //更改表格高度
+      this.tableHeight = "height:80%"
+
+    },
+    openDisplay(){
+      //更改表格高度
+      this.tableHeight = "height:60%"
     }
   }
 }
@@ -6147,7 +6164,7 @@ var see = "查看";
 }
 >>>.recommendPage .swiper-container{
   position: relative;
-  width: 67vw;
+  width: 70vw;
   height: 85vh;
 /*  width: 100%;
   height: 100%;*/
@@ -6168,8 +6185,8 @@ var see = "查看";
 }
 >>>.el-menu-item {
   float: left;
-  height: 60px;
-  line-height: 60px;
+  height: 40px;
+  line-height: 40px;
   margin: 0;
 }
 >>>.el-tabs--left .el-tabs__nav-wrap.is-left::after{
@@ -6229,4 +6246,5 @@ var see = "查看";
   line-height: 40px;
   text-align: left;
 }
+#dataView{height: 100%;overflow: auto}
 </style>
