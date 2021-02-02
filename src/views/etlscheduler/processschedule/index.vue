@@ -24,7 +24,7 @@
           :auto-upload="true"
           :on-change="handleFileChange"
           :show-file-list="false"
-          style="display: inline-block; 
+          style="display: inline-block;
           padding-left: 10px"
         >
           <el-button type="primary" class="oper-btn export" title="导入" />
@@ -1357,10 +1357,10 @@ export default {
     // 自定义上传
     uploadFile() {
       const loading = this.$loading({
-          lock: true,
-          // spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        })
+        lock: true,
+        // spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
       const index = this.file.name.lastIndexOf('.')
       const suffix = this.file.name.substr(index + 1)
       // 创建表单对象
@@ -1376,12 +1376,16 @@ export default {
         data: formData
       }).then((res) => {
         if (res.data.code === 2501) {
-          this.$notify({
-            title: this.$t('message.title'),
-            message: res.data.msg,
+          // this.$notify({
+          //   title: this.$t('message.title'),
+          //   message: res.data.msg,
+          //   type: 'error',
+          //   duration: 2000,
+          //   position: 'bottom-right'
+          // })
+          this.$message({
             type: 'error',
-            duration: 2000,
-            position: 'bottom-right'
+            message: res.data.msg
           })
           loading.close()
         } else {
@@ -1395,15 +1399,24 @@ export default {
           })
           loading.close()
         }
-      }).catch(function (error) { // 请求失败处理
+      }).catch(() => {
         this.$notify({
-            title: this.$t('message.title'),
-            message: '导入调度时发生异常',
-            type: 'error',
-            duration: 2000,
-            position: 'bottom-right'
-          })
-          loading.close()
+          title: this.$t('message.title'),
+          message: '导入调度时发生异常',
+          type: 'error',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+        loading.close()
+      //   function(error) { // 请求失败处理
+      //   this.$notify({
+      //     title: this.$t('message.title'),
+      //     message: '导入调度时发生异常',
+      //     type: 'error',
+      //     duration: 2000,
+      //     position: 'bottom-right'
+      //   })
+      //   loading.close()
       })
     },
     // 格式化表格
