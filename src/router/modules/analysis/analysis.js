@@ -47,6 +47,11 @@ const analysisRouter = {
       component: () => import('@/views/analysis/sqleditor/index')
     },
     {
+      path: 'editormodelnew',
+      name: '模型编(新)',
+      component: () => import('@/views/analysis/auditmodelone/editmodel')
+    },
+    {
       path: 'modelresulthandle',
       name: '模型结果处理',
       component: () => import('@/views/analysis/modelresulthandle/index')
