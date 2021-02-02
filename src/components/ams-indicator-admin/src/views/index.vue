@@ -6164,7 +6164,7 @@ var see = "查看";
 }
 >>>.recommendPage .swiper-container{
   position: relative;
-  width: 67vw;
+  width: 70vw;
   height: 85vh;
 /*  width: 100%;
   height: 100%;*/
