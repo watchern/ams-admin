@@ -468,9 +468,10 @@ export default {
       return src
     },
     async logout() {
+      this.selectMenuIn()
+      localStorage.clear()
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-      this.selectMenuIn()
     },
     logoutRemind(){
       this.$router.push({ path:'/base/remind'})
