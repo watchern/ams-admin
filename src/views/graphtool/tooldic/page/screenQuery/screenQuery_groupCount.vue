@@ -318,7 +318,7 @@
 </script>
 <style scoped>
     >>> .el-table .cell {
-        padding: 0;
+        padding: 0 !important;
         display: inline;
     }
     >>> .el-collapse-item__content{

@@ -17863,89 +17863,118 @@ mxSvgCanvas2D.prototype.image = function(x, y, w, h, src, aspect, flipH, flipV) 
 	var s = this.state;
 	x += s.dx;
 	y += s.dy;
+    if(src.indexOf('data:image/svg+xml') > -1){
+        var node = this.createElement('image');
+        node.setAttribute('x', this.format(x * s.scale) + this.imageOffset);
+        node.setAttribute('y', this.format(y * s.scale) + this.imageOffset);
+        node.setAttribute('width', this.format(w * s.scale));
+        node.setAttribute('height', this.format(h * s.scale));
+        // Workaround for missing namespace support
+        // //添加图形形状可调控制
+        if(node.setAttributeNS == null) {
+            node.setAttribute('xlink:href', src);
+        } else{
+            node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src);
+        }
 
-	var node = this.createElement('image');
-  node.setAttribute('x', this.format(x * s.scale) + this.imageOffset);
-  node.setAttribute('y', this.format(y * s.scale) + this.imageOffset);
-  node.setAttribute('width', this.format(w * s.scale));
-  node.setAttribute('height', this.format(h * s.scale));
-	// Workaround for missing namespace support
-	//添加图形形状可调控制
-	if(node.setAttributeNS == null) {
-		node.setAttribute('xlink:href', src);
-	} else{
-		node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src);
-	}
+        if(!aspect) {
+            node.setAttribute('preserveAspectRatio', 'none');
+        }
 
-	if(!aspect) {
-		node.setAttribute('preserveAspectRatio', 'none');
-	}
+        if(s.alpha < 1 || s.fillAlpha < 1) {
+            node.setAttribute('opacity', s.alpha * s.fillAlpha);
+        }
 
-	if(s.alpha < 1 || s.fillAlpha < 1) {
-		node.setAttribute('opacity', s.alpha * s.fillAlpha);
-	}
+        var tr = this.state.transform || '';
 
-	var tr = this.state.transform || '';
+        if(flipH || flipV) {
+            var sx = 1;
+            var sy = 1;
+            var dx = 0;
+            var dy = 0;
 
-	if(flipH || flipV) {
-		var sx = 1;
-		var sy = 1;
-		var dx = 0;
-		var dy = 0;
+            if(flipH) {
+                sx = -1;
+                dx = -w - 2 * x;
+            }
 
-		if(flipH) {
-			sx = -1;
-			dx = -w - 2 * x;
-		}
+            if(flipV) {
+                sy = -1;
+                dy = -h - 2 * y;
+            }
 
-		if(flipV) {
-			sy = -1;
-			dy = -h - 2 * y;
-		}
+            // Adds image tansformation to existing transform
+            tr += 'scale(' + sx + ',' + sy + ')translate(' + (dx * s.scale) + ',' + (dy * s.scale) + ')';
+        }
 
-		// Adds image tansformation to existing transform
-		tr += 'scale(' + sx + ',' + sy + ')translate(' + (dx * s.scale) + ',' + (dy * s.scale) + ')';
-	}
+        if(tr.length > 0) {
+            node.setAttribute('transform', tr);
+        }
 
-	if(tr.length > 0) {
-		node.setAttribute('transform', tr);
-	}
+        if(!this.pointerEvents) {
+            node.setAttribute('pointer-events', 'none');
+        }
+        this.root.appendChild(node);
 
-	if(!this.pointerEvents) {
-		node.setAttribute('pointer-events', 'none');
-	}
-
-	this.root.appendChild(node);
-
-	// Disables control-clicks on images in Firefox to open in new tab
-	// by putting a rect in the foreground that absorbs all events and
-	// disabling all pointer-events on the original image tag.
-	if(this.blockImagePointerEvents) {
-		node.setAttribute('style', 'pointer-events:none');
-
-		node = this.createElement('rect');
-		node.setAttribute('visibility', 'hidden');
-		node.setAttribute('pointer-events', 'fill');
-		node.setAttribute('x', this.format(x * s.scale));
-		node.setAttribute('y', this.format(y * s.scale));
-		node.setAttribute('width', this.format(w * s.scale));
-		node.setAttribute('height', this.format(h * s.scale));
-		this.root.appendChild(node);
-	}
+        // Disables control-clicks on images in Firefox to open in new tab
+        // by putting a rect in the foreground that absorbs all events and
+        // disabling all pointer-events on the original image tag.
+        if(this.blockImagePointerEvents) {
+            node.setAttribute('style', 'pointer-events:none');
+            node = this.createElement('rect');
+            node.setAttribute('visibility', 'hidden');
+            node.setAttribute('pointer-events', 'fill');
+            node.setAttribute('x', this.format(x * s.scale));
+            node.setAttribute('y', this.format(y * s.scale));
+            node.setAttribute('width', this.format(w * s.scale));
+            node.setAttribute('height', this.format(h * s.scale));
+            this.root.appendChild(node);
+        }
+    }else{
+        var svg_g = this.createElement('g');
+        svg_g.setAttribute('transform', 'translate(' + this.format((x - 11) * s.scale) + ',' + this.format((y - 8) * s.scale) + ')');
+        var fo = this.createElement('foreignObject');
+        fo.setAttribute('style', 'overflow:visible;');
+        fo.setAttribute('pointer-events', 'all');
+        fo.setAttribute('width', this.format(60 * s.scale) + 'px');
+        fo.setAttribute('height', this.format(60 * s.scale) + 'px');
+        var centerDiv = this.createDiv('', 'center', 'middle', '', 'hidden');
+        centerDiv.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+        centerDiv.style.width = this.format(40 * s.scale) + 'px';
+        centerDiv.style.height = this.format(40 * s.scale) + 'px';
+        var divDom = this.createDiv(centerDiv, 'center', 'middle', '', 'hidden');
+        divDom.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+        divDom.style.width = this.format(60 * s.scale) + 'px';
+        divDom.style.height = this.format(60 * s.scale) + 'px';
+        divDom.setAttribute('class', 'svgNodeImgDiv');
+        divDom.setAttribute('nodeId', this.cellId);
+        if(this.root.parentNode.parentNode.parentNode.parentNode.getAttribute('id') === 'geDiagramContainer'){//画布区域的图片均为自定义图片
+            centerDiv.style.marginTop = this.format(12 * s.scale) + 'px';
+            centerDiv.style.marginLeft = this.format(9 * s.scale) + 'px';
+            centerDiv.innerHTML = '<img src="' + src + '"/>';
+        }else{
+            centerDiv.style.marginTop = this.format(5 * s.scale) + 'px';
+            centerDiv.style.marginLeft = this.format(8 * s.scale) + 'px';
+            centerDiv.innerHTML = '<img src="' + src + '" style="width:' + this.format(40 * s.scale) + 'px;height:' + this.format(40 * s.scale) + 'px;"/>';
+        }
+        fo.appendChild(divDom);
+        svg_g.appendChild(fo);
+        this.root.appendChild(svg_g);
+    }
 };
 
 mxSvgCanvas2D.prototype.mark = function(x, y, w, h, cell, aspect, flipH, flipV) {
-	var src = "";
-	if(graph.nodeData[cell.id]) {
-		var resultTableStatus = graph.nodeData[cell.id].nodeInfo.resultTableStatus;
-		var midTableStatus = graph.nodeData[cell.id].nodeInfo.midTableStatus;
-		if(resultTableStatus == 2) {		//模型最终结果表
-            src = "../../lib/graphtool/images/graphicon/finaloutmark@2x.png";
-        }
-        if(midTableStatus == 2) {		//模型辅助结果表
-            src = "../../lib/graphtool/images/graphicon/centeroutmark@2x.png";
-        }
-	}
+	// var src = "";
+	// if(graph.nodeData[cell.id]) {
+	// 	var resultTableStatus = graph.nodeData[cell.id].nodeInfo.resultTableStatus;
+	// 	var midTableStatus = graph.nodeData[cell.id].nodeInfo.midTableStatus;
+	// 	if(resultTableStatus == 2) {		//模型最终结果表
+    //         src = "../../lib/graphtool/images/graphicon/finaloutmark@2x.png";
+    //     }
+    //     if(midTableStatus == 2) {		//模型辅助结果表
+    //         src = "../../lib/graphtool/images/graphicon/centeroutmark@2x.png";
+    //     }
+	// }
 
 	// LATER: Add option for embedding images as base64.
 	aspect = (aspect != null) ? aspect : true;
@@ -17956,81 +17985,114 @@ mxSvgCanvas2D.prototype.mark = function(x, y, w, h, cell, aspect, flipH, flipV) 
 	x += s.dx;
 	y += s.dy;
 
-	var node = this.createElement('image');
-	node.setAttribute("nodeId", this.cellId);
-	node.setAttribute("class", "output-mark");
-  node.setAttribute('x', this.format((x - 5) * s.scale) + this.imageOffset);
-  node.setAttribute('y', this.format(y * s.scale) + this.imageOffset);
-  node.setAttribute('width', 21 * s.scale);
-  node.setAttribute('height', 21 * s.scale);
-	// Workaround for missing namespace support
-	//添加图形形状可调控制
-	if(node.setAttributeNS == null) {
-		node.setAttribute('xlink:href', src);
-	} else {
-		node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src);
-	}
-
-	if(!aspect) {
-		node.setAttribute('preserveAspectRatio', 'none');
-	}
-
-	if(s.alpha < 1 || s.fillAlpha < 1) {
-		node.setAttribute('opacity', s.alpha * s.fillAlpha);
-	}
-
-	var tr = this.state.transform || '';
-
-	if(flipH || flipV) {
-		var sx = 1;
-		var sy = 1;
-		var dx = 0;
-		var dy = 0;
-
-		if(flipH) {
-			sx = -1;
-			dx = -w - 2 * x;
-		}
-
-		if(flipV) {
-			sy = -1;
-			dy = -h - 2 * y;
-		}
-
-		// Adds image tansformation to existing transform
-		tr += 'scale(' + sx + ',' + sy + ')translate(' + (dx * s.scale) + ',' + (dy * s.scale) + ')';
-	}
-
-	if(tr.length > 0) {
-		node.setAttribute('transform', tr);
-	}
-
-	if(!this.pointerEvents) {
-		node.setAttribute('pointer-events', 'none');
-	}
-
-	this.root.appendChild(node);
+	// var node = this.createElement('image');
+	// node.setAttribute("nodeId", this.cellId);
+	// node.setAttribute("class", "output-mark");
+    // node.setAttribute('x', this.format((x - 5) * s.scale) + this.imageOffset);
+    // node.setAttribute('y', this.format(y * s.scale) + this.imageOffset);
+    // node.setAttribute('width', 21 * s.scale);
+    // node.setAttribute('height', 21 * s.scale);
+	// // Workaround for missing namespace support
+	// //添加图形形状可调控制
+	// if(node.setAttributeNS == null) {
+	// 	node.setAttribute('xlink:href', src);
+	// } else {
+	// 	node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src);
+	// }
+    //
+	// if(!aspect) {
+	// 	node.setAttribute('preserveAspectRatio', 'none');
+	// }
+    //
+	// if(s.alpha < 1 || s.fillAlpha < 1) {
+	// 	node.setAttribute('opacity', s.alpha * s.fillAlpha);
+	// }
+    //
+	// var tr = this.state.transform || '';
+    //
+	// if(flipH || flipV) {
+	// 	var sx = 1;
+	// 	var sy = 1;
+	// 	var dx = 0;
+	// 	var dy = 0;
+    //
+	// 	if(flipH) {
+	// 		sx = -1;
+	// 		dx = -w - 2 * x;
+	// 	}
+    //
+	// 	if(flipV) {
+	// 		sy = -1;
+	// 		dy = -h - 2 * y;
+	// 	}
+    //
+	// 	// Adds image tansformation to existing transform
+	// 	tr += 'scale(' + sx + ',' + sy + ')translate(' + (dx * s.scale) + ',' + (dy * s.scale) + ')';
+	// }
+    //
+	// if(tr.length > 0) {
+	// 	node.setAttribute('transform', tr);
+	// }
+    //
+	// if(!this.pointerEvents) {
+	// 	node.setAttribute('pointer-events', 'none');
+	// }
+    //
+	// this.root.appendChild(node);
+    var imgWidth = this.format(18 * s.scale) + 'px';
+    var svg_g = this.createElement('g');
+    svg_g.setAttribute('transform', 'translate(' + this.format((x + 31) * s.scale) + ',' + this.format((y - 8) * s.scale) + ')');
+    var fo = this.createElement('foreignObject');
+    fo.setAttribute('style', 'overflow:visible;');
+    fo.setAttribute('pointer-events', 'all');
+    fo.setAttribute('width', imgWidth);
+    fo.setAttribute('height', imgWidth);
+    var divDom = this.createDiv('', 'center', 'middle', '', 'hidden');
+    divDom.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+    divDom.style.width = imgWidth;
+    divDom.style.height = imgWidth;
+    var src = "";
+    if(graph.nodeData[cell.id]) {
+        var resultTableStatus = graph.nodeData[cell.id].nodeInfo.resultTableStatus;
+        var midTableStatus = graph.nodeData[cell.id].nodeInfo.midTableStatus;
+        var flag = false;
+        if(resultTableStatus === 2) {//当前节点被标记为模型最终结果表
+            src = "../../lib/graphtool/images/finaloutmark.png";
+            flag = true;
+        }
+        if(midTableStatus === 2) {//当前节点被标记为模型辅助结果表
+            src = "../../lib/graphtool/images/centeroutmark.png";
+            flag = true;
+        }
+        if(!flag){
+            divDom.style.display = 'none';
+        }
+    }
+    divDom.innerHTML = '<img nodeId="' + this.cellId + '" src="' + src + '" class="output-mark" style="width:' + imgWidth + ';height:' + imgWidth + ';"/>';
+    fo.appendChild(divDom);
+    svg_g.appendChild(fo);
+    this.root.appendChild(svg_g);
 };
 
 mxSvgCanvas2D.prototype.exeState = function(x, y, w, h, cell, aspect, flipH, flipV) {
-	var src = "";
-	if(graph.nodeData[cell.id]) {
-		var nodeExcuteStatus = graph.nodeData[cell.id].nodeInfo.nodeExcuteStatus;
-		switch(nodeExcuteStatus){			//执行状态
-			case 1:		//未执行
-				src = "../../lib/graphtool/images/icon/point_gray.png";
-				break;
-			case 2:	//执行中
-				src = "../../lib/graphtool/images/icon/point_yellow.png";
-				break;
-			case 3:	//执行成功
-				src = "../../lib/graphtool/images/icon/point_green.png";
-				break;
-			case 4:	//执行失败
-				src = "../../lib/graphtool/images/icon/point_red.png";
-				break;
-		}
-	}
+	// var src = "";
+	// if(graph.nodeData[cell.id]) {
+	// 	var nodeExcuteStatus = graph.nodeData[cell.id].nodeInfo.nodeExcuteStatus;
+	// 	switch(nodeExcuteStatus){			//执行状态
+	// 		case 1:		//未执行
+	// 			src = "../../lib/graphtool/images/icons/point_gray.png";
+	// 			break;
+	// 		case 2:	//执行中
+	// 			src = "../../lib/graphtool/images/icons/point_yellow.png";
+	// 			break;
+	// 		case 3:	//执行成功
+	// 			src = "../../lib/graphtool/images/icons/point_green.png";
+	// 			break;
+	// 		case 4:	//执行失败
+	// 			src = "../../lib/graphtool/images/icons/point_red.png";
+	// 			break;
+	// 	}
+	// }
 	// LATER: Add option for embedding images as base64.
 	aspect = (aspect != null) ? aspect : true;
 	flipH = (flipH != null) ? flipH : false;
@@ -18041,73 +18103,105 @@ mxSvgCanvas2D.prototype.exeState = function(x, y, w, h, cell, aspect, flipH, fli
 	y += s.dy;
 
 	//执行状态图标
-	var node = this.createElement('image');
-	node.setAttribute("nodeId", this.cellId);
-	node.setAttribute("class", "exestate-mark");
-  node.setAttribute('x', this.format((x + 15) * s.scale) + this.imageOffset);
-  node.setAttribute('y', this.format((y + 40) * s.scale) + this.imageOffset);
-  node.setAttribute('width', 35 * s.scale);
-  node.setAttribute('height', 35 * s.scale);
-	// Workaround for missing namespace support
-	//添加图形形状可调控制
-	if(node.setAttributeNS == null) {
-		node.setAttribute('xlink:href', src);
-	} else {
-		node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src);
-	}
-
-	if(!aspect) {
-		node.setAttribute('preserveAspectRatio', 'none');
-	}
-
-	if(s.alpha < 1 || s.fillAlpha < 1) {
-		node.setAttribute('opacity', s.alpha * s.fillAlpha);
-	}
-
-	var tr = this.state.transform || '';
-
-	if(flipH || flipV) {
-		var sx = 1;
-		var sy = 1;
-		var dx = 0;
-		var dy = 0;
-
-		if(flipH) {
-			sx = -1;
-			dx = -w - 2 * x;
-		}
-
-		if(flipV) {
-			sy = -1;
-			dy = -h - 2 * y;
-		}
-
-		// Adds image tansformation to existing transform
-		tr += 'scale(' + sx + ',' + sy + ')translate(' + (dx * s.scale) + ',' + (dy * s.scale) + ')';
-	}
-
-	if(tr.length > 0) {
-		node.setAttribute('transform', tr);
-	}
-
-	if(!this.pointerEvents) {
-		node.setAttribute('pointer-events', 'none');
-	}
-
-	this.root.appendChild(node);
-
+	// var node = this.createElement('image');
+	// node.setAttribute("nodeId", this.cellId);
+	// node.setAttribute("class", "exestate-mark");
+    // node.setAttribute('x', this.format((x + 18) * s.scale) + this.imageOffset);
+    // node.setAttribute('y', this.format((y + 45) * s.scale) + this.imageOffset);
+    // node.setAttribute('width', 30 * s.scale);
+    // node.setAttribute('height', 4 * s.scale);
+	// // Workaround for missing namespace support
+	// //添加图形形状可调控制
+	// if(node.setAttributeNS == null) {
+	// 	node.setAttribute('xlink:href', src);
+	// } else {
+	// 	node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src);
+	// }
+    //
+	// if(!aspect) {
+	// 	node.setAttribute('preserveAspectRatio', 'none');
+	// }
+    //
+	// if(s.alpha < 1 || s.fillAlpha < 1) {
+	// 	node.setAttribute('opacity', s.alpha * s.fillAlpha);
+	// }
+    //
+	// var tr = this.state.transform || '';
+    //
+	// if(flipH || flipV) {
+	// 	var sx = 1;
+	// 	var sy = 1;
+	// 	var dx = 0;
+	// 	var dy = 0;
+    //
+	// 	if(flipH) {
+	// 		sx = -1;
+	// 		dx = -w - 2 * x;
+	// 	}
+    //
+	// 	if(flipV) {
+	// 		sy = -1;
+	// 		dy = -h - 2 * y;
+	// 	}
+    //
+	// 	// Adds image tansformation to existing transform
+	// 	tr += 'scale(' + sx + ',' + sy + ')translate(' + (dx * s.scale) + ',' + (dy * s.scale) + ')';
+	// }
+    //
+	// if(tr.length > 0) {
+	// 	node.setAttribute('transform', tr);
+	// }
+    //
+	// if(!this.pointerEvents) {
+	// 	node.setAttribute('pointer-events', 'none');
+	// }
+    //
+	// this.root.appendChild(node);
+    var svg_g = this.createElement('g');
+    svg_g.setAttribute('transform', 'translate(' + this.format((x + 20) * s.scale) + ',' + this.format((y + 48) * s.scale) + ')');
+    var fo = this.createElement('foreignObject');
+    fo.setAttribute('style', 'overflow:visible;');
+    fo.setAttribute('pointer-events', 'all');
+    fo.setAttribute('width', this.format(28 * s.scale) + 'px');
+    fo.setAttribute('height', this.format(4 * s.scale) + 'px');
+    var divDom = this.createDiv('', 'center', 'middle', '', 'hidden');
+    divDom.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+    divDom.setAttribute('nodeId', this.cellId);
+    divDom.setAttribute('class', 'exestate-mark');
+    divDom.style.width = this.format(28 * s.scale) + 'px';
+    divDom.style.height = this.format(4 * s.scale) + 'px';
+    divDom.innerHTML = '';
+    if(graph.nodeData[cell.id]) {
+        switch(graph.nodeData[cell.id].nodeInfo.nodeExcuteStatus){//当前节点的执行状态
+            case 1:	//未执行
+                divDom.style.background = '#999999';
+                break;
+            case 2:	//执行中
+                divDom.style.background = '#FECD44';
+                break;
+            case 3:	//执行成功
+                divDom.style.background = '#189D5C';
+                break;
+            case 4:	//执行失败
+                divDom.style.background = '#D81E07';
+                break;
+        }
+    }
+    fo.appendChild(divDom);
+    svg_g.appendChild(fo);
+    this.root.appendChild(svg_g);
 };
 
 mxSvgCanvas2D.prototype.setting = function(x, y, w, h, cell, aspect, flipH, flipV) {
-	var src = "";
-	if(graph.nodeData[cell.id]) {
-		var isSet = graph.nodeData[cell.id].isSet;			//配置状态
-		if(isSet){			//已配置
-			src = "../../lib/graphtool/images/icon/point_green.png";
-		}else{
-			src = "../../lib/graphtool/images/icon/point_gray.png";
-		}
-	}
+    // var src = "";
+    // if(graph.nodeData[cell.id]) {
+    //     var isSet = graph.nodeData[cell.id].isSet;//配置状态
+    //     if(isSet){			//已配置
+    //         src = "../../lib/graphtool/images/icons/point_green.png";
+    //     }else{
+    //         src = "../../lib/graphtool/images/icons/point_gray.png";
+    //     }
+    // }
 	// LATER: Add option for embedding images as base64.
 	aspect = (aspect != null) ? aspect : true;
 	flipH = (flipH != null) ? flipH : false;
@@ -18116,73 +18210,88 @@ mxSvgCanvas2D.prototype.setting = function(x, y, w, h, cell, aspect, flipH, flip
 	var s = this.state;
 	x += s.dx;
 	y += s.dy;
-
 	//配置状态图标
-	var node = this.createElement('image');
-	node.setAttribute("nodeId", this.cellId);
-	node.setAttribute("class", "setting-mark");
-	node.setAttribute('x', this.format(x * s.scale) + this.imageOffset);
-	node.setAttribute('y', this.format((y + 40) * s.scale) + this.imageOffset);
-	node.setAttribute('width', 35 * s.scale);
-	node.setAttribute('height', 35 * s.scale);
-	// Workaround for missing namespace support
-	//添加图形形状可调控制
-	if(node.setAttributeNS == null) {
-		node.setAttribute('xlink:href', src);
-	} else {
-		node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src);
-	}
-
-	if(!aspect) {
-		node.setAttribute('preserveAspectRatio', 'none');
-	}
-
-	if(s.alpha < 1 || s.fillAlpha < 1) {
-		node.setAttribute('opacity', s.alpha * s.fillAlpha);
-	}
-
-	var tr = this.state.transform || '';
-
-	if(flipH || flipV) {
-		var sx = 1;
-		var sy = 1;
-		var dx = 0;
-		var dy = 0;
-
-		if(flipH) {
-			sx = -1;
-			dx = -w - 2 * x;
-		}
-
-		if(flipV) {
-			sy = -1;
-			dy = -h - 2 * y;
-		}
-
-		// Adds image tansformation to existing transform
-		tr += 'scale(' + sx + ',' + sy + ')translate(' + (dx * s.scale) + ',' + (dy * s.scale) + ')';
-	}
-
-	if(tr.length > 0) {
-		node.setAttribute('transform', tr);
-	}
-
-	if(!this.pointerEvents) {
-		node.setAttribute('pointer-events', 'none');
-	}
-
-	this.root.appendChild(node);
-
+	// var node = this.createElement('image');
+	// node.setAttribute("nodeId", this.cellId);
+	// node.setAttribute("class", "setting-mark");
+	// node.setAttribute('x', this.format((x - 12) * s.scale) + this.imageOffset);
+	// node.setAttribute('y', this.format((y + 45) * s.scale) + this.imageOffset);
+	// node.setAttribute('width', 30 * s.scale);
+	// node.setAttribute('height', 4 * s.scale);
+	// // Workaround for missing namespace support
+	// //添加图形形状可调控制
+	// if(node.setAttributeNS == null) {
+	// 	node.setAttribute('xlink:href', src);
+	// } else {
+	// 	node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src);
+	// }
+    //
+	// if(!aspect) {
+	// 	node.setAttribute('preserveAspectRatio', 'none');
+	// }
+    //
+	// if(s.alpha < 1 || s.fillAlpha < 1) {
+	// 	node.setAttribute('opacity', s.alpha * s.fillAlpha);
+	// }
+    //
+	// var tr = this.state.transform || '';
+    //
+	// if(flipH || flipV) {
+	// 	var sx = 1;
+	// 	var sy = 1;
+	// 	var dx = 0;
+	// 	var dy = 0;
+    //
+	// 	if(flipH) {
+	// 		sx = -1;
+	// 		dx = -w - 2 * x;
+	// 	}
+    //
+	// 	if(flipV) {
+	// 		sy = -1;
+	// 		dy = -h - 2 * y;
+	// 	}
+    //
+	// 	// Adds image tansformation to existing transform
+	// 	tr += 'scale(' + sx + ',' + sy + ')translate(' + (dx * s.scale) + ',' + (dy * s.scale) + ')';
+	// }
+    //
+	// if(tr.length > 0) {
+	// 	node.setAttribute('transform', tr);
+	// }
+    //
+	// if(!this.pointerEvents) {
+	// 	node.setAttribute('pointer-events', 'none');
+	// }
+    //
+	// this.root.appendChild(node);
+    var svg_g = this.createElement('g');
+    svg_g.setAttribute('transform', 'translate(' + this.format((x - 10) * s.scale) + ',' + this.format((y + 48) * s.scale) + ')');
+    var fo = this.createElement('foreignObject');
+    fo.setAttribute('style', 'overflow:visible;');
+    fo.setAttribute('pointer-events', 'all');
+    fo.setAttribute('width', this.format(28 * s.scale) + 'px');
+    fo.setAttribute('height', this.format(4 * s.scale) + 'px');
+    var divDom = this.createDiv('', 'center', 'middle', '', 'hidden');
+    divDom.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+    divDom.setAttribute('nodeId', this.cellId);
+    divDom.setAttribute('class', 'setting-mark');
+    divDom.style.width = this.format(28 * s.scale) + 'px';
+    divDom.style.height = this.format(4 * s.scale) + 'px';
+    divDom.innerHTML = '';
+    if(graph.nodeData[cell.id]) {
+        if(graph.nodeData[cell.id].isSet){//当前节点的配置状态为已配置
+            divDom.style.background = '#189D5C';
+        }else{//未配置
+            divDom.style.background = '#999999';
+        }
+    }
+    fo.appendChild(divDom);
+    svg_g.appendChild(fo);
+    this.root.appendChild(svg_g);
 };
 
 mxSvgCanvas2D.prototype.copyIcon = function(x, y, w, h, cell, aspect, flipH, flipV) {
-	var src = "";
-	if(graph.nodeData[cell.id]) {
-		var isCopy = graph.nodeData[cell.id].isCopy;			//是否为复制表
-		if(isCopy){
-			src = "../../lib/graphtool/images/icon/copyIcon.png";
-		}
-	}
 	// LATER: Add option for embedding images as base64.
 	aspect = (aspect != null) ? aspect : true;
 	flipH = (flipH != null) ? flipH : false;
@@ -18193,61 +18302,76 @@ mxSvgCanvas2D.prototype.copyIcon = function(x, y, w, h, cell, aspect, flipH, fli
 	y += s.dy;
 
 	//复制表图标
-	var node = this.createElement('image');
-	node.setAttribute("nodeId", this.cellId);
-	node.setAttribute("class", "copyIcon-mark");
-	node.setAttribute('x', this.format((x + 32) * s.scale) + this.imageOffset);
-	node.setAttribute('y', this.format((y + 27) * s.scale) + this.imageOffset);
-	node.setAttribute('width', 21 * s.scale);
-	node.setAttribute('height', 21 * s.scale);
-	// Workaround for missing namespace support
-	//添加图形形状可调控制
-	if(node.setAttributeNS == null) {
-		node.setAttribute('xlink:href', src);
-	} else {
-		node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src);
-	}
-
-	if(!aspect) {
-		node.setAttribute('preserveAspectRatio', 'none');
-	}
-
-	if(s.alpha < 1 || s.fillAlpha < 1) {
-		node.setAttribute('opacity', s.alpha * s.fillAlpha);
-	}
-
-	var tr = this.state.transform || '';
-
-	if(flipH || flipV) {
-		var sx = 1;
-		var sy = 1;
-		var dx = 0;
-		var dy = 0;
-
-		if(flipH) {
-			sx = -1;
-			dx = -w - 2 * x;
-		}
-
-		if(flipV) {
-			sy = -1;
-			dy = -h - 2 * y;
-		}
-
-		// Adds image tansformation to existing transform
-		tr += 'scale(' + sx + ',' + sy + ')translate(' + (dx * s.scale) + ',' + (dy * s.scale) + ')';
-	}
-
-	if(tr.length > 0) {
-		node.setAttribute('transform', tr);
-	}
-
-	if(!this.pointerEvents) {
-		node.setAttribute('pointer-events', 'none');
-	}
-
-	this.root.appendChild(node);
-
+	// var node = this.createElement('image');
+	// node.setAttribute("nodeId", this.cellId);
+	// node.setAttribute("class", "copyIcon-mark");
+	// node.setAttribute('x', this.format((x - 12) * s.scale) + this.imageOffset);
+	// node.setAttribute('y', this.format((y + 29) * s.scale) + this.imageOffset);
+	// node.setAttribute('width', 16 * s.scale);
+	// node.setAttribute('height', 16 * s.scale);
+	// // Workaround for missing namespace support
+	// //添加图形形状可调控制
+	// if(node.setAttributeNS == null) {
+	// 	node.setAttribute('xlink:href', src);
+	// } else {
+	// 	node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src);
+	// }
+	// if(!aspect) {
+	// 	node.setAttribute('preserveAspectRatio', 'none');
+	// }
+	// if(s.alpha < 1 || s.fillAlpha < 1) {
+	// 	node.setAttribute('opacity', s.alpha * s.fillAlpha);
+	// }
+	// var tr = this.state.transform || '';
+	// if(flipH || flipV) {
+	// 	var sx = 1;
+	// 	var sy = 1;
+	// 	var dx = 0;
+	// 	var dy = 0;
+	// 	if(flipH) {
+	// 		sx = -1;
+	// 		dx = -w - 2 * x;
+	// 	}
+	// 	if(flipV) {
+	// 		sy = -1;
+	// 		dy = -h - 2 * y;
+	// 	}
+	// 	// Adds image tansformation to existing transform
+	// 	tr += 'scale(' + sx + ',' + sy + ')translate(' + (dx * s.scale) + ',' + (dy * s.scale) + ')';
+	// }
+	// if(tr.length > 0) {
+	// 	node.setAttribute('transform', tr);
+	// }
+	// if(!this.pointerEvents) {
+	// 	node.setAttribute('pointer-events', 'none');
+	// }
+	// this.root.appendChild(node);
+    var imgWidth = this.format(16 * s.scale) + 'px';
+    var svg_g = this.createElement('g');
+    svg_g.setAttribute('transform', 'translate(' + this.format((x - 10) * s.scale) + ',' + this.format((y + 32) * s.scale) + ')');
+    var fo = this.createElement('foreignObject');
+    fo.setAttribute('style', 'overflow:visible;');
+    fo.setAttribute('pointer-events', 'all');
+    fo.setAttribute('width', imgWidth);
+    fo.setAttribute('height', imgWidth);
+    var divDom = this.createDiv('', 'center', 'middle', '', 'hidden');
+    divDom.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+    divDom.style.width = imgWidth;
+    divDom.style.height = imgWidth;
+    divDom.style.background = '#2873FF';
+    var src = "";
+    if(graph.nodeData[cell.id]) {
+        var isCopy = graph.nodeData[cell.id].isCopy;			//是否为复制表
+        if(isCopy){
+            src = "../../lib/graphtool/images/copyIcon.png";
+        }else{
+            divDom.style.display = 'none';
+        }
+    }
+    divDom.innerHTML = '<img nodeId="' + this.cellId + '" src="' + src + '" class="copyIcon-mark" style="width:' + imgWidth + ';height:' + imgWidth + ';"/>';
+    fo.appendChild(divDom);
+    svg_g.appendChild(fo);
+    this.root.appendChild(svg_g);
 };
 
 /**
@@ -18318,8 +18442,10 @@ mxSvgCanvas2D.prototype.createDiv = function(str, align, valign, style, overflow
 	var lh = (mxConstants.ABSOLUTE_LINE_HEIGHT) ? (s.fontSize * mxConstants.LINE_HEIGHT) + 'px' :
 		(mxConstants.LINE_HEIGHT * this.lineHeightCorrection);
 
-	style = 'display:inline-block;font-size:' + s.fontSize + 'px;font-family:' + s.fontFamily +
-		';color:' + s.fontColor + ';line-height:' + lh + ';' + style;
+	// style = 'display:inline-block;font-size:' + s.fontSize + 'px;font-family:' + s.fontFamily +
+	// 	';color:' + s.fontColor + ';line-height:' + lh + ';' + style;
+    style = 'font-size:' + s.fontSize + 'px;font-family:' + s.fontFamily +
+        ';color:' + s.fontColor + ';line-height:' + lh + ';' + style;
 
 	if((s.fontStyle & mxConstants.FONT_BOLD) == mxConstants.FONT_BOLD) {
 		style += 'font-weight:bold;';
@@ -18570,7 +18696,7 @@ mxSvgCanvas2D.prototype.text = function(x, y, w, h, str, align, valign, wrap, fo
 
 			if(wrap && w > 0) {
 				style += 'width:' + Math.round(w + 1) + 'px;white-space:normal;word-wrap:' +
-					mxConstants.WORD_WRAP + ';word-break:break-all;padding-top:5px;';
+					mxConstants.WORD_WRAP + ';word-break:break-all;padding-top:15px;';
 			} else {
 				style += 'white-space:nowrap;';
 			}
@@ -25494,9 +25620,11 @@ mxLabel.prototype.paintMark = function(c, x, y, w, h) {
 mxLabel.prototype.getImageBounds = function(x, y, w, h) {
 	var align = mxUtils.getValue(this.style, mxConstants.STYLE_IMAGE_ALIGN, mxConstants.ALIGN_LEFT);
 	var valign = mxUtils.getValue(this.style, mxConstants.STYLE_IMAGE_VERTICAL_ALIGN, mxConstants.ALIGN_MIDDLE);
-	var width = mxUtils.getNumber(this.style, mxConstants.STYLE_IMAGE_WIDTH, mxConstants.DEFAULT_IMAGESIZE);
-	var height = mxUtils.getNumber(this.style, mxConstants.STYLE_IMAGE_HEIGHT, mxConstants.DEFAULT_IMAGESIZE);
-	var spacing = mxUtils.getNumber(this.style, mxConstants.STYLE_SPACING, this.spacing) + 5;
+	// var width = mxUtils.getNumber(this.style, mxConstants.STYLE_IMAGE_WIDTH, mxConstants.DEFAULT_IMAGESIZE);
+	// var height = mxUtils.getNumber(this.style, mxConstants.STYLE_IMAGE_HEIGHT, mxConstants.DEFAULT_IMAGESIZE);
+    var width = 40;
+    var height = 40;
+    var spacing = mxUtils.getNumber(this.style, mxConstants.STYLE_SPACING, this.spacing) + 5;
 
 	if(align == mxConstants.ALIGN_CENTER) {
 		x += (w - width) / 2;
@@ -68455,8 +68583,8 @@ mxVertexHandler.prototype.createParentHighlightShape = function(bounds) {
 mxVertexHandler.prototype.createSelectionShape = function(bounds) {
 	var shape = new mxRectangleShape(bounds, null, this.getSelectionColor());
 	shape.strokewidth = this.getSelectionStrokeWidth();
-	shape.isDashed = this.isSelectionDashed();
-
+	// shape.isDashed = this.isSelectionDashed();
+    shape.isDashed = false;
 	return shape;
 };
 
@@ -69501,7 +69629,7 @@ mxVertexHandler.prototype.union = function(bounds, dx, dy, index, gridEnabled, s
  */
 mxVertexHandler.prototype.redraw = function() {
 	this.selectionBounds = this.getSelectionBounds(this.state);
-	this.bounds = new mxRectangle(this.selectionBounds.x, this.selectionBounds.y, this.selectionBounds.width, this.selectionBounds.height);
+	this.bounds = new mxRectangle(this.selectionBounds.x, this.selectionBounds.y, this.selectionBounds.width, this.selectionBounds.height - 20);
 
 	this.redrawHandles();
 	this.drawPreview();
@@ -73464,7 +73592,6 @@ mxCellHighlight.prototype.setHighlightColor = function(color) {
 mxCellHighlight.prototype.drawHighlight = function() {
 	this.shape = this.createShape();
 	this.repaint();
-
 	if(!this.keepOnTop && this.shape.node.parentNode.firstChild != this.shape.node) {
 		this.shape.node.parentNode.insertBefore(this.shape.node, this.shape.node.parentNode.firstChild);
 	}
@@ -73522,8 +73649,9 @@ mxCellHighlight.prototype.repaint = function() {
 			this.shape.points = this.state.absolutePoints;
 			this.shape.outline = false;
 		} else {
-			this.shape.bounds = new mxRectangle(this.state.x - this.spacing, this.state.y - this.spacing,
-				this.state.width + 2 * this.spacing, this.state.height + 2 * this.spacing);
+			// this.shape.bounds = new mxRectangle(this.state.x - this.spacing, this.state.y - this.spacing,
+			// 	this.state.width + 2 * this.spacing, this.state.height + 2 * this.spacing);
+            this.shape.bounds = new mxRectangle(this.state.x, this.state.y,this.state.width, this.state.height - 20);
 			this.shape.rotation = Number(this.state.style[mxConstants.STYLE_ROTATION] || '0');
 			this.shape.strokewidth = this.getStrokeWidth() / this.state.view.scale;
 			this.shape.outline = true;
@@ -73572,9 +73700,7 @@ mxCellHighlight.prototype.highlight = function(state) {
 			this.shape.destroy();
 			this.shape = null;
 		}
-
 		this.state = state;
-
 		if(this.state != null) {
 			this.drawHighlight();
 		}
