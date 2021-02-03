@@ -279,7 +279,7 @@ export default {
       })
       if (!flag) {
         if (!type) {
-          this.$message.warning(`prop不能为空`)
+          this.$message.warning(`参数不能为空`)
         }
         return false
       }
@@ -292,7 +292,7 @@ export default {
       const newArr = _.cloneDeep(_.uniqWith(arr, _.isEqual))
       if (newArr.length !== arr.length) {
         if (!type) {
-          this.$message.warning(`prop中有重复`)
+          this.$message.warning(`参数名中有重复`)
         }
         return false
       }
