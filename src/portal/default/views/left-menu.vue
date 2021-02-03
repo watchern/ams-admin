@@ -508,7 +508,11 @@ export default {
         let id = data.id
         getByMenuId(id).then(resp => {
           if(resp.code === 0 && resp.data !== null){
-            document.getElementById('readonlyChild').innerHTML = resp.data.helpDocument
+            if (resp.data.helpDocument !== '') {
+              document.getElementById('readonlyChild').innerHTML = resp.data.helpDocument
+            } else {
+              document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
+            }
             this.loading = false
           } else if (resp.code === 0 && resp.data === null){
             document.getElementById('readonlyChild').innerHTML = '<p>暂无新手引导</p>'
