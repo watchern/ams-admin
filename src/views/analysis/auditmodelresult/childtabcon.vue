@@ -94,12 +94,13 @@
         :row-data="rowData"
         rowMultiSelectWithClick="true"
         :enable-col-resize="true"
+        :get-row-style="useType=='modelRunResult'?this.renderTable:undefined"
         row-selection="multiple"
-        :get-row-style="this.renderTable"
         @cellClicked="onCellClicked"
         @gridReady="onGridReady"
         @rowSelected="rowChange"
       />
+
       <el-card v-if="!isSee" class="box-card" style="height: 100px">
         <div>{{ errorMessage }}</div>
       </el-card>
@@ -284,6 +285,7 @@ import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";
 import childtabscopy from "@/views/analysis/auditmodelresult/childtabscopy";
 import userProject from "@/views/base/userproject/index";
+import {handleDataSingleValue,handleDataManyValue} from '@/api/analysis/thresholdvalue'
 import {
   selectTable,
   selectByRunResultTableUUid,
@@ -375,7 +377,6 @@ export default {
       dataArray: [], // 保存当前表格中的数据
       queryData: [], // 保存列信息，用来传给子组件(queryBuilder组件)
       queryJson: {}, // 用来储存由子组件传过来的 queryBuilder 的 Json数据
-      conditionShowData: [], // 存放模型运行结果需要渲染的数据
       primaryKey: "", // 存放模型运行结果主键
       isLoading: true, //给agrrid加遮罩
       nextValue: [], // 存放模型结果后传进来的值
@@ -419,7 +420,8 @@ export default {
       afterAddChartsWithNoConfigure:false,
       isHaveCharts:false, //判断该模型是否有图表
       projectDialogIsSee:false,   //用来控制项目dialog显示
-      chartSwitching: true  //控制表格与图表切换
+      chartSwitching: true,  //控制表格与图表切换
+      modelObj:{}  //查询当前模型结果对应的的model对象
     };
   },
   mounted() {
@@ -690,12 +692,28 @@ export default {
         var colNames = [];
         var col = [];
         var da = [];
+        var renderColumns = [] //存储需要渲染的列名
+        var renderObject = {}  //存储key-value格式对象，key为列名  value为这一列对应的模型阈值关联对象
+        var modelThresholdValues = this.modelObj.modelThresholdValues
+        for (var i = 0;i<modelThresholdValues.length;i++){
+          if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2 && renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName)==-1){
+            renderColumns.push(modelThresholdValues[i].modelResultColumnName)
+          }
+        }
+        for(var i = 0;i<modelThresholdValues.length;i++){
+          if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2){
+            modelThresholdValues[i].colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
+            renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i]
+          }
+        }
         this.pageQuery.condition = this.nowtable;
         if (typeof sql !== "string") {
           sql = "undefined";
         }
         selectTable(this.pageQuery, sql, this.resultSpiltObjects).then(
           (resp) => {
+            //todo
+            // var modelThre
             var column = resp.data.records[0].columns;
             var columnToUppercase = []
             for(var i = 1;i<column.length;i++){
@@ -767,16 +785,22 @@ export default {
                       onlyFlag = true
                     }
                     if (this.modelOutputColumn[j].isShow == 1) {
-                      if (i == 0) {
-                        var rowColom = {
-                          headerName: this.modelOutputColumn[j].columnAlias,
-                          field: colNames[i],
-                        };
-                      } else {
-                        var rowColom = {
-                          headerName: this.modelOutputColumn[j].columnAlias,
-                          field: colNames[i],
-                        };
+                      var rowColom = {}
+                      for(var k = 0;k<renderColumns.length;k++){
+                        if (renderColumns[k]===colNames[i].toUpperCase()){
+                          var thresholdValueRel =  renderObject[renderColumns[k]]
+      /*                    rowColom = {
+                            headerName: this.modelOutputColumn[j].columnAlias,
+                            field: colNames[i],
+                            cellRenderer:this.changeCellColor
+                          };*/
+                          rowColom =  {headerName: this.modelOutputColumn[j].columnAlias, field: colNames[i],cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel)}}
+                        }else {
+                          rowColom = {
+                            headerName: this.modelOutputColumn[j].columnAlias,
+                            field: colNames[i],
+                          };
+                        }
                       }
                       col.push(rowColom);
                     }
@@ -975,14 +999,9 @@ export default {
       this.nextValue = nextValue;
       var col = [];
       var rowData = [];
-      console.log("-------进入getIntoModelResultDetail");
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
-        console.log(this.prePersonalVal.id +  this.nextValue.executeSQL.id + "-------进入prePersonalVal.id == this.nextValue.executeSQL.id")
         if (this.nextValue.executeSQL.state == "2") {
-          console.log(this.nextValue.executeSQL.state + "-------进入this.nextValue.executeSQL.state 2")
           if (this.nextValue.executeSQL.type == "SELECT") {
-            console.log(this.nextValue.executeSQL.type + "-------进入getIntoModelResultDetail SELECT")
-            //todo 增加sql类型判断
             if (true) {
               this.modelResultButtonIsShow = true;
               this.modelResultPageIsSee = true;
@@ -1089,30 +1108,28 @@ export default {
      * 渲染表格，将颜色渲染上去
      */
     renderTable(params) {
-      if (this.nowtable.tableType != 1) {
-        this.isLoading = false;
-      } else {
-        if (this.modelUuid != undefined) {
-          if (this.conditionShowData[0].length == 0) {
-            this.isLoading = false;
+      var modelThresholdValues = this.modelObj.modelThresholdValues
+      var thresholdValueRel = {}
+      this.isLoading = false;
+      for (var i = 0;i<modelThresholdValues.length;i++){
+        thresholdValueRel = modelThresholdValues[i]
+        if(thresholdValueRel && thresholdValueRel.thresholdValue.thresholdValueType == 1){
+          if(typeof (modelThresholdValues[i].colorInfo) === "string"){
+            let colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
+            modelThresholdValues[i].colorInfo = colorInfo
           }
-          for (var i = 0; i < this.conditionShowData[0].length; i++) {
-            for (var j = 0; j < this.conditionShowData[0][i].length; j++) {
-              if (
-                params.data[this.primaryKey.toLowerCase()] ==
-                this.conditionShowData[0][i][j]
-              ) {
-                this.isLoading = false;
-                return {
-                  "background-color": JSON.parse(this.conditionShowData[1][i])
-                    .backGroundColor,
-                  color: JSON.parse(this.conditionShowData[1][i]).fontColor,
-                };
-              }
-            }
-          }
-          this.isLoading = false;
+          //判断颜色等信息
+          return handleDataSingleValue(params.data,thresholdValueRel)
         }
+      }
+    },
+    changeCellColor(params,thresholdValueRel){
+      if(thresholdValueRel){
+        //进行特殊处理
+        return handleDataManyValue(params,thresholdValueRel)
+      }
+      else{
+        return params.value
       }
     },
     /**
@@ -1121,14 +1138,10 @@ export default {
     getRenderTableData() {
       if (this.useType == "modelRunResult") {
         if (this.modelUuid != undefined) {
-          selectConditionShow(
-            this.modelUuid,
-            this.nowtable.resultTableName
-          ).then((resp) => {
-            this.conditionShowData = resp.data;
             selectPrimaryKeyByTableName().then((resp) => {
               this.primaryKey = resp.data;
               selectModel(this.modelUuid).then((resp) => {
+                this.modelObj = resp.data
                 this.modelDetailRelation = resp.data.modelDetailRelation;
                 this.modelOutputColumn = resp.data.modelOutputColumn;
                 var datacodes = [];
@@ -1149,7 +1162,6 @@ export default {
                 }
               });
             });
-          });
         } else {
           this.initData();
         }

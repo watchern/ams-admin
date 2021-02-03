@@ -471,8 +471,8 @@ export default {
     if (this.operationObj.modelType!= '' && this.operationObj.modelType!= undefined){
       this.form.modelType = this.operationObj.modelType
       this.modelTypeChangeEvent(this.form.modelType)
-      this.paramShowVIf = true
     }
+    this.paramShowVIf = true
     if (this.operationObj.model != undefined){
       this.isExecuteSql = true
       this.modelTypeChangeEvent(this.operationObj.model.modelType)
@@ -511,9 +511,10 @@ export default {
   },
   methods: {
     editThresholdDetermine(){
+      var thresholdObj = this.$refs.thresholdChild.getSaveObj()
       for (var j = 0 ;j<this.threshold.length; j++){
         if (this.threshold[j].onlyId===this.setThreasholdValueObj.thresholdValueRelObj.onlyId){
-          this.threshold.splice(j,1,this.setThreasholdValueObj.thresholdValueRelObj)
+          this.threshold.splice(j,1,thresholdObj)
         }
       }
       this.thresholdIsSee = false
@@ -652,6 +653,10 @@ export default {
         this.modifying = true
         this.changeBtn.two = true
       }
+      if (this.form.modelType === "002003002") {
+        //说明是图形化模型，从图形化组件里获取列信息
+        this.getGraphObj()
+      }
     },
     clickResultConfig(){
       if (this.modifying == true && this.resultConfigDraw == true){
@@ -671,6 +676,10 @@ export default {
         this.resultConfigDraw = true
         this.modifying = true
         this.changeBtn.three = true
+      }
+      if (this.form.modelType === "002003002") {
+        //说明是图形化模型，从图形化组件里获取列信息
+        this.getGraphObj()
       }
     },
     handleClose(done) {
@@ -870,8 +879,6 @@ export default {
       if (returnObj.params.length != 0) {
         this.sqlEditorParam = returnObj.params
         this.$refs.apple.initSetting(this.sqlEditorParam)
-      } else {
-        this.paramShowVIf = false
       }
       this.sqlEditorParamObj = {arr: returnObj.params}//给sql编辑器的参数对象赋值，编辑使用
       // region 初始化固定列
@@ -891,6 +898,7 @@ export default {
       }else if (this.columnData.length>0){
         this.isExecuteSql = true
       }
+      this.setThreasholdValueObj.columns = []
       for (var i = 0;i<columnData.length;i++){
         this.setThreasholdValueObj.columns.push(columnData[i].outputColumnName)
       }
@@ -946,8 +954,6 @@ export default {
       if (params.length != 0) {
         this.sqlEditorParam = params
         this.$refs.apple.initSetting(this.sqlEditorParam)
-      } else {
-        this.paramShowVIf = false
       }
       //endregion
       this.graphColumnInfo = returnObj
@@ -957,6 +963,7 @@ export default {
       }else if (this.columnData.length>0){
         this.isExecuteSql = true
       }
+      this.setThreasholdValueObj.columns = []
       for (var i = 0;i<columnData.length;i++){
         this.setThreasholdValueObj.columns.push(columnData[i].outputColumnName)
       }
@@ -1180,6 +1187,7 @@ export default {
       }
       // 列数据
       this.columnData = columnData
+      this.setThreasholdValueObj.columns = []
       for (var i = 0;i<columnData.length;i++){
         this.setThreasholdValueObj.columns.push(this.columnData[i].outputColumnName)
       }
@@ -1236,6 +1244,8 @@ export default {
       }
       // endregion
       this.displaySQL(returnObj)
+      console.log('666666666666666')
+      console.log(this.form)
     },
     /**
      *显示审计事项树

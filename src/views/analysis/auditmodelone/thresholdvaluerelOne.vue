@@ -68,19 +68,43 @@ export default {
   components: { Colorpicker,thresholdvaluetree},
   props:['setThreasholdValueObj'],
   mounted() {
-    if(this.setThreasholdValueObj.isDisplay){
+/*    if(this.setThreasholdValueObj.isDisplay){
       //反显数据
+      debugger
+      this.setThreasholdValueObj.thresholdValueRelObj.colorInfoObj = JSON.parse(this.setThreasholdValueObj.thresholdValueRelObj.colorInfo)
       this.thresholdValueRelObj = this.setThreasholdValueObj.thresholdValueRelObj
       if(this.thresholdValueRelObj.thresholdValue.thresholdValueType == 2){
         this.isShowThresholdValueObject = true
-        this.thresholdValueRelObj.colorInfoObj = JSON.parse(this.thresholdValueRelObj.colorInfo)
-        this.thresholdValueRelObj.thresholdValueObject = JSON.parse(this.thresholdValueRelObj.thresholdValueObject)
+        //this.thresholdValueRelObj.colorInfoObj = JSON.parse(this.thresholdValueRelObj.colorInfo)
       }
       else{
         this.isShowThresholdValueObject = false
         this.thresholdValueRelObj.thresholdValueObject = ""
-        this.thresholdValueRelObj.colorInfoObj = JSON.parse(this.thresholdValueRelObj.colorInfo)
-        this.thresholdValueRelObj.thresholdValueObject = JSON.parse(this.thresholdValueRelObj.thresholdValueObject)
+      }
+    }*/
+  },
+  created() {
+    if(this.setThreasholdValueObj.isDisplay){
+      //反显数据
+      //this.setThreasholdValueObj.thresholdValueRelObj.colorInfoObj = JSON.parse(this.setThreasholdValueObj.thresholdValueRelObj.colorInfo)
+      this.thresholdValueRelObj.modelThresholdValueUuid = this.setThreasholdValueObj.thresholdValueRelObj.modelThresholdValueUuid
+      this.thresholdValueRelObj.thresholdValueUuid = this.setThreasholdValueObj.thresholdValueRelObj.thresholdValueUuid
+      this.thresholdValueRelObj.thresholdValueUuid = this.setThreasholdValueObj.thresholdValueRelObj.thresholdValueUuid
+      this.thresholdValueRelObj.thresholdValueName = this.setThreasholdValueObj.thresholdValueRelObj.thresholdValueName
+      this.thresholdValueRelObj.colorInfo = this.setThreasholdValueObj.thresholdValueRelObj.colorInfo
+      this.thresholdValueRelObj.modelResultColumnName = this.setThreasholdValueObj.thresholdValueRelObj.modelResultColumnName
+      this.thresholdValueRelObj.operator = this.setThreasholdValueObj.thresholdValueRelObj.operator
+      this.thresholdValueRelObj.thresholdValueObject = this.setThreasholdValueObj.thresholdValueRelObj.thresholdValueObject
+      this.thresholdValueRelObj.thresholdValue = this.setThreasholdValueObj.thresholdValueRelObj.thresholdValue
+      this.thresholdValueRelObj.colorInfoObj = JSON.parse(this.setThreasholdValueObj.thresholdValueRelObj.colorInfo)
+      //this.thresholdValueRelObj = this.setThreasholdValueObj.thresholdValueRelObj
+      if(this.thresholdValueRelObj.thresholdValue.thresholdValueType == 2){
+        this.isShowThresholdValueObject = true
+        //this.thresholdValueRelObj.colorInfoObj = JSON.parse(this.thresholdValueRelObj.colorInfo)
+      }
+      else{
+        this.isShowThresholdValueObject = false
+        this.thresholdValueRelObj.thresholdValueObject = ""
       }
     }
   },
@@ -179,7 +203,6 @@ export default {
       if(verResult){
         //校验通过  调用回调 设置值
         this.thresholdValueRelObj.colorInfo = JSON.stringify(this.thresholdValueRelObj.colorInfoObj)
-        this.thresholdValueRelObj.colorInfo = JSON.stringify(this.thresholdValueRelObj.thresholdValueObject)
         return this.thresholdValueRelObj
       }
     }

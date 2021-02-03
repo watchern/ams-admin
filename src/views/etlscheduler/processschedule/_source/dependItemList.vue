@@ -101,10 +101,10 @@
       </template>
       <span v-if="show" class="operation">
         <a href="javascript:" class="delete" @click="!isDetails && _remove($index)">
-          <em class="oper-btn delete" :class="_isDetails" data-toggle="tooltip" data-container="body" title="删除" />
+          <span class="oper-btn delete" :class="_isDetails" data-toggle="tooltip" data-container="body" title="删除单个依赖" />
         </a>
         <a v-if="($index === (dependItemList.length - 1))" href="javascript:" class="add" @click="!isDetails && _add()">
-          <em class="oper-btn add" :class="_isDetails" data-toggle="tooltip" data-container="body" title="添加" />
+          <span class="oper-btn add" :class="_isDetails" data-toggle="tooltip" data-container="body" title="添加" />
         </a>
       </span>
     </div>

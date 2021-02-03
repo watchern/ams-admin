@@ -357,7 +357,7 @@ export function getExecuteNodeInfo(graphUuid, executeId, executeIdArr, refreshHi
         getExecuteNodeInfoPost(obj).then( response => {
             var e = response.data
             if(e && e.length > 0){
-                graphIndexVue.layuiTabClickLi(1)
+                graphIndexVue.resultTabActiveName = '1'
                 let count = 0
                 let executeIdArr = []
                 for (let i = 0; i < e.length; i++) {
@@ -408,76 +408,6 @@ export function getExecuteNodeInfo(graphUuid, executeId, executeIdArr, refreshHi
         })
     }
     executeNodeInfo()
-}
-
-// 点击节点，查看节点说明信息
-export function nodeRemark1(nodeType) {
-    var html = ''
-    switch (nodeType) {
-        case 'filter':					// 数据筛选
-            html += '根据前置原表或结果表的表数据设置筛选条件'
-            break
-        case 'sort':					// 数据排序
-            html += '根据前置原表或结果表对部分字段设置排序，包括正序和倒序'
-            break
-        case 'sample':				// 数据抽样
-            html += '根据前置原表或结果表对表数据进行抽样设置，包括按样本量（个）、比例（%）、前N个、等距抽样'
-            break
-        case 'layering':			// 数据分层
-            html += '根据前置原表或结果表对某个字段进行分层设置，分层字段的数据必须是数值型或日期类型'
-            break
-        case 'groupCount':		// 分组汇总
-            html += "根据前置原表或结果表对部分字段进行分组和汇总设置，汇总时会根据字段类型的不同进行不同方式的汇总，汇总方式包括汇总、求和、最大值、最小值、平均值<span style='color:red'>（注：若同时进行分组和汇总的设置，则结果集中只显示设置的字段，其他字段不显示；若只设置分组，则可自定义选择显示结果集的输出字段）</span>"
-            break
-        case 'delRepeat':			// 数据去重
-            html += "根据前置原表或结果表对部分字段进行去重设置，从而达到对表数据的去重<span style='color:red'>（注：去重后的结果集中只显示设置去重的字段，其他字段不显示）</spn>"
-            break
-        case 'comparison':		// 数据频次分析
-            html += '<p>描述：</p>' +
-                '<p>（1）根据前置原表或结果表的表数据，分析表的某字段中XX内容在表中出现的次数，本节点支持对多个表进行分析</p>' +
-                '<p>（2）例子（两表）：分析【表A】的【姓名】字段和【表B】的【客户名称】字段中【张三】在【表A】和【表B】中出现的次数</p>'
-            break
-        case 'change':				// 数据转码
-            html += '<p>描述：</p>' +
-                '<p>（1）根据前置原表或结果表对部分字段设置转码规则，从而将表中的原数据转换成转码后的数据</p>' +
-                '<p>（2）转码规则有特定的人员负责维护，图形化工具中只会选择需要的规则，并不会进行维护</p>' +
-                '<p>（3）在结果集中会追加显示一列数据（该字段未转码前的数据），追加的列仅作为对比列进行显示，不会作为输出字段被应用到下一个节点中</p>' +
-                '<p>（4）例子：可将将【表A】中【性别】字段中的0或1对应的转换为男和女</p>'
-            break
-        case 'union':				// 数据融合
-            html += '<p>1、描述</p>' +
-                '<p>（1）根据前置原表或结果表对部分字段中的数据进行横向结果处理，包括合并、交集、补集</p>' +
-                '<p>（2）本节点仅支持对两个表进行操作</p>' +
-                '<p>2、名称解释</p>' +
-                "<p>（1）合并：选取两个表的合并字段（字段的数据含义和数据类型必须相同），根据合并字段显示两个表所选字段内容合并后的结果数据，输出结果中的字段将以主表（基表）为主（<a onclick='viewEg(\"union\")'>点击查看图例</a>）</p>" +
-                "<p>（2）交集：选取两个表的交集字段（字段的数据含义和数据类型必须相同），根据交集字段显示两个表所选字段内容中完全相同部分的结果数据，输出结果中的字段将以主表（基表）为主（<a onclick='viewEg(\"intersect\")'>点击查看图例</a>）</p>" +
-                "<p>（3）补集：选取两个表的补集字段（字段的数据含义和数据类型必须相同），根据补集字段显示副表（从表）所选取字段中的内容不存在于主表（基表）所选取字段中的内容的数据，输出结果中的字段将以主表（基表）为主（<a onclick='viewEg(\"exclude\")'>点击查看图例</a>）</p>"
-            break
-        case 'barChart':			// 自定义图形
-            html += '根据前置原表或结果表的表数据，可对其进行多维度的图表、图形分析，从而更加直观的了解数据的变化趋势，包括柱状图、饼图、折线图、散点图等'
-            break
-        case 'sql':						// SQL查询器
-            html += '用户可借助SQL查询器自定义编写SQL语句，对数据进行实时查询'
-            break
-        case 'newNullNode':	// 结果表
-            html += '根据前置节点的配置自动生成，展示的数据是根据前置配置节点的条件设置所执行后的过滤数据'
-            break
-        case 'datasource':	// 原表
-            html += '包括数据库中原始表、汉化表、个人数据表'
-            break
-        case 'relation':				// 数据关联
-            html += '<p>1、描述</p>' +
-                '<p>（1）根据前置原表或结果表对其进行联查设置，关联方式包括左连接、右连接、内连接、外连接</p>' +
-                '<p>（2）本节点支持多张表同时做关联设置（至少两张表）</p>' +
-                '<p>2、名称解释</p>' +
-                "<p>（1）左连接：选取关联字段将两张表进行关联，左表的所有数据均显示，右表的数据只显示关联字段值相等的数据，若右表关联结果无数据则补空显示（<a @click='viewEg(\"left_join\")'>点击查看图例</a>）</p>" +
-                "<p>（2）右连接：选取关联字段将两张表进行关联，右表的所有数据均显示，左表的数据只显示关联字段值相等的数据，若左表关联结果无数据则补空显示（<a @click='viewEg(\"right_join\")'>点击查看图例</a>）</p>" +
-                "<p>（3）内连接：选取关联字段将两张表进行关联，仅显示两张表中关联字段值相等的数据（<a @click='viewEg(\"inner_join\")'>点击查看图例</a>）</p>" +
-                "<p>（4）外连接：选取关联字段将两张表进行关联，显示出左表和右表关联后的所有数据，但去除重复数据，两表中若无关联数据则补空显示（<a @click='viewEg(\"join\")'>点击查看图例</a>）</p>"
-            break
-    }
-    $('#detailContainer>.nav-tabs>li:eq(1)>a').click()
-    $('#nodeRemark').html(html)
 }
 
 // 点击节点，查看节点说明信息

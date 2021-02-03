@@ -363,13 +363,8 @@
         }
     }
 </script>
-<style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
-<style scoped src="@/api/graphtool/css/common.css"></style>
 <style scoped type="text/css">
     >>> .el-table .cell {
-        padding: 0;
-    }
-    >>> .el-input__inner {
-        margin: 0;
+        padding: 0 !important;
     }
 </style>
