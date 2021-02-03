@@ -283,7 +283,7 @@
                       @click="!isDetails && _addDep()"
                     >
                       <!-- :class="{'oper-btn add': iconDisable}" -->
-                      <em
+                      <span
                         v-if="!isLoading"
                         class="oper-btn add"
                         data-toggle="tooltip"
@@ -326,15 +326,16 @@
                       @on-delete-all="_onDeleteAll"
                       @getDependTaskList="getDependTaskList"
                     />
-                    <em
+                    <span
                       :class="{'oper-btn delete': iconDisable}"
                       class="deleteIcon"
                       data-toggle="tooltip"
                       data-container="body"
-                      title="删除"
+                      title="删除所有依赖"
                       :style="{
                         'pointer-events': disableUpdate === true ? 'none' : '',
                       }"
+                      style="cursor: pointer;"
                       @click="!isDetails && _deleteDep($index)"
                     />
                   </div>
@@ -1583,7 +1584,6 @@ export default {
   }
   .m-depend-item-list{
     position: static;
-
   }
   // .deleteIcon{
     // position: relative;
