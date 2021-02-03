@@ -33,6 +33,7 @@
   "dependencies": {
     "@babel/runtime": "^7.12.5",
     "@riophae/vue-treeselect": "^0.4.0",
+    "@vue/component-compiler-utils": "^3.2.0",
     "@xunlei/vue-context-menu": "^1.0.2",
     "acorn": "^8.0.4",
     "ag-grid": "^18.1.2",

@@ -179,9 +179,10 @@ export function initDragAndDrop() {
       iT = (e || event).clientX
       // if(iT < left_min){iT = left_min}
       // else if(iT > container.clientWidth*.85){iT = container.clientWidth*.85}
-      vertical.style.left = iT - 80 - tz_path + 'px'
-      leftPart.style.width = iT - 86 - tz_path + 'px'
-      rightContent.style.width = parseInt(container.clientWidth - iT + 76 + tz_path) + 'px'
+
+      vertical.style.left = (iT - 80 - tz_path) / container.clientWidth * 100 + '%'
+      leftPart.style.width = (iT - 86 - tz_path) / container.clientWidth * 100 + '%'
+      rightContent.style.width = (container.clientWidth - iT + 76 + tz_path) / container.clientWidth * 100 + '%'
       return false
     }
     document.onmouseup = function() {
