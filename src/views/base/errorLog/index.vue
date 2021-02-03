@@ -3,38 +3,52 @@
     <div class="filter-container">
       <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
     </div>
-    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;" @sort-change="" @selection-change="" height="calc(100vh - 300px)"
-      max-height="calc(100vh - 300px)">
+    <el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%;"
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
+      @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="操作用户"  width="100px" align="center" prop="opUserName" />
-      <el-table-column label="操作IP"   width="160px" align="center" prop="opIp" />
-      <el-table-column label="异常类"   prop="opClass" />
-      <el-table-column label="异常方法"  width="200px" prop="opMethod" />
-      <el-table-column label="异常时间"  width="300px" prop="logTime" align="center"/>
-      <el-table-column label="异常信息"  
-        width="300px" 
-        align="center" >
+      <el-table-column label="操作用户" width="100px" align="center" prop="opUserName" />
+      <el-table-column label="操作IP" width="160px" align="center" prop="opIp" />
+      <el-table-column label="异常类" prop="opClass" />
+      <el-table-column label="异常方法" width="200px" prop="opMethod" />
+      <el-table-column label="异常时间" width="300px" prop="logTime" align="center" />
+      <el-table-column
+        label="异常信息"
+        width="300px"
+        align="center"
+      >
         <template slot-scope="scope">
-          <a type="text" size="small" @click="handReadError(scope.row)" class="handreada">
+          <a type="text" size="small" class="handreada" @click="handReadError(scope.row)">
             查看异常信息
           </a>
         </template>
       </el-table-column>
       <!-- <el-table-column label="异常信息" prop="logContent" /> -->
     </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />  
+    <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <el-dialog
       :append-to-body="true"
       title="异常信息"
-      :visible.sync="dialogVisible">
-      <div style="max-height:60vh; overflow:auto">
-        <p class="error-log">{{this.logerrortxt}}</p>
+      :visible.sync="dialogVisible"
+    >
+      <div style="max-height:60vh;overflow:auto">
+        <p class="error-log">{{ logerrortxt }}</p>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import { 
+import {
   listByPageErrorLog,
   getReadErrorLog
 } from '@/api/base/base'
@@ -51,10 +65,10 @@ export default {
       listLoading: false,
       dialogVisible: false,
       queryFields: [
-        { label: '操作用户', name: 'opUserName', type: 'fuzzyText', value: '' },
-        { label: '操作IP', name: 'opIp', type: 'fuzzyText' },
-        { label: '异常类', name: 'opClass', type: 'fuzzyText' },
-        { label: '异常方法', name: 'opMethod', type: 'fuzzyText' },
+        { label: '操作用户', name: 'opUserName', type: 'text', value: '' },
+        { label: '操作IP', name: 'opIp', type: 'text' },
+        { label: '异常类', name: 'opClass', type: 'text' },
+        { label: '异常方法', name: 'opMethod', type: 'text' },
         { label: '日志时间区间', name: 'logTime', type: 'timePeriod' }
       ],
       // selectedRowVal:0,
@@ -97,7 +111,7 @@ export default {
             headerName: '异常时间',
             field: 'logTime',
             filter: 'agNumberColumnFilter'
-          },
+          }
         ]
       },
       formStyle: {
@@ -185,12 +199,12 @@ export default {
       }
     },
     /**
-     * 获取详细异常信息 
+     * 获取详细异常信息
      */
-    handReadError(data){
+    handReadError(data) {
       this.dialogVisible = true
       this.logerrortxt = data.logContent
-    },
+    }
   }
 }
 </script>
