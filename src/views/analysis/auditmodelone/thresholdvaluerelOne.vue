@@ -74,13 +74,10 @@ export default {
       if(this.thresholdValueRelObj.thresholdValue.thresholdValueType == 2){
         this.isShowThresholdValueObject = true
         this.thresholdValueRelObj.colorInfoObj = JSON.parse(this.thresholdValueRelObj.colorInfo)
-        this.thresholdValueRelObj.thresholdValueObject = JSON.parse(this.thresholdValueRelObj.thresholdValueObject)
       }
       else{
         this.isShowThresholdValueObject = false
         this.thresholdValueRelObj.thresholdValueObject = ""
-        this.thresholdValueRelObj.colorInfoObj = JSON.parse(this.thresholdValueRelObj.colorInfo)
-        this.thresholdValueRelObj.thresholdValueObject = JSON.parse(this.thresholdValueRelObj.thresholdValueObject)
       }
     }
   },
@@ -179,7 +176,6 @@ export default {
       if(verResult){
         //校验通过  调用回调 设置值
         this.thresholdValueRelObj.colorInfo = JSON.stringify(this.thresholdValueRelObj.colorInfoObj)
-        this.thresholdValueRelObj.colorInfo = JSON.stringify(this.thresholdValueRelObj.thresholdValueObject)
         return this.thresholdValueRelObj
       }
     }

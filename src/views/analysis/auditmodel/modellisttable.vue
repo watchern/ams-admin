@@ -1084,7 +1084,7 @@ export default {
             type: 'active',
             val: {
               name: result.data.modelName + '详细',
-              path: '/analysis/editorModel'
+              path: '/analysis/editormodelnew'
             }
           })
         } else {

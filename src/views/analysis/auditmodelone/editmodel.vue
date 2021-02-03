@@ -1084,6 +1084,7 @@ export default {
     },
     createThreshold(){
       var thresholdObj = this.$refs.thresholdChild.getSaveObj()
+      debugger
       if (thresholdObj===undefined){
         this.$message('缺少阈值字段')
       }else {
