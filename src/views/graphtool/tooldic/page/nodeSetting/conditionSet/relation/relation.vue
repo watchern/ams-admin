@@ -7,8 +7,8 @@
             <el-tab-pane label="条件设置" name="nodeSet">
                 <el-col :span="myDiagramDivWidth">
                     <div id="myDiagramDiv" ref="myDiagramDiv" style="border:1px solid #F3F3F3;height: 561px;" @mouseover="myDiagramMousemove"></div>
-                    <el-image v-if="showRight" title="画布放大" :src="imgUrl" style="width:15px;height:15px;z-index:9999;position: absolute;top: 10px;right:260px;" @click="amplify"></el-image>
-                    <el-image v-if="!showRight" title="画布缩小" :src="imgUrl" style="width:15px;height:15px;z-index:9999;position: absolute;right: 20px;top: 10px;" @click="reduce"></el-image>
+                    <el-image v-if="showRight" title="画布放大" :src="imgUrl" style="width:15px;height:15px;z-index:9999;position: absolute;top: 90px;right:280px;" @click="amplify"></el-image>
+                    <el-image v-if="!showRight" title="画布缩小" :src="imgUrl" style="width:15px;height:15px;z-index:9999;position: absolute;right: 40px;top: 90px;" @click="reduce"></el-image>
                 </el-col>
                 <el-col :span="6" v-if="showRight">
                     <div style="width: 100%;height: 561px;">
@@ -164,7 +164,7 @@
                 customizeColumnTitle:'',
                 customizeColumnType:'',
                 curNodeDataArray:[],
-                imgUrl:require('@/api/graphtool/images/icon/fangda.png')
+                imgUrl:require('@/api/graphtool/images/icons/fangda.png')
             }
         },
         mounted() {
@@ -325,7 +325,7 @@
         padding: 5px;
     }
     >>> .el-table .cell {
-        padding: 0;
+        padding: 0 !important;
     }
     >>> .el-collapse-item__content{
         padding: 5px 0;

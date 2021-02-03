@@ -119,18 +119,18 @@
         prop="endTime"
       />
       <el-table-column
-        label="共耗时"
-        prop="time"
-      />
-      <el-table-column
         label="有效性"
+        align="center"
         prop="flag"
       >
         <template slot-scope="scope">
           <span>{{ scope.row.flag == '1' ? "有效" : "无效" }}</span>
         </template>
       </el-table-column>
-
+      <el-table-column
+        label="共耗时"
+        prop="time"
+      />
     </el-table>
     <pagination
       v-show="total>0"
