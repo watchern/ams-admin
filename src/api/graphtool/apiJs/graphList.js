@@ -53,6 +53,28 @@ export function deleteGraphInfoById(ids) {
 }
 
 /**
+ * 发布个人场景查询图形为公共场景查询图形
+ */
+export function publicGraph(ids) {
+    return request({
+        baseURL: baseURL,
+        url: `/graphCt/publicGraph/${ids}`,
+        method: 'post'
+    })
+}
+
+/**
+ * 取消发布的公共场景查询图形，变为个人场景查询图形
+ */
+export function cancelPublicGraph(ids) {
+    return request({
+        baseURL: baseURL,
+        url: `/graphCt/cancelPublicGraph/${ids}`,
+        method: 'post'
+    })
+}
+
+/**
  * 分享图形
  * @param data 参数1：图形UUID串，以逗号分隔；参数2：图形名称串，以顿号分隔
  * 参数3：被分享人员UUID串，以逗号分隔；参数4：被分享人员名称串，以顿号分隔

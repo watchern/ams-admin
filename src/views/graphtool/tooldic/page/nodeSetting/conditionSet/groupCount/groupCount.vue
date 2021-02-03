@@ -10,7 +10,7 @@
                         <el-transfer filterable filter-placeholder="请输入搜索内容" v-model="columnDataValue" :data="columnData" :titles="['可选字段', '分组字段']" @change="changeGroupData" style="padding-left: 90px;"></el-transfer>
                     </el-collapse-item>
                     <el-collapse-item title="汇总设置" name="countSet">
-                        <el-table :data="items" height="450" style="width: 770px;margin-left: 90px;">
+                        <el-table id="graphCountNodeTable" :data="items" height="450" style="width: 770px;margin-left: 90px;">
                             <el-table-column label="待汇总字段" width="350" header-align="center">
                                 <template slot-scope="scope">
                                     <div :id="`searchName${(scope.row.id)}`" class="xm-select-demo"></div>
@@ -281,7 +281,9 @@
         margin: 0;
     }
     >>> .el-table .cell {
-        padding: 0;
+        padding: 0 !important;
+    }
+    >>> #graphCountNodeTable .cell{
         display: inline;
     }
     >>> .el-collapse-item__content{
