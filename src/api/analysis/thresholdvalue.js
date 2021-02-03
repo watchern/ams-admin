@@ -147,7 +147,7 @@ export function handleDataSingleValue(data,thresholdValueRel){
   let backgroundColor = thresholdValueRel.colorInfo.backgroundColor;
   let fontColor = thresholdValueRel.colorInfo.fontColor;
   //数据出来的值
-  let valueOne = data[thresholdValueRel.modelResultColumnName]
+  let valueOne = data[thresholdValueRel.modelResultColumnName.toLowerCase()]
   //要判断的值
   let valueTwo = thresholdValueRel.thresholdValue.filterValue
   //运算符
@@ -201,7 +201,8 @@ export function handleDataSingleValue(data,thresholdValueRel){
  * @param params 数据
  * @param thresholdValueRel 阈值关联对象
  */
-export function handleDataManyValue(params,thresholdValueRel){
+export function
+handleDataManyValue(params,thresholdValueRel){
   //测试数据 建议不要删 否则后续更改太麻烦 又得设置又得查
 /*  thresholdValueRel = JSON.parse("{\"modelThresholdValueUuid\":\"\",\"thresholdValueUuid\":\"40281a8177418a3d0177418aa0e60001\"," +
     "\"thresholdValueName\":\"多值修改\",\"colorInfo\":{\"backgroundColor\":\"#000000\",\"fontColor\":\"#ffffff\"},\"modelResultColumnName\":\"合计期初借方余额\"," +
@@ -218,9 +219,9 @@ export function handleDataManyValue(params,thresholdValueRel){
   let backgroundColor = thresholdValueRel.colorInfo.backgroundColor;
   let fontColor = thresholdValueRel.colorInfo.fontColor;
   //数据出来的值
-  let valueOne = data[thresholdValueRel.modelResultColumnName]
+  let valueOne = data[thresholdValueRel.modelResultColumnName.toLowerCase()]
   //阈值对象列数据
-  let thresholdValueObject = data[thresholdValueRel.thresholdValueObject]
+  let thresholdValueObject = data[thresholdValueRel.thresholdValueObject.toLowerCase()]
   //运算符
   let operator = thresholdValueRel.operator
   //当阈值类型为多值的时候，阈值对象信息
@@ -286,12 +287,12 @@ export function handleDataManyValue(params,thresholdValueRel){
     }
     return dom
   }
-  else if(operator === "=" && valueOne === valueTwo){
+  else if(operator === "="){
     for(let i = 0; i < thresholdValueRel.thresholdValue.thresholdValueInfoList.length;i++){
       //要判断的值
       let valueTwo = thresholdValueRel.thresholdValue.thresholdValueInfoList[i].filterValue
-      valueOne = parseFloat(valueOne)
-      valueTwo = parseFloat(valueTwo)
+/*      valueOne = parseFloat(valueOne)
+      valueTwo = parseFloat(valueTwo)*/
       let thresholdValueObjectValue = thresholdValueRel.thresholdValue.thresholdValueInfoList[i].filterConditions
       if(thresholdValueObject.indexOf(thresholdValueObjectValue) != -1 && valueOne == valueTwo){
         dom = "<span style='color:" + fontColor +  ";background-color:" + backgroundColor + "' title='" + title + "'>" + dom + "</span>"
