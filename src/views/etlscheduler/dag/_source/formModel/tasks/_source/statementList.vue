@@ -13,7 +13,7 @@
         resize="none"
         :autosize="{minRows:1}"
         placeholder="请输入非查询sql语句"
-        style="width: 500px;"
+        style="width: 500px;float: left;"
         @on-blur="_verifProp()"
       />
       <span v-if="!isDetails" class="lt-add">
@@ -134,7 +134,7 @@ export default {
       })
       if (!flag) {
         if (!type) {
-          this.$message.warning(`语句不能为空`)
+          this.$message.warning(`前置/后置sql语句不能为空`)
         }
         return false
       }

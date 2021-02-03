@@ -638,7 +638,6 @@ export default {
       return (colorList || []).findIndex((item) => item.value === value)
     },
     getList(query) {
-      console.log(query)
       this.listLoading = true
       if (query) {
         this.pageQuery.condition = query
@@ -725,7 +724,7 @@ export default {
         this.dialogFormVisible = false
         this.$notify({
           title: this.$t('message.title'),
-          message: '设置跳过环节成功成功',
+          message: '设置跳过环节成功',
           type: 'success',
           duration: 2000,
           position: 'bottom-right'
@@ -765,7 +764,7 @@ export default {
         this.getList()
         this.$notify({
           title: this.$t('message.title'),
-          message: '恢复运行成功',
+          message: '恢复运行操作成功',
           type: 'success',
           duration: 2000,
           position: 'bottom-right'
@@ -832,7 +831,7 @@ export default {
           this.getList()
           this.$notify({
             title: this.$t('message.title'),
-            message: '重新运行成功',
+            message: '重新运行操作成功',
             type: 'success',
             duration: 2000,
             position: 'bottom-right'
@@ -847,7 +846,7 @@ export default {
         this.getList()
         this.$notify({
           title: this.$t('message.title'),
-          message: '指定环节重新运行成功',
+          message: '指定环节重新运行操作成功',
           type: 'success',
           duration: 2000,
           position: 'bottom-right'
@@ -863,7 +862,7 @@ export default {
         this.getList()
         this.$notify({
           title: this.$t('message.title'),
-          message: '取消成功',
+          message: '取消操作成功',
           type: 'success',
           duration: 2000,
           position: 'bottom-right'
