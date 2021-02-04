@@ -695,12 +695,33 @@ export default {
         var renderColumns = [] //存储需要渲染的列名
         var renderObject = {}  //存储key-value格式对象，key为列名  value为这一列对应的模型阈值关联对象
         var modelThresholdValues = this.modelObj.modelThresholdValues
-        for (var i = 0;i<modelThresholdValues.length;i++){
+        //2021年2月4日 16:35:28   新增给带详细的模型结果列增加超链接样式
+        let modelResultDetailCol = []
+        if(this.modelObj.modelDetailRelation){
+          debugger
+          //循环模型详细关联
+          for(let i = 0; i < this.modelObj.modelDetailRelation.length;i++){
+            //获取关联对象
+            let modelDetailRelation = this.modelObj.modelDetailRelation[i]
+            //循环模型关联详细配置
+            for(let j = 0;j < modelDetailRelation.modelDetailConfig.length;j++){
+              let modelDetailConfig = modelDetailRelation.modelDetailConfig[j]
+              //确保数据不是undefined或null
+              if(modelDetailConfig.resultColumn){
+                //添加到数据 用于下边列处理的时候 作为判断条件
+                modelResultDetailCol.push(modelDetailConfig.resultColumn.toUpperCase())
+              }
+            }
+          }
+        }
+        console.log(modelResultDetailCol)
+        //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
+        for (var i = 0; i < modelThresholdValues.length;i++){
           if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2 && renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName)==-1){
             renderColumns.push(modelThresholdValues[i].modelResultColumnName)
           }
         }
-        for(var i = 0;i<modelThresholdValues.length;i++){
+        for(var i = 0;i < modelThresholdValues.length;i++){
           if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2){
             modelThresholdValues[i].colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
             renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i]
@@ -771,10 +792,7 @@ export default {
               var onlyFlag = false
               for (var i = 0; i < colNames.length; i++) {
                 loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
-                  if (
-                    this.modelOutputColumn[j].outputColumnName.toLowerCase() ==
-                    colNames[i]
-                  ) {
+                  if (this.modelOutputColumn[j].outputColumnName.toLowerCase() == colNames[i]) {
                     if(onlyFlag==false){
                       var rowColom = {
                       headerName: "onlyuuid",
@@ -786,21 +804,14 @@ export default {
                     }
                     if (this.modelOutputColumn[j].isShow == 1) {
                       var rowColom = {}
-                      for(var k = 0;k<renderColumns.length;k++){
-                        if (renderColumns[k]===colNames[i].toUpperCase()){
-                          var thresholdValueRel =  renderObject[renderColumns[k]]
-      /*                    rowColom = {
-                            headerName: this.modelOutputColumn[j].columnAlias,
-                            field: colNames[i],
-                            cellRenderer:this.changeCellColor
-                          };*/
-                          rowColom =  {headerName: this.modelOutputColumn[j].columnAlias, field: colNames[i],cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel)}}
-                        }else {
-                          rowColom = {
-                            headerName: this.modelOutputColumn[j].columnAlias,
-                            field: colNames[i],
-                          };
-                        }
+                      if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1){
+                        var thresholdValueRel =  renderObject[colNames[i].toUpperCase()]
+                        rowColom =  {headerName: this.modelOutputColumn[j].columnAlias, field: colNames[i],cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel)}}
+                      }else {
+                        rowColom = {
+                          headerName: this.modelOutputColumn[j].columnAlias,
+                          field: colNames[i],
+                        };
                       }
                       col.push(rowColom);
                     }
