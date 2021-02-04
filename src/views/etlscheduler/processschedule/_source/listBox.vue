@@ -1,19 +1,19 @@
 <template>
   <div class="clearfix list">
     <div class="text-box">
-      <span><slot name="text"></slot></span>
+      <span><slot name="text" /></span>
     </div>
     <div class="cont-box">
       <div class="label-box">
-        <slot name="content"></slot>
+        <slot name="content" />
       </div>
     </div>
   </div>
 </template>
 <script>
-  export default {
-    name: 'list-box'
-  }
+export default {
+  name: 'ListBox'
+}
 </script>
 
 <style scoped lang="scss" rel="stylesheet/scss">

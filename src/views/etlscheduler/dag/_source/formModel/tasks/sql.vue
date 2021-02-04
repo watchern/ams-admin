@@ -62,6 +62,9 @@
             name="code-sql-mirror"
             style="opacity: 0;"
           />
+          <a class="ans-modal-box-max">
+            <em class="ans-icon-max" @click="setEditorVal" />
+          </a>
         </div>
       </div>
     </m-list-box>
@@ -123,6 +126,7 @@ import mStatementList from './_source/statementList'
 import disabledState from '@/components/etl/mixin/disabledState'
 import codemirror from '@/components/etl/file/codemirror'
 import $ from 'jquery'
+import mSqlBox from './_source/sqlBox'
 let editor
 
 export default {
@@ -263,6 +267,34 @@ export default {
     }
   },
   methods: {
+    setEditorVal() {
+      const self = this
+      const modal = self.$modal.dialog({
+        className: 'scriptModal',
+        closable: false,
+        showMask: true,
+        maskClosable: true,
+        onClose: function() {
+
+        },
+        render(h) {
+          return h(mSqlBox, {
+            on: {
+              getSriptBoxValue(val) {
+                editor.setValue(val)
+              },
+              closeAble() {
+                // this.$modal.destroy()
+                modal.remove()
+              }
+            },
+            props: {
+              item: editor.getValue()
+            }
+          })
+        }
+      })
+    },
     /**
      * return sqlType
      */

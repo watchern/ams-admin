@@ -2144,11 +2144,8 @@ export function createParamTableHtml(sqlIsChanged, paramArr, canEditor) {
       $('.setParamTr:eq(' + i + ')').remove() // 则删除当前行
     }
   }
-  if (paramArr.length === 0) {
-    this.$message({
-      type: 'error',
-      message: '您尚未设置参数，无法进行参数配置'
-    })
+  if (paramArr===undefined || paramArr == null) {
+    load.hide()
     return
   }
   // 第三步：获取数据库所有母参数信息集合以及该模型用到的参数集合
@@ -2264,6 +2261,11 @@ export function initSetting() {
       }
     // 第二步：先获取有效的参数集合
     let paramArr = settingVue.paramsSetting
+    if (paramArr===undefined || paramArr == null) {
+      load.hide()
+      settingVue.setParamArr = []
+      return
+    }
     // 第三步：遍历已配置过得参数行（若有多余行则删除）,同时找到已配置的参数
     for(let i=settingVue.setParamArr.length - 1; i>=0; i--){// 倒序遍历已渲染的参数配置数组
       let moduleParamId = settingVue.setParamArr[i].dataModuleParamId// 取得当前行绑定的母参ID
@@ -2281,12 +2283,6 @@ export function initSetting() {
           // $('.setParamTr:eq(' + i + ')').remove()// 则删除当前行
         }
       }
-    }
-    if (paramArr.length === 0) {
-      load.hide()
-      settingVue.setParamArr = []
-      settingVue.$message({ type:"warning", message:'尚未设置参数，无法进行参数配置'})
-      return
     }
     // 第四步：获取数据库所有母参数信息
     findParamsAndModelRelParams().then( response => {

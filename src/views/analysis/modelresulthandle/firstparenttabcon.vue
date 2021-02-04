@@ -433,6 +433,9 @@ export default {
         return "";
       } else {
         var sql = JSON.parse(row.settingInfo).sql;
+        if(!sql){
+          return ""
+        }
         sql = sql.substring(0, 10);
         sql = sql + "...";
         return sql;

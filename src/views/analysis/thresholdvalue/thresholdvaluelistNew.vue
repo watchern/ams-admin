@@ -171,12 +171,12 @@ export default {
      * @param query 查询条件
      */
     getList(query) {
-      if(this.selectTreeNode != null){
-        query.thresholdValueFolderUuid = this.selectTreeNode.id
-      }
       this.listLoading = true
       if (query) {
         this.pageQuery.condition = query
+        if(this.selectTreeNode != null){
+          query.thresholdValueFolderUuid = this.selectTreeNode.id
+        }
       }
       findThresholdValueList(this.pageQuery).then(resp => {
         this.total = resp.data.total
@@ -447,6 +447,7 @@ export default {
               this.dialogFormVisibleEdit = false
               //刷新列表
               this.getList(this.query)
+              this.$emit('refreshTree')
             }
             else{
               this.$message({ type: 'error', message:'阈值添加失败' })
@@ -459,6 +460,7 @@ export default {
               this.dialogFormVisibleEdit = false
               //刷新列表
               this.getList(this.query)
+              this.$emit('refreshTree')
             }
             else{
               this.$message({ type: 'error', message:'阈值修改失败' })

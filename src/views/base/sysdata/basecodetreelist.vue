@@ -3,12 +3,11 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span class="title">查询结构列表</span>
-      </div>
-      
+      </div>  
       <div>
         <el-table
           ref="multipleTable"
-          height = "calc(93.9vh - 450px)"
+          height="calc(93.9vh - 450px)"
           :data="tableData"
           tooltip-effect="dark"
           border
@@ -24,7 +23,7 @@
             <el-button v-if="this.editTag!=1" type="primary" class="oper-btn add" size="mini" title="添加" @click="saveCodeData"></el-button>
             <el-button v-if="this.editTag!=1" type="primary" class="oper-btn again-2" size="mini" title="刷新" @click="resetForm"></el-button>
             <el-button v-if="this.editTag!=1" type="primary" class="oper-btn edit" size="mini" :disabled="handleSelectionChange.length !== 1" title="修改" @click="editCodeData"></el-button>
-            <el-button v-if="this.editTag!=1" type="danger" class="oper-btn delete" size="mini" :disabled="handleSelectionChange.length === 0" title="删除" @click="delCodeData"></el-button>
+            <el-button v-if="this.editTag!=1" type="primary" class="oper-btn delete" size="mini" :disabled="handleSelectionChange.length === 0" title="删除" @click="delCodeData"></el-button>
             <!-- <el-button type="primary" size="mini" @click="returnList">返回</el-button> -->
           </div>
         <div class="operate-div">

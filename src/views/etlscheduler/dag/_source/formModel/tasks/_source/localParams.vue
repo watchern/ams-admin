@@ -90,7 +90,7 @@
           @click="!isDetails && _removeUdp($index)"
         >
           <!-- class="oper-btn delete" -->
-          <em
+          <span
             class="oper-btn delete"
             :class="_isDetails"
             data-toggle="tooltip"
@@ -109,7 +109,7 @@
           @click="!isDetails && _addUdp()"
         >
           <!-- class="oper-btn add" -->
-          <em
+          <span
             class="oper-btn add"
             :class="_isDetails"
             data-toggle="tooltip"
@@ -126,7 +126,7 @@
         href="javascript:"
         @click="!isDetails && _addUdp()"
       >
-        <em
+        <span
           class="oper-btn add"
           :class="_isDetails"
           data-toggle="tooltip"
@@ -312,6 +312,7 @@ export default {
       padding-left: 4px;
       a {
         .iconfont {
+          font-style:normal;
           font-size: 18px;
           vertical-align: middle;
           margin-bottom: -2px;
@@ -324,6 +325,7 @@ export default {
     a {
       color: #000;
       .iconfont {
+        font-style:normal;
         font-size: 16px;
         vertical-align: middle;
         display: inline-block;
@@ -335,6 +337,7 @@ export default {
     a {
       color: #0097e0;
       .iconfont {
+        font-style:normal;
         font-size: 18px;
         vertical-align: middle;
         display: inline-block;

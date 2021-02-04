@@ -13,16 +13,15 @@
         resize="none"
         :autosize="{minRows:1}"
         placeholder="请输入非查询sql语句"
-        style="width: 500px;float: left;"
+        style="width: 500px;"
         @on-blur="_verifProp()"
       />
       <span v-if="!isDetails" class="lt-add">
         <a
           href="javascript:"
-          style="color:red;"
           @click="!isDetails && _removeStatement($index)"
         >
-          <em
+          <span
             class="oper-btn delete"
             :class="_isDetails"
             data-toggle="tooltip"
@@ -38,7 +37,7 @@
           href="javascript:"
           @click="!isDetails && _addStatement()"
         >
-          <em
+          <span
             class="oper-btn add"
             :class="_isDetails"
             data-toggle="tooltip"
@@ -50,12 +49,13 @@
     <span
       v-if="!localStatementList.length && !isDetails"
       class="add"
+      style="top:0"
     >
       <a
         href="javascript:"
         @click="!isDetails && _addStatement()"
       >
-        <em
+        <span
           class="oper-btn add"
           :class="_isDetails"
           data-toggle="tooltip"
@@ -151,6 +151,8 @@ export default {
   .select-listpp {
     margin-bottom: 6px;
     .lt-add {
+      position:relative;
+      top:-8px;
       margin: 2px;
       padding-left: 4px;
       a {
@@ -160,6 +162,7 @@ export default {
         //   display: inline-block;
         // }
         .iconfont {
+          font-style:normal;
           font-size: 18px;
           vertical-align: middle;
           margin-bottom: -2px;
@@ -169,8 +172,11 @@ export default {
     }
   }
   .add {
+    position:relative;
+    top:-4px;
     a {
       .iconfont {
+        font-style:normal;
         font-size: 16px;
         vertical-align: middle;
         display: inline-block;
