@@ -427,6 +427,7 @@ export default {
   mounted() {
     this.getRenderTableData();
     this.chartReflexion();
+    window.openModelDetailNew = this.openModelDetailNew
   },
   methods: {
     rowChange() {
@@ -698,7 +699,6 @@ export default {
         //2021年2月4日 16:35:28   新增给带详细的模型结果列增加超链接样式
         let modelResultDetailCol = []
         if(this.modelObj.modelDetailRelation){
-          debugger
           //循环模型详细关联
           for(let i = 0; i < this.modelObj.modelDetailRelation.length;i++){
             //获取关联对象
@@ -804,9 +804,12 @@ export default {
                     }
                     if (this.modelOutputColumn[j].isShow == 1) {
                       var rowColom = {}
-                      if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1){
+                      if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1 || modelResultDetailCol.indexOf(colNames[i].toUpperCase()) != -1){
                         var thresholdValueRel =  renderObject[colNames[i].toUpperCase()]
-                        rowColom =  {headerName: this.modelOutputColumn[j].columnAlias, field: colNames[i],cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel)}}
+                        rowColom =  {
+                          headerName: this.modelOutputColumn[j].columnAlias,
+                          field: colNames[i],
+                          cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)}}
                       }else {
                         rowColom = {
                           headerName: this.modelOutputColumn[j].columnAlias,
@@ -1134,12 +1137,28 @@ export default {
         }
       }
     },
-    changeCellColor(params,thresholdValueRel){
+    changeCellColor(params,thresholdValueRel,modelResultDetailCol){
+      debugger
       if(thresholdValueRel){
-        //进行特殊处理
-        return handleDataManyValue(params,thresholdValueRel)
+        let returnValue = handleDataManyValue(params,thresholdValueRel)
+        //如果当该列是关联详细列又是阈值展现改变颜色列的时候做特殊处理
+        //如果两种都存在则优先判断阈值，如果阈值成立则显示阈值颜色，阈值不成立则显示超链接颜色
+        if(returnValue.indexOf("<span") != -1){
+          return returnValue
+        }
+        else{
+          let dom = params.value
+          if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
+            dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;'>" + params.value + "</span>"
+          }
+          return dom
+        }
       }
       else{
+        if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
+          let dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;'>" + params.value + "</span>"
+          return dom
+        }
         return params.value
       }
     },
@@ -1198,6 +1217,21 @@ export default {
       } else {
         this.$message({ type: "info", message: "不能选中多条!" });
       }
+    },
+    /**
+     * 点击详细打开dialog效果
+     */
+    openModelDetailNew(selRows) {
+      alert(123)
+      this.options = [];
+      for (var i = 0; i < this.modelDetailRelation.length; i++) {
+        var eachOption = {
+          value: this.modelDetailRelation[i].relationObjectUuid,
+          label: this.modelDetailRelation[i].modelDetailName,
+        };
+        this.options.push(eachOption);
+      }
+      this.modelDetailDialogIsShow = true;
     },
     /**
      * 点击详细dialog的确定按钮后触发
