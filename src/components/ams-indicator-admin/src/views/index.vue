@@ -17,8 +17,8 @@
           </el-tabs>
           <div class="side-footer">
             <el-dropdown v-if="isInManager == 'true' || isOrgManager == 'true'">
-              <el-button style="border-color: aliceblue" class="el-dropdown-link" type="primary"><li class="dib">
-                <span style="font-size: 30px;color: #C0C0C0;background: ghostwhite;" class="icon iconfont">&#xe606;</span></li></el-button>
+              <el-button style="border-color: aliceblue" class="el-dropdown-link">
+                <span style="font-size: 30px;color: #C0C0C0;background: ghostwhite;" class="icon iconfont">&#xe606;</span></el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="nativeIndicatrixDesign">原生指标设计</el-dropdown-item>
                 <el-dropdown-item @click.native="addDeriveIn">派生指标设计</el-dropdown-item>
@@ -528,8 +528,15 @@ export default {
             }
             columnDefs.push(obj)
           }
-          let result = {column:val.columnNames,columnType:val.columnTypes,data:val.result,columnDefs:columnDefs}
-          //处理aggrid的列信息
+          let result = {
+            column:val.columnNames,
+            columnType:val.columnTypes,
+            data:val.result,
+            columnDefs:columnDefs,
+            id:val.analysisRegionId,
+            name:val.measureName
+          }
+          //处理aggrid的列信息ss
           let data = {id:val.analysisRegionId,data:result,measureName:val.measureName,chartConfig:val.chartConfig}
           //根据返回的结果id找到数组里面的数据进行修改
             dataList.data = result

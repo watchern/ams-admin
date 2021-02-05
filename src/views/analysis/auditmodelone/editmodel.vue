@@ -197,7 +197,7 @@
               </el-tab-pane>
             </el-tabs>
           </div>
-          <div  style="position: absolute;float:right;left: 97%;height: 92%;overflow:hidden;width: 2.5%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"> <!-- v-if="!modifying"  -->
+          <div  style="position: absolute;float:right;left: 97%;height: 92%;overflow:hidden;width: 2.5%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
             <div  title="基本信息" @click="clickModelInfo()" :style="{background: changeBtn.one === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/modelinfo.png"/></div>
             <div  title="已用参数" @click="clickUseParam()" :style="{background: changeBtn.two === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/useParam.png"/></div>
             <div  title="结果展现配置" @click="clickResultConfig()" :style="{background: changeBtn.three === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/resultConfig.png"/></div>
@@ -226,7 +226,7 @@
       </div>
     </el-dialog>
     <el-dialog v-if="modelDetailIsSee" :visible.sync="modelDetailIsSee" :title="modelDetailAdd===true?'添加模型关联':'修改模型关联'" width="50%">
-      <model-detail ref="child" v-if="modelDetailIsSee" :data="modelDetailAdd===true?{}:editingModelDetail" :operationtype="operationObj.operationType" :columns="columnData"></model-detail>
+      <model-detail :style="modelDetailIsSeeHeight" ref="child" v-if="modelDetailIsSee" :data="modelDetailAdd===true?{}:editingModelDetail" :operationtype="operationObj.operationType" :columns="columnData"></model-detail>
       <div slot="footer">
         <el-button type="primary" @click="modelDetailAdd===true?createDetail():editModelRelationDetermine()">确定</el-button>
         <el-button @click="modelDetailIsSee=false">取消</el-button>
@@ -456,7 +456,8 @@ export default {
         columns:[]
       },
       selectedThreshold:[],
-      isExecuteSql:false
+      isExecuteSql:false,
+      modelDetailIsSeeHeight:""
     }
   },
   watch: {
@@ -465,6 +466,7 @@ export default {
     }
   },
   created() {
+    this.modelDetailIsSeeHeight = "height:" + (window.outerHeight - 300) + "px"
     //设置一个默认的模型编号
     this.form.modelUuid = getUuid()
     this.operationObj = JSON.parse(sessionStorage.getItem('operationObj'));

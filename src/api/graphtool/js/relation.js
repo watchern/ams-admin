@@ -321,13 +321,16 @@ export function init() {
             }
             // 节点新增
             else if (e.change === go.ChangedEvent.Insert && e.modelChange === 'nodeDataArray') {
-                addNode(e.newValue)				// 新增节点核心方法
+                addNode(e.newValue,true)				// 新增节点核心方法
             }
         })
     })
     // 加载图表,start
     var curIsSet = nodeData.isSet			// 判断当前节点是否配置过
     if (curIsSet) {
+        if(nodeData.setting.join){
+            relationVue.join = nodeData.setting.join
+        }
         if (nodeData.setting.sqlEdit) {
             let columnsInfo = nodeData.columnsInfo
             let obj = JSON.parse(nodeData.setting.sqlEdit)
@@ -338,7 +341,7 @@ export function init() {
             let linkDataArray = obj.linkDataArray
             // 动态增加关联关系,start
             for (let i = 0; i < nodeDataArray.length; i++) {
-                addNode(nodeDataArray[i])
+                addNode(nodeDataArray[i],false)
             }
             for (let j = 0; j < linkDataArray.length; j++) {
                 addLine(linkDataArray[j], false)
@@ -460,8 +463,11 @@ function addLine(obj, isAdd) {
     showJoin(obj)
 }
 
-function addNode(obj) {
-    relationVue.join.push(obj)
+function addNode(obj,isAdd) {
+    if(isAdd){
+        relationVue.join.push(obj)
+    }
+
     relationVue.showJoinArea = false
 }
 

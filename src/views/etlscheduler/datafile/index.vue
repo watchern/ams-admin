@@ -20,10 +20,10 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
+      <!-- <el-table-column
         type="selection"
         align="center"
-      />
+      /> -->
       <el-table-column
         label="所属系统"
         width="150px"
