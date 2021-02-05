@@ -17,8 +17,8 @@
           </el-tabs>
           <div class="side-footer">
             <el-dropdown v-if="isInManager == 'true' || isOrgManager == 'true'">
-              <el-button style="border-color: aliceblue" class="el-dropdown-link" type="primary"><li class="dib">
-                <span style="font-size: 30px;color: #C0C0C0;background: ghostwhite;" class="icon iconfont">&#xe606;</span></li></el-button>
+              <el-button style="border-color: aliceblue" class="el-dropdown-link">
+                <span style="font-size: 30px;color: #C0C0C0;background: ghostwhite;" class="icon iconfont">&#xe606;</span></el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="nativeIndicatrixDesign">原生指标设计</el-dropdown-item>
                 <el-dropdown-item @click.native="addDeriveIn">派生指标设计</el-dropdown-item>
