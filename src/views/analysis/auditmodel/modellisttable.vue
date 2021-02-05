@@ -328,7 +328,8 @@ export default {
           this.$refs.[dataObj.modelUuid + 'param'][0].
           initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', dataObj.modelUuid)
         }*/
-        this.$refs.[dataObj.modelUuid][0].loadTableData(dataObj)
+        var selectObj = this.$refs.modelListTable.selection
+        this.$refs.[dataObj.modelUuid][0].loadTableData(dataObj,selectObj[0].modelName)
       }
       const func1 = func2.bind(this)
       this.webSocket.onclose = function(event) {

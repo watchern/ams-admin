@@ -3,6 +3,7 @@
   <el-tabs type="border-card" style="border:0;box-shadow:0 0 0 0 #000">
     <el-tab-pane v-if="useType==='modelRunResult'?true:false"  :label="useType === 'modelRunResult' ? '主表' : '结果1'"
       ><childTabCons
+        :settingInfo="settingInfo"
         :nowtable="maintable"
         :model-uuid="modelUuid"
         :useType="useType"
@@ -37,8 +38,8 @@ export default {
     /**
      * sql编辑器模型结果用来给子组件aggrid表格赋值
      */
-      loadTableData(nextValue){
-        this.$refs.child[this.index].initData(null,nextValue)
+      loadTableData(nextValue,modelName){
+        this.$refs.child[this.index].initData(null,nextValue,modelName)
         this.
           index++;
       },
@@ -81,7 +82,8 @@ export default {
     "preValue",
     "resultSpiltObjects",
     "modelId",
-    "chartModelUuid"
+    "chartModelUuid",
+    "settingInfo"
   ],
 };
 </script>
