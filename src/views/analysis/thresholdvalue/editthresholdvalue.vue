@@ -39,16 +39,21 @@
             </el-col>
           </el-row>
           <div ref="threshValueSet">
-            <el-button style="float: right" v-show="isShow.threshValueInfoSetIsShow" @click="addThreshValueInfo">添加</el-button>
+            <el-button style="float: right" v-show="isShow.threshValueInfoSetIsShow" @click="addThreshValueInfo">新增</el-button>
             <el-table ref="columnData" :data="thresholdValue.thresholdValueInfoList" class="div-width" v-show="isShow.threshValueInfoSetIsShow">
               <el-table-column prop="filterConditions" label="阈值对象" width="275">
                 <template slot-scope="scope">
                   <el-input v-model="scope.row.filterConditions" placeholder="请输入阈值对象名称" :disabled="isBanEdit"/>
                 </template>
               </el-table-column>
-              <el-table-column prop="filterValueOne" label="值" width="275">
+              <el-table-column prop="filterValueOne" label="值" width="200">
                 <template slot-scope="scope">
                   <el-input v-model="scope.row.filterValue" placeholder="请输入值" :disabled="isBanEdit"/>
+                </template>
+              </el-table-column>
+              <el-table-column prop="" label="操作" width="100">
+                <template slot-scope="scope">
+                  <el-button @click.native.prevent="deleteRowData(scope.$index, thresholdValue.thresholdValueInfoList)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -213,6 +218,9 @@ export default {
       if(verResult){
         return this.thresholdValue
       }
+    },
+    deleteRowData(index,rows){
+      rows.splice(index, 1)
     }
   }
 }

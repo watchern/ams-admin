@@ -113,8 +113,8 @@
                     row-selection="multiple"
                     row-height="40"
                   />
-                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' :chartBoxStyle="chartBoxStyle" v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
-                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' :chartBoxStyle="chartBoxStyle" v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
+                  <mtEditor :graphConfigHeight="160" v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' :chartBoxStyle="chartBoxStyle" v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
+                  <mtEditor :graphConfigHeight="160" v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' :chartBoxStyle="chartBoxStyle" v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
                   <div style="color:red;text-align: left" v-else>{{dataObj.message}}</div>
                 </swiper-slide>
               <div class="swiper-pagination" slot="pagination"></div>

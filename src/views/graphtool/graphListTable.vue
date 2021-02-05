@@ -197,6 +197,7 @@
                     this.pageLoading = true
                     let obj = this.getUuidsANdNames(selectObj)
                     deleteGraphInfoById(obj.graphUuids).then(response => {
+                        this.pageLoading = false
                         this.$notify({
                             title: this.$t('message.title'),
                             message: this.$t('message.delete.success'),
@@ -249,7 +250,9 @@
                         })
                         // 刷新图形树（主要刷新我的分析图形节点数据）
                         this.$emit('refreshGraphTree')
-                    }).catch( () => {})
+                    }).catch( () => {
+                        this.pageLoading = false
+                    })
                 }
             },
             cancelShare() {
