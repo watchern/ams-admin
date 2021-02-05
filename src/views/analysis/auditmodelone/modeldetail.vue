@@ -39,7 +39,7 @@
                 <el-button @click="selectModel" type="primary">选择</el-button>
               </el-form-item>
             </el-row>
-            <div ref="relModelTableDiv" style="display: none">
+            <div ref="relModelTableDiv" style="display: none;height:200px;overflow-y: scroll">
               <el-button type="primary" size="mini" @click="addRelFilter(1)">添加</el-button>
               <el-table ref="relModelTable" :data="relModelTable" border fit highlight-current-row>
                 <el-table-column label="原模型字段" align="center">
@@ -74,7 +74,7 @@
               </el-table>
             </div>
           </div>
-          <div ref="relTableDivParent" style="display: none;">
+          <div ref="relTableDivParent" style="display: none;height:200px;overflow-y: scroll">
             <el-row>
                 <el-form-item label="被关联表" prop="relationObjectUuidTable" >
                   <el-col :span="20">
