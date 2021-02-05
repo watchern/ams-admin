@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" ref="appContainerDiv" :style="appContainerDivStyle">
     <!--模型分类树-->
     <el-input
       v-model="filterText"
@@ -103,6 +103,7 @@ export default {
         pbScope: "",
       },
       checkedId: "",
+      appContainerDivStyle:""
     };
   },
   watch: {
@@ -112,6 +113,9 @@ export default {
     },
   },
   created() {
+    if(this.publicModel === 'relationModel'){
+      this.appContainerDivStyle = "height: 500px;overflow-y: scroll"
+    }
     this.getModelFolder();
   },
   methods: {
