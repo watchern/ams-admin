@@ -421,13 +421,17 @@ export default {
       isHaveCharts:false, //判断该模型是否有图表
       projectDialogIsSee:false,   //用来控制项目dialog显示
       chartSwitching: true,  //控制表格与图表切换
-      modelObj:{}  //查询当前模型结果对应的的model对象
+      modelObj:{},  //查询当前模型结果对应的的model对象
+      rowIndex:''  //存储点击表格的行数
     };
   },
   mounted() {
     this.getRenderTableData();
     this.chartReflexion();
-    window.openModelDetailNew = this.openModelDetailNew
+  },
+  created() {
+    let _this=this;
+    window.openModelDetailNew=_this.openModelDetailNew;
   },
   methods: {
     rowChange() {
@@ -678,8 +682,6 @@ export default {
       // 获取gridApi
       this.gridApi = params.api;
     },
-    // 单元格点击事件
-    onCellClicked(cell) {},
     initData(sql, nextValue) {
       this.result = {}
       if (this.useType == "modelRunResult") {
@@ -714,7 +716,6 @@ export default {
             }
           }
         }
-        console.log(modelResultDetailCol)
         //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
         for (var i = 0; i < modelThresholdValues.length;i++){
           if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2 && renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName)==-1){
@@ -723,7 +724,9 @@ export default {
         }
         for(var i = 0;i < modelThresholdValues.length;i++){
           if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2){
-            modelThresholdValues[i].colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
+            if (typeof modelThresholdValues[i].colorInfo === 'string'){
+              modelThresholdValues[i].colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
+            }
             renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i]
           }
         }
@@ -1138,7 +1141,6 @@ export default {
       }
     },
     changeCellColor(params,thresholdValueRel,modelResultDetailCol){
-      debugger
       if(thresholdValueRel){
         let returnValue = handleDataManyValue(params,thresholdValueRel)
         //如果当该列是关联详细列又是阈值展现改变颜色列的时候做特殊处理
@@ -1218,11 +1220,15 @@ export default {
         this.$message({ type: "info", message: "不能选中多条!" });
       }
     },
+    //单元格点击事件
+    onCellClicked(cell) {
+      console.log(cell.rowIndex);
+      this.rowIndex = cell.rowIndex
+    },
     /**
      * 点击详细打开dialog效果
      */
     openModelDetailNew(selRows) {
-      alert(123)
       this.options = [];
       for (var i = 0; i < this.modelDetailRelation.length; i++) {
         var eachOption = {
@@ -1264,7 +1270,7 @@ export default {
               obj.moduleParamId = this.modelDetailRelation[i].modelDetailConfig[
                 j
               ].ammParamUuid;
-              obj.paramValue = selectRowData[0][key.toLowerCase()];
+              obj.paramValue = this.rowData[this.rowIndex][key.toLowerCase()];
               detailValue.push(obj);
             }
           }
@@ -1301,7 +1307,7 @@ export default {
             ) {
               eachFilter = eachFilter.replace(
                 this.modelOutputColumn[j].outputColumnName,
-                selectRowData[0][
+                this.rowData[this.rowIndex][
                   this.modelOutputColumn[j].outputColumnName.toLowerCase()
                 ]
               );
@@ -1325,13 +1331,6 @@ export default {
           .catch((result) => {
             this.$message({ type: "info", message: "执行失败" });
           });
-        // startExecuteSql(obj).then((resp) => {
-        //   if (!resp.data.isError) {
-        //     this.currentExecuteSQL = resp.data.executeSQLList;
-        //   } else {
-        //     this.$message({ type: "info", message: "执行失败" });
-        //   }
-        // });
       }
       this.modelDetailDialogIsShow = false;
       this.modelDetailModelResultDialogIsShow = true;
