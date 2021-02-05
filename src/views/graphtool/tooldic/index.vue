@@ -195,7 +195,7 @@
             <el-input v-model="searchZtreeContent" placeholder="搜索关键字" class="input-with-select">
                 <el-button slot="append" icon="el-icon-search" @click="searchZtree" />
             </el-input>
-            <ul id="ztree_datasource" class="ztree" style="width: 100%;" />
+            <ul id="ztree_datasource" class="ztree"/>
         </div>
         <div id="graphContainer" class="graphContainer">
             <div id="geDiagramContainer" class="geDiagramContainer">
@@ -737,7 +737,7 @@
                             key: {
                                 checked: 'isChecked',
                                 name: 'name',
-                                title: 'displayName'
+                                title: 'name'
                             },
                             // 设置数据格式
                             simpleData: {

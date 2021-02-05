@@ -717,6 +717,7 @@ table.mxPopupMenu hr {
 }
 table.mxPopupMenu tr {
 	font-size:4pt;
+    cursor: pointer;
 }
 html td.mxWindowTitle {
 	font-family:Helvetica Neue,Helvetica,Arial Unicode MS,Arial;
