@@ -4,7 +4,7 @@ import {
   workerList,
   zookeeperList,
   getDatabase
-} from '@/api/etlscheduler/monitor'
+} from 'ams-etlscheduler-ui/src/api/etlscheduler/monitor'
 export default {
   getMasterData({ state }, payload) {
     return new Promise((resolve, reject) => {

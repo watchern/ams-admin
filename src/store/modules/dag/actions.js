@@ -1,24 +1,24 @@
 import _ from 'lodash'
-import io from '@/components/etl/io'
+import io from 'ams-etlscheduler-ui/src/components/etl/io'
 import {
   tasksState
-} from '@/views/etlscheduler/dag/_source/config'
+} from 'ams-etlscheduler-ui/src/views/etlscheduler/dag/_source/config'
 import {
   save,
   datasourceList,
   getById,
   update,
   findClassesByPackage
-} from '@/api/etlscheduler/processdefinition'
+} from 'ams-etlscheduler-ui/src/api/etlscheduler/processdefinition'
 import {
   getTaskListByProcessId,
   getProcessinstanceById,
   updateProcessInstance
-} from '@/api/etlscheduler/processinstance'
+} from 'ams-etlscheduler-ui/src/api/etlscheduler/processinstance'
 import {
   resourcesList,
   resourceId
-} from '@/api/etlscheduler/resources'
+} from 'ams-etlscheduler-ui/src/api/etlscheduler/resources'
 
 export default {
 

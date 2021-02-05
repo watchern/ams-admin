@@ -1,4 +1,4 @@
-import io from '@/components/etl/io'
+import io from 'ams-etlscheduler-ui/src/components/etl/io'
 
 export default {
   /**

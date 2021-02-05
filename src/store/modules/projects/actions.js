@@ -1,8 +1,8 @@
-import io from '@/components/etl/io'
+import io from 'ams-etlscheduler-ui/src/components/etl/io'
 
 import {
   taskStateCount, processStateCount
-} from '@/api/etlscheduler/taskmonitor'
+} from 'ams-etlscheduler-ui/src/api/etlscheduler/taskmonitor'
 
 export default {
   /**

@@ -1,9 +1,9 @@
-import io from '@/components/etl/io'
+import io from 'ams-etlscheduler-ui/src/components/etl/io'
 import {
   save,
   update,
   testConn
-} from '@/api/etlscheduler/datasource'
+} from 'ams-etlscheduler-ui/src/api/etlscheduler/datasource'
 
 export default {
   /**
