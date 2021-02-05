@@ -197,7 +197,7 @@
               </el-tab-pane>
             </el-tabs>
           </div>
-          <div  style="position: absolute;float:right;left: 97%;height: 92%;overflow:hidden;width: 2.5%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"> <!-- v-if="!modifying"  -->
+          <div  style="position: absolute;float:right;left: 97%;height: 92%;overflow:hidden;width: 2.5%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
             <div  title="基本信息" @click="clickModelInfo()" :style="{background: changeBtn.one === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/modelinfo.png"/></div>
             <div  title="已用参数" @click="clickUseParam()" :style="{background: changeBtn.two === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/useParam.png"/></div>
             <div  title="结果展现配置" @click="clickResultConfig()" :style="{background: changeBtn.three === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/resultConfig.png"/></div>
@@ -467,7 +467,6 @@ export default {
   },
   created() {
     this.modelDetailIsSeeHeight = "height:" + (window.outerHeight - 300) + "px"
-    alert(this.modelDetailIsSeeHeight)
     //设置一个默认的模型编号
     this.form.modelUuid = getUuid()
     this.operationObj = JSON.parse(sessionStorage.getItem('operationObj'));

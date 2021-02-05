@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vue-cli-service serve --host 0.0.0.0",
     "build:prod": "vue-cli-service build --mode production",
+    "build:poc": "vue-cli-service build --mode poc",
     "build:dev": "vue-cli-service build --mode development",
     "build:stage": "vue-cli-service build --mode staging",
     "preview": "node build/index.js --preview",
@@ -39,7 +40,7 @@
     "ag-grid": "^18.1.2",
     "ag-grid-community": "^23.2.1",
     "ag-grid-vue": "^23.2.1",
-    "ams-datamax": "^1.0.4",
+    "ams-datamax": "^1.0.5",
     "ans-ui": "^1.1.9",
     "autoprefixer": "^7.1.2",
     "axios": "0.18.1",
