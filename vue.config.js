@@ -169,7 +169,8 @@ module.exports = {
     name: name,
     resolve: {
       alias: {
-        '@': resolve('src')
+        '@': resolve('src'),
+        '@ETL': 'ams-etlscheduler-ui/src'
       }
     },
     // gzip压缩

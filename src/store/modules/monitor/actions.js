@@ -1,10 +1,10 @@
-import io from '@/components/etl/io'
 import {
   monitorList,
   workerList,
   zookeeperList,
   getDatabase
-} from 'ams-etlscheduler-ui/src/api/etlscheduler/monitor'
+// } from '@ETL/api/etlscheduler/monitor'
+} from '@ETL/api/etlscheduler/monitor'
 export default {
   getMasterData({ state }, payload) {
     return new Promise((resolve, reject) => {
