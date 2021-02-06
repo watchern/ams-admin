@@ -510,11 +510,13 @@
             removeJcCssfile("jquery.ztree.exhide.min.js","js")
         },
         mounted() {
-            let toolDivwidth = "100%";
+            let toolDivwidth = "100%"
+            let toolDivHeight = "100%"
             if(this.openGraphType === 4){//模型图形
                 toolDivwidth = ($(this.$parent.$parent.$parent.$refs.modelDesign).width() - 37) + "px"
+                toolDivHeight = $(this.$parent.$parent.$parent.$refs.modelDesign).height() + "px"
             }
-            $(this.$refs.graphToolDiv).css("width",toolDivwidth)
+            $(this.$refs.graphToolDiv).css({"width":toolDivwidth,"height":toolDivHeight})
             // 申明common.js的方法为全局方法
             this.initCommon()
             // //申明index.js的方法为全局方法
