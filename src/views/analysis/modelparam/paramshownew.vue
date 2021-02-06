@@ -11,7 +11,7 @@
         </tr>
         </thead>
         <tbody ref="setParamTbody">
-        <tr ref="setParamTr" v-if="setParamArr.length == 0" :index="index">
+        <tr ref="setParamTr" v-if="setParamArr.length == 0">
           <td align="center"></td>
           <td align="left"><span style="padding-left: 61px;">暂无数据</span></td>
           <td align="center"></td>
