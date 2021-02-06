@@ -1,5 +1,5 @@
 <template>
-    <div id="graphToolDiv" ref="graphToolDiv" style="width: 100%;height: 100%;overflow-y: hidden;">
+    <div id="graphToolDiv" ref="graphToolDiv">
         <div id="geToolbarContainer" class="geToolbarContainer">
             <div class="graphMenu" v-show="openGraphType !== 4" style="width: 320px;">
                 <div class="menuTit">
@@ -510,6 +510,11 @@
             removeJcCssfile("jquery.ztree.exhide.min.js","js")
         },
         mounted() {
+            let toolDivwidth = "100%";
+            if(this.openGraphType === 4){//模型图形
+                toolDivwidth = ($(this.$parent.$parent.$parent.$refs.modelDesign).width() - 37) + "px"
+            }
+            $(this.$refs.graphToolDiv).css("width",toolDivwidth)
             // 申明common.js的方法为全局方法
             this.initCommon()
             // //申明index.js的方法为全局方法
