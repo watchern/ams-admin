@@ -198,7 +198,7 @@
               </el-tab-pane>
             </el-tabs>
           </div>
-          <div  style="position: absolute;float:right;left: 97%;height: 92%;overflow:hidden;width: 2.5%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
+          <div  style="position: absolute;float:right;right: 15px;height: 92%;overflow:hidden;width: 2%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
             <div  title="基本信息" @click="clickModelInfo()" :style="{background: changeBtn.one === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/modelinfo.png"/></div>
             <div  title="已用参数" @click="clickUseParam()" :style="{background: changeBtn.two === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/useParam.png"/></div>
             <div  title="结果展现配置" @click="clickResultConfig()" :style="{background: changeBtn.three === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/resultConfig.png"/></div>
@@ -403,7 +403,7 @@ export default {
       //模型类型数组
       modelTypeObj: [],
       //关闭窗体时候用的窗体名
-      formName: "",
+      formName: "新增模型",
       //操作对象
       operationObj: {},
       //图形化的列信息，比较列是否相同
