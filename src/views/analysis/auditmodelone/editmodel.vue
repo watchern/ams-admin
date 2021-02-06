@@ -476,6 +476,7 @@ export default {
     }
     this.paramShowVIf = true
     if (this.operationObj.model != undefined){
+      this.form.graphUuid = this.operationObj.model.graphUuid
       this.isExecuteSql = true
       this.modelTypeChangeEvent(this.operationObj.model.modelType)
     }
@@ -1244,6 +1245,7 @@ export default {
         model.modelThresholdValues[i].onlyId = uuid2()
         this.threshold.push(model.modelThresholdValues[i])
       }
+      debugger
       // endregion
       this.displaySQL(returnObj)
     },
