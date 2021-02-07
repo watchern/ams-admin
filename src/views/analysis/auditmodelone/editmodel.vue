@@ -46,7 +46,7 @@
                 <el-row>
                   <el-col :span="24">
                     <el-form-item label="风险等级" prop="riskLevelUuid">
-                      <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级" style="width:67%">
+                      <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级" style="width:67%;">
                         <el-option
                           v-for="state in riskLeve"
                           :key="state.codeValue"
@@ -197,7 +197,7 @@
               </el-tab-pane>
             </el-tabs>
           </div>
-          <div  style="z-index:100000;position: absolute;float:right;right: 15px;height: 92%;overflow:hidden;width: 2%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
+          <div  style="z-index:1000;position: absolute;float:right;right: 15px;height: 92%;overflow:hidden;width: 2%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
             <div  title="基本信息" @click="clickModelInfo()" :style="{background: changeBtn.one === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/modelinfo.png"/></div>
             <div  title="已用参数" @click="clickUseParam()" :style="{background: changeBtn.two === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/useParam.png"/></div>
             <div  title="结果展现配置" @click="clickResultConfig()" :style="{background: changeBtn.three === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/resultConfig.png"/></div>
@@ -1508,7 +1508,7 @@ export default {
 }
 
 .modelInfoClass {
-  z-index:10000;
+z-index:999;
   background-color: white;
   position: relative;
   animation: modelInfo 0.5s forwards;
