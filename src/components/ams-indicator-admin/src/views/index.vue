@@ -411,8 +411,6 @@ export default {
       addTempDimAnalysisRegionId:'',
       inMeasureFilter:false,
       //每个分析区所需要展示的过滤条件，里面包含analysisRegionId,条件显示的sql对象
-      analysisRegionFilterShowObj:{},
-      //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilte:''}]}
       thresholdValueDialog:false,
       //设置阈值需要的对象
       setThreasholdValueObj:{},
@@ -500,8 +498,8 @@ export default {
         func1(dataObj)
       }
       const func2 = function func3(val) {
-        //  :get-row-style="(params) => {return setRowColor(params,dataObj.id)}"
         let dataList = {}
+        debugger
         //找到当前分析区的对象
         for(let i = 0; i < this.dataList.length;i++){
           if(this.dataList[i].id === val.analysisRegionId){
@@ -556,11 +554,11 @@ export default {
           }*/
         }
         else{
-            dataLis.loading = false
-            dataLis.isLoad = false
-            dataLis.icon = 'el-icon-close'
-            dataLis.message = val.executeSQL.msg
-            dataLis.isError = true
+          dataList.loading = false
+          dataList.isLoad = false
+          dataList.icon = 'el-icon-close'
+          dataList.message = val.executeSQL.msg
+          dataList.isError = true
 /*          for(let i = 0; i < this.dataList.length;i++){
             //如果相等则修改数据
             if(this.dataList[i].id == val.analysisRegionId){
@@ -4926,14 +4924,9 @@ export default {
           return;
         }
         newInList.push(indicatrixObj);
-        //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilteSql:''}]}
         //将指标最后生成的列名、条件显示sql记录到对象里，用于后边渲染颜色
-        let indicatorFilter = JSON.parse(indicatrixObj.inFilterShow)
         let indicatorName = that.updateGroupDisplay(indicatrixObj.measureGroup,indicatrixObj.measureName).replace("(","").replace(")","")
-        filterShow.push({indicatorName:indicatorName,indicatorFilter:indicatorFilter})
       });
-      let newId = analysisRegionId.substring(0,analysisRegionId.length - 4)
-      this.analysisRegionFilterShowObj[newId] = filterShow
       $.ajax({
         type: "post",
         url: url,
@@ -4996,14 +4989,9 @@ export default {
           return;
         }
         indicatrixObj = value;
-        //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilteSql:''}]}
         //将指标最后生成的列名、条件显示sql记录到对象里，用于后边渲染颜色
-        let indicatorFilter = JSON.parse(indicatrixObj.inFilterShow)
         let indicatorName = that.updateGroupDisplay(indicatrixObj.measureGroup,indicatrixObj.measureName).replace("(","").replace(")","")
-        filterShow.push({indicatorName:indicatorName,indicatorFilter:indicatorFilter})
       });
-      let newId = analysisRegionId.substring(0,analysisRegionId.length - 4)
-      this.analysisRegionFilterShowObj[newId] = filterShow
       $.ajax({
         type: "post",
         url: url,
