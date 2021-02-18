@@ -50,7 +50,10 @@
         <span class="label-open" @click="isShowToolsList=!isShowToolsList">
           <i class="el-icon-s-grid" />
         </span>
-        <span class="label-wang" @click="isShowSettingList=!isShowSettingList" >{{ userInfo.name }}<i class="label-wang-in" v-if="isThereReminder"></i></span>
+        <el-tooltip class="item" effect="light" :content="userInfo.name" placement="right">
+          <span class="label-wang"  @click="isShowSettingList=!isShowSettingList">{{ userInfoNew}}<i class="label-wang-in" v-if="isThereReminder"></i></span>
+        </el-tooltip>
+        <!-- <span class="label-wang" @click="isShowSettingList=!isShowSettingList" >{{ userInfo.name }}<i class="label-wang-in" v-if="isThereReminder"></i></span>-->
         <!-- <i class="shrink-btn icon iconfont iconright-1" @click="isShrink=false" /> -->
         <i class="setting-btn icon iconfont iconmenu-2 setting-btn-Upright"  @click="widthChange" />
       </div>
@@ -111,7 +114,9 @@
         <div class="footer-btns flex a-center j-between flex-row">
           <!-- <i class="shrink-btn icon iconfont iconleft-1" @click="isShrink=false" /> -->
           <i class="setting-btn icon iconfont iconmenu-2 setting-btn-right" @click="widthChange" />
-          <span class="label-wang"  @click="isShowSettingList=!isShowSettingList">{{ userInfo.name }}<i class="label-wang-in" v-if="isThereReminder"></i></span>
+          <el-tooltip class="item" effect="light" :content="userInfo.name" placement="right">
+            <span class="label-wang"  @click="isShowSettingList=!isShowSettingList">{{ userInfoNew}}<i class="label-wang-in" v-if="isThereReminder"></i></span>
+          </el-tooltip>
         </div>
       </div>
     </template>
@@ -222,6 +227,7 @@ export default {
       userInfo: {
         name: this.$store.getters.name
       },
+      userInfoNew: '',
       currentIndex: -1,
       websocket: null,
       isShowTreeList: false,
@@ -359,6 +365,7 @@ export default {
         this.isThereReminder = true
       }
     })
+    this.CurrentlyLoggedIn()
   },
   methods: {
     init() {
@@ -520,6 +527,10 @@ export default {
           }
         })
       }
+    },
+    // 当前登录人
+    CurrentlyLoggedIn () {
+      this.userInfoNew = this.userInfo.name.substring(0,2)
     }
   }
 }
@@ -797,6 +808,10 @@ export default {
     background: #484f5c;
     padding: 5px;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 52.5px;
+    white-space: nowrap;
     position: relative;
   }
   .bottom {
