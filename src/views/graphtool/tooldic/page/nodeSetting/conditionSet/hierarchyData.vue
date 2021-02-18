@@ -101,7 +101,7 @@
                         }
                         var pre_parentIds = parent_node.parentIds;
                         if(pre_parentIds && pre_parentIds.length > 0){
-                            parent_node = this.nodeData[pre_parentIds[0]];
+                            parent_node = graph.nodeData[pre_parentIds[0]];
                         }
                     }
                     if (parent_node.nodeInfo.resultTableName === '') {

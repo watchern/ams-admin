@@ -171,12 +171,12 @@ export default {
      * @param query 查询条件
      */
     getList(query) {
-      if(this.selectTreeNode != null){
-        query.thresholdValueFolderUuid = this.selectTreeNode.id
-      }
       this.listLoading = true
       if (query) {
         this.pageQuery.condition = query
+        if(this.selectTreeNode != null){
+          query.thresholdValueFolderUuid = this.selectTreeNode.id
+        }
       }
       findThresholdValueList(this.pageQuery).then(resp => {
         this.total = resp.data.total
@@ -326,7 +326,7 @@ export default {
     deleteThresholdValue() {
       var selectObj = this.$refs.modelListTable.selection
       if (selectObj == undefined || selectObj.length === 0) {
-        this.$message({ type: 'info', message: '请先选择要删除的模型!' })
+        this.$message({ type: 'info', message: '请先选择要删除的阈值!' })
         return
       }
       this.$confirm('此操作将永久删除该阈值, 是否继续?', '提示', {
@@ -447,6 +447,7 @@ export default {
               this.dialogFormVisibleEdit = false
               //刷新列表
               this.getList(this.query)
+              this.$emit('refreshTree')
             }
             else{
               this.$message({ type: 'error', message:'阈值添加失败' })
@@ -459,6 +460,7 @@ export default {
               this.dialogFormVisibleEdit = false
               //刷新列表
               this.getList(this.query)
+              this.$emit('refreshTree')
             }
             else{
               this.$message({ type: 'error', message:'阈值修改失败' })

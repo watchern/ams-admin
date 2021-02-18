@@ -9,7 +9,7 @@
           <el-col align="right">
             <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn start" @click="previewModel" />
 <!--            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />-->
-            <el-dropdown>
+            <el-dropdown style="margin-right: 10px;">
             <el-button type="primary" :disabled="btnState.addBtnState"  @mouseover="mouseOver" @mouseleave="mouseLeave" class="oper-btn add" @click="selectModelTypeDetermine('002003001')" />
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item v-for="state in modelTypeData" :key="state.codeValue" @click.native="selectModelTypeDetermine(state.codeValue)">{{state.codeName}}</el-dropdown-item>
@@ -328,7 +328,8 @@ export default {
           this.$refs.[dataObj.modelUuid + 'param'][0].
           initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', dataObj.modelUuid)
         }*/
-        this.$refs.[dataObj.modelUuid][0].loadTableData(dataObj)
+        var selectObj = this.$refs.modelListTable.selection
+        this.$refs.[dataObj.modelUuid][0].loadTableData(dataObj,selectObj[0].modelName)
       }
       const func1 = func2.bind(this)
       this.webSocket.onclose = function(event) {

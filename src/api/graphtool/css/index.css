@@ -1,8 +1,12 @@
+#graphToolDiv{
+    overflow-y: hidden;
+}
 #graphContainer {
 	background: url('../images/icons/grid.gif');
 	position: relative;
 }
 #geToolbarContainer {
+    width: 100%;
 	background-image: linear-gradient(90deg, #DADADA 0%, #EFEFEF 49%, #DADADA 100%);
     border: 0 solid #A8A8A8;
 }
@@ -103,9 +107,9 @@ div.rightMenu ul li:hover {
     overflow: auto;
 }
 #ztree_datasource{
-	overflow: auto;
+    width: 100%;
     margin: 0;
-    max-height: 70vh;
+    max-height: calc(100% - 40px);
 }
 #usedResourceTree,#historyTree{
 	height:100%;
@@ -120,7 +124,6 @@ div.rightMenu ul li:hover {
 #resourceZtree,#historyZtree{
     margin:0;
     padding: 10px;
-    overflow: auto;
     height:100%;
 }
 .graphMenu{
@@ -159,19 +162,11 @@ div.rightMenu ul li:hover {
     padding: 4px 0;
     height: 100%;
 }
-/*.iconImgGraph{*/
-/*    width: 20px;*/
-/*    height: 20px;*/
-/*    margin-bottom: 4px;*/
-/*}*/
 .iconText{
     height: 20px;
     font-size: 12px;
     color: #424242;
 }
-/*.iconText:hover{*/
-/*    color:#17ABE3;*/
-/*}*/
 p{
 	line-height: 1.5em;
 	word-wrap: break-word;

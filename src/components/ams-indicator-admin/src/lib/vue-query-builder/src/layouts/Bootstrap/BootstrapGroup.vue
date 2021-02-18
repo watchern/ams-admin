@@ -149,7 +149,7 @@ export default {
     margin-top: 10px;
   }
   >>>.form-inline{
-    padding-top: 11px;
+    padding-top: 10px;
     padding-left: 30px;
   }
   >>>.vqb-rule{

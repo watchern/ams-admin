@@ -1575,9 +1575,6 @@ export default {
       }
     }
   }
-  // .buttonText {
-    // color: #409eff;
-  // }
   .el-popover{
     width: 60%;
     overflow: auto;

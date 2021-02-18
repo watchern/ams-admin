@@ -2,7 +2,6 @@
   <div id="setParam" ref="settingParamDiv">
 <!--    <div class="col-sm-10">-->
     <el-row>
-      <span style="color: red;line-height: 35px;height: 30px;">注：可通过上下拖动行对参数进行排序设置</span>
       <table id="setParamTable" class="table table-bordered">
         <thead>
         <tr>
@@ -12,13 +11,18 @@
         </tr>
         </thead>
         <tbody ref="setParamTbody">
+        <tr ref="setParamTr" v-if="setParamArr.length == 0">
+          <td align="center"></td>
+          <td align="left"><span style="padding-left: 61px;">暂无数据</span></td>
+          <td align="center"></td>
+        </tr>
         <tr ref="setParamTr" v-for="(setParamObj,index) in setParamArr" :index="index">
           <td align="center">{{setParamObj.name}}</td>
           <td v-if="setParamObj.inputType === 'lineinp'" ref="selectParam">
             <div :id="setParamObj.id" :title="setParamObj.title" class='xm-select-demo paramTr'></div>
           </td>
           <td v-if="setParamObj.inputType === 'textinp'" ref="textParam">
-            <el-input :title="setParamObj.title" class='paramOption paramTr' v-model="setParamObj.value"></el-input>
+            <el-input style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' v-model="setParamObj.value"></el-input>
           </td>
           <td v-if="setParamObj.inputType === 'timeinp'" ref="dataParam">
             <el-date-picker style="width: 100%;" :title="setParamObj.title" class='paramOption paramTr' type="date" placeholder="选择日期" v-model="setParamObj.value"></el-date-picker>
@@ -83,7 +87,9 @@ div#operators p{
   line-height: 36px;
 }
 .table > thead > tr > th {
-  background-color: #5886B2;
-  color: #ECF0F5;
+  background-color: #FFFFFF;
+  color: #000000;
+  font-size: 15px;
+  width: 204px;
 }
 </style>

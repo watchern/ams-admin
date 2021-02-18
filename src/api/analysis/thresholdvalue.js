@@ -169,7 +169,7 @@ export function handleDataSingleValue(data,thresholdValueRel){
   else if(operator === "<=" && valueOne <= valueTwo){
     return {"background-color":backgroundColor,"color":fontColor}
   }
-  else if(operator === "=" && valueOne === valueTwo){
+  else if(operator === "=" && valueOne == valueTwo){
     return {"background-color":backgroundColor,"color":fontColor}
   }
   else if(operator === "like" && valueOne.indexOf(valueTwo) != -1){
@@ -291,6 +291,7 @@ handleDataManyValue(params,thresholdValueRel){
     for(let i = 0; i < thresholdValueRel.thresholdValue.thresholdValueInfoList.length;i++){
       //要判断的值
       let valueTwo = thresholdValueRel.thresholdValue.thresholdValueInfoList[i].filterValue
+      debugger
 /*      valueOne = parseFloat(valueOne)
       valueTwo = parseFloat(valueTwo)*/
       let thresholdValueObjectValue = thresholdValueRel.thresholdValue.thresholdValueInfoList[i].filterConditions

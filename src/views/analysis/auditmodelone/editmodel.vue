@@ -46,7 +46,7 @@
                 <el-row>
                   <el-col :span="24">
                     <el-form-item label="风险等级" prop="riskLevelUuid">
-                      <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级" style="width:67%">
+                      <el-select v-model="form.riskLevelUuid" placeholder="请选择风险等级" style="width:67%;">
                         <el-option
                           v-for="state in riskLeve"
                           :key="state.codeValue"
@@ -197,7 +197,7 @@
               </el-tab-pane>
             </el-tabs>
           </div>
-          <div  style="position: absolute;float:right;left: 97%;height: 92%;overflow:hidden;width: 2.5%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"> <!-- v-if="!modifying"  -->
+          <div  style="z-index:1000;position: absolute;float:right;right: 15px;height: 92%;overflow:hidden;width: 2%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
             <div  title="基本信息" @click="clickModelInfo()" :style="{background: changeBtn.one === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/modelinfo.png"/></div>
             <div  title="已用参数" @click="clickUseParam()" :style="{background: changeBtn.two === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/useParam.png"/></div>
             <div  title="结果展现配置" @click="clickResultConfig()" :style="{background: changeBtn.three === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/resultConfig.png"/></div>
@@ -226,7 +226,7 @@
       </div>
     </el-dialog>
     <el-dialog v-if="modelDetailIsSee" :visible.sync="modelDetailIsSee" :title="modelDetailAdd===true?'添加模型关联':'修改模型关联'" width="50%">
-      <model-detail ref="child" v-if="modelDetailIsSee" :data="modelDetailAdd===true?{}:editingModelDetail" :operationtype="operationObj.operationType" :columns="columnData"></model-detail>
+      <model-detail :style="modelDetailIsSeeHeight" ref="child" v-if="modelDetailIsSee" :data="modelDetailAdd===true?{}:editingModelDetail" :operationtype="operationObj.operationType" :columns="columnData"></model-detail>
       <div slot="footer">
         <el-button type="primary" @click="modelDetailAdd===true?createDetail():editModelRelationDetermine()">确定</el-button>
         <el-button @click="modelDetailIsSee=false">取消</el-button>
@@ -402,7 +402,7 @@ export default {
       //模型类型数组
       modelTypeObj: [],
       //关闭窗体时候用的窗体名
-      formName: "",
+      formName: "新增模型",
       //操作对象
       operationObj: {},
       //图形化的列信息，比较列是否相同
@@ -456,7 +456,8 @@ export default {
         columns:[]
       },
       selectedThreshold:[],
-      isExecuteSql:false
+      isExecuteSql:false,
+      modelDetailIsSeeHeight:""
     }
   },
   watch: {
@@ -465,6 +466,7 @@ export default {
     }
   },
   created() {
+    this.modelDetailIsSeeHeight = "height:" + (window.outerHeight - 300) + "px"
     //设置一个默认的模型编号
     this.form.modelUuid = getUuid()
     this.operationObj = JSON.parse(sessionStorage.getItem('operationObj'));
@@ -474,6 +476,7 @@ export default {
     }
     this.paramShowVIf = true
     if (this.operationObj.model != undefined){
+      this.form.graphUuid = this.operationObj.model.graphUuid
       this.isExecuteSql = true
       this.modelTypeChangeEvent(this.operationObj.model.modelType)
     }
@@ -1242,10 +1245,9 @@ export default {
         model.modelThresholdValues[i].onlyId = uuid2()
         this.threshold.push(model.modelThresholdValues[i])
       }
+      debugger
       // endregion
       this.displaySQL(returnObj)
-      console.log('666666666666666')
-      console.log(this.form)
     },
     /**
      *显示审计事项树
@@ -1505,8 +1507,9 @@ export default {
   overflow: hidden;
 }
 
-
 .modelInfoClass {
+z-index:999;
+  background-color: white;
   position: relative;
   animation: modelInfo 0.5s forwards;
 }
