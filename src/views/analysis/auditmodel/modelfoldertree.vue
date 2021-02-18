@@ -134,7 +134,7 @@ export default {
      */
     getModelFolder() {
       if (this.publicModel != undefined && this.publicModel != "") {
-        findModelFolderTree(false).then((result) => {
+        findModelFolderTree(false, this.spaceFolderName, this.spaceFolderId).then((result) => {
           let newData = [];
           if (this.publicModel === "publicModel") {
             // 处理数据  只保留公共分类的文件夹数据
@@ -157,7 +157,7 @@ export default {
             }
             this.data = newData;
           } else if (this.publicModel === "relationModel") {
-             findModelFolderTree(true).then((result) => {
+             findModelFolderTree(true, this.spaceFolderName, this.spaceFolderId).then((result) => {
           this.data = result.data;
         });
           } else {
@@ -167,7 +167,7 @@ export default {
 
         });
       } else {
-        findModelFolderTree(true).then((result) => {
+        findModelFolderTree(true, this.spaceFolderName, this.spaceFolderId).then((result) => {
           this.data = result.data;
         });
       }
