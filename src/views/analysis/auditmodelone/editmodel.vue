@@ -287,45 +287,6 @@ export default {
       resultConfigDraw:false,
       dataUserId: undefined,
       sceneCode: undefined,
-      treeNodeData: [
-        {
-          id: '1',
-          label: '基本信息',
-          type: 'basicInfo'
-        },
-        {
-          id: '2',
-          label: '模型设计',
-          type: 'modelDesign'
-        },
-        {
-          id: '3',
-          label: '模型参数',
-          type: 'paramDefaultValue'
-        },
-        {
-          id: '4',
-          label: '模型结果',
-          type: 'modelResultOutputCol'
-        },
-        {
-          id: '5',
-          label: '模型关联',
-          type: 'relInfo',
-          children: []
-        },
-        // {
-        //   id: '6',
-        //   label: '模型图表',
-        //   type: 'chartConfig'
-        // },
-        {
-          id: '7',
-          label: '模型条件',
-          type: 'filterShow',
-          children: []
-        }
-      ],
       defaultProps: {
         children: 'children',
         label: 'label'
@@ -397,8 +358,6 @@ export default {
       modelOriginalTable: [],
       //模型图表配置
       modelChartSetup: {},
-      //当前选中树节点
-      currentSelectTreeNode: null,
       //模型类型数组
       modelTypeObj: [],
       //关闭窗体时候用的窗体名
@@ -894,7 +853,7 @@ export default {
         columnData.push(columnDataObj)
       }
       // endregion
-      // 列数据  todo
+      // 列数据
       this.columnData = columnData
       if (this.columnData.length==0){
         this.isExecuteSql = false
@@ -1035,7 +994,6 @@ export default {
      * @param columnType 列类型
      */
     changeColumnDataFormat(columnNames, columnType) {
-      // [{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }]
       const returnObj = []
       for (let i = 0; i < columnNames.length; i++) {
         var obj = {
@@ -1125,54 +1083,12 @@ export default {
       this.businessColumnSelect = []
       //列类型列表
       this.columnTypeSelect = []
-      //选择树节点
-      this.selectTreeNode = null
       //模型详细数组
       this.modelDetails = []
       //模型详细索引
       this.modelDetailIndex = 0
       //条件显示数组
       this.filterShows = []
-      //树数据
-      this.treeNodeData = [
-        {
-          id: '1',
-          label: '基本信息',
-          type: 'basicInfo'
-        },
-        {
-          id: '2',
-          label: '模型设计',
-          type: 'modelDesign'
-        },
-        {
-          id: '3',
-          label: '参数默认值',
-          type: 'paramDefaultValue'
-        },
-        {
-          id: '4',
-          label: '模型结果输出列',
-          type: 'modelResultOutputCol'
-        },
-        {
-          id: '5',
-          label: '关联详细',
-          type: 'relInfo',
-          children: []
-        },
-        {
-          id: '6',
-          label: '图表配置',
-          type: 'chartConfig'
-        },
-        {
-          id: '7',
-          label: '条件展示',
-          type: 'filterShow',
-          children: []
-        }
-      ]
     },
     /**
      * 如果是修改模型的话则反显数据
@@ -1375,17 +1291,6 @@ export default {
   border: 1px solid #eee;
 }
 
-.div-btn {
-  margin-top: -3%;
-  float: right;
-  position: relative;
-}
-
-.p-div {
-  color: red;
-  font-size: large;
-}
-
 .model-result-output-col {
   height: 650px;
   overflow-y: scroll;
@@ -1395,21 +1300,6 @@ export default {
   margin-left: 20px;
 }
 
-.drag {
-  position: absolute;
-  z-index: 1000;
-  top: 35px;
-  right: 35px;
-  width: 95px;
-  background: #F2F2F2;
-  border-radius: 15px;
-  font-weight: bold;
-}
-
-#drag .title {
-  position: relative;
-  height: 12px;
-}
 
 #drag .title h2 {
   font-size: 24px;
@@ -1426,56 +1316,10 @@ export default {
   right: 0;
 }
 
-#drag .title a, a.open {
-  float: left;
-  width: 21px;
-  height: 19px;
-  display: block;
-  margin-left: 5px;
-}
-
-
-.el-tree-rewrite {
-  background: #F2F2F2;
-  width: 100%;
-}
-
-.custom-tree-node {
-  position: relative;
-  left: -2px;
-  font-size: 13px;
-  color: #353A43;
-}
-
-.custom-tree-caidan {
-  border-top: 1px solid #f0f0f0;
-  width: 100%;
-  margin-top: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 0 12px;
-}
-
 .custom-tree-caidan img {
   width: 20px;
   height: 20px;
   margin: 10px 0 0 0px;
-}
-
-.custom-tree-shangla {
-  border-top: 1px solid #f0f0f0;
-  margin-top: 5px;
-  width: 100%;
-  height: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-}
-
-.custom-xiala {
-  transform: rotate(180deg);
-  display: none;
 }
 
 #drag .custom-tree-node span:first-child {
@@ -1490,23 +1334,6 @@ export default {
   float: left;
 }
 
-.words {
-  width: 1000px;
-  /* height: 200px; */
-  margin: 50px 0 0 50px;
-  box-shadow: 0 0 9px 5px rgba(0, 0, 0, .15);
-  border-radius: 8px;
-  font-size: 20px;
-  color: #70747a;
-  text-align: justify;
-  line-height: 36px;
-  padding: 10px;
-}
-
-.content {
-  overflow: hidden;
-}
-
 .modelInfoClass {
 z-index:999;
   background-color: white;
@@ -1518,19 +1345,12 @@ z-index:999;
   0%{width: 0%;}
   100%{width: 50%}
 }
-.sqlEditorWidth{
-  float: left;
-  animation: sqlEditorWidth 0.5s forwards;
-}
+
 @keyframes sqlEditorWidth {
   0%{width: 98%;}
   100%{width: 50%;}
 }
 
-.sqlEditorParamWidthOn{
-  float: left;
-  animation: sqlEditorWidth1 0.5s forwards
-}
 @keyframes sqlEditorWidth1 {
   0%{width: 50%;}
   100%{width: 98%;}

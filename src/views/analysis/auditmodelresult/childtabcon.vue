@@ -24,12 +24,6 @@
       ></el-button>
       <el-row v-if="myFlag">
         <div align="right">
-          <!--<el-button
-            type="primary"
-            @click="sendToOA()"
-            class="oper-btn share"
-            title="发送到作业平台"
-          ></el-button>-->
           <el-button
             :disabled="modelRunResultBtnIson.exportBtn"
             type="primary"
@@ -234,7 +228,7 @@
     <el-row v-if="!chartSwitching">
       <el-row>
       <div align="right" v-if="this.preLength==this.myIndex+1||myFlag">
-        <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" style="width:24px;height:24px;margin-right:8px" @click="changeChart(item.id)" :key="key"/>
+        <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" class="chartSwitching" @click="changeChart(item.id)" :key="key"/>
         <img
           src="./imgs/deletein.png"
           v-if="useType=='sqlEditor'||myFlag"
@@ -742,7 +736,6 @@ export default {
         }
         selectTable(this.pageQuery, sql, this.resultSpiltObjects).then(
           (resp) => {
-            //todo
             // var modelThre
             var column = resp.data.records[0].columns;
             var columnToUppercase = []
@@ -1651,21 +1644,7 @@ export default {
         this.nowChartJson = undefined
         this.isHaveCharts = true
       }
-    },
-
-    /*sendToOA() {
-      var runTaskRelUuid =  this.nowtable.runTaskRelUuid;
-      const dataUserId = this.$store.getters.datauserid
-      const dataUserName = this.$store.getters.datausername
-      sendToOA(runTaskRelUuid, dataUserId, dataUserName).then(resp=>{
-        this.$message({
-          type: "success",
-          message: "发送成功!",
-        });
-      })
-
-
-    },*/
+    }
   },
 };
 </script>
@@ -1685,16 +1664,6 @@ export default {
   font-size: 16px;
   line-height: 16px;
 }
-.chartStyle{
-  background: #fff;
-  width: 26px;
-  height: 26px;
-  margin-top: -3px;
-  margin-right: 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  border: 1px solid #dcdfe6;
-}
 .delete-pos{
   width:25px;
   position: absolute;
@@ -1708,5 +1677,10 @@ export default {
   bottom: -30px;
   right: 80px;
   z-index:20;
+}
+.chartSwitching{
+  width:24px;
+  height:24px;
+  margin-right:8px;
 }
 </style>
