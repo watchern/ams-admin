@@ -86,7 +86,6 @@ Object.keys(filters).forEach(key => {
 
 Vue.config.productionTip = false
 //region 图表引用
-import iview from 'iview'
 
 import VueQriously from 'vue-qriously'
 import baseConfig from 'ams-datamax/src/config/config'
@@ -97,7 +96,6 @@ import dataV from '@jiaminghi/data-view'
 //Vue.use(VueAxios, axios)
 Vue.prototype.$clipboard = clipboard
 Vue.prototype.$ajax = axios
-Vue.use(iview)
 Vue.use(dataV)
 Vue.use(VueQriously)
 Vue.mixin({

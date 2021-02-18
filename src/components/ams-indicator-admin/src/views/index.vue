@@ -17,8 +17,8 @@
           </el-tabs>
           <div class="side-footer">
             <el-dropdown v-if="isInManager == 'true' || isOrgManager == 'true'">
-              <el-button style="border-color: aliceblue" class="el-dropdown-link" type="primary"><li class="dib">
-                <span style="font-size: 30px;color: #C0C0C0;background: ghostwhite;" class="icon iconfont">&#xe606;</span></li></el-button>
+              <el-button style="border-color: aliceblue" class="el-dropdown-link">
+                <span style="font-size: 30px;color: #C0C0C0;background: ghostwhite;" class="icon iconfont">&#xe606;</span></el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="nativeIndicatrixDesign">原生指标设计</el-dropdown-item>
                 <el-dropdown-item @click.native="addDeriveIn">派生指标设计</el-dropdown-item>
@@ -32,7 +32,7 @@
       <el-main>
         <div class="top-collapse-container">
           <div class="top-collapse-con">
-            <div class="toggle-btn J_slideup_btn"><i class="icon-toggle"></i><span>收起</span></div>
+            <div class="toggle-btn J_slideup_btn" @click="packUpClick"><i class="icon-toggle"></i><span>收起</span></div>
             <div class="collapse-panel">
               <div class="tag-left-con">
                 <div class="in-outer-layer" id="inRegion">
@@ -46,7 +46,7 @@
                         <span style='margin-top: -5px;' onclick="addTempIn(this)" analysisRegion='inAnalysisRegion'>新增临时指标</span>
                       </div>
                       <div title="设置阈值" class='tags-set'>
-                        <span class="icon iconfont" ref="setValue" style="color:#aeaeae;" onclick="setValue('inAnalysisRegion')">&#xe606;</span>
+                        <span class="icon iconfont" id="setValueinAnalysisRegion" style="color:#aeaeae;" onclick="setValue('inAnalysisRegion')">&#xe606;</span>
                       </div>
                       <div title="删除分析区" class='tags-del'><i onclick='delAnalysisRegion("inAnalysisRegion")'></i>
                       </div>
@@ -59,7 +59,7 @@
               </div>
               <div class="tag-right-con" id="dimRegion">
                 <div class="row table-view-caption pull-right">
-                  <el-button type="primary" size="mini" @click="test">测试</el-button>
+<!--                  <el-button type="primary" size="mini" @click="test">测试</el-button>-->
                   <el-button type="primary" size="mini" @click="queryData">查询</el-button>
                   <el-button type="primary" size="mini" @click="clearAnalysis">清空</el-button>
                   <el-button type="primary" size="mini" @click="saveChangYongAnalysis">保存为常用分析</el-button>
@@ -82,11 +82,13 @@
             <div class="slideup-left" id="analysisIn">
               <span>分析个数</span><em id="count">1</em>
             </div>
-            <a href="#" class="collapse-set-btn J_slidedown_btn">展开</a>
+            <a href="#" @click="openDisplay" class="collapse-set-btn J_slidedown_btn">展开</a>
           </div>
         </div>
-        <div id="dataView">
-          <div class="recommendPage" style="height: 620px;overflow-y:scroll">
+        <div :style="{height:this.tableHeight == 'height:80%'?'calc(100vh - 143px)':'calc(100vh - 292px)'}">
+          <div id="dataView">
+<!--          style="height: 650px;overflow-y:scroll"-->
+          <div class="recommendPage">
             <el-menu default-active="0" class="el-menu-demo" mode="horizontal">
               <div v-for="(dataObj,indexI) in dataList">
                 <el-menu-item :index="indexI.toString()" @click="jump(indexI)">{{dataObj.measureName}}<i :class="dataObj.icon"></i></el-menu-item>
@@ -95,33 +97,34 @@
             <swiper :options="swiperOption" ref="mySwiper">
                 <swiper-slide v-for="(dataObj,index) in dataList" v-loading="dataObj.loading" element-loading-text="正在执行SQL,请稍候...">
                   <div class="btn-div"  v-if="dataObj.isError == false">
-                    <div :class="dataObj.btnChartClass" :ref="dataObj.id + 'btnChart'"><span class="icon iconfont iconfont-div" @click="switchDivStyle(dataObj.id + 'btnChart',dataObj.id)">&#xe6d8;</span></div>
-                    <div :class="dataObj.btnTableClass" :ref="dataObj.id + 'btnTable'"><span class="icon iconfont iconfont-div" @click="switchDivStyle(dataObj.id + 'btnTable',dataObj.id)">&#xecee;</span></div>
+                    <div :class="dataObj.btnChartClass" :ref="dataObj.id + 'btnChart'" @click="switchDivStyle(dataObj.id + 'btnChart',dataObj.id)"><span class="icon iconfont" >&#xe6d8;</span></div>
+                    <div :class="dataObj.btnTableClass" :ref="dataObj.id + 'btnTable'" @click="switchDivStyle(dataObj.id + 'btnTable',dataObj.id)"><span class="icon iconfont" >&#xecee;</span></div>
                   </div>
                   <ag-grid-vue
                     v-show=dataObj.isShowTable
                     :ref="dataObj.id + 'table'" v-if="dataObj.isLoad == true && dataObj.isError == false"
-                    style="height:75%"
+                    :style="tableHeight"
                     class="table ag-theme-balham"
-                    :get-row-style="(params) => {return setRowColor(params,dataObj.id)}"
                     :column-defs="dataObj.data.columnDefs"
                     :row-data="dataObj.data.data"
+                    :get-row-style="(params) => {return setRowColor(params,dataObj.id)}"
                     rowMultiSelectWithClick="true"
                     :enable-col-resize="true"
                     row-selection="multiple"
                     row-height="40"
                   />
-                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
-                  <mtEditor v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
+                  <mtEditor :graphConfigHeight="160" v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' :chartBoxStyle="chartBoxStyle" v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
+                  <mtEditor :graphConfigHeight="160" v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' :chartBoxStyle="chartBoxStyle" v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
                   <div style="color:red;text-align: left" v-else>{{dataObj.message}}</div>
                 </swiper-slide>
               <div class="swiper-pagination" slot="pagination"></div>
             </swiper>
           </div>
         </div>
+        </div>
       </el-main>
     </el-container>
-    <div id="inMenu" class="menuDemo">
+    <div id="inMenu" class="menuDemo" style="display:none;">
       <el-menu class="el-menu-demo" mode="horizontal">
         <el-menu-item @click="inFilter()" index="2-1">筛选器</el-menu-item>
         <el-submenu index="2-2">
@@ -175,6 +178,9 @@
                        :columnName="updateInObj.columnName" columnType="string" :filterJson="nowFilterObj.filterJson" :columnNameCN="updateInObj.columnNameCN"
       :analysisRegionId="updateInObj.analysisRegionId" :inId="updateInObj.inId" @closeInmeasuerFilter="closeInmeasuerFilter" @inSetFilter="inSetFilter"></inmeasurefilter>
     </el-dialog>
+    <el-dialog title="阈值关联" :close-on-click-modal="false" v-if="thresholdValueDialog" :visible.sync="thresholdValueDialog" width="50%">
+      <ThresholdValueRel v-if="thresholdValueDialog" :setThreasholdValueObj="setThreasholdValueObj" @clearThresholdValue="clearThresholdValue" @closeThresholdValueRel="closeThresholdValueRel" @inSetThresholdValue="inSetThresholdValue"></ThresholdValueRel>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -184,7 +190,7 @@ import "ag-grid-community/dist/styles/ag-theme-balham.css";
 // 引入ag-grid-vue
 import { AgGridVue } from "ag-grid-vue";
 import request from '@/utils/request'
-import 'iview/dist/styles/iview.css'
+//import 'iview/dist/styles/iview.css'
 import mtEditor from 'ams-datamax'
 import $ from 'jquery'
 import {Loading} from 'element-ui';
@@ -192,8 +198,9 @@ import {fuzzySearch} from '../lib/ztree/ext/fuzzysearch.js'
 import { Message } from 'element-ui'
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import "swiper/dist/css/swiper.css";
-import Inmeasurefilter from "@/components/ams-indicator-admin/src/views/indicator/inmeasurefilter";
-
+import Inmeasurefilter from "../views/indicator/inmeasurefilter";
+import ThresholdValueRel from "../views/indicator/thresholdvaluerel"
+import {handleDataSingleValue,handleDataManyValue} from '../../../../api/analysis/thresholdvalue'
 export default {
   name: 'index',
   components: {
@@ -205,7 +212,7 @@ export default {
     saveanalysis: resolve => require(["../views/indicator/saveanalysis.vue"], resolve),
     indicatordesign: resolve => require(["../views/indicator/indicatordesign.vue"], resolve),
     inmeasurefilter: resolve => require(["../views/indicator/inmeasurefilter.vue"], resolve),
-    mtEditor,swiper, swiperSlide,AgGridVue
+    mtEditor,swiper, swiperSlide,AgGridVue,ThresholdValueRel
   },
   data() {
     return {
@@ -404,8 +411,14 @@ export default {
       addTempDimAnalysisRegionId:'',
       inMeasureFilter:false,
       //每个分析区所需要展示的过滤条件，里面包含analysisRegionId,条件显示的sql对象
-      analysisRegionFilterShowObj:{}
-      //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilte:''}]}
+      thresholdValueDialog:false,
+      //设置阈值需要的对象
+      setThreasholdValueObj:{},
+      chartBoxStyle: {
+        height: '200px',
+        width: '100%'
+      },
+      tableHeight:"height:60%"
     }
   },
   watch: {
@@ -485,17 +498,51 @@ export default {
         func1(dataObj)
       }
       const func2 = function func3(val) {
+        let dataList = {}
+        debugger
+        //找到当前分析区的对象
+        for(let i = 0; i < this.dataList.length;i++){
+          if(this.dataList[i].id === val.analysisRegionId){
+            dataList = this.dataList[i]
+          }
+        }
+        let thresholdValueRel
+        for(let i = 0; i < this.analysisList.length;i++){
+          if(this.analysisList[i].id === val.analysisRegionId){
+            thresholdValueRel = this.analysisList[i].thresholdValueRelObj
+          }
+        }
         if(val.executeSQL.state == 2){
           let columnDefs = []
           for(let i = 0; i < val.columnNames.length;i++){
-            let obj =  {headerName: val.columnNames[i], field: val.columnNames[i],width:300,cellRenderer:this.changeCellColor}
+            let obj
+            //如果阈值类型是多值的时候才会增加处理颜色情况
+            //判断当前列名与要设置颜色的列名是否相同  如果相同择加事件  不相同则不加
+            if(thresholdValueRel && thresholdValueRel.thresholdValue.thresholdValueType == 2 && thresholdValueRel.modelResultColumnName === val.columnNames[i]){
+              obj =  {headerName: val.columnNames[i], field: val.columnNames[i],width:300,cellRenderer:(params) => {return this.changeCellColor(params,val.analysisRegionId,thresholdValueRel)}}
+            }
+            else{
+              obj =  {headerName: val.columnNames[i], field: val.columnNames[i],width:300}
+            }
             columnDefs.push(obj)
           }
-          let result = {column:val.columnNames,columnType:val.columnTypes,data:val.result,columnDefs:columnDefs}
-          //处理aggrid的列信息
+          let result = {
+            column:val.columnNames,
+            columnType:val.columnTypes,
+            data:val.result,
+            columnDefs:columnDefs,
+            id:val.analysisRegionId,
+            name:val.measureName
+          }
+          //处理aggrid的列信息ss
           let data = {id:val.analysisRegionId,data:result,measureName:val.measureName,chartConfig:val.chartConfig}
           //根据返回的结果id找到数组里面的数据进行修改
-          for(let i = 0; i < this.dataList.length;i++){
+            dataList.data = result
+            dataList.loading = false
+            dataList.isLoad = true
+            dataList.icon = 'el-icon-check'
+            dataList.isError = false
+/*          for(let i = 0; i < this.dataList.length;i++){
             //如果相等则修改数据
             if(this.dataList[i].id == val.analysisRegionId){
               this.dataList[i].data = result
@@ -504,10 +551,15 @@ export default {
               this.dataList[i].icon = 'el-icon-check'
               this.dataList[i].isError = false
             }
-          }
+          }*/
         }
         else{
-          for(let i = 0; i < this.dataList.length;i++){
+          dataList.loading = false
+          dataList.isLoad = false
+          dataList.icon = 'el-icon-close'
+          dataList.message = val.executeSQL.msg
+          dataList.isError = true
+/*          for(let i = 0; i < this.dataList.length;i++){
             //如果相等则修改数据
             if(this.dataList[i].id == val.analysisRegionId){
               this.dataList[i].loading = false
@@ -516,7 +568,7 @@ export default {
               this.dataList[i].message = val.executeSQL.msg
               this.dataList[i].isError = true
             }
-          }
+          }*/
         }
       }
       const func1 = func2.bind(this)
@@ -2226,7 +2278,9 @@ export default {
 
       }, "json")
     },
-
+    closeThresholdValueRel(){
+      this.thresholdValueDialog = false
+    },
     /**
      * 将常用分析树添加到数据库
      * @param id 编号
@@ -3184,9 +3238,9 @@ export default {
     handleChartConfig(){
       //获取当前界面分析对象的图表配置
       for(let i = 0;i < this.analysisList.length;i++){
-        if(this.$refs.[this.analysisList[i].id] != undefined && this.$refs.[this.analysisList[i].id].length != 0){
-          if(!this.$refs.[this.analysisList[i].id][0].getChartConfig){
-            this.analysisList[i].chartConfig = this.$refs.[this.analysisList[i].id][0].getChartConfig()
+        if(this.$refs[this.analysisList[i].id] != undefined && this.$refs[this.analysisList[i].id].length != 0){
+          if(!this.$refs[this.analysisList[i].id][0].getChartConfig){
+            this.analysisList[i].chartConfig = this.$refs[this.analysisList[i].id][0].getChartConfig()
           }
         }
       }
@@ -3807,7 +3861,7 @@ export default {
         "<span style='margin-top: -5px;' onclick='addTempIn(this)' analysisRegion='" + InId + "'>新增临时指标</span>" +
         "</div>" +
         "<div title=\"设置阈值\" class='tags-set'>\n" +
-        "<span class='icon iconfont' ref='setValue' style='color:#aeaeae;' onclick='setValue(\"" + InId + "\")'>&#xe606;</span>\n" +
+        "<span class='icon iconfont' id='setValue" + InId + "' style='color:#aeaeae;' onclick='setValue(\"" + InId + "\")'>&#xe606;</span>\n" +
         "</div>"
         +
         "<div class='tags-del'><i class='icon-del' onclick='delAnalysisRegion(\"" + InId + "\")'></i></div>" +
@@ -4687,9 +4741,7 @@ export default {
       this.queryData();
     },
     test(){
-      let json = [{sex:'女',"age":12},{sex:'男',"age":15},{sex:'女',"age":15},{sex:'女',"age":22},{sex:'男',"age":36}]
-      let result = jsonsql.query("select * from json where (sex='女')",json);
-      console.log(result)
+      handleDataManyValue()
     },
     /**
      * 查询数据
@@ -4872,14 +4924,9 @@ export default {
           return;
         }
         newInList.push(indicatrixObj);
-        //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilteSql:''}]}
         //将指标最后生成的列名、条件显示sql记录到对象里，用于后边渲染颜色
-        let indicatorFilter = JSON.parse(indicatrixObj.inFilterShow)
         let indicatorName = that.updateGroupDisplay(indicatrixObj.measureGroup,indicatrixObj.measureName).replace("(","").replace(")","")
-        filterShow.push({indicatorName:indicatorName,indicatorFilter:indicatorFilter})
       });
-      let newId = analysisRegionId.substring(0,analysisRegionId.length - 4)
-      this.analysisRegionFilterShowObj[newId] = filterShow
       $.ajax({
         type: "post",
         url: url,
@@ -4942,14 +4989,9 @@ export default {
           return;
         }
         indicatrixObj = value;
-        //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilteSql:''}]}
         //将指标最后生成的列名、条件显示sql记录到对象里，用于后边渲染颜色
-        let indicatorFilter = JSON.parse(indicatrixObj.inFilterShow)
         let indicatorName = that.updateGroupDisplay(indicatrixObj.measureGroup,indicatrixObj.measureName).replace("(","").replace(")","")
-        filterShow.push({indicatorName:indicatorName,indicatorFilter:indicatorFilter})
       });
-      let newId = analysisRegionId.substring(0,analysisRegionId.length - 4)
-      this.analysisRegionFilterShowObj[newId] = filterShow
       $.ajax({
         type: "post",
         url: url,
@@ -5064,17 +5106,20 @@ export default {
           $("#dimAnalysisRegion").html("");
           //$("#inAnalysisRegion").parent().remove();
           var inDom = "<div class=\"tags-item\" id=\"inAnalysisRegion\" analysisRegion='inAnalysisRegion'>" +
-            "                                <div class=\"tags-order\" id=\"inAnalysisRegionCount\" >1</div>" +
-            "                                <div class=\"tag-select\">" +
-            "                                    <i class=\"icon-add\">+</i>" +
-            "                                    <span style='margin-top: -5px;' onclick=\"addTempIn(this)\" analysisRegion='inAnalysisRegion'>新增临时指标</span>" +
-            "                                </div>" +
+            "<div class=\"tags-order\" id=\"inAnalysisRegionCount\" >1</div>" +
+            "<div class=\"tag-select\">" +
+            "<i class=\"icon-add\">+</i>" +
+            "<span style='margin-top: -5px;' onclick=\"addTempIn(this)\" analysisRegion='inAnalysisRegion'>新增临时指标</span>" +
+            "</div>" +
+            "<div title=\"设置阈值\" class='tags-set'>\n" +
+            "<span class=\"icon iconfont\" id=\"setValueinAnalysisRegion\" style=\"color:#aeaeae;\" onclick=\"setValue('inAnalysisRegion')\">&#xe606;</span>\n" +
+            "</div>"+
             "<div class='tags-del'><i class='icon-del' onclick='delAnalysisRegion(\"inAnalysisRegion\")'></i></div>" +
             "</div>";
           $("#analysisRegion").append(inDom);
           var dimDom = "<div class=\"tags-item-con\" id=\"inDimAnalysisRegion\">" +
-            "<div class='tag-select'>" +
-            "<i class='icon-add'>+</i>" +
+            "<div class='tag-sele0ct'>" +
+            "<i class='icon-add'>+1</i>" +
             "<span onclick='addTempDim(\"" + "inAnalysisRegion" + "\")'>新增临时维度</span>" +
             "</div>" +
             "</div>";
@@ -5773,68 +5818,89 @@ export default {
      * @returns {undefined|{"background-color": (string), color: *}|{"background-color": *, color: *}}
      */
     setRowColor(params,regionAnalysiId){
-      let filterShow = this.analysisRegionFilterShowObj[regionAnalysiId]
-      for(let i = 0; i < filterShow.length;i++){
-        //拿到显示的条件后进行处理，判断当前行的值是否符合条件，如果符合条件则设置颜色等信息
-        //如果是多个指标则取最后一个颜色即可
-        //analysisRegionFilterShowObj:{analysisRegionId:'',filterShow:[{indicatorName:'',indicatorFilte:''}]}
-        let indicatorName = filterShow[i].indicatorName
-        let indicatorFilter = filterShow[i].indicatorFilter
-        if(indicatorFilter){
-          let result = this.handleData(params.data,indicatorFilter,indicatorName)
-          if(result){
-            return result
-          }
+      let thresholdValueRel
+      for(let i = 0; i < this.analysisList.length;i++){
+        if(this.analysisList[i].id === regionAnalysiId){
+          thresholdValueRel = this.analysisList[i].thresholdValueRelObj
         }
       }
-    },
-    /**
-     * 处理数据
-     * @param data 要处理的数据
-     * @param indicatorFilter 过滤条件对象
-     * @param columnName 列名
-     * @returns {{"background-color": (string), color: (string)}}
-     */
-    handleData(data,indicatorFilter,columnName){
-      //这块这么解析不太好，有很多问题，但是暂时想不到好的方式，先用这种方式，
-      //利用空格解析filter
-      let backgroundColor = indicatorFilter.backGroundColor;
-      let fontColor = indicatorFilter.fontColor;
-      let filterSplit = indicatorFilter.sql.split(' ')
-      //数据出来的值
-      let valueOne = data[columnName]
-      //要判断的值
-      let valueTwo = filterSplit[2]
-      //运算符
-      let operator = filterSplit[1]
-      if(valueOne == null || valueTwo == null){
-        return
-      }
-      valueOne = parseFloat(valueOne)
-      valueTwo = parseFloat(valueTwo)
-      if(operator === ">" && valueOne > valueTwo){
-          return {"background-color":backgroundColor,"color":fontColor}
-      }
-      else if(operator === ">=" && valueOne >= valueTwo){
-        return {"background-color":backgroundColor,"color":fontColor}
-      }
-      else if(operator === "<" && valueOne < valueTwo){
-        return {"background-color":backgroundColor,"color":fontColor}
-      }
-      else if(operator === "<=" && valueOne <= valueTwo){
-        return {"background-color":backgroundColor,"color":fontColor}
-      }
-      else if(operator === "=" && valueOne === valueTwo){
-        return {"background-color":backgroundColor,"color":fontColor}
+      if(thresholdValueRel && thresholdValueRel.thresholdValue.thresholdValueType == 1){
+        //判断颜色等信息
+        return handleDataSingleValue(params.data,thresholdValueRel)
       }
     },
     setValue(analysisRegionId){
-      alert(analysisRegionId)
-      //this.$refs.setValue.style.color="rgb(61 128 196)"
+      //设置传到设置阈值界面的对象
+      this.setThreasholdValueObj = {}
+      this.setThreasholdValueObj.analysisRegionId = analysisRegionId
+      //找到该分析区最后会产生的列名
+      let columns = []
+      for(let i = 0;i < this.analysisList.length;i++){
+        if(this.analysisList[i].id === analysisRegionId){
+          //找到该分析区下边的指标列表和维度列表
+          //设置是否反显，如果反显则证明已经有值了。
+          this.setThreasholdValueObj.isDisplay = false
+          let objInList = this.analysisList[i].objInList
+          let objDimList = this.analysisList[i].objDimList
+          objInList.forEach((inObj) => {
+            let name = this.updateGroupDisplay(inObj.measureGroup,inObj.measureName).replace("(","").replace(")","")
+            columns.push(name)
+          })
+          objDimList.forEach((dimObj) => {
+            columns.push(dimObj.dimensionName)
+          })
+          //如果该对象有值则说明是反显，将反显的对象传到那个界面
+          if(this.analysisList[i].thresholdValueRelObj){
+            this.setThreasholdValueObj.isDisplay = true
+            this.setThreasholdValueObj.thresholdValueRelObj = this.analysisList[i].thresholdValueRelObj
+          }
+        }
+      }
+      this.setThreasholdValueObj.columns = columns
+      this.thresholdValueDialog = true
     },
-    changeCellColor(params){
-      console.log(params)
-      return params.value
+    changeCellColor(params,regionAnalysisId,thresholdValueRel){
+      if(thresholdValueRel){
+        //进行特殊处理
+        return handleDataManyValue(params,thresholdValueRel)
+      }
+      else{
+        return params.value
+      }
+    },
+    /**
+     * 设置阈值关联
+     * @param data 阈值关联对象
+     * @param analysisRegionId 分析区编号
+     */
+    inSetThresholdValue(data,analysisRegionId){
+      //根据分析区编号找到分析区对象，给对象赋值
+      for(let i = 0; i < this.analysisList.length;i++){
+        if(this.analysisList[i].id === analysisRegionId){
+          this.analysisList[i].thresholdValueRelObj = data
+          break
+        }
+      }
+      $("#setValue" + analysisRegionId).css("color","#3D80C4")
+    },
+    clearThresholdValue(analysisRegionId){
+      //根据分析区编号找到分析区对象，给对象赋值
+      for(let i = 0; i < this.analysisList.length;i++){
+        if(this.analysisList[i].id === analysisRegionId){
+          this.analysisList[i].thresholdValueRelObj = undefined
+          break
+        }
+      }
+      $("#setValue" + analysisRegionId).css("color","#aeaeae")
+    },
+    packUpClick(){
+      //更改表格高度
+      this.tableHeight = "height:80%"
+
+    },
+    openDisplay(){
+      //更改表格高度
+      this.tableHeight = "height:60%"
     }
   }
 }
@@ -6093,7 +6159,7 @@ var see = "查看";
 }
 >>>.recommendPage .swiper-container{
   position: relative;
-  width: 67vw;
+  width: 70vw;
   height: 85vh;
 /*  width: 100%;
   height: 100%;*/
@@ -6114,8 +6180,8 @@ var see = "查看";
 }
 >>>.el-menu-item {
   float: left;
-  height: 60px;
-  line-height: 60px;
+  height: 40px;
+  line-height: 40px;
   margin: 0;
 }
 >>>.el-tabs--left .el-tabs__nav-wrap.is-left::after{
@@ -6175,4 +6241,5 @@ var see = "查看";
   line-height: 40px;
   text-align: left;
 }
+#dataView{height: 100%;overflow: auto}
 </style>

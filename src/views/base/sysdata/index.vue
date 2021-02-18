@@ -73,6 +73,7 @@
     <el-dialog 
       :title="textMap[dialogSecondStatus]" 
       :visible.sync="dialogFormSecond"
+      :close-on-click-modal="false"
       top="5vh"
       >
       <el-form
@@ -133,7 +134,7 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <el-button type="danger" class="oper-btn delete" size="mini" :disabled="selectionSecond.length === 0" title="删除" @click="deleteDataSecond()" style="float:right;margin:0 15px 0 10px"></el-button>
+      <el-button type="primary" class="oper-btn delete" size="mini" :disabled="selectionSecond.length === 0" title="删除" @click="deleteDataSecond()" style="float:right;margin:0 15px 0 10px"></el-button>
       <el-button type="primary" class="oper-btn edit" size="mini" :disabled="selectionSecond.length !== 1" title="修改" @click="updateDataSecond()" style="float:right"></el-button>
       <el-button type="primary" class="oper-btn again-2" size="mini" @click="resetTempSecond()" title="刷新" style="float:right"></el-button>
       <el-button type="primary" class="oper-btn add" size="mini" @click="addSecondCode()" title="添加"  style="float:right"></el-button>

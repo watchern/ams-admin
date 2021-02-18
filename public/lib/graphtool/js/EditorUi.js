@@ -723,37 +723,6 @@ EditorUi.prototype.toolbarHeight = 120;
  */
 EditorUi.prototype.allowAnimation = true;
 
-//节点图片路径——中间表
-EditorUi.prototype.datasourcePath = IMAGE_PATH + '/icon/table.png';
-//节点图片路径——SQL查询器
-EditorUi.prototype.SQLPath = IMAGE_PATH + '/icon/sql.png';
-//节点图片路径——自定义
-EditorUi.prototype.customizeChartPath = IMAGE_PATH + '/icon/customize.png';
-//节点图片路径——数据筛选
-EditorUi.prototype.filterPath = IMAGE_PATH + '/icon/filter.png';
-//节点图片路径——数据排序
-EditorUi.prototype.sortPath = IMAGE_PATH + '/icon/sort.png';
-//节点图片路径——数据抽样
-EditorUi.prototype.samplePath = IMAGE_PATH + '/icon/sample.png';
-//节点图片路径——数据分层
-EditorUi.prototype.layeringPath = IMAGE_PATH + '/icon/layering.png';
-//节点图片路径——分组汇总
-EditorUi.prototype.groupCountPath = IMAGE_PATH + '/icon/groupCount.png';
-//节点图片路径——数据去重
-EditorUi.prototype.delRepeatPath = IMAGE_PATH + '/icon/delRepeat.png';
-//节点图片路径——数据频次分析
-EditorUi.prototype.comparisonPath = IMAGE_PATH + '/icon/comparison.png';
-//节点图片路径——数据转码
-EditorUi.prototype.changePath = IMAGE_PATH + '/icon/change.png';
-//节点图片路径——数据合并
-EditorUi.prototype.combineSetPath = IMAGE_PATH + '/icon/combineSet.png';
-//节点图片路径——数据交集
-EditorUi.prototype.intersectionSetPath = IMAGE_PATH + '/icon/intersectionSet.png';
-//节点图片路径——数据补集
-EditorUi.prototype.cptSetPath = IMAGE_PATH + '/icon/cptSet.png';
-//节点图片路径——数据关联
-EditorUi.prototype.relationPath = IMAGE_PATH + '/icon/relation.png';
-
 /**
  * Installs the listeners to update the action states.
  */
@@ -1785,7 +1754,6 @@ EditorUi.prototype.createDivs = function() {
     var h = $(this.graphToolDiv).height() - this.toolbarHeight + 10;
     this.sidebarContainer.style.width = this.sidebarWidth + "px";
     this.resultContainer.style.height = this.resultHeight - 45 + "px";
-    this.toolbarContainer.style.width = $(this.graphToolDiv).width() + "px";
 	this.container.style.left = (this.sidebarWidth + this.splitSize) + "px";
 	this.container.style.right = (this.detailContainerWidth + 15) + "px";
     this.container.style.width = ($(this.graphToolDiv).width() - this.sidebarWidth - this.splitSize - this.detailContainerWidth) + "px";
@@ -1818,7 +1786,6 @@ EditorUi.prototype.createUi = function() {
 	}
 
 	// Creates toolbar
-//	this.toolbar = (this.editor.chromeless)? null: this.createToolbar(this.createDiv('geToolbar'));
 
 	if(this.toolbar != null) {
 		this.toolbarContainer.appendChild(this.toolbar.container);
@@ -2602,13 +2569,16 @@ EditorUi.prototype.rightAreaH_S = function() {
 //主页各个区域的折叠与展开事件，end
 
 var iconDrag = function(treeNode) {
-	var iconWidth = 100;
-	var iconHeight = 100;
 	//拖动后真实图形
+    //获取所有的原表
+    var valArr = getDataSourceTable();
+    var isCopy = false;//当前节点是不是重复节点
+    if($.inArray(treeNode.name,valArr) > -1){
+        isCopy = true
+    }
 	var funct = function(graph, evt, target, x, y) {
-		//获取所有的原表
-		var valArr = getDataSourceTable();
-		var cell =  new mxCell(treeNode.name, new mxGeometry(0, 0, iconWidth, iconHeight), createCellShape(treeNode.type));
+        var nodeImgPath = createCellShape(treeNode.type,isCopy)
+		var cell =  new mxCell(treeNode.name, new mxGeometry(0, 0, 60, 80), nodeImgPath);
 		cell.vertex = true;
 		cell.nodeType = treeNode.type;
         //初始化节点配置信息,start
@@ -2639,7 +2609,7 @@ var iconDrag = function(treeNode) {
                 return;
             }
             //判断该节点是否是复制节点
-            if($.inArray(treeNode.name,valArr) > -1){
+            if(isCopy){
                 setDataSourceCopyIcon(cell.id);
                 graph.nodeData[cell.id].isCopy = true;
             }
@@ -2656,9 +2626,10 @@ var iconDrag = function(treeNode) {
 	//用于拖动预览的可选DOM节点
 	var dragElt = document.createElement('div');
 	dragElt.className = "geItem";
-	dragElt.style.border = 'dashed black 1px';
-	dragElt.style.width = iconWidth + 'px';
-	dragElt.style.height = iconHeight + 'px';
+	// dragElt.style.border = 'dashed black 1px';
+    dragElt.style.border = '1px solid red';
+    dragElt.style.width = '60px';
+	dragElt.style.height = '60px';
 	switch(treeNode.type){
 		case "filter":
 		case "sort":
@@ -2672,7 +2643,7 @@ var iconDrag = function(treeNode) {
 		case "sql":
 		case "newNullNode":
 		case "relation":
-			mxUtils.makeDraggable($("#" + treeNode.type)[0], graph, funct, dragElt, null, null, true, true);
+			mxUtils.makeDraggable($("#" + treeNode.id)[0], graph, funct, dragElt, null, null, true, true);
 			break;
 		case "datasource":
 			mxUtils.makeDraggable($("#" + treeNode.tId + "_a")[0], graph, funct, dragElt, null, null, true, true);
@@ -2724,91 +2695,35 @@ var initNodeData = function(options,changeIcon){
 	//end
 };
 
-var createCellShape = function(type) {
-	var res = "shape=label;image=" + getNodeImagePath(type) + ";";
-	return res + "whiteSpace=wrap;indicatorColor=#FF0000;verticalLabelPosition=bottom;verticalAlign=top;imageVerticalAlign=top;imageAlign=center;strokeColor=transparent;imageWidth=50;imageHeight=50;spacingTop=-45";
-};
-
-var getNodeImagePath = function(type){
-	var path = "";
-	switch (type) {
-		case "newNullNode":
-		//中间表
-		case "datasource":
-			//基础表
-			path = EditorUi.prototype.datasourcePath;
-			break;
-		case "sql":
-			//SQL查询器
-			path = EditorUi.prototype.SQLPath;
-			break;
-		case "filter":
-			//数据筛选
-			path = EditorUi.prototype.filterPath;
-			break;
-		case "sort":
-			//数据排序
-			path = EditorUi.prototype.sortPath;
-			break;
-		case "sample":
-			//数据抽样
-			path = EditorUi.prototype.samplePath;
-			break;
-		case "layering":
-			//数据分层
-			path = EditorUi.prototype.layeringPath;
-			break;
-		case "groupCount":
-			//分组汇总
-			path = EditorUi.prototype.groupCountPath;
-			break;
-		case "delRepeat":
-			//数据去重
-			path = EditorUi.prototype.delRepeatPath;
-			break;
-		case "comparison":
-			//数据频次分析
-			path = EditorUi.prototype.comparisonPath;
-			break;
-		case "change":
-			//数据转码
-			path = EditorUi.prototype.changePath;
-			break;
-		case "union":
-			//数据合并
-			path = EditorUi.prototype.combineSetPath;
-			break;
-		case "intersect":
-			//数据交集
-			path = EditorUi.prototype.intersectionSetPath;
-			break;
-		case "exclude":
-			//数据补集
-			path = EditorUi.prototype.cptSetPath;
-			break;
-		case "relation":
-			//数据关联
-			path = EditorUi.prototype.relationPath;
-			break;
-		case "barChart":
-			//自定义
-			path = EditorUi.prototype.customizeChartPath;
-			break;
-	}
-	return path;
-};
-
-/**
- * 数据字典转换
- */
-var dictSwitch = function(type, val) {
-	switch (type) {
-		case "tableRelation":
-			var relation = [" INNER JOIN ", " LEFT JOIN ", " RIGHT JOIN ", " FULL JOIN "];
-			return relation[val];
-		default:
-			break;
-	}
+var createCellShape = function(type,isCopy) {
+    var path = "";
+    switch (type) {
+        case "newNullNode"://中间表
+            path = IMAGE_PATH + '/table.png';
+            break;
+        case "datasource"://基础表
+            if(isCopy){
+                path = IMAGE_PATH + '/table_copy.png';
+            }else{
+                path = IMAGE_PATH + '/table.png';
+            }
+            break;
+        case "sql"://SQL查询器
+        case "filter"://数据筛选
+        case "sort"://数据排序
+        case "sample"://数据抽样
+        case "layering"://数据分层
+        case "groupCount"://分组汇总
+        case "delRepeat"://数据去重
+        case "comparison"://数据频次分析
+        case "change"://数据转码
+        case "union"://数据合并
+        case "relation"://数据关联
+        case "barChart"://图表
+            path = IMAGE_PATH + '/' + type +'.png';
+            break;
+    }
+	return "shape=label;image=" + path + ";whiteSpace=wrap;indicatorColor=#FF0000;verticalLabelPosition=bottom;verticalAlign=top;imageVerticalAlign=top;imageAlign=center;strokeColor=transparent;imageWidth=50;imageHeight=50;spacingTop=-45";
 };
 
 var getEdgeCount = function(){
@@ -2830,25 +2745,11 @@ var toolCellInitSql = function(curSelCell) {
             return;
         }
 		if(!graph.edgeArr[curSelCell.id]){				//如果当前线不在的集合中，新增线所关联的父子节点信息
-            // var parent = graph.getDefaultParent();
-            // var parentChildren = parent.children;
 			if($.inArray(curSelCell.source.id,graph.nodeData[curSelCell.target.id].parentIds) < 0){
 				graph.nodeData[curSelCell.target.id].parentIds.push(curSelCell.source.id);
-				// for(var i=0;i<parentChildren.length;i++){
-				// 	if(parentChildren[i].id === curSelCell.target.id){
-                //         parentChildren[i].source = curSelCell;
-                //         break;
-				// 	}
-				// }
 			}
 			if($.inArray(curSelCell.target.id,graph.nodeData[curSelCell.source.id].childrenIds) < 0){
 				graph.nodeData[curSelCell.source.id].childrenIds.push(curSelCell.target.id);
-                // for(var j=0;j<parentChildren.length;j++){
-                //     if(parentChildren[j].id === curSelCell.source.id){
-                //         parentChildren[j].target = curSelCell;
-                //         break;
-                //     }
-                // }
 			}
             isChange = true;
 		}else{

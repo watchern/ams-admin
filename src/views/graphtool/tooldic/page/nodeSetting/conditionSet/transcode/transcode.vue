@@ -1,39 +1,36 @@
 <template>
-    <div ref="transcode" style="height: 570px;">
-        <div class="layui-form-item" style="padding-top:20px; width: 700px;margin-left:125px;">
-            <label class="layui-form-label">上一节点名称：<span ref="nodeName"></span></label>
-            <div class="layui-input-block">
-                <button type="button" style="float:right;" class="layui-btn" @click="addTranscode">添加</button>
-            </div>
-        </div>
-        <table id="main_table" class="table table-striped">
-            <thead>
-            <tr>
-                <td width="250px">字段名称</td>
-                <td width="350px">转码规则</td>
-                <td width="100px">操作</td>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(item,index) in items" :key="item.key">
-                <td>
-                    <el-select v-model="item.selectColumnName" filterable>
-                        <el-option v-for="colObj in item.colArr" :key="colObj.columnName" :value="colObj.columnName">{{ colObj.columnName }}</el-option>
+    <div style="height: 560px;padding: 20px 0 0 120px;" v-loading="transcodeLoading" element-loading-text="正在加载转码规则数据，请稍后……">
+        <el-table :data="items" height="450" class="layeringTable" style="width: 700px;">
+            <el-table-column label="字段名称" width="300" header-align="center" :resizable="false">
+                <template slot-scope="scope">
+                    <el-select v-model="scope.row.selectColumnName" filterable style="width: 100%;">
+                        <el-option v-for="colObj in scope.row.colArr" :key="colObj.columnName" :value="colObj.columnName">{{ colObj.columnName }}</el-option>
                     </el-select>
-                </td>
-                <td>
-                    <el-select v-model="item.transRuleUuid" filterable @change="getRuleName(item.transRuleUuid,index)">
-                        <el-option v-for="ruleObj in ruleArr" :key="ruleObj.transRuleUuid" :label="ruleObj.ruleName" :value="ruleObj.transRuleUuid">{{ ruleObj.ruleName }}
-                            <button class="chooseRule layui-btn" @click="previewTransCode(ruleObj.transRuleUuid)" style="float: right;height: 30px;line-height: 30px;">查看</button>
+                </template>
+            </el-table-column>
+            <el-table-column label="转码规则" width="300" header-align="center" :resizable="false">
+                <template slot-scope="scope">
+                    <el-select v-model="scope.row.transRuleUuid" filterable @change="getRuleName(scope.row.transRuleUuid,scope.$index)" style="width: 100%;">
+                        <el-option v-for="ruleObj in ruleArr" :key="ruleObj.transRuleUuid" :label="ruleObj.ruleName" :value="ruleObj.transRuleUuid">
+                            <el-col :span="20" style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
+                                <el-tooltip class="item" effect="dark" :content="ruleObj.ruleName" placement="bottom">
+                                    <span>{{ruleObj.ruleName}}</span>
+                                </el-tooltip>
+                            </el-col>
+                            <el-col :span="4">
+                                <el-button type="primary" class="oper-btn detail" @click="previewTransCode(ruleObj.transRuleUuid)" title="查看规则详情" style="float:right;line-height: normal;"/>
+                            </el-col>
                         </el-option>
                     </el-select>
-                </td>
-                <td>
-                    <button class="layui-btn" @click="deleteRule(index)">删除</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="100" align="center" :resizable="false">
+                <template slot-scope="scope">
+                    <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add" @click="addTranscode" title="添加规则" style="line-height: normal;"/>
+                    <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete" title="删除规则" @click="deleteRule(scope.$index)" style="line-height: normal;"/>
+                </template>
+            </el-table-column>
+        </el-table>
         <el-dialog v-if="detailDialogVisible" :visible.sync="detailDialogVisible" title="数据转码详情" :append-to-body="!pressEscape"
                    :close-on-press-escape="pressEscape" :close-on-click-modal="clickModal" width="600px">
             <TranscodeDetail :transRuleUuid="transRuleUuid"/>
@@ -42,7 +39,6 @@
 </template>
 
 <script>
-    import '@/components/ams-loading/css/loading.css'
     import {getTransCodeList} from '@/api/data/transCode'
     import TranscodeDetail from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/transcode/transcodeDetail.vue'
     export default {
@@ -50,6 +46,7 @@
         components:{ TranscodeDetail },
         data() {
             return {
+                transcodeLoading:true,
                 nodeData:null,
                 columns: [],
                 items: [],
@@ -61,9 +58,8 @@
             }
         },
         mounted() {
-            let loading = $(this.$refs.transcode).mLoading({ 'text': '正在加载转码规则数据，请稍后……', 'hasCancel': false })
             getTransCodeList().then(response => {
-                loading.destroy();
+                this.transcodeLoading = false
                 if (response.data == null) {
                     this.$message.error('转码规则数据获取失败')
                 } else {
@@ -72,14 +68,14 @@
                         this.init()
                     })
                 }
+            }).catch( () => {
+                this.transcodeLoading = false
             })
         },
         methods: {
             init() {
-                let graph = this.$parent.graph
+                let graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
-                let parentIds = graph.nodeData[graph.curCell.id].parentIds
-                $(this.$refs.nodeName).html(graph.nodeData[parentIds[0]].nodeInfo.nodeName)
                 // 判断当前节点是否已配置过
                 if (this.nodeData.isSet) {			// 如果配置过，直接读取已配置转码设置
                     var tableData = this.nodeData.setting.tableData
@@ -90,13 +86,11 @@
                     }
                 } else {				// 否则读取前置节点信息进行转码设置
                     // 获取前置节点信息
-                    var parentId = graph.nodeData[graph.curCell.id].parentIds[0]
-                    var preNodeData = graph.nodeData[parentId]
-                    var optType = ''; var isSet = false; var columnsInfo = []
+                    let parentId = graph.nodeData[graph.curCell.id].parentIds[0]
+                    let preNodeData = graph.nodeData[parentId]
+                    let columnsInfo = []
                     if (preNodeData) {
-                        optType = preNodeData.nodeInfo.optType
-                        isSet = preNodeData.isSet
-                        if (optType === 'newNullNode' && !isSet) {		// 如果前置节点是未配置的结果表
+                        if (preNodeData.nodeInfo.optType === 'newNullNode' && !preNodeData.isSet) {		// 如果前置节点是未配置的结果表
                             parentId = graph.nodeData[parentId].parentIds[0]
                             preNodeData = graph.nodeData[parentId]
                         }
@@ -107,6 +101,7 @@
                             this.columns.push(columnsInfo[i].newColumnName)
                         }
                     }
+                    this.addTranscode()
                 }
             },
             getRuleName(transRuleUuid,index){
@@ -180,28 +175,3 @@
         }
     }
 </script>
-<style scoped type="text/css">
-    #main_table{
-        width:700px;
-        max-height:490px;
-        margin-left:125px;
-    }
-    #main_table td{
-        text-align: center;
-        border:1px solid #DBDBDB;
-        background-color: #fff;
-    }
-    #main_table>thead>tr>td{
-        background-color:#5886B2;
-        color:#fff;
-    }
-    #main_table button{
-        height:30px;
-        line-height: 30px;
-    }
-    .layui-form-label{
-        width:auto;
-        float:left;
-        font-size: 20px;
-    }
-</style>

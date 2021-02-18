@@ -1,19 +1,27 @@
+#graphToolDiv{
+    overflow-y: hidden;
+}
 #graphContainer {
-	background: url('../images/icon/grid.gif');
+	background: url('../images/icons/grid.gif');
 	position: relative;
 }
 #geToolbarContainer {
-	background: whiteSmoke;
-	border-bottom: 1px solid #e0e0e0;
+    width: 100%;
+	background-image: linear-gradient(90deg, #DADADA 0%, #EFEFEF 49%, #DADADA 100%);
+    border: 0 solid #A8A8A8;
 }
 #geDiagramContainer {
 	left: 0;
 	top: 0;
 	right: 0;
+    background: #FFFFFF;
+    box-shadow: 0 0 8px 0 rgba(0,0,0,0.20);
 }
 #accordion{
 	position: relative;
     float: left;
+    background: #F2F2F2;
+    border: 0 solid #DADADB;
 }
 #geResultContainer {
 	width: 100%;
@@ -37,7 +45,8 @@
 #detailContainer {
 	position: relative;
     float: right;
-    border-left: 1px solid #E5E5E5;
+    background: #F2F2F2;
+    border: 0 solid #DADADB;
 }
 .tab-content{
 	height:calc(100% - 31px);
@@ -98,9 +107,9 @@ div.rightMenu ul li:hover {
     overflow: auto;
 }
 #ztree_datasource{
-	overflow: auto;
+    width: 100%;
     margin: 0;
-    max-height: 70vh;
+    max-height: calc(100% - 40px);
 }
 #usedResourceTree,#historyTree{
 	height:100%;
@@ -115,46 +124,48 @@ div.rightMenu ul li:hover {
 #resourceZtree,#historyZtree{
     margin:0;
     padding: 10px;
-    overflow: auto;
     height:100%;
 }
 .graphMenu{
-    width:155px;
     height:110px;
     float: left;
-    padding-top:10px;
-    padding-left:5px;
-    border-right:1px solid gray;
+    padding:10px 10px 0 10px;
 }
 .menuLi{
-    width:100%;
-    height:60px;
+    width: 100%;
+    height: 60px;
+    margin-top: 15px;
 }
 .menuTit{
     width:100%;
+    height: 20px;
     text-align: center;
-    padding-bottom: 14px;
+    padding-bottom: 10px;
     font-weight: 600;
 }
 .graphIcon{
-    width:100px;
-    height:30px;
-    line-height: 30px;
+    width:50px;
+    height:48px;
+    line-height: 28px;
     text-align:center;
     float: left;
 }
-.iconImgGraph{
-    width: 20px;
-    height: 20px;
-    margin-bottom: 4px;
+.graphIconElRow{
+    height:28px;
+    text-align: center;
+    background-color: #FFFFFF;
+    cursor: pointer;
+    box-shadow: 0 1px 2px 0 #A1A1A1;
+    border-radius: 0 2px 2px 0;
+}
+.graphToolImg{
+    padding: 4px 0;
+    height: 100%;
 }
 .iconText{
-    font-size: 14px;
-    cursor: pointer;
-    color: #333333;
-}
-.iconText:hover{
-    color:#17ABE3;
+    height: 20px;
+    font-size: 12px;
+    color: #424242;
 }
 p{
 	line-height: 1.5em;
@@ -173,7 +184,7 @@ p{
     position: relative;
     cursor:col-resize;
     background-color:#e5e5e5;
-    background-image:url('../images/icon/thumb_vertical.png');
+    background-image:url('../images/icons/thumb_vertical.png');
     background-repeat:no-repeat;
     background-position:center center;
 }
@@ -182,7 +193,7 @@ p{
     font-size:1pt;
     cursor:row-resize;
     background-color:#e5e5e5;
-    background-image:url('../images/icon/thumb_horz.png');
+    background-image:url('../images/icons/thumb_horz.png');
     background-repeat:no-repeat;
     background-position:center center;
 }
@@ -235,4 +246,37 @@ td>.form-group{
 }
 >>> .ztree>li>a.curSelectedNode{
     background-color: #edf6ff;
+}
+>>> #geResultContainer .el-tabs__content{
+    position: inherit;
+    /*background-color: #DDDDDD;*/
+    height: calc(100% - 39px);
+}
+>>> #geResultContainer .el-tabs__nav-wrap{
+    background: #FAFAFA;
+    border: 0 solid #DADADB;
+}
+>>> #detailContainer .el-tabs__nav-wrap{
+    background: #E1E1E1;
+    border: 1px solid #DADADB;
+}
+>>> #geResultContainer .el-tabs--border-card>.el-tabs__header .el-tabs__item,
+>>> #geResultContainer .el-tabs--border-card>.el-tabs__header .el-tabs__item:not(.is-disabled):hover,
+>>> #detailContainer .el-tabs--border-card>.el-tabs__header .el-tabs__item,
+>>> #detailContainer .el-tabs--border-card>.el-tabs__header .el-tabs__item:not(.is-disabled):hover{
+    font-family: PingFangSC-Regular;
+    font-size: 14px;
+    color: #4A4A4A;
+    letter-spacing: 0;
+}
+>>> #geResultContainer .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
+    color: #4A4A4A;
+}
+>>> #detailContainer .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
+    background: #FAFAFA;
+    border: 0 solid #DADADB;
+}
+>>> #detailContainer .el-tabs--border-card{
+    background: #F2F2F2;
+    border: 0 solid #DADADB;
 }

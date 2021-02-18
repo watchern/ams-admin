@@ -261,8 +261,10 @@
     require('@/components/ams-ztree/js/jquery.ztree_new.all.min')
     require('@/components/ams-ztree/js/jquery.ztree.excheck')
     require('@/components/ams-ztree/js/jquery.ztree.exhide')
+
     import '@/components/ams-codemirror/theme/ambiance.css'
     import '@/components/ams-codemirror/lib/codemirror.css'
+
     import '@/components/ams-codemirror/addon/hint/show-hint.css'
     import '@/components/ams-ztree/css/zTreeStyle/zTreeStyle.css'
     import {
@@ -1049,7 +1051,8 @@
         cursor: pointer;
     }
     #rightPart {
-        width: 84.82%;
+      width: 69.6732%;
+        /*width: 84.82%;*/
         position: relative;
         padding: 0;
         overflow: hidden;
@@ -1202,7 +1205,8 @@
     .left-part{
         overflow-x: hidden;
         overflow-y: auto;
-        width: 14.66666667%;
+   /*     width: 14.66666667%;*/
+        width: 29.6732%;
         float: left;
         height: 100%;
         margin-left: .5%;
@@ -1233,6 +1237,17 @@
     }
     div.rightMenu ul li:hover{
         background: rgb(237, 241, 245);
+    }
+    >>>.cm-keyword{
+      color:#0000C6;
+      font-weight: bold;
+    }
+    >>>.cm-atom {
+      color:#0000C6;
+      font-weight: bold;
+    }
+    >>>.el-input {
+      width: 95%;
     }
 </style>
 

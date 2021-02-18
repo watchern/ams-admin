@@ -8,6 +8,7 @@
     />
     <MyElTree
       ref="tree"
+      :show-count="true"
       :data="data"
       :props="defaultProps"
       :filter-node-method="filterNode"
@@ -19,29 +20,31 @@
       @check-change="handleNodeClick1">
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <span> <i :class="data.icon" />{{ node.label }} </span>
-          <el-button
-            title="添加阈值分类"
-            type="text"
-            size="mini"
-            class="tree-line-btn"
-            @click.stop="() => setSelectTreeNode(node, data, 1)"
-          ><svg-icon icon-class="icon-add-1"
-          /></el-button>
-          <el-button
-            title="修改阈值分类"
-            type="text"
-            size="mini"
-            class="tree-line-btn"
-            @click.stop="() => setSelectTreeNode(node, data, 2)"
-          ><svg-icon icon-class="icon-edit-1"
-          /></el-button>
-          <el-button
-            title="删除阈值分类"
-            type="text"
-            size="mini"
-            class="tree-line-btn"
-            @click.stop="() => deleteFolder(node, data)"
-          ><svg-icon icon-class="icon-delete-1"/></el-button>
+          <span v-if="isShowEdit == true">
+            <el-button
+              title="添加阈值分类"
+              type="text"
+              size="mini"
+              class="tree-line-btn"
+              @click.stop="() => setSelectTreeNode(node, data, 1)"
+            ><svg-icon icon-class="icon-add-1"
+            /></el-button>
+            <el-button
+              title="修改阈值分类"
+              type="text"
+              size="mini"
+              class="tree-line-btn"
+              @click.stop="() => setSelectTreeNode(node, data, 2)"
+            ><svg-icon icon-class="icon-edit-1"
+            /></el-button>
+            <el-button
+              title="删除阈值分类"
+              type="text"
+              size="mini"
+              class="tree-line-btn"
+              @click.stop="() => deleteFolder(node, data)"
+            ><svg-icon icon-class="icon-delete-1"/></el-button>
+          </span>
       </span>
     </MyElTree>
     <el-dialog
@@ -69,6 +72,7 @@ import {
 export default {
   name: "Thresholdvaluetree",
   components: { MyElTree },
+  props:['isShowEdit'],
   data() {
     return {
       filterText: null,
@@ -123,9 +127,9 @@ export default {
     deleteThresholdValueData(newData) {
       for (let i = 0; i < newData.children.length; i++) {
         if (newData.children[i].type == "model") {
-          newData.children[i].isShow = false;
+          newData.children[i].isShow = false
         } else {
-          deleteModelData(newData.children[i]);
+          deleteModelData(newData.children[i])
         }
       }
     },
@@ -134,10 +138,11 @@ export default {
      * @param data 树的对象数据 包括子节点
      */
     handleNodeClick(data) {
-      this.selectTreeNode = data;
+      this.selectTreeNode = data
       if (data.type === "model") {
       } else {
-        this.$emit("refreshThresholdvalueList", data);
+        this.$emit("refreshThresholdvalueList", data)
+        this.$emit("thresholdValueClick",data)
       }
     },
     /**
@@ -207,14 +212,14 @@ export default {
      * 添加模型分类
      */
     addThresholdValueFolder() {
-      this.form.modelFolderUuid = this.getGuuid();
+      this.form.thresholdValueFolderUuid = this.getGuuid();
       this.form.parentUuid = this.selectTreeNode.id;
       const nodePath = this.$refs.tree.getNodePath(this.selectTreeNode);
       const fullPath = [];
       nodePath.forEach((path) => {
         fullPath.push(path.id);
       });
-      this.form.folderPath = fullPath.join("/") + "/" + this.form.modelFolderUuid;
+      this.form.folderPath = fullPath.join("/") + "/" + this.form.thresholdValueFolderUuid;
       this.form.scope = this.selectTreeNode.extMap.scope;
       addThresholdValueFolder(this.form).then((result) => {
         if (result != null && result.code === 0) {

@@ -77,7 +77,6 @@ export default {
             if (moduleParamId === this.arr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
               this.arr[j].allowedNull = paramsArr[k].paramChoice.allowedNull
               if (flag==='modelPreview'){
-                debugger
                 if (this.arr[j].paramValue) {
                   paramsArr[k].defaultVal = this.arr[j].paramValue
                 }
@@ -100,7 +99,6 @@ export default {
           'paramsArr': this.arr
         }
         this.overallParmaobj[id] = eachParamObj
-        debugger
       for (let n = 0; n < copyParamArr.length; n++) {
         let paramInfoObj = {
           "paramName": copyParamArr[n].paramName,

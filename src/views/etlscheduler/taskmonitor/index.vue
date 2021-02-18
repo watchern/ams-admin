@@ -278,7 +278,7 @@ export default {
     this.searchParams.startTimeStart = new Date(new Date().setHours(0, 0, 0, 0))
     this.searchParams.startTimeEnd = new Date(new Date().setHours(0, 0, 0, 0))
     this.dateranges = [new Date(new Date().setHours(0, 0, 0, 0)), new Date(new Date().setHours(0, 0, 0, 0))]
-    this.setProcessGroupExecutionStatusType('')
+    this.setProcessGroupExecutionStatusType(null)
     this.setProcessStartTime(this.searchParams.startTimeStart)
     this.setProcessEndTime(this.searchParams.startTimeEnd)
     // 获取任务的总耗时

@@ -24,12 +24,6 @@
       ></el-button>
       <el-row v-if="myFlag">
         <div align="right">
-          <!--<el-button
-            type="primary"
-            @click="sendToOA()"
-            class="oper-btn share"
-            title="发送到作业平台"
-          ></el-button>-->
           <el-button
             :disabled="modelRunResultBtnIson.exportBtn"
             type="primary"
@@ -94,12 +88,13 @@
         :row-data="rowData"
         rowMultiSelectWithClick="true"
         :enable-col-resize="true"
+        :get-row-style="useType=='modelRunResult'?this.renderTable:undefined"
         row-selection="multiple"
-        :get-row-style="this.renderTable"
         @cellClicked="onCellClicked"
         @gridReady="onGridReady"
         @rowSelected="rowChange"
       />
+
       <el-card v-if="!isSee" class="box-card" style="height: 100px">
         <div>{{ errorMessage }}</div>
       </el-card>
@@ -233,7 +228,7 @@
     <el-row v-if="!chartSwitching">
       <el-row>
       <div align="right" v-if="this.preLength==this.myIndex+1||myFlag">
-        <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" style="width:24px;height:24px;margin-right:8px" @click="changeChart(item.id)" :key="key"/>
+        <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" class="chartSwitching" @click="changeChart(item.id)" :key="key"/>
         <img
           src="./imgs/deletein.png"
           v-if="useType=='sqlEditor'||myFlag"
@@ -284,6 +279,7 @@ import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";
 import childtabscopy from "@/views/analysis/auditmodelresult/childtabscopy";
 import userProject from "@/views/base/userproject/index";
+import {handleDataSingleValue,handleDataManyValue} from '@/api/analysis/thresholdvalue'
 import {
   selectTable,
   selectByRunResultTableUUid,
@@ -352,7 +348,8 @@ export default {
     "modelId",
     "preLength",
     "myIndex",
-    "chartModelUuid"
+    "chartModelUuid",
+    "settingInfo"
   ],
   data() {
     return {
@@ -375,7 +372,6 @@ export default {
       dataArray: [], // 保存当前表格中的数据
       queryData: [], // 保存列信息，用来传给子组件(queryBuilder组件)
       queryJson: {}, // 用来储存由子组件传过来的 queryBuilder 的 Json数据
-      conditionShowData: [], // 存放模型运行结果需要渲染的数据
       primaryKey: "", // 存放模型运行结果主键
       isLoading: true, //给agrrid加遮罩
       nextValue: [], // 存放模型结果后传进来的值
@@ -419,12 +415,18 @@ export default {
       afterAddChartsWithNoConfigure:false,
       isHaveCharts:false, //判断该模型是否有图表
       projectDialogIsSee:false,   //用来控制项目dialog显示
-      chartSwitching: true  //控制表格与图表切换
+      chartSwitching: true,  //控制表格与图表切换
+      modelObj:{},  //查询当前模型结果对应的的model对象
+      rowIndex:''  //存储点击表格的行数
     };
   },
   mounted() {
     this.getRenderTableData();
     this.chartReflexion();
+  },
+  created() {
+    let _this=this;
+    window.openModelDetailNew=_this.openModelDetailNew;
   },
   methods: {
     rowChange() {
@@ -675,9 +677,7 @@ export default {
       // 获取gridApi
       this.gridApi = params.api;
     },
-    // 单元格点击事件
-    onCellClicked(cell) {},
-    initData(sql, nextValue) {
+    initData(sql, nextValue,modelName) {
       this.result = {}
       if (this.useType == "modelRunResult") {
         this.isLoading = true;
@@ -690,18 +690,61 @@ export default {
         var colNames = [];
         var col = [];
         var da = [];
+        var renderColumns = [] //存储需要渲染的列名
+        var renderObject = {}  //存储key-value格式对象，key为列名  value为这一列对应的模型阈值关联对象
+        //2021年2月4日 16:35:28   新增给带详细的模型结果列增加超链接样式
+        let modelResultDetailCol = []
+        if(this.modelObj.modelDetailRelation){
+          //循环模型详细关联
+          for(let i = 0; i < this.modelObj.modelDetailRelation.length;i++){
+            //获取关联对象
+            let modelDetailRelation = this.modelObj.modelDetailRelation[i]
+            //循环模型关联详细配置
+            for(let j = 0;j < modelDetailRelation.modelDetailConfig.length;j++){
+              let modelDetailConfig = modelDetailRelation.modelDetailConfig[j]
+              //确保数据不是undefined或null
+              if(modelDetailConfig.resultColumn){
+                //添加到数据 用于下边列处理的时候 作为判断条件
+                modelResultDetailCol.push(modelDetailConfig.resultColumn.toUpperCase())
+              }
+            }
+          }
+        }
+        var modelThresholdValues = []
+        if (this.settingInfo!=undefined){
+          modelThresholdValues.push(JSON.parse(this.settingInfo).thresholdValueRel)
+        }else {
+          modelThresholdValues =  this.modelObj.modelThresholdValues
+        }
+        //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
+        for (var i = 0; i < modelThresholdValues.length;i++){
+          if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2 && renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName)==-1){
+            renderColumns.push(modelThresholdValues[i].modelResultColumnName)
+          }
+        }
+        for(var i = 0;i < modelThresholdValues.length;i++){
+          if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2){
+            if (typeof modelThresholdValues[i].colorInfo === 'string'){
+              modelThresholdValues[i].colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
+            }
+            renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i]
+          }
+        }
         this.pageQuery.condition = this.nowtable;
         if (typeof sql !== "string") {
           sql = "undefined";
         }
         selectTable(this.pageQuery, sql, this.resultSpiltObjects).then(
           (resp) => {
+            // var modelThre
             var column = resp.data.records[0].columns;
             var columnToUppercase = []
             for(var i = 1;i<column.length;i++){
               columnToUppercase.push(column[i].toUpperCase())
             }
             this.result.column = columnToUppercase;
+            this.result.id = this.modelObj.modelUuid
+            this.result.name = this.modelObj.modelName
             var chartData = [];
             for (var i = 0; i < resp.data.records[0].result.length; i++) {
               var eachChartData = [];
@@ -751,36 +794,63 @@ export default {
             // 生成ag-grid列信息
             if (this.modelUuid != undefined) {
               var onlyFlag = false
-              for (var i = 0; i < colNames.length; i++) {
-                loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
-                  if (
-                    this.modelOutputColumn[j].outputColumnName.toLowerCase() ==
-                    colNames[i]
-                  ) {
-                    if(onlyFlag==false){
-                      var rowColom = {
-                      headerName: "onlyuuid",
-                      field: "onlyuuid",
-                      checkboxSelection: true,
-                    };
-                    col.push(rowColom);
-                      onlyFlag = true
-                    }
-                    if (this.modelOutputColumn[j].isShow == 1) {
-                      if (i == 0) {
+              if (this.settingInfo != undefined){
+                for (var i = 0; i < colNames.length; i++) {
+                      if(onlyFlag==false){
                         var rowColom = {
-                          headerName: this.modelOutputColumn[j].columnAlias,
-                          field: colNames[i],
+                          headerName: "onlyuuid",
+                          field: "onlyuuid",
+                          checkboxSelection: true,
                         };
-                      } else {
-                        var rowColom = {
-                          headerName: this.modelOutputColumn[j].columnAlias,
-                          field: colNames[i],
-                        };
+                        col.push(rowColom);
+                        onlyFlag = true
                       }
-                      col.push(rowColom);
+                        var rowColom = {}
+                        if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1 || modelResultDetailCol.indexOf(colNames[i].toUpperCase()) != -1){
+                          var thresholdValueRel =  renderObject[colNames[i].toUpperCase()]
+                          rowColom =  {
+                            headerName: colNames[i],
+                            field: colNames[i],
+                            cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)}}
+                        }else {
+                          rowColom = {
+                            headerName: colNames[i],
+                            field: colNames[i],
+                          };
+                        }
+                        col.push(rowColom);
+                }
+              }else {
+                for (var i = 0; i < colNames.length; i++) {
+                  loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
+                    if (this.modelOutputColumn[j].outputColumnName.toLowerCase() == colNames[i]) {
+                      if(onlyFlag==false){
+                        var rowColom = {
+                          headerName: "onlyuuid",
+                          field: "onlyuuid",
+                          checkboxSelection: true,
+                        };
+                        col.push(rowColom);
+                        onlyFlag = true
+                      }
+                      if (this.modelOutputColumn[j].isShow == 1) {
+                        var rowColom = {}
+                        if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1 || modelResultDetailCol.indexOf(colNames[i].toUpperCase()) != -1){
+                          var thresholdValueRel =  renderObject[colNames[i].toUpperCase()]
+                          rowColom =  {
+                            headerName: this.modelOutputColumn[j].columnAlias,
+                            field: colNames[i],
+                            cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)}}
+                        }else {
+                          rowColom = {
+                            headerName: this.modelOutputColumn[j].columnAlias,
+                            field: colNames[i],
+                          };
+                        }
+                        col.push(rowColom);
+                      }
+                      break loop;
                     }
-                    break loop;
                   }
                 }
               }
@@ -875,6 +945,8 @@ export default {
                   columnType.push(type);
                 }
                 var resultData = this.nextValue.result;
+                this.result.id = this.nextValue.modelUuid
+                this.result.name = modelName
                 this.result.columnType = columnType;
                 var chartData = [];
                 for (var i = 0; i < resultData.length; i++) {
@@ -975,14 +1047,9 @@ export default {
       this.nextValue = nextValue;
       var col = [];
       var rowData = [];
-      console.log("-------进入getIntoModelResultDetail");
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
-        console.log(this.prePersonalVal.id +  this.nextValue.executeSQL.id + "-------进入prePersonalVal.id == this.nextValue.executeSQL.id")
         if (this.nextValue.executeSQL.state == "2") {
-          console.log(this.nextValue.executeSQL.state + "-------进入this.nextValue.executeSQL.state 2")
           if (this.nextValue.executeSQL.type == "SELECT") {
-            console.log(this.nextValue.executeSQL.type + "-------进入getIntoModelResultDetail SELECT")
-            //todo 增加sql类型判断
             if (true) {
               this.modelResultButtonIsShow = true;
               this.modelResultPageIsSee = true;
@@ -1012,6 +1079,8 @@ export default {
                 columnType.push(type);
               }
               var resultData = this.nextValue.result;
+              this.result.id = this.nextValue.modelUuid
+              this.result.name = '模型'
               this.result.columnType = columnType;
               var chartData = [];
               for (var i = 0; i < resultData.length; i++) {
@@ -1089,30 +1158,48 @@ export default {
      * 渲染表格，将颜色渲染上去
      */
     renderTable(params) {
-      if (this.nowtable.tableType != 1) {
-        this.isLoading = false;
-      } else {
-        if (this.modelUuid != undefined) {
-          if (this.conditionShowData[0].length == 0) {
-            this.isLoading = false;
+      var modelThresholdValues = []
+      if (this.settingInfo!=undefined){
+        modelThresholdValues.push(JSON.parse(this.settingInfo).thresholdValueRel)
+      }else {
+        modelThresholdValues =  this.modelObj.modelThresholdValues
+      }
+      var thresholdValueRel = {}
+      this.isLoading = false;
+      for (var i = 0;i<modelThresholdValues.length;i++){
+        thresholdValueRel = modelThresholdValues[i]
+        if(thresholdValueRel && thresholdValueRel.thresholdValue.thresholdValueType == 1){
+          if(typeof (modelThresholdValues[i].colorInfo) === "string"){
+            let colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
+            modelThresholdValues[i].colorInfo = colorInfo
           }
-          for (var i = 0; i < this.conditionShowData[0].length; i++) {
-            for (var j = 0; j < this.conditionShowData[0][i].length; j++) {
-              if (
-                params.data[this.primaryKey.toLowerCase()] ==
-                this.conditionShowData[0][i][j]
-              ) {
-                this.isLoading = false;
-                return {
-                  "background-color": JSON.parse(this.conditionShowData[1][i])
-                    .backGroundColor,
-                  color: JSON.parse(this.conditionShowData[1][i]).fontColor,
-                };
-              }
-            }
-          }
-          this.isLoading = false;
+          //判断颜色等信息
+          return handleDataSingleValue(params.data,thresholdValueRel)
         }
+      }
+    },
+    changeCellColor(params,thresholdValueRel,modelResultDetailCol){
+      if(thresholdValueRel){
+        let returnValue = handleDataManyValue(params,thresholdValueRel)
+        //如果当该列是关联详细列又是阈值展现改变颜色列的时候做特殊处理
+        //如果两种都存在则优先判断阈值，如果阈值成立则显示阈值颜色，阈值不成立则显示超链接颜色
+        if(returnValue.toString().indexOf("<span") != -1){
+          return returnValue
+        }
+        else{
+          let dom = params.value
+          if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
+            dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+          }
+          return dom
+        }
+      }
+      else{
+        if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
+          let dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+          return dom
+        }
+        return params.value
       }
     },
     /**
@@ -1121,14 +1208,11 @@ export default {
     getRenderTableData() {
       if (this.useType == "modelRunResult") {
         if (this.modelUuid != undefined) {
-          selectConditionShow(
-            this.modelUuid,
-            this.nowtable.resultTableName
-          ).then((resp) => {
-            this.conditionShowData = resp.data;
+          if (this.settingInfo === undefined){
             selectPrimaryKeyByTableName().then((resp) => {
               this.primaryKey = resp.data;
               selectModel(this.modelUuid).then((resp) => {
+                this.modelObj = resp.data
                 this.modelDetailRelation = resp.data.modelDetailRelation;
                 this.modelOutputColumn = resp.data.modelOutputColumn;
                 var datacodes = [];
@@ -1149,7 +1233,9 @@ export default {
                 }
               });
             });
-          });
+          }else {
+            this.initData();
+          }
         } else {
           this.initData();
         }
@@ -1175,6 +1261,24 @@ export default {
       } else {
         this.$message({ type: "info", message: "不能选中多条!" });
       }
+    },
+    //单元格点击事件
+    onCellClicked(cell) {
+      this.rowIndex = cell.rowIndex
+    },
+    /**
+     * 点击详细打开dialog效果
+     */
+    openModelDetailNew(selRows) {
+      this.options = [];
+      for (var i = 0; i < this.modelDetailRelation.length; i++) {
+        var eachOption = {
+          value: this.modelDetailRelation[i].relationObjectUuid,
+          label: this.modelDetailRelation[i].modelDetailName,
+        };
+        this.options.push(eachOption);
+      }
+      this.modelDetailDialogIsShow = true;
     },
     /**
      * 点击详细dialog的确定按钮后触发
@@ -1207,7 +1311,7 @@ export default {
               obj.moduleParamId = this.modelDetailRelation[i].modelDetailConfig[
                 j
               ].ammParamUuid;
-              obj.paramValue = selectRowData[0][key.toLowerCase()];
+              obj.paramValue = this.rowData[this.rowIndex][key.toLowerCase()];
               detailValue.push(obj);
             }
           }
@@ -1244,7 +1348,7 @@ export default {
             ) {
               eachFilter = eachFilter.replace(
                 this.modelOutputColumn[j].outputColumnName,
-                selectRowData[0][
+                this.rowData[this.rowIndex][
                   this.modelOutputColumn[j].outputColumnName.toLowerCase()
                 ]
               );
@@ -1268,13 +1372,6 @@ export default {
           .catch((result) => {
             this.$message({ type: "info", message: "执行失败" });
           });
-        // startExecuteSql(obj).then((resp) => {
-        //   if (!resp.data.isError) {
-        //     this.currentExecuteSQL = resp.data.executeSQLList;
-        //   } else {
-        //     this.$message({ type: "info", message: "执行失败" });
-        //   }
-        // });
       }
       this.modelDetailDialogIsShow = false;
       this.modelDetailModelResultDialogIsShow = true;
@@ -1547,21 +1644,7 @@ export default {
         this.nowChartJson = undefined
         this.isHaveCharts = true
       }
-    },
-
-    /*sendToOA() {
-      var runTaskRelUuid =  this.nowtable.runTaskRelUuid;
-      const dataUserId = this.$store.getters.datauserid
-      const dataUserName = this.$store.getters.datausername
-      sendToOA(runTaskRelUuid, dataUserId, dataUserName).then(resp=>{
-        this.$message({
-          type: "success",
-          message: "发送成功!",
-        });
-      })
-
-
-    },*/
+    }
   },
 };
 </script>
@@ -1581,16 +1664,6 @@ export default {
   font-size: 16px;
   line-height: 16px;
 }
-.chartStyle{
-  background: #fff;
-  width: 26px;
-  height: 26px;
-  margin-top: -3px;
-  margin-right: 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  border: 1px solid #dcdfe6;
-}
 .delete-pos{
   width:25px;
   position: absolute;
@@ -1604,5 +1677,10 @@ export default {
   bottom: -30px;
   right: 80px;
   z-index:20;
+}
+.chartSwitching{
+  width:24px;
+  height:24px;
+  margin-right:8px;
 }
 </style>

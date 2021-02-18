@@ -24,7 +24,8 @@
           :auto-upload="true"
           :on-change="handleFileChange"
           :show-file-list="false"
-          style="display: inline-block; padding-left: 10px"
+          style="display: inline-block;
+          padding-left: 10px"
         >
           <el-button type="primary" class="oper-btn export" title="导入" />
         </el-upload>
@@ -282,7 +283,7 @@
                       @click="!isDetails && _addDep()"
                     >
                       <!-- :class="{'oper-btn add': iconDisable}" -->
-                      <em
+                      <span
                         v-if="!isLoading"
                         class="oper-btn add"
                         data-toggle="tooltip"
@@ -325,15 +326,16 @@
                       @on-delete-all="_onDeleteAll"
                       @getDependTaskList="getDependTaskList"
                     />
-                    <em
+                    <span
                       :class="{'oper-btn delete': iconDisable}"
                       class="deleteIcon"
                       data-toggle="tooltip"
                       data-container="body"
-                      title="删除"
+                      title="删除所有依赖"
                       :style="{
                         'pointer-events': disableUpdate === true ? 'none' : '',
                       }"
+                      style="cursor: pointer;"
                       @click="!isDetails && _deleteDep($index)"
                     />
                   </div>
@@ -1355,6 +1357,11 @@ export default {
     },
     // 自定义上传
     uploadFile() {
+      const loading = this.$loading({
+        lock: true,
+        // spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
       const index = this.file.name.lastIndexOf('.')
       const suffix = this.file.name.substr(index + 1)
       // 创建表单对象
@@ -1363,20 +1370,25 @@ export default {
       formData.append('schdeuleFile', this.file)
       formData.append('uploadFileName', 'git')
       formData.append('uploadFileContentType', suffix)
+      var num = Math.random()
       axios({
-        url: '/etlscheduler/schedules/importFiles',
+        url: `/etlscheduler/schedules/importFiles?${num}`,
         method: 'post',
         data: formData
       }).then((res) => {
         if (res.data.code === 2501) {
-          this.getList()
-          this.$notify({
-            title: this.$t('message.title'),
-            message: res.data.msg,
+          // this.$notify({
+          //   title: this.$t('message.title'),
+          //   message: res.data.msg,
+          //   type: 'error',
+          //   duration: 2000,
+          //   position: 'bottom-right'
+          // })
+          this.$message({
             type: 'error',
-            duration: 2000,
-            position: 'bottom-right'
+            message: res.data.msg
           })
+          loading.close()
         } else {
           this.getList()
           this.$notify({
@@ -1386,7 +1398,26 @@ export default {
             duration: 5000,
             position: 'bottom-right'
           })
+          loading.close()
         }
+      }).catch(() => {
+        this.$notify({
+          title: this.$t('message.title'),
+          message: '导入调度时发生异常',
+          type: 'error',
+          duration: 2000,
+          position: 'bottom-right'
+        })
+        loading.close()
+      //   function(error) { // 请求失败处理
+      //   this.$notify({
+      //     title: this.$t('message.title'),
+      //     message: '导入调度时发生异常',
+      //     type: 'error',
+      //     duration: 2000,
+      //     position: 'bottom-right'
+      //   })
+      //   loading.close()
       })
     },
     // 格式化表格
@@ -1544,16 +1575,12 @@ export default {
       }
     }
   }
-  // .buttonText {
-    // color: #409eff;
-  // }
   .el-popover{
     width: 60%;
     overflow: auto;
   }
   .m-depend-item-list{
     position: static;
-
   }
   // .deleteIcon{
     // position: relative;

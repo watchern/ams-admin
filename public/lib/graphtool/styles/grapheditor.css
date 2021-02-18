@@ -546,31 +546,11 @@ div.mxWindow .geButton {
 .geSprite-left { background-position: 0 -505px; }
 .geSprite-middle { background-position: 0 -552px; }
 .geSprite-print { background-position: 0 -598px; }
-.geSprite-redo {
-	/* background-position: 0 -644px; */
-	background: url('../images/toolbar/redo.png') no-repeat;
-	background-position: center 5px;
-}
 .geSprite-right { background-position: 0 -689px; }
 .geSprite-shadow { background-position: 0 -735px; }
 .geSprite-strokecolor { background-position: 0 -782px; }
 .geSprite-top { background-position: 0 -828px; }
 .geSprite-underline { background-position: 0 -874px; }
-.geSprite-undo {
-	/* background-position: 0 -920px; */
-	background: url('../images/toolbar/undo.png') no-repeat;
-	background-position: center 5px;
-}
-.geSprite-zoomin {
-	/* background-position: 0 -966px; */
-	background: url('../images/toolbar/zoom-in.png') no-repeat;
-	background-position: center 5px;
-}
-.geSprite-zoomout {
-	/*background-position: 0 -1012px;*/
-	background: url('../images/toolbar/zoom-out.png') no-repeat;
-	background-position: center 5px;
-}
 .geSprite-arrow { background-position: 0 -1059px; }
 .geSprite-linkedge { background-position: 0 -1105px; }
 .geSprite-straight { background-position: 0 -1150px; }
@@ -679,33 +659,6 @@ div.mxWindow .geButton {
 .geSprite-horizontalelbow { background-position: 0 -5903px; }
 .geSprite-horizontalisometric { background-position: 0 -5949px; }
 .geSprite-verticalisometric { background-position: 0 -5995px; }
-
-.geSprite-intersect {
-	background: url('../images/toolbar/intersect.png') no-repeat;
-	background-position: center 5px;
-}
-.geSprite-union {
-	background: url('../images/toolbar/union.png') no-repeat;
-	background-position: center 5px;
-}
-.geSprite-exclude {
-	background: url('../images/toolbar/except.png') no-repeat;
-	background-position: center 5px;
-}
-
-.geSprite-relation {
-	background: url('../images/toolbar/relation.png') no-repeat;
-	background-position: center 5px;
-}
-.geSprite-newnullnode {
-	background: url('../images/toolbar/newnode.png') no-repeat;
-	background-position: center 5px;
-}
-.geSprite-sql {
-	background: url('../images/toolbar/SQL.png') no-repeat;
-	background-position: center 3px;
-	background-size: 20px;
-}
 
 
 html div.mxRubberband {
@@ -1336,31 +1289,11 @@ div.mxWindow .geButton {
 .geSprite-left { background-position: 0 -505px; }
 .geSprite-middle { background-position: 0 -552px; }
 .geSprite-print { background-position: 0 -598px; }
-.geSprite-redo {
-    /* background-position: 0 -644px; */
-    background: url('../images/toolbar/redo.png') no-repeat;
-    background-position: center 5px;
-}
 .geSprite-right { background-position: 0 -689px; }
 .geSprite-shadow { background-position: 0 -735px; }
 .geSprite-strokecolor { background-position: 0 -782px; }
 .geSprite-top { background-position: 0 -828px; }
 .geSprite-underline { background-position: 0 -874px; }
-.geSprite-undo {
-    /* background-position: 0 -920px; */
-    background: url('../images/toolbar/undo.png') no-repeat;
-    background-position: center 5px;
-}
-.geSprite-zoomin {
-    /* background-position: 0 -966px; */
-    background: url('../images/toolbar/zoom-in.png') no-repeat;
-    background-position: center 5px;
-}
-.geSprite-zoomout {
-    /*background-position: 0 -1012px;*/
-    background: url('../images/toolbar/zoom-out.png') no-repeat;
-    background-position: center 5px;
-}
 .geSprite-arrow { background-position: 0 -1059px; }
 .geSprite-linkedge { background-position: 0 -1105px; }
 .geSprite-straight { background-position: 0 -1150px; }
@@ -1469,33 +1402,6 @@ div.mxWindow .geButton {
 .geSprite-horizontalelbow { background-position: 0 -5903px; }
 .geSprite-horizontalisometric { background-position: 0 -5949px; }
 .geSprite-verticalisometric { background-position: 0 -5995px; }
-
-.geSprite-intersect {
-    background: url('../images/toolbar/intersect.png') no-repeat;
-    background-position: center 5px;
-}
-.geSprite-union {
-    background: url('../images/toolbar/union.png') no-repeat;
-    background-position: center 5px;
-}
-.geSprite-exclude {
-    background: url('../images/toolbar/except.png') no-repeat;
-    background-position: center 5px;
-}
-
-.geSprite-relation {
-    background: url('../images/toolbar/relation.png') no-repeat;
-    background-position: center 5px;
-}
-.geSprite-newnullnode {
-    background: url('../images/toolbar/newnode.png') no-repeat;
-    background-position: center 5px;
-}
-.geSprite-sql {
-    background: url('../images/toolbar/SQL.png') no-repeat;
-    background-position: center 3px;
-    background-size: 20px;
-}
 
 
 html div.mxRubberband {

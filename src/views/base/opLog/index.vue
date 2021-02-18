@@ -1,31 +1,33 @@
 <template>
   <div class="page-container">
     <div class="filter-container">
-      <QueryField 
-      ref="queryfield" 
-      :form-data="queryFields"
-      @submit="getList" />
+      <QueryField
+        ref="queryfield"
+        :form-data="queryFields"
+        @submit="getList"
+      />
     </div>
-    <el-table 
-    :key="tableKey" 
-    v-loading="listLoading" 
-    :data="list" 
-    border 
-    fit 
-    height="calc(100vh - 300px)"
-    max-height="calc(100vh - 300px)"
-    highlight-current-row 
-    style="width: 100%;" 
-    @sort-change="sortChange" 
-    @selection-change="handleSelectionChange">
+    <el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      height="calc(100vh - 300px)"
+      max-height="calc(100vh - 300px)"
+      highlight-current-row
+      style="width: 100%;"
+      @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" />
       <el-table-column label="操作用户" width="100px" align="center" prop="opUserName" />
       <el-table-column label="操作IP" width="160px" align="center" prop="opIp" />
       <el-table-column label="操作模块" width="200px" align="center" prop="moduleName" />
       <el-table-column label="操作子模块" width="200px" prop="subModuleName" />
-      <el-table-column label="操作类型" width="100px" prop="opOperate"/>
-      <el-table-column label="操作信息" prop="opInfo"/>
-      <el-table-column label="操作时间" prop="opTime" align="center"/>
+      <el-table-column label="操作类型" width="100px" prop="opOperate" />
+      <el-table-column label="操作信息" prop="opInfo" />
+      <el-table-column label="操作时间" prop="opTime" align="center" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
   </div>
@@ -43,9 +45,9 @@ export default {
       total: 0,
       listLoading: false,
       queryFields: [
-        { label: '操作用户', name: 'opUserName', type: 'fuzzyText', value: '' },
-        { label: '操作IP', name: 'opIp', type: 'fuzzyText' },
-        { label: '操作模块', name: 'moduleName', type: 'fuzzyText' },
+        { label: '操作用户', name: 'opUserName', type: 'text', value: '' },
+        { label: '操作IP', name: 'opIp', type: 'text' },
+        { label: '操作模块', name: 'moduleName', type: 'text' },
         { label: '操作时间范围', name: 'opTime', type: 'timePeriod' }
       ],
       // selectedRowVal:0,

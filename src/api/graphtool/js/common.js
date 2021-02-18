@@ -191,7 +191,7 @@ function autoCreateNode(y, index, name) {
         name = '结果表'
     }
     var type = 'newNullNode'
-    var cell = graph.insertVertex(graph.getDefaultParent(), null, name, x + 180, y, 100, 100, createCellShape(type))			// 生成节点
+    var cell = graph.insertVertex(graph.getDefaultParent(), null, name, x + 120, y, 60, 80, createCellShape(type,false))			// 生成节点
     cell.nodeType = type
     var options = {
         'id': cell.id,
@@ -554,7 +554,7 @@ export function executeNode_callback(notExecuteNodeIdArr) {
         executeNodeSql(dataParam).then(response => {
             if (response.data != null) {
                 $('#sysInfoArea').html(response.data.message)
-                graphIndexVue.layuiTabClickLi(1)
+                graphIndexVue.resultTabActiveName = '1'
                 if(response.data.isError){
                     Array.from(notExecuteNodeIdArr, item => {
                         graph.nodeData[item].nodeInfo.nodeExcuteStatus = 4
@@ -566,7 +566,7 @@ export function executeNode_callback(notExecuteNodeIdArr) {
                     nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
                     // 如果当前节点执行成功，则直接显示结果集
                     if (graph.nodeData[executeCellId] && graph.nodeData[executeCellId].nodeInfo && graph.nodeData[executeCellId].nodeInfo.nodeExcuteStatus === 3) {
-                        graphIndexVue.layuiTabClickLi(0)
+                        graphIndexVue.resultTabActiveName = '0'
                         graphIndexVue.showTableResult = false
                         let nodeId = executeCellId
                         let nodeName = graph.nodeData[executeCellId].nodeInfo.nodeName
@@ -820,7 +820,7 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
                     }
                 }
                 if(resultNodeIdArr.length > 0){
-                    graphIndexVue.layuiTabClickLi(0)
+                    graphIndexVue.resultTabActiveName = '0'
                     graphIndexVue.showTableResult = false
                     for(let j=0; j<resultNodeIdArr.length; j++){
                         let nodeId = resultNodeIdArr[j]
@@ -979,16 +979,17 @@ export function setNodeOutputTypeIcon(status, type) {
     var curCellId = graph.curCell.id
     var url = ''
     if (type === 0) { // 中间结果表标记的图片路径
-        url = '../../lib/graphtool/images/graphicon/centeroutmark@2x.png'
+        url = '../../lib/graphtool/images/centeroutmark.png'
     } else { // 最终结果表标记的图片路径
-        url = '../../lib/graphtool/images/graphicon/finaloutmark@2x.png'
+        url = '../../lib/graphtool/images/finaloutmark.png'
     }
     $('.output-mark').each(function(i, v) {
         if ($(this)[0].getAttribute('nodeId') === curCellId) {
             if (status === 2) {
-                $(this).attr('xlink:href', url)
+                $(this).attr('src', url)
+                this.parentNode.style.display = 'unset'
             } else {
-                $(this).attr('xlink:href', '')
+                this.parentNode.style.display = 'none'
             }
         }
     })
@@ -1006,24 +1007,24 @@ export function changeNodeIcon(nodeExcuteStatus, isSet, id) {
             if (typeof nodeExcuteStatus !== 'undefined' && nodeExcuteStatus != null) {
                 switch (nodeExcuteStatus) {
                     case 1:		// 未执行
-                        $(this).attr('xlink:href', '../../lib/graphtool/images/icon/point_gray.png')
+                        $(this).css('background', '#999999')
                         break
                     case 2:	// 执行中
-                        $(this).attr('xlink:href', '../../lib/graphtool/images/icon/point_yellow.png')
+                        $(this).css('background', '#FECD44')
                         break
                     case 3:	// 执行成功
-                        $(this).attr('xlink:href', '../../lib/graphtool/images/icon/point_green.png')
+                        $(this).css('background', '#189D5C')
                         break
                     case 4:	// 执行失败
-                        $(this).attr('xlink:href', '../../lib/graphtool/images/icon/point_red.png')
+                        $(this).css('background', '#D81E07')
                         break
                 }
             }
             if (isSet != null && typeof (isSet) !== 'undefined') {
                 if (isSet) {
-                    $('.setting-mark:eq(' + i + ')').attr('xlink:href', '../../lib/graphtool/images/icon/point_green.png')
+                    $('.setting-mark:eq(' + i + ')').css('background', '#189D5C')
                 } else {
-                    $('.setting-mark:eq(' + i + ')').attr('xlink:href', '../../lib/graphtool/images/icon/point_gray.png')
+                    $('.setting-mark:eq(' + i + ')').css('background', '#999999')
                 }
             }
         }
@@ -1036,7 +1037,7 @@ export function changeNodeIcon(nodeExcuteStatus, isSet, id) {
 export function setDataSourceCopyIcon(curCellId) {
     $('.copyIcon-mark').each(function(i, v) {
         if ($(this)[0].getAttribute('nodeId') === curCellId) {
-            $(this).attr('xlink:href', '../../lib/graphtool/images/icon/copyIcon.png')
+            $(this).attr('src', '../../lib/graphtool/images/copyIcon.png')
         }
     })
 }
@@ -1171,7 +1172,7 @@ export function previewNodeData() {
     graphIndexVue.$nextTick(() => {
         graphIndexVue.websocketBatchId = new UUIDGenerator().id
         graphIndexVue.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable }]
-        graphIndexVue.layuiTabClickLi(0)
+        graphIndexVue.resultTabActiveName = '0'
         graphIndexVue.viewData()
     })
 }

@@ -1,240 +1,258 @@
 <template>
-    <div id="graphToolDiv" ref="graphToolDiv" style="width: 100%;height: 100%;overflow-y: hidden;">
+    <div id="graphToolDiv" ref="graphToolDiv">
         <div id="geToolbarContainer" class="geToolbarContainer">
-            <div class="graphMenu" style="width: 235px !important;padding-left: 20px !important;">
+            <div class="graphMenu" v-show="openGraphType !== 4" style="width: 320px;">
                 <div class="menuTit">
-                    文件<img v-show="openGraphType !== 4" id="showMoreMenu" src="../../../api/graphtool/images/icon/more.png" title="更多" style="width:10px;height:10px;float: right;margin-top:5px;margin-right: 10px;" @click="showMoreMenu">
-                </div>
-                <div class="menuLi" v-show="openGraphType !== 4">
-                    <div class="graphIcon" style="width:70px !important;">
-                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../../../api/graphtool/images/icon/new.png" alt="新建">
-                        <a class="iconText" @click="newGraph">&nbsp;新建</a>
-                    </div>
-                    <div class="graphIcon" style="width:60px !important;">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/save.png" alt="保存">
-                        <a class="iconText" @click="saveGraph('saveGraph')">保存</a>
-                    </div>
-                    <div class="graphIcon" style="width:70px !important;margin-left: 10px;">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/next.png" alt="前进">
-                        <a class="iconText" @click="next">恢复</a>
-                    </div>
-                    <div class="graphIcon" style="width:70px !important;">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/open.png" alt="打开">
-                        <a class="iconText" @click="openGraph">打开</a>
-                    </div>
-                    <div class="graphIcon" style="width:70px !important;padding-left:6px;">
-                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../../../api/graphtool/images/icon/saveAs.png" alt="另存为">
-                        <a class="iconText" @click="saveGraph('saveAsGraph')">另存为</a>
-                    </div>
-                    <div class="graphIcon" style="width:70px !important;">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/back.png" alt="后撤">
-                        <a class="iconText" @click="back">撤销</a>
+                    <div style="float: left;width: 150px;text-align: right;">文件</div>
+                    <div style="float: left;width: 150px;height: 20px;line-height: 10px;text-align: left;padding-left: 5px;cursor: pointer;" @click="showMoreMenu">
+                        <el-image :src="require('@/api/graphtool/images/icons/more.png')" title="更多" style="padding-top:7px;"/>
                     </div>
                 </div>
-                <div class="menuLi" v-show="openGraphType === 4">
-                    <div class="graphIcon" style="width:70px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/open.png" alt="打开">
-                        <a class="iconText" @click="openGraph">打开</a>
-                    </div>
-                    <div class="graphIcon" style="width:70px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/next.png" alt="前进">
-                        <a class="iconText" @click="next">恢复</a>
-                    </div>
-                    <div class="graphIcon" style="width:70px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/back.png" alt="后撤">
-                        <a class="iconText" @click="back">撤销</a>
-                    </div>
-                </div>
-            </div>
-            <div class="graphMenu" style="width: 110px !important;">
-                <div class="menuTit">运行</div>
                 <div class="menuLi">
-                    <div class="graphIcon" style="width:100px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/run.png" alt="全部运行">
-                        <a class="iconText" @click="executeAllNode">全部运行</a>
+                    <div class="graphIcon">
+                        <div class="graphIconElRow" @click="newGraph">
+                            <el-image :src="require('@/api/graphtool/images/icons/new.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">新建</div>
+                    </div>
+                    <div class="graphIcon">
+                        <div class="graphIconElRow" @click="openGraph">
+                            <el-image :src="require('@/api/graphtool/images/icons/open.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">打开</div>
+                    </div>
+                    <div class="graphIcon">
+                        <div class="graphIconElRow" @click="saveGraph('saveGraph')">
+                            <el-image :src="require('@/api/graphtool/images/icons/save.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">保存</div>
+                    </div>
+                    <div class="graphIcon">
+                        <div class="graphIconElRow" @click="saveGraph('saveAsGraph')">
+                            <el-image :src="require('@/api/graphtool/images/icons/saveAs.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">另存为</div>
+                    </div>
+                    <div class="graphIcon">
+                        <div class="graphIconElRow" @click="next">
+                            <el-image :src="require('@/api/graphtool/images/icons/next.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">恢复</div>
+                    </div>
+                    <div class="graphIcon">
+                        <div class="graphIconElRow" @click="back">
+                            <el-image :src="require('@/api/graphtool/images/icons/back.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">后撤</div>
                     </div>
                 </div>
             </div>
-            <div class="graphMenu" style="width: 310px !important;">
+            <div class="graphMenu" v-show="openGraphType === 4" style="width: 170px;">
+                <div class="menuTit">文件</div>
+                <div class="menuLi">
+                    <div class="graphIcon">
+                        <div class="graphIconElRow" @click="openGraph">
+                            <el-image :src="require('@/api/graphtool/images/icons/open.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">打开</div>
+                    </div>
+                    <div class="graphIcon">
+                        <div class="graphIconElRow" @click="next">
+                            <el-image :src="require('@/api/graphtool/images/icons/next.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">恢复</div>
+                    </div>
+                    <div class="graphIcon">
+                        <div class="graphIconElRow" @click="back">
+                            <el-image :src="require('@/api/graphtool/images/icons/back.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">后撤</div>
+                    </div>
+                </div>
+            </div>
+            <div class="graphMenu" style="width: 320px;">
                 <div class="menuTit">行数据处理</div>
                 <div class="menuLi">
-                    <div id="filter" class="graphIcon" data-type="filter">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/filter.png" alt="数据筛选">
-                        <a class="iconText">数据筛选</a>
+                    <div class="graphIcon">
+                        <div id="graphNode_filter" class="graphIconElRow" data-type="filter">
+                            <el-image :src="require('@/api/graphtool/images/icons/filter.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">筛选</div>
                     </div>
-                    <div id="sort" class="graphIcon" data-type="sort">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/sort.png" alt="数据排序">
-                        <a class="iconText">数据排序</a>
+                    <div class="graphIcon">
+                        <div id="graphNode_sort" class="graphIconElRow" data-type="sort">
+                            <el-image :src="require('@/api/graphtool/images/icons/sort.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">排序</div>
                     </div>
-                    <div id="sample" class="graphIcon" data-type="sample">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/sample.png" alt="数据抽样">
-                        <a class="iconText">数据抽样</a>
+                    <div class="graphIcon">
+                        <div id="graphNode_sample" class="graphIconElRow" data-type="sample">
+                            <el-image :src="require('@/api/graphtool/images/icons/sample.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">抽样</div>
                     </div>
-                    <div id="layering" class="graphIcon" data-type="layering">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/layering.png" alt="数据分层">
-                        <a class="iconText">数据分层</a>
+                    <div class="graphIcon">
+                        <div id="graphNode_delRepeat" class="graphIconElRow" data-type="delRepeat">
+                            <el-image :src="require('@/api/graphtool/images/icons/delRepeat.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">去重</div>
                     </div>
-                    <div id="groupCount" class="graphIcon" data-type="groupCount">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/groupCount.png" alt="分组汇总">
-                        <a class="iconText">分组汇总</a>
+                    <div class="graphIcon">
+                        <div id="graphNode_layering" class="graphIconElRow" data-type="layering">
+                            <el-image :src="require('@/api/graphtool/images/icons/layering.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">分层</div>
                     </div>
-                    <div id="delRepeat" class="graphIcon" data-type="delRepeat">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/delRepeat.png" alt="数据去重">
-                        <a class="iconText">数据去重</a>
+                    <div class="graphIcon">
+                        <div id="graphNode_groupCount" class="graphIconElRow" data-type="groupCount">
+                            <el-image :src="require('@/api/graphtool/images/icons/groupCount.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">分组汇总</div>
                     </div>
                 </div>
             </div>
-            <div class="graphMenu" style="width: 135px !important;">
+            <div class="graphMenu" style="width: 120px;">
                 <div class="menuTit">列数据处理</div>
                 <div class="menuLi">
-                    <div id="comparison" class="graphIcon" data-type="comparison" style="width:130px !important;">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/comparison.png" alt="数据频次分析">
-                        <a class="iconText" style="padding-left: 5px;">数据频次分析</a>
+                    <div class="graphIcon">
+                        <div id="graphNode_comparison" class="graphIconElRow" data-type="comparison">
+                            <el-image :src="require('@/api/graphtool/images/icons/comparison.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">频次分析</div>
                     </div>
-                    <div id="change" class="graphIcon" data-type="change">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/change.png" alt="数据转码">
-                        <a class="iconText" style="padding-left: 5px;">数据转码</a>
+                    <div class="graphIcon">
+                        <div id="graphNode_change" class="graphIconElRow" data-type="change">
+                            <el-image :src="require('@/api/graphtool/images/icons/change.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">转码</div>
                     </div>
                 </div>
             </div>
-            <div class="graphMenu" style="width: 110px !important;">
+            <div class="graphMenu" style="width: 120px;">
                 <div class="menuTit">表间数据处理</div>
                 <div class="menuLi">
-                    <div id="union" class="graphIcon" data-type="union">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/combineSet.png" alt="数据合并">
-                        <a class="iconText">数据融合</a>
+                    <div class="graphIcon">
+                        <div id="graphNode_union" class="graphIconElRow" data-type="union">
+                            <el-image :src="require('@/api/graphtool/images/icons/union.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">融合</div>
                     </div>
-                    <div id="relation" class="graphIcon" data-type="relation">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/relation.png" alt="数据关联">
-                        <a class="iconText">数据关联</a>
+                    <div class="graphIcon">
+                        <div id="graphNode_relation" class="graphIconElRow" data-type="relation">
+                            <el-image :src="require('@/api/graphtool/images/icons/relation.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">关联</div>
                     </div>
                 </div>
             </div>
-            <div class="graphMenu" style="width: 120px !important;">
+            <div class="graphMenu" style="width: 70px;">
                 <div class="menuTit">SQL</div>
                 <div class="menuLi">
-                    <div class="graphIcon" id="sql" data-type="sql" style="width:110px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/sql.png" alt="SQL查询器"/>
-                        <a class="iconText">SQL查询器</a>
+                    <div class="graphIcon">
+                        <div id="graphNode_sql" class="graphIconElRow" data-type="sql">
+                            <el-image :src="require('@/api/graphtool/images/icons/sql.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">SQL查询</div>
                     </div>
                 </div>
             </div>
-            <div class="graphMenu" style="width: 90px !important;">
+            <div class="graphMenu" style="width: 70px;">
                 <div class="menuTit">参数</div>
-                <div class="menuLi" style="">
-                    <div id="nodeParamSet" class="graphIcon" data-type="nodeParamSet" style="width:80px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" style="width: 16px;height: 16px;" src="../../../api/graphtool/images/icon/param.png" alt="参数">
-                        <a class="iconText" @click="showParamNodeList">参数</a>
+                <div class="menuLi">
+                    <div class="graphIcon">
+                        <div class="graphIconElRow" @click="showParamNodeList">
+                            <el-image :src="require('@/api/graphtool/images/icons/param.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">参数</div>
                     </div>
                 </div>
             </div>
-            <div class="graphMenu" style="width: 90px !important;">
+            <div class="graphMenu" style="width: 70px;">
+                <div class="menuTit">运行</div>
+                <div class="menuLi">
+                    <div class="graphIcon">
+                        <div class="graphIconElRow" @click="executeAllNode">
+                            <el-image :src="require('@/api/graphtool/images/icons/run.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">全部运行</div>
+                    </div>
+                </div>
+            </div>
+            <div class="graphMenu" style="width: 70px;">
                 <div class="menuTit">帮助</div>
-                <div class="menuLi" style="">
-                    <div id="help" class="graphIcon" data-type="help" style="width:80px !important;height: 60px !important;line-height: 60px !important;">
-                        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/help.png" alt="帮助">
-                        <a class="iconText" @click="help">帮助</a>
+                <div class="menuLi">
+                    <div class="graphIcon">
+                        <div class="graphIconElRow" @click="help">
+                            <el-image :src="require('@/api/graphtool/images/icons/help.png')" class="graphToolImg"/>
+                        </div>
+                        <div class="iconText">帮助</div>
                     </div>
                 </div>
             </div>
             <span id="toolBarSpan" style="position: absolute;right: 0;bottom: 2px;font-weight: 800;" @click="hideAndShow">【折叠/展开】</span>
         </div>
-        <div id="accordion" class="panel-group">
-            <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active">
-                    <a href="#source" aria-control="source" role="tab" data-toggle="tab">资源</a>
-                </li>
-            </ul>
-            <div class="tab-content">
-                <div id="source" role="tabpanel" class="tab-pane active">
-                    <!-- 数据源 -->
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a id="dataTableList" data-toggle="collapse" href="#ztree_datasource_collapse" />
-                            </h4>
-                        </div>
-                        <div id="ztree_datasource_collapse" class="panel-collapse collapse in">
-                            <div class="panel-body">
-                                <div style="height: 45px;line-height:45px;">
-                                    <el-input v-model="searchZtreeContent" placeholder="搜索关键字" class="input-with-select">
-                                        <el-button slot="append" icon="el-icon-search" @click="searchZtree" />
-                                    </el-input>
-                                </div>
-                                <ul id="ztree_datasource" class="ztree" style="width: 100%;" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div id="accordion">
+            <el-input v-model="searchZtreeContent" placeholder="搜索关键字" class="input-with-select">
+                <el-button slot="append" icon="el-icon-search" @click="searchZtree" />
+            </el-input>
+            <ul id="ztree_datasource" class="ztree"/>
         </div>
         <div id="graphContainer" class="graphContainer">
             <div id="geDiagramContainer" class="geDiagramContainer">
                 <div id="geBackgroundPage" ref="geBackgroundPage" class="geBackgroundPage" />
             </div>
             <div id="geResultContainer" class="geResultContainer">
-                <div class="layui-tab">
-                    <ul class="layui-tab-title">
-                        <li @click="layuiTabClickLi(0)">数据结果集</li>
-                        <li @click="layuiTabClickLi(1)">执行信息</li>
-                        <li class="layui-this" @click="layuiTabClickLi(2)">缩略图</li>
-                    </ul>
-                    <!--<button id="viewAllData" class="btn btn-primary" onclick="viewAllData()" style="position: absolute;right: 200px;top: 10px;display:none;">预览全部数据</button>-->
-                    <!--<button id="exportAllData" class="btn btn-primary" onclick="exportAllData()" style="position: absolute;right: 100px;top: 10px;display:none;">全部导出</button>-->
-                    <!--<div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;display:none;" onclick="maxOpen()">-->
-                    <!--<img class="iconImgGraph" src="../../../api/graphtool/images/icon/maximize.png" alt="最大化">-->
-                    <!--<span class="iconText">最大化</span>-->
-                    <!--</div>-->
-                    <div class="layui-tab-content">
-                        <div class="layui-tab-item">
-                            <div id="tableArea">
-                                <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="resultTableArr" v-if="showTableResult"/>
-                            </div>
+                <!--<button id="viewAllData" class="btn btn-primary" onclick="viewAllData()" style="position: absolute;right: 200px;top: 10px;display:none;">预览全部数据</button>-->
+                <!--<button id="exportAllData" class="btn btn-primary" onclick="exportAllData()" style="position: absolute;right: 100px;top: 10px;display:none;">全部导出</button>-->
+                <!--<div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;display:none;" onclick="maxOpen()">-->
+                <!--<img class="iconImgGraph" src="../../../api/graphtool/images/icon/maximize.png" alt="最大化">-->
+                <!--<span class="iconText">最大化</span>-->
+                <!--</div>-->
+                <el-tabs v-model="resultTabActiveName" type="border-card">
+                    <el-tab-pane label="数据结果集" name="0">
+                        <div id="tableArea">
+                            <ChildTabs ref="childTabsRef" use-type="graph" :pre-value="resultTableArr" v-if="showTableResult"/>
                         </div>
-                        <div class="layui-tab-item"><div id="sysInfoArea" /></div>
-                        <div class="layui-tab-item layui-show"><div id="outLineArea" ref="outLineArea" /></div>
-                    </div>
-                </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="执行信息" name="1">
+                        <div id="sysInfoArea"></div>
+                    </el-tab-pane>
+                    <el-tab-pane label="缩略图" name="2">
+                        <div id="outLineArea" ref="outLineArea"></div>
+                    </el-tab-pane>
+                </el-tabs>
             </div>
         </div>
         <div id="detailContainer" class="panel-group">
-            <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active">
-                    <a href="#graphInfo" aria-control="graphInfo" role="tab" data-toggle="tab">图形信息</a>
-                </li>
-                <li role="presentation">
-                    <a href="#nodeRemark" aria-control="nodeRemark" role="tab" data-toggle="tab">说明</a>
-                </li>
-                <li role="presentation">
-                    <a href="#usedResourceTree" aria-control="usedResourceTree" role="tab" data-toggle="tab">所用资源</a>
-                </li>
-                <li role="presentation">
-                    <a href="#historyTree" aria-control="historyTree" role="tab" data-toggle="tab">痕迹</a>
-                </li>
-            </ul>
-            <div class="tab-content">
-                <div id="graphInfo" role="tabpanel" class="tab-pane active">
-                    <div style="margin-top: 15px;height: 40px;line-height: 40px;">
-                        <label class="col-sm-2 control-label" style="text-align: right;">名称</label>
-                        <div class="col-sm-10">
-                            <input v-model="graphName_show" type="text" class="form-control" autocomplete="off" placeholder="名称" readonly>
-                        </div>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <label class="col-sm-2 control-label" style="text-align: right;">描述</label>
-                        <div class="col-sm-10">
-                            <textarea v-model="description_show" class="form-control" placeholder="描述" style="resize:none;min-height:100px;max-height:300px;" readonly />
-                        </div>
-                    </div>
-                </div>
-                <div id="nodeRemark" role="tabpanel" class="tab-pane">点击操作节点，可查看节点说明信息</div>
-                <div id="usedResourceTree" role="tabpanel" class="tab-pane">
+            <el-tabs v-model="detailTabActiveName" type="border-card">
+                <el-tab-pane label="图形信息" name="0">
+                    <el-row>
+                        <el-col :span="4">
+                            <label style="height: 36px;line-height: 36px;float: right;padding-right: 5px;">名称</label>
+                        </el-col>
+                        <el-col :span="20">
+                            <el-input v-model="graphName_show" placeholder="图形名称" readonly/>
+                        </el-col>
+                    </el-row>
+                    <el-row style="padding-top: 10px;">
+                        <el-col :span="4">
+                            <label style="height: 36px;line-height: 36px;float: right;padding-right: 5px;">描述</label>
+                        </el-col>
+                        <el-col :span="20">
+                            <el-input type="textarea" resize="none" v-model="description_show" :autosize="{ minRows: 5, maxRows: 5}" placeholder="图形描述"/>
+                        </el-col>
+                    </el-row>
+                </el-tab-pane>
+                <el-tab-pane label="说明" name="1">
+                    <div id="nodeRemark" v-html="nodeRemarkHtml" @click="viewEgEvent"></div>
+                </el-tab-pane>
+                <el-tab-pane label="所用资源" name="2">
                     <ul id="resourceZtree" class="ztree" />
-                </div>
-                <div id="historyTree" role="tabpanel" class="tab-pane">
+                </el-tab-pane>
+                <el-tab-pane label="痕迹" name="3">
                     <ul id="historyZtree" class="ztree" />
-                </div>
-            </div>
+                </el-tab-pane>
+            </el-tabs>
         </div>
         <div id="geHsplit" />
         <div id="geVsplit" />
@@ -260,7 +278,7 @@
                 <el-row>
                     <el-col>
                         <el-form-item label="图形描述" prop="description">
-                            <el-input v-model="description" type="textarea" resize="none" :autosize="{ minRows: 3, maxRows: 5}" placeholder="请输入内容" />
+                            <el-input v-model="description" type="textarea" resize="none" :autosize="{ minRows: 5, maxRows: 5}" placeholder="请输入内容" />
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -270,31 +288,20 @@
                 <el-button type="primary" @click="getGraphFormInfo">保存</el-button>
             </div>
         </el-dialog>
-        <el-dialog v-if="nodeParamListDialogVisible" :visible.sync="nodeParamListDialogVisible" title="参数节点列表" :close-on-press-escape="false" :close-on-click-modal="false">
-            <div  style="height: 400px;overflow-y: auto;">
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th style="text-align: center">节点名称</th>
-                        <th style="text-align: center">结果表序号</th>
-                        <th style="text-align: center">操作</th>
-                    </tr>
-                    </thead>
-                    <tbody ref="nodeParamToby">
-                    <tr v-for="(nodeObj,index) in nodeParamArr" ref="paramSetTr" :index="index">
-                        <td align="center">{{ nodeObj.nodeName }}</td>
-                        <td align="center">{{ nodeObj.lineNum }}</td>
-                        <td v-if="nodeObj.hasParamSet" align="center">
-                            <button type="button" class="paramSetting btn btn-primary" @click="settingParam(nodeObj.nodeId,index)">修改参数</button>
-                            <button id="clearBtn" type="button" class="btn btn-primary" style="margin-left: 10px;" @click="clearSettingParam(nodeObj.nodeId,index)">清除参数</button>
-                        </td>
-                        <td v-if="!nodeObj.hasParamSet" align="center">
-                            <button type="button" class="paramSetting btn btn-primary" @click="settingParam(nodeObj.nodeId,index)">设置参数</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+        <el-dialog v-if="nodeParamListDialogVisible" :visible.sync="nodeParamListDialogVisible" title="参数节点列表" :close-on-press-escape="false" :close-on-click-modal="false" width="600px">
+            <el-row style="color: red;line-height: 35px;height: 30px;" v-show="openGraphType === 2 || openGraphType === 3">注：可通过上下拖动行对节点进行排序设置</el-row>
+            <el-table :data="nodeParamArr" height="400" fit ref="nodeParamTable" style="width:100%;">
+                <el-table-column type="index" label="编号" align="center" width="60" :resizable="false"/>
+                <el-table-column prop="nodeName" label="节点名称" header-align="center" :resizable="false"/>
+                <el-table-column prop="lineNum" label="结果表序号" width="100" align="center" :resizable="false"/>
+                <el-table-column label="操作" width="100" align="center" :resizable="false">
+                    <template slot-scope="scope">
+                        <el-button type="primary" v-if="!scope.row.hasParamSet" class="oper-btn setting" @click="settingParam(scope.row.nodeId,scope.$index)" title="设置参数" style="line-height: normal;"/>
+                        <el-button type="primary" v-if="scope.row.hasParamSet" class="oper-btn setting" @click="settingParam(scope.row.nodeId,scope.$index)" title="修改参数" style="line-height: normal;"/>
+                        <el-button type="primary" v-if="scope.row.hasParamSet" class="oper-btn delete" @click="clearSettingParam(scope.row.nodeId,scope.$index)" title="清除参数" style="line-height: normal;"/>
+                    </template>
+                </el-table-column>
+            </el-table>
             <div slot="footer">
                 <el-button @click="nodeParamListDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="showParamNodeListCallBack()">保存</el-button>
@@ -365,6 +372,9 @@
                 <el-button type="primary" @click="setExecuteParamCallBack">保存</el-button>
             </div>
         </el-dialog>
+        <el-dialog :visible.sync="imageDialogVisible" title="图片示例" width="600px">
+            <el-image :src="imageSrc" fit="contain" style="max-height:600px;"></el-image>
+        </el-dialog>
         <!-- 右键事件 -->
         <div id="rMenu" class="rightMenu">
             <ul>
@@ -388,12 +398,12 @@
     </div>
 </template>
 <script>
-    import '@/components/ams-graphtool/styles/grapheditor.css'
+    import '@/api/graphtool/css/grapheditor.css'
     import '@/components/ams-loading/css/loading.css'
     import '@/components/ams-ztree/js/jquery.ztree_new.all.min.js'
     import '@/components/ams-ztree/js/jquery.ztree.excheck.min.js'
     import '@/components/ams-ztree/js/jquery.ztree.exhide.min.js'
-    require("@/components/ams-graphtool/framework/sanitizer/sanitizer.min.js")
+    require("@/api/graphtool/js/sanitizer.min.js")
     // 引入子组件
     import Help from '@/views/graphtool/tooldic/page/funEventVue/help.vue'
     import GraphListExport from '@/views/graphtool/tooldic/page/funEventVue/graphListExport.vue'
@@ -479,24 +489,34 @@
                 sqlEditorStyle:'',
                 curModelSql: '',// 用来临时存储打开模型图形时的模型SQL语句
                 isSearchExpand:false,// 左侧资源树搜索功能的变量
-                curCell:null//当前执行节点的对象
+                curCell:null,//当前执行节点的对象
+                nodeRemarkHtml:'点击操作节点，可查看节点说明信息',
+                imageDialogVisible:false,
+                imageSrc:'',
+                resultTabActiveName:"2",
+                detailTabActiveName:'0'
             }
         },
         created() {
             // 引入公用CSS、JS
             addCssFile('/lib/Ztree/css/zTreeStyle/zTreeStyle.css','zTreeStyle')
-            addJsFile('/lib/bootstrap/js/bootstrap.min.js','bootstrap.min')
             this.init()
         },
         beforeDestroy() {
             //销毁公用CSS、JS
             removeJcCssfile("zTreeStyle.css","css")
-            removeJcCssfile("bootstrap.min.js","js")
             removeJcCssfile("jquery.ztree_new.all.min.js","js")
             removeJcCssfile("jquery.ztree.excheck.min.js","js")
             removeJcCssfile("jquery.ztree.exhide.min.js","js")
         },
         mounted() {
+            let toolDivwidth = "100%"
+            let toolDivHeight = "100%"
+            if(this.openGraphType === 4){//模型图形
+                toolDivwidth = ($(this.$parent.$parent.$parent.$refs.modelDesign).width() - 37) + "px"
+                toolDivHeight = $(this.$parent.$parent.$parent.$refs.modelDesign).height() + "px"
+            }
+            $(this.$refs.graphToolDiv).css({"width":toolDivwidth,"height":toolDivHeight})
             // 申明common.js的方法为全局方法
             this.initCommon()
             // //申明index.js的方法为全局方法
@@ -597,8 +617,8 @@
                 }
                 const $this = this
                 // 点击操作节点，显示说明信息
-                $(this.$refs.graphToolDiv).find('.iconText').click(function(i, v) {
-                    const optType = $(this).parent().attr('data-type')
+                $(this.$refs.graphToolDiv).find('.graphIconElRow').click(function() {
+                    const optType = $(this).attr('data-type')
                     if ($.inArray(optType, $this.optTypeArr) > -1) {
                         indexJs.nodeRemark(optType)
                     }
@@ -623,8 +643,6 @@
                     $this.graph.newOptArr = []
                     $this.graph.edgeArr = {}
                     // 缩略图
-                    // var container = document.getElementById('geBackgroundPage')
-                    // var outline = document.getElementById('outLineArea')
                     $this.$refs.outLineArea.style.position = 'absolute'
                     $this.$refs.outLineArea.style.width = '97%'
                     $this.$refs.outLineArea.style.height = '225px'
@@ -682,16 +700,10 @@
                 })
             },
             initJsp() {
-                var $this = this
+                let $this = this
                 const initGraphInterval = setInterval(function() {
                     if ($this.graph != null) {
                         clearInterval(initGraphInterval)
-                        if (typeof $this.openType !== 'undefined') {
-                            $('#dataTableList').html($this.openType === 1 ? '开发测试库数据' : '业务生产库数据')
-                        } else {
-                            $this.openType = 2
-                            $('#dataTableList').html('业务生产库数据')
-                        }
                         $this.graph.openType = $this.openType
                         $this.graph.canEditor = $this.canEditor
                         $this.graph.openGraphType = $this.openGraphType
@@ -707,22 +719,6 @@
                                 $this.graph.graphType = 4// 当前图形是模型图形
                                 break
                         }
-                        // 处理文件中的更多菜单
-                        // if ($this.openGraphType !== 1) { // 如果当前图形不是普通图形（即场景查询图形和模型图形）
-                        //     if ($this.openType === 1) { // 开发环境下
-                        //         $('#moreMenu>ul>li:gt(1)').hide()// 禁用【数据导入】、【生成场景查询】、【生成风险查证模型】菜单
-                        //     } else { // 权限环境下
-                        //         var ind = 2// 默认禁用【生成场景查询】、【生成风险查证模型】菜单
-                        //         if ($this.canEditor === false) { // 如果不可编辑
-                        //             ind = 1// 禁用【数据导入】、【生成场景查询】、【生成风险查证模型】菜单
-                        //         }
-                        //         $('#moreMenu>ul>li:gt(' + ind + ')').hide()
-                        //     }
-                        // } else {
-                        //     if ($this.openType === 1) {
-                        //         $('#moreMenu>ul>li:eq(2)').hide()// 只禁用【数据导入】功能
-                        //     }
-                        // }
                         /* 右侧所使用资源树,start*/
                         $this.resourceRootNode = { 'name': '所用资源', 'displayName': '所用资源', 'level': 0, 'isParent': true, 'open': true, 'type': 'rootNode', 'id': 'resourceRoot', 'pid': null, 'children': [] }
                         $this.resourceZtree = $.fn.zTree.init($('#resourceZtree'), indexJs.resourceSetting, $this.resourceRootNode)
@@ -748,7 +744,7 @@
                             key: {
                                 checked: 'isChecked',
                                 name: 'name',
-                                title: 'displayName'
+                                title: 'name'
                             },
                             // 设置数据格式
                             simpleData: {
@@ -827,17 +823,17 @@
                 loadZtree()
                 if (obj.canEditor) {
                     $.each($('.graphIcon'), function() {
-                        var id_type = $(this).attr('data-type')
-                        if (typeof (id_type) !== 'undefined') {
-                            var name = $(this).find('a').html()
-                            var obj = {
-                                type: id_type,
+                        let typeDom = $(this).find(".graphIconElRow")
+                        let textDom = $(this).find(".iconText")
+                        let type = typeDom.attr('data-type')
+                        if (typeof (type) !== 'undefined') {
+                            iconDrag({
+                                type: type,
                                 shape: 'rhombus',
-                                id: id_type,
+                                id: `graphNode_${type}`,
                                 tId: new UUIDGenerator().id,
-                                name: name
-                            }
-                            iconDrag(obj)
+                                name: textDom.html()
+                            })
                         }
                     })
                 }
@@ -858,7 +854,7 @@
                     if (executeSQLObj.customParam[0] === $this.websocketBatchId) {//匹配结果集
                         $this.loadResultNum++
                         if(executeSQLObj.state === "2"){//执行成功，展示当前操作的结果集
-                            $this.layuiTabClickLi(0)
+                            $this.resultTabActiveName = '0'
                             if(!$this.showTableResult){
                                 $this.showTableResult = true
                             }
@@ -870,7 +866,7 @@
                             }
                         }else{
                             $('#sysInfoArea').html("<p style='color: red;'>预览结果集失败：" + executeSQLObj.msg + "</p>")
-                            $this.layuiTabClickLi(1)
+                            $this.resultTabActiveName = '1'
                         }
                         if($this.loadResultNum === $this.resultTableArr.length){
                             $this.loading.destroy()
@@ -988,7 +984,7 @@
                         this.$nextTick(() => {
                             $this.websocketBatchId = new UUIDGenerator().id
                             $this.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable }]
-                            $this.layuiTabClickLi(0)
+                            $this.resultTabActiveName = '0'
                             $this.viewData()
                         })
                     }
@@ -999,7 +995,7 @@
                         .catch( error => {
                             this.loading.destroy()
                             $('#sysInfoArea').html("<p style='color: red;'>" + error + "</p>")
-                            this.layuiTabClickLi(1)
+                            this.resultTabActiveName = '1'
                         })
                 }
             },
@@ -1010,21 +1006,6 @@
             },
             relationTableQuery() {
 
-            },
-            layuiTabClickLi(index) {
-                if (index === 0) {
-                    $('#exportAllData').show()
-                    $('#viewAllData').show()
-                    $('#maxOpen').show()
-                } else {
-                    $('#maxOpen').hide()
-                    $('#exportAllData').hide()
-                    $('#viewAllData').hide()
-                }
-                $('ul.layui-tab-title>li').removeClass('layui-this')
-                $('div.layui-tab-item').removeClass('layui-show')
-                $('ul.layui-tab-title>li:eq(' + index + ')').addClass('layui-this')
-                $('div.layui-tab-item:eq(' + index + ')').addClass('layui-show')
             },
             showMoreMenu() { // 处理文件更多菜单
                 var event = event || window.event
@@ -1163,6 +1144,15 @@
             sqlNodeEditCallBack(){
                 commonJs.sqlNodeEdit_callBack()
             },
+            viewEgEvent(event){
+                if(event.target.nodeName === "A" && event.target.className === "viewEg"){//数据关联、数据融合节点查看图片
+                    let type = event.target.getAttribute("data_type")
+                    if(typeof type !== 'undefined'){
+                        this.imageSrc = require(`@/api/graphtool/images/${type}.jpg`)
+                        this.imageDialogVisible = true
+                    }
+                }
+            },
             /**
              * 接口：获取节点参数信息
              */
@@ -1186,6 +1176,4 @@
 
 </script>
 <!--引入图形化工具专用CSS样式-->
-<style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
-<style scoped src="@/api/graphtool/css/accordion.css"></style>
 <style scoped src="@/api/graphtool/css/index.css"></style>

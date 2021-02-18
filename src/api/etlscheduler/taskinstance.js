@@ -54,3 +54,12 @@ export function findTaskLogs(id) {
     method: 'get'
   })
 }
+
+// 重新执行流程实例
+export function repeatProcess(ids, startTaskIds) {
+  return request({
+    baseURL: baseURL,
+    url: `/taskInstance/repeatProcess/${ids}/${startTaskIds}`,
+    method: 'post'
+  })
+}

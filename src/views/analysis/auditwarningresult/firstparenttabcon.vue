@@ -77,6 +77,7 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column
+        v-if="warringResultType===1"
         label="模型名称"
         width="300px"
         align="center"
@@ -92,10 +93,34 @@
                 scope.row.model.modelName,
                 scope.row.model.modelUuid,
                 scope.row.runStatus,
-                resultSpiltObjects
+                resultSpiltObjects,
+                undefined
               )
             "
             >{{ scope.row.model.modelName }}</a
+          >
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-if="warringResultType===2"
+        label="指标名称"
+        width="300px"
+        align="center"
+        prop="model.modelName"
+      >
+        <template slot-scope="scope">
+          <a
+            type="text"
+            style="color: #409eff"
+            @click="getResultTables(
+                scope.row.runResultTables,
+                scope.row.inOftenindicators.oftenindicatorsName,
+                scope.row.inOftenindicators.inOftenindicatorsUuid,
+                scope.row.runStatus,
+                resultSpiltObjects,
+                scope.row.settingInfo
+              )"
+          >{{scope.row.inOftenindicators.oftenindicatorsName}}</a
           >
         </template>
       </el-table-column>
@@ -342,10 +367,11 @@ export default {
       ResultSplitoptions: [], //存储结果拆分dialog的下拉框中的数据
       selectedValue: [], //结果查分下拉框选中的值
       resultShareDialogIsSee: false, //点击模型结果关联按钮控制人员dialog显示
+      warringResultType:1 //存储预警结果的类型
     };
   },
   created() {
-    this.getLikeList();
+
   },
   methods: {
     /**
@@ -529,6 +555,13 @@ export default {
         getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
+        if (this.list.length>0){
+          if (this.list[0].runRecourceType === 1){
+            this.warringResultType = 1
+          }else {
+            this.warringResultType = 2
+          }
+        }
         this.listLoading = false;
       });
       }
@@ -552,6 +585,13 @@ export default {
         getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
+          if (this.list.length>0){
+            if (this.list[0].runRecourceType === 1){
+              this.warringResultType = 1
+            }else {
+              this.warringResultType = 2
+            }
+          }
         this.listLoading = false;
       });
       }
@@ -611,7 +651,7 @@ export default {
      */
     deleteRunTaskRel() {
       if (this.share.length == 0 && this.notShare.length == 0) {
-        alert("请选择要删除的运行结果");
+        this.$message({message: "请选择要删除的运行结果"});
       } else if (this.notShare.length != 0 && this.share.length == 0) {
         // 当选中的要删除结果中都是自己的没有别人共享结果的时候
         var flag = true;
@@ -624,7 +664,7 @@ export default {
         }
         // 如果有关联的项目
         if (flag == false) {
-          alert("选择的运行结果有项目关联，请取消关联，再删除！");
+          this.$message({message: "选择的运行结果有项目关联，请取消关联，再删除！"});
         } else {
           // 打开删除提示框
           this.open();
@@ -644,7 +684,7 @@ export default {
           }
         }
         if (flag == false) {
-          alert("选择的运行结果有项目关联，请取消关联，再删除！");
+          this.$message({message: "选择的运行结果有项目关联，请取消关联，再删除！"});
         } else {
           // 打开删除提示框
           this.open2();
@@ -955,7 +995,7 @@ export default {
      * val是运行结果中的resultTables
      * modelName是选中的模型的名字
      */
-    getResultTables(val, modelName, modelUuid, runStatus,resultSpiltObjects) {
+    getResultTables(val, modelName, modelUuid, runStatus,resultSpiltObjects,settingInfo) {
       if (runStatus == 3) {
         var assistTables = [];
         var mainTable = null;
@@ -968,7 +1008,7 @@ export default {
         }
         // 触发父类方法addTab在index.vue界面，同时穿过三个参数assistTables：辅表（运行结果表）数组  mainTable：主表（运行结果表对象）
         // modelName：模型的名称，用来给新页签赋值title属性用
-        this.$emit("addtab", assistTables, mainTable, modelName, modelUuid,resultSpiltObjects);
+        this.$emit("addtab", assistTables, mainTable, modelName, modelUuid,resultSpiltObjects,settingInfo);
       } else {
         this.$message({
           type: "info",
