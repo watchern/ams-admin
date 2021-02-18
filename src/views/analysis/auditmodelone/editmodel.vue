@@ -1291,6 +1291,17 @@ export default {
   border: 1px solid #eee;
 }
 
+.div-btn {
+  margin-top: -3%;
+  float: right;
+  position: relative;
+}
+
+.p-div {
+  color: red;
+  font-size: large;
+}
+
 .model-result-output-col {
   height: 650px;
   overflow-y: scroll;
@@ -1300,6 +1311,21 @@ export default {
   margin-left: 20px;
 }
 
+.drag {
+  position: absolute;
+  z-index: 1000;
+  top: 35px;
+  right: 35px;
+  width: 95px;
+  background: #F2F2F2;
+  border-radius: 15px;
+  font-weight: bold;
+}
+
+#drag .title {
+  position: relative;
+  height: 12px;
+}
 
 #drag .title h2 {
   font-size: 24px;
@@ -1316,10 +1342,56 @@ export default {
   right: 0;
 }
 
+#drag .title a, a.open {
+  float: left;
+  width: 21px;
+  height: 19px;
+  display: block;
+  margin-left: 5px;
+}
+
+
+.el-tree-rewrite {
+  background: #F2F2F2;
+  width: 100%;
+}
+
+.custom-tree-node {
+  position: relative;
+  left: -2px;
+  font-size: 13px;
+  color: #353A43;
+}
+
+.custom-tree-caidan {
+  border-top: 1px solid #f0f0f0;
+  width: 100%;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 12px;
+}
+
 .custom-tree-caidan img {
   width: 20px;
   height: 20px;
   margin: 10px 0 0 0px;
+}
+
+.custom-tree-shangla {
+  border-top: 1px solid #f0f0f0;
+  margin-top: 5px;
+  width: 100%;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.custom-xiala {
+  transform: rotate(180deg);
+  display: none;
 }
 
 #drag .custom-tree-node span:first-child {
@@ -1334,6 +1406,23 @@ export default {
   float: left;
 }
 
+.words {
+  width: 1000px;
+  /* height: 200px; */
+  margin: 50px 0 0 50px;
+  box-shadow: 0 0 9px 5px rgba(0, 0, 0, .15);
+  border-radius: 8px;
+  font-size: 20px;
+  color: #70747a;
+  text-align: justify;
+  line-height: 36px;
+  padding: 10px;
+}
+
+.content {
+  overflow: hidden;
+}
+
 .modelInfoClass {
 z-index:999;
   background-color: white;
@@ -1345,12 +1434,19 @@ z-index:999;
   0%{width: 0%;}
   100%{width: 50%}
 }
-
+.sqlEditorWidth{
+  float: left;
+  animation: sqlEditorWidth 0.5s forwards;
+}
 @keyframes sqlEditorWidth {
   0%{width: 98%;}
   100%{width: 50%;}
 }
 
+.sqlEditorParamWidthOn{
+  float: left;
+  animation: sqlEditorWidth1 0.5s forwards
+}
 @keyframes sqlEditorWidth1 {
   0%{width: 50%;}
   100%{width: 98%;}
