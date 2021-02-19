@@ -87,19 +87,6 @@
             <div ref="relTableDiv" style="display: none">
               <el-button type="primary" size="mini" @click="addRelFilter(2)">添加</el-button>
               <el-table ref="relTable" :data="relTable" border fit highlight-current-row>
-<!--                  <el-table-column label="关联表字段" align="center" prop="modelName">
-                    <template slot-scope="scope" v-if="!scope.row.noShow">
-                      <el-select v-model="scope.row.relColumn" value="-1">
-                        <el-option label="请选择" value="-1" />
-                        <el-option
-                          v-for="state in relTableColumn"
-                          :key="state.colMetaUuid"
-                          :value="state.colMetaUuid"
-                          :label="state.chnName"
-                        />
-                      </el-select>
-                    </template>
-                  </el-table-column>-->
                   <el-table-column label="过滤条件" align="center" prop=""  width="450px">
                     <template slot-scope="scope" v-if="!scope.row.noShow">
                       <el-row>
@@ -213,12 +200,6 @@ export default {
         relationType: [
           { required: true, message: '请选择关联类型', trigger: 'change' }
         ]
-        /*        relationObjectUuidModel: [
-          { validator:verForm, trigger: 'change' }
-        ],
-        relationObjectUuidTable: [
-          { validator:verForm, trigger: 'change' }
-        ]*/
       }
     }
   },

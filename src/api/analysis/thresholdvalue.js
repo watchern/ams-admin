@@ -291,7 +291,6 @@ handleDataManyValue(params,thresholdValueRel){
     for(let i = 0; i < thresholdValueRel.thresholdValue.thresholdValueInfoList.length;i++){
       //要判断的值
       let valueTwo = thresholdValueRel.thresholdValue.thresholdValueInfoList[i].filterValue
-      debugger
 /*      valueOne = parseFloat(valueOne)
       valueTwo = parseFloat(valueTwo)*/
       let thresholdValueObjectValue = thresholdValueRel.thresholdValue.thresholdValueInfoList[i].filterConditions

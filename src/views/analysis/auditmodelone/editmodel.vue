@@ -287,45 +287,6 @@ export default {
       resultConfigDraw:false,
       dataUserId: undefined,
       sceneCode: undefined,
-      treeNodeData: [
-        {
-          id: '1',
-          label: '基本信息',
-          type: 'basicInfo'
-        },
-        {
-          id: '2',
-          label: '模型设计',
-          type: 'modelDesign'
-        },
-        {
-          id: '3',
-          label: '模型参数',
-          type: 'paramDefaultValue'
-        },
-        {
-          id: '4',
-          label: '模型结果',
-          type: 'modelResultOutputCol'
-        },
-        {
-          id: '5',
-          label: '模型关联',
-          type: 'relInfo',
-          children: []
-        },
-        // {
-        //   id: '6',
-        //   label: '模型图表',
-        //   type: 'chartConfig'
-        // },
-        {
-          id: '7',
-          label: '模型条件',
-          type: 'filterShow',
-          children: []
-        }
-      ],
       defaultProps: {
         children: 'children',
         label: 'label'
@@ -397,8 +358,6 @@ export default {
       modelOriginalTable: [],
       //模型图表配置
       modelChartSetup: {},
-      //当前选中树节点
-      currentSelectTreeNode: null,
       //模型类型数组
       modelTypeObj: [],
       //关闭窗体时候用的窗体名
@@ -894,7 +853,7 @@ export default {
         columnData.push(columnDataObj)
       }
       // endregion
-      // 列数据  todo
+      // 列数据
       this.columnData = columnData
       if (this.columnData.length==0){
         this.isExecuteSql = false
@@ -1035,7 +994,6 @@ export default {
      * @param columnType 列类型
      */
     changeColumnDataFormat(columnNames, columnType) {
-      // [{ columnName: 'AUDIT_ITEM_UUID', columnType: 'varchar' }, { columnName: 'AUDIT_ITEM_NAME', columnType: 'varchar' }]
       const returnObj = []
       for (let i = 0; i < columnNames.length; i++) {
         var obj = {
@@ -1125,54 +1083,12 @@ export default {
       this.businessColumnSelect = []
       //列类型列表
       this.columnTypeSelect = []
-      //选择树节点
-      this.selectTreeNode = null
       //模型详细数组
       this.modelDetails = []
       //模型详细索引
       this.modelDetailIndex = 0
       //条件显示数组
       this.filterShows = []
-      //树数据
-      this.treeNodeData = [
-        {
-          id: '1',
-          label: '基本信息',
-          type: 'basicInfo'
-        },
-        {
-          id: '2',
-          label: '模型设计',
-          type: 'modelDesign'
-        },
-        {
-          id: '3',
-          label: '参数默认值',
-          type: 'paramDefaultValue'
-        },
-        {
-          id: '4',
-          label: '模型结果输出列',
-          type: 'modelResultOutputCol'
-        },
-        {
-          id: '5',
-          label: '关联详细',
-          type: 'relInfo',
-          children: []
-        },
-        {
-          id: '6',
-          label: '图表配置',
-          type: 'chartConfig'
-        },
-        {
-          id: '7',
-          label: '条件展示',
-          type: 'filterShow',
-          children: []
-        }
-      ]
     },
     /**
      * 如果是修改模型的话则反显数据

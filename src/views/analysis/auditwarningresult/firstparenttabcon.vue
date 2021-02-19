@@ -651,7 +651,7 @@ export default {
      */
     deleteRunTaskRel() {
       if (this.share.length == 0 && this.notShare.length == 0) {
-        alert("请选择要删除的运行结果");
+        this.$message({message: "请选择要删除的运行结果"});
       } else if (this.notShare.length != 0 && this.share.length == 0) {
         // 当选中的要删除结果中都是自己的没有别人共享结果的时候
         var flag = true;
@@ -664,7 +664,7 @@ export default {
         }
         // 如果有关联的项目
         if (flag == false) {
-          alert("选择的运行结果有项目关联，请取消关联，再删除！");
+          this.$message({message: "选择的运行结果有项目关联，请取消关联，再删除！"});
         } else {
           // 打开删除提示框
           this.open();
@@ -684,7 +684,7 @@ export default {
           }
         }
         if (flag == false) {
-          alert("选择的运行结果有项目关联，请取消关联，再删除！");
+          this.$message({message: "选择的运行结果有项目关联，请取消关联，再删除！"});
         } else {
           // 打开删除提示框
           this.open2();
