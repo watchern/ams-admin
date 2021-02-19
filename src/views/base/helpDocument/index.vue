@@ -62,7 +62,7 @@
         @retrieveData="retrieveData"
         ref="wangeditor"
       />
-      <el-button type="primary" @click="saveNew" :disabled="false" style="margin-top:10px">保存</el-button>
+      <el-button type="primary" @click="saveNew" :disabled="canSave" style="margin-top:10px">保存</el-button>
     </div>
 	</div>
 </template>
@@ -95,7 +95,9 @@ export default {
       // 保存帮助富文本内容的uuid
       helpDocumentUuid: '',
       // loading
-      loading: false
+      loading: false,
+      // 保存按钮
+      canSave: true
     }
   },
   computed: {
@@ -181,6 +183,7 @@ export default {
     // 单选功能
     handleCheckChange (data, checked, indeterminate) {
       if (checked) {
+        this.canSave = false
         this.loading = true
         this.$refs.tree.setCheckedNodes([data]);
         // 根据选择的模块显示已编辑的富文本
@@ -205,6 +208,8 @@ export default {
             })
           }
         })
+      } else {
+        this.canSave = true
       }
     },
     // 父节点不可选中
