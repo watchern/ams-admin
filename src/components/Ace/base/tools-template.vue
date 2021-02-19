@@ -817,7 +817,7 @@ export default {
     width: 510px;
     padding: 25px 20px;
     float: left;
-    overflow: hidden;
+    overflow: auto;
     .btns-wrap {
       right: 9px;
       top: 186px;
