@@ -62,7 +62,7 @@
         @retrieveData="retrieveData"
         ref="wangeditor"
       />
-      <el-button type="primary" @click="saveNew" style="margin-top:10px">保存</el-button>
+      <el-button type="primary" @click="saveNew" :disabled="false" style="margin-top:10px">保存</el-button>
     </div>
 	</div>
 </template>
@@ -239,7 +239,7 @@ export default {
     margin:40px 0 0 15px;
     float:left;
     width: calc(100vw - 495px);
-    height: calc(100vh - 100px);
+    height: calc(100vh - 120px);
     overflow: auto;
   }
   >>>.el-tree {
