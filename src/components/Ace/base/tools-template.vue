@@ -278,7 +278,7 @@ export default {
           image: require("../../Ace/base/accessIcon/diaodu.png")
         },
         {
-          name: '调度任务监控',
+          name: '调度监控',
           image: require("../../Ace/base/accessIcon/diaodu.png")
         },
         {
@@ -286,23 +286,19 @@ export default {
           image: require("../../Ace/base/accessIcon/diaodu.png")
         },
         {
-          name: '业务场景维护',
-          image: require("../../Ace/base/accessIcon/yewu.png")
-        },
-        {
-          name: '数据表注册',
+          name: '数据表管理',
           image: require("../../Ace/base/accessIcon/shuju.png")
         },
         {
-          name: '数据角色',
+          name: '数据授权',
           image: require("../../Ace/base/accessIcon/shuju.png")
         },
         {
-          name: '用户资源查询',
-          image: require("../../Ace/base/accessIcon/yonghu.png")
+          name: '数据转码',
+          image: require("../../Ace/base/accessIcon/shuju.png")
         },
         {
-          name: '数据字典维护',
+          name: '数据挖掘',
           image: require("../../Ace/base/accessIcon/shuju.png")
         },
         {
@@ -312,6 +308,18 @@ export default {
         {
           name: '数据资源目录',
           image: require("../../Ace/base/accessIcon/shuju.png")
+        },
+        {
+          name: '主题展示',
+          image: require("../../Ace/base/accessIcon/zhuti.png")
+        },
+        {
+          name: '主题展示配置',
+          image: require("../../Ace/base/accessIcon/zhuti.png")
+        },
+        {
+          name: '阈值管理',
+          image: require("../../Ace/base/accessIcon/yuzhi.png")
         },
         {
           name: '审计模型',
@@ -326,16 +334,16 @@ export default {
           image: require("../../Ace/base/accessIcon/moxing.png")
         },
         {
+          name: '线索核实',
+          image: require("../../Ace/base/accessIcon/yonghu.png")
+        },
+        {
           name: '图形化工具',
           image: require("../../Ace/base/accessIcon/gongju.png")
         },
         {
           name: 'SQL编辑器',
           image: require("../../Ace/base/accessIcon/gongju.png")
-        },
-        {
-          name: '审计分析',
-          image: require("../../Ace/base/accessIcon/shenji.png")
         },
         {
           name: '审计预警',
@@ -350,19 +358,7 @@ export default {
           image: require("../../Ace/base/accessIcon/jigou.png")
         },
         {
-          name: '被审计机构统计',
-          image: require("../../Ace/base/accessIcon/jigou.png")
-        },
-        {
           name: '领导干部',
-          image: require("../../Ace/base/accessIcon/lingdao.png")
-        },
-        {
-          name: '领导干部查询',
-          image: require("../../Ace/base/accessIcon/lingdao.png")
-        },
-        {
-          name: '领导干部统计',
           image: require("../../Ace/base/accessIcon/lingdao.png")
         },
         {
@@ -370,19 +366,7 @@ export default {
           image: require("../../Ace/base/accessIcon/gongcheng.png")
         },
         {
-          name: '工程项目查询',
-          image: require("../../Ace/base/accessIcon/gongcheng.png")
-        },
-        {
           name: '业务产品',
-          image: require("../../Ace/base/accessIcon/yewu.png")
-        },
-        {
-          name: '业务产品查询',
-          image: require("../../Ace/base/accessIcon/yewu.png")
-        },
-        {
-          name: '业务产品统计',
           image: require("../../Ace/base/accessIcon/yewu.png")
         },
         {
@@ -394,19 +378,11 @@ export default {
           image: require("../../Ace/base/accessIcon/shenji.png")
         },
         {
-          name: '临时审计手册',
-          image: require("../../Ace/base/accessIcon/shenji.png")
-        },
-        {
           name: '业务分类',
           image: require("../../Ace/base/accessIcon/yewu.png")
         },
         {
           name: '问题词条',
-          image: require("../../Ace/base/accessIcon/yujing.png")
-        },
-        {
-          name: '问题词条查询',
           image: require("../../Ace/base/accessIcon/yujing.png")
         },
         {
@@ -492,6 +468,18 @@ export default {
         {
           name: '数据源监控',
           image: require("../../Ace/base/accessIcon/jiankong.png")
+        },
+        {
+          name: '系统操作日志',
+          image: require("../../Ace/base/accessIcon/xitong.png")
+        },
+        {
+          name: '系统异常日志',
+          image: require("../../Ace/base/accessIcon/xitong.png")
+        },
+        {
+          name: '系统帮助维护',
+          image: require("../../Ace/base/accessIcon/bangzhu.png")
         }
       ],
       latelyInImgList:[],
@@ -528,18 +516,17 @@ export default {
     for(let x=1;x<200;x++){
       let Num= eval(arryV[arryV.length-x]);
       for(let i=0; i<arry.length; i++){
-        if(arry[i].v == Num && arry[i].p !== ''){
-          if(this.latelyUseList.indexOf(arry[i].id) == -1) {
+        if(arry[i].v === Num && arry[i].p !== ''){
+          if(this.latelyUseList.indexOf(arry[i].id) === -1) {
             this.latelyPathList.push(arry[i].p)
             this.latelyUseList.push(arry[i].id)
             for(let c=0;c<this.latelyImgList.length;c++){
-              if(arry[i].id == this.latelyImgList[c].name){
+              if(arry[i].id === this.latelyImgList[c].name){
                 this.latelyInImgList.push({image:this.latelyImgList[c].image})
               }
             }
             break
           }
-
         }
       }
       if(this.latelyUseList.length>=5){
