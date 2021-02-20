@@ -42,14 +42,14 @@
                                 type="primary"
                                 size="small"
                                 class="oper-btn folder"
-                                title="打开sql"
+                                title="打开SQL"
                                 @click="openSqlDraftList"
                             />
                             <el-button
                                 type="primary"
                                 size="small"
                                 class="oper-btn sqlcheck"
-                                title="校验sql"
+                                title="校验SQL"
                                 @click="getColumnSqlInfo"
                             />
                             <el-dropdown>
@@ -128,7 +128,7 @@
                             :key="result.id"
                             :pre-value="currentExecuteSQL"
                             use-type="sqlEditor"
-                            style="width: 101.5%;overflow:auto;height:450px;"
+                            style="width: 101.5%;height:450px;"
                             :chartModelUuid='modelUuid'
                             :modelId='modelUuid'
                             id="childTabs1"
