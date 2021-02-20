@@ -161,8 +161,10 @@
   }
 
   function getText(completion) {
-    if (typeof completion == "string") return completion;
-    else return completion.text;
+    if (typeof completion == "string")
+      return completion;
+    else
+      return completion.text;
   }
 
   function buildKeyMap(completion, handle) {
@@ -240,7 +242,13 @@
       var nnt = elt.appendChild(ownerDocument.createElement("span"));
       nnt.className = "CodeMirror-nnt"
       for (var key in tableNameTitle) {
-        if(key==getText(cur)){
+        cur = getText(cur)
+        if(cur && cur.indexOf(".") != -1){
+          //如果存在.这个字符 说明是在读取列，对字符进行特殊处理 按照.进行区分取最后一列
+          var arrs = cur.split(".")
+          cur = arrs[1]
+        }
+        if(key == cur){
           var tableList = tableNameTitle[key]
           nnt.appendChild(ownerDocument.createTextNode(getText(tableList)));
         }
