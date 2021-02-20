@@ -34,24 +34,26 @@
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <template class="detail-form">
-        <el-form
-          ref="dataForm"
-          :rules="rules"
-          :model="temp"
-          label-position="right"
-          width="80%"
-        >
-          <el-form-item label="业务属性名称" prop="attrName">
-            <el-input v-model="temp.attrName" />
-          </el-form-item>
-          <el-form-item label="业务属性编码" prop="attrCode">
-            <el-input v-model="temp.attrCode" />
-          </el-form-item>
-          <el-form-item label="描述" prop="describtion">
-            <el-input v-model="temp.describtion" type="textarea" />
-          </el-form-item>
-        </el-form>
+      <template >
+        <div class="detail-form">
+          <el-form
+            ref="dataForm"
+            :rules="rules"
+            :model="temp"
+            label-position="right"
+            width="80%"
+          >
+            <el-form-item label="业务属性名称" prop="attrName">
+              <el-input v-model="temp.attrName" />
+            </el-form-item>
+            <el-form-item label="业务属性编码" prop="attrCode">
+              <el-input v-model="temp.attrCode" />
+            </el-form-item>
+            <el-form-item label="描述" prop="describtion">
+              <el-input v-model="temp.describtion" type="textarea" />
+            </el-form-item>
+          </el-form>
+        </div>
       </template>
       <div slot="footer">
         <el-button size="mini" @click="dialogFormVisible = false">取消</el-button>

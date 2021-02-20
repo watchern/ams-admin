@@ -206,6 +206,7 @@ export default {
     },
     registTable() {
       var ckFolder = this.$refs.tree2.getCurrentNode()
+      //console.log(ckFolder); return;
       if (!ckFolder || ckFolder.type !== 'FOLDER') {
         this.$notify(commonNotify({ type: 'warning', message: '请选中文件夹' }))
         return false
@@ -219,6 +220,11 @@ export default {
         return false
       } else {
         var ckTbs = this.$refs.tree1.getCheckedNodes()
+        //var nodes = this.$refs.tree1.filter(this.filterText1);
+        if(this.filterText1!=null){
+          ckTbs = ckTbs.filter(tb=>{return tb.label.indexOf(this.filterText1)!==-1});
+        }
+        //console.log(ckTbs);
         ckTbs.filter(tb => {
           return tb.type === 'TABLE'
         }).forEach(node => {
