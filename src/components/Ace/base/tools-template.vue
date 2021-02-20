@@ -23,7 +23,9 @@
                :key="index"
                class="use-box flex a-center j-center use-zyt"
           >
-            <span style="font-size:14px"> {{ item }} </span>
+            <el-tooltip :content="item" placement="bottom" effect="light">
+              <span class="doubleWords"> {{ item }} </span>
+            </el-tooltip>
           </div>
         </div>
         <div class="title-label" style="margin-top: 15px">自定义快捷菜单</div>
@@ -50,7 +52,9 @@
                :key="index"
                class="use-box flex a-center j-center use-zyt"
           >
-            <span style="font-size:14px"> {{ item.name }} </span>
+            <el-tooltip :content="item.name" placement="bottom" effect="light">
+              <span class="doubleWords"> {{ item.name }} </span>
+            </el-tooltip>
           </div>
           <div class="use-box flex a-center j-center use-zyt">
             <span style="font-size:14px"> 维护 </span>
@@ -973,5 +977,13 @@ export default {
 }
 .btn-tree{
   margin: 10px 80px 0 22px;
+}
+.doubleWords{
+  font-size:14px;
+  width:75px;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+  text-align: center
 }
 </style>

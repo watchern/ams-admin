@@ -41,6 +41,7 @@ export default {
       this.isOpen = bool
     },
     close(item) {
+      console.log(item)
       let isCloseTree = false
       if (!item.children) {
         isCloseTree = true
