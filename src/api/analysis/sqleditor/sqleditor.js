@@ -576,65 +576,59 @@ export function initTableTree(result) {
           zTreeObj.removeChildNodes(treeNode)
           var tableName = treeNode.name
           var tableMetaUuid = treeNode.id
-          // 先从codeMirror里面找 如果能找到则不找数据库  找不到则找数据库
-          var columns = CodeMirror.tableColMapping[tableName]
-          if (!columns || (columns && columns.length === 0)) {
-            request({
-              baseURL: dataUrl,
-              url: '/tableMeta/getCols',
-              method: 'post',
-              params: { tableMetaUuid: tableMetaUuid }
-            }).then(result => {
-              if (result.data == null) {
-                alert('错误' + e.message + 'error')
-              } else {
-                // 处理拿回来的数据 处理成列表
-                const columns = []
-                for (let i = 0; i < result.data.length; i++) {
-                  if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
-                    columns.push(result.data[i].colName)
-                  } else {
-                    columns.push(result.data[i].chnName)
+          request({
+            baseURL: dataUrl,
+            url: '/tableMeta/getCols',
+            method: 'post',
+            params: { tableMetaUuid: tableMetaUuid }
+          }).then(result => {
+            if (result.data == null) {
+              alert('错误' + e.message + 'error')
+            } else {
+              // 处理拿回来的数据 处理成列表
+              const columns = []
+              var nodeList = []
+              for (let i = 0; i < result.data.length; i++) {
+                if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
+                  columns.push(result.data[i].colName)
+                  var node = {
+                    'id': tableName + '_' + this,
+                    'name': result.data[i].colName,
+                    'displayName': result.data[i].colName,
+                    'pid': treeNode.id,
+                    'isParent': false,
+                    'open': false,
+                    'type': 'column',
+                    'icon': columnIconPath,
+                    'enName':result.data[i].colName
                   }
-                }
-                if (columns.length > 0) {
-                  CodeMirror.tableColMapping[tableName] = columns
-                  editorObj.options.hintOptions.tables[tableName] = columns
-                  var nodeList = []
-                  $(columns).each(function() {
-                    var node = {
-                      'id': tableName + '_' + this,
-                      'name': this.toString(),
-                      'displayName': this.toString(),
-                      'pid': treeNode.id,
-                      'isParent': false,
-                      'open': false,
-                      'type': 'column',
-                      'icon': columnIconPath
-                    }
-                    nodeList.push(node)
-                  })
-                  zTreeObj.addNodes(treeNode, nodeList)
+                  nodeList.push(node)
+                } else {
+                  //如果有汉化字段则用中文加汉化字段
+                  let columnName = result.data[i].colName + "(" + result.data[i].chnName + ")"
+                  columns.push(result.data[i].colName)
+                  var node = {
+                    'id': tableName + '_' + this,
+                    'name': columnName,
+                    'displayName': columnName,
+                    'pid': treeNode.id,
+                    'isParent': false,
+                    'open': false,
+                    'type': 'column',
+                    'icon': columnIconPath,
+                    'enName':result.data[i].colName
+                  }
+                  nodeList.push(node)
+                  editorObj.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
                 }
               }
-            })
-          } else {
-            var nodeList = []
-            $(columns).each(function() {
-              var node = {
-                'id': tableName + '_' + this,
-                'name': this.toString(),
-                'displayName': this.toString(),
-                'pid': treeNode.id,
-                'isParent': false,
-                'open': false,
-                'type': 'column',
-                'icon': columnIconPath
+              if (columns.length > 0) {
+                CodeMirror.tableColMapping[tableName] = columns
+                editorObj.options.hintOptions.tables[tableName] = columns
+                zTreeObj.addNodes(treeNode, nodeList)
               }
-              nodeList.push(node)
-            })
-            zTreeObj.addNodes(treeNode, nodeList)
-          }
+            }
+          })
         }
       }
     },
@@ -663,10 +657,18 @@ export function initTableTree(result) {
   for (let i = 0; i < result.data.length; i++) {
     if (result.data[i].type === 'table') {
       result.data[i].icon = tableIconPath
+      result.data[i].enName = result.data[i].name;
+      if(result.data[i].nameCn){
+        result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
+      }
       result.data[i].isParent = true
     } else if (result.data[i].type === 'view') {
       result.data[i].icon = viewIconPath
       result.data[i].isParent = true
+      result.data[i].enName = result.data[i].name;
+      if(result.data[i].nameCn){
+        result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
+      }
     } else if (result.data[i].type === 'folder') {
       result.data[i].isParent = true
     }
@@ -1045,7 +1047,7 @@ function onDrop(event, treeId, treeNodes) {
     return
   }
   var cursor = editorObj.getCursor()
-  dragOne(treeNodes[0]['name'] + " ", cursor, cursor)
+  dragOne(treeNodes[0]['enName'] + " ", cursor, cursor)
 }
 
 /**

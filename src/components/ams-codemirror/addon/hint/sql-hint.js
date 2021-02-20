@@ -173,6 +173,7 @@ import store from '@/store'
           method: 'get',
           params: { tableName: table,dataUserId:dataUserId}
         }).then(result=>{
+          debugger
           if (result.data != null) {
             // 处理拿回来的数据 处理成列表
             var columnsArr = []
@@ -180,7 +181,9 @@ import store from '@/store'
               if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
                 columnsArr.push(result.data[i].colName)
               } else {
-                columnsArr.push(result.data[i].chnName)
+                debugger
+                columnsArr.push(result.data[i].colName)
+                editor.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
               }
             }
             CodeMirror.tableColMapping[table] = columnsArr;
