@@ -696,32 +696,36 @@ export default {
           quickMenuPath: this.$refs.tree4.getCheckedNodes()[i].path
         })
       }
-      saveQuickMenuList(allThing).then(resp => {
-        if(resp.code != 0){
-          this.$message({
-            type: 'error',
-            message: '保存失败!'
-          })
-          return
-        }
-        this.latelyFastList = []
-        getQuickMenuList().then(res => {
-          for (let i=0; i<res.data.length; i++) {
-            for (let n=0; n<this.latelyImgList.length; n++) {
-              if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
-                this.latelyFastList.push({
-                  id: res.data[i].quickMenuId,
-                  name: res.data[i].quickMenuName,
-                  path: res.data[i].quickMenuPath,
-                  image: this.latelyImgList[i].image,
-                  bg: this.latelyBackList[i].bg
-                })
+      if (allThing.length > 4) {
+        this.$message.error('自定义快捷菜单不能超过四个！');
+      } else {
+        saveQuickMenuList(allThing).then(resp => {
+          if(resp.code != 0){
+            this.$message({
+              type: 'error',
+              message: '保存失败!'
+            })
+            return
+          }
+          this.latelyFastList = []
+          getQuickMenuList().then(res => {
+            for (let i=0; i<res.data.length; i++) {
+              for (let n=0; n<this.latelyImgList.length; n++) {
+                if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
+                  this.latelyFastList.push({
+                    id: res.data[i].quickMenuId,
+                    name: res.data[i].quickMenuName,
+                    path: res.data[i].quickMenuPath,
+                    image: this.latelyImgList[i].image,
+                    bg: this.latelyBackList[i].bg
+                  })
+                }
               }
             }
-          }
+          })
         })
-      })
-      this.dialogVisible = false
+        this.dialogVisible = false
+      }
     },
     // 父节点不可选
     ifFather(data) {

@@ -106,7 +106,6 @@
         <div
           class="label-open flex a-center j-start flex-row"
           @click="isShowToolsList=!isShowToolsList"
-
         >
           <i class="el-icon-s-grid" />
           <span>更多工具</span>
