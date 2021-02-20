@@ -1150,7 +1150,7 @@ export default {
   width: 203px;
   height: 44px;
   border-radius: 21.6px;
-  font-size: 14.4;
+  font-size: 14.4px;
 }
 .icon-search{
   position: absolute;
@@ -1162,7 +1162,6 @@ export default {
 }
 .row-all{
   height: 650px;
-  overflow: auto;
 }
 .table{
   height: 450px !important;
