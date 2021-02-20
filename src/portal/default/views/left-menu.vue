@@ -44,10 +44,10 @@
         </div>
       </div>
       <div class="bottom flex a-center j-end flex-column">
-        <span class="label-search" @click="isShowToolsList=!isShowToolsList, isShowTreeList=false">
+        <span class="label-search" @click="isShowToolsList=!isShowToolsList, isShowTreeList=false, currentIndex=-1">
           <i class="el-icon-search" />
         </span>
-        <span class="label-open" @click="isShowToolsList=!isShowToolsList, isShowTreeList=false">
+        <span class="label-open" @click="isShowToolsList=!isShowToolsList, isShowTreeList=false, currentIndex=-1">
           <i class="el-icon-s-grid" />
         </span>
         <el-tooltip class="item" effect="light" :content="userInfo.name" placement="right">
@@ -105,7 +105,7 @@
         </div>
         <div
           class="label-open flex a-center j-start flex-row"
-          @click="isShowToolsList=!isShowToolsList, isShowTreeList=false"
+          @click="isShowToolsList=!isShowToolsList, isShowTreeList=false, currentIndex=-1"
         >
           <i class="el-icon-s-grid" />
           <span>更多工具</span>
