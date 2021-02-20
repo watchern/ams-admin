@@ -581,8 +581,8 @@
                     if (result.data != null) {
                         for (let i = 0; i < result.data.length; i++) {
                             if (result.data[i].type === 'table') {
-                                relTableMap[result.data[i].name] = []
-                                expTableMap[result.data[i].name] = result.data[i].extCol
+                                relTableMap[result.data[i].enName] = []
+                                expTableMap[result.data[i].enName] = result.data[i].extCol
                             }
                         }
                     }
