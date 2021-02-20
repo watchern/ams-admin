@@ -19,7 +19,7 @@
               @click="openProjectDialog"
               :disabled="buttonIson.AssociatedBtn"
               class="oper-btn refresh"
-              title="关联项目"
+              title="分配项目"
             ></el-button>
             <!-- relationProject('4534532', '项目5') -->
             <el-button
@@ -27,14 +27,14 @@
               @click="RemoverelationProject()"
               :disabled="buttonIson.DisassociateBtn"
               class="oper-btn move"
-              title="移除项目关联"
+              title="移除分配项目"
             ></el-button>
             <el-button
-              :disabled="buttonIson.deleteBtn"
               type="primary"
-              @click="deleteRunTaskRel"
-              class="oper-btn delete"
-              title="删除"
+              @click="modelResultOpenDialog()"
+              :disabled="buttonIson.resultShareBtn"
+              class="oper-btn share"
+              title="结果分配"
             ></el-button>
             <el-button
               type="primary"
@@ -45,24 +45,17 @@
             ></el-button>
             <el-button
               type="primary"
-              @click="modelResultOpenDialog()"
-              :disabled="buttonIson.resultShareBtn"
-              class="oper-btn share"
-              title="结果共享"
-            ></el-button>
-            <!-- <el-button
-              type="primary"
-              @click="sendToOA()"
-              :disabled="selected1.length !== 1"
-              class="oper-btn share"
-              title="结果分配"
-            ></el-button> -->
-            <el-button
-              type="primary"
               @click="exportExcel"
               :disabled="buttonIson.exportBtn"
               class="oper-btn export-2"
-              title="导出"
+              title="结果导出"
+            ></el-button>
+            <el-button
+              :disabled="buttonIson.deleteBtn"
+              type="primary"
+              @click="deleteRunTaskRel"
+              class="oper-btn delete"
+              title="结果删除"
             ></el-button>
           </el-row>
         </div>
@@ -1083,7 +1076,6 @@ export default {
       }
       var resultRelProjectUuids = ids.join(",");
       rmResultRelProjectlr(resultRelProjectUuids).then((resp) => {
-        console.log(resp.data);
         if (resp.data == true) {
           this.getLikeList();
           this.$message({
