@@ -180,7 +180,8 @@ import store from '@/store'
               if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
                 columnsArr.push(result.data[i].colName)
               } else {
-                columnsArr.push(result.data[i].chnName)
+                columnsArr.push(result.data[i].colName)
+                editor.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
               }
             }
             CodeMirror.tableColMapping[table] = columnsArr;
