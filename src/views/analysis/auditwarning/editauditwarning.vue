@@ -29,6 +29,23 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="分配类型" >
+                <el-select v-model="auditWarningSave.distributionType" @change="distributionTypeChange" placeholder="请选择分配类型" >
+                  <el-option label="请选择" :value="0"></el-option>
+                  <el-option label="分配到人" :value="1"></el-option>
+                  <el-option label="分配到项目" :value="2"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item  label="人员或项目">
+                <el-input  class="el-input-z" readonly="readonly" v-model="auditWarningSave.distributionName"/>
+                <span class="btn-z" @click="distributionButtonClick">选择</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
           <el-form-item label="关联模型" v-if="temp.warningType == 1">
             <el-row>
               <el-col align="right">
@@ -228,12 +245,36 @@
       title="请选择指标常用分析"
       :visible.sync="selectIndicatorVisble"
       width="45%"
-
       :append-to-body="true">
       <commonlyAnalysisList ref="commonlyAnalysisList"/>
       <span slot="footer" class="dialog-footer">
         <el-button @click="selectIndicatorVisble = false">取 消</el-button>
         <el-button type="primary" @click="getCommonlyAnalysis()">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="请选择人员"
+      :visible.sync="personDialog"
+      width="45%"
+      :append-to-body="true">
+      <personTree ref="personTree" />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="personDialog = false">取 消</el-button>
+        <el-button type="primary" @click="getCheckPerson">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="请选择项目"
+      :visible.sync="projectDialog"
+      width="45%"
+      :append-to-body="true">
+      <userProject
+        v-if="projectDialog"
+        ref="userproject"
+      ></userProject>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="projectDialog = false">取 消</el-button>
+        <el-button type="primary" @click="getCheckProject">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -250,9 +291,11 @@ import dataTree from "@/views/data/role-res/data-tree";
 import commonlyAnalysisList from "../../../components/ams-indicator-admin/src/views/indicator/commonlyAnalysisList";
 import $ from "jquery";
 import {Loading} from "element-ui";
+import personTree from '@/components/publicpersontree/index'
+import userProject from "@/views/base/userproject/index";
 export default {
   name:"editAuditWarning",
-  components: { SelectModels, paramDraw , dataTree,commonlyAnalysisList,paramDrawNew},
+  components: { SelectModels, paramDraw , dataTree,commonlyAnalysisList,paramDrawNew,personTree,userProject},
   props: {
     //操作类型 add添加 update更新 detail详情查看
     option : {
@@ -272,6 +315,10 @@ export default {
       tabShow : "baseInfo",
       //全局只读 在查看详情时=true
       allReadOnly : false,
+      //人员dialog
+      personDialog:false,
+      //项目dialog
+      projectDialog:false,
       //组件loading是否展现
       isShowLoading:false,
       //单次/多次/周期执行的周期开始结束时间 执行时间选择配置
@@ -291,6 +338,12 @@ export default {
         executeMode : 1,
         //单次执行时间
         singleExecuteTime: '',
+        //分配类型   1、人员；2、项目
+        distributionType:0,
+        //分配编号   如果分配类型为1则存储人员编号，为2则存储项目编号
+        distributionUuid:'',
+        //分配名称   如果分配类型为1则存储人员名称，为2则存储项目名称
+        distributionName:'',
         //多次执行时间关联
         manyTimesExecuteTime:[{
           //多次执行的执行时间
@@ -377,7 +430,13 @@ export default {
         //保存结果位置编号
         locationUuid:'',
         //保存结果文件夹名称
-        locationName:''
+        locationName:'',
+        //分配类型   1、人员；2、项目
+        distributionType:0,
+        //分配编号   如果分配类型为1则存储人员编号，为2则存储项目编号
+        distributionUuid:'',
+        //分配名称   如果分配类型为1则存储人员名称，为2则存储项目名称
+        distributionName:''
       },
       //已经初始化参数的模型
       initedParamModel:[],
@@ -903,6 +962,69 @@ export default {
      */
     deleteCommonlyAnalysis(index, rows){
       rows.splice(index, 1);
+    },
+    /**
+     * 分配按钮点击事件
+     */
+    distributionButtonClick(){
+      if(this.auditWarningSave.distributionType == 1){
+        //打开人员选择窗体
+        this.personDialog = true
+      }
+      else if(this.auditWarningSave.distributionType == 2){
+        //打开项目选择窗体
+        this.projectDialog = true
+      }
+      else{
+        this.$message({type:"info",message:"请先选择分配类型"})
+      }
+    },
+    /**
+     * 获取选择的人员
+     */
+    getCheckPerson(){
+      var userId = this.$store.getters.personuuid
+      const persons = this.$refs.personTree.getSelectValue()
+      if(persons.length > 1){
+        this.$message({ type: 'info', message: '只有分配给一个人!' })
+        return
+      }
+      if(persons[0].personuuid === userId){
+        this.$message({ type: 'info', message: '不能共享给自己!' })
+        return
+      }
+      //获取人员并给实体赋值
+      this.auditWarningSave.distributionUuid = persons[0].personuuid
+      this.auditWarningSave.distributionName = persons[0].cnname
+      this.personDialog = false
+    },
+    /**
+     * 获取选择的项目
+     */
+    getCheckProject(){
+      var projects = this.$refs.userproject.getSelectValue();
+      if (projects.length === 0) {
+        this.$message({
+          message: "请选择要关联的项目",
+        });
+      }
+      else if (projects.length === 1) {
+        this.auditWarningSave.distributionUuid = projects[0].PRJ_PROJECT_UUID
+        this.auditWarningSave.distributionName = projects[0].PRJ_NAME
+        this.projectDialog = false;
+      } else {
+        this.$message({
+          message: "只能关联一个项目",
+        });
+      }
+    },
+    /**
+     * 分配类型更改事件
+     * @param val 值
+     */
+    distributionTypeChange(val){
+      this.auditWarningSave.distributionUuid = ""
+      this.auditWarningSave.distributionName = ""
     }
   }
 }
