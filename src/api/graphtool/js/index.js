@@ -1,4 +1,4 @@
-import { saveGraphInterface,getExecuteNodeInfoPost,importGraphXml,exportGraphXml,deleteExecuteNodes,executeNodeSql } from '@/api/graphtool/apiJs/graphList'
+import { saveGraphInterface,getExecuteNodeInfoPost,importGraphXml,exportGraphXml,deleteExecuteNodes,executeNodeSql,dealReplaceParamSql } from '@/api/graphtool/apiJs/graphList'
 import { progressDownLoad,getPreNodes,changeNodeIcon,nodeCallBack } from '@/api/graphtool/js/common'
 let graphIndexVue = null//vue实例
 let graph = null

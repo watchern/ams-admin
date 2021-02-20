@@ -1,6 +1,6 @@
 <template>
-  <duv>
-    <el-table
+  <div>
+    <el-table  style="height: 400px;overflow-y: scroll"
       v-loading="listLoading"
       :data="list"
       border
@@ -28,7 +28,7 @@
         prop="CREATE_TIME"
       />
     </el-table>
-  </duv>
+  </div>
 </template>
 <script>
 import { getProjectByLoginUserUuid } from "@/api/base/userproject";
