@@ -14,7 +14,7 @@
         <el-button type="primary" @click="queryCondition">查 询</el-button>
       </span>
     </el-dialog>
-    <el-row style="margin-right: 35px;">
+    <el-row style="margin-right: 35px;" v-if="useType !== 'graph'">
       <div :class="chartClass" title="图表" @click="switchDivStyle('chart')"><span class="icon iconfont" >&#xecee;</span></div>
       <div :class="tableClass" title="表格" @click="switchDivStyle('table')"><span class="icon iconfont" >&#xe6d8;</span></div>
     </el-row>
