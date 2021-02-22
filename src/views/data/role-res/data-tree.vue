@@ -115,7 +115,8 @@ export default {
               type: 'col',
               dataType: e.dataType,
               dataLength: e.dataLength,
-              leaf: true
+              leaf: true,
+              title: e.chnName
             })
           })
           resolve(nodes)
