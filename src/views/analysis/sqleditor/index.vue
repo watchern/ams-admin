@@ -42,14 +42,14 @@
                                 type="primary"
                                 size="small"
                                 class="oper-btn folder"
-                                title="打开sql"
+                                title="打开SQL"
                                 @click="openSqlDraftList"
                             />
                             <el-button
                                 type="primary"
                                 size="small"
                                 class="oper-btn sqlcheck"
-                                title="校验sql"
+                                title="校验SQL"
                                 @click="getColumnSqlInfo"
                             />
                             <el-dropdown>
@@ -128,7 +128,7 @@
                             :key="result.id"
                             :pre-value="currentExecuteSQL"
                             use-type="sqlEditor"
-                            style="width: 101.5%;overflow:auto;height:450px;"
+                            style="width: 101.5%;height:450px;"
                             :chartModelUuid='modelUuid'
                             :modelId='modelUuid'
                             id="childTabs1"
@@ -581,8 +581,8 @@
                     if (result.data != null) {
                         for (let i = 0; i < result.data.length; i++) {
                             if (result.data[i].type === 'table') {
-                                relTableMap[result.data[i].name] = []
-                                expTableMap[result.data[i].name] = result.data[i].extCol
+                                relTableMap[result.data[i].enName] = []
+                                expTableMap[result.data[i].enName] = result.data[i].extCol
                             }
                         }
                     }
