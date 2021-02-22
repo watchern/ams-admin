@@ -18,7 +18,7 @@
               type="primary"
               @click="openProjectDialog"
               :disabled="buttonIson.AssociatedBtn"
-              class="oper-btn refresh"
+              class="oper-btn link-2"
               title="分配项目"
             ></el-button>
             <el-button
