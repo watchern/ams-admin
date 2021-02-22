@@ -1044,6 +1044,8 @@ export default {
      * 显示模型结果详细提取公共代码
      * */
     getIntoModelResultDetail(nextValue){
+      this.afterAddChartsWithNoConfigure = true
+      this.chartLoading = false
       this.loading = true;
       this.nextValue = nextValue;
       var col = [];
