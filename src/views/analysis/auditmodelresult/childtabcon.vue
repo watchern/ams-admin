@@ -337,7 +337,8 @@ export default {
     "preLength",
     "myIndex",
     "chartModelUuid",
-    "settingInfo"
+    "settingInfo",
+    "agridColumnDatas"
   ],
   data() {
     return {
@@ -1051,7 +1052,6 @@ export default {
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
           if (this.nextValue.executeSQL.type == "SELECT") {
-            if (true) {
               this.modelResultButtonIsShow = true;
               this.modelResultPageIsSee = true;
               this.modelResultData = this.nextValue.result;
@@ -1096,6 +1096,7 @@ export default {
               this.result.data = chartData;
               this.rowData = this.modelResultData;
               this.modelResultColumnNames = this.nextValue.columnNames;
+              if (this.agridColumnDatas === undefined){
               for (var j = 0; j < this.nextValue.columnNames.length; j++) {
                 var rowColom = {
                   headerName: this.nextValue.columnNames[j],
@@ -1106,11 +1107,13 @@ export default {
                 var value = this.nextValue.result[j];
                 col.push(rowColom);
               }
+              }else {
+                col = this.agridColumnDatas
+              }
               for (var k = 0; k < this.nextValue.result.length; k++) {
                 rowData.push(this.nextValue.result[k]);
               }
               this.columnDefs = col;
-            }
             this.afterResult = true
           } else {
             this.isSee = false;
