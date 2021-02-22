@@ -141,6 +141,9 @@ export default {
       })
     },
     onSwitchWith() {
+      Object.keys(this.query).forEach(o => {
+        this.query[o] = null
+      })
       if (this.searchBar === '0') {
         this.searchBar = '1'
       } else {
