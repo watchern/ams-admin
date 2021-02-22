@@ -192,6 +192,7 @@ export default {
     margin-right:10px;
   }
   .img-icon{
+    margin-top: 8px;
     margin-right:5px;
   }
   .someimgin{
