@@ -902,35 +902,37 @@ export default {
       }
       //region 初始化模型结果固定输出列
       const columnData = []
-      for (let i = 0; i < returnObj.finalTable.columnNameArr.length; i++) {
-        const columnDataObj = {
-          outputColumnName: returnObj.finalTable.columnNameArr[i],
-          columnType: returnObj.finalTable.columnTypeArr[i]
+      if (returnObj.finalTable.columnNameArr !== undefined){
+        for (let i = 0; i < returnObj.finalTable.columnNameArr.length; i++) {
+          const columnDataObj = {
+            outputColumnName: returnObj.finalTable.columnNameArr[i],
+            columnType: returnObj.finalTable.columnTypeArr[i]
+          }
+          columnData.push(columnDataObj)
         }
-        columnData.push(columnDataObj)
+        //endregion
+        // region初始化默认参数
+        // 初始化参数默认值界面界面
+        let params = this.$refs.graph[0].getParamsArr()
+        if (params.length != 0) {
+          this.sqlEditorParam = params
+          this.$refs.apple.initSetting(this.sqlEditorParam)
+        }
+        //endregion
+        this.graphColumnInfo = returnObj
+        this.columnData = columnData
+        if (this.columnData.length==0){
+          this.isExecuteSql = false
+        }else if (this.columnData.length>0){
+          this.isExecuteSql = true
+        }
+        this.setThreasholdValueObj.columns = []
+        for (var i = 0;i<columnData.length;i++){
+          this.setThreasholdValueObj.columns.push(columnData[i].outputColumnName)
+        }
+        //直接获取图形化编号
+        this.form.sqlValue = ""
       }
-      //endregion
-      // region初始化默认参数
-      // 初始化参数默认值界面界面
-      let params = this.$refs.graph[0].getParamsArr()
-      if (params.length != 0) {
-        this.sqlEditorParam = params
-        this.$refs.apple.initSetting(this.sqlEditorParam)
-      }
-      //endregion
-      this.graphColumnInfo = returnObj
-      this.columnData = columnData
-      if (this.columnData.length==0){
-        this.isExecuteSql = false
-      }else if (this.columnData.length>0){
-        this.isExecuteSql = true
-      }
-      this.setThreasholdValueObj.columns = []
-      for (var i = 0;i<columnData.length;i++){
-        this.setThreasholdValueObj.columns.push(columnData[i].outputColumnName)
-      }
-      //直接获取图形化编号
-      this.form.sqlValue = ""
       return true
     },
     /**
@@ -1161,7 +1163,6 @@ export default {
         model.modelThresholdValues[i].onlyId = uuid2()
         this.threshold.push(model.modelThresholdValues[i])
       }
-      debugger
       // endregion
       this.displaySQL(returnObj)
     },

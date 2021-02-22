@@ -14,38 +14,35 @@
         <el-button type="primary" @click="queryCondition">查 询</el-button>
       </span>
     </el-dialog>
+    <el-row style="margin-right: 35px;">
+      <div :class="chartClass" title="图表" @click="switchDivStyle('chart')"><span class="icon iconfont" >&#xecee;</span></div>
+      <div :class="tableClass" title="表格" @click="switchDivStyle('table')"><span class="icon iconfont" >&#xe6d8;</span></div>
+    </el-row>
     <el-row v-if="chartSwitching" style="position:relative">
-      <el-button
-        type="primary"
-        class="oper-btn chart"
-        @click="chartSwitching = false"
-        :style="{position:(myFlag?'absolute':'relative'),zIndex:10}"
-        title="下方图表展示"
-      ></el-button>
       <el-row v-if="myFlag">
         <div align="right">
           <el-button
-            :disabled="modelRunResultBtnIson.exportBtn"
             type="primary"
-            @click="exportExcel"
-            class="oper-btn export-2"
-            title="导出"
-          ></el-button>
-          <el-button
-            :disabled="modelRunResultBtnIson.chartDisplayBtn"
-            type="primary"
-            class="oper-btn chart"
-            @click="chartShowIsSee = true"
-            title="图表展示"
+            class="oper-btn refresh"
+            :disabled="modelRunResultBtnIson.associatedBtn"
+            @click="openProjectDialog"
+            title="分配项目"
           ></el-button>
           <el-button
             :disabled="modelRunResultBtnIson.disassociateBtn"
             type="primary"
-             class="oper-btn move"
+            class="oper-btn move"
             @click="removeRelated()"
-            title="移除关联"
-            ></el-button
+            title="移除分配项目"
+          ></el-button
           >
+<!--          <el-button-->
+<!--            :disabled="modelRunResultBtnIson.chartDisplayBtn"-->
+<!--            type="primary"-->
+<!--            class="oper-btn chart"-->
+<!--            @click="chartShowIsSee = true"-->
+<!--            title="图表展示"-->
+<!--          ></el-button>-->
           <el-button
             :disabled="false"
             type="primary"
@@ -53,14 +50,6 @@
             class="oper-btn search"
             title="查询设置"
           ></el-button>
-          <el-button
-            type="primary"
-            class="oper-btn refresh"
-            :disabled="modelRunResultBtnIson.associatedBtn"
-            @click="openProjectDialog"
-            title="关联项目"
-          ></el-button>
-          <!-- addDetailRel('qwer1', '项目11') -->
           <el-button
             :disabled="false"
             type="primary"
@@ -76,6 +65,14 @@
             @click="openModelDetail"
             title="查询关联"
           ></el-button>
+          <el-button
+            :disabled="modelRunResultBtnIson.exportBtn"
+            type="primary"
+            @click="exportExcel"
+            class="oper-btn export-2"
+            title="导出"
+          ></el-button>
+          <!-- addDetailRel('qwer1', '项目11') -->
         </div>
       </el-row>
 
@@ -114,7 +111,6 @@
         </el-col>
         <el-col :span="2">
           <el-row v-if="modelResultButtonIsShow" style="display: flex">
-            <!-- 2.1前台导出，双向绑定数据 -->
             <downloadExcel
               :data="tableData"
               :fields="json_fields"
@@ -129,18 +125,10 @@
                 title="导出"
               ></el-button>
             </downloadExcel>
-            <!-- <el-button
-              v-if="this.preLength==this.myIndex+1"
-              type="primary"
-              title="图表展示"
-              class="oper-btn chart"
-              @click="openChartDialog"
-            ></el-button> -->
           </el-row>
         </el-col>
       </el-row>
     </el-row>
-    <!-- modelResultPageIsSee -->
     <el-dialog
       title="模型详细关联"
       :visible.sync="modelDetailDialogIsShow"
@@ -191,14 +179,14 @@
       width="90%"
       :fullscreen="true"
       :append-to-body="true"
-    >
+    ><div v-if="chartShowIsSee">
       <mtEditor
         ref="chart"
         :data="result"
-        :v-if="chartShowIsSee"
         :chart-config="nowChartJson"
         :key="chartPreview"
       ></mtEditor>
+         </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="chartShowIsSee = false">取 消</el-button>
         <el-button
@@ -226,9 +214,27 @@
           </span>
         </el-dialog>
     <el-row v-if="!chartSwitching">
-      <el-row>
       <div align="right" v-if="this.preLength==this.myIndex+1||myFlag">
-        <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" class="chartSwitching" @click="changeChart(item.id)" :key="key"/>
+        <div class="smallImgs">
+          <div align="right">
+            <a
+              v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"
+              @click="openChartDialog"
+              title="添加图表"
+              style="margin: 10px 6px 10px 0;float: right"
+            >添加</a>
+          </div>
+          <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" class="chartSwitching" @click="changeChart(item.id)" :key="key"/>
+        </div>
+        <div v-if="!isHaveCharts && !afterAddChartsWithNoConfigure">
+        <img
+          src="./imgs/change.png"
+          v-if="useType=='sqlEditor'||myFlag"
+          type="primary"
+          @click="openEditChartDialog"
+          class="change-pos"
+          title="修改图表"
+        />
         <img
           src="./imgs/deletein.png"
           v-if="useType=='sqlEditor'||myFlag"
@@ -237,33 +243,14 @@
           class="delete-pos"
           title="删除图表"
         />
-        <img
-          src="./imgs/change.png"
-          v-if="useType=='sqlEditor'||myFlag"
-          type="primary"
-          @click="openEditChartDialog"
-          class="change-pos"
-          title="修改图标"
-        />
-        <el-button
-          v-if="useType=='sqlEditor'||myFlag"
-          type="primary"
-          @click="openChartDialog"
-          class="oper-btn add"
-          title="添加图表"
-        ></el-button>
-        <el-button
-          type="primary"
-          class="oper-btn excel"
-          @click="chartSwitching = true"
-          title="上方表格展示"
-        ></el-button>
+        </div>
       </div>
-    </el-row>
     <div style="height: 450px;" v-if="this.preLength==this.myIndex+1||myFlag">
       <div align='center' style='font-weight:lighter ;font-size:15px' v-if="afterAddChartsWithNoConfigure">请选择图表</div>
-      <div align='center' style='font-weight:lighter ;font-size:15px' v-if="isHaveCharts">该模型暂无图表</div>
-      <mtEditor v-loading="chartLoading" v-if="afterResult" :key="chartPreview" ref='chart1' :data='result' :chart-config='nowChartJson' :preview="true"></mtEditor>
+      <div align='center' style='font-weight:lighter ;font-size:15px' v-if="isHaveCharts">暂无图表</div>
+      <div v-if="afterResult" style="height: 350px;">
+      <mtEditor v-loading="chartLoading" :key="chartPreview" ref='chart1' :data='result' :chart-config='nowChartJson' :preview="true"></mtEditor>
+      </div>
     </div>
   </el-row>
   </div>
@@ -310,6 +297,7 @@ import {
 import { getTransMap } from "@/api/data/transCode.js";
 import mtEditor from "ams-datamax";
 import "iview/dist/styles/iview.css";
+import {uuid2} from "@/api/analysis/auditmodel";
 
 export default {
   name: "childTabCon",
@@ -349,7 +337,8 @@ export default {
     "preLength",
     "myIndex",
     "chartModelUuid",
-    "settingInfo"
+    "settingInfo",
+    "agridColumnDatas"
   ],
   data() {
     return {
@@ -417,7 +406,9 @@ export default {
       projectDialogIsSee:false,   //用来控制项目dialog显示
       chartSwitching: true,  //控制表格与图表切换
       modelObj:{},  //查询当前模型结果对应的的model对象
-      rowIndex:''  //存储点击表格的行数
+      rowIndex:'',  //存储点击表格的行数
+      tableClass:'el-btn-no-color',
+      chartClass:'el-btn-color'
     };
   },
   mounted() {
@@ -429,6 +420,17 @@ export default {
     window.openModelDetailNew=_this.openModelDetailNew;
   },
   methods: {
+    switchDivStyle(type){
+      if (type === 'table'){
+        this.chartSwitching = false
+        this.tableClass = 'el-btn-color'
+        this.chartClass = 'el-btn-no-color'
+      }else if(type === 'chart'){
+        this.chartSwitching = true
+        this.tableClass = 'el-btn-no-color'
+        this.chartClass = 'el-btn-color'
+      }
+    },
     rowChange() {
       var selectData = this.gridApi.getSelectedRows();
       if (selectData.length == 0) {
@@ -1050,7 +1052,6 @@ export default {
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
           if (this.nextValue.executeSQL.type == "SELECT") {
-            if (true) {
               this.modelResultButtonIsShow = true;
               this.modelResultPageIsSee = true;
               this.modelResultData = this.nextValue.result;
@@ -1079,7 +1080,7 @@ export default {
                 columnType.push(type);
               }
               var resultData = this.nextValue.result;
-              this.result.id = this.nextValue.modelUuid
+              this.result.id = uuid2()
               this.result.name = '模型'
               this.result.columnType = columnType;
               var chartData = [];
@@ -1095,6 +1096,7 @@ export default {
               this.result.data = chartData;
               this.rowData = this.modelResultData;
               this.modelResultColumnNames = this.nextValue.columnNames;
+              if (this.agridColumnDatas === undefined){
               for (var j = 0; j < this.nextValue.columnNames.length; j++) {
                 var rowColom = {
                   headerName: this.nextValue.columnNames[j],
@@ -1105,11 +1107,13 @@ export default {
                 var value = this.nextValue.result[j];
                 col.push(rowColom);
               }
+              }else {
+                col = this.agridColumnDatas
+              }
               for (var k = 0; k < this.nextValue.result.length; k++) {
                 rowData.push(this.nextValue.result[k]);
               }
               this.columnDefs = col;
-            }
             this.afterResult = true
           } else {
             this.isSee = false;
@@ -1450,7 +1454,7 @@ export default {
           if (resp.data) {
             this.$notify({
               title: this.$t("提示"),
-              message: this.$t("添加图标成功"),
+              message: this.$t("添加图表成功"),
               type: "success",
               duration: 2000,
               position: "bottom-right",
@@ -1459,10 +1463,9 @@ export default {
         });
     },
     /**
-     * 修改图标方法
+     * 修改图表方法
      */
     updateChart(){
-      this.chartShowIsSee = false;
       var chartJson = this.$refs.chart.getChartConfig();
       for(var i = 0;i<this.chartConfigs.length;i++){
         if(this.nowChartJson.id == this.chartConfigs[i].id){
@@ -1481,17 +1484,27 @@ export default {
              break
            }
         }
-      updateModelChartSetup(modelChartSetup).then((resp) => {
-          if (resp.data) {
-            this.$notify({
-              title: this.$t("提示"),
-              message: this.$t("修改成功"),
-              type: "success",
-              duration: 2000,
-              position: "bottom-right",
-            });
-          }
-        });
+        if (modelChartSetup.chartSetupUuid === undefined){
+          this.$notify({
+            title: this.$t("提示"),
+            message: this.$t("修改成功"),
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }else {
+          updateModelChartSetup(modelChartSetup).then((resp) => {
+            if (resp.data) {
+              this.$notify({
+                title: this.$t("提示"),
+                message: this.$t("修改成功"),
+                type: "success",
+                duration: 2000,
+                position: "bottom-right",
+              });
+            }
+          });
+        }
       }else{
               this.$notify({
               title: this.$t("提示"),
@@ -1501,6 +1514,7 @@ export default {
               position: "bottom-right",
             });
       }
+      this.chartShowIsSee = false;
     },
     /**
      * 获取参数返显的数据
@@ -1603,6 +1617,12 @@ export default {
      * 删除图标
      */
     deleteChart(){
+      if (this.nowChartJson === undefined){
+        this.$message({
+          message: "请选择图表后在删除!",
+        });
+        return
+      }
       for(var i = 0;i<this.chartConfigs.length;i++){
         if(this.nowChartJson.id == this.chartConfigs[i].id){
           this.chartConfigs.splice(i,1)
@@ -1618,17 +1638,27 @@ export default {
              break
            }
         }
-      deleteModelChartSetup(modelChartSetupUuid).then((resp) => {
-          if (resp.data) {
-            this.$notify({
-              title: this.$t("提示"),
-              message: this.$t("删除成功"),
-              type: "success",
-              duration: 2000,
-              position: "bottom-right",
-            });
-          }
-        });
+        if (modelChartSetupUuid===undefined){
+          this.$notify({
+            title: this.$t("提示"),
+            message: this.$t("删除成功"),
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }else {
+          deleteModelChartSetup(modelChartSetupUuid).then((resp) => {
+            if (resp.data) {
+              this.$notify({
+                title: this.$t("提示"),
+                message: this.$t("删除成功"),
+                type: "success",
+                duration: 2000,
+                position: "bottom-right",
+              });
+            }
+          });
+        }
       }else{
               this.$notify({
               title: this.$t("提示"),
@@ -1667,20 +1697,52 @@ export default {
 .delete-pos{
   width:25px;
   position: absolute;
-  bottom: -28px;
-  right: 109px;
+  right: 60px;
   z-index:20;
 }
 .change-pos{
   width:29px;
   position: absolute;
-  bottom: -30px;
-  right: 80px;
+  right: 35px;
   z-index:20;
 }
 .chartSwitching{
   width:24px;
   height:24px;
-  margin-right:8px;
+  margin: 10px 6px 0px 0px;
+  display: block;
+  cursor: pointer;
+  /*border:1px solid #999;*/
+  /*border-radius: 15%;*/
+}
+
+>>>.el-btn-no-color{
+  width: 44px;
+  float: left;
+  border: solid 1px #E0E0E0;
+  height: 29px;
+  margin: -7px 3px 3px 0px;
+  cursor: pointer;
+  text-align: center;
+}
+
+>>>.el-btn-color{
+  background: aliceblue;
+  width: 44px;
+  float: left;
+  border: solid 1px #E0E0E0;
+  height: 29px;
+  margin: -7px 3px 3px 0px;
+  cursor: pointer;
+  text-align: center;
+}
+.smallImgs{
+  float: right;
+  height: 723px;
+  padding-left: 5px;
+  background: rgb(245,245,245);
+  position: relative;
+  z-index: 10;
+  margin: -50px -8px 0px 0px;
 }
 </style>

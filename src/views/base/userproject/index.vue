@@ -1,6 +1,7 @@
 <template>
-  <duv>
-    <el-table
+  <div>
+    <span class="el-form-item__label">项目名称:</span><el-input style="width: 200px;" v-model="filterprojectName" placeholder="请输入内容"></el-input>
+    <el-table  style="height: 400px;overflow-y: scroll"
       v-loading="listLoading"
       :data="list"
       border
@@ -28,11 +29,25 @@
         prop="CREATE_TIME"
       />
     </el-table>
-  </duv>
+  </div>
 </template>
 <script>
 import { getProjectByLoginUserUuid } from "@/api/base/userproject";
 export default {
+  watch:{
+    filterprojectName(val){
+      if (val!==''){
+        this.list = []
+        for (var i =0;i< this.datas.length;i++){
+          if (this.datas[i].PRJ_NAME.indexOf(val) !== -1){
+            this.list.push(this.datas[i])
+          }
+        }
+      }else {
+        this.list = this.datas
+      }
+    }
+  },
   created() {
     this.getProject();
   },
@@ -41,11 +56,14 @@ export default {
       listLoading: true,
       list: [],
       selectValue: {},
+      filterprojectName:'' ,//存储选择关联项目时过滤项目的名称
+      datas:[]   //存储该人的所有项目
     };
   },
   methods: {
     getProject() {
       getProjectByLoginUserUuid().then((resp) => {
+        this.datas = resp.data
         this.list = resp.data;
         this.listLoading = false;
       });
