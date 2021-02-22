@@ -136,18 +136,20 @@
                 const isSet = this.nodeData.isSet// 判断当前节点是否已经设置
                 const parent_node = graph.nodeData[parentIds[0]] // one parent
                 this.preNodeName = '【上级节点名称：' + parent_node.nodeInfo.nodeName + '】'
-                Array.from(this.$parent.$parent.$parent.columnsInfoPre, item => {
+                let curColumnsInfo = this.$parent.$parent.$parent.columnsInfoPre
+                const settingFilter = this.initZtreeSetting()
+                if (isSet) {
+                    curColumnsInfo = this.nodeData.setting.columnsInfo
+                    this.zTreeObj_Filter = $.fn.zTree.init($(this.$refs.filterZtree), settingFilter, this.nodeData.setting.nodes)
+                } else {
+                    this.zTreeObj_Filter = $.fn.zTree.init($(this.$refs.filterZtree), settingFilter, [])
+                }
+                Array.from(curColumnsInfo, item => {
                     const newColumnName = item.newColumnName
                     const displayName = `${newColumnName}(${item.columnType})`
                     this.selectColms.push({ newColumnName, displayName })
                     this.compareColumnArr.push({ newColumnName, displayName })
                 })
-                const settingFilter = this.initZtreeSetting()
-                if (isSet) {
-                    this.zTreeObj_Filter = $.fn.zTree.init($(this.$refs.filterZtree), settingFilter, this.nodeData.setting.nodes)
-                } else {
-                    this.zTreeObj_Filter = $.fn.zTree.init($(this.$refs.filterZtree), settingFilter, [])
-                }
             },
             setSelectColms(val) {
                 this.select_colms = val
@@ -304,9 +306,9 @@
              * 	保存setting
              */
             saveSetting() {
-                var nodes = this.zTreeObj_Filter.getNodes()
                 this.nodeData.isSet = true
-                this.nodeData.setting.nodes = nodes
+                this.nodeData.setting.nodes = this.zTreeObj_Filter.getNodes()
+                this.nodeData.setting.columnsInfo = this.$parent.$parent.$parent.columnsInfoPre
             },
             // 页面输入项的校验(或空配置校验)
             inputVerify() {

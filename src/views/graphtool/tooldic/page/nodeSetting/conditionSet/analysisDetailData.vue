@@ -1,67 +1,133 @@
 <template>
-  <ul id="myTab" class="nav nav-tabs" />
-  <div id="columnName" style="height:50px;line-height: 50px;padding-left:20px;"><span>分析字段：</span><em style="color:red" /></div>
-  <div id="myTabContent" style="padding-left: 20px;" class="tab-content" />
+    <div style="height: 600px;overflow-y: auto;" v-loading="comparisonLoading" :element-loading-text="loadText">
+        <el-tabs v-model="detailTableName" :closable="false" @tab-click="clickTab">
+            <el-tab-pane v-for="obj in tableArr" :label="obj.name" :name="obj.index" :key="obj.id">
+                <el-row>
+                    <span>分析字段：</span><em style="color:red">{{obj.columnName}}</em>
+                </el-row>
+                <el-row>
+                    <ChildTabCons ref="childTabCons" :nowtable="obj.resultTable" :prePersonalVal="obj.resultTable" use-type="graph" preLength="1" myIndex="1"/>
+                </el-row>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
 </template>
 
 <script>
-export default {
-  name: 'AnalysisDetailData'
-}
-var dataTableName = getParams().dataTableName
-var openType = getParams().openType
-var cVal = getParams().cVal
-var paramData = {
-  'dataTableName': dataTableName,
-  'cVal': cVal,
-  'openType': openType
-}
-var height = $(document).height() - 100
-$('#myTabContent').height(height)
-var load = $('body').mLoading({ 'text': '正在加载数据，请稍后……', 'hasCancel': false })
-$.post(contextPath + '/graphEditor/getAnalysisDataDetail', paramData, function(res) {
-  load.hide()
-  // 判断总体结果是否出错
-  if (res.isError) {
-    alertMsg('错误', '获取数据表详细数据出错：' + res.message, 'error')
-  } else {
-    var list = res.resList
-    var li_html = ''; var div_html = ''
-    for (var i = 0; i < list.length; i++) {
-      var tableName = list[i].tableName
-      var nodeName = list[i].nodeName
-      var columnName = list[i].columnName
-      var layPageId = list[i].layPageId
-      // 判断每个涉及的表的查询明细数据结果是否出错
-      var isError = list[i].isError
-      var type = '1'
-      if (openType === 2) {
-        type = 0
-      }
-      var setting = {
-        'url': contextPath + '/graphEditor/viewData',
-        'param': { 'tableName': tableName, 'openType': openType, 'type': type },
-        'res': list[i],
-        'dropDownMenu': true,
-        'readOnly': true,
-        'isPage': true,
-        'pageUp': false,
-        'contextMenu': true,
-        'isError': isError,
-        'message': isError ? list[i].message : ''
-      }
-      if (i == 0) { // 设置选中active
-        li_html += '<li class="active"><a href="#' + layPageId + '" data-toggle="tab">' + nodeName + '</a></li>'
-        div_html += '<div class="tab-pane fade in active" id="' + layPageId + '"><div style="display:none;">' + JSON.stringify(setting) + '</div><iframe id="iframe_' + layPageId + '" src="dataTable.jsp?layPageId=' + layPageId + '" style="width: 98%; height:' + height + 'px;" frameborder="0"></iframe></div>'
-      } else {
-        li_html += '<li><a href="#' + layPageId + '" data-toggle="tab">' + nodeName + '</a></li>'
-        div_html += '<div class="tab-pane fade" id="' + layPageId + '"><div style="display:none;">' + JSON.stringify(setting) + '</div><iframe id="iframe_' + layPageId + '" src="dataTable.jsp?layPageId=' + layPageId + '" style="width: 98%; height:' + height + 'px;" frameborder="0"></iframe></div>'
-      }
+    import ChildTabCons from "@/views/analysis/auditmodelresult/childtabcon";
+    import { getAnalysisTableInfo, getAnalysisDataDetail } from '@/api/graphtool/apiJs/graphList'
+    export default {
+        name: 'AnalysisDetailData',
+        components:{ ChildTabCons },
+        data(){
+            return {
+                detailTableName:'0',
+                tableArr:[],
+                comparisonLoading:false,
+                loadText:'页面加载中，请稍后……'
+            }
+        },
+        props:['dataTableName','openType','columnVal'],
+        mounted() {
+            this.initWebsocket()
+            this.initData()
+        },
+        methods:{
+            initData(){
+                let paramData = {
+                    'dataTableName': this.dataTableName,
+                    'columnVal': this.columnVal,
+                    'openType': this.openType
+                }
+                this.comparisonLoading = true
+                getAnalysisTableInfo(paramData).then( response => {
+                    try{
+                        // 判断总体结果是否出错
+                        if (response.data.isError) {
+                            this.comparisonLoading = false
+                            this.$message.error(`获取数据表详细数据出错：${response.data.message}`)
+                        } else {
+                            for(let i=0; i<response.data.resList.length; i++){
+                                const item = response.data.resList[i]
+                                this.tableArr.push({
+                                    "id" : item.id,
+                                    "index" : `${i}`,
+                                    "name" : item.nodeName,
+                                    "tableName" : item.tableName,
+                                    "columnName" : item.columnName,
+                                    "resultTable" : {
+                                        "id" : item.id,
+                                        "name" : item.nodeName,
+                                    },
+                                    "loadData" : false//是否已加载数据
+                                })
+                            }
+                            this.$nextTick( () => {
+                                const param = {
+                                    'id' : this.tableArr[0].id,
+                                    'detailTableName' : this.tableArr[0].tableName,
+                                    'columnName' : this.tableArr[0].columnName,
+                                    'columnVal': this.columnVal,
+                                    'openType': this.openType
+                                }
+                                this.loadTableData(param)
+                            })
+                        }
+                    }catch (e) {
+                        this.comparisonLoading = false
+                        this.$message.error('页面加载出错')
+                    }
+                }).catch( () => {
+                    this.comparisonLoading = false
+                })
+            },
+            loadTableData(data){
+                if(!this.comparisonLoading){
+                    this.comparisonLoading = true
+                }
+                this.loadText = '数据请求中，请稍后……'
+                getAnalysisDataDetail(data).then( response => {}).catch( () => {
+                    this.comparisonLoading = false
+                })
+            },
+            clickTab(){
+                //切换页签且
+                if(!this.tableArr[Number(this.detailTableName)].loadData){
+                    const paramData = {
+                        'id' : this.tableArr[Number(this.detailTableName)].id,
+                        'detailTableName': this.tableArr[Number(this.detailTableName)].tableName,
+                        'columnName' : this.tableArr[Number(this.detailTableName)].columnName,
+                        'columnVal': this.columnVal,
+                        'openType': this.openType
+                    }
+                    this.loadTableData(paramData)
+                }
+            },
+            initWebsocket(){
+                let $this = this
+                const webSocketPath = `${process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET}${this.$store.state.user.id}graph_comparison`
+                // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
+                this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
+                // 发送消息
+                this.webSocket.onmessage = function(event) {
+                    const dataObj = JSON.parse(event.data)// 接收到返回结果
+                    const executeSQLObj = dataObj.executeSQL
+                    let tabObj = $this.tableArr[Number($this.detailTableName)]
+                    if (executeSQLObj.id === tabObj.id) {//匹配结果集
+                        $this.comparisonLoading = false
+                        if(executeSQLObj.state === "2"){//执行成功，展示当前操作的结果集
+                            tabObj.loadData = true
+                            $this.$refs.childTabCons[Number($this.detailTableName)].initData(null,dataObj,null)
+                        }else{
+                            $this.$message.error(`数据请求失败：${executeSQLObj.msg}`)
+                        }
+                    }
+                }
+                // 通信失败
+                this.webSocket.onerror = function(event) {
+                    $this.$message.error('数据请求失败')
+                }
+            },
+        }
     }
-    $('#myTab').append(li_html)
-    $('#myTabContent').append(div_html)
-    $('em').html(columnName)
-    $('#myTab li:eq(' + i + ')').click()
-  }
-}, 'json')
 </script>
