@@ -97,8 +97,8 @@
             <swiper :options="swiperOption" ref="mySwiper">
                 <swiper-slide v-for="(dataObj,index) in dataList" v-loading="dataObj.loading" element-loading-text="正在执行SQL,请稍候...">
                   <div class="btn-div"  v-if="dataObj.isError == false">
-                    <div :class="dataObj.btnChartClass" :ref="dataObj.id + 'btnChart'" @click="switchDivStyle(dataObj.id + 'btnChart',dataObj.id)"><span class="icon iconfont" >&#xe6d8;</span></div>
-                    <div :class="dataObj.btnTableClass" :ref="dataObj.id + 'btnTable'" @click="switchDivStyle(dataObj.id + 'btnTable',dataObj.id)"><span class="icon iconfont" >&#xecee;</span></div>
+                    <div :class="dataObj.btnTableClass" :ref="dataObj.id + 'btnTable'" @click="switchDivStyle(dataObj.id + 'btnTable',dataObj.id)"><span class="icon iconfont" style="position: absolute;top: 8px;left: 17px;">&#xecee;</span></div>
+                    <div :class="dataObj.btnChartClass" :ref="dataObj.id + 'btnChart'" @click="switchDivStyle(dataObj.id + 'btnChart',dataObj.id)"><span class="icon iconfont" style="position: absolute;top: 8px;left: 65px;">&#xe6d8;</span></div>
                   </div>
                   <ag-grid-vue
                     v-show=dataObj.isShowTable
@@ -6195,7 +6195,7 @@ var see = "查看";
 }
 >>>.el-btn-no-color{
   width: 44px;
-  float: right;
+  float: left;
   border: solid 1px #E0E0E0;
   height: 29px;
   margin: 2px;
@@ -6204,7 +6204,7 @@ var see = "查看";
 >>>.el-btn-color{
   background: aliceblue;
   width: 44px;
-  float: right;
+  float: left;
   border: solid 1px #E0E0E0;
   height: 29px;
   margin: 2px;

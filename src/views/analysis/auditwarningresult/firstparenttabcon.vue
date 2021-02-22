@@ -27,19 +27,19 @@
         ></el-button>
         <el-button
           type="primary"
+          @click="modelResultOpenDialog()"
+          :disabled="buttonIson.resultShareBtn"
+          class="oper-btn share"
+          title="结果分配"
+        ></el-button>
+        <el-button
+          type="primary"
           @click="RemoverelationProject()"
           :disabled="buttonIson.DisassociateBtn"
           class="oper-btn move"
           title="移除分配项目"
           ></el-button
         >
-        <el-button
-          type="primary"
-          @click="modelResultOpenDialog()"
-          :disabled="buttonIson.resultShareBtn"
-          class="oper-btn share"
-          title="结果分配"
-        ></el-button>
         <el-button
           type="primary"
           :disabled="buttonIson.resultSplitBtn"
