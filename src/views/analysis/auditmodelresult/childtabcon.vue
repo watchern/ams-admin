@@ -337,8 +337,7 @@ export default {
     "preLength",
     "myIndex",
     "chartModelUuid",
-    "settingInfo",
-    "agridColumnDatas"
+    "settingInfo"
   ],
   data() {
     return {
@@ -1096,7 +1095,7 @@ export default {
               this.result.data = chartData;
               this.rowData = this.modelResultData;
               this.modelResultColumnNames = this.nextValue.columnNames;
-              if (this.agridColumnDatas === undefined){
+              if (this.prePersonalVal['agridColumnDatas'] === undefined){
               for (var j = 0; j < this.nextValue.columnNames.length; j++) {
                 var rowColom = {
                   headerName: this.nextValue.columnNames[j],
@@ -1108,7 +1107,7 @@ export default {
                 col.push(rowColom);
               }
               }else {
-                col = this.agridColumnDatas
+                col = this.prePersonalVal['agridColumnDatas']
               }
               for (var k = 0; k < this.nextValue.result.length; k++) {
                 rowData.push(this.nextValue.result[k]);
