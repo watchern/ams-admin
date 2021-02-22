@@ -79,7 +79,7 @@
       <ag-grid-vue
         v-if="isSee"
         v-loading="isLoading"
-        :style="this.useType==='sqlEditor'?'height:32vh':'height:59vh'"
+        :style="this.useType==='sqlEditor' || this.useType==='graph'?'height:32vh':'height:59vh'"
         class="table ag-theme-balham"
         :column-defs="columnDefs"
         :row-data="rowData"
