@@ -73,6 +73,7 @@
       <div class="tree-container">
         <MyElTree
           ref="tree1"
+          v-loading="treeLoading"
           :props="props"
           :load="loadNode1"
           lazy
@@ -145,7 +146,8 @@ export default {
         update: '编辑文件夹',
         create: '添加文件夹'
       },
-      selectValue: 1
+      selectValue: 1,
+      treeLoading: false
     }
   },
   computed: {
@@ -188,7 +190,9 @@ export default {
           tableName = node.data.label
         }
         console.log(schemaName + ' ' + tableName)
+        this.treeLoading = true;
         listUnCached(node.level, schemaName, tableName).then(resp => {
+          this.treeLoading = false;
           resolve(resp.data)
         })
       } else {
