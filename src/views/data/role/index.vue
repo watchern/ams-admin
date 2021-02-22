@@ -41,54 +41,57 @@
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <template class="detail-form">
-        <el-form
-          ref="dataForm"
-          :rules="rules"
-          :model="temp"
-          label-position="right"
-        >
-          <el-form-item label="数据角色名称" prop="dataRoleName">
-            <el-input v-model="temp.dataRoleName" />
-          </el-form-item>
-          <el-form-item label="授权方式" prop="authenType">
-            <el-select ref="authenType" v-model="temp.authenType" placeholder="请选择授权方式">
-              <el-option
-                v-for="item in authenTypeJson"
-                :key="item.codeValue"
-                :label="item.codeName"
-                :value="item.codeValue"
+      <div class="detail-form">
+        <template class="detail-form">
+          <el-form
+            ref="dataForm"
+            :rules="rules"
+            :model="temp"
+            label-position="right"
+          >
+            <el-form-item label="数据角色名称" prop="dataRoleName">
+              <el-input v-model="temp.dataRoleName" />
+            </el-form-item>
+            <el-form-item label="授权方式" prop="authenType">
+              <el-select ref="authenType" v-model="temp.authenType" placeholder="请选择授权方式">
+                <el-option
+                  v-for="item in authenTypeJson"
+                  :key="item.codeValue"
+                  :label="item.codeName"
+                  :value="item.codeValue"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="开始时间" prop="startTime">
+              <el-date-picker
+                v-model="temp.startTime"
+                format="yyyy-MM-dd HH:mm:ss"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                clearable
+                style="width: 100%"
+                :picker-options="startDatePicker"
+                :disabled="dialogStatus=='view'"
+                type="datetime"
+                :placeholder="dialogStatus=='view'?'':'请输入生效开始时间'"
               />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="开始时间" prop="startTime">
-            <el-date-picker
-              v-model="temp.startTime"
-              format="yyyy-MM-dd HH:mm:ss"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              clearable
-              style="width: 100%"
-              :picker-options="startDatePicker"
-              :disabled="dialogStatus=='view'"
-              type="datetime"
-              :placeholder="dialogStatus=='view'?'':'请输入生效开始时间'"
-            />
-          </el-form-item>
-          <el-form-item label="结束时间" prop="endTime">
-            <el-date-picker
-              v-model="temp.endTime"
-              format="yyyy-MM-dd HH:mm:ss"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              clearable
-              style="width: 100%"
-              :picker-options="endDatePicker"
-              :disabled="dialogStatus=='view'"
-              type="datetime"
-              :placeholder="dialogStatus=='view'?'':'请输入生效结束时间'"
-            />
-          </el-form-item>
-        </el-form>
-      </template>
+            </el-form-item>
+            <el-form-item label="结束时间" prop="endTime">
+              <el-date-picker
+                v-model="temp.endTime"
+                format="yyyy-MM-dd HH:mm:ss"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                clearable
+                style="width: 100%"
+                :picker-options="endDatePicker"
+                :disabled="dialogStatus=='view'"
+                type="datetime"
+                :placeholder="dialogStatus=='view'?'':'请输入生效结束时间'"
+              />
+            </el-form-item>
+          </el-form>
+        </template>
+
+      </div>
       <div slot="footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">保存</el-button>

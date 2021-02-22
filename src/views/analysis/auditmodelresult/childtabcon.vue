@@ -14,7 +14,7 @@
         <el-button type="primary" @click="queryCondition">查 询</el-button>
       </span>
     </el-dialog>
-    <el-row style="margin-right: 35px;">
+    <el-row style="margin-right: 35px;" v-if="useType !== 'graph'">
       <div :class="chartClass" title="图表" @click="switchDivStyle('chart')"><span class="icon iconfont" >&#xecee;</span></div>
       <div :class="tableClass" title="表格" @click="switchDivStyle('table')"><span class="icon iconfont" >&#xe6d8;</span></div>
     </el-row>
@@ -79,7 +79,7 @@
       <ag-grid-vue
         v-if="isSee"
         v-loading="isLoading"
-        :style="this.useType==='sqlEditor'?'height:32vh':'height:59vh'"
+        :style="this.useType==='sqlEditor' || this.useType==='graph'?'height:32vh':'height:59vh'"
         class="table ag-theme-balham"
         :column-defs="columnDefs"
         :row-data="rowData"
@@ -1044,6 +1044,8 @@ export default {
      * 显示模型结果详细提取公共代码
      * */
     getIntoModelResultDetail(nextValue){
+      this.afterAddChartsWithNoConfigure = true
+      this.chartLoading = false
       this.loading = true;
       this.nextValue = nextValue;
       var col = [];
@@ -1051,7 +1053,6 @@ export default {
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
           if (this.nextValue.executeSQL.type == "SELECT") {
-            if (true) {
               this.modelResultButtonIsShow = true;
               this.modelResultPageIsSee = true;
               this.modelResultData = this.nextValue.result;
@@ -1096,6 +1097,7 @@ export default {
               this.result.data = chartData;
               this.rowData = this.modelResultData;
               this.modelResultColumnNames = this.nextValue.columnNames;
+              if (this.prePersonalVal['agridColumnDatas'] === undefined){
               for (var j = 0; j < this.nextValue.columnNames.length; j++) {
                 var rowColom = {
                   headerName: this.nextValue.columnNames[j],
@@ -1106,11 +1108,13 @@ export default {
                 var value = this.nextValue.result[j];
                 col.push(rowColom);
               }
+              }else {
+                col = this.prePersonalVal['agridColumnDatas']
+              }
               for (var k = 0; k < this.nextValue.result.length; k++) {
                 rowData.push(this.nextValue.result[k]);
               }
               this.columnDefs = col;
-            }
             this.afterResult = true
           } else {
             this.isSee = false;
