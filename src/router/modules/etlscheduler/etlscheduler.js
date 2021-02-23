@@ -2,12 +2,9 @@
 
 const etlschedulerRouter = {
   path: '/etlscheduler',
-  redirect: '/etlscheduler/etlconfi/datasource',
   component: () => import('@/portal/default/index'),
   name: 'Etlscheduler',
   meta: {
-    title: 'etlscheduler',
-    icon: 'nested'
   },
   children: [
     // {
