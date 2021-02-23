@@ -81,7 +81,7 @@
                     <el-input v-model="form.relationObjectUuid" style="display: none" :disabled="true"></el-input>
                     <el-input v-model="form.relationObjectName" :disabled="true"></el-input>
                   </el-col>
-                  <el-button @click="showDataTree">选择</el-button>
+                  <el-button @click="showDataTree" type="primary">选择</el-button>
                 </el-form-item>
             </el-row>
             <div ref="relTableDiv" style="display: none">
@@ -119,7 +119,7 @@
     <el-dialog v-if="dataTableTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%">
       <data-tree :dataUserId="dataUserId" ref="dataTableTree" :sceneCode="sceneCode"></data-tree>
       <div slot="footer">
-        <el-button tvype="primary" @click="getDataTable">确定</el-button>
+        <el-button type="primary" @click="getDataTable">确定</el-button>
         <el-button @click="dataTableTree = false">取消</el-button>
       </div>
     </el-dialog>

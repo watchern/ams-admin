@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 const baseURL = '/graphtool'
 const analysisUrl = '/analysis'
+const dataUrl = '/data'
 
 /**
  * 获取图形树
@@ -441,5 +442,17 @@ export function getAnalysisDataDetail(data) {
         url: '/graphCt/getAnalysisDataDetail',
         method: 'post',
         data
+    })
+}
+
+/**
+ * 获取数据表树节点下的字段列表数据
+ */
+export function getColumnsByTable(data) {
+    return request({
+        baseURL: dataUrl,
+        url: '/tableMeta/getCols',
+        method: 'post',
+        params: data
     })
 }

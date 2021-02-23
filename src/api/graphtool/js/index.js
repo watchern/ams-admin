@@ -16,26 +16,28 @@ export function replaceNodeType(e) {
     const tableIconPath = require('@/styles/icons/table_1.png')
     const viewIconPath = require('@/styles/icons/view.png')
     // 默认展开根节点的ID集合
-    var openNodeIdArr = ['bussRootNode_dev', 'my_space_dev', 'other_space_dev', 'bussRootNode', 'bussDataRoot', 'my_space']
     $(e).each(function() {
         var tableType = this.type
         // 统一表和试图的类型为datasource
         switch (tableType) {
             case 'datasource':
                 this.icon = tableIconPath
+                this.isParent = true
                 break
             case 'table':
                 this.icon = tableIconPath
                 this.type = 'datasource'
                 this.oldType = tableType
+                this.isParent = true
                 break
             case 'view':
                 this.icon = viewIconPath
                 this.type = 'datasource'
                 this.oldType = tableType
+                this.isParent = true
                 break
         }
-        if ($.inArray(this.id, openNodeIdArr) > -1) {
+        if (this.pid == null || typeof this.pid === 'undefined' || this.pid === '' || this.pid.toUpperCase() === 'ROOT') {
             this.open = true
         }
     })
@@ -475,7 +477,7 @@ export function nodeRemark(nodeType) {
                 "<p>（4）外连接：选取关联字段将两张表进行关联，显示出左表和右表关联后的所有数据，但去除重复数据，两表中若无关联数据则补空显示（<a data_type='join' class='viewEg'>点击查看图例</a>）</p>"
             break
     }
-    $('#detailContainer>.nav-tabs>li:eq(1)>a').click()
+    graphIndexVue.detailTabActiveName = '1'
 }
 
 // 右侧所使用资源树代码块,start----------------------------
