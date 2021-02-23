@@ -8,8 +8,6 @@ const dataUrl = '/data'
  * @returns {AxiosPromise}
  */
 export function findModelFolderTree(isShowModel, name, id) {
-  debugger
-
   return request({
     baseURL: analysisUrl,
     url: '/modelFolderController/findModelFolderTree',
