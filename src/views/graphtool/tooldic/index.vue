@@ -375,6 +375,9 @@
         <el-dialog :visible.sync="imageDialogVisible" title="图片示例" width="600px">
             <el-image :src="imageSrc" fit="contain" style="max-height:600px;"></el-image>
         </el-dialog>
+        <el-dialog v-if="comparisonTableDetailDialogVisible" :visible.sync="comparisonTableDetailDialogVisible" title="频次分析数据详情" :close-on-press-escape="false" :close-on-click-modal="false" width="1000px">
+            <AnalysisDetailData ref="analysisDetailData" :dataTableName="comparison_dataTableName" :openType="openType" :columnVal="comparison_columnVal"/>
+        </el-dialog>
         <!-- 右键事件 -->
         <div id="rMenu" class="rightMenu">
             <ul>
@@ -414,6 +417,7 @@
     import InputParams from '@/views/graphtool/tooldic/page/inputParams/inputParams.vue'
     import GroupCount from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/groupCount/groupCount.vue'
     import SqlEditor from '@/views/analysis/sqleditor/index.vue'
+    import AnalysisDetailData from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/analysisDetailData.vue'
     // 引入后端接口的相关方法
     import { removeJcCssfile, addCssFile, addJsFile } from "@/api/analysis/common"
     import { getGraphInfoById, viewNodeData, saveGraphInterface, createScreenQuery } from '@/api/graphtool/apiJs/graphList'
@@ -424,7 +428,7 @@
     import * as validateJs from '@/api/graphtool/js/validate'
     export default {
         name: 'ToolIndex',
-        components: { Help, GraphListExport, ChildTabs, SettingParams, NodeSetting, RelationSetting, InputParams, GroupCount, SqlEditor },
+        components: { Help, GraphListExport, ChildTabs, SettingParams, NodeSetting, RelationSetting, InputParams, GroupCount, SqlEditor, AnalysisDetailData },
         props: ['graphUuidParam', 'openGraphTypeParam', 'openTypeParam'],
         data() {
             return {
@@ -494,7 +498,10 @@
                 imageDialogVisible:false,
                 imageSrc:'',
                 resultTabActiveName:"2",
-                detailTabActiveName:'0'
+                detailTabActiveName:'0',
+                comparisonTableDetailDialogVisible:false,
+                comparison_dataTableName:'',
+                comparison_columnVal:''
             }
         },
         created() {
@@ -585,6 +592,7 @@
                 window.undoResourceZtreeNode = indexJs.undoResourceZtreeNode
                 window.redoResourceZtreeNode = indexJs.redoResourceZtreeNode
                 window.modifyParam = indexJs.modifyParam
+                window.showComparisonTableDetail = indexJs.showComparisonTableDetail
                 window.alertMsg = function (title,msg,type){
                     $this.$message({ type : type, message : msg})
                 }
@@ -860,6 +868,36 @@
                             }
                             let index = $this.resultTableArr.findIndex( item => item.id === executeSQLObj.id)
                             if(index > -1) {
+                                //如果是数据频次分析节点，则需要特殊处理
+                                let nodeId = $this.resultTableArr[index].id//节点的ID或者树节点的ID
+                                if( typeof $this.graph.nodeData[nodeId] !== 'undefined'){
+                                    let optType = $this.graph.nodeData[nodeId].nodeInfo.optType
+                                    if(optType === "newNullNode"){
+                                        nodeId = $this.graph.nodeData[nodeId].parentIds[0]
+                                        optType = $this.graph.nodeData[nodeId].nodeInfo.optType
+                                    }
+                                    if(optType === "comparison"){//频次分析节点
+                                        //获取当前频次分析节点的详情表名称
+                                        const dataTableName = $this.graph.nodeData[nodeId].nodeInfo.dataTableName
+                                        let columnDefs = []
+                                        Array.from(dataObj.columnNames, item => {
+                                            let obj = {}
+                                            if(item === '涉及表数量'){//此处列名称是固定的
+                                                obj.headerName = item
+                                                obj.field = item
+                                                obj.cellRenderer = (params) => {
+                                                    console.log(params)
+                                                    return `<span style="color:red;cursor:pointer;" title="点击查看详情数据" onclick="showComparisonTableDetail(\'${dataTableName}\',\'${params.data["对比内容"]}\')">${params.value}</span>`
+                                                }
+                                            }else{
+                                                obj.headerName = item
+                                                obj.field = item
+                                            }
+                                            columnDefs.push(obj)
+                                        })
+                                        $this.resultTableArr[index].agridColumnDatas = columnDefs
+                                    }
+                                }
                                 $this.$nextTick(() => {
                                     $this.$refs.childTabsRef.loadTableData(dataObj)
                                 })

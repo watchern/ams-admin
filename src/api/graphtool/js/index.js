@@ -1462,3 +1462,14 @@ export function getParamsArr(){
     }
     return paramsArr
 }
+
+/**
+ * 查看数据频次分析节点涉及表数量的详情数据
+ * @param dataTableName 详情表名称
+ * @param columnVal 涉及字段的当前值
+ */
+export function showComparisonTableDetail(dataTableName,columnVal) {
+    graphIndexVue.comparison_dataTableName = dataTableName
+    graphIndexVue.comparison_columnVal = columnVal
+    graphIndexVue.comparisonTableDetailDialogVisible = true
+}

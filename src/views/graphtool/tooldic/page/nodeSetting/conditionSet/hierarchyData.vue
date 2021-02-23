@@ -77,8 +77,11 @@
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 let parentIds = this.nodeData.parentIds
                 let parent_node = graph.nodeData[parentIds[0]]
-                let columnsInfoPre = this.$parent.$parent.$parent.columnsInfoPre
                 let typeArr = ['INTEGER', 'DECIMAL', 'NUMBER', 'FLOAT', 'REAL', 'DATE', 'TIMESTAMP']
+                let columnsInfoPre = this.$parent.$parent.$parent.columnsInfoPre
+                if (this.nodeData.isSet) {
+                    columnsInfoPre = this.nodeData.setting.columnsInfo
+                }
                 if (columnsInfoPre.length !== 0) { // 初始化数据源
                     for(let i=0; i<columnsInfoPre.length; i++){
                         if ($.inArray(columnsInfoPre[i].columnType, typeArr) > -1) {
@@ -107,44 +110,47 @@
                     if (parent_node.nodeInfo.resultTableName === '') {
                         this.$message({ type: 'warning', message: '请先执行上一节点' })
                     } else {
-                        /**
-                         * 获得上一节点执行结果的选择字段的最大值和最小值
-                         */
-                        let dataParam = {
-                            'tableName': parent_node.nodeInfo.resultTableName,
-                            'openType': graph.openType,
-                            'exeColumns': this.pre_str_column.join(','),
-                            'isRoleTable':isRoleTable
-                        }
-                        getMaxMinColumn(dataParam).then( response => {
+                        if (this.nodeData.isSet) {
                             this.layeringLoading = false
-                            if (response.data == null){
-                                this.$message.error('获取数据列的区间值失败')
-                            }else {
-                                if (response.data.isError) {
-                                    this.$message.error(response.data.message)
-                                } else {
-                                    this.dict_map = response.data.map_range
-                                    if (this.nodeData.isSet) {
-                                        this.empty_set(this.nodeData.setting.hierarchy_column)// 选择的分层字段
-                                        this.items = []
-                                        this.$nextTick(() => {
-                                            for (let i = 0; i < this.nodeData.setting.hierarchy_map.length; i++) {
-                                                let obj = this.nodeData.setting.hierarchy_map[i]
-                                                this.keyId = i
-                                                this.items.push({
-                                                    id: i,
-                                                    c_col_1: obj.c_col_1,
-                                                    c_col_2: obj.c_col_2
-                                                })
-                                            }
-                                        })
+                            this.dict_map = this.nodeData.setting.dict_map
+                            this.empty_set(this.nodeData.setting.hierarchy_column)// 选择的分层字段
+                            this.items = []
+                            this.$nextTick(() => {
+                                for (let i = 0; i < this.nodeData.setting.hierarchy_map.length; i++) {
+                                    let obj = this.nodeData.setting.hierarchy_map[i]
+                                    this.keyId = i
+                                    this.items.push({
+                                        id: i,
+                                        c_col_1: obj.c_col_1,
+                                        c_col_2: obj.c_col_2
+                                    })
+                                }
+                            })
+                        }else{
+                            /**
+                             * 获得上一节点执行结果的选择字段的最大值和最小值
+                             */
+                            let dataParam = {
+                                'tableName': parent_node.nodeInfo.resultTableName,
+                                'openType': graph.openType,
+                                'exeColumns': this.pre_str_column.join(','),
+                                'isRoleTable':isRoleTable
+                            }
+                            getMaxMinColumn(dataParam).then( response => {
+                                this.layeringLoading = false
+                                if (response.data == null){
+                                    this.$message.error('获取数据列的区间值失败')
+                                }else {
+                                    if (response.data.isError) {
+                                        this.$message.error(response.data.message)
+                                    } else {
+                                        this.dict_map = response.data.map_range
                                     }
                                 }
-                            }
-                        }).catch( () => {
-                            this.layeringLoading = false
-                        })
+                            }).catch( () => {
+                                this.layeringLoading = false
+                            })
+                        }
                     }
                 }
             },
@@ -195,7 +201,9 @@
             saveSetting() {
                 var obj = {
                     hierarchy_column: this.hierarchy_column,
-                    hierarchy_map: []
+                    hierarchy_map: [],
+                    dict_map: this.dict_map,
+                    columnsInfo: this.$parent.$parent.$parent.columnsInfoPre
                 }
                 for(let i=0; i<this.items.length; i++){
                     let c_col_1 = this.items[i].c_col_1

@@ -21,26 +21,27 @@
             init() {
                 let graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
-                let columnsInfoPre = this.$parent.$parent.$parent.columnsInfoPre
-                Array.from(columnsInfoPre,item => {
-                    this.columnData.push({
-                        'pinyin': item.newColumnName,
-                        'label': item.newColumnName,
-                        'key': item.newColumnName
-                    })
-                })
                 if (this.nodeData.isSet) {
+                    this.columnData = this.nodeData.setting.columnData
                     this.columnDataValue = this.nodeData.setting.delRepeatData
                     this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(this.columnDataValue)// 反显
+                }else{
+                    let columnsInfoPre = this.$parent.$parent.$parent.columnsInfoPre
+                    Array.from(columnsInfoPre,item => {
+                        this.columnData.push({
+                            'pinyin': item.newColumnName,
+                            'label': item.newColumnName,
+                            'key': item.newColumnName
+                        })
+                    })
                 }
-
             },
             changeSortData(){
-                // this.$parent.$parent.$parent.is_filter_column = this.columnDataValue
                 this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(this.columnDataValue)
             },
             saveSetting() {
                 this.nodeData.setting.delRepeatData = this.columnDataValue
+                this.nodeData.setting.columnData = this.columnData
             },
             inputVerify() {
                 var verify = true
