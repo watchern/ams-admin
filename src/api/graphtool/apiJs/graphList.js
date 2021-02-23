@@ -417,3 +417,29 @@ export function verifySqlNodeSelectOption(data) {
         data
     })
 }
+
+/**
+ * 获取频次分析节点的各个相关数据表的信息
+ * @param data 信息表名称、涉及字段的当前值、数据源环境类型
+ */
+export function getAnalysisTableInfo(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/getAnalysisTableInfo',
+        method: 'post',
+        data
+    })
+}
+
+/**
+ * 查询频次分析节点所涉及的各个表的详情数据
+ * @param data 本次查询唯一标识、详情表名称、涉及字段名称、涉及字段的当前值、数据源环境类型
+ */
+export function getAnalysisDataDetail(data) {
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/getAnalysisDataDetail',
+        method: 'post',
+        data
+    })
+}

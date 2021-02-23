@@ -7,7 +7,7 @@
                     <el-table-column label="分析字段" header-align="center" prop="columnName" width="300" :resizable="false">
                         <template slot-scope="scope">
                             <el-select v-model="scope.row.columnSelected" filterable style="width: 100%;">
-                                <el-option v-for="item in analysisColumnArr" :key="item.columnName" :label="item.columnName" :value="item.columnName">{{ item.columnName }}</el-option>
+                                <el-option v-for="item in scope.row.columnsInfo" :key="item.columnName" :label="item.columnName" :value="item.columnName">{{ item.columnName }}</el-option>
                             </el-select>
                         </template>
                     </el-table-column>
@@ -61,7 +61,6 @@
                 activeNames:['1','2'],
                 nodeData: null,
                 analysisData:[],
-                analysisColumnArr:[],
                 analysisContent:'',
                 analysisDisabled:false,
                 displayNum:null,
@@ -82,9 +81,8 @@
                 const graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 if (this.nodeData.isSet) {
-                    var analysisCol = this.nodeData.setting.analysisCol
-                    var appearNum = this.nodeData.setting.appearNum
-                    this.analysisColumnArr = this.nodeData.setting.analysisColumnArr
+                    let analysisCol = this.nodeData.setting.analysisCol
+                    let appearNum = this.nodeData.setting.appearNum
                     this.$nextTick( () => {
                         // 反显节点信息及列信息
                         this.analysisData = this.nodeData.setting.contrastCol
@@ -105,28 +103,30 @@
                         this.ignoreNullVal = true
                     }
                 } else {
-                    var parentIds = this.nodeData.parentIds
+                    let parentIds = this.nodeData.parentIds
+                    let curNodeId = ''
                     for (let i = 0; i < parentIds.length; i++) {
-                        var preNodeData = {}
+                        let preNodeData = {}
                         // 判断前置节点（结果表）是否有自己的配置
                         if (graph.nodeData[parentIds[i]].isSet) {			// 如果有，则前置节点信息取结果表本身的
-                            preNodeData = graph.nodeData[parentIds[i]]
+                            curNodeId = parentIds[i]
                         } else {			// 如果没有，则前置节点信息取结果表的前置节点的
-                            var pre_parentIds = graph.nodeData[parentIds[i]].parentIds
-                            preNodeData = graph.nodeData[pre_parentIds[0]]
+                            curNodeId = graph.nodeData[parentIds[i]].parentIds[0]
                         }
-                        var columnsInfo = preNodeData.columnsInfo
-                        for (var j = 0; j < columnsInfo.length; j++) {
+                        preNodeData = graph.nodeData[curNodeId]
+                        const columnsInfo = preNodeData.columnsInfo
+                        let curColumnInfo = []
+                        for (let j = 0; j < columnsInfo.length; j++) {
                             if (columnsInfo[j].isOutputColumn === 1) {
-                                this.analysisColumnArr.push({ 'columnName': columnsInfo[j].newColumnName})
+                                curColumnInfo.push({ 'columnName': columnsInfo[j].newColumnName})
                             }
                         }
-                        var obj = {
-                            'nodeId': parentIds[i],
-                            'nodeName': graph.nodeData[parentIds[i]].nodeInfo.nodeName,
-                            "columnSelected":''
-                        }
-                        this.analysisData.push(obj)
+                        this.analysisData.push({
+                            'nodeId': curNodeId,
+                            'nodeName': graph.nodeData[curNodeId].nodeInfo.nodeName,
+                            "columnSelected":'',
+                            "columnsInfo": curColumnInfo
+                        })
                     }
                 }
             },
@@ -154,16 +154,14 @@
                     let nodeId = this.analysisData[i].nodeId
                     let nodeName = this.analysisData[i].nodeName
                     let columns = []
-                    Array.from(this.analysisColumnArr, (n) => columns.push({
-                        "columnName":n.columnName,
-                        "selected":n.columnName === columnSelected
-                    }))
+                    Array.from(this.analysisData[i].columnsInfo, n => {
+                        columns.push({...{"selected":n.columnName === columnSelected},...n})
+                    })
                     contrastCol.push({nodeId,nodeName,columnSelected,columns})
                 }
                 this.nodeData.setting.analysisCol = analysisCol
                 this.nodeData.setting.appearNum = appearNum
                 this.nodeData.setting.contrastCol = contrastCol
-                this.nodeData.setting.analysisColumnArr = this.analysisColumnArr
             },
             inputVerify() {
                 let index = this.analysisData.findIndex( item => item.columnSelected === "")
