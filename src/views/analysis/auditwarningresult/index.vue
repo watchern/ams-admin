@@ -9,8 +9,8 @@
     >
       <!-- 加一个固定页签 -->
       <el-tab-pane
-        name="预警结果"
-        label="预警结果"
+        name="模型运行结果"
+        label="模型运行结果"
       ><firstParentTabCon @addtab="addTab" /></el-tab-pane>
       <el-tab-pane
         v-for="item in editableTabs"
@@ -26,7 +26,6 @@
           :model-uuid="item.modeluuid"
           useType="modelRunResult"
           :resultSpiltObjects="item.resultSpiltObjects"
-          :settingInfo="item.settingInfo"
         />
       </el-tab-pane>
     </el-tabs>
@@ -42,7 +41,7 @@ export default {
   },
   data() {
     return {
-      editableTabsValue: '预警结果', //第一个大页签的名称
+      editableTabsValue: '模型运行结果', //第一个大页签的名称
       editableTabs: [], //存放每一个页签对象
       tabIndex: 0, //语句记录页签个数
       mainTable: {}, //运行结果表主表对象
@@ -51,18 +50,17 @@ export default {
   },
   methods: {
     // 添加页签方法  resultTable:辅表（运行结果表）数组    mainTable:主表（运行结果表对象）   modelname:模型的名称，用来给新页签赋值title属性用
-    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects,settingInfo) {
+    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects) {
       const newTabName = ++this.tabIndex + ''
       this.mainTable = mainTable
       this.helpTables = resultTable
       this.editableTabs.push({
-        title: modelname + '预警结果',
+        title: modelname + '模型结果',
         name: newTabName,
         mainTable: mainTable,
         helpTables: resultTable,
         modeluuid: modelUuid,
-        resultSpiltObjects:resultSpiltObjects,
-        settingInfo:settingInfo
+        resultSpiltObjects:resultSpiltObjects
       })
       this.editableTabsValue = newTabName
     },
@@ -77,7 +75,7 @@ export default {
             if (nextTab) {
               activeName = nextTab.name
             } else {
-              activeName = '预警结果'
+              activeName = '模型运行结果'
             }
           }
         })

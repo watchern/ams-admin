@@ -64,15 +64,15 @@ export default {
   components: { LangSelect },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (value.length < 1) {
-        callback(new Error('请输入用户名!'))
+      if (!validUsername(value)) {
+        callback(new Error('Please enter the correct user name'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 1) {
-        callback(new Error('请输入密码!'))
+        callback(new Error('The password can not be less than 6 digits'))
       } else {
         callback()
       }
@@ -147,7 +147,6 @@ export default {
               this.loading = false
             })
         } else {
-          this.$message.error('用户名或密码不能为空!')
           return false
         }
       })

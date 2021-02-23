@@ -41,6 +41,7 @@
     "ag-grid-community": "^23.2.1",
     "ag-grid-vue": "^23.2.1",
     "ams-datamax": "^1.0.5",
+    "ams-etlscheduler-ui": "^1.0.0",
     "ans-ui": "^1.1.9",
     "autoprefixer": "^7.1.2",
     "axios": "0.18.1",

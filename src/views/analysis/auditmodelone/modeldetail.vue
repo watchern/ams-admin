@@ -39,7 +39,7 @@
                 <el-button @click="selectModel" type="primary">选择</el-button>
               </el-form-item>
             </el-row>
-            <div ref="relModelTableDiv" style="display: none;height:200px;overflow-y: scroll">
+            <div ref="relModelTableDiv" style="display: none">
               <el-button type="primary" size="mini" @click="addRelFilter(1)">添加</el-button>
               <el-table ref="relModelTable" :data="relModelTable" border fit highlight-current-row>
                 <el-table-column label="原模型字段" align="center">
@@ -74,7 +74,7 @@
               </el-table>
             </div>
           </div>
-          <div ref="relTableDivParent" style="display: none;height:200px;overflow-y: scroll">
+          <div ref="relTableDivParent" style="display: none;">
             <el-row>
                 <el-form-item label="被关联表" prop="relationObjectUuidTable" >
                   <el-col :span="20">
@@ -87,6 +87,19 @@
             <div ref="relTableDiv" style="display: none">
               <el-button type="primary" size="mini" @click="addRelFilter(2)">添加</el-button>
               <el-table ref="relTable" :data="relTable" border fit highlight-current-row>
+<!--                  <el-table-column label="关联表字段" align="center" prop="modelName">
+                    <template slot-scope="scope" v-if="!scope.row.noShow">
+                      <el-select v-model="scope.row.relColumn" value="-1">
+                        <el-option label="请选择" value="-1" />
+                        <el-option
+                          v-for="state in relTableColumn"
+                          :key="state.colMetaUuid"
+                          :value="state.colMetaUuid"
+                          :label="state.chnName"
+                        />
+                      </el-select>
+                    </template>
+                  </el-table-column>-->
                   <el-table-column label="过滤条件" align="center" prop=""  width="450px">
                     <template slot-scope="scope" v-if="!scope.row.noShow">
                       <el-row>
@@ -200,6 +213,12 @@ export default {
         relationType: [
           { required: true, message: '请选择关联类型', trigger: 'change' }
         ]
+        /*        relationObjectUuidModel: [
+          { validator:verForm, trigger: 'change' }
+        ],
+        relationObjectUuidTable: [
+          { validator:verForm, trigger: 'change' }
+        ]*/
       }
     }
   },

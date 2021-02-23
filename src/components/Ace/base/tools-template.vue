@@ -812,8 +812,7 @@ export default {
     width: 510px;
     padding: 25px 20px;
     float: left;
-    z-index: 10;
-    overflow: auto;
+    overflow: hidden;
     .btns-wrap {
       right: 9px;
       top: 186px;
@@ -952,11 +951,9 @@ export default {
   }
 }
 .tools-right{
+  float: right;
   height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  right: 0;
+  width: 70%;
 }
 .tools-center{
   position: absolute;

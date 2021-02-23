@@ -326,7 +326,7 @@ export default {
     deleteThresholdValue() {
       var selectObj = this.$refs.modelListTable.selection
       if (selectObj == undefined || selectObj.length === 0) {
-        this.$message({ type: 'info', message: '请先选择要删除的阈值!' })
+        this.$message({ type: 'info', message: '请先选择要删除的模型!' })
         return
       }
       this.$confirm('此操作将永久删除该阈值, 是否继续?', '提示', {

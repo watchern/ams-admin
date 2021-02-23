@@ -19,12 +19,16 @@
       :load="loadNode"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
-        <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
-        <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
-        <i v-if="data.type==='table' && data.extMap.tblType==='T'" class="el-icon-tickets" style="color:#409EFF" />
-        <i v-if="data.type==='table' && data.extMap.tblType==='V'" class="el-icon-search" style="color:#409EFF" />
-        <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
-        <span :title="data.title">{{ node.label }}</span>
+        <i v-if="data.id==='root'" class="el-icon-s-home" />
+        <i v-if="data.type==='folder'" class="el-icon-folder" />
+        <i v-if="data.type==='table' && data.extMap.tblType==='T' && treeType==='common'">
+          <span class="icon iconfont" style="padding-right: 3px;vertical-align: bottom;">&#xecee;</span>
+        </i>
+        <i v-if="data.type==='table' && data.extMap.tblType==='V' && treeType==='common'">
+          <span class="icon iconfont" style="padding-right: 3px;vertical-align: bottom;">&#xe6cd;</span>
+        </i>
+        <i v-if="data.type==='column' && treeType==='common'" class="el-icon-c-scale-to-original" />
+        <span :title="data.title" style=" line-height: 22px;">{{ node.label }}</span>
       </span>
     </MyElTree>
   </div>

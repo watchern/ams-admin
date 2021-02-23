@@ -1,5 +1,5 @@
 <template>
-    <div id="graphToolDiv" ref="graphToolDiv">
+    <div id="graphToolDiv" ref="graphToolDiv" style="width: 100%;height: 100%;overflow-y: hidden;">
         <div id="geToolbarContainer" class="geToolbarContainer">
             <div class="graphMenu" v-show="openGraphType !== 4" style="width: 320px;">
                 <div class="menuTit">
@@ -195,7 +195,7 @@
             <el-input v-model="searchZtreeContent" placeholder="搜索关键字" class="input-with-select">
                 <el-button slot="append" icon="el-icon-search" @click="searchZtree" />
             </el-input>
-            <ul id="ztree_datasource" class="ztree"/>
+            <ul id="ztree_datasource" class="ztree" style="width: 100%;" />
         </div>
         <div id="graphContainer" class="graphContainer">
             <div id="geDiagramContainer" class="geDiagramContainer">
@@ -517,13 +517,6 @@
             removeJcCssfile("jquery.ztree.exhide.min.js","js")
         },
         mounted() {
-            let toolDivwidth = "100%"
-            let toolDivHeight = "100%"
-            if(this.openGraphType === 4){//模型图形
-                toolDivwidth = ($(this.$parent.$parent.$parent.$refs.modelDesign).width() - 37) + "px"
-                toolDivHeight = $(this.$parent.$parent.$parent.$refs.modelDesign).height() + "px"
-            }
-            $(this.$refs.graphToolDiv).css({"width":toolDivwidth,"height":toolDivHeight})
             // 申明common.js的方法为全局方法
             this.initCommon()
             // //申明index.js的方法为全局方法
@@ -752,7 +745,7 @@
                             key: {
                                 checked: 'isChecked',
                                 name: 'name',
-                                title: 'name'
+                                title: 'displayName'
                             },
                             // 设置数据格式
                             simpleData: {

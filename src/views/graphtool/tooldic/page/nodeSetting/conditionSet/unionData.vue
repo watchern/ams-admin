@@ -18,7 +18,7 @@
                 </el-col>
             </el-row>
             <el-table :data="leftTableColArr" fit style="width: 100%;" height="435" ref="leftElTable">
-                <el-table-column align="center" width="60" :resizable="false">
+                <el-table-column align="center" width="80" :resizable="false">
                     <template slot="header" slot-scope="scope">
                         <el-checkbox v-model="leftSelectAll" @change="leftSelectAllChange"></el-checkbox>
                     </template>
@@ -26,7 +26,6 @@
                         <el-checkbox v-model="scope.row.checked" @change="leftColumnChange"></el-checkbox>
                     </template>
                 </el-table-column>
-                <el-table-column type="index" label="编号" width="60" align="center" :resizable="false"/>
                 <el-table-column header-align="center" label="融合字段" :resizable="false">
                     <template slot-scope="scope">
                         {{scope.row.colName}}
@@ -54,7 +53,7 @@
                 </el-col>
             </el-row>
             <el-table :data="rightTableColArr" fit style="width: 100%;" height="435" ref="rightElTable">
-                <el-table-column align="center" width="60" :resizable="false">
+                <el-table-column align="center" width="80" :resizable="false">
                     <template slot="header" slot-scope="scope">
                         <el-checkbox v-model="rightSelectAll" @change="rightSelectAllChange"></el-checkbox>
                     </template>
@@ -62,7 +61,6 @@
                         <el-checkbox v-model="scope.row.checked" @change="rightColumnChange"></el-checkbox>
                     </template>
                 </el-table-column>
-                <el-table-column type="index" label="编号" width="60" align="center" :resizable="false"/>
                 <el-table-column header-align="center" label="融合字段" :resizable="false">
                     <template slot-scope="scope">
                         {{scope.row.colName}}
@@ -138,8 +136,7 @@
                         let id = v.id
                         let colName = v.name
                         let checked = v.checked
-                        let num = i
-                        colArr.push({id,colName,checked,num})
+                        colArr.push({id,colName,checked})
                     })
                     if (colArr.length !== 0) {
                         this.leftTableColArr = [...colArr];
@@ -149,8 +146,7 @@
                         let id = v.id
                         let colName = v.name
                         let checked = v.checked
-                        let num = i
-                        colArr.push({id,colName,checked,num})
+                        colArr.push({id,colName,checked})
                     })
                     if (colArr.length !== 0) {
                         this.rightTableColArr = [...colArr];
@@ -199,15 +195,12 @@
                                 }
                             }
                             let colArr = [];
-                            let curNum = 0
                             $(columnsInfo).each(function(ind, val) {
                                 if (val.isOutputColumn) {
                                     let id = ind;
                                     let colName = val.newColumnName;
                                     let checked = false
-                                    let num = curNum
-                                    colArr.push({id,colName,checked,num});
-                                    curNum++
+                                    colArr.push({id,colName,checked});
                                 }
                             })
                             if (colArr.length !== 0) {
@@ -253,7 +246,7 @@
                 if(chk === this.leftTableColArr.length){
                     this.leftSelectAll = true
                 }else{
-                    if(this.leftSelectAll){
+                    if(this.leftSelectAll = true){
                         this.leftSelectAll = false
                     }
                 }
@@ -282,7 +275,7 @@
                 if(chk === this.rightTableColArr.length){
                     this.rightSelectAll = true
                 }else{
-                    if(this.rightSelectAll){
+                    if(this.rightSelectAll = true){
                         this.rightSelectAll = false
                     }
                 }
@@ -417,26 +410,21 @@
                 } else {
                     right_data.mainTable = true
                 }
-                let $this = this
-                let leftTableColTr = this.$refs.leftElTable.$refs.bodyWrapper.children[0].children[1].children
-                if(typeof leftTableColTr !== 'undefined' && leftTableColTr.length > 0){
-                    $.each(leftTableColTr,function (i) {
-                        const leftIndex = parseInt($(this).find("td:eq(1)>div>div").html()) - 1
-                        let id = i
-                        let name = $this.leftTableColArr[leftIndex].colName
-                        let checked = $this.leftTableColArr[leftIndex].checked
-                        left_data.columnSetArr.push({id, name, checked})
-                    })
+                let leftTableColTr = this.$refs.leftTableColTr
+                for(let i=0; i<leftTableColTr.length; i++){
+                    let leftIndex = Number(leftTableColTr[i].getAttribute("data-index"))
+                    let id = i
+                    let name = this.leftTableColArr[leftIndex].colName
+                    let checked = this.leftTableColArr[leftIndex].checked
+                    left_data.columnSetArr.push({id, name, checked})
                 }
-                let rightTableColTr = this.$refs.rightElTable.$refs.bodyWrapper.children[0].children[1].children
-                if(typeof rightTableColTr !== 'undefined' && rightTableColTr.length > 0){
-                    $.each(rightTableColTr,function (i) {
-                        const rightIndex = parseInt($(this).find("td:eq(1)>div>div").html()) - 1
-                        let id = i
-                        let name = $this.rightTableColArr[rightIndex].colName
-                        let checked = $this.rightTableColArr[rightIndex].checked
-                        right_data.columnSetArr.push({id, name, checked})
-                    })
+                let rightTableColTr = this.$refs.rightTableColTr
+                for(let i=0; i<rightTableColTr.length; i++){
+                    let rightIndex = Number(rightTableColTr[i].getAttribute("data-index"))
+                    let id = i
+                    let name = this.rightTableColArr[rightIndex].colName
+                    let checked = this.rightTableColArr[rightIndex].checked
+                    right_data.columnSetArr.push({id, name, checked})
                 }
                 this.nodeData.setting.left_data = left_data// 选择的数据（带顺序）
                 this.nodeData.setting.right_data = right_data// 选择的数据（带顺序）
@@ -445,36 +433,33 @@
             inputVerify() {
                 let checkedIndex = 0
                 let verify = true
-                let leftTableColTr = this.$refs.leftElTable.$refs.bodyWrapper.children[0].children[1].children
-                let rightTableColTr = this.$refs.rightElTable.$refs.bodyWrapper.children[0].children[1].children
-                let $this = this
-                if(typeof leftTableColTr !== 'undefined' && typeof rightTableColTr !== 'undefined'){
-                    $.each(leftTableColTr,function (i) {
-                        const leftIndex = parseInt($(this).find("td:eq(1)>div>div").html()) - 1
-                        if($this.leftTableColArr[leftIndex].checked){
-                            let rightIndex = parseInt($(rightTableColTr[i]).find("td:eq(1)>div>div").html()) - 1
-                            let curRightCol = $this.rightTableColArr[rightIndex]
-                            if(typeof curRightCol === 'undefined' || !$this.rightTableColArr[rightIndex].checked){
+                let leftTableColTr = this.$refs.leftTableColTr
+                let rightTableColTr = this.$refs.rightTableColTr
+                if(this.leftMainTableChecked){//左表为主表
+                    checkedIndex = this.leftTableColArr.findIndex( n => n.checked === true)
+                    for(let i=0; i<leftTableColTr.length; i++){
+                        let leftIndex = Number(leftTableColTr[i].getAttribute("data-index"))
+                        if(this.leftTableColArr[leftIndex].checked){
+                            let rightIndex = Number(rightTableColTr[i].getAttribute("data-index"))
+                            let curRightCol = this.rightTableColArr[rightIndex]
+                            if(typeof curRightCol === 'undefined' || !this.rightTableColArr[rightIndex].checked){
                                 verify = false
                                 return false
                             }
                         }
-                    })
-                    if(this.leftMainTableChecked){//左表为主表
-                        checkedIndex = this.leftTableColArr.findIndex( n => n.checked === true)
-                    }else{//右表为主表
-                        checkedIndex = this.rightTableColArr.findIndex( n => n.checked === true)
-                        $.each(rightTableColTr,function (i) {
-                            const rightIndex = parseInt($(this).find("td:eq(1)>div>div").html()) - 1
-                            if($this.rightTableColArr[rightIndex].checked){
-                                let leftIndex = parseInt($(leftTableColTr[i]).find("td:eq(0)>div>div").html()) - 1
-                                let curLeftCol = $this.rightTableColArr[leftIndex]
-                                if(typeof curLeftCol === 'undefined' || !$this.leftTableColArr[leftIndex].checked){
-                                    verify = false
-                                    return false
-                                }
+                    }
+                }else{//右表为主表
+                    checkedIndex = this.rightTableColArr.findIndex( n => n.checked === true)
+                    for(let i=0; i<rightTableColTr.length; i++){
+                        let rightIndex = Number(rightTableColTr[i].getAttribute("data-index"))
+                        if(this.rightTableColArr[rightIndex].checked){
+                            let leftIndex = Number(leftTableColTr[i].getAttribute("data-index"))
+                            let curLeftCol = this.rightTableColArr[leftIndex]
+                            if(typeof curLeftCol === 'undefined' || !this.leftTableColArr[leftIndex].checked){
+                                verify = false
+                                return false
                             }
-                        })
+                        }
                     }
                 }
                 if(checkedIndex < 0){

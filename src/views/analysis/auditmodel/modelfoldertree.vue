@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" ref="appContainerDiv" :style="appContainerDivStyle">
+  <div class="app-container">
     <!--模型分类树-->
     <el-input
       v-model="filterText"
@@ -82,7 +82,7 @@ import {
 export default {
   name: "ModelFolderTree",
   components: { MyElTree },
-  props: ["publicModel", "power", "spaceFolderName", "spaceFolderId"],
+  props: ["publicModel", "power"],
   data() {
     return {
       filterText: null,
@@ -103,7 +103,6 @@ export default {
         pbScope: "",
       },
       checkedId: "",
-      appContainerDivStyle:""
     };
   },
   watch: {
@@ -113,9 +112,6 @@ export default {
     },
   },
   created() {
-    if(this.publicModel === 'relationModel'){
-      this.appContainerDivStyle = "height: 500px;overflow-y: scroll"
-    }
     this.getModelFolder();
   },
   methods: {
@@ -134,7 +130,7 @@ export default {
      */
     getModelFolder() {
       if (this.publicModel != undefined && this.publicModel != "") {
-        findModelFolderTree(false, this.spaceFolderName, this.spaceFolderId).then((result) => {
+        findModelFolderTree(false).then((result) => {
           let newData = [];
           if (this.publicModel === "publicModel") {
             // 处理数据  只保留公共分类的文件夹数据
@@ -157,7 +153,7 @@ export default {
             }
             this.data = newData;
           } else if (this.publicModel === "relationModel") {
-             findModelFolderTree(true, this.spaceFolderName, this.spaceFolderId).then((result) => {
+             findModelFolderTree(true).then((result) => {
           this.data = result.data;
         });
           } else {
@@ -167,7 +163,7 @@ export default {
 
         });
       } else {
-        findModelFolderTree(true, this.spaceFolderName, this.spaceFolderId).then((result) => {
+        findModelFolderTree(true).then((result) => {
           this.data = result.data;
         });
       }

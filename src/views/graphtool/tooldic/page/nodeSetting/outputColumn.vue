@@ -104,9 +104,6 @@
                     this.isDisabled = true
                 }
             },
-            /**
-             * 重置输出列的勾选状态（只适用于数据融合、数据去重节点）
-             */
             re_checkbox(data, hasMoreTable) {
                 var num = 0
                 for (let i = 0; i < this.items.length; i++) {
@@ -117,17 +114,17 @@
                     var nullNodeId = this.items[j].nullNodeId
                     if (data && data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
-                            if(hasMoreTable){//数据融合节点
-                                if (data[i].value === this.items[j].curColumnName && data[i].nodeId === nodeId && data[i].nullNodeId === nullNodeId) {
+                            if (data[i] === this.items[j].curColumnName) {
+                                if (!hasMoreTable) {
                                     this.items[j].checked = true
                                     num++
                                     break
-                                }
-                            }else{//数据去重节点
-                                if (data[i] === this.items[j].curColumnName) {
-                                    this.items[j].checked = true
-                                    num++
-                                    break
+                                }else{
+                                    if (data[i].nodeId === nodeId && data[i].nullNodeId === nullNodeId) {
+                                        this.items[j].checked = true
+                                        num++
+                                        break
+                                    }
                                 }
                             }
                         }

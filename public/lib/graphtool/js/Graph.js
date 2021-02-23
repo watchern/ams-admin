@@ -3132,7 +3132,7 @@ HoverIcons.prototype.repaint = function() {
 			mxUtils.setOpacity(this.arrowRight, this.inactiveOpacity);
 
 			this.arrowDown.style.left = Math.round(this.currentState.getCenterX() - this.triangleUp.width / 2 - this.tolerance + this.graph.getGridSizePadding()) + 'px';
-			this.arrowDown.style.top = Math.round(bds.y + bds.height - 20 - this.tolerance) + 'px';
+			this.arrowDown.style.top = Math.round(bds.y + bds.height - this.tolerance) + 'px';
 			mxUtils.setOpacity(this.arrowDown, 100);
 
 			this.arrowLeft.style.left = Math.round(bds.x - this.triangleLeft.width - this.tolerance) + 'px';

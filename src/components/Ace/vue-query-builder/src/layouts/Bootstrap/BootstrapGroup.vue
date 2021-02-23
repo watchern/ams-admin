@@ -14,7 +14,6 @@
         </label>
 
         <select
-          style="margin-top: 5px"
           id="vqb-match-type"
           v-model="query.logicalOperator"
           class="form-control"
@@ -95,67 +94,58 @@ export default {
 }
 </script>
 
-<style scoped>
-  >>>.form-control{
-    margin-left: 10px;
-    height: 34px;
-    padding: 6px 12px;
-    font-size: 14px;
-    line-height: 1.42857143;
-    color: #555;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
-    -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
-    transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
-    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+<style>
+  .vue-query-builder .vqb-group .rule-actions {
+    margin-bottom: 20px;
   }
-  >>>.btn{
-    margin: 5px;
-    display: inline-block;
-    padding: 6px 12px;
-    margin-bottom: 0;
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.42857143;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-    -ms-touch-action: manipulation;
-    touch-action: manipulation;
-    cursor: pointer;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    margin-top: -3px;
-    margin-left: 9px;
-  }
-  >>>.close{
-    float: right;
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1;
-    color: #000;
-    text-shadow: 0 1px 0 #fff;
-    opacity: .5;
-    margin-right: 15px;
-  }
-  >>>.el-input__inner{
-    margin-left: 10px;
-  }
-  >>>.form-group{
-    margin-top: 10px;
-  }
-  >>>.form-inline{
-    padding-top: 10px;
-    padding-left: 30px;
-  }
-  >>>.vqb-rule{
-    border-left: 2px solid #8bc34a;
+
+  .vue-query-builder .vqb-rule {
     margin-top: 15px;
-    background-color: #efefef;
-    height: 60px;
+    margin-bottom: 15px;
+    background-color: #f5f5f5;
+    border-color: #ddd;
+    padding: 15px;
+  }
+
+  .vue-query-builder .vqb-group.depth-1 .vqb-rule,
+  .vue-query-builder .vqb-group.depth-2 {
+    border-left: 2px solid #8bc34a;
+  }
+
+  .vue-query-builder .vqb-group.depth-2 .vqb-rule,
+  .vue-query-builder .vqb-group.depth-3 {
+    border-left: 2px solid #00bcd4;
+  }
+
+  .vue-query-builder .vqb-group.depth-3 .vqb-rule,
+  .vue-query-builder .vqb-group.depth-4 {
+    border-left: 2px solid #ff5722;
+  }
+
+  .vue-query-builder .close {
+    opacity: 1;
+    color: rgb(150,150,150);
+  }
+
+  .form-control{
+    margin-left: 10px;
+  }
+  .btn{
+    margin-left: 10px;
+  }
+  .el-input__inner{
+    margin-left: 10px;
+  }
+  .match-type-container{
+    padding: 0px 15px 0 0 ;
+  }
+  .form-group{
+    margin-top: 8px;
+  }
+
+  @media (min-width: 768px) {
+    .vue-query-builder .vqb-rule.form-inline .form-group {
+      display: block;
+    }
   }
 </style>

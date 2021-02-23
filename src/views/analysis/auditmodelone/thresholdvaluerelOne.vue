@@ -67,6 +67,22 @@ export default {
   name:'ThresholdValueRel',
   components: { Colorpicker,thresholdvaluetree},
   props:['setThreasholdValueObj'],
+  mounted() {
+/*    if(this.setThreasholdValueObj.isDisplay){
+      //反显数据
+      debugger
+      this.setThreasholdValueObj.thresholdValueRelObj.colorInfoObj = JSON.parse(this.setThreasholdValueObj.thresholdValueRelObj.colorInfo)
+      this.thresholdValueRelObj = this.setThreasholdValueObj.thresholdValueRelObj
+      if(this.thresholdValueRelObj.thresholdValue.thresholdValueType == 2){
+        this.isShowThresholdValueObject = true
+        //this.thresholdValueRelObj.colorInfoObj = JSON.parse(this.thresholdValueRelObj.colorInfo)
+      }
+      else{
+        this.isShowThresholdValueObject = false
+        this.thresholdValueRelObj.thresholdValueObject = ""
+      }
+    }*/
+  },
   created() {
     if(this.setThreasholdValueObj.isDisplay){
       //反显数据
