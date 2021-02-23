@@ -2,26 +2,16 @@
     <div class="app-container">
         <!--图形树-->
         <el-input v-model="filterText" placeholder="输入关键字进行过滤" class="tree-search" />
-        <MyElTree
-            ref="tree"
-            v-loading="treeLoading"
-            :data="data"
-            :default-expanded-keys="['myGraph']"
-            :props="defaultProps"
-            :filter-node-method="filterNode"
-            :highlight-current="true"
-            :expand-on-click-node="false"
-            node-key="id"
-            :current-node-key="defaultNodeKey"
-            @node-expand="nodeExpand"
-            @node-click="nodeclick"
-        >
-      <span slot-scope="{ node, data }" class="custom-tree-node">
-        <span>
-          <i class="el-icon-folder" />
-          <span :title="node.name">{{ node.label }}</span>
-        </span>
-      </span>
+        <MyElTree ref="tree" v-loading="treeLoading" :data="data" :default-expanded-keys="['myGraph']" :props="defaultProps"
+            :filter-node-method="filterNode" :highlight-current="true" :expand-on-click-node="false"
+            node-key="id" :current-node-key="defaultNodeKey" @node-expand="nodeExpand" @node-click="nodeclick">
+            <span slot-scope="{ node, data }" class="custom-tree-node">
+                <span>
+                    <i v-if="data.id === 'myGraph'" class="el-icon-s-home" />
+                    <i v-if="data.pid === 'myGraph'" class="el-icon-folder" />
+                    <span :title="data.label">{{ node.label }}</span>
+                </span>
+            </span>
         </MyElTree>
     </div>
 </template>
@@ -66,11 +56,9 @@
                     })
                 })
             },
-            nodeExpand(obj, treeNode, el) {
-                console.log(treeNode)
-            },
-            nodeclick(obj, treeNode, el) {
-                if (treeNode.data.id !== 'myGraph') {
+            nodeExpand(obj, treeNode, el) {},
+            nodeclick(obj, treeNode) {
+                if (treeNode.data.pid === 'myGraph') {
                     this.$emit('refreshGraphList', treeNode.data)
                 }
             }

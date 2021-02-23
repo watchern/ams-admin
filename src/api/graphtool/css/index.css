@@ -106,10 +106,16 @@ div.rightMenu ul li:hover {
 #tableArea,#sysInfoArea,#outLineArea{
     overflow: auto;
 }
+#ztree_datasource_div{
+    width: 100%;
+    height: calc(100% - 40px);
+    overflow: auto;
+}
 #ztree_datasource{
     width: 100%;
     margin: 0;
-    max-height: calc(100% - 40px);
+    max-height: calc(100%);
+    overflow: unset;
 }
 #usedResourceTree,#historyTree{
 	height:100%;
@@ -121,10 +127,17 @@ div.rightMenu ul li:hover {
 	word-wrap: break-word;
 	text-indent: 2em;
 }
+#resourceZtreeDiv,#historyZtreeDiv{
+    width: 100%;
+    height:calc(100%);
+    overflow: auto;
+}
 #resourceZtree,#historyZtree{
+    width: 100%;
     margin:0;
     padding: 10px;
-    height:100%;
+    height:calc(100%);
+    overflow: unset;
 }
 .graphMenu{
     height:110px;
