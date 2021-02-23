@@ -583,7 +583,10 @@ export function initTableTree(result) {
             params: { tableMetaUuid: tableMetaUuid }
           }).then(result => {
             if (result.data == null) {
-              alert('错误' + e.message + 'error')
+              this.$message({
+                message: '错误' + e.message + 'error',
+              });
+              // alert('错误' + e.message + 'error')
             } else {
               // 处理拿回来的数据 处理成列表
               const columns = []
@@ -770,7 +773,10 @@ export function refushTableTree(treeNodes) {
               params: { tableMetaUuid: tableMetaUuid }
             }).then(result => {
               if (result.data == null) {
-                alert('错误' + e.message + 'error')
+                this.$message({
+                  message: '错误' + e.message + 'error',
+                });
+                // alert('错误' + e.message + 'error')
               } else {
                 // 处理拿回来的数据 处理成列表
                 const columns = []
@@ -1546,7 +1552,10 @@ export function sqlFormat() {
     params: param
   }).then(result => {
     if (result.data.isError) {
-      alert('SQL语句书写不正确，格式化时出错')
+      this.$message({
+        message: 'SQL语句书写不正确，格式化时出错',
+      });
+      // alert('SQL语句书写不正确，格式化时出错')
     } else {
       var newVal = result.data.sql
       if (Object.keys(paramObj).length > 0) {
@@ -1632,7 +1641,10 @@ export function caseTransformation(type) {
     }
     editorObj.replaceSelection(selectValue)
   } else {
-    alertMsg('提示', '请选择转换内容', 'info')
+    this.$message({
+      message: '请选择转换内容',
+    });
+    // alertMsg('提示', '请选择转换内容', 'info')
   }
 }
 
@@ -1667,7 +1679,10 @@ export function selectSqlNotes() {
     }
     replaceParam(newParamObj)
   } else {
-    alert('请选择注释内容')
+    this.$message({
+      message: '请选择注释内容',
+    });
+    // alert('请选择注释内容')
   }
 }
 
@@ -1700,7 +1715,10 @@ export function selectSqlCancelNotes() {
     }
     replaceParam(newParamObj)
   } else {
-    alert('请选择待取消注释的内容')
+    this.$message({
+      message: '请选择待取消注释的内容',
+    });
+    // alert('请选择待取消注释的内容')
   }
 }
 
@@ -1800,7 +1818,10 @@ function getSelectSQLByColumns(columns, tableName, oldSql, loading) {
       if (loading) {
         loading.destroy()
       }
-      alert('SQL语句书写不正确，格式化时出错')
+      this.$message({
+        message: 'SQL语句书写不正确，格式化时出错',
+      });
+      // alert('SQL语句书写不正确，格式化时出错')
     } else {
       editorObj.setValue(oldSql === '' ? result.data.sql : oldSql + '\n' + result.data.sql)
       // 如果有参数，替换显示状态

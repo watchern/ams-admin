@@ -133,6 +133,12 @@ export default {
      *获取模型分类
      */
     getModelFolder() {
+      if (this.spaceFolderName === undefined){
+        this.spaceFolderName = '个人模型'
+      }
+      if (this.spaceFolderId === undefined){
+        this.spaceFolderId = this.$store.getters.datauserid
+      }
       if (this.publicModel != undefined && this.publicModel != "") {
         findModelFolderTree(false, this.spaceFolderName, this.spaceFolderId).then((result) => {
           let newData = [];
