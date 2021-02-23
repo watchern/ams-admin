@@ -155,7 +155,7 @@ import personTree from '@/components/publicpersontree/index'
 export default {
   name: 'ModelListTable',
   components: { paramDrawNew,Pagination, QueryField, EditModel, ModelFolderTree, childTabs, crossrangeParam, paramDraw, modelshoppingcart, personTree },
-  props: ['power','dataUserId','sceneCode'],
+  props: ['power','dataUserId','sceneCode','isAuditWarring'],
   data() {
     return {
       isShow: false,
@@ -328,7 +328,8 @@ export default {
           this.$refs.[dataObj.modelUuid + 'param'][0].
           initParamHtmlSS(this.currentPreviewModelParamAndSql.sqlValue, this.currentPreviewModelParamAndSql.paramObj, '请输入参数', dataObj.modelUuid)
         }*/
-        this.$refs.[dataObj.modelUuid][0].loadTableData(dataObj)
+        var selectObj = this.$refs.modelListTable.selection
+        this.$refs.[dataObj.modelUuid][0].loadTableData(dataObj,selectObj[0].modelName)
       }
       const func1 = func2.bind(this)
       this.webSocket.onclose = function(event) {
@@ -491,8 +492,10 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = false
         this.btnState.previewBtn = false
-        this.isShowShoppingCart = true
-        this.$refs.modelShoppingCartRef.setMemo(selectObj)
+        if (this.isAuditWarring != true){
+          this.isShowShoppingCart = true
+          this.$refs.modelShoppingCartRef.setMemo(selectObj)
+        }
       } else if (selectObj.length > 1) {
         // 只显示删除和添加按钮
         this.btnState.otherBtn = false
@@ -500,8 +503,10 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = true
         this.btnState.previewBtn = true
-        this.isShowShoppingCart = true
-        this.$refs.modelShoppingCartRef.setMemo(selectObj)
+        if (this.isAuditWarring != true){
+          this.isShowShoppingCart = true
+          this.$refs.modelShoppingCartRef.setMemo(selectObj)
+        }
       } else if (selectObj.length == 0) {
         // 只显示添加按钮
         this.btnState.otherBtn = true

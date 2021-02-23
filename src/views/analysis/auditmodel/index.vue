@@ -3,7 +3,7 @@
     <!--模型分类树-->
     <el-container>
       <el-aside class="tree-side">
-        <ModelFolderTree ref="modelFolderTree" :power="power" @refreshModelList="refreshModelList" />
+        <ModelFolderTree ref="modelFolderTree" :power="power" @refreshModelList="refreshModelList" :spaceFolderName="thisFolderName" :spaceFolderId="thisDataUserId"/>
       </el-aside>
       <ModelListTable :data-user-id='thisDataUserId' :scene-code='thisSceneCode' ref="modelListTable" :power="power" @loadingSet="loadingSet" @refreshTree="refreshTree" />
     </el-container>
@@ -23,9 +23,12 @@ export default {
     },
     thisSceneCode(){
       return this.sceneCode ? this.sceneCode:this.$store.getters.scenecode;
+    },
+    thisFolderName(){
+      return this.folderName ? this.folderName:'个人模型';
     }
   },
-  props:['power','dataUserId','sceneCode'],
+  props:['power','dataUserId','sceneCode','folderName'],
   data() {
     return {
       //dataSpaceName: sessionStorage.getItem("dataUserName"),

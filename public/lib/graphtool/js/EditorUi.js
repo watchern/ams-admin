@@ -1754,7 +1754,6 @@ EditorUi.prototype.createDivs = function() {
     var h = $(this.graphToolDiv).height() - this.toolbarHeight + 10;
     this.sidebarContainer.style.width = this.sidebarWidth + "px";
     this.resultContainer.style.height = this.resultHeight - 45 + "px";
-    this.toolbarContainer.style.width = $(this.graphToolDiv).width() + "px";
 	this.container.style.left = (this.sidebarWidth + this.splitSize) + "px";
 	this.container.style.right = (this.detailContainerWidth + 15) + "px";
     this.container.style.width = ($(this.graphToolDiv).width() - this.sidebarWidth - this.splitSize - this.detailContainerWidth) + "px";
@@ -1787,7 +1786,6 @@ EditorUi.prototype.createUi = function() {
 	}
 
 	// Creates toolbar
-//	this.toolbar = (this.editor.chromeless)? null: this.createToolbar(this.createDiv('geToolbar'));
 
 	if(this.toolbar != null) {
 		this.toolbarContainer.appendChild(this.toolbar.container);

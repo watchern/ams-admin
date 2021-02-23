@@ -82,7 +82,7 @@ import {
 export default {
   name: "ModelFolderTree",
   components: { MyElTree },
-  props: ["publicModel", "power"],
+  props: ["publicModel", "power", "spaceFolderName", "spaceFolderId"],
   data() {
     return {
       filterText: null,

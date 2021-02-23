@@ -101,9 +101,7 @@ import {
   getListByAmmParam,
   updateEnabled,
   updateDisenable,
-  deleteParams,
-  initParamHtml,
-  createParamTableHtml,
+  deleteParams
 } from "@/api/analysis/auditparam";
 export default {
   components: {

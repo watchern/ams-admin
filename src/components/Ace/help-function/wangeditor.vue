@@ -24,7 +24,7 @@ export default {
     // const $textarea = $('#textarea')
     const _that = this
     // 设置高度
-    editor.config.height = 710
+    editor.config.height = 685
     editor.config.onchange = function (html) {
       // 监控变化，同步更新到 textarea
       // $textarea.val(html)
