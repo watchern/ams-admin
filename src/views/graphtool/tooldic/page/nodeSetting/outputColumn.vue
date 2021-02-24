@@ -56,7 +56,6 @@
             return {
                 nodeData: null,
                 columnsInfoPre: this.$parent.$parent.$parent.columnsInfoPre,
-                // re_columnsInfo: '',
                 items: [],
                 isIndeterminate: true,
                 checkAll: false,
@@ -78,15 +77,7 @@
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 this.initConfig()
             },
-            // check_old_column() { // 重构字段组，优化查询
-            //     const object = {}
-            //     $(this.nodeData.columnsInfo).each(function(index) {
-            //         object[this.columnName] = this
-            //     })
-            //     return object
-            // },
             initConfig() { // 初始化字段列表
-                // this.re_columnsInfo = this.check_old_column()
                 this.createTrFacture()
                 var num = 0
                 for (let i = 0; i < this.items.length; i++) {
@@ -146,55 +137,18 @@
                 const columnsInfoArray = isSet ? this.nodeData.columnsInfo : this.columnsInfoPre
                 for (let column = 0; column < columnsInfoArray.length; column++) {
                     const curColumnName = isSet ? columnsInfoArray[column].columnName : columnsInfoArray[column].newColumnName
-                    let nodeId = ''
-                    let nullNodeId = ''
-                    let resourceTableName = ''
-                    let columnInfo = ''
-                    let rtn = ''
+                    let nodeId = columnsInfoArray[column].nodeId
+                    let nullNodeId = columnsInfoArray[column].nullNodeId
+                    let resourceTableName = columnsInfoArray[column].resourceTableName
+                    let columnInfo = columnsInfoArray[column]
+                    let rtn = columnsInfoArray[column].rtn
                     let checked = false
                     const id = column
-                    let disColumnName = ''
-                    let isHide = false
+                    let disColumnName = columnsInfoArray[column].newColumnName
                     if (isSet) {
-                        nodeId = columnsInfoArray[column].nodeId
-                        nullNodeId = columnsInfoArray[column].nullNodeId
-                        columnInfo = columnsInfoArray[column]
-                        rtn = columnsInfoArray[column].rtn
-                        resourceTableName = columnsInfoArray[column].resourceTableName
-                        if(columnsInfoArray[column].customizeColumn){//如果是函数列（自定义字段）
-                            if(columnsInfoArray[column].isOutputColumn === 1){
-                                checked = true
-                            }
-                            disColumnName = columnsInfoArray[column].newColumnName
-                        }else{
-                            let oldSetColumnInfo = columnsInfoArray.find(n => n.columnName === curColumnName)
-                            if(typeof oldSetColumnInfo !== "undefined"){
-                                disColumnName = oldSetColumnInfo.newColumnName
-                                if (oldSetColumnInfo.isOutputColumn === 1) {
-                                    checked = true
-                                }
-                            }
-                            // let oldSetColumnInfo = columnsInfoArray.find(n => n.newColumnName === curColumnName)
-                            // if(typeof oldSetColumnInfo !== "undefined"){
-                            //     const oldSetColumn = this.find_self_column(curColumnName)
-                            //     if(oldSetColumn.flag){
-                            //         disColumnName = oldSetColumn.newColumnName
-                            //         // if (oldSetColumn.checked && !isHide) {
-                            //         if (oldSetColumn.checked) {
-                            //             checked = true
-                            //         }
-                            //     }else{
-                            //         disColumnName = curColumnName
-                            //     }
-                            // }
+                        if(columnsInfoArray[column].isOutputColumn === 1){
+                            checked = true
                         }
-                    }else{
-                        disColumnName = curColumnName
-                        nodeId = this.columnsInfoPre[column].nodeId
-                        nullNodeId = this.columnsInfoPre[column].nullNodeId
-                        columnInfo = this.columnsInfoPre[column]
-                        rtn = this.columnsInfoPre[column].rtn
-                        resourceTableName = this.columnsInfoPre[column].resourceTableName
                     }
                     this.items.push({ id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, checked, resourceTableName})
                 }
@@ -226,23 +180,6 @@
                 }
                 this.nodeData.columnsInfo = this_columnInfos
             },
-            // find_self_column(columnName) { // 是否设置并且含有当前字段
-            //     var obj = {
-            //         flag: false,
-            //         columnName: columnName,
-            //         newColumnName: columnName,
-            //         checked: false
-            //     }
-            //     var oldset = this.re_columnsInfo
-            //     // 通过当前节点下的字段名称进行匹配，防止不同节点含有相同字段名称所导致的共用一个输出字段值con's
-            //     if (typeof oldset[columnName] !== 'undefined') {
-            //         obj.flag = true
-            //         obj.columnName = columnName
-            //         obj.newColumnName = oldset[columnName].newColumnName
-            //         obj.checked = oldset[columnName].isOutputColumn !== 0
-            //     }
-            //     return obj
-            // },
             handleCheckAllChange(checked) {
                 Array.from(this.items, (n) => n.checked = checked)
             },
