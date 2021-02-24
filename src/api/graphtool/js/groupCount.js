@@ -145,16 +145,13 @@ function initOutputColumn(columnInfo, isCountTr, sign, countType) {
         columnItem.sign = sign
         if(countType){
             columnItem.dataCountType = countType
-            columnItem.newColumnName = (columnInfo.oldColumnName || columnInfo.columnName) + "_" + countType.name;
+            if(!nodeData.isSet){
+                columnItem.newColumnName = columnItem.columnName + "_" + countType.name;
+            }
         }
-
     }
-    if(countType){
-        if(typeof columnInfo.oldColumnName !== "undefined"){
-            columnItem.columnName = countType.value + "(" + columnInfo.oldColumnName + ")";
-        }else{
-            columnItem.columnName = countType.value + "(" + columnInfo.columnName + ")";
-        }
+    if(countType && !nodeData.isSet){
+        columnItem.columnName = countType.value + "(" + columnItem.columnName + ")";
     }
     groupCountVue.columnItems.push(columnItem)
     groupCountVue.ind++
@@ -295,7 +292,7 @@ function initCountSelectData(trNum) {
                             } else { // 若不存在，则添加输出列的行
                                 // 在所有输出列中匹配当前选中的汇总列
                                 for (let i = 0; i < groupCountVue.columnsInfo.length; i++) {
-                                    if (groupCountVue.columnsInfo[i].columnName === columnValue[0].value) {
+                                    if (groupCountVue.columnsInfo[i].newColumnName === columnValue[0].value) {
                                         // 追加一行输出列配置
                                         initOutputColumn(groupCountVue.columnsInfo[i], true, sign, countType)
                                         refreshOutputColumn()
@@ -319,7 +316,7 @@ function initCountSelectData(trNum) {
                         } else { // 若不存在，则添加输出列的行
                             // 在所有输出列中匹配当前选中的汇总列
                             for (let i = 0; i < groupCountVue.columnsInfo.length; i++) {
-                                if (groupCountVue.columnsInfo[i].columnName === columnValue[0].value) {
+                                if (groupCountVue.columnsInfo[i].newColumnName === columnValue[0].value) {
                                     // 追加一行输出列配置
                                     initOutputColumn(groupCountVue.columnsInfo[i], true, sign, countType)
                                     refreshOutputColumn()
@@ -460,13 +457,12 @@ export function saveNodeInfo() {
             if(groupCountVue.columnItems[index].checked){
                 columnInfo.isOutputColumn = 1
                 columnInfo.checked = true
-                columnInfo.newColumnName = newColumnName
             }else{
                 columnInfo.checked = false
                 columnInfo.isOutputColumn = 0
             }
-            columnInfo.oldColumnName = columnInfo.oldColumnName || columnInfo.columnName;//将原字段存储一份
             columnInfo.columnName = groupCountVue.columnItems[index].columnName
+            columnInfo.newColumnName = newColumnName
             if (typeof groupCountVue.columnItems[index].sign !== "undefined") { // 汇总字段的输出列数据行
                 // 组织汇总列的字段配置信息
                 columnInfo.isCount = true

@@ -195,7 +195,7 @@
             <el-input v-model="searchZtreeContent" placeholder="搜索关键字" class="input-with-select">
                 <el-button slot="append" icon="el-icon-search" @click="searchZtree" />
             </el-input>
-            <ul id="ztree_datasource" class="ztree"/>
+            <div id="ztree_datasource_div"><ul id="ztree_datasource" class="ztree"/></div>
         </div>
         <div id="graphContainer" class="graphContainer">
             <div id="geDiagramContainer" class="geDiagramContainer">
@@ -247,10 +247,10 @@
                     <div id="nodeRemark" v-html="nodeRemarkHtml" @click="viewEgEvent"></div>
                 </el-tab-pane>
                 <el-tab-pane label="所用资源" name="2">
-                    <ul id="resourceZtree" class="ztree" />
+                    <div id="resourceZtreeDiv"><ul id="resourceZtree" class="ztree" /></div>
                 </el-tab-pane>
                 <el-tab-pane label="痕迹" name="3">
-                    <ul id="historyZtree" class="ztree" />
+                    <div id="historyZtreeDiv"><ul id="historyZtree" class="ztree" /></div>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -420,12 +420,13 @@
     import AnalysisDetailData from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/analysisDetailData.vue'
     // 引入后端接口的相关方法
     import { removeJcCssfile, addCssFile, addJsFile } from "@/api/analysis/common"
-    import { getGraphInfoById, viewNodeData, saveGraphInterface, createScreenQuery } from '@/api/graphtool/apiJs/graphList'
+    import { getGraphInfoById, viewNodeData, saveGraphInterface, createScreenQuery, getColumnsByTable } from '@/api/graphtool/apiJs/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
     // 引入前段JS的相关方法
     import * as commonJs from '@/api/graphtool/js/common'
     import * as indexJs from '@/api/graphtool/js/index'
     import * as validateJs from '@/api/graphtool/js/validate'
+    import request from "@/utils/request";
     export default {
         name: 'ToolIndex',
         components: { Help, GraphListExport, ChildTabs, SettingParams, NodeSetting, RelationSetting, InputParams, GroupCount, SqlEditor, AnalysisDetailData },
@@ -784,7 +785,49 @@
                             onRightClick: indexJs.onRightClick,
                             onExpand: function(event, treeId, treeNode) {
                                 if ((!treeNode.children || treeNode.children.length === 0) && (treeNode.type === 'datasource' || treeNode.type === 'table' || treeNode.type === 'view')) {
-                                    indexJs.getColumnsByTable(treeNode, false, false)
+                                    if (obj.openType === 1) {//开发测试环境
+
+                                    }else{//权限环境
+                                        getColumnsByTable({ tableMetaUuid: treeNode.id }).then(result => {
+                                            if (result.data == null) {
+                                                obj.$message.error('数据表字段信息获取失败：' + result.data.message)
+                                            } else {
+                                                // 处理拿回来的数据 处理成列表
+                                                let nodeList = []
+                                                const columnIconPath = require("@/styles/icons/column.png")
+                                                Array.from(result.data, item => {
+                                                    if (item.chnName === '' || item.chnName == null || typeof item.chnName === 'undefined') {
+                                                        nodeList.push({
+                                                            'id': new UUIDGenerator().id,
+                                                            'name': item.colName,
+                                                            'displayName': item.colName,
+                                                            'pid': treeNode.id,
+                                                            'isParent': false,
+                                                            'open': false,
+                                                            'type': 'column',
+                                                            'icon': columnIconPath,
+                                                        })
+                                                    } else {
+                                                        //如果有汉化字段则用中文加汉化字段
+                                                        let columnName = item.colName + "(" + item.chnName + ")"
+                                                        nodeList.push({
+                                                            'id': treeNode.name + '_' + this,
+                                                            'name': columnName,
+                                                            'displayName': columnName,
+                                                            'pid': treeNode.id,
+                                                            'isParent': false,
+                                                            'open': false,
+                                                            'type': 'column',
+                                                            'icon': columnIconPath,
+                                                        })
+                                                    }
+                                                })
+                                                if (nodeList.length > 0) {
+                                                    obj.zTreeObj.addNodes(treeNode, nodeList)
+                                                }
+                                            }
+                                        })
+                                    }
                                 }
                             }
                         }
@@ -799,7 +842,7 @@
                         }
                     }
                     // 数据表根节点
-                    if (obj.openType === 1) {				// 开发测试环境
+                    if (obj.openType === 1) {//开发测试环境
                         setting.view.selectedMulti = true// 允许ctrl多选
                         setting.callback.onClick = indexJs.onclick
                         $.post(contextPath + '/graphEditor/getDevelopTable', {}, function(e) {

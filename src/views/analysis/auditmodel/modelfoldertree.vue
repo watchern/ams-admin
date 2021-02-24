@@ -133,8 +133,20 @@ export default {
      *获取模型分类
      */
     getModelFolder() {
+      var spaceFolderName = ''
+      var spaceFolderId = ''
+      if (this.spaceFolderName === undefined){
+        spaceFolderName = '个人模型'
+      }else {
+        spaceFolderName = this.spaceFolderName
+      }
+      if (this.spaceFolderId === undefined){
+        spaceFolderId = this.$store.getters.datauserid
+      }else {
+        spaceFolderId = this.spaceFolderId
+      }
       if (this.publicModel != undefined && this.publicModel != "") {
-        findModelFolderTree(false, this.spaceFolderName, this.spaceFolderId).then((result) => {
+        findModelFolderTree(false, spaceFolderName, spaceFolderId).then((result) => {
           let newData = [];
           if (this.publicModel === "publicModel") {
             // 处理数据  只保留公共分类的文件夹数据
@@ -149,7 +161,7 @@ export default {
             for (let i = 0; i < result.data.length; i++) {
               if (
                 result.data[i].id == "gonggong" ||
-                result.data[i].id == this.$store.getters.personuuid
+                result.data[i].id == this.$store.getters.datauserid
               ) {
                 result.data[i].disabled = true;
                 newData.push(result.data[i]);
@@ -157,7 +169,7 @@ export default {
             }
             this.data = newData;
           } else if (this.publicModel === "relationModel") {
-             findModelFolderTree(true, this.spaceFolderName, this.spaceFolderId).then((result) => {
+             findModelFolderTree(true, spaceFolderName, spaceFolderId).then((result) => {
           this.data = result.data;
         });
           } else {
@@ -167,7 +179,7 @@ export default {
 
         });
       } else {
-        findModelFolderTree(true, this.spaceFolderName, this.spaceFolderId).then((result) => {
+        findModelFolderTree(true, spaceFolderName, spaceFolderId).then((result) => {
           this.data = result.data;
         });
       }
