@@ -113,8 +113,11 @@
                     row-selection="multiple"
                     row-height="40"
                   />
-                  <mtEditor :graphConfigHeight="160" v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' :chartBoxStyle="chartBoxStyle" v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
-                  <mtEditor :graphConfigHeight="160" v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' :chartBoxStyle="chartBoxStyle" v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
+                  <mtEditor :graphConfigHeight="160" v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data'
+                            :chartBoxStyle="chartBoxStyle"
+                            v-if="dataObj.chartConfig != undefined && dataObj.isLoad == true && dataObj.isError == false" :chart-config='dataObj.chartConfig'></mtEditor>
+                  <mtEditor :graphConfigHeight="160" v-show=dataObj.isShowChart :ref="dataObj.id" :data='dataObj.data' :chartBoxStyle="chartBoxStyle"
+                            v-else-if="dataObj.isLoad == true && dataObj.isError == false"></mtEditor>
                   <div style="color:red;text-align: left" v-else>{{dataObj.message}}</div>
                 </swiper-slide>
               <div class="swiper-pagination" slot="pagination"></div>
@@ -535,6 +538,7 @@ export default {
             name:val.measureName
           }
           //处理aggrid的列信息ss
+          debugger
           let data = {id:val.analysisRegionId,data:result,measureName:val.measureName,chartConfig:val.chartConfig}
           //根据返回的结果id找到数组里面的数据进行修改
             dataList.data = result
@@ -3177,6 +3181,7 @@ export default {
      * @param name 名称
      */
     addAnalistsNode(name, pbScopeUuid, folderId) {
+      debugger
       var inRegionStyle = $("#inRegion").html();
       var dimRegionStyle = $("#dimAnalysisRegion").html();
       var mapping = JSON.stringify(this.inRegionAndDimRegionMapping);
@@ -3239,7 +3244,9 @@ export default {
       //获取当前界面分析对象的图表配置
       for(let i = 0;i < this.analysisList.length;i++){
         if(this.$refs[this.analysisList[i].id] != undefined && this.$refs[this.analysisList[i].id].length != 0){
-          if(!this.$refs[this.analysisList[i].id][0].getChartConfig){
+          console.log(this.$refs[this.analysisList[i].id][0].getChartConfig)
+          if(this.$refs[this.analysisList[i].id][0].getChartConfig){
+            console.log(this.$refs[this.analysisList[i].id][0].getChartConfig())
             this.analysisList[i].chartConfig = this.$refs[this.analysisList[i].id][0].getChartConfig()
           }
         }
@@ -6159,7 +6166,6 @@ var see = "查看";
 }
 >>>.recommendPage .swiper-container{
   position: relative;
-  width: 72vw;
   height: 85vh;
 /*  width: 100%;
   height: 100%;*/
