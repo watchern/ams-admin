@@ -37,7 +37,6 @@ const AmsRoutes = [
     component: () => import('ams-datamax/src/components/canvasPreview')
   },
   {
-    name: 'screenOp',
     path: '/screenOp',
     component: () => import('ams-datamax/src/components/screenOp')
   }
