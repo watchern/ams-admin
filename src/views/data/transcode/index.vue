@@ -9,9 +9,9 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" title="新增" size="mini" class="oper-btn add" @click="handleCreate" />
-        <el-button type="primary" title="修改" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate" />
-        <el-button type="primary" title="删除" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete" />
+        <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate" />
+        <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate" />
+        <el-button type="primary" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete" />
       </el-col>
     </el-row>
     <el-table

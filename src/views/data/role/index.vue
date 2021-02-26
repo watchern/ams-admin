@@ -9,11 +9,11 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" size="mini" title="新增" class="oper-btn add" @click="handleCreate()" />
-        <el-button type="primary" size="mini" title="修改" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
-        <el-button type="primary" size="mini" title="删除" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
-        <el-button type="primary" size="mini" title="绑定资源" class="oper-btn link-2" :disabled="selections.length !== 1" @click="bindRes()" />
-        <el-button type="primary" size="mini" title="授权" class="oper-btn auth" :disabled="selections.length === 0" @click="authentic()" />
+        <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
+        <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
+        <el-button type="primary" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
+        <el-button type="primary" size="mini" class="oper-btn link-1" :disabled="selections.length !== 1" @click="bindRes()" />
+        <el-button type="primary" size="mini" class="oper-btn auth" :disabled="selections.length === 0" @click="authentic()" />
       </el-col>
     </el-row>
     <el-table
@@ -33,7 +33,7 @@
       <el-table-column label="授权方式" width="100px" align="center" prop="authenType" :formatter="formatAuthenType" />
       <el-table-column label="数据筛选" style="width: 50px" align="center">
         <template slot-scope="scope">
-          <el-button type="primary" title="预览" class="oper-btn detail" size="mini" @click="openFilterPanel(scope.row.dataRoleUuid)" />
+          <el-button type="primary" class="oper-btn detail" size="mini" @click="openFilterPanel(scope.row.dataRoleUuid)" />
         </template>
       </el-table-column>
       <el-table-column label="数据有效期" prop="timeDuring" :formatter="formatDuring" style="width : 400px" />

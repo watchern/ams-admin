@@ -28,28 +28,25 @@
                                 type="primary"
                                 size="small"
                                 class="oper-btn clean"
-                                title="格式化sql"
                                 @click="sqlFormat"
+                                style="margin-left:18px"
                             />
                             <el-button
                                 type="primary"
                                 size="small"
                                 class="oper-btn start"
-                                title="执行"
                                 @click="executeSQL"
                             />
                             <el-button
                                 type="primary"
                                 size="small"
-                                class="oper-btn folder"
-                                title="打开SQL"
+                                class="oper-btn folder-1"
                                 @click="openSqlDraftList"
                             />
                             <el-button
                                 type="primary"
                                 size="small"
                                 class="oper-btn sqlcheck"
-                                title="校验SQL"
                                 @click="getColumnSqlInfo"
                             />
                             <el-dropdown>
@@ -57,7 +54,6 @@
                                     type="primary"
                                     size="small"
                                     class="oper-btn save"
-                                    title="保存"
                                 />
                                 <el-dropdown-menu slot="dropdown">
                                     <el-dropdown-item
@@ -73,7 +69,6 @@
                                     type="primary"
                                     size="small"
                                     class="oper-btn maintain"
-                                    title="工具箱"
                                 />
                                 <el-dropdown-menu slot="dropdown">
                                     <el-dropdown-item

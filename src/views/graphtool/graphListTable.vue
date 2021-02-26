@@ -5,14 +5,14 @@
         </div>
         <el-row>
             <el-col align="right">
-                <el-button v-if="type === 'privateGraphType' || type === 'personScreenGraphType'" type="primary" title="新增" class="oper-btn add" @click="add"/>
-                <el-button v-if="type !== 'shareToGraphType'" type="primary" class="oper-btn edit" @click="edit" title="修改" :disabled="editGraphBtn"/>
-                <el-button v-if="showDelBtn" type="primary" class="oper-btn delete" @click="deleteGraph" title="删除" :disabled="deleteGraphBtn"/>
-                <el-button v-if="type === 'privateGraphType'" type="primary" class="oper-btn share" title="分享" @click="personTreeDialogVisible = true" :disabled="shareGraphBtn"/>
-                <el-button v-if="type === 'shareToGraphType'" type="primary" class="oper-btn cancelshare" title="取消分享" @click="cancelShare" :disabled="cancelShareGraphBtn"/>
-                <el-button v-if="type === 'personScreenGraphType'" type="primary" class="oper-btn publish" title="发布" @click="publicGraph" :disabled="publicGraphBtn"/>
-                <el-button v-if="type === 'screenGraphType'" type="primary" class="oper-btn publish" title="取消发布" @click="cancelPublic" :disabled="cancelPublicGraphBtn"/>
-                <el-button v-if="type.toLowerCase().indexOf('screengraphtype') > -1" type="primary" class="oper-btn start" title="运行" @click="run" :disabled="runGraphBtn"/>
+                <el-button v-if="type === 'privateGraphType' || type === 'personScreenGraphType'" type="primary" class="oper-btn add" @click="add"/>
+                <el-button v-if="type !== 'shareToGraphType'" type="primary" class="oper-btn edit" @click="edit" :disabled="editGraphBtn"/>
+                <el-button v-if="showDelBtn" type="primary" class="oper-btn delete" @click="deleteGraph" :disabled="deleteGraphBtn"/>
+                <el-button v-if="type === 'privateGraphType'" type="primary" class="oper-btn share-1" @click="personTreeDialogVisible = true" :disabled="shareGraphBtn"/>
+                <el-button v-if="type === 'shareToGraphType'" type="primary" class="oper-btn cancelshare"@click="cancelShare" :disabled="cancelShareGraphBtn"/>
+                <el-button v-if="type === 'personScreenGraphType'" type="primary" class="oper-btn publish" @click="publicGraph" :disabled="publicGraphBtn"/>
+                <el-button v-if="type === 'screenGraphType'" type="primary" class="oper-btn publish-1" @click="cancelPublic" :disabled="cancelPublicGraphBtn"/>
+                <el-button v-if="type.toLowerCase().indexOf('screengraphtype') > -1" type="primary" class="oper-btn start" @click="run" :disabled="runGraphBtn"/>
             </el-col>
         </el-row>
         <el-table key="graphTable" ref="graphListTable" v-loading="listLoading" height="500" :data="dataList" border fit highlight-current-row

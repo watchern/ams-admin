@@ -18,8 +18,8 @@
                     </el-table-column>
                     <el-table-column label="操作" width="180" align="center">
                         <template slot-scope="scope">
-                            <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add" @click="addCountTr" title="添加行" style="line-height: normal;"/>
-                            <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete" title="删除行" @click="delCountTr(scope.$index)" style="line-height: normal;"/>
+                            <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add-3" @click="addCountTr" style="line-height: normal;"/>
+                            <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete-7" @click="delCountTr(scope.$index)" style="line-height: normal;"/>
                         </template>
                     </el-table-column>
                 </el-table>

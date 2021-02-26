@@ -46,11 +46,11 @@
       <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn search"
         ></el-button
       >
+      >
       <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
         >重置</el-button -->
       <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn again-2"
-        ></el-button
-      >
+        ></el-button>
       <el-button
         class="oper-btn link"
         :disabled="modelRunResultBtnIson.modelDetailAssBtn"
@@ -67,10 +67,10 @@
         <el-button
           type="primary"
           @click="modelResultExport"
-          class="oper-btn export-2"
+          class="oper-btn export-3"
         ></el-button>
       </downloadExcel>
-      <el-button type="primary" title="图表展示" class="oper-btn chart"></el-button>
+      <el-button type="primary" class="oper-btn chart"></el-button>
     </el-row>
     <ag-grid-vue
       v-if="isSee"

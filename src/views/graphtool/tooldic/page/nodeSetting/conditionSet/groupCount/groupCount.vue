@@ -23,8 +23,8 @@
                             </el-table-column>
                             <el-table-column label="操作" width="180" align="center">
                                 <template slot-scope="scope">
-                                    <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add" @click="addCountTr" title="添加行" style="line-height: normal;"/>
-                                    <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete" title="删除行" @click="delCountTr(scope.$index)" style="line-height: normal;"/>
+                                    <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add-3" @click="addCountTr" style="line-height: normal;"/>
+                                    <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete-7" @click="delCountTr(scope.$index)" style="line-height: normal;"/>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -34,8 +34,8 @@
             <el-tab-pane label="输出字段设置" name="outPutCol">
                 <el-row style="padding-top: 10px;">
                     <el-col align="right">
-                        <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" style="line-height: normal;"/>
-                        <el-button type="primary" title="说明" class="oper-btn help" @click="helpDialogVisible = true" style="line-height: normal;"/>
+                        <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" style="line-height: normal;"/>
+                        <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" style="line-height: normal;"/>
                     </el-col>
                 </el-row>
                 <el-table :data="columnItems" border style="width: 100%;" height="527" ref="outPutTable">
@@ -57,7 +57,7 @@
                     </el-table-column>
                     <el-table-column align="center" label="操作" width="100" :resizable="false">
                         <template slot-scope="scope">
-                            <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" title="设置" style="line-height: normal;"/>
+                            <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" style="line-height: normal;"/>
                         </template>
                     </el-table-column>
                 </el-table>
