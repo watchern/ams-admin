@@ -895,7 +895,7 @@
              */
             replaceNodeParam() {
                 // var obj = replaceNodeParam(this.paramDrawUuid, 'sqlEditor')
-              this.$refs.paramDrawRefNew.replaceNodeParam(this.paramDrawUuid).then(obj=>{
+              var obj = this.$refs.paramDrawRefNew.replaceNodeParam(this.paramDrawUuid)
                 if (!obj.verify) {
                   this.$message({ type: 'info', message: obj.message })
                   return
@@ -939,7 +939,6 @@
                   }
                 });*/
                 this.dialogFormVisible = false
-              })
             },
             maxOpen() {
                 maxOpenOne()
