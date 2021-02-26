@@ -751,7 +751,7 @@ export default {
   padding: 25px;
 }
 #tool .use-zy img{
-  width:100%
+  width:27px;
 }
 #tool .use-zyt{
   width:18%;

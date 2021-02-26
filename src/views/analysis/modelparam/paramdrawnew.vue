@@ -26,7 +26,7 @@
 
 <script>
 import '@/components/ams-loading/css/loading.css'
-import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams  } from '@/api/graphtool/apiJs/graphList'
+import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams ,recplaceParams } from '@/api/graphtool/apiJs/graphList'
 import * as paramCommonJs from '@/api/graphtool/js/paramCommon'
 import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
 export default {
@@ -618,12 +618,13 @@ export default {
       if (selectedObj && selectedObj.length > 0) {
         selectXs.setValue([])// 清空选中值
       }
-    },            /**
+    },
+    /**
      * 替换参数
      * @return {{verify: boolean, message: string}}
      * @author JL
      */
-    async replaceNodeParam(id) {
+    replaceNodeParam(id) {
       let returnObj = {
         'verify': true, // 校验是否通过
         'message': '',// 提示信息
@@ -633,6 +634,7 @@ export default {
       // 循环所有节点
       let nodeParamDom = this.$refs.nodeParam
       if(nodeParamDom){
+        debugger
           let filterArr = []// 参数条件的数组，包含参数ID和参数值
           let paramNum = 0// 记录参数不允许为空却未输入值的参数数量
           let hasAllowedNullParam = false// 本次查询是否含有可为空的参数条件
@@ -811,7 +813,8 @@ export default {
 
             } else {
               if (hasAllowedNullParam) { // 如果存在可为空的参数并且为空值，走后台进行空参替换
-                const response = await replaceModelSqlByParams(replaceParamSql, JSON.stringify(arr))
+                const response = recplaceParams(replaceParamSql, JSON.stringify(arr))
+                //const response = await replaceModelSqlByParams(replaceParamSql, JSON.stringify(arr))
                 if(response.data == null || response.data.isError){// 出错后replaceParamSql的值会在后台置为空
                   returnObj.verify = false
                   returnObj.message = '替换空值参数时出错'

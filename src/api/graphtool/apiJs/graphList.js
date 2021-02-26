@@ -1,8 +1,31 @@
 import request from '@/utils/request'
+import $ from "jquery"
 const baseURL = '/graphtool'
 const analysisUrl = '/analysis'
 const dataUrl = '/data'
 
+export function recplaceParams(sql, paramArr){
+  let result;
+  let url = analysisUrl + '/paramController/replaceModelSqlByParamsOne'
+  const data = {
+    sql: sql,
+    paramArr: paramArr
+  }
+  $.ajax({
+    type: "post",
+    url: url,
+    dataType : "json",
+    data: data,
+    async: false,
+    success: function (res) {
+      result = res
+    },
+    error: function (res) {
+
+    }
+  });
+  return result;
+}
 /**
  * 获取图形树
  */
