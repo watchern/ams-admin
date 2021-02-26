@@ -6,8 +6,8 @@
     <el-row type="flex" class="row-bg">
       <el-col align="right">
         <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add-1" @click="addThreshValue" />
-        <el-button type="primary" :disabled="btnState.editBtnState" title="修改阈值" class="oper-btn edit-2" @click="updateThresholdValue" />
-        <el-button type="primary" :disabled="btnState.deleteBtnState" titl="删除阈值" class="oper-btn delete-6" @click="deleteThresholdValue" />
+        <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit-2" @click="updateThresholdValue" />
+        <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete-6" @click="deleteThresholdValue" />
         <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
           <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
           <el-dropdown-menu slot="dropdown">

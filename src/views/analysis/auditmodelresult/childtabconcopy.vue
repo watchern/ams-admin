@@ -50,8 +50,7 @@
       <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
         >重置</el-button -->
       <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn again-2"
-        ></el-button
-      >
+        ></el-button>
       <el-button
         class="oper-btn link"
         :disabled="modelRunResultBtnIson.modelDetailAssBtn"
