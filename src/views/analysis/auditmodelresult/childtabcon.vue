@@ -23,19 +23,16 @@
         <div align="right">
           <el-button
             type="primary"
-            class="oper-btn refresh"
+            class="oper-btn refresh-1"
             :disabled="modelRunResultBtnIson.associatedBtn"
             @click="openProjectDialog"
-            title="分配项目"
           ></el-button>
           <el-button
             :disabled="modelRunResultBtnIson.disassociateBtn"
             type="primary"
             class="oper-btn move"
             @click="removeRelated()"
-            title="移除分配项目"
-          ></el-button
-          >
+          ></el-button>
 <!--          <el-button-->
 <!--            :disabled="modelRunResultBtnIson.chartDisplayBtn"-->
 <!--            type="primary"-->
@@ -48,14 +45,12 @@
             type="primary"
             @click="queryConditionSetting"
             class="oper-btn search"
-            title="查询设置"
           ></el-button>
           <el-button
             :disabled="false"
             type="primary"
             @click="reSet"
-            class="oper-btn again-2"
-            title="重置"
+            class="oper-btn again-3"
           ></el-button>
           <el-button
             class="oper-btn link"
@@ -63,14 +58,12 @@
             v-if="modelDetailButtonIsShow"
             type="primary"
             @click="openModelDetail"
-            title="查询关联"
           ></el-button>
           <el-button
             :disabled="modelRunResultBtnIson.exportBtn"
             type="primary"
             @click="exportExcel"
             class="oper-btn export-2"
-            title="导出"
           ></el-button>
           <!-- addDetailRel('qwer1', '项目11') -->
         </div>
@@ -122,7 +115,6 @@
                 type="primary"
                 @click="modelResultExport"
                 class="oper-btn export-2"
-                title="导出"
               ></el-button>
             </downloadExcel>
           </el-row>

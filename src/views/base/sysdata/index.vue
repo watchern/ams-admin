@@ -9,10 +9,10 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" class="oper-btn  setting" :disabled="selections.length !== 1" title="设置" @click="setBaseCode" />
-        <el-button type="primary" class="oper-btn add" title="添加" @click="addCode" />
-        <el-button type="primary" size="mini" :disabled="selections.length === 0" title="删除" class="oper-btn delete" @click="deleteCode()" />
-        <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" title="修改" @click="updateCode()" />
+        <el-button type="primary" class="oper-btn  setting" :disabled="selections.length !== 1" @click="setBaseCode" />
+        <el-button type="primary" class="oper-btn add" @click="addCode" />
+        <el-button type="primary" size="mini" :disabled="selections.length === 0" class="oper-btn delete" @click="deleteCode()" />
+        <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="updateCode()" />
       </el-col>
     </el-row>
     <el-table
@@ -54,9 +54,9 @@
           <el-input v-model="temp.dataSortDesc" />
         </el-form-item>
         <el-form-item label="展现形式" prop="extendTag">
-          <el-select 
-            ref="relTypeSelect" 
-            v-model="temp.extendTag" 
+          <el-select
+            ref="relTypeSelect"
+            v-model="temp.extendTag"
             style="width:100%"
             placeholder="请选择展现形式">
             <el-option label="列表类" :value="0" />
@@ -70,8 +70,8 @@
       </div>
     </el-dialog>
     <!-- 这是第二个弹窗，用来操作类别下具体的基础数据 -->
-    <el-dialog 
-      :title="textMap[dialogSecondStatus]" 
+    <el-dialog
+      :title="textMap[dialogSecondStatus]"
       :visible.sync="dialogFormSecond"
       :close-on-click-modal="false"
       top="5vh"
@@ -82,63 +82,63 @@
         :rules="rulesSecond"
         :model="tempSecond"
         label-position="right"
-      > 
-        <el-form-item 
-              label="代码类别" 
+      >
+        <el-form-item
+              label="代码类别"
               prop="dataSortUuid" hidden>
-              <el-input 
-                v-model="tempSecond.dataSortUuid" 
+              <el-input
+                v-model="tempSecond.dataSortUuid"
               />
         </el-form-item>
-        <el-form-item 
-          label="通用代码名称" 
+        <el-form-item
+          label="通用代码名称"
           prop="codeName">
-          <el-input 
+          <el-input
             v-model="tempSecond.codeName" />
         </el-form-item>
-        <el-form-item 
-          label="通用代码编码" 
+        <el-form-item
+          label="通用代码编码"
           prop="codeValue">
-          <el-input 
-            v-model="tempSecond.codeValue"  
+          <el-input
+            v-model="tempSecond.codeValue"
             @change="numberSecond()" />
         </el-form-item>
-        <el-form-item 
-          label="通用代码描述" 
+        <el-form-item
+          label="通用代码描述"
           prop="codeDesc">
-          <el-input 
+          <el-input
             v-model="tempSecond.codeDesc"  />
         </el-form-item>
-        <el-form-item 
-          label="代码排序号" 
+        <el-form-item
+          label="代码排序号"
           prop="codeIndex">
-          <el-input 
-            v-model="tempSecond.codeIndex"  
+          <el-input
+            v-model="tempSecond.codeIndex"
             @change="numberIndex()" />
         </el-form-item>
-        <el-form-item 
-          label="状态" 
+        <el-form-item
+          label="状态"
           prop="codeState"
           >
-          <el-select 
-            ref="relTypeSelect" 
-            v-model="tempSecond.codeState" 
+          <el-select
+            ref="relTypeSelect"
+            v-model="tempSecond.codeState"
             style="width:100%"
             placeholder="通用代码状态" >
-            <el-option 
-              label="启用" 
+            <el-option
+              label="启用"
               :value="0" />
-            <el-option 
-              label="禁用" 
+            <el-option
+              label="禁用"
               :value="1" />
           </el-select>
         </el-form-item>
       </el-form>
-      <el-button type="primary" class="oper-btn delete" size="mini" :disabled="selectionSecond.length === 0" title="删除" @click="deleteDataSecond()" style="float:right;margin:0 15px 0 10px"></el-button>
-      <el-button type="primary" class="oper-btn edit" size="mini" :disabled="selectionSecond.length !== 1" title="修改" @click="updateDataSecond()" style="float:right"></el-button>
-      <el-button type="primary" class="oper-btn again-2" size="mini" @click="resetTempSecond()" title="刷新" style="float:right"></el-button>
-      <el-button type="primary" class="oper-btn add" size="mini" @click="addSecondCode()" title="添加"  style="float:right"></el-button>
-          
+      <el-button type="primary" class="oper-btn delete" size="mini" :disabled="selectionSecond.length === 0" @click="deleteDataSecond()" style="float:right;margin:0 15px 0 10px"></el-button>
+      <el-button type="primary" class="oper-btn edit" size="mini" :disabled="selectionSecond.length !== 1" @click="updateDataSecond()" style="float:right"></el-button>
+      <el-button type="primary" class="oper-btn again-2" size="mini" @click="resetTempSecond()" style="float:right"></el-button>
+      <el-button type="primary" class="oper-btn add" size="mini" @click="addSecondCode()" style="float:right"></el-button>
+
       <el-table
         :key="tableSecondKey"
         v-loading="listLoadingSecond"
@@ -346,7 +346,7 @@ export default {
     // clearValidate(){
     //     this.$nextTick(() => {
     //       this.$refs['dataSecondForm'].clearValidate()
-    //   })      
+    //   })
     // },
     addCode() {
       this.resetTemp()
@@ -415,7 +415,7 @@ export default {
          var ids = []
         this.selections.forEach((r, i) => { ids.push(r.dataSortUuid) })
       del(ids).then(() => {
-        this.getList()  
+        this.getList()
         this.$notify({
             title: this.$t('message.title'),
             message: this.$t('message.delete.success'),
@@ -443,7 +443,7 @@ export default {
         })
         this.$nextTick(() => {
           this.$refs['dataSecondForm'].clearValidate()
-      })    
+      })
       } else {
         this.openTree()
       }

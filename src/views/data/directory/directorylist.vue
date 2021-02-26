@@ -9,16 +9,16 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" :disabled="selections.length === 0" title="删除" class="oper-btn delete" @click="delData" />
-        <el-button type="primary" class="oper-btn copy" :disabled="selections.length !== 1" title="复制" @click="copyResource" />
-        <el-button type="primary" class="oper-btn move" title="移动" :disabled="selections.length === 0" @click="movePath" />
-        <el-button type="primary" class="oper-btn rename" title="重命名" :disabled="selections.length !== 1" @click="renameResource" />
-        <el-button type="primary" class="oper-btn add" title="新增表" :disabled="clickData.type == 'table'" @click="add" />
-        <el-button type="primary" class="oper-btn export" title="导入表" :disabled="clickData.type == 'table'" @click="uploadTable" />
-        <el-button type="primary" class="oper-btn add-folder" title="新增文件夹" :disabled="clickData.type == 'table'" @click="createFolder" />
-        <el-button type="primary" class="oper-btn  edit" title="表结构维护" :disabled="selections.length !== 1" @click="update" />
-        <el-button type="primary" class="oper-btn  detail" title="表结构展示" :disabled="selections.length !== 1" @click="showTable" />
-        <el-button type="primary" class="oper-btn search" title="预览" :disabled="infoFlag" @click="preview" />
+        <el-button type="primary" :disabled="selections.length === 0" class="oper-btn delete" @click="delData" />
+        <el-button type="primary" class="oper-btn copy" :disabled="selections.length !== 1" @click="copyResource" />
+        <el-button type="primary" class="oper-btn move-1" :disabled="selections.length === 0" @click="movePath" />
+        <el-button type="primary" class="oper-btn rename" :disabled="selections.length !== 1" @click="renameResource" />
+        <el-button type="primary" class="oper-btn add-2" :disabled="clickData.type == 'table'" @click="add" />
+        <el-button type="primary" class="oper-btn export" :disabled="clickData.type == 'table'" @click="uploadTable" />
+        <el-button type="primary" class="oper-btn add-folder-1" :disabled="clickData.type == 'table'" @click="createFolder" />
+        <el-button type="primary" class="oper-btn  edit" :disabled="selections.length !== 1" @click="update" />
+        <el-button type="primary" class="oper-btn  detail" :disabled="selections.length !== 1" @click="showTable" />
+        <el-button type="primary" class="oper-btn search-1" :disabled="infoFlag" @click="preview" />
       </el-col>
     </el-row>
     <el-table
@@ -367,7 +367,7 @@ export default {
             nextUpload(this.uploadtemp).then(res => {
               this.uploadStep = 2
               this.uploadtempInfo = res.data
-              
+
             })
           })
         }

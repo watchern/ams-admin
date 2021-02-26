@@ -18,7 +18,6 @@
               :disabled="false"
               type="primary"
               size="small"
-              title="处理"
               class="oper-btn processing"
               @click="handleResult"
             ></el-button>
@@ -26,8 +25,7 @@
               :disabled="buttonIson.deleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
-              class="oper-btn delete"
-              title="如果选中的结果有项目关联，则删除的是关联的项目，如果没有则不能删除"
+              class="oper-btn delete-3"
             ></el-button>
           </el-row>
         </div>
