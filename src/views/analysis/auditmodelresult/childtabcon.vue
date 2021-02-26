@@ -18,24 +18,37 @@
       <div :class="chartClass" title="图表" @click="switchDivStyle('chart')"><span class="icon iconfont" >&#xecee;</span></div>
       <div :class="tableClass" title="表格" @click="switchDivStyle('table')"><span class="icon iconfont" >&#xe6d8;</span></div>
     </el-row>
-    <el-row v-if="chartSwitching" style="position:relative">
-      <el-row v-if="myFlag">
+    <div v-if="chartSwitching" style="position:relative">
+      <div v-if="myFlag">
         <div align="right">
-          <el-button
-            type="primary"
-            class="oper-btn refresh"
-            :disabled="modelRunResultBtnIson.associatedBtn"
-            @click="openProjectDialog"
-            title="分配项目"
-          ></el-button>
-          <el-button
-            :disabled="modelRunResultBtnIson.disassociateBtn"
-            type="primary"
-            class="oper-btn move"
-            @click="removeRelated()"
-            title="移除分配项目"
-          ></el-button
-          >
+          <el-dropdown>
+            <el-button
+              type="primary"
+              class="oper-btn link-2"
+              :disabled="modelRunResultBtnIson.associatedBtn"
+              @click="openProjectDialog"
+              title="分配项目"
+            ></el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="openProjectDialog">分配项目</el-dropdown-item>
+              <el-dropdown-item @click.native="removeRelated()">移除分配项目</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+<!--          <el-button-->
+<!--            type="primary"-->
+<!--            class="oper-btn link-2"-->
+<!--            :disabled="modelRunResultBtnIson.associatedBtn"-->
+<!--            @click="openProjectDialog"-->
+<!--            title="分配项目"-->
+<!--          ></el-button>-->
+<!--          <el-button-->
+<!--            :disabled="modelRunResultBtnIson.disassociateBtn"-->
+<!--            type="primary"-->
+<!--            class="oper-btn move"-->
+<!--            @click="removeRelated()"-->
+<!--            title="移除分配项目"-->
+<!--          ></el-button-->
+<!--          >-->
 <!--          <el-button-->
 <!--            :disabled="modelRunResultBtnIson.chartDisplayBtn"-->
 <!--            type="primary"-->
@@ -57,14 +70,14 @@
             class="oper-btn again-2"
             title="重置"
           ></el-button>
-          <el-button
-            class="oper-btn link"
-            :disabled="modelRunResultBtnIson.modelDetailAssBtn"
-            v-if="modelDetailButtonIsShow"
-            type="primary"
-            @click="openModelDetail"
-            title="查询关联"
-          ></el-button>
+<!--          <el-button-->
+<!--            class="oper-btn link"-->
+<!--            :disabled="modelRunResultBtnIson.modelDetailAssBtn"-->
+<!--            v-if="modelDetailButtonIsShow"-->
+<!--            type="primary"-->
+<!--            @click="openModelDetail"-->
+<!--            title="查询关联"-->
+<!--          ></el-button>-->
           <el-button
             :disabled="modelRunResultBtnIson.exportBtn"
             type="primary"
@@ -74,7 +87,7 @@
           ></el-button>
           <!-- addDetailRel('qwer1', '项目11') -->
         </div>
-      </el-row>
+      </div>
 
       <ag-grid-vue
         v-if="isSee"
@@ -85,7 +98,7 @@
         :row-data="rowData"
         rowMultiSelectWithClick="true"
         :enable-col-resize="true"
-        :get-row-style="useType=='modelRunResult'?this.renderTable:undefined"
+        :get-row-style="useType=='modelRunResult'&&this.modelUuid!==undefined?this.renderTable:undefined"
         row-selection="multiple"
         @cellClicked="onCellClicked"
         @gridReady="onGridReady"
@@ -128,7 +141,7 @@
           </el-row>
         </el-col>
       </el-row>
-    </el-row>
+    </div>
     <el-dialog
       title="模型详细关联"
       :visible.sync="modelDetailDialogIsShow"
@@ -156,6 +169,7 @@
       title="模型详细结果"
       :visible.sync="modelDetailModelResultDialogIsShow"
       width="80%"
+      :fullscreen="true"
     >
       <childtabscopy
         ref="childTabsRef"
@@ -718,17 +732,19 @@ export default {
           modelThresholdValues =  this.modelObj.modelThresholdValues
         }
         //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
-        for (var i = 0; i < modelThresholdValues.length;i++){
-          if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2 && renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName)==-1){
-            renderColumns.push(modelThresholdValues[i].modelResultColumnName)
-          }
-        }
-        for(var i = 0;i < modelThresholdValues.length;i++){
-          if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2){
-            if (typeof modelThresholdValues[i].colorInfo === 'string'){
-              modelThresholdValues[i].colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
+        if(this.modelUuid !==undefined){
+          for (var i = 0; i < modelThresholdValues.length;i++){
+            if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2 && renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName)==-1){
+              renderColumns.push(modelThresholdValues[i].modelResultColumnName)
             }
-            renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i]
+          }
+          for(var i = 0;i < modelThresholdValues.length;i++){
+            if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2){
+              if (typeof modelThresholdValues[i].colorInfo === 'string'){
+                modelThresholdValues[i].colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
+              }
+              renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i]
+            }
           }
         }
         this.pageQuery.condition = this.nowtable;
@@ -797,27 +813,38 @@ export default {
               var onlyFlag = false
               if (this.settingInfo != undefined){
                 for (var i = 0; i < colNames.length; i++) {
-                      if(onlyFlag==false){
-                        var rowColom = {
-                          headerName: "onlyuuid",
-                          field: "onlyuuid",
-                          checkboxSelection: true,
-                        };
-                        col.push(rowColom);
-                        onlyFlag = true
-                      }
                         var rowColom = {}
                         if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1 || modelResultDetailCol.indexOf(colNames[i].toUpperCase()) != -1){
                           var thresholdValueRel =  renderObject[colNames[i].toUpperCase()]
-                          rowColom =  {
-                            headerName: colNames[i],
-                            field: colNames[i],
-                            cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)}}
+                          if (onlyFlag==false){
+                            rowColom =  {
+                              headerName: colNames[i],
+                              field: colNames[i],
+                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)},
+                              checkboxSelection: true
+                            }
+                            onlyFlag = true
+
+                          }else {
+                            rowColom =  {
+                              headerName: colNames[i],
+                              field: colNames[i],
+                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)}}
+                          }
                         }else {
-                          rowColom = {
-                            headerName: colNames[i],
-                            field: colNames[i],
-                          };
+                          if (onlyFlag==false){
+                            rowColom = {
+                              headerName: colNames[i],
+                              field: colNames[i],
+                              checkboxSelection: true
+                            };
+                            onlyFlag = true
+                          }else {
+                            rowColom = {
+                              headerName: colNames[i],
+                              field: colNames[i],
+                            };
+                          }
                         }
                         col.push(rowColom);
                 }
@@ -825,28 +852,38 @@ export default {
                 for (var i = 0; i < colNames.length; i++) {
                   loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
                     if (this.modelOutputColumn[j].outputColumnName.toLowerCase() == colNames[i]) {
-                      if(onlyFlag==false){
-                        var rowColom = {
-                          headerName: "onlyuuid",
-                          field: "onlyuuid",
-                          checkboxSelection: true,
-                        };
-                        col.push(rowColom);
-                        onlyFlag = true
-                      }
                       if (this.modelOutputColumn[j].isShow == 1) {
                         var rowColom = {}
                         if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1 || modelResultDetailCol.indexOf(colNames[i].toUpperCase()) != -1){
                           var thresholdValueRel =  renderObject[colNames[i].toUpperCase()]
-                          rowColom =  {
-                            headerName: this.modelOutputColumn[j].columnAlias,
-                            field: colNames[i],
-                            cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)}}
+                          if(onlyFlag==false){
+                            rowColom =  {
+                              headerName: this.modelOutputColumn[j].columnAlias,
+                              field: colNames[i],
+                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)},
+                              checkboxSelection: true
+                            }
+                            onlyFlag = true
+                          }else {
+                            rowColom =  {
+                              headerName: this.modelOutputColumn[j].columnAlias,
+                              field: colNames[i],
+                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)}}
+                          }
                         }else {
-                          rowColom = {
-                            headerName: this.modelOutputColumn[j].columnAlias,
-                            field: colNames[i],
-                          };
+                          if(onlyFlag==false){
+                            rowColom = {
+                              headerName: this.modelOutputColumn[j].columnAlias,
+                              field: colNames[i],
+                              checkboxSelection: true
+                            };
+                            onlyFlag = true
+                          }else {
+                            rowColom = {
+                              headerName: this.modelOutputColumn[j].columnAlias,
+                              field: colNames[i]
+                            };
+                          }
                         }
                         col.push(rowColom);
                       }
@@ -871,6 +908,7 @@ export default {
                 }
                 col.push(rowColom);
               }
+              this.isLoading = false;
             }
             if (this.modelUuid != undefined) {
               // 生成ag-frid表格数据
@@ -914,6 +952,9 @@ export default {
         this.nextValue = nextValue;
         var col = [];
         var rowData = [];
+        var renderColumns = [] //存储需要渲染的列名
+        var renderObject = {}  //存储key-value格式对象，key为列名  value为这一列对应的模型阈值关联对象
+        var modelThresholdValues = []
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           if (this.nextValue.executeSQL.state == "2") {
             if (this.nextValue.executeSQL.type == "SELECT") {
@@ -963,7 +1004,41 @@ export default {
                 // this.rowData = this.modelResultData;
                 this.modelResultColumnNames = this.nextValue.columnNames;
                 selectModel(this.modelId).then((resp) => {
+                  this.modelDetailRelation = resp.data.modelDetailRelation
+                  //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
+                  if(this.preLength==this.myIndex+1){
+                    for (var i = 0; i < resp.data.modelThresholdValues.length;i++){
+                      if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2 && renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName)==-1){
+                        renderColumns.push(modelThresholdValues[i].modelResultColumnName)
+                      }
+                    }
+                    for(var i = 0;i < resp.data.modelThresholdValues.length;i++){
+                      if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2){
+                        if (typeof modelThresholdValues[i].colorInfo === 'string'){
+                          modelThresholdValues[i].colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
+                        }
+                        renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i]
+                      }
+                    }
+                  }
                   var modelOutputColumn = resp.data.modelOutputColumn
+                  let modelResultDetailCol = []
+                  if(resp.data.modelDetailRelation){
+                    //循环模型详细关联
+                    for(let i = 0; i < resp.data.modelDetailRelation.length;i++){
+                      //获取关联对象
+                      let modelDetailRelation = resp.data.modelDetailRelation[i]
+                      //循环模型关联详细配置
+                      for(let j = 0;j < modelDetailRelation.modelDetailConfig.length;j++){
+                        let modelDetailConfig = modelDetailRelation.modelDetailConfig[j]
+                        //确保数据不是undefined或null
+                        if(modelDetailConfig.resultColumn){
+                          //添加到数据 用于下边列处理的时候 作为判断条件
+                          modelResultDetailCol.push(modelDetailConfig.resultColumn.toUpperCase())
+                        }
+                      }
+                    }
+                  }
                   var datacodes = [];
                   for (var i = 0; i <modelOutputColumn.length; i++) {
                     if (modelOutputColumn[i].dataCoding != undefined) {
@@ -976,11 +1051,21 @@ export default {
                       if (modelOutputColumn[n].outputColumnName ==
                         this.nextValue.columnNames[j]){
                         if (modelOutputColumn[n].isShow == 1) {
-                          rowColom = {
-                            headerName: modelOutputColumn[n].columnAlias,
-                            field: this.nextValue.columnNames[j],
-                            width: "180",
-                          };
+                          if (renderColumns.indexOf(this.nextValue.columnNames[j].toUpperCase()) != -1 || modelResultDetailCol.indexOf(this.nextValue.columnNames[j].toUpperCase()) != -1){
+                            var thresholdValueRel =  renderObject[this.nextValue.columnNames[j].toUpperCase()]
+                            rowColom = {
+                              headerName: modelOutputColumn[n].columnAlias,
+                              field: this.nextValue.columnNames[j],
+                              width: "180",
+                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)},
+                            };
+                          }else {
+                            rowColom = {
+                              headerName: modelOutputColumn[n].columnAlias,
+                              field: this.nextValue.columnNames[j],
+                              width: "180",
+                            };
+                          }
                         }
                       }
                     }
@@ -1201,7 +1286,7 @@ export default {
       }
       else{
         if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
-          let dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+          let dom = "<span onmouseover='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
           return dom
         }
         return params.value
@@ -1275,6 +1360,7 @@ export default {
      * 点击详细打开dialog效果
      */
     openModelDetailNew(selRows) {
+      debugger
       this.options = [];
       for (var i = 0; i < this.modelDetailRelation.length; i++) {
         var eachOption = {
@@ -1316,7 +1402,11 @@ export default {
               obj.moduleParamId = this.modelDetailRelation[i].modelDetailConfig[
                 j
               ].ammParamUuid;
-              obj.paramValue = this.rowData[this.rowIndex][key.toLowerCase()];
+              if (this.modelUuid !==undefined){
+                obj.paramValue = this.rowData[this.rowIndex][key.toLowerCase()];
+              }else {
+                obj.paramValue = this.rowData[this.rowIndex][key.toUpperCase()];
+              }
               detailValue.push(obj);
             }
           }
