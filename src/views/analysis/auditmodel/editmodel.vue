@@ -676,7 +676,6 @@ export default {
         if (this.sqlEditorParamObj.arr.length != 0) {
           // paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
           paramDefaultValue = this.$refs.apple.getParamsSetting()
-            debugger
           if (!paramDefaultValue.verify) {
             this.$message({type: 'info', message: paramDefaultValue.message})
             return null
@@ -977,7 +976,6 @@ export default {
       return returnObj
     },
     closeWinfrom() {
-      debugger
       this.$store.commit('aceState/setRightFooterTags', {
         type: 'close',
         val: {

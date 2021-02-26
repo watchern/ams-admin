@@ -462,7 +462,7 @@ export function initParamHtml_Common(paramObj, selectNum, selectTreeNum,serviceI
         if (paramSql !== '') {
           hasSql = true // 下拉列表是SQL方式
           if (typeof paramObj.defaultVal !== 'undefined') { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据  当时写的时候有sql和没sql是分开的
-            executeParamSql(paramObj.paramChoice.optionsSql).then(e => {
+              executeParamSql(paramObj.paramChoice.optionsSql).then(e => {
               if (e.data.isError) {
                 obj.isError = true
                 obj.message = '获取参数【' + paramObj.paramName + '】的值的失败，原因：' + e.data.message
@@ -784,7 +784,6 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
     serviceInfo = ''
   }
   // 找出该参数与被关联参数之间的联系（它影响谁和谁影响它两种）
-  try {
     var sqlWhereStr = ''
     // 在当前参数列表中匹配影响当前参数的主参数集合，获取其选中的值拼接where条件
     $('.xm-select-demo').each(function () {
@@ -849,7 +848,7 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
                   newDataArr.push(paramObj)
                 }
               } else { // idStr=='#selectTreeParam'
-                newDataArr = organizeSelectTreeData(res.data.result)
+                newDataArr = organizeSelectTreeData(res.data.paramList)
               }
               selectXs.update({
                 data: newDataArr
@@ -907,17 +906,7 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
               // alertMsg("错误", "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message, "error");
             } else {
               var newDataArr = []
-              if (idStr === '#selectParam'+serviceInfo) {
-                for (var k = 0; k < res.data.paramList.length; k++) {
-                  var paramObj = {
-                    'name': res.data.paramList[k].paramName,
-                    'value': res.data.paramList[k].paramValue
-                  }
-                  newDataArr.push(paramObj)
-                }
-              } else { // idStr=='#selectTreeParam'
                 newDataArr = organizeSelectTreeData(res.data.result)
-              }
               selectXs.update({
                 data: newDataArr
                 // autoRow: true,
@@ -941,10 +930,10 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
             // alertMsg("错误", "获取参数【" + paramName + "】的值的失败，原因：" + res.data.message, "error");
           } else {
             if (idStr === '#selectParam'+serviceInfo) {
-              for (var k = 0; k < res.data.paramList.length; k++) {
+              for (var k = 0; k < res.data.result.length; k++) {
                 var paramObj = {
-                  'name': res.data.paramList[k].paramName,
-                  'value': res.data.paramList[k].paramValue
+                  'name': res.data.result[k].paramName,
+                  'value': res.data.result[k].paramValue
                 }
                 dataArr.push(paramObj)
               }
@@ -968,12 +957,6 @@ function selectShow(idStr, paramId, paramName, sql, choiceType, paramArr, dataAr
       }
       $(idStr + paramId).removeAttr('data-sqlWhereStr')
     }
-  } catch (e) {
-    this.$message({
-      type: 'error',
-      message: '程序执行出错，刷新参数数据失败'
-    })
-  }
   return initDataArr
 }
 
@@ -1565,13 +1548,13 @@ export function findParamsAndModelRelParams() {
  * 执行当前参数SQL语句
  * @param {*} data   SQL语句
  */
-async function executeParamSql(data) {
-  data = {sql:data}
-  return await request({
+function executeParamSql(sql) {
+  return request({
     baseURL: analysisUrl,
     url: '/paramController/executeParamSql',
     method: 'post',
-    data
+    async:false,
+    params:{sql:sql}
   })
 }
 
@@ -1827,7 +1810,7 @@ export function initSetting() {
       }
     }
     // 第四步：获取数据库所有母参数信息
-    findParamsAndModelRelParams().then( response => {
+     findParamsAndModelRelParams().then( response => {
       if(response.data == null){
         load.hide()
         settingVue.$message.error('获取参数信息失败')
@@ -1865,7 +1848,7 @@ export function initSetting() {
                   setParamObj.value = paramArr[j].defaultVal
                   paramObj.defaultVal = paramArr[j].defaultVal
                 }
-                let returnObj = getSettingParamArr(paramObj, setParamObj)
+                let returnObj =getSettingParamArr(paramObj, setParamObj)
                 if (!returnObj.isError) {
                   setParamObj = returnObj.setParamObj
                 } else {
@@ -2197,27 +2180,28 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
         if (paramSql !== '') {
           hasSql = true// 下拉列表是SQL方式
           if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
-            const response = executeParamSql(paramSql)
-            if(response.data == null){
-              obj.isError = true
-              obj.message = `获取参数【${paramObj.paramName}】的值的失败`
-            }else {
-              if (response.data.isError) {
-                obj.isError = true
-                obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
-              } else {
-                let e = response.data
-                if (e.valueList && e.valueList.length > 0) {
-                  for (let k = 0; k < e.valueList.length; k++) {
-                    var paramObj = {
-                      'name': e.valueList[k].paramName,
-                      'value': e.valueList[k].paramValue
-                    }
-                    dataArr.push(paramObj)
-                  }
-                }
-              }
-            }
+             executeParamSql(paramSql).then(response=>{
+               if(response.data == null){
+                 obj.isError = true
+                 obj.message = `获取参数【${paramObj.paramName}】的值的失败`
+               }else {
+                 if (response.data.isError) {
+                   obj.isError = true
+                   obj.message = `获取参数【${paramObj.stateparamName}】的值的失败，原因：${response.data.message}`
+                 } else {
+                   let e = response.data
+                   if (e.paramList && e.paramList.length > 0) {
+                     for (let k = 0; k < e.paramList.length; k++) {
+                       var paramObj1 = {
+                         'name': e.paramList[k].paramName,
+                         'value': e.paramList[k].paramValue
+                       }
+                       dataArr.push(paramObj1)
+                     }
+                   }
+                 }
+               }
+             })
           }
         }
       }

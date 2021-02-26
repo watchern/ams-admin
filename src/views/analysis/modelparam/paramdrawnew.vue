@@ -76,7 +76,7 @@ export default {
             let moduleParamId = paramsArr[k].ammParamUuid
             if (moduleParamId === this.arr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
               this.arr[j].allowedNull = paramsArr[k].paramChoice.allowedNull
-              if (flag==='modelPreview'){
+              if (flag==='modelPreview' ||flag==='auditwarring'){
                 if (this.arr[j].paramValue) {
                   paramsArr[k].defaultVal = this.arr[j].paramValue
                 }
@@ -634,7 +634,6 @@ export default {
       // 循环所有节点
       let nodeParamDom = this.$refs.nodeParam
       if(nodeParamDom){
-        debugger
           let filterArr = []// 参数条件的数组，包含参数ID和参数值
           let paramNum = 0// 记录参数不允许为空却未输入值的参数数量
           let hasAllowedNullParam = false// 本次查询是否含有可为空的参数条件
@@ -828,7 +827,6 @@ export default {
                   let moduleParamId = filterArr[x].moduleParamId
                   for (let a = 0; a < arr.length; a++) { // 遍历当前节点绑定的参数
                     if (arr[a].moduleParamId === moduleParamId) {
-                      replaceParamSql = replaceParamSql.replace(arr[a].id, filterArr[x].paramValue)// 将参数SQL中的参数ID替换为输入得值
                       if (arr[a].paramValue instanceof Array){
                         var paramValue = []
                         paramValue.push(filterArr[x].paramValue)
@@ -836,6 +834,7 @@ export default {
                       }else {
                         arr[a].paramValue = filterArr[x].paramValue
                       }
+                      replaceParamSql = replaceParamSql.replace(arr[a].id, filterArr[x].paramValue)// 将参数SQL中的参数ID替换为输入得值
                     }
                   }
                 }
