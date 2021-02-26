@@ -645,14 +645,14 @@ EditorUi = function(editor, container, lightbox) {
           dataType:"json",
           async:false,
           data: {
-              "tableMetaUuid": treeNode.id
+              "tableMetaUuid": treeNode.id,
+              "isEnclose":"1"
           },
           success: function(e) {
               var nodeExcuteStatus = 3;//默认执行成功
               if(e.data == null){
                   isCreateTableNodeError = true;
-                  $("ul.layui-tab-title li:eq(1)").click();
-                  $("#sysInfoArea").html("获取数据表【" + cell.value + "】信息失败,无法创建数据表节点").css({"color":"red"});
+                  alert("获取数据表【" + cell.value + "】信息失败,无法创建数据表节点");
                   nodeExcuteStatus = 4;//执行失败
               }else{
                   var columnsInfo = [];
@@ -2626,7 +2626,6 @@ var iconDrag = function(treeNode) {
 	//用于拖动预览的可选DOM节点
 	var dragElt = document.createElement('div');
 	dragElt.className = "geItem";
-	// dragElt.style.border = 'dashed black 1px';
     dragElt.style.border = '1px solid red';
     dragElt.style.width = '60px';
 	dragElt.style.height = '60px';

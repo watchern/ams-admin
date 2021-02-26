@@ -1229,6 +1229,10 @@ export function reSetOptProperty() {
             return
         }
         graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 1	// 置节点执行状态为未执行
+        graph.nodeData[curNodeId].nodeInfo.resultTableName = ""
+        if(graph.nodeData[curNodeId].nodeInfo.resultTableNameArr){
+            graph.nodeData[curNodeId].nodeInfo.resultTableNameArr = []
+        }
         graph.nodeData[curNodeId].isSet = false// 重置其配置状态，在打开时不读取已配置信息，重新进行配置
         delete graph.nodeData[curNodeId].hasParam;
         delete graph.nodeData[curNodeId].paramsSetting;

@@ -270,29 +270,6 @@ export async function getSettingParamArr(paramObj, setParamObj, selectNum, selec
             } else { // 执行备选sql
                 if (paramSql !== '') {
                     hasSql = true// 下拉列表是SQL方式
-            //         if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
-            //             const response = await executeParamSql(paramSql)
-            //             if(response.data == null){
-            //                 obj.isError = true
-            //                 obj.message = `获取参数【${paramObj.paramName}】的值的失败`
-            //             }else {
-            //                 if (response.data.isError) {
-            //                     obj.isError = true
-            //                     obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
-            //                 } else {
-            //                     let e = response.data
-            //                     if (e.valueList && e.valueList.length > 0) {
-            //                         for (let k = 0; k < e.valueList.length; k++) {
-            //                             var paramObj = {
-            //                                 'name': e.valueList[k].paramName,
-            //                                 'value': e.valueList[k].paramValue
-            //                             }
-            //                             dataArr.push(paramObj)
-            //                         }
-            //                     }
-            //                 }
-            //             }
-            //         }
                 }
             }
             if(typeof obj.selectNum !== 'undefined' && obj.selectNum != null){
