@@ -296,13 +296,13 @@ export function findParamsAndModelRelParams() {
  * 执行当前参数SQL语句
  * @param {*} data   SQL语句
  */
-export function executeParamSql(data) {
+export function executeParamSql(sql) {
     return request({
         baseURL: analysisUrl,
         url: '/paramController/executeParamSql',
         method: 'post',
         async:false,
-        data
+        params:{sql:sql}
     })
 }
 

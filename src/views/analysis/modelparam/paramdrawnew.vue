@@ -181,8 +181,7 @@ export default {
             if (paramSql !== '') {
               hasSql = true// 下拉列表是SQL方式
               if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
-                var data = {sql:paramSql}
-                const response = await executeParamSql(data)
+                const response = await executeParamSql(paramSql)
                 if(response.data == null){
                   obj.isError = true
                   obj.message = `获取参数【${paramObj.paramName}】的值的失败`
@@ -530,8 +529,7 @@ export default {
           if (oldSqlWhereStr === '' || oldSqlWhereStr !== sqlWhereStr) {
             sql = 'SELECT * FROM (' + sql + ') where 1=1' + sqlWhereStr
             if (idStr === '#selectParam') { // 下拉列表
-              var data = {sql:sql}
-              response = await executeParamSql(data)
+              response = await executeParamSql(sql)
             } else { // idStr=='#selectTreeParam'   下拉树
               response = await getSelectTreeData(sql)
             }
@@ -564,8 +562,7 @@ export default {
         if (sqlWhereStr === '' && dataArr.length === 0) { // 当影响它的主参没有选择值且本身没数据时（第一次加载全部数据）
           initDataArr = true
           if (idStr === '#selectParam') { // 下拉列表
-            var data = {sql:sql}
-            response = await executeParamSql(data)
+            response = await executeParamSql(sql)
           } else { // idStr=='#selectTreeParam'   下拉树
             response = await getSelectTreeData(sql)
           }
