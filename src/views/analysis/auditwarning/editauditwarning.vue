@@ -657,7 +657,7 @@ export default {
       //模型参数关联
       if(this.auditWarningSave.warningType == 1){
         //获取模型参数配置
-        for(let model of this.temp.modelList){
+         for(let model of this.temp.modelList){
           let taskRel = {
             //与审计预警表关联字段
             auditWarningUuid : this.auditWarningSave.auditWarningUuid,
@@ -671,7 +671,9 @@ export default {
             this.auditWarningSave.warningTaskRel.push(taskRel)
             continue
           }
-          taskRel.settingInfo = JSON.stringify(this.getModelParamById(model))
+           let settingInfo = this.getModelParamById(model)
+
+          taskRel.settingInfo = JSON.stringify(settingInfo)
           this.auditWarningSave.warningTaskRel.push(taskRel)
         }
       }
@@ -750,23 +752,24 @@ export default {
     },
     //从参数组件中获取模型配置的参数信息
     getModelParamById(model){
+      let result = {};
       if(!model){
         return {};
       }
-      // let param = replaceNodeParam(model.modelUuid)
-      this.$refs["paramDrawRef"+model.modelUuid][0].replaceNodeParam(model.modelUuid).then(param=>{
-        //模型的参数数组
-        let paramObj = model.paramObj
-        for (let i = 0;i < paramObj.length;i++){
-          for (let j = 0;j < param.paramsArr.length;j++){
-            if(paramObj[i].moduleParamId == param.paramsArr[j].moduleParamId){
-              //如果母参相等说明是同一个参数，将输入的值替换到里面
-              paramObj[i].paramValue = param.paramsArr[j].paramValue
-            }
+      let param = this.$refs["paramDrawRef"+model.modelUuid][0].replaceNodeParam(model.modelUuid);
+      //模型的参数数组
+      let paramObj = model.paramObj
+      for (let i = 0;i < paramObj.length;i++){
+        for (let j = 0;j < param.paramsArr.length;j++){
+          if(paramObj[i].moduleParamId == param.paramsArr[j].moduleParamId){
+            //如果母参相等说明是同一个参数，将输入的值替换到里面
+            paramObj[i].paramValue = param.paramsArr[j].paramValue
           }
         }
-        return {sql:param.sql,paramsArr:model.paramObj}
-      })
+      }
+      result = {sql:param.sql,paramsArr:model.paramObj}
+      debugger
+      return result
     },
 
     //删除模型
@@ -856,13 +859,13 @@ export default {
       }
     },
     //获取整体表单要存储的对象
-    getFormData(){
+     getFormData(){
       let isSubmit = false;
-      this.$refs["baseDataForm"].validate((valid) => {
+      this.$refs["baseDataForm"].validate( (valid) => {
         if(!valid){
           this.tabShow = "baseInfo"
         } else {
-           this.$refs["executeDataForm"].validate((valide) => {
+            this.$refs["executeDataForm"].validate( (valide) =>  {
               if(!valide){
                 this.tabShow = "executeInfo"
               }else{
