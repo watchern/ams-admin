@@ -9,7 +9,7 @@ if (process.env.npm_config_preview || rawArgv.includes('--preview')) {
 
   run(`vue-cli-service build ${args}`)
 
-  const port = 9527
+  const port = 1070
   // const port = 8070
   const publicPath = config.publicPath
 
@@ -19,7 +19,7 @@ if (process.env.npm_config_preview || rawArgv.includes('--preview')) {
 
   app.use(
     publicPath,
-    serveStatic('./dist', {
+    serveStatic('./ROOT', {
       index: ['index.html', '/']
     })
   )

@@ -52,13 +52,13 @@ module.exports = {
     https: false, // https:{type:Boolean}
     open: true, // 配置自动启动浏览器
     proxy: {
-      '/r1/': {
-        target: process.env.R1_LOCATION,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/r1/': '/'
-        }
-      },
+      // '/r1/': {
+      //   target: process.env.R1_LOCATION,
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     '^/r1/': '/'
+      //   }
+      // },
       '/data/': {
         target: process.env.AMSDATA_API,
         changeOrigin: true,
@@ -186,15 +186,17 @@ module.exports = {
       //     minRatio: 0.8,
       //     deleteOriginalAssets: false
       //   }))
+
       new CompressionWebpackPlugin({
         filename: '[path].gz[query]',
         algorithm: 'gzip',
-        test: /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i,
+        test: /\.(js|css|json|txt|html|ico|svg|woff)(\?.*)?$/i,
         threshold: 10240, // 对超过10k的数据进行压缩
         minRatio: 0.8, // 只有压缩率小于这个值的资源才会被处理
         deleteOriginalAssets: false // 删除原文件
         // deleteOriginalAssets: process.env.NODE_ENV !== 'development' // 删除原文件
       })
+
       // ,
       // new UglifyJsPlugin({
       //     uglifyOptions: {
@@ -241,6 +243,8 @@ module.exports = {
         symbolId: 'icon-[name]'
       })
       .end()
+
+
     config
       .when(process.env.NODE_ENV !== 'development',
         config => {
