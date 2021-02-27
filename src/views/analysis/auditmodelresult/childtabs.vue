@@ -11,6 +11,8 @@
         :modelId="modelId"
         :myIndex='1'
         :preLength="1"
+        @addBigTabs="addBigTabs"
+        @setNextValue="setNextValue"
     /></el-tab-pane>
     <el-tab-pane
       v-for="(item, key) in useType==='modelRunResult'?helptables:preValue"
@@ -67,7 +69,14 @@ export default {
         }else if(this.useType==='graph'){
           return this.preValue[key].name
         }
-      }
+      },
+    addBigTabs(resultTable,mainTable,modelname,modelUuid,resultSpiltObjects,useType,currentExecuteSQL){
+      debugger
+        this.$emit('addTab',undefined,undefined,modelname,modelUuid,undefined,useType,currentExecuteSQL)
+    },
+    setNextValue(val){
+      this.$emit('setNextValue',val)
+    }
   },
   /**
    * SQL编辑器结果、模型结果界面使用变量：preValue:先传过来的值，用于判断加几个页签  nextValue：后传过来的数据表

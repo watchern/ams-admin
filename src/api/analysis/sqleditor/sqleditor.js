@@ -1031,6 +1031,8 @@ export function initParamTree() {
     if (result.data.isError) {
 
     } else {
+      result.data.paramNode.open = true
+      // 'open': true,
       paramZtree = $.fn.zTree.init($('#paramTree'), paramSetting, result.data.paramNode)
     }
   })
