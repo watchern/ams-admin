@@ -25,7 +25,6 @@ router.beforeEach(async(to, from, next) =>
 /*console.log(to);
   console.log(from);
   next({ ...to, replace: true })*/
-   console.log(to.query);
    if(to.query.scene){  //如果参数中有scene 则设置场景
      var sceneCode = to.query.scene.split(',')[0];
      var dataUserId = to.query.scene.split(',')[1];

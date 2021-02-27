@@ -1286,7 +1286,7 @@ export default {
       }
       else{
         if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
-          let dom = "<span onmouseover='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+          let dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
           return dom
         }
         return params.value
@@ -1334,24 +1334,24 @@ export default {
     /**
      * 点击详细打开dialog效果
      */
-    openModelDetail() {
-      var selRows = this.gridApi.getSelectedRows();
-      if (selRows.length < 1) {
-        this.$message({ type: "info", message: "请选择后再进行关联!" });
-      } else if (selRows.length == 1) {
-        this.options = [];
-        for (var i = 0; i < this.modelDetailRelation.length; i++) {
-          var eachOption = {
-            value: this.modelDetailRelation[i].relationObjectUuid,
-            label: this.modelDetailRelation[i].modelDetailName,
-          };
-          this.options.push(eachOption);
-        }
-        this.modelDetailDialogIsShow = true;
-      } else {
-        this.$message({ type: "info", message: "不能选中多条!" });
-      }
-    },
+    // openModelDetail() {
+    //   var selRows = this.gridApi.getSelectedRows();
+    //   if (selRows.length < 1) {
+    //     this.$message({ type: "info", message: "请选择后再进行关联!" });
+    //   } else if (selRows.length == 1) {
+    //     this.options = [];
+    //     for (var i = 0; i < this.modelDetailRelation.length; i++) {
+    //       var eachOption = {
+    //         value: this.modelDetailRelation[i].relationObjectUuid,
+    //         label: this.modelDetailRelation[i].modelDetailName,
+    //       };
+    //       this.options.push(eachOption);
+    //     }
+    //     this.modelDetailDialogIsShow = true;
+    //   } else {
+    //     this.$message({ type: "info", message: "不能选中多条!" });
+    //   }
+    // },
     //单元格点击事件
     onCellClicked(cell) {
       this.rowIndex = cell.rowIndex
@@ -1360,7 +1360,6 @@ export default {
      * 点击详细打开dialog效果
      */
     openModelDetailNew(selRows) {
-      debugger
       this.options = [];
       for (var i = 0; i < this.modelDetailRelation.length; i++) {
         var eachOption = {
@@ -1379,6 +1378,7 @@ export default {
       var relationType = null;
       var objectName = "";
       var detailConfig = null;
+      var detailModel = {}
       for (var i = 0; i < this.modelDetailRelation.length; i++) {
         if (this.value == this.modelDetailRelation[i].relationObjectUuid) {
           relationType = this.modelDetailRelation[i].relationType;
@@ -1419,11 +1419,14 @@ export default {
           selectModel(this.value).then((resp) => {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
             const obj = { sqls: sql, businessField: "modelresultdetail" };
+            detailModel = resp.data
             getExecuteTask(obj)
               .then((resp) => {
                 this.currentExecuteSQL = resp.data.executeSQLList;
                 //界面渲染完成之后开始执行sql,将sql送入调度
-                startExecuteSql(resp.data).then((result) => {});
+                startExecuteSql(resp.data).then((result) => {
+                  this.$emit('addBigTabs',undefined,undefined,detailModel.modelName,detailModel.modelUuid,undefined,'modelPreview',this.currentExecuteSQL)
+                });
               })
               .catch((result) => {
                 this.$message({ type: "info", message: "执行失败" });
@@ -1469,7 +1472,8 @@ export default {
           });
       }
       this.modelDetailDialogIsShow = false;
-      this.modelDetailModelResultDialogIsShow = true;
+      this.initWebSocket();
+      // this.modelDetailModelResultDialogIsShow = true;
     },
     /**
      * sql编辑器模型结果点击导出后出发的方法
@@ -1517,7 +1521,8 @@ export default {
         func1(dataObj);
       };
       const func2 = function func3(val) {
-        this.$refs.childTabsRef.loadTableData(val);
+        this.$emit('setNextValue',val)
+        // this.$refs.childTabsRef.loadTableData(val);
       };
       const func1 = func2.bind(this);
       this.webSocket.onclose = function (event) {};

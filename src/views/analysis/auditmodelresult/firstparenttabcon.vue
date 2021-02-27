@@ -376,6 +376,7 @@ import {
   getDataAfterResultSpiltToRelateProject,
   addCoverResultRelProject,
   sendToOA,
+  deleteRunResultShareByRunTaskRelUuid
 } from "@/api/analysis/auditmodelresult";
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 import QueryField from "@/components/Ace/query-field/index";
@@ -1090,18 +1091,20 @@ export default {
       }
       var resultRelProjectUuids = ids.join(",");
       rmResultRelProjectlr(resultRelProjectUuids).then((resp) => {
-        if (resp.data == true) {
-          this.getLikeList();
-          this.$message({
-            type: "success",
-            message: "取消分配成功!",
-          });
-        } else {
-          this.$message({
-            type: "error",
-            message: "取消分配失败!",
-          });
-        }
+        deleteRunResultShareByRunTaskRelUuid(resultRelProjectUuids).then(resp =>{
+          if (resp.data == true) {
+            this.getLikeList();
+            this.$message({
+              type: "success",
+              message: "取消分配成功!",
+            });
+          } else {
+            this.$message({
+              type: "error",
+              message: "取消分配失败!",
+            });
+          }
+        })
       });
     },
     /**

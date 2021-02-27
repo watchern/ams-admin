@@ -21,11 +21,16 @@
         <!-- 新页签中页签组件 -->
         <!-- <div v-html="item.content"></div> -->
         <childTabs
+          ref="childtabsref"
           :maintable="item.mainTable"
           :helptables="item.helpTables"
           :model-uuid="item.modeluuid"
           :resultSpiltObjects="item.resultSpiltObjects"
-          useType="modelRunResult"
+          :useType="item.useType===undefined?'modelRunResult':item.useType"
+          :pre-value="item.currentExecuteSQL"
+          @addTab="addTab"
+          @setNextValue="setNextValue"
+          :model-id="item.modelId"
         />
       </el-tab-pane>
     </el-tabs>
@@ -50,7 +55,8 @@ export default {
   },
   methods: {
     // 添加页签方法  resultTable:辅表（运行结果表）数组    mainTable:主表（运行结果表对象）   modelname:模型的名称，用来给新页签赋值title属性用
-    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects) {
+    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects,usetype,currentExecuteSQL) {
+      debugger
       const newTabName = ++this.tabIndex + ''
       this.mainTable = mainTable
       this.helpTables = resultTable
@@ -60,9 +66,18 @@ export default {
         mainTable: mainTable,
         helpTables: resultTable,
         modeluuid: modelUuid,
-        resultSpiltObjects:resultSpiltObjects
+        resultSpiltObjects:resultSpiltObjects,
+        useType : usetype,
+        currentExecuteSQL : currentExecuteSQL,
+        modelId:modelUuid
       })
       this.editableTabsValue = newTabName
+    },
+    setNextValue(val){
+      debugger
+      console.log('123123123')
+      console.log(this.$refs)
+      this.$refs.childtabsref[this.editableTabs.length-1].loadTableData(val,'apple')
     },
     // 删除页签方法
     removeTab(targetName) {
