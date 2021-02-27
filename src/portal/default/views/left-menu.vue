@@ -50,8 +50,8 @@
         <span class="label-open" @click="isShowToolsList=!isShowToolsList, isShowTreeList=false, currentIndex=-1">
           <i class="el-icon-s-grid" />
         </span>
-        <el-tooltip class="item" effect="light" :content="userInfo.name" placement="top">
-          <span class="label-wang"  @click="isShowSettingList=!isShowSettingList">{{ userInfoNew}}<i class="label-wang-in" v-if="isThereReminder"></i></span>
+        <el-tooltip class="item" effect="light" :content="$store.getters.name" placement="top">
+          <span class="label-wang"  @click="isShowSettingList=!isShowSettingList">{{ $store.getters.name}}<i class="label-wang-in" v-if="isThereReminder"></i></span>
         </el-tooltip>
         <!-- <span class="label-wang" @click="isShowSettingList=!isShowSettingList" >{{ userInfo.name }}<i class="label-wang-in" v-if="isThereReminder"></i></span>-->
         <!-- <i class="shrink-btn icon iconfont iconright-1" @click="isShrink=false" /> -->
@@ -113,8 +113,8 @@
         <div class="footer-btns flex a-center j-between flex-row">
           <!-- <i class="shrink-btn icon iconfont iconleft-1" @click="isShrink=false" /> -->
           <i class="setting-btn icon iconfont iconmenu-2 setting-btn-right" @click="widthChange" />
-          <el-tooltip class="item" effect="light" :content="userInfo.name" placement="top">
-            <span class="label-wang"  @click="isShowSettingList=!isShowSettingList">{{ userInfoNew }}<i class="label-wang-in" v-if="isThereReminder"></i></span>
+          <el-tooltip class="item" effect="light" :content="$store.getters.name" placement="top">
+            <span class="label-wang"  @click="isShowSettingList=!isShowSettingList">{{ $store.getters.name }}<i class="label-wang-in" v-if="isThereReminder"></i></span>
           </el-tooltip>
         </div>
       </div>
@@ -223,10 +223,6 @@ export default {
   components: { MenuTree },
   data() {
     return {
-      userInfo: {
-        name: this.$store.getters.name
-      },
-      userInfoNew: '',
       currentIndex: -1,
       websocket: null,
       isShowTreeList: false,
@@ -527,10 +523,6 @@ export default {
           }
         })
       }
-    },
-    // 当前登录人
-    CurrentlyLoggedIn () {
-      this.userInfoNew = this.userInfo.name.substring(0,2)
     }
   }
 }
