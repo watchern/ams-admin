@@ -1077,7 +1077,7 @@ export function showParamNodeList(){
     var cells = graph.getModel().cells;//当前图形中的所有节点和线
     var keys = Object.keys(cells);
     for(var j=0; j<keys.length; j++){
-        if(cells[keys[j]].edge === 1){//edge == 1为连接线
+        if(cells[keys[j]].edge){//连接线
             edgeArr.push(cells[keys[j]]);
         }
     }
