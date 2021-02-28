@@ -267,7 +267,7 @@
       </div>
     </div>
   </el-row>
-    <div class="globalDropDownBox" @mouseover="StopTime" @mouseover="openModelDetailOld" v-if="globalDropDownBox" :style="{top: globalDropTop,left: globalDropLeft}">
+    <div class="globalDropDownBox" @mouseover="StopTime" @mouseleave="openModelDetailOld" v-if="globalDropDownBox" :style="{top: globalDropTop,left: globalDropLeft}">
       <li class="globalDDBli" v-for="item in modelDetailRelation" :click="modelDetailCetermine(item.relationObjectUuid)">
         {{item.modelDetailName}}
       </li>
