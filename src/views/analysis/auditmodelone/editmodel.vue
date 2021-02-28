@@ -3,7 +3,7 @@
     <el-container class="el-container">
       <div ref="modelDesign" class="div-width">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
-          <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" :class="[modifying===true?'sqlEditorWidth':'sqlEditorParamWidthOn']"
+          <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" class="sqlEditorParamWidthOn"
                id="graphDiv">
             <SQLEditor :data-user-id='dataUserId' :scene-code1='sceneCode' :modelUuid='form.modelUuid'
                        @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
@@ -12,7 +12,7 @@
             <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2"
                    v-if="state.id==graphEditorStr"></graph>
           </div>
-          <div class="modelInfoClass"  v-show="modelInfoDraw" style="width: 26%;float: right;height: 748px">
+          <div class="modelInfoClass" v-show="modelInfoDraw" style="width: 26%;position:absolute;height: calc(100% - 63px);">
             <div ref="basicInfo" class="detail-form">
               <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules" :disabled="isBanEdit">
                 <el-row>
@@ -86,7 +86,7 @@
               </el-form>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="useParamDraw" style="width: 50%;float: right;height: 748px">
+          <div class="modelInfoClass" v-show="useParamDraw" style="width: 50%;position:absolute;height: calc(100% - 63px);">
             <div ref="paramDefaultValue" class="default-value">
               <div style="font-size: 20px">
                 模型参数
@@ -98,7 +98,7 @@
               </div>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="resultConfigDraw" style="width: 50%;float: right;height: 748px">
+          <div class="modelInfoClass" v-show="resultConfigDraw" style="width: 50%;position:absolute;height: calc(100% - 63px);">
             <el-tabs v-model="activeName" :stretch="true" style="width: 92%">
               <el-tab-pane label="模型结果" name="first"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" ref="modelResultOutputCol" class="default-value">
                 <div style="font-size: 20px">
@@ -197,7 +197,7 @@
               </el-tab-pane>
             </el-tabs>
           </div>
-          <div  style="z-index:1000;position: absolute;float:right;right: 15px;height: 92%;overflow:hidden;width: 2%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
+          <div  style="z-index:1000;position: absolute;float:right;right: 15px;height: calc(100% - 63px);overflow:hidden;width: 2%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
             <div  title="基本信息" @click="clickModelInfo()" :style="{background: changeBtn.one === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/modelinfo.png"/></div>
             <div  title="已用参数" @click="clickUseParam()" :style="{background: changeBtn.two === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/useParam.png"/></div>
             <div  title="结果展现配置" @click="clickResultConfig()" :style="{background: changeBtn.three === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/resultConfig.png"/></div>
@@ -1425,12 +1425,14 @@ export default {
 }
 
 .modelInfoClass {
-z-index:999;
+  z-index:999;
   background-color: white;
   position: relative;
   animation: modelInfo 0.5s forwards;
+  top: 17px;
+  right: 53px;
+  overflow: auto;
 }
-
 @keyframes modelInfo {
   0%{width: 0%;}
   100%{width: 50%}
