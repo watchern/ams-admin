@@ -13,13 +13,14 @@
         :preLength="1"
         @addBigTabs="addBigTabs"
         @setNextValue="setNextValue"
+        ref="onlyChild"
     /></el-tab-pane>
     <el-tab-pane
       v-for="(item, key) in useType==='modelRunResult'?helptables:preValue"
       :key="key"
       :label="tabsName(key)"
       class="qweqwe"
-      ><childTabCons ref="child" :chartModelUuid="chartModelUuid" :resultSpiltObjects="resultSpiltObjects" :modelId="modelId" :nowtable="item" :prePersonalVal="item" :useType="useType" :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1" :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"/>
+      ><childTabCons ref="child" :is-model-preview="isModelPreview" @addBigTabsModelPreview="addBigTabsModelPreview" @addBigTabs="addBigTabs" @setNextValue="setNextValue" :chartModelUuid="chartModelUuid" :resultSpiltObjects="resultSpiltObjects" :modelId="modelId" :nowtable="item" :prePersonalVal="item" :useType="useType" :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1" :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"/>
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -71,11 +72,21 @@ export default {
         }
       },
     addBigTabs(resultTable,mainTable,modelname,modelUuid,resultSpiltObjects,useType,currentExecuteSQL){
-      debugger
         this.$emit('addTab',undefined,undefined,modelname,modelUuid,undefined,useType,currentExecuteSQL)
+    },
+    addBigTabsModelPreview(modelName,modelUuid,currentExecuteSQL){
+      var modelObj = {modelName:modelName,modelUuid:modelUuid}
+      this.$emit('addTab',modelObj,false,currentExecuteSQL,true)
     },
     setNextValue(val){
       this.$emit('setNextValue',val)
+    },
+    clickBigTab(){
+        if (this.resultMark==='modelResult'){
+          this.$refs.onlyChild.clickBigTab()
+        }else{
+          this.$refs.child[this.index-1].clickBigTab()
+        }
     }
   },
   /**
@@ -92,7 +103,10 @@ export default {
     "resultSpiltObjects",
     "modelId",
     "chartModelUuid",
-    "settingInfo"
+    "settingInfo",
+    "resultMark",
+    "isModelPreview",
+    "isRelation"
   ],
 };
 </script>
