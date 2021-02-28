@@ -19,7 +19,7 @@ if (process.env.npm_config_preview || rawArgv.includes('--preview')) {
 
   app.use(
     publicPath,
-    serveStatic('./ROOT', {
+    serveStatic('./dist', {
       index: ['index.html', '/']
     })
   )
