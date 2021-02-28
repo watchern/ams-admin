@@ -267,6 +267,11 @@
       </div>
     </div>
   </el-row>
+    <div class="globalDropDownBox" @mouseover="StopTime" @mouseover="openModelDetailOld" v-if="globalDropDownBox" :style="{top: globalDropTop,left: globalDropLeft}">
+      <li class="globalDDBli" v-for="item in modelDetailRelation" :click="modelDetailCetermine(item.relationObjectUuid)">
+        {{item.modelDetailName}}
+      </li>
+    </div>
   </div>
 </template>
 
@@ -421,7 +426,11 @@ export default {
       modelObj:{},  //查询当前模型结果对应的的model对象
       rowIndex:'',  //存储点击表格的行数
       tableClass:'el-btn-no-color',
-      chartClass:'el-btn-color'
+      chartClass:'el-btn-color',
+      globalDropDownBox:false, //移入显示下拉框
+      globalDropTop: 0,
+      globalDropLeft: 0,
+      timeOut: setTimeout
     };
   },
   mounted() {
@@ -1279,14 +1288,15 @@ export default {
         else{
           let dom = params.value
           if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
-            dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+            // dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+            dom = "<span onmouseover='openModelDetailNew()' onmouseleave='openModelDetailOld()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
           }
           return dom
         }
       }
       else{
         if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
-          let dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+          let dom = "<span onmouseover='openModelDetailNew()' onmouseleave='openModelDetailOld()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
           return dom
         }
         return params.value
@@ -1359,16 +1369,34 @@ export default {
     /**
      * 点击详细打开dialog效果
      */
+    // openModelDetailNew(selRows) {
+    //   this.options = [];
+    //   for (var i = 0; i < this.modelDetailRelation.length; i++) {
+    //     var eachOption = {
+    //       value: this.modelDetailRelation[i].relationObjectUuid,
+    //       label: this.modelDetailRelation[i].modelDetailName,
+    //     };
+    //     this.options.push(eachOption);
+    //   }
+    //   this.modelDetailDialogIsShow = true;
+    // },
+    /**
+     * 移入打开下拉框
+     */
     openModelDetailNew(selRows) {
-      this.options = [];
-      for (var i = 0; i < this.modelDetailRelation.length; i++) {
-        var eachOption = {
-          value: this.modelDetailRelation[i].relationObjectUuid,
-          label: this.modelDetailRelation[i].modelDetailName,
-        };
-        this.options.push(eachOption);
-      }
-      this.modelDetailDialogIsShow = true;
+      let e = event || window.event
+      this.globalDropDownBox = true
+      this.globalDropLeft = e.clientX + 'px'
+      this.globalDropTop = e.clientY + 'px'
+      clearTimeout(this.timeOut)
+    },
+    openModelDetailOld(){
+      this.timeOut = setTimeout(() => {
+        this.globalDropDownBox = false
+      }, 2000)
+    },
+    StopTime(){
+      clearTimeout(this.timeOut)//清除计时器
     },
     /**
      * 点击详细dialog的确定按钮后触发
@@ -1840,5 +1868,36 @@ export default {
   position: relative;
   z-index: 10;
   margin: -50px -8px 0px 0px;
+}
+.globalDropDownBox{
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  padding: 10px 0;
+  margin: 5px 0;
+  background-color: #fff;
+  border: 1px solid #e6ebf5;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+  animation: globalDropDownBox 0.3s linear forwards;
+}
+@keyframes globalDropDownBox {
+  0%{height:0}
+  100%{height:73px}
+}
+.globalDDBli{
+  list-style: none;
+  line-height: 30px;
+  padding: 0 17px;
+  font-size: 14px;
+  margin: 0;
+  color: #606266;
+  cursor: pointer;
+  outline: none;
+}
+.globalDDBli:hover{
+  background-color: #e8f4ff;
+  color: #46a6ff;
 }
 </style>
