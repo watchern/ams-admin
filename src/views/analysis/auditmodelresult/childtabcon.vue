@@ -1388,6 +1388,7 @@ export default {
       this.globalDropDownBox = true
       this.globalDropLeft = e.clientX + 'px'
       this.globalDropTop = e.clientY + 'px'
+      clearTimeout(this.timeOut)//清除计时器
       this.timeOut = setTimeout(() => {
         this.globalDropDownBox = false
       }, 2000)
@@ -1881,11 +1882,11 @@ export default {
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
-  animation: globalDropDownBox 0.3s linear forwards;
+
 }
 @keyframes globalDropDownBox {
   0%{height:0}
-  100%{height:73px}
+  100%{height:30px}
 }
 .globalDDBli{
   list-style: none;
@@ -1896,6 +1897,7 @@ export default {
   color: #606266;
   cursor: pointer;
   outline: none;
+  animation: globalDropDownBox 0.3s linear forwards;
 }
 .globalDDBli:hover{
   background-color: #e8f4ff;
