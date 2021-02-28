@@ -268,7 +268,7 @@
     </div>
   </el-row>
     <div class="globalDropDownBox" @mouseover="StopTime" @mouseleave="openModelDetailOld" v-if="globalDropDownBox" :style="{top: globalDropTop,left: globalDropLeft}">
-      <li class="globalDDBli" v-for="item in modelDetailRelation" :click="modelDetailCetermine(item.relationObjectUuid)">
+      <li class="globalDDBli" v-for="item in modelDetailRelation" @click="modelDetailCetermine(item.relationObjectUuid)">
         {{item.modelDetailName}}
       </li>
     </div>
@@ -1289,14 +1289,14 @@ export default {
           let dom = params.value
           if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
             // dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
-            dom = "<span onmouseover='openModelDetailNew()' onmouseleave='openModelDetailOld()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+            dom = "<span onmouseover='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
           }
           return dom
         }
       }
       else{
         if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
-          let dom = "<span onmouseover='openModelDetailNew()' onmouseleave='openModelDetailOld()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+          let dom = "<span onmouseover='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
           return dom
         }
         return params.value
@@ -1388,12 +1388,12 @@ export default {
       this.globalDropDownBox = true
       this.globalDropLeft = e.clientX + 'px'
       this.globalDropTop = e.clientY + 'px'
-      clearTimeout(this.timeOut)
-    },
-    openModelDetailOld(){
       this.timeOut = setTimeout(() => {
         this.globalDropDownBox = false
       }, 2000)
+    },
+    openModelDetailOld(){
+      this.globalDropDownBox = false
     },
     StopTime(){
       clearTimeout(this.timeOut)//清除计时器
@@ -1499,7 +1499,7 @@ export default {
             this.$message({ type: "info", message: "执行失败" });
           });
       }
-      this.modelDetailDialogIsShow = false;
+      this.globalDropDownBox = false
       this.initWebSocket();
       // this.modelDetailModelResultDialogIsShow = true;
     },
@@ -1879,6 +1879,7 @@ export default {
   background-color: #fff;
   border: 1px solid #e6ebf5;
   border-radius: 4px;
+  overflow: hidden;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
   animation: globalDropDownBox 0.3s linear forwards;
 }
