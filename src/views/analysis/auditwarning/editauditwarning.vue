@@ -532,7 +532,7 @@ export default {
             continue
           }
           let settingInfo = JSON.parse(taskRef.settingInfo)
-          taskRef.sqlValue = settingInfo.sql
+          taskRef.sqlValue = taskRef.sqlValue
           taskRef.modelUuid = taskRef.sourceUuid
           if(!settingInfo.paramsArr){
             this.temp.modelList.push(taskRef)
@@ -594,7 +594,7 @@ export default {
             this.initedParamModel.push(model)
             this.paramSql.push(model.sqlValue)
             this.paramArr.push(model.paramObj)
-            this.$refs["paramDrawRef"+model.modelUuid][0].createParamNodeHtml(model.modelUuid,model.modelName+' 参数')
+            this.$refs["paramDrawRef"+model.modelUuid][0].createParamNodeHtml(model.modelUuid,model.modelName+' 参数','auditwarring')
             // this.$refs["paramDrawRef"+model.modelUuid][0].initParamHtmlSS(model.sqlValue, model.paramObj, model.modelName, model.modelUuid)
           }
         }
@@ -767,8 +767,7 @@ export default {
           }
         }
       }
-      result = {sql:param.sql,paramsArr:model.paramObj}
-      debugger
+      result = {sql:param.sql,paramsArr:paramObj}
       return result
     },
 
@@ -808,8 +807,8 @@ export default {
               obj.paramObj.push(JSON.parse(param.paramValue))
             }
           }
-
-          this.temp.modelList = this.temp.modelList.concat(result.data)
+          var modelList= this.temp.modelList.concat(result.data)
+          this.temp.modelList = modelList
         })
         return
       }

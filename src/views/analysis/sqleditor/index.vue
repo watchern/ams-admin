@@ -58,10 +58,10 @@
                                 <el-dropdown-menu slot="dropdown">
                                     <el-dropdown-item
                                         @click.native="openSaveSqlDialog(1)"
-                                    >保存</el-dropdown-item>
+                                    >SQL保存</el-dropdown-item>
                                     <el-dropdown-item
                                         @click.native="openSaveSqlDialog(2)"
-                                    >另存为</el-dropdown-item>
+                                    >SQL另存为</el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
                             <el-dropdown type="primary">
@@ -247,6 +247,8 @@
     </div>
 </template>
 <script>
+    import {uuid2} from "@/api/analysis/auditmodel";
+
     require('@/components/ams-codemirror/addon/edit/matchbrackets')
     require('@/components/ams-codemirror/addon/selection/active-line')
     require('@/components/ams-codemirror/mode/sql/sql')
@@ -425,7 +427,8 @@
                 modelResultSavePathId: '',
                 personCode: this.$store.state.user.code,
                 sceneCode: 'auditor',
-                treeType: 'save'
+                treeType: 'save',
+                pushUuid:''
             }
         },
         watch: {
@@ -473,13 +476,14 @@
              * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
              */
             getWebSocket() {
+              this.pushUuid = uuid2()
                 /*      const webSocketPath =
                   'ws://localhost:8086/analysis/websocket?' +
                   this.$store.getters.personuuid*/
                 const webSocketPath =
                     process.env.VUE_APP_ANALYSIS_WEB_SOCKET +
                     this.$store.getters.personuuid +
-                    'sqleditor'
+                    'sqleditor'+this.pushUuid
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
                 // 当服务端打开连接
@@ -843,8 +847,9 @@
                     const obj = executeSQL()
                     obj.businessField = 'sqleditor'
                     obj.modelResultSavePathId = this.modelResultSavePathId
+                    obj.pushUuid = this.pushUuid
                     if (!obj.isExistParam) {
-                        this.executeLoading = true
+                        // this.executeLoading = true
                         this.loadText = '正在获取SQL信息...'
                         getExecuteTask(obj,this.dataUserId,this.sceneCode1).then((result) => {    //在这如果报错就加一个新页签，如果不报错就显示我的
                             if(result.data.isError){
@@ -890,13 +895,14 @@
              */
             replaceNodeParam() {
                 // var obj = replaceNodeParam(this.paramDrawUuid, 'sqlEditor')
-              this.$refs.paramDrawRefNew.replaceNodeParam(this.paramDrawUuid).then(obj=>{
+              var obj = this.$refs.paramDrawRefNew.replaceNodeParam(this.paramDrawUuid)
                 if (!obj.verify) {
                   this.$message({ type: 'info', message: obj.message })
                   return
                 }
                 obj.sqls = obj.sql
                 obj.businessField = 'sqleditor'
+                obj.pushUuid = this.pushUuid
                 this.executeLoading = true
                 getExecuteTask(obj,this.dataUserId,this.sceneCode1).then((result) => {
                   if(result.data.isError){
@@ -934,7 +940,6 @@
                   }
                 });*/
                 this.dialogFormVisible = false
-              })
             },
             maxOpen() {
                 maxOpenOne()

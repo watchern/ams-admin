@@ -76,7 +76,7 @@ export default {
             let moduleParamId = paramsArr[k].ammParamUuid
             if (moduleParamId === this.arr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
               this.arr[j].allowedNull = paramsArr[k].paramChoice.allowedNull
-              if (flag==='modelPreview'){
+              if (flag==='modelPreview' ||flag==='auditwarring'){
                 if (this.arr[j].paramValue) {
                   paramsArr[k].defaultVal = this.arr[j].paramValue
                 }
@@ -181,8 +181,7 @@ export default {
             if (paramSql !== '') {
               hasSql = true// 下拉列表是SQL方式
               if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
-                var data = {sql:paramSql}
-                const response = await executeParamSql(data)
+                const response = await executeParamSql(paramSql)
                 if(response.data == null){
                   obj.isError = true
                   obj.message = `获取参数【${paramObj.paramName}】的值的失败`
@@ -530,8 +529,7 @@ export default {
           if (oldSqlWhereStr === '' || oldSqlWhereStr !== sqlWhereStr) {
             sql = 'SELECT * FROM (' + sql + ') where 1=1' + sqlWhereStr
             if (idStr === '#selectParam') { // 下拉列表
-              var data = {sql:sql}
-              response = await executeParamSql(data)
+              response = await executeParamSql(sql)
             } else { // idStr=='#selectTreeParam'   下拉树
               response = await getSelectTreeData(sql)
             }
@@ -564,8 +562,7 @@ export default {
         if (sqlWhereStr === '' && dataArr.length === 0) { // 当影响它的主参没有选择值且本身没数据时（第一次加载全部数据）
           initDataArr = true
           if (idStr === '#selectParam') { // 下拉列表
-            var data = {sql:sql}
-            response = await executeParamSql(data)
+            response = await executeParamSql(sql)
           } else { // idStr=='#selectTreeParam'   下拉树
             response = await getSelectTreeData(sql)
           }
@@ -637,7 +634,6 @@ export default {
       // 循环所有节点
       let nodeParamDom = this.$refs.nodeParam
       if(nodeParamDom){
-        debugger
           let filterArr = []// 参数条件的数组，包含参数ID和参数值
           let paramNum = 0// 记录参数不允许为空却未输入值的参数数量
           let hasAllowedNullParam = false// 本次查询是否含有可为空的参数条件
@@ -831,7 +827,6 @@ export default {
                   let moduleParamId = filterArr[x].moduleParamId
                   for (let a = 0; a < arr.length; a++) { // 遍历当前节点绑定的参数
                     if (arr[a].moduleParamId === moduleParamId) {
-                      replaceParamSql = replaceParamSql.replace(arr[a].id, filterArr[x].paramValue)// 将参数SQL中的参数ID替换为输入得值
                       if (arr[a].paramValue instanceof Array){
                         var paramValue = []
                         paramValue.push(filterArr[x].paramValue)
@@ -839,6 +834,7 @@ export default {
                       }else {
                         arr[a].paramValue = filterArr[x].paramValue
                       }
+                      replaceParamSql = replaceParamSql.replace(arr[a].id, filterArr[x].paramValue)// 将参数SQL中的参数ID替换为输入得值
                     }
                   }
                 }

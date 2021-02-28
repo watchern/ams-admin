@@ -580,7 +580,7 @@ export function initTableTree(result) {
             baseURL: dataUrl,
             url: '/tableMeta/getCols',
             method: 'post',
-            params: { tableMetaUuid: tableMetaUuid }
+            params: { tableMetaUuid: tableMetaUuid, isEnclose:"1"  }
           }).then(result => {
             if (result.data == null) {
               this.$message({
@@ -770,7 +770,7 @@ export function refushTableTree(treeNodes) {
               baseURL: dataUrl,
               url: '/tableMeta/getCols',
               method: 'post',
-              params: { tableMetaUuid: tableMetaUuid }
+              params: { tableMetaUuid: tableMetaUuid, isEnclose:"1" }
             }).then(result => {
               if (result.data == null) {
                 this.$message({
@@ -1031,6 +1031,8 @@ export function initParamTree() {
     if (result.data.isError) {
 
     } else {
+      result.data.paramNode.open = true
+      // 'open': true,
       paramZtree = $.fn.zTree.init($('#paramTree'), paramSetting, result.data.paramNode)
     }
   })
@@ -1764,7 +1766,7 @@ export function getSelectSql(menuId) {
         baseURL: dataUrl,
         url: '/tableMeta/getCols',
         method: 'post',
-        params: { tableMetaUuid: tableMetaUuid }
+        params: { tableMetaUuid: tableMetaUuid, isEnclose:"1" }
       }).then(result => {
         if (result.data == undefined || result.data == null) {
           return

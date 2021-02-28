@@ -26,7 +26,7 @@
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <span> <i :class="data.icon" />{{ node.label }} </span>
-        <span v-if="data.type == 'folder' && power != 'warning'">
+        <span v-if="data.type == 'folder' && power != 'warning' && !isBussinessType">
           <el-button
             title="添加模型分类"
             type="text"
@@ -103,7 +103,8 @@ export default {
         pbScope: "",
       },
       checkedId: "",
-      appContainerDivStyle:""
+      appContainerDivStyle:"",
+      isBussinessType:false  //是否是业务分类
     };
   },
   watch: {
@@ -167,6 +168,7 @@ export default {
                 newData.push(result.data[i]);
               }
             }
+            this.isBussinessType = true
             this.data = newData;
           } else if (this.publicModel === "relationModel") {
              findModelFolderTree(true, spaceFolderName, spaceFolderId).then((result) => {

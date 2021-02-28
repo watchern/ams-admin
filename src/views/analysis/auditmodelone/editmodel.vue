@@ -197,12 +197,12 @@
               </el-tab-pane>
             </el-tabs>
           </div>
-          <div  style="z-index:1000;position: absolute;float:right;right: 15px;height: calc(100% - 63px);overflow:hidden;width: 2%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
-            <div  title="基本信息" @click="clickModelInfo()" :style="{background: changeBtn.one === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/modelinfo.png"/></div>
-            <div  title="已用参数" @click="clickUseParam()" :style="{background: changeBtn.two === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/useParam.png"/></div>
-            <div  title="结果展现配置" @click="clickResultConfig()" :style="{background: changeBtn.three === true?'#fff':'transparent'}"><img class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/resultConfig.png"/></div>
-            <div  title="保存" class=""><img class="custom-save rightButtonClass" src="@/views/analysis/auditmodel/imgs/save2.png" @click="save" style="margin-top: 100px;" /></div>
-            <div  title="取消" class=""><img class="custom-close rightButtonClass" src="@/views/analysis/auditmodel/imgs/close2.png" @click="closeWinfrom" /></div>
+          <div  style="z-index:1000;position: absolute;float:right;right: 15px;calc(100% - 63px);overflow:hidden;width: 2%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
+            <div  title="基本信息" @click="clickModelInfo()" :style="{background: changeBtn.one === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="linshishuju1 = false" @mouseleave="linshishuju1 = true"><img v-if="linshishuju1" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/modelinfo.png"/><span class="rightButtonClassa" v-if="!linshishuju1" style="display: inline-block;font-size: 12px;background: #b3d4fc;height: 34px">基础信息</span></div>
+            <div  title="已用参数" @click="clickUseParam()" :style="{background: changeBtn.two === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="linshishuju2 = false" @mouseleave="linshishuju2 = true"><img v-if="linshishuju2" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/useParam.png"/><span class="rightButtonClassa" v-if="!linshishuju2" style="display: inline-block;font-size: 12px;background: #b3d4fc;height: 34px">已用参数</span></div>
+            <div  title="结果展现配置" @click="clickResultConfig()" :style="{background: changeBtn.three === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="linshishuju3 = false" @mouseleave="linshishuju3 = true"><img v-if="linshishuju3" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/resultConfig.png"/><span class="rightButtonClassa" v-if="!linshishuju3" style="display: inline-block;font-size: 12px;background: #b3d4fc;height: 54px">结果展现配置</span></div>
+            <div  title="保存" class=""  @click="save" @mouseover="linshishuju4 = false" @mouseleave="linshishuju4 = true"><img v-if="linshishuju4" class="custom-save rightButtonClass" src="@/views/analysis/auditmodel/imgs/save2.png"  style="margin-top: 100px;" /><span class="rightButtonClassa" v-if="!linshishuju4" style="display: inline-block;font-size: 12px;margin-top: 100px;background: #b3d4fc;height: 20px">保存</span></div>
+            <div  title="取消" class="" style="height: 65.33px" @click="closeWinfrom" @mouseover="linshishuju5 = false" @mouseleave="linshishuju5 = true"><img v-if="linshishuju5" class="custom-close rightButtonClass" src="@/views/analysis/auditmodel/imgs/close2.png" /><span class="rightButtonClassa" v-if="!linshishuju5" style="display: inline-block;font-size: 12px;background: #b3d4fc;height: 20px">返回</span></div>
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
@@ -1425,14 +1425,12 @@ export default {
 }
 
 .modelInfoClass {
-  z-index:999;
+z-index:999;
   background-color: white;
   position: relative;
   animation: modelInfo 0.5s forwards;
-  top: 17px;
-  right: 53px;
-  overflow: auto;
 }
+
 @keyframes modelInfo {
   0%{width: 0%;}
   100%{width: 50%}

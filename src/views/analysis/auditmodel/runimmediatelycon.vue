@@ -161,7 +161,6 @@ export default {
         if(this.detailModels[i].modelType == "002003002"){
           sql = this.detailModels[i].modelSql
         }
-        debugger
         this.drawsSql.push(sql)
         this.drawParamarr.push(paramArr)
         this.$refs.paramassembly[i].createParamNodeHtml(this.detailModels[i].modelUuid,this.detailModels[i].modelName+'  参数')
@@ -180,9 +179,8 @@ export default {
       var replaceInfo = [];
       for (var i = 0; i < this.detailModels.length; i++) {
         // replaceInfo.push(replaceNodeParam(this.detailModels[i].modelUuid + "2",this.detailModels[i].modelUuid + "2"));
-         await this.$refs.paramassembly[i].replaceNodeParam(this.detailModels[i].modelUuid).then(obj=>{
+         var obj = this.$refs.paramassembly[i].replaceNodeParam(this.detailModels[i].modelUuid)
           replaceInfo.push(obj)
-        })
       }
       var obj = {
         dateTime: this.dateTime,
