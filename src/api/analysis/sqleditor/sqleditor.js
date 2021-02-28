@@ -196,19 +196,22 @@ export function initDragAndDrop() {
 
   // 单击侧边按钮收起左边栏
   function tree_zy_zhan() {
+    var overWidth = document.getElementById('container').clientWidth - 229
+    console.log(overWidth)
     if (tree_shuju == false && tree_canshu == false && tree_sql == false) {
       $('#leftPart').stop(true).animate({ 'width': 203 }, 300)
       $('#vertical').delay(300).fadeIn(100).css('left', 11.5 + '%')
-      $('#rightPart').stop(true).animate({ 'width': 1562, 'left': 0 }, 300)
+      $('#rightPart').stop(true).animate({ 'width': overWidth + 'px', 'left': 0 }, 300)
       $('#sidebar').css('border-right', 1 + 'px' + ' solid' + ' rgb(206,208,212)')
     }
   }
 
   function tree_zy_zhanhe() {
+    var overWidth = document.getElementById('container').clientWidth - 34
     if (tree_shuju == false && tree_canshu == false && tree_sql == false) {
       $('#vertical').fadeOut(100)
       $('#leftPart').delay(100).stop(true).animate({ 'width': 0 }, 300)
-      $('#rightPart').delay(100).stop(true).animate({ 'width': 1752, 'left': 15 }, 300)
+      $('#rightPart').delay(100).stop(true).animate({ 'width': overWidth + 'px', 'left': 15 }, 300)
       $('#sidebar').css('border', 'none')
     }
   }

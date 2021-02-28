@@ -3,7 +3,7 @@
     <el-container class="el-container">
       <div ref="modelDesign" class="div-width">
         <el-form ref="modelDesignForm" :model="form" :rules="modelDesignRules" :disabled="isBanEdit">
-          <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" :class="[modifying===true?'sqlEditorWidth':'sqlEditorParamWidthOn']"
+          <div v-for="state in modelTypeObj" :key="state.id" :value="state.id" :label="state.id" class="sqlEditorParamWidthOn"
                id="graphDiv">
             <SQLEditor :data-user-id='dataUserId' :scene-code1='sceneCode' :modelUuid='form.modelUuid'
                        @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
@@ -12,7 +12,7 @@
             <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2"
                    v-if="state.id==graphEditorStr"></graph>
           </div>
-          <div class="modelInfoClass"  v-show="modelInfoDraw" style="width: 26%;float: right;height: 748px">
+          <div class="modelInfoClass" v-show="modelInfoDraw" style="width: 26%;position:absolute;height: calc(100% - 63px);">
             <div ref="basicInfo" class="detail-form">
               <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules" :disabled="isBanEdit">
                 <el-row>
@@ -86,7 +86,7 @@
               </el-form>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="useParamDraw" style="width: 50%;float: right;height: 748px">
+          <div class="modelInfoClass" v-show="useParamDraw" style="width: 50%;position:absolute;height: calc(100% - 63px);">
             <div ref="paramDefaultValue" class="default-value">
               <div style="font-size: 20px">
                 模型参数
@@ -98,7 +98,7 @@
               </div>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="resultConfigDraw" style="width: 50%;float: right;height: 748px">
+          <div class="modelInfoClass" v-show="resultConfigDraw" style="width: 50%;position:absolute;height: calc(100% - 63px);">
             <el-tabs v-model="activeName" :stretch="true" style="width: 92%">
               <el-tab-pane label="模型结果" name="first"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" ref="modelResultOutputCol" class="default-value">
                 <div style="font-size: 20px">
@@ -197,12 +197,12 @@
               </el-tab-pane>
             </el-tabs>
           </div>
-          <div  style="z-index:1000;position: absolute;float:right;right: 15px;height: 92%;overflow:hidden;width: 2%;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
-            <div  title="基本信息" @click="clickModelInfo()" :style="{background: changeBtn.one === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="linshishuju1 = false" @mouseleave="linshishuju1 = true"><img v-if="linshishuju1" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/modelinfo.png"/><span class="rightButtonClassa" v-if="!linshishuju1" style="display: inline-block;font-size: 12px;background: #b3d4fc;height: 34px">基础信息</span></div>
-            <div  title="已用参数" @click="clickUseParam()" :style="{background: changeBtn.two === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="linshishuju2 = false" @mouseleave="linshishuju2 = true"><img v-if="linshishuju2" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/useParam.png"/><span class="rightButtonClassa" v-if="!linshishuju2" style="display: inline-block;font-size: 12px;background: #b3d4fc;height: 34px">已用参数</span></div>
-            <div  title="结果展现配置" @click="clickResultConfig()" :style="{background: changeBtn.three === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="linshishuju3 = false" @mouseleave="linshishuju3 = true"><img v-if="linshishuju3" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/resultConfig.png"/><span class="rightButtonClassa" v-if="!linshishuju3" style="display: inline-block;font-size: 12px;background: #b3d4fc;height: 54px">结果展现配置</span></div>
-            <div  title="保存" class=""  @click="save" @mouseover="linshishuju4 = false" @mouseleave="linshishuju4 = true"><img v-if="linshishuju4" class="custom-save rightButtonClass" src="@/views/analysis/auditmodel/imgs/save2.png"  style="margin-top: 100px;" /><span class="rightButtonClassa" v-if="!linshishuju4" style="display: inline-block;font-size: 12px;margin-top: 100px;background: #b3d4fc;height: 20px">保存</span></div>
-            <div  title="取消" class="" style="height: 65.33px" @click="closeWinfrom" @mouseover="linshishuju5 = false" @mouseleave="linshishuju5 = true"><img v-if="linshishuju5" class="custom-close rightButtonClass" src="@/views/analysis/auditmodel/imgs/close2.png" /><span class="rightButtonClassa" v-if="!linshishuju5" style="display: inline-block;font-size: 12px;background: #b3d4fc;height: 20px">返回</span></div>
+          <div  style="z-index:1000;position: absolute;float:right;right: 15px;height:calc(100% - 63px);width: 45px;background-color:  #f7f7f7;border-radius: 0px 20px 20px 0px;"><!--v-if="!modifying"-->
+            <div @click="clickModelInfo()" :style="{background: changeBtn.one === true?'#fff':'transparent',height: 65.33+'px',borderTopRightRadius: 20 + 'px'}" @mouseover="configurationSave1 = false" @mouseleave="configurationSave1 = true"><img v-if="configurationSave1" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/modelinfo.png"/><span class="rightButtonClassa" v-if="!configurationSave1" >基础信息</span></div>
+            <div @click="clickUseParam()" :style="{background: changeBtn.two === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="configurationSave2 = false" @mouseleave="configurationSave2 = true"><img v-if="configurationSave2" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/useParam.png"/><span class="rightButtonClassa" v-if="!configurationSave2" >已用参数</span></div>
+            <div @click="clickResultConfig()" :style="{background: changeBtn.three === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="configurationSave3 = false" @mouseleave="configurationSave3 = true"><img v-if="configurationSave3" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/resultConfig.png"/><span class="rightButtonClassa" v-if="!configurationSave3" >结果展现</span></div>
+            <el-button type="primary" size="small" class="oper-btn save" style="position: absolute;bottom: 95px;left: 9px;" @click="save"></el-button>
+            <el-button type="primary" size="small" class="oper-btn cancel" style="position: absolute;bottom: 35px;left: -1px;" @click="closeWinfrom"></el-button>
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
@@ -417,11 +417,10 @@ export default {
       selectedThreshold:[],
       isExecuteSql:false,
       modelDetailIsSeeHeight:"",
-      linshishuju1: true,
-      linshishuju2: true,
-      linshishuju3: true,
-      linshishuju4: true,
-      linshishuju5: true
+      // 右侧列表按钮样式
+      configurationSave1: true,
+      configurationSave2: true,
+      configurationSave3: true
     }
   },
   watch: {
@@ -1430,10 +1429,11 @@ export default {
 }
 
 .modelInfoClass {
-z-index:999;
+  z-index:999;
   background-color: white;
   position: relative;
   animation: modelInfo 0.5s forwards;
+  right: 70px;
 }
 
 @keyframes modelInfo {
@@ -1458,22 +1458,27 @@ z-index:999;
   100%{width: 98%;}
 }
 .rightButtonClass{
-  width: 20px;
-  height: 20px;
-  margin: 25px 0 15px 8px;
-  cursor:pointer;
+  width: 25px;
+  height: 25px;
+  margin: 22px 0 15px 10px;
+  cursor: pointer;
 }
-.rightButtonClassa{
-  width: 24px;
-  height: 24px;
-  margin: 23px 0 13px 4px;
-  cursor:pointer;
-  font-weight: bold;
-}
-
 .notExecuteSqlClass{
   font-weight:lighter ;
   font-size:15px;
   margin-top:50px
+}
+.rightButtonClassa{
+  display: inline-block;
+  font-size: 14px;
+  background: rgb(232, 240, 255);
+  height: 40px;
+  width: 40px;
+  line-height: 16px;
+  border-radius: 3px;
+  margin: 12px 0 0 3px;
+  padding: 3.5px 5px 5px 5.5px;
+  color: rgb(27,76,139);
+  cursor: pointer;
 }
 </style>

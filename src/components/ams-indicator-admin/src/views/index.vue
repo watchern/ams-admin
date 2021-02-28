@@ -6200,19 +6200,19 @@ var see = "查看";
   border-bottom: 2px solid #ffffff;
 }
 >>>.el-btn-no-color{
-  width: 44px;
+  width: 40px;
   float: left;
   border: solid 1px #E0E0E0;
-  height: 29px;
+  height: 26px;
   margin: 2px;
   cursor: pointer;
 }
 >>>.el-btn-color{
   background: aliceblue;
-  width: 44px;
+  width: 40px;
   float: left;
   border: solid 1px #E0E0E0;
-  height: 29px;
+  height: 26px;
   margin: 2px;
   cursor: pointer;
 }

@@ -8,16 +8,16 @@
             </div>
             <div id="leftPart" class="left-part">
                 <div class="left-dataTree">
-                    <el-input id="dataSearch" v-model="tableSearchInput" placeholder="输入关键字进行过滤" @change="tableTreeSearch" />
-                    <ul id="dataTree" class="ztree" />
+                    <el-input id="dataSearch" style="margin-top:5px" v-model="tableSearchInput" placeholder="输入关键字进行过滤" @change="tableTreeSearch" suffix-icon="el-icon-search"/>
+                    <ul id="dataTree" class="ztree" style="margin-top:5px"/>
                 </div>
                 <div class="left-paramTree">
-                    <el-input id="paramSearch" v-model="paramSearchInput" placeholder="输入关键字进行过滤" @change="paramTreeSearch" />
-                    <ul id="paramTree" class="ztree" />
+                    <el-input id="paramSearch" style="margin-top:5px" v-model="paramSearchInput" placeholder="输入关键字进行过滤" @change="paramTreeSearch" suffix-icon="el-icon-search"/>
+                    <ul id="paramTree" class="ztree" style="margin-top:5px"/>
                 </div>
                 <div class="left-sqlFunTree">
-                    <el-input id="sqlSearch" v-model="functionInput" placeholder="输入关键字进行过滤" @change="functionTreeSearch" />
-                    <ul id="sqlFunTree" class="ztree" />
+                    <el-input id="sqlSearch" style="margin-top:5px" v-model="functionInput" placeholder="输入关键字进行过滤" @change="functionTreeSearch" suffix-icon="el-icon-search"/>
+                    <ul id="sqlFunTree" class="ztree" style="margin-top:5px"/>
                 </div>
             </div>
             <div id="rightPart" style="height: 100%">
@@ -130,7 +130,7 @@
                         />
                     </div>
                   <div v-if="!isExecuteError" class="data-show">
-                    <el-tabs type="border-card">
+                    <el-tabs type="border-card" style="height:30px">
                       <el-tab-pane label='错误信息'>
                         <el-card class="box-card" style="height: 100px" align="center">
                           <div style='font-weight:lighter ;font-size:15px'>{{ errorMessage }}</div>
@@ -1184,8 +1184,8 @@
     .max-size {
         width: 80px;
         position: relative;
-        right: 0;
-        top: 4%;
+        right: 15px;
+        top: 29px;
         float: right;
         display: none;
         z-index: 201;
@@ -1198,7 +1198,7 @@
     }
 
     .data-show{
-        width: 98.7%;
+        width: 100%;
         height: 100%;
     }
 
@@ -1248,6 +1248,9 @@
     }
     >>>.el-input {
       width: 95%;
+    }
+    #dataSearch{
+      margin: 5px 0 10px 0;
     }
 </style>
 

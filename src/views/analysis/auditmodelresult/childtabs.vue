@@ -1,7 +1,7 @@
 <template>
   <!-- childTabs是子页签组件 -->
-  <el-tabs type="border-card" style="border:0;box-shadow:0 0 0 0 #000">
-    <el-tab-pane v-if="useType==='modelRunResult'?true:false"  :label="useType === 'modelRunResult' ? '主表' : '结果1'"
+  <el-tabs type="border-card" style="border:0;box-shadow:0 0 0 0 #000;">
+    <el-tab-pane v-if="useType==='modelRunResult'?true:false" style="height:30px" :label="useType === 'modelRunResult' ? '主表' : '结果1'"
       ><childTabCons
         :settingInfo="settingInfo"
         :nowtable="maintable"
@@ -96,3 +96,9 @@ export default {
   ],
 };
 </script>
+<style scoped>
+>>>.el-tabs__item{
+    height:32px!important;
+    line-height:32px!important;
+}
+</style>
