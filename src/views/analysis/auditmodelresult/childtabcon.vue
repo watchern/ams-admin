@@ -20,7 +20,7 @@
     </el-row>
     <div v-if="chartSwitching" style="position:relative">
       <div v-if="myFlag">
-        <div align="right">
+        <div align="right" style="position: absolute;top: -29px;right: 0;">
           <el-dropdown>
             <el-button
               type="primary"

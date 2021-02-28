@@ -130,7 +130,7 @@
                         />
                     </div>
                   <div v-if="!isExecuteError" class="data-show">
-                    <el-tabs type="border-card">
+                    <el-tabs type="border-card" style="height:30px">
                       <el-tab-pane label='错误信息'>
                         <el-card class="box-card" style="height: 100px" align="center">
                           <div style='font-weight:lighter ;font-size:15px'>{{ errorMessage }}</div>
@@ -1184,8 +1184,8 @@
     .max-size {
         width: 80px;
         position: relative;
-        right: 0;
-        top: 4%;
+        right: 15px;
+        top: 29px;
         float: right;
         display: none;
         z-index: 201;
@@ -1198,7 +1198,7 @@
     }
 
     .data-show{
-        width: 98.7%;
+        width: 100%;
         height: 100%;
     }
 
