@@ -271,6 +271,9 @@
       <li class="globalDDBli" v-for="item in modelDetailRelation" @click="modelDetailCetermine(item.relationObjectUuid)">
         {{item.modelDetailName}}
       </li>
+      <li class="globalDDBli">
+        asdasdsad
+      </li>
     </div>
   </div>
 </template>
@@ -1389,12 +1392,12 @@ export default {
       this.globalDropLeft = e.clientX + 'px'
       this.globalDropTop = e.clientY + 'px'
       clearTimeout(this.timeOut)//清除计时器
-      this.timeOut = setTimeout(() => {
-        this.globalDropDownBox = false
-      }, 2000)
+      // this.timeOut = setTimeout(() => {
+      //   this.globalDropDownBox = false
+      // }, 1000)
     },
     openModelDetailOld(){
-      this.globalDropDownBox = false
+      // this.globalDropDownBox = false
     },
     StopTime(){
       clearTimeout(this.timeOut)//清除计时器
@@ -1402,14 +1405,14 @@ export default {
     /**
      * 点击详细dialog的确定按钮后触发
      */
-    modelDetailCetermine() {
+    modelDetailCetermine(value) {
       var selectRowData = this.gridApi.getSelectedRows();
       var relationType = null;
       var objectName = "";
       var detailConfig = null;
       var detailModel = {}
       for (var i = 0; i < this.modelDetailRelation.length; i++) {
-        if (this.value == this.modelDetailRelation[i].relationObjectUuid) {
+        if (value == this.modelDetailRelation[i].relationObjectUuid) {
           relationType = this.modelDetailRelation[i].relationType;
           objectName = this.modelDetailRelation[i].relationObjectName;
           detailConfig = this.modelDetailRelation[i].modelDetailConfig;
@@ -1419,7 +1422,7 @@ export default {
       if (relationType == 1) {
         var detailValue = [];
         for (var i = 0; i < this.modelDetailRelation.length; i++) {
-          if (this.modelDetailRelation[i].relationObjectUuid == this.value) {
+          if (this.modelDetailRelation[i].relationObjectUuid == value) {
             for (
               var j = 0;
               j < this.modelDetailRelation[i].modelDetailConfig.length;
@@ -1440,12 +1443,12 @@ export default {
             }
           }
         }
-        findParamModelRelByModelUuid(this.value).then((resp) => {
+        findParamModelRelByModelUuid(value).then((resp) => {
           var arr = [];
           for (var i = 0; i < resp.data.length; i++) {
             arr.push(JSON.parse(resp.data[i]));
           }
-          selectModel(this.value).then((resp) => {
+          selectModel(value).then((resp) => {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
             const obj = { sqls: sql, businessField: "modelresultdetail" };
             detailModel = resp.data
