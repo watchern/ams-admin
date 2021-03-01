@@ -83,6 +83,20 @@ export function getTableCol(tableMetaUuid) {
 }
 
 /**
+ * 获取数据表信息
+ * @param data
+ * @returns {AxiosPromise}
+ */
+export function getTableByCol(colMetaUuid) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/getTableByCol`,
+    method: 'post',
+    params: { colMetaUuid: colMetaUuid }
+  })
+}
+
+/**
  * 获取关联列
  * @param data
  * @returns {AxiosPromise}

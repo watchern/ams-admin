@@ -116,9 +116,9 @@
         </el-col>
       </el-row>
       <span slot="footer">
+        <el-button @click="uploadVisible = false">取消</el-button>
         <el-button v-if="uploadStep === 1" type="primary" @click="nextImport">下一步</el-button>
         <el-button v-if="uploadStep === 2" type="primary" @click="importTable">导入</el-button>
-        <el-button type="primary" @click="uploadVisible = false">关闭</el-button>
       </span>
     </el-dialog>
     <!-- 弹窗4 -->
@@ -259,11 +259,6 @@ export default {
       downloadLoading: false
     }
   },
-  // computed: {
-  //   dialogTitle() {
-  //     return (this.selections[0].label == null ? '' : '在<' + this.selections[0].label + '>下') + this.textMap[this.dialogStatus]
-  //   }
-  // },
   created() {
     this.initDirectory()
   },
@@ -367,7 +362,6 @@ export default {
             nextUpload(this.uploadtemp).then(res => {
               this.uploadStep = 2
               this.uploadtempInfo = res.data
-              
             })
           })
         }

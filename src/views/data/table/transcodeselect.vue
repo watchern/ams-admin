@@ -8,7 +8,7 @@
         :value="item.transRuleUuid"
       >
         <span v-text="item.ruleName" />
-        <el-button style="float:right" type="primary" size="mini" @click="seleteTransCode(item.transRuleUuid)">查看</el-button>
+        <el-link style="float:right" type="primary" size="mini" @click="seleteTransCode(item.transRuleUuid)">查看</el-link>
       </el-option>
     </el-select>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
