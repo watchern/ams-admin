@@ -659,3 +659,11 @@
 .oper-btn.minussign:hover::before{
   content:'跳过指定环节'!important;
 }
+
+// etl依赖添加删除
+.oper-btn.scheduleadd:after{
+  content:'\e60a'!important;
+}
+.oper-btn.scheduledelete:after{
+  content:'\e601'!important;
+}
