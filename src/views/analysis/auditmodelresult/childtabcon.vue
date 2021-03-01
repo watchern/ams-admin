@@ -27,7 +27,6 @@
               class="oper-btn link-2"
               :disabled="modelRunResultBtnIson.associatedBtn"
               @click="openProjectDialog"
-              title="分配项目"
             ></el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item @click.native="openProjectDialog">分配项目</el-dropdown-item>
@@ -61,14 +60,13 @@
             type="primary"
             @click="queryConditionSetting"
             class="oper-btn search"
-            title="查询设置"
+            style="margin-left: 10px"
           ></el-button>
           <el-button
             :disabled="false"
             type="primary"
             @click="reSet"
-            class="oper-btn again-2"
-            title="重置"
+            class="oper-btn again-3"
           ></el-button>
 <!--          <el-button-->
 <!--            class="oper-btn link"-->
@@ -83,7 +81,6 @@
             type="primary"
             @click="exportExcel"
             class="oper-btn export-2"
-            title="导出"
           ></el-button>
           <!-- addDetailRel('qwer1', '项目11') -->
         </div>
