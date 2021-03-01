@@ -1433,7 +1433,7 @@ export default {
   background-color: white;
   position: relative;
   animation: modelInfo 0.5s forwards;
-  right: 70px;
+  right: 60px;
 }
 
 @keyframes modelInfo {
