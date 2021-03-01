@@ -1198,7 +1198,7 @@
     }
 
     .data-show{
-        width: 100%;
+        width: calc(100% - 30px);
         height: 100%;
     }
 
