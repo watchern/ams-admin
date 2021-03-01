@@ -6,7 +6,7 @@ const controllerName = 'tableRelation'
 export function listByPage(data) {
   return request({
     baseURL: baseURL,
-    url: `/${controllerName}/listByPage`,
+    url: `/${controllerName}/selectPage`,
     method: 'post',
     data
   })
@@ -16,6 +16,15 @@ export function save(data) {
   return request({
     baseURL: baseURL,
     url: `/${controllerName}/save`,
+    method: 'post',
+    data
+  })
+}
+
+export function saveTableRelation(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/saveTableRelation`,
     method: 'post',
     data
   })
@@ -38,6 +47,16 @@ export function del(ids) {
   })
 }
 
+export function delByTableId(id) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/delByTableId`,
+    method: 'get',
+    params: { id: id }
+  })
+}
+
+
 export function getById(id) {
   return request({
     baseURL: baseURL,
@@ -46,3 +65,4 @@ export function getById(id) {
     params: { id: id }
   })
 }
+
