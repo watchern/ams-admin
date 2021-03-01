@@ -143,28 +143,6 @@
       </el-row>
     </div>
     <el-dialog
-      title="模型详细关联"
-      :visible.sync="modelDetailDialogIsShow"
-      width="30%"
-    >
-      <div align="center">
-        <el-select v-model="value">
-          <el-option
-            v-for="(item, key) in options"
-            :key="key"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="modelDetailDialogIsShow = false">取 消</el-button>
-        <el-button type="primary" @click="modelDetailCetermine"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
-    <el-dialog
       v-if="modelDetailModelResultDialogIsShow"
       title="模型详细结果"
       :visible.sync="modelDetailModelResultDialogIsShow"
@@ -356,7 +334,8 @@ export default {
     "preLength",
     "myIndex",
     "chartModelUuid",
-    "settingInfo"
+    "settingInfo",
+    "isModelPreview"
   ],
   data() {
     return {
@@ -442,6 +421,10 @@ export default {
     window.openModelDetailNew=_this.openModelDetailNew;
   },
   methods: {
+    clickBigTab() {
+      let _this=this;
+      window.openModelDetailNew=_this.openModelDetailNew;
+    },
     switchDivStyle(type){
       if (type === 'table'){
         this.chartSwitching = false
@@ -1287,16 +1270,18 @@ export default {
         }
         else{
           let dom = params.value
+          var rowIndex = params.rowIndex
           if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
             // dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
-            dom = "<span onmouseover='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+            dom = "<span onmouseover=\"openModelDetailNew('"+rowIndex+"')\" style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
           }
           return dom
         }
       }
       else{
+        var rowIndex1 = params.rowIndex
         if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
-          let dom = "<span onmouseover='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+          let dom = "<span onmouseover=\"openModelDetailNew('"+rowIndex1+"')\" style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
           return dom
         }
         return params.value
@@ -1383,7 +1368,8 @@ export default {
     /**
      * 移入打开下拉框
      */
-    openModelDetailNew(selRows) {
+    openModelDetailNew(param) {
+      this.rowIndex = parseInt(param)
       let e = event || window.event
       this.globalDropDownBox = true
       this.globalDropLeft = e.clientX + 'px'
@@ -1391,7 +1377,7 @@ export default {
       clearTimeout(this.timeOut)//清除计时器
       this.timeOut = setTimeout(() => {
         this.globalDropDownBox = false
-      }, 2000)
+      }, 1000)
     },
     openModelDetailOld(){
       this.globalDropDownBox = false
@@ -1402,14 +1388,14 @@ export default {
     /**
      * 点击详细dialog的确定按钮后触发
      */
-    modelDetailCetermine() {
+    modelDetailCetermine(value) {
       var selectRowData = this.gridApi.getSelectedRows();
       var relationType = null;
       var objectName = "";
       var detailConfig = null;
       var detailModel = {}
       for (var i = 0; i < this.modelDetailRelation.length; i++) {
-        if (this.value == this.modelDetailRelation[i].relationObjectUuid) {
+        if (value == this.modelDetailRelation[i].relationObjectUuid) {
           relationType = this.modelDetailRelation[i].relationType;
           objectName = this.modelDetailRelation[i].relationObjectName;
           detailConfig = this.modelDetailRelation[i].modelDetailConfig;
@@ -1419,7 +1405,7 @@ export default {
       if (relationType == 1) {
         var detailValue = [];
         for (var i = 0; i < this.modelDetailRelation.length; i++) {
-          if (this.modelDetailRelation[i].relationObjectUuid == this.value) {
+          if (this.modelDetailRelation[i].relationObjectUuid == value) {
             for (
               var j = 0;
               j < this.modelDetailRelation[i].modelDetailConfig.length;
@@ -1440,12 +1426,12 @@ export default {
             }
           }
         }
-        findParamModelRelByModelUuid(this.value).then((resp) => {
+        findParamModelRelByModelUuid(value).then((resp) => {
           var arr = [];
           for (var i = 0; i < resp.data.length; i++) {
             arr.push(JSON.parse(resp.data[i]));
           }
-          selectModel(this.value).then((resp) => {
+          selectModel(value).then((resp) => {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
             const obj = { sqls: sql, businessField: "modelresultdetail" };
             detailModel = resp.data
@@ -1454,7 +1440,11 @@ export default {
                 this.currentExecuteSQL = resp.data.executeSQLList;
                 //界面渲染完成之后开始执行sql,将sql送入调度
                 startExecuteSql(resp.data).then((result) => {
-                  this.$emit('addBigTabs',undefined,undefined,detailModel.modelName,detailModel.modelUuid,undefined,'modelPreview',this.currentExecuteSQL)
+                  if (this.isModelPreview!==true){
+                    this.$emit('addBigTabs',undefined,undefined,detailModel.modelName,detailModel.modelUuid,undefined,'modelPreview',this.currentExecuteSQL)
+                  }else {
+                    this.$emit('addBigTabsModelPreview',detailModel.modelName,detailModel.modelUuid,this.currentExecuteSQL)
+                  }
                 });
               })
               .catch((result) => {
@@ -1550,7 +1540,7 @@ export default {
         func1(dataObj);
       };
       const func2 = function func3(val) {
-        this.$emit('setNextValue',val)
+          this.$emit('setNextValue',val)
         // this.$refs.childTabsRef.loadTableData(val);
       };
       const func1 = func2.bind(this);
