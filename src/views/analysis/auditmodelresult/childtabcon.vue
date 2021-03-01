@@ -143,28 +143,6 @@
       </el-row>
     </div>
     <el-dialog
-      title="模型详细关联"
-      :visible.sync="modelDetailDialogIsShow"
-      width="30%"
-    >
-      <div align="center">
-        <el-select v-model="value">
-          <el-option
-            v-for="(item, key) in options"
-            :key="key"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="modelDetailDialogIsShow = false">取 消</el-button>
-        <el-button type="primary" @click="modelDetailCetermine"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
-    <el-dialog
       v-if="modelDetailModelResultDialogIsShow"
       title="模型详细结果"
       :visible.sync="modelDetailModelResultDialogIsShow"
@@ -271,9 +249,6 @@
       <li class="globalDDBli" v-for="item in modelDetailRelation" @click="modelDetailCetermine(item.relationObjectUuid)">
         {{item.modelDetailName}}
       </li>
-      <li class="globalDDBli">
-        asdasdsad
-      </li>
     </div>
   </div>
 </template>
@@ -359,7 +334,8 @@ export default {
     "preLength",
     "myIndex",
     "chartModelUuid",
-    "settingInfo"
+    "settingInfo",
+    "isModelPreview"
   ],
   data() {
     return {
@@ -445,6 +421,10 @@ export default {
     window.openModelDetailNew=_this.openModelDetailNew;
   },
   methods: {
+    clickBigTab() {
+      let _this=this;
+      window.openModelDetailNew=_this.openModelDetailNew;
+    },
     switchDivStyle(type){
       if (type === 'table'){
         this.chartSwitching = false
@@ -1290,16 +1270,18 @@ export default {
         }
         else{
           let dom = params.value
+          var rowIndex = params.rowIndex
           if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
             // dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
-            dom = "<span onmouseover='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+            dom = "<span onmouseover=\"openModelDetailNew('"+rowIndex+"')\" style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
           }
           return dom
         }
       }
       else{
+        var rowIndex1 = params.rowIndex
         if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
-          let dom = "<span onmouseover='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+          let dom = "<span onmouseover=\"openModelDetailNew('"+rowIndex1+"')\" style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
           return dom
         }
         return params.value
@@ -1386,18 +1368,19 @@ export default {
     /**
      * 移入打开下拉框
      */
-    openModelDetailNew(selRows) {
+    openModelDetailNew(param) {
+      this.rowIndex = parseInt(param)
       let e = event || window.event
       this.globalDropDownBox = true
       this.globalDropLeft = e.clientX + 'px'
       this.globalDropTop = e.clientY + 'px'
       clearTimeout(this.timeOut)//清除计时器
-      // this.timeOut = setTimeout(() => {
-      //   this.globalDropDownBox = false
-      // }, 1000)
+      this.timeOut = setTimeout(() => {
+        this.globalDropDownBox = false
+      }, 1000)
     },
     openModelDetailOld(){
-      // this.globalDropDownBox = false
+      this.globalDropDownBox = false
     },
     StopTime(){
       clearTimeout(this.timeOut)//清除计时器
@@ -1457,7 +1440,11 @@ export default {
                 this.currentExecuteSQL = resp.data.executeSQLList;
                 //界面渲染完成之后开始执行sql,将sql送入调度
                 startExecuteSql(resp.data).then((result) => {
-                  this.$emit('addBigTabs',undefined,undefined,detailModel.modelName,detailModel.modelUuid,undefined,'modelPreview',this.currentExecuteSQL)
+                  if (this.isModelPreview!==true){
+                    this.$emit('addBigTabs',undefined,undefined,detailModel.modelName,detailModel.modelUuid,undefined,'modelPreview',this.currentExecuteSQL)
+                  }else {
+                    this.$emit('addBigTabsModelPreview',detailModel.modelName,detailModel.modelUuid,this.currentExecuteSQL)
+                  }
                 });
               })
               .catch((result) => {
@@ -1553,7 +1540,7 @@ export default {
         func1(dataObj);
       };
       const func2 = function func3(val) {
-        this.$emit('setNextValue',val)
+          this.$emit('setNextValue',val)
         // this.$refs.childTabsRef.loadTableData(val);
       };
       const func1 = func2.bind(this);

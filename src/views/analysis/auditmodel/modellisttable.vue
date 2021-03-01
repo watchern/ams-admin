@@ -1,6 +1,6 @@
 <template>
   <div class="tree-list-container all">
-    <el-tabs v-model="editableTabsValue" closable @tab-remove="removeTab">
+    <el-tabs @tab-click="handleClick" v-model="editableTabsValue" closable @tab-remove="removeTab">
       <el-tab-pane label="模型列表" name="modelList">
         <div class="filter-container">
           <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
@@ -76,7 +76,7 @@
             <el-row>
               <div @click="Toggle1()">
                 <el-col :span="24" class="row-all">
-                  <childTabs :modelId="modelId"  :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="modelPreview" />
+                  <childTabs :isRelation="item.isRelation===true?true:false" @setNextValue="setNextValue" @addTab="addTab" :modelId="modelId" :is-model-preview="true" :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="modelPreview" />
                 </el-col>
               </div>
               <el-col :span="2">
@@ -191,6 +191,7 @@ export default {
       isUpdate: false,
       // 页签默认值
       editableTabsValue: 'modelList',
+      nowTabModelUuid:'',
       // 页签数组
       editableTabs: [],
       // 已经正在预览的模型
@@ -253,8 +254,8 @@ export default {
       modelTypeData:[], //模型类型
       modelFolderTreeDialog:false,
       modelFolderUuid:'',
-      modelFolderName:''
-
+      modelFolderName:'',
+      relationNextValue:{}
     }
   },
   computed: {
@@ -982,15 +983,25 @@ export default {
      * @param isExistParam 参数对象
      * @param executeSQLList 执行sql列表
      */
-    addTab(modelObj, isExistParam, executeSQLList) {
+    addTab(modelObj, isExistParam, executeSQLList,isRelation) {
       this.editableTabs.push({
         title: modelObj.modelName + '结果',
         name: modelObj.modelUuid,
         isExistParam: isExistParam,
-        executeSQLList: executeSQLList
+        executeSQLList: executeSQLList,
+        isRelation:isRelation
       })
-      this.editableTabsValue = modelObj.modelUuid
-      this.modelPreview.push(modelObj.modelUuid)
+        this.nowTabModelUuid = modelObj.modelUuid
+        this.editableTabsValue = modelObj.modelUuid
+        this.modelPreview.push(modelObj.modelUuid)
+    },
+    handleClick(tab, event){
+      if (tab.name!=='模型列表'){
+        tab.$children[0].$children[0].$children[0].$children[0].$children[0].clickBigTab()
+      }
+    },
+    setNextValue(val){
+      this.$refs[this.nowTabModelUuid][0].loadTableData(val,'')
     },
     /**
      * 移除页签
