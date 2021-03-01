@@ -501,6 +501,12 @@
 .oper-btn.export-2:hover::before{
   content:'导出'!important;
 }
+.oper-btn.export-4:after{
+  content:'\e775'!important;
+}
+.oper-btn.export-4:hover::before{
+  content:'结果导出'!important;
+}
 
 .oper-btn.split-2:after{
   content:'\e617'!important;
