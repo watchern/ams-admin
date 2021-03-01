@@ -1,6 +1,6 @@
 <template>
   <div class="tree-list-container all">
-    <el-tabs v-model="editableTabsValue" closable @tab-remove="removeTab">
+    <el-tabs @tab-click="handleClick" v-model="editableTabsValue" closable @tab-remove="removeTab">
       <el-tab-pane label="模型列表" name="modelList">
         <div class="filter-container">
           <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
@@ -21,8 +21,8 @@
             <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
               <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
               <el-dropdown-menu slot="dropdown">
-                <!--                  <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
-                <el-dropdown-item @click.native="importData">导入</el-dropdown-item>-->
+                <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
+                <el-dropdown-item @click.native="modelFolderTreeDialog = true">导入</el-dropdown-item>
                 <el-dropdown-item @click.native="shareModelDialog">共享</el-dropdown-item>
                 <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
                 <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
@@ -30,6 +30,13 @@
             </el-dropdown>
           </el-col>
         </el-row>
+        <el-dialog v-if="modelFolderTreeDialog" :visible.sync="modelFolderTreeDialog" title="选择业务分类" width="50%">
+          <ModelFolderTree ref="modelFolderTree" public-model="editorModel"/>
+          <div slot="footer">
+            <el-button type="primary" @click="setImportFolder">确定</el-button>
+            <el-button @click="modelFolderTreeDialog=false">取消</el-button>
+          </div>
+        </el-dialog>
         <el-table
           :key="tableKey"
           ref="modelListTable"
@@ -69,7 +76,7 @@
             <el-row>
               <div @click="Toggle1()">
                 <el-col :span="24" class="row-all">
-                  <childTabs :modelId="modelId"  :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="modelPreview" />
+                  <childTabs :isRelation="item.isRelation===true?true:false" @setNextValue="setNextValue" @addTab="addTab" :modelId="modelId" :is-model-preview="true" :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="modelPreview" />
                 </el-col>
               </div>
               <el-col :span="2">
@@ -112,7 +119,7 @@
       :on-error="onError"
       :before-upload="beforeUpload"
       :on-remove="handleRemove"
-      action="/modelController/importModel"
+      :action='"/analysis/modelController/importModel/"+modelFolderUuid'
       accept=".json"
     >
       <el-button id="importBtn" plain type="primary">导入</el-button>
@@ -184,6 +191,7 @@ export default {
       isUpdate: false,
       // 页签默认值
       editableTabsValue: 'modelList',
+      nowTabModelUuid:'',
       // 页签数组
       editableTabs: [],
       // 已经正在预览的模型
@@ -200,7 +208,7 @@ export default {
         editBtnState: true,
         deleteBtnState: true,
         previewBtn: true,
-        otherBtn: true
+        otherBtn: false
       },
       // 当前预览模型参数和sql
       currentPreviewModelParamAndSql: {},
@@ -243,7 +251,11 @@ export default {
       flag:'notModelPreview',  //渲染参数面试判断是不是模型预览调用的，如果是就取第一次输入的值，如果不是就取默认值
       addModelIsSee:false,  //点击添加模型按钮的时候触发选择模型类型dialog
       selectModelType:'', //选择的模型类型
-      modelTypeData:[] //模型类型
+      modelTypeData:[], //模型类型
+      modelFolderTreeDialog:false,
+      modelFolderUuid:'',
+      modelFolderName:'',
+      relationNextValue:{}
     }
   },
   computed: {
@@ -279,6 +291,22 @@ export default {
     this.initData()
   },
   methods: {
+    setImportFolder(){
+      let selectNode = this.$refs.modelFolderTree.getSelectNode()
+      if (selectNode.id == undefined) {
+        this.$message({type: 'info', message: "请选择业务分类"})
+        return
+      }
+      if (selectNode.pid == 0 || selectNode.pid == null || selectNode.pid == undefined) {
+        this.$message({type: 'info', message: '不允许建立在根目录'})
+        return
+      } else {
+        this.modelFolderUuid = selectNode.id
+        this.modelFolderName = selectNode.label
+        this.modelFolderTreeDialog = false
+        this.importData()
+      }
+    },
     mouseOver(){
 
     },
@@ -509,7 +537,7 @@ export default {
         }
       } else if (selectObj.length == 0) {
         // 只显示添加按钮
-        this.btnState.otherBtn = true
+        this.btnState.otherBtn = false
         this.btnState.deleteBtnState = true
         this.btnState.addBtnState = false
         this.btnState.editBtnState = true
@@ -792,9 +820,10 @@ export default {
      * 上传成功回调函数
      */
     onSuccess(response, file, fileList) {
+      this.$emit('refreshTree')
       this.$message({
-        message: response.msg,
-        type: 'info'
+        message: '上传'+response.msg,
+        type: 'success'
       })
       file = []
       fileList = []
@@ -954,15 +983,25 @@ export default {
      * @param isExistParam 参数对象
      * @param executeSQLList 执行sql列表
      */
-    addTab(modelObj, isExistParam, executeSQLList) {
+    addTab(modelObj, isExistParam, executeSQLList,isRelation) {
       this.editableTabs.push({
         title: modelObj.modelName + '结果',
         name: modelObj.modelUuid,
         isExistParam: isExistParam,
-        executeSQLList: executeSQLList
+        executeSQLList: executeSQLList,
+        isRelation:isRelation
       })
-      this.editableTabsValue = modelObj.modelUuid
-      this.modelPreview.push(modelObj.modelUuid)
+        this.nowTabModelUuid = modelObj.modelUuid
+        this.editableTabsValue = modelObj.modelUuid
+        this.modelPreview.push(modelObj.modelUuid)
+    },
+    handleClick(tab, event){
+      if (tab.name!=='模型列表'){
+        tab.$children[0].$children[0].$children[0].$children[0].$children[0].clickBigTab()
+      }
+    },
+    setNextValue(val){
+      this.$refs[this.nowTabModelUuid][0].loadTableData(val,'')
     },
     /**
      * 移除页签
@@ -994,7 +1033,7 @@ export default {
      */
     replaceNodeParam() {
       if(!this.currentModelIsRun){
-        this.$refs.paramDrawRefNew.replaceNodeParam(this.paramDrawUuid).then(obj=>{
+        var obj = this.$refs.paramDrawRefNew.replaceNodeParam(this.paramDrawUuid)
           var selectObj = this.$refs.modelListTable.selection
           if (!obj.verify) {
             this.$message({ type: 'info', message: obj.message })
@@ -1012,7 +1051,6 @@ export default {
           }
           this.currentRunModelAllConfig[selectObj[0].modelUuid] = runModelConfig
           this.executeSql(obj,selectObj,true)
-        })
       }
       else{
         this.queryModel(this.paramDrawUuid)
@@ -1024,7 +1062,7 @@ export default {
      */
     queryModel(modelUuid) {
       // var obj = replaceNodeParam(this.paramDrawUuid)
-      this.$refs.paramDrawRefNew.replaceNodeParam(this.paramDrawUuid).then(obj=>{
+      var obj = this.$refs.paramDrawRefNew.replaceNodeParam(this.paramDrawUuid)
         if (!obj.verify) {
           this.$message({ type: 'info', message: obj.message })
           return
@@ -1057,7 +1095,6 @@ export default {
             })
           }
         })
-      })
 
     },
     /**

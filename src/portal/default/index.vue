@@ -124,10 +124,12 @@ export default {
   background: #ffffff;
 }
 .seat{
-  position: fixed;
-  right: 20px;
-  bottom: 24px;
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
   font-size: 24px;
+  background: #fff;
+  border-radius: 100%;
   cursor: pointer;
 }
 .readonlyTo{

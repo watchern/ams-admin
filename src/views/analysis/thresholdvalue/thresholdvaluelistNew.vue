@@ -5,14 +5,14 @@
     </div>
     <el-row type="flex" class="row-bg">
       <el-col align="right">
-        <el-button type="primary" :disabled="btnState.addBtnState" title="添加阈值" class="oper-btn add" @click="addThreshValue" />
-        <el-button type="primary" :disabled="btnState.editBtnState" title="修改阈值" class="oper-btn edit" @click="updateThresholdValue" />
-        <el-button type="primary" :disabled="btnState.deleteBtnState" titl="删除阈值" class="oper-btn delete" @click="deleteThresholdValue" />
+        <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add-1" @click="addThreshValue" />
+        <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit-2" @click="updateThresholdValue" />
+        <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete-6" @click="deleteThresholdValue" />
         <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
           <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
-            <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
+            <el-dropdown-item @click.native="">发布</el-dropdown-item>
+            <el-dropdown-item @click.native="">撤销发布</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-col>
@@ -192,43 +192,6 @@ export default {
       this.selectTreeNode = data
     },
     /**
-     * 保存模型
-     */
-    save() {
-      var modelObj = this.$refs.editModel.getModelObj()
-      if (modelObj == null) {
-        return
-      }
-      this.editorModelLoading = true
-      if (!this.isUpdate) {
-        saveModel(modelObj).then(result => {
-          if (result.code === 0) {
-            this.getList(this.query)// 刷新列表
-            this.$emit('refreshTree')
-            this.editorModelLoading = false
-            this.editModelShow = false
-            // this.$refs.editModel.clear();
-          } else {
-            this.$message({ type: 'error', message: '新增模型失败!' })
-            this.editorModelLoading = false
-          }
-        })
-      } else {
-        updateModel(modelObj).then(result => {
-          if (result.code === 0) {
-            this.getList(this.query)// 刷新列表
-            this.$emit('refreshTree')
-            this.editorModelLoading = false
-            this.editModelShow = false
-            // this.$refs.editModel.clear();
-          } else {
-            this.$message({ type: 'error', message: '修改模型失败!' })
-            this.editorModelLoading = false
-          }
-        })
-      }
-    },
-    /**
      * 重置查询
      */
     resetQuery() {
@@ -272,7 +235,7 @@ export default {
       }
     },
     /**
-     * 添加模型
+     * 添加阈值
      */
     addThreshValue() {
       this.editThresholdValueTitle = "添加阈值"
@@ -352,17 +315,17 @@ export default {
       })
     },
     /**
-     * 发布模型
+     * 发布阈值
      */
-    publicModel(value) {
+    publicThresholdValue(value) {
       if (this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') != -1) {
-        this.$message({ type: 'info', message: '只能发布非公共模型下的模型' })
+        this.$message({ type: 'info', message: '只能发布非公共阈值下的阈值' })
         return
       }
       this.publicModelValue = value
       var selectObj = this.$refs.modelListTable.selection
       if (selectObj == undefined || selectObj.length === 0) {
-        this.$message({ type: 'info', message: '请先选择要发布的模型!' })
+        this.$message({ type: 'info', message: '请先选择要发布的阈值!' })
         return
       }
       this.treeSelectShow = true
@@ -370,25 +333,22 @@ export default {
     /**
      *撤销发布
      */
-    cancelPublicModel() {
+    cancelThresholdValue() {
       if (this.selectTreeNode == null || this.selectTreeNode.path.indexOf('gonggong') == -1) {
-        this.$message({ type: 'info', message: '只能撤销公共模型下的模型' })
+        this.$message({ type: 'info', message: '只能撤销公共阈值下的阈值' })
         return
       }
       var selectObj = this.$refs.modelListTable.selection
       if (selectObj == undefined || selectObj.length === 0) {
-        this.$message({ type: 'info', message: '请先选择要撤销发布的模型!' })
+        this.$message({ type: 'info', message: '请先选择要撤销发布的阈值!' })
         return
       }
-      this.$confirm('是否确定将选中的模型撤销发布?', '提示', {
+      this.$confirm('是否确定将选中的阈值撤销发布?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        for (let i = 0; i < selectObj.length; i++) {
-          selectObj[i].modelFolderUuid = 'xiaxian'
-        }
-        this.updateModelBasicInfo(selectObj, '撤销发布')
+
       }).catch(() => {
 
       })

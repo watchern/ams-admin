@@ -1,8 +1,31 @@
 import request from '@/utils/request'
+import $ from "jquery"
 const baseURL = '/graphtool'
 const analysisUrl = '/analysis'
 const dataUrl = '/data'
 
+export function recplaceParams(sql, paramArr){
+  let result;
+  let url = analysisUrl + '/paramController/replaceModelSqlByParamsOne'
+  const data = {
+    sql: sql,
+    paramArr: paramArr
+  }
+  $.ajax({
+    type: "post",
+    url: url,
+    dataType : "json",
+    data: data,
+    async: false,
+    success: function (res) {
+      result = res
+    },
+    error: function (res) {
+
+    }
+  });
+  return result;
+}
 /**
  * 获取图形树
  */
@@ -296,13 +319,13 @@ export function findParamsAndModelRelParams() {
  * 执行当前参数SQL语句
  * @param {*} data   SQL语句
  */
-export function executeParamSql(data) {
+export function executeParamSql(sql) {
     return request({
         baseURL: analysisUrl,
         url: '/paramController/executeParamSql',
         method: 'post',
         async:false,
-        data
+        params:{sql:sql}
     })
 }
 

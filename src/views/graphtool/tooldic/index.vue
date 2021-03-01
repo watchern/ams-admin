@@ -296,9 +296,9 @@
                 <el-table-column prop="lineNum" label="结果表序号" width="100" align="center" :resizable="false"/>
                 <el-table-column label="操作" width="100" align="center" :resizable="false">
                     <template slot-scope="scope">
-                        <el-button type="primary" v-if="!scope.row.hasParamSet" class="oper-btn setting" @click="settingParam(scope.row.nodeId,scope.$index)" title="设置参数" style="line-height: normal;"/>
-                        <el-button type="primary" v-if="scope.row.hasParamSet" class="oper-btn setting" @click="settingParam(scope.row.nodeId,scope.$index)" title="修改参数" style="line-height: normal;"/>
-                        <el-button type="primary" v-if="scope.row.hasParamSet" class="oper-btn delete" @click="clearSettingParam(scope.row.nodeId,scope.$index)" title="清除参数" style="line-height: normal;"/>
+                        <el-button type="primary" v-if="!scope.row.hasParamSet" class="oper-btn setting-1" @click="settingParam(scope.row.nodeId,scope.$index)" style="line-height: normal;"/>
+                        <el-button type="primary" v-if="scope.row.hasParamSet" class="oper-btn setting-2" @click="settingParam(scope.row.nodeId,scope.$index)" style="line-height: normal;"/>
+                        <el-button type="primary" v-if="scope.row.hasParamSet" class="oper-btn delete-4" @click="clearSettingParam(scope.row.nodeId,scope.$index)" style="line-height: normal;"/>
                     </template>
                 </el-table-column>
             </el-table>

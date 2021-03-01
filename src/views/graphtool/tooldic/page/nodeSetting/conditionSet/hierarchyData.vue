@@ -39,8 +39,8 @@
             </el-table-column>
             <el-table-column label="操作" width="100" align="center" :resizable="false">
                 <template slot-scope="scope">
-                    <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add" @click="addRows" title="增加区间" style="line-height: normal;"/>
-                    <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete" title="删除区间" @click="clickDel(scope.$index)" style="line-height: normal;"/>
+                    <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add-5" @click="addRows" style="line-height: normal;"/>
+                    <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete-1" @click="clickDel(scope.$index)" style="line-height: normal;"/>
                 </template>
             </el-table-column>
         </el-table>

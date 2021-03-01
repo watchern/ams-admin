@@ -92,7 +92,7 @@ export function rmResultRelProjectlr(data) {
 
 /**
  * 根据RunTaskRelUuid查询该结果有无关联项目
- * @param {*} data 
+ * @param {*} data
  */
 export function getResultRelProject(data) {
   return request({
@@ -125,6 +125,18 @@ export function deleteRunResultShare(data) {
     method: 'delete'
   })
 }
+
+/**
+ * 删除结果共享表
+ */
+export function deleteRunResultShareByRunTaskRelUuid(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/RunResultShareController/deleteRunResultShareByRunTaskRelUuid/' + data,
+    method: 'delete'
+  })
+}
+
 /**
  * 根据运行结果表查询真实表
  * @param {*} data pageQuery对象

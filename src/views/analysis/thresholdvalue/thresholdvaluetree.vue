@@ -20,7 +20,7 @@
       @check-change="handleNodeClick1">
       <span slot-scope="{ node, data }" class="custom-tree-node">
         <span> <i :class="data.icon" />{{ node.label }} </span>
-          <span v-if="isShowEdit == true">
+          <span v-if="isShowEdit == true && data.type=='folder'">
             <el-button
               title="添加阈值分类"
               type="text"
@@ -260,7 +260,7 @@ export default {
       this.dialogFormVisible = false;
     },
     /**
-     * 删除模型分类
+     * 删除阈值或文件夹
      * @param node 节点对象
      * @param data 节点数据
      */
@@ -270,7 +270,7 @@ export default {
         return;
       }
       if ((data.children !== undefined && data.children.length === 0) || data.children === undefined) {
-        this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        this.$confirm("此操作将永久删除该阈值, 是否继续?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",

@@ -9,16 +9,16 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" :disabled="selections.length === 0" title="删除" class="oper-btn delete" @click="delData" />
-        <el-button type="primary" class="oper-btn copy" :disabled="selections.length !== 1" title="复制" @click="copyResource" />
-        <el-button type="primary" class="oper-btn move" title="移动" :disabled="selections.length === 0" @click="movePath" />
-        <el-button type="primary" class="oper-btn rename" title="重命名" :disabled="selections.length !== 1" @click="renameResource" />
-        <el-button type="primary" class="oper-btn add" title="新增表" :disabled="clickData.type == 'table'" @click="add" />
-        <el-button type="primary" class="oper-btn export" title="导入表" :disabled="clickData.type == 'table'" @click="uploadTable" />
-        <el-button type="primary" class="oper-btn add-folder" title="新增文件夹" :disabled="clickData.type == 'table'" @click="createFolder" />
-        <el-button type="primary" class="oper-btn  edit" title="表结构维护" :disabled="selections.length !== 1" @click="update" />
-        <el-button type="primary" class="oper-btn  detail" title="表结构展示" :disabled="selections.length !== 1" @click="showTable" />
-        <el-button type="primary" class="oper-btn search" title="预览" :disabled="infoFlag" @click="preview" />
+        <el-button type="primary" :disabled="selections.length === 0" class="oper-btn delete" @click="delData" />
+        <el-button type="primary" class="oper-btn copy" :disabled="selections.length !== 1" @click="copyResource" />
+        <el-button type="primary" class="oper-btn move-1" :disabled="selections.length === 0" @click="movePath" />
+        <el-button type="primary" class="oper-btn rename" :disabled="selections.length !== 1" @click="renameResource" />
+        <el-button type="primary" class="oper-btn add-2" :disabled="clickData.type == 'table'" @click="add" />
+        <el-button type="primary" class="oper-btn export" :disabled="clickData.type == 'table'" @click="uploadTable" />
+        <el-button type="primary" class="oper-btn add-folder-1" :disabled="clickData.type == 'table'" @click="createFolder" />
+        <el-button type="primary" class="oper-btn  edit" :disabled="selections.length !== 1" @click="update" />
+        <el-button type="primary" class="oper-btn  detail" :disabled="selections.length !== 1" @click="showTable" />
+        <el-button type="primary" class="oper-btn search-1" :disabled="infoFlag" @click="preview" />
       </el-col>
     </el-row>
     <el-table
@@ -116,9 +116,9 @@
         </el-col>
       </el-row>
       <span slot="footer">
-        <el-button @click="uploadVisible = false">取消</el-button>
         <el-button v-if="uploadStep === 1" type="primary" @click="nextImport">下一步</el-button>
         <el-button v-if="uploadStep === 2" type="primary" @click="importTable">导入</el-button>
+        <el-button type="primary" @click="uploadVisible = false">关闭</el-button>
       </span>
     </el-dialog>
     <!-- 弹窗4 -->
@@ -259,6 +259,11 @@ export default {
       downloadLoading: false
     }
   },
+  // computed: {
+  //   dialogTitle() {
+  //     return (this.selections[0].label == null ? '' : '在<' + this.selections[0].label + '>下') + this.textMap[this.dialogStatus]
+  //   }
+  // },
   created() {
     this.initDirectory()
   },
@@ -362,6 +367,7 @@ export default {
             nextUpload(this.uploadtemp).then(res => {
               this.uploadStep = 2
               this.uploadtempInfo = res.data
+
             })
           })
         }
