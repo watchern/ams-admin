@@ -49,7 +49,7 @@
                                 class="oper-btn sqlcheck"
                                 @click="getColumnSqlInfo"
                             />
-                            <el-dropdown>
+                            <el-dropdown style="margin-left:10px">
                                 <el-button
                                     type="primary"
                                     size="small"
@@ -64,7 +64,7 @@
                                     >SQL另存为</el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
-                            <el-dropdown type="primary">
+                            <el-dropdown type="primary" style="margin-left:10px">
                                 <el-button
                                     type="primary"
                                     size="small"

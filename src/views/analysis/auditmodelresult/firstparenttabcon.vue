@@ -56,6 +56,7 @@
               class="oper-btn split-2"
               @click="openResultSplitDialog"
               title="结果拆分"
+              style="margin-left: 10px"
             ></el-button>
             <el-button
               type="primary"
