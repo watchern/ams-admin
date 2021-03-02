@@ -360,7 +360,6 @@ export default {
         this.isThereReminder = true
       }
     })
-    this.CurrentlyLoggedIn()
   },
   methods: {
     init() {

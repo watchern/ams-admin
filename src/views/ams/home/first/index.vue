@@ -253,19 +253,19 @@ export default {
     this.pageQuery.condition = query1;
     getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
       this.warningMatters = resp.data.records;
-      if (resp.data.records.length > 0) {
-        for(let i=0;i<5;i++){
-          this.cardList[1].des.push({
-            text:resp.data.records[i].remindTitle,
-            iconColor: '#D81020',
-            icon: '',
-            url:resp.data.records[i].modeUrl,
-            content:resp.data.records[i].remindContent,
-            index:i,
-            Uuid:resp.data.records[i].remindUuid
-          })
-        }
-      }
+      // if (resp.data.records.length > 0) {
+      //   for(let i=0;i<5;i++){
+      //     this.cardList[1].des.push({
+      //       text:resp.data.records[i].remindTitle,
+      //       iconColor: '#D81020',
+      //       icon: '',
+      //       url:resp.data.records[i].modeUrl,
+      //       content:resp.data.records[i].remindContent,
+      //       index:i,
+      //       Uuid:resp.data.records[i].remindUuid
+      //     })
+      //   }
+      // }
     })
     axios.get('/psbcaudit/homepage/loadTodoInfo').then(resp =>{
       if (resp.data !== '') {
