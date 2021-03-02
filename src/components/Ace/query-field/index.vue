@@ -26,7 +26,7 @@
       </el-form-item>
 
       <el-form-item v-if="searchBar == '1'" class="full-search">
-        <el-input v-model="query['keyword']" placeholder="查询">
+        <el-input v-model="keywordQuery['keyword']" placeholder="查询">
           <img slot="suffix" src="./input.png" class="img-icon" @click="onSubmit">
         </el-input>
       </el-form-item>
@@ -59,6 +59,7 @@ export default {
   data() {
     return {
       query: {},
+      keywordQuery: {},
       searchBar: '0',
       switchImg: '',
       searchFor: require('../../Ace/query-field/搜索.png'),
