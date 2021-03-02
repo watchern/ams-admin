@@ -53,7 +53,7 @@ export default {
     },
     timePeriodWidth:{
       type: Number,
-      default: 163
+      default: 220
     }
   },
   data() {
