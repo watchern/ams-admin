@@ -6,15 +6,15 @@
       </div>
 
       <el-form-item v-for="fd in formData" v-if="searchBar == '0'" :label="fd.label">
-        <el-input v-if="fd.type==='text'" v-model="query[fd.name]" style="width:135px"/>
-        <el-input v-if="fd.type==='fuzzyText'" v-model="query[fd.name]" placeholder="模糊查询" style="width:135px"/>
-        <el-select v-if="fd.type==='select'" v-model="query[fd.name]" style="width:95px">
+        <el-input v-if="fd.type==='text'" v-model="query[fd.name]" :style="textStyle"/>
+        <el-input v-if="fd.type==='fuzzyText'" v-model="query[fd.name]" placeholder="模糊查询" :style="textStyle"/>
+        <el-select v-if="fd.type==='select'" v-model="query[fd.name]" :style="selectStyle">
           <el-option label="全部" value="" />
           <el-option v-for="opt in fd.data" :label="opt.name" :value="opt.value" />
         </el-select>
         <template v-if="fd.type==='timePeriod'">
-          <el-date-picker v-model="query[fd.name+'Start']" type="date" placeholder="开始时间" style="width:130px"/>-
-          <el-date-picker v-model="query[fd.name+'End']" type="date" placeholder="结束时间" style="width:130px"/>
+          <el-date-picker v-model="query[fd.name+'Start']" type="date" placeholder="开始时间" :style="timeStyle"/>
+          <el-date-picker v-model="query[fd.name+'End']" type="date" placeholder="结束时间" :style="timeStyle"/>
         </template>
       </el-form-item>
 
@@ -43,20 +43,18 @@ export default {
       type: Array,
       default: []
     },
-    // customWidth: {
-    //   text:{
-    //     type: Number,
-    //     default: 135
-    //   },
-    //   select:{
-    //     type: Number,
-    //     default: 95
-    //   },
-    //   timePeriod:{
-    //     type: Number,
-    //     default: 130
-    //   }
-    // }
+    textWidth:{
+      type: Number,
+      default: 163
+    },
+    selectWidth:{
+      type: Number,
+      default: 163
+    },
+    timePeriodWidth:{
+      type: Number,
+      default: 220
+    }
   },
   data() {
     return {
@@ -78,6 +76,15 @@ export default {
     }
   },
   computed: {
+    textStyle() {
+      return `width: ${this.textWidth}px`
+    },
+    selectStyle() {
+      return `width: ${this.selectWidth}px`
+    },
+    timeStyle() {
+      return `width: ${this.timePeriodWidth}px`
+    }
   },
   watch: {
     formData: {
