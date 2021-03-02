@@ -78,7 +78,7 @@ export function getTableCol(tableMetaUuid) {
     baseURL: baseURL,
     url: `/${controller2}/getCols`,
     method: 'post',
-    params: { tableMetaUuid: tableMetaUuid }
+    params: { tableMetaUuid: tableMetaUuid, isEnclose: '' }
   })
 }
 
