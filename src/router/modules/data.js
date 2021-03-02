@@ -62,6 +62,11 @@ const dataRouter = {
       path: 'workspace/:sceneCode',
       name: '项目空间',
       component: () => import('@/views/data/project/index')
+    },
+    {
+      path: 'config',
+      name: '运维操作',
+      component: () => import('@/views/data/config/index')
     }
   ]
 }
