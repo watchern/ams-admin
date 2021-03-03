@@ -506,6 +506,12 @@
 .oper-btn.export-4:hover::before{
   content:'结果导出'!important;
 }
+.oper-btn.export-5:after{
+  content:'\e775'!important;
+}
+.oper-btn.export-5:hover::before{
+  content:'模板导出'!important;
+}
 
 .oper-btn.split-2:after{
   content:'\e617'!important;
@@ -598,8 +604,12 @@
   content:'取消'!important;
 }
 
-
-
+.oper-btn.import-2:after{
+  content:'\e7a3'!important;
+}
+.oper-btn.import-2:hover::before{
+  content:'模板导入'!important;
+}
 
 // 未使用 16个
 .oper-btn.pdf:after{

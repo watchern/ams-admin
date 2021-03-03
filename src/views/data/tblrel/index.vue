@@ -9,9 +9,9 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" title="新增" class="oper-btn add" @click="add" />
-        <el-button type="primary" title="修改" class="oper-btn edit" :disabled="selections.length !== 1" @click="update" />
-        <el-button type="primary" title="删除" class="oper-btn delete" :disabled="selections.length === 0" @click="deleteBiz" />
+        <el-button type="primary" class="oper-btn add" @click="add" />
+        <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="update" />
+        <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="deleteRel" />
       </el-col>
     </el-row>
     <el-table
@@ -43,32 +43,32 @@
           label-position="right"
           width="80%"
         >
-          <el-form-item prop="tableMetaUuid" label="选择主表">
+          <el-form-item prop="tableMetaUuid" label="表名称">
             <el-input v-model="temp.tbName" :disabled="true" />
             <el-input v-model="temp.tableMetaUuid" :disabled="true" style="display: none" />
           </el-form-item>
-          <el-form-item prop="colMetaUuid" label="列名称">
+          <el-form-item prop="colMetaUuid" label="字段名称">
             <el-row>
-              <el-col :span="6">
-                <el-input v-model="temp.colMetaUuid" :disabled="true" />
-                <el-input v-model="temp.colMetaName" :disabled="true" style="display: none" />
+              <el-col :span="12">
+                <el-input v-model="temp.colName" :disabled="true" />
+                <el-input v-model="temp.colMetaUuid" :disabled="true" style="display: none" />
               </el-col>
-              <el-col :span="6">
+              <el-col :span="4">
                 <el-button @click="showDataTree(1)">选择</el-button>
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item prop="relTableMeataUuid" label="被关联表">
+          <el-form-item prop="relTableMeataUuid" label="从表名称">
             <el-input v-model="temp.relationTableName" :disabled="true" />
             <el-input v-model="temp.relTableMetaUuid" :disabled="true" style="display: none" />
           </el-form-item>
-          <el-form-item prop="relColMetaUuid" label="关联字段">
+          <el-form-item prop="relColMetaUuid" label="从表字段">
             <el-row>
-              <el-col :span="16">
+              <el-col :span="12">
                 <el-input v-model="temp.relationCol" :disabled="true" />
                 <el-input v-model="temp.relColMetaUuid" style="display:none" hidden :disabled="true" />
               </el-col>
-              <el-col :span="6">
+              <el-col :span="4">
                 <el-button @click="showDataTree(2)">选择</el-button>
               </el-col>
             </el-row>
@@ -90,11 +90,11 @@
         <el-button size="mini" @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
       </div>
-      <el-dialog v-if="dataTableTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%">
+      <el-dialog v-if="dataTableTree" class="abow_dialog" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="600px">
         <data-tree ref="dataTableTree" :data-user-id="dataUserId" :scene-code="sceneCode" />
         <div slot="footer">
-          <el-button tvype="primary" @click="getDataTable">确定</el-button>
           <el-button @click="dataTableTree = false">取消</el-button>
+          <el-button type="primary" @click="getDataTable">确定</el-button>
         </div>
       </el-dialog>
     </el-dialog>
@@ -130,7 +130,10 @@ export default {
       temp: {
         tableMetaUuid: '',
         tbName: '',
+        colName: '',
+        colMetaUuid: '',
         tableRelationUuid: '',
+        relationTableName: '',
         selectType: 1,
         sqlGenJoinType: '',
         relColMetaUuid: ''
@@ -166,9 +169,9 @@ export default {
       ],
       dialogPvVisible: false,
       rules: {
-        attrName: [{ required: true, message: '请填写业务属性名称', trigger: 'change' }],
-        attrCode: [{ required: true, message: '请填写业务属性编码', trigger: 'change' }],
-        describtion: [{ max: 100, message: '长度不得超过100', trigger: 'change' }]
+        colMetaUuid: [{ required: true, message: '请选择表字段', trigger: 'change' }],
+        sqlGenJoinType: [{ required: true, message: '请选择关联关系', trigger: 'change' }],
+        relColMetaUuid: [{ required: true, message: '请选择从表字段', trigger: 'change' }]
       },
       downloadLoading: false
     }
@@ -204,10 +207,13 @@ export default {
       this.temp = {
         tableMetaUuid: '',
         tbName: '',
-        tableRelationUuid: '',
-        sqlGenJoinType: '',
+        colName: '',
+        colMetaUuid: '',
         relColMetaUuid: '',
-        describtion: ''
+        tableRelationUuid: '',
+        relationTableName: '',
+        selectType: 1,
+        sqlGenJoinType: ''
       }
     },
     add() {
@@ -220,7 +226,6 @@ export default {
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
-        console.log(this.temp)
         if (valid) {
           save(this.temp).then(() => {
             this.getList()
@@ -263,10 +268,10 @@ export default {
         }
       })
     },
-    deleteBiz() {
+    deleteRel() {
       var ids = []
       this.selections.forEach((r, i) => { ids.push(r.tableRelationUuid) })
-      this.$confirm('确定删除图形?', '提示', {
+      this.$confirm('确定删除该关联关系?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -284,16 +289,23 @@ export default {
         })
       })
     },
-    formatSqlGenJoinType(row, column) {
-      if (row.sqlGenJoinType === 1) {
-        return 'left join'
-      } else if (row.SqlGenJoinType === 2) {
-        return 'right join'
-      } else if (row.SqlGenJoinType === 3) {
-        return 'full join'
-      } else if (row.SqlGenJoinType === 4) {
-        return 'inner join'
+    formatSqlGenJoinType(row) {
+      let sqlGenJoinType = ''
+      switch (row.sqlGenJoinType) {
+        case 1:
+          sqlGenJoinType = 'left join'
+          break
+        case 2:
+          sqlGenJoinType = 'right join'
+          break
+        case 3:
+          sqlGenJoinType = 'full join'
+          break
+        case 4:
+          sqlGenJoinType = 'inner join'
+          break
       }
+      return sqlGenJoinType
     },
     getDataTable() {
       const dataTree = this.$refs.dataTableTree.getTree()
@@ -305,16 +317,19 @@ export default {
       this.loadTable(currentNode.id)
       if (this.selectType === 1) {
         this.temp.colName = currentNode.label
-        this.temp.colMetaUuid = currentNode.id
-        getTableByCol(currentNode.id).then(resp => {
-          this.colsList = resp.data.colMetas
-        })
+        const str = currentNode.id
+        this.temp.colMetaUuid = str
+        const arr = str.split('>')
+        this.temp.tbName = arr[1]
+        this.temp.tableMetaUuid = arr[0] + '>' + arr[1]
       } else {
-        this.temp.relationTableName = currentNode.label
-        this.temp.relTableMetaUuid = currentNode.id
-        getTableByCol(currentNode.id).then(resp => {
-          this.colsRelList = resp.data.colMetas
-        })
+        this.temp.relationCol = currentNode.label
+        this.temp.relColMetaUuid = currentNode.id
+        const str = currentNode.id
+        this.temp.colMetaUuid = str
+        const arr = str.split('>')
+        this.temp.relationTableName = arr[1]
+        this.temp.relTableMetaUuid = arr[0] + '>' + arr[1]
       }
       this.dataTableTree = false
     },
@@ -342,3 +357,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+
+</style>

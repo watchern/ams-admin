@@ -9,8 +9,8 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" title="导出模板" class="oper-btn export-2" @click="exportFile" />
-        <el-button type="primary" title="导入数据" class="oper-btn import" @click="importFile" />
+        <el-button type="primary" class="oper-btn export-5" @click="exportFile" />
+        <el-button type="primary" class="oper-btn import-2" @click="importFile" />
       </el-col>
     </el-row>
     <el-table
@@ -164,6 +164,7 @@ export default {
       this.getList()
     },
     selectFilterOne(tableMetaUuid) {
+      this.listLoading = true
       this.dialogStatus = 'preview'
       var objArr = this.list.filter(obj => { return obj.tableMetaUuid === tableMetaUuid })
       this.tempObj = objArr[0]
@@ -171,6 +172,7 @@ export default {
         console.log(resp)
         this.tempObj.colMetas = resp.data.colMetas
         this.dialogFormVisibleTable = true
+        this.listLoading = false
       })
     },
     formatCreateTime(row, column) {
