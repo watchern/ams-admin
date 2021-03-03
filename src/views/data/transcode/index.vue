@@ -491,8 +491,8 @@ export default {
           debugger
           for (const obj in exl) {
             const tranObj = {}
-            tranObj.transValue = exl[obj][0]
-            tranObj.codeValue = exl[obj][1]
+            tranObj.codeValue = exl[obj][0]
+            tranObj.transValue = exl[obj][1]
             transArr.push(tranObj)
           }
           // 将 JSON 数据挂到 data 里
