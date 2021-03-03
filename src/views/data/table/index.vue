@@ -114,7 +114,6 @@ import MyElTree from '@/components/Ace/tree/src/tree.vue'
 import { listUnCached, getDataTreeNode, saveTable, delTable } from '@/api/data/table-info'
 import { saveFolder, updateFolder, delFolder } from '@/api/data/folder'
 import { commonNotify } from '@/utils'
-import { debug } from 'leancloud-storage'
 
 export default {
   components: { MyElTree, tabledatatabs },
@@ -179,20 +178,19 @@ export default {
     },
     loadNode1(node, resolve) {
       if (node.level <= 3) {
-        var pid = node.data ? node.data.id : 'ROOT'
         var schemaName = ''
         var tableName = ''
-        if (node.level == 1) {
+        if (node.level === 1) {
           schemaName = node.data.id
-        } else if (node.level == 2) {
+        } else if (node.level === 2) {
           var nodePath = this.$refs.tree2.getNodePath(node)
           schemaName = nodePath[1].id
           tableName = node.data.label
         }
         console.log(schemaName + ' ' + tableName)
-        this.treeLoading = true;
+        this.treeLoading = true
         listUnCached(node.level, schemaName, tableName).then(resp => {
-          this.treeLoading = false;
+          this.treeLoading = false
           resolve(resp.data)
         })
       } else {
@@ -210,7 +208,7 @@ export default {
     },
     registTable() {
       var ckFolder = this.$refs.tree2.getCurrentNode()
-      //console.log(ckFolder); return;
+      // console.log(ckFolder); return;
       if (!ckFolder || ckFolder.type !== 'FOLDER') {
         this.$notify(commonNotify({ type: 'warning', message: '请选中文件夹' }))
         return false
@@ -224,11 +222,11 @@ export default {
         return false
       } else {
         var ckTbs = this.$refs.tree1.getCheckedNodes()
-        //var nodes = this.$refs.tree1.filter(this.filterText1);
-        if(this.filterText1!=null){
-          ckTbs = ckTbs.filter(tb=>{return tb.label.indexOf(this.filterText1)!==-1});
+        // var nodes = this.$refs.tree1.filter(this.filterText1);
+        if (this.filterText1 != null) {
+          ckTbs = ckTbs.filter(tb => { return tb.label.indexOf(this.filterText1) !== -1 })
         }
-        //console.log(ckTbs);
+        // console.log(ckTbs);
         ckTbs.filter(tb => {
           return tb.type === 'TABLE'
         }).forEach(node => {
@@ -350,7 +348,6 @@ export default {
     }
   } // 注册
 }
-
 </script>
 
 <style lang="scss" scoped>
@@ -370,9 +367,6 @@ export default {
   margin-top: 10px;
   cursor:pointer;
   }
-</style>
-
-<style lang="scss">
   .page-container .tree-container{
     height: 80vh;
     overflow: scroll;

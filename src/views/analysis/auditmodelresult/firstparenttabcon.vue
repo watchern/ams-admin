@@ -20,7 +20,6 @@
                 @click="openProjectDialog"
                 :disabled="buttonIson.AssociatedBtn"
                 class="oper-btn link-2"
-                title="分配项目"
               ></el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="modelResultOpenDialog">分配项目</el-dropdown-item>
@@ -55,21 +54,19 @@
               :disabled="buttonIson.resultSplitBtn"
               class="oper-btn split-2"
               @click="openResultSplitDialog"
-              title="结果拆分"
+              style="margin-left: 10px"
             ></el-button>
             <el-button
               type="primary"
               @click="exportExcel"
               :disabled="buttonIson.exportBtn"
-              class="oper-btn export-2"
-              title="结果导出"
+              class="oper-btn export-4"
             ></el-button>
             <el-button
               :disabled="buttonIson.deleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
-              class="oper-btn delete"
-              title="结果删除"
+              class="oper-btn delete-2"
             ></el-button>
           </el-row>
         </div>
