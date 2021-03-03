@@ -991,10 +991,10 @@ export default {
         this.$message({ type: 'info', message: '只有分配给一个人!' })
         return
       }
-      if(persons[0].personuuid === userId){
+/*      if(persons[0].personuuid === userId){
         this.$message({ type: 'info', message: '不能共享给自己!' })
         return
-      }
+      }*/
       //获取人员并给实体赋值
       this.auditWarningSave.distributionUuid = persons[0].personuuid
       this.auditWarningSave.distributionName = persons[0].cnname
