@@ -279,7 +279,7 @@ export default {
     fileuploadname(data) {
       this.uploadtemp.tableFileName = data
     },
-    formatTableType(row, column) {
+    formatTableType(row) {
       if (row.type === '') {
         return ''
       }
@@ -367,7 +367,6 @@ export default {
             nextUpload(this.uploadtemp).then(res => {
               this.uploadStep = 2
               this.uploadtempInfo = res.data
-
             })
           })
         }
