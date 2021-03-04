@@ -111,9 +111,9 @@ export default {
       // 解决HTTP400错误
       request({
         baseURL: this.dataContextUrl,
-        url: '/tableMeta/getCols?tableMetaUuid='+tableId,
+        url: '/tableMeta/getCols',
         method: 'post',
-        params: { tableMetaUuid: tableId}
+        params: { tableMetaUuid: tableId,isEnclose:"-1" }
       }).then(res => {
         $.each(res.data,function (number,value) {
           that.colList.push(value.colName);

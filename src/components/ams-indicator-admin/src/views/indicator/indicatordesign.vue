@@ -375,9 +375,9 @@ export default {
       // 解决HTTP400错误
       request({
         baseURL: this.dataContextUrl,
-        url: '/tableMeta/getCols?tableMetaUuid='+tableId,
+        url: '/tableMeta/getCols',
         method: 'post',
-        params: { tableMetaUuid: tableId}
+        params: { tableMetaUuid: tableId,isEnclose:"-1" }
       }).then(res => {
         //获取到表列之后获取计算列
         var getCalculationColUrl = that.contextUrl + '/InCalculationColumn/getTableIdData'
