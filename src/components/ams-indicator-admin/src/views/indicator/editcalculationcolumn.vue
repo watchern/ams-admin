@@ -108,6 +108,7 @@ export default {
       var that = this;
       $("#colName").html("");
 
+      // 解决HTTP400错误
       request({
         baseURL: this.dataContextUrl,
         url: '/tableMeta/getCols',
@@ -128,7 +129,6 @@ export default {
       })
 
       // var url = this.dataContextUrl + '/tableMeta/getCols'
-      //
       // $.post(url, { tableMetaUuid: tableId }, function (res) {
       //   $.each(res.data,function (number,value) {
       //     that.colList.push(value.colName);
