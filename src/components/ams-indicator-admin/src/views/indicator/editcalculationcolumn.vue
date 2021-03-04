@@ -113,7 +113,7 @@ export default {
         baseURL: this.dataContextUrl,
         url: '/tableMeta/getCols',
         method: 'post',
-        params: { tableMetaUuid: tableId}
+        params: { tableMetaUuid: tableId,isEnclose:"-1" }
       }).then(res => {
         $.each(res.data,function (number,value) {
           that.colList.push(value.colName);
