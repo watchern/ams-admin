@@ -82,6 +82,7 @@
 <script>
 import $ from 'jquery'
 import {Loading} from 'element-ui'
+import request from "@/utils/request";
 
 export default {
   name: 'index',
@@ -371,75 +372,151 @@ export default {
             var domTd = "<th "+(value.hidden?"class='td-hidden'":"")+" >" + value.lable + "</th>"
             $("#colTitle").append(domTd)
         })
-        var url = this.dataContextUrl + '/tableMeta/getCols'
-        $.post(url, { tableMetaUuid: tableId }, function (res) {
+        // var url = this.dataContextUrl + '/tableMeta/getCols'
+
+
+        request({
+          baseURL: this.dataContextUrl,
+          url: '/tableMeta/getCols',
+          method: 'post',
+          params: { tableMetaUuid: tableId}
+        }).then(res => {
           //获取到表列之后获取计算列
           var getCalculationColUrl = that.contextUrl + '/InCalculationColumn/getTableIdData'
-            $.post(getCalculationColUrl, { tableId: tableId }, function (resCalculation) {
-              //处理列属性  以产品的列为准
-              if(resCalculation.head.status == 50){
-                that.message({info:'error',text:'数据读取失败,' + resCalculation.head.message})
+          $.post(getCalculationColUrl, { tableId: tableId }, function (resCalculation) {
+            //处理列属性  以产品的列为准
+            if(resCalculation.head.status == 50){
+              that.message({info:'error',text:'数据读取失败,' + resCalculation.head.message})
+            }
+            else{
+              for(var i = 0;i < resCalculation.body.result.length;i++){
+                var obj = {
+                  colMetaUuid:resCalculation.body.result[i].inCalculationColumnUuid,
+                  colName:resCalculation.body.result[i].calculationColumnName,
+                  chnName:resCalculation.body.result[i].calculationColumnName,
+                  type:2
+                };
+                res.data.push(obj)
               }
-              else{
-                for(var i = 0;i < resCalculation.body.result.length;i++){
-                  var obj = {
-                    colMetaUuid:resCalculation.body.result[i].inCalculationColumnUuid,
-                    colName:resCalculation.body.result[i].calculationColumnName,
-                    chnName:resCalculation.body.result[i].calculationColumnName,
-                    type:2
-                  };
-                  res.data.push(obj)
+            }
+            //循环数据
+            $.each(res.data, function (num, data) {
+              var uuid = that.getuuid()
+              var domTr = "<tr id='" + uuid + "' onclick='tableColOnClick(this,\"colTable\")' " +
+                "ondragover='onColDragOver(event)' " +
+                "ondragend='onColDrop(event)' " +
+                "ondragstart='onColDragStart(event)'></tr>"
+              $("#colTitleTb").append(domTr)
+              //注入事件和属性
+              $("#" + uuid).attr("check", "false")
+              $("#" + uuid).attr("draggable", "true")
+              $("#" + uuid).attr("columnType", data["dataType"])
+              //循环行
+              $.each(colModel, function (num, value) {
+                if (num == 0) {
+                  var domTd = "<td class='td-hidden'>" + "<input type='hidden' id='" + data[value.name] + "'>" + "</td>"
+                  $("#" + uuid).append(domTd)
                 }
-              }
-              //循环数据
-              $.each(res.data, function (num, data) {
-                  var uuid = that.getuuid()
-                  var domTr = "<tr id='" + uuid + "' onclick='tableColOnClick(this,\"colTable\")' " +
-                      "ondragover='onColDragOver(event)' " +
-                      "ondragend='onColDrop(event)' " +
-                      "ondragstart='onColDragStart(event)'></tr>"
-                  $("#colTitleTb").append(domTr)
-                  //注入事件和属性
-                  $("#" + uuid).attr("check", "false")
-                  $("#" + uuid).attr("draggable", "true")
-                  $("#" + uuid).attr("columnType", data["dataType"])
-                  //循环行
-                  $.each(colModel, function (num, value) {
-                      if (num == 0) {
-                          var domTd = "<td class='td-hidden'>" + "<input type='hidden' id='" + data[value.name] + "'>" + "</td>"
-                          $("#" + uuid).append(domTd)
-                      }
-                      else {
-                          if (value.name == "operation") {//判断是不是操作类型，如果是操作类型则显示编辑删除按钮
-                              var type = data["type"]
-                              if (type == 1 || type == undefined) {
-                                  var domTd = "<td id='" + that.getuuid() + "'>无</td>"
-                                  $("#" + uuid).append(domTd)
-                                  return
-                              }
-                              var domTd = "<td id='" + that.getuuid() + "'>" +
-                                  "<button class='btn btn-primary pull-left' style='padding: 2px;margin: 5px;' onclick='delCalculationCol(\"" + data["colMetaUuid"] + "\")'>删除</button>" +
-                                  "<button class='btn btn-primary pull-left' style='padding: 2px;margin: 5px;' onclick='editCalculationCol(\"" + data["colMetaUuid"] + "\")'>编辑</button>" +
-                                  "</td>"
-                              $("#" + uuid).append(domTd)
-                          }
-                          else {
-                            var colName = "";
-                            if(data[value.name] == null){
-                              colName = "无";
-                            }
-                            else{
-                              colName = data[value.name];
-                            }
-                              var domTd = "<td id='" + that.getuuid() + "'>" + colName + "</td>"
-                              $("#" + uuid).append(domTd)
-                          }
-                      }
-                  })
+                else {
+                  if (value.name == "operation") {//判断是不是操作类型，如果是操作类型则显示编辑删除按钮
+                    var type = data["type"]
+                    if (type == 1 || type == undefined) {
+                      var domTd = "<td id='" + that.getuuid() + "'>无</td>"
+                      $("#" + uuid).append(domTd)
+                      return
+                    }
+                    var domTd = "<td id='" + that.getuuid() + "'>" +
+                      "<button class='btn btn-primary pull-left' style='padding: 2px;margin: 5px;' onclick='delCalculationCol(\"" + data["colMetaUuid"] + "\")'>删除</button>" +
+                      "<button class='btn btn-primary pull-left' style='padding: 2px;margin: 5px;' onclick='editCalculationCol(\"" + data["colMetaUuid"] + "\")'>编辑</button>" +
+                      "</td>"
+                    $("#" + uuid).append(domTd)
+                  }
+                  else {
+                    var colName = "";
+                    if(data[value.name] == null){
+                      colName = "无";
+                    }
+                    else{
+                      colName = data[value.name];
+                    }
+                    var domTd = "<td id='" + that.getuuid() + "'>" + colName + "</td>"
+                    $("#" + uuid).append(domTd)
+                  }
+                }
               })
-            },"json")
-            loadingInstance.close()
-        }, "json")
+            })
+          },"json")
+          loadingInstance.close()
+        })
+
+        // $.post(url, { tableMetaUuid: tableId }, function (res) {
+        //   //获取到表列之后获取计算列
+        //   var getCalculationColUrl = that.contextUrl + '/InCalculationColumn/getTableIdData'
+        //     $.post(getCalculationColUrl, { tableId: tableId }, function (resCalculation) {
+        //       //处理列属性  以产品的列为准
+        //       if(resCalculation.head.status == 50){
+        //         that.message({info:'error',text:'数据读取失败,' + resCalculation.head.message})
+        //       }
+        //       else{
+        //         for(var i = 0;i < resCalculation.body.result.length;i++){
+        //           var obj = {
+        //             colMetaUuid:resCalculation.body.result[i].inCalculationColumnUuid,
+        //             colName:resCalculation.body.result[i].calculationColumnName,
+        //             chnName:resCalculation.body.result[i].calculationColumnName,
+        //             type:2
+        //           };
+        //           res.data.push(obj)
+        //         }
+        //       }
+        //       //循环数据
+        //       $.each(res.data, function (num, data) {
+        //           var uuid = that.getuuid()
+        //           var domTr = "<tr id='" + uuid + "' onclick='tableColOnClick(this,\"colTable\")' " +
+        //               "ondragover='onColDragOver(event)' " +
+        //               "ondragend='onColDrop(event)' " +
+        //               "ondragstart='onColDragStart(event)'></tr>"
+        //           $("#colTitleTb").append(domTr)
+        //           //注入事件和属性
+        //           $("#" + uuid).attr("check", "false")
+        //           $("#" + uuid).attr("draggable", "true")
+        //           $("#" + uuid).attr("columnType", data["dataType"])
+        //           //循环行
+        //           $.each(colModel, function (num, value) {
+        //               if (num == 0) {
+        //                   var domTd = "<td class='td-hidden'>" + "<input type='hidden' id='" + data[value.name] + "'>" + "</td>"
+        //                   $("#" + uuid).append(domTd)
+        //               }
+        //               else {
+        //                   if (value.name == "operation") {//判断是不是操作类型，如果是操作类型则显示编辑删除按钮
+        //                       var type = data["type"]
+        //                       if (type == 1 || type == undefined) {
+        //                           var domTd = "<td id='" + that.getuuid() + "'>无</td>"
+        //                           $("#" + uuid).append(domTd)
+        //                           return
+        //                       }
+        //                       var domTd = "<td id='" + that.getuuid() + "'>" +
+        //                           "<button class='btn btn-primary pull-left' style='padding: 2px;margin: 5px;' onclick='delCalculationCol(\"" + data["colMetaUuid"] + "\")'>删除</button>" +
+        //                           "<button class='btn btn-primary pull-left' style='padding: 2px;margin: 5px;' onclick='editCalculationCol(\"" + data["colMetaUuid"] + "\")'>编辑</button>" +
+        //                           "</td>"
+        //                       $("#" + uuid).append(domTd)
+        //                   }
+        //                   else {
+        //                     var colName = "";
+        //                     if(data[value.name] == null){
+        //                       colName = "无";
+        //                     }
+        //                     else{
+        //                       colName = data[value.name];
+        //                     }
+        //                       var domTd = "<td id='" + that.getuuid() + "'>" + colName + "</td>"
+        //                       $("#" + uuid).append(domTd)
+        //                   }
+        //               }
+        //           })
+        //       })
+        //     },"json")
+        //     loadingInstance.close()
+        // }, "json")
     },
 
     /**
