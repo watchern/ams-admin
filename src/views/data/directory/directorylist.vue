@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div v-loading="loading" class="page-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -169,6 +169,7 @@ export default {
   components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs, directoryFileUpload },
   // eslint-disable-next-line vue/require-prop-types
   props: ['dataUserId', 'sceneCode'],
+  // eslint-disable-next-line vue/order-in-components
   data() {
     return {
       saveFlag: true,
@@ -189,6 +190,7 @@ export default {
       tree: null,
       total: 0,
       listLoading: false,
+      loading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '名称', name: 'label', type: 'text', value: '' }
@@ -601,12 +603,15 @@ export default {
     },
     // 预览数据
     preview() {
+      this.loading = true
       preview(this.selections[0]).then(res => {
+        console.log(res)
         this.executeSQLList = res.data.executeTask.executeSQL
         this.arrSql = res.data
         this.previewVisible = true
         this.$nextTick(() => {
           this.$refs.childTabs.loadTableData(this.arrSql)
+          this.loading = false
         })
       })
     },
