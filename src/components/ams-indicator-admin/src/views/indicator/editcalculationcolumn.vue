@@ -111,7 +111,7 @@ export default {
       // 解决HTTP400错误
       request({
         baseURL: this.dataContextUrl,
-        url: '/tableMeta/getCols',
+        url: '/tableMeta/getCols?tableMetaUuid='+tableId,
         method: 'post',
         params: { tableMetaUuid: tableId}
       }).then(res => {
