@@ -20,7 +20,7 @@ const port = process.env.port || 8070 // dev port
 
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
 // // 代码压缩优化
-// const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const UplifyJsPlugin = require('uglifyjs-webpack-plugin')
 require('events').EventEmitter.defaultMaxListeners = 0
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
@@ -33,7 +33,7 @@ module.exports = {
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
   publicPath: './',
-  outputDir: 'dist',
+  outputDir: 'ROOT',
   assetsDir: 'static',
   lintOnSave: false,
   // lintOnSave: process.env.NODE_ENV === 'development',
@@ -195,8 +195,18 @@ module.exports = {
         minRatio: 0.8, // 只有压缩率小于这个值的资源才会被处理
         deleteOriginalAssets: false // 删除原文件
         // deleteOriginalAssets: process.env.NODE_ENV !== 'development' // 删除原文件
-      })
+      }),
+      new UplifyJsPlugin({
+        uglifyOptions: {
+          compress: {
+            warnings: false,//警告
+            drop_debugger: true,//debugger
+            drop_console: true,//console(注释掉)
+            pure_funcs:['console.log'] // 移除console
+          }
+        }
 
+      })
       // ,
       // new UglifyJsPlugin({
       //     uglifyOptions: {
