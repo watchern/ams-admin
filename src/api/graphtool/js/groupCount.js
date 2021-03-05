@@ -146,7 +146,12 @@ function initOutputColumn(columnInfo, isCountTr, sign, countType) {
         if(countType){
             columnItem.dataCountType = countType
             if(!nodeData.isSet){
-                columnItem.newColumnName = columnItem.columnName + "_" + countType.name;
+                if(columnItem.columnName.indexOf("`") > -1){ //此处单独处理SPARK数据源下的输出字段显示问题
+                    const spark_columnName = columnItem.columnName.replaceAll("`","");
+                    columnItem.newColumnName = "`" + spark_columnName + "_" + countType.name + "`"
+                }else{
+                    columnItem.newColumnName = columnItem.columnName + "_" + countType.name;
+                }
             }
         }
     }
