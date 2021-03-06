@@ -129,7 +129,6 @@ div.rightMenu ul li:hover {
 }
 #resourceZtreeDiv,#historyZtreeDiv{
     width: 100%;
-    height:calc(100%);
     overflow: auto;
 }
 #resourceZtree,#historyZtree{
