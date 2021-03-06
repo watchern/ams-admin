@@ -229,6 +229,13 @@
 .oper-btn.link-1:hover::before{
   content:'绑定资源'!important;
 }
+
+.oper-btn.link-3:after{
+  content:'\e6af'!important;
+}
+.oper-btn.link-3:hover::before{
+  content:'关联信息'!important;
+}
 // publish
 .oper-btn.publish:after{
   content:'\e695'!important;

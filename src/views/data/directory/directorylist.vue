@@ -13,10 +13,11 @@
         <el-button type="primary" class="oper-btn copy" :disabled="selections.length !== 1" @click="copyResource" />
         <el-button type="primary" class="oper-btn move-1" :disabled="selections.length === 0" @click="movePath" />
         <el-button type="primary" class="oper-btn rename" :disabled="selections.length !== 1" @click="renameResource" />
-        <el-button type="primary" class="oper-btn add-2" :disabled="clickData.type == 'table'" @click="add" />
-        <el-button type="primary" class="oper-btn export" :disabled="clickData.type == 'table'" @click="uploadTable" />
+        <el-button type="primary" class="oper-btn add-2" :disabled="clickData.type == 'table' || (typeof (clickData.extMap.sceneInstUuid) !== 'undefined')" @click="add" />
+        <el-button type="primary" class="oper-btn export" :disabled="clickData.type == 'table'|| (typeof (clickData.extMap.sceneInstUuid) !== 'undefined')" @click="uploadTable" />
         <el-button type="primary" class="oper-btn add-folder-1" :disabled="clickData.type == 'table'" @click="createFolder" />
         <el-button type="primary" class="oper-btn  edit" :disabled="selections.length !== 1" @click="update" />
+        <el-button type="primary" class="oper-btn  link-3" :disabled="selections.length !== 1" @click="relationTable" />
         <el-button type="primary" class="oper-btn  detail" :disabled="selections.length !== 1" @click="showTable" />
         <el-button type="primary" class="oper-btn search-1" :disabled="infoFlag" @click="preview" />
       </el-col>
@@ -125,7 +126,7 @@
     <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="800px">
       <el-row>
         <el-col>
-          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" @table-show="tableshow" />
+          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @table-show="tableshow" />
         </el-col>
       </el-row>
       <span slot="footer">
@@ -133,6 +134,30 @@
       </span>
     </el-dialog>
     <!-- 弹窗5 -->
+    <el-dialog v-if="tableColumnVisible" :visible.sync="tableColumnVisible" width="800px">
+      <el-row>
+        <el-col>
+          <column ref="column" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" @table-show="tableshow" />
+        </el-col>
+      </el-row>
+      <span slot="footer">
+        <el-button @click="tableColumnVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveTableInfo">保存</el-button>
+      </span>
+    </el-dialog>
+    <!-- 弹窗6 -->
+    <el-dialog v-if="tableRelationVisible" :visible.sync="tableRelationVisible" width="800px">
+      <el-row>
+        <el-col>
+          <tablerelation ref="tablerelation" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" />
+        </el-col>
+      </el-row>
+      <span slot="footer">
+        <el-button @click="tableRelationVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveRelationInfo">保存</el-button>
+      </span>
+    </el-dialog>
+    <!-- 弹窗7 -->
     <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
       <el-row>
         <el-col>
@@ -146,9 +171,11 @@
   </div>
 </template>
 <script>
+import column from '@/views/data/table/column'
 import directoryFileUpload from '@/views/data/tableupload'
 import { getSqlType } from '@/api/data/table-info'
 import tabledatatabs from '@/views/data/table/tabledatatabs'
+import tablerelation from '@/views/data/table/tablerelation'
 import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import QueryField from '@/components/Ace/query-field/index'
@@ -166,7 +193,7 @@ export default {
     })
   },
   // eslint-disable-next-line vue/order-in-components
-  components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs, directoryFileUpload },
+  components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs, directoryFileUpload, column, tablerelation },
   // eslint-disable-next-line vue/require-prop-types
   props: ['dataUserId', 'sceneCode'],
   // eslint-disable-next-line vue/order-in-components
@@ -238,6 +265,11 @@ export default {
       tabShow: '',
       previewVisible: false,
       tableShowVisible: false,
+      // 列信息弹窗
+      tableColumnVisible: false,
+      // 关联信息弹窗
+      tableRelationVisible: false,
+      // 移动表弹窗
       moveTreeVisible: false,
       uploadVisible: false,
       uploadtemp: {
@@ -489,7 +521,7 @@ export default {
     // 新增表
     add() {
       this.openType = 'addTable'
-      this.tableShowVisible = true
+      this.tableColumnVisible = true
       this.tabShow = 'column'
       this.tableId = '1'
     },
@@ -503,7 +535,14 @@ export default {
     // 表结构维护
     update() {
       this.openType = 'updateTable'
-      this.tableShowVisible = true
+      this.tableColumnVisible = true
+      this.tabShow = 'column'
+      this.tableId = this.selections[0].id
+    },
+    // 表结构维护
+    relationTable() {
+      this.openType = 'updateTable'
+      this.tableRelationVisible = true
       this.tabShow = 'column'
       this.tableId = this.selections[0].id
     },
@@ -561,8 +600,8 @@ export default {
     },
     // 保存新建文件夹
     createFolderSave() {
-      if (this.currentSceneUuid !== 'auditor') {
-        this.resourceForm.sceneInstUuid = this.directyDataUserId
+      if (typeof (this.clickData.extMap.sceneInstUuid) !== 'undefined') {
+        this.resourceForm.sceneInstUuid = this.clickData.extMap.sceneInstUuid
       }
       this.resourceForm.parentFolderUuid = this.clickData.id
       this.resourceForm.fullPath = this.clickFullPath.reverse().join('/')
@@ -605,14 +644,18 @@ export default {
     preview() {
       this.loading = true
       preview(this.selections[0]).then(res => {
-        console.log(res)
-        this.executeSQLList = res.data.executeTask.executeSQL
-        this.arrSql = res.data
-        this.previewVisible = true
-        this.$nextTick(() => {
-          this.$refs.childTabs.loadTableData(this.arrSql)
+        if (res.data.code === 200) {
+          this.executeSQLList = res.data.executeTask.executeSQL
+          this.arrSql = res.data
+          this.previewVisible = true
+          this.$nextTick(() => {
+            this.$refs.childTabs.loadTableData(this.arrSql)
+            this.loading = false
+          })
+        } else {
           this.loading = false
-        })
+          this.$message({ type: 'info', message: res.data.msg })
+        }
       })
     },
     sortChange(data) {
@@ -657,6 +700,14 @@ export default {
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
+    },
+    saveTableInfo() {
+      this.$refs.column.saveTableInfo()
+      this.tableColumnVisible = false
+    },
+    saveTableRelation() {
+      this.$refs.tablerelation.saveTableRelation()
+      this.tableRelationVisible = false
     },
     // 将字节数转换成大小
     formatTableSize(limit) {

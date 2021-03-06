@@ -94,9 +94,6 @@
         </div>
       </el-dialog>
     </el-table>
-    <div slot="footer">
-      <el-button v-if="openType !== 'showTable' && openType !== 'tableRegister'" type="primary" style="float:right;margin-top:20px" @click="saveTableRelation">保存</el-button>
-    </div>
   </div>
 </template>
 
