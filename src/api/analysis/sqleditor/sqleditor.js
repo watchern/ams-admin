@@ -1113,7 +1113,7 @@ function showRMenu(type, containerId, menuId, x, y) {
  * 隐藏菜单
  * @param menuId 要隐藏的编号
  */
-function hideRMenu(menuId) {
+export function hideRMenu(menuId) {
   if ($('#' + menuId)[0]) $('#' + menuId).css({ 'visibility': 'hidden' })
   $('body').unbind('mousedown', onBodyMouseDown)
 }
@@ -2137,4 +2137,13 @@ export async function getGraphSaveInfo(){
         returnObj.isChange = response.data.isChange;
     }
     return returnObj;
+}
+
+/**
+ * 获取选中节点
+ * @returns {*}
+ */
+export function getZtreeSelectNode(){
+  var nodes = zTreeObj.getSelectedNodes()
+  return nodes
 }
