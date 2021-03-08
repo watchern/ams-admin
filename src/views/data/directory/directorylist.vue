@@ -134,7 +134,7 @@
       </span>
     </el-dialog>
     <!-- 弹窗5 -->
-    <el-dialog v-if="tableColumnVisible" :visible.sync="tableColumnVisible" width="800px">
+    <el-dialog v-if="tableColumnVisible" :visible.sync="tableColumnVisible" lock-scroll width="800px">
       <el-row>
         <el-col>
           <column ref="column" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" @table-show="tableshow" />
@@ -146,7 +146,7 @@
       </span>
     </el-dialog>
     <!-- 弹窗6 -->
-    <el-dialog v-if="tableRelationVisible" :visible.sync="tableRelationVisible" width="800px">
+    <el-dialog v-if="tableRelationVisible" fullscreen :visible.sync="tableRelationVisible" width="800px">
       <el-row>
         <el-col>
           <tablerelation ref="tablerelation" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" />
@@ -154,7 +154,7 @@
       </el-row>
       <span slot="footer">
         <el-button @click="tableRelationVisible = false">取消</el-button>
-        <el-button type="primary" @click="saveRelationInfo">保存</el-button>
+        <el-button type="primary" @click="saveTableRelation">保存</el-button>
       </span>
     </el-dialog>
     <!-- 弹窗7 -->
@@ -704,6 +704,10 @@ export default {
     saveTableInfo() {
       this.$refs.column.saveTableInfo()
       this.tableColumnVisible = false
+    },
+    saveRelationInfo() {
+      this.$refs.tablerelation.saveRelationInfo()
+      this.tableRelationVisible = false
     },
     saveTableRelation() {
       this.$refs.tablerelation.saveTableRelation()

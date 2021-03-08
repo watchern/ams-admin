@@ -22,7 +22,7 @@
         </el-form-item> -->
       </el-form>
     </template>
-    <el-table :data="temp" height="600px" @selection-change="handleSelectionChange">
+    <el-table :data="temp" height="500px" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" />
       <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
         <template slot-scope="scope" show-overflow-tooltip>
