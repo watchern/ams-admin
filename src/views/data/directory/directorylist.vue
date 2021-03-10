@@ -20,6 +20,7 @@
         <el-button type="primary" class="oper-btn  link-3" :disabled="selections.length !== 1" @click="relationTable" />
         <el-button type="primary" class="oper-btn  detail" :disabled="selections.length !== 1" @click="showTable" />
         <el-button type="primary" class="oper-btn search-1" :disabled="infoFlag" @click="preview" />
+        <el-button type="primary" class="oper-btn share-1" :disabled="selections.length === 0" @click="shareTable" />
       </el-col>
     </el-row>
     <el-table
@@ -168,9 +169,33 @@
         <el-button type="primary" @click="previewVisible = false">关闭</el-button>
       </span>
     </el-dialog>
+    <!-- 弹窗7 -->
+    <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
+      <el-row>
+        <el-col>
+          <childTabs ref="childTabs" :pre-value="executeSQLList" use-type="previewTable" />
+        </el-col>
+      </el-row>
+      <span slot="footer">
+        <el-button type="primary" @click="previewVisible = false">关闭</el-button>
+      </span>
+    </el-dialog>
+    <!-- 弹窗8 分享 -->
+    <el-dialog v-if="shareVisible" :visible.sync="shareVisible" width="800px">
+      <el-row>
+        <el-col>
+          <PersonTree ref="personTree" />
+        </el-col>
+      </el-row>
+      <span slot="footer">
+        <el-button @click="shareVisible = false">关闭</el-button>
+        <el-button type="primary" @click="shareTableSave">确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
+import PersonTree from '@/components/publicpersontree/index'
 import column from '@/views/data/table/column'
 import directoryFileUpload from '@/views/data/tableupload'
 import { getSqlType } from '@/api/data/table-info'
@@ -180,7 +205,7 @@ import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import QueryField from '@/components/Ace/query-field/index'
 import { getArrLength } from '@/utils'
-import { deleteDirectory, copyTable, renameResource, movePath, preview, nextUpload, importTable } from '@/api/data/directory'
+import { deleteDirectory, copyTable, renameResource, movePath, preview, nextUpload, importTable, shareTableSave } from '@/api/data/directory'
 import { saveFolder } from '@/api/data/folder'
 import dataTree from '@/views/data/role-res/data-tree'
 import { mapState } from 'vuex'
@@ -193,7 +218,7 @@ export default {
     })
   },
   // eslint-disable-next-line vue/order-in-components
-  components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs, directoryFileUpload, column, tablerelation },
+  components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs, directoryFileUpload, column, tablerelation, PersonTree },
   // eslint-disable-next-line vue/require-prop-types
   props: ['dataUserId', 'sceneCode'],
   // eslint-disable-next-line vue/order-in-components
@@ -271,6 +296,8 @@ export default {
       tableRelationVisible: false,
       // 移动表弹窗
       moveTreeVisible: false,
+      // 选择人员窗口
+      shareVisible: false,
       uploadVisible: false,
       uploadtemp: {
         tbName: '',
@@ -293,11 +320,6 @@ export default {
       downloadLoading: false
     }
   },
-  // computed: {
-  //   dialogTitle() {
-  //     return (this.selections[0].label == null ? '' : '在<' + this.selections[0].label + '>下') + this.textMap[this.dialogStatus]
-  //   }
-  // },
   created() {
     this.initDirectory()
   },
@@ -655,6 +677,62 @@ export default {
         } else {
           this.loading = false
           this.$message({ type: 'info', message: res.data.msg })
+        }
+      })
+    },
+    // 分享表
+    shareTable() {
+      var flag = true
+      this.selections.forEach((r, i) => {
+        if (r.type === 'folder') {
+          this.$message({ type: 'info', message: '无法分享文件夹!' })
+          flag = false
+          return
+        }
+      })
+      if (flag) {
+        this.shareVisible = true
+      }
+    },
+    shareTableSave() {
+      // 获取选中的人员
+      // 循环组织对象添加数据
+      var userId = this.$store.getters.personuuid
+      const tableShareRelList = []
+      var verResult = true
+      var selectObj = this.selections
+      const persons = this.$refs.personTree.getSelectValue()
+      for (let i = 0; i < selectObj.length; i++) {
+        for (let j = 0; j < persons.length; j++) {
+          if (persons[j].personuuid === userId) {
+            verResult = false
+            break
+          }
+          console.log(persons)
+          const obj = {
+            tableMetaUuid: selectObj[i].id,
+            seneInstUuid: persons[j].personcode,
+            folderName: persons[j].cnname
+          }
+          tableShareRelList.push(obj)
+        }
+      }
+      if (!verResult) {
+        this.$message({ type: 'info', message: '不能共享给自己!' })
+        return
+      }
+      shareTableSave(tableShareRelList).then(result => {
+        if (result.code === 0) {
+          this.$notify({
+            title: '提示',
+            message: '共享成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+          this.shareVisible = false
+        } else {
+          this.$message({ type: 'error', message: '共享模型失败!' })
         }
       })
     },
