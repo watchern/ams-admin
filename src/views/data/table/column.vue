@@ -22,7 +22,7 @@
         </el-form-item> -->
       </el-form>
     </template>
-    <el-table :data="temp" height="600px" @selection-change="handleSelectionChange">
+    <el-table :data="temp" height="500px" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" />
       <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
         <template slot-scope="scope" show-overflow-tooltip>
@@ -59,7 +59,6 @@
         </template>
       </el-table-column> -->
     </el-table>
-    <el-button v-if="openType !== 'showTable' && openType !== 'tableRegister'" type="primary" style="float:right;margin-top:20px" @click="openType==='addTable'?saveTable():updateTable()">保存</el-button>
   </div>
 </template>
 
@@ -164,6 +163,13 @@ export default {
       }
       // 不是选中，选中当前点击 Radio
       this.temp[row].isNullable = e
+    },
+    saveTableInfo() {
+      if (this.openType === 'addTable') {
+        this.saveTable()
+      } else {
+        this.updateTable()
+      }
     },
     // 保存基本信息
     saveTable() {
