@@ -1066,7 +1066,7 @@
                         this.initData()
                         this.$nextTick(() => {
                             $this.websocketBatchId = new UUIDGenerator().id
-                            $this.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable }]
+                            $this.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable, optType: '' }]
                             $this.resultTabActiveName = '0'
                             $this.viewData()
                         })
