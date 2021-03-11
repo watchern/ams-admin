@@ -10251,7 +10251,7 @@ mxXmlRequest.prototype.send = function(onload, onerror, timeout, ontimeout) {
 			this.request.ontimeout = ontimeout;
 		}
 
-		// this.request.send(this.params);
+		this.request.send(this.params);
 	}
 };
 
