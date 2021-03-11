@@ -56,7 +56,6 @@ export function delByTableId(id) {
   })
 }
 
-
 export function getById(id) {
   return request({
     baseURL: baseURL,
@@ -65,4 +64,3 @@ export function getById(id) {
     params: { id: id }
   })
 }
-

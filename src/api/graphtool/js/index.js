@@ -971,7 +971,7 @@ export async function saveModelGraph(){
                                     modelSql += "/*节点【" + preNodeInfo.nodeName + "】的查询结果表的SQL语句*/\n " + selectSql + "\n"
                                 }else{
                                     dropViewSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果视图的SQL语句*/\n DROP VIEW " + tableName + "\n"
-                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE OR REPLACE VIEW " + tableName + " AS " + selectSql + "\n";//不能移动位置
+                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS " + selectSql + "\n";//不能移动位置
                                 }
                             }
                         }
@@ -1423,23 +1423,6 @@ export function hideAndShowLeftArea() {
 export function hideAndShowRightArea() {
     hideRMenu('H_S_Menu')
     ownerEditor.rightAreaH_S()
-}
-
-/**
- * 增加水印
- */
-export function addWaterMark(containerId) {
-    // 增加水印
-    var loginUserId = $('#loginUserId').val()
-    var nowTime = getNowTime()
-    var setting = { 'watermark_txt': loginUserId + ' ' + nowTime }
-    if (containerId && containerId !== '') {
-        setting.containerId = containerId
-        $('#' + containerId + ' .mask_div').remove()
-    } else {
-        $('.mask_div').remove()
-    }
-    watermark(setting)
 }
 
 // 修改参数设置

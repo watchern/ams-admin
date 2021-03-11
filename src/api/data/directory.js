@@ -84,3 +84,12 @@ export function importTable(data) {
   })
 }
 
+export function shareTableSave(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/shareTableSave`,
+    method: 'post',
+    data
+  })
+}
+

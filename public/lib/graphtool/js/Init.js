@@ -18,7 +18,7 @@ window.STYLE_PATH = window.STYLE_PATH || '../../lib/graphtool/styles';
 // files (the special bundle and the default bundle) is disabled to
 // save a GET request. This requires that all resources be present in
 // each properties file since only one file is loaded.
-window.mxBasePath = window.mxBasePath || (window.PURL || "") + 'resources/src';
+window.mxBasePath = window.mxBasePath || (window.PURL || "lib/graphtool/") + 'resources/src';
 window.mxLanguage = window.mxLanguage || urlParams['lang'];
 window.mxLanguages = window.mxLanguages || ['de'];
 
@@ -35,21 +35,21 @@ $.fn.extend({
 		zMenuDiv.className = "mxPopupMenu";
 		zMenuDiv.style.left = x + "px";
 		zMenuDiv.style.top = y + "px";
-		
+
 		var zMenuTable = document.createElement("table");
 		zMenuTable.className = "mxPopupMenu";
-		
+
 		var zMenuTr = document.createElement("tr");
 		zMenuTr.className = "mxPopupMenuItem";
-		
+
 		var zMenuTd = document.createElement("td");
 		zMenuTd.className = "mxPopupMenuItem";
 		zMenuTd.innerHTML = "查看";
-		
+
 		zMenuTr.appendChild(zMenuTd);
 		zMenuTable.appendChild(zMenuTr);
 		zMenuDiv.appendChild(zMenuTable);
-		
+
 		document.body.appendChild(zMenuDiv);
 	}
 });

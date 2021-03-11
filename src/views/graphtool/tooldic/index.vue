@@ -247,10 +247,10 @@
                     <div id="nodeRemark" v-html="nodeRemarkHtml" @click="viewEgEvent"></div>
                 </el-tab-pane>
                 <el-tab-pane label="所用资源" name="2">
-                    <div id="resourceZtreeDiv"><ul id="resourceZtree" class="ztree" /></div>
+                    <div id="resourceZtreeDiv" :style="rightZtreeStyle"><ul id="resourceZtree" class="ztree" /></div>
                 </el-tab-pane>
                 <el-tab-pane label="痕迹" name="3">
-                    <div id="historyZtreeDiv"><ul id="historyZtree" class="ztree" /></div>
+                    <div id="historyZtreeDiv" :style="rightZtreeStyle"><ul id="historyZtree" class="ztree" /></div>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -502,7 +502,8 @@
                 detailTabActiveName:'0',
                 comparisonTableDetailDialogVisible:false,
                 comparison_dataTableName:'',
-                comparison_columnVal:''
+                comparison_columnVal:'',
+                rightZtreeStyle:''
             }
         },
         created() {
@@ -538,6 +539,7 @@
             this.sqlEditorWidth = $(this.$refs.graphToolDiv).width() + "px"
             let sqlEditorHeight = $(this.$refs.graphToolDiv).height() + 18 + "px"
             this.sqlEditorStyle = `margin-left:${$(this.$refs.graphToolDiv).position().left -10}px;height:${sqlEditorHeight}`
+            this.rightZtreeStyle = `height:${$(this.$refs.graphToolDiv).height() - 170}px`
         },
         methods: {
             init() {
@@ -1064,7 +1066,7 @@
                         this.initData()
                         this.$nextTick(() => {
                             $this.websocketBatchId = new UUIDGenerator().id
-                            $this.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable }]
+                            $this.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable, optType: '' }]
                             $this.resultTabActiveName = '0'
                             $this.viewData()
                         })
