@@ -104,7 +104,6 @@
                 if(typeof this.curColumnInfo !== "undefined" && this.curColumnInfo != null){
                     let columnInfo = this.curColumnInfo.columnInfo
                     this.customizeColumnVal = this.curColumnInfo.curColumnName || this.curColumnInfo.columnName
-                    this.columnLength = columnInfo.columnLength
                     let obj = this.replaceColumnType(columnInfo.columnType.toUpperCase())
                     this.columnType = obj.columnTypeVal
                     this.outputColumnName = this.curColumnInfo.disColumnName || this.curColumnInfo.newColumnName
@@ -319,7 +318,6 @@
                     "columnInfo":{
                         "columnName":'',
                         "columnType":'',
-                        "columnLength":null,
                         "newColumnName":'',
                         "isOutputColumn":1,
                         "customizeColumn":true
