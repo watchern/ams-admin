@@ -109,11 +109,11 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column prop="dataLength" label="数据长度" show-overflow-tooltip>
+           <!-- <el-table-column prop="dataLength" label="数据长度" show-overflow-tooltip>
               <template slot-scope="scope" show-overflow-tooltip>
                 <el-input v-model="scope.row.dataLength" style="width:90%;" />
               </template>
-            </el-table-column>
+            </el-table-column>-->
           </el-table>
         </el-col>
       </el-row>

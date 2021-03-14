@@ -89,6 +89,7 @@ module.exports = {
         }
       },
       '/graphtool/': {
+        timeout: 1111800000,
         target: process.env.AMSGRAPHTOOL_API,
         changeOrigin: true,
         pathRewrite: {
