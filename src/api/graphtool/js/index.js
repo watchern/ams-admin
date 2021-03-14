@@ -880,9 +880,10 @@ export async function saveModelGraph(){
                 'nodeIdList': lineNodeIdArr.join(","),
                 'nodeData': JSON.stringify(graph.nodeData)
             }
-            // graph.nodeData[nodeId].replaceParamSql = replaceParamSql
             const response = await executeNodeSql(dataParam)
             if(response.data != null){
+                console.log("模型图形执行结果======")
+                console.log(response.data)
                 if(response.data.isError){
                     isError = true
                     message = '模型设计校验图形未通过：存在运行出错的节点'
@@ -894,6 +895,7 @@ export async function saveModelGraph(){
                     let dropTableSql = ''//删除表的SQL语句
                     let selectSql = ''
                     let tableName = ''
+                    console.log("开始组织节点结果表语句======")
                     for (let i = 0; i < lineNodeIdArr.length; i++) {
                         let curNodeInfo = newNodeData[lineNodeIdArr[i]].nodeInfo
                         if(curNodeInfo.optType === 'datasource'){
@@ -1012,6 +1014,7 @@ export async function saveModelGraph(){
                     //     //替换ID结束
                     // }
                     modelSql = dropTableSql + modelSql + dropViewSql
+                    console.log("组织节点结果表语句结束======")
                 }
             }else{
                 isError = true
@@ -1019,6 +1022,7 @@ export async function saveModelGraph(){
             }
         }
         if(!isError){
+            console.log("模型图形开始保存……")
             //保存当前模型图形信息
             //获取图形xml数据
             var encoder = new mxCodec();
@@ -1038,6 +1042,8 @@ export async function saveModelGraph(){
                 "modelSql" : modelSql
             };
             await saveGraphInterface(param).then(response => {
+                console.log("模型图形保存结果")
+                console.log(response.data)
                 if (!response.data) {
                     isError = true
                     message = '模型设计保存图形信息失败'
