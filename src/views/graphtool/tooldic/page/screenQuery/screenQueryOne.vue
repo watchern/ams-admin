@@ -1010,7 +1010,6 @@
                                     }else{
                                         let curSql = res.data.dealSql
                                         this.sql = curSql
-                                        console.log(curSql)
                                         this.pageInit(curSql);
                                         this.settingObj.initSql = curSql;
                                     }
