@@ -847,6 +847,7 @@ export function getResultColumnInfo(){
 }
 
 export async function saveModelGraph(){
+    console.log("=====调用模型图形的保存方法=====")
     let isError = false
     let message = ''
     let modelSql = ''//生成的模型语句
@@ -880,9 +881,10 @@ export async function saveModelGraph(){
                 'nodeIdList': lineNodeIdArr.join(","),
                 'nodeData': JSON.stringify(graph.nodeData)
             }
+            console.log("=====模型图形开始执行=====")
             const response = await executeNodeSql(dataParam)
             if(response.data != null){
-                console.log("模型图形执行结果======")
+                console.log("=====模型图形执行结果=====")
                 console.log(response.data)
                 if(response.data.isError){
                     isError = true
@@ -1014,7 +1016,7 @@ export async function saveModelGraph(){
                     //     //替换ID结束
                     // }
                     modelSql = dropTableSql + modelSql + dropViewSql
-                    console.log("组织节点结果表语句结束======")
+                    console.log("=====组织节点结果表语句结束=====")
                 }
             }else{
                 isError = true
@@ -1022,7 +1024,7 @@ export async function saveModelGraph(){
             }
         }
         if(!isError){
-            console.log("模型图形开始保存……")
+            console.log("=====模型图形开始保存=====")
             //保存当前模型图形信息
             //获取图形xml数据
             var encoder = new mxCodec();
@@ -1042,7 +1044,7 @@ export async function saveModelGraph(){
                 "modelSql" : modelSql
             };
             await saveGraphInterface(param).then(response => {
-                console.log("模型图形保存结果")
+                console.log("=====模型图形保存结果=====")
                 console.log(response.data)
                 if (!response.data) {
                     isError = true
