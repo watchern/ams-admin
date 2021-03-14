@@ -1032,50 +1032,24 @@
                             position: 'bottom-right'})
                     }
                 }
-                switch (this.openGraphType) {
-                    case 1://个人图形
-                        data.graphType = 1
-                        saveGraphInterface(data).then(response => {
-                            callBack(this,response,'图形保存成功','图形保存失败')
-                        }).catch( () => {})
-                        break
-                    case 2://个人场景查询图形
-                        data.graphType = 3
+                //此处保存不包含模型图形，模型图形的保存按钮不显示
+                if(this.openGraphType === 1){//个人图形
+                    data.graphType = 1
+                    saveGraphInterface(data).then(response => {
+                        callBack(this,response,'图形保存成功','图形保存失败')
+                    }).catch( () => {})
+                }else{//场景查询图形
+                    data.graphType = 3
+                    if(this.openGraphType === 2){//个人场景查询图形
                         data.publicType = 0
-                        createScreenQuery(data).then( response => {
-                            callBack(this,response,'场景查询图形保存成功','场景查询图形保存失败')
-                        }).catch( () => {})
-                        break
-                    case 3://公共场景查询图形
-                        data.graphType = 3
+                    }else{//公共场景查询图形
                         data.publicType = 1
                         data.executeStatus = 3// 未执行
-                        break
-                    case 4://模型图形
-                        data.graphType = 4
-                        saveGraphInterface(data).then(response => {
-                            callBack(this,response,'图形保存成功','图形保存失败')
-                        }).catch( () => {})
-                        break
-
+                    }
+                    createScreenQuery(data).then( response => {
+                        callBack(this,response,'场景查询图形保存成功','场景查询图形保存失败')
+                    }).catch( () => {})
                 }
-                // if(this.openGraphType === 1){//个人图形
-                //     data.graphType = 1
-                //     saveGraphInterface(data).then(response => {
-                //         callBack(this,response,'图形保存成功','图形保存失败')
-                //     }).catch( () => {})
-                // }else{//场景查询图形
-                //     data.graphType = 3
-                //     if(this.openGraphType === 2){//个人场景查询图形
-                //         data.publicType = 0
-                //     }else{//公共场景查询图形
-                //         data.publicType = 1
-                //         data.executeStatus = 3// 未执行
-                //     }
-                //     createScreenQuery(data).then( response => {
-                //         callBack(this,response,'场景查询图形保存成功','场景查询图形保存失败')
-                //     }).catch( () => {})
-                // }
             },
             searchZtree() {
                 indexJs.searchZtree()
