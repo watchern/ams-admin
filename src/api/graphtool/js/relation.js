@@ -7,6 +7,7 @@ export var sendVueObj = (_this) => {
     relationVue = _this;
     graph = _this.graph;
     nodeData = graph.nodeData[graph.curCell.id];
+    relationVue.nodeIsSet = nodeData.isSet
     layeX = _this.layeX
     layeY = _this.layeY
 }
@@ -326,13 +327,12 @@ export function init() {
         })
     })
     // 加载图表,start
-    var curIsSet = nodeData.isSet			// 判断当前节点是否配置过
-    if (curIsSet) {
+    if (relationVue.nodeIsSet) {
         if(nodeData.setting.join){
             relationVue.join = nodeData.setting.join
         }
         if (nodeData.setting.sqlEdit) {
-            let columnsInfo = nodeData.columnsInfo
+            // relationVue.columnsInfo = nodeData.columnsInfo
             let obj = JSON.parse(nodeData.setting.sqlEdit)
             relationVue.myDiagram.model = go.Model.fromJson(nodeData.setting.sqlEdit)
             // 获取节点数据
@@ -348,21 +348,23 @@ export function init() {
             }
             // 动态增加关联关系,end
             // 组装输出列的表格,start
-            for (let k = 0; k < columnsInfo.length; k++) {
+            for (let k = 0; k < nodeData.columnsInfo.length; k++) {
                 let id = k
-                let resourceTableName = columnsInfo[k].resourceTableName
-                let rtn = columnsInfo[k].rtn
-                const columnInfo = columnsInfo[k]
-                let columnName = columnsInfo[k].columnName
-                let disColumnName = columnsInfo[k].newColumnName
+                let resourceTableName = nodeData.columnsInfo[k].resourceTableName
+                let rtn = nodeData.columnsInfo[k].rtn
+                const columnInfo = nodeData.columnsInfo[k]
+                let columnName = nodeData.columnsInfo[k].columnName
+                let disColumnName = nodeData.columnsInfo[k].newColumnName
+                let nodeId = nodeData.columnsInfo[k].nodeId
                 let checked = true
-                if(columnsInfo[k].isOutputColumn === 0){
+                if(nodeData.columnsInfo[k].isOutputColumn === 0){
                     checked = false
                     if(relationVue.checkAll){
                         relationVue.checkAll = false
                     }
                 }
-                relationVue.items.push({id,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
+                relationVue.items.push({id,nodeId,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
+                relationVue.columnsInfo.push({...{},...nodeData.columnsInfo[k]})
             }
             // 组装输出列的表格,end
         }
@@ -371,7 +373,6 @@ export function init() {
         let dom = document.getElementById('myDiagramDiv')
         let height = dom.getBoundingClientRect().height
         let offsetY = 0 - height / 2
-        let combineColumnsInfo = []
         let idNum = 0
         for (let i = 0; i < cells.length; i++) {
             let curNodeId = cells[i].id
@@ -381,12 +382,14 @@ export function init() {
             let rtn = '"' + graph.nodeData[curNodeId].nodeInfo.nodeName + '"'
             let resourceTableName = graph.nodeData[curNodeId].nodeInfo.resultTableName
             let columnsInfo = graph.nodeData[curNodeId].columnsInfo
+            let nodeId = graph.nodeData[curNodeId].nodeInfo.nodeId
             if (optType === 'newNullNode' && !isSet) {
                 let parentIds = graph.nodeData[curNodeId].parentIds
                 let preNodeData = graph.nodeData[parentIds[0]]
                 resourceTableName = preNodeData.nodeInfo.resultTableName
                 rtn = '"' + preNodeData.nodeInfo.nodeName + '"_' + rtn
                 columnsInfo = preNodeData.columnsInfo
+                nodeId = preNodeData.nodeInfo.nodeId
             }
             // 组装图表和输出列的表格,start
             let local = `${i*100} ${layeY}${offsetY}`
@@ -415,19 +418,18 @@ export function init() {
             // 组装输出列的表格,start
             for (let k = 0; k < columnsInfo.length; k++) {
                 if (columnsInfo[k].isOutputColumn === 1) {
-                    combineColumnsInfo.push(columnsInfo[k])
                     let id = idNum
-                    let columnInfo = columnsInfo[k]
-                    let columnName = columnsInfo[k].newColumnName
+                    let columnInfo = {...{},...columnsInfo[k]}
+                    let columnName = table.key + "." + columnsInfo[k].newColumnName
                     let disColumnName = columnsInfo[k].newColumnName
                     let checked = false
-                    relationVue.items.push({id,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
+                    relationVue.items.push({id,nodeId,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
+                    relationVue.columnsInfo.push({...columnsInfo[k],...{"columnName":columnName,"nodeId":nodeId,"rtn":rtn,"resourceTableName":resourceTableName}})
                     idNum++
                 }
             }
             // 组装输出列的表格,end
         }
-        nodeData.columnsInfo = JSON.parse(JSON.stringify(combineColumnsInfo))
     }
     // 加载图表,end
 }
@@ -630,24 +632,14 @@ export function reduce() {
 
 export function saveNodeInfo() {
     let columnsInfo = []
-    let diaGramJson = JSON.parse(relationVue.myDiagram.model.toJson())				// 获取图表的json串
-    let nodeDataArray = diaGramJson.nodeDataArray		// 获取节点（图）的数组数据
     let trDom = relationVue.$refs.outPutTable.$refs.bodyWrapper.children[0].children[1].children
     if(typeof trDom !== 'undefined' && trDom.length > 0){
         $.each(trDom,function () {
             const index = parseInt($(this).find("td:eq(0)>div>div").html()) - 1
             let columnInfo = {...{},...relationVue.items[index].columnInfo}
-            let tableAlias = ''
             let resourceTableName = relationVue.items[index].resourceTableName
             let rtn = relationVue.items[index].rtn
-            for (let j = 0; j < nodeDataArray.length; j++) {
-                if (nodeDataArray[j].tableName === resourceTableName) {
-                    tableAlias = nodeDataArray[j].key					// 获取来源表名称的别名
-                    break
-                }
-            }
             if (relationVue.items[index].checked) {
-                columnInfo.tableAlias = tableAlias
                 columnInfo.isOutputColumn = 1
             } else {
                 columnInfo.isOutputColumn = 0
@@ -656,6 +648,7 @@ export function saveNodeInfo() {
             columnInfo.newColumnName = relationVue.items[index].disColumnName
             columnInfo.resourceTableName = resourceTableName
             columnInfo.rtn = rtn
+            columnInfo.nodeId = relationVue.items[index].nodeId
             columnsInfo.push(columnInfo)
         })
     }

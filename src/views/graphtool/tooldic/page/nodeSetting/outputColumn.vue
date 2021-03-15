@@ -38,7 +38,7 @@
             </div>
         </el-dialog>
         <el-dialog v-if="customizeColumnDialogVisible" :visible.sync="customizeColumnDialogVisible" :title="customizeColumnTitle" :close-on-press-escape="false" :close-on-click-modal="false" :append-to-body="true" width="1000px">
-            <CustomizeColumn ref="customizeColumn" :columnInfoArr="columnsInfoPre" :cur-column-info="curColumnInfo" node-type="common"/>
+            <CustomizeColumn ref="customizeColumn" :columnInfoArr="columnsInfoArray" :node-is-set="nodeIsSet" :cur-column-info="curColumnInfo" node-type="common"/>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="customizeColumnDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="customizeColumnBack()">保存</el-button>
@@ -65,7 +65,9 @@
                 customizeColumnDialogVisible:false,
                 curColumnInfo:null,
                 customizeColumnType:'',
-                customizeColumnTitle:''
+                customizeColumnTitle:'',
+                columnsInfoArray:[],
+                nodeIsSet:false
             }
         },
         mounted() {
@@ -75,6 +77,8 @@
             init() {
                 const graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
+                this.nodeIsSet = this.nodeData.isSet// 判断当前节点是否已经设置
+                this.columnsInfoArray = this.nodeIsSet ? this.nodeData.columnsInfo : this.columnsInfoPre
                 this.initConfig()
             },
             initConfig() { // 初始化字段列表
@@ -133,20 +137,18 @@
                 }
             },
             createTrFacture() {
-                const isSet = this.nodeData.isSet// 判断当前节点是否已经设置
-                const columnsInfoArray = isSet ? this.nodeData.columnsInfo : this.columnsInfoPre
-                for (let column = 0; column < columnsInfoArray.length; column++) {
-                    const curColumnName = isSet ? columnsInfoArray[column].columnName : columnsInfoArray[column].newColumnName
-                    let nodeId = columnsInfoArray[column].nodeId
-                    let nullNodeId = columnsInfoArray[column].nullNodeId
-                    let resourceTableName = columnsInfoArray[column].resourceTableName
-                    let columnInfo = columnsInfoArray[column]
-                    let rtn = columnsInfoArray[column].rtn
+                for (let i = 0; i < this.columnsInfoArray.length; i++) {
+                    const curColumnName = this.nodeIsSet ? this.columnsInfoArray[i].columnName : this.columnsInfoArray[i].newColumnName
+                    let nodeId = this.columnsInfoArray[i].nodeId
+                    let nullNodeId = this.columnsInfoArray[i].nullNodeId
+                    let resourceTableName = this.columnsInfoArray[i].resourceTableName
+                    let columnInfo = this.columnsInfoArray[i]
+                    let rtn = this.columnsInfoArray[i].rtn
                     let checked = false
-                    const id = column
-                    let disColumnName = columnsInfoArray[column].newColumnName
-                    if (isSet) {
-                        if(columnsInfoArray[column].isOutputColumn === 1){
+                    const id = i
+                    let disColumnName = this.columnsInfoArray[i].newColumnName
+                    if (this.nodeIsSet) {
+                        if(this.columnsInfoArray[i].isOutputColumn === 1){
                             checked = true
                         }
                     }

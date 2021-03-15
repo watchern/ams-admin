@@ -195,7 +195,7 @@
             <el-input v-model="searchZtreeContent" placeholder="搜索关键字" class="input-with-select">
                 <el-button slot="append" icon="el-icon-search" @click="searchZtree" />
             </el-input>
-            <div id="ztree_datasource_div"><ul id="ztree_datasource" class="ztree"/></div>
+            <div id="ztree_datasource_div"><ul id="ztree_datasource" ref="ztree_datasource_ref" class="ztree"/></div>
         </div>
         <div id="graphContainer" class="graphContainer">
             <div id="geDiagramContainer" class="geDiagramContainer">
@@ -790,7 +790,7 @@
                                     if (obj.openType === 1) {//开发测试环境
 
                                     }else{//权限环境
-                                        getColumnsByTable({ tableMetaUuid: treeNode.id }).then(result => {
+                                        getColumnsByTable({ tableMetaUuid: treeNode.id, "isEnclose":"1"}).then(result => {
                                             if (result.data == null) {
                                                 obj.$message.error('数据表字段信息获取失败：' + result.data.message)
                                             } else {
@@ -854,7 +854,7 @@
                             } else {
                                 // 统一表和试图的类型为datasource，不需要替换的就执行空方法
                                 indexJs.replaceNodeType(e.nodeList)
-                                obj.zTreeObj = $.fn.zTree.init($('#ztree_datasource'), setting, e.nodeList)
+                                obj.zTreeObj = $.fn.zTree.init($(obj.$refs.ztree_datasource_ref), setting, e.nodeList)
                                 obj.loading.destroy()
                             }
                         }, 'json')
@@ -866,7 +866,7 @@
                             } else {
                                 // 统一表和试图的类型为datasource，不需要替换的就执行空方法
                                 indexJs.replaceNodeType(response.data)
-                                obj.zTreeObj = $.fn.zTree.init($('#ztree_datasource'), setting, response.data)
+                                obj.zTreeObj = $.fn.zTree.init($(obj.$refs.ztree_datasource_ref), setting, response.data)
                                 obj.loading.destroy()
                             }
                         })

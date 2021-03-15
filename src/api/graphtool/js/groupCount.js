@@ -9,11 +9,12 @@ let nodeData = null
 export const sendVueObj = (_this) => {
     groupCountVue = _this
     nodeData = _this.nodeData
+    groupCountVue.nodeIsSet = nodeData.isSet
 }
 
 // 初始化分组汇总界面
 export function init() {
-    if (nodeData.isSet) { // 如果配置过，则反显加载配置信息
+    if (groupCountVue.nodeIsSet) { // 如果配置过，则反显加载配置信息
         groupCountVue.columnsInfo = nodeData.columnsInfo
         // 初始化分组穿梭框和分组字段（不是已分组字段，是可分组字段）输出列列表
         initGroupTransfer(groupCountVue.columnsInfo)
@@ -103,12 +104,12 @@ function initGroupTransfer(columnsInfo) {
             // 初始化汇总字段的输出列行数据（只初始化汇总字段的）
             const sign = columnsInfo[i].sign
             const countType = columnsInfo[i].countType
-            initOutputColumn(columnsInfo[i], true, sign, countType)
+            initOutputColumn(columnsInfo[i], true, sign, countType, true)
         }else{
             // columnsInfo[i].isCount：第一种是undefined（这种情况是第一次配置该节点）
             // 第二种是false（这种情况是该节点已经配置过一次，为false的字段信息是可用于分组的字段，同时也是前置节点的所有输出字段）
             // 初始化输出列信息
-            initOutputColumn(columnsInfo[i], false, null, null)
+            initOutputColumn(columnsInfo[i], false, null, null, true)
             /**
              * @type {{name: *, value: *, title: *, type: string}}
              * @description name与value属性是为了满足xmSelect插件的数据格式
@@ -116,7 +117,7 @@ function initGroupTransfer(columnsInfo) {
              * @description type是处理数据时需要用到的额外属性
              */
             let name = columnsInfo[i].newColumnName// 读取其输出列名称
-            if (nodeData.isSet) { // 如果配置过了，读取其字段名称
+            if (groupCountVue.nodeIsSet) { // 如果配置过了，读取其字段名称
                 name = columnsInfo[i].columnName
             }
             groupCountVue.columnData.push({ 'name': name, 'value': name, 'pinyin': name, 'label': name, 'key': name, 'type': columnsInfo[i].columnType })
@@ -130,13 +131,14 @@ function initGroupTransfer(columnsInfo) {
  * @param isCountTr 是否是汇总字段的行
  * @param sign 唯一标识
  * @param countType 汇总方式对象{"name":*,"value":*}
+ * @param isInit 是否是初始化字段（否的话就是新增）
  */
-function initOutputColumn(columnInfo, isCountTr, sign, countType) {
+function initOutputColumn(columnInfo, isCountTr, sign, countType, isInit) {
     let columnItem = {
         "id":groupCountVue.ind,
         "nodeId":columnInfo.nodeId,//所属节点ID
         "columnInfo":columnInfo,//当前输出字段信息
-        "columnName":nodeData.isSet ? columnInfo.columnName : columnInfo.newColumnName,// 字段名称
+        "columnName":groupCountVue.nodeIsSet ? columnInfo.columnName : columnInfo.newColumnName,// 字段名称
         "newColumnName":columnInfo.newColumnName,// 输出字段名称
         "rtn":columnInfo.rtn,
         "checked":columnInfo.checked,
@@ -145,7 +147,7 @@ function initOutputColumn(columnInfo, isCountTr, sign, countType) {
         columnItem.sign = sign
         if(countType){
             columnItem.dataCountType = countType
-            if(!nodeData.isSet){
+            if(!isInit){
                 if(columnItem.columnName.indexOf("`") > -1){ //此处单独处理SPARK数据源下的输出字段显示问题
                     const spark_columnName = columnItem.columnName.replaceAll("`","");
                     columnItem.newColumnName = "`" + spark_columnName + "_" + countType.name + "`"
@@ -155,7 +157,7 @@ function initOutputColumn(columnInfo, isCountTr, sign, countType) {
             }
         }
     }
-    if(countType && !nodeData.isSet){
+    if(countType && !isInit){
         columnItem.columnName = countType.value + "(" + columnItem.columnName + ")";
     }
     groupCountVue.columnItems.push(columnItem)
@@ -299,7 +301,7 @@ function initCountSelectData(trNum) {
                                 for (let i = 0; i < groupCountVue.columnsInfo.length; i++) {
                                     if (groupCountVue.columnsInfo[i].newColumnName === columnValue[0].value) {
                                         // 追加一行输出列配置
-                                        initOutputColumn(groupCountVue.columnsInfo[i], true, sign, countType)
+                                        initOutputColumn(groupCountVue.columnsInfo[i], true, sign, countType, false)
                                         refreshOutputColumn()
                                         break
                                     }
@@ -323,7 +325,7 @@ function initCountSelectData(trNum) {
                             for (let i = 0; i < groupCountVue.columnsInfo.length; i++) {
                                 if (groupCountVue.columnsInfo[i].newColumnName === columnValue[0].value) {
                                     // 追加一行输出列配置
-                                    initOutputColumn(groupCountVue.columnsInfo[i], true, sign, countType)
+                                    initOutputColumn(groupCountVue.columnsInfo[i], true, sign, countType, false)
                                     refreshOutputColumn()
                                     break
                                 }

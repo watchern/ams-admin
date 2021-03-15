@@ -72,7 +72,7 @@
             </div>
         </el-dialog>
         <el-dialog v-if="customizeColumnDialogVisible" :visible.sync="customizeColumnDialogVisible" :title="customizeColumnTitle" :close-on-press-escape="false" :close-on-click-modal="false" :append-to-body="true" width="1000px">
-            <CustomizeColumn ref="customizeColumn" :columnInfoArr="columnsInfoPre" :cur-column-info="curColumnInfo" node-type="groupCount"/>
+            <CustomizeColumn ref="customizeColumn" :columnInfoArr="columnsInfo" :node-is-set="nodeIsSet" :cur-column-info="curColumnInfo" node-type="groupCount"/>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="customizeColumnDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="customizeColumnBack()">保存</el-button>
@@ -92,6 +92,7 @@
             return {
                 items: [], // 存放霍总配置的行号
                 nodeData: null,
+                nodeIsSet:false,
                 columnsInfoPre: [], // 前置节点的输出列信息集合（只用于有且只有一个前置节点的节点）
                 countTrNum: 1,
                 isAllDisabled:false,
@@ -234,6 +235,13 @@
                     if(typeof curColumnInfo.sign !== 'undefined' && curColumnInfo.sign !== ''){
                         this.$message({'type':'warning','message':'汇总字段不可被修改'})
                         return
+                    }
+                    //判断当前字段是否被设置为分组字段
+                    for(let i=0; i<this.columnDataValue.length;i++){
+                        if(curColumnInfo.columnName === this.columnDataValue[i]){
+                            this.$message({'type':'warning','message':`当前字段已被占用，不可被修改`})
+                            return
+                        }
                     }
                     this.customizeColumnTitle = '修改设置'
                     this.curColumnInfo = curColumnInfo
