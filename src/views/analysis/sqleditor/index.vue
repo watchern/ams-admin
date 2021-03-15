@@ -481,8 +481,9 @@
                   'ws://localhost:8086/analysis/websocket?' +
                   this.$store.getters.personuuid*/
                 const webSocketPath =
-                    process.env.VUE_APP_ANALYSIS_WEB_SOCKET +
-                    this.$store.getters.personuuid +
+                    // process.env.VUE_APP_ANALYSIS_WEB_SOCKET +
+                  'ws://' + window.location.host + ':' +window.location.port + '/websocket?' +
+                  this.$store.getters.personuuid +
                     'sqleditor'+this.pushUuid
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
