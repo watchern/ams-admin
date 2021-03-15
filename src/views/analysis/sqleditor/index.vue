@@ -149,8 +149,8 @@
             <div id="tableMenu" class="rightMenu">
                 <ul>
                     <li @click="getSelectSql('tableMenu')">生成SELECT语句</li>
-                    <!--          <li onclick="">查看表信息</li>
-                              <li onclick="">查看表关联信息</li>-->
+                    <li @click="selectTableRelInfo('tableMenu')">查看表关联信息</li>
+                  <!--<li onclick="">查看表信息</li>-->
                 </ul>
             </div>
         </div>
@@ -244,11 +244,17 @@
         >确 定</el-button>
       </span>
         </el-dialog>
+      <el-dialog title="表关联信息" :visible.sync="selectTableRelInfoDialog" width="60%" :append-to-body="true">
+        <tablerelation :table-id="selectTableRelInfoTableId" :open-type="openTypeOne"/>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="selectTableRelInfoDialog = false">关闭</el-button>
+        </div>
+      </el-dialog>
     </div>
 </template>
 <script>
     import {uuid2} from "@/api/analysis/auditmodel";
-
+    import tablerelation from'@/views/data/table/tablerelation'
     require('@/components/ams-codemirror/addon/edit/matchbrackets')
     require('@/components/ams-codemirror/addon/selection/active-line')
     require('@/components/ams-codemirror/mode/sql/sql')
@@ -304,6 +310,8 @@
         saveSqlEditorExecuteDefaultPath,
         sendSqlEditorVue,
         getGraphSaveInfo,
+        getZtreeSelectNode,
+        hideRMenu
     } from '@/api/analysis/sqleditor/sqleditor'
     import sqlDraftList from '@/views/analysis/sqleditor/sqldraftlist'
     import { updateDraft } from '@/api/analysis/sqleditor/sqldraft'
@@ -347,7 +355,7 @@
     let lastSqlIndex = -1
     export default {
         name: 'SQLEditor',
-        components: { sqlDraftList, childTabs, paramDraw, dataTree, paramDrawNew },
+        components: { sqlDraftList, childTabs, paramDraw, dataTree, paramDrawNew,tablerelation },
         props: ["sqlEditorParamObj", "sqlValue","callType","locationUuid","locationName","modelUuid",'dataUserId','sceneCode1','callType'],
         created(){
             if(this.dataUserId!=undefined && this.sceneCode1!=undefined){
@@ -357,6 +365,9 @@
         },
         data() {
             return {
+              openTypeOne:"showTable",
+              selectTableRelInfoDialog:false,
+              selectTableRelInfoTableId:'',
               errorMessage:'',
               isExecuteError:true,
                 sqlDraftForm: {
@@ -1035,6 +1046,15 @@
              */
             async getVerifySqlResult(){
                 return await verifySql()
+            },
+            /**
+             * 查看表关联信息
+             */
+            selectTableRelInfo(tableMenu){
+              var nodes = getZtreeSelectNode()
+              this.selectTableRelInfoTableId = nodes[0].id;
+              this.selectTableRelInfoDialog = true
+              hideRMenu(tableMenu)
             }
         }
     }

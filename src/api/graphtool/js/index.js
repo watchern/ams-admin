@@ -847,6 +847,7 @@ export function getResultColumnInfo(){
 }
 
 export async function saveModelGraph(){
+    console.log("=====调用模型图形的保存方法=====")
     let isError = false
     let message = ''
     let modelSql = ''//生成的模型语句
@@ -880,9 +881,11 @@ export async function saveModelGraph(){
                 'nodeIdList': lineNodeIdArr.join(","),
                 'nodeData': JSON.stringify(graph.nodeData)
             }
-            // graph.nodeData[nodeId].replaceParamSql = replaceParamSql
+            console.log("=====模型图形开始执行=====")
             const response = await executeNodeSql(dataParam)
             if(response.data != null){
+                console.log("=====模型图形执行结果=====")
+                console.log(response.data)
                 if(response.data.isError){
                     isError = true
                     message = '模型设计校验图形未通过：存在运行出错的节点'
@@ -894,6 +897,7 @@ export async function saveModelGraph(){
                     let dropTableSql = ''//删除表的SQL语句
                     let selectSql = ''
                     let tableName = ''
+                    console.log("开始组织节点结果表语句======")
                     for (let i = 0; i < lineNodeIdArr.length; i++) {
                         let curNodeInfo = newNodeData[lineNodeIdArr[i]].nodeInfo
                         if(curNodeInfo.optType === 'datasource'){
@@ -971,7 +975,7 @@ export async function saveModelGraph(){
                                     modelSql += "/*节点【" + preNodeInfo.nodeName + "】的查询结果表的SQL语句*/\n " + selectSql + "\n"
                                 }else{
                                     dropViewSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果视图的SQL语句*/\n DROP VIEW " + tableName + "\n"
-                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE OR REPLACE VIEW " + tableName + " AS " + selectSql + "\n";//不能移动位置
+                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS " + selectSql + "\n";//不能移动位置
                                 }
                             }
                         }
@@ -1012,6 +1016,7 @@ export async function saveModelGraph(){
                     //     //替换ID结束
                     // }
                     modelSql = dropTableSql + modelSql + dropViewSql
+                    console.log("=====组织节点结果表语句结束=====")
                 }
             }else{
                 isError = true
@@ -1019,6 +1024,7 @@ export async function saveModelGraph(){
             }
         }
         if(!isError){
+            console.log("=====模型图形开始保存=====")
             //保存当前模型图形信息
             //获取图形xml数据
             var encoder = new mxCodec();
@@ -1038,6 +1044,8 @@ export async function saveModelGraph(){
                 "modelSql" : modelSql
             };
             await saveGraphInterface(param).then(response => {
+                console.log("=====模型图形保存结果=====")
+                console.log(response.data)
                 if (!response.data) {
                     isError = true
                     message = '模型设计保存图形信息失败'
@@ -1423,23 +1431,6 @@ export function hideAndShowLeftArea() {
 export function hideAndShowRightArea() {
     hideRMenu('H_S_Menu')
     ownerEditor.rightAreaH_S()
-}
-
-/**
- * 增加水印
- */
-export function addWaterMark(containerId) {
-    // 增加水印
-    var loginUserId = $('#loginUserId').val()
-    var nowTime = getNowTime()
-    var setting = { 'watermark_txt': loginUserId + ' ' + nowTime }
-    if (containerId && containerId !== '') {
-        setting.containerId = containerId
-        $('#' + containerId + ' .mask_div').remove()
-    } else {
-        $('.mask_div').remove()
-    }
-    watermark(setting)
 }
 
 // 修改参数设置

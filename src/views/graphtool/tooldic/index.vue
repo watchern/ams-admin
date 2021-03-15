@@ -1032,6 +1032,7 @@
                             position: 'bottom-right'})
                     }
                 }
+                //此处保存不包含模型图形，模型图形的保存按钮不显示
                 if(this.openGraphType === 1){//个人图形
                     data.graphType = 1
                     saveGraphInterface(data).then(response => {
@@ -1066,7 +1067,7 @@
                         this.initData()
                         this.$nextTick(() => {
                             $this.websocketBatchId = new UUIDGenerator().id
-                            $this.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable }]
+                            $this.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable, optType: '' }]
                             $this.resultTabActiveName = '0'
                             $this.viewData()
                         })
