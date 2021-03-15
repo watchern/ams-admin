@@ -104,7 +104,9 @@
             initWebsocket(){
                 let $this = this
                 let loginUserUuid = this.$store.state.user.id
-                const webSocketPath = `${process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET}${loginUserUuid}ScreenQuery`
+
+              const webSocketPath = 'ws://' + window.location.host + ':' +window.location.port + '/websocket?' + loginUserUuid + 'ScreenQuery'
+                // const webSocketPath = `${process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET}${loginUserUuid}ScreenQuery`
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
                 // 发送消息

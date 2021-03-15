@@ -105,8 +105,7 @@
             },
             initWebsocket(){
                 let $this = this
-                const webSocketPath = `${'' +'ws://' + window.location.host + ':' +window.location.port + '/websocket?' +
-                ''}${this.$store.state.user.id}graph_comparison`
+                const webSocketPath = 'ws://' + window.location.host + ':' +window.location.port + '/websocket?' + this.$store.state.user.id + 'graph_comparison'
                 // const webSocketPath = `${process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET}${this.$store.state.user.id}graph_comparison`
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
