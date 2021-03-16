@@ -474,7 +474,8 @@ export default {
         background: #FFFFFF;
         box-shadow: 17px 17px 34px 0 rgba(0,0,0,0.10);
         border-radius: 25.2px;
-        padding: 27px;
+        padding: 50px;
+        padding-right:200px;
         width: 479px;
         position: relative;
         margin:20px;
@@ -515,7 +516,7 @@ export default {
         }
       }
       .bottom-card{
-        width: 479px;
+        width: 400px;
         margin-top: 33px;
         position: relative;
         //.left-card{
