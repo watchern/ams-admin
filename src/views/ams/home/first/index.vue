@@ -267,29 +267,29 @@ export default {
       //   }
       // }
     })
-    axios.get('/psbcaudit/homepage/loadTodoInfo').then(resp =>{
-      if (resp.data !== '') {
-        this.TopTodo = resp.data
-      }
-    })
-    axios.get('/psbcaudit/homepage/loadPrjInfo').then(resp =>{
-      if (resp.data.prjList.length > 0) {
-        this.projectDetails = []
-          for (let i = 0;i < resp.data.prjList.length; i++) {
-            this.projectDetails.push({
-              name: resp.data.prjList[i].prjName,
-              time: resp.data.prjList[i].createTime,
-              lengthIn: resp.data.prjList.length,
-              idProject: resp.data.prjList[i].projectUUID,
-              idPlan: resp.data.prjList[i].planUUID
-            })
-          }
-        this.myProject(0)
-      }
-    })
-    axios.get('/psbcaudit/homepage/hasCount').then(resp =>{
-      console.log(resp)
-    })
+    // axios.get('/psbcaudit/homepage/loadTodoInfo').then(resp =>{
+    //   if (resp.data !== '') {
+    //     this.TopTodo = resp.data
+    //   }
+    // })
+    // axios.get('/psbcaudit/homepage/loadPrjInfo').then(resp =>{
+    //   if (resp.data.prjList.length > 0) {
+    //     this.projectDetails = []
+    //       for (let i = 0;i < resp.data.prjList.length; i++) {
+    //         this.projectDetails.push({
+    //           name: resp.data.prjList[i].prjName,
+    //           time: resp.data.prjList[i].createTime,
+    //           lengthIn: resp.data.prjList.length,
+    //           idProject: resp.data.prjList[i].projectUUID,
+    //           idPlan: resp.data.prjList[i].planUUID
+    //         })
+    //       }
+    //     this.myProject(0)
+    //   }
+    // })
+    // axios.get('/psbcaudit/homepage/hasCount').then(resp =>{
+    //   console.log(resp)
+    // })
   },
   methods: {
     formatter(num) {
