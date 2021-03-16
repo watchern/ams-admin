@@ -377,7 +377,7 @@ export default {
      */
     getWebSocket(personuuid) {
       // const wsuri = process.env.VUE_APP_BASE_WEB_SOCKET + personuuid + 'systemTask'// 连接地址，可加参数
-      const wsuri = 'ws://' + window.location.host + ':' +window.location.port + '/websocket?' + personuuid + 'systemTask'// 连接地址，可加参数
+      const wsuri = 'ws://' + window.location.host+ '/websocket?' + personuuid + 'systemTask'// 连接地址，可加参数
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(wsuri) // 建立与服务端的连接
       // 当服务端打开连接
