@@ -332,7 +332,6 @@ export function init() {
             relationVue.join = nodeData.setting.join
         }
         if (nodeData.setting.sqlEdit) {
-            // relationVue.columnsInfo = nodeData.columnsInfo
             let obj = JSON.parse(nodeData.setting.sqlEdit)
             relationVue.myDiagram.model = go.Model.fromJson(nodeData.setting.sqlEdit)
             // 获取节点数据

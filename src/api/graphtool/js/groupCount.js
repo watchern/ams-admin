@@ -15,8 +15,22 @@ export const sendVueObj = (_this) => {
 // 初始化分组汇总界面
 export function init() {
     if (groupCountVue.nodeIsSet) { // 如果配置过，则反显加载配置信息
-        groupCountVue.columnsInfo = nodeData.columnsInfo
-        // 初始化分组穿梭框和分组字段（不是已分组字段，是可分组字段）输出列列表
+        groupCountVue.columnsInfo = nodeData.setting.columnsInfo
+        //初始化输出字段列表
+        Array.from(nodeData.columnsInfo, item => {
+            if (item.isCount) {
+                // 初始化汇总字段的输出列行数据（只初始化汇总字段的）
+                const sign = item.sign
+                const countType = item.countType
+                initOutputColumn(item, true, sign, countType, true)
+            } else {
+                // item.isCount：第一种是undefined（这种情况是第一次配置该节点）
+                // 第二种是false（这种情况是该节点已经配置过一次，为false的字段信息是可用于分组的字段，同时也是前置节点的所有输出字段）
+                // 初始化输出列信息
+                initOutputColumn(item, false, null, null, true)
+            }
+        })
+        // 循环输出列信息，组织穿梭框所使用的字段数据数组集合
         initGroupTransfer(groupCountVue.columnsInfo)
         groupCountVue.columnDataValue = nodeData.setting.groupData
         let countData = nodeData.setting.countData// 获取汇总字段的配置数组
@@ -86,6 +100,13 @@ export function init() {
         groupCountVue.checkAllFun()
     } else {
         groupCountVue.columnsInfo = groupCountVue.columnsInfoPre // 获取当前节点的前置节点的所有输出列
+        //初始化输出字段列表
+        Array.from(groupCountVue.columnsInfoPre, item => {
+            // item.isCount：第一种是undefined（这种情况是第一次配置该节点）
+            // 第二种是false（这种情况是该节点已经配置过一次，为false的字段信息是可用于分组的字段，同时也是前置节点的所有输出字段）
+            // 初始化输出列信息
+            initOutputColumn(item, false, null, null, true)
+        })
         initGroupTransfer(groupCountVue.columnsInfo)
         groupCountVue.countTrNum = 0
         addCountTr()
@@ -95,34 +116,19 @@ export function init() {
 
 /**
  * 初始化分组穿梭框
- * @param columnsInfo 输出列信息的数组
+ * @param columnsInfo 分组设置所需输出列信息的数组
  */
 function initGroupTransfer(columnsInfo) {
-    // 循环输出列信息，组织穿梭框所使用的字段数据数组集合
-    for (let i = 0; i < columnsInfo.length; i++) {
-        if (columnsInfo[i].isCount) {
-            // 初始化汇总字段的输出列行数据（只初始化汇总字段的）
-            const sign = columnsInfo[i].sign
-            const countType = columnsInfo[i].countType
-            initOutputColumn(columnsInfo[i], true, sign, countType, true)
-        }else{
-            // columnsInfo[i].isCount：第一种是undefined（这种情况是第一次配置该节点）
-            // 第二种是false（这种情况是该节点已经配置过一次，为false的字段信息是可用于分组的字段，同时也是前置节点的所有输出字段）
-            // 初始化输出列信息
-            initOutputColumn(columnsInfo[i], false, null, null, true)
-            /**
-             * @type {{name: *, value: *, title: *, type: string}}
-             * @description name与value属性是为了满足xmSelect插件的数据格式
-             * @description pinyin、label、key属性是transfer插件的数据格式
-             * @description type是处理数据时需要用到的额外属性
-             */
-            let name = columnsInfo[i].newColumnName// 读取其输出列名称
-            if (groupCountVue.nodeIsSet) { // 如果配置过了，读取其字段名称
-                name = columnsInfo[i].columnName
-            }
-            groupCountVue.columnData.push({ 'name': name, 'value': name, 'pinyin': name, 'label': name, 'key': name, 'type': columnsInfo[i].columnType })
-        }
-    }
+    Array.from(columnsInfo, item => {
+        /**
+         * @type {{name: *, value: *, title: *, type: string}}
+         * @description name与value属性是为了满足xmSelect插件的数据格式
+         * @description pinyin、label、key属性是transfer插件的数据格式
+         * @description type是处理数据时需要用到的额外属性
+         */
+        const name = item.newColumnName// 读取其输出列名称
+        groupCountVue.columnData.push({ 'name': name, 'value': name, 'pinyin': name, 'label': name, 'key': name, 'type': item.columnType })
+    })
 }
 
 /**
@@ -489,7 +495,8 @@ export function saveNodeInfo() {
     }
     nodeData.setting.countData = countData
     nodeData.setting.groupData = groupCountVue.columnDataValue// 获取已分组字段数组
-    nodeData.columnsInfo = curColumnsInfo
+    nodeData.setting.columnsInfo = groupCountVue.columnsInfo//初始化输出列的信息
+    nodeData.columnsInfo = curColumnsInfo//当前重组的输出列信息
     nodeData.isSet = true
     groupCountVue.$refs.basicVueRef.save_base()// 保存基础信息
 }

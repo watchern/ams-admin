@@ -2,8 +2,8 @@
     <div style="width: 100%;">
         <el-row style="padding-top: 10px;">
             <el-col align="right">
-                <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" style="line-height: normal;"/>
-                <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" style="line-height: normal;"/>
+                <el-button type="primary" v-show="nodeData.nodeInfo.optType !== 'union' && nodeData.nodeInfo.optType !== 'delRepeat'" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" style="line-height: normal;"/>
+                <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" title="说明" style="line-height: normal;"/>
             </el-col>
         </el-row>
         <el-table :data="items" border style="width: 100%;" height="526" ref="outPutTable">
@@ -25,7 +25,7 @@
             </el-table-column>
             <el-table-column align="center" label="操作" width="100" :resizable="false">
                 <template slot-scope="scope">
-                    <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" style="line-height: normal;"/>
+                    <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" title="设置" style="line-height: normal;"/>
                 </template>
             </el-table-column>
         </el-table>
@@ -292,7 +292,6 @@
                         resourceTableName = this.curColumnInfo.resourceTableName
                         let index = this.items.findIndex( item => item.id === this.curColumnInfo.id)
                         if(index > -1){
-                            this.items.splice(index,1)
                             this.items.splice(index,1,{id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, checked, resourceTableName})
                         }
                     }
