@@ -1,10 +1,23 @@
 <template>
   <div class="page-container">
     <div class="page-left">
-      <el-collapse class="tools-menu-small" v-model="activeName" accordion>
-        <el-collapse-item title="审计作业" name="1">
+      <el-collapse class="tools-menu-small" v-model="activeName" accordion v-if="showmoremenu">
+        <el-collapse-item :title="moremenugroupId[0].name" name="0">
           <el-tree
-            :data="moremenugroup['402883817586fc2a017586fd9e1a0001']"
+            :data="moremenugroup[0]"
+            node-key="id"
+            show-checkbox
+            :check-strictly="defaultProps.checkStrictly"
+            @check-change="handleCheckChange"
+            ref="tree"
+            highlight-current
+            v-if="activeName === '0'"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item :title="moremenugroupId[1].name" name="1">
+          <el-tree
+            :data="moremenugroup[1]"
             node-key="id"
             show-checkbox
             :check-strictly="defaultProps.checkStrictly"
@@ -15,9 +28,9 @@
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
-        <el-collapse-item title="审计分析" name="2">
+        <el-collapse-item :title="moremenugroupId[2].name" name="2">
           <el-tree
-            :data="moremenugroup['4028838175880ded01758835b393006b']"
+            :data="moremenugroup[2]"
             node-key="id"
             show-checkbox
             :check-strictly="defaultProps.checkStrictly"
@@ -28,9 +41,9 @@
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
-        <el-collapse-item title="审计资源" name="3">
+        <el-collapse-item :title="moremenugroupId[3].name" name="3">
           <el-tree
-            :data="moremenugroup['4028838175880ded01758816610b001a']"
+            :data="moremenugroup[3]"
             node-key="id"
             show-checkbox
             :check-strictly="defaultProps.checkStrictly"
@@ -38,19 +51,6 @@
             ref="tree"
             highlight-current
             v-if="activeName === '3'"
-            :props="defaultProps">
-          </el-tree>
-        </el-collapse-item>
-        <el-collapse-item title="系统配置" name="4">
-          <el-tree
-            :data="moremenugroup['4028838175880ded01758828366f0046']"
-            node-key="id"
-            show-checkbox
-            :check-strictly="defaultProps.checkStrictly"
-            @check-change="handleCheckChange"
-            ref="tree"
-            highlight-current
-            v-if="activeName === '4'"
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
@@ -77,12 +77,13 @@ export default {
       // 左侧数据块
       applications: [],
       // 各菜单内容
-      menugroup: [],
+      moremenugroupId: [],
       moremenugroup: [],
+      showmoremenu: false,
       // 左侧树数据
       defaultProps: {
         children: 'children',
-        label: 'label',
+        label: 'name',
         checkStrictly: true,
         disabled: this.ifFather,
       },
@@ -105,38 +106,10 @@ export default {
   created() {
 	},
   mounted() {
-    getUserRes()
-      .then(response => {
-        response.data.application.forEach((app, index) => {
-          // 设置左侧应用栏数据
-          this.applications.push({
-            name: app.name,
-            id: app.id
-          })
-        })
-        response.data.menugroup.forEach(grp => {
-          const children = []
-          grp.menuList.forEach(menu => {
-            children.push({
-              label: menu.name,
-              id: menu.id,
-              path: this.getCleanSrc(menu.src)
-            })
-          })
-          if (!this.menugroup[grp.appuuid]) {
-            this.menugroup[grp.appuuid] = []
-          }
-          this.menugroup[grp.appuuid].push({
-            label: grp.name,
-            path: grp.navurl,
-            children: children
-          })
-        })
-        this.moremenugroup = this.menugroup
-      })
-      .catch(error => {
-        console.error(error)
-      })
+    let listTree = JSON.parse(sessionStorage.getItem('shenjiMenuTree'))
+    this.moremenugroup = listTree.second
+    this.moremenugroupId = listTree.first
+    this.showmoremenu = true
   },
   watch:{
     'richText'() {
@@ -189,7 +162,6 @@ export default {
         // 根据选择的模块显示已编辑的富文本
         getByMenuId(data.id).then(resp => {
           if(resp.code === 0 && resp.data !== null){
-            console.log(resp.data)
             this.richText = resp.data.helpDocument
             this.helpDocumentUuid = resp.data.helpDocumentUuid
             this.loading = false
@@ -197,7 +169,7 @@ export default {
             let saveData = []
             saveData.push({
               menuId: this.$refs.tree.getCheckedNodes()[0].id,
-              menuName: this.$refs.tree.getCheckedNodes()[0].label,
+              menuName: this.$refs.tree.getCheckedNodes()[0].name,
               menuPath: this.$refs.tree.getCheckedNodes()[0].path,
               helpDocument: ''
             })
