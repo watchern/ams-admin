@@ -45,7 +45,7 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getListSelect" />
     <!-- 弹窗 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="folderFormVisible" width="600px">
+    <el-dialog :close-on-click-modal=false :title="textMap[dialogStatus]" :visible.sync="folderFormVisible" width="600px">
       <el-form ref="folderForm" :model="resourceForm" label-width="80px">
         <el-form-item :label="typeLabel" label-width="120px">
           <el-input v-model="resourceForm.resourceName" style="width: 300px" />
@@ -67,7 +67,7 @@
       </span>
     </el-dialog>
     <!-- 弹窗3 -->
-    <el-dialog v-if="uploadVisible" :visible.sync="uploadVisible" width="800px">
+    <el-dialog :close-on-click-modal="false" v-if="uploadVisible" :visible.sync="uploadVisible" width="800px">
       <el-row>
         <el-col>
           <directory-file-upload v-if="uploadStep === 1" @fileuploadname="fileuploadname" />
@@ -181,7 +181,7 @@
       </span>
     </el-dialog>
     <!-- 弹窗8 分享 -->
-    <el-dialog v-if="shareVisible" :visible.sync="shareVisible" width="800px">
+    <el-dialog :close-on-click-modal="false" v-if="shareVisible" :visible.sync="shareVisible" width="800px">
       <el-row>
         <el-col>
           <PersonTree ref="personTree" />
