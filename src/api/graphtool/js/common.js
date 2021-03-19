@@ -586,8 +586,9 @@ export function executeNode_callback(notExecuteNodeIdArr) {
                                 isRoleTable = true
                             }
                             nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + nodeName
+                            optType = graph.nodeData[parentIds[0]].nodeInfo.optType
                         }
-                        graphIndexVue.resultTableArr.push({ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable })
+                        graphIndexVue.resultTableArr.push({ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable,optType: optType })
                         // 预览数据
                         graphIndexVue.viewData()
                     }
@@ -828,8 +829,9 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
                         let nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + graph.nodeData[resultNodeIdArr[j]].nodeInfo.nodeName
                         let midTableStatus = graph.nodeData[resultNodeIdArr[j]].nodeInfo.midTableStatus
                         let resultTableStatus = graph.nodeData[resultNodeIdArr[j]].nodeInfo.resultTableStatus
+                        let optType = graph.nodeData[parentIds[0]].nodeInfo.optType
                         let resultTableName = ''
-                        if (graph.nodeData[parentIds[0]].nodeInfo.optType === "layering") {//如果当前结果表的父节点是数据分层节点
+                        if (optType === "layering") {//如果当前结果表的父节点是数据分层节点
                             let index = graph.nodeData[resultNodeIdArr[j]].nodeInfo.setting.index
                             resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableNameArr[index]
                         } else {
@@ -839,7 +841,7 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
                         if (midTableStatus === 2 || resultTableStatus === 2) {
                             isRoleTable = true
                         }
-                        graphIndexVue.resultTableArr.push({ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable })
+                        graphIndexVue.resultTableArr.push({ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable, optType: optType })
                     }
                     // 预览数据
                     graphIndexVue.viewData()
@@ -1135,6 +1137,7 @@ export function previewNodeData() {
     let nodeName = ''
     let resultTableName = ''
     let isRoleTable = false
+    let optType = ''
     switch (curNodeInfo.optType) {
         case 'datasource':				// 如果是原表，直接拿其临时表名称
             resultTableName = curNodeInfo.resultTableName
@@ -1152,6 +1155,7 @@ export function previewNodeData() {
                 }
                 nodeId = graph.nodeData[parentIds[0]].nodeInfo.nodeId
                 nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + graph.nodeData[graph.curCell.id].nodeInfo.nodeName
+                optType = graph.nodeData[parentIds[0]].nodeInfo.optType
             } else {																										// 如果是非空结果表，直接拿其临时表名称
                 resultTableName = curNodeInfo.resultTableName
                 nodeId = curNodeInfo.nodeId
@@ -1171,7 +1175,7 @@ export function previewNodeData() {
     graphIndexVue.initData()
     graphIndexVue.$nextTick(() => {
         graphIndexVue.websocketBatchId = new UUIDGenerator().id
-        graphIndexVue.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable }]
+        graphIndexVue.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable, optType: optType }]
         graphIndexVue.resultTabActiveName = '0'
         graphIndexVue.viewData()
     })

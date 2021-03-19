@@ -1113,7 +1113,7 @@ function showRMenu(type, containerId, menuId, x, y) {
  * 隐藏菜单
  * @param menuId 要隐藏的编号
  */
-function hideRMenu(menuId) {
+export function hideRMenu(menuId) {
   if ($('#' + menuId)[0]) $('#' + menuId).css({ 'visibility': 'hidden' })
   $('body').unbind('mousedown', onBodyMouseDown)
 }
@@ -1760,10 +1760,11 @@ export function getSelectSql(menuId) {
   hideRMenu(menuId)
   var nodes = zTreeObj.getSelectedNodes()
   if (nodes.length > 0) {
-    var tableName = nodes[0].name
+    var tableName = nodes[0].enName
     var tableMetaUuid = nodes[0].id
     var columns = CodeMirror.tableColMapping[tableName]
     var oldSql = editorObj.getValue()
+    debugger
     if (!columns || (columns && columns.length === 0)) {
       request({
         baseURL: dataUrl,
@@ -1776,16 +1777,20 @@ export function getSelectSql(menuId) {
         } else {
           if (result.data && result.data.length > 0) {
             var columns = []
+            var enColumns = []
             for (var i = 0; i < result.data.length; i++) {
               if (result.data[i].chnName == '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
                 columns.push(result.data[i].colName)
+                enColumns.push(result.data[i].colName)
               } else {
                 columns.push(result.data[i].chnName)
+                enColumns.push(result.data[i].colName)
+                editorObj.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
               }
             }
-            CodeMirror.tableColMapping[tableName] = columns
-            editorObj.options.hintOptions.tables[tableName] = columns
-            getSelectSQLByColumns(columns, tableName, oldSql, null)
+            CodeMirror.tableColMapping[tableName] = enColumns
+            editorObj.options.hintOptions.tables[tableName] = enColumns
+            getSelectSQLByColumns(enColumns, tableName, oldSql, null)
           } else {
           }
         }
@@ -2132,4 +2137,13 @@ export async function getGraphSaveInfo(){
         returnObj.isChange = response.data.isChange;
     }
     return returnObj;
+}
+
+/**
+ * 获取选中节点
+ * @returns {*}
+ */
+export function getZtreeSelectNode(){
+  var nodes = zTreeObj.getSelectedNodes()
+  return nodes
 }

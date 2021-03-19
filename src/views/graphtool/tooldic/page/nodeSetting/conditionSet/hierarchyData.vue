@@ -64,7 +64,8 @@
                 hierarchy_column:'',
                 hierarchyColumnArr:[],
                 range:'',
-                rangeTip:false
+                rangeTip:false,
+                curColumnsInfo:[]
             }
         },
         mounted() {
@@ -78,20 +79,21 @@
                 let parentIds = this.nodeData.parentIds
                 let parent_node = graph.nodeData[parentIds[0]]
                 let typeArr = ['INTEGER', 'DECIMAL', 'NUMBER', 'FLOAT', 'REAL', 'DATE', 'TIMESTAMP']
-                let columnsInfoPre = this.$parent.$parent.$parent.columnsInfoPre
+                this.curColumnsInfo = this.$parent.$parent.$parent.columnsInfoPre
                 if (this.nodeData.isSet) {
-                    columnsInfoPre = this.nodeData.setting.columnsInfo
+                    this.curColumnsInfo = this.nodeData.setting.columnsInfo
                 }
-                if (columnsInfoPre.length !== 0) { // 初始化数据源
-                    for(let i=0; i<columnsInfoPre.length; i++){
-                        if ($.inArray(columnsInfoPre[i].columnType, typeArr) > -1) {
-                            this.hierarchyColumnArr.push({newColumnName:columnsInfoPre[i].newColumnName})
-                            this.pre_str_column.push(columnsInfoPre[i].newColumnName)
+                if (this.curColumnsInfo.length !== 0) { // 初始化数据源
+                    for(let i=0; i<this.curColumnsInfo.length; i++){
+                        if ($.inArray(this.curColumnsInfo[i].columnType, typeArr) > -1) {
+                            this.hierarchyColumnArr.push({newColumnName:this.curColumnsInfo[i].newColumnName})
+                            this.pre_str_column.push(this.curColumnsInfo[i].newColumnName)
                         }
                     }
                 }
                 if (this.pre_str_column.length === 0) {
                     this.$message({ type: 'warning', message: '上一节点的表或视图暂无可分层的字段' })
+                    this.layeringLoading = false
                 } else {
                     let isRoleTable = false //上级节点的表是否需要走权限
                     let optType = parent_node.nodeInfo.optType
@@ -109,6 +111,7 @@
                     }
                     if (parent_node.nodeInfo.resultTableName === '') {
                         this.$message({ type: 'warning', message: '请先执行上一节点' })
+                        this.layeringLoading = false
                     } else {
                         if (this.nodeData.isSet) {
                             this.layeringLoading = false
@@ -203,7 +206,7 @@
                     hierarchy_column: this.hierarchy_column,
                     hierarchy_map: [],
                     dict_map: this.dict_map,
-                    columnsInfo: this.$parent.$parent.$parent.columnsInfoPre
+                    columnsInfo: this.curColumnsInfo
                 }
                 for(let i=0; i<this.items.length; i++){
                     let c_col_1 = this.items[i].c_col_1

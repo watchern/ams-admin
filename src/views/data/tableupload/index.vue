@@ -40,7 +40,7 @@ export default {
       },
       // TODO
       attrs: {
-        accept: '.xlsx'
+        accept: '.xls'
       }
     }
   },

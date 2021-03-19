@@ -68,8 +68,8 @@
             <el-tab-pane label="输出字段设置" name="outPutCol">
                 <el-row style="padding-top: 10px;">
                     <el-col align="right">
-                        <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" tyle="line-height: normal;"/>
-                        <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" style="line-height: normal;"/>
+                        <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" tyle="line-height: normal;"/>
+                        <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" title="说明" style="line-height: normal;"/>
                     </el-col>
                 </el-row>
                 <el-table :data="items" border style="width: 100%;" height="530" ref="outPutTable">
@@ -91,7 +91,7 @@
                     </el-table-column>
                     <el-table-column align="center" label="操作" width="100" :resizable="false">
                         <template slot-scope="scope">
-                            <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" style="line-height: normal;"/>
+                            <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" title="设置" style="line-height: normal;"/>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -106,7 +106,7 @@
             </div>
         </el-dialog>
         <el-dialog v-if="customizeColumnDialogVisible" :visible.sync="customizeColumnDialogVisible" :title="customizeColumnTitle" :close-on-press-escape="false" :close-on-click-modal="false" :append-to-body="true" width="1000px">
-            <CustomizeColumn ref="customizeColumn" :columnInfoArr="columnsInfoPre" :cur-column-info="curColumnInfo" node-type="relation" :node-data-array="curNodeDataArray"/>
+            <CustomizeColumn ref="customizeColumn" :columnInfoArr="columnsInfo" :node-is-set="nodeIsSet" :cur-column-info="curColumnInfo" node-type="relation" :node-data-array="curNodeDataArray"/>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="customizeColumnDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="customizeColumnBack()">保存</el-button>
@@ -163,7 +163,9 @@
                 customizeColumnDialogVisible:false,
                 customizeColumnTitle:'',
                 customizeColumnType:'',
-                curNodeDataArray:[]
+                curNodeDataArray:[],
+                nodeIsSet:false,
+                columnsInfo:[]
             }
         },
         mounted() {
@@ -295,19 +297,22 @@
                     let rtn = ''
                     let checked = true
                     let id = null
+                    let nodeId = ''
                     let disColumnName = returnObj.columnInfo.newColumnName
                     if(this.customizeColumnType === "1"){//自定义字段
                         id = this.items.length + 1
                         rtn = '自定义字段'
-                        this.items.push({ id, columnName, columnInfo, rtn, disColumnName, checked, resourceTableName })
+                        nodeId = 'customizeColumn'
+                        resourceTableName = 'customizeColumnTempTable'
+                        this.items.push({ id, nodeId, columnName, columnInfo, rtn, disColumnName, checked, resourceTableName })
                     }else{//修改设置
                         id = this.curColumnInfo.id
                         rtn = this.curColumnInfo.rtn
+                        nodeId = this.curColumnInfo.nodeId
                         resourceTableName = this.curColumnInfo.resourceTableName
                         let index = this.items.findIndex( item => item.id === id)
                         if(index > -1){
-                            this.items.splice(index,1)
-                            this.items.splice(index,1,{id, columnName, columnInfo, rtn, disColumnName, checked, resourceTableName})
+                            this.items.splice(index,1,{id, nodeId, columnName, columnInfo, rtn, disColumnName, checked, resourceTableName})
                         }
                     }
                 }

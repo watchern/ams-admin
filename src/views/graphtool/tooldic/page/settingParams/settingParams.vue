@@ -6,10 +6,10 @@
                     <el-collapse v-model="activeName" accordion >
                         <el-collapse-item name="nodeColumn" title="节点信息">
                             <el-input v-model="searchColumnContent" placeholder="搜索关键字"/>
-                            <ul id="nodeZtree" class="ztree" style="height:415px;margin-top: 10px;margin-bottom: 0;"/>
+                            <ul ref="nodeZtreeRef" class="ztree" style="height:415px;margin-top: 10px;margin-bottom: 0;"/>
                         </el-collapse-item>
                         <el-collapse-item name="paramList" title="参数">
-                            <ul id="paramZtree" class="ztree" style="height:460px;margin: 0 !important;"/>
+                            <ul ref="paramZtreeRef" class="ztree" style="height:460px;margin: 0 !important;"/>
                         </el-collapse-item>
                     </el-collapse>
                 </el-col>
@@ -150,7 +150,7 @@
             searchColumnZtree(){
                 let searchColumnContent = $.trim(this.searchColumnContent)
                 if(searchColumnContent.length === 0){
-                    this.nodeZtreeObj = $.fn.zTree.init($("#nodeZtree"), this.nodeZtreeSetting, [this.nodeZtreeRoot])
+                    this.nodeZtreeObj = $.fn.zTree.init($(this.$refs.nodeZtreeRef), this.nodeZtreeSetting, [this.nodeZtreeRoot])
                 }else{
                     let curRootNode = { ...{},...this.nodeZtreeRoot}
                     let childrens = []
@@ -160,7 +160,7 @@
                         }
                     })
                     curRootNode.children = childrens
-                    this.nodeZtreeObj = $.fn.zTree.init($("#nodeZtree"), this.nodeZtreeSetting, [curRootNode])
+                    this.nodeZtreeObj = $.fn.zTree.init($(this.$refs.nodeZtreeRef), this.nodeZtreeSetting, [curRootNode])
                 }
             }
         }

@@ -107,8 +107,14 @@ export default {
     getTableColumn(tableId) {
       var that = this;
       $("#colName").html("");
-      var url = this.dataContextUrl + '/tableMeta/getCols'
-      $.post(url, { tableMetaUuid: tableId }, function (res) {
+
+      // 解决HTTP400错误
+      request({
+        baseURL: this.dataContextUrl,
+        url: '/tableMeta/getCols',
+        method: 'post',
+        params: { tableMetaUuid: tableId,isEnclose:"-1" }
+      }).then(res => {
         $.each(res.data,function (number,value) {
           that.colList.push(value.colName);
           var li = $("<li id='" + value.colMetaUuid + " '>" + value.colName + "</li>");
@@ -120,7 +126,22 @@ export default {
           }
           $("#colName").append(li);
         })
-      },"json")
+      })
+
+      // var url = this.dataContextUrl + '/tableMeta/getCols'
+      // $.post(url, { tableMetaUuid: tableId }, function (res) {
+      //   $.each(res.data,function (number,value) {
+      //     that.colList.push(value.colName);
+      //     var li = $("<li id='" + value.colMetaUuid + " '>" + value.colName + "</li>");
+      //     for (var i = 0; i < li.length; i++) {
+      //       li[i].onclick  = that.setStyle;
+      //       li[i].ondragstart = that.ulDragStart;
+      //       li[i].draggable = true;
+      //       li[i].ondragend = that.ulDragEnd;
+      //     }
+      //     $("#colName").append(li);
+      //   })
+      // },"json")
     },
 
     /**

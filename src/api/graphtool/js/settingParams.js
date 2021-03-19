@@ -210,7 +210,7 @@ async function initNodeZtree(nodeId) {
         if (settingVue.nodeZtreeRoot.children.length === 0) {
             settingVue.$message({ type: 'warning', message: '当前节点无可使用输出字段，请重新执行节点' })
         }else{
-            settingVue.nodeZtreeObj = $.fn.zTree.init($('#nodeZtree'), settingVue.nodeZtreeSetting, [settingVue.nodeZtreeRoot])
+            settingVue.nodeZtreeObj = $.fn.zTree.init($(settingVue.$refs.nodeZtreeRef), settingVue.nodeZtreeSetting, [settingVue.nodeZtreeRoot])
             settingVue.initTreeSuccess = true
         }
     } else {
@@ -309,7 +309,7 @@ function initParamZtree() {
         }
     }
     getParamsTree().then(result => {
-        settingVue.paramZtreeObj = $.fn.zTree.init($('#paramZtree'), paramSetting,  result.data.paramNode)
+        settingVue.paramZtreeObj = $.fn.zTree.init($(settingVue.$refs.paramZtreeRef), paramSetting,  result.data.paramNode)
         // paramManager = result.data.paramManager
         // developManager = result.data.developManager
     })

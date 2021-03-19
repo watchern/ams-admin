@@ -11,7 +11,8 @@
             return {
                 nodeData:null,
                 columnData:[],
-                columnDataValue:[]
+                columnDataValue:[],
+                curColumnsInfo:[]
             }
         },
         mounted() {
@@ -21,30 +22,29 @@
             init() {
                 let graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
+                this.curColumnsInfo = this.$parent.$parent.$parent.columnsInfoPre
                 if (this.nodeData.isSet) {
-                    this.columnData = this.nodeData.setting.columnData
+                    this.curColumnsInfo = this.nodeData.setting.columnsInfo
                     this.columnDataValue = this.nodeData.setting.delRepeatData
                     this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(this.columnDataValue)// 反显
-                }else{
-                    let columnsInfoPre = this.$parent.$parent.$parent.columnsInfoPre
-                    Array.from(columnsInfoPre,item => {
-                        this.columnData.push({
-                            'pinyin': item.newColumnName,
-                            'label': item.newColumnName,
-                            'key': item.newColumnName
-                        })
-                    })
                 }
+                Array.from(this.curColumnsInfo,item => {
+                    this.columnData.push({
+                        'pinyin': item.newColumnName,
+                        'label': item.newColumnName,
+                        'key': item.newColumnName
+                    })
+                })
             },
             changeSortData(){
                 this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(this.columnDataValue)
             },
             saveSetting() {
                 this.nodeData.setting.delRepeatData = this.columnDataValue
-                this.nodeData.setting.columnData = this.columnData
+                this.nodeData.setting.columnsInfo = this.curColumnsInfo
             },
             inputVerify() {
-                var verify = true
+                let verify = true
                 if (this.columnDataValue.length === 0) {
                     this.$message({ type: 'warning', message: '已选择去重字段列表不能为空' })
                     verify = false

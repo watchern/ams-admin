@@ -58,7 +58,6 @@
   padding: 4px;
   position: relative;
   color:#ffffff;
-  z-index: 1000;
   font-family: "iconfont" !important;
   font-weight: normal!important;
 }
@@ -229,6 +228,13 @@
 }
 .oper-btn.link-1:hover::before{
   content:'绑定资源'!important;
+}
+
+.oper-btn.link-3:after{
+  content:'\e6af'!important;
+}
+.oper-btn.link-3:hover::before{
+  content:'关联信息'!important;
 }
 // publish
 .oper-btn.publish:after{
@@ -501,6 +507,18 @@
 .oper-btn.export-2:hover::before{
   content:'导出'!important;
 }
+.oper-btn.export-4:after{
+  content:'\e775'!important;
+}
+.oper-btn.export-4:hover::before{
+  content:'结果导出'!important;
+}
+.oper-btn.export-5:after{
+  content:'\e775'!important;
+}
+.oper-btn.export-5:hover::before{
+  content:'模板导出'!important;
+}
 
 .oper-btn.split-2:after{
   content:'\e617'!important;
@@ -593,8 +611,12 @@
   content:'取消'!important;
 }
 
-
-
+.oper-btn.import-2:after{
+  content:'\e7a3'!important;
+}
+.oper-btn.import-2:hover::before{
+  content:'模板导入'!important;
+}
 
 // 未使用 16个
 .oper-btn.pdf:after{
@@ -652,4 +674,12 @@
 }
 .oper-btn.minussign:hover::before{
   content:'跳过指定环节'!important;
+}
+
+// etl依赖添加删除
+.oper-btn.scheduleadd:after{
+  content:'\e60a'!important;
+}
+.oper-btn.scheduledelete:after{
+  content:'\e601'!important;
 }

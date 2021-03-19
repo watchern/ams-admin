@@ -7,14 +7,18 @@
                         <span style="padding-left: 10px;">字段列表</span>
                     </template>
                     <el-input v-model="searchColumnContent" placeholder="搜索关键字"/>
-                    <ul id="columnZtree" class="ztree" style="height:436px;margin: 10px 0;" />
+                    <div id="columnZtreeDiv">
+                        <ul id="columnZtree" ref="columnZtreeRef" class="ztree"/>
+                    </div>
                 </el-collapse-item>
                 <el-collapse-item name="funZtreeList">
                     <template slot="title">
                         <span style="padding-left: 10px;">函数列表</span>
                     </template>
                     <el-input v-model="searchFunContent" placeholder="搜索关键字"/>
-                    <ul id="funZtree" class="ztree" style="height:436px;margin: 10px 0;" />
+                    <div id="funZtreeDiv">
+                        <ul id="funZtree" ref="funZtreeRef" class="ztree"/>
+                    </div>
                 </el-collapse-item>
             </el-collapse>
         </el-col>
@@ -59,7 +63,6 @@
                 funZtree:null,
                 columnRootNodeArr:[],
                 funRootNodeArr:[],
-                rtnArr:[],
                 searchColumnContent:'',
                 searchFunContent:'',
                 activeName:'columnZtreeList',
@@ -81,11 +84,11 @@
                     {"name":"包含","value":"IN"}],
                 outputColumnName:'',
                 specialSignArr:['SELECT ','UPDATE ','DELETE ','ALTER ','DROP ','TRUNCATE ','BEGIN ',' END','FOR LOOP ',' END LOOP'],
-                columnType:'VARCHAR2',
-                columnTypeArr:[{'name':'字符','val':'VARCHAR2'},{'name':'数值','val':'NUMBER'},{'name':'日期','val':'TIMESTAMP'}],
+                columnType:'VARCHAR',
+                columnTypeArr:[{'name':'字符','val':'VARCHAR'},{'name':'数值','val':'NUMBER'},{'name':'日期','val':'TIMESTAMP'}],
             }
         },
-        props:['columnInfoArr','curColumnInfo','nodeType','nodeDataArray'],
+        props:['columnInfoArr','curColumnInfo','nodeType','nodeIsSet','nodeDataArray'],
         mounted() {
             this.initData()
         },
@@ -104,7 +107,6 @@
                 if(typeof this.curColumnInfo !== "undefined" && this.curColumnInfo != null){
                     let columnInfo = this.curColumnInfo.columnInfo
                     this.customizeColumnVal = this.curColumnInfo.curColumnName || this.curColumnInfo.columnName
-                    this.columnLength = columnInfo.columnLength
                     let obj = this.replaceColumnType(columnInfo.columnType.toUpperCase())
                     this.columnType = obj.columnTypeVal
                     this.outputColumnName = this.curColumnInfo.disColumnName || this.curColumnInfo.newColumnName
@@ -184,44 +186,48 @@
                 const columnIconPath = require('@/styles/icons/column.png')
                 Array.from(this.columnInfoArr, item => {
                     let exsit = false
-                    for(let j=0; j<this.rtnArr.length; j++){
-                        if(this.rtnArr[j].rtn === item.rtn){
+                    for(let j=0; j<this.columnRootNodeArr.length; j++){
+                        if(this.columnRootNodeArr[j].id === item.nodeId){
                             exsit = true
                             break
                         }
                     }
                     if(!exsit){
-                        this.rtnArr.push({
-                            "rtn":item.rtn,
-                            "nodeId":item.nodeId,
-                            "nullNodeId":item.nullNodeId
-                        })
                         this.columnRootNodeArr.push({
                             "name": item.rtn,
                             "displayName": item.rtn,
                             "isParent": true,
                             "level" : 1,
-                            "id": `${idNum}`,
+                            "id": item.nodeId,
                             "pid" : null,
                             "open": true,
                             "children": []
                         })
-                        idNum++
                     }
-                    let rootNode = this.columnRootNodeArr.find( node => node.name === item.rtn)
+                    let rootNode = this.columnRootNodeArr.find( node => node.id === item.nodeId)
                     if(typeof rootNode !== "undefined"){
                         let nodeName = ''
                         let nodeDisplayName = ''
                         let obj = this.replaceColumnType(item.columnType.toUpperCase())
                         if(this.nodeType === "relation"){
-                            let ind = this.nodeDataArray.findIndex( n => n.tableName === item.resourceTableName)
-                            if(ind > -1){
-                                nodeName = `${this.nodeDataArray[ind].key}.${item.columnName}(${obj.columnTypeName})`
-                                nodeDisplayName = `${this.nodeDataArray[ind].key}.${item.columnName}`
+                            if(this.nodeIsSet){//如果当前节点配置过
+                                nodeName = `${item.columnName}(${obj.columnTypeName})`
+                                nodeDisplayName = `${item.columnName}`
+                            }else {
+                                let ind = this.nodeDataArray.findIndex( n => n.tableName === item.resourceTableName)
+                                if(ind > -1){
+                                    nodeName = `${this.nodeDataArray[ind].key}.${item.newColumnName}(${obj.columnTypeName})`
+                                    nodeDisplayName = `${this.nodeDataArray[ind].key}.${item.newColumnName}`
+                                }
                             }
                         }else{
-                            nodeName = `${item.columnName}(${obj.columnTypeName})`
-                            nodeDisplayName = item.columnName
+                            if(this.nodeIsSet){
+                                nodeName = `${item.columnName}(${obj.columnTypeName})`
+                                nodeDisplayName = item.columnName
+                            }else {
+                                nodeName = `${item.newColumnName}(${obj.columnTypeName})`
+                                nodeDisplayName = item.newColumnName
+                            }
                         }
                         rootNode.children.push({
                             "name": nodeName,
@@ -237,7 +243,7 @@
                         idNum++
                     }
                 })
-                this.columnZtree = $.fn.zTree.init($("#columnZtree"), this.initZtreeSetting('columnZtree'), this.columnRootNodeArr)
+                this.columnZtree = $.fn.zTree.init($(this.$refs.columnZtreeRef), this.initZtreeSetting('columnZtree'), this.columnRootNodeArr)
             },
             initFunZtree(){
                 this.$ajax.get('lib/jsonFile/oracle_Fun.json').then( response => {
@@ -251,7 +257,7 @@
                             })
                         })
                         this.funRootNodeArr = response.data
-                        this.funZtree = $.fn.zTree.init($("#funZtree"), this.initZtreeSetting('funZtree'), response.data)
+                        this.funZtree = $.fn.zTree.init($(this.$refs.funZtreeRef), this.initZtreeSetting('funZtree'), response.data)
                     }
                 }).catch(() => {
                     this.$message.error("函数列表数据加载失败")
@@ -263,13 +269,14 @@
                     "columnTypeVal":'',
                 }
                 switch (cType) {
+                    case "STRING":
                     case "VARCHAR":
                     case "VARCHAR2":
                     case "NVARCHAR":
                     case "NVARCHAR2":
                         obj.columnTypeName = '字符'
-                        obj.columnTypeVal = 'VARCHAR2'
-                        break;
+                        obj.columnTypeVal = 'VARCHAR'
+                        break
                     case "INTEGER":
                     case "DECIMAL":
                     case "NUMBER":
@@ -277,13 +284,17 @@
                     case "REAL":
                         obj.columnTypeName = '数值'
                         obj.columnTypeVal = 'NUMBER'
-                        break;
+                        break
                     case "DATE":
                     case "TIMESTAMP":
                     case "TIMESTAMP(6)":
                         obj.columnTypeName = '日期'
                         obj.columnTypeVal = 'TIMESTAMP'
-                        break;
+                        break
+                    default:
+                        obj.columnTypeName = '字符'
+                        obj.columnTypeVal = 'VARCHAR'
+                    break
                 }
                 return obj
             },
@@ -319,7 +330,6 @@
                     "columnInfo":{
                         "columnName":'',
                         "columnType":'',
-                        "columnLength":null,
                         "newColumnName":'',
                         "isOutputColumn":1,
                         "customizeColumn":true
@@ -349,7 +359,7 @@
                 let searchColumnContent = $.trim(this.searchColumnContent)
                 const setting = this.initZtreeSetting("columnZtree")
                 if(searchColumnContent.length === 0){
-                    this.columnZtree = $.fn.zTree.init($("#columnZtree"), setting, this.columnRootNodeArr)
+                    this.columnZtree = $.fn.zTree.init($(this.$refs.columnZtreeRef), setting, this.columnRootNodeArr)
                 }else{
                     let curRootNodeArr = []
                     this.columnRootNodeArr.forEach( item => {
@@ -363,14 +373,14 @@
                         rootNode.children = childrens
                         curRootNodeArr.push(rootNode)
                     })
-                    this.columnZtree = $.fn.zTree.init($("#columnZtree"), setting, curRootNodeArr)
+                    this.columnZtree = $.fn.zTree.init($(this.$refs.columnZtreeRef), setting, curRootNodeArr)
                 }
             },
             searchFunZtree(){
                 let searchFunContent = $.trim(this.searchFunContent)
                 const setting = this.initZtreeSetting("funZtree")
                 if(searchFunContent.length === 0){
-                    this.funZtree = $.fn.zTree.init($("#funZtree"), setting, this.funRootNodeArr)
+                    this.funZtree = $.fn.zTree.init($(this.$refs.funZtreeRef), setting, this.funRootNodeArr)
                 }else{
                     let curRootNodeArr = []
                     this.funRootNodeArr.forEach( item => {
@@ -385,7 +395,7 @@
                         rootNode.open = true
                         curRootNodeArr.push(rootNode)
                     })
-                    this.funZtree = $.fn.zTree.init($("#funZtree"), setting, curRootNodeArr)
+                    this.funZtree = $.fn.zTree.init($(this.$refs.funZtreeRef), setting, curRootNodeArr)
                 }
             }
         }
@@ -404,8 +414,15 @@
         background-color: #409EFF;
         box-shadow: 3px 3px 5px #409EFF;
     }
-    >>> .ztree>li>ul {
+    #columnZtree,#funZtree{
+        overflow: unset;
+        margin-bottom: 0;
+        margin-top: 0;
+    }
+    #columnZtreeDiv,#funZtreeDiv{
+        height: 456px;
         overflow: auto;
+        width: 100%;
     }
     >>> .el-collapse-item__content{
         padding-bottom: 0;

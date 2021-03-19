@@ -34,9 +34,13 @@ const dataRouter = {
       name: '用户资源查询',
       component: () => import('@/views/data/resquery/index')
     }, {
+      path: 'transcode',
+      name: '数据转码维护',
+      component: () => import('@/views/data/transcode/index')
+    }, {
       path: 'dict',
       name: '数据字典维护',
-      component: () => import('@//views/data/transcode/index')
+      component: () => import('@/views/data/dict/index')
     }, {
       path: 'tblrel',
       name: '表关联关系维护',

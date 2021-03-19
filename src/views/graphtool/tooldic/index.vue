@@ -195,7 +195,7 @@
             <el-input v-model="searchZtreeContent" placeholder="搜索关键字" class="input-with-select">
                 <el-button slot="append" icon="el-icon-search" @click="searchZtree" />
             </el-input>
-            <div id="ztree_datasource_div"><ul id="ztree_datasource" class="ztree"/></div>
+            <div id="ztree_datasource_div"><ul id="ztree_datasource" ref="ztree_datasource_ref" class="ztree"/></div>
         </div>
         <div id="graphContainer" class="graphContainer">
             <div id="geDiagramContainer" class="geDiagramContainer">
@@ -247,10 +247,10 @@
                     <div id="nodeRemark" v-html="nodeRemarkHtml" @click="viewEgEvent"></div>
                 </el-tab-pane>
                 <el-tab-pane label="所用资源" name="2">
-                    <div id="resourceZtreeDiv"><ul id="resourceZtree" class="ztree" /></div>
+                    <div id="resourceZtreeDiv" :style="rightZtreeStyle"><ul id="resourceZtree" class="ztree" /></div>
                 </el-tab-pane>
                 <el-tab-pane label="痕迹" name="3">
-                    <div id="historyZtreeDiv"><ul id="historyZtree" class="ztree" /></div>
+                    <div id="historyZtreeDiv" :style="rightZtreeStyle"><ul id="historyZtree" class="ztree" /></div>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -502,7 +502,8 @@
                 detailTabActiveName:'0',
                 comparisonTableDetailDialogVisible:false,
                 comparison_dataTableName:'',
-                comparison_columnVal:''
+                comparison_columnVal:'',
+                rightZtreeStyle:''
             }
         },
         created() {
@@ -538,6 +539,7 @@
             this.sqlEditorWidth = $(this.$refs.graphToolDiv).width() + "px"
             let sqlEditorHeight = $(this.$refs.graphToolDiv).height() + 18 + "px"
             this.sqlEditorStyle = `margin-left:${$(this.$refs.graphToolDiv).position().left -10}px;height:${sqlEditorHeight}`
+            this.rightZtreeStyle = `height:${$(this.$refs.graphToolDiv).height() - 170}px`
         },
         methods: {
             init() {
@@ -788,7 +790,7 @@
                                     if (obj.openType === 1) {//开发测试环境
 
                                     }else{//权限环境
-                                        getColumnsByTable({ tableMetaUuid: treeNode.id }).then(result => {
+                                        getColumnsByTable({ tableMetaUuid: treeNode.id, "isEnclose":"1"}).then(result => {
                                             if (result.data == null) {
                                                 obj.$message.error('数据表字段信息获取失败：' + result.data.message)
                                             } else {
@@ -852,7 +854,7 @@
                             } else {
                                 // 统一表和试图的类型为datasource，不需要替换的就执行空方法
                                 indexJs.replaceNodeType(e.nodeList)
-                                obj.zTreeObj = $.fn.zTree.init($('#ztree_datasource'), setting, e.nodeList)
+                                obj.zTreeObj = $.fn.zTree.init($(obj.$refs.ztree_datasource_ref), setting, e.nodeList)
                                 obj.loading.destroy()
                             }
                         }, 'json')
@@ -864,7 +866,7 @@
                             } else {
                                 // 统一表和试图的类型为datasource，不需要替换的就执行空方法
                                 indexJs.replaceNodeType(response.data)
-                                obj.zTreeObj = $.fn.zTree.init($('#ztree_datasource'), setting, response.data)
+                                obj.zTreeObj = $.fn.zTree.init($(obj.$refs.ztree_datasource_ref), setting, response.data)
                                 obj.loading.destroy()
                             }
                         })
@@ -1030,6 +1032,7 @@
                             position: 'bottom-right'})
                     }
                 }
+                //此处保存不包含模型图形，模型图形的保存按钮不显示
                 if(this.openGraphType === 1){//个人图形
                     data.graphType = 1
                     saveGraphInterface(data).then(response => {
@@ -1064,7 +1067,7 @@
                         this.initData()
                         this.$nextTick(() => {
                             $this.websocketBatchId = new UUIDGenerator().id
-                            $this.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable }]
+                            $this.resultTableArr = [{ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable, optType: '' }]
                             $this.resultTabActiveName = '0'
                             $this.viewData()
                         })

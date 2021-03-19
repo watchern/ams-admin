@@ -122,7 +122,8 @@
                 compareColumnSel: '',
                 compareColumnArr: [],
                 conn_value: '',
-                showMoreVal: false
+                showMoreVal: false,
+                curColumnsInfo:[]
             }
         },
         mounted() {
@@ -136,10 +137,10 @@
                 const isSet = this.nodeData.isSet// 判断当前节点是否已经设置
                 const parent_node = graph.nodeData[parentIds[0]] // one parent
                 this.preNodeName = '【上级节点名称：' + parent_node.nodeInfo.nodeName + '】'
-                let curColumnsInfo = this.$parent.$parent.$parent.columnsInfoPre
+                this.curColumnsInfo = this.$parent.$parent.$parent.columnsInfoPre
                 const settingFilter = this.initZtreeSetting()
                 if (isSet) {
-                    curColumnsInfo = this.nodeData.setting.columnsInfo
+                    this.curColumnsInfo = this.nodeData.setting.columnsInfo
                     this.zTreeObj_Filter = $.fn.zTree.init($(this.$refs.filterZtree), settingFilter, this.nodeData.setting.nodes)
                 } else {
                     this.zTreeObj_Filter = $.fn.zTree.init($(this.$refs.filterZtree), settingFilter, [])
@@ -308,7 +309,7 @@
             saveSetting() {
                 this.nodeData.isSet = true
                 this.nodeData.setting.nodes = this.zTreeObj_Filter.getNodes()
-                this.nodeData.setting.columnsInfo = this.$parent.$parent.$parent.columnsInfoPre
+                this.nodeData.setting.columnsInfo = this.curColumnsInfo
             },
             // 页面输入项的校验(或空配置校验)
             inputVerify() {
