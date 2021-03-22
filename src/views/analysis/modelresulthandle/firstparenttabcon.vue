@@ -11,14 +11,13 @@
           />
         </div>
       </el-header>
-      <el-main>
-        <div align="right" style="width: 92%">
+      <el-main style="width: 92vw">
+        <div align="right">
           <el-row>
             <el-button
               :disabled="false"
               type="primary"
               size="small"
-              title="处理"
               class="oper-btn processing"
               @click="handleResult"
             ></el-button>
@@ -26,8 +25,7 @@
               :disabled="buttonIson.deleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
-              class="oper-btn delete"
-              title="如果选中的结果有项目关联，则删除的是关联的项目，如果没有则不能删除"
+              class="oper-btn delete-3"
             ></el-button>
           </el-row>
         </div>
@@ -280,8 +278,6 @@ export default {
     };
   },
   created() {
-    //判断是不是从项目进来的 如果从项目进来则走项目的权限
-    // todo 梁瑞
     let params = this.getQueryString();
     if (params.projectUuid != undefined) {
       this.projectUuid = params.projectUuid;
@@ -341,6 +337,7 @@ export default {
      * modelName是选中的模型的名字
      */
     getResultTables(val, modelName, modelUuid, runStatus, resultSpiltObjects) {
+      debugger
       if (runStatus == 3) {
         var assistTables = [];
         var mainTable = null;
@@ -359,7 +356,8 @@ export default {
           mainTable,
           modelName,
           modelUuid,
-          resultSpiltObjects
+          resultSpiltObjects,
+          this.projectUuid
         );
       } else {
         this.$message({
@@ -433,6 +431,9 @@ export default {
         return "";
       } else {
         var sql = JSON.parse(row.settingInfo).sql;
+        if(!sql){
+          return ""
+        }
         sql = sql.substring(0, 10);
         sql = sql + "...";
         return sql;

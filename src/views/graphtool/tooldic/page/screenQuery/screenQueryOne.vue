@@ -1,5 +1,5 @@
 <template>
-    <div ref="screenTableMain" :style="screenStyle" v-loading="screenLoading" element-loading-text="数据加载中">
+    <div ref="screenTableMain" :style="screenStyle" v-loading="screenLoading" element-loading-text="数据请求中，请稍后……">
         <el-collapse v-model="activeName" accordion v-if="queryFilter">
             <el-collapse-item name="1" title="查询条件">
                 <div :style="collapseStyle">
@@ -78,14 +78,14 @@
 
 <script>
     import InputParams from '@/views/graphtool/tooldic/page/inputParams/inputParams.vue'
-    import ChildTabCons from "@/views/analysis/auditmodelresult/childtabcon"
+    import ChildTabCons from "@/views/analysis/auditmodelresult/childtabcon.vue"
     import ScreenQueryFilter from '@/views/graphtool/tooldic/page/screenQuery/screenQuery_filter.vue'
     import ScreenQuerySort from '@/views/graphtool/tooldic/page/screenQuery/screenQuery_sort.vue'
     import ScreenQueryGroupCount from '@/views/graphtool/tooldic/page/screenQuery/screenQuery_groupCount.vue'
     import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams,
-        getScreenGraphInfo,getScreenExecuteSql,selectScreenQueryData,dealReplaceParamSql } from '@/api/graphtool/graphList'
-    import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
-    import { getPreNodesNotDatasource } from '@/views/graphtool/tooldic/js/common'
+        getScreenGraphInfo,getScreenExecuteSql,selectScreenQueryData,dealReplaceParamSql } from '@/api/graphtool/apiJs/graphList'
+    import * as paramCommonJs from '@/api/graphtool/js/paramCommon'
+    import { getPreNodesNotDatasource } from '@/api/graphtool/js/common'
     export default {
         name: "screenQueryOne",
         components:{ InputParams, ChildTabCons, ScreenQueryFilter, ScreenQuerySort, ScreenQueryGroupCount },
@@ -139,7 +139,7 @@
         methods: {
             async init() {
                 let height = $(this.$parent.$parent.$parent.$parent.$refs.screenMainContain).height() - 70
-                this.screenStyle = `width:100%;height:${height}px;overflow-y:auto;`
+                this.screenStyle = `width:100%;height:${height + 23}px;overflow-y:auto;`
                 this.collapseStyle = `width:100%;height:${height - 130}px;overflow-y:auto;`
                 this.loginUserId = this.$store.state.user.code
                 this.loginUserUuid = this.$store.state.user.id
@@ -441,7 +441,8 @@
                             el: `#${divId}`,
                             filterable: true,
                             filterMethod: function (val, item) {
-                                if (val === item.value || (item.name && item.name.indexOf(val) > -1)) { // 把value相同的搜索出来或者把名称中包含的搜索出来
+                                //把value相同的搜索出来或者把名称中包含的搜索出来
+                                if (val === item.value || (item.name && item.name.indexOf(val) > -1)) {
                                     return true
                                 }
                                 return false// 不知道的就不管了
@@ -460,7 +461,7 @@
                             }
                             selectSetting.hide = function () {
                                 if (initDataArr && dataArr.length === 0) {
-                                    let selectXs = xmSelect.get(divId, true)// 获取当前下拉框的实体对象
+                                    let selectXs = xmSelect.get(`#${divId}`, true)// 获取当前下拉框的实体对象
                                     dataArr = selectXs.options.data
                                     initDataArr = false
                                 }
@@ -510,7 +511,7 @@
                             }
                             selectSetting.hide = function() {
                                 if (initDataArr && dataArr.length === 0) {
-                                    let selectXs = xmSelect.get(divId, true)// 获取当前下拉框的实体对象
+                                    let selectXs = xmSelect.get(`#${divId}`, true)// 获取当前下拉框的实体对象
                                     dataArr = selectXs.options.data
                                     initDataArr = false
                                 }
@@ -1089,4 +1090,4 @@
             }
         }
     }
-    </script>
+</script>

@@ -102,7 +102,7 @@
     >
       <runimmediatelycon
         :data-user-id='dataUserId'
-        :scene-code1='sceneCode'
+        :scene-code='sceneCode'
         v-if="runimmediatelyIsSee"
         ref="modelsetting"
         :timing="false"
@@ -428,154 +428,155 @@ export default {
      * 添加运行任务和运行任务关联表
      */
     modelRunSetting() {
-      var results = this.$refs.modelsetting.replaceParams();
-      this.models = results.models;
-      this.replacedInfo = results.replaceInfo;
-      var modelResultSavePathId = results.modelResultSavePathId;
-      var dateTime = results.dateTime;
-      if (this.timingExecutionIsSee) {
-        if (dateTime == "") {
-          this.$message('请输入定时时间');
-        } else if (this.replacedInfo[0].sql == "") {
-          this.$message('请输入参数');
-        } else if (modelResultSavePathId == "") {
-          this.$message('请选择模型结果保存路径');
-        } else {
-          var time1 = Date.parse(dateTime.toString());
-          var time2 = Date.parse(new Date().toString());
-          var differTime = (time1 - time2) / (1000 * 60);
-          // if (differTime < 5) {
-          //   this.$message({
-          //     type: "info",
-          //     message: "定时运行时间距当前时间要大于5分钟",
-          //   });
-          // } else {
-          var runTaskUuid = uuid2();
-          var batchUuid = uuid2();
-          var runTaskRels = [];
-          for (var i = 0; i < this.models.length; i++) {
-            var runTaskRelUuid = uuid2();
-            var settingInfo = {
-              sql: this.replacedInfo[i].sql,
-              paramsArr: this.replacedInfo[i].paramsArr,
-            };
-            var runTaskRel = {
-              runTaskRelUuid: runTaskRelUuid,
-              runTaskUuid: runTaskUuid,
-              sourceUuid: this.models[i].modelUuid,
-              settingInfo: JSON.stringify(settingInfo),
-              modelVersion: this.models[i].modelVersion,
-              runRecourceType: 1,
-              isDeleted: 0,
-              runStatus: 1,
-            };
-            runTaskRels.push(runTaskRel);
-          }
-          let runType = 3;
-          if (this.timingExecutionIsSee) {
-            runType = 2;
-          }
-          if (this.runimmediatelyIsSee) {
-            runType = 3;
-          }
-          var runTask = {
-            runTaskUuid: runTaskUuid,
-            batchUuid: batchUuid,
-            runTaskName: "系统添加",
-            runType: runType,
-            timingExecute: dateTime,
-            locationUuid: modelResultSavePathId,
-            runTaskRels: runTaskRels
-          };
-          addRunTaskAndRunTaskRel(runTask,this.dataUserId,this.sceneCode).then((resp) => {
-            if (resp.data == true) {
-              this.$notify({
-                title: "提示",
-                message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
-                type: "success",
-                duration: 2000,
-                position: "bottom-right",
-              });
-            } else {
-              this.$message({ type: "info", message: "执行运行任务失败" });
+      this.$refs.modelsetting.replaceParams().then(results=>{
+        this.models = results.models;
+        this.replacedInfo = results.replaceInfo;
+        var modelResultSavePathId = results.modelResultSavePathId;
+        var dateTime = results.dateTime;
+        if (this.timingExecutionIsSee) {
+          if (dateTime == "") {
+            this.$message('请输入定时时间');
+          } else if (this.replacedInfo[0].sql == "") {
+            this.$message('请输入参数');
+          } else if (modelResultSavePathId == "") {
+            this.$message('请选择模型结果保存路径');
+          } else {
+            var time1 = Date.parse(dateTime.toString());
+            var time2 = Date.parse(new Date().toString());
+            var differTime = (time1 - time2) / (1000 * 60);
+            // if (differTime < 5) {
+            //   this.$message({
+            //     type: "info",
+            //     message: "定时运行时间距当前时间要大于5分钟",
+            //   });
+            // } else {
+            var runTaskUuid = uuid2();
+            var batchUuid = uuid2();
+            var runTaskRels = [];
+            for (var i = 0; i < this.models.length; i++) {
+              var runTaskRelUuid = uuid2();
+              var settingInfo = {
+                sql: this.replacedInfo[i].sql,
+                paramsArr: this.replacedInfo[i].paramsArr,
+              };
+              var runTaskRel = {
+                runTaskRelUuid: runTaskRelUuid,
+                runTaskUuid: runTaskUuid,
+                sourceUuid: this.models[i].modelUuid,
+                settingInfo: JSON.stringify(settingInfo),
+                modelVersion: this.models[i].modelVersion,
+                runRecourceType: 1,
+                isDeleted: 0,
+                runStatus: 1,
+              };
+              runTaskRels.push(runTaskRel);
             }
-          });
-          // }
-
-          this.runimmediatelyIsSee = false;
-          this.timingExecutionIsSee = false;
-        }
-      } else if (this.runimmediatelyIsSee) {
-        if (this.replacedInfo[0].sql == "") {
-          this.$message('请输入参数');
-        } else if (modelResultSavePathId == "") {
-           this.$message('请选择模型结果保存路径');
-        } else {
-          var time1 = Date.parse(dateTime.toString());
-          var time2 = Date.parse(new Date().toString());
-          var differTime = (time1 - time2) / (1000 * 60);
-          // if (differTime < 5) {
-          //   this.$message({
-          //     type: "info",
-          //     message: "定时运行时间距当前时间要大于5分钟",
-          //   });
-          // } else {
-          var runTaskUuid = uuid2();
-          var batchUuid = uuid2();
-          var runTaskRels = [];
-          for (var i = 0; i < this.models.length; i++) {
-            var runTaskRelUuid = uuid2();
-            var settingInfo = {
-              sql: this.replacedInfo[i].sql,
-              paramsArr: this.replacedInfo[i].paramsArr,
-            };
-            var runTaskRel = {
-              runTaskRelUuid: runTaskRelUuid,
-              runTaskUuid: runTaskUuid,
-              sourceUuid: this.models[i].modelUuid,
-              settingInfo: JSON.stringify(settingInfo),
-              modelVersion: this.models[i].modelVersion,
-              runRecourceType: 1,
-              isDeleted: 0,
-              runStatus: 1,
-            };
-            runTaskRels.push(runTaskRel);
-          }
-          let runType = 3;
-          if (this.timingExecutionIsSee) {
-            runType = 2;
-          }
-          if (this.runimmediatelyIsSee) {
-            runType = 3;
-          }
-          var runTask = {
-            runTaskUuid: runTaskUuid,
-            batchUuid: batchUuid,
-            runTaskName: "系统添加",
-            runType: runType,
-            timingExecute: dateTime,
-            runTaskRels: runTaskRels,
-            locationUuid: modelResultSavePathId,
-          };
-          addRunTaskAndRunTaskRel(runTask,this.dataUserId,this.sceneCode).then((resp) => {
-            if (resp.data == true) {
-              this.$notify({
-                title: "提示",
-                message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
-                type: "success",
-                duration: 2000,
-                position: "bottom-right",
-              });
-            } else {
-              this.$message({ type: "info", message: "执行运行任务失败" });
+            let runType = 3;
+            if (this.timingExecutionIsSee) {
+              runType = 2;
             }
-          });
-          // }
+            if (this.runimmediatelyIsSee) {
+              runType = 3;
+            }
+            var runTask = {
+              runTaskUuid: runTaskUuid,
+              batchUuid: batchUuid,
+              runTaskName: "系统添加",
+              runType: runType,
+              timingExecute: dateTime,
+              locationUuid: modelResultSavePathId,
+              runTaskRels: runTaskRels
+            };
+            addRunTaskAndRunTaskRel(runTask,this.dataUserId,this.sceneCode).then((resp) => {
+              if (resp.data == true) {
+                this.$notify({
+                  title: "提示",
+                  message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
+                  type: "success",
+                  duration: 2000,
+                  position: "bottom-right",
+                });
+              } else {
+                this.$message({ type: "info", message: "执行运行任务失败" });
+              }
+            });
+            // }
 
-          this.runimmediatelyIsSee = false;
-          this.timingExecutionIsSee = false;
+            this.runimmediatelyIsSee = false;
+            this.timingExecutionIsSee = false;
+          }
+        } else if (this.runimmediatelyIsSee) {
+          if (this.replacedInfo[0].sql == "") {
+            this.$message('请输入参数');
+          } else if (modelResultSavePathId == "") {
+            this.$message('请选择模型结果保存路径');
+          } else {
+            var time1 = Date.parse(dateTime.toString());
+            var time2 = Date.parse(new Date().toString());
+            var differTime = (time1 - time2) / (1000 * 60);
+            // if (differTime < 5) {
+            //   this.$message({
+            //     type: "info",
+            //     message: "定时运行时间距当前时间要大于5分钟",
+            //   });
+            // } else {
+            var runTaskUuid = uuid2();
+            var batchUuid = uuid2();
+            var runTaskRels = [];
+            for (var i = 0; i < this.models.length; i++) {
+              var runTaskRelUuid = uuid2();
+              var settingInfo = {
+                sql: this.replacedInfo[i].sql,
+                paramsArr: this.replacedInfo[i].paramsArr,
+              };
+              var runTaskRel = {
+                runTaskRelUuid: runTaskRelUuid,
+                runTaskUuid: runTaskUuid,
+                sourceUuid: this.models[i].modelUuid,
+                settingInfo: JSON.stringify(settingInfo),
+                modelVersion: this.models[i].modelVersion,
+                runRecourceType: 1,
+                isDeleted: 0,
+                runStatus: 1,
+              };
+              runTaskRels.push(runTaskRel);
+            }
+            let runType = 3;
+            if (this.timingExecutionIsSee) {
+              runType = 2;
+            }
+            if (this.runimmediatelyIsSee) {
+              runType = 3;
+            }
+            var runTask = {
+              runTaskUuid: runTaskUuid,
+              batchUuid: batchUuid,
+              runTaskName: "系统添加",
+              runType: runType,
+              timingExecute: dateTime,
+              runTaskRels: runTaskRels,
+              locationUuid: modelResultSavePathId,
+            };
+            addRunTaskAndRunTaskRel(runTask,this.dataUserId,this.sceneCode).then((resp) => {
+              if (resp.data == true) {
+                this.$notify({
+                  title: "提示",
+                  message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
+                  type: "success",
+                  duration: 2000,
+                  position: "bottom-right",
+                });
+              } else {
+                this.$message({ type: "info", message: "执行运行任务失败" });
+              }
+            });
+            // }
+
+            this.runimmediatelyIsSee = false;
+            this.timingExecutionIsSee = false;
+          }
         }
-      }
+      });
     }
   },
 };

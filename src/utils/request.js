@@ -7,7 +7,7 @@ import { getToken } from '@/utils/auth'
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 50000 // request timeout
+  timeout: 5000000000 // request timeout
 })
 
 // request interceptor
@@ -48,7 +48,7 @@ service.interceptors.response.use(
     // if the custom code is not 0, it is judged as an error.
     if (res.code !== 0 && res.code !== 20000) {
       Message({
-        message: res.msg || 'Error',
+        message: res.message || 'Error',
         type: 'error',
         duration: 5 * 1000
       })
@@ -66,7 +66,20 @@ service.interceptors.response.use(
           })
         })
       }
-      return Promise.reject(new Error(res.msg || res || 'Error'))
+    //code==1993为biz
+      if(res.code == 1993){
+        Message({
+          dangerouslyUseHTMLString: true,
+          message: `<div style="font-weight: bold;">${res.title}</div><div>${res.msg}</div>`,
+          type: 'error',
+          duration: 50 * 1000,
+          showClose: true,
+          offset: 100
+        })
+        return Promise.reject()
+      }else{
+        return Promise.reject(new Error(res.msg || res || 'Error'))
+      }
     } else {
       return res
     }

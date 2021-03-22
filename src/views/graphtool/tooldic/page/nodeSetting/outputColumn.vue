@@ -1,55 +1,73 @@
 <template>
-    <div ref="outputContentDiv" style="width: 98%;margin: 4px 1%">
-        <div style="color: red;">
-            <p>注：（1）如果修改了【输出字段名称】且存在已配置过或执行过的后续节点，则后续节点关于该字段的配置信息会失效</p>
-            <p style="text-indent: 2em">（2）如果继续使用后续节点，则需重新配置和执行相关节点</p>
-            <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
-            <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
-        </div>
-        <div ref="outPutTable" style="height: 490px;overflow-y: auto;">
-            <table id="column_config" class="table table-bordered">
-                <thead>
-                <tr>
-                    <th width="5%" style="text-align: center">序号</th>
-                    <th width="30%" style="text-align: center">上一节点名称</th>
-                    <th width="25%" style="text-align: center">字段名称</th>
-                    <th width="25%" style="text-align: center">输出字段名称</th>
-                    <th width="15%" style="text-align: center">是否为输出字段
-                        <el-checkbox v-model="checkAll" :disabled="isAllDisabled" @change="handleCheckAllChange" style="float: right;"/>
-                    </th>
-                </tr>
-                </thead>
-                <tbody ref="outPutTbody">
-                <tr v-for="(item,index) in items" ref="colTr" :data-index="index">
-                    <td align="center">{{ index+1 }}</td>
-                    <td>{{ item.rtn }}</td>
-                    <td>{{ item.curColumnName }}</td>
-                    <td>
-                        <el-input v-model="item.disColumnName" class="newColumn"></el-input>
-                    </td>
-                    <td class="text-center">
-                        <el-checkbox :key="item.id" v-model="item.checked" :name="item.attrColumnName" :disabled="isDisabled" @change="checkBoxChange(index)" />
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+    <div style="width: 100%;">
+        <el-row style="padding-top: 10px;">
+            <el-col align="right">
+                <el-button type="primary" v-show="nodeData.nodeInfo.optType !== 'union' && nodeData.nodeInfo.optType !== 'delRepeat'" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" style="line-height: normal;"/>
+                <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" title="说明" style="line-height: normal;"/>
+            </el-col>
+        </el-row>
+        <el-table :data="items" border style="width: 100%;" height="526" ref="outPutTable">
+            <el-table-column type="index" label="编号" width="60" align="center" :resizable="false"/>
+            <el-table-column label="上一节点名称" width="200" :show-overflow-tooltip="true" prop="rtn" header-align="center" :resizable="false"></el-table-column>
+            <el-table-column label="字段名称" width="260" :show-overflow-tooltip="true" prop="curColumnName" header-align="center" :resizable="false"></el-table-column>
+            <el-table-column label="输出字段名称" width="240" header-align="center" :resizable="false">
+                <template slot-scope="scope">
+                    <el-input v-model="scope.row.disColumnName"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column align="center" width="100" :resizable="false">
+                <template slot="header" slot-scope="scope">
+                    输出字段<el-checkbox v-model="checkAll" :disabled="isAllDisabled" @change="handleCheckAllChange" style="padding-left: 5px;"/>
+                </template>
+                <template slot-scope="scope">
+                    <el-checkbox v-model="scope.row.checked" :disabled="isDisabled" @change="checkBoxChange" />
+                </template>
+            </el-table-column>
+            <el-table-column align="center" label="操作" width="100" :resizable="false">
+                <template slot-scope="scope">
+                    <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" title="设置" style="line-height: normal;"/>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-dialog :visible.sync="helpDialogVisible" :append-to-body="true" title="说明" width="400px">
+            <div style="height: 260px;padding: 10px;">
+                <p style="text-indent: 2em">（1）如果修改了【输出字段名称】且存在已配置过或执行过的后续节点，则后续节点关于该字段的配置信息会失效</p>
+                <p style="text-indent: 2em">（2）如果继续使用后续节点，则需重新配置和执行相关节点</p>
+                <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
+                <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
+            </div>
+        </el-dialog>
+        <el-dialog v-if="customizeColumnDialogVisible" :visible.sync="customizeColumnDialogVisible" :title="customizeColumnTitle" :close-on-press-escape="false" :close-on-click-modal="false" :append-to-body="true" width="1000px">
+            <CustomizeColumn ref="customizeColumn" :columnInfoArr="columnsInfoArray" :node-is-set="nodeIsSet" :cur-column-info="curColumnInfo" node-type="common"/>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="customizeColumnDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="customizeColumnBack()">保存</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+    import CustomizeColumn from '@/views/graphtool/tooldic/page/nodeSetting/customizeColumn'
     export default {
         name: 'OutputColumnSetting',
+        components:{ CustomizeColumn },
         data() {
             return {
                 nodeData: null,
-                columnsInfoPre: this.$parent.columnsInfoPre,
-                re_columnsInfo: '',
+                columnsInfoPre: this.$parent.$parent.$parent.columnsInfoPre,
                 items: [],
                 isIndeterminate: true,
                 checkAll: false,
                 isAllDisabled: false,
-                isDisabled: false
+                isDisabled: false,
+                helpDialogVisible:false,
+                customizeColumnDialogVisible:false,
+                curColumnInfo:null,
+                customizeColumnType:'',
+                customizeColumnTitle:'',
+                columnsInfoArray:[],
+                nodeIsSet:false
             }
         },
         mounted() {
@@ -57,19 +75,13 @@
         },
         methods: {
             init() {
-                const graph = this.$parent.graph
+                const graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
+                this.nodeIsSet = this.nodeData.isSet// 判断当前节点是否已经设置
+                this.columnsInfoArray = this.nodeIsSet ? this.nodeData.columnsInfo : this.columnsInfoPre
                 this.initConfig()
             },
-            check_old_column() { // 重构字段组，优化查询
-                const object = {}
-                $(this.nodeData.columnsInfo).each(function(index) {
-                    object[this.columnName] = this
-                })
-                return object
-            },
             initConfig() { // 初始化字段列表
-                this.re_columnsInfo = this.check_old_column()
                 this.createTrFacture()
                 var num = 0
                 for (let i = 0; i < this.items.length; i++) {
@@ -82,11 +94,14 @@
                 if (num === 0) {
                     this.checkAll = true
                 }
-                if (this.nodeData.nodeInfo.optType === 'groupCount' || this.nodeData.nodeInfo.optType === 'delRepeat' || this.nodeData.nodeInfo.optType === 'union') {				// 分组汇总和数据去重节点的输出字段单独处理，置为不可编辑
+                if (this.nodeData.nodeInfo.optType === 'delRepeat' || this.nodeData.nodeInfo.optType === 'union') {				// 分组汇总和数据去重节点的输出字段单独处理，置为不可编辑
                     this.isAllDisabled = true
                     this.isDisabled = true
                 }
             },
+            /**
+             * 重置输出列的勾选状态（只适用于数据融合、数据去重节点）
+             */
             re_checkbox(data, hasMoreTable) {
                 var num = 0
                 for (let i = 0; i < this.items.length; i++) {
@@ -97,13 +112,14 @@
                     var nullNodeId = this.items[j].nullNodeId
                     if (data && data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
-                            if (data[i].value === this.items[j].curColumnName) {
-                                if (data[i].nodeId === nodeId && hasMoreTable && data[i].nullNodeId === nullNodeId) {
+                            if(hasMoreTable){//数据融合节点
+                                if (data[i].value === this.items[j].curColumnName && data[i].nodeId === nodeId && data[i].nullNodeId === nullNodeId) {
                                     this.items[j].checked = true
                                     num++
                                     break
                                 }
-                                if (!hasMoreTable) {
+                            }else{//数据去重节点
+                                if (data[i] === this.items[j].curColumnName) {
                                     this.items[j].checked = true
                                     num++
                                     break
@@ -121,97 +137,55 @@
                 }
             },
             createTrFacture() {
-                const isSet = this.nodeData.isSet// 判断当前节点是否已经设置
-                const columnsInfoArray = isSet ? this.nodeData.columnsInfo : this.columnsInfoPre
-                for (let column = 0; column < columnsInfoArray.length; column++) {
-                    let isHide = false
-                    if (isSet) {
-                        let num = 0
-                        for (let j = 0; j < this.columnsInfoPre.length; j++) {
-                            if (columnsInfoArray[column].columnName === this.columnsInfoPre[j].newColumnName) {
-                                isHide = false
-                                break
-                            } else {
-                                num++
-                            }
-                        }
-                        if (num === columnsInfoArray.length) {
-                            isHide = true
-                        }
-                    }
-                    const curColumnName = isSet ? columnsInfoArray[column].columnName : columnsInfoArray[column].newColumnName
-                    const oldSetColumn = this.find_self_column(curColumnName, this.columnsInfoPre[column].nodeId)
-                    const nodeId = this.columnsInfoPre[column].nodeId
-                    const nullNodeId = this.columnsInfoPre[column].nullNodeId
-                    const columnInfo = JSON.stringify(this.columnsInfoPre[column])
-                    const rtn = this.columnsInfoPre[column].rtn
+                for (let i = 0; i < this.columnsInfoArray.length; i++) {
+                    const curColumnName = this.nodeIsSet ? this.columnsInfoArray[i].columnName : this.columnsInfoArray[i].newColumnName
+                    let nodeId = this.columnsInfoArray[i].nodeId
+                    let nullNodeId = this.columnsInfoArray[i].nullNodeId
+                    let resourceTableName = this.columnsInfoArray[i].resourceTableName
+                    let columnInfo = this.columnsInfoArray[i]
+                    let rtn = this.columnsInfoArray[i].rtn
                     let checked = false
-                    const id = column
-                    let disColumnName = ''
-                    let attrColumnName = ''
-                    if (isSet && oldSetColumn.flag) {
-                        disColumnName = oldSetColumn.newColumnName
-                        attrColumnName = oldSetColumn.columnName
-                        if (oldSetColumn.checked && !isHide) {
+                    const id = i
+                    let disColumnName = this.columnsInfoArray[i].newColumnName
+                    if (this.nodeIsSet) {
+                        if(this.columnsInfoArray[i].isOutputColumn === 1){
                             checked = true
                         }
-                    } else {
-                        disColumnName = curColumnName
-                        attrColumnName = curColumnName
                     }
-                    this.items.push({ id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, attrColumnName, checked })
+                    this.items.push({ id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, checked, resourceTableName})
                 }
-                $(this.$refs.outPutTbody).sortable().disableSelection()
+                this.$nextTick( () => {
+                    $(this.$refs.outPutTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
+                })
             },
             get_column() { // 这里保存的是上级节点所有的字段，包括输出字段，（意义：不输出的字段不代表不是该节点的字段，在获取上级节点字段应该进一步筛选师傅是输出字段）
+                let $this = this
                 const this_columnInfos = []
-                for (let i = 0; i < this.$refs.colTr.length; i++) {
-                    const index = this.$refs.colTr[i].getAttribute('data-index')
-                    var checked = this.items[index].checked
-                    var this_column = JSON.parse(this.items[index].columnInfo)
-                    var old_colum_name = this.items[index].curColumnName// 之前的newColumnName
-                    var re_is_filter_comumn = []
-                    $(this.$parent.is_filter_column).each(function() {
-                        re_is_filter_comumn.push(this.value)
-                    })
-                    if (re_is_filter_comumn.length === 0 || $.inArray(old_colum_name, re_is_filter_comumn) > -1) { // 没有做配置、没有类似去重此功能需求或者配置并且在对勾显示字段的
+                let trDom = this.$refs.outPutTable.$refs.bodyWrapper.children[0].children[1].children
+                if(typeof trDom !== 'undefined' && trDom.length > 0){
+                    $.each(trDom,function () {
+                        const index = parseInt($(this).find("td:eq(0)>div>div").html()) - 1
+                        var checked = $this.items[index].checked
+                        var this_column = {...{},...$this.items[index].columnInfo}
+                        var old_colum_name = $this.items[index].curColumnName// 之前的newColumnName
                         if (checked) {
-                            this_column.isOutputColumn = 1// is output column
+                            this_column.isOutputColumn = 1
                         } else {
                             this_column.isOutputColumn = 0
                         }
-                    } else {
-                        this_column.isOutputColumn = 0
-                    }
-                    this_column.newColumnName = this.items[index].disColumnName
-                    this_column.columnName = old_colum_name
-                    this_column.rtn = this.items[index].rtn
-                    this_column.nodeId = this.items[index].nodeId
-                    this_columnInfos.push(this_column)
+                        this_column.newColumnName = $this.items[index].disColumnName
+                        this_column.columnName = old_colum_name
+                        this_column.rtn = $this.items[index].rtn
+                        this_column.nodeId = $this.items[index].nodeId
+                        this_columnInfos.push(this_column)
+                    })
                 }
                 this.nodeData.columnsInfo = this_columnInfos
-            },
-            find_self_column(columnName, nodeId) { // 是否设置并且含有当前字段
-                var obj = {
-                    flag: false,
-                    columnName: columnName,
-                    newColumnName: columnName,
-                    checked: false
-                }
-                var oldset = this.re_columnsInfo
-                // 通过当前节点下的字段名称进行匹配，防止不同节点含有相同字段名称所导致的共用一个输出字段值con's
-                if (typeof oldset[columnName] !== 'undefined') {
-                    obj.flag = true
-                    obj.columnName = columnName
-                    obj.newColumnName = oldset[columnName].newColumnName
-                    obj.checked = oldset[columnName].isOutputColumn !== 0
-                }
-                return obj
             },
             handleCheckAllChange(checked) {
                 Array.from(this.items, (n) => n.checked = checked)
             },
-            checkBoxChange(index) {
+            checkBoxChange() {
                 var chk = 0
                 for (let i = 0; i < this.items.length; i++) {
                     if (this.items[i].checked) {
@@ -267,20 +241,67 @@
             },
             outputVerify() {
                 return this.vilidata_simple()
+            },
+            /**
+             * 自定义列/设置
+             * @param type 打开方式（1、自定义字段，2、设置）
+             * @param curColumnInfo 当前字段的信息
+             */
+            customizeColumn(type,curColumnInfo){
+                this.customizeColumnType = type
+                if(type === "1"){//自定义字段
+                    this.customizeColumnTitle = '自定义字段'
+                    this.curColumnInfo = null
+                }else{//修改设置
+                    if (this.nodeData.nodeInfo.optType === 'delRepeat' || this.nodeData.nodeInfo.optType === 'union') {// 分组汇总和数据去重节点的输出字段单独处理
+                        if(curColumnInfo.nodeId !== 'customizeColumn'){
+                            this.$message({'type':'warning','message':'当前字段信息不可被修改'})
+                            return
+                        }
+                    }
+                    this.customizeColumnTitle = '修改设置'
+                    this.curColumnInfo = curColumnInfo
+                }
+                this.customizeColumnDialogVisible = true
+            },
+            customizeColumnBack(){
+                let returnObj = this.$refs.customizeColumn.saveInfo()
+                if(!returnObj.isError){
+                    this.customizeColumnDialogVisible = false
+                    const curColumnName = returnObj.columnInfo.columnName
+                    let nodeId = ''
+                    let nullNodeId = ''
+                    let resourceTableName = ''
+                    let columnInfo = returnObj.columnInfo
+                    let rtn = ''
+                    let checked = true
+                    let id = null
+                    let disColumnName = returnObj.columnInfo.newColumnName
+                    if(this.customizeColumnType === "1"){//自定义字段
+                        nodeId = 'customizeColumn'
+                        nullNodeId = 'customizeColumn'
+                        resourceTableName = 'customizeColumnTempTable'
+                        id = this.items.length + 1
+                        rtn = '自定义字段'
+                        this.items.push({ id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, checked, resourceTableName})
+                    }else{//修改设置
+                        id = this.curColumnInfo.id
+                        nodeId = this.curColumnInfo.nodeId
+                        nullNodeId = this.curColumnInfo.nullNodeId
+                        rtn = this.curColumnInfo.rtn
+                        resourceTableName = this.curColumnInfo.resourceTableName
+                        let index = this.items.findIndex( item => item.id === this.curColumnInfo.id)
+                        if(index > -1){
+                            this.items.splice(index,1,{id, curColumnName, nodeId, nullNodeId, columnInfo, rtn, disColumnName, checked, resourceTableName})
+                        }
+                    }
+                }
             }
         }
     }
 </script>
-<style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
-<style scoped src="@/components/ams-basic/css/common.css"></style>
 <style scoped type="text/css">
-    .table > tbody > tr > td{
-        font-size: 13px;
-        color: #4B4B4B;
-        line-height: 36px;
-    }
-    .table > thead > tr > th {
-        background-color: #5886B2;
-        color: #ECF0F5;
+    >>> .el-table .cell {
+        padding: 0 !important;
     }
 </style>

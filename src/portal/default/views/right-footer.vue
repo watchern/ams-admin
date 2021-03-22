@@ -109,7 +109,18 @@ export default {
     clickOther: function () {
       this.isShowPopover = false
     }
-  }
+  },
+  watch:{
+    // 监听url到first页面时关闭下方页签
+    $route(to,from){
+      if (to.name === "amsFirst") {
+        this.$store.commit('aceState/setRightFooterTags', {
+          type: 'closeAll',
+          val: ''
+        })
+      }
+    }
+  },
 }
 </script>
 

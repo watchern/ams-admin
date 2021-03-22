@@ -1,9 +1,9 @@
 <template>
-  <div class="tools-template w100 h100 relative" @click="callback">
+  <div class="tools-template w100 h100 relative" id="tool">
     <div class="tools-content h100 relative">
       <div class="title text-white">
         <i class="el-icon-s-grid" />
-        <span class="label">More tools</span>
+        <span class="label">更多工具</span>
       </div>
       <div class="lately-use">
         <div class="title-label">常用功能</div>
@@ -11,25 +11,55 @@
           <div
             v-for="(item,index) in latelyBdInList"
             :key="index"
-            class="use-box flex a-center j-center"
-            id="use-zy"
+            class="use-box flex a-center j-center use-zy"
             @click="theRouting(index)"
             :style='{background:item.bg}'
           >
             <img :src="item.image" />
           </div>
-
         </div>
         <div class="lately-use-box flex a-center j-start flex-row">
           <div v-for="(item,index) in latelyUseList"
                :key="index"
-               class="use-box flex a-center j-center"
-               id="use-zyt"
+               class="use-box flex a-center j-center use-zyt"
           >
-            <span style="font-size:14px"> {{ item }} </span>
+            <el-tooltip :content="item" placement="bottom" effect="light">
+              <span class="doubleWords"> {{ item }} </span>
+            </el-tooltip>
           </div>
         </div>
-
+        <div class="title-label" style="margin-top: 15px">自定义快捷菜单</div>
+        <div class="lately-use-box flex a-center j-start flex-row">
+          <div
+            v-for="(item,index) in latelyFastList"
+            :key="index"
+            class="use-box flex a-center j-center use-zy"
+            @click="theRoutingIn(item)"
+            :style='{background:item.bg}'
+          >
+            <img :src="item.image" />
+          </div>
+          <div
+            class="use-box flex a-center j-center use-zy"
+            @click="dialogVisible = true"
+            :style='{background:"rgb(81, 69, 89)"}'
+          >
+            <img src="../../Ace/base/accessIcon/zidingyi.png" />
+          </div>
+        </div>
+        <div class="lately-use-box flex a-center j-start flex-row">
+          <div v-for="(item,index) in latelyFastList"
+               :key="index"
+               class="use-box flex a-center j-center use-zyt"
+          >
+            <el-tooltip :content="item.name" placement="bottom" effect="light">
+              <span class="doubleWords"> {{ item.name }} </span>
+            </el-tooltip>
+          </div>
+          <div class="use-box flex a-center j-center use-zyt">
+            <span style="font-size:14px"> 维护 </span>
+          </div>
+        </div>
       </div>
       <div class="other-tools">
         <div class="title-label">其他工具</div>
@@ -80,16 +110,76 @@
 <!--      <span class="msg">Helpful and short message.</span>-->
 <!--      <i class="el-icon-close icon-close" @click="isShowInfoBox=false" />-->
 <!--    </div>-->
+    <div class="tools-right" @click="callback">
+    </div>
+    <div class="tools-center" v-show="dialogVisible">
+      <el-collapse class="tools-menu-small" v-if="showmenuGroup">
+        <el-collapse-item :title="menugroupId[0].name">
+          <el-tree
+            :data="menugroup[0]"
+            show-checkbox
+            node-key="id"
+            ref="tree0"
+            highlight-current
+            :check-strictly="defaultProps.checkStrictly"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item :title="menugroupId[1].name">
+          <el-tree
+            :data="menugroup[1]"
+            show-checkbox
+            node-key="id"
+            ref="tree1"
+            highlight-current
+            @check=""
+            :check-strictly="defaultProps.checkStrictly"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item :title="menugroupId[2].name">
+          <el-tree
+            :data="menugroup[2]"
+            show-checkbox
+            node-key="id"
+            ref="tree2"
+            highlight-current
+            :check-strictly="defaultProps.checkStrictly"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item :title="menugroupId[3].name">
+          <el-tree
+            :data="menugroup[3]"
+            show-checkbox
+            node-key="id"
+            ref="tree3"
+            highlight-current
+            :check-strictly="defaultProps.checkStrictly"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+      </el-collapse>
+      <el-button @click="getCheckedNodes" type="primary" class="btn-tree">保 存</el-button>
+      <el-button @click="dialogVisible = false">取 消</el-button>
+    </div>
   </div>
 </template>
 
 <script>
 import { querySystemTask } from '@/api/base/systemtask'
+import { getUserRes } from '@/api/user'
+import { saveQuickMenuList, getQuickMenuList } from '@/api/base/quickmenu'
 export default {
   data() {
     return {
       websocket: null,
       list: {},
+      applications: [],
+      menugroup: [],
+      menugroupId: [],
+      showmenuGroup: false,
+      dialogVisible: false,
       isShowInfoBox: true,
       otherToolsList: [
         {
@@ -194,7 +284,7 @@ export default {
           image: require("../../Ace/base/accessIcon/diaodu.png")
         },
         {
-          name: '调度任务监控',
+          name: '调度监控',
           image: require("../../Ace/base/accessIcon/diaodu.png")
         },
         {
@@ -202,23 +292,19 @@ export default {
           image: require("../../Ace/base/accessIcon/diaodu.png")
         },
         {
-          name: '业务场景维护',
-          image: require("../../Ace/base/accessIcon/yewu.png")
-        },
-        {
-          name: '数据表注册',
+          name: '数据表管理',
           image: require("../../Ace/base/accessIcon/shuju.png")
         },
         {
-          name: '数据角色',
+          name: '数据授权',
           image: require("../../Ace/base/accessIcon/shuju.png")
         },
         {
-          name: '用户资源查询',
-          image: require("../../Ace/base/accessIcon/yonghu.png")
+          name: '数据转码',
+          image: require("../../Ace/base/accessIcon/shuju.png")
         },
         {
-          name: '数据字典维护',
+          name: '数据挖掘',
           image: require("../../Ace/base/accessIcon/shuju.png")
         },
         {
@@ -228,6 +314,18 @@ export default {
         {
           name: '数据资源目录',
           image: require("../../Ace/base/accessIcon/shuju.png")
+        },
+        {
+          name: '主题展示',
+          image: require("../../Ace/base/accessIcon/zhuti.png")
+        },
+        {
+          name: '主题展示配置',
+          image: require("../../Ace/base/accessIcon/zhuti.png")
+        },
+        {
+          name: '阈值管理',
+          image: require("../../Ace/base/accessIcon/yuzhi.png")
         },
         {
           name: '审计模型',
@@ -242,16 +340,16 @@ export default {
           image: require("../../Ace/base/accessIcon/moxing.png")
         },
         {
+          name: '线索核实',
+          image: require("../../Ace/base/accessIcon/yonghu.png")
+        },
+        {
           name: '图形化工具',
           image: require("../../Ace/base/accessIcon/gongju.png")
         },
         {
           name: 'SQL编辑器',
           image: require("../../Ace/base/accessIcon/gongju.png")
-        },
-        {
-          name: '审计分析',
-          image: require("../../Ace/base/accessIcon/shenji.png")
         },
         {
           name: '审计预警',
@@ -266,19 +364,7 @@ export default {
           image: require("../../Ace/base/accessIcon/jigou.png")
         },
         {
-          name: '被审计机构统计',
-          image: require("../../Ace/base/accessIcon/jigou.png")
-        },
-        {
           name: '领导干部',
-          image: require("../../Ace/base/accessIcon/lingdao.png")
-        },
-        {
-          name: '领导干部查询',
-          image: require("../../Ace/base/accessIcon/lingdao.png")
-        },
-        {
-          name: '领导干部统计',
           image: require("../../Ace/base/accessIcon/lingdao.png")
         },
         {
@@ -286,19 +372,7 @@ export default {
           image: require("../../Ace/base/accessIcon/gongcheng.png")
         },
         {
-          name: '工程项目查询',
-          image: require("../../Ace/base/accessIcon/gongcheng.png")
-        },
-        {
           name: '业务产品',
-          image: require("../../Ace/base/accessIcon/yewu.png")
-        },
-        {
-          name: '业务产品查询',
-          image: require("../../Ace/base/accessIcon/yewu.png")
-        },
-        {
-          name: '业务产品统计',
           image: require("../../Ace/base/accessIcon/yewu.png")
         },
         {
@@ -310,19 +384,11 @@ export default {
           image: require("../../Ace/base/accessIcon/shenji.png")
         },
         {
-          name: '临时审计手册',
-          image: require("../../Ace/base/accessIcon/shenji.png")
-        },
-        {
           name: '业务分类',
           image: require("../../Ace/base/accessIcon/yewu.png")
         },
         {
           name: '问题词条',
-          image: require("../../Ace/base/accessIcon/yujing.png")
-        },
-        {
-          name: '问题词条查询',
           image: require("../../Ace/base/accessIcon/yujing.png")
         },
         {
@@ -408,10 +474,33 @@ export default {
         {
           name: '数据源监控',
           image: require("../../Ace/base/accessIcon/jiankong.png")
+        },
+        {
+          name: '系统操作日志',
+          image: require("../../Ace/base/accessIcon/xitong.png")
+        },
+        {
+          name: '系统异常日志',
+          image: require("../../Ace/base/accessIcon/xitong.png")
+        },
+        {
+          name: '系统帮助维护',
+          image: require("../../Ace/base/accessIcon/bangzhu.png")
         }
       ],
       latelyInImgList:[],
-      latelyBdInList:[]
+      latelyBdInList:[],
+      latelyFastList:[],
+      defaultProps: {
+        children: 'children',
+        label: 'name',
+        disabled: this.ifFather,
+        checkStrictly: true
+      },
+      quickRefresh: {
+        top: true,
+        bottom: false
+      }
     }
   },
   created() {
@@ -433,18 +522,17 @@ export default {
     for(let x=1;x<200;x++){
       let Num= eval(arryV[arryV.length-x]);
       for(let i=0; i<arry.length; i++){
-        if(arry[i].v == Num && arry[i].p !== ''){
-          if(this.latelyUseList.indexOf(arry[i].id) == -1) {
+        if(arry[i].v === Num && arry[i].p !== ''){
+          if(this.latelyUseList.indexOf(arry[i].id) === -1) {
             this.latelyPathList.push(arry[i].p)
             this.latelyUseList.push(arry[i].id)
             for(let c=0;c<this.latelyImgList.length;c++){
-              if(arry[i].id == this.latelyImgList[c].name){
+              if(arry[i].id === this.latelyImgList[c].name){
                 this.latelyInImgList.push({image:this.latelyImgList[c].image})
               }
             }
             break
           }
-
         }
       }
       if(this.latelyUseList.length>=5){
@@ -454,6 +542,27 @@ export default {
     for(let i =0; i<this.latelyInImgList.length; i++){
       this.latelyBdInList.push({image:this.latelyInImgList[i].image,bg:this.latelyBackList[i].bg})
     }
+    let listTree = JSON.parse(sessionStorage.getItem('shenjiMenuTree'))
+    this.menugroup = listTree.second
+    this.menugroupId = listTree.first
+    this.showmenuGroup = true
+    console.log(this.menugroupId)
+    getQuickMenuList().then(res => {
+      // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
+      for (let i=0; i<res.data.length; i++) {
+        for (let n=0; n<this.latelyImgList.length; n++) {
+          if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
+            this.latelyFastList.push({
+              id: res.data[i].quickMenuId,
+              name: res.data[i].quickMenuName,
+              path: res.data[i].quickMenuPath,
+              image: this.latelyImgList[i].image,
+              bg: this.latelyBackList[i].bg
+            })
+          }
+        }
+      }
+    })
   },
   methods: {
     theRouting(index){
@@ -466,6 +575,16 @@ export default {
         }
       })
       // this.$emit('func',false)
+    },
+    theRoutingIn(item){
+      this.$router.push({ path: item.path })
+      this.$store.commit('aceState/setRightFooterTags', {
+        type: 'active',
+        val: {
+          name: item.name,
+          path: item.path
+        }
+      })
     },
     init() {
       querySystemTask().then(resp => {
@@ -518,22 +637,100 @@ export default {
     },
     callback() {
       this.$emit('func',false)
+    },
+    getCleanSrc(src) {
+      if (src.indexOf('&resUUID') !== -1) {
+        src = src.split('&resUUID')[0]
+      } else if (src.indexOf('?resUUID') !== -1) {
+        src = src.split('?resUUID')[0]
+      }
+      return src
+    },
+    getCheckedNodes() {
+      let allThing = []
+      for (let i=0;i<this.$refs.tree0.getCheckedNodes().length;i++) {
+        allThing.push({
+          quickMenuId: this.$refs.tree0.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree0.getCheckedNodes()[i].name,
+          quickMenuPath: this.$refs.tree0.getCheckedNodes()[i].path
+        })
+      }
+      for (let i=0;i<this.$refs.tree1.getCheckedNodes().length;i++) {
+        allThing.push({
+          quickMenuId: this.$refs.tree1.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree1.getCheckedNodes()[i].name,
+          quickMenuPath: this.$refs.tree1.getCheckedNodes()[i].path
+        })
+      }
+      for (let i=0;i<this.$refs.tree2.getCheckedNodes().length;i++) {
+        allThing.push({
+          quickMenuId: this.$refs.tree2.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree2.getCheckedNodes()[i].name,
+          quickMenuPath: this.$refs.tree2.getCheckedNodes()[i].path
+        })
+      }
+      for (let i=0;i<this.$refs.tree3.getCheckedNodes().length;i++) {
+        allThing.push({
+          quickMenuId: this.$refs.tree3.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree3.getCheckedNodes()[i].name,
+          quickMenuPath: this.$refs.tree3.getCheckedNodes()[i].path
+        })
+      }
+      console.log(allThing)
+      if (allThing.length > 4) {
+        this.$message.error('自定义快捷菜单不能超过四个！');
+      } else {
+        saveQuickMenuList(allThing).then(resp => {
+          if(resp.code != 0){
+            this.$message({
+              type: 'error',
+              message: '保存失败!'
+            })
+            return
+          }
+          this.latelyFastList = []
+          getQuickMenuList().then(res => {
+            for (let i=0; i<res.data.length; i++) {
+              for (let n=0; n<this.latelyImgList.length; n++) {
+                if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
+                  this.latelyFastList.push({
+                    id: res.data[i].quickMenuId,
+                    name: res.data[i].quickMenuName,
+                    path: res.data[i].quickMenuPath,
+                    image: this.latelyImgList[i].image,
+                    bg: this.latelyBackList[i].bg
+                  })
+                }
+              }
+            }
+          })
+        })
+        this.dialogVisible = false
+      }
+    },
+    // 父节点不可选
+    ifFather(data) {
+      if (data.children) {
+        return true
+      }else{
+        return false
+      }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-#use-zy{
-  width:18%;
-  height:18%;
-  margin:8px 5px 2px 5px;
-  padding:28px;
+#tool .use-zy{
+  width: 18%;
+  height: 27px;
+  margin: 8px 5px 2px 5px;
+  padding: 25px;
 }
-#use-zy img{
-  width:100%
+#tool .use-zy img{
+  width:27px;
 }
-#use-zyt{
+#tool .use-zyt{
   width:18%;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -591,8 +788,9 @@ export default {
     border-radius: 1px 46px 1px 1px;
     width: 510px;
     padding: 25px 20px;
-
-    overflow: hidden;
+    float: left;
+    z-index: 10;
+    overflow: auto;
     .btns-wrap {
       right: 9px;
       top: 186px;
@@ -729,5 +927,40 @@ export default {
   {
     0%{width:0px}100%{width: 510px;}
   }
+}
+.tools-right{
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.tools-center{
+  position: absolute;
+  width: 300px;
+  max-height: 94vh;
+  box-shadow: 0 0 20px 0 #888;
+  z-index:10000;
+  top: 30px;
+  left: 520px;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 10px;
+  overflow: hidden;
+}
+.tools-menu-small{
+  max-height: 86vh;
+  overflow: auto;
+}
+.btn-tree{
+  margin: 10px 80px 0 22px;
+}
+.doubleWords{
+  font-size:14px;
+  width:75px;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+  text-align: center
 }
 </style>

@@ -5,7 +5,7 @@
         </div>
         <el-table :key="tableKey" ref="graphListTable" v-loading="listLoading" height="500" :data="dataList" border fit highlight-current-row>
             <el-table-column type="selection" width="55" />
-            <el-table-column label="图形名称" align="left" prop="graphName" >
+            <el-table-column label="图形名称" align="left" prop="graphName" :show-overflow-tooltip="true">
                 <template slot-scope="scope">
                     <el-link @click.native.prevent="detail(scope.row.graphUuid)" type="primary">
                         {{scope.row.graphName}}
@@ -32,7 +32,7 @@
 <script>
     import QueryField from '@/components/Ace/query-field/index'
     import Pagination from '@/components/Pagination/index'
-    import { getExportGrapgListByType } from '@/api/graphtool/graphList'
+    import { getExportGrapgListByType } from '@/api/graphtool/apiJs/graphList'
     import PreviewGraph from '@/views/graphtool/previewGraph'
     export default {
         name: 'GraphListExport',

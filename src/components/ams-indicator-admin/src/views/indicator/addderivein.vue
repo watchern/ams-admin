@@ -1,9 +1,9 @@
 <template>
     <el-container>
         <el-aside class="left-tree">
-            <input type="text" class="form-control" id="search" placeholder="搜索">
+            <el-input id="searchAddIn" v-model="inMeasureSearch" placeholder="搜索"></el-input>
             <div class="panel panel-default">
-                <div class="panel-body" style="height: 500px;overflow-y: auto">
+                <div class="panel-body" style="height: 400px;overflow-y: auto">
                     <tree :nodes="inTreeNodes" :setting="inTreeSetting" @onCreated="inTreeCreate"/>
                 </div>
             </div>
@@ -14,7 +14,7 @@
                     <el-row>
                         <el-col :span="12">
                             <el-form-item label="指标名称">
-                                <el-input v-model="form.inName" id="inName" placeholder="请输入指标名称"></el-input>
+                                <el-input v-model="form.measureName" id="inName" placeholder="请输入指标名称"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12" v-if="addType != 2">
@@ -58,6 +58,17 @@
                 <el-button type="primary" @click="addGroup('distinct'),groupDialogVisible=false">差异计数</el-button>
             </el-button-group>
         </el-dialog>
+        <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true">
+          <myQueryBuilder
+            v-if="queryBuilderDialogVisible"
+            ref="myQueryBuilder"
+            :columns="queryRules"
+            :data="form.inFilterShowObj.queryBuilderJson"/>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="queryBuilderDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="queryCondition">确定</el-button>
+          </span>
+        </el-dialog>
         <!-- <div id="group" class="menuDemo" style="display: block; top: 15px; left: 314px; visibility: visible;">
             <ul id="menuShow" class="dropdown-menu">
                 <li class="hoverLi" id="m_sum" onclick="addDeriveIn.updateGroup('sum')" style="background-color: white;">总计</li>
@@ -83,25 +94,31 @@ import 'codemirror/theme/cobalt.css'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/mode/vue/vue.js'
 import {fuzzySearch} from '../../lib/ztree/ext/fuzzysearch.js'
-
+import Colorpicker from '../../lib/vue-color-picker/packages/color-picker/src/color-picker'
+import myQueryBuilder from "../indicator/myquerybuilder";
 export default {
   name: 'addderiveIn',
   props: ['type','addType','inMeasureUuid','parentUuid','nowAnalysisRegionId'],
   components: {
     tree: resolve => require(["../../lib/ztree/ztree.vue"], resolve),
-    publictree: resolve => require(["../../views/indicator/publictree.vue"], resolve)
+    publictree: resolve => require(["../../views/indicator/publictree.vue"], resolve),Colorpicker,myQueryBuilder
   },
   data() {
     return {
         form: {
-          inName: '',
+          measureName: '',
           folderName: '',
           code: '',
-          inMemo: ''
+          inMemo: '',
+          inFilterShow:'',
+          inFilterShowObj:{queryBuilderJson:{},backGroundColor:'#000000',fontColor:'#000000',sql:''}
         },
+        queryRules:{},
         inTree: null,
         inTreeNodes: null,
         inTreeSetting: null,
+        inMeasureSearch:'',
+        queryBuilderDialogVisible:false,
         /**
          * CodeMirror对象
          * @type {null}
@@ -161,6 +178,7 @@ export default {
   mounted() {
     this.initData()
     this.initIndicatrixZtree()
+
   },
   created() {
 
@@ -170,8 +188,7 @@ export default {
         var that = this
         this.inTree = inTree
         this.inTree.expandAll(true)
-        fuzzySearch(this.inTree,'#search',null,false)
-
+        fuzzySearch(this.inTree,'#searchAddIn',null,false)
         var node = this.inTree.getNodes() //可以获取所有的父节点
         var nodes = this.inTree.transformToArray(node) //获取树所有节点
         for(var i = 0;i < nodes.length; i++){
@@ -190,25 +207,25 @@ export default {
      * 初始化数据
      */
     initData() {
-        if(this.inMeasureUuid == undefined) {//判断该id是否为空 如果为空则是新增  反之编辑
+      this.editor = CodeMirror.fromTextArea(this.$refs.code, {
+        lineNumbers: true,     // 显示行数
+        indentUnit: 4,         // 缩进单位为4
+        styleActiveLine: true, // 当前行背景高亮
+        matchBrackets: true,   // 括号匹配
+        mode: 'htmlmixed',     // HMTL混合模式
+        lineWrapping: true    // 自动换行
+      })
+      var that = this
+      this.editor.on("change",function(instance,changeObj) {
+        that.codeMirrorValueEdit(instance,changeObj)
+      })
+        if(this.inMeasureUuid == "") {//判断该id是否为空 如果为空则是新增  反之编辑
             //$("#folderName").attr("value",decodeURI(this.param.treeName))
         }
         else{
             var inMeasureUuid = decodeURI(this.inMeasureUuid)
             this.antiDisplayIndicatrixData(inMeasureUuid)
         }
-        this.editor = CodeMirror.fromTextArea(this.$refs.code, {
-            lineNumbers: true,     // 显示行数
-            indentUnit: 4,         // 缩进单位为4
-            styleActiveLine: true, // 当前行背景高亮
-            matchBrackets: true,   // 括号匹配
-            mode: 'htmlmixed',     // HMTL混合模式
-            lineWrapping: true    // 自动换行
-        })
-        var that = this
-        this.editor.on("change",function(instance,changeObj) {
-            that.codeMirrorValueEdit(instance,changeObj)
-        })
     },
     /**
      * 初始化指标树
@@ -319,7 +336,8 @@ export default {
             createPersonName: "",
             measurePath: this.treePath,
             measureAlias:inName,
-            pbScopeUuid:this.pbScopeUuid
+            pbScopeUuid:this.pbScopeUuid,
+            inFilterShow:JSON.stringify(this.form.inFilterShowObj)
         }
         var urlVer = this.contextUrl + "/InMeasure/verMeasureAlias"
         var that = this
@@ -329,8 +347,6 @@ export default {
                     var url = that.contextUrl + "/InMeasure/insertDeriveIn"
                     $.post(url,{inMeasurem:JSON.stringify(data)},function(res) {
                         if(res.state == true) {
-                            var info = "新增了派生指标:'{0}'".format(inName)
-                            that.addOperLogByParam(that.log_module,that.log_add,that.log_info)
                             that.$emit('loadInMeasueData',2, that.analysisRegionId,uuid,true)
                         }
                         that.closeDialog()
@@ -347,8 +363,6 @@ export default {
             $.post(url,{inMeasurem:JSON.stringify(data)},function(res) {
                 if(res.state == true) {
                     if(that.addType == 2){
-                        var info = "新增了临时指标:'{0}'".format(inName)
-                        that.addOperLogByParam(that.log_module,that.log_add,that.log_info)
                         that.$message(res.message)
                         that.$emit('loadInMeasueData',2, that.analysisRegionId,uuid,true)
                     }
@@ -429,6 +443,7 @@ export default {
             this.editData.pbScopeUuid = this.pbScopeUuid
             this.editData.measurePath = this.treePath
         }
+        this.editData.inFilterShow = JSON.stringify(this.form.inFilterShowObj)
         var inName = $("#inName").val()
         var reg = new RegExp("^[A-Za-z\u4e00-\u9fa5]+$")
         if(!reg.test(inName)){
@@ -474,6 +489,7 @@ export default {
             url = this.contextUrl + "/InMeasure/selectDeriveIn"
         }
         $.post(url,{inMeasureUuid:id},function(res) {
+            res.inFilterShowObj = JSON.parse(res.inFilterShow)
             that.form = res
             that.editData = res
             that.treePath = that.editData.measurePath
@@ -481,6 +497,7 @@ export default {
             $("#folderName").attr("value",res.folderName)
             $("#inMemo").text(res.measureMemo)
             that.setValue2CM(that.editor,res.measureFormula)
+            console.log(that.form.inFilterShowObj)
         },"json")
     },
 
@@ -893,6 +910,33 @@ export default {
             return "差异计数(" + name + ")"
         }
         return name
+    },
+    /**
+     *设置querybuilder
+     */
+    setQueryBuilderRules(){
+      let queryRules = []
+      const obj = {}
+      obj.columnType = "int"
+      obj.columnName = this.form.measureName
+      queryRules.push(obj)
+      this.queryRules.columnList = queryRules
+    },
+    /**
+     * 设置条件显示
+     */
+    setFilterShow(){
+      if(this.form.inName === ""){
+        this.$message("请输入指标名称。");
+        return
+      }
+      this.queryBuilderDialogVisible = true
+    },
+    queryCondition() {
+      const obj = this.$refs.myQueryBuilder.getSelectSql()
+      this.form.inFilterShowObj.sql = obj.sql
+      this.form.inFilterShowObj.queryBuilderJson = obj.queryJson
+      this.queryBuilderDialogVisible = false
     }
   }
 }

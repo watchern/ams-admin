@@ -1,8 +1,9 @@
 <template>
   <!-- childTabs是子页签组件 -->
-  <el-tabs type="border-card" style="border:0;box-shadow:0 0 0 0 #000">
-    <el-tab-pane v-if="useType==='modelRunResult'?true:false"  :label="useType === 'modelRunResult' ? '主表' : '结果1'"
+  <el-tabs type="border-card" style="border:0;box-shadow:0 0 0 0 #000;">
+    <el-tab-pane v-if="useType==='modelRunResult'?true:false" style="height:30px" :label="useType === 'modelRunResult' ? '主表' : '结果1'"
       ><childTabCons
+        :settingInfo="settingInfo"
         :nowtable="maintable"
         :model-uuid="modelUuid"
         :useType="useType"
@@ -10,13 +11,16 @@
         :modelId="modelId"
         :myIndex='1'
         :preLength="1"
+        @addBigTabs="addBigTabs"
+        @setNextValue="setNextValue"
+        ref="onlyChild"
     /></el-tab-pane>
     <el-tab-pane
       v-for="(item, key) in useType==='modelRunResult'?helptables:preValue"
       :key="key"
       :label="tabsName(key)"
       class="qweqwe"
-      ><childTabCons ref="child" :chartModelUuid="chartModelUuid" :resultSpiltObjects="resultSpiltObjects" :modelId="modelId" :nowtable="item" :prePersonalVal="item" :useType="useType" :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1" :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"/>
+      ><childTabCons ref="child" :is-model-preview="isModelPreview" @addBigTabsModelPreview="addBigTabsModelPreview" @addBigTabs="addBigTabs" @setNextValue="setNextValue" :chartModelUuid="chartModelUuid" :resultSpiltObjects="resultSpiltObjects" :modelId="modelId" :nowtable="item" :prePersonalVal="item" :useType="useType" :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1" :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"/>
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -37,8 +41,8 @@ export default {
     /**
      * sql编辑器模型结果用来给子组件aggrid表格赋值
      */
-      loadTableData(nextValue){
-        this.$refs.child[this.index].initData(null,nextValue)
+      loadTableData(nextValue,modelName){
+        this.$refs.child[this.index].initData(null,nextValue,modelName)
         this.
           index++;
       },
@@ -66,7 +70,24 @@ export default {
         }else if(this.useType==='graph'){
           return this.preValue[key].name
         }
-      }
+      },
+    addBigTabs(resultTable,mainTable,modelname,modelUuid,resultSpiltObjects,useType,currentExecuteSQL){
+        this.$emit('addTab',undefined,undefined,modelname,modelUuid,undefined,useType,currentExecuteSQL)
+    },
+    addBigTabsModelPreview(modelName,modelUuid,currentExecuteSQL){
+      var modelObj = {modelName:modelName,modelUuid:modelUuid}
+      this.$emit('addTab',modelObj,false,currentExecuteSQL,true)
+    },
+    setNextValue(val){
+      this.$emit('setNextValue',val)
+    },
+    clickBigTab(){
+        if (this.resultMark==='modelResult'){
+          this.$refs.onlyChild.clickBigTab()
+        }else{
+          this.$refs.child[this.index-1].clickBigTab()
+        }
+    }
   },
   /**
    * SQL编辑器结果、模型结果界面使用变量：preValue:先传过来的值，用于判断加几个页签  nextValue：后传过来的数据表
@@ -81,7 +102,17 @@ export default {
     "preValue",
     "resultSpiltObjects",
     "modelId",
-    "chartModelUuid"
+    "chartModelUuid",
+    "settingInfo",
+    "resultMark",
+    "isModelPreview",
+    "isRelation"
   ],
 };
 </script>
+<style scoped>
+>>>.el-tabs__item{
+    height:32px!important;
+    line-height:32px!important;
+}
+</style>

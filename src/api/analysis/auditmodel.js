@@ -7,12 +7,12 @@ const dataUrl = '/data'
  * 获取当前登录人模型分类树
  * @returns {AxiosPromise}
  */
-export function findModelFolderTree(isShowModel) {
+export function findModelFolderTree(isShowModel, name, id) {
   return request({
     baseURL: analysisUrl,
     url: '/modelFolderController/findModelFolderTree',
     method: 'get',
-    params: { isShowModel: isShowModel }
+    params: { isShowModel: isShowModel, spaceFolderName: name, spaceFolderId: id }
   })
 }
 

@@ -2,8 +2,9 @@
   <div class="app-container">
     <div>
       <div class="detail-form">
-        <el-card title="SQL内容">
-          <div id="DivContent" v-html="parentContent" />
+        <el-card title="SQL内容" style="height: 500px">
+         <!-- <div id="DivContent" v-html="parentContent" />-->
+          <el-input type="textarea" :value="parentContent" :rows="25"  readonly></el-input>
         </el-card>
       </div>
     </div>

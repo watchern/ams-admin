@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { compareSql } from '@/api/graphtool/graphList'
+import { compareSql } from '@/api/graphtool/apiJs/graphList'
 const CodeMirror = require('@/components/ams-codemirror/lib/codemirror')
 import store from '@/store'
 const analysisUrl = '/analysis'
@@ -63,18 +63,18 @@ var mouseY
  * 列图标路径
  * @type {string}
  */
-var columnIconPath = '../../images/ico/column.png'
+var columnIconPath = require("@/styles/icons/column.png")
 
 /**
  * 表图标路径
  * @type {string}
  */
-var tableIconPath = '../../images/ico/table_1.png'
+var tableIconPath = require("@/styles/icons/table_1.png")
 /**
  * 视图图标路径
  * @type {string}
  */
-var viewIconPath = '../../images/ico/view.png'
+var viewIconPath =  require("@/styles/icons/view.png")
 /**
  * 参数对象
  * @type {{}}
@@ -179,9 +179,10 @@ export function initDragAndDrop() {
       iT = (e || event).clientX
       // if(iT < left_min){iT = left_min}
       // else if(iT > container.clientWidth*.85){iT = container.clientWidth*.85}
-      vertical.style.left = iT - 80 - tz_path + 'px'
-      leftPart.style.width = iT - 86 - tz_path + 'px'
-      rightContent.style.width = parseInt(container.clientWidth - iT + 76 + tz_path) + 'px'
+
+      vertical.style.left = (iT - 80 - tz_path) / container.clientWidth * 100 + '%'
+      leftPart.style.width = (iT - 86 - tz_path) / container.clientWidth * 100 + '%'
+      rightContent.style.width = (container.clientWidth - iT + 76 + tz_path) / container.clientWidth * 100 + '%'
       return false
     }
     document.onmouseup = function() {
@@ -195,19 +196,22 @@ export function initDragAndDrop() {
 
   // 单击侧边按钮收起左边栏
   function tree_zy_zhan() {
+    var overWidth = document.getElementById('container').clientWidth - 229
+    console.log(overWidth)
     if (tree_shuju == false && tree_canshu == false && tree_sql == false) {
       $('#leftPart').stop(true).animate({ 'width': 203 }, 300)
       $('#vertical').delay(300).fadeIn(100).css('left', 11.5 + '%')
-      $('#rightPart').stop(true).animate({ 'width': 1562, 'left': 0 }, 300)
+      $('#rightPart').stop(true).animate({ 'width': overWidth + 'px', 'left': 0 }, 300)
       $('#sidebar').css('border-right', 1 + 'px' + ' solid' + ' rgb(206,208,212)')
     }
   }
 
   function tree_zy_zhanhe() {
+    var overWidth = document.getElementById('container').clientWidth - 34
     if (tree_shuju == false && tree_canshu == false && tree_sql == false) {
       $('#vertical').fadeOut(100)
       $('#leftPart').delay(100).stop(true).animate({ 'width': 0 }, 300)
-      $('#rightPart').delay(100).stop(true).animate({ 'width': 1752, 'left': 15 }, 300)
+      $('#rightPart').delay(100).stop(true).animate({ 'width': overWidth + 'px', 'left': 15 }, 300)
       $('#sidebar').css('border', 'none')
     }
   }
@@ -512,7 +516,7 @@ export function initTableTree(result) {
       key: {
         checked: 'isChecked',
         name: 'name',
-        title: 'displayName'
+        title: 'name'
       },
       // 设置数据格式
       simpleData: {
@@ -575,65 +579,62 @@ export function initTableTree(result) {
           zTreeObj.removeChildNodes(treeNode)
           var tableName = treeNode.name
           var tableMetaUuid = treeNode.id
-          // 先从codeMirror里面找 如果能找到则不找数据库  找不到则找数据库
-          var columns = CodeMirror.tableColMapping[tableName]
-          if (!columns || (columns && columns.length === 0)) {
-            request({
-              baseURL: dataUrl,
-              url: '/tableMeta/getCols',
-              method: 'post',
-              params: { tableMetaUuid: tableMetaUuid }
-            }).then(result => {
-              if (result.data == null) {
-                alert('错误' + e.message + 'error')
-              } else {
-                // 处理拿回来的数据 处理成列表
-                const columns = []
-                for (let i = 0; i < result.data.length; i++) {
-                  if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
-                    columns.push(result.data[i].colName)
-                  } else {
-                    columns.push(result.data[i].chnName)
+          request({
+            baseURL: dataUrl,
+            url: '/tableMeta/getCols',
+            method: 'post',
+            params: { tableMetaUuid: tableMetaUuid, isEnclose:"1"  }
+          }).then(result => {
+            if (result.data == null) {
+              this.$message({
+                message: '错误' + e.message + 'error',
+              });
+              // alert('错误' + e.message + 'error')
+            } else {
+              // 处理拿回来的数据 处理成列表
+              const columns = []
+              var nodeList = []
+              for (let i = 0; i < result.data.length; i++) {
+                if (result.data[i].chnName === '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
+                  columns.push(result.data[i].colName)
+                  var node = {
+                    'id': tableName + '_' + this,
+                    'name': result.data[i].colName,
+                    'displayName': result.data[i].colName,
+                    'pid': treeNode.id,
+                    'isParent': false,
+                    'open': false,
+                    'type': 'column',
+                    'icon': columnIconPath,
+                    'enName':result.data[i].colName
                   }
-                }
-                if (columns.length > 0) {
-                  CodeMirror.tableColMapping[tableName] = columns
-                  editorObj.options.hintOptions.tables[tableName] = columns
-                  var nodeList = []
-                  $(columns).each(function() {
-                    var node = {
-                      'id': tableName + '_' + this,
-                      'name': this.toString(),
-                      'displayName': this.toString(),
-                      'pid': treeNode.id,
-                      'isParent': false,
-                      'open': false,
-                      'type': 'column',
-                      'icon': columnIconPath
-                    }
-                    nodeList.push(node)
-                  })
-                  zTreeObj.addNodes(treeNode, nodeList)
+                  nodeList.push(node)
+                } else {
+                  //如果有汉化字段则用中文加汉化字段
+                  let columnName = result.data[i].colName + "(" + result.data[i].chnName + ")"
+                  columns.push(result.data[i].colName)
+                  var node = {
+                    'id': tableName + '_' + this,
+                    'name': columnName,
+                    'displayName': columnName,
+                    'pid': treeNode.id,
+                    'isParent': false,
+                    'open': false,
+                    'type': 'column',
+                    'icon': columnIconPath,
+                    'enName':result.data[i].colName
+                  }
+                  nodeList.push(node)
+                  editorObj.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
                 }
               }
-            })
-          } else {
-            var nodeList = []
-            $(columns).each(function() {
-              var node = {
-                'id': tableName + '_' + this,
-                'name': this.toString(),
-                'displayName': this.toString(),
-                'pid': treeNode.id,
-                'isParent': false,
-                'open': false,
-                'type': 'column',
-                'icon': columnIconPath
+              if (columns.length > 0) {
+                CodeMirror.tableColMapping[tableName] = columns
+                editorObj.options.hintOptions.tables[tableName] = columns
+                zTreeObj.addNodes(treeNode, nodeList)
               }
-              nodeList.push(node)
-            })
-            zTreeObj.addNodes(treeNode, nodeList)
-          }
+            }
+          })
         }
       }
     },
@@ -662,10 +663,18 @@ export function initTableTree(result) {
   for (let i = 0; i < result.data.length; i++) {
     if (result.data[i].type === 'table') {
       result.data[i].icon = tableIconPath
+      result.data[i].enName = result.data[i].name;
+      if(result.data[i].nameCn){
+        result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
+      }
       result.data[i].isParent = true
     } else if (result.data[i].type === 'view') {
       result.data[i].icon = viewIconPath
       result.data[i].isParent = true
+      result.data[i].enName = result.data[i].name;
+      if(result.data[i].nameCn){
+        result.data[i].name = result.data[i].name + "(" + result.data[i].nameCn + ")"
+      }
     } else if (result.data[i].type === 'folder') {
       result.data[i].isParent = true
     }
@@ -764,10 +773,13 @@ export function refushTableTree(treeNodes) {
               baseURL: dataUrl,
               url: '/tableMeta/getCols',
               method: 'post',
-              params: { tableMetaUuid: tableMetaUuid }
+              params: { tableMetaUuid: tableMetaUuid, isEnclose:"1" }
             }).then(result => {
               if (result.data == null) {
-                alert('错误' + e.message + 'error')
+                this.$message({
+                  message: '错误' + e.message + 'error',
+                });
+                // alert('错误' + e.message + 'error')
               } else {
                 // 处理拿回来的数据 处理成列表
                 const columns = []
@@ -1022,6 +1034,8 @@ export function initParamTree() {
     if (result.data.isError) {
 
     } else {
+      result.data.paramNode.open = true
+      // 'open': true,
       paramZtree = $.fn.zTree.init($('#paramTree'), paramSetting, result.data.paramNode)
     }
   })
@@ -1044,7 +1058,7 @@ function onDrop(event, treeId, treeNodes) {
     return
   }
   var cursor = editorObj.getCursor()
-  dragOne(treeNodes[0]['name'] + " ", cursor, cursor)
+  dragOne(treeNodes[0]['enName'] + " ", cursor, cursor)
 }
 
 /**
@@ -1099,7 +1113,7 @@ function showRMenu(type, containerId, menuId, x, y) {
  * 隐藏菜单
  * @param menuId 要隐藏的编号
  */
-function hideRMenu(menuId) {
+export function hideRMenu(menuId) {
   if ($('#' + menuId)[0]) $('#' + menuId).css({ 'visibility': 'hidden' })
   $('body').unbind('mousedown', onBodyMouseDown)
 }
@@ -1543,7 +1557,10 @@ export function sqlFormat() {
     params: param
   }).then(result => {
     if (result.data.isError) {
-      alert('SQL语句书写不正确，格式化时出错')
+      this.$message({
+        message: 'SQL语句书写不正确，格式化时出错',
+      });
+      // alert('SQL语句书写不正确，格式化时出错')
     } else {
       var newVal = result.data.sql
       if (Object.keys(paramObj).length > 0) {
@@ -1629,7 +1646,10 @@ export function caseTransformation(type) {
     }
     editorObj.replaceSelection(selectValue)
   } else {
-    alertMsg('提示', '请选择转换内容', 'info')
+    this.$message({
+      message: '请选择转换内容',
+    });
+    // alertMsg('提示', '请选择转换内容', 'info')
   }
 }
 
@@ -1664,7 +1684,10 @@ export function selectSqlNotes() {
     }
     replaceParam(newParamObj)
   } else {
-    alert('请选择注释内容')
+    this.$message({
+      message: '请选择注释内容',
+    });
+    // alert('请选择注释内容')
   }
 }
 
@@ -1697,7 +1720,10 @@ export function selectSqlCancelNotes() {
     }
     replaceParam(newParamObj)
   } else {
-    alert('请选择待取消注释的内容')
+    this.$message({
+      message: '请选择待取消注释的内容',
+    });
+    // alert('请选择待取消注释的内容')
   }
 }
 
@@ -1734,32 +1760,37 @@ export function getSelectSql(menuId) {
   hideRMenu(menuId)
   var nodes = zTreeObj.getSelectedNodes()
   if (nodes.length > 0) {
-    var tableName = nodes[0].name
+    var tableName = nodes[0].enName
     var tableMetaUuid = nodes[0].id
     var columns = CodeMirror.tableColMapping[tableName]
     var oldSql = editorObj.getValue()
+    debugger
     if (!columns || (columns && columns.length === 0)) {
       request({
         baseURL: dataUrl,
         url: '/tableMeta/getCols',
         method: 'post',
-        params: { tableMetaUuid: tableMetaUuid }
+        params: { tableMetaUuid: tableMetaUuid, isEnclose:"1" }
       }).then(result => {
         if (result.data == undefined || result.data == null) {
           return
         } else {
           if (result.data && result.data.length > 0) {
             var columns = []
+            var enColumns = []
             for (var i = 0; i < result.data.length; i++) {
               if (result.data[i].chnName == '' || result.data[i].chnName == null || result.data[i].chnName == undefined) {
                 columns.push(result.data[i].colName)
+                enColumns.push(result.data[i].colName)
               } else {
                 columns.push(result.data[i].chnName)
+                enColumns.push(result.data[i].colName)
+                editorObj.options.hintOptions.tablesTitle[result.data[i].colName] = result.data[i].chnName
               }
             }
-            CodeMirror.tableColMapping[tableName] = columns
-            editorObj.options.hintOptions.tables[tableName] = columns
-            getSelectSQLByColumns(columns, tableName, oldSql, null)
+            CodeMirror.tableColMapping[tableName] = enColumns
+            editorObj.options.hintOptions.tables[tableName] = enColumns
+            getSelectSQLByColumns(enColumns, tableName, oldSql, null)
           } else {
           }
         }
@@ -1797,7 +1828,10 @@ function getSelectSQLByColumns(columns, tableName, oldSql, loading) {
       if (loading) {
         loading.destroy()
       }
-      alert('SQL语句书写不正确，格式化时出错')
+      this.$message({
+        message: 'SQL语句书写不正确，格式化时出错',
+      });
+      // alert('SQL语句书写不正确，格式化时出错')
     } else {
       editorObj.setValue(oldSql === '' ? result.data.sql : oldSql + '\n' + result.data.sql)
       // 如果有参数，替换显示状态
@@ -2103,4 +2137,13 @@ export async function getGraphSaveInfo(){
         returnObj.isChange = response.data.isChange;
     }
     return returnObj;
+}
+
+/**
+ * 获取选中节点
+ * @returns {*}
+ */
+export function getZtreeSelectNode(){
+  var nodes = zTreeObj.getSelectedNodes()
+  return nodes
 }

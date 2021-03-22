@@ -356,7 +356,6 @@ export default {
       if (!this.filterNodeMethod) throw new Error('[Tree] filterNodeMethod is required when filter')
       this.store.filter(value)
     },
-
     getNodeKey(node) {
       return getNodeKey(this.nodeKey, node.data)
     },

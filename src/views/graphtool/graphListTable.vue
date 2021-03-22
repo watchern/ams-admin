@@ -8,15 +8,17 @@
                 <el-button v-if="type === 'privateGraphType' || type === 'personScreenGraphType'" type="primary" class="oper-btn add" @click="add"/>
                 <el-button v-if="type !== 'shareToGraphType'" type="primary" class="oper-btn edit" @click="edit" :disabled="editGraphBtn"/>
                 <el-button v-if="showDelBtn" type="primary" class="oper-btn delete" @click="deleteGraph" :disabled="deleteGraphBtn"/>
-                <el-button v-if="type === 'privateGraphType'" type="primary" class="oper-btn share" @click="personTreeDialogVisible = true" :disabled="shareGraphBtn"/>
-                <el-button v-if="type === 'shareToGraphType'" type="primary" class="oper-btn cancelshare" @click="cancelShare" :disabled="cancelShareGraphBtn"/>
+                <el-button v-if="type === 'privateGraphType'" type="primary" class="oper-btn share-1" @click="personTreeDialogVisible = true" :disabled="shareGraphBtn"/>
+                <el-button v-if="type === 'shareToGraphType'" type="primary" class="oper-btn cancelshare"@click="cancelShare" :disabled="cancelShareGraphBtn"/>
+                <el-button v-if="type === 'personScreenGraphType'" type="primary" class="oper-btn publish" @click="publicGraph" :disabled="publicGraphBtn"/>
+                <el-button v-if="type === 'screenGraphType'" type="primary" class="oper-btn publish-1" @click="cancelPublic" :disabled="cancelPublicGraphBtn"/>
                 <el-button v-if="type.toLowerCase().indexOf('screengraphtype') > -1" type="primary" class="oper-btn start" @click="run" :disabled="runGraphBtn"/>
             </el-col>
         </el-row>
         <el-table key="graphTable" ref="graphListTable" v-loading="listLoading" height="500" :data="dataList" border fit highlight-current-row
                   @select="listSelectChange" @select-all="listSelectChange">
             <el-table-column type="selection" width="55" />
-            <el-table-column label="图形名称" align="left" prop="graphName">
+            <el-table-column label="图形名称" align="left" prop="graphName" :show-overflow-tooltip="true">
                 <template slot-scope="scope">
                     <el-link @click.native.prevent="detail(scope.row.graphUuid)" type="primary">
                         {{scope.row.graphName}}
@@ -64,7 +66,7 @@
     import Pagination from '@/components/Pagination/index'
     import PreviewGraph from '@/views/graphtool/previewGraph'
     import PersonTree from '@/components/publicpersontree/index'
-    import { getGrapgListByType, deleteGraphInfoById, shareGraph, cancelShareGraph, searchGraphNodes, selectSharedPerson } from '@/api/graphtool/graphList'
+    import { getGrapgListByType, deleteGraphInfoById, shareGraph, cancelShareGraph, searchGraphNodes, selectSharedPerson, publicGraph, cancelPublicGraph } from '@/api/graphtool/apiJs/graphList'
     export default {
         name: 'GraphListTable',
         components: { QueryField, Pagination, PreviewGraph, PersonTree },
@@ -95,6 +97,8 @@
                 shareGraphBtn:true,
                 cancelShareGraphBtn:true,
                 runGraphBtn:true,
+                publicGraphBtn:true,
+                cancelPublicGraphBtn:true,
                 personTreeDialogVisible:false,
                 sharedPersonDialogVisible:false
             }
@@ -123,15 +127,18 @@
                     this.runGraphBtn = true
                     this.deleteGraphBtn = true
                     this.shareGraphBtn = true
-                }
-                if (selection.length === 1) {
-                    this.editGraphBtn = false
-                    this.cancelShareGraphBtn = false
-                    this.runGraphBtn = false
-                }
-                if(selection.length > 0){
+                    this.publicGraphBtn = true
+                    this.cancelPublicGraphBtn = true
+                }else{
+                    if (selection.length === 1) {
+                        this.editGraphBtn = false
+                        this.cancelShareGraphBtn = false
+                        this.runGraphBtn = false
+                    }
                     this.deleteGraphBtn = false
                     this.shareGraphBtn = false
+                    this.publicGraphBtn = false
+                    this.cancelPublicGraphBtn = false
                 }
             },
             detail(graphUuid) {
@@ -187,8 +194,10 @@
                     cancelButtonText: this.$t('confirm.cancelBtn'),
                     type: 'warning'
                 }).then(() => {
+                    this.pageLoading = true
                     let obj = this.getUuidsANdNames(selectObj)
                     deleteGraphInfoById(obj.graphUuids).then(response => {
+                        this.pageLoading = false
                         this.$notify({
                             title: this.$t('message.title'),
                             message: this.$t('message.delete.success'),
@@ -201,6 +210,7 @@
                         // 刷新图形树
                         this.$emit('refreshGraphTree')
                     }).catch( () => {
+                        this.pageLoading = false
                         this.$message.error(this.$t('message.delete.fail'))
                     })
                 }).catch( () => {})
@@ -240,7 +250,9 @@
                         })
                         // 刷新图形树（主要刷新我的分析图形节点数据）
                         this.$emit('refreshGraphTree')
-                    }).catch( () => {})
+                    }).catch( () => {
+                        this.pageLoading = false
+                    })
                 }
             },
             cancelShare() {
@@ -290,7 +302,9 @@
                         this.getGraphList()
                         // 刷新图形树（主要刷新我的分析图形节点数据）
                         this.$emit('refreshGraphTree')
-                    }).catch( () => {})
+                    }).catch( () => {
+                        this.pageLoading = false
+                    })
                 }
             },
             run() {
@@ -323,6 +337,62 @@
                 }).catch( () =>{
                     this.pageLoading = false
                 })
+            },
+            publicGraph(){
+                let selectObj = this.$refs.graphListTable.selection
+                this.$confirm(this.$t('确定发布为公共场景查询图形？'), this.$t('confirm.title'),{
+                    confirmButtonText: this.$t('confirm.okBtn'),
+                    cancelButtonText: this.$t('confirm.cancelBtn'),
+                    type: 'warning'
+                }).then(() => {
+                    this.pageLoading = true
+                    let obj = this.getUuidsANdNames(selectObj)
+                    publicGraph(obj.graphUuids).then(response => {
+                        this.pageLoading = false
+                        this.$notify({
+                            title: this.$t('message.title'),
+                            message: this.$t('发布成功'),
+                            type: 'success',
+                            duration: 2000,
+                            position: 'bottom-right'
+                        })
+                        this.listSelectChange([])
+                        this.getGraphList()
+                        // 刷新图形树
+                        this.$emit('refreshGraphTree')
+                    }).catch( () => {
+                        this.pageLoading = false
+                        this.$message.error(this.$t('发布失败'))
+                    })
+                }).catch( () => {})
+            },
+            cancelPublic(){
+                let selectObj = this.$refs.graphListTable.selection
+                this.$confirm(this.$t('确定取消已发布的公共场景查询图形？'), this.$t('confirm.title'),{
+                    confirmButtonText: this.$t('confirm.okBtn'),
+                    cancelButtonText: this.$t('confirm.cancelBtn'),
+                    type: 'warning'
+                }).then(() => {
+                    this.pageLoading = true
+                    let obj = this.getUuidsANdNames(selectObj)
+                    cancelPublicGraph(obj.graphUuids).then(response => {
+                        this.pageLoading = false
+                        this.$notify({
+                            title: this.$t('message.title'),
+                            message: this.$t('取消发布成功'),
+                            type: 'success',
+                            duration: 2000,
+                            position: 'bottom-right'
+                        })
+                        this.listSelectChange([])
+                        this.getGraphList()
+                        // 刷新图形树
+                        this.$emit('refreshGraphTree')
+                    }).catch( () => {
+                        this.pageLoading = false
+                        this.$message.error(this.$t('取消发布失败'))
+                    })
+                }).catch( () => {})
             },
             /**
              * 根据选中的列表数据获取图形UUID和名称串

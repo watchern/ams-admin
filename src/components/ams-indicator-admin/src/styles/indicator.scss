@@ -212,7 +212,7 @@ website:    http://code.google.com/p/jquerytree/
 .ztreein li a.tmpTargetNode_next {}
 .ztreein li a input.rename {height:14px; width:80px; padding:0; margin:0;
   font-size:12px; border:1px #585956 solid; *border:0px}
-.ztreein li span {line-height:21px; margin-right:2px}
+.ztreein li span {line-height:16px; margin-right:2px}
 .ztreein li span.button {line-height:0; margin:0; padding: 0; width:21px; height:21px; display: inline-block; vertical-align:middle;
   border:0 none; cursor: pointer;outline:none;
   background-color:transparent; background-repeat:no-repeat; background-attachment: scroll;
@@ -750,9 +750,17 @@ ul.ztreein.zTreeDragUL {z-index:100000;margin:0; padding:0; position:absolute; w
     display: table-cell;
     vertical-align: middle;
 }
+.tags-order,.tags-con,.tags-set{
+  display: table-cell;
+  vertical-align: middle;
+}
 .tags-order,.tags-del{
     width: 20px;
     text-align: center;
+}
+.tags-order,.tags-set{
+  width: 20px;
+  text-align: center;
 }
 .tags-order{
     background-color: #f2f2f2;
@@ -770,8 +778,20 @@ ul.ztreein.zTreeDragUL {z-index:100000;margin:0; padding:0; position:absolute; w
     background: url("icons/icon-del-gray.png") no-repeat center;
     cursor: pointer;
 }
+
 .tags-del i:hover{
-    background-image: url("icons/icon-delete-info.png");
+  background-image: url("icons/icon-delete-info.png");
+}
+
+.tags-set i{
+  display: inline-block;
+  width: 11px;
+  height: 13px;
+  background: url("icons/setting.png") no-repeat center;
+  cursor: pointer;
+}
+.tags-set i:hover{
+  background-image: url("icons/setting.png");
 }
 
 .CodeMirror{

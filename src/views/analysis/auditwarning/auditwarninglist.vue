@@ -315,8 +315,6 @@ export default {
           this.getList()
         })
       })
-
-
     },
 
     /**

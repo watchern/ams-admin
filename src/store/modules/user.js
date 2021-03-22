@@ -6,7 +6,6 @@ import { cacheDict } from '@/api/base/sys-dict'
 import { getAllScene, getSceneInst } from '@/api/data/scene'
 import Cookies from 'js-cookie'
 const state = {
-  ext: "xxxx",
   token: getToken(),
   name: '',
   avatar: '',
@@ -76,38 +75,16 @@ const actions = {
           })
         }
         /*登录时设置场景编码和实例*/
-        var sceneCode = 'auditor';
-        var dataUserId = data.userid;
+        var sceneCode = 'auditor'
+        var dataUserId = data.userid
         getSceneInst(sceneCode, dataUserId).then(resp => {
-          var dataUserName = resp.data.dataUserName;
-          var sceneName = resp.data.sceneName;
+          var dataUserName = resp.data.dataUserName
+          var sceneName = resp.data.sceneName
           commit('SET_SCENECODE', sceneCode)
           commit('SET_SCENENAME', sceneName)
           commit('SET_DATAUSERID', dataUserId)
           commit('SET_DATAUSERNAME', dataUserName)
-        });
-
-
-        /*getAllScene().then(res => {
-          var sceneCode = res.data[0].sceneCode;
-          var sceneName = res.data[0].sceneName;
-          commit('SET_SCENECODE', sceneCode)
-          commit('SET_SCENENAME', sceneName)
-          commit('SET_DATAUSERID', data.userid)
-          commit('SET_DATAUSERNAME', data.username)
-          sessionStorage.setItem('sceneCode', res.data[0].sceneCode);
-          sessionStorage.setItem('sceneName', res.data[0].sceneName);
-          sessionStorage.setItem('dataUserId', data.userid);
-          sessionStorage.setItem('dataUserName', data.username);*/
-          //this.$store.dispatch('user/saveScene', sceneCode, "项目场景", prjcode, personuuid, prjname);
-         /* saveSession({
-            sceneCode: res.data[0].sceneCode,
-            sceneName :res.data[0].sceneName,
-            dataUserId: data.userid,
-            dataUserName: data.username
-          });
         })
-        */
         resolve()
       }).catch(error => {
         reject(error)
@@ -117,16 +94,6 @@ const actions = {
 
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      //console.log(state);
-     /* var personuuid = state.id;
-      if(personuuid == "" || personuuid == null){
-        personuuid = Cookies.get("PERSONUUID")
-      }
-      if(personuuid == "" || personuuid == null){
-        personuuid = window.location.hash.replace('#/base/sso?param=', '').split(",")[0];
-        Cookies.set("PERSONUUID", personuuid)
-      }*/
-
       getInfo().then(response => {
         const { data } = response
         if (!data) {
@@ -144,18 +111,17 @@ const actions = {
         commit('SET_INTRODUCTION', introduction)
         commit('SET_CODE', personcode)
 
-        if(state.scenecode == "" || state.scenecode == null){
-
-          var sceneCode = 'auditor';
-          var dataUserId = personcode;
+        if (state.scenecode === '' || state.scenecode == null) {
+          var sceneCode = 'auditor'
+          var dataUserId = personcode
           getSceneInst(sceneCode, dataUserId).then(resp => {
-            var dataUserName = resp.data.dataUserName;
-            var sceneName = resp.data.sceneName;
+            var dataUserName = resp.data.dataUserName
+            var sceneName = resp.data.sceneName
             commit('SET_SCENECODE', sceneCode)
             commit('SET_SCENENAME', sceneName)
             commit('SET_DATAUSERID', dataUserId)
             commit('SET_DATAUSERNAME', dataUserName)
-          });
+          })
         }
         resolve(data)
       }).catch(error => {
@@ -175,6 +141,8 @@ const actions = {
         resetRouter()
         dispatch('tagsView/delAllViews', null, { root: true })
         resolve()
+        Cookies.remove('LTPAToken')
+        Cookies.remove('ROLTPAToken')
       }).catch(error => {
         reject(error)
       })

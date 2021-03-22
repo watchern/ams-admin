@@ -1,6 +1,6 @@
 <template>
     <div ref="basicInfo" class="detail-form">
-        <el-form ref="basicInfoForm" :model="formData">
+        <el-form ref="basicInfoForm" :model="formData" class="detail-form">
             <el-row>
                 <el-col>
                     <el-form-item label="图形名称" prop="graphName">
@@ -66,7 +66,7 @@
 </template>
 
 <script>
-    import { getGraphInfoById } from '@/api/graphtool/graphList'
+    import { getGraphInfoById } from '@/api/graphtool/apiJs/graphList'
     export default {
         name: 'PreviewGraph',
         props: ['graphUuid'],

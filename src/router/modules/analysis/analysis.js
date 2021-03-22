@@ -47,6 +47,11 @@ const analysisRouter = {
       component: () => import('@/views/analysis/sqleditor/index')
     },
     {
+      path: 'editormodelnew',
+      name: '模型编(新)',
+      component: () => import('@/views/analysis/auditmodelone/editmodel')
+    },
+    {
       path: 'modelresulthandle',
       name: '模型结果处理',
       component: () => import('@/views/analysis/modelresulthandle/index')
@@ -70,6 +75,12 @@ const analysisRouter = {
       path: 'indicatoranalysis',
       name: '指标分析',
       component: () => import('@/views/analysis/indicatoranalysis/index')
+    }
+    ,
+    {
+      path: 'threadoldvalue',
+      name: '阈值管理',
+      component: () => import('@/views/analysis/thresholdvalue/index')
     }
   ]
 }

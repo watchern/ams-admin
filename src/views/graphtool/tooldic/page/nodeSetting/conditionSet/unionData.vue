@@ -1,74 +1,77 @@
 <template>
-    <div style="padding: 30px 0 0 15px;">
-        <div style="color:red">注：两张表所勾选融合字段的含义和顺序需保持一致，均可通过拖动行改变字段的的显示顺序</div>
-        <div id="table_left" class="div_table">
-            <div class="_table">
-                <div class="_table_th">
-                    <div id="table_name_left">{{leftTableName}}</div>
-                    <div class="mtDiv">
-                        <el-checkbox v-model="leftMainTableChecked" @change="leftMainTableChange">主表</el-checkbox>
-                    </div>
-                </div>
-                <div style="height: 400px;width: 400px;overflow-y: auto;">
-                    <table id="col_table_col_left_data" class="table table-striped">
-                        <thead>
-                        <tr class="tr_th">
-                            <th width="50px" style="text-align: center;">
-                                <el-checkbox v-model="leftSelectAll" @change="leftSelectAllChange"></el-checkbox>
-                            </th>
-                            <th>融合字段</th>
-                        </tr>
-                        </thead>
-                        <tbody ref="leftTableCol">
-                            <tr ref="leftTableColTr" v-for="(leftObj,index) in leftTableColArr" :key="leftObj.id" :data-index="index">
-                                <td>
-                                    <el-checkbox v-model="leftObj.checked" @change="leftColumnChange"></el-checkbox>
-                                </td>
-                                <td align="left">{{leftObj.colName}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    <div style="height: 560px;padding: 30px 0 0 15px;">
+        <el-row>
+            <p style="color:red">注：两张表所勾选融合字段的含义和顺序需保持一致，均可通过拖动行改变字段的的顺序</p>
+        </el-row>
+        <div class="div_table">
+            <el-row style="padding: 10px 5px;">
+                <el-col :span="20" v-if="!isLeftTip" ref="leftTableCol" style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
+                    <label>{{leftTableName}}</label>
+                </el-col>
+                <el-col :span="20" v-if="isLeftTip" ref="leftTableCol" style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
+                    <el-tooltip class="item" effect="dark" :content="leftTableName" placement="top">
+                        <label>{{leftTableName}}</label>
+                    </el-tooltip>
+                </el-col>
+                <el-col :span="4">
+                    <el-checkbox v-model="leftMainTableChecked" @change="leftMainTableChange">主表</el-checkbox>
+                </el-col>
+            </el-row>
+            <el-table :data="leftTableColArr" fit style="width: 100%;" height="435" ref="leftElTable">
+                <el-table-column align="center" width="60" :resizable="false">
+                    <template slot="header" slot-scope="scope">
+                        <el-checkbox v-model="leftSelectAll" @change="leftSelectAllChange"></el-checkbox>
+                    </template>
+                    <template slot-scope="scope">
+                        <el-checkbox v-model="scope.row.checked" @change="leftColumnChange"></el-checkbox>
+                    </template>
+                </el-table-column>
+                <el-table-column type="index" label="编号" width="60" align="center" :resizable="false"/>
+                <el-table-column header-align="center" label="融合字段" :resizable="false">
+                    <template slot-scope="scope">
+                        {{scope.row.colName}}
+                    </template>
+                </el-table-column>
+            </el-table>
         </div>
-        <div class="div_table" style="width: 130px;margin-top: 150px">
+        <div style="width: 130px;margin-top: 230px;float: left;">
             <el-select v-model="conn_type" @change="setConnType">
                 <el-option v-for="connTypeObj in connTypeArr" :value="connTypeObj.value" :label="connTypeObj.name">{{connTypeObj.name}}</el-option>
             </el-select>
         </div>
-        <div id="table_right" class="div_table">
-            <div class="_table">
-                <div class="_table_th">
-                    <div id="table_name_right">{{rightTableName}}}</div>
-                    <div class="mtDiv">
-                        <el-checkbox v-model="rightMainTableChecked" @change="rightMainTableChange">主表</el-checkbox>
-                    </div>
-                </div>
-                <div style="height: 400px;width: 400px;overflow-y: auto;">
-                    <table id="col_table_col_right_data" class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th width="50px" style="text-align: center;">
-                                <el-checkbox v-model="rightSelectAll" @change="rightSelectAllChange"></el-checkbox>
-                            </th>
-                            <th>融合字段</th>
-                        </tr>
-                        </thead>
-                        <tbody ref="rightTableCol">
-                            <tr ref="rightTableColTr" v-for="(rightObj,index) in rightTableColArr" :key="rightObj.id" :data-index="index">
-                                <td>
-                                    <el-checkbox v-model="rightObj.checked" @change="rightColumnChange"></el-checkbox>
-                                </td>
-                                <td align="left">{{rightObj.colName}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="div_table">
+            <el-row style="padding: 10px 5px;">
+                <el-col :span="20" v-if="!isRightTip" ref="rightTableCol" style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
+                    <label>{{rightTableName}}</label>
+                </el-col>
+                <el-col :span="20" v-if="isRightTip" ref="rightTableCol" style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
+                    <el-tooltip class="item" effect="dark" :content="rightTableName" placement="top">
+                        <label>{{rightTableName}}</label>
+                    </el-tooltip>
+                </el-col>
+                <el-col :span="4">
+                    <el-checkbox v-model="rightMainTableChecked" @change="rightMainTableChange">主表</el-checkbox>
+                </el-col>
+            </el-row>
+            <el-table :data="rightTableColArr" fit style="width: 100%;" height="435" ref="rightElTable">
+                <el-table-column align="center" width="60" :resizable="false">
+                    <template slot="header" slot-scope="scope">
+                        <el-checkbox v-model="rightSelectAll" @change="rightSelectAllChange"></el-checkbox>
+                    </template>
+                    <template slot-scope="scope">
+                        <el-checkbox v-model="scope.row.checked" @change="rightColumnChange"></el-checkbox>
+                    </template>
+                </el-table-column>
+                <el-table-column type="index" label="编号" width="60" align="center" :resizable="false"/>
+                <el-table-column header-align="center" label="融合字段" :resizable="false">
+                    <template slot-scope="scope">
+                        {{scope.row.colName}}
+                    </template>
+                </el-table-column>
+            </el-table>
         </div>
     </div>
 </template>
-
 <script>
     export default {
         name: 'unionDataSet',
@@ -88,7 +91,9 @@
                 conn_type:'union',
                 connTypeArr:[{value:"union",name:"合并"},{value:"intersect",name:"交集"},{value:"exclude",name:"补集"}],
                 leftTableName:'',
-                rightTableName:''
+                rightTableName:'',
+                isLeftTip:false,
+                isRightTip:false
             }
         },
         mounted(){
@@ -96,7 +101,7 @@
         },
         methods:{
             init(){
-                let graph = this.$parent.graph
+                let graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 let parentIds = this.nodeData.parentIds
                 let isSet = this.nodeData.isSet
@@ -133,7 +138,8 @@
                         let id = v.id
                         let colName = v.name
                         let checked = v.checked
-                        colArr.push({id,colName,checked})
+                        let num = i
+                        colArr.push({id,colName,checked,num})
                     })
                     if (colArr.length !== 0) {
                         this.leftTableColArr = [...colArr];
@@ -143,7 +149,8 @@
                         let id = v.id
                         let colName = v.name
                         let checked = v.checked
-                        colArr.push({id,colName,checked})
+                        let num = i
+                        colArr.push({id,colName,checked,num})
                     })
                     if (colArr.length !== 0) {
                         this.rightTableColArr = [...colArr];
@@ -171,8 +178,8 @@
                             }
                         }
                     }
-                    this.$parent.$refs.outputColumnVueRef.$nextTick( () => {
-                        this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
+                    this.$parent.$parent.$parent.$refs.outputColumnVueRef.$nextTick( () => {
+                        this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
                     })
                 } else {
                     if (parentIds && parentIds.length > 0) {
@@ -192,12 +199,15 @@
                                 }
                             }
                             let colArr = [];
+                            let curNum = 0
                             $(columnsInfo).each(function(ind, val) {
                                 if (val.isOutputColumn) {
                                     let id = ind;
                                     let colName = val.newColumnName;
                                     let checked = false
-                                    colArr.push({id,colName,checked});
+                                    let num = curNum
+                                    colArr.push({id,colName,checked,num});
+                                    curNum++
                                 }
                             })
                             if (colArr.length !== 0) {
@@ -216,10 +226,24 @@
                         }
                     }
                 }
-                $(this.$refs.leftTableCol).sortable().disableSelection()
-                $(this.$refs.rightTableCol).sortable().disableSelection()
+                this.$nextTick( () => {
+                    $(this.$refs.leftElTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
+                    $(this.$refs.rightElTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
+                })
+                this.$nextTick( () => {
+                    let cWidth = this.$refs.leftTableCol.$el.clientWidth;
+                    let sWidth = this.$refs.leftTableCol.$el.scrollWidth;
+                    if (sWidth > cWidth) { //超过容器宽度
+                        this.isLeftTip = true
+                    }
+                    cWidth = this.$refs.rightTableCol.$el.clientWidth;
+                    sWidth = this.$refs.rightTableCol.$el.scrollWidth;
+                    if (sWidth > cWidth) { //超过容器宽度
+                        this.isRightTip = true
+                    }
+                })
             },
-            leftColumnChange(checked){
+            leftColumnChange(){
                 let chk = 0
                 for(let i=0; i<this.leftTableColArr.length; i++){
                     if(this.leftTableColArr[i].checked){
@@ -229,7 +253,7 @@
                 if(chk === this.leftTableColArr.length){
                     this.leftSelectAll = true
                 }else{
-                    if(this.leftSelectAll = true){
+                    if(this.leftSelectAll){
                         this.leftSelectAll = false
                     }
                 }
@@ -245,10 +269,10 @@
                             })
                         }
                     }
-                    this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
+                    this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
                 }
             },
-            rightColumnChange(checked){
+            rightColumnChange(){
                 let chk = 0
                 for(let i=0; i<this.rightTableColArr.length; i++){
                     if(this.rightTableColArr[i].checked){
@@ -258,7 +282,7 @@
                 if(chk === this.rightTableColArr.length){
                     this.rightSelectAll = true
                 }else{
-                    if(this.rightSelectAll = true){
+                    if(this.rightSelectAll){
                         this.rightSelectAll = false
                     }
                 }
@@ -274,7 +298,7 @@
                             })
                         }
                     }
-                    this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
+                    this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
                 }
             },
             leftMainTableChange(checked){
@@ -302,7 +326,7 @@
                         }
                     }
                 }
-                this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
+                this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
             },
             rightMainTableChange(checked){
                 let data = []
@@ -329,7 +353,7 @@
                         }
                     }
                 }
-                this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
+                this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
             },
             leftSelectAllChange(checked){
                 Array.from(this.leftTableColArr, (n) => n.checked = checked)
@@ -345,9 +369,9 @@
                                 })
                             }
                         }
-                        this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
+                        this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
                     }else{
-                        this.$parent.$refs.outputColumnVueRef.re_checkbox(null, true)
+                        this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(null, true)
                     }
                 }
             },
@@ -365,9 +389,9 @@
                                 })
                             }
                         }
-                        this.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
+                        this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(data, true)
                     }else{
-                        this.$parent.$refs.outputColumnVueRef.re_checkbox(null, true)
+                        this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(null, true)
                     }
                 }
             },
@@ -393,36 +417,27 @@
                 } else {
                     right_data.mainTable = true
                 }
-                let leftTableColTr = this.$refs.leftTableColTr
-                for(let i=0; i<leftTableColTr.length; i++){
-                    let leftIndex = Number(leftTableColTr[i].getAttribute("data-index"))
-                    let id = i
-                    let name = this.leftTableColArr[leftIndex].colName
-                    let checked = this.leftTableColArr[leftIndex].checked
-                    left_data.columnSetArr.push({id, name, checked})
+                let $this = this
+                let leftTableColTr = this.$refs.leftElTable.$refs.bodyWrapper.children[0].children[1].children
+                if(typeof leftTableColTr !== 'undefined' && leftTableColTr.length > 0){
+                    $.each(leftTableColTr,function (i) {
+                        const leftIndex = parseInt($(this).find("td:eq(1)>div>div").html()) - 1
+                        let id = i
+                        let name = $this.leftTableColArr[leftIndex].colName
+                        let checked = $this.leftTableColArr[leftIndex].checked
+                        left_data.columnSetArr.push({id, name, checked})
+                    })
                 }
-                let rightTableColTr = this.$refs.rightTableColTr
-                for(let i=0; i<rightTableColTr.length; i++){
-                    let rightIndex = Number(rightTableColTr[i].getAttribute("data-index"))
-                    let id = i
-                    let name = this.rightTableColArr[rightIndex].colName
-                    let checked = this.rightTableColArr[rightIndex].checked
-                    right_data.columnSetArr.push({id, name, checked})
+                let rightTableColTr = this.$refs.rightElTable.$refs.bodyWrapper.children[0].children[1].children
+                if(typeof rightTableColTr !== 'undefined' && rightTableColTr.length > 0){
+                    $.each(rightTableColTr,function (i) {
+                        const rightIndex = parseInt($(this).find("td:eq(1)>div>div").html()) - 1
+                        let id = i
+                        let name = $this.rightTableColArr[rightIndex].colName
+                        let checked = $this.rightTableColArr[rightIndex].checked
+                        right_data.columnSetArr.push({id, name, checked})
+                    })
                 }
-                // $("#col_table_col_left_data>tbody>tr").each(function(i,v){
-                //     let leftIndex = Number($(this).attr("data-index"))
-                //     let id = i
-                //     let name = $this.leftTableColArr[leftIndex].colName
-                //     let checked = $this.leftTableColArr[leftIndex].checked
-                //     left_data.columnSetArr.push({id, name, checked})
-                // });
-                // $("#col_table_col_right_data>tbody>tr").each(function(i,v){
-                //     let rightIndex = Number($(this).attr("data-index"))
-                //     let id = i
-                //     let name = $this.rightTableColArr[rightIndex].colName
-                //     let checked = $this.rightTableColArr[rightIndex].checked
-                //     right_data.columnSetArr.push({id, name, checked})
-                // });
                 this.nodeData.setting.left_data = left_data// 选择的数据（带顺序）
                 this.nodeData.setting.right_data = right_data// 选择的数据（带顺序）
                 this.nodeData.setting.conn_type = this.conn_type
@@ -430,33 +445,36 @@
             inputVerify() {
                 let checkedIndex = 0
                 let verify = true
-                let leftTableColTr = this.$refs.leftTableColTr
-                let rightTableColTr = this.$refs.rightTableColTr
-                if(this.leftMainTableChecked){//左表为主表
-                    checkedIndex = this.leftTableColArr.findIndex( n => n.checked === true)
-                    for(let i=0; i<leftTableColTr.length; i++){
-                        let leftIndex = Number(leftTableColTr[i].getAttribute("data-index"))
-                        if(this.leftTableColArr[leftIndex].checked){
-                            let rightIndex = Number(rightTableColTr[i].getAttribute("data-index"))
-                            let curRightCol = this.rightTableColArr[rightIndex]
-                            if(typeof curRightCol === 'undefined' || !this.rightTableColArr[rightIndex].checked){
+                let leftTableColTr = this.$refs.leftElTable.$refs.bodyWrapper.children[0].children[1].children
+                let rightTableColTr = this.$refs.rightElTable.$refs.bodyWrapper.children[0].children[1].children
+                let $this = this
+                if(typeof leftTableColTr !== 'undefined' && typeof rightTableColTr !== 'undefined'){
+                    $.each(leftTableColTr,function (i) {
+                        const leftIndex = parseInt($(this).find("td:eq(1)>div>div").html()) - 1
+                        if($this.leftTableColArr[leftIndex].checked){
+                            let rightIndex = parseInt($(rightTableColTr[i]).find("td:eq(1)>div>div").html()) - 1
+                            let curRightCol = $this.rightTableColArr[rightIndex]
+                            if(typeof curRightCol === 'undefined' || !$this.rightTableColArr[rightIndex].checked){
                                 verify = false
                                 return false
                             }
                         }
-                    }
-                }else{//右表为主表
-                    checkedIndex = this.rightTableColArr.findIndex( n => n.checked === true)
-                    for(let i=0; i<rightTableColTr.length; i++){
-                        let rightIndex = Number(rightTableColTr[i].getAttribute("data-index"))
-                        if(this.rightTableColArr[rightIndex].checked){
-                            let leftIndex = Number(leftTableColTr[i].getAttribute("data-index"))
-                            let curLeftCol = this.rightTableColArr[leftIndex]
-                            if(typeof curLeftCol === 'undefined' || !this.leftTableColArr[leftIndex].checked){
-                                verify = false
-                                return false
+                    })
+                    if(this.leftMainTableChecked){//左表为主表
+                        checkedIndex = this.leftTableColArr.findIndex( n => n.checked === true)
+                    }else{//右表为主表
+                        checkedIndex = this.rightTableColArr.findIndex( n => n.checked === true)
+                        $.each(rightTableColTr,function (i) {
+                            const rightIndex = parseInt($(this).find("td:eq(1)>div>div").html()) - 1
+                            if($this.rightTableColArr[rightIndex].checked){
+                                let leftIndex = parseInt($(leftTableColTr[i]).find("td:eq(0)>div>div").html()) - 1
+                                let curLeftCol = $this.rightTableColArr[leftIndex]
+                                if(typeof curLeftCol === 'undefined' || !$this.leftTableColArr[leftIndex].checked){
+                                    verify = false
+                                    return false
+                                }
                             }
-                        }
+                        })
                     }
                 }
                 if(checkedIndex < 0){
@@ -474,53 +492,13 @@
         }
     }
 </script>
-
 <style scoped type="text/css">
-    #col_table_col_left_data,#col_table_col_right_data {
-        margin:0 auto;
-        float: left;
-        text-align: center;
-    }
-    #col_table_col_left_data>thead>tr,#col_table_col_left_data>tbody>tr,
-    #col_table_col_right_data>thead>tr,#col_table_col_right_data>tbody>tr{
-        height:38px;
-        line-height: 38px;
-    }
-    #col_table_col_left_data>thead>tr>th,#col_table_col_right_data>thead>tr>th{
-        border:1px solid #ddd;
-    }
-    #col_table_col_left_data>tbody>tr>td,#col_table_col_right_data>tbody>tr>td{
-        border:1px solid #ddd;
-    }
-    ._table {
+    .div_table {
         float: left;
         width: 400px;
-        height: 440px;
+        height: 480px;
         margin-top:20px;
         background-color: #fff;
         border:1px solid #E6E6E6;
-    }
-    ._table_th {
-        height: 40px;
-    }
-    #table_name_left,#table_name_right,.mtDiv{
-        display:inline-block;
-        text-align: center;
-    }
-    #table_name_left,#table_name_right{
-        width:290px;
-        padding-top: 10px;
-    }
-    .mtDiv{
-        width: 80px;
-        padding-top: 10px;
-    }
-    .tr_th{
-        margin-left: 4px;
-        margin-top: 3px;
-    }
-    .div_table {
-        float: left;
-        border: 1px solid #fff;
     }
 </style>

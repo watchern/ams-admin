@@ -11,58 +11,62 @@
           />
         </div>
       </el-header>
-      <el-main>
-        <div align="right" style="width: 64%">
+      <el-main style="width: 91.8vw">
+        <div align="right">
           <el-row>
-            <el-button
-              type="primary"
-              @click="openProjectDialog"
-              :disabled="buttonIson.AssociatedBtn"
-              class="oper-btn refresh"
-              title="关联项目"
-            ></el-button>
-            <!-- relationProject('4534532', '项目5') -->
-            <el-button
-              type="primary"
-              @click="RemoverelationProject()"
-              :disabled="buttonIson.DisassociateBtn"
-              class="oper-btn move"
-              title="移除项目关联"
-            ></el-button>
-            <el-button
-              :disabled="buttonIson.deleteBtn"
-              type="primary"
-              @click="deleteRunTaskRel"
-              class="oper-btn delete"
-              title="删除"
-            ></el-button>
+            <el-dropdown>
+              <el-button
+                type="primary"
+                @click="openProjectDialog"
+                :disabled="buttonIson.AssociatedBtn"
+                class="oper-btn link-2"
+              ></el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="modelResultOpenDialog">分配项目</el-dropdown-item>
+                <el-dropdown-item @click.native="modelResultOpenDialog">结果分配</el-dropdown-item>
+                <el-dropdown-item @click.native="RemoverelationProject">移除分配项目</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+<!--            <el-button-->
+<!--              type="primary"-->
+<!--              @click="openProjectDialog"-->
+<!--              :disabled="buttonIson.AssociatedBtn"-->
+<!--              class="oper-btn link-2"-->
+<!--              title="分配项目"-->
+<!--            ></el-button>-->
+<!--            <el-button-->
+<!--              type="primary"-->
+<!--              @click="modelResultOpenDialog()"-->
+<!--              :disabled="buttonIson.resultShareBtn"-->
+<!--              class="oper-btn share"-->
+<!--              title="结果分配"-->
+<!--            ></el-button>-->
+<!--            &lt;!&ndash; relationProject('4534532', '项目5') &ndash;&gt;-->
+<!--            <el-button-->
+<!--              type="primary"-->
+<!--              @click="RemoverelationProject()"-->
+<!--              :disabled="buttonIson.DisassociateBtn"-->
+<!--              class="oper-btn move"-->
+<!--              title="移除分配项目"-->
+<!--            ></el-button>-->
             <el-button
               type="primary"
               :disabled="buttonIson.resultSplitBtn"
               class="oper-btn split-2"
               @click="openResultSplitDialog"
-              title="结果拆分"
+              style="margin-left: 10px"
             ></el-button>
-            <el-button
-              type="primary"
-              @click="modelResultOpenDialog()"
-              :disabled="buttonIson.resultShareBtn"
-              class="oper-btn share"
-              title="结果共享"
-            ></el-button>
-            <!-- <el-button
-              type="primary"
-              @click="sendToOA()"
-              :disabled="selected1.length !== 1"
-              class="oper-btn share"
-              title="结果分配"
-            ></el-button> -->
             <el-button
               type="primary"
               @click="exportExcel"
               :disabled="buttonIson.exportBtn"
-              class="oper-btn export-2"
-              title="导出"
+              class="oper-btn export-4"
+            ></el-button>
+            <el-button
+              :disabled="buttonIson.deleteBtn"
+              type="primary"
+              @click="deleteRunTaskRel"
+              class="oper-btn delete-2"
             ></el-button>
           </el-row>
         </div>
@@ -77,7 +81,6 @@
           @sort-change="sortChange"
           @selection-change="handleSelectionChange"
           height="450px"
-          style="overflow-x: scroll; width: 64%"
         >
           <el-table-column type="selection" width="55" />
           <el-table-column
@@ -370,6 +373,7 @@ import {
   getDataAfterResultSpiltToRelateProject,
   addCoverResultRelProject,
   sendToOA,
+  deleteRunResultShareByRunTaskRelUuid
 } from "@/api/analysis/auditmodelresult";
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 import QueryField from "@/components/Ace/query-field/index";
@@ -468,7 +472,7 @@ export default {
         this.projectDialogIsSee = true;
       }else{
         this.$message({
-            message: "未运行成功的结果不能关联项目",
+            message: "未运行成功的结果不能分配项目",
          });
       }
     },
@@ -770,17 +774,17 @@ export default {
       } else if (this.notShare.length != 0 && this.share.length == 0) {
         // 当选中的要删除结果中都是自己的没有别人共享结果的时候
         var flag = true;
-        // 判断选中的项目中是否有关联的项目
+        // 判断选中的项目中是否有分配的项目
         for (var i = 0; i < this.notShare.length; i++) {
           if (this.notShare[i].projectName != null) {
             flag = false;
             break;
           }
         }
-        // 如果有关联的项目
+        // 如果有分配的项目
         if (flag == false) {
           this.$message({
-            message: "选择的运行结果有项目关联，请取消关联，再删除！",
+            message: "选择的运行结果有项目分配，请取消分配，再删除！",
           });
         } else {
           // 打开删除提示框
@@ -793,7 +797,7 @@ export default {
       } else {
         // 当选中的要删除结果中有自己的也有别人共享结果的时候
         var flag = true;
-        // 判断自己的结果中有无项目关联
+        // 判断自己的结果中有无项目分配
         for (var i = 0; i < this.notShare.length; i++) {
           if (this.notShare[i].projectName != null) {
             flag = false;
@@ -802,7 +806,7 @@ export default {
         }
         if (flag == false) {
           this.$message({
-            message: "选择的运行结果有项目关联，请取消关联，再删除！",
+            message: "选择的运行结果有项目分配，请取消分配，再删除！",
           });
         } else {
           // 打开删除提示框
@@ -943,7 +947,7 @@ export default {
 
         if (projects.length === 0) {
           this.$message({
-            message: "请选择要关联的项目",
+            message: "请选择要分配的项目",
           });
         } else if (projects.length === 1) {
           this.relationProject(
@@ -953,12 +957,12 @@ export default {
           this.projectDialogIsSee = false;
         } else {
           this.$message({
-            message: "只能关联一个项目",
+            message: "只能分配一个项目",
           });
         }
     },
     /**
-     * 关联项目按钮触发
+     * 分配项目按钮触发
      */
     relationProject(projectId, projctName) {
       var selected2 = this.selected1;
@@ -991,13 +995,13 @@ export default {
                 this.getLikeList();
                 this.$message({
                   type: "success",
-                  message: "关联成功!",
+                  message: "分配成功!",
                 });
               } else {
                 this.listLoading = false;
                 this.$message({
                   type: "error",
-                  message: "关联失败!",
+                  message: "分配失败!",
                 });
               }
             });
@@ -1039,20 +1043,20 @@ export default {
               }
               addCoverResultRelProject(resultRelPros).then((resp) => {
                 if (resp.data == true) {
-                  var message = "关联成功！其中  ";
+                  var message = "分配成功！其中  ";
                   for (var i = 0; i < modelNames.length; i++) {
                     message += modelNames[i] + " , ";
                   }
                   this.getLikeList();
                   this.listLoading = false;
-                  message += "之前关联的项目已被覆盖";
+                  message += "之前分配的项目已被覆盖";
                   this.listLoading = false;
                   this.$message({ type: "success", message: message });
                 } else {
                   this.listLoading = false;
                   this.$message({
                     type: "error",
-                    message: "关联失败!",
+                    message: "分配失败!",
                   });
                 }
               });
@@ -1061,13 +1065,13 @@ export default {
               this.getLikeList();
               this.$message({
                 type: "success",
-                message: "关联成功!",
+                message: "分配成功!",
               });
             } else if (flag == false) {
               this.listLoading = false;
               this.$message({
                 type: "error",
-                message: "关联失败!",
+                message: "分配失败!",
               });
             }
           });
@@ -1075,7 +1079,7 @@ export default {
       }
     },
     /**
-     * 移除项目关联
+     * 移除项目分配
      */
     RemoverelationProject() {
       var ids = [];
@@ -1084,19 +1088,20 @@ export default {
       }
       var resultRelProjectUuids = ids.join(",");
       rmResultRelProjectlr(resultRelProjectUuids).then((resp) => {
-        console.log(resp.data);
-        if (resp.data == true) {
-          this.getLikeList();
-          this.$message({
-            type: "success",
-            message: "取消关联成功!",
-          });
-        } else {
-          this.$message({
-            type: "error",
-            message: "取消关联失败!",
-          });
-        }
+        deleteRunResultShareByRunTaskRelUuid(resultRelProjectUuids).then(resp =>{
+          if (resp.data == true) {
+            this.getLikeList();
+            this.$message({
+              type: "success",
+              message: "取消分配成功!",
+            });
+          } else {
+            this.$message({
+              type: "error",
+              message: "取消分配失败!",
+            });
+          }
+        })
       });
     },
     /**
@@ -1134,7 +1139,7 @@ export default {
       } else {
         this.listLoading = false;
         this.$message({
-          message: "请选择要关联的人员！",
+          message: "请选择要分配的人员！",
         });
       }
     },
@@ -1220,7 +1225,7 @@ export default {
       }
     },
     /**
-     * 添加运行任务和运行任务关联表
+     * 添加运行任务和运行任务分配表
      */
     modelRunSetting() {
       var runType = this.nowRunTaskRel.runTask.runType;

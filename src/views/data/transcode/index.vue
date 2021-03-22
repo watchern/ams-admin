@@ -9,9 +9,9 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" title="新增" size="mini" class="oper-btn add" @click="handleCreate()" />
-        <el-button type="primary" title="修改" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
-        <el-button type="primary" title="删除" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
+        <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate" />
+        <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate" />
+        <el-button type="primary" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete" />
       </el-col>
     </el-row>
     <el-table
@@ -52,8 +52,8 @@
           <el-radio v-model="temp.ruleType" :label="2">手动输入</el-radio>
         </el-form-item>
         <el-form-item v-if="temp.ruleType === 1" label="转码规则" prop="sqlContent" placeholder="请输入SQL">
-          <el-button v-if="temp.ruleType === 1" type="primary" size="mini" class="el_header_button" style="margin-right: 20px;float: left;" @click="exSql()">执行SQL</el-button>
-          <el-input v-model="temp.sqlContent" type="textarea" style="width:500px" />
+          <el-link v-if="temp.ruleType === 1" size="mini" type="primary" @click="exSql()">执行SQL</el-link>
+          <el-input v-model="temp.sqlContent" type="textarea" />
         </el-form-item>
         <el-table v-if="temp.ruleType === 1" :data="sqlRule">
           <el-table-column prop="codeValue" label="真实值">
@@ -101,9 +101,9 @@
         :multiple="false"
         :http-request="beforeUpload"
         accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        :limit="1"
       >
-        <el-button size="small" type="primary">上传</el-button>
+        <el-link size="mini" type="primary">导入</el-link>
+        <span style="font-size:2px;color:red">(请选择xls或者xlsx格式,导入第一列为真实值,第二列为转码值)</span>
       </el-upload>
       <el-table v-if="temp.ruleType === 2" :data="transColRelsData" height="200">
         <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>
@@ -364,6 +364,10 @@ export default {
     },
     exSql() {
       var transCodeObj = {}
+      if (typeof (this.temp.sqlContent) === 'undefined') {
+        this.$message({ type: 'info', message: '执行失败！转码规则未填写' })
+        return
+      }
       transCodeObj.sqlContent = this.temp.sqlContent
       previewSql(transCodeObj).then(res => {
         this.transCodeShow = true
@@ -394,13 +398,14 @@ export default {
           this.colsJson = []
           this.resetSqlRule()
           this.transColRelsData = res.data.transColRels
+          var temporaryObj = this.tableInput.transColRels
+          temporaryObj.start = '0'
+          temporaryObj.transValue = this.transColRelsData[this.transColRelsData.length - 1].transValue
+          temporaryObj.codeValue = this.transColRelsData[this.transColRelsData.length - 1].codeValue
+          this.transColRelsData.push(temporaryObj)
+          this.transColRelsData.splice(this.transColRelsData.length - 2, 1)
         }
         // 添加最后一行输入行为可编辑，按钮设为添加
-        var temporaryObj = this.tableInput.transColRels
-        temporaryObj.start = '0'
-        temporaryObj.transValue = null
-        temporaryObj.codeValue = null
-        this.transColRelsData.push(temporaryObj)
       })
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
@@ -481,15 +486,24 @@ export default {
             type: 'binary' // 以字符编码的方式解析
           })
           const exlname = workbook.SheetNames[0] // 取第一张表
-          const exl = XLSX.utils.sheet_to_json(workbook.Sheets[exlname]) // 生成json表格内容
+          const exl = XLSX.utils.sheet_to_json(workbook.Sheets[exlname], { header: 1, defval: '' }) // 生成json表格内容
+          var transArr = []
+          debugger
+          for (const obj in exl) {
+            const tranObj = {}
+            tranObj.codeValue = exl[obj][0]
+            tranObj.transValue = exl[obj][1]
+            transArr.push(tranObj)
+          }
           // 将 JSON 数据挂到 data 里
-          this.transColRelsData = exl
+          this.transColRelsData = transArr
           // 添加最后一行输入行为可编辑，按钮设为添加
           var temporaryObj = this.tableInput.transColRels
           temporaryObj.start = '0'
-          temporaryObj.transValue = null
-          temporaryObj.codeValue = null
+          temporaryObj.transValue = this.transColRelsData[this.transColRelsData.length - 1].transValue
+          temporaryObj.codeValue = this.transColRelsData[this.transColRelsData.length - 1].codeValue
           this.transColRelsData.push(temporaryObj)
+          this.transColRelsData.splice(this.transColRelsData.length - 2, 1)
           // document.getElementsByName('file')[0].value = '' // 根据自己需求，可重置上传value为空，允许重复上传同一文件
         } catch (e) {
           console.log('出错了：：')
