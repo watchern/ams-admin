@@ -69,8 +69,8 @@
     <!-- 弹窗3 -->
     <el-dialog :close-on-click-modal="false" v-if="uploadVisible" :visible.sync="uploadVisible" width="800px">
       <el-row>
-        <el-col>
-          <directory-file-upload v-if="uploadStep === 1" @fileuploadname="fileuploadname" />
+        <el-col >
+          <directory-file-upload   v-if="uploadStep === 1" @fileuploadname="fileuploadname" />
         </el-col>
       </el-row>
       <el-row>
@@ -89,7 +89,10 @@
           </el-form>
         </el-col>
       </el-row>
-      <el-row>
+      <el-row  v-loading="dialoading"
+               element-loading-text="拼命导入中"
+               element-loading-spinner="el-icon-loading"
+               element-loading-background="rgba(0, 0, 0, 0.8)">
         <el-col>
           <el-table v-if="uploadStep === 2" :data="uploadtempInfo.colMetas" height="600px">
             <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
@@ -136,6 +139,7 @@
     </el-dialog>
     <!-- 弹窗5 -->
     <el-dialog v-if="tableColumnVisible" :visible.sync="tableColumnVisible" lock-scroll width="800px">
+      <el-button></el-button>
       <el-row>
         <el-col>
           <column ref="column" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" @table-show="tableshow" />
@@ -317,7 +321,8 @@ export default {
         copyTable: '复制表',
         createFolder: '新建文件夹'
       },
-      downloadLoading: false
+      downloadLoading: false,
+      dialoading: false
     }
   },
   created() {
@@ -430,7 +435,9 @@ export default {
     },
     // 执行create后导入功能
     importTable() {
+      this.dialoading = true
       importTable(this.uploadtempInfo).then(res => {
+        this.dialoading = false;
         this.uploadVisible = false
         if (res.data.resCode === true) {
           var childData = {
