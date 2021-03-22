@@ -26,7 +26,7 @@
                 <span @click="toDoJump(text.index)" class="notes-text">{{ text.text }}</span>
                 <span v-if="text.icon" :style="{color:text.iconColor,width:text.width}" class="icon">{{ text.icon }}</span>
               </div>
-              <span class="card-more" @click="moreJump">更多</span>
+              <span class="card-more" @click="moreJump(item)">更多</span>
             </div>
           </div>
         </div>
@@ -253,20 +253,18 @@ export default {
     this.pageQuery.condition = query1;
     getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
       this.warningMatters = resp.data.records;
-      // console.log(resp.data.records)
-      // for(let i=0;i<5;i++){
-        // this.cardList[1].des.push({
-          // text:resp.data.records[i].remindTitle,
-          // iconColor: '#D81020',
-          // icon: '',
-          // url:resp.data.records[i].modeUrl,
-          // content:resp.data.records[i].remindContent,
-          // index:i,
-          // Uuid:resp.data.records[i].remindUuid
-        // })
-        // if(resp.data.records[i].readStatus === 0){
-        //   this.cardList[0].des[i].icon = ' NEW'
-        // }
+      // if (resp.data.records.length > 0) {
+      //   for(let i=0;i<5;i++){
+      //     this.cardList[1].des.push({
+      //       text:resp.data.records[i].remindTitle,
+      //       iconColor: '#D81020',
+      //       icon: '',
+      //       url:resp.data.records[i].modeUrl,
+      //       content:resp.data.records[i].remindContent,
+      //       index:i,
+      //       Uuid:resp.data.records[i].remindUuid
+      //     })
+      //   }
       // }
     })
     axios.get('/psbcaudit/homepage/loadTodoInfo').then(resp =>{
@@ -320,12 +318,26 @@ export default {
       }
       updateRemind(this.cardList[0].des[data].Uuid)
     },
-    moreJump(){
-      // this.activeTags({
-      //   type: 'active',
-      //   val: {val:this.cardList[1].path , name:'提醒'}
-      // })
-      this.$router.push({ path: '/base/remind'})
+    moreJump(data){
+      if (data.title === '提醒事项') {
+        this.$router.push({ path: '/base/remind'})
+        this.$store.commit('aceState/setRightFooterTags', {
+          type: 'active',
+          val: {
+            name: '系统提醒',
+            path: '/base/remind'
+          }
+        })
+      } else {
+        this.$router.push({ path: '/analysis/auditwarning'})
+        this.$store.commit('aceState/setRightFooterTags', {
+          type: 'active',
+          val: {
+            name: '审计预警',
+            path: '/analysis/auditwarning'
+          }
+        })
+      }
     },
     toDoSomeJump(){
       this.$router.push({ path: '/base/frameto?url=psbcaudit/todoInfo/todoInfoList'})

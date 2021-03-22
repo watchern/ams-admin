@@ -1,5 +1,5 @@
 <template>
-    <div style="height: 600px;">
+    <div style="height: 560px;">
         <div style="padding: 50px 0 0 180px;">
             <el-row>
                 <el-col :span="6">
@@ -33,11 +33,6 @@
                     <el-input type="number" placeholder="请输入样本步长" min="1" v-model="eqCountSample"></el-input>
                 </el-col>
             </el-row>
-                <!--<el-row>-->
-                    <!--<el-col :span="6">-->
-                        <!--<el-radio v-model="radioVal" label="simpleRom">简单随机抽样</el-radio>-->
-                    <!--</el-col>-->
-                <!--</el-row>-->
         </div>
     </div>
 </template>
@@ -67,7 +62,7 @@
         },
         methods: {
             init() {
-                const graph = this.$parent.graph
+                const graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 if (this.nodeData.isSet) {
                     this.radioVal = this.nodeData.setting.radioValue

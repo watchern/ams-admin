@@ -21,21 +21,18 @@
           type="primary"
           @click="exportExcel"
           class="oper-btn export-2"
-          title="导出"
         ></el-button>
         <el-button
           :disabled="modelRunResultBtnIson.chartDisplayBtn"
           type="primary"
           class="oper-btn chart"
           @click="chartShowIsSee=true"
-          title="图表展示"
         ></el-button>
         <el-button
           :disabled="false"
           type="primary"
           size="small"
           @click="handleResult"
-          title="处理"
           class="oper-btn processing"
         ></el-button>
         <el-button
@@ -43,7 +40,6 @@
           :disabled="modelRunResultBtnIson.modelDetailAssBtn"
           type="primary"
           @click="openModelDetail"
-          title="查询关联"
         ></el-button>
       </div>
     </el-row>
@@ -87,12 +83,10 @@
               type="primary"
               @click="modelResultExport"
               class="oper-btn export-2"
-              title="导出"
             ></el-button>
           </downloadExcel>
           <el-button
             type="primary"
-            title="图表展示"
             class="oper-btn chart"
             @click="chartShowIsSee = true"
           ></el-button>
@@ -255,6 +249,7 @@ export default {
     "useType",
     "prePersonalVal",
     "resultSpiltObjects",
+    "projectUuid"
   ],
   data() {
     return {
@@ -543,7 +538,7 @@ export default {
         if (typeof sql !== "string") {
           sql = "undefined";
         }
-        selectTableHandle(this.pageQuery, sql).then(
+        selectTableHandle(this.pageQuery, sql,this.projectUuid).then(
           (resp) => {
             var column = resp.data.records[0].columns
             this.result.column = column

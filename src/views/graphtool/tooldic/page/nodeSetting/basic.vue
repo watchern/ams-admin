@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-form>
+        <el-form class="detail-form">
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="节点名称" prop="graphName">
@@ -27,7 +27,6 @@
         name: 'BasicSetting',
         mounted() {
             this.init()
-            // window.basicInfoVerify = this.basicInfoVerify
         },
         data(){
             return{
@@ -45,27 +44,29 @@
                  * 前提是前置节点一定存在
                  * 获得上移节点字段列已经选择的信息字段
                  */
-                let graph = this.$parent.graph
+                let graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
-                let columnsInfoPre = this.$parent.columnsInfoPre
+                let columnsInfoPre = this.$parent.$parent.$parent.columnsInfoPre
                 var parentIds = this.nodeData.parentIds
                 if (parentIds.length > 0) {
                     for (let i = 0; i < parentIds.length; i++) {
                         var parent_node = graph.nodeData[parentIds[i]] // one parent
-                        var resourceTableName = '"' + parent_node.nodeInfo.nodeName + '"'
+                        var nodeName = '"' + parent_node.nodeInfo.nodeName + '"'
                         if (parent_node && parent_node.nodeInfo.optType === 'newNullNode' && !parent_node.isSet) {		// 如果前置节点为结果表且该结果表未配置
                             var pre_parentIds = parent_node.parentIds
                             if (pre_parentIds && pre_parentIds.length > 0) {
                                 parent_node = graph.nodeData[pre_parentIds[0]]
-                                resourceTableName = '"' + parent_node.nodeInfo.nodeName + '"_' + resourceTableName
+                                nodeName = '"' + parent_node.nodeInfo.nodeName + '"_' + nodeName
                             }
                         }
+                        var resourceTableName = parent_node.nodeInfo.resultTableName
                         var filter_columnsInfoPre = JSON.parse(JSON.stringify(parent_node.columnsInfo))// 这时上级节点一定是已经配置完成
                         for (let j = 0; j < filter_columnsInfoPre.length; j++) {
                             if (filter_columnsInfoPre[j].isOutputColumn) {
-                                filter_columnsInfoPre[j].rtn = resourceTableName
-                                filter_columnsInfoPre[j].nodeId = parent_node.nodeInfo.nodeId
-                                filter_columnsInfoPre[j].nullNodeId = parentIds[i]
+                                filter_columnsInfoPre[j].rtn = nodeName
+                                filter_columnsInfoPre[j].resourceTableName = resourceTableName
+                                filter_columnsInfoPre[j].nodeId = parent_node.nodeInfo.nodeId//操作节点ID或源表节点ID
+                                filter_columnsInfoPre[j].nullNodeId = parentIds[i]//结果表节点或源表节点ID
                                 columnsInfoPre.push(filter_columnsInfoPre[j])
                             }
                         }
@@ -73,38 +74,12 @@
                 }
                 this.init_basic()
             },
-            // saveData() {
-            //     if ($('#isSaveData').is(':checked')) {
-            //         $('.dataTableNameDiv').css("visibility","visible")
-            //         var dataTableName = $('#dataTableName').val()
-            //         if (dataTableName === '') {
-            //             $('#dataTableName').val(this.nodeInfo.nodeName + '结果表')
-            //         }
-            //     } else {
-            //         $('.dataTableNameDiv').css("visibility","hidden")
-            //         $('#isSaveDataTitle').hide()
-            //     }
-            // },
             init_basic: function() {
                 this.node_name = this.nodeData.nodeInfo.nodeName
-                // $('.dataTableNameDiv').css("visibility","hidden")
-                // if (this.nodeInfo.isCreateTable && this.nodeInfo.isCreateTable === 1) {
-                //     $('#isSaveData').attr('checked', 'checked')
-                //     $('#dataTableName').val(this.nodeInfo.userTableName)
-                //     $('.dataTableNameDiv').css("visibility","visible")
-                // } else {
-                //     $('#isCreateTable').icheck('unchecked')
-                // }
                 this.nodeExcuteStatus = this.conversion(this.nodeData.nodeInfo.nodeExcuteStatus)
                 this.nodeDescription = typeof this.nodeData.nodeInfo.nodeDescription === 'undefined' ? '' : this.nodeData.nodeInfo.nodeDescription
             },
             save_base: function() {
-                // if ($('#isSaveData').is(':checked')) {
-                //     this.nodeInfo.isCreateTable = 1
-                //     this.nodeInfo.userTableName = $('#dataTableName').val()
-                // } else {
-                //     this.nodeInfo.isCreateTable = 0
-                // }
                 this.nodeData.nodeInfo.nodeName = this.node_name
                 this.nodeData.nodeInfo.nodeDescription = this.nodeDescription
             },

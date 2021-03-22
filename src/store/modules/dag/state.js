@@ -31,7 +31,7 @@ export default {
   // Current project
   projectName: projectName || '',
   // Whether to update the process definition
-  syncDefine: true,
+  syncDefine: false,
   // tasks processList
   processListS: [],
   classListS: [],
@@ -41,6 +41,7 @@ export default {
   resourcesListS: [],
   // tasks resourcesListJar
   resourcesListJar: [],
+  processInstanceDetail: {},
   // tasks datasource Type
   dsTypeListS: [{
     id: 0,
@@ -93,5 +94,5 @@ export default {
 
   },
   status: '',
-  orderNo: ''
+  orderNo: null
 }

@@ -27,10 +27,8 @@
 
 <script>
     import '@/components/ams-loading/css/loading.css'
-    import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams  } from '@/api/graphtool/graphList'
-    import * as paramCommonJs from '@/views/graphtool/tooldic/js/paramCommon'
-    import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
-    import {organizeSelectTreeData} from "@/views/graphtool/tooldic/js/paramCommon";
+    import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams  } from '@/api/graphtool/apiJs/graphList'
+    import * as paramCommonJs from '@/api/graphtool/js/paramCommon'
     export default {
         name: 'InputParams',
         data(){
@@ -43,12 +41,6 @@
             }
         },
         props:["nodeData","nodeIdArr"],
-        created(){
-            addJsFile('/lib/layui/xm-select.js','xm-select')
-        },
-        beforeDestroy() {
-            removeJcCssfile("xm-select.js","js")
-        },
         methods:{
             /**
              * 组织所有待执行节点队列中有参数设置的节点的HTML
@@ -342,7 +334,8 @@
                             el: `#${divId}`,
                             filterable: true,
                             filterMethod: function (val, item) {
-                                if (val === item.value || (item.name && item.name.indexOf(val) > -1)) { // 把value相同的搜索出来或把名称中包含的搜索出来
+                                //把value相同的搜索出来或把名称中包含的搜索出来
+                                if (val === item.value || (item.name && item.name.indexOf(val) > -1)) {
                                     return true
                                 }
                                 return false// 不知道的就不管了
@@ -361,7 +354,7 @@
                             }
                             selectSetting.hide = function () {
                                 if (initDataArr && dataArr.length === 0) {
-                                    let selectXs = xmSelect.get(divId, true)// 获取当前下拉框的实体对象
+                                    let selectXs = xmSelect.get(`#${divId}`, true)// 获取当前下拉框的实体对象
                                     dataArr = selectXs.options.data
                                     initDataArr = false
                                 }
@@ -418,7 +411,7 @@
                             }
                             selectSetting.hide = function() {
                                 if (initDataArr && dataArr.length === 0) {
-                                    let selectXs = xmSelect.get(divId, true)// 获取当前下拉框的实体对象
+                                    let selectXs = xmSelect.get(`#${divId}`, true)// 获取当前下拉框的实体对象
                                     dataArr = selectXs.options.data
                                     initDataArr = false
                                 }
@@ -665,7 +658,7 @@
                                 paramInfoObj = paramInfoArr[index]
                                 let moduleParamId = paramInfoObj.dataId// 母参数ID
                                 let allowedNull = typeof paramInfoObj.dataAllowedNull !== 'undefined' ? paramInfoObj.dataAllowedNull : '1'// 是否允许为空，当为undefined时默认为可为空
-                                let paramValue = paramInfoObj.value
+                                let paramValue = typeof paramInfoObj.value !== 'undefined' ? paramInfoObj.value : ""
                                 let obj = {
                                     'moduleParamId': moduleParamId,
                                     'paramValue': $.trim(paramValue), // 处理可能存在的空格
@@ -801,7 +794,7 @@
                         }
                         if (paramNum !== 0) { // 第一步，先判断是否有必填的参数没有输入值
                             returnObj.verify = false
-                            returnObj.message += nodeName + '含有未输入值的参数项，请重新输入<br/>'
+                            returnObj.message += nodeName + '含有未输入值的参数项，请重新输入\n'
                             delete this.nodeData[nodeId].replaceParamSql
                             break
                         } else {

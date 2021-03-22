@@ -1,125 +1,98 @@
 <template>
-    <div style="height: 600px;">
-        <ul id="myTab" class="nav nav-tabs">
-            <li>
-                <a href="#basic" data-toggle="tab">基本信息</a>
-            </li>
-            <li class="active">
-                <a href="#filterSet" data-toggle="tab">条件设置</a>
-            </li>
-            <li>
-                <a href="#outputColumn" data-toggle="tab">输出字段设置</a>
-            </li>
-        </ul>
-        <div id="myTabContent" class="tab-content">
-            <div id="basic" class="tab-pane fade">
+    <div style="height: 600px;overflow-y: auto;">
+        <el-tabs v-model="activeTabName">
+            <el-tab-pane label="基本信息" name="basicInfo">
                 <Basic ref="basicVueRef"/>
+            </el-tab-pane>
+            <el-tab-pane label="条件设置" name="nodeSet">
+                <el-collapse v-model="activeCollapseNames" accordion>
+                    <el-collapse-item title="分组设置" name="groupSet">
+                        <el-transfer filterable filter-placeholder="请输入搜索内容" v-model="columnDataValue" :data="columnData" :titles="['可选字段', '分组字段']" @change="changeGroupData" style="padding-left: 90px;"></el-transfer>
+                    </el-collapse-item>
+                    <el-collapse-item title="汇总设置" name="countSet">
+                        <el-table id="graphCountNodeTable" :data="items" height="450" style="width: 770px;margin-left: 90px;">
+                            <el-table-column label="待汇总字段" width="350" header-align="center">
+                                <template slot-scope="scope">
+                                    <div :id="`searchName${(scope.row.id)}`" class="xm-select-demo"></div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="汇总方式" width="240" header-align="center">
+                                <template slot-scope="scope">
+                                    <div :id="`searchType${(scope.row.id)}`" class="xm-select-demo"></div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add-3" @click="addCountTr" style="line-height: normal;"/>
+                                    <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete-7" @click="delCountTr(scope.$index)" style="line-height: normal;"/>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-collapse-item>
+                </el-collapse>
+            </el-tab-pane>
+            <el-tab-pane label="输出字段设置" name="outPutCol">
+                <el-row style="padding-top: 10px;">
+                    <el-col align="right">
+                        <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" style="line-height: normal;"/>
+                        <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" title="说明" style="line-height: normal;"/>
+                    </el-col>
+                </el-row>
+                <el-table :data="columnItems" border style="width: 100%;" height="527" ref="outPutTable">
+                    <el-table-column type="index" label="编号" width="60" align="center" :resizable="false"></el-table-column>
+                    <el-table-column label="上一节点名称" width="200" :show-overflow-tooltip="true" prop="rtn" header-align="center" :resizable="false"></el-table-column>
+                    <el-table-column label="字段名称" width="260" :show-overflow-tooltip="true" prop="columnName" header-align="center" :resizable="false"></el-table-column>
+                    <el-table-column label="输出字段名称" width="240" header-align="center" :resizable="false">
+                        <template slot-scope="scope">
+                            <el-input v-model="scope.row.newColumnName"></el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column align="center" width="100" :resizable="false">
+                        <template slot="header" slot-scope="scope">
+                            输出字段<el-checkbox v-model="checkAll" :disabled="isAllDisabled" @change="handleCheckAllChange" style="padding-left: 5px;"/>
+                        </template>
+                        <template slot-scope="scope">
+                            <el-checkbox v-model="scope.row.checked" :disabled="isDisabled" @change="checkBoxChange" />
+                        </template>
+                    </el-table-column>
+                    <el-table-column align="center" label="操作" width="100" :resizable="false">
+                        <template slot-scope="scope">
+                            <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" title="设置" style="line-height: normal;"/>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-tab-pane>
+        </el-tabs>
+        <el-dialog :visible.sync="helpDialogVisible" :append-to-body="true" title="说明" width="400px">
+            <div style="height: 260px;padding: 10px;">
+                <p style="text-indent: 2em">（1）如果修改了【输出字段名称】且存在已配置过或执行过的后续节点，则后续节点关于该字段的配置信息会失效</p>
+                <p style="text-indent: 2em">（2）如果继续使用后续节点，则需重新配置和执行相关节点</p>
+                <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
+                <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
             </div>
-            <div id="filterSet" class="tab-pane fade in active">
-                <div class="col-sm-12" style="padding: 20px;height: 565px;overflow-y: auto;">
-                    <div id="groupAccordion" class="panel-group">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#groupAccordion" href="#groupCollapse">分组设置</a>
-                                </h4>
-                            </div>
-                            <div id="groupCollapse" class="panel-collapse collapse in">
-                                <div class="panel-body">
-                                    <div id="group" class="demo-transfer" style="margin-left: 80px;" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="countAccordion" class="panel-group">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#countAccordion" href="#countCollapse">汇总设置</a>
-                                </h4>
-                            </div>
-                            <div id="countCollapse" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    <table id="countTable" class="table table-striped">
-                                        <thead>
-                                        <tr>
-                                            <th width="350px" style="text-align: center">待汇总字段</th>
-                                            <th width="200px" style="text-align: center">汇总方式</th>
-                                            <th width="200px" style="text-align: center">操作</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="row_add">
-                                        <tr v-for="(item,index) in items" :key="item.id" ref="countTr">
-                                            <td><div :id="`searchName${(item.id)}`" class="xm-select-demo"></div></td>
-                                            <td><div :id="`searchType${(item.id)}`" class="xm-select-demo"></div></td>
-                                            <td v-if="index === 0" align="center">
-                                                <button type="button" class="btn btn-primary" @click="addCountTr">添加行</button>
-                                            </td>
-                                            <td v-if="index !== 0" align="center">
-                                                <button type="button" class="btn btn-primary" @click="delCountTr(index)">删除行</button>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        </el-dialog>
+        <el-dialog v-if="customizeColumnDialogVisible" :visible.sync="customizeColumnDialogVisible" :title="customizeColumnTitle" :close-on-press-escape="false" :close-on-click-modal="false" :append-to-body="true" width="1000px">
+            <CustomizeColumn ref="customizeColumn" :columnInfoArr="columnsInfo" :node-is-set="nodeIsSet" :cur-column-info="curColumnInfo" node-type="groupCount"/>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="customizeColumnDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="customizeColumnBack()">保存</el-button>
             </div>
-            <div id="outputColumn" class="tab-pane fade">
-                <div style="width: 98%;margin: 4px 1%">
-                    <div style="color: red;">
-                        <p>注：（1）如果修改了【输出字段名称】且存在已配置过或执行过的后续节点，则后续节点关于该字段的配置信息会失效</p>
-                        <p style="text-indent: 2em">（2）如果继续使用后续节点，则需重新配置相关节点</p>
-                        <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
-                        <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
-                    </div>
-                    <div id="outPutTable" style="height: 480px;overflow-y: auto;">
-                        <table id="column_config" class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <th width="5%" style="text-align: center">序号</th>
-                                <th width="30%" class="text-center">上一节点名称</th>
-                                <th width="25%" class="text-center">字段名称</th>
-                                <th width="25%" class="text-center">输出字段名称</th>
-                                <th width="15%" class="text-center">是否为输出字段
-                                    <el-checkbox v-model="checkAll" :disabled="isAllDisabled" @change="handleCheckAllChange" style="float: right;"/>
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody ref="outPutTbody">
-                            <tr v-for="(item,index) in columnItems" ref="colTr" :data-index="index">
-                                <td align="center">{{ index+1 }}</td>
-                                <td>{{ item.rtn }}</td>
-                                <td>{{ item.columnName }}</td>
-                                <td>
-                                    <el-input v-model="item.newColumnName" class="newColumn"></el-input>
-                                </td>
-                                <td class="text-center">
-                                    <el-checkbox :key="item.columnName" v-model="item.checked" :disabled="isDisabled" @change="checkBoxChange(index)" />
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     import Basic from '@/views/graphtool/tooldic/page/nodeSetting/basic.vue'
-    import * as groupCountJs from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/groupCount/js/groupCount'
-    import {removeJcCssfile,addJsFile} from "@/api/analysis/common"
+    import CustomizeColumn from '@/views/graphtool/tooldic/page/nodeSetting/customizeColumn.vue'
+    import * as groupCountJs from '@/api/graphtool/js/groupCount'
     export default {
         name: 'GroupCountSet',
-        components: { Basic },
+        components: { Basic, CustomizeColumn },
         data() {
             return {
                 items: [], // 存放霍总配置的行号
                 nodeData: null,
+                nodeIsSet:false,
                 columnsInfoPre: [], // 前置节点的输出列信息集合（只用于有且只有一个前置节点的节点）
                 countTrNum: 1,
                 isAllDisabled:false,
@@ -127,17 +100,19 @@
                 columnItems:[],
                 isDisabled:false,
                 columnData:[],// 穿梭框中加载的字段数据数组集合
+                columnDataValue:[],//穿梭框中已选择的字段数据数组集合
                 columnsInfo:[],// 所有输出列信息
-                groupTransfer:null// 分组的穿梭框对象
+                curColumnInfo:null,
+                helpDialogVisible:false,
+                customizeColumnDialogVisible:false,
+                customizeColumnTitle:'',
+                customizeColumnType:'',
+                ind:0,//记录输出字段的唯一标识
+                activeTabName:'nodeSet',
+                activeCollapseNames:['groupSet']
             }
         },
         props:['graph'],
-        created(){
-            addJsFile('/lib/layui/xm-select.js','xm-select')
-        },
-        beforeDestroy() {
-            removeJcCssfile("xm-select.js","js")
-        },
         mounted() {
             this.nodeData = this.graph.nodeData[this.graph.curCell.id]
             groupCountJs.sendVueObj(this)
@@ -147,7 +122,7 @@
             handleCheckAllChange(checked){
                 Array.from(this.columnItems, (n) => n.checked = checked)
             },
-            checkBoxChange(index){
+            checkBoxChange(){
                 var chk = 0
                 for (let i = 0; i < this.columnItems.length; i++) {
                     if (this.columnItems[i].checked) {
@@ -160,10 +135,41 @@
                     this.checkAll = false
                 }
             },
+            changeGroupData(value, direction, movedKeys){
+                if(this.isAllDisabled){// 如果输出字段的全选复选框为禁用状态，当增加或移除分组字段时，实时变更输出列信息
+                    this.isDisabled = false//目的是先解禁，否则checked状态无法动态改变
+                    Array.from(movedKeys,item => {
+                        let index = this.columnItems.findIndex( n => n.columnName === item)
+                        if(index > -1){
+                            if (direction === 'right') { // 增加，选中该分组字段的输出列
+                                this.columnItems[index].checked = true
+                            } else { // 移除，取消选中该分组字段的输出列
+                                this.columnItems[index].checked = false
+                            }
+                        }
+                    })
+                    // 检查是否全部选择
+                    this.checkAllFun()
+                    this.isDisabled = true
+                }
+            },
+            checkAllFun() {
+                let checkNum = 0
+                for(let i=0; i<this.columnItems.length; i++){
+                    if(this.columnItems[i].checked){
+                        checkNum++
+                    }
+                }
+                if(checkNum === this.columnItems.length){
+                    this.checkAll = true
+                }else{
+                    this.checkAll = false
+                }
+            },
             addCountTr() {
                 groupCountJs.addCountTr()
             },
-            delCountTr(index, event) {
+            delCountTr(index) {
                 groupCountJs.delCountTr(index)
             },
             vilidata_simple() {
@@ -214,35 +220,83 @@
             //节点输入项的校验(或空配置校验)
             inputVerify() {
                 return groupCountJs.inputVerify()
+            },
+            /**
+             * 自定义列/设置
+             * @param type 打开方式（1、自定义字段，2、设置）
+             * @param curColumnInfo 当前字段的信息
+             */
+            customizeColumn(type,curColumnInfo){
+                this.customizeColumnType = type
+                if(type === "1"){//自定义字段
+                    if(this.isAllDisabled){//输出咧不可被勾选（即设置了汇总字段）
+                        this.$message({'type':'warning','message':'存在已设置的汇总字段，不可新增自定义字段'})
+                        return
+                    }
+                    this.customizeColumnTitle = '自定义字段'
+                    this.curColumnInfo = null
+                }else{//修改设置
+                    if(this.isAllDisabled){//输出咧不可被勾选（即设置了汇总字段）
+                        this.$message({'type':'warning','message':'存在已设置的汇总字段，不可进行设置操作'})
+                        return
+                    }
+                    this.customizeColumnTitle = '修改设置'
+                    this.curColumnInfo = curColumnInfo
+                }
+                this.customizeColumnDialogVisible = true
+            },
+            customizeColumnBack(){
+                let returnObj = this.$refs.customizeColumn.saveInfo()
+                if(!returnObj.isError){
+                    this.customizeColumnDialogVisible = false
+                    const columnName = returnObj.columnInfo.columnName
+                    let id = null
+                    let nodeId = ''
+                    let columnInfo = returnObj.columnInfo
+                    let rtn = ''
+                    let checked = true
+                    let newColumnName = returnObj.columnInfo.newColumnName
+                    if(this.customizeColumnType === "1"){//自定义字段
+                        id = this.ind
+                        nodeId = 'customizeColumn'
+                        rtn = '自定义字段'
+                        columnInfo.nodeId = nodeId
+                        columnInfo.rtn = rtn
+                        this.columnItems.push({id, nodeId, columnName, columnInfo, rtn, newColumnName, checked})
+                        this.ind++
+                    }else{//修改设置
+                        id = this.curColumnInfo.id
+                        rtn = this.curColumnInfo.rtn
+                        nodeId = this.curColumnInfo.nodeId
+                        columnInfo.nodeId = nodeId
+                        columnInfo.rtn = rtn
+                        let index = this.columnItems.findIndex( item => item.id === id)
+                        if(index > -1){
+                            this.columnItems.splice(index,1,{id, nodeId, columnName, columnInfo, rtn, newColumnName, checked})
+                        }
+                    }
+                }
             }
         }
     }
 </script>
-
-<style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
-<style scoped src="@/components/ams-basic/css/common.css"></style>
-<style scoped src="@/components/ams-basic/css/accordion.css"></style>
 <style scoped>
-    #countTable{
-        margin-left: 80px;
-        width: 760px;
+    >>> .el-tabs__header {
+        margin: 0;
     }
-    #countTable>thead>tr>th{
-        border:1px solid #ddd;
+    >>> .el-table .cell {
+        padding: 0 !important;
     }
-    #countTable>tbody>tr>td{
-        border:1px solid #ddd;
+    >>> #graphCountNodeTable .cell{
+        display: inline;
     }
-    .table > tbody > tr > td{
-        font-size: 13px;
-        color: #4B4B4B;
-        line-height: 36px;
+    >>> .el-collapse-item__content{
+        padding: 5px 0;
     }
-    .table > thead > tr > th {
-        background-color: #5886B2;
-        color: #ECF0F5;
+    >>> .el-collapse-item__wrap{
+        border-bottom: unset;
     }
-    .panel-body{
-        padding: 10px 0;
+    >>> .el-transfer-panel{
+        width: 300px;
     }
 </style>

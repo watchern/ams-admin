@@ -1,36 +1,32 @@
 <template>
   <div class="app-container">
     <div v-if="isShow">
-      <div class="detail-form">
+      <div>
         <el-form
           ref="dataForm"
           :model="temp"
           label-position="right"
           style="width: 750px;"
         >
-          业务表信息：
+          <span class="midText">业务表信息：</span>
           <el-form-item label="汉化名称：" prop="chnName">
-            <el-input v-model="temp.chnName" style="width:60%;" :disabled="openType === 'showTable'" />
+            <el-input v-model="temp.chnName" :disabled="openType === 'showTable'" />
           </el-form-item>
-          列业务信息：
-          <el-table :data="temp.colMetas" height="200">
-            <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
-              <template slot-scope="scope" show-overflow-tooltip>
-                <el-tooltip effect="dark" :content="scope.row.colName" placement="top">
-                  <el-input v-model="scope.row.colName" style="width:90%;" :disabled="openType === 'showTable'" />
-                </el-tooltip>
+          <span class="midText">列业务信息：</span>
+          <el-table :data="temp.colMetas" height="400px">
+            <el-table-column prop="colName" label="字段名称">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.colName" style="width:90%;" :disabled="openType === 'showTable'" />
               </template>
             </el-table-column>
-            <el-table-column prop="chnName" label="汉化名称" show-overflow-tooltip>
+            <el-table-column prop="chnName" label="汉化名称">
               <template slot-scope="scope">
-                <el-tooltip effect="dark" :content="scope.row.chnName" placement="top">
-                  <el-input v-model="scope.row.chnName" style="width:90%;" :disabled="openType === 'showTable'" />
-                </el-tooltip>
+                <el-input v-model="scope.row.chnName" style="width:90%;" :disabled="openType === 'showTable'" />
               </template>
             </el-table-column>
             <el-table-column prop="bizAttrUuid" label="业务标签">
               <template slot-scope="scope">
-                <el-select ref="bizAttrUuid" v-model="scope.row.bizAttrUuid" style="width:90%" placeholder="请选择业务属性" :disabled="openType === 'showTable'">
+                <el-select ref="bizAttrUuid" v-model="scope.row.bizAttrUuid" clearable :disabled="openType === 'showTable'">
                   <el-option
                     v-for="item in bizJson"
                     :key="item.bizAttrUuid"
@@ -58,7 +54,7 @@
 </template>
 
 <script>
-import { getTableCol, getTableInfo, saveTableInfo } from '@/api/data/table-info'
+import { getTableInfo, saveTableInfo } from '@/api/data/table-info'
 import { listByPage } from '@/api/data/biz-attr'
 import SelectTransCode from '@/views/data/table/transcodeselect'
 import { selectById } from '@/api/data/transCode'
@@ -106,9 +102,6 @@ export default {
           this.bizJson = resp.data.records
         })
         this.isShow = true
-        getTableCol(tableId).then(resp => {
-          this.temp.colMetas = resp.data
-        })
         getTableInfo(tableId).then(resp => {
           this.temp = resp.data
           this.isTrueInput = true
@@ -155,3 +148,8 @@ export default {
   }
 }
 </script>
+<style scoped lang="scss" rel="stylesheet/scss">
+  .midText{
+  color:#1890ff;
+  }
+</style>

@@ -9,11 +9,11 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" size="mini" title="新增" class="oper-btn add" @click="handleCreate()" />
-        <el-button type="primary" size="mini" title="修改" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
-        <el-button type="primary" size="mini" title="删除" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
-        <el-button type="primary" size="mini" title="绑定资源" class="oper-btn link-2" :disabled="selections.length !== 1" @click="bindRes()" />
-        <el-button type="primary" size="mini" title="授权" class="oper-btn auth" :disabled="selections.length === 0" @click="authentic()" />
+        <el-button type="primary" size="mini" class="oper-btn add" @click="handleCreate()" />
+        <el-button type="primary" size="mini" class="oper-btn edit" :disabled="selections.length !== 1" @click="handleUpdate()" />
+        <el-button type="primary" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="handleDelete()" />
+        <el-button type="primary" size="mini" class="oper-btn link-1" :disabled="selections.length !== 1" @click="bindRes()" />
+        <el-button type="primary" size="mini" class="oper-btn auth" :disabled="selections.length === 0" @click="authentic()" />
       </el-col>
     </el-row>
     <el-table
@@ -33,7 +33,7 @@
       <el-table-column label="授权方式" width="100px" align="center" prop="authenType" :formatter="formatAuthenType" />
       <el-table-column label="数据筛选" style="width: 50px" align="center">
         <template slot-scope="scope">
-          <el-button type="primary" title="预览" class="oper-btn detail" size="mini" @click="openFilterPanel(scope.row.dataRoleUuid)" />
+          <el-button type="primary" class="oper-btn detail" size="mini" @click="openFilterPanel(scope.row.dataRoleUuid)" />
         </template>
       </el-table-column>
       <el-table-column label="数据有效期" prop="timeDuring" :formatter="formatDuring" style="width : 400px" />
@@ -41,54 +41,57 @@
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <template class="detail-form">
-        <el-form
-          ref="dataForm"
-          :rules="rules"
-          :model="temp"
-          label-position="right"
-        >
-          <el-form-item label="数据角色名称" prop="dataRoleName">
-            <el-input v-model="temp.dataRoleName" />
-          </el-form-item>
-          <el-form-item label="授权方式" prop="authenType">
-            <el-select ref="authenType" v-model="temp.authenType" placeholder="请选择授权方式">
-              <el-option
-                v-for="item in authenTypeJson"
-                :key="item.codeValue"
-                :label="item.codeName"
-                :value="item.codeValue"
+      <div class="detail-form">
+        <template class="detail-form">
+          <el-form
+            ref="dataForm"
+            :rules="rules"
+            :model="temp"
+            label-position="right"
+          >
+            <el-form-item label="数据角色名称" prop="dataRoleName">
+              <el-input v-model="temp.dataRoleName" />
+            </el-form-item>
+            <el-form-item label="授权方式" prop="authenType">
+              <el-select ref="authenType" v-model="temp.authenType" placeholder="请选择授权方式">
+                <el-option
+                  v-for="item in authenTypeJson"
+                  :key="item.codeValue"
+                  :label="item.codeName"
+                  :value="item.codeValue"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="开始时间" prop="startTime">
+              <el-date-picker
+                v-model="temp.startTime"
+                format="yyyy-MM-dd HH:mm:ss"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                clearable
+                style="width: 100%"
+                :picker-options="startDatePicker"
+                :disabled="dialogStatus=='view'"
+                type="datetime"
+                :placeholder="dialogStatus=='view'?'':'请输入生效开始时间'"
               />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="开始时间" prop="startTime">
-            <el-date-picker
-              v-model="temp.startTime"
-              format="yyyy-MM-dd HH:mm:ss"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              clearable
-              style="width: 100%"
-              :picker-options="startDatePicker"
-              :disabled="dialogStatus=='view'"
-              type="datetime"
-              :placeholder="dialogStatus=='view'?'':'请输入生效开始时间'"
-            />
-          </el-form-item>
-          <el-form-item label="结束时间" prop="endTime">
-            <el-date-picker
-              v-model="temp.endTime"
-              format="yyyy-MM-dd HH:mm:ss"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              clearable
-              style="width: 100%"
-              :picker-options="endDatePicker"
-              :disabled="dialogStatus=='view'"
-              type="datetime"
-              :placeholder="dialogStatus=='view'?'':'请输入生效结束时间'"
-            />
-          </el-form-item>
-        </el-form>
-      </template>
+            </el-form-item>
+            <el-form-item label="结束时间" prop="endTime">
+              <el-date-picker
+                v-model="temp.endTime"
+                format="yyyy-MM-dd HH:mm:ss"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                clearable
+                style="width: 100%"
+                :picker-options="endDatePicker"
+                :disabled="dialogStatus=='view'"
+                type="datetime"
+                :placeholder="dialogStatus=='view'?'':'请输入生效结束时间'"
+              />
+            </el-form-item>
+          </el-form>
+        </template>
+
+      </div>
       <div slot="footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">保存</el-button>

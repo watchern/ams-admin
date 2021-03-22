@@ -68,7 +68,7 @@
                 <el-input v-model="form.modelFolderName" :disabled="true"/>
               </el-col>
               <el-col :span="2">
-                <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true">选择</el-button>
+                <el-button ref="businessFolderBtnRef" @click="modelFolderTreeDialog = true" type="primary">选择</el-button>
               </el-col>
               <el-col :span="2"></el-col>
             </el-form-item>
@@ -79,7 +79,7 @@
                 <el-input v-model="form.auditItemUuid" class="display" :disabled="true"/>
                 <el-input v-model="form.auditItemName" :disabled="true"/>
               </el-col>
-              <el-button @click="showAuditItemTree">选择</el-button>
+              <el-button @click="showAuditItemTree" type="primary">选择</el-button>
             </el-form-item>
           </el-row>
           <el-row>
@@ -147,7 +147,8 @@
             <i class="el-icon-info"/></el-tooltip>
         </div>
         <div id="paramList">
-          <paramShow ref="apple" v-if="paramShowVIf"></paramShow>
+<!--          <paramShow ref="apple" v-if="paramShowVIf"></paramShow>-->
+          <paramshownew ref="apple" v-if="paramShowVIf"></paramshownew>
         </div>
       </div>
       <div ref="modelResultOutputCol" class="display default-value">
@@ -253,10 +254,10 @@
         <el-button @click="modelFolderTreeDialog=false">取消</el-button>
       </div>
     </el-dialog>
-    <!-- <div ref="btnDivRef" class="div-btn" v-show="isShowBtn">
-      <el-button type="primary" @click="save">保存</el-button>
-      <el-button @click="closeWinfrom">取消</el-button>
-    </div> -->
+<!--     <div ref="btnDivRef" class="div-btn" v-show="isShowBtn">-->
+<!--      <el-button type="primary" @click="save">保存</el-button>-->
+<!--      <el-button @click="closeWinfrom">取消</el-button>-->
+<!--    </div>-->
   </div>
 </template>
 <script>
@@ -274,6 +275,7 @@ import SelectTransCode from '@/views/data/table/transcodeselect'
 import modelshoppingcart from '@/views/analysis/auditmodel/modelshoppingcart'
 import graph from '@/views/graphtool/tooldic/index'
 import messageTips from '@/views/analysis/auditmodel/message'
+import paramshownew from "@/views/analysis/modelparam/paramshownew";
 // import func from 'vue-temp/vue-editor-bridge'
 export default {
   name: 'EditModel',
@@ -288,7 +290,8 @@ export default {
     ModelFolderTree,
     SelectTransCode,
     graph,
-    messageTips
+    messageTips,
+    paramshownew
   },
   props: ['openValue'],
   data() {
@@ -411,7 +414,7 @@ export default {
       //模型类型数组
       modelTypeObj: [],
       //关闭窗体时候用的窗体名
-      formName: "",
+      formName: "新增模型",
       //操作对象
       operationObj: {},
       //图形化的列信息，比较列是否相同
@@ -436,7 +439,8 @@ export default {
       },
       imgCus1: require("@/views/analysis/auditmodel/imgs/close.png"),
       imgCus2: require("@/views/analysis/auditmodel/imgs/save.png"),
-      imgCus3: require("@/views/analysis/auditmodel/imgs/opentop.png")
+      imgCus3: require("@/views/analysis/auditmodel/imgs/opentop.png"),
+      paramShowArr: this.sqlEditorParam
     }
   },
   watch: {
@@ -453,7 +457,9 @@ export default {
     paramShowVIf(newChild) {
       this.$nextTick(function () {
         if (newChild) {
-          this.$refs.apple.createParamTableHtml(true, this.sqlEditorParam, true);
+          // this.paramShowArr = this.sqlEditorParam
+          // this.$refs.apple.createParamTableHtml(true, this.sqlEditorParam, true);
+          this.$refs.apple.initSetting(this.sqlEditorParam)
         }
       })
     }
@@ -481,7 +487,6 @@ export default {
       this.displayData(model)
       this.formName = "修改模型"
     }
-
     // 如果为2则反显要显示的数据
     if (this.operationObj.operationType == 3) {
       this.isUpdate = true
@@ -492,8 +497,6 @@ export default {
       this.isShowBtn = false
       //禁用所有界面可编辑元素
       this.isBanEdit = true
-    } else {
-      this.formName = "新增模型"
     }
   },
   methods: {
@@ -671,7 +674,8 @@ export default {
         // endregion
         //获取SQL编辑器参数对象 到下边去处理
         if (this.sqlEditorParamObj.arr.length != 0) {
-          paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
+          // paramDefaultValue = this.$refs.apple.getParamSettingArr(this.sqlEditorParamObj.arr);
+          paramDefaultValue = this.$refs.apple.getParamsSetting()
           if (!paramDefaultValue.verify) {
             this.$message({type: 'info', message: paramDefaultValue.message})
             return null
@@ -1216,7 +1220,8 @@ export default {
       // endregion
       // region 反显参数默认值
       if (returnObj.params.arr.length != 0) {
-        this.$refs.apple.createParamTableHtml(true, displayParamObj, true, '参数展示');
+        this.$refs.apple.initSetting(displayParamObj)
+        // this.$refs.apple.createParamTableHtml(true, displayParamObj, true, '参数展示');
       }
       // endregion
       // region 模型结果输出列

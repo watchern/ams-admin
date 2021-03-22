@@ -33,10 +33,11 @@
         </el-header>
         <el-main>
           <div v-for="(item, key) in this.detailModels" :key="key">
-            <paramDraw
-              :myId="item.modelUuid + '2'"
-              ref="paramassembly"
-            ></paramDraw>
+<!--            <paramDraw-->
+<!--              :myId="item.modelUuid + '2'"-->
+<!--              ref="paramassembly"-->
+<!--            ></paramDraw>-->
+            <paramDrawNew  :sql="drawsSql[key]" :arr="drawParamarr[key]" ref="paramassembly"></paramDrawNew>
           </div>
           <el-dialog
             title="选择模型结果保存路径"
@@ -45,8 +46,8 @@
             :append-to-body="true"
           >
             <data-tree
-              :data-user-id="dataUserId=='undefined'?personCode:dataUserId"
-              :scene-code="sceneCode1=='undefined'?sceneCode:sceneCode1"
+              :data-user-id="dataUserId"
+              :scene-code="sceneCode"
               :tree-type="treeType"
               @node-click="handleClick"
               style="height: 500px;overflow-y: scroll"
@@ -71,6 +72,7 @@ import { findModelList } from "@/api/analysis/auditmodel";
 import { replaceNodeParam } from "@/api/analysis/auditparam";
 import { getOneDict } from "@/utils/index";
 import dataTree from "@/views/data/role-res/data-tree";
+import paramDrawNew from '@/views/analysis/modelparam/paramdrawnew'
 export default {
   watch: {
     detailModels(value) {
@@ -95,6 +97,7 @@ export default {
   components: {
     paramDraw,
     dataTree,
+    paramDrawNew
   },
   data() {
     return {
@@ -114,16 +117,17 @@ export default {
       },
       modelResultSavePathDialog: false,
       personCode: this.$store.state.user.code,
-      sceneCode: "auditor",
       treeType: "save",
       path: "",
       modelResultSavePathId: '',
       tempPath: "",
       nodeType: "",
       tempId: "",
+      drawsSql:[],
+      drawParamarr:[]
     };
   },
-  props: ["models", "timing",'dataUserId','sceneCode1'],
+  props: ["models", "timing",'dataUserId','sceneCode'],
   methods: {
     /**
      * 初始化dialog
@@ -157,23 +161,26 @@ export default {
         if(this.detailModels[i].modelType == "002003002"){
           sql = this.detailModels[i].modelSql
         }
-        this.$refs.paramassembly[i].initParamHtmlSS(
-          sql, paramArr,
-          this.detailModels[i].modelName + "参数",
-          this.detailModels[i].modelUuid + "2",
-          this.detailModels[i].modelUuid + "2"
-        );
+        this.drawsSql.push(sql)
+        this.drawParamarr.push(paramArr)
+        this.$refs.paramassembly[i].createParamNodeHtml(this.detailModels[i].modelUuid,this.detailModels[i].modelName+'  参数')
+        // this.$refs.paramassembly[i].initParamHtmlSS(
+        //   sql, paramArr,
+        //   this.detailModels[i].modelName + "参数",
+        //   this.detailModels[i].modelUuid + "2",
+        //   this.detailModels[i].modelUuid + "2"
+        // );
       }
     },
     /**
      * 点击dialog确定按钮返回的替换好的sql和paramArr
      */
-    replaceParams() {
+    async replaceParams() {
       var replaceInfo = [];
       for (var i = 0; i < this.detailModels.length; i++) {
-        replaceInfo.push(
-          replaceNodeParam(this.detailModels[i].modelUuid + "2",this.detailModels[i].modelUuid + "2")
-        );
+        // replaceInfo.push(replaceNodeParam(this.detailModels[i].modelUuid + "2",this.detailModels[i].modelUuid + "2"));
+         var obj = this.$refs.paramassembly[i].replaceNodeParam(this.detailModels[i].modelUuid)
+          replaceInfo.push(obj)
       }
       var obj = {
         dateTime: this.dateTime,

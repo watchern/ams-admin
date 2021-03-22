@@ -1,51 +1,55 @@
 <template>
-    <div style="height: 600px;">
-        <div style="width: 80%;padding-left: 15%;padding-top: 50px;">
-            <el-row>
-                <el-table height="200" :data="analysisData" :border="tableBorder" fit highlight-current-row>
-                    <el-table-column label="上一节点名称" align="center" prop="nodeName"/>
-                    <el-table-column label="分析字段" align="center" prop="columnName">
+    <div style="height: 560px;overflow-y: auto">
+        <el-collapse v-model="activeNames">
+            <el-collapse-item title="分析字段" name="1">
+                <el-table :data="analysisData" :border="tableBorder" fit highlight-current-row style="padding-left: 160px;">
+                    <el-table-column label="上一节点名称" header-align="center" prop="nodeName" width="300" :show-overflow-tooltip="true" :resizable="false"/>
+                    <el-table-column label="分析字段" header-align="center" prop="columnName" width="300" :resizable="false">
                         <template slot-scope="scope">
-                            <el-select v-model="scope.row.columnSelected" filterable>
-                                <el-option v-for="item in analysisColumnArr" :key="item.columnName" :label="item.columnName" :value="item.columnName">{{ item.columnName }}</el-option>
+                            <el-select v-model="scope.row.columnSelected" filterable style="width: 100%;">
+                                <el-option v-for="item in scope.row.columnsInfo" :key="item.columnName" :label="item.columnName" :value="item.columnName">{{ item.columnName }}</el-option>
                             </el-select>
                         </template>
                     </el-table-column>
                 </el-table>
-            </el-row>
-            <el-row>
-                <el-col :span="4">
-                    <label style="float: right;line-height: 36px;padding-right: 10px;">分析内容</label>
-                </el-col>
-                <el-col :span="4">
-                    <el-select v-model="analysisType" :disabled="analysisDisabled">
-                        <el-option v-for="item in analysisTypeArr" :key="item.value" :label="item.name" :value="item.value">{{ item.name }}</el-option>
-                    </el-select>
-                </el-col>
-                <el-col :span="8">
-                   <el-input v-model="analysisContent" :disabled="analysisDisabled" style="padding: 0 10px;"/>
-                </el-col>
-                <el-col :span="4">
-                    <el-checkbox v-model="autoAnalysis" @change="autoContrastChange" style="line-height: 36px;">自动分析</el-checkbox>
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="4">
-                    <label style="float: right;line-height: 36px;padding-right: 10px;">出现次数</label>
-                </el-col>
-                <el-col :span="4">
-                    <el-select v-model="compareType">
-                        <el-option v-for="item in compareTypeArr" :key="item.value" :label="item.name" :value="item.value">{{ item.name }}</el-option>
-                    </el-select>
-                </el-col>
-                <el-col :span="8">
-                    <el-input v-model="displayNum" type="number" style="padding: 0 10px;"/>
-                </el-col>
-                <el-col :span="4">
-                    <el-checkbox v-model="ignoreNullVal" style="line-height: 36px;">忽略空值</el-checkbox>
-                </el-col>
-            </el-row>
-        </div>
+            </el-collapse-item>
+            <el-collapse-item title="分析内容" name="2">
+                <div style="padding-left: 160px;width: 100%;">
+                    <el-row>
+                        <el-col :span="2">
+                            <label style="float: right;line-height: 36px;padding-right: 10px;">分析内容</label>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-select v-model="analysisType" :disabled="analysisDisabled">
+                                <el-option v-for="item in analysisTypeArr" :key="item.value" :label="item.name" :value="item.value">{{ item.name }}</el-option>
+                            </el-select>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-input v-model="analysisContent" :disabled="analysisDisabled" style="padding: 0 10px;"/>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-checkbox v-model="autoAnalysis" @change="autoContrastChange" style="line-height: 36px;">自动分析</el-checkbox>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="2">
+                            <label style="float: right;line-height: 36px;padding-right: 10px;">出现次数</label>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-select v-model="compareType">
+                                <el-option v-for="item in compareTypeArr" :key="item.value" :label="item.name" :value="item.value">{{ item.name }}</el-option>
+                            </el-select>
+                        </el-col>
+                        <el-col :span="7">
+                            <el-input v-model="displayNum" type="number" style="padding: 0 10px;"/>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-checkbox v-model="ignoreNullVal" style="line-height: 36px;">忽略空值</el-checkbox>
+                        </el-col>
+                    </el-row>
+                </div>
+            </el-collapse-item>
+        </el-collapse>
     </div>
 </template>
 
@@ -54,9 +58,9 @@
         name: 'FrequencyAnalysisSet',
         data() {
             return {
+                activeNames:['1','2'],
                 nodeData: null,
                 analysisData:[],
-                analysisColumnArr:[],
                 analysisContent:'',
                 analysisDisabled:false,
                 displayNum:null,
@@ -74,12 +78,11 @@
         },
         methods: {
             init() {
-                const graph = this.$parent.graph
+                const graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
                 if (this.nodeData.isSet) {
-                    var analysisCol = this.nodeData.setting.analysisCol
-                    var appearNum = this.nodeData.setting.appearNum
-                    this.analysisColumnArr = this.nodeData.setting.analysisColumnArr
+                    let analysisCol = this.nodeData.setting.analysisCol
+                    let appearNum = this.nodeData.setting.appearNum
                     this.$nextTick( () => {
                         // 反显节点信息及列信息
                         this.analysisData = this.nodeData.setting.contrastCol
@@ -100,28 +103,30 @@
                         this.ignoreNullVal = true
                     }
                 } else {
-                    var parentIds = this.nodeData.parentIds
+                    let parentIds = this.nodeData.parentIds
+                    let curNodeId = ''
                     for (let i = 0; i < parentIds.length; i++) {
-                        var preNodeData = {}
+                        let preNodeData = {}
                         // 判断前置节点（结果表）是否有自己的配置
                         if (graph.nodeData[parentIds[i]].isSet) {			// 如果有，则前置节点信息取结果表本身的
-                            preNodeData = graph.nodeData[parentIds[i]]
+                            curNodeId = parentIds[i]
                         } else {			// 如果没有，则前置节点信息取结果表的前置节点的
-                            var pre_parentIds = graph.nodeData[parentIds[i]].parentIds
-                            preNodeData = graph.nodeData[pre_parentIds[0]]
+                            curNodeId = graph.nodeData[parentIds[i]].parentIds[0]
                         }
-                        var columnsInfo = preNodeData.columnsInfo
-                        for (var j = 0; j < columnsInfo.length; j++) {
+                        preNodeData = graph.nodeData[curNodeId]
+                        const columnsInfo = preNodeData.columnsInfo
+                        let curColumnInfo = []
+                        for (let j = 0; j < columnsInfo.length; j++) {
                             if (columnsInfo[j].isOutputColumn === 1) {
-                                this.analysisColumnArr.push({ 'columnName': columnsInfo[j].newColumnName})
+                                curColumnInfo.push({ 'columnName': columnsInfo[j].newColumnName})
                             }
                         }
-                        var obj = {
-                            'nodeId': parentIds[i],
-                            'nodeName': graph.nodeData[parentIds[i]].nodeInfo.nodeName,
-                            "columnSelected":''
-                        }
-                        this.analysisData.push(obj)
+                        this.analysisData.push({
+                            'nodeId': curNodeId,
+                            'nodeName': graph.nodeData[curNodeId].nodeInfo.nodeName,
+                            "columnSelected":'',
+                            "columnsInfo": curColumnInfo
+                        })
                     }
                 }
             },
@@ -149,16 +154,14 @@
                     let nodeId = this.analysisData[i].nodeId
                     let nodeName = this.analysisData[i].nodeName
                     let columns = []
-                    Array.from(this.analysisColumnArr, (n) => columns.push({
-                        "columnName":n.columnName,
-                        "selected":n.columnName === columnSelected
-                    }))
+                    Array.from(this.analysisData[i].columnsInfo, n => {
+                        columns.push({...{"selected":n.columnName === columnSelected},...n})
+                    })
                     contrastCol.push({nodeId,nodeName,columnSelected,columns})
                 }
                 this.nodeData.setting.analysisCol = analysisCol
                 this.nodeData.setting.appearNum = appearNum
                 this.nodeData.setting.contrastCol = contrastCol
-                this.nodeData.setting.analysisColumnArr = this.analysisColumnArr
             },
             inputVerify() {
                 let index = this.analysisData.findIndex( item => item.columnSelected === "")

@@ -2,7 +2,7 @@
   <div>
     <el-tabs ref="tabs" v-model="tabShowName" style="text-aling = center">
       <el-tab-pane label="数据资源目录" name="directory"><directory :data-user-id="dataUserId" :scene-code="sceneCode" /></el-tab-pane>
-      <el-tab-pane label="模型编写" name="auditmodel"><auditmodel :data-user-id="dataUserId" :scene-code="sceneCode" /></el-tab-pane>
+      <el-tab-pane label="模型编写" name="auditmodel"><auditmodel :data-user-id="dataUserId" :scene-code="sceneCode" :folder-name="folderName" /></el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -16,7 +16,8 @@ export default {
   props: ['dataUserId', 'sceneCode', 'tabShow'],
   data() {
     return {
-      tabShowName: ''
+      tabShowName: '',
+      folderName: "项目模型"
     }
   },
   watch: {

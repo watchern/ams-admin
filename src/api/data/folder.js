@@ -29,3 +29,20 @@ export function delFolder(ids) {
   })
 }
 
+
+export function saveAsStandard() {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller}/saveAsStandard/${ids}`,
+    method: 'get'
+  })
+}
+
+export function compareWithStandard() {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller}/compareWithStandard/${ids}`,
+    method: 'get'
+  })
+}
+

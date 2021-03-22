@@ -33,7 +33,6 @@ export default {
           that.$message({info:"error",message:"数据读取出错!"})
         }
         else{
-          debugger
           that.columnData = res.result.columnInfo.columnList
           that.tableData = res.result.result
         }

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" v-loading="isShowLoading">
-    <el-dialog title="选择模型列表" v-if='selectModelVisible' :visible.sync="selectModelVisible" :append-to-body="true" width="80%">
-      <SelectModels ref="selectModels" power="warning"/>
+    <el-dialog title="选择模型列表" :fullscreen="true" v-if='selectModelVisible' :visible.sync="selectModelVisible" :append-to-body="true" width="80%">
+      <SelectModels ref="selectModels" :isAuditWarring="true" power="warning"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="selectModelVisible = false">关闭</el-button>
         <el-button type="primary" @click="selectModel">确定</el-button>
@@ -18,7 +18,7 @@
               <el-form-item label="预警类型" >
                 <el-select v-model="temp.warningType" placeholder="请选择预警类型" >
                   <el-option label="模型" :value="1"></el-option>
-                  <el-option label="指标" :value="2"></el-option>
+                  <el-option label="指标常用分析" :value="2"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
@@ -26,6 +26,23 @@
               <el-form-item  label="结果保存地址">
                 <el-input  class="el-input-z" readonly="readonly" v-model="this.auditWarningSave.locationName"/>
                 <span class="btn-z" @click="modelResultSavePathDialog = true">选择</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="分配类型" >
+                <el-select v-model="auditWarningSave.distributionType" @change="distributionTypeChange" placeholder="请选择分配类型" >
+                  <el-option label="请选择" :value="0"></el-option>
+                  <el-option label="分配到人" :value="1"></el-option>
+                  <el-option label="分配到项目" :value="2"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item  label="人员或项目">
+                <el-input  class="el-input-z" readonly="readonly" v-model="auditWarningSave.distributionName"/>
+                <span class="btn-z" @click="distributionButtonClick">选择</span>
               </el-form-item>
             </el-col>
           </el-row>
@@ -54,12 +71,36 @@
               </el-table-column>
             </el-table>
           </el-form-item>
-          <el-form-item label="关联指标" v-if="temp.warningType == 2">
+          <el-form-item label="关联指标常用分析" v-if="temp.warningType == 2">
+            <el-row>
+              <el-col align="right">
+                <el-link type="primary" v-if="!allReadOnly" @click="selectIndicatorVisble = true">选择指标常用分析</el-link>
+              </el-col>
+            </el-row>
             <el-table key="indexList" ref="indexListTable" align="center" :data="temp.indexList" border fit highlight-current-row>
-              <el-table-column label="指标名称"  prop="modelName" />
-              <el-table-column label="平均运行时间"  prop="runTime" />
-              <el-table-column label="指标类型"  prop="modelType" :formatter="modelTypeFormatter" />
-              <el-table-column label="审计事项"  prop="auditItemName" />
+              <el-table-column
+                prop="oftenindicatorsName"
+                label="指标常用分析名称"
+                width="300">
+              </el-table-column>
+              <el-table-column
+                prop="createPersonName"
+                label="创建人"
+                width="180">
+              </el-table-column>
+              <el-table-column
+                prop="createTime"
+                label="创建时间" :formatter="dateFormatter">
+              </el-table-column>
+              <el-table-column
+                v-if="!allReadOnly"
+                label="操作"
+                prop="auditItemName">
+                <template slot-scope="scope">
+                  <el-link type="primary" @click.native.prevent="deleteCommonlyAnalysis(scope.$index, temp.indexList)">删除
+                  </el-link>
+                </template>
+              </el-table-column>
             </el-table>
           </el-form-item>
         </el-form>
@@ -73,7 +114,6 @@
               <el-option label="周期执行" :value="3"></el-option>
             </el-select>
           </el-form-item>
-
           <!--单次执行时间选择-->
           <el-form-item label="执行时间" v-if="temp.executeMode == 1" prop="singleExecuteTime">
             <el-date-picker
@@ -176,7 +216,8 @@
           <!--周期执行时间配置选择end-->
           <!--模型参数配置-->
           <el-form-item label="模型参数配置" v-show="temp.warningType == 1" >
-            <paramDraw v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :myId="domain.modelUuid" :ref="'paramDrawRef'+domain.modelUuid"/>
+<!--            <paramDraw v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :myId="domain.modelUuid" :ref="'paramDrawRef'+domain.modelUuid"/>-->
+            <paramDrawNew v-for="(domain, index) in temp.modelList" v-if="domain.paramObj != undefined && domain.paramObj.length > 0" :ref="'paramDrawRef'+domain.modelUuid" :sql="paramSql[index]" :arr="paramArr[index]"></paramDrawNew>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -200,19 +241,61 @@
         >
       </span>
     </el-dialog>
+    <el-dialog
+      title="请选择指标常用分析"
+      :visible.sync="selectIndicatorVisble"
+      width="45%"
+      :append-to-body="true">
+      <commonlyAnalysisList ref="commonlyAnalysisList"/>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="selectIndicatorVisble = false">取 消</el-button>
+        <el-button type="primary" @click="getCommonlyAnalysis()">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="请选择人员"
+      :visible.sync="personDialog"
+      width="45%"
+      :append-to-body="true">
+      <personTree ref="personTree" />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="personDialog = false">取 消</el-button>
+        <el-button type="primary" @click="getCheckPerson">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="请选择项目"
+      :visible.sync="projectDialog"
+      width="45%"
+      :append-to-body="true">
+      <userProject
+        v-if="projectDialog"
+        ref="userproject"
+      ></userProject>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="projectDialog = false">取 消</el-button>
+        <el-button type="primary" @click="getCheckProject">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import SelectModels from '@/views/analysis/auditmodel/index'
-import {findModelsWithParam, getWarningById} from '@/api/analysis/auditwarning'
+import paramDrawNew from '@/views/analysis/modelparam/paramdrawnew'
+import {findModelsWithParam, getWarningById,supQuery,bingLieQuery,getCommonlyAnalysisListByIds} from '@/api/analysis/auditwarning'
 import {getOneDict} from "@/utils"
 import paramDraw from '@/views/analysis/modelparam/paramdraw'
 import {replaceNodeParam } from '@/api/analysis/auditparam'
 import dataTree from "@/views/data/role-res/data-tree";
+import commonlyAnalysisList from "../../../components/ams-indicator-admin/src/views/indicator/commonlyAnalysisList";
+import $ from "jquery";
+import {Loading} from "element-ui";
+import personTree from '@/components/publicpersontree/index'
+import userProject from "@/views/base/userproject/index";
 export default {
   name:"editAuditWarning",
-  components: { SelectModels, paramDraw , dataTree},
+  components: { SelectModels, paramDraw , dataTree,commonlyAnalysisList,paramDrawNew,personTree,userProject},
   props: {
     //操作类型 add添加 update更新 detail详情查看
     option : {
@@ -232,6 +315,10 @@ export default {
       tabShow : "baseInfo",
       //全局只读 在查看详情时=true
       allReadOnly : false,
+      //人员dialog
+      personDialog:false,
+      //项目dialog
+      projectDialog:false,
       //组件loading是否展现
       isShowLoading:false,
       //单次/多次/周期执行的周期开始结束时间 执行时间选择配置
@@ -251,6 +338,12 @@ export default {
         executeMode : 1,
         //单次执行时间
         singleExecuteTime: '',
+        //分配类型   1、人员；2、项目
+        distributionType:0,
+        //分配编号   如果分配类型为1则存储人员编号，为2则存储项目编号
+        distributionUuid:'',
+        //分配名称   如果分配类型为1则存储人员名称，为2则存储项目名称
+        distributionName:'',
         //多次执行时间关联
         manyTimesExecuteTime:[{
           //多次执行的执行时间
@@ -287,6 +380,8 @@ export default {
       },
       //是否显示选择模型列表
       selectModelVisible : false,
+      //是否显示选择指标常用分析列表
+      selectIndicatorVisble : false,
       //表单校验规则
       rules:{
         warningName : {
@@ -335,7 +430,13 @@ export default {
         //保存结果位置编号
         locationUuid:'',
         //保存结果文件夹名称
-        locationName:''
+        locationName:'',
+        //分配类型   1、人员；2、项目
+        distributionType:0,
+        //分配编号   如果分配类型为1则存储人员编号，为2则存储项目编号
+        distributionUuid:'',
+        //分配名称   如果分配类型为1则存储人员名称，为2则存储项目名称
+        distributionName:''
       },
       //已经初始化参数的模型
       initedParamModel:[],
@@ -347,6 +448,8 @@ export default {
       personCode: this.$store.state.user.code,
       sceneCode: "auditor",
       treeType: "save",
+      paramArr:[],
+      paramSql:[]
     }
   },
   created() {
@@ -425,12 +528,11 @@ export default {
       if(this.auditWarningSave.warningType == "1"){
         //组织模型列表
         for(let taskRef of this.auditWarningSave.warningTaskRel){
-
           if(!taskRef.settingInfo){
             continue
           }
           let settingInfo = JSON.parse(taskRef.settingInfo)
-          taskRef.sqlValue = settingInfo.sql
+          taskRef.sqlValue = taskRef.sqlValue
           taskRef.modelUuid = taskRef.sourceUuid
           if(!settingInfo.paramsArr){
             this.temp.modelList.push(taskRef)
@@ -440,7 +542,19 @@ export default {
           taskRef.paramObj = settingInfo.paramsArr
           this.temp.modelList.push(taskRef)
         }
-
+      }
+      else{
+        let sourceUuid = []
+        for(let taskRef of this.auditWarningSave.warningTaskRel){
+          if(!taskRef.settingInfo){
+            continue
+          }
+          sourceUuid.push(taskRef.sourceUuid)
+        }
+        //加载指标数据
+        getCommonlyAnalysisListByIds(sourceUuid).then(result => {
+          this.temp.indexList = result.data
+        })
       }
       //加载完成 去掉loading
       this.isShowLoading = false
@@ -478,7 +592,10 @@ export default {
           }
           if(model.paramObj && model.paramObj.length > 0){
             this.initedParamModel.push(model)
-            this.$refs["paramDrawRef"+model.modelUuid][0].initParamHtmlSS(model.sqlValue, model.paramObj, model.modelName, model.modelUuid)
+            this.paramSql.push(model.sqlValue)
+            this.paramArr.push(model.paramObj)
+            this.$refs["paramDrawRef"+model.modelUuid][0].createParamNodeHtml(model.modelUuid,model.modelName+' 参数','auditwarring')
+            // this.$refs["paramDrawRef"+model.modelUuid][0].initParamHtmlSS(model.sqlValue, model.paramObj, model.modelName, model.modelUuid)
           }
         }
       })
@@ -486,7 +603,6 @@ export default {
 
   },
   methods: {
-
     //将前端表单数据转换为要保存的后端对象
     formToSaveObj(){
       this.auditWarningSave.warningName = this.temp.warningName
@@ -541,7 +657,7 @@ export default {
       //模型参数关联
       if(this.auditWarningSave.warningType == 1){
         //获取模型参数配置
-        for(let model of this.temp.modelList){
+         for(let model of this.temp.modelList){
           let taskRel = {
             //与审计预警表关联字段
             auditWarningUuid : this.auditWarningSave.auditWarningUuid,
@@ -555,18 +671,92 @@ export default {
             this.auditWarningSave.warningTaskRel.push(taskRel)
             continue
           }
-          taskRel.settingInfo = JSON.stringify(this.getModelParamById(model))
+           let settingInfo = this.getModelParamById(model)
+
+          taskRel.settingInfo = JSON.stringify(settingInfo)
           this.auditWarningSave.warningTaskRel.push(taskRel)
         }
       }
-
+      //获取指标sql
+      else if(this.auditWarningSave.warningType == 2){
+        //送入到后台获取指标sql
+        for(let indicator of this.temp.indexList){
+          let analysisList = JSON.parse(indicator.oftenindicatorsAnalysisobject).analysisList
+          for(let i = 0; i < analysisList.length;i++){
+            if (analysisList[i] == null) {
+              return
+            }
+            var count = 0;
+            for(let j = 0; j < analysisList[i].objInList.length;j++){
+              if (analysisList[i].objInList[j] == null) {
+                return
+              }
+              count++;
+            }
+            if (count > 1) {
+              let resultObj = supQuery(analysisList[i].objInList, analysisList[i].objDimList)
+              this.handleWarningTaskRel(indicator.inOftenindicatorsUuid,1,resultObj.sql,analysisList[i].thresholdValueRelObj)
+            } else {
+               let resultObj = bingLieQuery(analysisList[i].objInList, analysisList[i].objDimList)
+               this.handleWarningTaskRel(indicator.inOftenindicatorsUuid,1,resultObj.sql,analysisList[i].thresholdValueRelObj)
+            }
+          }
+        }
+      }
+    },
+    handleWarningTaskRel(sourceUuid,version,sql,thresholdValueRel){
+      let taskRel = {
+        //与审计预警表关联字段
+        auditWarningUuid : this.auditWarningSave.auditWarningUuid,
+        sourceUuid : sourceUuid,
+        //模型版本号
+        modelVersion : version,
+        settingInfo : JSON.stringify({sql:sql,thresholdValueRel:thresholdValueRel})
+      }
+      this.auditWarningSave.warningTaskRel.push(taskRel)
+    },
+    /**
+     * 格式化时间字符串
+     * @param row 格式化行
+     * @param column 格式化列
+     * @returns {返回格式化后的时间字符串}
+     */
+    dateFormatter(row, column) {
+      const datetime = row.createTime
+      if (datetime) {
+        let dateMat = new Date(datetime)
+        let year = dateMat.getFullYear()
+        let month = dateMat.getMonth() + 1
+        let day = dateMat.getDate()
+        let hours = dateMat.getHours()
+        let minutes = dateMat.getMinutes()
+        let second = dateMat.getSeconds()
+        if (month.toString().length == 1) {
+          month = "0" + month
+        }
+        if (day.toString().length == 1) {
+          day = "0" + day
+        }
+        if (hours.toString().length == 1) {
+          hours = "0" + hours
+        }
+        if (minutes.toString().length == 1) {
+          minutes = "0" + minutes
+        }
+        if(second.toString().length == 1){
+          second = "0" + second
+        }
+        var d = year + "-" + month + "-" + day + " " + hours + ":" + minutes+ ":" + second;
+        return d;
+      }
     },
     //从参数组件中获取模型配置的参数信息
     getModelParamById(model){
+      let result = {};
       if(!model){
         return {};
       }
-      let param = replaceNodeParam(model.modelUuid)
+      let param = this.$refs["paramDrawRef"+model.modelUuid][0].replaceNodeParam(model.modelUuid);
       //模型的参数数组
       let paramObj = model.paramObj
       for (let i = 0;i < paramObj.length;i++){
@@ -577,7 +767,8 @@ export default {
           }
         }
       }
-      return {sql:param.sql,paramsArr:model.paramObj}
+      result = {sql:param.sql,paramsArr:paramObj}
+      return result
     },
 
     //删除模型
@@ -616,8 +807,8 @@ export default {
               obj.paramObj.push(JSON.parse(param.paramValue))
             }
           }
-
-          this.temp.modelList = this.temp.modelList.concat(result.data)
+          var modelList= this.temp.modelList.concat(result.data)
+          this.temp.modelList = modelList
         })
         return
       }
@@ -667,13 +858,13 @@ export default {
       }
     },
     //获取整体表单要存储的对象
-    getFormData(){
+     getFormData(){
       let isSubmit = false;
-      this.$refs["baseDataForm"].validate((valid) => {
+      this.$refs["baseDataForm"].validate( (valid) => {
         if(!valid){
           this.tabShow = "baseInfo"
         } else {
-          this.$refs["executeDataForm"].validate((valide) => {
+            this.$refs["executeDataForm"].validate( (valide) =>  {
               if(!valide){
                 this.tabShow = "executeInfo"
               }else{
@@ -685,7 +876,7 @@ export default {
                     type: 'info',
                     message: '请选择要执行的模型或指标'
                   })
-                  his.tabShow = "baseInfo"
+                  this.tabShow = "baseInfo"
                   isSubmit = false;
                 }
                 //非周期执行需要校验执行时间 执行时间必须大于当前时间
@@ -706,7 +897,6 @@ export default {
                     }
                   }
                 }
-
               }
           })
         }
@@ -753,6 +943,90 @@ export default {
           type: "warning",
         });
       }
+    },
+    /**
+     * 获取选中的常用分析
+     */
+    getCommonlyAnalysis(){
+      let list = this.$refs.commonlyAnalysisList.getSelectOption();
+      if(list.length == 0){
+        this.$message({type:"info",message:"最少选择一条常用分析"})
+        return
+      }
+      //加载数据
+      this.temp.indexList = list
+      this.selectIndicatorVisble = false
+    },
+    /**
+     * 删除常用分析
+     * @param index 索引
+     * @param rows 数据列表
+     */
+    deleteCommonlyAnalysis(index, rows){
+      rows.splice(index, 1);
+    },
+    /**
+     * 分配按钮点击事件
+     */
+    distributionButtonClick(){
+      if(this.auditWarningSave.distributionType == 1){
+        //打开人员选择窗体
+        this.personDialog = true
+      }
+      else if(this.auditWarningSave.distributionType == 2){
+        //打开项目选择窗体
+        this.projectDialog = true
+      }
+      else{
+        this.$message({type:"info",message:"请先选择分配类型"})
+      }
+    },
+    /**
+     * 获取选择的人员
+     */
+    getCheckPerson(){
+      var userId = this.$store.getters.personuuid
+      const persons = this.$refs.personTree.getSelectValue()
+      if(persons.length > 1){
+        this.$message({ type: 'info', message: '只有分配给一个人!' })
+        return
+      }
+/*      if(persons[0].personuuid === userId){
+        this.$message({ type: 'info', message: '不能共享给自己!' })
+        return
+      }*/
+      //获取人员并给实体赋值
+      this.auditWarningSave.distributionUuid = persons[0].personuuid
+      this.auditWarningSave.distributionName = persons[0].cnname
+      this.personDialog = false
+    },
+    /**
+     * 获取选择的项目
+     */
+    getCheckProject(){
+      var projects = this.$refs.userproject.getSelectValue();
+      if (projects.length === 0) {
+        this.$message({
+          message: "请选择要关联的项目",
+        });
+      }
+      else if (projects.length === 1) {
+        this.auditWarningSave.distributionUuid = projects[0].PRJ_PROJECT_UUID
+        this.auditWarningSave.distributionName = projects[0].PRJ_NAME
+        this.projectDialog = false;
+      } else {
+        this.$message({
+          message: "只能关联一个项目",
+        });
+      }
+    },
+    /**
+     * 分配类型更改事件
+     * @param val 值
+     */
+    distributionTypeChange(val){
+      this.auditWarningSave.distributionUuid = ""
+      this.auditWarningSave.distributionName = ""
     }
   }
 }

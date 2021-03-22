@@ -12,6 +12,7 @@
             v-loading="tree1Loading"
             :props="props"
             class="filter-tree"
+            :default-expanded-keys="['ROOT']"
             :highlight-current="true"
             :data="treeData1"
             node-key="id"
@@ -56,6 +57,7 @@
             :highlight-current="true"
             :data="treeData2"
             node-key="id"
+            :default-expanded-keys="['ROOT']"
             :expand-on-click-node="false"
             show-checkbox
           >

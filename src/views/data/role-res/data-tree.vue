@@ -4,33 +4,32 @@
       v-model="filterText1"
       placeholder="输入关键字进行过滤"
     />
-    <MyElTree
-      ref="tree1"
-      v-loading="treeLoading"
-      :props="props"
-      class="filter-tree"
-      :highlight-current="true"
-      :data="treeData1"
-      :filter-node-method="filterNode"
-      node-key="id"
-      @node-click="nodeClick"
-      @node-expand="nodeExpand"
-      lazy
-      :load="loadNode"
-    >
+    <div  style="overflow: scroll; height: 85vh">
+      <MyElTree
+        ref="tree1"
+        v-loading="treeLoading"
+        :props="props"
+        class="filter-tree"
+        :highlight-current="true"
+        :data="treeData1"
+        :filter-node-method="filterNode"
+        node-key="id"
+        @node-click="nodeClick"
+        @node-expand="nodeExpand"
+        lazy
+        :load="loadNode"
+      >
       <span slot-scope="{ node, data }" class="custom-tree-node">
-        <i v-if="data.id==='root'" class="el-icon-s-home" />
-        <i v-if="data.type==='folder'" class="el-icon-folder" />
-        <i v-if="data.type==='table' && data.extMap.tblType==='T' && treeType==='common'">
-          <span class="icon iconfont" style="padding-right: 3px;vertical-align: bottom;">&#xecee;</span>
-        </i>
-        <i v-if="data.type==='table' && data.extMap.tblType==='V' && treeType==='common'">
-          <span class="icon iconfont" style="padding-right: 3px;vertical-align: bottom;">&#xe6cd;</span>
-        </i>
-        <i v-if="data.type==='column' && treeType==='common'" class="el-icon-c-scale-to-original" />
-        <span :title="data.title" style=" line-height: 22px;">{{ node.label }}</span>
+        <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
+        <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
+        <i v-if="data.type==='table' && data.extMap.tblType==='T'" class="el-icon-tickets" style="color:#409EFF" />
+        <i v-if="data.type==='table' && data.extMap.tblType==='V'" class="el-icon-search" style="color:#409EFF" />
+        <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
+        <span :title="data.title">{{ node.label }}</span>
       </span>
-    </MyElTree>
+      </MyElTree>
+    </div>
+
   </div>
 </template>
 
@@ -119,7 +118,8 @@ export default {
               type: 'col',
               dataType: e.dataType,
               dataLength: e.dataLength,
-              leaf: true
+              leaf: true,
+              title: e.chnName
             })
           })
           resolve(nodes)

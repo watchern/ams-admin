@@ -39,7 +39,7 @@
                   <el-input :disabled="true" v-model="form.relationObjectUuid" style="display: none"/>
                   <el-input :disabled="true" v-model="form.relationObjectName"/>
                 </el-col>
-                <el-button @click="selectModel">选择</el-button>
+                <el-button @click="selectModel" type="primary">选择</el-button>
               </el-form-item>
             </el-row>
             <div ref="relModelTableDiv" style="display: none">

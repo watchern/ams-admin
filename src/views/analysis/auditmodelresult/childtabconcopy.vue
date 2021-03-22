@@ -46,11 +46,11 @@
       <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn search"
         ></el-button
       >
+      >
       <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
         >重置</el-button -->
       <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn again-2"
-        ></el-button
-      >
+        ></el-button>
       <el-button
         class="oper-btn link"
         :disabled="modelRunResultBtnIson.modelDetailAssBtn"
@@ -67,15 +67,15 @@
         <el-button
           type="primary"
           @click="modelResultExport"
-          class="oper-btn export-2"
+          class="oper-btn export-3"
         ></el-button>
       </downloadExcel>
-      <el-button type="primary" title="图表展示" class="oper-btn chart"></el-button>
+      <el-button type="primary" class="oper-btn chart"></el-button>
     </el-row>
     <ag-grid-vue
       v-if="isSee"
       v-loading="isLoading"
-      style="height: 200px"
+      style="height: 59vh"
       class="table ag-theme-balham"
       :column-defs="columnDefs"
       :row-data="rowData"
@@ -221,7 +221,6 @@ export default {
       myFlag: false, // 用来判断主表界面有按钮，辅表界面没有按钮，为true是主表，为false是辅表
       selectRows: [], //用于存放多选框选中的数据
       detailTable: [], //存放关联详细表
-      primaryKey: "", // 保存每个表中的主键，因为每个表的主键都不一样，所以得根据表明查出来
       dataArray: [], // 保存当前表格中的数据
       queryData: [], // 保存列信息，用来传给子组件(queryBuilder组件)
       queryJson: {}, // 用来储存由子组件传过来的 queryBuilder 的 Json数据

@@ -8,58 +8,51 @@
     </div>
      </el-aside>
      <el-container>
-     <el-header style="width: 60%">
+     <el-header>
       <QueryField
         ref="queryfield"
         :form-data="queryFields"
         @submit="getLikeList"
       />
     </el-header>
-    <el-main>
-    <div align="right" style="width: 53%">
+    <el-main style="width:77.5vw;">
+    <div align="right">
       <el-row>
         <el-button
           type="primary"
-          @click="relationProject('453452', '项目2')"
+          @click="openProjectDialog"
           :disabled="buttonIson.AssociatedBtn"
-          class="oper-btn refresh"
-          title="关联项目"
+          class="oper-btn link-2"
         ></el-button>
-        <el-button
-         v-if="false"
-          type="primary"
-          @click="RemoverelationProject('asdasdasdas')"
-          :disabled="buttonIson.DisassociateBtn"
-          title="移除项目关联"
-          >移除项目关联</el-button
-        >
-        <el-button
-          :disabled="buttonIson.deleteBtn"
-          type="primary"
-          @click="deleteRunTaskRel"
-          class="oper-btn delete"
-          title="删除"
-        ></el-button>
-         <el-button
-              type="primary"
-              :disabled="buttonIson.resultSplitBtn"
-              class="oper-btn split-2"
-              @click="openResultSplitDialog"
-              title="结果拆分"
-          ></el-button>
         <el-button
           type="primary"
           @click="modelResultOpenDialog()"
           :disabled="buttonIson.resultShareBtn"
           class="oper-btn share"
-          title="结果分配"
+        ></el-button>
+        <el-button
+          type="primary"
+          @click="RemoverelationProject()"
+          :disabled="buttonIson.DisassociateBtn"
+          class="oper-btn move"
+          ></el-button>
+        <el-button
+          type="primary"
+          :disabled="buttonIson.resultSplitBtn"
+          class="oper-btn split-2"
+          @click="openResultSplitDialog"
         ></el-button>
         <el-button
           type="primary"
           @click="exportExcel"
           :disabled="buttonIson.exportBtn"
           class="oper-btn export-2"
-          title="导出"
+        ></el-button>
+        <el-button
+          :disabled="buttonIson.deleteBtn"
+          type="primary"
+          @click="deleteRunTaskRel"
+          class="oper-btn delete-2"
         ></el-button>
       </el-row>
     </div>
@@ -74,10 +67,10 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
       height="450px"
-      style="overflow-x: scroll; width: 53%"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column
+        v-if="warringResultType===1"
         label="模型名称"
         width="300px"
         align="center"
@@ -93,10 +86,34 @@
                 scope.row.model.modelName,
                 scope.row.model.modelUuid,
                 scope.row.runStatus,
-                resultSpiltObjects
+                resultSpiltObjects,
+                undefined
               )
             "
             >{{ scope.row.model.modelName }}</a
+          >
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-if="warringResultType===2"
+        label="指标名称"
+        width="300px"
+        align="center"
+        prop="model.modelName"
+      >
+        <template slot-scope="scope">
+          <a
+            type="text"
+            style="color: #409eff"
+            @click="getResultTables(
+                scope.row.runResultTables,
+                scope.row.inOftenindicators.oftenindicatorsName,
+                scope.row.inOftenindicators.inOftenindicatorsUuid,
+                scope.row.runStatus,
+                resultSpiltObjects,
+                scope.row.settingInfo
+              )"
+          >{{scope.row.inOftenindicators.oftenindicatorsName}}</a
           >
         </template>
       </el-table-column>
@@ -260,6 +277,22 @@
         <el-button type="primary" @click="afterSettingTime">确 定</el-button>
       </span>
     </el-dialog>
+       <el-dialog
+         title="请选择项目"
+         :visible.sync="projectDialogIsSee"
+         width="40%"
+       >
+         <userProject
+           v-if="projectDialogIsSee"
+           ref="userproject"
+         ></userProject>
+         <span slot="footer" class="dialog-footer">
+            <el-button @click="projectDialogIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="determineProject"
+            >确 定</el-button
+            >
+          </span>
+       </el-dialog>
     <el-footer>
     <pagination
       v-show="total > 0"
@@ -329,7 +362,7 @@ export default {
       selected1: [], // 存储表格中选中的数据
       buttonIson: {
         AssociatedBtn: true,
-        DisassociateBtn: false,
+        DisassociateBtn: true,
         deleteBtn: true,
         resultSplitBtn: true,
         resultShareBtn: true,
@@ -343,12 +376,49 @@ export default {
       ResultSplitoptions: [], //存储结果拆分dialog的下拉框中的数据
       selectedValue: [], //结果查分下拉框选中的值
       resultShareDialogIsSee: false, //点击模型结果关联按钮控制人员dialog显示
+      warringResultType:1, //存储预警结果的类型
+      projectDialogIsSee: false, //关联项目dialog是否可见
     };
   },
   created() {
-    this.getLikeList();
+
   },
   methods: {
+    determineProject(){
+      var projects = this.$refs.userproject.getSelectValue();
+
+      if (projects.length === 0) {
+        this.$message({
+          message: "请选择要关联的项目",
+        });
+      } else if (projects.length === 1) {
+        this.relationProject(
+          projects[0].PRJ_PROJECT_UUID,
+          projects[0].PRJ_NAME
+        );
+        this.projectDialogIsSee = false;
+      } else {
+        this.$message({
+          message: "只能关联一个项目",
+        });
+      }
+    },
+    openProjectDialog() {
+      var flag = true;
+      for (var i = 0; i < this.selected1.length; i++) {
+        if (this.selected1[i].runStatus != 3) {
+          flag = false;
+          break;
+        }
+      }
+      if(flag){
+        this.projectDialogIsSee = true;
+      }else{
+        this.$message({
+          message: "未运行成功的结果不能关联项目",
+        });
+      }
+    },
     /**
      * 导出方法
      */
@@ -530,6 +600,13 @@ export default {
         getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
+        if (this.list.length>0){
+          if (this.list[0].runRecourceType === 1){
+            this.warringResultType = 1
+          }else {
+            this.warringResultType = 2
+          }
+        }
         this.listLoading = false;
       });
       }
@@ -553,6 +630,13 @@ export default {
         getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
         this.total = resp.data.total;
         this.list = resp.data.records;
+          if (this.list.length>0){
+            if (this.list[0].runRecourceType === 1){
+              this.warringResultType = 1
+            }else {
+              this.warringResultType = 2
+            }
+          }
         this.listLoading = false;
       });
       }
@@ -564,7 +648,7 @@ export default {
     handleSelectionChange(val) {
       if (val.length <= 0) {
         this.buttonIson.AssociatedBtn = true;
-        this.buttonIson.DisassociateBtn = false;
+        this.buttonIson.DisassociateBtn = true;
         this.buttonIson.deleteBtn = true;
         this.buttonIson.resultSplitBtn = true;
         this.buttonIson.resultShareBtn = true;
@@ -612,7 +696,7 @@ export default {
      */
     deleteRunTaskRel() {
       if (this.share.length == 0 && this.notShare.length == 0) {
-        alert("请选择要删除的运行结果");
+        this.$message({message: "请选择要删除的运行结果"});
       } else if (this.notShare.length != 0 && this.share.length == 0) {
         // 当选中的要删除结果中都是自己的没有别人共享结果的时候
         var flag = true;
@@ -625,7 +709,7 @@ export default {
         }
         // 如果有关联的项目
         if (flag == false) {
-          alert("选择的运行结果有项目关联，请取消关联，再删除！");
+          this.$message({message: "选择的运行结果有项目关联，请取消关联，再删除！"});
         } else {
           // 打开删除提示框
           this.open();
@@ -645,7 +729,7 @@ export default {
           }
         }
         if (flag == false) {
-          alert("选择的运行结果有项目关联，请取消关联，再删除！");
+          this.$message({message: "选择的运行结果有项目关联，请取消关联，再删除！"});
         } else {
           // 打开删除提示框
           this.open2();
@@ -777,7 +861,7 @@ export default {
           });
         });
     },
-   /**
+    /**
      * 关联项目按钮触发
      */
     relationProject(projectId, projctName) {
@@ -798,30 +882,30 @@ export default {
               }
             }
           }
-              selectPrimaryKeyByTableName().then((resp) => {
-                var primaryKey = resp.data;
-                getDataAfterResultSpiltToRelateProject(
-                  this.resultSpiltObjects,
-                  projectId,
-                  projctName,
-                  selectRunTaskRelUuid
-                ).then((resp) => {
-                  if (resp.data == true) {
-                    this.listLoading = false;
-                    this.getLikeList();
-                    this.$message({
-                      type: "success",
-                      message: "关联成功!",
-                    });
-                  } else {
-                    this.listLoading = false;
-                    this.$message({
-                      type: "error",
-                      message: "关联失败!",
-                    });
-                  }
+          selectPrimaryKeyByTableName().then((resp) => {
+            var primaryKey = resp.data;
+            getDataAfterResultSpiltToRelateProject(
+              this.resultSpiltObjects,
+              projectId,
+              projctName,
+              selectRunTaskRelUuid
+            ).then((resp) => {
+              if (resp.data == true) {
+                this.listLoading = false;
+                this.getLikeList();
+                this.$message({
+                  type: "success",
+                  message: "关联成功!",
                 });
-              });
+              } else {
+                this.listLoading = false;
+                this.$message({
+                  type: "error",
+                  message: "关联失败!",
+                });
+              }
+            });
+          });
         } else {
           this.listLoading = true;
           var resultRelPro = [];
@@ -897,8 +981,13 @@ export default {
     /**
      * 移除项目关联
      */
-    RemoverelationProject(resultRelProjectUuid) {
-      rmResultRelProjectlr(resultRelProjectUuid).then((resp) => {
+    RemoverelationProject() {
+      var ids = [];
+      for (var i = 0; i < this.selected1.length; i++) {
+        ids.push(this.selected1[i].runTaskRelUuid);
+      }
+      var resultRelProjectUuids = ids.join(",");
+      rmResultRelProjectlr(resultRelProjectUuids).then((resp) => {
         if (resp.data == true) {
           this.getLikeList();
           this.$message({
@@ -956,7 +1045,7 @@ export default {
      * val是运行结果中的resultTables
      * modelName是选中的模型的名字
      */
-    getResultTables(val, modelName, modelUuid, runStatus,resultSpiltObjects) {
+    getResultTables(val, modelName, modelUuid, runStatus,resultSpiltObjects,settingInfo) {
       if (runStatus == 3) {
         var assistTables = [];
         var mainTable = null;
@@ -969,7 +1058,7 @@ export default {
         }
         // 触发父类方法addTab在index.vue界面，同时穿过三个参数assistTables：辅表（运行结果表）数组  mainTable：主表（运行结果表对象）
         // modelName：模型的名称，用来给新页签赋值title属性用
-        this.$emit("addtab", assistTables, mainTable, modelName, modelUuid,resultSpiltObjects);
+        this.$emit("addtab", assistTables, mainTable, modelName, modelUuid,resultSpiltObjects,settingInfo);
       } else {
         this.$message({
           type: "info",

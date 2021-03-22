@@ -1,6 +1,6 @@
 <template>
-    <div id="transfer_div_column" style="padding: 30px 0 0 150px;">
-        <div id="del_repeat" class="demo-transfer"></div>
+    <div style="padding: 30px 0 0 80px;">
+        <el-transfer filterable filter-placeholder="请输入搜索内容" v-model="columnDataValue" :data="columnData" :titles="['可选字段', '去重字段']" @change="changeSortData"></el-transfer>
     </div>
 </template>
 
@@ -10,7 +10,9 @@
         data(){
             return {
                 nodeData:null,
-                transfer1:null
+                columnData:[],
+                columnDataValue:[],
+                curColumnsInfo:[]
             }
         },
         mounted() {
@@ -18,58 +20,32 @@
         },
         methods: {
             init() {
-                let graph = this.$parent.graph
+                let graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
-                let columnsInfoPre = this.$parent.columnsInfoPre
-                let $this = this
-                layui.use(['transfer'], function() {
-                    var transfer = layui.transfer
-                    var dg_data = []
-                    $(columnsInfoPre).each(function(index) {
-                        dg_data.push({
-                            'value': this.newColumnName,
-                            'title': this.newColumnName
-                        })
+                this.curColumnsInfo = this.$parent.$parent.$parent.columnsInfoPre
+                if (this.nodeData.isSet) {
+                    this.curColumnsInfo = this.nodeData.setting.columnsInfo
+                    this.columnDataValue = this.nodeData.setting.delRepeatData
+                    this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(this.columnDataValue)// 反显
+                }
+                Array.from(this.curColumnsInfo,item => {
+                    this.columnData.push({
+                        'pinyin': item.newColumnName,
+                        'label': item.newColumnName,
+                        'key': item.newColumnName
                     })
-
-                    // 显示搜索框
-                    var height = 500
-                    var width = 300
-
-                    $this.transfer1 = transfer.render({
-                        elem: '#del_repeat',
-                        data: dg_data,
-                        title: ['可选字段', '去重字段'],
-                        showSearch: true,
-                        height: height,
-                        width: width,
-                        id: 'delRepeat',
-                        onchange: function(data, index) {
-                            $this.$parent.is_filter_column = $this.transfer1.getData('delRepeat')
-                            $this.$parent.$refs.outputColumnVueRef.re_checkbox($this.$parent.is_filter_column)
-                        }
-                    })
-                    // 是否反显
-                    if ($this.nodeData.isSet) {
-                        var re_value = []
-                        $($this.nodeData.setting.delRepeatData).each(function() {
-                            re_value.push(this.value)
-                        })
-                        transfer.reload('delRepeat', {
-                            title: ['可选字段', '去重字段'],
-                            value: re_value,
-                            showSearch: true
-                        })
-                        $this.$parent.$refs.outputColumnVueRef.re_checkbox($this.nodeData.setting.delRepeatData)// 反显
-                    }
                 })
             },
+            changeSortData(){
+                this.$parent.$parent.$parent.$refs.outputColumnVueRef.re_checkbox(this.columnDataValue)
+            },
             saveSetting() {
-                this.nodeData.setting.delRepeatData = this.transfer1.getData('delRepeat')
+                this.nodeData.setting.delRepeatData = this.columnDataValue
+                this.nodeData.setting.columnsInfo = this.curColumnsInfo
             },
             inputVerify() {
-                var verify = true
-                if (this.transfer1.getData().length === 0) {
+                let verify = true
+                if (this.columnDataValue.length === 0) {
                     this.$message({ type: 'warning', message: '已选择去重字段列表不能为空' })
                     verify = false
                 }
@@ -77,5 +53,16 @@
             }
         }
     }
-
 </script>
+<style scoped type="text/css">
+    >>> .el-transfer-panel{
+        width: 300px;
+        height: 530px;
+    }
+    >>> .el-transfer-panel__list.is-filterable{
+        height: 425px;
+    }
+    >>> .el-checkbox{
+        margin-right: 15px;
+    }
+</style>

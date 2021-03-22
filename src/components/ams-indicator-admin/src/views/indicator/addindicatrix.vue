@@ -11,23 +11,51 @@
                 <el-form-item label="指标列">
                     <el-input id="colName" v-model="form.colName" readonly="readonly"></el-input>
                 </el-form-item>
-                <el-form-item label="聚合方式">
-                    <el-select id="group" v-model="form.group" readonly="readonly">
-                        <el-option value="sum" label="总计"></el-option>
-                        <el-option value="count" label="计数"></el-option>
-                        <el-option value="avg" label="平均值"></el-option>
-                        <el-option value="max" label="最大值"></el-option>
-                        <el-option value="min" label="最小值"></el-option>
-                        <el-option value="distinct" label="差异计数"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="所属分类">
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="聚合方式">
+                      <el-select style="width: 100%" id="group" v-model="form.group" readonly="readonly">
+                          <el-option value="sum" label="总计"></el-option>
+                          <el-option value="count" label="计数"></el-option>
+                          <el-option value="avg" label="平均值"></el-option>
+                          <el-option value="max" label="最大值"></el-option>
+                          <el-option value="min" label="最小值"></el-option>
+                          <el-option value="distinct" label="差异计数"></el-option>
+                      </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="所属分类" style="margin-left: 15px">
                     <el-select v-model="form.folderName" placeholder="请选择所属分类" style="width: 100%" ref="folderName">
-                        <el-option :value="form.folderName" :label="form.folderName" style="width: 100%;height:200px;overflow: auto;background-color:#fff">
-                            <publictree :setFolderIdAndName="setFolderIdAndName" :type="2"></publictree>
-                        </el-option>
+                      <el-option :value="form.folderName" :label="form.folderName" style="width: 100%;height:200px;overflow: auto;background-color:#fff">
+                        <publictree :setFolderIdAndName="setFolderIdAndName" :type="2"></publictree>
+                      </el-option>
                     </el-select>
-                </el-form-item>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+<!--                <el-row>
+                  <el-form-item  label="条件显示">
+                    <el-col :span="21">
+                      <el-input readonly="readonly" v-model="form.inFilterShowObj.sql" />
+                    </el-col>
+                    <el-col :span="3">
+                      <el-button style="margin-left: 19px;" type="primary" size="mini" @click="setQueryBuilderRules();setFilterShow()">设置</el-button>
+                    </el-col>
+                  </el-form-item>
+                </el-row>
+                <el-row>
+                  <el-col :span="8">
+                    <el-form-item label="字体颜色">
+                      <Colorpicker v-model="form.inFilterShowObj.fontColor" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="背景色">
+                      <Colorpicker v-model="form.inFilterShowObj.backGroundColor" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>-->
                 <el-form-item label="指标说明">
                     <el-input type="textarea" id="inMemo" v-model="form.inMemo"></el-input>
                 </el-form-item>
@@ -98,10 +126,11 @@ export default {
     }
   },
   mounted() {
-      this.initData();
+
   },
   created() {
-
+    this.clearData()
+    this.initData();
   },
   methods: {
           /**
@@ -197,7 +226,8 @@ export default {
             measureAlias: this.form.inName,
             belongOrg: '',
             belongType: this.auditorOrauditorgan,
-            pbScopeUuid: this.pbScopeUuid
+            pbScopeUuid: this.pbScopeUuid,
+            inFilterShow: JSON.stringify(this.form.inFilterShowObj)
         };
         var relData = {
             inColumnrelationUuid: "",
@@ -220,8 +250,7 @@ export default {
                     that.$emit('getAllColumn',that.tableId)
                     that.$emit('addInTable',that.tableId)
                     that.$emit('getAllIndicatrix',that.tableId)
-                    var info = "新增了原生指标:'{0}'，文件夹路径:'{1}'".format(that.form.inName,that.form.folderName);
-                    that.addOperLogByParam(that.log_module,that.log_add,that.log_info);
+                    //保存完成之后清除该界面数据
                     that.closeDialog();
                 }
                 else {
@@ -274,6 +303,7 @@ export default {
         this.editData.measureMemo = this.form.inMemo;
         this.editData.measureAlias = this.form.inName;
         this.editData.measureGroup = this.form.group;
+        this.editData.inFilterShow = JSON.stringify(this.form.inFilterShowObj)
         this.editData.measurePath = this.treePath;
       //因时间报错所以注销时间（时间格式为格林威治时间）
 //        this.editData.createTime = new Date(this.editData.createTime);
@@ -290,6 +320,7 @@ export default {
             if (res.state == true) {
                 that.$emit('getAllIndicatrix',that.tableId)
                 that.$emit('getAllColumn',that.tableId)
+                //保存完成之后清除该界面数据
                 that.closeDialog();
             }
             else {
@@ -304,17 +335,27 @@ export default {
     closeDialog() {
         this.$emit('closeAddIndicatrix')
     },
-
-
     /**
      * 设置文件夹的路径以及id和名称
      */
     setFolderIdAndName(treeId, treeName, path, pathName,pbScopeUuids) {
-        this.form.folderName = pathName
+        this.form.folderName = treeName
         this.clickTreeId = treeId
         this.pbScopeUuid = pbScopeUuids
         this.treePath = path
     },
+    clearData(){
+      this.form = {
+          inName: '',
+          tableName: '',
+          colName: '',
+          folderName: '',
+          group: '',
+          inMemo: ''
+      }
+      this.queryRules = {}
+      this.editData = null
+    }
   }
 }
 </script>

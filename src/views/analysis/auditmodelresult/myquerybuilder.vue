@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="kongxi">
     <p style="color: silver; font-size: large">———————————————————————————</p>
     <queryBuilder ref="queryBuilder" v-model="queryJson" :rules="queryRules" />
   </div>
@@ -164,3 +164,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+ .kongxi{
+   overflow-y: auto;
+   overflow-x:hidden;
+   max-height: 60vh;
+ }
+</style>

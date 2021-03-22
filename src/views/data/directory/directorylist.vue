@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div v-loading="loading" class="page-container">
     <div class="filter-container">
       <QueryField
         ref="queryfield"
@@ -9,16 +9,18 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" :disabled="selections.length === 0" title="删除" class="oper-btn delete" @click="delData" />
-        <el-button type="primary" class="oper-btn copy" :disabled="selections.length !== 1" title="复制" @click="copyResource" />
-        <el-button type="primary" class="oper-btn move" title="移动" :disabled="selections.length === 0" @click="movePath" />
-        <el-button type="primary" class="oper-btn rename" title="重命名" :disabled="selections.length !== 1" @click="renameResource" />
-        <el-button type="primary" class="oper-btn add" title="新增表" :disabled="clickData.type == 'table'" @click="add" />
-        <el-button type="primary" class="oper-btn export" title="导入表" :disabled="clickData.type == 'table'" @click="uploadTable" />
-        <el-button type="primary" class="oper-btn add-folder" title="新增文件夹" :disabled="clickData.type == 'table'" @click="createFolder" />
-        <el-button type="primary" class="oper-btn  edit" title="表结构维护" :disabled="selections.length !== 1" @click="update" />
-        <el-button type="primary" class="oper-btn  detail" title="表结构展示" :disabled="selections.length !== 1" @click="showTable" />
-        <el-button type="primary" class="oper-btn search" title="预览" :disabled="infoFlag" @click="preview" />
+        <el-button type="primary" :disabled="selections.length === 0" class="oper-btn delete" @click="delData" />
+        <el-button type="primary" class="oper-btn copy" :disabled="selections.length !== 1" @click="copyResource" />
+        <el-button type="primary" class="oper-btn move-1" :disabled="selections.length === 0" @click="movePath" />
+        <el-button type="primary" class="oper-btn rename" :disabled="selections.length !== 1" @click="renameResource" />
+        <el-button type="primary" class="oper-btn add-2" :disabled="clickData.type == 'table' || (typeof (clickData.extMap.sceneInstUuid) !== 'undefined')" @click="add" />
+        <el-button type="primary" class="oper-btn export" :disabled="clickData.type == 'table'|| (typeof (clickData.extMap.sceneInstUuid) !== 'undefined')" @click="uploadTable" />
+        <el-button type="primary" class="oper-btn add-folder-1" :disabled="clickData.type == 'table'" @click="createFolder" />
+        <el-button type="primary" class="oper-btn  edit" :disabled="selections.length !== 1" @click="update" />
+        <el-button type="primary" class="oper-btn  link-3" :disabled="selections.length !== 1" @click="relationTable" />
+        <el-button type="primary" class="oper-btn  detail" :disabled="selections.length !== 1" @click="showTable" />
+        <el-button type="primary" class="oper-btn search-1" :disabled="infoFlag" @click="preview" />
+        <el-button type="primary" class="oper-btn share-1" :disabled="selections.length === 0" @click="shareTable" />
       </el-col>
     </el-row>
     <el-table
@@ -43,7 +45,7 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getListSelect" />
     <!-- 弹窗 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="folderFormVisible" width="600px">
+    <el-dialog :close-on-click-modal=false :title="textMap[dialogStatus]" :visible.sync="folderFormVisible" width="600px">
       <el-form ref="folderForm" :model="resourceForm" label-width="80px">
         <el-form-item :label="typeLabel" label-width="120px">
           <el-input v-model="resourceForm.resourceName" style="width: 300px" />
@@ -65,10 +67,10 @@
       </span>
     </el-dialog>
     <!-- 弹窗3 -->
-    <el-dialog v-if="uploadVisible" :visible.sync="uploadVisible" width="800px">
+    <el-dialog :close-on-click-modal="false" v-if="uploadVisible" :visible.sync="uploadVisible" width="800px">
       <el-row>
-        <el-col>
-          <directory-file-upload v-if="uploadStep === 1" @fileuploadname="fileuploadname" />
+        <el-col >
+          <directory-file-upload   v-if="uploadStep === 1" @fileuploadname="fileuploadname" />
         </el-col>
       </el-row>
       <el-row>
@@ -87,7 +89,10 @@
           </el-form>
         </el-col>
       </el-row>
-      <el-row>
+      <el-row  v-loading="dialoading"
+               element-loading-text="拼命导入中"
+               element-loading-spinner="el-icon-loading"
+               element-loading-background="rgba(0, 0, 0, 0.8)">
         <el-col>
           <el-table v-if="uploadStep === 2" :data="uploadtempInfo.colMetas" height="600px">
             <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
@@ -107,11 +112,11 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column prop="dataLength" label="数据长度" show-overflow-tooltip>
+           <!-- <el-table-column prop="dataLength" label="数据长度" show-overflow-tooltip>
               <template slot-scope="scope" show-overflow-tooltip>
                 <el-input v-model="scope.row.dataLength" style="width:90%;" />
               </template>
-            </el-table-column>
+            </el-table-column>-->
           </el-table>
         </el-col>
       </el-row>
@@ -125,7 +130,7 @@
     <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="800px">
       <el-row>
         <el-col>
-          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" />
+          <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @table-show="tableshow" />
         </el-col>
       </el-row>
       <span slot="footer">
@@ -133,6 +138,31 @@
       </span>
     </el-dialog>
     <!-- 弹窗5 -->
+    <el-dialog v-if="tableColumnVisible" :visible.sync="tableColumnVisible" lock-scroll width="800px">
+      <el-button></el-button>
+      <el-row>
+        <el-col>
+          <column ref="column" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" @table-show="tableshow" />
+        </el-col>
+      </el-row>
+      <span slot="footer">
+        <el-button @click="tableColumnVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveTableInfo">保存</el-button>
+      </span>
+    </el-dialog>
+    <!-- 弹窗6 -->
+    <el-dialog v-if="tableRelationVisible" fullscreen :visible.sync="tableRelationVisible" width="800px">
+      <el-row>
+        <el-col>
+          <tablerelation ref="tablerelation" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" />
+        </el-col>
+      </el-row>
+      <span slot="footer">
+        <el-button @click="tableRelationVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveTableRelation">保存</el-button>
+      </span>
+    </el-dialog>
+    <!-- 弹窗7 -->
     <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
       <el-row>
         <el-col>
@@ -143,17 +173,43 @@
         <el-button type="primary" @click="previewVisible = false">关闭</el-button>
       </span>
     </el-dialog>
+    <!-- 弹窗7 -->
+    <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
+      <el-row>
+        <el-col>
+          <childTabs ref="childTabs" :pre-value="executeSQLList" use-type="previewTable" />
+        </el-col>
+      </el-row>
+      <span slot="footer">
+        <el-button type="primary" @click="previewVisible = false">关闭</el-button>
+      </span>
+    </el-dialog>
+    <!-- 弹窗8 分享 -->
+    <el-dialog :close-on-click-modal="false" v-if="shareVisible" :visible.sync="shareVisible" width="800px">
+      <el-row>
+        <el-col>
+          <PersonTree ref="personTree" />
+        </el-col>
+      </el-row>
+      <span slot="footer">
+        <el-button @click="shareVisible = false">关闭</el-button>
+        <el-button type="primary" @click="shareTableSave">确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
+import PersonTree from '@/components/publicpersontree/index'
+import column from '@/views/data/table/column'
 import directoryFileUpload from '@/views/data/tableupload'
 import { getSqlType } from '@/api/data/table-info'
 import tabledatatabs from '@/views/data/table/tabledatatabs'
+import tablerelation from '@/views/data/table/tablerelation'
 import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import QueryField from '@/components/Ace/query-field/index'
 import { getArrLength } from '@/utils'
-import { deleteDirectory, copyTable, renameResource, movePath, preview, nextUpload, importTable } from '@/api/data/directory'
+import { deleteDirectory, copyTable, renameResource, movePath, preview, nextUpload, importTable, shareTableSave } from '@/api/data/directory'
 import { saveFolder } from '@/api/data/folder'
 import dataTree from '@/views/data/role-res/data-tree'
 import { mapState } from 'vuex'
@@ -166,9 +222,10 @@ export default {
     })
   },
   // eslint-disable-next-line vue/order-in-components
-  components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs, directoryFileUpload },
+  components: { Pagination, QueryField, dataTree, childTabs, tabledatatabs, directoryFileUpload, column, tablerelation, PersonTree },
   // eslint-disable-next-line vue/require-prop-types
   props: ['dataUserId', 'sceneCode'],
+  // eslint-disable-next-line vue/order-in-components
   data() {
     return {
       saveFlag: true,
@@ -189,6 +246,7 @@ export default {
       tree: null,
       total: 0,
       listLoading: false,
+      loading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
       queryFields: [
         { label: '名称', name: 'label', type: 'text', value: '' }
@@ -236,7 +294,14 @@ export default {
       tabShow: '',
       previewVisible: false,
       tableShowVisible: false,
+      // 列信息弹窗
+      tableColumnVisible: false,
+      // 关联信息弹窗
+      tableRelationVisible: false,
+      // 移动表弹窗
       moveTreeVisible: false,
+      // 选择人员窗口
+      shareVisible: false,
       uploadVisible: false,
       uploadtemp: {
         tbName: '',
@@ -256,14 +321,10 @@ export default {
         copyTable: '复制表',
         createFolder: '新建文件夹'
       },
-      downloadLoading: false
+      downloadLoading: false,
+      dialoading: false
     }
   },
-  // computed: {
-  //   dialogTitle() {
-  //     return (this.selections[0].label == null ? '' : '在<' + this.selections[0].label + '>下') + this.textMap[this.dialogStatus]
-  //   }
-  // },
   created() {
     this.initDirectory()
   },
@@ -279,7 +340,7 @@ export default {
     fileuploadname(data) {
       this.uploadtemp.tableFileName = data
     },
-    formatTableType(row, column) {
+    formatTableType(row) {
       if (row.type === '') {
         return ''
       }
@@ -367,7 +428,6 @@ export default {
             nextUpload(this.uploadtemp).then(res => {
               this.uploadStep = 2
               this.uploadtempInfo = res.data
-              
             })
           })
         }
@@ -375,7 +435,9 @@ export default {
     },
     // 执行create后导入功能
     importTable() {
+      this.dialoading = true
       importTable(this.uploadtempInfo).then(res => {
+        this.dialoading = false;
         this.uploadVisible = false
         if (res.data.resCode === true) {
           var childData = {
@@ -488,7 +550,7 @@ export default {
     // 新增表
     add() {
       this.openType = 'addTable'
-      this.tableShowVisible = true
+      this.tableColumnVisible = true
       this.tabShow = 'column'
       this.tableId = '1'
     },
@@ -502,7 +564,14 @@ export default {
     // 表结构维护
     update() {
       this.openType = 'updateTable'
-      this.tableShowVisible = true
+      this.tableColumnVisible = true
+      this.tabShow = 'column'
+      this.tableId = this.selections[0].id
+    },
+    // 表结构维护
+    relationTable() {
+      this.openType = 'updateTable'
+      this.tableRelationVisible = true
       this.tabShow = 'column'
       this.tableId = this.selections[0].id
     },
@@ -560,8 +629,8 @@ export default {
     },
     // 保存新建文件夹
     createFolderSave() {
-      if (this.currentSceneUuid !== 'auditor') {
-        this.resourceForm.personCode = this.directyDataUserId
+      if (typeof (this.clickData.extMap.sceneInstUuid) !== 'undefined') {
+        this.resourceForm.sceneInstUuid = this.clickData.extMap.sceneInstUuid
       }
       this.resourceForm.parentFolderUuid = this.clickData.id
       this.resourceForm.fullPath = this.clickFullPath.reverse().join('/')
@@ -602,14 +671,76 @@ export default {
     },
     // 预览数据
     preview() {
+      this.loading = true
       preview(this.selections[0]).then(res => {
-        this.executeSQLList = res.data.executeTask.executeSQL
-        debugger
-        this.arrSql = res.data
-        this.previewVisible = true
-        this.$nextTick(() => {
-          this.$refs.childTabs.loadTableData(this.arrSql)
-        })
+        if (res.data.code === 200) {
+          this.executeSQLList = res.data.executeTask.executeSQL
+          this.arrSql = res.data
+          this.previewVisible = true
+          this.$nextTick(() => {
+            this.$refs.childTabs.loadTableData(this.arrSql)
+            this.loading = false
+          })
+        } else {
+          this.loading = false
+          this.$message({ type: 'info', message: res.data.msg })
+        }
+      })
+    },
+    // 分享表
+    shareTable() {
+      var flag = true
+      this.selections.forEach((r, i) => {
+        if (r.type === 'folder') {
+          this.$message({ type: 'info', message: '无法分享文件夹!' })
+          flag = false
+          return
+        }
+      })
+      if (flag) {
+        this.shareVisible = true
+      }
+    },
+    shareTableSave() {
+      // 获取选中的人员
+      // 循环组织对象添加数据
+      var userId = this.$store.getters.personuuid
+      const tableShareRelList = []
+      var verResult = true
+      var selectObj = this.selections
+      const persons = this.$refs.personTree.getSelectValue()
+      for (let i = 0; i < selectObj.length; i++) {
+        for (let j = 0; j < persons.length; j++) {
+          if (persons[j].personuuid === userId) {
+            verResult = false
+            break
+          }
+          console.log(persons)
+          const obj = {
+            tableMetaUuid: selectObj[i].id,
+            seneInstUuid: persons[j].personcode,
+            folderName: persons[j].cnname
+          }
+          tableShareRelList.push(obj)
+        }
+      }
+      if (!verResult) {
+        this.$message({ type: 'info', message: '不能共享给自己!' })
+        return
+      }
+      shareTableSave(tableShareRelList).then(result => {
+        if (result.code === 0) {
+          this.$notify({
+            title: '提示',
+            message: '共享成功',
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+          this.shareVisible = false
+        } else {
+          this.$message({ type: 'error', message: '共享模型失败!' })
+        }
       })
     },
     sortChange(data) {
@@ -648,9 +779,24 @@ export default {
     appendnode(childData, parentNode) {
       this.$emit('append-node', childData, this.clickNode)
     },
+    tableshow(show) {
+      this.tableShowVisible = show
+    },
     getSortClass: function(key) {
       const sort = this.pageQuery.sort
       return sort === `+${key}` ? 'asc' : 'desc'
+    },
+    saveTableInfo() {
+      this.$refs.column.saveTableInfo()
+      this.tableColumnVisible = false
+    },
+    saveRelationInfo() {
+      this.$refs.tablerelation.saveRelationInfo()
+      this.tableRelationVisible = false
+    },
+    saveTableRelation() {
+      this.$refs.tablerelation.saveTableRelation()
+      this.tableRelationVisible = false
     },
     // 将字节数转换成大小
     formatTableSize(limit) {

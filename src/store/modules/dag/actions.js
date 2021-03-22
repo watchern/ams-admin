@@ -1,23 +1,24 @@
 import _ from 'lodash'
-import io from '@/components/etl/io'
+import io from '@ETL/components/etl/io'
 import {
   tasksState
-} from '@/views/etlscheduler/dag/_source/config'
+} from '@ETL/views/etlscheduler/dag/_source/config'
 import {
   save,
   datasourceList,
   getById,
   update,
   findClassesByPackage
-} from '@/api/etlscheduler/processdefinition'
+} from '@ETL/api/etlscheduler/processdefinition'
 import {
   getTaskListByProcessId,
-  getProcessinstanceById
-} from '@/api/etlscheduler/processinstance'
+  getProcessinstanceById,
+  updateProcessInstance
+} from '@ETL/api/etlscheduler/processinstance'
 import {
   resourcesList,
   resourceId
-} from '@/api/etlscheduler/resources'
+} from '@ETL/api/etlscheduler/resources'
 
 export default {
 
@@ -216,7 +217,7 @@ export default {
           // startup parameters
           state.startup = _.assign(state.startup, _.pick(res.data, ['commandType', 'failureStrategy', 'processInstancePriority', 'workerGroup', 'warningType', 'warningGroupId', 'receivers', 'receiversCc']))
           state.startup.commandParam = JSON.parse(res.data.commandParam)
-
+          state.processInstanceDetail = res.data
           resolve(res.data)
         }).catch(e => {
         reject(e)
@@ -354,13 +355,25 @@ export default {
         tenantId: state.tenantId,
         timeout: state.timeout
       }
-      io.post(`projects/${state.projectName}/instance/update`, {
+      // io.post(`projects/${state.projectName}/instance/update`, {
+      //   processInstanceJson: JSON.stringify(data),
+      //   locations: JSON.stringify(state.locations),
+      //   connects: JSON.stringify(state.connects),
+      //   processInstanceId: payload,
+      //   syncDefine: state.syncDefine
+      // }, res => {
+      //   resolve(res)
+      // }).catch(e => {
+      //   reject(e)
+      // })
+      updateProcessInstance({
         processInstanceJson: JSON.stringify(data),
+        name: _.trim(state.name),
         locations: JSON.stringify(state.locations),
         connects: JSON.stringify(state.connects),
-        processInstanceId: payload,
+        processInstanceUuid: payload,
         syncDefine: state.syncDefine
-      }, res => {
+      }).then(res => {
         resolve(res)
       }).catch(e => {
         reject(e)

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-select ref="transRuleUuid" v-model="selectTransId" :disabled="openType === 'showTable'" style="width:90%" filterable placeholder="请选择转码规则" @change="selectChanged">
+    <el-select ref="transRuleUuid" v-model="selectTransId" clearable :disabled="openType === 'showTable'" style="width:90%" filterable placeholder="请选择转码规则" @change="selectChanged">
       <el-option
         v-for="item in transJson"
         :key="item.transRuleUuid"
@@ -8,11 +8,11 @@
         :value="item.transRuleUuid"
       >
         <span v-text="item.ruleName" />
-        <el-button style="float:right" type="primary" size="mini" @click="seleteTransCode(item.transRuleUuid)">查看</el-button>
+        <el-link style="float:right" type="primary" size="mini" @click="seleteTransCode(item.transRuleUuid)">查看</el-link>
       </el-option>
     </el-select>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <div class="detail-form">
+      <div>
         <el-form
           ref="dataForm"
           :model="tempRule"

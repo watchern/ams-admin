@@ -1,141 +1,135 @@
 <template>
     <div style="height: 600px;">
-        <ul ref="myTab" class="nav nav-tabs">
-            <li>
-                <a href="#basic" data-toggle="tab">基本信息</a>
-            </li>
-            <li class="active">
-                <a href="#filter_jsp" data-toggle="tab">条件设置</a>
-            </li>
-            <li>
-                <a href="#column" data-toggle="tab">输出字段设置</a>
-            </li>
-        </ul>
-        <div id="myTabContent" class="tab-content">
-            <div id="basic" class="tab-pane fade">
-                <Basic ref="basicVueRef" />
-            </div>
-            <div id="filter_jsp" class="tab-pane fade in active">
-                <div id="col10" class="col-sm-12" style="position: relative;background-color: #fff">
-                    <div id="myDiagramDiv" ref="myDiagramDiv" class="col-sm-9" style="width:calc(100% - 245px);border: solid 1px #F3F3F3;height:600px;" @mouseover="myDiagramMousemove"></div>
-                    <img v-if="showRight" width="15" height="15" title="画布放大" src="../images/fangda.png" style="z-index:9999;position: relative;top: 10px;right:30px;" @click="amplify">
-                    <img v-if="!showRight" width="15" height="15" title="画布缩小" src="../images/fangda.png" style="z-index:9999;position: relative;right: 0;top: 10px;" @click="reduce">
-                    <div v-if="showRight" style="width: 245px;float: right;">
-                        <div style="padding: 0px 4px; height: 120px;">
-                            <div class="tstext"><span style="font-weight: 800">表连接</span>（显示多个表间的关联关系）</div>
-                            <div id="form" style="background: #F7F7F7;border: 1px solid #F3F3F3;height:90%;overflow-y:auto">
-                                <div v-if="showTableJoin">
-                                    <div class="col-sm-12">
-                                        <input id="MainTable" v-model="mainTableName" name="MainTable" type="text" class="form-control" disabled="disabled">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-sm-6 control-label">关联关系：</label>
-                                        <div class="col-sm-6">
-                                            <el-select v-model="joinType" @change="changeType">
-                                                <el-option v-for="joinTypeObj in joinTypeArr" :key="joinTypeObj.value" :value="joinTypeObj.value" :label="joinTypeObj.name">{{ joinTypeObj.name }}</el-option>
-                                            </el-select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="col-sm-12">
-                                            <input v-model="slaverTableName" type="text" class="form-control" disabled="disabled">
-                                        </div>
-                                    </div>
+        <el-tabs v-model="activeTabName">
+            <el-tab-pane label="基本信息" name="basicInfo">
+                <Basic ref="basicVueRef"/>
+            </el-tab-pane>
+            <el-tab-pane label="条件设置" name="nodeSet">
+                <el-col :span="myDiagramDivWidth">
+                    <div id="myDiagramDiv" ref="myDiagramDiv" style="border:1px solid #F3F3F3;height: 561px;" @mouseover="myDiagramMousemove"></div>
+                    <el-image v-if="showRight" title="画布放大" :src="require('@/api/graphtool/images/icons/fangda.png')" style="width:15px;height:15px;z-index:9999;position: absolute;top: 10px;right:260px;" @click="amplify"></el-image>
+                    <el-image v-if="!showRight" title="画布缩小" :src="require('@/api/graphtool/images/icons/fangda.png')" style="width:15px;height:15px;z-index:9999;position: absolute;top: 10px;right: 20px;" @click="reduce"></el-image>
+                </el-col>
+                <el-col :span="6" v-if="showRight">
+                    <div style="width: 100%;height: 561px;">
+                        <el-collapse v-model="activeCollapseNames">
+                            <el-collapse-item name="tableRelation">
+                                <template slot="title">
+                                    <span style="padding-left: 10px;">表间连接关联关系</span>
+                                </template>
+                                <div v-if="showTableJoin" style="width:100%;height:100%;background: #F7F7F7;border: 1px solid #F3F3F3;overflow-y:auto">
+                                    <el-row>
+                                        <el-input v-model="mainTableName" disabled/>
+                                    </el-row>
+                                    <el-row>
+                                        <div style="width: 50px;text-align: right;line-height: 36px;float: left;">关系：</div>
+                                        <el-select v-model="joinType" @change="changeType" style="width: calc(100% - 54px)">
+                                            <el-option v-for="joinTypeObj in joinTypeArr" :key="joinTypeObj.value" :value="joinTypeObj.value" :label="joinTypeObj.name">{{ joinTypeObj.name }}</el-option>
+                                        </el-select>
+                                    </el-row>
+                                    <el-row>
+                                        <el-input v-model="slaverTableName" disabled/>
+                                    </el-row>
                                 </div>
-                            </div>
-                        </div>
-                        <div style="margin-top:15px;height: 300px;overflow-y: auto;">
-                            <div class="tstext"><span style="font-weight: 800">名词解释</span></div>
-                            <div v-show="showDescription" style="background: #F7F7F7;overflow-y:auto;height:90%;padding:5px;">
-                                <p ref="descriptionP" style="text-indent: 2em;">左连接：选取关联字段将两张表进行关联，左表的所有数据均显示，右表的数据只显示关联字段值相等的数据，若右表关联结果无数据则补空显示（例：详见右上角【帮助】）</p>
-                                <p ref="descriptionP" style="text-indent: 2em;">右连接：选取关联字段将两张表进行关联，右表的所有数据均显示，左表的数据只显示关联字段值相等的数据，若左表关联结果无数据则补空显示（例：详见右上角【帮助】）</p>
-                                <p ref="descriptionP" style="text-indent: 2em;">内连接：选取关联字段将两张表进行关联，仅显示两张表中关联字段值相等的数据（例：详见右上角【帮助】）</p>
-                                <p ref="descriptionP" style="text-indent: 2em;">外连接：选取关联字段将两张表进行关联，显示出左表和右表关联后的所有数据，但去除重复数据，两表中若无关联数据则补空显示（例：详见右上角【帮助】）</p>
-                            </div>
-                        </div>
-                        <div style="height: 140px;">
-                            <div class="tstext"><span style="font-weight: 800">连接条件</span>（只显示左侧选中线的连接条件）</div>
-                            <div class="col-sm-12" style="background: #F7F7F7;overflow:auto;height: 110px;">
-                                <div v-if="showJoinArea" class="form-group">
-                                    <div class="col-sm-12">
-                                        <input v-model="mainPort" type="text" class="form-control" disabled="disabled">
-                                    </div>
-                                </div>
-                                <div v-if="showJoinArea" class="form-group">
-                                    <div class="col-sm-8">
-                                        <el-select v-model="comper" @change="changeCopare">
+                            </el-collapse-item>
+                            <el-collapse-item name="filterRelation">
+                                <template slot="title">
+                                    <span style="padding-left: 10px;">连接条件</span>
+                                </template>
+                                <div style="width:100%;height:100%;background: #F7F7F7;overflow-y:auto;" v-if="showJoinArea">
+                                    <el-row>
+                                        <el-input v-model="mainPort" disabled/>
+                                    </el-row>
+                                    <el-row>
+                                        <div style="width: 50px;text-align: right;line-height: 36px;float:left;">关系：</div>
+                                        <el-select v-model="comper" @change="changeCopare" style="width: calc(100% - 54px)">
                                             <el-option v-for="obj in comperArr" :key="obj.value" :value="obj.value" :label="obj.name">{{ obj.name }}</el-option>
                                         </el-select>
-                                    </div>
+                                    </el-row>
+                                    <el-row>
+                                        <el-input v-model="toPort" disabled/>
+                                    </el-row>
                                 </div>
-                                <div v-if="showJoinArea" class="form-group">
-                                    <div class="col-sm-12">
-                                        <input v-model="toPort" type="text" class="form-control" disabled="disabled">
-                                        <input v-model="from" type="hidden" class="form-control">
-                                        <input v-model="to" type="hidden" class="form-control">
+                            </el-collapse-item>
+                            <el-collapse-item name="nounTranslation">
+                                <template slot="title">
+                                    <span style="padding-left: 10px;">名词解释</span>
+                                </template>
+                                <el-card class="box-card" shadow="never">
+                                    <div style="max-height:120px;background: #F7F7F7;overflow-y:auto;">
+                                        <p style="text-indent: 2em;">{{joinDescription}}</p>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
+                                </el-card>
+                            </el-collapse-item>
+                        </el-collapse>
                     </div>
-                </div>
-                <div id="sql" class="col-sm-12" style="display:none;background: #F7F7F7;height: 40%;overflow:auto"></div>
+                </el-col>
+            </el-tab-pane>
+            <el-tab-pane label="输出字段设置" name="outPutCol">
+                <el-row style="padding-top: 10px;">
+                    <el-col align="right">
+                        <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" tyle="line-height: normal;"/>
+                        <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" title="说明" style="line-height: normal;"/>
+                    </el-col>
+                </el-row>
+                <el-table :data="items" border style="width: 100%;" height="530" ref="outPutTable">
+                    <el-table-column type="index" label="编号" width="60" align="center" :resizable="false"></el-table-column>
+                    <el-table-column label="上一节点名称" width="200" :show-overflow-tooltip="true" prop="rtn" header-align="center" :resizable="false"></el-table-column>
+                    <el-table-column label="字段名称" width="260" :show-overflow-tooltip="true" prop="columnName" header-align="center" :resizable="false"></el-table-column>
+                    <el-table-column label="输出字段名称" width="240" header-align="center" :resizable="false">
+                        <template slot-scope="scope">
+                            <el-input v-model="scope.row.disColumnName"></el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column align="center" width="100" :resizable="false">
+                        <template slot="header" slot-scope="scope">
+                            输出字段<el-checkbox v-model="checkAll" @change="handleCheckAllChange" style="padding-left: 5px;"/>
+                        </template>
+                        <template slot-scope="scope">
+                            <el-checkbox v-model="scope.row.checked" @change="checkBoxChange" />
+                        </template>
+                    </el-table-column>
+                    <el-table-column align="center" label="操作" width="100" :resizable="false">
+                        <template slot-scope="scope">
+                            <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" title="设置" style="line-height: normal;"/>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-tab-pane>
+        </el-tabs>
+        <el-dialog :visible.sync="helpDialogVisible" :append-to-body="true" title="说明" width="400px">
+            <div style="height: 260px;padding: 10px;">
+                <p style="text-indent: 2em">（1）如果修改了【输出字段名称】且存在已配置过或执行过的后续节点，则后续节点关于该字段的配置信息会失效</p>
+                <p style="text-indent: 2em">（2）如果继续使用后续节点，则需重新配置和执行相关节点</p>
+                <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
+                <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
             </div>
-            <div id="column" class="tab-pane fade">
-                <div style="width: 98%;margin: 4px 1%">
-                    <div style="color: red;">
-                        <p>注：（1）如果修改了【输出字段名称】且存在已配置过或执行过的后续节点，则后续节点关于该字段的配置信息会失效</p>
-                        <p style="text-indent: 2em">（2）如果继续使用后续节点，则需重新配置和执行相关节点</p>
-                        <p style="text-indent: 2em">（3）如果修改了【输出字段名称】后并执行了当前节点，则后续节点的执行结果会发生变化</p>
-                        <p style="text-indent: 2em">（4）支持通过拖拽更改输出字段的顺序，同时在结果集中同步展示</p>
-                    </div>
-                    <div id="outPutTable"style="height: 500px;overflow-y: auto;">
-                        <table id="column_config" class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <th width="5%" style="text-align: center">序号</th>
-                                <th width="30%" style="text-align: center">上一节点名称</th>
-                                <th width="25%" style="text-align: center">字段名称</th>
-                                <th width="25%" style="text-align: center">输出字段名称</th>
-                                <th width="15%" style="text-align: center">是否为输出字段
-                                    <el-checkbox v-model="checkAll" @change="handleCheckAllChange" />
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody ref="outputTbody">
-                            <tr v-for="(item,index) in items" ref="colTr" :data-index="index">
-                                <td align="center">{{ index+1 }}</td>
-                                <td>{{ item.rtn }}</td>
-                                <td>{{ item.columnName }}</td>
-                                <td>
-                                    <el-input v-model="item.disColumnName" class="newColumn"></el-input>
-                                </td>
-                                <td class="text-center">
-                                    <el-checkbox :key="item.id" v-model="item.checked" :name="item.attrColumnName" @change="checkBoxChange(index)" />
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        </el-dialog>
+        <el-dialog v-if="customizeColumnDialogVisible" :visible.sync="customizeColumnDialogVisible" :title="customizeColumnTitle" :close-on-press-escape="false" :close-on-click-modal="false" :append-to-body="true" width="1000px">
+            <CustomizeColumn ref="customizeColumn" :columnInfoArr="columnsInfo" :node-is-set="nodeIsSet" :cur-column-info="curColumnInfo" node-type="relation" :node-data-array="curNodeDataArray"/>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="customizeColumnDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="customizeColumnBack()">保存</el-button>
             </div>
-        </div>
+        </el-dialog>
     </div>
 </template>
-
 <script>
-    require('@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/js/go.js')
+    import CustomizeColumn from '@/views/graphtool/tooldic/page/nodeSetting/customizeColumn.vue'
+    require('@/api/graphtool/js/go.js')
     import Basic from '@/views/graphtool/tooldic/page/nodeSetting/basic.vue'
-    import * as relationJs from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/relation/js/relation'
+    import * as relationJs from '@/api/graphtool/js/relation'
     export default {
         name: 'RelationSetting',
-        components: { Basic },
+        components: { Basic, CustomizeColumn },
         props: ['graph'],
         data() {
             return {
+                activeTabName:'nodeSet',
+                myDiagramDivWidth:18,
+                activeCollapseNames:['tableRelation','filterRelation','nounTranslation'],
                 join:[],
                 myDiagram:null,
-                columnsInfoPre: [], // 前置节点的输出列信息集合（只用于有且只有一个前置节点的节点）
                 layeX: -1,
                 layeY: -1,
                 joinShow: false,
@@ -155,24 +149,35 @@
                     { value: '<', name: '小于' },
                     { value: '<=', name: '小于等于' }],
                 mainPort: '',
-                showDescription: true,
                 showRight: true,
                 showTableJoin: false,
-                joinType: 'INNER JOIN',
-                joinTypeArr: [{ value: 'LEFT JOIN', name: '左连接' },
-                    { value: 'RIGHT JOIN', name: '右连接' },
-                    { value: 'INNER JOIN', name: '内连接' },
-                    { value: 'FULL JOIN', name: '外连接' }]
+                joinTypeArr: [{ value: 'LEFT JOIN', name: '左连接', description:'左连接：选取关联字段将两张表进行关联，左表的所有数据均显示，右表的数据只显示关联字段值相等的数据，若右表关联结果无数据则补空显示'},
+                    { value: 'RIGHT JOIN', name: '右连接', description:'选取关联字段将两张表进行关联，右表的所有数据均显示，左表的数据只显示关联字段值相等的数据，若左表关联结果无数据则补空显示'},
+                    { value: 'INNER JOIN', name: '内连接', description:'内连接：选取关联字段将两张表进行关联，仅显示两张表中关联字段值相等的数据'},
+                    { value: 'FULL JOIN', name: '外连接', description:'外连接：选取关联字段将两张表进行关联，显示出左表和右表关联后的所有数据，但去除重复数据，两表中若无关联数据则补空显示'}],
+                joinType: '',
+                joinDescription:'',
+                columnsInfoPre: [], // 前置节点的输出列信息集合（只用于有且只有一个前置节点的节点）
+                curColumnInfo:null,
+                helpDialogVisible:false,
+                customizeColumnDialogVisible:false,
+                customizeColumnTitle:'',
+                customizeColumnType:'',
+                curNodeDataArray:[],
+                nodeIsSet:false,
+                columnsInfo:[]
             }
         },
         mounted() {
             this.init()
+            this.joinType = this.joinTypeArr[2].value
+            this.joinDescription = this.joinTypeArr[2].description
         },
         methods: {
             init() {
                 relationJs.sendVueObj(this)
                 relationJs.init()
-                $(this.$refs.outputTbody).sortable().disableSelection()
+                $(this.$refs.outPutTable.$refs.bodyWrapper.children[0].children[1]).sortable().disableSelection()
             },
             myDiagramMousemove(event) {
                 this.layeX = event.layerX
@@ -198,7 +203,7 @@
             handleCheckAllChange(checked) {
                 Array.from(this.items, (n) => n.checked = checked)
             },
-            checkBoxChange(index) {
+            checkBoxChange() {
                 var chk = 0
                 for (let i = 0; i < this.items.length; i++) {
                     if (this.items[i].checked) {
@@ -253,28 +258,86 @@
                 return verify
             },
             inputVerify() {
+                let diaGramJson = JSON.parse(this.myDiagram.model.toJson())				// 获取图表的json串
+                let linkDataArray = diaGramJson.linkDataArray
+                if (linkDataArray.length === 0) {
+                    this.$message({ type: 'warning', message: '未设置表间的连接条件' })
+                    return false
+                }
+                if (!this.vilidata_simple()) {
+                    return false
+                }
                 return true		// 只是为了全局校验，此节点配置不用单独校验
+            },
+            /**
+             * 自定义列/设置
+             * @param type 打开方式（1、自定义字段，2、设置）
+             * @param curColumnInfo 当前字段的信息
+             */
+            customizeColumn(type,curColumnInfo){
+                this.customizeColumnType = type
+                let diaGramJson = JSON.parse(this.myDiagram.model.toJson())				// 获取图表的json串
+                this.curNodeDataArray = diaGramJson.nodeDataArray		// 获取节点（图）的数组数据
+                if(type === "1"){//自定义字段
+                    this.customizeColumnTitle = '自定义字段'
+                    this.curColumnInfo = null
+                }else{//修改设置
+                    this.customizeColumnTitle = '修改设置'
+                    this.curColumnInfo = curColumnInfo
+                }
+                this.customizeColumnDialogVisible = true
+            },
+            customizeColumnBack(){
+                let returnObj = this.$refs.customizeColumn.saveInfo()
+                if(!returnObj.isError){
+                    this.customizeColumnDialogVisible = false
+                    const columnName = returnObj.columnInfo.columnName
+                    let resourceTableName = ''
+                    let columnInfo = returnObj.columnInfo
+                    let rtn = ''
+                    let checked = true
+                    let id = null
+                    let nodeId = ''
+                    let disColumnName = returnObj.columnInfo.newColumnName
+                    if(this.customizeColumnType === "1"){//自定义字段
+                        id = this.items.length + 1
+                        rtn = '自定义字段'
+                        nodeId = 'customizeColumn'
+                        resourceTableName = 'customizeColumnTempTable'
+                        this.items.push({ id, nodeId, columnName, columnInfo, rtn, disColumnName, checked, resourceTableName })
+                    }else{//修改设置
+                        id = this.curColumnInfo.id
+                        rtn = this.curColumnInfo.rtn
+                        nodeId = this.curColumnInfo.nodeId
+                        resourceTableName = this.curColumnInfo.resourceTableName
+                        let index = this.items.findIndex( item => item.id === id)
+                        if(index > -1){
+                            this.items.splice(index,1,{id, nodeId, columnName, columnInfo, rtn, disColumnName, checked, resourceTableName})
+                        }
+                    }
+                }
             }
         }
     }
 </script>
 <!--引入公共CSS样式-->
-<style scoped src="@/components/ams-bootstrap/css/bootstrap.css"></style>
-<style scoped src="@/components/ams-basic/css/common.css"></style>
 <style scoped type="text/css">
-    .column-has-error{
-        border: 1px solid red;
+    >>> .el-tabs__header {
+        margin: 0;
     }
-    .tstext{
-        padding-left: 5px;
+    >>> .el-card__body {
+        padding: 5px;
     }
-    .table > tbody > tr > td{
-        font-size: 13px;
-        color: #4B4B4B;
-        line-height: 36px;
+    >>> .el-table .cell {
+        padding: 0 !important;
     }
-    .table > thead > tr > th {
-        background-color: #5886B2;
-        color: #ECF0F5;
+    >>> .el-collapse-item__content{
+        padding: 5px 0;
+    }
+    >>> .el-collapse-item__wrap{
+        border-bottom: unset;
+    }
+    .el-row{
+        padding: 5px 0;
     }
 </style>
