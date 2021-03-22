@@ -34,8 +34,8 @@
             <el-tab-pane label="输出字段设置" name="outPutCol">
                 <el-row style="padding-top: 10px;">
                     <el-col align="right">
-                        <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" style="line-height: normal;"/>
-                        <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" style="line-height: normal;"/>
+                        <el-button type="primary" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" style="line-height: normal;"/>
+                        <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" title="说明" style="line-height: normal;"/>
                     </el-col>
                 </el-row>
                 <el-table :data="columnItems" border style="width: 100%;" height="527" ref="outPutTable">
@@ -57,7 +57,7 @@
                     </el-table-column>
                     <el-table-column align="center" label="操作" width="100" :resizable="false">
                         <template slot-scope="scope">
-                            <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" style="line-height: normal;"/>
+                            <el-button type="primary" class="oper-btn setting" @click="customizeColumn('2',scope.row)" title="设置" style="line-height: normal;"/>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -72,7 +72,7 @@
             </div>
         </el-dialog>
         <el-dialog v-if="customizeColumnDialogVisible" :visible.sync="customizeColumnDialogVisible" :title="customizeColumnTitle" :close-on-press-escape="false" :close-on-click-modal="false" :append-to-body="true" width="1000px">
-            <CustomizeColumn ref="customizeColumn" :columnInfoArr="columnsInfoPre" :cur-column-info="curColumnInfo" node-type="groupCount"/>
+            <CustomizeColumn ref="customizeColumn" :columnInfoArr="columnsInfo" :node-is-set="nodeIsSet" :cur-column-info="curColumnInfo" node-type="groupCount"/>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="customizeColumnDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="customizeColumnBack()">保存</el-button>
@@ -92,6 +92,7 @@
             return {
                 items: [], // 存放霍总配置的行号
                 nodeData: null,
+                nodeIsSet:false,
                 columnsInfoPre: [], // 前置节点的输出列信息集合（只用于有且只有一个前置节点的节点）
                 countTrNum: 1,
                 isAllDisabled:false,
@@ -228,11 +229,15 @@
             customizeColumn(type,curColumnInfo){
                 this.customizeColumnType = type
                 if(type === "1"){//自定义字段
+                    if(this.isAllDisabled){//输出咧不可被勾选（即设置了汇总字段）
+                        this.$message({'type':'warning','message':'存在已设置的汇总字段，不可新增自定义字段'})
+                        return
+                    }
                     this.customizeColumnTitle = '自定义字段'
                     this.curColumnInfo = null
                 }else{//修改设置
-                    if(typeof curColumnInfo.sign !== 'undefined' && curColumnInfo.sign !== ''){
-                        this.$message({'type':'warning','message':'汇总字段不可被修改'})
+                    if(this.isAllDisabled){//输出咧不可被勾选（即设置了汇总字段）
+                        this.$message({'type':'warning','message':'存在已设置的汇总字段，不可进行设置操作'})
                         return
                     }
                     this.customizeColumnTitle = '修改设置'
@@ -267,7 +272,6 @@
                         columnInfo.rtn = rtn
                         let index = this.columnItems.findIndex( item => item.id === id)
                         if(index > -1){
-                            this.columnItems.splice(index,1)
                             this.columnItems.splice(index,1,{id, nodeId, columnName, columnInfo, rtn, newColumnName, checked})
                         }
                     }

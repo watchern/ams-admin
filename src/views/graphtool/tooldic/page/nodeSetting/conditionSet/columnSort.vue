@@ -38,10 +38,11 @@
             init() {
                 const graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
-                const columnsInfoPre = this.$parent.$parent.$parent.columnsInfoPre
+                this.curColumnsInfo = this.$parent.$parent.$parent.columnsInfoPre
                 if (this.nodeData.isSet) {// 配置过,字段信息来自本身节点
-                    this.columnData = this.nodeData.setting.columnData
+                    this.curColumnsInfo = this.nodeData.setting.curColumnsInfo
                     this.columnDataValue = this.nodeData.setting.columnDataValue
+                    Array.from(this.curColumnsInfo, item => this.columnData.push({ 'pinyin': item.newColumnName, 'label': item.newColumnName, 'key': item.newColumnName, 'sortType': 'ASC', 'showSort': false}))
                     Array.from(this.columnDataValue, n => {
                         let index = this.columnData.findIndex(item => item.key === n)
                         if (index > -1) {
@@ -59,7 +60,7 @@
                         }
                     })
                 }else{
-                    Array.from(columnsInfoPre, item => this.columnData.push({ 'pinyin': item.newColumnName, 'label': item.newColumnName, 'key': item.newColumnName, 'sortType': 'ASC', 'showSort': false}))
+                    Array.from(this.curColumnsInfo, item => this.columnData.push({ 'pinyin': item.newColumnName, 'label': item.newColumnName, 'key': item.newColumnName, 'sortType': 'ASC', 'showSort': false}))
                 }
             },
             changeSortData(value, direction, movedKeys){
@@ -95,7 +96,7 @@
                     }
                 })
                 this.nodeData.setting.columnDataValue = this.columnDataValue
-                this.nodeData.setting.columnData = this.columnData
+                this.nodeData.setting.curColumnsInfo = this.curColumnsInfo
                 this.nodeData.setting.rightData = rightData
             },
             inputVerify() {

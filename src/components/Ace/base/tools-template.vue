@@ -113,21 +113,33 @@
     <div class="tools-right" @click="callback">
     </div>
     <div class="tools-center" v-show="dialogVisible">
-      <el-collapse class="tools-menu-small">
-        <el-collapse-item title="审计作业">
+      <el-collapse class="tools-menu-small" v-if="showmenuGroup">
+        <el-collapse-item :title="menugroupId[0].name">
           <el-tree
-            :data="menugroup['402883817586fc2a017586fd9e1a0001']"
+            :data="menugroup[0]"
             show-checkbox
             node-key="id"
-            ref="tree1"
+            ref="tree0"
             highlight-current
             :check-strictly="defaultProps.checkStrictly"
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
-        <el-collapse-item title="审计分析">
+        <el-collapse-item :title="menugroupId[1].name">
           <el-tree
-            :data="menugroup['4028838175880ded01758835b393006b']"
+            :data="menugroup[1]"
+            show-checkbox
+            node-key="id"
+            ref="tree1"
+            highlight-current
+            @check=""
+            :check-strictly="defaultProps.checkStrictly"
+            :props="defaultProps">
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item :title="menugroupId[2].name">
+          <el-tree
+            :data="menugroup[2]"
             show-checkbox
             node-key="id"
             ref="tree2"
@@ -136,25 +148,13 @@
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
-        <el-collapse-item title="审计资源">
+        <el-collapse-item :title="menugroupId[3].name">
           <el-tree
-            :data="menugroup['4028838175880ded01758816610b001a']"
+            :data="menugroup[3]"
             show-checkbox
             node-key="id"
             ref="tree3"
             highlight-current
-            :check-strictly="defaultProps.checkStrictly"
-            :props="defaultProps">
-          </el-tree>
-        </el-collapse-item>
-        <el-collapse-item title="系统配置">
-          <el-tree
-            :data="menugroup['4028838175880ded01758828366f0046']"
-            show-checkbox
-            node-key="id"
-            ref="tree4"
-            highlight-current
-            @check=""
             :check-strictly="defaultProps.checkStrictly"
             :props="defaultProps">
           </el-tree>
@@ -177,6 +177,8 @@ export default {
       list: {},
       applications: [],
       menugroup: [],
+      menugroupId: [],
+      showmenuGroup: false,
       dialogVisible: false,
       isShowInfoBox: true,
       otherToolsList: [
@@ -491,7 +493,7 @@ export default {
       latelyFastList:[],
       defaultProps: {
         children: 'children',
-        label: 'label',
+        label: 'name',
         disabled: this.ifFather,
         checkStrictly: true
       },
@@ -540,37 +542,11 @@ export default {
     for(let i =0; i<this.latelyInImgList.length; i++){
       this.latelyBdInList.push({image:this.latelyInImgList[i].image,bg:this.latelyBackList[i].bg})
     }
-    getUserRes()
-      .then(response => {
-        response.data.application.forEach((app, index) => {
-          // 设置左侧应用栏数据
-          this.applications.push({
-            name: app.name,
-            id: app.id
-          })
-        })
-        response.data.menugroup.forEach(grp => {
-          const children = []
-          grp.menuList.forEach(menu => {
-            children.push({
-              label: menu.name,
-              id: menu.id,
-              path: this.getCleanSrc(menu.src)
-            })
-          })
-          if (!this.menugroup[grp.appuuid]) {
-            this.menugroup[grp.appuuid] = []
-          }
-          this.menugroup[grp.appuuid].push({
-            label: grp.name,
-            path: grp.navurl,
-            children: children
-          })
-        })
-      })
-      .catch(error => {
-        console.error(error)
-      })
+    let listTree = JSON.parse(sessionStorage.getItem('shenjiMenuTree'))
+    this.menugroup = listTree.second
+    this.menugroupId = listTree.first
+    this.showmenuGroup = true
+    console.log(this.menugroupId)
     getQuickMenuList().then(res => {
       // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
       for (let i=0; i<res.data.length; i++) {
@@ -673,34 +649,35 @@ export default {
     },
     getCheckedNodes() {
       let allThing = []
+      for (let i=0;i<this.$refs.tree0.getCheckedNodes().length;i++) {
+        allThing.push({
+          quickMenuId: this.$refs.tree0.getCheckedNodes()[i].id,
+          quickMenuName: this.$refs.tree0.getCheckedNodes()[i].name,
+          quickMenuPath: this.$refs.tree0.getCheckedNodes()[i].path
+        })
+      }
       for (let i=0;i<this.$refs.tree1.getCheckedNodes().length;i++) {
         allThing.push({
           quickMenuId: this.$refs.tree1.getCheckedNodes()[i].id,
-          quickMenuName: this.$refs.tree1.getCheckedNodes()[i].label,
+          quickMenuName: this.$refs.tree1.getCheckedNodes()[i].name,
           quickMenuPath: this.$refs.tree1.getCheckedNodes()[i].path
         })
       }
       for (let i=0;i<this.$refs.tree2.getCheckedNodes().length;i++) {
         allThing.push({
           quickMenuId: this.$refs.tree2.getCheckedNodes()[i].id,
-          quickMenuName: this.$refs.tree2.getCheckedNodes()[i].label,
+          quickMenuName: this.$refs.tree2.getCheckedNodes()[i].name,
           quickMenuPath: this.$refs.tree2.getCheckedNodes()[i].path
         })
       }
       for (let i=0;i<this.$refs.tree3.getCheckedNodes().length;i++) {
         allThing.push({
           quickMenuId: this.$refs.tree3.getCheckedNodes()[i].id,
-          quickMenuName: this.$refs.tree3.getCheckedNodes()[i].label,
+          quickMenuName: this.$refs.tree3.getCheckedNodes()[i].name,
           quickMenuPath: this.$refs.tree3.getCheckedNodes()[i].path
         })
       }
-      for (let i=0;i<this.$refs.tree4.getCheckedNodes().length;i++) {
-        allThing.push({
-          quickMenuId: this.$refs.tree4.getCheckedNodes()[i].id,
-          quickMenuName: this.$refs.tree4.getCheckedNodes()[i].label,
-          quickMenuPath: this.$refs.tree4.getCheckedNodes()[i].path
-        })
-      }
+      console.log(allThing)
       if (allThing.length > 4) {
         this.$message.error('自定义快捷菜单不能超过四个！');
       } else {

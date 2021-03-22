@@ -108,7 +108,7 @@ export function rootDataRefresh(treeNode) {
         url = contextPathAuditAnalysis + '/sqlEditor/getBusinessTableSingle'
         param.id = curNode.id
     }
-    var loading = $('#ztree_datasource').mLoading({ 'text': '', 'hasCancel': false })
+    var loading = $(graphIndexVue.$refs.ztree_datasource_ref).mLoading({ 'text': '', 'hasCancel': false })
     $.post(url, param, function(e) {
         if (e.isError) {
             loading.destroy()

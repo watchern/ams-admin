@@ -66,7 +66,20 @@ service.interceptors.response.use(
           })
         })
       }
-      return Promise.reject(new Error(res.msg || res || 'Error'))
+    //code==1993为biz
+      if(res.code == 1993){
+        Message({
+          dangerouslyUseHTMLString: true,
+          message: `<div style="font-weight: bold;">${res.title}</div><div>${res.msg}</div>`,
+          type: 'error',
+          duration: 50 * 1000,
+          showClose: true,
+          offset: 100
+        })
+        return Promise.reject()
+      }else{
+        return Promise.reject(new Error(res.msg || res || 'Error'))
+      }
     } else {
       return res
     }

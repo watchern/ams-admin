@@ -65,8 +65,8 @@
                             if (filter_columnsInfoPre[j].isOutputColumn) {
                                 filter_columnsInfoPre[j].rtn = nodeName
                                 filter_columnsInfoPre[j].resourceTableName = resourceTableName
-                                filter_columnsInfoPre[j].nodeId = parent_node.nodeInfo.nodeId
-                                filter_columnsInfoPre[j].nullNodeId = parentIds[i]
+                                filter_columnsInfoPre[j].nodeId = parent_node.nodeInfo.nodeId//操作节点ID或源表节点ID
+                                filter_columnsInfoPre[j].nullNodeId = parentIds[i]//结果表节点或源表节点ID
                                 columnsInfoPre.push(filter_columnsInfoPre[j])
                             }
                         }

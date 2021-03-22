@@ -6,14 +6,14 @@ const baseURL = '/data'
 const controller2 = 'tableMeta'
 
 /* 元数据操作*/
-export function listUnCached(level, schemaName, tableName) {
+export function listUnCached(requestType, pid, tableName) {
   return request({
     baseURL: baseURL,
     url: `/${controller2}/listUnCached`,
     method: 'get',
     params: {
-      level: level,
-      schemaName: schemaName,
+      requestType: requestType,
+      pid: pid,
       tableName: tableName
     }
   })

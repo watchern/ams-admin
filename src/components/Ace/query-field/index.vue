@@ -1,5 +1,5 @@
 <template>
-  <div class="query-field">
+  <div class="query-field" :style="{position: componentMisalignment?'relative':'absolute'}">
     <el-form :inline="true" :model="query" label-position="bottom">
       <div class="switch-btn">
         <img :src="this.switchImg" @click="onSwitchWith">
@@ -63,7 +63,7 @@ export default {
       searchBar: '0',
       switchImg: '',
       searchFor: require('../../Ace/query-field/搜索.png'),
-      resetFor: require('../../Ace/query-field/重置.png')
+      resetFor: require('../../Ace/query-field/重置.png'),
       /*      inquire:[
         {
           text: 'test',
@@ -73,7 +73,10 @@ export default {
           select:'002002001'
         }
       ],*/
-
+      // 监听浏览器宽度
+      screenWidth: document.body.clientWidth,
+      // 是否需要错行显示
+      componentMisalignment: false
     }
   },
   computed: {
@@ -94,6 +97,22 @@ export default {
       handler(o) {
         this.setData(o)
       }
+    },
+    screenWidth:{
+      handler(newVal,oldVal){
+        // 为了避免频繁触发resize函数导致页面卡顿，使用定时器
+        if(!this.timer){
+          // 一旦监听到的screenWidth值改变，就将其重新赋给data里的screenWidth
+          this.screenWidth = newVal;
+          this.timer = true;
+          let that = this;
+          setTimeout(function(){
+            that.timer = false;
+            that.contentWidthChange();//执行自己的逻辑
+          },400)
+        }
+      },
+      immediate:true,
     }
   },
   created() {
@@ -101,6 +120,13 @@ export default {
   },
   mounted() {
     this.cSearch()
+    let that = this;
+    window.addEventListener("resize", function() {
+      return (() => {
+        window.screenWidth= document.body.clientWidth;
+        that.screenWidth= window.screenWidth;
+      })();
+    })
   },
   methods: {
     getData() {
@@ -198,6 +224,40 @@ export default {
         this.searchBar = localStorage.getItem(urls)
       }
       this.searchBar === '0' ? this.switchImg = require('../../Ace/query-field/filter.png') : this.switchImg = require('../../Ace/query-field/filter-in.png')
+    },
+    contentWidthChange() {
+      // 获取搜索框数量
+      let widthCount = 0
+      for (let i=0;i<this.formData.length;i++) {
+        if(this.formData[i].type === 'timePeriod'){
+          widthCount += 2
+        } else {
+          widthCount += 1
+        }
+      }
+      // 判断应该减少宽度的情况
+      if (this.screenWidth < 1920 && widthCount >= 4) {
+        // 如果减少宽度仍旧不够 则放开限制 自动换行
+        if (this.screenWidth >= 1400 && this.screenWidth< 1920) {
+          let inPutWords = (30 * (1920 - this.screenWidth) / 520).toFixed(1)
+          this.textWidth = 163 - inPutWords
+          this.selectWidth = 163 - inPutWords
+          let inPutTimes = (85 * (1920 - this.screenWidth) / 520).toFixed(1)
+          this.timePeriodWidth = 220 - inPutTimes
+          this.componentMisalignment = false
+        } else {
+          this.textWidth = 130
+          this.selectWidth = 130
+          this.timePeriodWidth = 135
+          this.componentMisalignment = true
+        }
+      } else {
+        // 宽度足够则恢复原设定
+        this.textWidth = 163
+        this.selectWidth = 163
+        this.timePeriodWidth = 220
+        this.componentMisalignment = false
+      }
     }
   }
 
@@ -206,7 +266,6 @@ export default {
 <style lang="scss" scoped>
   .query-field{
     height: 45px;
-    position: absolute;
     z-index:500;
   }
   /*.el-form--inline .el-form-item {*/
