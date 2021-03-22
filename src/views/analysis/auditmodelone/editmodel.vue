@@ -1434,6 +1434,7 @@ export default {
   position: relative;
   animation: modelInfo 0.5s forwards;
   right: 60px;
+  box-shadow: -15px 0 15px 0 #3f444d12;
 }
 
 @keyframes modelInfo {
