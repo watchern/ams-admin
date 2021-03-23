@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // import { asyncRoutes, constantRoutes } from '@/router'
+=======
+import { asyncRoutes, constantRoutes } from '@/router'
+>>>>>>> f50f6d123e4736d2ced8b9459fadb87b9ff7a95d
 import { getUserRes } from '@/api/user'
 /**
  * Use meta.role to determine if the current user has permission

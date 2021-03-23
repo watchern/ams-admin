@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import {
 //   monitorList,
 //   workerList,
@@ -5,6 +6,15 @@
 //   getDatabase
 // // } from '@ETL/api/etlscheduler/monitor'
 // } from '@ETL/api/etlscheduler/monitor'
+=======
+import {
+  monitorList,
+  workerList,
+  zookeeperList,
+  getDatabase
+// } from '@ETL/api/etlscheduler/monitor'
+} from '@ETL/api/etlscheduler/monitor'
+>>>>>>> f50f6d123e4736d2ced8b9459fadb87b9ff7a95d
 export default {
   getMasterData({ state }, payload) {
     return new Promise((resolve, reject) => {

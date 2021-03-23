@@ -1,6 +1,10 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+<<<<<<< HEAD
 // import router, { resetRouter } from '@/router'
+=======
+import router, { resetRouter } from '@/router'
+>>>>>>> f50f6d123e4736d2ced8b9459fadb87b9ff7a95d
 import { onAccessSystem } from '@/utils/permission'
 import { cacheDict } from '@/api/base/sys-dict'
 import { getAllScene, getSceneInst } from '@/api/data/scene'

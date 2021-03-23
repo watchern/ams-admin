@@ -1,5 +1,9 @@
 import Cookies from 'js-cookie'
+<<<<<<< HEAD
 import { getLanguage } from '../../lang/index'
+=======
+import { getLanguage } from '@/lang/index'
+>>>>>>> f50f6d123e4736d2ced8b9459fadb87b9ff7a95d
 
 const state = {
   sidebar: {
