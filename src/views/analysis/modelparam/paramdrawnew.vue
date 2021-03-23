@@ -12,7 +12,7 @@
       <el-col :span="15">
         <div ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title"></div>
         <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam"></el-input>
-        <el-date-picker ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.dataDefaultVal" style="width: 98%;"></el-date-picker>
+        <el-date-picker ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.dataDefaultVal" style="width: 98%;" value-format="yyyy-MM-dd"></el-date-picker>
         <div ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title"></div>
       </el-col>
       <el-col :span="2" v-show="paramInfo.allowedNull">

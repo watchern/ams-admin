@@ -3,16 +3,16 @@
         <el-collapse accordion v-model="activeName">
             <el-collapse-item v-for="(nodeParamInfo,index) in nodeParamInfoArr" :key="nodeParamInfo.nodeId" :title="nodeParamInfo.nodeName" :name="nodeParamInfo.curInd" :index="index" ref="nodeParam">
                 <div style="min-height: 290px;overflow-y: auto;" >
-                    <el-row v-for="(paramInfo,ind) in nodeParamInfo.paramInfoArr" :key="ind">
-                        <el-col :span="7" style="line-height:36px;padding-right: 10px;text-align: right;">
-                            <el-tooltip :content="paramInfo.description" placement="bottom">
+                    <el-row v-for="(paramInfo,ind) in nodeParamInfo.paramInfoArr" :key="ind" style="padding:5px 0;">
+                        <el-col :span="7" style="line-height:36px;padding-right: 10px;text-align: right;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
+                            <el-tooltip :content="getContent(paramInfo)" placement="bottom">
                                 <label>{{paramInfo.paramName}}</label>
                             </el-tooltip>
                         </el-col>
                         <el-col :span="15">
                             <div ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title" :nodeId="nodeParamInfo.nodeId" class="xm-select-demo"></div>
                             <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.value" class="textParam"></el-input>
-                            <el-date-picker ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.value" style="width: 100%;"></el-date-picker>
+                            <el-date-picker ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.value" style="width: 100%;" value-format="yyyy-MM-dd"></el-date-picker>
                             <div ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title" :nodeId="nodeParamInfo.nodeId" class="xm-select-demo"></div>
                         </el-col>
                         <el-col :span="2" v-show="paramInfo.allowedNull">
@@ -843,6 +843,13 @@
                     }
                 }
                 return returnObj
+            },
+            /**
+             * 获取参数的全部title信息
+             * @param obj
+             */
+            getContent(obj){
+                return `${obj.paramName}【${obj.description}】`
             }
         }
     }

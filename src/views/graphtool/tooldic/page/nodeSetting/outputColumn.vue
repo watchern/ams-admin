@@ -2,7 +2,7 @@
     <div style="width: 100%;">
         <el-row style="padding-top: 10px;">
             <el-col align="right">
-                <el-button type="primary" v-show="nodeData.nodeInfo.optType !== 'union' && nodeData.nodeInfo.optType !== 'delRepeat'" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" style="line-height: normal;"/>
+                <el-button type="primary" v-show="nodeData != null && nodeData.nodeInfo.optType !== 'union' && nodeData.nodeInfo.optType !== 'delRepeat'" class="oper-btn customfield" @click="customizeColumn('1')" title="自定义字段" style="line-height: normal;"/>
                 <el-button type="primary" class="oper-btn help" @click="helpDialogVisible = true" title="说明" style="line-height: normal;"/>
             </el-col>
         </el-row>
