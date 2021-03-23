@@ -12,7 +12,7 @@
             <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2"
                    v-if="state.id==graphEditorStr"></graph>
           </div>
-          <div class="modelInfoClass" v-show="modelInfoDraw" style="width: 26%;position:absolute;height: calc(100% - 63px);">
+          <div class="modelInfoClass" v-show="modelInfoDraw" style="position:absolute;height: calc(100% - 63px);">
             <div ref="basicInfo" class="detail-form">
               <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules" :disabled="isBanEdit">
                 <el-row>
@@ -86,7 +86,7 @@
               </el-form>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="useParamDraw" style="width: 50%;position:absolute;height: calc(100% - 63px);">
+          <div class="modelInfoClass" v-show="useParamDraw" style="position:absolute;height: calc(100% - 63px);">
             <div ref="paramDefaultValue" class="default-value">
               <div style="font-size: 20px">
                 模型参数
@@ -98,8 +98,8 @@
               </div>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="resultConfigDraw" style="width: 50%;position:absolute;height: calc(100% - 63px);">
-            <el-tabs v-model="activeName" :stretch="true" style="width: 92%">
+          <div class="modelInfoClass" v-show="resultConfigDraw" style="position:absolute;height: calc(100% - 63px);">
+            <el-tabs v-model="activeName" :stretch="true">
               <el-tab-pane label="模型结果" name="first"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" ref="modelResultOutputCol" class="default-value">
                 <div style="font-size: 20px">
                   模型结果
@@ -114,26 +114,28 @@
                         <SelectTransCode ref="SelectTransCode" :transuuid.sync="scope.row.dataCoding"/>
                       </template>
                     </el-table-column>
-                    <el-table-column prop="columnName" label="是否显示" width="80">
+                    <el-table-column prop="columnName" label="显示列" align="center" width="80">
                       <template slot-scope="scope">
-                        <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1" :disabled="isBanEdit">
-                          <el-option label="是" :value="1"/>
-                          <el-option label="否" :value="0"/>
-                        </el-select>
+<!--                        <el-select v-model="scope.row.isShow" placeholder="是否显示" value="1" :disabled="isBanEdit">-->
+<!--                          <el-option label="是" :value="1"/>-->
+<!--                          <el-option la bel="否" :value="0"/>-->
+<!--                        </el-select>-->
+                        <el-checkbox v-model="scope.row.isShow" v-if="scope.row.isShow === 1 || scope.row.isShow == undefined" :checked=true true-label="1" false-label="0" :disabled="isBanEdit"></el-checkbox>
+                        <el-checkbox v-model="scope.row.isShow" v-else :checked=false true-label="1" false-label="0" :value="scope.row.isShow" :disabled="isBanEdit"></el-checkbox>
                       </template>
                     </el-table-column>
-                    <el-table-column prop="columnName" label="对应业务字段" width="180">
-                      <template slot-scope="scope">
-                        <el-select v-model="scope.row.businessFieldUuid" value="-1" :disabled="isBanEdit">
-                          <el-option
-                            v-for="state in businessColumnSelect"
-                            :key="state.attrCode"
-                            :value="state.attrCode"
-                            :label="state.attrName"
-                          />
-                        </el-select>
-                      </template>
-                    </el-table-column>
+<!--                    <el-table-column prop="columnName" label="对应业务字段" width="180">-->
+<!--                      <template slot-scope="scope">-->
+<!--                        <el-select v-model="scope.row.businessFieldUuid" value="-1" :disabled="isBanEdit">-->
+<!--                          <el-option-->
+<!--                            v-for="state in businessColumnSelect"-->
+<!--                            :key="state.attrCode"-->
+<!--                            :value="state.attrCode"-->
+<!--                            :label="state.attrName"-->
+<!--                          />-->
+<!--                        </el-select>-->
+<!--                      </template>-->
+<!--                    </el-table-column>-->
                     <el-table-column prop="columnName" label="别名" width="180">
                       <template slot-scope="scope">
                         <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" :disabled="isBanEdit"/>
@@ -626,6 +628,8 @@ export default {
     },
     clickResultConfig(){
       if (this.modifying == true && this.resultConfigDraw == true){
+        console.log('111')
+        console.log(this.columnData)
         this.modifying = false
         this.resultConfigDraw = false
         this.changeBtn.three = false
@@ -1274,7 +1278,7 @@ export default {
       }
       //}
     }
-  }
+  },
 }
 </script>
 <style scoped>
@@ -1434,11 +1438,12 @@ export default {
   position: relative;
   animation: modelInfo 0.5s forwards;
   right: 60px;
+  box-shadow: -15px 0 15px 0 #3f444d12;
 }
 
 @keyframes modelInfo {
   0%{width: 0%;}
-  100%{width: 50%}
+  100%{width: 43%}
 }
 .sqlEditorWidth{
   float: left;

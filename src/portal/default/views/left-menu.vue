@@ -158,47 +158,14 @@
     </transition>
     <div class="page-left" v-if="showHelpWidth">
       <el-collapse class="tools-menu-small" v-model="activeName" accordion>
-        <el-collapse-item title="审计作业" name="1">
+        <el-collapse-item v-for="(item,index) in moremenugroupId" :title="item.name" :name="index">
           <el-tree
-            :data="moremenugroup['402883817586fc2a017586fd9e1a0001']"
+            :data="moremenugroup[index]"
             node-key="id"
             @node-click="handleNodeClick"
             ref="tree"
             highlight-current
-            v-if="activeName === '1'"
-            :props="defaultProps">
-          </el-tree>
-        </el-collapse-item>
-        <el-collapse-item title="审计分析" name="2">
-          <el-tree
-            :data="moremenugroup['4028838175880ded01758835b393006b']"
-            node-key="id"
-            @node-click="handleNodeClick"
-            ref="tree"
-            highlight-current
-            v-if="activeName === '2'"
-            :props="defaultProps">
-          </el-tree>
-        </el-collapse-item>
-        <el-collapse-item title="审计资源" name="3">
-          <el-tree
-            :data="moremenugroup['4028838175880ded01758816610b001a']"
-            node-key="id"
-            @node-click="handleNodeClick"
-            ref="tree"
-            highlight-current
-            v-if="activeName === '3'"
-            :props="defaultProps">
-          </el-tree>
-        </el-collapse-item>
-        <el-collapse-item title="系统配置" name="4">
-          <el-tree
-            :data="moremenugroup['4028838175880ded01758828366f0046']"
-            node-key="id"
-            @node-click="handleNodeClick"
-            ref="tree"
-            highlight-current
-            v-if="activeName === '4'"
+            v-if="activeName === index"
             :props="defaultProps">
           </el-tree>
         </el-collapse-item>
@@ -233,6 +200,7 @@ export default {
       nowAppName: '',
       menugroup: {},
       moremenugroup: [],
+      moremenugroupId: [],
       defaultProps: {
         children: 'children',
         label: 'name'
@@ -338,8 +306,13 @@ export default {
             path: grp.navurl,
             children: menuList
           })
-          this.moremenugroup = this.menugroup
         })
+        let sSTree = []
+        for(let i=0;i<this.applications.length;i++) {
+          sSTree.push(this.menugroup[this.applications[i].id])
+        }
+        let sSLTree = {first: this.applications, second: sSTree}
+        sessionStorage.setItem('shenjiMenuTree', JSON.stringify(sSLTree))
         var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
         if (sysDict == null) {
           cacheDict().then(resp => {
@@ -360,6 +333,9 @@ export default {
         this.isThereReminder = true
       }
     })
+    let listTree = JSON.parse(sessionStorage.getItem('shenjiMenuTree'))
+    this.moremenugroup = listTree.second
+    this.moremenugroupId = listTree.first
   },
   methods: {
     init() {

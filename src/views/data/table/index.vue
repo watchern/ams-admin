@@ -60,11 +60,15 @@
         <tabledatatabs v-if="divInfo" ref="tabledatatabs" open-type="tableRegister" :table-id="tableId" :tab-show.sync="tabShow" />
       </el-col>
     </el-row>
-    <el-dialog :title="'选择注册表'" :visible.sync="registTableFlag" width="600px">
-      <el-input
+    <el-dialog :close-on-click-modal=false
+               :default-expand-all=true :title="'选择注册表'" :visible.sync="registTableFlag" width="600px">
+      <el-input style="width: 70%"
         v-model="filterText1"
-        placeholder="输入关键字进行过滤"
+        placeholder="输入想要查询的表名称（模糊搜索）"
       />
+      <el-button @click="getTables">
+        搜索
+      </el-button>
       <!--<el-select defaultFirstOption="true" @change="handleSelectChange" :value="selectValue">
           <el-option label="显示所有" value="all"></el-option>
           <el-option label="只显示未注册" value="noPart"></el-option>
@@ -75,9 +79,7 @@
           ref="tree1"
           v-loading="treeLoading"
           :props="props"
-          :load="loadNode1"
-          lazy
-          :filter-node-method="filterNode"
+          :data="tableData"
           class="filter-tree"
           show-checkbox
         >
@@ -90,7 +92,7 @@
         </MyElTree>
       </div>
       <span slot="footer">
-        <el-button @click="folderFormVisible = false">取消</el-button>
+        <el-button @click="registTableFlag = false">取消</el-button>
         <el-button type="primary" @click="flagSelectTable">保存</el-button>
       </span>
     </el-dialog>
@@ -128,7 +130,8 @@ export default {
       fromData: [],
       props: {
         label: 'label',
-        isLeaf: 'leaf'
+        isLeaf: 'leaf',
+        children: 'children'
       },
       folderForm: {
         folderUuid: null,
@@ -146,7 +149,8 @@ export default {
         create: '添加文件夹'
       },
       selectValue: 1,
-      treeLoading: false
+      treeLoading: false,
+      tableData: []
     }
   },
   computed: {
@@ -165,9 +169,9 @@ export default {
       this.$refs.tree1.filter(val)
       // eslint-disable-next-line indent
       },
-    filterText2(val) {
+    /*filterText2(val) {
       this.$refs.tree2.filter(val)
-    }
+    }*/
   },
   created() {
   },
@@ -176,26 +180,41 @@ export default {
       if (!value) return true
       return data.label.indexOf(value) !== -1
     },
-    loadNode1(node, resolve) {
+    /*loadNode1(node, resolve) {
+      debugger;
       if (node.level <= 3) {
         var schemaName = ''
         var tableName = ''
         if (node.level === 1) {
-          schemaName = node.data.id
+          //schemaName = node.data.id
+          resolve(this.tableData)
         } else if (node.level === 2) {
           var nodePath = this.$refs.tree2.getNodePath(node)
           schemaName = nodePath[1].id
           tableName = node.data.label
         }
         console.log(schemaName + ' ' + tableName)
-        this.treeLoading = true
-        listUnCached(node.level, schemaName, tableName).then(resp => {
-          this.treeLoading = false
-          resolve(resp.data)
-        })
+        if(node.level !== 1){
+          this.treeLoading = true
+          listUnCached(node.level, schemaName, tableName).then(resp => {
+            if(node.level === 0){
+              this.currentUser = resp.data[0].id;  //获取用户
+            }
+            this.treeLoading = false
+            resolve(resp.data)
+          })
+        }
+
       } else {
         resolve([])
       }
+    },*/
+    getTables(){
+      this.treeLoading = true;
+      listUnCached('table', '', this.filterText1==null?"":this.filterText1).then(resp => {
+        this.treeLoading = false
+        this.tableData = resp.data;
+      })
     },
     loadNode2(node, resolve) {
       if (!node.data) {
