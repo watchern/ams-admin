@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import request from '../../utils/request'
-=======
-import request from '@/utils/request'
->>>>>>> f50f6d123e4736d2ced8b9459fadb87b9ff7a95d
 const baseURL = '/base'
 
 /**
@@ -22,15 +18,9 @@ export function getByMenuId(id) {
 
 /**
  * 保存
-<<<<<<< HEAD
  * @param data
  * @returns {返回查询后的数据}
  *
-=======
- * @param data 
- * @returns {返回查询后的数据}
- * 
->>>>>>> f50f6d123e4736d2ced8b9459fadb87b9ff7a95d
  */
 export function saveHelpDocument(data) {
   return request({
@@ -45,11 +35,7 @@ export function saveHelpDocument(data) {
 
 /**
  * 修改
-<<<<<<< HEAD
  * @param data
-=======
- * @param data 
->>>>>>> f50f6d123e4736d2ced8b9459fadb87b9ff7a95d
  * @returns {返回查询后的数据}
  */
 export function updateHelpDocument(data) {

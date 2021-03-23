@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // import _ from 'lodash'
 // import io from '@ETL/components/etl/io'
 // import {
@@ -20,29 +19,6 @@
 //   resourcesList,
 //   resourceId
 // } from '@ETL/api/etlscheduler/resources'
-=======
-import _ from 'lodash'
-import io from '@ETL/components/etl/io'
-import {
-  tasksState
-} from '@ETL/views/etlscheduler/dag/_source/config'
-import {
-  save,
-  datasourceList,
-  getById,
-  update,
-  findClassesByPackage
-} from '@ETL/api/etlscheduler/processdefinition'
-import {
-  getTaskListByProcessId,
-  getProcessinstanceById,
-  updateProcessInstance
-} from '@ETL/api/etlscheduler/processinstance'
-import {
-  resourcesList,
-  resourceId
-} from '@ETL/api/etlscheduler/resources'
->>>>>>> f50f6d123e4736d2ced8b9459fadb87b9ff7a95d
 
 export default {
 

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // import io from '@ETL/components/etl/io'
-=======
-import io from '@ETL/components/etl/io'
->>>>>>> f50f6d123e4736d2ced8b9459fadb87b9ff7a95d
 
 export default {
   /**

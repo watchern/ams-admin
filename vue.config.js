@@ -68,7 +68,7 @@ module.exports = {
       },
       '/base/': {
         timeout: 1800000,
-        target: 'http://139.159.246.94:8080/base',
+        target: 'http://139.159.246.94:1088/base',
         // target: process.env.AMSBASE_API,
         changeOrigin: true,
         pathRewrite: {

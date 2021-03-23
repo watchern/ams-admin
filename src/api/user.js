@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import request from '../utils/request'
-=======
-import request from '@/utils/request'
->>>>>>> f50f6d123e4736d2ced8b9459fadb87b9ff7a95d
 
 const baseURL = '/base'
 export function login(data) {
