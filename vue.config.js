@@ -46,11 +46,7 @@ module.exports = {
       errors: false
     },
     disableHostCheck: true,
-<<<<<<< HEAD
     port: 8081, // 端口号
-=======
-    port: port, // 端口号
->>>>>>> f50f6d123e4736d2ced8b9459fadb87b9ff7a95d
     host: 'localhost',
     // host: '192.168.80.142',
     https: false, // https:{type:Boolean}
@@ -72,12 +68,8 @@ module.exports = {
       },
       '/base/': {
         timeout: 1800000,
-<<<<<<< HEAD
         target: 'http://139.159.246.94:8080/base',
         // target: process.env.AMSBASE_API,
-=======
-        target: process.env.AMSBASE_API,
->>>>>>> f50f6d123e4736d2ced8b9459fadb87b9ff7a95d
         changeOrigin: true,
         pathRewrite: {
           '^/base/': '/'
