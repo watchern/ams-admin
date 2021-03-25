@@ -10,7 +10,7 @@
                         <el-col :span="6">
                             <div ref="selectParamScreen" :index="ind" v-if="filter.inputType === 'lineinp'" :id="filter.id" :title="filter.title" class="xm-select-demo"></div>
                             <el-input ref="paramOptionScreen" :index="ind" v-if="filter.inputType === 'textinp'" :title="filter.title" v-model="filter.value" class="textParam"></el-input>
-                            <el-date-picker ref="paramOptionScreen" :index="ind"  v-if="filter.inputType === 'timeinp'" :title="filter.title" type="date" placeholder="选择日期" v-model="filter.value" style="width: 100%;"></el-date-picker>
+                            <el-date-picker ref="paramOptionScreen" :index="ind"  v-if="filter.inputType === 'timeinp'" :title="filter.title" type="date" placeholder="选择日期" v-model="filter.value" style="width: 100%;" value-format="yyyy-MM-dd"></el-date-picker>
                             <div ref="selectTreeParamScreen" :index="ind" v-if="filter.inputType === 'treeinp'" :id="filter.id" :title="filter.title" class="xm-select-demo"></div>
                         </el-col>
                         <el-col :span="1" v-show="filter.allowedNull">

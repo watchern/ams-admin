@@ -13,11 +13,16 @@ export const sendSettingVue = ( (_this) => {
  * 初始化页面
  * @param nodeId 节点ID
  */
-export function init(nodeId) {
+export async function init(nodeId) {
     // 初始化节点信息树
-    initNodeZtree(nodeId)
+    await initNodeZtree(nodeId)
     // 初始化参数树
-    initParamZtree()
+    getParamsTree().then(result => {
+        console.log(111)
+        settingVue.paramZtreeObj = $.fn.zTree.init($(settingVue.$refs.paramZtreeRef), settingVue.initZtreeSetting('paramZtree'), result.data.paramNode)
+        // paramManager = result.data.paramManager
+        // developManager = result.data.developManager
+    })
 }
 
 /**
@@ -92,59 +97,59 @@ async function initNodeZtree(nodeId) {
         }
     }
     if (!isError) {
-        settingVue.nodeZtreeSetting = {
-            data: {
-                key: {
-                    checked: 'isChecked',
-                    name: 'name',
-                    title: 'displayName'
-                },
-                // 设置数据格式
-                simpleData: {
-                    enable: true
-                }
-            },
-            check: {
-                enable: false,
-                chkStyle: 'radio',
-                radioType: 'all'
-            },
-            view: {
-                selectedMulti: false
-            },
-            edit: {
-                enable: true,
-                showRenameBtn: false,
-                showRemoveBtn: false,
-                drag: { // 禁止拖拽变更树节点
-                    autoExpandTrigger: false, // 拖拽时父节点自动展开是否触发 onExpand
-                    prev: false,
-                    inner: false,
-                    next: false
-                }
-            },
-            callback: {
-                onDrop: function(event, treeId, treeNodes) {
-                    // 判断是否在可拖拽区域内
-                    if (!inArea()) {
-                        return
-                    }
-                    let columnName = treeNodes[0].name
-                    // 获取文本框内的光标对象
-                    let cursor = settingVue.editor.getCursor()
-                    settingVue.editor.replaceRange(columnName, cursor, cursor)
-                },
-                beforeDrag: function(treeId, treeNodes) {
-                    let thisNode = treeNodes[0]
-                    // 如果不是字段节点，不做任何操作
-                    if (treeNodes[0] && treeNodes[0].type !== 'column') {
-                        return false
-                    } else {
-                        return true
-                    }
-                }
-            }
-        }
+        // settingVue.ztreeSetting = {
+        //     data: {
+        //         key: {
+        //             checked: 'isChecked',
+        //             name: 'name',
+        //             title: 'displayName'
+        //         },
+        //         // 设置数据格式
+        //         simpleData: {
+        //             enable: true
+        //         }
+        //     },
+        //     check: {
+        //         enable: false,
+        //         chkStyle: 'radio',
+        //         radioType: 'all'
+        //     },
+        //     view: {
+        //         selectedMulti: false
+        //     },
+        //     edit: {
+        //         enable: true,
+        //         showRenameBtn: false,
+        //         showRemoveBtn: false,
+        //         drag: { // 禁止拖拽变更树节点
+        //             autoExpandTrigger: false, // 拖拽时父节点自动展开是否触发 onExpand
+        //             prev: false,
+        //             inner: false,
+        //             next: false
+        //         }
+        //     },
+        //     callback: {
+        //         onDrop: function(event, treeId, treeNodes) {
+        //             // 判断是否在可拖拽区域内
+        //             if (!inArea()) {
+        //                 return
+        //             }
+        //             let columnName = treeNodes[0].name
+        //             // 获取文本框内的光标对象
+        //             let cursor = settingVue.editor.getCursor()
+        //             settingVue.editor.replaceRange(columnName, cursor, cursor)
+        //         },
+        //         beforeDrag: function(treeId, treeNodes) {
+        //             let thisNode = treeNodes[0]
+        //             // 如果不是字段节点，不做任何操作
+        //             if (treeNodes[0] && treeNodes[0].type !== 'column') {
+        //                 return false
+        //             } else {
+        //                 return true
+        //             }
+        //         }
+        //     }
+        // }
         // 组织列节点信息
         let nodeRootId = new UUIDGenerator().id
         settingVue.nodeZtreeRoot = {
@@ -210,7 +215,7 @@ async function initNodeZtree(nodeId) {
         if (settingVue.nodeZtreeRoot.children.length === 0) {
             settingVue.$message({ type: 'warning', message: '当前节点无可使用输出字段，请重新执行节点' })
         }else{
-            settingVue.nodeZtreeObj = $.fn.zTree.init($(settingVue.$refs.nodeZtreeRef), settingVue.nodeZtreeSetting, [settingVue.nodeZtreeRoot])
+            settingVue.nodeZtreeObj = $.fn.zTree.init($(settingVue.$refs.nodeZtreeRef), settingVue.initZtreeSetting('nodeZtree'), [settingVue.nodeZtreeRoot])
             settingVue.initTreeSuccess = true
         }
     } else {
@@ -218,105 +223,9 @@ async function initNodeZtree(nodeId) {
     }
 }
 
-/**
- * 初始化参数树
- */
-function initParamZtree() {
-    let paramSetting = {
-        data: {
-            key: {
-                checked: 'isChecked',
-                name: 'name',
-                title: 'displayName'
-            },
-            // 设置数据格式
-            simpleData: {
-                enable: true,
-                idKey: 'id',
-                PidKey: 'pid'
-            }
-        },
-        check: {
-            enable: false
-        },
-        view: {
-            selectedMulti: false
-        },
-        callback: {
-            onDrop: function(event, treeId, treeNodes) { // 每次拖参数都会基于拖动的参数新复制一个参数
-                // 判断是否在可拖拽区域内
-                if (!inArea()) {
-                    return
-                }
-                let copyParamId = new UUIDGenerator().id// 复制参数的ID
-                let id = '{#' + copyParamId + '#}'
-                let cursor = settingVue.editor.getCursor()// 获取编辑器的光标
-                settingVue.editor.replaceRange(id, cursor, cursor)// 在编辑器的光标位置添加id的值
-                let dom = $("<button class='divEditorBtn' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
-                let endCursor = { ch: cursor.ch + id.length, line: cursor.line, sticky: null }
-                // 将id替换成button的内容（只改变显示效果，编辑器的真实值不变）
-                settingVue.editor.markText(cursor, endCursor, {
-                    replacedWith: dom,
-                    className: 'paramBlock'
-                })
-                /**
-                 * 参数对象
-                 * @param id 新参数拼接特殊符号后的ID
-                 * @param copyParamId 新参数的ID
-                 * @param moduleParamId 母参的ID
-                 * @param name新参数的名称（与母参数一致）
-                 * @type {{id: string, copyParamId: *, moduleParamId: *, name: *}}
-                 */
-                let obj = {
-                    'id': id,
-                    'copyParamId': copyParamId,
-                    'moduleParamId': treeNodes[0].id,
-                    'allowedNull': treeNodes[0].extCol, // 临时占用此属性来存储该参数是否可以为空
-                    'name': treeNodes[0].name
-                }
-                if (Object.keys(settingVue.paramsSetting).length === 0) {
-                    settingVue.paramsSetting.arr = []
-                }
-                settingVue.paramsSetting.arr.push(obj)
-                let divBtnObj = {
-                    'id': id, // 加上占位符后的复制参数ID
-                    'opt': 1// 参数是否生效（不生效是指在当前SQL编辑中已被删除），0、不生效，1、生效
-                }
-                settingVue.paramDivArr.push(divBtnObj)
-            },
-            beforeDrag: function(treeId, treeNodes) {
-                // 如果是参数 允许拖动 否则不可以
-                let thisNode = treeNodes[0]
-                if (thisNode.type !== 'paramNode') {
-                    return false
-                }
-            },
-            onExpand: function(event, treeId, treeNode) {
-                if (!treeNode.children || treeNode.children.length === 0) {
-                    loadParamChildrenNodes(treeNode)
-                }
-            }
-        },
-        edit: {
-            enable: true,
-            showRenameBtn: false,
-            showRemoveBtn: false,
-            drag: {
-                prev: false,
-                next: false,
-                inner: false
-            }
-        }
-    }
-    getParamsTree().then(result => {
-        settingVue.paramZtreeObj = $.fn.zTree.init($(settingVue.$refs.paramZtreeRef), paramSetting,  result.data.paramNode)
-        // paramManager = result.data.paramManager
-        // developManager = result.data.developManager
-    })
-}
 
 // 重新加载参数文件夹节点的子节点
-function loadParamChildrenNodes(treeNode) {
+export function loadParamChildrenNodes(treeNode) {
     let dataParam = {
         'id': treeNode.id,
         'type': treeNode.type,
