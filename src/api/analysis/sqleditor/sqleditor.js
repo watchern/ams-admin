@@ -60,6 +60,11 @@ var mouseX
 var mouseY
 
 /**
+ * 参数图标路径
+ * @type {string}
+ */
+var paramIconPath = require("@/styles/icons/param.png")
+/**
  * 列图标路径
  * @type {string}
  */
@@ -74,7 +79,12 @@ var tableIconPath = require("@/styles/icons/table_1.png")
  * 视图图标路径
  * @type {string}
  */
-var viewIconPath =  require("@/styles/icons/view.png")
+var viewIconPath = require("@/styles/icons/view.png")
+
+/**
+ * 函数图标路径
+ */
+var functionIconPath = require("@/styles/icons/function.png")
 /**
  * 参数对象
  * @type {{}}
@@ -1041,6 +1051,138 @@ export function initParamTree() {
   })
 }
 
+/**
+ * 初始化参数树
+ */
+export function initParamTreeNew() {
+  var paramSetting = {
+    data: {
+      key: {
+        checked: 'isChecked',
+        name: 'name',
+        title: 'displayName'
+      },
+      // 设置数据格式
+      simpleData: {
+        enable: true,
+        idKey: 'id',
+        PidKey: 'pid'
+      }
+    },
+    check: {
+      enable: false,
+      chkStyle: 'radio',
+      radioType: 'all'
+    },
+    view: {
+      selectedMulti: false
+    },
+    callback: {
+      onDrop: function(event, treeId, treeNodes) {
+        // 这是存放参数的数组
+        var arr = new Array()
+        var selText = editorObj.getSelection()
+        // 如果选中执行等于全部待执行SQL或者没有选中直接执行SQL 则视为满足模型生成条件第一条 即：必须将SQL编译器的内容全部执行才可以保存模型结果 flag为控制标识
+        if ($.trim(selText) === '' || selText === editorObj.getValue()) {
+          selText = editorObj.getValue()
+        }
+        var parArr = selText.split('#')
+        for (var i = 0; i < parArr.length; i++) {
+          if (i % 2 != 0) {
+            arr.push(parArr[i])
+          }
+        }
+        var width = $('.CodeMirror').width()
+        var height = $('#sqlEditorDiv').height()
+        var offLeft = $('.leftCon').width()
+        var offTop = $('.table-view-caption').height()
+        if ((mouseX < (offLeft + 30) || (mouseX > (offLeft + width)) || (mouseY < offTop) || (mouseY > height))) {
+          return
+        }
+        var cursor = editorObj.getCursor()
+        /* 新修改 star*/
+        var copyParamId = getUuid()
+        var id = '{#' + copyParamId + '#}'
+        editorObj.replaceRange(id, cursor, cursor)
+        var dom = $("<button type='button' class='divEditorBtn' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
+        var endCursor = { ch: cursor.ch + id.length, line: cursor.line, sticky: null }
+        editorObj.markText(cursor, endCursor, {
+          replacedWith: dom,
+          className: 'paramBlock'
+        })
+        var obj = {
+          'id': id, // 加上占位符后的复制参数ID
+          'copyParamId': copyParamId, // 复制参数ID
+          'moduleParamId': treeNodes[0].id, // 复制参数的母参ID
+          'allowedNull': treeNodes[0].extMap.allowedNull, // 临时占用此属性来存储该参数是否可以为空
+          'name': treeNodes[0].name// 参数名称
+        }
+        if (Object.keys(paramObj).length === 0) {
+          paramObj.arr = []
+        }
+        paramObj.arr.push(obj)
+        var divBtnObj = {
+          'id': id, // 加上占位符后的复制参数ID
+          'opt': 1// 参数是否生效（不生效是指在当前SQL编辑中已被删除），0、不生效，1、生效
+        }
+        paramDivArr.push(divBtnObj)
+      },
+      beforeDrag: function(treeId, treeNodes) {
+        // 如果是参数 允许拖动 否则不可以
+        var thisNode = treeNodes[0]
+        if (thisNode.type !== 'param') {
+          return false
+        }
+      },
+      onRightClick: function(event, treeId, treeNode) {
+
+      },
+      onExpand: function(event, treeId, treeNode) {
+/*        if (!treeNode.children || treeNode.children.length === 0) {
+          loadParamChildrenNodes(treeNode)
+        }*/
+      }
+    },
+    edit: {
+      enable: true,
+      showRenameBtn: false,
+      showRemoveBtn: false,
+      drag: {
+        prev: false,
+        next: false,
+        inner: false
+      }
+    }
+  }
+  getParamsTree().then(result => {
+    if (result.data.isError) {
+
+    } else {
+      for(let i = 0; i < result.data.paramNode.length;i++) {
+        setIcon(result.data.paramNode[i])
+      }
+      paramZtree = $.fn.zTree.init($('#paramTree'), paramSetting, result.data.paramNode)
+    }
+  })
+}
+
+/**
+ * 递归设置参数相关信息
+ * @param treeNode 节点
+ */
+function setIcon(treeNode){
+    if(treeNode.children.length > 0 && treeNode.type == "folder"){
+      for(let i = 0; i < treeNode.children.length;i++){
+        setIcon(treeNode.children[i])
+      }
+    }
+    else{
+      if(treeNode.type == 'param'){
+        treeNode.icon = paramIconPath
+        treeNode.isParent = false
+      }
+    }
+}
 $('.ag-theme-balham .ag-header-row').css('background-color', 'white')
 
 /**
@@ -1178,9 +1320,9 @@ export function initFunctionTree() {
     if (nodes && nodes.length > 0) {
       for (var i = 0; i < nodes.length; i++) {
         if (pathname.match('page')) {
-          nodes[i].icon = '../../images/ico/function.png'
+          nodes[i].icon = functionIconPath
         } else {
-          nodes[i].icon = '../images/ico/function.png'
+          nodes[i].icon = functionIconPath
         }
       }
       sqlZtreeObj.updateNode(nodes)

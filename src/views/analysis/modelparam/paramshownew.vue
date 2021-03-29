@@ -25,7 +25,7 @@
             <el-input style="width: 90%;" :title="setParamObj.title" class='paramOption paramTr' v-model="setParamObj.value"></el-input>
           </td>
           <td v-if="setParamObj.inputType === 'timeinp'" ref="dataParam">
-            <el-date-picker style="width: 100%;" :title="setParamObj.title" class='paramOption paramTr' type="date" placeholder="选择日期" v-model="setParamObj.value" value-format="yyyy-MM-dd"></el-date-picker>
+            <el-date-picker style="width: 100%;" :title="setParamObj.title" class='paramOption paramTr' type="date" placeholder="选择日期" v-model="setParamObj.value"></el-date-picker>
           </td>
           <td v-if="setParamObj.inputType === 'treeinp'" ref="selectTreeParam">
             <div :id="setParamObj.id" :title="setParamObj.title" class='xm-select-demo paramTr'></div>

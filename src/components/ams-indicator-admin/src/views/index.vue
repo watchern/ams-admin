@@ -502,7 +502,6 @@ export default {
       }
       const func2 = function func3(val) {
         let dataList = {}
-        debugger
         //找到当前分析区的对象
         for(let i = 0; i < this.dataList.length;i++){
           if(this.dataList[i].id === val.analysisRegionId){
