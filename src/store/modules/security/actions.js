@@ -1,4 +1,4 @@
-// import io from '@ETL/components/etl/io'
+import io from '@ETL/components/etl/io'
 
 export default {
   /**

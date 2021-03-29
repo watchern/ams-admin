@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
@@ -11,9 +11,8 @@ export default {
 </script>
 
 <style>
-#app {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
+@import url('assets/styles/css/index.css');
+.el-loading-mask{
+  z-index: 1998;
 }
 </style>

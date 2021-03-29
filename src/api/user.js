@@ -1,4 +1,4 @@
-import request from '../utils/request'
+import request from '@/utils/request'
 
 const baseURL = '/base'
 export function login(data) {

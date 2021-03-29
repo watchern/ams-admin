@@ -46,7 +46,7 @@ module.exports = {
       errors: false
     },
     disableHostCheck: true,
-    port: 8081, // 端口号
+    port: port, // 端口号
     host: 'localhost',
     // host: '192.168.80.142',
     https: false, // https:{type:Boolean}
@@ -68,8 +68,7 @@ module.exports = {
       },
       '/base/': {
         timeout: 1800000,
-        target: 'http://139.159.246.94:1088/base',
-        // target: process.env.AMSBASE_API,
+        target: process.env.AMSBASE_API,
         changeOrigin: true,
         pathRewrite: {
           '^/base/': '/'
@@ -164,10 +163,12 @@ module.exports = {
       }
     }
   },
-  configureWebpack: {
+  configureWebpack: config => {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
     // Object.assign(config, {
+    config.entry.app = ["@babel/polyfill", "./src/main.js"]
+    return{
     name: name,
     resolve: {
       alias: {
@@ -212,10 +213,18 @@ module.exports = {
       //     parallel: true
       //   })
     ]
+    }
   },
-  chainWebpack(config) {
+  chainWebpack:config =>{
     // it can improve the speed of the first screen, it is recommended to turn on preload
     // it can improve the speed of the first screen, it is recommended to turn on preload
+    //兼容ie11
+    config.module
+        .rule('view-design')
+        .test(/view-design.src.*?js$/)
+        .use('babel')
+        .loader('babel-loader')
+        .end()
     config.plugin('preload').tap(() => [{
       rel: 'preload',
       // to ignore runtime.js

@@ -1,4 +1,4 @@
-import request from '../../utils/request'
+import request from '@/utils/request'
 const baseURL = '/base'
 
 /**
@@ -18,9 +18,9 @@ export function getByMenuId(id) {
 
 /**
  * 保存
- * @param data
+ * @param data 
  * @returns {返回查询后的数据}
- *
+ * 
  */
 export function saveHelpDocument(data) {
   return request({
@@ -35,7 +35,7 @@ export function saveHelpDocument(data) {
 
 /**
  * 修改
- * @param data
+ * @param data 
  * @returns {返回查询后的数据}
  */
 export function updateHelpDocument(data) {

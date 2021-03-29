@@ -1,9 +1,9 @@
-// import io from '@ETL/components/etl/io'
-// import {
-//   save,
-//   update,
-//   testConn
-// } from '@ETL/api/etlscheduler/datasource'
+import io from '@ETL/components/etl/io'
+import {
+  save,
+  update,
+  testConn
+} from '@ETL/api/etlscheduler/datasource'
 
 export default {
   /**
