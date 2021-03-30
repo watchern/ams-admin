@@ -278,7 +278,7 @@
         initTableTree,
         initFunctionTree,
         initEvent,
-        initParamTree,
+        initParamTreeNew,
         tableTreeSearch,
         paramTreeSearch,
         functionTreeSearch,
