@@ -131,31 +131,20 @@ async function initNodeZtree(nodeId) {
                     case "groupCount":
                     case "delRepeat":
                     case "change":
+                    case "relation":
                         if(flag){
                             obj.name = columnsInfo[i].newColumnName
                         }else{
                             obj.name = columnsInfo[i].columnName
                         }
-                        obj.displayName = columnsInfo[i].newColumnName
-                        settingVue.nodeZtreeRoot.children.push(obj)
-                        break
-                    case "relation":
-                        if(flag){
-                            obj.name = columnsInfo[i].newColumnName
-                            obj.displayName = columnsInfo[i].newColumnName
-                        }else{
-                            obj.name = columnsInfo[i].tableAlias + "." + columnsInfo[i].columnName
-                            obj.displayName = columnsInfo[i].tableAlias + "." + columnsInfo[i].newColumnName
-                        }
-                        settingVue.nodeZtreeRoot.children.push(obj)
                         break
                     case "sample":
                     case "union":
                         obj.name = columnsInfo[i].newColumnName
-                        obj.displayName = columnsInfo[i].newColumnName
-                        settingVue.nodeZtreeRoot.children.push(obj)
                         break
                 }
+                obj.displayName = columnsInfo[i].newColumnName
+                settingVue.nodeZtreeRoot.children.push(obj)
             }
         }
         if (settingVue.nodeZtreeRoot.children.length === 0) {
