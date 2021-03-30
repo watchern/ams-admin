@@ -1171,7 +1171,7 @@ export function initParamTreeNew() {
  * @param treeNode 节点
  */
 function setIcon(treeNode){
-    if(treeNode.children.length > 0 && treeNode.type == "folder"){
+    if(typeof (treeNode.children) !== 'undefined' && treeNode.children.length > 0 && treeNode.type == "folder"){
       for(let i = 0; i < treeNode.children.length;i++){
         setIcon(treeNode.children[i])
       }
