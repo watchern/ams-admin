@@ -372,6 +372,7 @@ export default {
             var domTd = "<th "+(value.hidden?"class='td-hidden'":"")+" >" + value.lable + "</th>"
             $("#colTitle").append(domTd)
         })
+
       // 解决HTTP400错误
       request({
         baseURL: this.dataContextUrl,
