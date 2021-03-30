@@ -60,7 +60,7 @@
   </div>
 </template>
 <script>
-import Colorpicker from '@/components/Ace/vue-color-picker/packages/color-picker/src/color-picker'
+import Colorpicker from '@/components/public/vue-color-picker/packages/color-picker/src/color-picker'
 import thresholdvaluetree from '@/views/analysis/thresholdvalue/thresholdvaluetree'
 import {findThresholdValueById} from '@/api/analysis/thresholdvalue'
 export default {

@@ -30,7 +30,7 @@
 </template>
 
 <script>
-    import QueryField from '@/components/Ace/query-field/index'
+    import QueryField from '@/components/public/query-field/index'
     import Pagination from '@/components/Pagination/index'
     import { getExportGrapgListByType } from '@/api/graphtool/apiJs/graphList'
     import PreviewGraph from '@/views/graphtool/previewGraph'

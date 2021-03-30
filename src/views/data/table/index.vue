@@ -112,7 +112,7 @@
 
 <script>
 import tabledatatabs from '@/views/data/table/tabledatatabs'
-import MyElTree from '@/components/Ace/tree/src/tree.vue'
+import MyElTree from '@/components/public/tree/src/tree.vue'
 import { listUnCached, getDataTreeNode, saveTable, delTable } from '@/api/data/table-info'
 import { saveFolder, updateFolder, delFolder } from '@/api/data/folder'
 import { commonNotify } from '@/utils'

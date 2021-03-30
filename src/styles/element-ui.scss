@@ -1,4 +1,4 @@
-// cover some element-ui styles
+// 涵盖一些元素用户界面样式
 
 .el-breadcrumb__inner,
 .el-breadcrumb__inner a {
@@ -46,7 +46,7 @@
   }
 }
 
-// to fixed https://github.com/ElemeFE/element/issues/2461
+// 修复 https://github.com/ElemeFE/element/issues/2461
 .el-dialog {
   transform: none;
   left: 0;
@@ -54,7 +54,7 @@
   margin: 0 auto;
 }
 
-// refine element ui upload
+// 优化元素ui上传
 .upload-container {
   .el-upload {
     width: 100%;
@@ -73,12 +73,12 @@
   }
 }
 
-// fix date-picker ui bug in filter-item
+// 修复filter-item中的date-picker ui错误
 .el-range-editor.el-input__inner {
   display: inline-flex !important;
 }
 
-// to fix el-date-picker css style
+// 修复el-date-picker CSS样式
 .el-range-separator {
   box-sizing: content-box;
 }

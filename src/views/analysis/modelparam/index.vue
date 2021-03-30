@@ -93,7 +93,7 @@
   </div>
 </template>
 <script>
-import QueryField from "@/components/Ace/query-field/index";
+import QueryField from "@/components/public/query-field/index";
 import Pagination from "@/components/Pagination/index";
 import myZtree from "@/views/analysis/modelparam/myztree";
 import addParamWindow from "@/views/analysis/modelparam/addparamwindow";

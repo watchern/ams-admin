@@ -15,7 +15,6 @@
           />
           <div
             ref="domTopList"
-            v-scroll-top="scrollTop"
             class="list flex a-center j-between flex-column"
           >
             <div
@@ -70,7 +69,7 @@
             :class="[currentIndex===0 && 'icon-disable']"
             @click="action('prev')"
           />
-          <div v-scroll-top="scrollTop" class="list flex a-center j-between flex-column">
+          <div class="list flex a-center j-between flex-column">
             <div
               ref="navDom"
               class="box flex a-center j-center flex-column"
@@ -126,7 +125,7 @@
           {{ nowAppName }}
         </div>
         <div class="tree-list-content">
-          <menu-tree :list="currentMenuGroup" @closetree="isShowTreeList=false;isShrink=true" />
+          <menu-tree :list="currentMenuGroup" @closetree="isShrink=true" />
         </div>
       </div>
     </transition>

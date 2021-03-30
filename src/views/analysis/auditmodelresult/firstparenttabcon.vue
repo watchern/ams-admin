@@ -376,7 +376,7 @@ import {
   deleteRunResultShareByRunTaskRelUuid
 } from "@/api/analysis/auditmodelresult";
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
-import QueryField from "@/components/Ace/query-field/index";
+import QueryField from "@/components/public/query-field/index";
 import Pagination from "@/components/Pagination/index";
 import { elementInside } from "dropzone";
 import runimmediatelycon from "@/views/analysis/auditmodel/runimmediatelycon";

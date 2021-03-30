@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import MyElTree from '@/components/Ace/tree/src/tree.vue'
+import MyElTree from '@/components/public/tree/src/tree.vue'
 import { getResELTree, getResByRole, getRoleCols, saveRoleTable, getTableCol } from '@/api/data/table-info'
 import { commonNotify } from '@/utils'
 

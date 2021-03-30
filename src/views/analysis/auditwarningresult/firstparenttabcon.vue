@@ -321,7 +321,7 @@ import {
   selectPrimaryKeyByTableName,
   getDataAfterResultSpiltToRelateProject,
 } from "@/api/analysis/auditmodelresult";
-import QueryField from "@/components/Ace/query-field/index";
+import QueryField from "@/components/public/query-field/index";
 import Pagination from "@/components/Pagination/index";
 import { elementInside } from "dropzone";
 import axios from "axios";

@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import MyElTree from '@/components/Ace/tree/src/tree.vue'
+import MyElTree from '@/components/public/tree/src/tree.vue'
 import { getAuditItem } from '@/api/analysis/auditmodel'
 export default {
   components: { MyElTree },

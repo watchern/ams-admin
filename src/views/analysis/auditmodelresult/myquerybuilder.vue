@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import queryBuilder from "@/components/Ace/vue-query-builder/src/VueQueryBuilder";
+import queryBuilder from "@/components/public/vue-query-builder/src/VueQueryBuilder";
 export default {
   components: {
     queryBuilder,

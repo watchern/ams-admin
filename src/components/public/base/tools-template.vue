@@ -44,7 +44,7 @@
             @click="dialogVisible = true"
             :style='{background:"rgb(81, 69, 89)"}'
           >
-            <img src="../../Ace/base/accessIcon/zidingyi.png" />
+            <img src="../../public/base/accessIcon/zidingyi.png" />
           </div>
         </div>
         <div class="lately-use-box flex a-center j-start flex-row">
@@ -106,7 +106,7 @@
 <!--      <ace-progress />-->
 <!--    </div>-->
 <!--    <div v-if="isShowInfoBox" class="info-box absolute flex a-center j-start flex-row">-->
-<!--      <img src="../../../assets/Ace/image/提示icon2@2x.png" class="info-icon">-->
+<!--      <img src="../../../assets/styles/image/提示icon2@2x.png" class="info-icon">-->
 <!--      <span class="msg">Helpful and short message.</span>-->
 <!--      <i class="el-icon-close icon-close" @click="isShowInfoBox=false" />-->
 <!--    </div>-->
@@ -233,259 +233,259 @@ export default {
       latelyImgList:[
         {
           name: '审计计划',
-          image: require("../../Ace/base/accessIcon/shenji.png")
+          image: require("../../public/base/accessIcon/shenji.png")
         },
         {
           name: '备选计划',
-          image: require("../../Ace/base/accessIcon/shenji.png")
+          image: require("../../public/base/accessIcon/shenji.png")
         },
         {
           name: '快速通道授权',
-          image: require("../../Ace/base/accessIcon/shouquan.png")
+          image: require("../../public/base/accessIcon/shouquan.png")
         },
         {
           name: '立项申请',
-          image: require("../../Ace/base/accessIcon/xiangmu.png")
+          image: require("../../public/base/accessIcon/xiangmu.png")
         },
         {
           name: '项目执行',
-          image: require("../../Ace/base/accessIcon/zhixing.png")
+          image: require("../../public/base/accessIcon/zhixing.png")
         },
         {
           name: '指标分析',
-          image: require("../../Ace/base/accessIcon/zhixing.png")
+          image: require("../../public/base/accessIcon/zhixing.png")
         },
         {
           name: '作废申请',
-          image: require("../../Ace/base/accessIcon/zuofei.png")
+          image: require("../../public/base/accessIcon/zuofei.png")
         },
         {
           name: '整改管理',
-          image: require("../../Ace/base/accessIcon/zhenggai.png")
+          image: require("../../public/base/accessIcon/zhenggai.png")
         },
         {
           name: '问责管理',
-          image: require("../../Ace/base/accessIcon/zhenggai.png")
+          image: require("../../public/base/accessIcon/zhenggai.png")
         },
         {
           name: '档案下载申请',
-          image: require("../../Ace/base/accessIcon/dangan.png")
+          image: require("../../public/base/accessIcon/dangan.png")
         },
         {
           name: '档案下载列表',
-          image: require("../../Ace/base/accessIcon/dangan.png")
+          image: require("../../public/base/accessIcon/dangan.png")
         },
         {
           name: '调度流程',
-          image: require("../../Ace/base/accessIcon/diaodu.png")
+          image: require("../../public/base/accessIcon/diaodu.png")
         },
         {
           name: '调度管理',
-          image: require("../../Ace/base/accessIcon/diaodu.png")
+          image: require("../../public/base/accessIcon/diaodu.png")
         },
         {
           name: '调度监控',
-          image: require("../../Ace/base/accessIcon/diaodu.png")
+          image: require("../../public/base/accessIcon/diaodu.png")
         },
         {
           name: '调度配置',
-          image: require("../../Ace/base/accessIcon/diaodu.png")
+          image: require("../../public/base/accessIcon/diaodu.png")
         },
         {
           name: '数据表管理',
-          image: require("../../Ace/base/accessIcon/shuju.png")
+          image: require("../../public/base/accessIcon/shuju.png")
         },
         {
           name: '数据授权',
-          image: require("../../Ace/base/accessIcon/shuju.png")
+          image: require("../../public/base/accessIcon/shuju.png")
         },
         {
           name: '数据转码',
-          image: require("../../Ace/base/accessIcon/shuju.png")
+          image: require("../../public/base/accessIcon/shuju.png")
         },
         {
           name: '数据挖掘',
-          image: require("../../Ace/base/accessIcon/shuju.png")
+          image: require("../../public/base/accessIcon/shuju.png")
         },
         {
           name: '表关系管理',
-          image: require("../../Ace/base/accessIcon/guanxi.png")
+          image: require("../../public/base/accessIcon/guanxi.png")
         },
         {
           name: '数据资源目录',
-          image: require("../../Ace/base/accessIcon/shuju.png")
+          image: require("../../public/base/accessIcon/shuju.png")
         },
         {
           name: '主题展示',
-          image: require("../../Ace/base/accessIcon/zhuti.png")
+          image: require("../../public/base/accessIcon/zhuti.png")
         },
         {
           name: '主题展示配置',
-          image: require("../../Ace/base/accessIcon/zhuti.png")
+          image: require("../../public/base/accessIcon/zhuti.png")
         },
         {
           name: '阈值管理',
-          image: require("../../Ace/base/accessIcon/yuzhi.png")
+          image: require("../../public/base/accessIcon/yuzhi.png")
         },
         {
           name: '审计模型',
-          image: require("../../Ace/base/accessIcon/moxing.png")
+          image: require("../../public/base/accessIcon/moxing.png")
         },
         {
           name: '模型参数',
-          image: require("../../Ace/base/accessIcon/moxing.png")
+          image: require("../../public/base/accessIcon/moxing.png")
         },
         {
           name: '模型结果',
-          image: require("../../Ace/base/accessIcon/moxing.png")
+          image: require("../../public/base/accessIcon/moxing.png")
         },
         {
           name: '线索核实',
-          image: require("../../Ace/base/accessIcon/yonghu.png")
+          image: require("../../public/base/accessIcon/yonghu.png")
         },
         {
           name: '图形化工具',
-          image: require("../../Ace/base/accessIcon/gongju.png")
+          image: require("../../public/base/accessIcon/gongju.png")
         },
         {
           name: 'SQL编辑器',
-          image: require("../../Ace/base/accessIcon/gongju.png")
+          image: require("../../public/base/accessIcon/gongju.png")
         },
         {
           name: '审计预警',
-          image: require("../../Ace/base/accessIcon/yujing.png")
+          image: require("../../public/base/accessIcon/yujing.png")
         },
         {
           name: '预警结果',
-          image: require("../../Ace/base/accessIcon/yujing.png")
+          image: require("../../public/base/accessIcon/yujing.png")
         },
         {
           name: '被审计机构',
-          image: require("../../Ace/base/accessIcon/jigou.png")
+          image: require("../../public/base/accessIcon/jigou.png")
         },
         {
           name: '领导干部',
-          image: require("../../Ace/base/accessIcon/lingdao.png")
+          image: require("../../public/base/accessIcon/lingdao.png")
         },
         {
           name: '工程项目',
-          image: require("../../Ace/base/accessIcon/gongcheng.png")
+          image: require("../../public/base/accessIcon/gongcheng.png")
         },
         {
           name: '业务产品',
-          image: require("../../Ace/base/accessIcon/yewu.png")
+          image: require("../../public/base/accessIcon/yewu.png")
         },
         {
           name: '审计手册',
-          image: require("../../Ace/base/accessIcon/shenji.png")
+          image: require("../../public/base/accessIcon/shenji.png")
         },
         {
           name: '审计手册查询',
-          image: require("../../Ace/base/accessIcon/shenji.png")
+          image: require("../../public/base/accessIcon/shenji.png")
         },
         {
           name: '业务分类',
-          image: require("../../Ace/base/accessIcon/yewu.png")
+          image: require("../../public/base/accessIcon/yewu.png")
         },
         {
           name: '问题词条',
-          image: require("../../Ace/base/accessIcon/yujing.png")
+          image: require("../../public/base/accessIcon/yujing.png")
         },
         {
           name: '培训管理',
-          image: require("../../Ace/base/accessIcon/peixun.png")
+          image: require("../../public/base/accessIcon/peixun.png")
         },
         {
           name: '培训查询',
-          image: require("../../Ace/base/accessIcon/peixun.png")
+          image: require("../../public/base/accessIcon/peixun.png")
         },
         {
           name: '法律法规',
-          image: require("../../Ace/base/accessIcon/falv.png")
+          image: require("../../public/base/accessIcon/falv.png")
         },
         {
           name: '制度依据',
-          image: require("../../Ace/base/accessIcon/falv.png")
+          image: require("../../public/base/accessIcon/falv.png")
         },
         {
           name: '基础代码管理',
-          image: require("../../Ace/base/accessIcon/jichu.png")
+          image: require("../../public/base/accessIcon/jichu.png")
         },
         {
           name: '基础数据管理',
-          image: require("../../Ace/base/accessIcon/jichu.png")
+          image: require("../../public/base/accessIcon/jichu.png")
         },
         {
           name: '假期管理',
-          image: require("../../Ace/base/accessIcon/jiaqi.png")
+          image: require("../../public/base/accessIcon/jiaqi.png")
         },
         {
           name: '公告管理',
-          image: require("../../Ace/base/accessIcon/gonggao.png")
+          image: require("../../public/base/accessIcon/gonggao.png")
         },
         {
           name: '公告查阅',
-          image: require("../../Ace/base/accessIcon/gonggao.png")
+          image: require("../../public/base/accessIcon/gonggao.png")
         },
         {
           name: '审计机构管理',
-          image: require("../../Ace/base/accessIcon/jigou.png")
+          image: require("../../public/base/accessIcon/jigou.png")
         },
         {
           name: '审计人员管理',
-          image: require("../../Ace/base/accessIcon/yonghu.png")
+          image: require("../../public/base/accessIcon/yonghu.png")
         },
         {
           name: '审计机构辖区管理',
-          image: require("../../Ace/base/accessIcon/jigou.png")
+          image: require("../../public/base/accessIcon/jigou.png")
         },
         {
           name: '被审计机构查询',
-          image: require("../../Ace/base/accessIcon/jigou.png")
+          image: require("../../public/base/accessIcon/jigou.png")
         },
         {
           name: '被审计部门查询',
-          image: require("../../Ace/base/accessIcon/jigou.png")
+          image: require("../../public/base/accessIcon/jigou.png")
         },
         {
           name: '被审计人员查询',
-          image: require("../../Ace/base/accessIcon/yonghu.png")
+          image: require("../../public/base/accessIcon/yonghu.png")
         },
         {
           name: '项目阶段管理',
-          image: require("../../Ace/base/accessIcon/xiangmu.png")
+          image: require("../../public/base/accessIcon/xiangmu.png")
         },
         {
           name: '项目阶段结束条件管理',
-          image: require("../../Ace/base/accessIcon/xiangmu.png")
+          image: require("../../public/base/accessIcon/xiangmu.png")
         },
         {
           name: '项目查询权限',
-          image: require("../../Ace/base/accessIcon/xiangmu.png")
+          image: require("../../public/base/accessIcon/xiangmu.png")
         },
         {
           name: '监管常规项目管理',
-          image: require("../../Ace/base/accessIcon/xiangmu.png")
+          image: require("../../public/base/accessIcon/xiangmu.png")
         },
         {
           name: '服务监控',
-          image: require("../../Ace/base/accessIcon/jiankong.png")
+          image: require("../../public/base/accessIcon/jiankong.png")
         },
         {
           name: '数据源监控',
-          image: require("../../Ace/base/accessIcon/jiankong.png")
+          image: require("../../public/base/accessIcon/jiankong.png")
         },
         {
           name: '系统操作日志',
-          image: require("../../Ace/base/accessIcon/xitong.png")
+          image: require("../../public/base/accessIcon/xitong.png")
         },
         {
           name: '系统异常日志',
-          image: require("../../Ace/base/accessIcon/xitong.png")
+          image: require("../../public/base/accessIcon/xitong.png")
         },
         {
           name: '系统帮助维护',
-          image: require("../../Ace/base/accessIcon/bangzhu.png")
+          image: require("../../public/base/accessIcon/bangzhu.png")
         }
       ],
       latelyInImgList:[],
@@ -546,7 +546,6 @@ export default {
     this.menugroup = listTree.second
     this.menugroupId = listTree.first
     this.showmenuGroup = true
-    console.log(this.menugroupId)
     getQuickMenuList().then(res => {
       // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
       for (let i=0; i<res.data.length; i++) {
@@ -676,7 +675,6 @@ export default {
           quickMenuPath: this.$refs.tree3.getCheckedNodes()[i].path
         })
       }
-      console.log(allThing)
       if (allThing.length > 4) {
         this.$message.error('自定义快捷菜单不能超过四个！');
       } else {

@@ -62,7 +62,7 @@
 </template>
 
 <script>
-    import QueryField from '@/components/Ace/query-field/index'
+    import QueryField from '@/components/public/query-field/index'
     import Pagination from '@/components/Pagination/index'
     import PreviewGraph from '@/views/graphtool/previewGraph'
     import PersonTree from '@/components/publicpersontree/index'

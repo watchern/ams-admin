@@ -53,7 +53,7 @@ import {
   listByPageErrorLog,
   getReadErrorLog
 } from '@/api/base/base'
-import QueryField from '@/components/Ace/query-field/index'
+import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 export default {
   components: { Pagination, QueryField },
@@ -168,6 +168,18 @@ export default {
     //   }
     //   return ''
     // },
+    sortChange(data) {
+      const { prop, order } = data;
+      this.pageQuery.sortBy = order;
+      this.pageQuery.sortName = prop;
+      this.handleFilter();
+    },
+    /**
+     * 当多选框改变时触发
+     */
+    handleSelectionChange(val) {
+      this.selectValue = val
+    },
     /**
      * 获取列表
      * @param query 查询对象

@@ -50,7 +50,7 @@
   </div>
 </template>
 <script>
-import QueryField from '@/components/Ace/query-field/index'
+import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import {findThresholdValueList,addThresholdValue,batchThresholdValueDel,findThresholdValueById,updateThresholdValue} from '@/api/analysis/thresholdvalue'
 import EditThresholdValue from '@/views/analysis/thresholdvalue/editthresholdvalue'

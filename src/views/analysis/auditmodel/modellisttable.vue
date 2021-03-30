@@ -146,7 +146,7 @@
 <script>
 import { findModel, saveModel, deleteModel, shareModel, selectModel, updateModel, updateModelBasicInfo, exportModel, setModelSession } from '@/api/analysis/auditmodel'
 import {deleteGraphInfoById} from '@/api/graphtool/apiJs/graphList'
-import QueryField from '@/components/Ace/query-field/index'
+import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import ModelFolderTree from '@/views/analysis/auditmodel/modelfoldertree'
 import EditModel from '@/views/analysis/auditmodel/editmodel'

@@ -17,7 +17,7 @@
 </template>
 
 <script>
-    import MyElTree from '@/components/Ace/tree/src/tree.vue'
+    import MyElTree from '@/components/public/tree/src/tree.vue'
     import { getGraphTrees } from '@/api/graphtool/apiJs/graphList'
     export default {
         name: 'GraphTree',

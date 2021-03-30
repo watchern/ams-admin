@@ -62,8 +62,8 @@ export default {
       keywordQuery: {},
       searchBar: '0',
       switchImg: '',
-      searchFor: require('../../Ace/query-field/搜索.png'),
-      resetFor: require('../../Ace/query-field/重置.png'),
+      searchFor: require('../../public/query-field/搜索.png'),
+      resetFor: require('../../public/query-field/重置.png'),
       /*      inquire:[
         {
           text: 'test',
@@ -76,18 +76,21 @@ export default {
       // 监听浏览器宽度
       screenWidth: document.body.clientWidth,
       // 是否需要错行显示
-      componentMisalignment: false
+      componentMisalignment: false,
+      textWidthZ:0,
+      selectWidthZ:0,
+      timePeriodWidthZ:0
     }
   },
   computed: {
     textStyle() {
-      return `width: ${this.textWidth}px`
+      return `width: ${this.textWidthZ}px`
     },
     selectStyle() {
-      return `width: ${this.selectWidth}px`
+      return `width: ${this.selectWidthZ}px`
     },
     timeStyle() {
-      return `width: ${this.timePeriodWidth}px`
+      return `width: ${this.timePeriodWidthZ}px`
     }
   },
   watch: {
@@ -127,6 +130,9 @@ export default {
         that.screenWidth= window.screenWidth;
       })();
     })
+    this.textWidthZ = this.textWidth
+    this.selectWidthZ = this.selectWidth
+    this.timePeriodWidthZ = this.timePeriodWidth
   },
   methods: {
     getData() {
@@ -214,7 +220,7 @@ export default {
       }
       const url = window.location.href
       const urls = url.split('/')
-      this.searchBar === '0' ? this.switchImg = require('../../Ace/query-field/filter.png') : this.switchImg = require('../../Ace/query-field/filter-in.png')
+      this.searchBar === '0' ? this.switchImg = require('../../public/query-field/filter.png') : this.switchImg = require('../../public/query-field/filter-in.png')
       localStorage.setItem(urls, this.searchBar)
     },
     cSearch() {
@@ -223,7 +229,7 @@ export default {
       if (localStorage.getItem(urls)) {
         this.searchBar = localStorage.getItem(urls)
       }
-      this.searchBar === '0' ? this.switchImg = require('../../Ace/query-field/filter.png') : this.switchImg = require('../../Ace/query-field/filter-in.png')
+      this.searchBar === '0' ? this.switchImg = require('../../public/query-field/filter.png') : this.switchImg = require('../../public/query-field/filter-in.png')
     },
     contentWidthChange() {
       // 获取搜索框数量
@@ -240,22 +246,22 @@ export default {
         // 如果减少宽度仍旧不够 则放开限制 自动换行
         if (this.screenWidth >= 1400 && this.screenWidth< 1920) {
           let inPutWords = (30 * (1920 - this.screenWidth) / 520).toFixed(1)
-          this.textWidth = 163 - inPutWords
-          this.selectWidth = 163 - inPutWords
+          this.textWidthZ = 163 - inPutWords
+          this.selectWidthZ = 163 - inPutWords
           let inPutTimes = (85 * (1920 - this.screenWidth) / 520).toFixed(1)
-          this.timePeriodWidth = 220 - inPutTimes
+          this.timePeriodWidthZ = 220 - inPutTimes
           this.componentMisalignment = false
         } else {
-          this.textWidth = 130
-          this.selectWidth = 130
-          this.timePeriodWidth = 135
+          this.textWidthZ = 130
+          this.selectWidthZ = 130
+          this.timePeriodWidthZ = 135
           this.componentMisalignment = true
         }
       } else {
         // 宽度足够则恢复原设定
-        this.textWidth = 163
-        this.selectWidth = 163
-        this.timePeriodWidth = 220
+        this.textWidthZ = 163
+        this.selectWidthZ = 163
+        this.timePeriodWidthZ = 220
         this.componentMisalignment = false
       }
     }

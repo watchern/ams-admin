@@ -197,7 +197,6 @@ export function initDragAndDrop() {
   // 单击侧边按钮收起左边栏
   function tree_zy_zhan() {
     var overWidth = document.getElementById('container').clientWidth - 229
-    console.log(overWidth)
     if (tree_shuju == false && tree_canshu == false && tree_sql == false) {
       $('#leftPart').stop(true).animate({ 'width': 203 }, 300)
       $('#vertical').delay(300).fadeIn(100).css('left', 11.5 + '%')

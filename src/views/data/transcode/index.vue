@@ -151,7 +151,7 @@
 import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, save, update, del, selectOne, previewSql } from '@/api/data/transCode'
-import QueryField from '@/components/Ace/query-field/index'
+import QueryField from '@/components/public/query-field/index'
 import XLSX from 'xlsx'
 export default {
   components: { Pagination, QueryField, childTabs },
