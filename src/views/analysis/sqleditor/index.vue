@@ -581,7 +581,7 @@
                 initFunctionTree()
                 initVariable()
                 initEvent()
-                initParamTree()
+                initParamTreeNew()
                 this.executeLoading = true
                 this.loadText = '正在初始化数据表...'
                 initTableTip(this.dataUserId,this.sceneCode1).then((result) => {
