@@ -672,10 +672,7 @@ export default {
     // 预览数据
     preview() {
       this.loading = true
-      var thisData = Object.assign({}, this.selections[0]);
-      thisData.extMap.sceneCode =  this.currentSceneUuid;
-      thisData.extMap.dataUserId = this.directyDataUserId;
-      preview(thisData).then(res => {
+      preview(this.selections[0]).then(res => {
         if (res.data.code === 200) {
           this.executeSQLList = res.data.executeTask.executeSQL
           this.arrSql = res.data
