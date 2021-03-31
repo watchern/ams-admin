@@ -136,10 +136,10 @@
   </div>
 </template>
 <script>
-import MyElTree from '@/components/Ace/tree/src/tree.vue'
+import MyElTree from '@/components/public/tree/src/tree.vue'
 import { findModelParamTreeData,addFolder,editFolder,delFolder,listByAmmParam } from '@/api/analysis/parammanagerlist'
 import { getUuid } from '@/api/analysis/common'
-import QueryField from '@/components/Ace/query-field/index'
+import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import addParam from '@/views/analysis/modelparam/paramManager/addParam'
 import $ from 'jquery'
