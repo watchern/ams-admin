@@ -1,6 +1,6 @@
 <template>
-  <div class="app-container" v-loading="isShowLoading">
-    <el-dialog title="选择模型列表" :fullscreen="true" v-if='selectModelVisible' :visible.sync="selectModelVisible" :append-to-body="true" width="80%">
+  <div class="app-container" v-loading="isShowLoading" style="height:62vh; overflow:auto;">
+    <el-dialog title="选择模型列表" :close-on-click-modal="false" :fullscreen="true" v-if='selectModelVisible' :visible.sync="selectModelVisible" :append-to-body="true" width="80%">
       <SelectModels ref="selectModels" :isAuditWarring="true" power="warning"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="selectModelVisible = false">关闭</el-button>
@@ -227,6 +227,7 @@
       :visible.sync="modelResultSavePathDialog"
       width="30%"
       :append-to-body="true"
+      :close-on-click-modal="false"
     >
       <data-tree
         :data-user-id="personCode"
@@ -245,7 +246,8 @@
       title="请选择指标常用分析"
       :visible.sync="selectIndicatorVisble"
       width="45%"
-      :append-to-body="true">
+      :append-to-body="true"
+      :close-on-click-modal="false">
       <commonlyAnalysisList ref="commonlyAnalysisList"/>
       <span slot="footer" class="dialog-footer">
         <el-button @click="selectIndicatorVisble = false">取 消</el-button>
@@ -256,7 +258,8 @@
       title="请选择人员"
       :visible.sync="personDialog"
       width="45%"
-      :append-to-body="true">
+      :append-to-body="true"
+      :close-on-click-modal="false">
       <personTree ref="personTree" />
       <span slot="footer" class="dialog-footer">
         <el-button @click="personDialog = false">取 消</el-button>
@@ -267,7 +270,8 @@
       title="请选择项目"
       :visible.sync="projectDialog"
       width="45%"
-      :append-to-body="true">
+      :append-to-body="true"
+      :close-on-click-modal="false">
       <userProject
         v-if="projectDialog"
         ref="userproject"

@@ -40,7 +40,7 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
       <div class="detail-form">
         <template class="detail-form">
           <el-form
@@ -98,7 +98,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="数据筛选选择" :visible.sync="filterVisible">
+    <el-dialog title="数据筛选选择" :visible.sync="filterVisible" :close-on-click-modal="false">
       <template class="detail-form">
         <el-form>
           <el-form-item>

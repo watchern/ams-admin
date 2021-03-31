@@ -48,7 +48,7 @@
                 </div>
             </el-footer>
         </el-container>
-        <el-dialog append-to-body title="选择聚合方式" :visible.sync="groupDialogVisible" width="30%" >
+        <el-dialog append-to-body title="选择聚合方式" :visible.sync="groupDialogVisible" width="30%" :close-on-click-modal="false" >
             <el-button-group >
                 <el-button type="primary" @click="addGroup('sum'),groupDialogVisible=false">合计</el-button>
                 <el-button type="primary" @click="addGroup('count'),groupDialogVisible=false">计数</el-button>
@@ -58,7 +58,7 @@
                 <el-button type="primary" @click="addGroup('distinct'),groupDialogVisible=false">差异计数</el-button>
             </el-button-group>
         </el-dialog>
-        <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true">
+        <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :close-on-click-modal="false" :append-to-body="true">
           <myQueryBuilder
             v-if="queryBuilderDialogVisible"
             ref="myQueryBuilder"

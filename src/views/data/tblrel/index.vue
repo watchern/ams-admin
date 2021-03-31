@@ -35,8 +35,9 @@
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <template class="detail-form">
+      <template>
         <el-form
+          class="detail-form"
           ref="dataForm"
           :rules="rules"
           :model="temp"

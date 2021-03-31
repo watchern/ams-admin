@@ -17,7 +17,7 @@
       </el-table-column>
     </el-table>
     <pagination style="height:30px" v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog v-if="sqlDraftDetail" title="草稿SQL" :visible.sync="sqlDraftDetail" :append-to-body="true" width="80%">
+    <el-dialog v-if="sqlDraftDetail" title="草稿SQL" :close-on-click-modal="false" :visible.sync="sqlDraftDetail" :append-to-body="true" width="80%">
       <div id="sqlValueViewShow" ref="sqlValueViewShow" style="height: 300px; overflow-y: auto; border: 1px solid #E0E0E0; margin-left: 30px; width: 95%; padding: 15px;">
       </div>
     </el-dialog>

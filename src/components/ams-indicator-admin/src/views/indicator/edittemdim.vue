@@ -25,7 +25,7 @@
             </div>
         </el-footer>
     </el-container>
-  <el-dialog append-to-body title="查看数据" v-if="seeSqlDataDialog" :visible.sync="seeSqlDataDialog" >
+  <el-dialog append-to-body title="查看数据" v-if="seeSqlDataDialog" :visible.sync="seeSqlDataDialog" :close-on-click-modal="false">
     <seeSqlData :seeDataSql="seeDataSql"/>
   </el-dialog>
 </el-container>
