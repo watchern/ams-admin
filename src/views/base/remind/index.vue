@@ -56,6 +56,7 @@
       top="10vh"
       title="消息详情"
       width="50%"
+      :close-on-click-modal="false"
     >
       <el-row>
         <el-col :span="24"><div class="visible-p1">

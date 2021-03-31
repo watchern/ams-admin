@@ -11,7 +11,7 @@
         <el-link style="float:right" type="primary" size="mini" @click="seleteTransCode(item.transRuleUuid)">查看</el-link>
       </el-option>
     </el-select>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
       <div>
         <el-form
           ref="dataForm"

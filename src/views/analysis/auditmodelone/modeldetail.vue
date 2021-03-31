@@ -109,21 +109,21 @@
         </el-form>
       </div>
     </el-container>
-    <el-dialog v-if="ModelTreeDialog" :destroy-on-close="true" :append-to-body="true" :visible.sync="ModelTreeDialog" title="请选择模型" width="80%">
+    <el-dialog v-if="ModelTreeDialog" :close-on-click-modal="false" :destroy-on-close="true" :append-to-body="true" :visible.sync="ModelTreeDialog" title="请选择模型" width="80%">
       <ModelFolderTree ref="modelFolderTree" publicModel="relationModel"  v-loading="modelTreeLoading" />
       <div slot="footer">
         <el-button type="primary" @click="getSelectModel">确定</el-button>
         <el-button @click="ModelTreeDialog = false">取消</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-if="dataTableTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%">
+    <el-dialog v-if="dataTableTree" :close-on-click-modal="false" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%">
       <data-tree :dataUserId="dataUserId" ref="dataTableTree" :sceneCode="sceneCode"></data-tree>
       <div slot="footer">
         <el-button type="primary" @click="getDataTable">确定</el-button>
         <el-button @click="dataTableTree = false">取消</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true">
+    <el-dialog title="条件设置" :close-on-click-modal="false" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true">
       <myQueryBuilder
         v-if="queryBuilderDialogVisible"
         ref="myQueryBuilder"

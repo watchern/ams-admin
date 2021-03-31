@@ -3,7 +3,7 @@
     <el-row>
       <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'" align="right">
         <el-button type="primary" size="mini" class="oper-btn add" @click="addCol()" />
-        <el-button type="danger" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="delCol()" />
+        <el-button type="primary" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="delCol()" />
       </el-col>
     </el-row>
     <!-- 如果进行查看 -->
@@ -111,7 +111,7 @@
             </el-col>
             <el-button @click="openQueryBuilder(scope.row.index)">设置</el-button>
           </el-row>
-          <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true">
+          <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true" :close-on-click-modal="false">
             <myQueryBuilder
               v-if="queryBuilderDialogVisible"
               ref="myQueryBuilder"
@@ -127,7 +127,7 @@
         </template>
       </el-table-column>
       <!-- </el-table> -->
-      <el-dialog v-if="dataTableTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%">
+      <el-dialog v-if="dataTableTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%" :close-on-click-modal="false">
         <data-tree ref="dataTableTree" :data-user-id="dataUserId" :scene-code="sceneCode" />
         <div slot="footer">
           <el-button tvype="primary" @click="getDataTable">确定</el-button>
