@@ -72,7 +72,9 @@
           :data="tableData"
           @select="paramTableSelectEvent"
           @select-all="paramTableSelectEvent"
-          style="height: 630px;overflow-y: scroll">
+          height="calc(100vh - 300px)"
+          max-height="calc(100vh - 300px)"
+        >
           <el-table-column type="selection" width="55" />
           <el-table-column
             prop="paramName"
