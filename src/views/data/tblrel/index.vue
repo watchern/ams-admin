@@ -106,7 +106,7 @@ import dataTree from '@/views/data/role-res/data-tree'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { getTableByCol } from '@/api/data/table-info'
 import { listByPage, save, update, del } from '@/api/data/tablerelation'
-import QueryField from '@/components/Ace/query-field/index'
+import QueryField from '@/components/public/query-field/index'
 
 export default {
   components: { Pagination, QueryField, dataTree },

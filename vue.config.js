@@ -163,10 +163,12 @@ module.exports = {
       }
     }
   },
-  configureWebpack: {
+  configureWebpack: config => {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
     // Object.assign(config, {
+    config.entry.app = ["@babel/polyfill", "./src/main.js"]
+    return{
     name: name,
     resolve: {
       alias: {
@@ -211,10 +213,18 @@ module.exports = {
       //     parallel: true
       //   })
     ]
+    }
   },
-  chainWebpack(config) {
+  chainWebpack:config =>{
     // it can improve the speed of the first screen, it is recommended to turn on preload
     // it can improve the speed of the first screen, it is recommended to turn on preload
+    //兼容ie11
+    config.module
+        .rule('view-design')
+        .test(/view-design.src.*?js$/)
+        .use('babel')
+        .loader('babel-loader')
+        .end()
     config.plugin('preload').tap(() => [{
       rel: 'preload',
       // to ignore runtime.js

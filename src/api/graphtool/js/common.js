@@ -1146,7 +1146,7 @@ export function previewNodeData() {
             isRoleTable = true
             break
         case 'newNullNode':// 如果是结果表
-            if (!curNodeInfo.isSet) { // 如果是未配置的结果表，拿其前置节点的临时表名称
+            if (!graph.nodeData[graph.curCell.id].isSet) { // 如果是未配置的结果表，拿其前置节点的临时表名称
                 var parentIds = graph.nodeData[graph.curCell.id].parentIds
                 if (graph.nodeData[parentIds[0]].nodeInfo.optType === 'layering') {
                     resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableNameArr[curNodeInfo.index]

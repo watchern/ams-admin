@@ -65,7 +65,7 @@
   </div>
 </template>
 <script>
-import MyElTree from "@/components/Ace/tree/src/tree.vue";
+import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
   findThresholdValueFolderTree,addThresholdValueFolder,updateThresholdValueFolder,deleteThresholdValueData
 } from "@/api/analysis/thresholdvalue";

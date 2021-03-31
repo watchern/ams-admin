@@ -117,7 +117,7 @@
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, save, update, del, getSceneFilter, changeRoleFilter } from '@/api/data/role'
-import QueryField from '@/components/Ace/query-field/index'
+import QueryField from '@/components/public/query-field/index'
 import { getDictList, commonNotify } from '@/utils'
 
 export default {

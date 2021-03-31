@@ -96,7 +96,7 @@ import directoryFileImport from '@/views/data/tableupload'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, selectOne, importTable } from '@/api/data/dict'
 import axios from 'axios'
-import QueryField from '@/components/Ace/query-field/index'
+import QueryField from '@/components/public/query-field/index'
 import qs from 'qs'
 
 export default {

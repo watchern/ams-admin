@@ -18,15 +18,13 @@ export function init() {
         groupCountVue.columnsInfo = nodeData.setting.columnsInfo
         //初始化输出字段列表
         Array.from(nodeData.columnsInfo, item => {
-            if (item.isCount) {
-                // 初始化汇总字段的输出列行数据（只初始化汇总字段的）
+            // item.isCount：第一种是undefined（这种情况是第一次配置该节点）
+            // 第二种是false（这种情况是该节点已经配置过一次，为false的字段信息是可用于分组的字段，同时也是前置节点的所有输出字段）
+            if (item.isCount) {//初始化汇总字段的
                 const sign = item.sign
                 const countType = item.countType
                 initOutputColumn(item, true, sign, countType, true)
             } else {
-                // item.isCount：第一种是undefined（这种情况是第一次配置该节点）
-                // 第二种是false（这种情况是该节点已经配置过一次，为false的字段信息是可用于分组的字段，同时也是前置节点的所有输出字段）
-                // 初始化输出列信息
                 initOutputColumn(item, false, null, null, true)
             }
         })

@@ -56,7 +56,7 @@
 </template>
 <script>
 import { findAuditWarningList, addWarning, deleteAuditWarning, updateWarning, startById, stopById} from '@/api/analysis/auditwarning'
-import QueryField from '@/components/Ace/query-field/index'
+import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 import EditAuditWarning from '@/views/analysis/auditwarning/editauditwarning'
 export default {

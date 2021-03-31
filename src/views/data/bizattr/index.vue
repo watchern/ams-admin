@@ -66,7 +66,7 @@
 <script>
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { listByPage, save, update, del } from '@/api/data/biz-attr'
-import QueryField from '@/components/Ace/query-field/index'
+import QueryField from '@/components/public/query-field/index'
 
 export default {
   components: { Pagination, QueryField },

@@ -81,7 +81,7 @@
 </template>
 <script>
 import { listByPageRemind, updateRemind, updateReminds } from '@/api/base/base'
-import QueryField from '@/components/Ace/query-field/index'
+import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
 export default {
   components: { Pagination, QueryField },

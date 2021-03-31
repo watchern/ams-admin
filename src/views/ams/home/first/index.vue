@@ -4,7 +4,7 @@
       <div class="right flex a-end j-center flex-column">
         <div class="top-card flex a-start j-start flex-row">
           <div class="top-card-left flex-shrink  flex a-center j-center">
-            <img src="../../../../assets/Ace/image/c2.png" class="img">
+            <img src="../../../../assets/styles/image/c2.png" class="img">
           </div>
           <div class="top-card-right">
             <div class="title">待办事项</div>
@@ -69,7 +69,7 @@
         <!--            <div class="label">{{ item.label }}</div>-->
         <!--            <div class="value">{{ item.value }}</div>-->
         <!--          </div>-->
-        <!--          <img src="../../../../assets/Ace/image/enlarge.png" class="enlarge absolute">-->
+        <!--          <img src="../../../../assets/styles/image/enlarge.png" class="enlarge absolute">-->
         <!--        </div>-->
       </div>
     </div>
@@ -133,7 +133,7 @@ export default {
       resultSpiltObjects:{},
       cardList: [
         {
-          img: require('../../../../assets/Ace/image/提醒.png'),
+          img: require('../../../../assets/styles/image/提醒.png'),
           title: '提醒事项',
           bg: '#EDF1F5',
           cardBg: '#353A43',
@@ -141,7 +141,7 @@ export default {
           des: []
         },
         {
-          img: require('../../../../assets/Ace/image/c1.png'),
+          img: require('../../../../assets/styles/image/c1.png'),
           title: '审计预警',
           bg: '#fff',
           cardBg: '#353A43',
@@ -220,8 +220,8 @@ export default {
           clickable: true //允许分页点击跳转
         }
       },
-      linshiImg1:require('../../../../assets/Ace/image/firstcercle.png'),
-      linshiImg2:require('../../../../assets/Ace/image/firsttable.png'),
+      linshiImg1:require('../../../../assets/styles/image/firstcercle.png'),
+      linshiImg2:require('../../../../assets/styles/image/firsttable.png'),
       showDetailedData: {
         FINDPROBLEMCOUNT:12,
         WORKCOUNT:0,
@@ -287,9 +287,9 @@ export default {
         this.myProject(0)
       }
     })
-    axios.get('/psbcaudit/homepage/hasCount').then(resp =>{
-      console.log(resp)
-    })
+    // axios.get('/psbcaudit/homepage/hasCount').then(resp =>{
+    //   // console.log(resp)
+    // })
   },
   methods: {
     formatter(num) {
@@ -409,7 +409,7 @@ export default {
       .day-wrap{
         width: 100%;
         height: 450px;
-        background: url("../../../../assets/Ace/image/bg-home@2x.png") no-repeat center center;
+        background: url("../../../../assets/styles/image/bg-home@2x.png") no-repeat center center;
         background-size:465px 443px;
         .num{
           font-family: BebasNeue;
@@ -587,6 +587,7 @@ export default {
         border-radius: 24px;
         width: 213px;
         height: 36px;
+        line-height: 36px;
         text-align: center;
         font-family: PingFangSC-Medium;
         font-size: 16px;

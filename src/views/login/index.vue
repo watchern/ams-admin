@@ -7,7 +7,7 @@
       </div>
       <div class="right-container">
         <div class="title-container">
-          <lang-select class="set-language" />
+<!--          <lang-select class="set-language" />-->
         </div>
 
         <el-form-item prop="username">
@@ -15,12 +15,12 @@
             用户名
           </span>
           <el-input
-            ref="username"
-            v-model="loginForm.username"
-            name="username"
-            type="text"
-            tabindex="1"
-            autocomplete="on"
+              ref="username"
+              v-model="loginForm.username"
+              name="username"
+              type="text"
+              tabindex="1"
+              autocomplete="on"
           />
         </el-form-item>
 
@@ -30,16 +30,16 @@
               密码
             </span>
             <el-input
-              :key="passwordType"
-              ref="password"
-              v-model="loginForm.password"
-              :type="passwordType"
-              name="password"
-              tabindex="2"
-              autocomplete="on"
-              @keyup.native="checkCapslock"
-              @blur="capsTooltip = false"
-              @keyup.enter.native="handleLogin"
+                :key="passwordType"
+                ref="password"
+                v-model="loginForm.password"
+                :type="passwordType"
+                name="password"
+                tabindex="2"
+                autocomplete="on"
+                @keyup.native="checkCapslock"
+                @blur="capsTooltip = false"
+                @keyup.enter.native="handleLogin"
             />
             <span class="show-pwd" @click="showPwd">
               <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
@@ -57,11 +57,11 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
-import LangSelect from '@/components/LangSelect'
+// import LangSelect from '@/components/LangSelect'
 
 export default {
   name: 'Login',
-  components: { LangSelect },
+  // components: { LangSelect },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (value.length < 1) {
@@ -139,13 +139,13 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
+              .then(() => {
+                this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+                this.loading = false
+              })
+              .catch(() => {
+                this.loading = false
+              })
         } else {
           this.$message.error('用户名或密码不能为空!')
           return false
@@ -313,11 +313,11 @@ $cursor: #fff;
     font-weight: bold!important;
   }
   .login-btn:active {
-      background: #ff0114!important;
-      border-color: #ff0114!important;
-      color: #ffffff!important;
-      outline: none!important;
-      font-weight: bold!important;
+    background: #ff0114!important;
+    border-color: #ff0114!important;
+    color: #ffffff!important;
+    outline: none!important;
+    font-weight: bold!important;
   }
 }
 </style>

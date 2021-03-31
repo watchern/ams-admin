@@ -67,7 +67,7 @@
 	</div>
 </template>
 <script>
-import wangeditor from "../../../components/Ace/help-function/wangeditor.vue"
+import wangeditor from "../../../components/public/help-function/wangeditor.vue"
 import { getUserRes } from '@/api/user'
 import { saveHelpDocument, getByMenuId, updateHelpDocument } from '@/api/base/helpdocument'
 export default {

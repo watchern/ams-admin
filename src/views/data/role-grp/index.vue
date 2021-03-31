@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import MyElTree from '@/components/Ace/tree/src/tree.vue'
+import MyElTree from '@/components/public/tree/src/tree.vue'
 import { getAllScene, initSceneTree } from '@/api/data/scene'
 import { saveRoleGrp, getRoleGrp } from '@/api/data/role'
 import { commonNotify } from '@/utils'

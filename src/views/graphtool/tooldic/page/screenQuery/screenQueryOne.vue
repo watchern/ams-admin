@@ -184,7 +184,6 @@
                                 this.allNodeData[nodeId].setting.index = this.screenParam.layering_index
                             }
                             //组装列表字段数组
-                            var columnsInfo = curNodeData.columnsInfo;
                             Array.from(curNodeData.columnsInfo, item => {
                                 if(item.isOutputColumn === 1){
                                     this.columnInfoArr.push(item);

@@ -207,7 +207,7 @@ import tabledatatabs from '@/views/data/table/tabledatatabs'
 import tablerelation from '@/views/data/table/tablerelation'
 import childTabs from '@/views/analysis/auditmodelresult/childtabs'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import QueryField from '@/components/Ace/query-field/index'
+import QueryField from '@/components/public/query-field/index'
 import { getArrLength } from '@/utils'
 import { deleteDirectory, copyTable, renameResource, movePath, preview, nextUpload, importTable, shareTableSave } from '@/api/data/directory'
 import { saveFolder } from '@/api/data/folder'

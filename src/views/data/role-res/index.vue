@@ -162,7 +162,7 @@
   </div>
 </template>
 <script>
-import MyElTree from '@/components/Ace/tree/src/tree.vue'
+import MyElTree from '@/components/public/tree/src/tree.vue'
 import { getResELTree, getResByRole, getRoleCols, saveRoleTable, getAccessType } from '@/api/data/table-info'
 import { commonNotify } from '@/utils'
 
@@ -368,8 +368,7 @@ export default {
 
 <style lang="scss">
   .page-container .tree-container{
-    height: 80vh;
-    overflow: scroll;
+    height:55vh; overflow:auto;
   }
   .page-container .tree-container .filter-tree {
     margin-top: 20px;

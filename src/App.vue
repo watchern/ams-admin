@@ -9,8 +9,9 @@ export default {
   name: 'App'
 }
 </script>
+
 <style>
-@import url('assets/Ace/css/index.css');
+@import url('assets/styles/css/index.css');
 .el-loading-mask{
   z-index: 1998;
 }
