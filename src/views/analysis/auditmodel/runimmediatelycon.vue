@@ -44,6 +44,7 @@
             :visible.sync="modelResultSavePathDialog"
             width="30%"
             :append-to-body="true"
+            :close-on-click-modal="false"
           >
             <data-tree
               :data-user-id="dataUserId"

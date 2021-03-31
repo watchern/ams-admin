@@ -45,7 +45,7 @@
       </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-    <el-dialog :title="editDialogTitle" v-if='editDialogVisible' :visible.sync="editDialogVisible">
+    <el-dialog :title="editDialogTitle" v-if='editDialogVisible' :close-on-click-modal="false" :visible.sync="editDialogVisible">
       <EditAuditWarning ref="edit" :option="operationObj.option" :optionUuid="operationObj.optionUuid"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">关闭</el-button>

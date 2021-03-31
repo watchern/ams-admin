@@ -37,9 +37,9 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <!-- 弹窗1 预览数据-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisibleTable">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisibleTable" :close-on-click-modal="false">
       <template>
-        <div class="detail-form">
+        <div class="detail-form" style="height:62vh; overflow:auto;">
           <el-form
             ref="dataForm"
             :rules="rules"
@@ -63,7 +63,7 @@
             border
             fit
             highlight-current-row
-            style="width: 100%;height:500px;overflow: auto;"
+            style="width: 100%;overflow: auto;"
           >
             <el-table-column label="字段名称" width="250px" prop="colName" />
             <el-table-column label="字段汉化名称" width="250px" prop="chnName" />
@@ -77,7 +77,7 @@
       </div>
     </el-dialog>
     <!-- 弹窗2 导入数据-->
-    <el-dialog v-if="importVisible" :title="textMap[dialogStatus]" :visible.sync="importVisible" width="800px">
+    <el-dialog v-if="importVisible" :title="textMap[dialogStatus]" :visible.sync="importVisible" :close-on-click-modal="false" width="800px">
       <el-row>
         <el-col>
           <directory-file-import @fileuploadname="fileuploadname" />

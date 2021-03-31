@@ -58,6 +58,7 @@
       v-if="dialogFormVisible"
       title="请填写分类信息"
       :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
     >
       <el-form :model="form">
         <el-form-item label="分类名称">

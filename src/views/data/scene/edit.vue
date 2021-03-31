@@ -60,7 +60,7 @@
           </el-table-column>
         </el-table>
         <!-- <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" /> -->
-        <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+        <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
           <template class="detail-form">
             <el-form
               ref="dataFormGrp"
@@ -146,7 +146,7 @@
           </el-table>
           <!-- <pagination v-show="totalFilter>0" :total="totalFilter" :page.sync="pageQueryFilter.pageNo" :limit.sync="pageQueryFilter.pageSize" @pagination="getListFilter" /> -->
 
-          <el-dialog :title="textMapFilter[dialogStatusFilter]" :visible.sync="dialogFormVisibleFilter">
+          <el-dialog :title="textMapFilter[dialogStatusFilter]" :visible.sync="dialogFormVisibleFilter" :close-on-click-modal="false">
             <div class="detail-form">
               <el-form
                 ref="dataFormFilter"
@@ -181,7 +181,7 @@
             </div>
           </el-dialog>
 
-          <el-dialog title="预览" :visible.sync="dialogFormVisibleTree">
+          <el-dialog title="预览" :visible.sync="dialogFormVisibleTree" :close-on-click-modal="false">
             <MyElTree
               ref="tree1"
               v-loading="tree1Loading"

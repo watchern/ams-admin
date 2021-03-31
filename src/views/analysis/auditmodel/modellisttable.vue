@@ -30,7 +30,7 @@
             </el-dropdown>
           </el-col>
         </el-row>
-        <el-dialog v-if="modelFolderTreeDialog" :visible.sync="modelFolderTreeDialog" title="选择业务分类" width="50%">
+        <el-dialog v-if="modelFolderTreeDialog" :close-on-click-modal="false" :visible.sync="modelFolderTreeDialog" title="选择业务分类" width="50%">
           <ModelFolderTree ref="modelFolderTree" public-model="editorModel"/>
           <div slot="footer">
             <el-button type="primary" @click="setImportFolder">确定</el-button>
@@ -90,14 +90,14 @@
       </el-tab-pane>
     </el-tabs>
     <modelshoppingcart :data-user-id='dataUserId' :scene-code='sceneCode' v-show="isShowShoppingCart" ref="modelShoppingCartRef" />
-    <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
+    <el-dialog v-if="treeSelectShow" :close-on-click-modal="false" :visible.sync="treeSelectShow" title="发布模型" width="50%">
       <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
       <div slot="footer">
         <el-button type="primary" @click="updatePublicModel">确定</el-button>
         <el-button @click="treeSelectShow=false">取消</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-if="dialogFormVisible" title="请输入参数" :visible.sync="dialogFormVisible" :append-to-body="true">
+    <el-dialog v-if="dialogFormVisible" :close-on-click-modal="false" title="请输入参数" :visible.sync="dialogFormVisible" :append-to-body="true">
 <!--      <paramDraw v-if="dialogFormVisible" ref="paramDrawRef" :my-id="paramDrawUuid" />-->
       <paramDrawNew v-if="dialogFormVisible" :sql="this.currentPreviewModelParamAndSql.sqlValue" :arr="this.currentPreviewModelParamAndSql.paramObj" ref="paramDrawRefNew"></paramDrawNew>
       <div slot="footer" class="dialog-footer">
@@ -105,7 +105,7 @@
         <el-button type="primary" @click="replaceNodeParam">确定</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-if="dialogFormVisiblePersonTree" title="请选择共享人员" :visible.sync="dialogFormVisiblePersonTree" :append-to-body="true">
+    <el-dialog v-if="dialogFormVisiblePersonTree" :close-on-click-modal="false" title="请选择共享人员" :visible.sync="dialogFormVisiblePersonTree" :append-to-body="true">
       <personTree ref="personTree" />
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisiblePersonTree = false">关闭</el-button>
@@ -127,6 +127,7 @@
     <el-dialog
       title="请选择模型类型"
       :visible.sync="addModelIsSee"
+      :close-on-click-modal="false"
       width="30%">
       <el-select v-model="selectModelType" placeholder="请选择模型类型" style="width:67%">
         <el-option

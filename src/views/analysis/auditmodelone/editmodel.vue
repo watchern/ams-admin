@@ -211,28 +211,28 @@
       </div>
     </el-container>
     <el-dialog v-if="auditItemTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="auditItemTree"
-               title="请选择审计事项" width="80%">
+               title="请选择审计事项" width="80%" :close-on-click-modal="false">
       <AuditItemTree ref="auditItemTreeRef"></AuditItemTree>
       <div slot="footer">
         <el-button  type="primary" @click="getAuditItem">确定</el-button>
         <el-button @click="auditItemTree=false">取消</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-if="modelFolderTreeDialog" :visible.sync="modelFolderTreeDialog" title="选择业务分类" width="50%">
+    <el-dialog v-if="modelFolderTreeDialog" :visible.sync="modelFolderTreeDialog" title="选择业务分类" width="50%" :close-on-click-modal="false">
       <ModelFolderTree ref="modelFolderTree" public-model="editorModel"/>
       <div slot="footer">
         <el-button type="primary" @click="setBusinessFolder">确定</el-button>
         <el-button @click="modelFolderTreeDialog=false">取消</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-if="modelDetailIsSee" :visible.sync="modelDetailIsSee" :title="modelDetailAdd===true?'添加模型关联':'修改模型关联'" width="50%">
+    <el-dialog v-if="modelDetailIsSee" :visible.sync="modelDetailIsSee" :title="modelDetailAdd===true?'添加模型关联':'修改模型关联'" width="50%" :close-on-click-modal="false">
       <model-detail :style="modelDetailIsSeeHeight" ref="child" v-if="modelDetailIsSee" :data="modelDetailAdd===true?{}:editingModelDetail" :operationtype="operationObj.operationType" :columns="columnData"></model-detail>
       <div slot="footer">
         <el-button type="primary" @click="modelDetailAdd===true?createDetail():editModelRelationDetermine()">确定</el-button>
         <el-button @click="modelDetailIsSee=false">取消</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-if="thresholdIsSee" :visible.sync="thresholdIsSee" :title="thresholdAdd===true?'添加模型阈值':'修改模型阈值'" width="50%">
+    <el-dialog v-if="thresholdIsSee" :visible.sync="thresholdIsSee" :title="thresholdAdd===true?'添加模型阈值':'修改模型阈值'" width="50%" :close-on-click-modal="false">
           <thresholdvaluerel v-if="thresholdIsSee" ref="thresholdChild" :setThreasholdValueObj="setThreasholdValueObj"></thresholdvaluerel>
       <div slot="footer">
         <el-button type="primary" @click="thresholdAdd===true?createThreshold():editThresholdDetermine()">确定</el-button>
