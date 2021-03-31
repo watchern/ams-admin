@@ -97,6 +97,7 @@ export default {
      */
     getWebSocket() {
       var userId = this.$store.getters.personuuid
+      // 修改为动态获取ip，否则上线打包不通用
       const wsuri = 'ws://' + window.location.host+ '/websocket?' + userId + 'systemTask'// 连接地址，可加参数// 连接地址，可加参数
       // const wsuri = process.env.VUE_APP_BASE_WEB_SOCKET + userId + 'systemTask'// 连接地址，可加参数// 连接地址，可加参数
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
