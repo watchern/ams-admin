@@ -16,3 +16,4 @@ yarn-error.log*
 *.sln
 *.iml
 *.xml
+package-lock.json
