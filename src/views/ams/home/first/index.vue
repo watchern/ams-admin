@@ -2,7 +2,7 @@
   <div class="home w100 h100 flex a-center j-start flex-column">
     <div class="top flex a-center j-between flex-row flex1 flex-shrink ">
       <div class="right flex a-end j-center flex-column">
-        <div class="top-card flex a-start j-start flex-row">
+        <!-- <div class="top-card flex a-start j-start flex-row">
           <div class="top-card-left flex-shrink  flex a-center j-center">
             <img src="../../../../assets/styles/image/c2.png" class="img">
           </div>
@@ -14,7 +14,7 @@
             </div>
           </div>
           <span class="card-more" @click="toDoSomeJump">更多</span>
-        </div>
+        </div> -->
         <div class="bottom-card flex a-center j-between flex-row">
           <div v-for="(item,index) in cardList" :key="index" class="top-card flex j-start flex-row" :style="{background:item.bg}">
             <div class="top-card-left flex-shrink  flex a-center j-center" :style="{background:item.cardBg}">
@@ -31,12 +31,10 @@
           </div>
         </div>
       </div>
-      <div class="left flex-shrink flex a-center j-center flex-column">
+      <!-- <div class="left flex-shrink flex a-center j-center flex-column">
         <swiper :options="swiperOption" ref="mySwiper" :autoplay="5000">
           <swiper-slide>
             <div class="day-wrap relative">
-<!--              <animate-number from="00" :to="this.myProjectIn[0].lengthIn" :formatter="formatter" class="num" />-->
-<!--              <span class="text absolute">我的项目</span>-->
               <div class="showDetailedIn">
                 <span style="background-color:rgb(81,69,89)">{{showDetailedData.TAKEPROJECTCOUNT}}</span>
                 参与项目数
@@ -64,16 +62,16 @@
           <div class="swiper-pagination" slot="pagination"></div>
         </swiper>
 
-        <!--        <div class="calendar-wrap flex a-center j-center flex-row relative">-->
-        <!--          <div v-for="(item,index) in boxList" :key="index" class="box flex a-center j-center flex-column" :class="[index===3 && 'box-active']">-->
-        <!--            <div class="label">{{ item.label }}</div>-->
-        <!--            <div class="value">{{ item.value }}</div>-->
-        <!--          </div>-->
-        <!--          <img src="../../../../assets/styles/image/enlarge.png" class="enlarge absolute">-->
-        <!--        </div>-->
-      </div>
+               <div class="calendar-wrap flex a-center j-center flex-row relative">
+                 <div v-for="(item,index) in boxList" :key="index" class="box flex a-center j-center flex-column" :class="[index===3 && 'box-active']">
+                   <div class="label">{{ item.label }}</div>
+                   <div class="value">{{ item.value }}</div>
+                 </div>
+                 <img src="../../../../assets/Ace/image/enlarge.png" class="enlarge absolute">
+               </div>
+      </div> -->
     </div>
-    <div class="bottom-father" v-for="(item, index) in myProjectIn">
+    <!-- <div class="bottom-father" v-for="(item, index) in myProjectIn">
       <div class="bottom bottom-animate flex a-center j-start flex-row" :key="projectAnimation">
         <div class="line1 line flex a-start j-center flex-column" style="flex-basis:80px;">
           <div class="count-font" style="cursor:pointer;">
@@ -101,7 +99,7 @@
         </div>
       </div>
       <div class="bottom-after" @click="toTheNext(item.theIndex)"><i class="el-icon-arrow-down"></i></div>
-    </div>
+    </div> -->
     <el-dialog
       :visible.sync="dialogFormVisible"
       top = "10vh"
@@ -267,26 +265,26 @@ export default {
       //   }
       // }
     })
-    axios.get('/psbcaudit/homepage/loadTodoInfo').then(resp =>{
-      if (resp.data !== '') {
-        this.TopTodo = resp.data
-      }
-    })
-    axios.get('/psbcaudit/homepage/loadPrjInfo').then(resp =>{
-      if (resp.data.prjList.length > 0) {
-        this.projectDetails = []
-          for (let i = 0;i < resp.data.prjList.length; i++) {
-            this.projectDetails.push({
-              name: resp.data.prjList[i].prjName,
-              time: resp.data.prjList[i].createTime,
-              lengthIn: resp.data.prjList.length,
-              idProject: resp.data.prjList[i].projectUUID,
-              idPlan: resp.data.prjList[i].planUUID
-            })
-          }
-        this.myProject(0)
-      }
-    })
+    // axios.get('/psbcaudit/homepage/loadTodoInfo').then(resp =>{
+    //   if (resp.data !== '') {
+    //     this.TopTodo = resp.data
+    //   }
+    // })
+    // axios.get('/psbcaudit/homepage/loadPrjInfo').then(resp =>{
+    //   if (resp.data.prjList.length > 0) {
+    //     this.projectDetails = []
+    //       for (let i = 0;i < resp.data.prjList.length; i++) {
+    //         this.projectDetails.push({
+    //           name: resp.data.prjList[i].prjName,
+    //           time: resp.data.prjList[i].createTime,
+    //           lengthIn: resp.data.prjList.length,
+    //           idProject: resp.data.prjList[i].projectUUID,
+    //           idPlan: resp.data.prjList[i].planUUID
+    //         })
+    //       }
+    //     this.myProject(0)
+    //   }
+    // })
     // axios.get('/psbcaudit/homepage/hasCount').then(resp =>{
     //   // console.log(resp)
     // })
@@ -474,11 +472,12 @@ export default {
         background: #FFFFFF;
         box-shadow: 17px 17px 34px 0 rgba(0,0,0,0.10);
         border-radius: 25.2px;
-        padding: 27px;
+        padding: 50px;
+        padding-right:200px;
         width: 479px;
         position: relative;
-        margin:5px;
-        height: 218px;
+        margin:20px;
+        height: 300px;
         &-left{
           background: #FFFFFF;
           border: 1px solid #D8D8D8;
@@ -515,7 +514,7 @@ export default {
         }
       }
       .bottom-card{
-        width: 479px;
+        width: 400px;
         margin-top: 33px;
         position: relative;
         //.left-card{
