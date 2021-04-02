@@ -887,6 +887,8 @@ function the_left_all() {
     max_left = 70
     max_width = 96
     tz_path = 0
+  } else {
+    tz_path = -63
   }
 }
 

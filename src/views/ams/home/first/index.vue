@@ -2,22 +2,22 @@
   <div class="home w100 h100 flex a-center j-start flex-column">
     <div class="top flex a-center j-between flex-row flex1 flex-shrink ">
       <div class="right flex a-end j-center flex-column">
-        <div class="top-card flex a-start j-start flex-row">
+        <div class="top-card flex a-start j-start flex-row skin-wbgColor-3 skin-shadow">
           <div class="top-card-left flex-shrink  flex a-center j-center">
-            <img src="../../../../assets/styles/image/c2.png" class="img">
+            <img src="../../../../styles/image/c2.png" class="img">
           </div>
           <div class="top-card-right">
-            <div class="title">待办事项</div>
+            <div class="title skin-wordColor">待办事项</div>
             <div class="des" v-for="(item,index) in TopTodo">
-              <span style="color:#000">{{item.name}}</span>
+              <span class="skin-wordColor">{{item.name}}</span>
               <span v-if="item.icon" :style="{color:item.iconColor}" class="icon">{{ item.icon }}</span>
             </div>
           </div>
-          <span class="card-more" @click="toDoSomeJump">更多</span>
+          <span class="card-more skin-wordmoreColor" @click="toDoSomeJump">更多</span>
         </div>
         <div class="bottom-card flex a-center j-between flex-row">
-          <div v-for="(item,index) in cardList" :key="index" class="top-card flex j-start flex-row" :style="{background:item.bg}">
-            <div class="top-card-left flex-shrink  flex a-center j-center" :style="{background:item.cardBg}">
+          <div v-for="(item,index) in cardList" :key="index" class="top-card flex j-start flex-row skin-shadow" :class="{backgroundColor:index === 0?'skin-wbgColor-1':'skin-wbgColor-2'}">
+            <div class="top-card-left flex-shrink skin-bgColor flex a-center j-center">
               <img :src="item.img" class="img">
             </div>
             <div class="top-card-right">
@@ -74,13 +74,13 @@
       </div>
     </div>
     <div class="bottom-father" v-for="(item, index) in myProjectIn">
-      <div class="bottom bottom-animate flex a-center j-start flex-row" :key="projectAnimation">
-        <div class="line1 line flex a-start j-center flex-column" style="flex-basis:80px;">
+      <div class="bottom bottom-animate flex a-center j-start flex-row skin-bgColor" :key="projectAnimation">
+        <div class="line1 line flex a-start j-center flex-column skin-border-right" style="flex-basis:80px;">
           <div class="count-font" style="cursor:pointer;">
             <span class="count-font">{{ item.theIndex + 1 }}</span>/<animate-number :from="0" :to="item.lengthIn" class="count-font" />
           </div>
         </div>
-        <div class="line1 line flex a-center j-center flex-column">
+        <div class="line1 line flex a-center j-center flex-column skin-border-right">
           <div class="title-bottom-top">我的项目</div>
           <div class="des flex a-center j-start flex-row">
             <div class="right-name right">
@@ -88,11 +88,11 @@
             </div>
           </div>
         </div>
-        <div class="line2 line flex a-center j-center flex-column">
+        <div class="line2 line flex a-center j-center flex-column skin-border-right">
           <div class="title-bottom">项目状态</div>
           <div class="date">执行中</div>
         </div>
-        <div class="line3 line flex a-center j-center flex-column">
+        <div class="line3 line flex a-center j-center flex-column skin-border-right">
           <div class="title-bottom">立项时间</div>
           <div class="date">{{ item.time }}</div>
         </div>
@@ -100,7 +100,7 @@
           <div class="btn" @click="projectDetailsIn(item.idProject)">查看此项目的详情</div>
         </div>
       </div>
-      <div class="bottom-after" @click="toTheNext(item.theIndex)"><i class="el-icon-arrow-down"></i></div>
+      <div class="bottom-after skin-bttom-a" @click="toTheNext(item.theIndex)"><i class="el-icon-arrow-down"></i></div>
     </div>
     <el-dialog
       :visible.sync="dialogFormVisible"
@@ -133,18 +133,14 @@ export default {
       resultSpiltObjects:{},
       cardList: [
         {
-          img: require('../../../../assets/styles/image/提醒.png'),
+          img: require('../../../../styles/image/提醒.png'),
           title: '提醒事项',
-          bg: '#EDF1F5',
-          cardBg: '#353A43',
           path:'',
           des: []
         },
         {
-          img: require('../../../../assets/styles/image/c1.png'),
+          img: require('../../../../styles/image/c1.png'),
           title: '审计预警',
-          bg: '#fff',
-          cardBg: '#353A43',
           path:'',
           des: []
         },
@@ -220,8 +216,8 @@ export default {
           clickable: true //允许分页点击跳转
         }
       },
-      linshiImg1:require('../../../../assets/styles/image/firstcercle.png'),
-      linshiImg2:require('../../../../assets/styles/image/firsttable.png'),
+      linshiImg1:require('../../../../styles/image/firstcercle.png'),
+      linshiImg2:require('../../../../styles/image/firsttable.png'),
       showDetailedData: {
         FINDPROBLEMCOUNT:12,
         WORKCOUNT:0,
@@ -406,10 +402,12 @@ export default {
     .left{
       flex: 1;
       height: 100%;
+      position: relative;
+      top: -57px;
       .day-wrap{
         width: 100%;
         height: 450px;
-        background: url("../../../../assets/styles/image/bg-home@2x.png") no-repeat center center;
+        background: url("../../../../styles/image/bg-home@2x.png") no-repeat center center;
         background-size:465px 443px;
         .num{
           font-family: BebasNeue;
@@ -470,6 +468,8 @@ export default {
     }
     .right{
       width: 500px;
+      position: relative;
+      top: -30px;
       .top-card{
         background: #FFFFFF;
         box-shadow: 17px 17px 34px 0 rgba(0,0,0,0.10);
@@ -573,10 +573,6 @@ export default {
     box-shadow: 10px 10px 20px 0 rgba(0,0,0,0.10);
     border-radius: 15px;
     position: absolute;
-    top: -38px;
-    left:5%;
-    margin-bottom: 12px;
-    margin-top: 20px;
     user-select:none;
     .line3,.line2{
       width: 20%;
@@ -713,11 +709,9 @@ export default {
   height:60px;
 }
 .bottom-father{
-  height: 106px;
+  height: 124px;
   width: 100%;
   position: relative;
-  bottom:-12px;
-  margin-bottom: 12px;
   margin-top: 20px;
 }
 .top-card-right{
@@ -729,7 +723,6 @@ export default {
   display: block;
   width: 86%;
   height: 18px;
-  background: #0F1F32;
   border-bottom-left-radius: 100px;
   border-bottom-right-radius: 100px;
   position:absolute;
@@ -745,25 +738,25 @@ export default {
   0%{
     width:0;
     height:0;
-    top: 15px;
+    bottom: 18px;
     left:50%;
   }
   30%{
     height: 80px;
     width: 85%;
-    top: -25px;
+    bottom: 18px;
     left:7.5%;
   }
   80%{
     height: 130px;
     width: 100%;
-    top: -60px;
-    left:0%;
+    bottom: 18px;
+    left:0;
   }
   100%{
     height: 106px;
     width: 90%;
-    top: -38px;
+    bottom: 18px;
     left:5%;
   }
 }

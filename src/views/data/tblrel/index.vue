@@ -35,13 +35,14 @@
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <template class="detail-form">
+      <template>
         <el-form
           ref="dataForm"
           :rules="rules"
           :model="temp"
           label-position="right"
           width="80%"
+          class="detail-form"
         >
           <el-form-item prop="tableMetaUuid" label="表名称">
             <el-input v-model="temp.tbName" :disabled="true" />

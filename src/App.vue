@@ -11,7 +11,7 @@ export default {
 </script>
 
 <style>
-@import url('assets/styles/css/index.css');
+@import url('styles/css/index.css');
 .el-loading-mask{
   z-index: 1998;
 }

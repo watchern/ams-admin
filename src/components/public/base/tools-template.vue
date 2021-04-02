@@ -61,19 +61,19 @@
           </div>
         </div>
       </div>
-      <div class="other-tools">
-        <div class="title-label">其他工具</div>
-        <div class="other-tools-box flex flex-row a-center j-start">
-          <div
-            v-for="(item,index) in otherToolsList"
-            :key="index"
-            class="tools-box flex a-start j-center flex-column"
-          >
-            <i class="el-icon-s-home tools-box-icon" />
-            <div class="tools-box-name">{{ item.name }}</div>
-          </div>
-        </div>
-      </div>
+<!--      <div class="other-tools">-->
+<!--        <div class="title-label">其他工具</div>-->
+<!--        <div class="other-tools-box flex flex-row a-center j-start">-->
+<!--          <div-->
+<!--            v-for="(item,index) in otherToolsList"-->
+<!--            :key="index"-->
+<!--            class="tools-box flex a-start j-center flex-column"-->
+<!--          >-->
+<!--            <i class="el-icon-s-home tools-box-icon" />-->
+<!--            <div class="tools-box-name">{{ item.name }}</div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <div class="newest-item">
         <div class="title-label">执行任务</div>

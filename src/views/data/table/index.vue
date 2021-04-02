@@ -386,16 +386,4 @@ export default {
   margin-top: 10px;
   cursor:pointer;
   }
-  .page-container .tree-container{
-    height: 80vh;
-    overflow: scroll;
-  }
-  .page-container .tree-container .filter-tree {
-    margin-top: 20px;
-  }
-  .transfer-center-item{
-    width: 40px;
-    margin: 2px;
-    height: 40vh;
-  }
 </style>
