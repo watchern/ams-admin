@@ -1,5 +1,5 @@
 <template>
-    <div ref="basicInfo" class="detail-form">
+    <div ref="basicInfo">
         <el-form ref="basicInfoForm" :model="formData" class="detail-form">
             <el-row>
                 <el-col>

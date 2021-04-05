@@ -33,13 +33,15 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <el-dialog v-if="dialogFormVisible" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
+      <div style="height:65vh;overflow:auto;">
       <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="120px"
-        style="width: 700px;"
+        class="detail-form"
+        
       >
         <el-form-item label="规则名称" prop="ruleName">
           <el-input v-model="temp.ruleName" />
@@ -47,15 +49,15 @@
         <el-form-item label="规则描述" prop="ruleDesc">
           <el-input v-model="temp.ruleDesc" type="textarea" />
         </el-form-item>
-        <el-form-item label="转码方式" prop="ruleType">
+        <el-form-item label="转码方式" prop="ruleType" v-if="false">
           <el-radio v-model="temp.ruleType" :label="1">SQL语句</el-radio>
           <el-radio v-model="temp.ruleType" :label="2">手动输入</el-radio>
         </el-form-item>
-        <el-form-item v-if="temp.ruleType === 1" label="转码规则" prop="sqlContent" placeholder="请输入SQL">
+        <!-- <el-form-item v-if="temp.ruleType === 1" label="转码规则" prop="sqlContent" placeholder="请输入SQL">
           <el-link v-if="temp.ruleType === 1" size="mini" type="primary" @click="exSql()">执行SQL</el-link>
           <el-input v-model="temp.sqlContent" type="textarea" />
-        </el-form-item>
-        <el-table v-if="temp.ruleType === 1" :data="sqlRule">
+        </el-form-item> -->
+        <!-- <el-table v-if="temp.ruleType === 1" :data="sqlRule">
           <el-table-column prop="codeValue" label="真实值">
             <template slot-scope="scope">
               <el-select ref="codeValue" v-model="scope.row.codeValue" placeholder="请选择真实值">
@@ -80,7 +82,7 @@
               </el-select>
             </template>
           </el-table-column>
-        </el-table>
+        </el-table> -->
         <!-- 执行预览弹窗 -->
         <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
           <el-row>
@@ -103,7 +105,7 @@
         accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
       >
         <el-link size="mini" type="primary">导入</el-link>
-        <span style="font-size:2px;color:red">(请选择xls或者xlsx格式,导入第一列为真实值,第二列为转码值)</span>
+        <span style="font-size:12px;color:red">(请选择xls或者xlsx格式,导入第一列为真实值,第二列为转码值)</span>
       </el-upload>
       <el-table v-if="temp.ruleType === 2" :data="transColRelsData" height="200">
         <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>
@@ -139,6 +141,7 @@
           </template>
         </el-table-column>
       </el-table>
+      </div>
       <div slot="footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">保存</el-button>
@@ -299,7 +302,8 @@ export default {
       this.temp = {
         transRuleUuid: undefined,
         ruleName: '',
-        ruleType: 1,
+        // ruleType: 1,
+        ruleType: 2,
         ruleDesc: '',
         codeValue: '',
         transValue: '',

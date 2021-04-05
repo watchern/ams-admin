@@ -16,11 +16,11 @@
       style="width: 100%;"
     >
       <el-table-column label="表名称" width="150px" prop="tbName" />
-      <el-table-column label="字段名称" width="150px" prop="colName" />
+      <!-- <el-table-column label="字段名称" width="150px" prop="colName" /> -->
       <el-table-column label="从表名称" width="200px" prop="relationTableName" />
       <el-table-column label="关联字段" width="150px" prop="relationCol" />
       <el-table-column label="关联关系" align="center" prop="sqlGenJoinType" :formatter="formatSqlGenJoinType" />
-      <el-table-column label="过滤条件" prop="describtion">
+      <!-- <el-table-column label="过滤条件" prop="describtion">
         <template v-if="scope.row.sqlGenOnStr!=null && scope.row.sqlGenOnStr.length>0" slot-scope="scope">
           <el-popover trigger="hover" placement="top" width="500">
             <el-row>
@@ -29,12 +29,12 @@
               </el-col>
             </el-row>
             <div slot="reference" class="name-wrapper">
-              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
+              <!-- <el-tag><i class="el-icon-tickets" /></el-tag> 
               <el-link :underline="false" type="primary">查看过滤</el-link>
             </div>
           </el-popover>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
     <!-- 如果进行关联操作 -->
     <el-table v-if="openType !== 'showTable' && openType !== 'tableRegister'" :data="temp" height="700px" @selection-change="handleSelectionChange">

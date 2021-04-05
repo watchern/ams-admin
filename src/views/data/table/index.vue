@@ -61,7 +61,7 @@
       </el-col>
     </el-row>
     <el-dialog :close-on-click-modal=false
-               :default-expand-all=true :title="'选择注册表'" :visible.sync="registTableFlag" width="600px">
+               :default-expand-all=true :title="'选择注册表'" :visible.sync="registTableFlag">
       <el-input style="width: 70%"
         v-model="filterText1"
         placeholder="输入想要查询的表名称（模糊搜索）"
@@ -233,6 +233,7 @@ export default {
         return false
       }
       this.registTableFlag = true
+      this.getTables()
     },
     flagSelectTable() {
       var ckFolder = this.$refs.tree2.getCurrentNode()
