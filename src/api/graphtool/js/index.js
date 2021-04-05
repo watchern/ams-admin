@@ -942,6 +942,9 @@ export async function saveModelGraph(){
                                 }else if(preNodeInfo.optType === "sql"){
                                     selectSql = preNodeInfo.resultSql
                                     tableName = preNodeInfo.resultTableName
+                                }else if(preNodeInfo.optType === "sort"){//排序节点含有order by子句时需再扩一层（只有DB2数据库才需要），此处未做区分，优化的话可以根据当前业务数据库的类型判断一下
+                                    selectSql = `SELECT * FROM (${preNodeInfo.nodeSql})`
+                                    tableName = preNodeInfo.resultTableName
                                 }else{//其他类型的操作节点都一样，直接取前置节点的临时表名称
                                     selectSql = preNodeInfo.nodeSql
                                     tableName = preNodeInfo.resultTableName
