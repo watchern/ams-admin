@@ -954,7 +954,7 @@ export async function saveModelGraph(){
                                     dropTableSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果表的SQL语句*/\n DROP TABLE " + tableName + "\n"
                                     modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS (" + selectSql + ") definition only;\n";//不能移动位置
                                     //此句只适用于业务库是DB2数据库（目的是为了实现CREATE TABLE xx AS SELECT……的数据插入）
-                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的结果表插入数据的SQL语句*/\n INSERT INTO " + tableName + " " + selectSql + "\n";
+                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的结果表插入数据的SQL语句*/\n INSERT INTO " + tableName + " " + selectSql + ";\n";
                                     selectSql = `SELECT ${selectColArr.join(",")} FROM ${tableName}`
                                     if(newNodeData[parentIds[0]].hasParam && newNodeData[parentIds[0]].paramsSetting){
                                         //此处处理不同操作节点SELECT语句附带的参数条件
