@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" style="height:80vh;overflow:auto">
     <el-row>
       <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'" align="right">
         <!-- <el-button type="primary" size="mini" class="oper-btn iconoper-export" title="上移" @click="upTheCol()" />
@@ -13,7 +13,6 @@
       <el-form
         ref="dataForm"
         :model="tempTable"
-        style="height:80vh;overflow:hidden"
       >
         <el-form-item label="表名称" prop="tableName">
           <el-input v-model="tempTable.tableName" />
