@@ -18,7 +18,7 @@
               <el-form-item label="预警类型" >
                 <el-select v-model="temp.warningType" placeholder="请选择预警类型" >
                   <el-option label="模型" :value="1"></el-option>
-                  <el-option label="指标常用分析" :value="2"></el-option>
+                  <!-- <el-option label="指标常用分析" :value="2"></el-option> -->
                 </el-select>
               </el-form-item>
             </el-col>
