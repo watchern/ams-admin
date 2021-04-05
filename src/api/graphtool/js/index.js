@@ -911,7 +911,7 @@ export async function saveModelGraph(){
                                         paramArr.push({ ...{}, ...arr[t] });//此处深层扩展赋值，是为了当改变paramArr中得值时不影响paramsSetting得值
                                     }
                                 }
-                                modelSql += "/*原表【" + curNodeInfo.nodeName + "】的查询SQL语句*/\n" + selectSql + "\n";
+                                modelSql += "/*原表【" + curNodeInfo.nodeName + "】的查询SQL语句*/\n" + selectSql + ";\n";
                             }
                         }
                         if(curNodeInfo.optType === 'newNullNode'){
@@ -951,8 +951,8 @@ export async function saveModelGraph(){
                                 }
                                 //组织SQL语句
                                 if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果结果表是辅助结果表或最终结果表
-                                    dropTableSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果表的SQL语句*/\n DROP TABLE " + tableName + "\n"
-                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS " + selectSql + "\n";//不能移动位置
+                                    dropTableSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果表的SQL语句*/\n DROP VIEW " + tableName + "\n"
+                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE VIEW " + tableName + " AS " + selectSql + ";\n";//不能移动位置
                                     selectSql = `SELECT ${selectColArr.join(",")} FROM ${tableName}`
                                     if(newNodeData[parentIds[0]].hasParam && newNodeData[parentIds[0]].paramsSetting){
                                         //此处处理不同操作节点SELECT语句附带的参数条件
@@ -978,7 +978,7 @@ export async function saveModelGraph(){
                                     modelSql += "/*节点【" + preNodeInfo.nodeName + "】的查询结果表的SQL语句*/\n " + selectSql + "\n"
                                 }else{
                                     dropViewSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果视图的SQL语句*/\n DROP VIEW " + tableName + "\n"
-                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS " + selectSql + "\n";//不能移动位置
+                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS " + selectSql + ";\n";//不能移动位置
                                 }
                             }
                         }
