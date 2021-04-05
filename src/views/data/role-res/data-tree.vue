@@ -4,7 +4,7 @@
       v-model="filterText1"
       placeholder="输入关键字进行过滤"
     />
-    <div style="overflow: auto; height: 80vh">
+    <div :style="treeStyle">
       <MyElTree
         ref="tree1"
         v-loading="treeLoading"
@@ -43,6 +43,10 @@ export default {
   props: {
     dataUserId: String,
     sceneCode: String,
+    treeHeight:{
+      type: Number,
+      default: 55
+    },
     treeType: {
       type: String,
       default: 'common' // common:正常的权限树   save:用于保存数据的文件夹树
@@ -68,6 +72,9 @@ export default {
     }
   },
   computed: {
+    treeStyle() {
+      return `height: ${this.treeHeight}vh;overflow: auto`
+    }
   },
   watch: {
     filterText1(val) {

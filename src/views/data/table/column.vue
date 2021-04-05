@@ -13,6 +13,7 @@
       <el-form
         ref="dataForm"
         :model="tempTable"
+        style="height:80vh;overflow:hidden"
       >
         <el-form-item label="表名称" prop="tableName">
           <el-input v-model="tempTable.tableName" />

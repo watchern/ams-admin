@@ -24,7 +24,7 @@
                 <el-input v-model="scope.row.chnName" style="width:90%;" :disabled="openType === 'showTable'" />
               </template>
             </el-table-column>
-            <el-table-column prop="bizAttrUuid" label="业务标签">
+            <!--<el-table-column prop="bizAttrUuid" label="业务标签">
               <template slot-scope="scope">
                 <el-select ref="bizAttrUuid" v-model="scope.row.bizAttrUuid" clearable :disabled="openType === 'showTable'">
                   <el-option
@@ -35,7 +35,7 @@
                   />
                 </el-select>
               </template>
-            </el-table-column>
+            </el-table-column>-->
             <el-table-column prop="transRuleUuid" label="转码规则" width="260px" :disabled="openType === 'showTable'">
               <template slot-scope="scope">
                 <SelectTransCode

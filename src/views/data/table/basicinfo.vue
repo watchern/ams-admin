@@ -16,12 +16,12 @@
         <el-form-item label="字段数" prop="fieldsNum">
           <el-input v-model="temp.fieldsNum" readonly />
         </el-form-item>
-        <el-form-item label="行数" prop="rowNum">
-          <el-input v-model="temp.rowNum" readonly />
-        </el-form-item>
-        <el-form-item label="表容量" prop="tableSize">
-          <el-input v-model="temp.tableSize" readonly />
-        </el-form-item>
+        <!--  <el-form-item label="行数" prop="rowNum">
+           <el-input v-model="temp.rowNum" readonly />
+         </el-form-item>
+         <el-form-item label="表容量" prop="tableSize">
+           <el-input v-model="temp.tableSize" readonly />
+         </el-form-item>-->
       </el-form>
     </div>
     <!-- <div slot="footer">
