@@ -252,6 +252,9 @@ export default {
 }
 .handreada-no:hover{text-decoration:underline}
 .handreada:hover{text-decoration:underline}
+/*
+  弹窗布局
+*/
 .visible-p1{
   text-align: center;
   width: 95%;

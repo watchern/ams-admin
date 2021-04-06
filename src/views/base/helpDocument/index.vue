@@ -197,16 +197,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .page-container{
-    width:100%;
-    height:100%;
-    overflow: hidden;
-    position: relative;
-  }
   .page-left{
-    width: 290px;
+    width: 16%;
     height: 100%;
-    background-color: #fff;
     border-radius: 5px;
     padding: 10px;
     float: left;
@@ -215,8 +208,8 @@ export default {
   .mytuieditor{
     margin:40px 0 0 15px;
     float:left;
-    width: calc(100vw - 495px);
-    height: calc(100vh - 120px);
+    width: calc(84% - 15px);
+    height: calc(100% - 40px);
     overflow: auto;
   }
   >>>.el-tree {

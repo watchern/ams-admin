@@ -2,7 +2,7 @@
 
 const etlschedulerRouter = {
   path: '/etlscheduler',
-  component: () => import('@/portal/default/index'),
+  component: (resolve) => require(['@/portal/'+ process.env.VUE_APP_BASE_SKIN + '/index'],resolve),
   name: 'Etlscheduler',
   meta: {
   },

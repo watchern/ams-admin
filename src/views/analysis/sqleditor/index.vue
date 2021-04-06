@@ -1220,8 +1220,9 @@
     }
 
     .data-show{
-        width: calc(100% - 30px);
+        width: 100%;
         height: 100%;
+        overflow: auto;
     }
 
     .left-part{

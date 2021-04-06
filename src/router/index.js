@@ -47,7 +47,7 @@ const AmsRoutes = [
   {
     path: '/ams',
     name: 'ams',
-    component: () => import('@/portal/default/index'),
+    component: (resolve) => require(['@/portal/'+ process.env.VUE_APP_BASE_SKIN + '/index'],resolve),
     children: [
       {
         path: '',
@@ -86,7 +86,7 @@ const AmsRoutes = [
   {
     path: '/datamining',
     name: '数据挖掘',
-    component: () => import('@/portal/default/index'),
+    component: (resolve) => require(['@/portal/'+ process.env.VUE_APP_BASE_SKIN + '/index'],resolve),
     children: [{
       path: '/datamining/index',
       name: '数据挖掘',
