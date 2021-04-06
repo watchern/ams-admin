@@ -36,7 +36,7 @@
         </el-form>
       </div>
     </el-container>
-    <el-dialog title="条件设置" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true">
+    <el-dialog title="条件设置" :close-on-click-modal="false" :visible.sync="queryBuilderDialogVisible" width="30%" :append-to-body="true">
       <myQueryBuilder
         v-if="queryBuilderDialogVisible"
         ref="myQueryBuilder"

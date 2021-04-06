@@ -18,7 +18,6 @@ export async function init(nodeId) {
     await initNodeZtree(nodeId)
     // 初始化参数树
     getParamsTree().then(result => {
-        console.log(111)
         settingVue.paramZtreeObj = $.fn.zTree.init($(settingVue.$refs.paramZtreeRef), settingVue.initZtreeSetting('paramZtree'), result.data.paramNode)
         // paramManager = result.data.paramManager
         // developManager = result.data.developManager
@@ -97,59 +96,6 @@ async function initNodeZtree(nodeId) {
         }
     }
     if (!isError) {
-        // settingVue.ztreeSetting = {
-        //     data: {
-        //         key: {
-        //             checked: 'isChecked',
-        //             name: 'name',
-        //             title: 'displayName'
-        //         },
-        //         // 设置数据格式
-        //         simpleData: {
-        //             enable: true
-        //         }
-        //     },
-        //     check: {
-        //         enable: false,
-        //         chkStyle: 'radio',
-        //         radioType: 'all'
-        //     },
-        //     view: {
-        //         selectedMulti: false
-        //     },
-        //     edit: {
-        //         enable: true,
-        //         showRenameBtn: false,
-        //         showRemoveBtn: false,
-        //         drag: { // 禁止拖拽变更树节点
-        //             autoExpandTrigger: false, // 拖拽时父节点自动展开是否触发 onExpand
-        //             prev: false,
-        //             inner: false,
-        //             next: false
-        //         }
-        //     },
-        //     callback: {
-        //         onDrop: function(event, treeId, treeNodes) {
-        //             // 判断是否在可拖拽区域内
-        //             if (!inArea()) {
-        //                 return
-        //             }
-        //             let columnName = treeNodes[0].name
-        //             // 获取文本框内的光标对象
-        //             let cursor = settingVue.editor.getCursor()
-        //             settingVue.editor.replaceRange(columnName, cursor, cursor)
-        //         },
-        //         beforeDrag: function(treeId, treeNodes) {
-        //             let thisNode = treeNodes[0]
-        //             // 如果不是字段节点，不做任何操作
-        //             if (treeNodes[0] && treeNodes[0].type !== 'column') {
-        //                 return false
-        //             } else {
-        //                 return true
-        //             }
-        //         }
-        //     }
-        // }
         // 组织列节点信息
         let nodeRootId = new UUIDGenerator().id
         settingVue.nodeZtreeRoot = {
@@ -185,31 +131,20 @@ async function initNodeZtree(nodeId) {
                     case "groupCount":
                     case "delRepeat":
                     case "change":
+                    case "relation":
                         if(flag){
                             obj.name = columnsInfo[i].newColumnName
                         }else{
                             obj.name = columnsInfo[i].columnName
                         }
-                        obj.displayName = columnsInfo[i].newColumnName
-                        settingVue.nodeZtreeRoot.children.push(obj)
-                        break
-                    case "relation":
-                        if(flag){
-                            obj.name = columnsInfo[i].newColumnName
-                            obj.displayName = columnsInfo[i].newColumnName
-                        }else{
-                            obj.name = columnsInfo[i].tableAlias + "." + columnsInfo[i].columnName
-                            obj.displayName = columnsInfo[i].tableAlias + "." + columnsInfo[i].newColumnName
-                        }
-                        settingVue.nodeZtreeRoot.children.push(obj)
                         break
                     case "sample":
                     case "union":
                         obj.name = columnsInfo[i].newColumnName
-                        obj.displayName = columnsInfo[i].newColumnName
-                        settingVue.nodeZtreeRoot.children.push(obj)
                         break
                 }
+                obj.displayName = columnsInfo[i].newColumnName
+                settingVue.nodeZtreeRoot.children.push(obj)
             }
         }
         if (settingVue.nodeZtreeRoot.children.length === 0) {
@@ -237,19 +172,6 @@ export function loadParamChildrenNodes(treeNode) {
         settingVue.paramZtreeObj.removeChildNodes(treeNode)
         settingVue.paramZtreeObj.addNodes(treeNode, response.data)
     })
-}
-
-/**
- * 判断拖拽的节点是否在文本域内
- */
-function inArea() {
-    let event = window.event
-    let codeMirrorScroll = $(settingVue.$refs.settingParamDiv).find('.CodeMirror-scroll')[0]
-    if(event.target === codeMirrorScroll){
-        return true
-    }else{
-        return false
-    }
 }
 
 /**

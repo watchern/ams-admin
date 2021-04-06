@@ -145,7 +145,7 @@
                 } else {
                     this.zTreeObj_Filter = $.fn.zTree.init($(this.$refs.filterZtree), settingFilter, [])
                 }
-                Array.from(curColumnsInfo, item => {
+                Array.from(this.curColumnsInfo, item => {
                     const newColumnName = item.newColumnName
                     const displayName = `${newColumnName}(${item.columnType})`
                     this.selectColms.push({ newColumnName, displayName })

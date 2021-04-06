@@ -17,11 +17,6 @@ const analysisRouter = {
       component: () => import('@/views/analysis/auditmodelresult/index')
     },
     {
-      path: 'auditmodelparam',
-      name: '模型参数',
-      component: () => import('@/views/analysis/modelparam/index')
-    },
-    {
       path: 'editormodel',
       name: '编辑模型',
       component: () => import('@/views/analysis/auditmodel/editmodel')
@@ -81,6 +76,12 @@ const analysisRouter = {
       path: 'threadoldvalue',
       name: '阈值管理',
       component: () => import('@/views/analysis/thresholdvalue/index')
+    }
+    ,
+    {
+      path: 'parammanagerlist',
+      name: '参数管理',
+      component: () => import('@/views/analysis/modelparam/paramManager/parammanagerlist')
     }
   ]
 }

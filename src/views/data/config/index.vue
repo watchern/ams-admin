@@ -48,3 +48,16 @@ export default {
   }
 </style>
 
+<style lang="scss">
+  .page-container .tree-container{
+    height:55vh; overflow:auto;
+  }
+  .page-container .tree-container .filter-tree {
+    margin-top: 20px;
+  }
+  .transfer-center-item{
+    width: 40px;
+    margin: 2px;
+    height: 40vh;
+  }
+</style>

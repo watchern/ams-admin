@@ -108,6 +108,7 @@
       title="消息详情"
       width="50%"
       v-model="this.PopUpContent"
+      :close-on-click-modal="false"
       >
       <span class="visible-span">消息标题</span>
       <p class="visible-p1">{{this.PopUpContent[0].text}}</p >

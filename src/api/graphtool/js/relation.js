@@ -423,7 +423,7 @@ export function init() {
                     let disColumnName = columnsInfo[k].newColumnName
                     let checked = false
                     relationVue.items.push({id,nodeId,rtn,columnInfo,columnName,disColumnName,resourceTableName,checked})
-                    relationVue.columnsInfo.push({...columnsInfo[k],...{"columnName":columnName,"nodeId":nodeId,"rtn":rtn,"resourceTableName":resourceTableName}})
+                    relationVue.columnsInfo.push({...columnsInfo[k],...{"nodeId":nodeId,"rtn":rtn,"resourceTableName":resourceTableName}})
                     idNum++
                 }
             }
@@ -652,8 +652,10 @@ export function saveNodeInfo() {
         })
     }
     // 开始保存节点所有数据信息
-    nodeData.setting.sqlEdit = relationVue.myDiagram.model.toJson()
-    nodeData.setting.join = relationVue.join
+    let sqlEditStr = JSON.parse(relationVue.myDiagram.model.toJson());
+    sqlEditStr.nodeDataArray = join;
+    nodeData.setting.sqlEdit = JSON.stringify(sqlEditStr);
+    nodeData.setting.join = relationVue.join//此处再存储一份是为了后端组装SQL语句
     nodeData.columnsInfo = columnsInfo
     relationVue.$refs.basicVueRef.save_base()						// 保存基础信息
     nodeData.isSet = true

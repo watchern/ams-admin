@@ -239,7 +239,7 @@
         </div>
       </div>
     </el-container>
-    <el-dialog v-if="auditItemTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="auditItemTree"
+    <el-dialog v-if="auditItemTree" :destroy-on-close="true" :close-on-click-modal="false" :append-to-body="true" :visible.sync="auditItemTree"
                title="请选择审计事项" width="80%">
       <AuditItemTree ref="auditItemTreeRef"></AuditItemTree>
       <div slot="footer">
@@ -247,7 +247,7 @@
         <el-button @click="auditItemTree=false">取消</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-if="modelFolderTreeDialog" :visible.sync="modelFolderTreeDialog" title="选择业务分类" width="50%">
+    <el-dialog v-if="modelFolderTreeDialog" :visible.sync="modelFolderTreeDialog" :close-on-click-modal="false" title="选择业务分类" width="50%">
       <ModelFolderTree ref="modelFolderTree" public-model="editorModel"/>
       <div slot="footer">
         <el-button type="primary" @click="setBusinessFolder">确定</el-button>
@@ -478,6 +478,7 @@ export default {
     }
   },
   mounted() {
+    alert(123)
     this.initEvent()
     this.initData(this.operationObj)
     // 如果为2则反显要修改的数据

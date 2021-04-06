@@ -7,7 +7,7 @@
           placeholder="输入关键字进行过滤"
         />
         <el-link class="select-link" type="primary" @click="registTable">注册资源</el-link>
-        <div class="tree-container">
+        <div class="tree-containerall">
           <MyElTree
             ref="tree2"
             :props="props"
@@ -74,7 +74,7 @@
           <el-option label="只显示未注册" value="noPart"></el-option>
           <el-option label="只显示已注册" value="yesPart"></el-option>
         </el-select>-->
-      <div class="tree-container">
+      <div class="tree-containerselect">
         <MyElTree
           ref="tree1"
           v-loading="treeLoading"
@@ -96,7 +96,7 @@
         <el-button type="primary" @click="flagSelectTable">保存</el-button>
       </span>
     </el-dialog>
-    <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="600px">
+    <el-dialog :title="dialogTitle" :visible.sync="folderFormVisible" width="600px" :close-on-click-modal="false">
       <el-form ref="folderForm" :model="folderForm" label-width="80px">
         <el-form-item label="文件夹名称" label-width="120px">
           <el-input v-model="folderForm.folderName" style="width: 300px" />
@@ -385,5 +385,22 @@ export default {
 .select-link {
   margin-top: 10px;
   cursor:pointer;
+  }
+  .page-container .tree-containerselect{
+    height:55vh; overflow:auto;
+  }
+  .page-container .tree-containerselect .filter-tree {
+    margin-top: 20px;
+  }
+  .page-container .tree-containerall{
+    height:75vh; overflow:auto;
+  }
+  .page-container .tree-containerall .filter-tree {
+    margin-top: 20px;
+  }
+  .transfer-center-item{
+    width: 40px;
+    margin: 2px;
+    height: 40vh;
   }
 </style>

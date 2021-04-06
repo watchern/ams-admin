@@ -6,10 +6,10 @@
                     <el-collapse v-model="activeName" accordion >
                         <el-collapse-item name="nodeColumn" title="节点信息">
                             <el-input v-model="searchColumnContent" placeholder="搜索关键字"/>
-                            <ul ref="nodeZtreeRef" class="ztree" style="height:415px;margin-top: 10px;margin-bottom: 0;"/>
+                            <ul ref="nodeZtreeRef" id="nodeZtreeId" class="ztree" style="height:415px;margin-top: 10px;margin-bottom: 0;"/>
                         </el-collapse-item>
                         <el-collapse-item name="paramList" title="参数">
-                            <ul ref="paramZtreeRef" class="ztree" style="height:460px;margin: 0 !important;"/>
+                            <ul ref="paramZtreeRef" id="paramZtreeId" class="ztree" style="height:460px;margin: 0 !important;"/>
                         </el-collapse-item>
                     </el-collapse>
                 </el-col>
@@ -133,7 +133,6 @@
             },
             initZtreeSetting(ztreeType){
                 let $this = this
-                console.log('222' + ztreeType)
                 return {
                     data: {
                         key: {
@@ -168,25 +167,28 @@
                     callback: {
                         onDrop: function (event, treeId, treeNodes) {
                             // 判断是否在可拖拽区域内
-                            let codeMirrorScroll = $($this.$refs.settingParamDiv).find('.CodeMirror-scroll')[0]
+                            const codeMirrorScroll = $($this.$refs.settingParamDiv).find('.CodeMirror-scroll')[0]
                             if (event.target === codeMirrorScroll || $(codeMirrorScroll).find("." + $.trim(event.target.className))[0]) {
-                                if (ztreeType === 'nodeZtree') {
-                                    let columnName = treeNodes[0].name
+                                if(ztreeType === 'nodeZtree'){
+                                    const columnName = treeNodes[0].name
                                     // 获取文本框内的光标对象
-                                    let cursor = $this.editor.getCursor()
+                                    const cursor = $this.editor.getCursor()
                                     $this.editor.replaceRange(columnName, cursor, cursor)
-                                } else {//ztreeType === 'paramZtree'
-                                    let copyParamId = new UUIDGenerator().id// 复制参数的ID
-                                    let id = '{#' + copyParamId + '#}'
-                                    let cursor = $this.editor.getCursor()// 获取编辑器的光标
+                                }else{//ztreeType === 'paramZtree'
+                                    const copyParamId = new UUIDGenerator().id// 复制参数的ID
+                                    const id = '{#' + copyParamId + '#}'
+                                    const cursor = $this.editor.getCursor()// 获取编辑器的光标
                                     $this.editor.replaceRange(id, cursor, cursor)// 在编辑器的光标位置添加id的值
-                                    let dom = $("<button class='divEditorBtn' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
-                                    let endCursor = { ch: cursor.ch + id.length, line: cursor.line, sticky: null }
+                                    const dom = $("<button class='divEditorBtn' id='" + id + "'>" + treeNodes[0].name + '</buttonn>').get(0)
+                                    const endCursor = { ch: cursor.ch + id.length, line: cursor.line, sticky: null }
                                     // 将id替换成button的内容（只改变显示效果，编辑器的真实值不变）
                                     $this.editor.markText(cursor, endCursor, {
                                         replacedWith: dom,
                                         className: 'paramBlock'
                                     })
+                                    if (Object.keys($this.paramsSetting).length === 0) {
+                                        $this.paramsSetting.arr = []
+                                    }
                                     /**
                                      * 参数对象
                                      * @param id 新参数拼接特殊符号后的ID
@@ -195,32 +197,28 @@
                                      * @param name新参数的名称（与母参数一致）
                                      * @type {{id: string, copyParamId: *, moduleParamId: *, name: *}}
                                      */
-                                    let obj = {
+                                    $this.paramsSetting.arr.push({
                                         'id': id,
                                         'copyParamId': copyParamId,
                                         'moduleParamId': treeNodes[0].id,
                                         'allowedNull': treeNodes[0].extCol, // 临时占用此属性来存储该参数是否可以为空
                                         'name': treeNodes[0].name
-                                    }
-                                    if (Object.keys($this.paramsSetting).length === 0) {
-                                        $this.paramsSetting.arr = []
-                                    }
-                                    $this.paramsSetting.arr.push(obj)
-                                    let divBtnObj = {
+                                    })
+                                    $this.paramDivArr.push({
                                         'id': id, // 加上占位符后的复制参数ID
                                         'opt': 1// 参数是否生效（不生效是指在当前SQL编辑中已被删除），0、不生效，1、生效
-                                    }
-                                    $this.paramDivArr.push(divBtnObj)
+                                    })
                                 }
                             }
                         },
                         beforeDrag: function (treeId, treeNodes) {
-                            if (ztreeType === 'nodeZtree') {
+                            if(ztreeType === 'nodeZtree') {
                                 // 如果不是字段节点，不做任何操作
                                 if (treeNodes[0].type !== 'column') {
                                     return false
                                 }
                             }else{//ztreeType === 'paramZtree'
+                                // 如果不是函数节点，不做任何操作
                                 if (treeNodes[0].type !== 'paramNode') {
                                     return false
                                 }
@@ -228,10 +226,8 @@
                             return true
                         },
                         onExpand: function(event, treeId, treeNode) {
-                            if (ztreeType === 'paramZtree') {
-                                if (!treeNode.children || treeNode.children.length === 0) {
-                                    settingParams.loadParamChildrenNodes(treeNode)
-                                }
+                            if (ztreeType === 'paramZtree' && (!treeNode.children || treeNode.children.length === 0)) {
+                                settingParams.loadParamChildrenNodes(treeNode)
                             }
                         }
                     }

@@ -3,7 +3,7 @@
     <el-row>
       <el-col v-if="openType!== 'showTable'" align="right">
         <el-button type="primary" size="mini" class="oper-btn add" @click="addCol()" />
-        <el-button type="danger" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="delCol()" />
+        <el-button type="primary" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="delCol()" />
       </el-col>
     </el-row>
     <el-table :data="temp" @selection-change="handleSelectionChange">
@@ -29,7 +29,7 @@
           <el-button @click="showDataTree">选择</el-button>
         </template>
       </el-table-column>
-      <el-dialog v-if="dataTableTree" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%">
+      <el-dialog v-if="dataTableTree" :close-on-click-modal="false" :destroy-on-close="true" :append-to-body="true" :visible.sync="dataTableTree" title="请选择数据表" width="80%">
         <data-tree ref="dataTableTree" :data-user-id="dataUserId" :scene-code="sceneCode" />
         <div slot="footer">
           <el-button tvype="primary" @click="getDataTable">确定</el-button>

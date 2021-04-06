@@ -4,7 +4,7 @@
       v-model="filterText1"
       placeholder="输入关键字进行过滤"
     />
-    <div  style="overflow: scroll; height: 85vh">
+    <div style="overflow: auto; height: 80vh">
       <MyElTree
         ref="tree1"
         v-loading="treeLoading"
