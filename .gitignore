@@ -18,3 +18,4 @@ yarn-error.log*
 *.iml
 *.xml
 package-lock.json
+.env.development
