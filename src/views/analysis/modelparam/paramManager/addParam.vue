@@ -37,6 +37,24 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row v-if="this.isShowElement.dateFormatTag">
+          <el-col :span="12">
+            <el-form-item label="日期单位" prop="dataType">
+              <el-select v-model="form.timeFormat" @change="changeTimeValue" >
+                <el-option value=""  label="请选择"></el-option>
+                <el-option value="year"  label="年"></el-option>
+                <el-option value="month"  label="月"></el-option>
+                <el-option value="date"  label="日"></el-option>
+                <el-option value="other"  label="其他"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="自定义其他格式" prop="dataType" v-if="this.isShowElement.customizeFormatTag">
+              <el-input v-model="form.customizeFormat"  placeholder="请输入其他格式"  />
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-row>
           <el-form-item label="示例" prop="example">
             <el-input name="example" id="example" v-model="form.example" autocomplete="off" placeholder="示例"/>
@@ -235,7 +253,11 @@ export default{
         formalTypeShow:false,
         alternateValueShow:false,
         SQLdtreeShow:false,
-        dataLengthInterValShow:false
+        dataLengthInterValShow:false,
+        //日期单位
+        dateFormatTag:false ,
+        //新增自定义日期格式
+        customizeFormatTag:false,
       },
       //是否存储sql的标志位
       tabsigns:0,
@@ -315,6 +337,12 @@ export default{
 
             that.form.description = data.description
             if (data.paramTimes) {
+              $("#timesUuid").val(data.paramTimes.ammParamTimesUuid);
+              that.form.timeFormat = data.paramTimes.timeFormat;
+              if(that.form.timeFormat=="other"){
+                that.isShowElement.customizeFormatTag = true;
+                that.form.customizeFormat = data.paramTimes.customizeFormat;
+              }
               that.form.maxIntervalVal = data.paramTimes.maxIntervalVal
               if (null != data.paramTimes.ammParamTimesUuid && '' != data.paramTimes.ammParamTimesUuid){
                 that.form.maxIntervalUnit = data.paramTimes.maxIntervalUnit
@@ -352,12 +380,14 @@ export default{
           this.isShowElement.alternateValueShow = false
           this.isShowElement.dataLengthInterValShow = false
           this.isShowElement.SQLdtreeShow = false
+          this.isShowElement.dateFormatTag = true;
         }else if(inputTypeValue == "lineinp"){//下拉列表
           this.isShowElement.timeIntervalShow = false
           this.isShowElement.formalTypeShow = true
           this.isShowElement.alternateValueShow = true
           this.isShowElement.dataLengthInterValShow = false
           this.isShowElement.SQLdtreeShow = false
+          this.isShowElement.dateFormatTag = false;
         }else if(inputTypeValue=="treeinp"){//下拉树
           this.isShowElement.timeIntervalShow = false
           this.isShowElement.formalTypeShow = true
@@ -365,12 +395,14 @@ export default{
           this.isShowElement.dataLengthInterValShow = false
           this.isShowElement.SQLdtreeShow = true
           this.tabsigns = 1;
+          this.isShowElement.dateFormatTag = false;
         }else{//文本
           this.isShowElement.timeIntervalShow = false
           this.isShowElement.formalTypeShow = false
           this.isShowElement.alternateValueShow = false
           this.isShowElement.dataLengthInterValShow = true
           this.isShowElement.SQLdtreeShow = false
+          this.isShowElement.dateFormatTag = false;
         }
       }
     },
@@ -386,6 +418,14 @@ export default{
             this.inputTypes.push(this.inputTypeValueStr[i])
           }
         }
+      }
+    },
+    //更改日期格式-其他
+    changeTimeValue(dataTypeValue){
+      if(dataTypeValue=="other"){
+        this.isShowElement.customizeFormatTag = true;
+      }else{
+        this.isShowElement.customizeFormatTag = false;
       }
     },
     tabsigntree(){
@@ -456,6 +496,11 @@ export default{
         dataParam["paramTimes.maxIntervalUnit"] = $("#maxIntervalUnit").val();
         dataParam["paramTimes.maxIntervalVal"] = $("#maxIntervalVal").val();
       }*/
+       //新增时间格式
+      if(this.isShowElement.dateFormatTag){
+        dataParam["paramTimes.timeFormat"] = this.form.timeFormat;
+        dataParam["paramTimes.customizeFormat"] = this.form.customizeFormat;
+      }
 
       if(this.isShowElement.formalTypeShow){
         dataParam["paramChoice.choiceType"] = this.form.formalType;
@@ -544,6 +589,12 @@ export default{
         dataParam["paramTimes.maxIntervalUnit"] = $("#maxIntervalUnit").val();
         dataParam["paramTimes.maxIntervalVal"] = $("#maxIntervalVal").val();
         dataParam["paramTimes.ammParamTimesUuid"] = $("#timesUuid").val();
+      }
+      //新增时间格式
+      if(this.isShowElement.dateFormatTag){
+        dataParam["paramTimes.ammParamTimesUuid"] = $("#timesUuid").val();
+        dataParam["paramTimes.timeFormat"] = this.form.timeFormat;
+        dataParam["paramTimes.customizeFormat"] = this.form.customizeFormat;
       }
 
       if(this.isShowElement.formalTypeShow){
