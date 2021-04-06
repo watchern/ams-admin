@@ -314,6 +314,9 @@
 .oper-btn.save:after{
   content:'\e67e  保存'!important;
 }
+.oper-btn.save-none:after{
+  content:'\e67e'!important;
+}
 .oper-btn.chart:after{
   content:'\e6d8  图表'!important;
 }
@@ -334,6 +337,9 @@
 }
 .oper-btn.cancel:after{
   content:'\e657  取消'!important;
+}
+.oper-btn.cancel-none:after{
+  content:'\e657'!important;
 }
 .oper-btn.import-2:after{
   content:'\e7a3  导入'!important;
