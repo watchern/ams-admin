@@ -2,7 +2,7 @@
 const analysisRouter = {
   path: '/analysis',
   name: '审计分析',
-  component: () => import('@/portal/default/index'),
+  component: (resolve) => require(['@/portal/'+ process.env.VUE_APP_BASE_SKIN + '/index'],resolve),
   meta: {
   },
   children: [

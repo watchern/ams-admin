@@ -54,6 +54,7 @@
       title="当前已选模型"
       :visible.sync="dialogFormVisible"
       :append-to-body="true"
+      :close-on-click-modal="false"
     >
       <el-table
         ref="modelListTable"
@@ -99,6 +100,7 @@
       :visible.sync="runimmediatelyIsSee"
       width="60%"
       :append-to-body="true"
+      :close-on-click-modal="false"
     >
       <runimmediatelycon
         :data-user-id='dataUserId'
@@ -118,6 +120,7 @@
       :visible.sync="timingExecutionIsSee"
       width="60%"
       :append-to-body="true"
+      :close-on-click-modal="false"
     >
       <runimmediatelycon
         :data-user-id='dataUserId'

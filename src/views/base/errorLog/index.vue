@@ -41,6 +41,7 @@
       :append-to-body="true"
       title="异常信息"
       :visible.sync="dialogVisible"
+      :close-on-click-modal="false"
     >
       <div style="max-height:60vh;overflow:auto">
         <p class="error-log">{{ logerrortxt }}</p>

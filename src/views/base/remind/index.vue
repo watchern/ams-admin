@@ -56,6 +56,7 @@
       top="10vh"
       title="消息详情"
       width="50%"
+      :close-on-click-modal="false"
     >
       <el-row>
         <el-col :span="24"><div class="visible-p1">
@@ -251,6 +252,9 @@ export default {
 }
 .handreada-no:hover{text-decoration:underline}
 .handreada:hover{text-decoration:underline}
+/*
+  弹窗布局
+*/
 .visible-p1{
   text-align: center;
   width: 95%;

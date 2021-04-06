@@ -9,9 +9,9 @@ import Cookies from 'js-cookie'
 import Element from 'element-ui'
 import './styles/element-variables.scss'
 // Ace start
-import tool from '@/assets/styles/js/tool'
+import tool from '@/styles/js/tool'
 Vue.prototype.$tool = tool
-import create from '@/assets/styles/js/create'
+import create from '@/styles/js/create'
 Vue.prototype.$create = create
 import VueAnimateNumber from 'vue-animate-number'
 Vue.use(VueAnimateNumber)

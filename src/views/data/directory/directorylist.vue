@@ -59,8 +59,8 @@
       </span>
     </el-dialog>
     <!-- 弹窗2 -->
-    <el-dialog :visible.sync="moveTreeVisible" width="600px">
-      <dataTree v-if="personcode!==''" ref="dataTree" :data-user-id="personcode" :scene-code="currentSceneUuid" :tree-type="treeType" @node-click="nodeclick" />
+    <el-dialog :visible.sync="moveTreeVisible" width="600px" :close-on-click-modal="false">
+      <dataTree style="overflow: auto; height: 62vh" v-if="personcode!==''" ref="dataTree" :data-user-id="personcode" :scene-code="currentSceneUuid" :tree-type="treeType" @node-click="nodeclick" />
       <span slot="footer">
         <el-button @click="moveTreeVisible = false">取消</el-button>
         <el-button type="primary" @click="movePathSave()">保存</el-button>
@@ -127,7 +127,7 @@
       </span>
     </el-dialog>
     <!-- 弹窗4 -->
-    <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="800px">
+    <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="800px" :close-on-click-modal="false">
       <el-row>
         <el-col>
           <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @table-show="tableshow" />
@@ -138,32 +138,40 @@
       </span>
     </el-dialog>
     <!-- 弹窗5 -->
-    <el-dialog v-if="tableColumnVisible" :visible.sync="tableColumnVisible" lock-scroll width="800px">
-      <el-button></el-button>
-      <el-row>
-        <el-col>
-          <column ref="column" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" @table-show="tableshow" />
-        </el-col>
-      </el-row>
-      <span slot="footer">
-        <el-button @click="tableColumnVisible = false">取消</el-button>
-        <el-button type="primary" @click="saveTableInfo">保存</el-button>
-      </span>
+    <el-dialog v-if="tableColumnVisible" :visible.sync="tableColumnVisible" lock-scroll width="800px" :close-on-click-modal="false">
+       <template>
+         <div style="height:62vh; overflow:auto;">
+           <el-button></el-button>
+           <el-row>
+             <el-col>
+               <column ref="column" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @append-node="appendnode" @table-show="tableshow" />
+             </el-col>
+           </el-row>
+         </div>
+         <span slot="footer">
+              <el-button @click="tableColumnVisible = false">取消</el-button>
+              <el-button type="primary" @click="saveTableInfo">保存</el-button>
+           </span>
+       </template>
     </el-dialog>
     <!-- 弹窗6 -->
-    <el-dialog v-if="tableRelationVisible" fullscreen :visible.sync="tableRelationVisible" width="800px">
-      <el-row>
-        <el-col>
-          <tablerelation ref="tablerelation" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" />
-        </el-col>
-      </el-row>
-      <span slot="footer">
-        <el-button @click="tableRelationVisible = false">取消</el-button>
-        <el-button type="primary" @click="saveTableRelation">保存</el-button>
-      </span>
+    <el-dialog v-if="tableRelationVisible" :visible.sync="tableRelationVisible" width="800px" :close-on-click-modal="false">
+      <template>
+        <div style="height:62vh; overflow:auto;">
+          <el-row>
+            <el-col>
+              <tablerelation ref="tablerelation" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" />
+            </el-col>
+          </el-row>
+        </div>
+        <span slot="footer">
+          <el-button @click="tableRelationVisible = false">取消</el-button>
+          <el-button type="primary" @click="saveTableRelation">保存</el-button>
+        </span>
+      </template>
     </el-dialog>
     <!-- 弹窗7 -->
-    <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
+    <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px" :close-on-click-modal="false">
       <el-row>
         <el-col>
           <childTabs ref="childTabs" :pre-value="executeSQLList" use-type="previewTable" />
@@ -174,7 +182,7 @@
       </span>
     </el-dialog>
     <!-- 弹窗7 -->
-    <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
+    <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px" :close-on-click-modal="false">
       <el-row>
         <el-col>
           <childTabs ref="childTabs" :pre-value="executeSQLList" use-type="previewTable" />

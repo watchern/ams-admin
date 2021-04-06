@@ -1,17 +1,17 @@
 <template>
   <div class="tab-content">
     <div  id="basicInfo">
-      <el-form id="ammParamAdd" :model="form"  class="detail-form">
+      <el-form id="ammParamAdd" :model="form"  class="detail-form" style="height:62vh; overflow:auto;">
         <input type="hidden" id="paramUuid"/>
         <input id="inputTypeStr" type="hidden"/>
         <input id="dataTypeStr" type="hidden"/>
         <input id="typeUuid" type="hidden">
         <input type="hidden" id="treeId" name="treeId"/>
-        <input id="scopeType" type="hidden" name="scopeType">
-        <input id="scopeUuid" type="hidden" name="scopeUuid">
-        <input id="timesUuid" type="hidden" name="timesUuid">
-        <input name="choiceUuid" id="choiceUuid" type="hidden" ></input>
-        <input id="flag" type="hidden" name="flag">
+        <input id="scopeType" type="hidden" name="scopeType"/>
+        <input id="scopeUuid" type="hidden" name="scopeUuid"/>
+        <input id="timesUuid" type="hidden" name="timesUuid"/>
+        <input name="choiceUuid" id="choiceUuid" type="hidden" />
+        <input id="flag" type="hidden" name="flag"/>
         <el-row>
           <el-col :span="24">
             <el-form-item label="参数名称" prop="paramName">

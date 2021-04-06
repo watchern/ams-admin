@@ -36,7 +36,7 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <!-- 这是第一个弹窗，用来添加基础数据类别 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" height="70vh">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false" height="70vh">
       <el-form
         class="detail-form"
         ref="dataForm"
