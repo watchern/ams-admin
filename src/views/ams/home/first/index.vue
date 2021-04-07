@@ -2,11 +2,7 @@
   <div class="home w100 h100 flex a-center j-start flex-column">
     <div class="top flex a-center j-between flex-row flex1 flex-shrink ">
       <div class="right flex a-end j-center flex-column">
-<<<<<<< HEAD
-        <!-- <div class="top-card flex a-start j-start flex-row">
-=======
-        <div class="top-card flex a-start j-start flex-row skin-wbgColor-3 skin-shadow">
->>>>>>> 44e7468136ad0821a6e584a1b153d62aa601ebd9
+        <!-- <div class="top-card flex a-start j-start flex-row skin-wbgColor-3 skin-shadow">
           <div class="top-card-left flex-shrink  flex a-center j-center">
             <img src="../../../../styles/image/c2.png" class="img">
           </div>
@@ -17,13 +13,8 @@
               <span v-if="item.icon" :style="{color:item.iconColor}" class="icon">{{ item.icon }}</span>
             </div>
           </div>
-<<<<<<< HEAD
-          <span class="card-more" @click="toDoSomeJump">更多</span>
-        </div> -->
-=======
           <span class="card-more skin-wordmoreColor" @click="toDoSomeJump">更多</span>
-        </div>
->>>>>>> 44e7468136ad0821a6e584a1b153d62aa601ebd9
+        </div> -->
         <div class="bottom-card flex a-center j-between flex-row">
           <div v-for="(item,index) in cardList" :key="index" class="top-card flex j-start flex-row skin-shadow" :class="{backgroundColor:index === 0?'skin-wbgColor-1':'skin-wbgColor-2'}">
             <div class="top-card-left flex-shrink skin-bgColor flex a-center j-center">
@@ -80,15 +71,9 @@
                </div>
       </div> -->
     </div>
-<<<<<<< HEAD
     <!-- <div class="bottom-father" v-for="(item, index) in myProjectIn">
-      <div class="bottom bottom-animate flex a-center j-start flex-row" :key="projectAnimation">
-        <div class="line1 line flex a-start j-center flex-column" style="flex-basis:80px;">
-=======
-    <div class="bottom-father" v-for="(item, index) in myProjectIn">
       <div class="bottom bottom-animate flex a-center j-start flex-row skin-bgColor" :key="projectAnimation">
         <div class="line1 line flex a-start j-center flex-column skin-border-right" style="flex-basis:80px;">
->>>>>>> 44e7468136ad0821a6e584a1b153d62aa601ebd9
           <div class="count-font" style="cursor:pointer;">
             <span class="count-font">{{ item.theIndex + 1 }}</span>/<animate-number :from="0" :to="item.lengthIn" class="count-font" />
           </div>
@@ -113,13 +98,8 @@
           <div class="btn" @click="projectDetailsIn(item.idProject)">查看此项目的详情</div>
         </div>
       </div>
-<<<<<<< HEAD
-      <div class="bottom-after" @click="toTheNext(item.theIndex)"><i class="el-icon-arrow-down"></i></div>
-    </div> -->
-=======
       <div class="bottom-after skin-bttom-a" @click="toTheNext(item.theIndex)"><i class="el-icon-arrow-down"></i></div>
-    </div>
->>>>>>> 44e7468136ad0821a6e584a1b153d62aa601ebd9
+    </div> -->
     <el-dialog
       :visible.sync="dialogFormVisible"
       top = "10vh"
