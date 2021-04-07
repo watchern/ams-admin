@@ -40,8 +40,8 @@ import * as filters from './filters' // global filters
 
 // import i18n1 from '@/components/Dolphin/i18n'
 // import en_US from 'ans-ui/lib/locale/en' // eslint-disable-line
-// import 'ans-ui/lib/ans-ui.min.css' ---
-// import ans from 'ans-ui/lib/ans-ui.min' ---
+import 'ans-ui/lib/ans-ui.min.css'
+import ans from 'ans-ui/lib/ans-ui.min'
 // Vue.use(ans) ---
 // import 'canvg/dist/browser/canvg.min.js'
 // Component internationalization ---
@@ -53,7 +53,7 @@ import * as filters from './filters' // global filters
 //   // locale: en_US ---
 // }
 
-// Vue.use(ans)
+Vue.use(ans)
 // Vue.use(ans, useOpt) ---
 
 // end dolphin
