@@ -201,8 +201,8 @@
             <div @click="clickModelInfo()" :style="{background: changeBtn.one === true?'#fff':'transparent',height: 65.33+'px',borderTopRightRadius: 20 + 'px'}" @mouseover="configurationSave1 = false" @mouseleave="configurationSave1 = true"><img v-if="configurationSave1" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/modelinfo.png"/><span class="rightButtonClassa" v-if="!configurationSave1" >基础信息</span></div>
             <div @click="clickUseParam()" :style="{background: changeBtn.two === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="configurationSave2 = false" @mouseleave="configurationSave2 = true"><img v-if="configurationSave2" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/useParam.png"/><span class="rightButtonClassa" v-if="!configurationSave2" >已用参数</span></div>
             <div @click="clickResultConfig()" :style="{background: changeBtn.three === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="configurationSave3 = false" @mouseleave="configurationSave3 = true"><img v-if="configurationSave3" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/resultConfig.png"/><span class="rightButtonClassa" v-if="!configurationSave3" >结果展现</span></div>
-            <el-button type="primary" size="small" class="oper-btn save-none" style="position: absolute;bottom: 95px;left: 9px;width: 24px" @click="save"></el-button>
-            <el-button type="primary" size="small" class="oper-btn cancel-none" style="position: absolute;bottom: 35px;left: -1px;width: 24px;" @click="closeWinfrom"></el-button>
+            <el-button type="primary" size="small" class="oper-btn save" style="position: absolute;bottom: 95px;left: 9px;width: 24px" @click="save"></el-button>
+            <el-button type="primary" size="small" class="oper-btn cancel" style="position: absolute;bottom: 35px;left: -1px;width: 24px;" @click="closeWinfrom"></el-button>
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
