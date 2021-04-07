@@ -1,0 +1,66 @@
+.skin-bgColor{
+  background-color: rgb(85,158,212)!important;
+}
+.skin-wbgColor-1{
+  background-color: #ffffff!important;
+}
+.skin-wbgColor-2{
+  background-color: #ffffff!important;
+}
+.skin-wbgColor-3{
+  background-color: rgb(85,158,212)!important;
+}
+.skin-iconbgColor{
+  background-color: rgb(95,190,235)!important;
+}
+.skin-wordColor{
+  color: #fff!important;
+}
+.skin-wordmoreColor{
+  color: #fff!important;
+}
+.skin-shadow{
+  box-shadow: 10px 10px 20px 0 rgba(95,190,235,0.3)!important;
+}
+.skin-border-right{
+  border-right: 1px solid rgba(95,190,235,0.5)!important;
+}
+.skin-bttom-a{
+  background-color: rgb(95,190,235)!important;
+}
+.skin-home-rc{
+  -webkit-box-shadow: none!important;
+  box-shadow: none!important;
+}
+.filter-container{
+  margin-bottom: 10px;
+  border-bottom: 2px solid #ededed;
+}
+.home-right-content{
+  background-color: transparent!important;
+}
+.el-table{
+  background-color: transparent!important;
+}
+.el-table tr{
+  background-color: transparent!important;
+}
+.el-table th{
+  background-color: transparent!important;
+}
+.tree-side{
+  background-color: transparent!important;
+}
+.el-input__inner{
+  background-color: transparent!important;
+}
+.editmodel-right{
+  z-index:1000;
+  position: absolute;
+  float:right;
+  right: 15px;
+  height:calc(100% - 125px);
+  width: 45px;
+  background-color: #f7f7f7;
+  border-radius: 0px 20px 20px 0px;
+}

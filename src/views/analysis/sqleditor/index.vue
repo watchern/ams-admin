@@ -123,7 +123,7 @@
                             :key="result.id"
                             :pre-value="currentExecuteSQL"
                             use-type="sqlEditor"
-                            style="width: 101.5%;height:450px;"
+                            style="width: 100%;height:450px;"
                             :chartModelUuid='modelUuid'
                             :modelId='modelUuid'
                             id="childTabs1"
@@ -1218,8 +1218,10 @@
     }
 
     .data-show{
-        width: calc(100% - 30px);
+        width: 100%;
         height: 100%;
+        overflow: auto;
+        background: #fff;
     }
 
     .left-part{

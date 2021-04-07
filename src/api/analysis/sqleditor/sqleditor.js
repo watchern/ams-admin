@@ -897,6 +897,9 @@ function the_left_all() {
     max_left = 70
     max_width = 96
     tz_path = 0
+  } else {
+    tz_path = -63
+    max_width = 100
   }
 }
 
@@ -908,7 +911,7 @@ export function maxOpenOne() {
     $('#drag').hide(100)
     $('#iconImg').css('display', 'none')
     $('#iconImg-huifu').css('display', 'block')
-    $('#bottomPart').css({ 'position': 'fixed', 'width': max_width + '%', 'left': max_left, 'top': 0, 'height': 96 + '%', 'z-index': 1000 })
+    $('#bottomPart').css({ 'position': 'fixed', 'width': max_width + '%', 'left': max_left, 'top': 0, 'height': 96 + '%', 'z-index': 10000 })
     $('.ag-theme-balham').css('height', 550)
     maxormin = false
   } else if (maxormin == false) {

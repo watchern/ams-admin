@@ -6,6 +6,7 @@ import newSelect from '@/components/public/form/new-select'
 import newCard from '@/components/public/base/new-card'
 import newCalender from '@/components/public/base/new-calender'
 import ToolsTemplate from '@/components/public/base/tools-template'
+import ToolsTemplateUpdate from '@/components/public/base/tools-template-update'
 import NewTime from '@/components/public/base/new-time'
 // import AceAlert from '@/components/public/ace-alert/index'
 // import AceDialog from '@/components/public/ace-dialog/index'
@@ -23,6 +24,7 @@ export default {
     Vue.component('new-card', newCard)
     Vue.component('new-calender', newCalender)
     Vue.component('tools-template', ToolsTemplate)
+    Vue.component('tools-template-update', ToolsTemplateUpdate)
     Vue.component('new-time', NewTime)
     // Vue.component('ace-alert', AceAlert)
     // Vue.component('ace-dialog', AceDialog)
