@@ -785,7 +785,7 @@ export default {
     box-shadow: -10px 10px 5px 0 rgba(85,158,212,.5);
     border-radius: 1px 1px 30px 30px;
     width: 510px;
-    height: 685px;
+    height: 640px;
     padding: 25px 20px;
     margin: 65px 0 0 0;
     float: right;

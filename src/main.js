@@ -23,7 +23,7 @@ import '../src/components/ams-indicator-admin/src/styles/index.scss' // global c
 Vue.use(components)
 // Ace end
 
-import '@/styles/index.scss' // global css
+require(`@/styles/index-${process.env.VUE_APP_BASE_SKIN}.scss`);
 
 import App from './App'
 import store from './store'
