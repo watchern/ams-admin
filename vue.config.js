@@ -173,9 +173,7 @@ module.exports = {
     resolve: {
       alias: {
         '@': resolve('src'),
-        '@ETL': 'ams-etlscheduler-ui/src',
-        '_them': `./${process.env.VUE_APP_BASE_SKIN}`,
-        '_btn': `./btn-${process.env.VUE_APP_BASE_SKIN}`
+        '@ETL': 'ams-etlscheduler-ui/src'
       }
     },
     // gzip压缩

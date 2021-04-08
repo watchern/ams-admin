@@ -5,8 +5,8 @@
 //@import './sidebar.scss';
 @import './base.scss';
 @import './iconfont/iconfont.css';
-@import "~_them";
-@import "~_btn";
+@import "./default";
+@import "./btn-default";
 
 .iconfont {
   font-family: "iconfont" !important;
