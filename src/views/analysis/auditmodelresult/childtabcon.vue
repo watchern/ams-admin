@@ -258,7 +258,7 @@ import {
 } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
 import mtEditor from "ams-datamax";
-import "iview/dist/styles/iview.css";
+// import "iview/dist/styles/iview.css";
 import {uuid2} from "@/api/analysis/auditmodel";
 // 引入大屏图标
 import chartsResource from '@MAX/data/chartsResource'
