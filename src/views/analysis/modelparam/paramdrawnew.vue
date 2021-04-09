@@ -1,6 +1,6 @@
 <template>
   <div style="overflow-y: visible;" ref="inputParamContent" class="paramadrawnew">
-      <el-row v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
+      <el-row ref="nodeParam" v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
         <el-col :span="7" style="line-height:36px;padding-right: 10px;">
           <el-tooltip :content="paramInfo.description" placement="bottom">
             <label>{{paramInfo.paramName}}</label>
