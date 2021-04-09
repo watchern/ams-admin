@@ -29,7 +29,11 @@
               <div class="name">{{ item.name }}</div>
               <transition name="slide-fade">
                 <div v-if="isShowTreeList" class="tree-list absolute">
-                  <div class="tree-list-content" :class="[currentIndex===index && 'tree-list-back']">
+                  <div class="tree-list-content"
+                       :class="[currentIndex===index && 'tree-list-back']"
+                       :style="{borderLeft:index == '0'?'1px solid rgb(85,158,212)':'none',
+                       borderRight:(index + 1) == applications.length?'1px solid rgb(85,158,212)':'none'}"
+                  >
                     <menu-tree :list="moremenugroup[index]" @closetree="isShrink=true" @mouseover="selectMenu(item,index)"/>
                   </div>
                 </div>
@@ -621,10 +625,10 @@ export default {
     top: 48px;
     left: -30px;
     z-index: 999;
+    border-bottom: 1px solid rgb(85,158,212);
     &-back {
       box-shadow: 0 4px 10px 0 rgb(3 136 238 / 38%);
-      border-top: 2px solid rgb(85,158,212);
-      border-radius: 0!important;
+      border-top: 2px solid;
       z-index:1000;
     }
     &-content {
@@ -632,7 +636,6 @@ export default {
       background: hsla(0,0%,100%,.3);
       width: 150px;
       min-height: 640px;
-      border-radius: 0 0 9px 9px;
     }
   }
   .top {
