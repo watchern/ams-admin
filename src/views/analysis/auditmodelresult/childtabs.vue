@@ -116,7 +116,7 @@ export default {
     line-height:32px!important;
 }
 >>>.el-tabs__content{
-  height: 93%;
+  height: calc(100% - 25px);
   overflow: auto;
 }
 </style>
