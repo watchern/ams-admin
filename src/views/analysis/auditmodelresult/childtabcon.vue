@@ -29,7 +29,7 @@
         </div>
       </div>
     </el-row>
-    <div id="DragOn" style="height:550px">
+    <div id="DragOn">
   <!--  此下为表格  -->
       <div style="position:relative">
         <div v-if="myFlag">
@@ -1772,7 +1772,6 @@ export default {
 .itxst {
   margin: 10px;
   text-align: left;
-  overflow-y: auto;
 }
 .thechard-z {
   margin-right: 15px;
@@ -1880,9 +1879,6 @@ export default {
   border-radius: 2px;
   border: 1px solid #46a6ff;
   float: left;
-}
-#DragOn{
-  overflow-y: auto;
 }
 
 </style>
