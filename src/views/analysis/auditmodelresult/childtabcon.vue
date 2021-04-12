@@ -260,7 +260,7 @@ import {
 import { getTransMap } from "@/api/data/transCode.js";
 import mtEditor from "ams-datamax";
 // import "iview/dist/styles/iview.css";
-import {uuid2} from "@/api/analysis/auditmodel";
+import {addRunTaskAndRunTaskRel, uuid2} from "@/api/analysis/auditmodel";
 // 引入大屏图标
 import chartsResource from '@MAX/data/chartsResource'
 // 引入拖拽布局文件
@@ -1771,7 +1771,13 @@ export default {
      * 保存结果，将模型添加到后台立即执行 **注意带参数模型
      */
     saveResult(){
-      this.$emit("saveModelResult")
+      this.$confirm('是否保存模型结果?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$emit("saveModelResult")
+      })
     }
   }
 };
