@@ -1,7 +1,7 @@
 <template>
   <!-- childTabs是子页签组件 -->
-  <el-tabs type="border-card" >
-    <el-tab-pane v-if="useType==='modelRunResult'?true:false" style="height:30px" :label="useType === 'modelRunResult' ? '主表' : '结果1'"
+  <el-tabs type="border-card" class="child-taps-top">
+    <el-tab-pane v-if="useType==='modelRunResult'?true:false" style="height:calc(100% - 60px)" :label="useType === 'modelRunResult' ? '主表' : '结果1'"
       ><childTabCons
         :settingInfo="settingInfo"
         :nowtable="maintable"
@@ -147,6 +147,9 @@ export default {
   padding:0px!important;
 }
 .result-tabs{
+  height:100%
+}
+.child-taps-top{
   height:100%
 }
 </style>
