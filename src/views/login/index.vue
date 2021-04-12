@@ -1,9 +1,9 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
+    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form skin-bgColor" autocomplete="on" label-position="left">
       <div class="left-container">
         <img src="./style/images/login-logo.png" class="logo-img">
-        <span class="login-right">© 2020 中软国际</span>
+<!--        <span class="login-right">© 2020 中软国际</span>-->
       </div>
       <div class="right-container">
         <div class="title-container">
@@ -240,7 +240,7 @@ $cursor: #fff;
     margin: 0 auto;
     overflow: hidden;
     margin-top: 10%;
-    background-color: #353A43!important;
+    //background-color: #353A43!important;
     box-shadow: 0 29px 38px 0 rgba(53,58,67,0.26);
     border-radius: 5px;
   }
@@ -300,22 +300,22 @@ $cursor: #fff;
     width: 100%;
     margin-top: 20px;
     padding:13px 0px;
-    background: #d70010!important;
-    border-color: #d70010!important;
-    color: #ffffff!important;
+    background: #d70010;
+    border-color: #d70010;
+    color: #ffffff;
     font-weight: bold!important;
   }
 
   .login-btn:focus {
-    background: #d70010!important;
-    border-color: #d70010!important;
-    color: #ffffff!important;
+    background: #d70010;
+    border-color: #d70010;
+    color: #ffffff;
     font-weight: bold!important;
   }
   .login-btn:active {
-    background: #ff0114!important;
-    border-color: #ff0114!important;
-    color: #ffffff!important;
+    background: #ff0114;
+    border-color: #ff0114;
+    color: #ffffff;
     outline: none!important;
     font-weight: bold!important;
   }

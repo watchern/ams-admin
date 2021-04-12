@@ -91,7 +91,7 @@ export default {
     height: 100vh;
   }
   &-right{
-    height: calc(100vh - 62px);
+    height: calc(100vh - 62px);f
     &-content{
       height: calc(100% - 95px);
     }

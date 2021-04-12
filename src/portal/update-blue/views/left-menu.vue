@@ -49,12 +49,12 @@
           <div class="label-wang"><i class="label-wang-in" v-if="isThereReminder"></i></div>
           <span class="label-word">{{ $store.getters.name }}</span>
         </div>
-        <div
-            class="label-open flex a-center j-end flex-row"
-            @click="isShowToolsList=!isShowToolsList, isShowTreeList=false, currentIndex=-1"
-        >
-          <span class="oper-btn menu-21" style="color: #303030;background: transparent"/>
-        </div>
+<!--        <div-->
+<!--            class="label-open flex a-center j-end flex-row"-->
+<!--            @click="isShowToolsList=!isShowToolsList, isShowTreeList=false, currentIndex=-1"-->
+<!--        >-->
+<!--          <span class="oper-btn menu-21" style="color: #303030;background: transparent"/>-->
+<!--        </div>-->
       </div>
     </template>
 

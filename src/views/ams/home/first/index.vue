@@ -1,5 +1,5 @@
 <template>
-  <div class="home w100 h100 flex a-center j-start flex-column">
+  <div class="home w100 h100 flex a-center j-start flex-column homezz">
     <div class="top flex a-center j-between flex-row flex1 flex-shrink ">
       <div class="right flex a-end j-center flex-column">
         <div class="bottom-card a-center j-between flex-row">
@@ -195,9 +195,12 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.homezz {
+  background: url('../../../../styles/image/bg.png') left center no-repeat!important;
+  background-size: 100% 100% !important;
+}
 .home{
   //background: #FFFFFF;
-  // background: #fff url(../../static/img/bg.3ef6624e.png) no-repeat 0 fixed;
   // background-size: 82%;
   // background-position-x: -130px;
   // background-position-y: 2px;
