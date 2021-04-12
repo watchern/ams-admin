@@ -536,8 +536,7 @@ export default {
             id:val.analysisRegionId,
             name:val.measureName
           }
-          //处理aggrid的列信息ss
-          debugger
+          //处理aggrid的列信息
           let data = {id:val.analysisRegionId,data:result,measureName:val.measureName,chartConfig:val.chartConfig}
           //根据返回的结果id找到数组里面的数据进行修改
             dataList.data = result
