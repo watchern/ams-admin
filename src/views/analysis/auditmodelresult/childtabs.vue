@@ -1,7 +1,7 @@
 <template>
   <!-- childTabs是子页签组件 -->
-  <el-tabs type="border-card" style="border:0;box-shadow:0 0 0 0 #000;">
-    <el-tab-pane v-if="useType==='modelRunResult'?true:false" style="height:30px" :label="useType === 'modelRunResult' ? '主表' : '结果1'"
+  <el-tabs type="border-card" class="child-taps-top">
+    <el-tab-pane v-if="useType==='modelRunResult'?true:false" style="height:calc(100% - 60px)" :label="useType === 'modelRunResult' ? '主表' : '结果1'"
       ><childTabCons
         :settingInfo="settingInfo"
         :nowtable="maintable"
@@ -19,7 +19,7 @@
       v-for="(item, key) in useType==='modelRunResult'?helptables:preValue"
       :key="key"
       :label="tabsName(key)"
-      class="qweqwe"
+      class="result-tabs"
       ><childTabCons ref="child" :is-model-preview="isModelPreview" @addBigTabsModelPreview="addBigTabsModelPreview" @addBigTabs="addBigTabs" @setNextValue="setNextValue" :chartModelUuid="chartModelUuid" :resultSpiltObjects="resultSpiltObjects" :modelId="modelId" :nowtable="item" :prePersonalVal="item" :useType="useType" :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1" :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"/>
     </el-tab-pane>
   </el-tabs>
@@ -114,5 +114,16 @@ export default {
 >>>.el-tabs__item{
     height:32px!important;
     line-height:32px!important;
+}
+>>>.el-tabs__content{
+  height: calc(100% - 31px);
+  overflow: auto;
+  padding:0px!important;
+}
+.result-tabs{
+  height:100%
+}
+.child-taps-top{
+  height:100%
 }
 </style>
