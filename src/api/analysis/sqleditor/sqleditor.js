@@ -65,6 +65,11 @@ var mouseY
  */
 var paramIconPath = require("@/styles/icons/param.png")
 /**
+ * 参数图标路径
+ * @type {string}
+ */
+var paramPackageIconPath = require("@/components/ams-ztree/css/zTreeStyle/img/zTreezywjjc.png")
+/**
  * 列图标路径
  * @type {string}
  */
@@ -1158,7 +1163,7 @@ export function initParamTreeNew() {
   }
   getParamsTree().then(result => {
     if (result.data.isError) {
-
+      
     } else {
       for(let i = 0; i < result.data.paramNode.length;i++) {
         setIcon(result.data.paramNode[i])
@@ -1177,11 +1182,15 @@ function setIcon(treeNode){
       for(let i = 0; i < treeNode.children.length;i++){
         setIcon(treeNode.children[i])
       }
-    }
-    else{
+    }else{
       if(treeNode.type == 'param'){
+        //删除Children 防止出现展开伸缩箭头
+        delete treeNode.children;
         treeNode.icon = paramIconPath
         treeNode.isParent = false
+      }
+      else if(treeNode.type == 'folder'){
+        treeNode.icon = paramPackageIconPath;  
       }
     }
 }
@@ -1908,7 +1917,6 @@ export function getSelectSql(menuId) {
     var tableMetaUuid = nodes[0].id
     var columns = CodeMirror.tableColMapping[tableName]
     var oldSql = editorObj.getValue()
-    debugger
     if (!columns || (columns && columns.length === 0)) {
       request({
         baseURL: dataUrl,
