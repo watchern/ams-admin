@@ -21,6 +21,7 @@
       :key="key"
       :label="tabsName(key)"
       class="result-tabs"
+      :style="useType==='previewTable'?'height:500px':''"
       ><childTabCons
         ref="child"
         :is-model-preview="isModelPreview"
