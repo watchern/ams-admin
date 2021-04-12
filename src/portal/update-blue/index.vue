@@ -84,7 +84,7 @@ export default {
 
 <style lang="scss" scoped >
 .home{
-  height: calc(100vh - 85px);
+  height: 100vh;
   background: #fff url('style/images/bg.png') no-repeat left center fixed;
   background-size: 100% 100%;
   &-left{

@@ -15,8 +15,8 @@
       </span>
     </el-dialog>
     <el-row v-if="useType !== 'graph'">
-      <div class="el-btn-no-colorz" v-if="!chartSwitching" @click="switchDivStyle('chart')"><span><i class="el-icon-s-data"></i> 图表模式</span></div>
-      <div class="el-btn-no-colorz" v-if="chartSwitching" @click="switchDivStyle('table')"><span><i class="el-icon-s-order"></i> 表格模式</span></div>
+      <div class="el-btn-no-colorz" v-if="!chartSwitching" @click="switchDivStyle('chart')"><span><i class="el-icon-menu"></i> 仅表格</span></div>
+      <div class="el-btn-no-colorz" v-if="chartSwitching" @click="switchDivStyle('table')"><span><i class="el-icon-s-data"></i> 配置图表</span></div>
       <div v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching" v-for="(item, index) in chartsResource.menuData" class="chartChange" :key="index">
         <div class="item_div" v-for="(menu, i) in item.sub">
           <div :key="i"
@@ -29,9 +29,9 @@
         </div>
       </div>
     </el-row>
-    <div id="DragOn">
+    <div id="DragOn" class="drag-on">
   <!--  此下为表格  -->
-      <div style="position:relative">
+      <div class="drag-on-table">
         <div v-if="myFlag">
           <div align="right" style="position: absolute;top: -29px;right: 0;">
             <el-dropdown>
@@ -72,7 +72,7 @@
         <ag-grid-vue
           v-if="isSee"
           v-loading="isLoading"
-          :style="this.useType==='sqlEditor' || this.useType==='graph'?'height:32vh':'height:59vh'"
+          style="height:calc(100% - 19px);"
           class="table ag-theme-balham"
           :column-defs="columnDefs"
           :row-data="rowData"
@@ -1770,8 +1770,8 @@ export default {
 </script>
 <style scoped>
 .itxst {
-  margin: 10px;
   text-align: left;
+  height:100%;
 }
 .thechard-z {
   margin-right: 15px;
@@ -1807,10 +1807,9 @@ export default {
 
 .el-btn-no-colorz{
   float: right;
-  border: 1px solid #46a6ff;
   height: 30px;
   margin: 5px;
-  font-size: 16px;
+  font-size: 14px;
   color: #46a6ff;
   padding: 2px 5px;
   cursor: pointer;
@@ -1872,13 +1871,20 @@ export default {
   background-size: 420px 168px;
 }
 .item_div{
-  width: 46px;
+  width: 38px;
   height: 34px;
-  padding: 5px;
+  padding: 5px 0px;
   margin: 3px 10px;
   border-radius: 2px;
   border: 1px solid #46a6ff;
   float: left;
+}
+.drag-on{
+  height: calc(100% - 40px);
+}
+.drag-on-table{
+  position:relative;
+  height:100%;
 }
 
 </style>
