@@ -43,7 +43,7 @@
         </div>
       </div>
       <div class="bottom-open flex a-center j-end flex-row">
-        <div class="footer-btns flex a-center j-end flex-row" @click="isShowSettingList=!isShowSettingList">
+        <div class="footer-btns flex a-center j-end flex-row" @click="isShowSettingList=!isShowSettingList" style="padding-right: 15px">
           <!-- <i class="shrink-btn icon iconfont iconleft-1" @click="isShrink=false" /> -->
 <!--          <i class="setting-btn icon iconfont iconmenu-2 setting-btn-right" @click="widthChange" />-->
           <div class="label-wang"><i class="label-wang-in" v-if="isThereReminder"></i></div>
