@@ -14,7 +14,7 @@
             <div
               ref="navDom"
               class="box flex a-center j-center flex-row"
-              @mouseover="selectMenuIn()"
+              @click="selectMenuIn()"
             >
               <div class="name">首页</div>
             </div>
@@ -24,7 +24,7 @@
               :key="index"
               class="box flex a-center j-center flex-row"
               :class="[currentIndex===index && 'box-active']"
-              @mouseover="selectMenu(item,index)"
+              @click="selectMenu(item,index)"
             >
               <div class="name">{{ item.name }}</div>
               <transition name="slide-fade">
@@ -34,7 +34,7 @@
                        :style="{borderLeft:index == '0'?'1px solid rgb(85,158,212)':'none',
                        borderRight:(index + 1) == applications.length?'1px solid rgb(85,158,212)':'none'}"
                   >
-                    <menu-tree :list="moremenugroup[index]" @closetree="isShrink=true" @mouseover="selectMenu(item,index)"/>
+                    <menu-tree :list="moremenugroup[index]" @closetree="isShrink=true" @click="selectMenu(item,index)"/>
                   </div>
                 </div>
               </transition>
