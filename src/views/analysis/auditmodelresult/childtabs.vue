@@ -42,6 +42,8 @@
 <script>
 import childTabCons from "@/views/analysis/auditmodelresult/childtabcon";
 import { now } from "moment";
+import {addRunTaskAndRunTaskRel, deleteModel, uuid2} from "@/api/analysis/auditmodel";
+import {deleteGraphInfoById} from "@/api/graphtool/apiJs/graphList";
 export default {
   components: {
     'childTabCons':childTabCons
@@ -110,8 +112,49 @@ export default {
       this.paramInfoCopy = paramInfo
     },
     saveModelResult(){
-        console.log(this.paramInfoCopy)
-        console.log(this.modelId)
+      this.$confirm('是否保存模型结果?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        var runTaskUuid = uuid2();
+        var batchUuid = uuid2();
+        var runTaskRels = [];
+        var runTaskRelUuid = uuid2();
+        var runTaskRel = {
+          runTaskRelUuid: runTaskRelUuid,
+          runTaskUuid: runTaskUuid,
+          sourceUuid: this.modelId,
+          settingInfo: JSON.stringify(this.paramInfoCopy),
+          modelVersion: 1,
+          runRecourceType: 1,
+          isDeleted: 0,
+          runStatus: 1,
+        };
+        runTaskRels.push(runTaskRel);
+        var runTask = {
+          runTaskUuid: runTaskUuid,
+          batchUuid: batchUuid,
+          runTaskName: "系统添加",
+          runType: 3,
+          timingExecute: "",
+          //locationUuid: modelResultSavePathId,
+          runTaskRels: runTaskRels
+        };
+        addRunTaskAndRunTaskRel(runTask).then((resp) => {
+          if (resp.data == true) {
+            this.$notify({
+              title: "提示",
+              message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          } else {
+            this.$message({ type: "info", message: "执行运行任务失败" });
+          }
+        });
+      })
     }
   },
   /**
