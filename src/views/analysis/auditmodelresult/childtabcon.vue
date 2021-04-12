@@ -17,6 +17,7 @@
     <el-row v-if="useType !== 'graph'">
       <div class="el-btn-no-colorz" v-if="!chartSwitching" @click="switchDivStyle('chart')"><span><i class="el-icon-menu"></i> 仅表格</span></div>
       <div class="el-btn-no-colorz" v-if="chartSwitching" @click="switchDivStyle('table')"><span><i class="el-icon-s-data"></i> 配置图表</span></div>
+      <div class="el-btn-no-colorz" v-if="chartSwitching" @click="saveResult()"><span><i class="oper-btn save"></i></span></div>
       <div v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching" v-for="(item, index) in chartsResource.menuData" class="chartChange" :key="index">
         <div class="item_div" v-for="(menu, i) in item.sub">
           <div :key="i"
@@ -307,6 +308,7 @@ export default {
     "myIndex",
     "chartModelUuid",
     "settingInfo",
+    "paramInfo",
     "isModelPreview",
   ],
   data() {
@@ -1764,6 +1766,12 @@ export default {
           });
         }
       });
+    },
+    /**
+     * 保存结果，将模型添加到后台立即执行 **注意带参数模型
+     */
+    saveResult(){
+      this.$emit("saveModelResult")
     }
   }
 };

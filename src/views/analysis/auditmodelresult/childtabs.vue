@@ -13,6 +13,7 @@
         :preLength="1"
         @addBigTabs="addBigTabs"
         @setNextValue="setNextValue"
+        @saveModelResult="saveModelResult"
         ref="onlyChild"
     /></el-tab-pane>
     <el-tab-pane
@@ -20,7 +21,21 @@
       :key="key"
       :label="tabsName(key)"
       class="result-tabs"
-      ><childTabCons ref="child" :is-model-preview="isModelPreview" @addBigTabsModelPreview="addBigTabsModelPreview" @addBigTabs="addBigTabs" @setNextValue="setNextValue" :chartModelUuid="chartModelUuid" :resultSpiltObjects="resultSpiltObjects" :modelId="modelId" :nowtable="item" :prePersonalVal="item" :useType="useType" :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1" :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"/>
+      ><childTabCons
+        ref="child"
+        :is-model-preview="isModelPreview"
+        @addBigTabsModelPreview="addBigTabsModelPreview"
+        @addBigTabs="addBigTabs"
+        @setNextValue="setNextValue"
+        @saveModelResult="saveModelResult"
+        :chartModelUuid="chartModelUuid"
+        :resultSpiltObjects="resultSpiltObjects"
+        :modelId="modelId"
+        :nowtable="item"
+        :prePersonalVal="item"
+        :useType="useType"
+        :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1"
+        :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"/>
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -34,8 +49,12 @@ export default {
   data() {
     return {
       index:0,
-      hasButton:false
+      hasButton:false,
+      paramInfoCopy:{}
     };
+  },
+  mounted() {
+    this.paramInfoCopy = this.paramInfo
   },
   methods: {
     /**
@@ -43,8 +62,7 @@ export default {
      */
       loadTableData(nextValue,modelName){
         this.$refs.child[this.index].initData(null,nextValue,modelName)
-        this.
-          index++;
+        this.index++;
       },
       /**
        * sql编辑器模型结果用于给子组件aggrid表格加遮罩
@@ -87,6 +105,13 @@ export default {
         }else{
           this.$refs.child[this.index-1].clickBigTab()
         }
+    },
+    loadNewParamInfo(paramInfo){
+      this.paramInfoCopy = paramInfo
+    },
+    saveModelResult(){
+        console.log(this.paramInfoCopy)
+        console.log(this.modelId)
     }
   },
   /**
@@ -106,7 +131,8 @@ export default {
     "settingInfo",
     "resultMark",
     "isModelPreview",
-    "isRelation"
+    "isRelation",
+    "paramInfo"
   ],
 };
 </script>
