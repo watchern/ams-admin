@@ -1,12 +1,8 @@
 <template>
   <div class="tools-template w100 h100 relative" id="tool">
     <div class="tools-content h100 relative">
-      <div class="title text-white">
-        <i class="el-icon-s-grid" />
-        <span class="label">更多工具</span>
-      </div>
       <div class="lately-use">
-        <div class="title-label">常用功能</div>
+        <div class="title-label-menu">常用功能</div>
         <div class="lately-use-box flex a-center j-start flex-row">
           <div
             v-for="(item,index) in latelyBdInList"
@@ -28,38 +24,38 @@
             </el-tooltip>
           </div>
         </div>
-        <div class="title-label" style="margin-top: 15px">自定义快捷菜单</div>
+        <div class="title-label-menu" style="margin-top: 15px">自定义快捷菜单</div>
           <div class="lately-use-box flex a-center j-start flex-row">
-            <div
-              v-for="(item,index) in latelyFastList"
+          <div
+            v-for="(item,index) in latelyFastList"
+            :key="index"
+            class="use-box flex a-center j-center use-zy"
+            @click="theRoutingIn(item)"
+            :style='{background:item.bg}'
+          >
+            <img :src="item.image" />
+          </div>
+          <div
+            class="use-box flex a-center j-center use-zy"
+            @click="dialogVisible = true"
+            :style='{background:"rgb(95, 190, 235)"}'
+          >
+            <img src="../../public/base/accessIcon/zidingyi.png" />
+          </div>
+        </div>
+        <div class="lately-use-box flex a-center j-start flex-row">
+          <div v-for="(item,index) in latelyFastList"
               :key="index"
-              class="use-box flex a-center j-center use-zy"
-              @click="theRoutingIn(item)"
-              :style='{background:item.bg}'
-            >
-              <img :src="item.image" />
-            </div>
-            <div
-              class="use-box flex a-center j-center use-zy"
-              @click="dialogVisible = true"
-              :style='{background:"rgb(95, 190, 235)"}'
-            >
-              <img src="../../public/base/accessIcon/zidingyi.png" />
-            </div>
+              class="use-box flex a-center j-center use-zyt"
+          >
+            <el-tooltip :content="item.name" placement="bottom" effect="light">
+              <span class="doubleWords"> {{ item.name }} </span>
+            </el-tooltip>
           </div>
-          <div class="lately-use-box flex a-center j-start flex-row">
-            <div v-for="(item,index) in latelyFastList"
-                :key="index"
-                class="use-box flex a-center j-center use-zyt"
-            >
-              <el-tooltip :content="item.name" placement="bottom" effect="light">
-                <span class="doubleWords"> {{ item.name }} </span>
-              </el-tooltip>
-            </div>
-            <div class="use-box flex a-center j-center use-zyt">
-              <span style="font-size:14px"> 维护 </span>
-            </div>
+          <div class="use-box flex a-center j-center use-zyt">
+            <span style="font-size:14px"> 维护 </span>
           </div>
+        </div>
         </div>
 <!--      <div class="other-tools">-->
 <!--        <div class="title-label">其他工具</div>-->
@@ -76,19 +72,22 @@
 <!--      </div>-->
 
       <div class="newest-item">
-        <div class="title-label">执行任务</div>
         <div class="newest-item-box">
-          <div>
+          <div data-v-02dbff7e="" class="title-label-img">
+            <img data-v-02dbff7e="" src="../../../styles/image/c2.png" class="img">
+          </div>
+          <div class="title-label">执行任务</div>
+          <div class="task-list">
             <ul>
               <li v-for="(item , index) in list" :key="index">
-                <span v-if="item.taskStatus == 2" style="color:#eaeaea" class="el-icon-success" />
-                <span v-if="item.taskStatus == 1" style="color:#eaeaea" class="el-icon-loading" />
-                <span v-if="item.taskStatus == 3" style="color:#eaeaea" class="el-icon-error" />
-                <span style="color:#eaeaea;font-size:11px;padding:2px" class="tools-box-name" v-text="item.taskEstimatedTime" />
-                <span style="color:#eaeaea;font-size:11px;padding:2px;cursor:pointer;" class="tools-box-name" @click="toUrl(item.taskUrl)" v-text="item.taskName" />
+                <span v-if="item.taskStatus == 2" style="color:#ffffff" class="el-icon-success" />
+                <span v-if="item.taskStatus == 1" style="color:#ffffff" class="el-icon-loading" />
+                <span v-if="item.taskStatus == 3" style="color:#ffffff" class="el-icon-error" />
+                <span style="color:#ffffff;font-size:14px;padding:5px" class="tools-box-name" v-text="item.taskEstimatedTime" />
+                <span style="color:#ffffff;font-size:14px;padding:5px;cursor:pointer;" class="tools-box-name" @click="toUrl(item.taskUrl)" v-text="item.taskName" />
               </li>
             </ul>
-            <span type="primary" style="color:#fff;float:right;bottom:-22px;font-size:13px;font-weight:bold;cursor:pointer;" @click="moreTask">更多</span>
+            <span type="primary" style="color:#ffffff;float:right;bottom:-22px;font-size:13px;font-weight:bold;cursor:pointer;" @click="moreTask">更多</span>
           </div>
         </div>
       </div>
@@ -513,6 +512,9 @@ export default {
     let arry = []
     let arryV = []
     arry = JSON.parse(localStorage.getItem('userid'))
+    if(!arry){
+      arry = []
+    }
     for(let i = 0 ; i < arry.length ; i++){
       arryV.push(arry[i].v)
     }
@@ -539,6 +541,7 @@ export default {
         break
       }
     }
+
     for(let i =0; i<this.latelyInImgList.length; i++){
       this.latelyBdInList.push({image:this.latelyInImgList[i].image,bg:this.latelyBackList[i].bg})
     }
@@ -675,8 +678,8 @@ export default {
           quickMenuPath: this.$refs.tree3.getCheckedNodes()[i].path
         })
       }
-      if (allThing.length > 4) {
-        this.$message.error('自定义快捷菜单不能超过四个！');
+      if (allThing.length > 5) {
+        this.$message.error('自定义快捷菜单不能超过5个！');
       } else {
         saveQuickMenuList(allThing).then(resp => {
           if(resp.code != 0){
@@ -781,13 +784,11 @@ export default {
     height: 80px;
   }
   .tools-content {
-    background: rgb(85,158,212);
-    box-shadow: -10px 10px 5px 0 rgba(85,158,212,.5);
     border-radius: 1px 1px 30px 30px;
-    width: 510px;
+    width: 550px;
     height: 640px;
     padding: 25px 20px;
-    margin: 65px 0 0 0;
+    margin: 40px 50px 0 0;
     float: right;
     z-index: 10;
     animation: allinwidth .5s ease-out;
@@ -813,15 +814,22 @@ export default {
       }
     }
     .title-label {
-      font-family: PingFangSC-Semibold;
-      font-size: 12px;
+      font-family: PingFangSC-Regular;
+      font-size: 20.16px;
       color: #ffffff;
-      letter-spacing: 0;
+      line-height: 26.88px;
+      margin-bottom: 14px;
+      width:200px;
+      float:left;
+    }
+    .title-label-menu{
+      font-size: 20.16px;
+      color: #559ed4;
     }
     .title {
       font-family: BebasNeue;
       font-size: 16px;
-      color: #ffffff;
+      color: #333333;
       letter-spacing: 0;
       .label {
         margin-left: 6px;
@@ -839,7 +847,7 @@ export default {
           height: 67.2px;
           font-size: 30px;
           margin-right: 15.8px;
-          color: white;
+          color: #333333;
           &-add {
             border: 1px solid #454c58;
             color: #454c58;
@@ -883,12 +891,14 @@ export default {
     .newest-item {
       width: 426px;
       &-box {
-        height: 140px;
-        margin-top: 20px;
-        border: 1px solid rgb(95,190,235);
-        //box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        padding: 10px 20px;
+        background: #559ed4;
+        box-shadow: 10px 10px 20px 0 rgb(95 190 235 / 30%) !important;
+        border-radius: 25.2px;
+        padding: 27px;
+        width: 479px;
+        position: relative;
+        margin: 30px 0px;
+        height: 218px;
         &-title {
           font-family: PingFangSC-Regular;
           font-size: 14px;
@@ -899,7 +909,7 @@ export default {
           .content-left {
             font-family: BebasNeue;
             font-size: 56px;
-            color: #ffffff;
+            color: #333333;
             line-height: 64px;
             margin-right: 26px;
           }
@@ -907,7 +917,7 @@ export default {
             .right-p1 {
               font-family: PingFangSC-Regular;
               font-size: 18px;
-              color: white;
+              color: #333333;
               line-height: 32px;
             }
             .right-p2 {
@@ -960,5 +970,21 @@ export default {
   text-overflow:ellipsis;
   white-space: nowrap;
   text-align: center
+}
+.title-label-img{
+    background: #fff;
+    border: 1px solid #d8d8d8;
+    border-radius: 12.6px;
+    width: 67px;
+    height: 67px;
+    margin-right: 27px;
+    padding: 15px;
+    float:left;
+    .img{
+      width: 36px;
+    }
+}
+.task-list{
+  margin:50px 0px 0px 100px;
 }
 </style>

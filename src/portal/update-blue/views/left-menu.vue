@@ -14,7 +14,7 @@
             <div
               ref="navDom"
               class="box flex a-center j-center flex-row"
-              @mouseover="selectMenuIn()"
+              @click="selectMenuIn()"
             >
               <div class="name">首页</div>
             </div>
@@ -24,13 +24,17 @@
               :key="index"
               class="box flex a-center j-center flex-row"
               :class="[currentIndex===index && 'box-active']"
-              @mouseover="selectMenu(item,index)"
+              @click="selectMenu(item,index)"
             >
               <div class="name">{{ item.name }}</div>
               <transition name="slide-fade">
                 <div v-if="isShowTreeList" class="tree-list absolute">
-                  <div class="tree-list-content" :class="[currentIndex===index && 'tree-list-back']">
-                    <menu-tree :list="moremenugroup[index]" @closetree="isShrink=true" @mouseover="selectMenu(item,index)"/>
+                  <div class="tree-list-content"
+                       :class="[currentIndex===index && 'tree-list-back']"
+                       :style="{borderLeft:index == '0'?'1px solid rgb(85,158,212)':'none',
+                       borderRight:(index + 1) == applications.length?'1px solid rgb(85,158,212)':'none'}"
+                  >
+                    <menu-tree :list="moremenugroup[index]" @closetree="isShrink=true" @click="selectMenu(item,index)"/>
                   </div>
                 </div>
               </transition>
@@ -39,18 +43,18 @@
         </div>
       </div>
       <div class="bottom-open flex a-center j-end flex-row">
-        <div class="footer-btns flex a-center j-end flex-row" @click="isShowSettingList=!isShowSettingList">
+        <div class="footer-btns flex a-center j-end flex-row" @click="isShowSettingList=!isShowSettingList" style="padding-right: 15px">
           <!-- <i class="shrink-btn icon iconfont iconleft-1" @click="isShrink=false" /> -->
 <!--          <i class="setting-btn icon iconfont iconmenu-2 setting-btn-right" @click="widthChange" />-->
           <div class="label-wang"><i class="label-wang-in" v-if="isThereReminder"></i></div>
           <span class="label-word">{{ $store.getters.name }}</span>
         </div>
-        <div
-            class="label-open flex a-center j-end flex-row"
-            @click="isShowToolsList=!isShowToolsList, isShowTreeList=false, currentIndex=-1"
-        >
-          <span class="oper-btn menu-21" style="color: #303030;background: transparent"/>
-        </div>
+<!--        <div-->
+<!--            class="label-open flex a-center j-end flex-row"-->
+<!--            @click="isShowToolsList=!isShowToolsList, isShowTreeList=false, currentIndex=-1"-->
+<!--        >-->
+<!--          <span class="oper-btn menu-21" style="color: #303030;background: transparent"/>-->
+<!--        </div>-->
       </div>
     </template>
 
@@ -621,10 +625,10 @@ export default {
     top: 48px;
     left: -30px;
     z-index: 999;
+    border-bottom: 1px solid rgb(85,158,212);
     &-back {
       box-shadow: 0 4px 10px 0 rgb(3 136 238 / 38%);
-      border-top: 2px solid rgb(85,158,212);
-      border-radius: 0!important;
+      border-top: 2px solid;
       z-index:1000;
     }
     &-content {
@@ -632,7 +636,6 @@ export default {
       background: hsla(0,0%,100%,.3);
       width: 150px;
       min-height: 640px;
-      border-radius: 0 0 9px 9px;
     }
   }
   .top {

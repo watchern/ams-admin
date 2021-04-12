@@ -261,6 +261,7 @@ td>.form-group{
 }
 >>> #geResultContainer .el-tabs__content{
     position: inherit;
+    padding:0px!important;
     /*background-color: #DDDDDD;*/
     height: calc(100% - 39px);
 }

@@ -17,3 +17,4 @@ yarn-error.log*
 *.iml
 *.xml
 .env.development
+package-lock.json

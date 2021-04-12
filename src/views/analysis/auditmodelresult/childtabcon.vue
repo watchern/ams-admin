@@ -14,234 +14,202 @@
         <el-button type="primary" @click="queryCondition">查 询</el-button>
       </span>
     </el-dialog>
-    <el-row style="margin-right: 35px;" v-if="useType !== 'graph'">
-      <div :class="chartClass" title="图表" @click="switchDivStyle('chart')"><span class="icon iconfont" >&#xecee;</span></div>
-      <div :class="tableClass" title="表格" @click="switchDivStyle('table')"><span class="icon iconfont" >&#xe6d8;</span></div>
-    </el-row>
-    <div v-if="chartSwitching" style="position:relative">
-      <div v-if="myFlag">
-        <div align="right" style="position: absolute;top: -29px;right: 0;">
-          <el-dropdown>
-            <el-button
-              type="primary"
-              class="oper-btn link-2"
-              :disabled="modelRunResultBtnIson.associatedBtn"
-              @click="openProjectDialog"
-            ></el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item @click.native="openProjectDialog">分配项目</el-dropdown-item>
-              <el-dropdown-item @click.native="removeRelated()">移除分配项目</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-<!--          <el-button-->
-<!--            type="primary"-->
-<!--            class="oper-btn link-2"-->
-<!--            :disabled="modelRunResultBtnIson.associatedBtn"-->
-<!--            @click="openProjectDialog"-->
-<!--            title="分配项目"-->
-<!--          ></el-button>-->
-<!--          <el-button-->
-<!--            :disabled="modelRunResultBtnIson.disassociateBtn"-->
-<!--            type="primary"-->
-<!--            class="oper-btn move"-->
-<!--            @click="removeRelated()"-->
-<!--            title="移除分配项目"-->
-<!--          ></el-button-->
-<!--          >-->
-<!--          <el-button-->
-<!--            :disabled="modelRunResultBtnIson.chartDisplayBtn"-->
-<!--            type="primary"-->
-<!--            class="oper-btn chart"-->
-<!--            @click="chartShowIsSee = true"-->
-<!--            title="图表展示"-->
-<!--          ></el-button>-->
-          <el-button
-            :disabled="false"
-            type="primary"
-            @click="queryConditionSetting"
-            class="oper-btn search"
-            style="margin-left: 10px"
-          ></el-button>
-          <el-button
-            :disabled="false"
-            type="primary"
-            @click="reSet"
-            class="oper-btn again-3"
-          ></el-button>
-<!--          <el-button-->
-<!--            class="oper-btn link"-->
-<!--            :disabled="modelRunResultBtnIson.modelDetailAssBtn"-->
-<!--            v-if="modelDetailButtonIsShow"-->
-<!--            type="primary"-->
-<!--            @click="openModelDetail"-->
-<!--            title="查询关联"-->
-<!--          ></el-button>-->
-          <el-button
-            :disabled="modelRunResultBtnIson.exportBtn"
-            type="primary"
-            @click="exportExcel"
-            class="oper-btn export-2"
-          ></el-button>
-          <!-- addDetailRel('qwer1', '项目11') -->
+    <el-row v-if="useType !== 'graph'">
+      <div class="el-btn-no-colorz" v-if="!chartSwitching" @click="switchDivStyle('chart')"><span><i class="el-icon-menu"></i> 仅表格</span></div>
+      <div class="el-btn-no-colorz" v-if="chartSwitching" @click="switchDivStyle('table')"><span><i class="el-icon-s-data"></i> 配置图表</span></div>
+      <div v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching" v-for="(item, index) in chartsResource.menuData" class="chartChange" :key="index">
+        <div class="item_div" v-for="(menu, i) in item.sub">
+          <div :key="i"
+               :style="{backgroundPosition: menu.bgPositionX + 'px ' + menu.bgPositionY + 'px',cursor: 'pointer'}"
+               class="item_img item-bgimg-size"
+               @click="clickout(menu)"
+               draggable="true"
+          ></div>
+<!--    @drag="drag" @dragend="dragend(menu)"      -->
         </div>
       </div>
-
-      <ag-grid-vue
-        v-if="isSee"
-        v-loading="isLoading"
-        :style="this.useType==='sqlEditor' || this.useType==='graph'?'height:32vh':'height:59vh'"
-        class="table ag-theme-balham"
-        :column-defs="columnDefs"
-        :row-data="rowData"
-        rowMultiSelectWithClick="true"
-        :enable-col-resize="true"
-        :get-row-style="useType=='modelRunResult'&&this.modelUuid!==undefined?this.renderTable:undefined"
-        row-selection="multiple"
-        @cellClicked="onCellClicked"
-        @gridReady="onGridReady"
-        @rowSelected="rowChange"
-      />
-
-      <el-card v-if="!isSee" class="box-card" style="height: 100px">
-        <div>{{ errorMessage }}</div>
-      </el-card>
-      <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="pageQuery.pageNo"
-        :limit.sync="pageQuery.pageSize"
-        @pagination="initData(nowSql)"
-      />
-      <el-row>
-        <el-col :span="22">
-          <div v-if="modelResultPageIsSee">
-            共<span class="paging-z" title="只显示前10000条数据">{{ rowData.length }}</span
-            >条
-          </div>
-        </el-col>
-        <el-col :span="2">
-          <el-row v-if="modelResultButtonIsShow" style="display: flex">
-            <downloadExcel
-              :data="tableData"
-              :fields="json_fields"
-              :name="excelName"
-              class="thechard-z"
-              v-if="this.preLength==this.myIndex+1 && this.useType!=='sqlEditor'"
-            >
+    </el-row>
+    <div id="DragOn" class="drag-on">
+  <!--  此下为表格  -->
+      <div class="drag-on-table">
+        <div v-if="myFlag">
+          <div align="right" style="position: absolute;top: -29px;right: 0;">
+            <el-dropdown>
               <el-button
                 type="primary"
-                @click="modelResultExport"
-                class="oper-btn export-2"
-                title="导出"
+                class="oper-btn link-2"
+                :disabled="modelRunResultBtnIson.associatedBtn"
+                @click="openProjectDialog"
               ></el-button>
-            </downloadExcel>
-          </el-row>
-        </el-col>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="openProjectDialog">分配项目</el-dropdown-item>
+                <el-dropdown-item @click.native="removeRelated()">移除分配项目</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <el-button
+              :disabled="false"
+              type="primary"
+              @click="queryConditionSetting"
+              class="oper-btn search"
+              style="margin-left: 10px"
+            ></el-button>
+            <el-button
+              :disabled="false"
+              type="primary"
+              @click="reSet"
+              class="oper-btn again-3"
+            ></el-button>
+            <el-button
+              :disabled="modelRunResultBtnIson.exportBtn"
+              type="primary"
+              @click="exportExcel"
+              class="oper-btn export-2"
+            ></el-button>
+            <!-- addDetailRel('qwer1', '项目11') -->
+          </div>
+        </div>
+
+        <ag-grid-vue
+          v-if="isSee"
+          v-loading="isLoading"
+          style="height:calc(100% - 19px);"
+          class="table ag-theme-balham"
+          :column-defs="columnDefs"
+          :row-data="rowData"
+          rowMultiSelectWithClick="true"
+          :enable-col-resize="true"
+          :get-row-style="useType=='modelRunResult'&&this.modelUuid!==undefined?this.renderTable:undefined"
+          row-selection="multiple"
+          @cellClicked="onCellClicked"
+          @gridReady="onGridReady"
+          @rowSelected="rowChange"
+        />
+
+        <el-card v-if="!isSee" class="box-card" style="height: 100px">
+          <div>{{ errorMessage }}</div>
+        </el-card>
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          :page.sync="pageQuery.pageNo"
+          :limit.sync="pageQuery.pageSize"
+          @pagination="initData(nowSql)"
+        />
+        <el-row>
+          <el-col :span="22">
+            <div v-if="modelResultPageIsSee">
+              共<span class="paging-z" title="只显示前10000条数据">{{ rowData.length }}</span
+              >条
+            </div>
+          </el-col>
+          <el-col :span="2">
+            <el-row v-if="modelResultButtonIsShow" style="display: flex">
+              <downloadExcel
+                :data="tableData"
+                :fields="json_fields"
+                :name="excelName"
+                class="thechard-z"
+                v-if="this.preLength==this.myIndex+1 && this.useType!=='sqlEditor'"
+              >
+                <el-button
+                  type="primary"
+                  @click="modelResultExport"
+                  class="oper-btn export-2"
+                  title="导出"
+                ></el-button>
+              </downloadExcel>
+            </el-row>
+          </el-col>
+        </el-row>
+      </div>
+  <!--  此下为图表  -->
+      <el-row v-if="!chartSwitching">
+        <div style="height: 450px;" v-if="this.preLength==this.myIndex+1||myFlag" :key="thechartdead">
+          <div v-if="afterResult" v-for="(item, index) in chartConfigs" style="height: 350px;">
+            <div>
+              <img
+                  src="./imgs/change.png"
+                  v-if="useType=='sqlEditor'||myFlag"
+                  type="primary"
+                  @click="openEditChartDialog(index)"
+                  class="change-pos"
+                  title="修改图表"
+              />
+              <img
+                  src="./imgs/deletein.png"
+                  v-if="useType=='sqlEditor'||myFlag"
+                  type="primary"
+                  @click="deleteChart(index)"
+                  class="delete-pos"
+                  title="删除图表"
+              />
+            </div>
+            <mtEditor v-loading="chartLoading" :key="index" ref='chart1' :data='result' :chart-config='item' :preview="true"></mtEditor>
+          </div>
+        </div>
       </el-row>
     </div>
     <el-dialog
-      v-if="modelDetailModelResultDialogIsShow"
-      title="模型详细结果"
-      :visible.sync="modelDetailModelResultDialogIsShow"
-      width="80%"
-      :fullscreen="true"
+        v-if="modelDetailModelResultDialogIsShow"
+        title="模型详细结果"
+        :visible.sync="modelDetailModelResultDialogIsShow"
+        width="80%"
+        :fullscreen="true"
     >
       <childtabscopy
-        ref="childTabsRef"
-        :pre-value="currentExecuteSQL"
-        use-type="sqlEditor"
+          ref="childTabsRef"
+          :pre-value="currentExecuteSQL"
+          use-type="sqlEditor"
       />
       <span slot="footer" class="dialog-footer">
         <el-button @click="modelDetailModelResultDialogIsShow = false"
-          >取 消</el-button
+        >取 消</el-button
         >
         <el-button
-          type="primary"
-          @click="modelDetailModelResultDialogIsShow = false"
-          >确 定</el-button
+            type="primary"
+            @click="modelDetailModelResultDialogIsShow = false"
+        >确 定</el-button
         >
       </span>
     </el-dialog>
-       <el-dialog
-      title="提示"
-      :visible.sync="chartShowIsSee"
-      width="90%"
-      :fullscreen="true"
-      :append-to-body="true"
-    ><div v-if="chartShowIsSee">
-      <mtEditor
-        ref="chart"
-        :data="result"
-        :chart-config="nowChartJson"
-        :key="chartPreview"
-      ></mtEditor>
-         </div>
+    <el-dialog
+        title="提示"
+        :visible.sync="chartShowIsSee"
+        width="90%"
+        :fullscreen="true"
+        :append-to-body="true"
+    >
+      <div v-if="chartShowIsSee">
+        <mtEditor
+            ref="chart"
+            :data="result"
+            :chart-config="nowChartJson"
+            :key="chartPreview"
+        ></mtEditor>
+      </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="chartShowIsSee = false">取 消</el-button>
         <el-button
-          v-if="useType == 'sqlEditor' ||  useType == 'modelRunResult'? true: false"
-          type="primary"
-          @click="chartSaveOrUpdate=='save'?saveChart():updateChart()"
-          >保 存</el-button
-        >
+            v-if="useType == 'sqlEditor' ||  useType == 'modelRunResult'? true: false"
+            type="primary"
+            @click="updateChart"
+        >保 存</el-button>
       </span>
     </el-dialog>
-            <el-dialog
-          title="请选择项目"
-          :visible.sync="projectDialogIsSee"
-          width="40%"
-        >
-          <userProject
-            v-if="projectDialogIsSee"
-            ref="userproject"
-          ></userProject>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="projectDialogIsSee = false">取 消</el-button>
-            <el-button type="primary" @click="determineProject"
-              >确 定</el-button
-            >
-          </span>
-        </el-dialog>
-    <el-row v-if="!chartSwitching">
-      <div align="right" v-if="this.preLength==this.myIndex+1||myFlag">
-        <div class="smallImgs">
-          <div align="right">
-            <a
-              v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"
-              @click="openChartDialog"
-              title="添加图表"
-              style="margin: 10px 6px 10px 0;float: right"
-            >添加</a>
-          </div>
-          <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" class="chartSwitching" @click="changeChart(item.id)" :key="key"/>
-        </div>
-        <div v-if="!isHaveCharts && !afterAddChartsWithNoConfigure">
-        <img
-          src="./imgs/change.png"
-          v-if="useType=='sqlEditor'||myFlag"
-          type="primary"
-          @click="openEditChartDialog"
-          class="change-pos"
-          title="修改图表"
-        />
-        <img
-          src="./imgs/deletein.png"
-          v-if="useType=='sqlEditor'||myFlag"
-          type="primary"
-          @click="deleteChart"
-          class="delete-pos"
-          title="删除图表"
-        />
-        </div>
-      </div>
-    <div style="height: 450px;" v-if="this.preLength==this.myIndex+1||myFlag">
-      <div align='center' style='font-weight:lighter ;font-size:15px' v-if="afterAddChartsWithNoConfigure">请选择图表</div>
-      <div align='center' style='font-weight:lighter ;font-size:15px' v-if="isHaveCharts">暂无图表</div>
-      <div v-if="afterResult" style="height: 350px;">
-      <mtEditor v-loading="chartLoading" :key="chartPreview" ref='chart1' :data='result' :chart-config='nowChartJson' :preview="true"></mtEditor>
-      </div>
-    </div>
-  </el-row>
+    <el-dialog
+        title="请选择项目"
+        :visible.sync="projectDialogIsSee"
+        width="40%"
+    >
+      <userProject
+          v-if="projectDialogIsSee"
+          ref="userproject"
+      ></userProject>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="projectDialogIsSee = false">取 消</el-button>
+        <el-button type="primary" @click="determineProject">确 定</el-button>
+      </span>
+    </el-dialog>
     <div class="globalDropDownBox" @mouseover="StopTime" @mouseleave="openModelDetailOld" v-if="globalDropDownBox" :style="{top: globalDropTop,left: globalDropLeft}">
       <li class="globalDDBli" v-for="item in modelDetailRelation" @click="modelDetailCetermine(item.relationObjectUuid)">
         {{item.modelDetailName}}
@@ -290,9 +258,14 @@ import {
 } from "@/api/analysis/sqleditor/sqleditor";
 import { getTransMap } from "@/api/data/transCode.js";
 import mtEditor from "ams-datamax";
-import "iview/dist/styles/iview.css";
+// import "iview/dist/styles/iview.css";
 import {uuid2} from "@/api/analysis/auditmodel";
-
+// 引入大屏图标
+import chartsResource from '@MAX/data/chartsResource'
+// 引入拖拽布局文件
+import {GridLayout, GridItem} from 'vue-grid-layout';
+import {setDataSetToNode} from "ams-datamax/src/components/chartEdit/methods/commonMethods";
+let mouseXY = {"x": null, "y": null};
 export default {
   name: "childTabCon",
   // 注册draggable组件
@@ -303,7 +276,9 @@ export default {
     childtabscopy,
     downloadExcel: JsonExcel,
     mtEditor,
-    userProject
+    userProject,
+    GridLayout,
+    GridItem
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -315,7 +290,7 @@ export default {
     },
     nowChartJson () {
         this.chartPreview = !this.chartPreview
-      }
+    }
   },
   /**
    * 模型运行结果使用变量：nowtable：表示模型结果表对象   modelUuid：根据modelUUid进行表格渲染，只有主表用渲染  useType=modelRunResult 表示是模型运行结果所用
@@ -332,7 +307,7 @@ export default {
     "myIndex",
     "chartModelUuid",
     "settingInfo",
-    "isModelPreview"
+    "isModelPreview",
   ],
   data() {
     return {
@@ -389,8 +364,9 @@ export default {
       dynamicSelect: [], //实时存储多选框勾选中的数据
       chartShowIsSee: false,
       result: {},   //给myeditor传的数据
-      chartSaveOrUpdate: "", //判断图标是保存还是更新操作
+      chartIndex: 0, //修改操作的下标
       nowChartJson: undefined, //存储当前正在显示的图表的json
+      allChartJson: [], //存储当前正在显示的图表的json
       modelChartSetups:[],  //用于存储添加的多个图标，用于图表返显功能
       chartConfigs:[],   //用于存储当前模型的图表config   （myeditor组件的chart-config属性）chartConfigs
       afterResult:false,  //等result数据赋值完以后再初始化返显的charts组件
@@ -401,17 +377,30 @@ export default {
       chartSwitching: true,  //控制表格与图表切换
       modelObj:{},  //查询当前模型结果对应的的model对象
       rowIndex:'',  //存储点击表格的行数
-      tableClass:'el-btn-no-color',
-      chartClass:'el-btn-color',
       globalDropDownBox:false, //移入显示下拉框
       globalDropTop: 0,
       globalDropLeft: 0,
-      timeOut: setTimeout
+      timeOut: setTimeout,
+      chartsResource: chartsResource, // 图标
+      opNode: {},
+      // 拖拽组件
+      dragChart: false,
+      // 强制刷新
+      thechartdead: true,
+      // 高度显示
+      listContainer: 700,
+      height123: document.getElementById("dataShow")
     };
   },
   mounted() {
     this.getRenderTableData();
     this.chartReflexion();
+    document.addEventListener("dragover", function (e) {
+      mouseXY.x = e.clientX;
+      mouseXY.y = e.clientY;
+    }, false);
+    let height = document.getElementById("dataShow");
+    this.listContainer = height.offsetHeight;
   },
   created() {
     let _this=this;
@@ -425,12 +414,8 @@ export default {
     switchDivStyle(type){
       if (type === 'table'){
         this.chartSwitching = false
-        this.tableClass = 'el-btn-color'
-        this.chartClass = 'el-btn-no-color'
       }else if(type === 'chart'){
         this.chartSwitching = true
-        this.tableClass = 'el-btn-no-color'
-        this.chartClass = 'el-btn-color'
       }
     },
     rowChange() {
@@ -1578,54 +1563,16 @@ export default {
      * 修改图表方法
      */
     updateChart(){
-      var chartJson = this.$refs.chart.getChartConfig();
-      for(var i = 0;i<this.chartConfigs.length;i++){
-        if(this.nowChartJson.id == this.chartConfigs[i].id){
-          this.chartConfigs.splice(i,1)
-          break
-        }
-      }
-      this.chartConfigs.push(chartJson)
-      if(this.modelChartSetups.length!=0){
-        var modelChartSetup = {}
-        for(var i =0;i<this.modelChartSetups.length;i++){
-           var charjson= JSON.parse(this.modelChartSetups[i].chartJson)
-           if(charjson.id==this.nowChartJson.id){
-             modelChartSetup = this.modelChartSetups[i]
-             modelChartSetup.chartJson = JSON.stringify(chartJson)
-             break
-           }
-        }
-        if (modelChartSetup.chartSetupUuid === undefined){
-          this.$notify({
-            title: this.$t("提示"),
-            message: this.$t("修改成功"),
-            type: "success",
-            duration: 2000,
-            position: "bottom-right",
-          });
-        }else {
-          updateModelChartSetup(modelChartSetup).then((resp) => {
-            if (resp.data) {
-              this.$notify({
-                title: this.$t("提示"),
-                message: this.$t("修改成功"),
-                type: "success",
-                duration: 2000,
-                position: "bottom-right",
-              });
-            }
-          });
-        }
-      }else{
-              this.$notify({
-              title: this.$t("提示"),
-              message: this.$t("修改成功"),
-              type: "success",
-              duration: 2000,
-              position: "bottom-right",
-            });
-      }
+      // console.log(this.$refs.chart.getChartConfig())
+      this.chartConfigs.splice(this.chartIndex,1,this.$refs.chart.getChartConfig())
+      this.thechartdead = !this.thechartdead
+      this.$notify({
+        title: this.$t("提示"),
+        message: this.$t("修改成功"),
+        type: "success",
+        duration: 2000,
+        position: "bottom-right",
+      })
       this.chartShowIsSee = false;
     },
     /**
@@ -1636,18 +1583,11 @@ export default {
       this.modelChartSetups = []
       if(this.nowtable.runResultTableUuid!=undefined){
         getModelChartSetup(this.nowtable.runTaskRelUuid).then((resp) => {
-              if (resp.data.isError == true) {
-            //做保存操作
-            this.chartSaveOrUpdate = "save";
-          } else {
             //做修改操作
             this.modelChartSetups = resp.data.modelChartSetups;
             for(var i = 0;i<this.modelChartSetups.length;i++){
               this.chartConfigs.push(JSON.parse(this.modelChartSetups[i].chartJson))
             }
-            this.nowChartJson = this.chartConfigs[0]
-            this.chartSaveOrUpdate = "update";
-          }
           if(this.chartConfigs.length==0){
             this.isHaveCharts = true
           }
@@ -1656,18 +1596,10 @@ export default {
       }else{
          if (this.modelUuid != undefined) {
         getModelChartSetup(this.modelUuid).then((resp) => {
-          if (resp.data.isError == true) {
-            //做保存操作
-            this.chartSaveOrUpdate = "save";
-          } else {
-            //做修改操作
             this.modelChartSetups = resp.data.modelChartSetups;
             for(var i = 0;i<this.modelChartSetups.length;i++){
               this.chartConfigs.push(JSON.parse(this.modelChartSetups[i].chartJson))
             }
-            this.nowChartJson = this.chartConfigs[0]
-            this.chartSaveOrUpdate = "update";
-          }
           if(this.chartConfigs.length==0){
             this.isHaveCharts = true
           }
@@ -1675,18 +1607,11 @@ export default {
         });
       } else if (this.modelId != undefined) {
         getModelChartSetup(this.modelId).then((resp) => {
-          if (resp.data.isError == true) {
-            //做保存操作
-            this.chartSaveOrUpdate = "save";
-          } else {
               //做修改操作
             this.modelChartSetups = resp.data.modelChartSetups;
             for(var i = 0;i<this.modelChartSetups.length;i++){
               this.chartConfigs.push(JSON.parse(this.modelChartSetups[i].chartJson))
             }
-            this.nowChartJson = this.chartConfigs[0]
-            this.chartSaveOrUpdate = "update";
-          }
           if(this.chartConfigs.length==0){
             this.isHaveCharts = true
           }
@@ -1701,100 +1626,152 @@ export default {
      */
     openChartDialog(){
       this.afterAddChartsWithNoConfigure = true
-      this.chartSaveOrUpdate = 'save'
-      this.nowChartJson = undefined
+      this.chartIndex = 0
       this.chartShowIsSee = true
-    },
-    /**
-     * 点击小图表的时候大图标切换方法
-     */
-    changeChart(chartId){
-      this.afterAddChartsWithNoConfigure = false
-      var chartConfigs = this.chartConfigs
-      for(var i = 0;i<chartConfigs.length;i++){
-        if(chartId==chartConfigs[i].id){
-          this.nowChartJson = chartConfigs[i]
-          break
-        }
-      }
     },
     /**
      * 打开修改图表的dialog
      */
-    openEditChartDialog(){
-      this.chartSaveOrUpdate = 'update'
+    openEditChartDialog(index){
+      this.nowChartJson = this.chartConfigs[index];
+      this.chartIndex = index
       this.chartShowIsSee = true
     },
     /**
      * 删除图标
      */
-    deleteChart(){
-      if (this.nowChartJson === undefined){
-        this.$message({
-          message: "请选择图表后在删除!",
-        });
-        return
-      }
-      for(var i = 0;i<this.chartConfigs.length;i++){
-        if(this.nowChartJson.id == this.chartConfigs[i].id){
-          this.chartConfigs.splice(i,1)
-          break
-        }
-      }
-      if(this.modelChartSetups.length!=0){
-        var modelChartSetupUuid = {}
-        for(var i =0;i<this.modelChartSetups.length;i++){
-           var charjson= JSON.parse(this.modelChartSetups[i].chartJson)
-           if(charjson.id==this.nowChartJson.id){
-             modelChartSetupUuid = this.modelChartSetups[i].chartSetupUuid
-             break
-           }
-        }
-        if (modelChartSetupUuid===undefined){
-          this.$notify({
-            title: this.$t("提示"),
-            message: this.$t("删除成功"),
-            type: "success",
-            duration: 2000,
-            position: "bottom-right",
-          });
-        }else {
-          deleteModelChartSetup(modelChartSetupUuid).then((resp) => {
-            if (resp.data) {
-              this.$notify({
-                title: this.$t("提示"),
-                message: this.$t("删除成功"),
-                type: "success",
-                duration: 2000,
-                position: "bottom-right",
-              });
-            }
-          });
-        }
+    deleteChart(index){
+      this.chartConfigs.splice(index,1)
+      this.thechartdead = !this.thechartdead
+      this.$notify({
+        title: this.$t("提示"),
+        message: this.$t("删除成功"),
+        type: "success",
+        duration: 2000,
+        position: "bottom-right",
+      });
+      if(this.chartConfigs.length!==0){
       }else{
-              this.$notify({
+        this.isHaveCharts = true
+      }
+    },
+
+    /*
+    * 拖拽操作
+    * */
+    drag: function (e) {
+      let parentRect = document.getElementById('DragOn').getBoundingClientRect();
+      let mouseInGrid = false;
+      if (((mouseXY.x > parentRect.left) && (mouseXY.x < parentRect.right)) && ((mouseXY.y > parentRect.top) && (mouseXY.y < parentRect.bottom))) {
+        mouseInGrid = true;
+      }
+      if (mouseInGrid === true) {
+      }
+    },
+    dragend: function (e) {
+      let parentRect = document.getElementById('DragOn').getBoundingClientRect();
+      let mouseInGrid = false;
+      if (((mouseXY.x > parentRect.left) && (mouseXY.x < parentRect.right)) && ((mouseXY.y > parentRect.top) && (mouseXY.y < parentRect.bottom))) {
+        mouseInGrid = true;
+      }
+      if (mouseInGrid === true) {
+        if (!e) {
+          return
+        }
+        // 与大屏兼容 使用大屏的节点数据格式
+        let node = {
+          id: (new Date()).valueOf(),
+          loading: false,
+          dataId: this.result.id,
+          dataName: this.result.name,
+          name: e.title,
+          typeName: e.title,
+          type: e.type,
+          chart: e.chart,
+          img: e.icon,
+          background: '#409EFF',
+          active: true,
+          rename: false,
+          // echart datav等的显示配置信息
+          initOptions: JSON.parse(JSON.stringify(this.chartsResource.resources.initOptions[e.type][e.chart])),
+          // 右侧表单的配置信息
+          configOptions: JSON.parse(JSON.stringify(this.chartsResource.resources.configOptions[e.type][e.chart]))
+        }
+        // 设置数据集
+        // setDataSetToNode(node, this.result)
+        // node.initOptions.transform = this.opNode.initOptions.transform
+        this.chartConfigs.push(node)
+        var modelUuid = this.nowtable.runResultTableUuid==undefined?this.chartModelUuid:this.nowtable.runTaskRelUuid
+        var modelChartSetup = {
+          chartJson: JSON.stringify(node),
+          modelUuid: modelUuid,
+        };
+        this.modelChartSetups.push(modelChartSetup)
+        addModelChartSetup(modelChartSetup).then((resp) => {
+          if (resp.data) {
+            this.$notify({
               title: this.$t("提示"),
-              message: this.$t("删除成功"),
+              message: this.$t("添加图表成功"),
               type: "success",
               duration: 2000,
               position: "bottom-right",
             });
+          }
+        });
       }
-      if(this.chartConfigs.length!=0){
-        this.nowChartJson = this.chartConfigs[0]
-      }else{
-        this.nowChartJson = undefined
-        this.isHaveCharts = true
+    },
+    clickout: function (e) {
+      if (!e) {
+        return
       }
+      // 与大屏兼容 使用大屏的节点数据格式
+      let node = {
+        id: (new Date()).valueOf(),
+        loading: false,
+        dataId: this.result.id,
+        dataName: this.result.name,
+        name: e.title,
+        typeName: e.title,
+        type: e.type,
+        chart: e.chart,
+        img: e.icon,
+        background: '#409EFF',
+        active: true,
+        rename: false,
+        // echart datav等的显示配置信息
+        initOptions: JSON.parse(JSON.stringify(this.chartsResource.resources.initOptions[e.type][e.chart])),
+        // 右侧表单的配置信息
+        configOptions: JSON.parse(JSON.stringify(this.chartsResource.resources.configOptions[e.type][e.chart]))
+      }
+      // 设置数据集
+      // setDataSetToNode(node, this.result)
+      // node.initOptions.transform = this.opNode.initOptions.transform
+      this.chartConfigs.push(node)
+      var modelUuid = this.nowtable.runResultTableUuid==undefined?this.chartModelUuid:this.nowtable.runTaskRelUuid
+      var modelChartSetup = {
+        chartJson: JSON.stringify(node),
+        modelUuid: modelUuid,
+      };
+      this.modelChartSetups.push(modelChartSetup)
+      addModelChartSetup(modelChartSetup).then((resp) => {
+        if (resp.data) {
+          this.$notify({
+            title: this.$t("提示"),
+            message: this.$t("添加图表成功"),
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }
+      });
     }
-  },
+  }
 };
 </script>
 <style scoped>
 .itxst {
-  margin: 10px;
   text-align: left;
-  /* overflow: auto; */
+  height:100%;
 }
 .thechard-z {
   margin-right: 15px;
@@ -1828,26 +1805,18 @@ export default {
   /*border-radius: 15%;*/
 }
 
->>>.el-btn-no-color{
-  width: 40px;
-  float: left;
-  border: solid 1px #E0E0E0;
-  height: 26px;
-  margin: -7px 3px 3px 0px;
+.el-btn-no-colorz{
+  float: right;
+  height: 30px;
+  margin: 5px;
+  font-size: 14px;
+  color: #46a6ff;
+  padding: 2px 5px;
   cursor: pointer;
   text-align: center;
+  user-select:none;
 }
 
->>>.el-btn-color{
-  background: aliceblue;
-  width: 40px;
-  float: left;
-  border: solid 1px #E0E0E0;
-  height: 26px;
-  margin: -7px 3px 3px 0px;
-  cursor: pointer;
-  text-align: center;
-}
 .smallImgs{
   float: right;
   height: 723px;
@@ -1890,4 +1859,32 @@ export default {
   background-color: #e8f4ff;
   color: #46a6ff;
 }
+.chartChange{
+  float: left;
+}
+.item-bgimg-size{
+  background-image: url("imgs/chart-type-icons.png");
+}
+.item_img{
+  width: 36px;
+  height: 24px;
+  background-size: 420px 168px;
+}
+.item_div{
+  width: 38px;
+  height: 34px;
+  padding: 5px 0px;
+  margin: 3px 10px;
+  border-radius: 2px;
+  border: 1px solid #46a6ff;
+  float: left;
+}
+.drag-on{
+  height: calc(100% - 40px);
+}
+.drag-on-table{
+  position:relative;
+  height:100%;
+}
+
 </style>

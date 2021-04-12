@@ -9,7 +9,7 @@
         <span class="name" :class="[isOpen && 'text-black']">{{ item.name }}</span>
         <i
           v-if="item.children && item.children.length"
-          class="el-icon-s-unfold icon absolute"
+          class="el-icon-arrow-left icon absolute"
           :class="[isOpen && 'icon-open text-black']"
         />
       </div>
@@ -107,10 +107,10 @@ export default {
     .icon {
       right: 10px;
       top: 50%;
-      font-size: 16px;
+      font-size: 12px;
       margin-top: -8px;
       &-open {
-        transform: rotateZ(90deg);
+        transform: rotateZ(-90deg);
       }
     }
   }
