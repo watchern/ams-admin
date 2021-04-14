@@ -76,7 +76,17 @@
             <el-row>
               <div @click="Toggle1()">
                 <el-col :span="24" class="row-all">
-                  <childTabs :isRelation="item.isRelation===true?true:false" @setNextValue="setNextValue" @addTab="addTab" :modelId="modelId" :is-model-preview="true" :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="modelPreview" />
+                  <childTabs
+                      :isRelation="item.isRelation===true?true:false"
+                      @setNextValue="setNextValue"
+                      @addTab="addTab"
+                      :modelId="modelId"
+                      :is-model-preview="true"
+                      :ref="item.name"
+                      :key="1"
+                      :pre-value="item.executeSQLList"
+                      :paramInfo="item.runModelConfig"
+                      use-type="modelPreview" />
                 </el-col>
               </div>
               <el-col :span="2">
@@ -967,6 +977,9 @@ export default {
         }else{
         this.$emit('loadingSet',false,"");
         this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
+        if(isExistParam){
+          selectObj[0].runModelConfig = obj.runModelConfig
+        }
         this.addTab(selectObj[0], isExistParam, result.data.executeSQLList)
         //界面渲染完成之后开始执行sql,将sql送入调度
         startExecuteSql(result.data).then((result) => {
@@ -985,16 +998,20 @@ export default {
      * @param executeSQLList 执行sql列表
      */
     addTab(modelObj, isExistParam, executeSQLList,isRelation) {
-      this.editableTabs.push({
+      let obj = {
         title: modelObj.modelName + '结果',
         name: modelObj.modelUuid,
         isExistParam: isExistParam,
         executeSQLList: executeSQLList,
         isRelation:isRelation
-      })
-        this.nowTabModelUuid = modelObj.modelUuid
-        this.editableTabsValue = modelObj.modelUuid
-        this.modelPreview.push(modelObj.modelUuid)
+      }
+      if(isExistParam){
+        obj.runModelConfig = modelObj.runModelConfig
+      }
+      this.editableTabs.push(obj)
+      this.nowTabModelUuid = modelObj.modelUuid
+      this.editableTabsValue = modelObj.modelUuid
+      this.modelPreview.push(modelObj.modelUuid)
     },
     handleClick(tab, event){
       if (tab.name!=='模型列表'){
@@ -1051,6 +1068,11 @@ export default {
             paramObj:obj.paramsArr
           }
           this.currentRunModelAllConfig[selectObj[0].modelUuid] = runModelConfig
+          let recplaceed = {
+            sql:obj.sqls,
+            paramsArr:obj.paramsArr
+          }
+          obj.runModelConfig = recplaceed
           this.executeSql(obj,selectObj,true)
       }
       else{
@@ -1074,6 +1096,11 @@ export default {
         obj.businessField = 'modellisttable'
         // 重置数据展现界面数据
         this.$refs.[modelUuid][0].reSetTable()
+        let paramInfo = {
+          sql:obj.sqls,
+          paramsArr:obj.paramsArr
+        }
+        this.$refs.[modelUuid][0].loadNewParamInfo(paramInfo)
         //设置新的参数信息
         let runModelConfig = {
           sqlValue:this.currentRunModelAllConfig[modelUuid].sqlValue,

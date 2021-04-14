@@ -1,6 +1,6 @@
 <template>
   <!-- index.vue是最外层的父页签组件，把firstParentTabCon.vue挂载进来作为第一个页签中的内容 -->
-  <div>
+  <div class="result-tabs-div">
     <el-tabs
       @tab-click="handleClick"
       v-model="editableTabsValue"
@@ -18,6 +18,7 @@
         :key="item.name"
         :label="item.title"
         :name="item.name"
+        class="result-tabs"
       >
         <!-- 新页签中页签组件 -->
         <!-- <div v-html="item.content"></div> -->
@@ -105,3 +106,24 @@ export default {
   }
 }
 </script>
+<style scoped>
+>>>.el-tabs__item{
+    height:32px!important;
+    line-height:32px!important;
+}
+>>>.el-tabs__content{
+  height: calc(100% - 31px);
+  overflow: auto;
+  padding:0px!important;
+}
+>>>.el-tabs--card{
+  height:100%
+}
+.result-tabs-div{
+  height:100%
+}
+.result-tabs{
+  height:100%
+}
+</style>
+

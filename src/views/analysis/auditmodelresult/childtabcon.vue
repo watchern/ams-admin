@@ -18,6 +18,7 @@
 <!--   v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"   -->
       <div class="el-btn-no-colorz" v-if="!chartSwitching" @click="switchDivStyle('chart')"><span><i class="el-icon-menu"></i> 仅表格</span></div>
       <div class="el-btn-no-colorz" v-if="chartSwitching" @click="switchDivStyle('table')"><span><i class="el-icon-s-data"></i> 配置图表</span></div>
+      <div class="el-btn-no-colorz" v-if="chartSwitching" @click="saveResult()"><span><i class="oper-btn save"></i></span></div>
       <div v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching" v-for="(item, index) in chartsResource.menuData" class="chartChange" :key="index">
         <div class="item_div" v-for="(menu, i) in item.sub">
           <div :key="i"
@@ -374,7 +375,7 @@ import {
 import { getTransMap } from "@/api/data/transCode.js";
 import mtEditor from "ams-datamax";
 // import "iview/dist/styles/iview.css";
-import {uuid2} from "@/api/analysis/auditmodel";
+import {addRunTaskAndRunTaskRel, uuid2} from "@/api/analysis/auditmodel";
 // 引入大屏图标
 import chartsResource from '@MAX/data/chartsResource'
 // 引入拖拽布局文件
@@ -827,21 +828,21 @@ export default {
           }
         }
         var modelThresholdValues = []
-        if (this.settingInfo != undefined) {
+        if (this.settingInfo!=undefined){
           modelThresholdValues.push(JSON.parse(this.settingInfo).thresholdValueRel)
-        } else {
-          modelThresholdValues = this.modelObj.modelThresholdValues
+        }else {
+          modelThresholdValues =  this.modelObj.modelThresholdValues
         }
         //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
-        if (this.modelUuid !== undefined) {
-          for (var i = 0; i < modelThresholdValues.length; i++) {
-            if (modelThresholdValues[i].thresholdValue.thresholdValueType == 2 && renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName) == -1) {
+        if(this.modelUuid !==undefined){
+          for (var i = 0; i < modelThresholdValues.length;i++){
+            if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2 && renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName)==-1){
               renderColumns.push(modelThresholdValues[i].modelResultColumnName)
             }
           }
-          for (var i = 0; i < modelThresholdValues.length; i++) {
-            if (modelThresholdValues[i].thresholdValue.thresholdValueType == 2) {
-              if (typeof modelThresholdValues[i].colorInfo === 'string') {
+          for(var i = 0;i < modelThresholdValues.length;i++){
+            if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2){
+              if (typeof modelThresholdValues[i].colorInfo === 'string'){
                 modelThresholdValues[i].colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
               }
               renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i]
@@ -853,212 +854,202 @@ export default {
           sql = "undefined";
         }
         selectTable(this.pageQuery, sql, this.resultSpiltObjects).then(
-            (resp) => {
-              // var modelThre
-              var column = resp.data.records[0].columns;
-              var columnToUppercase = []
-              for (var i = 1; i < column.length; i++) {
-                columnToUppercase.push(column[i].toUpperCase())
+          (resp) => {
+            // var modelThre
+            var column = resp.data.records[0].columns;
+            var columnToUppercase = []
+            for(var i = 1;i<column.length;i++){
+              columnToUppercase.push(column[i].toUpperCase())
+            }
+            this.result.column = columnToUppercase;
+            this.result.id = this.modelObj.modelUuid
+            this.result.name = this.modelObj.modelName
+            var chartData = [];
+            for (var i = 0; i < resp.data.records[0].result.length; i++) {
+              var eachChartData = [];
+              for (var j = 1; j < column.length; j++) {
+                eachChartData.push(resp.data.records[0].result[i][column[j]]);
               }
-              this.result.column = columnToUppercase;
-              this.result.id = this.modelObj.modelUuid
-              this.result.name = this.modelObj.modelName
-              var chartData = [];
-              for (var i = 0; i < resp.data.records[0].result.length; i++) {
-                var eachChartData = [];
-                for (var j = 1; j < column.length; j++) {
-                  eachChartData.push(resp.data.records[0].result[i][column[j]]);
-                }
-                chartData.push(eachChartData);
+              chartData.push(eachChartData);
+            }
+            this.result.data = chartData;
+            var columnInfo = resp.data.records[0].columnInfo.columnList;
+            var columnType = [];
+            for (var i = 1; i < columnInfo.length; i++) {
+              //number,varchar,time,float
+              var type = "";
+              if (
+                columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1
+              ) {
+                type = "varchar";
+              } else if (
+                columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") !=
+                  -1 ||
+                columnInfo[i].columnType.toUpperCase().indexOf("INT") != -1
+              ) {
+                type = "number";
+              } else if (
+                columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") !=
+                  -1 ||
+                columnInfo[i].columnType.toUpperCase().indexOf("DATE") != -1
+              ) {
+                type = "time";
+              } else if (
+                columnInfo[i].columnType.toUpperCase().indexOf("FLOAT") != -1
+              ) {
+                type = "float";
               }
-              this.result.data = chartData;
-              var columnInfo = resp.data.records[0].columnInfo.columnList;
-              var columnType = [];
-              for (var i = 1; i < columnInfo.length; i++) {
-                //number,varchar,time,float
-                var type = "";
-                if (
-                    columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1
-                ) {
-                  type = "varchar";
-                } else if (
-                    columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") !=
-                    -1 ||
-                    columnInfo[i].columnType.toUpperCase().indexOf("INT") != -1
-                ) {
-                  type = "number";
-                } else if (
-                    columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") !=
-                    -1 ||
-                    columnInfo[i].columnType.toUpperCase().indexOf("DATE") != -1
-                ) {
-                  type = "time";
-                } else if (
-                    columnInfo[i].columnType.toUpperCase().indexOf("FLOAT") != -1
-                ) {
-                  type = "float";
-                }
-                columnType.push(type);
-              }
-              this.result.columnType = columnType;
-              this.afterResult = true
-              if (resp.data.records[0].result.length == 0) {
-                this.isLoading = false;
-              }
-              this.total = resp.data.total;
-              this.dataArray = resp.data.records[0].result;
-              this.queryData = resp.data.records[0].columnInfo;
-              colNames = resp.data.records[0].columns
-              // 生成ag-grid列信息
-              if (this.modelUuid != undefined) {
-                var onlyFlag = false
-                if (this.settingInfo != undefined) {
-                  for (var i = 0; i < colNames.length; i++) {
-                    var rowColom = {}
-                    if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1 || modelResultDetailCol.indexOf(colNames[i].toUpperCase()) != -1) {
-                      var thresholdValueRel = renderObject[colNames[i].toUpperCase()]
-                      if (onlyFlag == false) {
-                        rowColom = {
-                          headerName: colNames[i],
-                          field: colNames[i],
-                          cellRenderer: (params) => {
-                            return this.changeCellColor(params, thresholdValueRel, modelResultDetailCol)
-                          },
-                          checkboxSelection: true
-                        }
-                        onlyFlag = true
-
-                      } else {
-                        rowColom = {
-                          headerName: colNames[i],
-                          field: colNames[i],
-                          cellRenderer: (params) => {
-                            return this.changeCellColor(params, thresholdValueRel, modelResultDetailCol)
-                          }
-                        }
-                      }
-                    } else {
-                      if (onlyFlag == false) {
-                        rowColom = {
-                          headerName: colNames[i],
-                          field: colNames[i],
-                          checkboxSelection: true
-                        };
-                        onlyFlag = true
-                      } else {
-                        rowColom = {
-                          headerName: colNames[i],
-                          field: colNames[i],
-                        };
-                      }
-                    }
-                    col.push(rowColom);
-                  }
-                } else {
-                  for (var i = 0; i < colNames.length; i++) {
-                    loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
-                      if (this.modelOutputColumn[j].outputColumnName.toLowerCase() == colNames[i]) {
-                        if (this.modelOutputColumn[j].isShow == 1) {
-                          var rowColom = {}
-                          if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1 || modelResultDetailCol.indexOf(colNames[i].toUpperCase()) != -1) {
-                            var thresholdValueRel = renderObject[colNames[i].toUpperCase()]
-                            if (onlyFlag == false) {
-                              rowColom = {
-                                headerName: this.modelOutputColumn[j].columnAlias,
-                                field: colNames[i],
-                                cellRenderer: (params) => {
-                                  return this.changeCellColor(params, thresholdValueRel, modelResultDetailCol)
-                                },
-                                checkboxSelection: true
-                              }
-                              onlyFlag = true
-                            } else {
-                              rowColom = {
-                                headerName: this.modelOutputColumn[j].columnAlias,
-                                field: colNames[i],
-                                cellRenderer: (params) => {
-                                  return this.changeCellColor(params, thresholdValueRel, modelResultDetailCol)
-                                }
-                              }
-                            }
-                          } else {
-                            if (onlyFlag == false) {
-                              rowColom = {
-                                headerName: this.modelOutputColumn[j].columnAlias,
-                                field: colNames[i],
-                                checkboxSelection: true
-                              };
-                              onlyFlag = true
-                            } else {
-                              rowColom = {
-                                headerName: this.modelOutputColumn[j].columnAlias,
-                                field: colNames[i]
-                              };
-                            }
-                          }
-                          col.push(rowColom);
-                        }
-                        break loop;
-                      }
-                    }
-                  }
-                }
-              } else {
+              columnType.push(type);
+            }
+            this.result.columnType = columnType;
+            this.afterResult = true
+            if (resp.data.records[0].result.length == 0) {
+              this.isLoading = false;
+            }
+            this.total = resp.data.total;
+            this.dataArray = resp.data.records[0].result;
+            this.queryData = resp.data.records[0].columnInfo;
+            colNames = resp.data.records[0].columns
+            // 生成ag-grid列信息
+            if (this.modelUuid != undefined) {
+              var onlyFlag = false
+              if (this.settingInfo != undefined){
                 for (var i = 0; i < colNames.length; i++) {
-                  if (i == 0) {
-                    var rowColom = {
-                      headerName: colNames[i],
-                      field: colNames[i],
-                      checkboxSelection: true,
-                    };
-                  } else {
-                    var rowColom = {
-                      headerName: colNames[i],
-                      field: colNames[i],
-                    };
-                  }
-                  col.push(rowColom);
-                }
-                this.isLoading = false;
-              }
-              if (this.modelUuid != undefined) {
-                // 生成ag-frid表格数据
-                for (var i = 0; i < resp.data.records[0].result.length; i++) {
-                  da.push(resp.data.records[0].result[i]);
-                }
-                for (var i = 0; i < da.length; i++) {
-                  for (var j = 0; j < colNames.length; j++) {
-                    for (var k = 0; k < this.modelOutputColumn.length; k++) {
-                      if (
-                          this.modelOutputColumn[
-                              k
-                              ].outputColumnName.toLowerCase() == colNames[j]
-                      ) {
-                        if (this.modelOutputColumn[k].dataCoding != undefined) {
-                          var a = da[i][colNames[j]];
-                          da[i][colNames[j]] = this.dataCoding[
-                              this.modelOutputColumn[k].dataCoding
-                              ][a];
+                        var rowColom = {}
+                        if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1 || modelResultDetailCol.indexOf(colNames[i].toUpperCase()) != -1){
+                          var thresholdValueRel =  renderObject[colNames[i].toUpperCase()]
+                          if (onlyFlag==false){
+                            rowColom =  {
+                              headerName: colNames[i],
+                              field: colNames[i],
+                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)},
+                              checkboxSelection: true
+                            }
+                            onlyFlag = true
+
+                          }else {
+                            rowColom =  {
+                              headerName: colNames[i],
+                              field: colNames[i],
+                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)}}
+                          }
+                        }else {
+                          if (onlyFlag==false){
+                            rowColom = {
+                              headerName: colNames[i],
+                              field: colNames[i],
+                              checkboxSelection: true
+                            };
+                            onlyFlag = true
+                          }else {
+                            rowColom = {
+                              headerName: colNames[i],
+                              field: colNames[i],
+                            };
+                          }
                         }
+                        col.push(rowColom);
+                }
+              }else {
+                for (var i = 0; i < colNames.length; i++) {
+                  loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
+                    if (this.modelOutputColumn[j].outputColumnName.toLowerCase() == colNames[i]) {
+                      if (this.modelOutputColumn[j].isShow == 1) {
+                        var rowColom = {}
+                        if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1 || modelResultDetailCol.indexOf(colNames[i].toUpperCase()) != -1){
+                          var thresholdValueRel =  renderObject[colNames[i].toUpperCase()]
+                          if(onlyFlag==false){
+                            rowColom =  {
+                              headerName: this.modelOutputColumn[j].columnAlias,
+                              field: colNames[i],
+                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)},
+                              checkboxSelection: true
+                            }
+                            onlyFlag = true
+                          }else {
+                            rowColom =  {
+                              headerName: this.modelOutputColumn[j].columnAlias,
+                              field: colNames[i],
+                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)}}
+                          }
+                        }else {
+                          if(onlyFlag==false){
+                            rowColom = {
+                              headerName: this.modelOutputColumn[j].columnAlias,
+                              field: colNames[i],
+                              checkboxSelection: true
+                            };
+                            onlyFlag = true
+                          }else {
+                            rowColom = {
+                              headerName: this.modelOutputColumn[j].columnAlias,
+                              field: colNames[i]
+                            };
+                          }
+                        }
+                        col.push(rowColom);
+                      }
+                      break loop;
+                    }
+                  }
+                }
+              }
+            } else {
+              for (var i = 0; i < colNames.length; i++) {
+                if (i == 0) {
+                  var rowColom = {
+                    headerName: colNames[i],
+                    field: colNames[i],
+                    checkboxSelection: true,
+                  };
+                } else {
+                  var rowColom = {
+                    headerName: colNames[i],
+                    field: colNames[i],
+                  };
+                }
+                col.push(rowColom);
+              }
+              this.isLoading = false;
+            }
+            if (this.modelUuid != undefined) {
+              // 生成ag-frid表格数据
+              for (var i = 0; i < resp.data.records[0].result.length; i++) {
+                da.push(resp.data.records[0].result[i]);
+              }
+              for (var i = 0; i < da.length; i++) {
+                for (var j = 0; j < colNames.length; j++) {
+                  for (var k = 0; k < this.modelOutputColumn.length; k++) {
+                    if (
+                      this.modelOutputColumn[
+                        k
+                      ].outputColumnName.toLowerCase() == colNames[j]
+                    ) {
+                      if (this.modelOutputColumn[k].dataCoding != undefined) {
+                        var a = da[i][colNames[j]];
+                        da[i][colNames[j]] = this.dataCoding[
+                          this.modelOutputColumn[k].dataCoding
+                        ][a];
                       }
                     }
                   }
                 }
-              } else {
-                // 生成ag-frid表格数据
-                for (var i = 0; i < resp.data.records[0].result.length; i++) {
-                  da.push(resp.data.records[0].result[i]);
-                }
+              }
+            } else {
+              // 生成ag-frid表格数据
+              for (var i = 0; i < resp.data.records[0].result.length; i++) {
+                da.push(resp.data.records[0].result[i]);
               }
             }
+          }
         );
         this.columnDefs = col;
         this.rowData = da;
       } else if (
-          this.useType == "sqlEditor"
-      ) {
+        this.useType == "sqlEditor"
+      ){
         this.getIntoModelResultDetail(nextValue)
-      } else if (this.useType == "modelPreview") {
+       }else if( this.useType == "modelPreview"){
         this.loading = true;
         this.nextValue = nextValue;
         var col = [];
@@ -1081,17 +1072,17 @@ export default {
                   if (columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1) {
                     type = "varchar";
                   } else if (
-                      columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 ||
-                      columnTypes1[i].toUpperCase().indexOf("INT") != -1
+                    columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 ||
+                    columnTypes1[i].toUpperCase().indexOf("INT") != -1
                   ) {
                     type = "number";
                   } else if (
-                      columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ||
-                      columnTypes1[i].toUpperCase().indexOf("DATE") != -1
+                    columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ||
+                    columnTypes1[i].toUpperCase().indexOf("DATE") != -1
                   ) {
                     type = "time";
                   } else if (
-                      columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1
+                    columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1
                   ) {
                     type = "float";
                   }
@@ -1106,7 +1097,7 @@ export default {
                   var eachChartData = [];
                   for (var j = 0; j < this.nextValue.columnNames.length; j++) {
                     eachChartData.push(
-                        resultData[i][this.nextValue.columnNames[j]]
+                      resultData[i][this.nextValue.columnNames[j]]
                     );
                   }
                   chartData.push(eachChartData);
@@ -1117,15 +1108,15 @@ export default {
                 selectModel(this.modelId).then((resp) => {
                   this.modelDetailRelation = resp.data.modelDetailRelation
                   //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
-                  if (this.preLength == this.myIndex + 1) {
-                    for (var i = 0; i < resp.data.modelThresholdValues.length; i++) {
-                      if (modelThresholdValues[i].thresholdValue.thresholdValueType == 2 && renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName) == -1) {
+                  if(this.preLength==this.myIndex+1){
+                    for (var i = 0; i < resp.data.modelThresholdValues.length;i++){
+                      if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2 && renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName)==-1){
                         renderColumns.push(modelThresholdValues[i].modelResultColumnName)
                       }
                     }
-                    for (var i = 0; i < resp.data.modelThresholdValues.length; i++) {
-                      if (modelThresholdValues[i].thresholdValue.thresholdValueType == 2) {
-                        if (typeof modelThresholdValues[i].colorInfo === 'string') {
+                    for(var i = 0;i < resp.data.modelThresholdValues.length;i++){
+                      if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2){
+                        if (typeof modelThresholdValues[i].colorInfo === 'string'){
                           modelThresholdValues[i].colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
                         }
                         renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i]
@@ -1134,16 +1125,16 @@ export default {
                   }
                   var modelOutputColumn = resp.data.modelOutputColumn
                   let modelResultDetailCol = []
-                  if (resp.data.modelDetailRelation) {
+                  if(resp.data.modelDetailRelation){
                     //循环模型详细关联
-                    for (let i = 0; i < resp.data.modelDetailRelation.length; i++) {
+                    for(let i = 0; i < resp.data.modelDetailRelation.length;i++){
                       //获取关联对象
                       let modelDetailRelation = resp.data.modelDetailRelation[i]
                       //循环模型关联详细配置
-                      for (let j = 0; j < modelDetailRelation.modelDetailConfig.length; j++) {
+                      for(let j = 0;j < modelDetailRelation.modelDetailConfig.length;j++){
                         let modelDetailConfig = modelDetailRelation.modelDetailConfig[j]
                         //确保数据不是undefined或null
-                        if (modelDetailConfig.resultColumn) {
+                        if(modelDetailConfig.resultColumn){
                           //添加到数据 用于下边列处理的时候 作为判断条件
                           modelResultDetailCol.push(modelDetailConfig.resultColumn.toUpperCase())
                         }
@@ -1151,28 +1142,26 @@ export default {
                     }
                   }
                   var datacodes = [];
-                  for (var i = 0; i < modelOutputColumn.length; i++) {
+                  for (var i = 0; i <modelOutputColumn.length; i++) {
                     if (modelOutputColumn[i].dataCoding != undefined) {
                       datacodes.push(modelOutputColumn[i].dataCoding);
                     }
                   }
                   for (var j = 0; j < this.nextValue.columnNames.length; j++) {
                     var rowColom = {}
-                    for (var n = 0; n < modelOutputColumn.length; n++) {
+                    for (var n = 0;n<modelOutputColumn.length;n++){
                       if (modelOutputColumn[n].outputColumnName ==
-                          this.nextValue.columnNames[j]) {
+                        this.nextValue.columnNames[j]){
                         if (modelOutputColumn[n].isShow == 1) {
-                          if (renderColumns.indexOf(this.nextValue.columnNames[j].toUpperCase()) != -1 || modelResultDetailCol.indexOf(this.nextValue.columnNames[j].toUpperCase()) != -1) {
-                            var thresholdValueRel = renderObject[this.nextValue.columnNames[j].toUpperCase()]
+                          if (renderColumns.indexOf(this.nextValue.columnNames[j].toUpperCase()) != -1 || modelResultDetailCol.indexOf(this.nextValue.columnNames[j].toUpperCase()) != -1){
+                            var thresholdValueRel =  renderObject[this.nextValue.columnNames[j].toUpperCase()]
                             rowColom = {
                               headerName: modelOutputColumn[n].columnAlias,
                               field: this.nextValue.columnNames[j],
                               width: "180",
-                              cellRenderer: (params) => {
-                                return this.changeCellColor(params, thresholdValueRel, modelResultDetailCol)
-                              },
+                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)},
                             };
-                          } else {
+                          }else {
                             rowColom = {
                               headerName: modelOutputColumn[n].columnAlias,
                               field: this.nextValue.columnNames[j],
@@ -1182,7 +1171,7 @@ export default {
                         }
                       }
                     }
-                    if (rowColom.field != undefined) {
+                    if (rowColom.field!=undefined){
                       col.push(rowColom);
                     }
                   }
@@ -1195,20 +1184,20 @@ export default {
                       for (var i = 0; i < resultData.length; i++) {
                         for (var j = 0; j < this.nextValue.columnNames.length; j++) {
                           for (var k = 0; k < modelOutputColumn.length; k++) {
-                            if (modelOutputColumn[k].outputColumnName == this.nextValue.columnNames[j]) {
-                              if (modelOutputColumn[k].dataCoding != undefined) {
-                                var a = rowData[i][this.nextValue.columnNames[j]];
-                                rowData[i][this.nextValue.columnNames[j]] = dataCoding[
+                              if(modelOutputColumn[k].outputColumnName == this.nextValue.columnNames[j]){
+                                if (modelOutputColumn[k].dataCoding != undefined) {
+                                  var a = rowData[i][this.nextValue.columnNames[j]];
+                                  rowData[i][this.nextValue.columnNames[j]] = dataCoding[
                                     modelOutputColumn[k].dataCoding
                                     ][a];
+                                }
                               }
-                            }
                           }
                         }
                       }
                       this.rowData = rowData
                     });
-                  } else {
+                  }else {
                     for (var k = 0; k < this.nextValue.result.length; k++) {
                       rowData.push(this.nextValue.result[k]);
                     }
@@ -1241,7 +1230,7 @@ export default {
     /**
      * 显示模型结果详细提取公共代码
      * */
-    getIntoModelResultDetail(nextValue) {
+    getIntoModelResultDetail(nextValue){
       this.afterAddChartsWithNoConfigure = true
       this.chartLoading = false
       this.loading = true;
@@ -1251,51 +1240,51 @@ export default {
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
           if (this.nextValue.executeSQL.type == "SELECT") {
-            this.modelResultButtonIsShow = true;
-            this.modelResultPageIsSee = true;
-            this.modelResultData = this.nextValue.result;
-            this.result.column = this.nextValue.columnNames;
-            var columnTypes1 = this.nextValue.columnTypes;
-            var columnType = [];
-            for (var i = 0; i < columnTypes1.length; i++) {
-              var type = "";
-              if (columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 || columnTypes1[i].toUpperCase().indexOf("CHAR") != -1) {
-                type = "varchar";
-              } else if (
+              this.modelResultButtonIsShow = true;
+              this.modelResultPageIsSee = true;
+              this.modelResultData = this.nextValue.result;
+              this.result.column = this.nextValue.columnNames;
+              var columnTypes1 = this.nextValue.columnTypes;
+              var columnType = [];
+              for (var i = 0; i < columnTypes1.length; i++) {
+                var type = "";
+                if (columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 || columnTypes1[i].toUpperCase().indexOf("CHAR") != -1) {
+                  type = "varchar";
+                } else if (
                   columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 ||
                   columnTypes1[i].toUpperCase().indexOf("INT") != -1
-              ) {
-                type = "number";
-              } else if (
+                ) {
+                  type = "number";
+                } else if (
                   columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ||
                   columnTypes1[i].toUpperCase().indexOf("DATE") != -1
-              ) {
-                type = "time";
-              } else if (
+                ) {
+                  type = "time";
+                } else if (
                   columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1
-              ) {
-                type = "float";
+                ) {
+                  type = "float";
+                }
+                columnType.push(type);
               }
-              columnType.push(type);
-            }
-            var resultData = this.nextValue.result;
-            this.result.id = uuid2()
-            this.result.name = '模型'
-            this.result.columnType = columnType;
-            var chartData = [];
-            for (var i = 0; i < resultData.length; i++) {
-              var eachChartData = [];
-              for (var j = 0; j < this.nextValue.columnNames.length; j++) {
-                eachChartData.push(
+              var resultData = this.nextValue.result;
+              this.result.id = uuid2()
+              this.result.name = '模型'
+              this.result.columnType = columnType;
+              var chartData = [];
+              for (var i = 0; i < resultData.length; i++) {
+                var eachChartData = [];
+                for (var j = 0; j < this.nextValue.columnNames.length; j++) {
+                  eachChartData.push(
                     resultData[i][this.nextValue.columnNames[j]]
-                );
+                  );
+                }
+                chartData.push(eachChartData);
               }
-              chartData.push(eachChartData);
-            }
-            this.result.data = chartData;
-            this.rowData = this.modelResultData;
-            this.modelResultColumnNames = this.nextValue.columnNames;
-            if (this.prePersonalVal['agridColumnDatas'] === undefined) {
+              this.result.data = chartData;
+              this.rowData = this.modelResultData;
+              this.modelResultColumnNames = this.nextValue.columnNames;
+              if (this.prePersonalVal['agridColumnDatas'] === undefined){
               for (var j = 0; j < this.nextValue.columnNames.length; j++) {
                 var rowColom = {
                   headerName: this.nextValue.columnNames[j],
@@ -1306,13 +1295,13 @@ export default {
                 var value = this.nextValue.result[j];
                 col.push(rowColom);
               }
-            } else {
-              col = this.prePersonalVal['agridColumnDatas']
-            }
-            for (var k = 0; k < this.nextValue.result.length; k++) {
-              rowData.push(this.nextValue.result[k]);
-            }
-            this.columnDefs = col;
+              }else {
+                col = this.prePersonalVal['agridColumnDatas']
+              }
+              for (var k = 0; k < this.nextValue.result.length; k++) {
+                rowData.push(this.nextValue.result[k]);
+              }
+              this.columnDefs = col;
             this.afterResult = true
           } else {
             this.isSee = false;
@@ -1362,45 +1351,47 @@ export default {
      */
     renderTable(params) {
       var modelThresholdValues = []
-      if (this.settingInfo != undefined) {
+      if (this.settingInfo!=undefined){
         modelThresholdValues.push(JSON.parse(this.settingInfo).thresholdValueRel)
-      } else {
-        modelThresholdValues = this.modelObj.modelThresholdValues
+      }else {
+        modelThresholdValues =  this.modelObj.modelThresholdValues
       }
       var thresholdValueRel = {}
       this.isLoading = false;
-      for (var i = 0; i < modelThresholdValues.length; i++) {
+      for (var i = 0;i<modelThresholdValues.length;i++){
         thresholdValueRel = modelThresholdValues[i]
-        if (thresholdValueRel && thresholdValueRel.thresholdValue.thresholdValueType == 1) {
-          if (typeof (modelThresholdValues[i].colorInfo) === "string") {
+        if(thresholdValueRel && thresholdValueRel.thresholdValue.thresholdValueType == 1){
+          if(typeof (modelThresholdValues[i].colorInfo) === "string"){
             let colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
             modelThresholdValues[i].colorInfo = colorInfo
           }
           //判断颜色等信息
-          return handleDataSingleValue(params.data, thresholdValueRel)
+          return handleDataSingleValue(params.data,thresholdValueRel)
         }
       }
     },
-    changeCellColor(params, thresholdValueRel, modelResultDetailCol) {
-      if (thresholdValueRel) {
-        let returnValue = handleDataManyValue(params, thresholdValueRel)
+    changeCellColor(params,thresholdValueRel,modelResultDetailCol){
+      if(thresholdValueRel){
+        let returnValue = handleDataManyValue(params,thresholdValueRel)
         //如果当该列是关联详细列又是阈值展现改变颜色列的时候做特殊处理
         //如果两种都存在则优先判断阈值，如果阈值成立则显示阈值颜色，阈值不成立则显示超链接颜色
-        if (returnValue.toString().indexOf("<span") != -1) {
+        if(returnValue.toString().indexOf("<span") != -1){
           return returnValue
-        } else {
+        }
+        else{
           let dom = params.value
           var rowIndex = params.rowIndex
-          if (modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1) {
+          if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
             // dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
-            dom = "<span onmouseover=\"openModelDetailNew('" + rowIndex + "')\" style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+            dom = "<span onmouseover=\"openModelDetailNew('"+rowIndex+"')\" style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
           }
           return dom
         }
-      } else {
+      }
+      else{
         var rowIndex1 = params.rowIndex
-        if (modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1) {
-          let dom = "<span onmouseover=\"openModelDetailNew('" + rowIndex1 + "')\" style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+        if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
+          let dom = "<span onmouseover=\"openModelDetailNew('"+rowIndex1+"')\" style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
           return dom
         }
         return params.value
@@ -1412,7 +1403,7 @@ export default {
     getRenderTableData() {
       if (this.useType == "modelRunResult") {
         if (this.modelUuid != undefined) {
-          if (this.settingInfo === undefined) {
+          if (this.settingInfo === undefined){
             selectPrimaryKeyByTableName().then((resp) => {
               this.primaryKey = resp.data;
               selectModel(this.modelUuid).then((resp) => {
@@ -1437,7 +1428,7 @@ export default {
                 }
               });
             });
-          } else {
+          }else {
             this.initData();
           }
         } else {
@@ -1498,10 +1489,10 @@ export default {
         this.globalDropDownBox = false
       }, 1000)
     },
-    openModelDetailOld() {
+    openModelDetailOld(){
       this.globalDropDownBox = false
     },
-    StopTime() {
+    StopTime(){
       clearTimeout(this.timeOut)//清除计时器
     },
     /**
@@ -1526,19 +1517,19 @@ export default {
         for (var i = 0; i < this.modelDetailRelation.length; i++) {
           if (this.modelDetailRelation[i].relationObjectUuid == value) {
             for (
-                var j = 0;
-                j < this.modelDetailRelation[i].modelDetailConfig.length;
-                j++
+              var j = 0;
+              j < this.modelDetailRelation[i].modelDetailConfig.length;
+              j++
             ) {
               var key = this.modelDetailRelation[i].modelDetailConfig[j]
-                  .resultColumn;
-              var obj = {moduleParamId: "", paramValue: ""};
+                .resultColumn;
+              var obj = { moduleParamId: "", paramValue: "" };
               obj.moduleParamId = this.modelDetailRelation[i].modelDetailConfig[
-                  j
-                  ].ammParamUuid;
-              if (this.modelUuid !== undefined) {
+                j
+              ].ammParamUuid;
+              if (this.modelUuid !==undefined){
                 obj.paramValue = this.rowData[this.rowIndex][key.toLowerCase()];
-              } else {
+              }else {
                 obj.paramValue = this.rowData[this.rowIndex][key.toUpperCase()];
               }
               detailValue.push(obj);
@@ -1552,23 +1543,23 @@ export default {
           }
           selectModel(value).then((resp) => {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
-            const obj = {sqls: sql, businessField: "modelresultdetail"};
+            const obj = { sqls: sql, businessField: "modelresultdetail" };
             detailModel = resp.data
             getExecuteTask(obj)
-                .then((resp) => {
-                  this.currentExecuteSQL = resp.data.executeSQLList;
-                  //界面渲染完成之后开始执行sql,将sql送入调度
-                  startExecuteSql(resp.data).then((result) => {
-                    if (this.isModelPreview !== true) {
-                      this.$emit('addBigTabs', undefined, undefined, detailModel.modelName, detailModel.modelUuid, undefined, 'modelPreview', this.currentExecuteSQL)
-                    } else {
-                      this.$emit('addBigTabsModelPreview', detailModel.modelName, detailModel.modelUuid, this.currentExecuteSQL)
-                    }
-                  });
-                })
-                .catch((result) => {
-                  this.$message({type: "info", message: "执行失败"});
+              .then((resp) => {
+                this.currentExecuteSQL = resp.data.executeSQLList;
+                //界面渲染完成之后开始执行sql,将sql送入调度
+                startExecuteSql(resp.data).then((result) => {
+                  if (this.isModelPreview!==true){
+                    this.$emit('addBigTabs',undefined,undefined,detailModel.modelName,detailModel.modelUuid,undefined,'modelPreview',this.currentExecuteSQL)
+                  }else {
+                    this.$emit('addBigTabsModelPreview',detailModel.modelName,detailModel.modelUuid,this.currentExecuteSQL)
+                  }
                 });
+              })
+              .catch((result) => {
+                this.$message({ type: "info", message: "执行失败" });
+              });
           });
         });
       } else if (relationType == 2) {
@@ -1579,14 +1570,14 @@ export default {
           var eachFilter = detailConfig[i].relFilterValue;
           loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
             if (
-                eachFilter.indexOf(this.modelOutputColumn[j].outputColumnName) >
-                -1
+              eachFilter.indexOf(this.modelOutputColumn[j].outputColumnName) >
+              -1
             ) {
               eachFilter = eachFilter.replace(
-                  this.modelOutputColumn[j].outputColumnName,
-                  this.rowData[this.rowIndex][
-                      this.modelOutputColumn[j].outputColumnName.toLowerCase()
-                      ]
+                this.modelOutputColumn[j].outputColumnName,
+                this.rowData[this.rowIndex][
+                  this.modelOutputColumn[j].outputColumnName.toLowerCase()
+                ]
               );
               break loop;
             }
@@ -1598,17 +1589,16 @@ export default {
           }
         }
         sql = sql + filterSql;
-        const obj = {sqls: sql, businessField: "modelresultdetail"};
+        const obj = { sqls: sql, businessField: "modelresultdetail" };
         getExecuteTask(obj)
-            .then((resp) => {
-              this.currentExecuteSQL = resp.data.executeSQLList;
-              //界面渲染完成之后开始执行sql,将sql送入调度
-              startExecuteSql(resp.data).then((result) => {
-              });
-            })
-            .catch((result) => {
-              this.$message({type: "info", message: "执行失败"});
-            });
+          .then((resp) => {
+            this.currentExecuteSQL = resp.data.executeSQLList;
+            //界面渲染完成之后开始执行sql,将sql送入调度
+            startExecuteSql(resp.data).then((result) => {});
+          })
+          .catch((result) => {
+            this.$message({ type: "info", message: "执行失败" });
+          });
       }
       this.globalDropDownBox = false
       this.initWebSocket();
@@ -1622,8 +1612,8 @@ export default {
       this.json_fields = {};
       for (var i = 0; i < this.nextValue.columnNames.length; i++) {
         this.json_fields[
-            this.nextValue.columnNames[i]
-            ] = this.nextValue.columnNames[i];
+          this.nextValue.columnNames[i]
+        ] = this.nextValue.columnNames[i];
       }
       this.excelName = "模型结果导出表";
     },
@@ -1647,30 +1637,27 @@ export default {
         "ws://localhost:8086/analysis/websocket?" +
         this.$store.getters.personuuid;*/
       const webSocketPath =
-          process.env.VUE_APP_ANALYSIS_WEB_SOCKET +
-          this.$store.getters.personuuid +
-          "modelresultdetail";
+        process.env.VUE_APP_ANALYSIS_WEB_SOCKET +
+        this.$store.getters.personuuid +
+        "modelresultdetail";
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接
-      this.webSocket.onopen = function (event) {
-      };
+      this.webSocket.onopen = function (event) {};
       // 发送消息
       this.webSocket.onmessage = function (event) {
         const dataObj = JSON.parse(event.data);
         func1(dataObj);
       };
       const func2 = function func3(val) {
-        this.$emit('setNextValue', val)
+          this.$emit('setNextValue',val)
         // this.$refs.childTabsRef.loadTableData(val);
       };
       const func1 = func2.bind(this);
-      this.webSocket.onclose = function (event) {
-      };
+      this.webSocket.onclose = function (event) {};
 
       // 通信失败
-      this.webSocket.onerror = function (event) {
-      };
+      this.webSocket.onerror = function (event) {};
     },
     /**
      * sql编辑器保存图标
@@ -1850,6 +1837,7 @@ export default {
           });
         }
       }
+
     },
     /**
      * 打开添加图标的dialog
@@ -2032,6 +2020,18 @@ export default {
         });
       }
     },
+    /**
+     * 保存结果，将模型添加到后台立即执行 **注意带参数模型
+     */
+    saveResult() {
+      this.$confirm('是否保存模型结果?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$emit("saveModelResult")
+      })
+    },
     saveChartsAll() {
       if (this.modelChartSetups.length != 0) {
         for (let i = 0; i < this.modelChartSetups.length; i++) {
@@ -2046,7 +2046,6 @@ export default {
                 }),
                 modelUuid: this.modelChartSetups[i].modelUuid
               }
-              debugger
               updateModelChartSetup(modelChartSetupZ).then((resp) => {
                 if (resp.data) {
                   this.$notify({
@@ -2186,71 +2185,4 @@ export default {
   height:100%;
 }
 
-
-.vue-grid-layout {
-  background: transparent;
-}
-.vue-grid-item:not(.vue-grid-placeholder) {
-  background: transparent;
-  border: 1px dashed #46a6ff;
-}
-.vue-grid-item .resizing {
-  opacity: 0.9;
-}
-.vue-grid-item .static {
-  background: #cce;
-}
-.vue-grid-item .textz {
-  text-align: center;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  height: 100%;
-  width: 100%;
-}
-.vue-grid-item .no-drag {
-  height: 100%;
-  width: 100%;
-}
-.vue-grid-item .minMax {
-  font-size: 12px;
-}
-.vue-grid-item .add {
-  cursor: pointer;
-}
-.vue-draggable-handle {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  top: 0;
-  right: 0;
-  padding: 0 8px 8px 0;
-  background-origin: content-box;
-  background-color: black;
-  box-sizing: border-box;
-  border-radius: 10px;
-  cursor: pointer;
-  z-index: 100000;
-}
-.layoutJSON {
-  background: #ddd;
-  border: 1px solid black;
-  margin-top: 10px;
-  padding: 10px;
-}
-.eventsJSON {
-  background: #ddd;
-  border: 1px solid black;
-  margin-top: 10px;
-  padding: 10px;
-  height: 100px;
-  overflow-y: scroll;
-}
->>>.vue-grid-item.vue-grid-placeholder {
-  background: #46a6ff !important;
-  opacity: 0.2!important;
-}
 </style>
