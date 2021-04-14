@@ -258,6 +258,7 @@ import graph from '@/views/graphtool/tooldic/index'
 import messageTips from '@/views/analysis/auditmodel/message'
 import paramshownew from "@/views/analysis/modelparam/paramshownew";
 import thresholdvaluerel from "@/views/analysis/auditmodelone/thresholdvaluerelOne";
+import chartAudit from "@/api/analysis/chartauditmodel"
 // import func from 'vue-temp/vue-editor-bridge'
 export default {
   name: 'EditModel',
@@ -1235,6 +1236,7 @@ export default {
      */
     async save() {
       let modelObj = await this.getModelObj()
+      console.log(modelObj)
       if (modelObj == null) {
         return
       }
@@ -1273,6 +1275,8 @@ export default {
         })
       }
       //}
+      // 调用保存图表拖拽布局
+      chartAudit.$emit('chartAuditOn');
     }
   }
 }
