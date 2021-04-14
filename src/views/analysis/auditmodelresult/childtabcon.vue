@@ -2185,4 +2185,71 @@ export default {
   height:100%;
 }
 
+
+.vue-grid-layout {
+  background: transparent;
+}
+.vue-grid-item:not(.vue-grid-placeholder) {
+  background: transparent;
+  border: 1px dashed #46a6ff;
+}
+.vue-grid-item .resizing {
+  opacity: 0.9;
+}
+.vue-grid-item .static {
+  background: #cce;
+}
+.vue-grid-item .textz {
+  text-align: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  height: 100%;
+  width: 100%;
+}
+.vue-grid-item .no-drag {
+  height: 100%;
+  width: 100%;
+}
+.vue-grid-item .minMax {
+  font-size: 12px;
+}
+.vue-grid-item .add {
+  cursor: pointer;
+}
+.vue-draggable-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 0;
+  right: 0;
+  padding: 0 8px 8px 0;
+  background-origin: content-box;
+  background-color: black;
+  box-sizing: border-box;
+  border-radius: 10px;
+  cursor: pointer;
+  z-index: 100000;
+}
+.layoutJSON {
+  background: #ddd;
+  border: 1px solid black;
+  margin-top: 10px;
+  padding: 10px;
+}
+.eventsJSON {
+  background: #ddd;
+  border: 1px solid black;
+  margin-top: 10px;
+  padding: 10px;
+  height: 100px;
+  overflow-y: scroll;
+}
+>>>.vue-grid-item.vue-grid-placeholder {
+  background: #46a6ff !important;
+  opacity: 0.2!important;
+}
 </style>
