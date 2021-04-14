@@ -13,6 +13,7 @@
         :preLength="1"
         @addBigTabs="addBigTabs"
         @setNextValue="setNextValue"
+        @saveModelResult="saveModelResult"
         ref="onlyChild"
     /></el-tab-pane>
     <el-tab-pane
@@ -20,13 +21,30 @@
       :key="key"
       :label="tabsName(key)"
       class="result-tabs"
-      ><childTabCons ref="child" :is-model-preview="isModelPreview" @addBigTabsModelPreview="addBigTabsModelPreview" @addBigTabs="addBigTabs" @setNextValue="setNextValue" :chartModelUuid="chartModelUuid" :resultSpiltObjects="resultSpiltObjects" :modelId="modelId" :nowtable="item" :prePersonalVal="item" :useType="useType" :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1" :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"/>
+      :style="useType==='previewTable'?'height:500px':''"
+      ><childTabCons
+        ref="child"
+        :is-model-preview="isModelPreview"
+        @addBigTabsModelPreview="addBigTabsModelPreview"
+        @addBigTabs="addBigTabs"
+        @setNextValue="setNextValue"
+        @saveModelResult="saveModelResult"
+        :chartModelUuid="chartModelUuid"
+        :resultSpiltObjects="resultSpiltObjects"
+        :modelId="modelId"
+        :nowtable="item"
+        :prePersonalVal="item"
+        :useType="useType"
+        :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1"
+        :myIndex="useType=='sqlEditor'||useType=='modelPreview'?key:1"/>
     </el-tab-pane>
   </el-tabs>
 </template>
 <script>
 import childTabCons from "@/views/analysis/auditmodelresult/childtabcon";
 import { now } from "moment";
+import {addRunTaskAndRunTaskRel, deleteModel, uuid2} from "@/api/analysis/auditmodel";
+import {deleteGraphInfoById} from "@/api/graphtool/apiJs/graphList";
 export default {
   components: {
     'childTabCons':childTabCons
@@ -34,8 +52,12 @@ export default {
   data() {
     return {
       index:0,
-      hasButton:false
+      hasButton:false,
+      paramInfoCopy:{}
     };
+  },
+  mounted() {
+    this.paramInfoCopy = this.paramInfo
   },
   methods: {
     /**
@@ -43,8 +65,7 @@ export default {
      */
       loadTableData(nextValue,modelName){
         this.$refs.child[this.index].initData(null,nextValue,modelName)
-        this.
-          index++;
+        this.index++;
       },
       /**
        * sql编辑器模型结果用于给子组件aggrid表格加遮罩
@@ -87,6 +108,48 @@ export default {
         }else{
           this.$refs.child[this.index-1].clickBigTab()
         }
+    },
+    loadNewParamInfo(paramInfo){
+      this.paramInfoCopy = paramInfo
+    },
+    saveModelResult(){
+      var runTaskUuid = uuid2();
+      var batchUuid = uuid2();
+      var runTaskRels = [];
+      var runTaskRelUuid = uuid2();
+      var runTaskRel = {
+        runTaskRelUuid: runTaskRelUuid,
+        runTaskUuid: runTaskUuid,
+        sourceUuid: this.modelId,
+        settingInfo: JSON.stringify(this.paramInfoCopy),
+        modelVersion: 1,
+        runRecourceType: 1,
+        isDeleted: 0,
+        runStatus: 1,
+      };
+      runTaskRels.push(runTaskRel);
+      var runTask = {
+        runTaskUuid: runTaskUuid,
+        batchUuid: batchUuid,
+        runTaskName: "系统添加",
+        runType: 3,
+        timingExecute: "",
+        //locationUuid: modelResultSavePathId,
+        runTaskRels: runTaskRels
+      };
+      addRunTaskAndRunTaskRel(runTask).then((resp) => {
+        if (resp.data == true) {
+          this.$notify({
+            title: "提示",
+            message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        } else {
+          this.$message({ type: "info", message: "执行运行任务失败" });
+        }
+      });
     }
   },
   /**
@@ -106,7 +169,8 @@ export default {
     "settingInfo",
     "resultMark",
     "isModelPreview",
-    "isRelation"
+    "isRelation",
+    "paramInfo"
   ],
 };
 </script>
@@ -117,7 +181,7 @@ export default {
 }
 >>>.el-tabs__content{
   height: calc(100% - 31px);
-  overflow: auto;
+  overflow-y: auto!important;
   padding:0px!important;
 }
 .result-tabs{
