@@ -1,8 +1,21 @@
 <template>
-  <div class="home w100 h100 flex a-center j-start flex-column homezz">
+  <div class="home w100 h100 flex a-center j-start flex-column">
     <div class="top flex a-center j-between flex-row flex1 flex-shrink ">
       <div class="right flex a-end j-center flex-column">
-        <div class="bottom-card a-center j-between flex-row">
+        <div class="top-card flex a-start j-start flex-row skin-wbgColor-3 skin-shadow">
+          <div class="top-card-left flex-shrink  flex a-center j-center">
+            <img src="../../../../styles/image/c2.png" class="img">
+          </div>
+          <div class="top-card-right">
+            <div class="title skin-wordColor">待办事项</div>
+            <div class="des" v-for="(item,index) in TopTodo">
+              <span class="skin-wordColor">{{item.name}}</span>
+              <span v-if="item.icon" :style="{color:item.iconColor}" class="icon">{{ item.icon }}</span>
+            </div>
+          </div>
+          <span class="card-more skin-wordmoreColor" @click="toDoSomeJump">更多</span>
+        </div>
+        <div class="bottom-card flex a-center j-between flex-row">
           <div v-for="(item,index) in cardList" :key="index" class="top-card flex j-start flex-row skin-shadow" :class="{backgroundColor:index === 0?'skin-wbgColor-1':'skin-wbgColor-2'}">
             <div class="top-card-left flex-shrink skin-bgColor flex a-center j-center">
               <img :src="item.img" class="img">
@@ -18,9 +31,76 @@
           </div>
         </div>
       </div>
-     <!-- <div >
-        <toolsTemplateIndex/>
-      </div>-->
+      <div class="left flex-shrink flex a-center j-center flex-column">
+        <swiper :options="swiperOption" ref="mySwiper" :autoplay="5000">
+          <swiper-slide>
+            <div class="day-wrap relative">
+<!--              <animate-number from="00" :to="this.myProjectIn[0].lengthIn" :formatter="formatter" class="num" />-->
+<!--              <span class="text absolute">我的项目</span>-->
+              <div class="showDetailedIn">
+                <span style="background-color:rgb(81,69,89)">{{showDetailedData.TAKEPROJECTCOUNT}}</span>
+                参与项目数
+              </div>
+              <div class="showDetailedIn">
+                <span style="background-color:rgb(81,69,89)">{{showDetailedData.FINDPROBLEMCOUNT}}</span>
+                发现问题数量
+              </div>
+              <div class="showDetailedOut">
+                <span style="background-color:rgb(131,132,158)">{{showDetailedData.TAKECHIEFJUDGECOUNT}}</span>
+                担任主审次数
+              </div>
+              <div class="showDetailedOut">
+                <span style="background-color:rgb(69,86,89)">{{showDetailedData.WORKCOUNT}}</span>
+                项目工作天数
+              </div>
+            </div>
+          </swiper-slide>
+          <swiper-slide>
+            <img :src="linshiImg1" style="width: 100%;margin-top: 40px"/>
+          </swiper-slide>
+          <swiper-slide>
+            <img :src="linshiImg2" style="width: 100%;margin-top: 40px" />
+          </swiper-slide >
+          <div class="swiper-pagination" slot="pagination"></div>
+        </swiper>
+
+        <!--        <div class="calendar-wrap flex a-center j-center flex-row relative">-->
+        <!--          <div v-for="(item,index) in boxList" :key="index" class="box flex a-center j-center flex-column" :class="[index===3 && 'box-active']">-->
+        <!--            <div class="label">{{ item.label }}</div>-->
+        <!--            <div class="value">{{ item.value }}</div>-->
+        <!--          </div>-->
+        <!--          <img src="../../../../assets/styles/image/enlarge.png" class="enlarge absolute">-->
+        <!--        </div>-->
+      </div>
+    </div>
+    <div class="bottom-father" v-for="(item, index) in myProjectIn">
+      <div class="bottom bottom-animate flex a-center j-start flex-row skin-bgColor" :key="projectAnimation">
+        <div class="line1 line flex a-start j-center flex-column skin-border-right" style="flex-basis:80px;">
+          <div class="count-font" style="cursor:pointer;">
+            <span class="count-font">{{ item.theIndex + 1 }}</span>/<animate-number :from="0" :to="item.lengthIn" class="count-font" />
+          </div>
+        </div>
+        <div class="line1 line flex a-center j-center flex-column skin-border-right">
+          <div class="title-bottom-top">我的项目</div>
+          <div class="des flex a-center j-start flex-row">
+            <div class="right-name right">
+              <div class="p1">{{ item.name }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="line2 line flex a-center j-center flex-column skin-border-right">
+          <div class="title-bottom">项目状态</div>
+          <div class="date">执行中</div>
+        </div>
+        <div class="line3 line flex a-center j-center flex-column skin-border-right">
+          <div class="title-bottom">立项时间</div>
+          <div class="date">{{ item.time }}</div>
+        </div>
+        <div class="line4 line flex a-center j-center flex1">
+          <div class="btn" @click="projectDetailsIn(item.idProject)">查看此项目的详情</div>
+        </div>
+      </div>
+      <div class="bottom-after skin-bttom-a" @click="toTheNext(item.theIndex)"><i class="el-icon-arrow-down"></i></div>
     </div>
     <el-dialog
       :visible.sync="dialogFormVisible"
@@ -41,10 +121,13 @@
 <script>
 import { getRemindByDescTime, updateRemind } from '@/api/base/base'
 import { getRunTaskRelByPage } from "@/api/analysis/auditmodelresult"
-import toolsTemplateIndex from '@/components/public/base/tools-template-index.vue'
+import { swiper, swiperSlide } from "vue-awesome-swiper";
+import "swiper/dist/css/swiper.css";
+import axios from 'axios'
+import mtEditor from "ams-datamax";
 export default {
   components: {
-    toolsTemplateIndex
+    mtEditor,swiper, swiperSlide
   },
   data() {
     return {
@@ -63,6 +146,30 @@ export default {
           des: []
         },
       ],
+      // boxList: [
+      //   {
+      //     label: 'Mon',
+      //     value: 2
+      //   }, {
+      //     label: 'Tue',
+      //     value: 3
+      //   }, {
+      //     label: 'Wed',
+      //     value: 4
+      //   }, {
+      //     label: 'Thu',
+      //     value: 5
+      //   }, {
+      //     label: 'Fri',
+      //     value: 6
+      //   }, {
+      //     label: 'Sat',
+      //     value: 7
+      //   }, {
+      //     label: 'Sun',
+      //     value: 8
+      //   }
+      // ],
       TopTodo: [
         {
           text: '暂无待办事项',
@@ -88,11 +195,36 @@ export default {
           content:''
         }
       ],
+      projectDetails: [],
+      myProjectIn: [],
       dialogFormVisible: false,
       PopUpContent:[{
         text:'',
         content:''
-      }]
+      }],
+      projectAnimation: true,
+      swiperOption: {
+        loop: true,
+        autoplay :{
+          delay: 2000,
+          stopOnLastSlide: true,
+          /* 触摸滑动后是否继续轮播 */
+          disableOnInteraction: false
+        },
+        stopOnLastSlide: true,
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true //允许分页点击跳转
+        }
+      },
+      linshiImg1:require('../../../../styles/image/firstcercle.png'),
+      linshiImg2:require('../../../../styles/image/firsttable.png'),
+      showDetailedData: {
+        FINDPROBLEMCOUNT:12,
+        WORKCOUNT:0,
+        TAKECHIEFJUDGECOUNT:14,
+        TAKEPROJECTCOUNT:15
+      }
     }
   },
   mounted() {
@@ -118,7 +250,43 @@ export default {
     this.pageQuery.condition = query1;
     getRunTaskRelByPage(this.pageQuery,this.resultSpiltObjects).then((resp) => {
       this.warningMatters = resp.data.records;
+      // if (resp.data.records.length > 0) {
+      //   for(let i=0;i<5;i++){
+      //     this.cardList[1].des.push({
+      //       text:resp.data.records[i].remindTitle,
+      //       iconColor: '#D81020',
+      //       icon: '',
+      //       url:resp.data.records[i].modeUrl,
+      //       content:resp.data.records[i].remindContent,
+      //       index:i,
+      //       Uuid:resp.data.records[i].remindUuid
+      //     })
+      //   }
+      // }
     })
+    axios.get('/psbcaudit/homepage/loadTodoInfo').then(resp =>{
+      if (resp.data !== '') {
+        this.TopTodo = resp.data
+      }
+    })
+    axios.get('/psbcaudit/homepage/loadPrjInfo').then(resp =>{
+      if (resp.data.prjList.length > 0) {
+        this.projectDetails = []
+          for (let i = 0;i < resp.data.prjList.length; i++) {
+            this.projectDetails.push({
+              name: resp.data.prjList[i].prjName,
+              time: resp.data.prjList[i].createTime,
+              lengthIn: resp.data.prjList.length,
+              idProject: resp.data.prjList[i].projectUUID,
+              idPlan: resp.data.prjList[i].planUUID
+            })
+          }
+        this.myProject(0)
+      }
+    })
+    // axios.get('/psbcaudit/homepage/hasCount').then(resp =>{
+    //   // console.log(resp)
+    // })
   },
   methods: {
     formatter(num) {
@@ -171,6 +339,9 @@ export default {
     toDoSomeJump(){
       this.$router.push({ path: '/base/frameto?url=psbcaudit/todoInfo/todoInfoList'})
     },
+    projectDetailsIn(){
+      this.$router.push({ path: '/base/frameto?url=/psbcaudit_pmrs/plPrj/prjProjectToEnd'})
+    },
     displayItem(data){
       let thisItem = document.getElementsByClassName('bottom')
       for (let i = 0; i < thisItem.length; i++) {
@@ -190,24 +361,43 @@ export default {
         }
         this.displayItem(index - 1)
       }
+    },
+    myProject (data) {
+      this.myProjectIn = []
+      let somedata
+      if (data === this.projectDetails.length-1) {
+        somedata = 0
+      } else {
+        somedata = data + 1
+      }
+      this.myProjectIn.push({
+        name: this.projectDetails[data].name,
+        time: this.projectDetails[data].time,
+        lengthIn: this.projectDetails.length,
+        idProject: this.projectDetails[data].idProject,
+        idPlan: this.projectDetails[data].idPlan,
+        next: this.projectDetails[somedata].name,
+        theIndex: data
+      })
+    },
+    toTheNext (data) {
+      let tt = data + 1
+      if (tt === this.projectDetails.length) {
+        tt = 0
+      }
+      this.myProject(tt)
+      this.projectAnimation = !this.projectAnimation
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-.homezz {
-  background: url('../../../../styles/image/bg.png') left center no-repeat!important;
-  background-size: 100% 100% !important;
-}
 .home{
   //background: #FFFFFF;
-  // background-size: 82%;
-  // background-position-x: -130px;
-  // background-position-y: 2px;
   padding-bottom: 12px;
   .top{
     // background: grey;
-    width: 85%;
+    width: 90%;
     margin-left: 5%;
     margin-right: 5%;
     .left{
@@ -285,12 +475,11 @@ export default {
         background: #FFFFFF;
         box-shadow: 17px 17px 34px 0 rgba(0,0,0,0.10);
         border-radius: 25.2px;
-        padding: 50px;
-        padding-right:200px;
+        padding: 27px;
         width: 479px;
         position: relative;
-        margin:20px;
-        height: 300px;
+        margin:5px;
+        height: 218px;
         &-left{
           background: #FFFFFF;
           border: 1px solid #D8D8D8;
@@ -327,9 +516,54 @@ export default {
         }
       }
       .bottom-card{
-        width: 400px;
+        width: 479px;
         margin-top: 33px;
         position: relative;
+        //.left-card{
+        //  background: #EDF1F5;
+        //}
+        //.right-card{
+        //  background: #FFFFFF;
+        //}
+        //.card{
+        //  position: relative;
+        //  box-shadow: 17px 17px 34px 0 rgba(0,0,0,0.10);
+        //  border-radius: 25.2px;
+        //  width: 479px;
+        //  //height: 242px;
+        //  padding: 27px 20px 27px 27px;
+        //  .img-box{
+        //    background: #FFFFFF;
+        //    border: 1px solid #D8D8D8;
+        //    border-radius: 12.6px;
+        //    width: 67px;
+        //    height: 67px;
+        //    .img{
+        //      width: 30px;
+        //      height: 30px;
+        //      object-fit: cover;
+        //    }
+        //  }
+        //  .title{
+        //    font-family: PingFangSC-Regular;
+        //    font-size: 20.16px;
+        //    color: #333333;
+        //    line-height: 26.88px;
+        //    margin: 18px 0;
+        //  }
+        //  .line{
+        //    font-family: PingFangSC-Regular;
+        //    font-size: 13.5px;
+        //    color: rgba(21,21,21,0.50);
+        //    letter-spacing: 0;
+        //    text-align: justify;
+        //    line-height: 22px;
+        //    .icon{
+        //      display: inline-block;
+        //      margin-left: 4px;
+        //    }
+        //  }
+        //}
       }
     }
   }
@@ -526,6 +760,17 @@ export default {
     bottom: 18px;
     left:5%;
   }
+}
+.swiper-container{
+  position: relative;
+  width: 30vw;
+  height: 75vh;
+  padding-top: 15vh;
+}
+.swiper-container .swiper-slide{
+  width: 100%;
+  font-size: 16px;
+  text-align: center;
 }
 .showDetailedIn{
   width:40%;

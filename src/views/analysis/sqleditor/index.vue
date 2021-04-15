@@ -123,7 +123,7 @@
                             :key="result.id"
                             :pre-value="currentExecuteSQL"
                             use-type="sqlEditor"
-                            style="width: 100%;height:450px;"
+                            style="width: 100%;"
                             :chartModelUuid='modelUuid'
                             :modelId='modelUuid'
                             id="childTabs1"
@@ -488,15 +488,10 @@
              */
             getWebSocket() {
               this.pushUuid = uuid2()
-                /*      const webSocketPath =
-                  'ws://localhost:8086/analysis/websocket?' +
-                  this.$store.getters.personuuid*/
-                // const webSocketPath =
-                //     process.env.VUE_APP_ANALYSIS_WEB_SOCKET +
-                //     this.$store.getters.personuuid +
-                //     'sqleditor'+this.pushUuid
-                const webSocketPath = 'ws://' + window.location.host+ '/websocket?' + this.$store.getters.personuuid + 'sqleditor'+this.pushUuid
-
+                const webSocketPath =
+                    this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) +
+                    this.$store.getters.personuuid +
+                    'sqleditor'+this.pushUuid
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
                 // 当服务端打开连接
@@ -1222,7 +1217,6 @@
     .data-show{
         width: 100%;
         height: 100%;
-        overflow: auto;
         background: #fff;
     }
 

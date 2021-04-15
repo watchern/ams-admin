@@ -18,9 +18,9 @@
         <el-button type="primary" class="oper-btn add-folder-1" :disabled="clickData.type == 'table'" @click="createFolder" />
         <el-button type="primary" class="oper-btn  edit" :disabled="selections.length !== 1" @click="update" />
         <el-button type="primary" class="oper-btn  link-3" :disabled="selections.length !== 1" @click="relationTable" />
-        <el-button type="primary" class="oper-btn  detail" :disabled="selections.length !== 1" @click="showTable" />
-        <!-- <el-button type="primary" class="oper-btn search-1" :disabled="infoFlag" @click="preview" /> -->
-        <!-- <el-button type="primary" class="oper-btn share-1" :disabled="selections.length === 0" @click="shareTable" /> -->
+        <el-button type="primary" class="oper-btn  detail-1" :disabled="selections.length !== 1" @click="showTable" />
+<!--        <el-button type="primary" class="oper-btn search-1" :disabled="infoFlag" @click="preview" />-->
+<!--        <el-button type="primary" class="oper-btn share-1" :disabled="selections.length === 0" @click="shareTable" />-->
       </el-col>
     </el-row>
     <el-table

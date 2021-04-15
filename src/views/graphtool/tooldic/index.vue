@@ -893,9 +893,7 @@
             },
             initWebSocKet() {
                 var $this = this
-                // 修改为动态获取ip，否则上线打包不通用
-                const webSocketPath = 'ws://' + window.location.host+ '/websocket?' + this.loginUserUuid + 'GRAPH'
-                // const webSocketPath = process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET + this.loginUserUuid + 'GRAPH'
+                const webSocketPath = this.AmsWebsocket.getWSBaseUrl(this.AmsModules.GRAPHTOOL) + this.loginUserUuid + 'GRAPH'
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
                 // 当服务端打开连接

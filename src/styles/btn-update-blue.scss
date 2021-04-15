@@ -1,5 +1,13 @@
 @import './variables.scss';
 
+.self-made-btn{
+  background: transparent;
+  color: #333;
+}
+.self-made-btn-a{
+  background: #559ed4!important;
+  color: #fff!important;
+}
 
 .el-button {
   background: #ffffff;
@@ -24,24 +32,24 @@
 }
 
 .el-button--primary {
-  background: rgb(85,158,212);
-  border-color: rgb(90,195,235);
-  color: #fff;
+  background: rgb(85,158,212)!important;
+  border-color: rgb(90,195,235)!important;
+  color: #fff!important;
   font-weight: bold;
 }
 
 .el-button--primary:active {
-  background: rgb(90,195,235);
-  border-color: rgb(90,195,235);
-  color: rgb(242,243,253);
+  background: rgb(90,195,235)!important;
+  border-color: rgb(90,195,235)!important;
+  color: rgb(242,243,253)!important;
   outline: none;
   font-weight: bold;
 }
 
 .el-button--primary:hover, .el-button--primary:focus {
-  background: rgb(90,195,235);
-  border-color: rgb(90,195,235);
-  color: rgb(242,243,253);
+  background: rgb(90,195,235)!important;
+  border-color: rgb(90,195,235)!important;
+  color: rgb(242,243,253)!important;
   font-weight: bold;
 }
 

@@ -8,11 +8,11 @@
             <SQLEditor :data-user-id='dataUserId' :scene-code1='sceneCode' :modelUuid='form.modelUuid'
                        @getSqlObj="getSqlObj" v-if="state.id==sqlEditorStr" ref="SQLEditor"
                        :sql-editor-param-obj="sqlEditorParamObj" :sql-value="form.sqlValue" :callType="editorModel"
-                       :locationUuid="form.locationUuid" :locationName="form.locationName" class="sql-editor"/>
+                       :locationUuid="form.locationUuid" :locationName="form.locationName" :style="{height: someHeight + 'px'}"/>
             <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2"
                    v-if="state.id==graphEditorStr"></graph>
           </div>
-          <div class="modelInfoClass" v-show="modelInfoDraw" style="width: 26%;position:absolute;height: calc(100% - 63px);">
+          <div class="modelInfoClass" v-show="modelInfoDraw" :style="{position:'absolute',height: this.someHeight + 'px'}">
             <div ref="basicInfo" class="detail-form">
               <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules" :disabled="isBanEdit">
                 <el-row>
@@ -86,7 +86,7 @@
               </el-form>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="useParamDraw" style="width: 50%;position:absolute;height: calc(100% - 63px);">
+          <div class="modelInfoClass" v-show="useParamDraw" :style="{position:'absolute',height: this.someHeight + 'px'}">
             <div ref="paramDefaultValue" class="default-value">
               <div style="font-size: 20px">
                 模型参数
@@ -98,7 +98,7 @@
               </div>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="resultConfigDraw" style="width: 50%;position:absolute;height: calc(100% - 63px);">
+          <div class="modelInfoClass" v-show="resultConfigDraw" :style="{position:'absolute',height: this.someHeight + 'px'}">
             <el-tabs v-model="activeName" :stretch="true" style="width: 92%">
               <el-tab-pane label="模型结果" name="first"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" ref="modelResultOutputCol" class="default-value">
                 <div style="font-size: 20px">
@@ -122,18 +122,18 @@
                         </el-select>
                       </template>
                     </el-table-column>
-                    <el-table-column prop="columnName" label="对应业务字段" width="180">
-                      <template slot-scope="scope">
-                        <el-select v-model="scope.row.businessFieldUuid" value="-1" :disabled="isBanEdit">
-                          <el-option
-                            v-for="state in businessColumnSelect"
-                            :key="state.attrCode"
-                            :value="state.attrCode"
-                            :label="state.attrName"
-                          />
-                        </el-select>
-                      </template>
-                    </el-table-column>
+<!--                    <el-table-column prop="columnName" label="对应业务字段" width="180">-->
+<!--                      <template slot-scope="scope">-->
+<!--                        <el-select v-model="scope.row.businessFieldUuid" value="-1" :disabled="isBanEdit">-->
+<!--                          <el-option-->
+<!--                            v-for="state in businessColumnSelect"-->
+<!--                            :key="state.attrCode"-->
+<!--                            :value="state.attrCode"-->
+<!--                            :label="state.attrName"-->
+<!--                          />-->
+<!--                        </el-select>-->
+<!--                      </template>-->
+<!--                    </el-table-column>-->
                     <el-table-column prop="columnName" label="别名" width="180">
                       <template slot-scope="scope">
                         <el-input v-model="scope.row.columnAlias" placeholder="请输入别名" :disabled="isBanEdit"/>
@@ -198,11 +198,11 @@
             </el-tabs>
           </div>
           <div class="editmodel-right"><!--v-if="!modifying"-->
-            <div @click="clickModelInfo()" :style="{background: changeBtn.one === true?'#fff':'transparent',height: 65.33+'px',borderTopRightRadius: 20 + 'px'}" @mouseover="configurationSave1 = false" @mouseleave="configurationSave1 = true"><img v-if="configurationSave1" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/modelinfo.png"/><span class="rightButtonClassa" v-if="!configurationSave1" >基础信息</span></div>
-            <div @click="clickUseParam()" :style="{background: changeBtn.two === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="configurationSave2 = false" @mouseleave="configurationSave2 = true"><img v-if="configurationSave2" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/useParam.png"/><span class="rightButtonClassa" v-if="!configurationSave2" >已用参数</span></div>
-            <div @click="clickResultConfig()" :style="{background: changeBtn.three === true?'#fff':'transparent',height: 65.33+'px'}" @mouseover="configurationSave3 = false" @mouseleave="configurationSave3 = true"><img v-if="configurationSave3" class="rightButtonClass" src="@/views/analysis/auditmodel/imgs/resultConfig.png"/><span class="rightButtonClassa" v-if="!configurationSave3" >结果展现</span></div>
-            <el-button type="primary" size="small" class="oper-btn save" style="position: absolute;bottom: 95px;left: 9px;width: 24px" @click="save"></el-button>
-            <el-button type="primary" size="small" class="oper-btn cancel" style="position: absolute;bottom: 35px;left: -1px;width: 24px;" @click="closeWinfrom"></el-button>
+            <div @click="clickModelInfo()"><span :class="changeBtn.one === true?'self-made-btn-a':'self-made-btn'"  class="rightButtonClassa">基础信息</span></div>
+            <div @click="clickUseParam()"><span :class="changeBtn.two === true?'self-made-btn-a':'self-made-btn'" class="rightButtonClassa">已用参数</span></div>
+            <div @click="clickResultConfig()"><span :class="changeBtn.three === true?'self-made-btn-a':'self-made-btn'" class="rightButtonClassa">结果展现</span></div>
+            <el-button type="primary" size="small" class="oper-btn save-none" style="position: absolute;bottom: 95px;left: 9px;width: 24px" @click="save"></el-button>
+            <el-button type="primary" size="small" class="oper-btn cancel-none" style="position: absolute;bottom: 35px;left: -1px;width: 24px;" @click="closeWinfrom"></el-button>
           </div>
           <el-form-item label="模型sql" prop="sqlValue" class="display">
             <el-input v-model="form.sqlValue" type="textarea"/>
@@ -258,6 +258,7 @@ import graph from '@/views/graphtool/tooldic/index'
 import messageTips from '@/views/analysis/auditmodel/message'
 import paramshownew from "@/views/analysis/modelparam/paramshownew";
 import thresholdvaluerel from "@/views/analysis/auditmodelone/thresholdvaluerelOne";
+import chartAudit from "@/api/analysis/chartauditmodel"
 // import func from 'vue-temp/vue-editor-bridge'
 export default {
   name: 'EditModel',
@@ -417,10 +418,7 @@ export default {
       selectedThreshold:[],
       isExecuteSql:false,
       modelDetailIsSeeHeight:"",
-      // 右侧列表按钮样式
-      configurationSave1: true,
-      configurationSave2: true,
-      configurationSave3: true
+      someHeight: 700
     }
   },
   watch: {
@@ -474,6 +472,9 @@ export default {
       //禁用所有界面可编辑元素
       this.isBanEdit = true
     }
+    // 自适应高度
+    let windowHeight = document.getElementsByClassName("app-container")[0]
+    this.someHeight = windowHeight.offsetHeight
   },
   methods: {
     editThresholdDetermine(){
@@ -1235,6 +1236,7 @@ export default {
      */
     async save() {
       let modelObj = await this.getModelObj()
+      console.log(modelObj)
       if (modelObj == null) {
         return
       }
@@ -1273,16 +1275,13 @@ export default {
         })
       }
       //}
+      // 调用保存图表拖拽布局
+      chartAudit.$emit('chartAuditOn');
     }
   }
 }
 </script>
 <style scoped>
-.sql-editor {
-  height: 842px;
-  /* overflow-y:scroll */
-}
-
 .display {
   display: none;
 
@@ -1438,7 +1437,7 @@ export default {
 
 @keyframes modelInfo {
   0%{width: 0%;}
-  100%{width: 50%}
+  100%{width: 706px}
 }
 .sqlEditorWidth{
   float: left;
@@ -1471,14 +1470,15 @@ export default {
 .rightButtonClassa{
   display: inline-block;
   font-size: 14px;
-  background: rgb(232, 240, 255);
   height: 40px;
   width: 40px;
   line-height: 16px;
   border-radius: 3px;
   margin: 12px 0 0 3px;
   padding: 3.5px 5px 5px 5.5px;
-  color: rgb(27,76,139);
   cursor: pointer;
+}
+.rightButtonClassa:hover{
+  background: rgba(0,0,0,0.1)
 }
 </style>

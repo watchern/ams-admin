@@ -104,10 +104,8 @@
                 }
             },
             initWebsocket(){
-                let $this = this
-                // 修改为动态获取ip，否则上线打包不通用
-                const webSocketPath = 'ws://' + window.location.host+ '/websocket?' + this.$store.state.user.id + 'graph_comparison'
-                // const webSocketPath = `${process.env.VUE_APP_GRAPHTOOL_WEB_SOCKET}${this.$store.state.user.id}graph_comparison`
+                // const webSocketPath = 'ws://' + window.location.host+ '/websocket?' + this.$store.state.user.id + 'graph_comparison'
+                const webSocketPath = `${this.AmsWebsocket.getWSBaseUrl(this.AmsModules.GRAPHTOOL)}${this.$store.state.user.id}graph_comparison`
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
                 // 发送消息

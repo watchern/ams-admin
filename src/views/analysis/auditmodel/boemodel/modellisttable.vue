@@ -1,157 +1,236 @@
 <template>
-  <div class="tree-list-container all zzz">
-    <el-tabs @tab-click="handleClick" v-model="editableTabsValue" closable @tab-remove="removeTab">
-      <el-tab-pane label="模型列表" name="modelList">
-        <div class="filter-container">
-          <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
-        </div>
-        <el-row v-if="power!='warning'" type="flex" class="row-bg">
-          <el-col align="right">
-            <el-button type="primary" :disabled="btnState.previewBtn" class="oper-btn start" @click="previewModel" />
-<!--            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />-->
-            <el-dropdown style="margin-right: 10px;">
-            <el-button type="primary" :disabled="btnState.addBtnState"  @mouseover="mouseOver" @mouseleave="mouseLeave" class="oper-btn add" @click="selectModelTypeDetermine('002003001')" />
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item v-for="state in modelTypeData" :key="state.codeValue" @click.native="selectModelTypeDetermine(state.codeValue)">{{state.codeName}}</el-dropdown-item>
-          </el-dropdown-menu>
-            </el-dropdown>
-            <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel" />
-<!--            <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel1" />-->
-            <el-button type="primary" :disabled="btnState.deleteBtnState" class="oper-btn delete" @click="deleteModel" />
-            <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
-              <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
-                <el-dropdown-item @click.native="modelFolderTreeDialog = true">导入</el-dropdown-item>
-                <el-dropdown-item @click.native="shareModelDialog">共享</el-dropdown-item>
-                <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
-                <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </el-col>
-        </el-row>
-        <el-dialog v-if="modelFolderTreeDialog" :close-on-click-modal="false" :visible.sync="modelFolderTreeDialog" title="选择业务分类" width="50%">
-          <ModelFolderTree ref="modelFolderTree" public-model="editorModel"/>
-          <div slot="footer">
-            <el-button type="primary" @click="setImportFolder">确定</el-button>
-            <el-button @click="modelFolderTreeDialog=false">取消</el-button>
-          </div>
-        </el-dialog>
-        <el-table
-          :key="tableKey"
-          ref="modelListTable"
-          v-loading="listLoading"
-          style="height: 450px;overflow: auto"
-          :data="list"
-          border
-          fit
-          highlight-current-row
-          @select="modelTableSelectEvent"
-          @select-all="modelTableSelectEvent"
+  <div class="app-container" v-loading="loading" :element-loading-text="loadText">
+    <el-container>
+      <div class="tree-list-container all">
+        <el-tabs
+          @tab-click="handleClick"
+          v-model="editableTabsValue"
+          closable
+          @tab-remove="removeTab"
         >
-          <el-table-column type="selection" width="55" />
-          <el-table-column label="模型名称" width="300px"  prop="modelName">
-            <template slot-scope="scope">
-              <el-link type="primary" @click="selectModelDetail(scope.row.modelUuid)">{{ scope.row.modelName }}</el-link>
-            </template>
-          </el-table-column>
-          <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
-          <el-table-column label="审计事项" prop="auditItemName" align="center" />
-          <el-table-column label="风险等级" prop="riskLevelUuid" align="center" :formatter="riskLevelFormatter" />
-          <el-table-column label="模型类型" prop="modelType" align="center" :formatter="modelTypeFormatter" />
-          <el-table-column label="创建时间" prop="createTime" align="center" :formatter="dateFormatter" />
-        </el-table>
-        <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
-      </el-tab-pane>
-      <el-tab-pane
-        v-for="(item, index) in editableTabs"
-        :key="item.name"
-        :label="item.title"
-        :name="item.name"
-      >
-        <!--增加参数输入组件-->
-        <el-collapse v-model="activeNames">
-          <el-collapse-item name="2" class="content-y">
-            <!--增加结果组件-->
-            <el-row>
-              <div @click="Toggle1()">
-                <el-col :span="24" class="row-all">
-                  <childTabs
-                      :isRelation="item.isRelation===true?true:false"
-                      @setNextValue="setNextValue"
-                      @addTab="addTab"
-                      :modelId="modelId"
-                      :is-model-preview="true"
-                      :ref="item.name"
-                      :key="1"
-                      :pre-value="item.executeSQLList"
-                      :paramInfo="item.runModelConfig"
-                      use-type="modelPreview" />
-                </el-col>
-              </div>
-              <el-col :span="2">
-                <el-button v-if="item.isExistParam" type="primary" class="btn-show" @click="loadParamDraw(item.name)">
-                  <span class="iconfont iconoper-search" />查询
-                </el-button>
+          <el-tab-pane label="模型列表" name="modelList">
+            <div class="filter-container">
+              <QueryField ref="queryfield" :form-data="queryFields" @submit="getList" />
+            </div>
+            <el-row v-if="power!='warning'" type="flex" class="row-bg">
+              <el-col align="right">
+                <el-button
+                  type="primary"
+                  :disabled="btnState.previewBtn"
+                  class="oper-btn start"
+                  @click="previewModel"
+                />
+                <!--            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />-->
+                <el-dropdown style="margin-right: 10px;">
+                  <el-button
+                    type="primary"
+                    :disabled="btnState.addBtnState"
+                    @mouseover="mouseOver"
+                    @mouseleave="mouseLeave"
+                    class="oper-btn add"
+                    @click="selectModelTypeDetermine('002003001')"
+                  />
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item
+                      v-for="state in modelTypeData"
+                      :key="state.codeValue"
+                      @click.native="selectModelTypeDetermine(state.codeValue)"
+                    >{{state.codeName}}</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+                <el-button
+                  type="primary"
+                  :disabled="btnState.editBtnState"
+                  class="oper-btn edit"
+                  @click="updateModel"
+                />
+                <!--            <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel1" />-->
+                <el-button
+                  type="primary"
+                  :disabled="btnState.deleteBtnState"
+                  class="oper-btn delete"
+                  @click="deleteModel"
+                />
+                <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
+                  <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
+                    <el-dropdown-item @click.native="modelFolderTreeDialog = true">导入</el-dropdown-item>
+                    <el-dropdown-item @click.native="shareModelDialog">共享</el-dropdown-item>
+                    <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
+                    <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
               </el-col>
             </el-row>
-          </el-collapse-item>
-        </el-collapse>
-      </el-tab-pane>
-    </el-tabs>
-    <modelshoppingcart :data-user-id='dataUserId' :scene-code='sceneCode' v-show="isShowShoppingCart" ref="modelShoppingCartRef" />
-    <el-dialog v-if="treeSelectShow" :close-on-click-modal="false" :visible.sync="treeSelectShow" title="发布模型" width="50%">
-      <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
-      <div slot="footer">
-        <el-button type="primary" @click="updatePublicModel">确定</el-button>
-        <el-button @click="treeSelectShow=false">取消</el-button>
+            <el-dialog
+              v-if="modelFolderTreeDialog"
+              :visible.sync="modelFolderTreeDialog"
+              title="选择业务分类"
+              width="50%"
+            >
+              <ModelFolderTree ref="modelFolderTree" public-model="editorModel" />
+              <div slot="footer">
+                <el-button type="primary" @click="setImportFolder">确定</el-button>
+                <el-button @click="modelFolderTreeDialog=false">取消</el-button>
+              </div>
+            </el-dialog>
+            <el-table
+              :key="tableKey"
+              ref="modelListTable"
+              v-loading="listLoading"
+              style="height: 450px;overflow-y: scroll"
+              :data="list"
+              border
+              fit
+              highlight-current-row
+              @select="modelTableSelectEvent"
+              @select-all="modelTableSelectEvent"
+            >
+              <el-table-column type="selection" width="55" />
+              <el-table-column label="模型名称" width="300px" prop="modelName">
+                <template slot-scope="scope">
+                  <el-link
+                    type="primary"
+                    @click="selectModelDetail(scope.row.modelUuid)"
+                  >{{ scope.row.modelName }}</el-link>
+                </template>
+              </el-table-column>
+              <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
+              <el-table-column label="审计事项" prop="auditItemName" align="center" />
+              <el-table-column
+                label="风险等级"
+                prop="riskLevelUuid"
+                align="center"
+                :formatter="riskLevelFormatter"
+              />
+              <el-table-column
+                label="模型类型"
+                prop="modelType"
+                align="center"
+                :formatter="modelTypeFormatter"
+              />
+              <el-table-column
+                label="创建时间"
+                prop="createTime"
+                align="center"
+                :formatter="dateFormatter"
+              />
+            </el-table>
+            <pagination
+              v-show="total>0"
+              :total="total"
+              :page.sync="pageQuery.pageNo"
+              :limit.sync="pageQuery.pageSize"
+              @pagination="getList"
+            />
+          </el-tab-pane>
+          <el-tab-pane
+            v-for="(item) in editableTabs"
+            :key="item.name"
+            :label="item.title"
+            :name="item.name"
+          >
+            <!--增加参数输入组件-->
+            <el-collapse v-model="activeNames">
+              <el-collapse-item name="2" class="content-y">
+                <!--增加结果组件-->
+                <el-row>
+                  <div @click="Toggle1()">
+                    <el-col :span="24" class="row-all">
+                      <childTabs
+                        :isRelation="item.isRelation===true?true:false"
+                        @setNextValue="setNextValue"
+                        @addTab="addTab"
+                        :modelId="modelId"
+                        :is-model-preview="true"
+                        :ref="item.name"
+                        :key="1"
+                        :pre-value="item.executeSQLList"
+                        use-type="modelPreview"
+                      />
+                    </el-col>
+                  </div>
+                  <el-col :span="2">
+                    <el-button
+                      v-if="item.isExistParam"
+                      type="primary"
+                      class="btn-show"
+                      @click="loadParamDraw(item.name)"
+                    >
+                      <span class="iconfont iconoper-search" />查询
+                    </el-button>
+                  </el-col>
+                </el-row>
+              </el-collapse-item>
+            </el-collapse>
+          </el-tab-pane>
+        </el-tabs>
+        <el-dialog v-if="treeSelectShow" :visible.sync="treeSelectShow" title="发布模型" width="50%">
+          <ModelFolderTree ref="modelFolderTree" :public-model="publicModelValue" />
+          <div slot="footer">
+            <el-button type="primary" @click="updatePublicModel">确定</el-button>
+            <el-button @click="treeSelectShow=false">取消</el-button>
+          </div>
+        </el-dialog>
+        <el-dialog
+          v-if="dialogFormVisible"
+          title="请输入参数"
+          :visible.sync="dialogFormVisible"
+          :append-to-body="true"
+        >
+          <!--      <paramDraw v-if="dialogFormVisible" ref="paramDrawRef" :my-id="paramDrawUuid" />-->
+          <paramDrawNew
+            v-if="dialogFormVisible"
+            :sql="this.currentPreviewModelParamAndSql.sqlValue"
+            :arr="this.currentPreviewModelParamAndSql.paramObj"
+            ref="paramDrawRefNew"
+          ></paramDrawNew>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisible = false">关闭</el-button>
+            <el-button type="primary" @click="replaceNodeParam">确定</el-button>
+          </div>
+        </el-dialog>
+        <el-dialog
+          v-if="dialogFormVisiblePersonTree"
+          title="请选择共享人员"
+          :visible.sync="dialogFormVisiblePersonTree"
+          :append-to-body="true"
+        >
+          <personTree ref="personTree" />
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisiblePersonTree = false">关闭</el-button>
+            <el-button type="primary" @click="shareModel">确定</el-button>
+          </div>
+        </el-dialog>
+        <el-upload
+          style="position: relative;top: -40px;left: 240px;display: none"
+          :show-file-list="false"
+          :on-success="onSuccess"
+          :on-error="onError"
+          :before-upload="beforeUpload"
+          :on-remove="handleRemove"
+          :action='"/analysis/modelController/importModel/"+modelFolderUuid'
+          accept=".json"
+        >
+          <el-button id="importBtn" plain type="primary">导入</el-button>
+        </el-upload>
+        <el-dialog title="请选择模型类型" :visible.sync="addModelIsSee" width="30%">
+          <el-select v-model="selectModelType" placeholder="请选择模型类型" style="width:67%">
+            <el-option
+              v-for="state in modelTypeData"
+              :key="state.codeValue"
+              :value="state.codeValue"
+              :label="state.codeName"
+            />
+          </el-select>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="addModelIsSee = false">取 消</el-button>
+            <el-button type="primary" @click="selectModelTypeDetermine()">确 定</el-button>
+          </span>
+        </el-dialog>
       </div>
-    </el-dialog>
-    <el-dialog v-if="dialogFormVisible" :close-on-click-modal="false" title="请输入参数" :visible.sync="dialogFormVisible" :append-to-body="true">
-<!--      <paramDraw v-if="dialogFormVisible" ref="paramDrawRef" :my-id="paramDrawUuid" />-->
-      <paramDrawNew v-if="dialogFormVisible" :sql="this.currentPreviewModelParamAndSql.sqlValue" :arr="this.currentPreviewModelParamAndSql.paramObj" ref="paramDrawRefNew"></paramDrawNew>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">关闭</el-button>
-        <el-button type="primary" @click="replaceNodeParam">确定</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog v-if="dialogFormVisiblePersonTree" :close-on-click-modal="false" title="请选择共享人员" :visible.sync="dialogFormVisiblePersonTree" :append-to-body="true">
-      <personTree ref="personTree" />
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisiblePersonTree = false">关闭</el-button>
-        <el-button type="primary" @click="shareModel">确定</el-button>
-      </div>
-    </el-dialog>
-    <el-upload
-      style="position: relative;top: -40px;left: 240px;display: none"
-      :show-file-list="false"
-      :on-success="onSuccess"
-      :on-error="onError"
-      :before-upload="beforeUpload"
-      :on-remove="handleRemove"
-      :action='"/analysis/modelController/importModel/"+modelFolderUuid'
-      accept=".json"
-    >
-      <el-button id="importBtn" plain type="primary">导入</el-button>
-    </el-upload>
-    <el-dialog
-      title="请选择模型类型"
-      :visible.sync="addModelIsSee"
-      :close-on-click-modal="false"
-      width="30%">
-      <el-select v-model="selectModelType" placeholder="请选择模型类型" style="width:67%">
-        <el-option
-          v-for="state in modelTypeData"
-          :key="state.codeValue"
-          :value="state.codeValue"
-          :label="state.codeName"
-        />
-      </el-select>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="addModelIsSee = false">取 消</el-button>
-    <el-button type="primary" @click="selectModelTypeDetermine()">确 定</el-button>
-  </span>
-    </el-dialog>
+    </el-container>
   </div>
 </template>
 <script>
@@ -185,7 +264,6 @@ export default {
       listLoading: false,
       // 编辑框名称
       editModelTitle: '',
-      isShowShoppingCart: false,
       // 发布模型dialog
       treeSelectShow: false,
       // 折叠面板默认展开
@@ -318,15 +396,11 @@ export default {
         this.importData()
       }
     },
-    mouseOver(){
-
-    },
-    mouseLeave(){
-
-    },
     initData(){
       // 初始化审计事项
       this.modelTypeData = getDictList('002003')
+      //京东方默认传ID
+      this.getList(this.query);
     },
     Toggle: function() {
       this.isShow = !this.isShow
@@ -347,6 +421,7 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
+      /* const webSocketPath = 'ws://localhost:8086/analysis/websocket?' + this.$store.getters.personuuid*/
       const webSocketPath = this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) + this.$store.getters.personuuid + 'modellisttable'
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
@@ -450,6 +525,7 @@ export default {
     getList(query) {
       this.listLoading = true
       if (query) {
+        query.modelFolderUuid = "aab99d83-20c0-4cd8-a7d0-8cd58f326258";
         this.pageQuery.condition = query
       }
       findModel(this.pageQuery).then(resp => {
@@ -457,13 +533,6 @@ export default {
         this.list = resp.data.records
         this.listLoading = false
       })
-    },
-    /**
-     * 设置选中的树节点
-     * @param data 树节点
-     */
-    setSelectTreeNode(data) {
-      this.selectTreeNode = data
     },
     /**
      * 保存模型
@@ -530,10 +599,6 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = false
         this.btnState.previewBtn = false
-        if (this.isAuditWarring != true){
-          this.isShowShoppingCart = true
-          this.$refs.modelShoppingCartRef.setMemo(selectObj)
-        }
       } else if (selectObj.length > 1) {
         // 只显示删除和添加按钮
         this.btnState.otherBtn = false
@@ -541,10 +606,6 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = true
         this.btnState.previewBtn = true
-        if (this.isAuditWarring != true){
-          this.isShowShoppingCart = true
-          this.$refs.modelShoppingCartRef.setMemo(selectObj)
-        }
       } else if (selectObj.length == 0) {
         // 只显示添加按钮
         this.btnState.otherBtn = false
@@ -552,7 +613,6 @@ export default {
         this.btnState.addBtnState = false
         this.btnState.editBtnState = true
         this.btnState.previewBtn = true
-        this.isShowShoppingCart = false
       }
     },
     /**
@@ -976,9 +1036,6 @@ export default {
         }else{
         this.$emit('loadingSet',false,"");
         this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
-        if(isExistParam){
-          selectObj[0].runModelConfig = obj.runModelConfig
-        }
         this.addTab(selectObj[0], isExistParam, result.data.executeSQLList)
         //界面渲染完成之后开始执行sql,将sql送入调度
         startExecuteSql(result.data).then((result) => {
@@ -997,20 +1054,16 @@ export default {
      * @param executeSQLList 执行sql列表
      */
     addTab(modelObj, isExistParam, executeSQLList,isRelation) {
-      let obj = {
+      this.editableTabs.push({
         title: modelObj.modelName + '结果',
         name: modelObj.modelUuid,
         isExistParam: isExistParam,
         executeSQLList: executeSQLList,
         isRelation:isRelation
-      }
-      if(isExistParam){
-        obj.runModelConfig = modelObj.runModelConfig
-      }
-      this.editableTabs.push(obj)
-      this.nowTabModelUuid = modelObj.modelUuid
-      this.editableTabsValue = modelObj.modelUuid
-      this.modelPreview.push(modelObj.modelUuid)
+      })
+        this.nowTabModelUuid = modelObj.modelUuid
+        this.editableTabsValue = modelObj.modelUuid
+        this.modelPreview.push(modelObj.modelUuid)
     },
     handleClick(tab, event){
       if (tab.name!=='模型列表'){
@@ -1067,11 +1120,6 @@ export default {
             paramObj:obj.paramsArr
           }
           this.currentRunModelAllConfig[selectObj[0].modelUuid] = runModelConfig
-          let recplaceed = {
-            sql:obj.sqls,
-            paramsArr:obj.paramsArr
-          }
-          obj.runModelConfig = recplaceed
           this.executeSql(obj,selectObj,true)
       }
       else{
@@ -1095,11 +1143,6 @@ export default {
         obj.businessField = 'modellisttable'
         // 重置数据展现界面数据
         this.$refs.[modelUuid][0].reSetTable()
-        let paramInfo = {
-          sql:obj.sqls,
-          paramsArr:obj.paramsArr
-        }
-        this.$refs.[modelUuid][0].loadNewParamInfo(paramInfo)
         //设置新的参数信息
         let runModelConfig = {
           sqlValue:this.currentRunModelAllConfig[modelUuid].sqlValue,
@@ -1174,39 +1217,38 @@ export default {
 </script>
 
 <style scoped>
-
-.el-dropdown{
+.el-dropdown {
   margin-left: 10px;
 }
 
-.panel-font-size{
+.panel-font-size {
   font-size: 25px;
 }
 
-.item-y{
+.item-y {
   position: fixed;
   top: 15%;
   left: 45%;
-  background: #FFFFFF;
-  box-shadow: 0 0 9px 0 rgba(0,0,0,0.15);
+  background: #ffffff;
+  box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.15);
   border-radius: 13.5px;
   border-radius: 13px;
   width: 800px;
   /* height: 130px; */
   z-index: 10;
 }
-.content-y{
+.content-y {
   margin: -52px 0 0 0;
   height: 650px;
   width: 100%;
 }
-.btn-show{
+.btn-show {
   position: absolute;
   top: 3px;
   right: 32px;
   z-index: 3;
 }
-.btn-show1{
+.btn-show1 {
   position: absolute;
   top: 135px;
   right: 330px;
@@ -1216,7 +1258,7 @@ export default {
   border-radius: 21.6px;
   font-size: 14.4px;
 }
-.icon-search{
+.icon-search {
   position: absolute;
   top: 150px;
   right: 385px;
@@ -1224,13 +1266,10 @@ export default {
   font-size: 14.4px;
   color: #c8ff8c;
 }
-.row-all{
+.row-all {
   height: 650px;
 }
-.table{
+.table {
   height: 450px !important;
-}
->>>.el-tabs__content{
-  overflow: visible;
 }
 </style>

@@ -23,8 +23,8 @@ import '../src/components/ams-indicator-admin/src/styles/index.scss' // global c
 Vue.use(components)
 // Ace end
 
-require(`@/styles/index-${process.env.VUE_APP_BASE_SKIN}.scss`);
 
+require(`@/styles/index-${process.env.VUE_APP_BASE_SKIN}.scss`);
 import App from './App'
 import store from './store'
 import router from './router'
@@ -36,27 +36,13 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
-// dolphin start
-
-// import i18n1 from '@/components/Dolphin/i18n'
-// import en_US from 'ans-ui/lib/locale/en' // eslint-disable-line
+// etl start
 import 'ans-ui/lib/ans-ui.min.css'
 import ans from 'ans-ui/lib/ans-ui.min'
-// Vue.use(ans) ---
 // import 'canvg/dist/browser/canvg.min.js'
-// Component internationalization ---
-// const useOpt = i18n1.globalScope.LOCALE === 'en' || i18n1.globalScope.LOCALE === 'en_US' ? {
-//   locale: en_US
-// } : {}
-// const useOpt = {}
-// const useOpt = {
-//   // locale: en_US ---
-// }
-
 Vue.use(ans)
-// Vue.use(ans, useOpt) ---
 
-// end dolphin
+// end etl
 
 // file Upload
 import uploader from 'vue-simple-uploader'
@@ -124,6 +110,51 @@ Vue.prototype.log_edit = "编辑";
 Vue.prototype.log_del = "删除";
 Vue.prototype.log_see = "查看";
 
+/**
+ * AMS模块
+ * {{ETLSCHEDULER: string, DATA: string, GRAPHTOOL: string, INDICATOR: string, ANALYSIS: string, DATAMAX: string, BASE: string}}
+ */
+Vue.prototype.AmsModules = {
+  ANALYSIS:'analysis', 
+  BASE:'base', 
+  DATA: 'data', 
+  ETLSCHEDULER:'etlscheduler', 
+  DATAMAX:'datamax',
+  INDICATOR:'indicator', 
+  GRAPHTOOL:'graphtool'
+}
+
+/**
+ * 获取websocket相关配置与基准路径获取方法
+ * @option modules 模块名
+ * @option getWSBaseUrl 获取ws基准目录
+ * @returns {string}
+ */
+Vue.prototype.AmsWebsocket = {
+  getWSBaseUrl: function(moduleName) {
+    moduleName = moduleName ? moduleName : null
+    const websockettype = process.env["VUE_APP_WEBSOCKETTYPE"] ? process.env["VUE_APP_WEBSOCKETTYPE"]: "client"
+    if(moduleName == null || websockettype==="client") {
+      // 默认读浏览器访问host
+      return 'ws://' + window.location.host+ '/websocket?'
+    } else {
+      // 读env配置
+      switch (moduleName.toLowerCase()) {
+        case Vue.prototype.AmsModules.ANALYSIS:
+          return process.env["VUE_APP_ANALYSIS_WEB_SOCKET"]
+        case Vue.prototype.AmsModules.BASE:
+          return process.env["VUE_APP_BASE_WEB_SOCKET"]
+        case Vue.prototype.AmsModules.GRAPHTOOL:
+          return process.env["VUE_APP_GRAPHTOOL_WEB_SOCKET"]
+        case Vue.prototype.AmsModules.INDICATOR:
+          return process.env["this.AmsWebsocket.getWSBaseUrl(this.AmsModules.INDICATOR)"]
+        default:
+          // 默认读浏览器访问host
+          return 'ws://' + window.location.host+ '/websocket?'
+      }
+    }
+  }
+}
 
 Vue.prototype.contextUrl = "indicator";
 Vue.prototype.dataContextUrl = "data";

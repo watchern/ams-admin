@@ -10,6 +10,13 @@ const analysisRouter = {
       path: 'auditmodel',
       name: '审计模型',
       component: () => import('@/views/analysis/auditmodel/index')
+      // component: () => import('@/views/analysis/auditmodel/boemodel/modellisttable')
+    },
+    //ps:京东方-新需求路由
+    {
+      path: 'boeauditmodel',
+      name: '京东方审计模型',
+      component: () => import('@/views/analysis/auditmodel/boemodel/modellisttable')
     },
     {
       path: 'auditmodelresult',

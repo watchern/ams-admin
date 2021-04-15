@@ -99,6 +99,7 @@
       title="模型运行设置-立即"
       :visible.sync="runimmediatelyIsSee"
       width="60%"
+      top="5vh"
       :append-to-body="true"
       :close-on-click-modal="false"
     >
