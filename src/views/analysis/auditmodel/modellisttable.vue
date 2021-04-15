@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-list-container all">
+  <div class="tree-list-container all zzz">
     <el-tabs @tab-click="handleClick" v-model="editableTabsValue" closable @tab-remove="removeTab">
       <el-tab-pane label="模型列表" name="modelList">
         <div class="filter-container">
@@ -1231,5 +1231,7 @@ export default {
 .table{
   height: 450px !important;
 }
-
+>>>.el-tabs__content{
+  overflow: visible;
+}
 </style>

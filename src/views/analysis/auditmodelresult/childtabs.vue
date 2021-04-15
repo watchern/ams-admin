@@ -21,6 +21,7 @@
       :key="key"
       :label="tabsName(key)"
       class="result-tabs"
+      :style="useType==='previewTable'?'height:500px':''"
       ><childTabCons
         ref="child"
         :is-model-preview="isModelPreview"
@@ -180,7 +181,7 @@ export default {
 }
 >>>.el-tabs__content{
   height: calc(100% - 31px);
-  overflow: auto;
+  overflow-y: auto!important;
   padding:0px!important;
 }
 .result-tabs{

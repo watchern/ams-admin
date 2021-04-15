@@ -633,7 +633,7 @@ export default {
     }
     &-content {
       backdrop-filter: blur(8px);
-      background: hsla(0,0%,100%,.3);
+      background: hsla(0,0%,100%,.6);
       width: 150px;
       min-height: 640px;
     }

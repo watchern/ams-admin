@@ -525,7 +525,7 @@ export default {
     getList(query) {
       this.listLoading = true
       if (query) {
-        query.modelFolderUuid = "872761ef-6c7c-4385-b9d4-fff6f5b9f655";
+        query.modelFolderUuid = "aab99d83-20c0-4cd8-a7d0-8cd58f326258";
         this.pageQuery.condition = query
       }
       findModel(this.pageQuery).then(resp => {
