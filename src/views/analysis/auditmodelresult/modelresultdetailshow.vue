@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="result-tabs-top">
         <childTabs
           v-if="open"
           :maintable="this.mainTable"
@@ -68,3 +68,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.result-tabs-top{
+  height:100%
+}
+</style>

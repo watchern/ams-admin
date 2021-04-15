@@ -65,6 +65,11 @@ var mouseY
  */
 var paramIconPath = require("@/styles/icons/param.png")
 /**
+ * 参数图标路径
+ * @type {string}
+ */
+var paramPackageIconPath = require("@/components/ams-ztree/css/zTreeStyle/img/zTreezywjjc.png")
+/**
  * 列图标路径
  * @type {string}
  */
@@ -911,15 +916,15 @@ export function maxOpenOne() {
     $('#drag').hide(100)
     $('#iconImg').css('display', 'none')
     $('#iconImg-huifu').css('display', 'block')
-    $('#bottomPart').css({ 'position': 'fixed', 'width': max_width + '%', 'left': max_left, 'top': 0, 'height': '480px', 'z-index': 10000 })
+    $('#bottomPart').css({ 'position': 'fixed', 'width': max_width + '%', 'left': max_left, 'top': 0, 'height': 100 + '%', 'z-index': 10000 })
     $('.ag-theme-balham').css('height', 650)
     maxormin = false
   } else if (maxormin == false) {
     $('#drag').show(100)
     $('#iconImg').css('display', 'block')
     $('#iconImg-huifu').css('display', 'none')
-    $('#bottomPart').css({ 'position': 'static', 'left': 0, 'width': 100 + '%', 'height': 100 + '%', 'z-index': 100 })
-    $('.ag-theme-balham').css('height', 500)
+    $('#bottomPart').css({ 'position': 'static', 'left': 0, 'width': 100 + '%', 'height': '480px', 'z-index': 100 })
+    $('.ag-theme-balham').css('height', 300)
     maxormin = true
   }
 }
@@ -1158,7 +1163,7 @@ export function initParamTreeNew() {
   }
   getParamsTree().then(result => {
     if (result.data.isError) {
-
+      
     } else {
       for(let i = 0; i < result.data.paramNode.length;i++) {
         setIcon(result.data.paramNode[i])
@@ -1177,11 +1182,15 @@ function setIcon(treeNode){
       for(let i = 0; i < treeNode.children.length;i++){
         setIcon(treeNode.children[i])
       }
-    }
-    else{
+    }else{
       if(treeNode.type == 'param'){
+        //删除Children 防止出现展开伸缩箭头
+        delete treeNode.children;
         treeNode.icon = paramIconPath
         treeNode.isParent = false
+      }
+      else if(treeNode.type == 'folder'){
+        treeNode.icon = paramPackageIconPath;  
       }
     }
 }
@@ -1908,7 +1917,6 @@ export function getSelectSql(menuId) {
     var tableMetaUuid = nodes[0].id
     var columns = CodeMirror.tableColMapping[tableName]
     var oldSql = editorObj.getValue()
-    debugger
     if (!columns || (columns && columns.length === 0)) {
       request({
         baseURL: dataUrl,

@@ -61,14 +61,17 @@
             :expand-on-click-node="false"
             show-checkbox
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span slot-scope="{ node, data }" class="custom-tree-node" style="width:100%">
               <i v-if="data.id==='ROOT'" class="el-icon-s-home" style="color:#409EFF" />
               <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
               <i v-if="data.type==='table'" class="el-icon-tickets" style="color:#409EFF" />
               <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
               <span :title="node.name" @click="onclick2(node)">{{ node.label }}</span>
-              <span v-if="data.id!=='ROOT'" style="padding-left: 10px">
+              <span v-if="data.id!=='ROOT'" style="padding-left: 10px;">
                 <el-button type="text" size="mini" icon="el-icon-remove" @click="() => remove(node, data)" />
+                <el-checkbox-group v-model="data.accessType" style="display:inline;float:right" >
+                  <el-checkbox label="WRITE">写入</el-checkbox>
+                </el-checkbox-group>
               </span>
             </span>
           </MyElTree>
@@ -117,12 +120,11 @@
           <el-form-item label="资源名称" label-width="100px">
             <el-input v-model="currentData.label" :disabled="true" />
           </el-form-item>
-
-          <el-form-item label="访问类型设置" label-width="100px">
+          <!-- <el-form-item label="访问类型设置" label-width="100px">
             <el-checkbox-group v-model="currentData.accessType">
               <el-checkbox v-for="(acc, i) in accessTypeArray" :key="acc.code" :label="acc.code">{{ acc.name }}</el-checkbox>
             </el-checkbox-group>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item v-if="currentData.type==='table'" label="表行列筛选设置" label-width="100px">
             <el-table
               key="colMetaUuid"
@@ -229,6 +231,8 @@ export default {
       }
       var ckTbsMap = {}
       ckTbs.forEach((item) => {
+        //默认即可读取
+        item.accessType = ["READ"];
         var assItem = Object.assign({}, item)
         assItem.children = []
         if (!ckTbsMap[item.pid]) ckTbsMap[item.pid] = []
@@ -269,7 +273,19 @@ export default {
       const index = children.findIndex(d => d.id === data.id)
       children.splice(index, 1)
     },
-
+    //所有子集禁用
+    witerData(node,data){
+      if(data.children.length>0){
+        if(data.accessType.length===2){
+          this.dealDisableWiter(data,false);      
+        }else{
+          this.dealDisableWiter(data,true);
+        }
+      }
+    },
+    dealDisableWiter(data){
+      console.log(data);
+    },
     /* 点击角色数据 展示列和wherestr */
     onclick2(node, data) {
       if (node.data.type === 'table') {
