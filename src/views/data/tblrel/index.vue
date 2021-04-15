@@ -85,8 +85,7 @@
               />
             </el-select>
           </el-form-item>
-        </el-form
-          class="detail-form">
+        </el-form>
       </template>
       <div slot="footer">
         <el-button size="mini" @click="dialogFormVisible = false">取消</el-button>
