@@ -43,7 +43,6 @@
           :model="temp"
           label-position="right"
           width="80%"
-          class="detail-form"
         >
           <el-form-item prop="tableMetaUuid" label="表名称">
             <el-input v-model="temp.tbName" :disabled="true" />
@@ -86,7 +85,8 @@
               />
             </el-select>
           </el-form-item>
-        </el-form>
+        </el-form
+          class="detail-form">
       </template>
       <div slot="footer">
         <el-button size="mini" @click="dialogFormVisible = false">取消</el-button>
