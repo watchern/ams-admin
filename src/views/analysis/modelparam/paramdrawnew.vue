@@ -1,6 +1,7 @@
 <template>
   <div style="overflow-y: visible;" ref="inputParamContent" class="paramadrawnew">
-      <el-row ref="nodeParam" v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
+    <div ref="nodeParam">
+      <el-row  v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
         <el-col :span="7" style="line-height:36px;padding-right: 10px;">
           <el-tooltip :content="paramInfo.description" placement="bottom">
             <label>{{paramInfo.paramName}}</label>
@@ -21,6 +22,7 @@
       </el-row>
       <!-- 分隔线 -->
       <el-divider v-if="paramInfoArr.length>0"></el-divider>
+    </div>  
   </div>
 </template>
 <script>
