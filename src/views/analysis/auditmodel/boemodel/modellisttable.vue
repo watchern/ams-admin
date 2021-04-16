@@ -374,6 +374,8 @@ export default {
   },
   created() {
     // this.getList({ modelFolderUuid: 1 })
+    this.sceneCode ="boeProject";
+    this.dataUserId = this.$route.query.id;
   },
   mounted() {
     this.initWebSocket()
