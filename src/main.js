@@ -110,6 +110,51 @@ Vue.prototype.log_edit = "编辑";
 Vue.prototype.log_del = "删除";
 Vue.prototype.log_see = "查看";
 
+/**
+ * AMS模块
+ * {{ETLSCHEDULER: string, DATA: string, GRAPHTOOL: string, INDICATOR: string, ANALYSIS: string, DATAMAX: string, BASE: string}}
+ */
+Vue.prototype.AmsModules = {
+  ANALYSIS:'analysis', 
+  BASE:'base', 
+  DATA: 'data', 
+  ETLSCHEDULER:'etlscheduler', 
+  DATAMAX:'datamax',
+  INDICATOR:'indicator', 
+  GRAPHTOOL:'graphtool'
+}
+
+/**
+ * 获取websocket相关配置与基准路径获取方法
+ * @option modules 模块名
+ * @option getWSBaseUrl 获取ws基准目录
+ * @returns {string}
+ */
+Vue.prototype.AmsWebsocket = {
+  getWSBaseUrl: function(moduleName) {
+    moduleName = moduleName ? moduleName : null
+    const websockettype = process.env["VUE_APP_WEBSOCKETTYPE"] ? process.env["VUE_APP_WEBSOCKETTYPE"]: "client"
+    if(moduleName == null || websockettype==="client") {
+      // 默认读浏览器访问host
+      return 'ws://' + window.location.host+ '/websocket?'
+    } else {
+      // 读env配置
+      switch (moduleName.toLowerCase()) {
+        case Vue.prototype.AmsModules.ANALYSIS:
+          return process.env["VUE_APP_ANALYSIS_WEB_SOCKET"]
+        case Vue.prototype.AmsModules.BASE:
+          return process.env["VUE_APP_BASE_WEB_SOCKET"]
+        case Vue.prototype.AmsModules.GRAPHTOOL:
+          return process.env["VUE_APP_GRAPHTOOL_WEB_SOCKET"]
+        case Vue.prototype.AmsModules.INDICATOR:
+          return process.env["this.AmsWebsocket.getWSBaseUrl(this.AmsModules.INDICATOR)"]
+        default:
+          // 默认读浏览器访问host
+          return 'ws://' + window.location.host+ '/websocket?'
+      }
+    }
+  }
+}
 
 Vue.prototype.contextUrl = "indicator";
 Vue.prototype.dataContextUrl = "data";
