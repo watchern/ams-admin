@@ -400,6 +400,9 @@
 .oper-btn.import-1:hover::before{
   content:'下载流程模板'!important;
 }
+.oper-btn.import-2:hover::before{
+  content:'下载项目模板'!important;
+}
 // pause
 .oper-btn.pause:after{
   content:'\e607'!important;
