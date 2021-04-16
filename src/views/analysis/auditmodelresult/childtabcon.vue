@@ -18,7 +18,7 @@
 <!--   v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"   -->
       <div class="el-btn-no-colorz" v-if="!chartSwitching" @click="switchDivStyle('chart')"><span><i class="el-icon-menu"></i> 仅表格</span></div>
       <div class="el-btn-no-colorz" v-if="chartSwitching" @click="switchDivStyle('table')"><span><i class="el-icon-s-data"></i> 配置图表</span></div>
-      <div class="el-btn-no-colorz" v-if="chartSwitching" @click="saveResult()"><span><i class="oper-btn save"></i></span></div>
+      <div class="el-btn-no-colorz" v-if="isModelPreview" @click="saveResult()"><span><i class="oper-btn save"></i></span></div>
       <div v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching" v-for="(item, index) in chartsResource.menuData" class="chartChange" :key="index">
         <div class="item_div" v-for="(menu, i) in item.sub">
           <div :key="i"
@@ -581,7 +581,7 @@ export default {
         const blob = new Blob([res.data], {type: "application/vnd.ms-excel"});
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "模型运行结果表.xlsx");
+        link.setAttribute("download", "模型运行结果表.xls");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
