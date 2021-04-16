@@ -489,7 +489,7 @@ export default {
         const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "模型运行结果表.xlsx");
+        link.setAttribute("download", "模型运行结果表.xls");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

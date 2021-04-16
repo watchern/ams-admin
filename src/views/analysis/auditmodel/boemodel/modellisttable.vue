@@ -422,7 +422,7 @@ export default {
      */
     getWebSocket() {
       /* const webSocketPath = 'ws://localhost:8086/analysis/websocket?' + this.$store.getters.personuuid*/
-      const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid + 'modellisttable'
+      const webSocketPath = this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) + this.$store.getters.personuuid + 'modellisttable'
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
       // 当服务端打开连接
@@ -525,7 +525,7 @@ export default {
     getList(query) {
       this.listLoading = true
       if (query) {
-        query.modelFolderUuid = "872761ef-6c7c-4385-b9d4-fff6f5b9f655";
+        query.modelFolderUuid = "aab99d83-20c0-4cd8-a7d0-8cd58f326258";
         this.pageQuery.condition = query
       }
       findModel(this.pageQuery).then(resp => {
