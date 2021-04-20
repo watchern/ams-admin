@@ -72,42 +72,39 @@ export default {
 
 <style lang="scss" scoped >
 .home{
-  height: 98vh;
+  height: 100vh;
   background: #fff url('style/images/bg.png') no-repeat left center fixed;
-  background-size: 82% 100%;
-  background-position-x: -130px;
-  background-position-y: 2px;
+  background-size: 100% 100%;
   &-left{
     height: 100vh;
   }
   &-right{
-    height: 100vh;
-    &-content{
-      height: calc(100% - 30px);
-    }
+    height: calc(100vh - 62px);
+  &-content{
+    height: calc(100% - 95px);
+  }
     &-footer{
       height: 30px;
     }
   }
 }
-.home-left{
+.home-top{
   //z-index:20201111;
   z-index: 1999
 }
 .home-right{
-  background: #eaeaea url('style/images/bg.png') no-repeat left center fixed;
+  background: #fff url('style/images/bg.png') no-repeat left center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+  width: 100vw;
 }
 .home-right-content{
   overflow: hidden;
   width: calc(100% - 24px);
   height: calc(100% - 32px);
   border-radius: 30px;
-  -webkit-box-shadow: 3px 0 17px 0 rgba(0,0,0,.1);
-  box-shadow: 3px 0 17px 0 rgba(0,0,0,.1);
   margin: 16px 10px;
   background: #ffffff;
 }
@@ -126,7 +123,7 @@ export default {
   top: 0;
   right: 0;
   position: fixed;
-  z-index: 1001;
+  z-index: 10001;
   animation: whiteIn 0.8s forwards;
 }
 .readonlyChild{
