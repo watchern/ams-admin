@@ -6,7 +6,8 @@
     <template>
       <div class="top-open flex flex-row a-center">
         <div class="logo-wrap flex a-center j-center flex-row" style="cursor: pointer">
-          <div class="logo-Words">审计系统</div>
+          <!-- <img src="../style/images/taicanglogo.png"> -->
+          <div class="logo-Words"><img width="20px" src="../../../styles/image/taicanglogo.png">太仓农村商业银行审计系统</div>
           <img src="../style/images/color-n.png" class="logo-text">
         </div>
         <div class="menu flex a-center j-between flex-row">

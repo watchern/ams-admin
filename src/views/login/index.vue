@@ -240,6 +240,7 @@ $cursor: #fff;
     margin: 0 auto;
     overflow: hidden;
     margin-top: 10%;
+    // background-image: url(../../styles/image/bgcolor.png);
     //background-color: #353A43!important;
     box-shadow: 0 29px 38px 0 rgba(53,58,67,0.26);
     border-radius: 5px;
