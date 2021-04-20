@@ -196,7 +196,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .homezz {
-  background: url('../../../../styles/image/bg.png') left center no-repeat!important;
+  background: #fff url('../../../../styles/image/bg.png') left center no-repeat!important;
   background-size: 100% 100% !important;
 }
 .home{
