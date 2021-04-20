@@ -418,16 +418,6 @@ export function updateModelChartSetup(data) {
     data
   })
 }
-/*BOE 发送模型结果到作业平台 */
-export function sendToOA(taskRelUuid, dataUserId, dataUserName) {
-  return request({
-    baseURL: analysisUrl,
-    url: '/ResultRelProjectController/sendToOA',
-    method: 'get',
-    params:{taskRelUuid: taskRelUuid, dataUserId: dataUserId, dataUserName: dataUserName}
-  })
-}
-
 
 /**
  * 批量删除删除运行结果与项目关联表
@@ -452,6 +442,16 @@ export function deleteModelChartSetup(data) {
     url: '/modelChartSetupController/deleteModelChartSetup',
     method: 'delete',
     data
+  })
+}
+
+/*BOE 发送模型结果到作业平台 */
+export function sendToOA(taskRelUuid, dataUserId, dataUserName) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/AnalysisResultController/sendToOA',
+    method: 'get',
+    params:{taskRelUuid: taskRelUuid, dataUserId: dataUserId, dataUserName: dataUserName}
   })
 }
 

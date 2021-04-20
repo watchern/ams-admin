@@ -45,6 +45,7 @@ import childTabCons from "@/views/analysis/auditmodelresult/childtabcon";
 import { now } from "moment";
 import {addRunTaskAndRunTaskRel, deleteModel, uuid2} from "@/api/analysis/auditmodel";
 import {deleteGraphInfoById} from "@/api/graphtool/apiJs/graphList";
+import {sendToOA} from "@/api/analysis/auditmodelresult";
 export default {
   components: {
     'childTabCons':childTabCons
@@ -150,6 +151,14 @@ export default {
           this.$message({ type: "info", message: "执行运行任务失败" });
         }
       });
+      if(process.env["VUE_APP_BASE_PROJECT_TYPE"]=="BOE"){
+        sendToOA(runTaskRelUuid).then((resp) => {
+          this.$message({
+            type: "success",
+            message: "发送成功!",
+          });
+        });
+      }
     }
   },
   /**
