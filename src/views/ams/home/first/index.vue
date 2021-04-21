@@ -326,7 +326,7 @@ export default {
         }
       }
       .bottom-card{
-        width: 479px;
+        width: 550px;
         margin-top: 33px;
         position: relative;
       }

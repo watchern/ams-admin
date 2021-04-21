@@ -14,7 +14,7 @@
         <el-button type="primary" @click="queryCondition">查 询</el-button>
       </span>
     </el-dialog>
-    <el-row v-if="useType !== 'graph'">
+    <el-row v-if="useType != 'graph' && ifopen==1">
 <!--   v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"   -->
       <div class="el-btn-no-colorz" v-if="!chartSwitching" @click="switchDivStyle('chart')"><span><i class="el-icon-menu"></i> 仅表格</span></div>
       <div class="el-btn-no-colorz" v-if="chartSwitching" @click="switchDivStyle('table')"><span><i class="el-icon-s-data"></i> 配置图表</span></div>
@@ -31,10 +31,10 @@
         </div>
       </div>
     </el-row>
-    <div id="DragOn" class="drag-on">
+    <div ref="DragOn" class="drag-on">
       <div v-if="chartSwitching" class="drag-on-table textz">
         <div v-if="myFlag">
-          <div align="right" style="position: absolute;top: -29px;right: 0;">
+          <div align="right" :style="ifopen==1?'position: absolute;top: -29px;right: 0;':''">
             <el-dropdown>
               <el-button
                   type="primary"
@@ -160,7 +160,7 @@
                 </el-row>
               </el-col>
               <div v-if="myFlag">
-                <div align="right" style="position: absolute;top: -29px;right: 0;">
+                <div align="right" :style="ifopen==1?'position: absolute;top: -29px;right: 0;':''">
                   <el-dropdown>
                     <el-button
                         type="primary"
@@ -498,7 +498,7 @@ export default {
       afterAddChartsWithNoConfigure:false,
       isHaveCharts:false, //判断该模型是否有图表
       projectDialogIsSee:false,   //用来控制项目dialog显示
-      chartSwitching: true,  //控制表格与图表切换
+      chartSwitching: false,  //控制表格与图表切换
       modelObj:{},  //查询当前模型结果对应的的model对象
       rowIndex:'',  //存储点击表格的行数
       globalDropDownBox:false, //移入显示下拉框
@@ -514,18 +514,23 @@ export default {
       thechartdead: true,
       // 高度显示
       listContainer: 700,
-      height123: document.getElementById("dataShow")
+      // height123: document.getElementById("dataShow"),
+      ifopen:0
     };
   },
   mounted() {
+    console.log(this.$route.path)
+    if(this.$route.path=="/analysis/editormodelnew"){
+      this.ifopen = 1
+    }
     this.getRenderTableData();
     this.chartReflexion();
     document.addEventListener("dragover", function (e) {
       mouseXY.x = e.clientX;
       mouseXY.y = e.clientY;
     }, false);
-    let height = document.getElementById("dataShow");
-    this.listContainer = height.offsetHeight;
+    // let height = document.getElementById("dataShow");
+    // this.listContainer = height.offsetHeight;
     chartAudit.$on('chartAuditOn', (e) => {
       this.saveChartsAll()
     })
@@ -1547,6 +1552,7 @@ export default {
             detailModel = resp.data
             getExecuteTask(obj)
               .then((resp) => {
+                console.log("getExecuteTask0")
                 this.currentExecuteSQL = resp.data.executeSQLList;
                 //界面渲染完成之后开始执行sql,将sql送入调度
                 startExecuteSql(resp.data).then((result) => {
@@ -1592,6 +1598,7 @@ export default {
         const obj = { sqls: sql, businessField: "modelresultdetail" };
         getExecuteTask(obj)
           .then((resp) => {
+            console.log("getExecuteTask1")
             this.currentExecuteSQL = resp.data.executeSQLList;
             //界面渲染完成之后开始执行sql,将sql送入调度
             startExecuteSql(resp.data).then((result) => {});
@@ -1780,6 +1787,7 @@ export default {
       this.modelChartSetups = []
       if (this.nowtable.runResultTableUuid != undefined) {
         getModelChartSetup(this.nowtable.runTaskRelUuid).then((resp) => {
+          console.log("走这里了0")
           //做修改操作
           this.modelChartSetups = resp.data.modelChartSetups;
           for (var i = 0; i < this.modelChartSetups.length; i++) {
@@ -1800,6 +1808,7 @@ export default {
       } else {
         if (this.modelUuid != undefined) {
           getModelChartSetup(this.modelUuid).then((resp) => {
+            console.log("走这里了1")
             this.modelChartSetups = resp.data.modelChartSetups;
             for (var i = 0; i < this.modelChartSetups.length; i++) {
               let json = JSON.parse(this.modelChartSetups[i].chartJson)
@@ -1817,9 +1826,12 @@ export default {
             this.chartLoading = false
           });
         } else if (this.modelId != undefined) {
+          console.log(this.modelId)
           getModelChartSetup(this.modelId).then((resp) => {
             //做修改操作
+            console.log("走这里了2")
             this.modelChartSetups = resp.data.modelChartSetups;
+            console.log(this.modelChartSetups)
             for (var i = 0; i < this.modelChartSetups.length; i++) {
               let json = JSON.parse(this.modelChartSetups[i].chartJson)
               if (json.layout === undefined || json.layout === null) {
@@ -1922,11 +1934,13 @@ export default {
     * 拖拽操作
     * */
     drag: function (e) {
-      let parentRect = document.getElementById('DragOn').getBoundingClientRect();
+      console.log("拖拽了")
+      let parentRect = this.$refs.DragOn.getBoundingClientRect();
       let mouseInGrid = false;
       if (((mouseXY.x > parentRect.left) && (mouseXY.x < parentRect.right)) && ((mouseXY.y > parentRect.top) && (mouseXY.y < parentRect.bottom))) {
         mouseInGrid = true;
       }
+      console.log(mouseInGrid)
       if (mouseInGrid === true && (this.chartConfigs.layout.findIndex(item => item.i === 'drop')) === -1) {
         this.chartConfigs.layout.push({
           x: (this.chartConfigs.layout.length * 2) % (this.colNum || 12),
@@ -1957,7 +1971,8 @@ export default {
       }
     },
     dragend: function (e) {
-      let parentRect = document.getElementById('DragOn').getBoundingClientRect();
+      console.log("点击了")
+      let parentRect = this.$refs.DragOn.getBoundingClientRect();
       let mouseInGrid = false;
       if (((mouseXY.x > parentRect.left) && (mouseXY.x < parentRect.right)) && ((mouseXY.y > parentRect.top) && (mouseXY.y < parentRect.bottom))) {
         mouseInGrid = true;
