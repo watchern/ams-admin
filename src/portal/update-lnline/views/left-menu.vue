@@ -6,7 +6,7 @@
     <template>
       <div class="top-open flex flex-row a-center">
         <div class="logo-wrap flex a-center j-center flex-row" style="cursor: pointer">
-          <div class="logo-Words">审计系统</div>
+          <div class="logo-Words">{{projectname}}</div>
           <img src="../style/images/color-n.png" class="logo-text">
         </div>
         <div class="menu flex a-center j-between flex-row">
@@ -159,7 +159,8 @@ export default {
       workbenchImg: require('../style/images/icon0.png'),
       isThereReminder: false,
       drawer: false,
-      loading: false
+      loading: false,
+      projectname:process.env.VUE_APP_BASE_NAME||''
     }
   },
   computed: {
