@@ -48,7 +48,11 @@
               v-for="(item, index) in applications"
               :key="index"
             >
-              <div v-if="isShowTreeList" class="tree-list">
+              <div
+                v-if="isShowTreeList"
+                class="tree-list"
+                @mouseover="selectMenu(item, index)"
+              >
                 <!-- :style="{
                     borderLeft:
                       index == '0' ? '1px solid rgb(85,158,212)' : 'none',
@@ -522,9 +526,14 @@ export default {
       font-size: 24px;
       margin-left: 30px;
       font-weight: bold;
+      width: 300px;
+      margin-right: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .logo-wrap {
-      margin-right: 200px;
+      // margin-right: 200px;
     }
     .menu {
       margin-top: 0px;
