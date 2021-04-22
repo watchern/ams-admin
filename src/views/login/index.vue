@@ -479,7 +479,7 @@ $cursor: #fff;
 }
 </style>
 <style lang="scss" scoped>
-// new-login本地背景图在这里修改
+//new-login本地背景图在这里修改
 $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixed;
 .login-box2 {
   width: 100%;
