@@ -323,7 +323,7 @@
             :before-close="closeNodeSetting"
             :append-to-body="true"
             :destroy-on-close="true"
-            width="1000px">
+            :width="settingType === 'relation' ? '1200px' : '1000px'">
             <NodeSetting v-if="settingType === 'commonSetting'" ref="nodeSetting" :graph="graph" :opt-type="sp_optType" />
             <RelationSetting v-if="settingType === 'relation'" ref="nodeSetting" :graph="graph" />
             <GroupCount v-if="settingType === 'groupCount'" ref="nodeSetting" :graph="graph"/>
