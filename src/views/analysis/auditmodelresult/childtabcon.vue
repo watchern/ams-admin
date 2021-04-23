@@ -14,18 +14,18 @@
         <el-button type="primary" @click="queryCondition">查 询</el-button>
       </span>
     </el-dialog>
-    <el-row v-if="useType != 'graph' && ifopen == 1">
+    <el-row v-if="useType != 'graph' && ifopen != 0">
       <!--   v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"   -->
       <div
         class="el-btn-no-colorz"
-        v-if="!chartSwitching"
+        v-if="!chartSwitching && ifopen==1"
         @click="switchDivStyle('chart')"
       >
         <span><i class="el-icon-menu"></i> 仅表格</span>
       </div>
       <div
         class="el-btn-no-colorz"
-        v-if="chartSwitching"
+        v-if="chartSwitching && ifopen==1"
         @click="switchDivStyle('table')"
       >
         <span><i class="el-icon-s-data"></i> 配置图表</span>
@@ -62,7 +62,7 @@
           <div
             align="right"
             :style="
-              ifopen == 1 ? 'position: absolute;top: -29px;right: 0;' : ''
+              ifopen != 0 ? 'position: absolute;top: -29px;right: 0;' : ''
             "
           >
             <el-dropdown>
@@ -189,7 +189,7 @@
           <div class="drag-on-table textz">
             <el-col
               :span="2"
-              style="right: 50px; top: 5px; position: absolute; z-index: 1"
+              style="right: 50px; top: -44px; position: absolute; z-index: 1"
             >
               <el-row v-if="modelResultButtonIsShow" style="display: flex">
                 <downloadExcel
@@ -215,7 +215,7 @@
               <div
                 align="right"
                 :style="
-                  ifopen == 1 ? 'position: absolute;top: -29px;right: 0;' : ''
+                  ifopen != 0 ? 'position: absolute;top: -29px;right: 0;' : ''
                 "
               >
                 <el-dropdown>
@@ -614,6 +614,9 @@ export default {
     console.log(this.$route.path);
     if (this.$route.path == "/analysis/editormodelnew") {
       this.ifopen = 1;
+    }
+    if(this.$route.path == "/analysis/auditmodel"){
+      this.ifopen = 2;
     }
     this.getRenderTableData();
     this.chartReflexion();
@@ -2479,6 +2482,7 @@ export default {
   cursor: pointer;
   text-align: center;
   user-select: none;
+  /* background-color: #559ED4; */
 }
 
 .smallImgs {
