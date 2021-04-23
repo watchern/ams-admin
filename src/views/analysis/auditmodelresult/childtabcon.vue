@@ -187,7 +187,7 @@
         >
           <!--  此下为表格  -->
           <div class="drag-on-table textz">
-            <el-col
+            <div
               :span="2"
               style="right: 50px; top: -44px; position: absolute; z-index: 1"
             >
@@ -210,7 +210,7 @@
                   ></el-button>
                 </downloadExcel>
               </el-row>
-            </el-col>
+            </div>
             <div v-if="myFlag">
               <div
                 align="right"
