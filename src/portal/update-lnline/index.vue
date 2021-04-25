@@ -1,11 +1,17 @@
 <template>
-  <div class="home flex a-start flex-row j-start h100">
-    <div class="home-right flex1 h100 flex a-start j-start flex-column">
-      <div class="home-right-content flex1 w100">
+  <div class="home flex a-start flex-column j-start w100">
+    <div class="home-top flex-shrink w100">
+      <LeftMenu v-show="flase" />
+    </div>
+    <div class="home-right flex1 flex a-start j-start flex-column">
+      <div class="home-right-content flex1 w100 skin-home-rc">
         <router-view />
         <el-tooltip content="系统帮助" placement="top" effect="light">
-          <i class="el-icon-question seat" @click="getHelp()"></i>
+          <i class="el-icon-question seat" @click="getHelp()" style="color:rgb(90,195,235)"></i>
         </el-tooltip>
+      </div>
+      <div v-if="isShowRightFooter" class="home-right-footer flex-shrink w100">
+        <RightFooter />
       </div>
     </div>
     <div class="readonlyTo" v-if="showHelpHeight" v-loading="loading">
@@ -17,8 +23,14 @@
 </template>
 
 <script>
+import LeftMenu from './views/left-menu'
+import RightFooter from './views/right-footer'
 import { getHelpByMenuPath } from '@/api/base/helpdocument'
 export default {
+  components: {
+    LeftMenu,
+    RightFooter
+  },
   data () {
     return {
       showHelpHeight: false,
@@ -79,10 +91,10 @@ export default {
     height: 100vh;
   }
   &-right{
-    height: calc(100vh - 62px);
-  &-content{
-    height: calc(100% - 95px);
-  }
+    height: calc(100vh - 62px);f
+    &-content{
+      height: calc(100% - 95px);
+    }
     &-footer{
       height: 30px;
     }
@@ -93,7 +105,7 @@ export default {
   z-index: 1999
 }
 .home-right{
-  background: #fff url('style/images/bg.png') no-repeat left center fixed;
+  background: #eaeaea url('style/images/bg.png') no-repeat left center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

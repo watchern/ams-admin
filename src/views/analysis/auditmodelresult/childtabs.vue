@@ -57,6 +57,9 @@ export default {
       paramInfoCopy:{}
     };
   },
+  created(){
+    console.log(this.preValue)
+  },
   mounted() {
     this.paramInfoCopy = this.paramInfo
   },
@@ -79,13 +82,13 @@ export default {
       },
       tabsName(key){
         if(this.useType==='modelRunResult'){
-          return '辅表' + (key + 1)
+          return '辅表' + (key)
         }else if(this.useType==='sqlEditor'||this.useType==='modelPreview'){
-          if(this.preValue.length === key + 1){
+          if(key==0){
             return '主表'
           }
           else{
-            return '辅助' + (key + 1)
+            return '辅助' + (key)
           }
         }else if(this.useType==='previewTable'){
             return '数据详情'

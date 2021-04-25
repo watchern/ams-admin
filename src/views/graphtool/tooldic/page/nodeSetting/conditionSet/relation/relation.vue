@@ -7,7 +7,7 @@
             <el-tab-pane label="条件设置" name="nodeSet">
                 <el-col :span="myDiagramDivWidth">
                     <div id="myDiagramDiv" ref="myDiagramDiv" style="border:1px solid #F3F3F3;height: 561px;" @mouseover="myDiagramMousemove"></div>
-                    <el-image v-if="showRight" title="画布放大" :src="require('@/api/graphtool/images/icons/fangda.png')" style="width:15px;height:15px;z-index:9999;position: absolute;top: 10px;right:260px;" @click="amplify"></el-image>
+                    <el-image v-if="showRight" title="画布放大" :src="require('@/api/graphtool/images/icons/fangda.png')" style="width:15px;height:15px;z-index:9999;position: absolute;top: 10px;right:300px;" @click="amplify"></el-image>
                     <el-image v-if="!showRight" title="画布缩小" :src="require('@/api/graphtool/images/icons/fangda.png')" style="width:15px;height:15px;z-index:9999;position: absolute;top: 10px;right: 20px;" @click="reduce"></el-image>
                 </el-col>
                 <el-col :span="6" v-if="showRight">
@@ -38,7 +38,9 @@
                                 </template>
                                 <div style="width:100%;height:100%;background: #F7F7F7;overflow-y:auto;" v-if="showJoinArea">
                                     <el-row>
-                                        <el-input v-model="mainPort" disabled/>
+                                        <el-input v-model="useMainPort" class="input-with-select">
+                                            <el-button slot="append" icon="el-icon-check" style="padding: 0 10px;" @click="saveCondition('from')" title="点击保存编辑后的连接条件"></el-button>
+                                        </el-input>
                                     </el-row>
                                     <el-row>
                                         <div style="width: 50px;text-align: right;line-height: 36px;float:left;">关系：</div>
@@ -47,7 +49,9 @@
                                         </el-select>
                                     </el-row>
                                     <el-row>
-                                        <el-input v-model="toPort" disabled/>
+                                        <el-input v-model="useToPort" class="input-with-select">
+                                            <el-button slot="append" icon="el-icon-check" style="padding: 0 10px;" @click="saveCondition('to')" title="点击保存编辑后的连接条件"></el-button>
+                                        </el-input>
                                     </el-row>
                                 </div>
                             </el-collapse-item>
@@ -137,9 +141,12 @@
                 slaverTableName: '',
                 items: [],
                 checkAll: false,
+                mainPort: '',
                 toPort: '',
                 from: '',
                 to: '',
+                useMainPort: '',
+                useToPort: '',
                 showJoinArea: false, // 是否显示数据表关联条件
                 comper: '=',
                 comperArr: [{ value: '=', name: '等于' },
@@ -148,7 +155,6 @@
                     { value: '>=', name: '大于等于' },
                     { value: '<', name: '小于' },
                     { value: '<=', name: '小于等于' }],
-                mainPort: '',
                 showRight: true,
                 showTableJoin: false,
                 joinTypeArr: [{ value: 'LEFT JOIN', name: '左连接', description:'左连接：选取关联字段将两张表进行关联，左表的所有数据均显示，右表的数据只显示关联字段值相等的数据，若右表关联结果无数据则补空显示'},
@@ -195,6 +201,9 @@
             },
             reduce() {
                 relationJs.reduce()
+            },
+            saveCondition(type){
+                relationJs.saveCondition(type)
             },
             changeCopare(val) {
                 this.comper = val

@@ -1093,11 +1093,8 @@ function lightHeightCallBack(curCellId,parentChildren){
  */
 export function curNodeSQL() {
     var nodeExcuteStatus = graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus
-    if (nodeExcuteStatus === 1) {			// 未执行
-        graphIndexVue.$message({"type":"warning","message":"该节点尚未执行，请执行后再查看"})
-        return
-    } else if (nodeExcuteStatus === 2) {			// 执行中
-        graphIndexVue.$message({"type":"warning","message":"该节点尚未执行完成，请等待执行完成后再查看"})
+    if (nodeExcuteStatus !== 3) {
+        graphIndexVue.$message({"type":"warning","message":"该节点尚未执行成功，请执行成功后再查看"})
         return
     } else {
         var optType = graph.nodeData[graph.curCell.id].nodeInfo.optType
