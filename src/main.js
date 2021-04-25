@@ -147,7 +147,7 @@ Vue.prototype.AmsWebsocket = {
         case Vue.prototype.AmsModules.GRAPHTOOL:
           return process.env["VUE_APP_GRAPHTOOL_WEB_SOCKET"]
         case Vue.prototype.AmsModules.INDICATOR:
-          return process.env["this.AmsWebsocket.getWSBaseUrl(this.AmsModules.INDICATOR)"]
+          return process.env["VUE_APP_INDICATOR_WEB_SOCKET"]
         default:
           // 默认读浏览器访问host
           return 'ws://' + window.location.host+ '/websocket?'
