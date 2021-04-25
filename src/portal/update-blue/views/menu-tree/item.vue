@@ -41,17 +41,30 @@ export default {
       this.isOpen = bool
     },
     close(item) {
+      console.log(item)
       let isCloseTree = false
       if (!item.children) {
         isCloseTree = true
       }
       if (item.path && item.path !== '' && this.item.path!=='') {
+        console.log("二级有路径")
         this.$router.push({ path: this.item.path })
         this.$store.commit('aceState/setRightFooterTags', {
           type: 'active',
           val: {
             name: item.name,
             path: item.path
+          }
+        })
+      }
+      if (item.children && item.children.length==1) {
+        console.log("三级路径唯一")
+        this.$router.push({ path: this.item.children[0].path })
+        this.$store.commit('aceState/setRightFooterTags', {
+          type: 'active',
+          val: {
+            name: item.children[0].name,
+            path: item.children[0].path
           }
         })
       }
