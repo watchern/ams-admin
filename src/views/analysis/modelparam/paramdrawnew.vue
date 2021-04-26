@@ -1,6 +1,7 @@
 <template>
   <div style="overflow-y: visible;" ref="inputParamContent" class="paramadrawnew">
-      <el-row ref="nodeParam" v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
+    <div ref="nodeParam">
+      <el-row  v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
         <el-col :span="7" style="line-height:36px;padding-right: 10px;">
           <el-tooltip :content="paramInfo.description" placement="bottom">
             <label>{{paramInfo.paramName}}</label>
@@ -11,7 +12,7 @@
           <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam"></el-input>
           <div class="select-div" ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title"></div>
           <span  v-if="paramInfo.inputType === 'timeinp'" >
-            <el-date-picker v-if="paramInfo.timeFormat!='other'" ref="paramOption" :index="ind"  :title="paramInfo.title" :type="paramInfo.timeFormat" placeholder="选择日期" v-model="paramInfo.dataDefaultVal" style="width: 98%;"></el-date-picker> 
+            <el-date-picker v-if="paramInfo.timeFormat!='other'" ref="paramOption" :index="ind"  :title="paramInfo.title" :type="paramInfo.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(paramInfo.timeFormat)"  v-model="paramInfo.dataDefaultVal" style="width: 98%;"></el-date-picker> 
             <el-date-picker v-else ref="paramOption" :index="ind"  :title="paramInfo.title" type="date" placeholder="选择日期" :value-format="paramInfo.customizeFormat" v-model="paramInfo.dataDefaultVal" style="width: 98%;"></el-date-picker> 
           </span>
         </el-col>
@@ -21,6 +22,7 @@
       </el-row>
       <!-- 分隔线 -->
       <el-divider v-if="paramInfoArr.length>0"></el-divider>
+    </div>  
   </div>
 </template>
 <script>
@@ -168,7 +170,7 @@ export default {
       switch (obj.setParamObj.inputType) {
         case 'lineinp':// 下拉列表
           if (!paramSql) {// 备选sql为空的情况下 取静态的option值
-            $.each(paramObj.paramChoice.paramOptionsList, function(i, v) {
+            $.each(paramObj.paramChoice.ammParamOptionsList, function(i, v) {
               if (v.optionsVal && v.optionsName) {
                 // 组织下拉选项数据
                 dataArr.push({
@@ -620,6 +622,16 @@ export default {
       let selectedObj = selectXs.getValue()// 获取选中的参数值
       if (selectedObj && selectedObj.length > 0) {
         selectXs.setValue([])// 清空选中值
+      }
+    },
+    //处理时间格式
+    timeDealFormat(val){
+      if(val=="year"){
+        return "yyyy";
+      }else if(val=="month"){
+        return "yyyy-MM";
+      }else{
+        return "yyyy-MM-dd";
       }
     },
     /**
