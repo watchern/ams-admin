@@ -169,7 +169,7 @@
                 switch (obj.setParamObj.inputType) {
                     case 'lineinp':// 下拉列表
                         if (!paramSql) {// 备选sql为空的情况下 取静态的option值
-                            $.each(paramObj.paramChoice.paramOptionsList, function(i, v) {
+                            $.each(paramObj.paramChoice.ammParamOptionsList, function(i, v) {
                                 if (v.optionsVal && v.optionsName) {
                                     // 组织下拉选项数据
                                     dataArr.push({

@@ -1,43 +1,65 @@
 .skin-bgColor{
-  background-color: #353A43!important;
+  background-color: rgb(85,158,212)!important;
 }
 .skin-wbgColor-1{
-  background-color: #EDF1F5!important;
+  background-color: #ffffff!important;
 }
 .skin-wbgColor-2{
   background-color: #ffffff!important;
 }
 .skin-wbgColor-3{
-  background-color: #ffffff!important;
+  background-color: rgb(85,158,212)!important;
 }
 .skin-iconbgColor{
-  background-color: #353A43!important;
+  background-color: rgb(95,190,235)!important;
 }
 .skin-wordColor{
-  color: #333!important;
+  color: #fff!important;
 }
 .skin-wordmoreColor{
-  color: #1890ff!important;
+  color: #fff!important;
 }
 .skin-shadow{
-  box-shadow: 17px 17px 34px 0 rgb(0 0 0 / 10%)!important;
+  box-shadow: 10px 10px 20px 0 rgba(95,190,235,0.3)!important;
 }
 .skin-border-right{
-  border-right: 1px solid #21364E!important;
+  border-right: 1px solid rgba(95,190,235,0.5)!important;
 }
 .skin-bttom-a{
-  background-color: #0F1F32!important;
+  background-color: rgb(95,190,235)!important;
 }
 .skin-home-rc{
-  -webkit-box-shadow: 3px 0 17px 0 rgba(0,0,0,.1)!important;
-  box-shadow: 3px 0 17px 0 rgba(0,0,0,.1)!important;
+  -webkit-box-shadow: none!important;
+  box-shadow: none!important;
+}
+.filter-container{
+  margin-bottom: 10px;
+  border-bottom: 2px solid #ededed;
+}
+.home-right-content{
+  background-color: transparent!important;
+}
+.el-table{
+  background-color: transparent!important;
+}
+.el-table tr{
+  background-color: transparent!important;
+}
+.el-table th{
+  background-color: transparent!important;
+}
+.tree-side{
+  background-color: transparent!important;
+}
+.el-input__inner{
+  background-color: transparent!important;
 }
 .editmodel-right{
   z-index:1000;
   position: absolute;
   float:right;
   right: 15px;
-  height:calc(100% - 63px);
+  height:calc(100% - 125px);
   width: 45px;
   background-color: #f7f7f7;
   border-radius: 0px 20px 20px 0px;

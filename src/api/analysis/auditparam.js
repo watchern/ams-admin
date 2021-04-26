@@ -448,7 +448,7 @@ export function initParamHtml_Common(paramObj, selectNum, selectTreeNum,serviceI
       var paramSql = paramObj.paramChoice.optionsSql
       // 备选sql为空的情况下 取静态的option值
       if (!paramSql) { // 如果没有被选sql的时候进入
-        $.each(paramObj.paramChoice.paramOptionsList, function (i, v) {
+        $.each(paramObj.paramChoice.ammParamOptionsList, function (i, v) {
           if (v.optionsVal && v.optionsName) {
             // 组织下拉选项数据
             var optionObj = {
@@ -2166,7 +2166,7 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
   switch (obj.setParamObj.inputType) {
     case 'lineinp':// 下拉列表
       if (!paramSql) {// 备选sql为空的情况下 取静态的option值
-        $.each(paramObj.paramChoice.paramOptionsList, function(i, v) {
+        $.each(paramObj.paramChoice.ammParamOptionsList, function(i, v) {
           if (v.optionsVal && v.optionsName) {
             // 组织下拉选项数据
             var optionObj = {

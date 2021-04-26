@@ -1,20 +1,26 @@
 <template>
-  <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form skin-bgColor" autocomplete="on" label-position="left">
-      <div class="left-container">
-        <img src="./style/images/login-logo.png" class="logo-img">
-<!--        <span class="login-right">© 2020 中软国际</span>-->
-      </div>
-      <div class="right-container">
-        <div class="title-container">
-<!--          <lang-select class="set-language" />-->
+  <div class="login-outbox">
+    <div class="login-container" v-if="skincontrol == 'old-login'">
+      <el-form
+        ref="loginForm"
+        :model="loginForm"
+        :rules="loginRules"
+        class="login-form skin-bgColor"
+        autocomplete="on"
+        label-position="left"
+      >
+        <div class="left-container">
+          <img src="./style/images/login-logo.png" class="logo-img" />
+          <!--        <span class="login-right">© 2020 中软国际</span>-->
         </div>
+        <div class="right-container">
+          <div class="title-container">
+            <!--          <lang-select class="set-language" />-->
+          </div>
 
-        <el-form-item prop="username">
-          <span class="input-container">
-            用户名
-          </span>
-          <el-input
+          <el-form-item prop="username">
+            <span class="input-container"> 用户名 </span>
+            <el-input
               ref="username"
               v-model="loginForm.username"
               name="username"
@@ -30,6 +36,7 @@
               密码
             </span>
             <el-input
+
                 :key="passwordType"
                 ref="password"
                 v-model="loginForm.password"
@@ -52,6 +59,103 @@
         </el-button>
       </div>
     </el-form>
+    </div>
+    <div
+      v-else-if="skincontrol == 'new-login'"
+      class="login-box2"
+      :style="
+        backgroundImg ? 'background-image:url(' + backgroundImg + ');' : ''
+      "
+    >
+      <div class="login-box2center">
+        <div class="login-box2left">
+          <div class="login-box2-tit1">
+            {{ title1 }}
+          </div>
+          <div class="login-box2-tit2">
+            {{ title2 }}
+          </div>
+          <div class="login-box2-txt1">
+            {{ text1 }}
+          </div>
+          <div class="login-box2-txt2">
+            {{ text2 }}
+          </div>
+        </div>
+        <div class="login-box2right">
+          <el-form
+            ref="loginFormNew"
+            :model="loginForm"
+            :rules="loginRules"
+            class="loginbackcolor"
+            autocomplete="on"
+            label-position="left"
+          >
+            <div class="left-container">
+              <div class="right-title">登录</div>
+              <!--        <span class="login-right">© 2020 中软国际</span>-->
+            </div>
+            <div class="right-container">
+              <div class="title-container">
+                <!--          <lang-select class="set-language" />-->
+              </div>
+
+              <el-form-item prop="username" class="login-item">
+                <img src="@/assets/login_img/用户名.png" align="top" />
+                <el-input
+                  ref="usernamenew"
+                  v-model="loginForm.username"
+                  name="username"
+                  type="text"
+                  tabindex="1"
+                  autocomplete="on"
+                  class="login-input"
+                />
+              </el-form-item>
+
+              <el-tooltip
+                v-model="capsTooltip"
+                content="Caps lock is On"
+                placement="right"
+                manual
+              >
+                <el-form-item prop="password" class="login-item">
+                  <img src="@/assets/login_img/密码.png" align="top" />
+                  <el-input
+                    :key="passwordType"
+                    ref="passwordnew"
+                    v-model="loginForm.password"
+                    :type="passwordType"
+                    name="password"
+                    tabindex="2"
+                    autocomplete="on"
+                    @keyup.native="checkCapslock"
+                    @blur="capsTooltip = false"
+                    @keyup.enter.native="handleLogin"
+                    class="login-input"
+                  />
+                  <!-- <span class="show-pwd" @click="showPwd">
+                    <svg-icon
+                      :icon-class="
+                        passwordType === 'password' ? 'eye' : 'eye-open'
+                      "
+                    />
+                  </span> -->
+                </el-form-item>
+              </el-tooltip>
+
+              <el-button
+                :loading="loading"
+                class="login-box2button"
+                @click.native.prevent="handleLogin"
+              >
+                {{ $t("login.logIn") }}
+              </el-button>
+            </div>
+          </el-form>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -61,6 +165,7 @@ import { validUsername } from '@/utils/validate'
 
 export default {
   name: 'Login',
+
   // components: { LangSelect },
   data() {
     const validateUsername = (rule, value, callback) => {
@@ -91,29 +196,50 @@ export default {
       loading: false,
       showDialog: false,
       redirect: undefined,
-      otherQuery: {}
-    }
+      otherQuery: {},
+      skincontrol: "old-login",
+      backgroundImg: "",
+      title1: process.env.VUE_APP_BASE_SKINTITLE1 || "",
+      title2: process.env.VUE_APP_BASE_SKINTITLE2 || "",
+      text1: process.env.VUE_APP_BASE_SKINTEXT1 || "",
+      text2: process.env.VUE_APP_BASE_SKINTEXT2 || "",
+    };
   },
   watch: {
     $route: {
-      handler: function(route) {
-        const query = route.query
+      handler: function (route) {
+        const query = route.query;
+        console.log(query);
         if (query) {
-          this.redirect = query.redirect
-          this.otherQuery = this.getOtherQuery(query)
+          this.redirect = query.redirect;
+          this.otherQuery = this.getOtherQuery(query);
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   created() {
+    if (process.env.VUE_APP_BASE_SKINCONTROL == "new-login") {
+      this.skincontrol = "new-login";
+    }
+    if (process.env.VUE_APP_BASE_SKINBACKGROUND!='') {
+      this.backgroundImg = process.env.VUE_APP_BASE_SKINBACKGROUND
+    }
     // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
-    if (this.loginForm.username === '') {
-      this.$refs.username.focus()
-    } else if (this.loginForm.password === '') {
-      this.$refs.password.focus()
+    if (this.loginForm.username === "") {
+      if (this.skincontrol == "new-login") {
+        this.$refs.usernamenew.focus();
+      } else {
+        this.$refs.username.focus();
+      }
+    } else if (this.loginForm.password === "") {
+      if (this.skincontrol == "new-login") {
+        this.$refs.passwordnew.focus();
+      } else {
+        this.$refs.password.focus();
+      }
     }
   },
   destroyed() {
@@ -121,59 +247,89 @@ export default {
   },
   methods: {
     checkCapslock(e) {
-      const { key } = e
-      this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z')
+      const { key } = e;
+      this.capsTooltip = key && key.length === 1 && key >= "A" && key <= "Z";
     },
     showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
+      if (this.passwordType === "password") {
+        this.passwordType = "";
       } else {
-        this.passwordType = 'password'
+        this.passwordType = "password";
       }
       this.$nextTick(() => {
-        this.$refs.password.focus()
-      })
+        this.$refs.password.focus();
+      });
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
+      if (this.skincontrol == "new-login") {
+        this.$refs.loginFormNew.validate((valid) => {
+          if (valid) {
+            this.loading = true;
+            this.$store
+              .dispatch("user/login", this.loginForm)
               .then(() => {
-                this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-                this.loading = false
+                this.$router.push({
+                  path: this.redirect || "/",
+                  query: this.otherQuery,
+                });
+                this.loading = false;
               })
               .catch(() => {
-                this.loading = false
+                this.loading = false;
+              });
+          } else {
+            this.$message.error("用户名或密码不能为空!");
+            return false;
+          }
+        });
+      } else {
+        this.$refs.loginForm.validate((valid) => {
+          if (valid) {
+            this.loading = true;
+            this.$store
+              .dispatch("user/login", this.loginForm)
+              .then(() => {
+                this.$router.push({
+                  path: this.redirect || "/",
+                  query: this.otherQuery,
+                });
+                this.loading = false;
               })
-        } else {
-          this.$message.error('用户名或密码不能为空!')
-          return false
-        }
-      })
+              .catch(() => {
+                this.loading = false;
+              });
+          } else {
+            this.$message.error("用户名或密码不能为空!");
+            return false;
+          }
+        });
+      }
     },
     getOtherQuery(query) {
       return Object.keys(query).reduce((acc, cur) => {
-        if (cur !== 'redirect') {
-          acc[cur] = query[cur]
+        if (cur !== "redirect") {
+          acc[cur] = query[cur];
         }
-        return acc
-      }, {})
-    }
-  }
-}
+        return acc;
+      }, {});
+    },
+  },
+};
 </script>
 <style lang="scss" scoped>
-$bg:#fdfdfd url('./style/images/login-bg.png') no-repeat left center fixed;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg: #fdfdfd url("./style/images/login-bg.png") no-repeat left center fixed;
+$dark_gray: #889aa4;
+$light_gray: #eee;
 $cursor: #fff;
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
   .login-container .el-input input {
     color: $cursor;
   }
 }
-
+.login-outbox {
+  height: 100%;
+  width: 100%;
+}
 .login-container {
   min-height: 100%;
   width: 100%;
@@ -188,13 +344,13 @@ $cursor: #fff;
     position: relative;
     float: left;
     width: 50%;
-    .logo-img{
+    .logo-img {
       margin: 155px 129px;
     }
-    .login-right{
+    .login-right {
       opacity: 0.35;
       font-size: 12px;
-      color: #FFFFFF;
+      color: #ffffff;
       letter-spacing: 0.38px;
       line-height: 16px;
       margin-left: 170px;
@@ -242,7 +398,8 @@ $cursor: #fff;
     margin-top: 10%;
     // background-image: url(../../styles/image/bgcolor.png);
     //background-color: #353A43!important;
-    box-shadow: 0 29px 38px 0 rgba(53,58,67,0.26);
+
+    box-shadow: 0 29px 38px 0 rgba(53, 58, 67, 0.26);
     border-radius: 5px;
   }
   .tips {
@@ -297,21 +454,21 @@ $cursor: #fff;
     user-select: none;
     position: absolute;
   }
-  .login-btn{
+  .login-btn {
     width: 100%;
     margin-top: 20px;
-    padding:13px 0px;
+    padding: 13px 0px;
     background: #d70010;
     border-color: #d70010;
     color: #ffffff;
-    font-weight: bold!important;
+    font-weight: bold !important;
   }
 
   .login-btn:focus {
     background: #d70010;
     border-color: #d70010;
     color: #ffffff;
-    font-weight: bold!important;
+    font-weight: bold !important;
   }
   .login-btn:active {
     background: #ff0114;
@@ -320,5 +477,98 @@ $cursor: #fff;
     outline: none!important;
     font-weight: bold!important;
   }
+}
+</style>
+<style lang="scss" scoped>
+//new-login本地背景图在这里修改
+$bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixed;
+.login-box2 {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: $bg;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  .login-box2center {
+    height: 90%;
+    width: 70%;
+    min-width: 1000px;
+    margin: 0 auto;
+    margin-top: 10%;
+    display: flex;
+  }
+  .login-box2left {
+    width: 40%;
+    margin: 10% 0;
+    margin-left: 10%;
+  }
+  .login-box2-tit1 {
+    margin-top: 40px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #44a0d2;
+    margin-bottom: 10px;
+  }
+  .login-box2-tit2 {
+    font-size: 30px;
+    font-weight: bold;
+    color: #44a0d2;
+    margin-bottom: 40px;
+  }
+  .login-box2-txt1 {
+    font-size: 30px;
+    font-weight: bold;
+    color: #000;
+    margin-bottom: 10px;
+  }
+  .login-box2-txt2 {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+    line-height: 40px;
+  }
+  .login-box2right {
+    width: 40%;
+    margin: 10% 0;
+    margin-left: 10%;
+    .right-title {
+      color: #fff;
+      font-size: 28px;
+      text-align: center;
+      font-weight: bold;
+      padding-top: 10px;
+      padding-bottom: 50px;
+    }
+  }
+}
+.login-item {
+  margin-bottom: 30px !important;
+  img {
+    margin-right: 5px;
+  }
+}
+.login-input {
+  background-color: white !important;
+  border-radius: 5px;
+  width: 90%;
+  margin-bottom: 5px;
+}
+.loginbackcolor {
+  background-image: linear-gradient(to right, #4db1dc, #57a0d7);
+  border-radius: 20px;
+  padding: 20px;
+}
+.login-box2button {
+  margin-left: 5%;
+  width: 90%;
+  height: 60px;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 6px;
+  border-radius: 50px;
+  cursor: pointer;
+  margin-bottom: 30px;
 }
 </style>

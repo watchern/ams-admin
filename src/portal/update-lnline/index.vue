@@ -1,11 +1,17 @@
 <template>
-  <div class="home flex a-start flex-row j-start h100">
-    <div class="home-right flex1 h100 flex a-start j-start flex-column">
-      <div class="home-right-content flex1 w100">
+  <div class="home flex a-start flex-column j-start w100">
+    <div class="home-top flex-shrink w100">
+      <LeftMenu v-show="flase" />
+    </div>
+    <div class="home-right flex1 flex a-start j-start flex-column">
+      <div class="home-right-content flex1 w100 skin-home-rc">
         <router-view />
         <el-tooltip content="系统帮助" placement="top" effect="light">
-          <i class="el-icon-question seat" @click="getHelp()"></i>
+          <i class="el-icon-question seat" @click="getHelp()" style="color:rgb(90,195,235)"></i>
         </el-tooltip>
+      </div>
+      <div v-if="isShowRightFooter" class="home-right-footer flex-shrink w100">
+        <RightFooter />
       </div>
     </div>
     <div class="readonlyTo" v-if="showHelpHeight" v-loading="loading">
@@ -17,8 +23,14 @@
 </template>
 
 <script>
+import LeftMenu from './views/left-menu'
+import RightFooter from './views/right-footer'
 import { getHelpByMenuPath } from '@/api/base/helpdocument'
 export default {
+  components: {
+    LeftMenu,
+    RightFooter
+  },
   data () {
     return {
       showHelpHeight: false,
@@ -72,25 +84,23 @@ export default {
 
 <style lang="scss" scoped >
 .home{
-  height: 98vh;
+  height: 100vh;
   background: #fff url('style/images/bg.png') no-repeat left center fixed;
-  background-size: 82% 100%;
-  background-position-x: -130px;
-  background-position-y: 2px;
+  background-size: 100% 100%;
   &-left{
     height: 100vh;
   }
   &-right{
-    height: 100vh;
+    height: calc(100vh - 62px);f
     &-content{
-      height: calc(100% - 30px);
+      height: calc(100% - 95px);
     }
     &-footer{
       height: 30px;
     }
   }
 }
-.home-left{
+.home-top{
   //z-index:20201111;
   z-index: 1999
 }
@@ -100,14 +110,13 @@ export default {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+  width: 100vw;
 }
 .home-right-content{
   overflow: hidden;
   width: calc(100% - 24px);
   height: calc(100% - 32px);
   border-radius: 30px;
-  -webkit-box-shadow: 3px 0 17px 0 rgba(0,0,0,.1);
-  box-shadow: 3px 0 17px 0 rgba(0,0,0,.1);
   margin: 16px 10px;
   background: #ffffff;
 }
@@ -126,7 +135,7 @@ export default {
   top: 0;
   right: 0;
   position: fixed;
-  z-index: 1001;
+  z-index: 10001;
   animation: whiteIn 0.8s forwards;
 }
 .readonlyChild{

@@ -1,0 +1,1209 @@
+/*1920*1080分辨率*/
+
+@media screen and (max-height:1050px) {
+    #home {
+        height: 100%;
+    }
+    .el-main {
+        background: url("../img/背景.png");
+        /* overflow: hidden; */
+    }
+    .contentLeft {
+        width: 943px;
+        height: 280px;
+    }
+    .daibanicon {
+        position: absolute;
+        top: 53px;
+        left: 75px
+    }
+    .daibanicon2 {
+        position: absolute;
+        top: 76px;
+        left: 861px
+    }
+    .contentRight {
+        width: 943px;
+        height: 280px;
+    }
+    .tongzhiicon {
+        position: absolute;
+        top: 53px;
+        left: 959px
+    }
+    .tongzhiicon1 {
+        position: absolute;
+        top: 76px;
+        left: 1849px;
+    }
+    .dealtTxt {
+        position: absolute;
+        top: 64px;
+        left: 153px;
+        width: 113px;
+        height: 25px;
+        font-size: 26px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #ffffff;
+    }
+    .listTitle {
+        position: absolute;
+        color: #fff;
+        font-size: 20px;
+        left: 75px;
+        top: 148px;
+        width: 327px;
+        height: 25px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .listTime {
+        position: absolute;
+        color: #fff;
+        font-size: 20px;
+        left: 756px;
+        top: 148px;
+        width: 132px;
+        height: 16px;
+        font-family: PingFang SC;
+        font-weight: 400;
+    }
+    .listTitle1 {
+        position: absolute;
+        color: #fff;
+        font-size: 20px;
+        left: 75px;
+        top: 197px;
+        width: 446px;
+        height: 25px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .listTime1 {
+        position: absolute;
+        color: #fff;
+        font-size: 20px;
+        left: 756px;
+        top: 197px;
+        width: 132px;
+        height: 16px;
+        font-family: PingFang SC;
+        font-weight: 400;
+    }
+    .dealtTxt1 {
+        font-size: 26px;
+        position: absolute;
+        top: 64px;
+        left: 1051px;
+        color: #559dd3;
+        width: 113px;
+        height: 25px;
+        font-family: PingFang SC;
+        font-weight: bold;
+    }
+    .notice {
+        color: #242424;
+        font-size: 20px;
+        position: absolute;
+        top: 140px;
+        left: 962px;
+        line-height: 50px;
+        width: 890px;
+        height: 90px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .enterpriseList {
+        width: 943px;
+        height: 557px;
+        overflow: hidden;
+    }
+    .dealtTxt2 {
+        font-size: 26px;
+        position: absolute;
+        top: 15px;
+        left: 153px;
+        color: #242424;
+        width: 114px;
+        height: 25px;
+        font-family: PingFang SC;
+        font-weight: bold;
+    }
+    .qiyeicon {
+        position: absolute;
+        top: 0;
+        left: 75px
+    }
+    .qiyeicon2 {
+        position: absolute;
+        top: 25px;
+        left: 860px
+    }
+    .enterpriseCard {
+        float: left;
+        margin: 100px 0 0 50px;
+        width: 2000px;
+    }
+    .enterpriseCard li {
+        float: left;
+        margin: 0 20px 0 0;
+        position: relative;
+        cursor: pointer;
+    }
+    .enterpriseCard .cardName {
+        position: absolute;
+        top: 24px;
+        left: 35px;
+        font-size: 20px;
+        color: #242424;
+        width: 215px;
+        height: 25px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .enterpriseCard .cardNum {
+        position: absolute;
+        top: 61px;
+        left: 35px;
+        font-size: 28px;
+        color: #559dd4;
+        width: 66px;
+        height: 23px;
+        font-family: JCuYuan;
+        font-weight: 400;
+    }
+    .enterpriseCard .cardTxt {
+        position: absolute;
+        top: 75px;
+        left: 86px;
+        font-size: 16px;
+        color: #559dd4;
+    }
+    .jiantou1 {
+        position: absolute;
+        top: 150px;
+        left: 39px;
+        cursor: pointer;
+        z-index: 1;
+    }
+    .jiantou2 {
+        position: absolute;
+        top: 150px;
+        left: 885px;
+        cursor: pointer;
+    }
+    .eCharts {
+        width: 860px;
+        height: 330px;
+        position: absolute;
+        top: 250px;
+        left: 90px;
+    }
+    .zhexiantu {
+        width: 860px;
+        height: 330px;
+    }
+    .earlyWarningdata {
+        width: 943px;
+        height: 480px;
+        background: #fff;
+        border-radius: 25px;
+        position: absolute;
+        top: 0;
+        left: 958px;
+        /* box-shadow: -4px 0 5px -3px #ddd; */
+    }
+    .yujingicon {
+        position: absolute;
+        top: 20px;
+        left: 25px;
+        z-index: 1
+    }
+    .yujingicon2 {
+        position: absolute;
+        top: 42px;
+        right: 62px;
+        z-index: 1
+    }
+    .earlyTitle {
+        position: absolute;
+        top: 33px;
+        left: 105px;
+        font-size: 26px;
+        color: #404040;
+        z-index: 1;
+        width: 113px;
+        height: 25px;
+        font-family: PingFang SC;
+        font-weight: bold;
+    }
+    .earlyCard {
+        position: absolute;
+        top: 80px;
+        left: -22px;
+        width: 941px;
+        height: 374px;
+        overflow-y: scroll;
+    }
+    /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+    .earlyCard::-webkit-scrollbar {
+        width: 10px;
+        height: 5px;
+        background-color: #f6f6f6;
+    }
+    /*定义滚动条轨道 内阴影+圆角*/
+    .earlyCard::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        /* border-radius: 10px; */
+        background-color: #f6f6f6;
+    }
+    /*定义滑块 内阴影+圆角*/
+    .earlyCard::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        background-color: #bcbcbc;
+        width: 5px;
+        height: 5px;
+    }
+    .earlyCard li {
+        float: left;
+        margin: 0 48px 40px 0;
+    }
+    .earlyTime {
+        width: 107px;
+        height: 13px;
+        font-size: 16px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #404040;
+        line-height: 8px;
+        opacity: 0.6;
+    }
+    .earlyName {
+        width: 260px;
+        height: 19px;
+        font-size: 20px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #404040;
+        line-height: 18px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .earlyNum {
+        width: 27px;
+        height: 16px;
+        font-size: 16px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #ff512f;
+        line-height: 8px;
+    }
+    .earlyTxt {
+        width: 33px;
+        height: 16px;
+        font-size: 16px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #404040;
+        line-height: 8px;
+        opacity: 0.6;
+    }
+    .fengexian {
+        width: 0px;
+        height: 319px;
+        border: 1px black dashed;
+        position: absolute;
+        z-index: 2;
+        top: 111px;
+        left: 290px;
+    }
+    .fengexian1 {
+        width: 0px;
+        height: 319px;
+        border: 1px black dashed;
+        position: absolute;
+        z-index: 2;
+        top: 111px;
+        left: 600px;
+    }
+    .jiantou3 {
+        position: absolute;
+        top: 140px;
+        left: -50px;
+        cursor: pointer;
+    }
+    .jiantou4 {
+        position: absolute;
+        top: 140px;
+        left: 800px;
+        cursor: pointer;
+    }
+    .footer {
+        width: 1920px;
+        height: 100px;
+        background: #539ed5;
+        float: left;
+        margin: 0 0 0 0;
+        /* overflow: hidden; */
+    }
+    .footerList {
+        /* position: absolute;
+        top: -17px;
+        left: 55px;
+        width: 1800px;
+        height: 100px; */
+        /* background: red; */
+    }
+    .footerList li {
+        float: left;
+        margin: -12px 0 0 -32px;
+    }
+    .footerTxt {
+        width: 97px;
+        height: 16px;
+        font-size: 16px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #ffffff;
+        line-height: 15px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .footerNum {
+        width: 56px;
+        height: 20px;
+        font-size: 28px;
+        font-family: Jdahei;
+        font-weight: 400;
+        color: #ffffff;
+        line-height: 8px;
+    }
+    .footerDw {
+        width: 29px;
+        height: 14px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #ffffff;
+        line-height: 8px;
+        opacity: 0.8;
+    }
+    /* 隐藏图标 */
+    .dibuicon {
+        position: absolute;
+        top: 40px;
+        left: 29px
+    }
+    /* 图标 */
+    .zichanicon {
+        position: absolute;
+        top: 14px;
+        left: 60px
+    }
+    .footerTxt1 {
+        position: absolute;
+        top: 21px;
+        left: 140px;
+    }
+    .footerNum1 {
+        position: absolute;
+        top: 55px;
+        left: 140px
+    }
+    .footerDw1 {
+        position: absolute;
+        top: 62px;
+        left: 220px
+    }
+    .guimuicon {
+        position: absolute;
+        top: 14px;
+        left: 280px
+    }
+    .footerTxt2 {
+        position: absolute;
+        top: 21px;
+        left: 360px
+    }
+    .footerNum2 {
+        position: absolute;
+        top: 55px;
+        left: 360px
+    }
+    .footerDw2 {
+        position: absolute;
+        top: 62px;
+        left: 466px
+    }
+    .yinyeicon {
+        position: absolute;
+        top: 14px;
+        left: 520px
+    }
+    .footerTxt3 {
+        position: absolute;
+        top: 21px;
+        left: 600px
+    }
+    .footerNum3 {
+        position: absolute;
+        top: 55px;
+        left: 600px
+    }
+    .footerDw3 {
+        position: absolute;
+        top: 62px;
+        left: 704px
+    }
+    .lirunicon {
+        position: absolute;
+        top: 14px;
+        left: 770px
+    }
+    .footerTxt4 {
+        position: absolute;
+        top: 21px;
+        left: 850px
+    }
+    .footerNum4 {
+        position: absolute;
+        top: 55px;
+        left: 850px
+    }
+    .footerDw4 {
+        position: absolute;
+        top: 62px;
+        left: 939px
+    }
+    .quanyiicon {
+        position: absolute;
+        top: 14px;
+        left: 990px
+    }
+    .footerTxt5 {
+        position: absolute;
+        top: 21px;
+        left: 1070px
+    }
+    .footerNum5 {
+        position: absolute;
+        top: 55px;
+        left: 1070px
+    }
+    .footerDw5 {
+        position: absolute;
+        top: 62px;
+        left: 1123px
+    }
+    .hushuicon {
+        position: absolute;
+        top: 14px;
+        left: 1210px
+    }
+    .footerTxt6 {
+        position: absolute;
+        top: 21px;
+        left: 1290px
+    }
+    .footerNum6 {
+        position: absolute;
+        top: 55px;
+        left: 1290px
+    }
+    .footerDw6 {
+        position: absolute;
+        top: 62px;
+        left: 1340px
+    }
+    .jingicon {
+        position: absolute;
+        top: 14px;
+        left: 1430px
+    }
+    .footerTxt7 {
+        position: absolute;
+        top: 21px;
+        left: 1510px
+    }
+    .footerNum7 {
+        position: absolute;
+        top: 55px;
+        left: 1510px
+    }
+    .footerDw7 {
+        position: absolute;
+        top: 62px;
+        left: 1600px
+    }
+    .shuieicon {
+        position: absolute;
+        top: 14px;
+        left: 1650px
+    }
+    .footerTxt8 {
+        position: absolute;
+        top: 21px;
+        left: 1730px
+    }
+    .footerNum8 {
+        position: absolute;
+        top: 55px;
+        left: 1730px
+    }
+    .footerDw8 {
+        position: absolute;
+        top: 62px;
+        left: 1818px
+    }
+}
+
+
+/*这个是适配1366*768分辨率*，只适配宽度为1366的宽度*/
+
+@media screen and (max-width: 1366px) {
+    #home {
+        height: 100%;
+    }
+    .el-main {
+        background: url("../img/背景.png");
+        /* overflow: hidden; */
+    }
+    .contentLeft {
+        width: 670.91px;
+        height: 229.09px;
+    }
+    .daibanBK {
+        width: 670.91px;
+        height: 229.09px;
+    }
+    .daibanicon {
+        width: 46px;
+        height: 46px;
+        position: absolute;
+        top: 33.44px;
+        left: 41.98px;
+    }
+    .dealtTxt {
+        position: absolute;
+        top: 45.53px;
+        left: 108.85px;
+        width: 113px;
+        height: 25px;
+        font-size: 18px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #ffffff;
+    }
+    .daibanicon2 {
+        width: 4.27px;
+        height: 18.5px;
+        position: absolute;
+        top: 45.53px;
+        left: 612.57px;
+    }
+    .listTitle {
+        position: absolute;
+        left: 43.4px;
+        top: 105.3px;
+        width: 233px;
+        height: 14px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #FFFFFF;
+        line-height: 12px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .listTime {
+        position: absolute;
+        left: 520.8px;
+        top: 106.72px;
+        width: 94px;
+        height: 11px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #FFFFFF;
+        line-height: 6px;
+    }
+    .listTitle1 {
+        position: absolute;
+        left: 43.4px;
+        top: 140.16px;
+        width: 317px;
+        height: 15px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #FFFFFF;
+        line-height: 12px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap
+    }
+    .listTime1 {
+        position: absolute;
+        left: 520.8px;
+        top: 142.29px;
+        width: 94px;
+        height: 11px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #FFFFFF;
+        line-height: 6px;
+    }
+    .contentRight {
+        width: 670.91px;
+        height: 229.09px;
+    }
+    .tongzhiicon {
+        width: 46px;
+        height: 46px;
+        position: absolute;
+        top: 33.44px;
+        left: 682.29px;
+    }
+    .dealtTxt1 {
+        width: 80px;
+        height: 18px;
+        font-size: 18px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #559DD3;
+        line-height: 6px;
+        position: absolute;
+        top: 45.53px;
+        left: 747.74px;
+    }
+    .tongzhiicon1 {
+        width: 4.27px;
+        height: 18.5px;
+        position: absolute;
+        top: 45.53px;
+        left: 1315.49px
+    }
+    .notice {
+        color: #242424;
+        font-size: 14px;
+        position: absolute;
+        top: 79.71px;
+        left: 684.42px;
+        line-height: 50px;
+        width: 633px;
+        height: 68px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .enterpriseList {
+        width: 670.91px;
+        height: 298.09px;
+        overflow: hidden;
+        float: left;
+        margin: -20px 0 0 0;
+    }
+    .qiyeicon {
+        width: 46px;
+        height: 46px;
+        position: absolute;
+        top: -25px;
+        left: 40.55px
+    }
+    .dealtTxt2 {
+        width: 81px;
+        height: 18px;
+        font-size: 18px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #242424;
+        line-height: 6px;
+        position: absolute;
+        top: -5px;
+        left: 107.43px;
+    }
+    .qiyeicon2 {
+        width: 4.27px;
+        height: 18.5px;
+        position: absolute;
+        top: -5px;
+        left: 612.57px;
+    }
+    .qiyeBK {
+        width: 202.77px;
+        height: 80.39px;
+    }
+    .enterpriseCard {
+        float: left;
+        margin: 60px 0 0 18px;
+        width: 2000px;
+    }
+    .enterpriseCard li {
+        float: left;
+        margin: 0 15px 0 0;
+        position: relative;
+        cursor: pointer;
+    }
+    .enterpriseCard .cardName {
+        position: absolute;
+        top: 17.08px;
+        left: 24.9px;
+        width: 153px;
+        height: 14px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #242424;
+        line-height: 12px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .enterpriseCard .cardNum {
+        position: absolute;
+        top: 43.4px;
+        left: 24.19px;
+        width: 47px;
+        height: 16px;
+        font-size: 20px;
+        font-family: JCuYuan;
+        font-weight: 400;
+        color: #559DD4;
+        line-height: 6px;
+    }
+    .enterpriseCard .cardTxt {
+        position: absolute;
+        top: 42px;
+        left: 62px;
+        font-size: 8px;
+        color: #559dd4;
+    }
+    .jiantou1 {
+        position: absolute;
+        top: 72px;
+        left: 27.75px;
+        cursor: pointer;
+        z-index: 1;
+        width: 9.96px;
+        height: 18.5px;
+    }
+    .jiantou2 {
+        position: absolute;
+        top: 72px;
+        left: 641.5px;
+        cursor: pointer;
+        width: 9.96px;
+        height: 18.5px;
+    }
+    .eCharts {
+        width: 567px;
+        height: 238px;
+        position: absolute;
+        top: 120px;
+        left: 90px;
+    }
+    .canvas {
+        width: 500px;
+        height: 200px;
+    }
+    .earlyWarningdata {
+        width: 670.91px;
+        height: 344.09px;
+        background: #fff;
+        border-radius: 25px;
+        position: absolute;
+        top: -37px;
+        left: 669.61px;
+    }
+    .yujingicon {
+        width: 45.53px;
+        height: 45.53px;
+        position: absolute;
+        top: 17px;
+        left: 20px;
+        z-index: 1
+    }
+    .earlyTitle {
+        position: absolute;
+        top: 41px;
+        left: 82px;
+        width: 80px;
+        height: 18px;
+        font-size: 18px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #404040;
+        line-height: 6px;
+    }
+    .yujingicon2 {
+        width: 4.27px;
+        height: 18.5px;
+        position: absolute;
+        top: 30px;
+        right: 14px;
+        z-index: 1
+    }
+    .earlyCard {
+        position: absolute;
+        top: 60px;
+        left: -22px;
+        width: 650px;
+        height: 251px;
+        overflow-y: scroll;
+    }
+    /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+    .earlyCard::-webkit-scrollbar {
+        width: 10px;
+        height: 5px;
+        background-color: #f6f6f6;
+    }
+    /*定义滚动条轨道 内阴影+圆角*/
+    .earlyCard::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        /* border-radius: 10px; */
+        background-color: #f6f6f6;
+    }
+    /*定义滑块 内阴影+圆角*/
+    .earlyCard::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        background-color: #bcbcbc;
+        width: 5px;
+        height: 5px;
+    }
+    .earlyCard li {
+        float: left;
+        margin: 0 28px 32px 0;
+    }
+    .earlyTime {
+        width: 76px;
+        height: 9px;
+        font-size: 11px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #404040;
+        line-height: 6px;
+        opacity: 0.6;
+    }
+    .earlyName {
+        width: 185px;
+        height: 14px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #404040;
+        line-height: 12px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .earlyNum {
+        width: 19px;
+        height: 11px;
+        font-size: 11px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #FF512F;
+        line-height: 6px;
+    }
+    .earlyTxt {
+        width: 23px;
+        height: 11px;
+        font-size: 11px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #404040;
+        line-height: 6px;
+        opacity: 0.6;
+    }
+    .fengexian {
+        width: 0px;
+        height: 189px;
+        border: 1px black dashed;
+        position: absolute;
+        z-index: 2;
+        top: 111px;
+        left: 205px;
+    }
+    .fengexian1 {
+        width: 0px;
+        height: 189px;
+        border: 1px black dashed;
+        position: absolute;
+        z-index: 2;
+        top: 111px;
+        left: 419px;
+    }
+    .jiantou3 {
+        position: absolute;
+        top: 122px;
+        left: -59.75px;
+        cursor: pointer;
+        width: 9.96px;
+        height: 18.5px;
+    }
+    .jiantou4 {
+        position: absolute;
+        top: 122px;
+        left: 555.5px;
+        cursor: pointer;
+        width: 9.96px;
+        height: 18.5px;
+    }
+    .footer {
+        width: 1355px;
+        height: 68px;
+        background: #539ed5;
+        float: left;
+        margin: 47px 0 0 0;
+        /* overflow: hidden; */
+    }
+    .footerList {
+        /* position: absolute;
+        top: -17px;
+        left: 55px;
+        width: 1800px;
+        height: 100px; */
+        /* background: red; */
+    }
+    .footerList li {
+        float: left;
+        margin: 0 0 0 17px;
+    }
+    .footerTxt {
+        width: 72px;
+        height: 12px;
+        font-size: 11px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #404040;
+        line-height: 10px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .footerNum {
+        width: 40px;
+        height: 14px;
+        font-size: 20px;
+        font-family: Jdahei;
+        font-weight: 400;
+        color: #FA6060;
+        line-height: 6px;
+    }
+    .footerDw {
+        width: 24px;
+        height: 10px;
+        font-size: 10px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #404040;
+        line-height: 6px;
+        opacity: 0.8;
+    }
+    /* 隐藏图标 */
+    .dibuicon {
+        width: 14.23px;
+        height: 11.38px;
+        position: absolute;
+        top: 73px;
+        left: 20px
+    }
+    /* 图标 */
+    .zichanicon {
+        position: absolute;
+        top: 57.5px;
+        left: 43px;
+        width: 60px;
+        height: 60px;
+    }
+    .footerTxt1 {
+        position: absolute;
+        top: 64px;
+        left: 98px;
+    }
+    .footerNum1 {
+        position: absolute;
+        top: 87px;
+        left: 96px;
+    }
+    .footerDw1 {
+        position: absolute;
+        top: 90px;
+        left: 148px;
+    }
+    .guimuicon {
+        position: absolute;
+        top: 57.5px;
+        left: 196px;
+        width: 60px;
+        height: 60px;
+    }
+    .footerTxt2 {
+        position: absolute;
+        top: 64px;
+        left: 253px;
+    }
+    .footerNum2 {
+        position: absolute;
+        top: 87px;
+        left: 250px;
+    }
+    .footerDw2 {
+        position: absolute;
+        top: 90px;
+        left: 329px;
+    }
+    .yinyeicon {
+        position: absolute;
+        top: 57.5px;
+        left: 358px;
+        width: 60px;
+        height: 60px;
+    }
+    .footerTxt3 {
+        position: absolute;
+        top: 64px;
+        left: 413px;
+    }
+    .footerNum3 {
+        position: absolute;
+        top: 87px;
+        left: 410px;
+    }
+    .footerDw3 {
+        position: absolute;
+        top: 90px;
+        left: 489px;
+    }
+    .lirunicon {
+        position: absolute;
+        top: 57.5px;
+        left: 533px;
+        width: 60px;
+        height: 60px;
+    }
+    .footerTxt4 {
+        position: absolute;
+        top: 64px;
+        left: 588px;
+    }
+    .footerNum4 {
+        position: absolute;
+        top: 87px;
+        left: 585px;
+    }
+    .footerDw4 {
+        position: absolute;
+        top: 90px;
+        left: 650px;
+    }
+    .quanyiicon {
+        position: absolute;
+        top: 57.5px;
+        left: 703px;
+        width: 60px;
+        height: 60px;
+    }
+    .footerTxt5 {
+        position: absolute;
+        top: 64px;
+        left: 758px;
+    }
+    .footerNum5 {
+        position: absolute;
+        top: 87px;
+        left: 755px;
+    }
+    .footerDw5 {
+        position: absolute;
+        top: 90px;
+        left: 800px;
+    }
+    .hushuicon {
+        position: absolute;
+        top: 57.5px;
+        left: 858px;
+        width: 60px;
+        height: 60px;
+    }
+    .footerTxt6 {
+        position: absolute;
+        top: 64px;
+        left: 918px;
+    }
+    .footerNum6 {
+        position: absolute;
+        top: 87px;
+        left: 915px;
+    }
+    .footerDw6 {
+        position: absolute;
+        top: 90px;
+        left: 960px;
+    }
+    .jingicon {
+        position: absolute;
+        top: 57.5px;
+        left: 1007px;
+        width: 60px;
+        height: 60px;
+    }
+    .footerTxt7 {
+        position: absolute;
+        top: 64px;
+        left: 1068px;
+    }
+    .footerNum7 {
+        position: absolute;
+        top: 87px;
+        left: 1065px;
+    }
+    .footerDw7 {
+        position: absolute;
+        top: 90px;
+        left: 1140px;
+    }
+    .shuieicon {
+        position: absolute;
+        top: 57.5px;
+        left: 1183px;
+        width: 60px;
+        height: 60px;
+    }
+    .footerTxt8 {
+        position: absolute;
+        top: 64px;
+        left: 1238px;
+    }
+    .footerNum8 {
+        position: absolute;
+        top: 87px;
+        left: 1235px;
+    }
+    .footerDw8 {
+        position: absolute;
+        top: 90px;
+        left: 1298px;
+    }
+}

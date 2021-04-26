@@ -1202,9 +1202,10 @@ export default {
 }
 .btn-show{
   position: absolute;
-  top: 3px;
-  right: 32px;
+  top: 39px;
+  right: 153px;
   z-index: 3;
+  padding: 3px 8px 4px 8px !important;
 }
 .btn-show1{
   position: absolute;
