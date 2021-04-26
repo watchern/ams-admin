@@ -18,14 +18,14 @@
       <!--   v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"   -->
       <div
         class="el-btn-no-colorz"
-        v-if="!chartSwitching && ifopen==1"
+        v-if="!chartSwitching && ifopen == 1"
         @click="switchDivStyle('chart')"
       >
         <span><i class="el-icon-menu"></i> 仅表格</span>
       </div>
       <div
         class="el-btn-no-colorz"
-        v-if="chartSwitching && ifopen==1"
+        v-if="chartSwitching && ifopen == 1"
         @click="switchDivStyle('table')"
       >
         <span><i class="el-icon-s-data"></i> 配置图表</span>
@@ -615,7 +615,7 @@ export default {
     if (this.$route.path == "/analysis/editormodelnew") {
       this.ifopen = 1;
     }
-    if(this.$route.path == "/analysis/auditmodel"){
+    if (this.$route.path == "/analysis/auditmodel") {
       this.ifopen = 2;
     }
     this.getRenderTableData();
@@ -2071,6 +2071,11 @@ export default {
             if (this.chartConfigs.chart.length == 0) {
               this.isHaveCharts = true;
             }
+          } else {
+            this.chartConfigs = {
+              chart: [],
+              layout: [{ x: 0, y: 0, w: 12, h: 16, i: "0" }],
+            };
           }
           this.chartLoading = false;
         });

@@ -221,6 +221,7 @@
             label="操作"
             width="150px"
             align="center"
+            class="unop"
           >
             <template slot-scope="scope">
               <div>
@@ -1416,4 +1417,9 @@ export default {
   },
 };
 </script>
+<style>
+.app-container .el-table__fixed-right{
+  background-image: linear-gradient(to bottom, #F6F6FE , #FEFEFF);
+}
+</style>
 
