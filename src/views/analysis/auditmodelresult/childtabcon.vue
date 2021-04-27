@@ -18,14 +18,14 @@
       <!--   v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"   -->
       <div
         class="el-btn-no-colorz"
-        v-if="!chartSwitching && ifopen==1"
+        v-if="!chartSwitching && ifopen == 1"
         @click="switchDivStyle('chart')"
       >
         <span><i class="el-icon-menu"></i> 仅表格</span>
       </div>
       <div
         class="el-btn-no-colorz"
-        v-if="chartSwitching && ifopen==1"
+        v-if="chartSwitching && ifopen == 1"
         @click="switchDivStyle('table')"
       >
         <span><i class="el-icon-s-data"></i> 配置图表</span>
@@ -101,6 +101,13 @@
               class="oper-btn export-2"
             ></el-button>
             <!-- addDetailRel('qwer1', '项目11') -->
+            
+            <el-button
+            :disabled="false"
+            type="primary"
+            @click="toSubmit"
+            style="margin-left: 10px"
+          >提交审核</el-button>
           </div>
         </div>
         <ag-grid-vue
@@ -254,6 +261,12 @@
                   class="oper-btn export-2"
                 ></el-button>
                 <!-- addDetailRel('qwer1', '项目11') -->
+            <el-button
+            :disabled="false"
+            type="primary"
+            @click="toSubmit"
+            style="margin-left: 10px"
+          >提交审核</el-button>
               </div>
             </div>
 
@@ -422,6 +435,35 @@
         {{ item.modelDetailName }}
       </li>
     </div>
+    
+    
+    <el-dialog
+        title="提交审核"
+        v-if="dialogVisibleSubmit"
+        :visible.sync="dialogVisibleSubmit"
+        :close-on-click-modal="false"
+        width="80%"
+      >
+        <div>
+          <flowItem
+            ref="flowItem"
+            :flowSet="flowSet"
+            :flowItem="flowItem"
+            :flow-param="flowParam"
+            @closeModal="closeFlowItem"
+            @delectData="delectData"
+          ></flowItem>
+        </div>
+        <span slot="footer">
+          <el-button size="mini" type="info" class="table_header_btn" @click="saveOpinion">提交</el-button>
+          <el-button
+            size="mini"
+            type="info"
+            class="table_header_btn"
+            @click="dialogVisibleSubmit = false"
+          >关闭</el-button>
+        </span>
+      </el-dialog>
   </div>
 </template>
 
@@ -479,6 +521,8 @@ import { setDataSetToNode } from "ams-datamax/src/components/chartEdit/methods/c
 import chartAudit from "@/api/analysis/chartauditmodel";
 let mouseXY = { x: null, y: null };
 let DragPos = { x: null, y: null, w: 1, h: 1, i: null };
+import { randomString4Len } from '@/api/analysis/common';
+import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
 export default {
   name: "childTabCon",
   // 注册draggable组件
@@ -492,6 +536,7 @@ export default {
     userProject,
     GridLayout,
     GridItem,
+    flowItem,
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -524,6 +569,32 @@ export default {
   ],
   data() {
     return {
+      //工作流相关
+      // 判断是否走工作流
+      flowParam: 0,
+      multipleSelection:[],
+      applyInfo:{},
+      dialogVisibleSubmit:false,
+      flowSet: {
+        opinionList: false,
+        opinion: false,
+        nextStep: true,
+        isSecond: false
+      },
+      flowItem: {
+        //动态赋值
+        wftype: "cn_com_boe_as_preInvest",
+        applyUuid: "",
+        detailUuids: "",
+        applyTitle: "",
+        workEffortId: "",
+        appDataUuid: "",
+        versionUuid: "",
+        isSecond: false,
+        temp1: ""
+      },
+
+      //其他
       chartPreview: true,
       dialogVisible: false,
       // 定义ag-grid列
@@ -615,7 +686,7 @@ export default {
     if (this.$route.path == "/analysis/editormodelnew") {
       this.ifopen = 1;
     }
-    if(this.$route.path == "/analysis/auditmodel"){
+    if (this.$route.path == "/analysis/auditmodel") {
       this.ifopen = 2;
     }
     this.getRenderTableData();
@@ -652,6 +723,7 @@ export default {
     },
     rowChange() {
       var selectData = this.gridApi.getSelectedRows();
+      this.multipleSelection=selectData;
       if (selectData.length == 0) {
         this.modelRunResultBtnIson.exportBtn = false;
         this.modelRunResultBtnIson.chartDisplayBtn = false;
@@ -2071,6 +2143,11 @@ export default {
             if (this.chartConfigs.chart.length == 0) {
               this.isHaveCharts = true;
             }
+          } else {
+            this.chartConfigs = {
+              chart: [],
+              layout: [{ x: 0, y: 0, w: 12, h: 16, i: "0" }],
+            };
           }
           this.chartLoading = false;
         });
@@ -2432,8 +2509,79 @@ export default {
         }
       }
     },
-  },
-};
+    /**
+     * 工作流  点击提交审核按钮
+     */
+    toSubmit() {
+      
+      // alert(JSON.stringify(this.multipleSelection));
+      if (this.multipleSelection.length ==0) {
+        alert("请至少选中一条数据");
+        // this.common.alertMsg(2, "请选中一条数据");
+        return false;
+      }
+      this.flowItem.versionUuid = randomString4Len();
+      this.flowItem.applyTitle = 'zhan';
+      this.applyInfo.versionUuid = this.flowItem.versionUuid;
+      this.applyInfo.status = "";
+      this.applyInfo.mstate = "";
+      this.applyInfo.fstate = "";
+      this.applyInfo.isUpdate = false; //初始化
+      this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
+      this.dialogVisibleSubmit = true;
+    },
+    saveOpinion() {
+      var data={
+      versionUuid:this.flowItem.versionUuid,
+      busdatas:this.multipleSelection
+      }
+       this.$axios
+        .post("/ams-clue/busRelation/toSubmit", data)
+        .then(response => {
+          if (response.data.code == "0") {
+           this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+            //修改业务执行状态为0，调用监听，执行更新流程状态操作。
+            this.$store.dispatch("applyInfo/setMstate", "0");
+            this.flowParam = 1
+          }else{
+           this.dialogVisibleSubmit = false;
+          this.common.alertMsg(1, this.textShare.operateFail());
+
+          }
+        })
+        .catch(error => {
+           this.dialogVisibleSubmit = false;
+          this.common.alertMsg(1, this.textShare.operateFail());
+          console.log(error);
+        });
+    },
+    
+    closeFlowItem(val) {
+      this.dialogVisibleSubmit = val;
+      this.flowParam=0;
+      this.initData();
+    },
+    //流程发布失败
+    delectData(val) {
+      this.dialogVisibleSubmit=val;
+      var data={
+      busRelationUuid:this.flowItem.appDataUuid,
+      }
+       this.$axios
+        .post("/ams-clue/busRelation/delete/rollBackData", data)
+        .then(response => {
+          if (response.data.code == "0") {
+           this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+          }
+        })
+        .catch(error => {
+          this.common.alertMsg(1, this.textShare.operateFail());
+          console.log(error);
+        });
+        this.loadUserList();
+    },
+  }
+}
 </script>
 <style scoped>
 .itxst {

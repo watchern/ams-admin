@@ -8,8 +8,8 @@
       >
         <span class="name" :class="[isOpen && 'text-black']">{{ item.name }}</span>
         <i
-          v-if="item.children && item.children.length"
-          class="el-icon-arrow-left icon absolute"
+          v-if="item.children && item.children.length && item.children.length!=1"
+          class="el-icon-arrow-down icon absolute"
           :class="[isOpen && 'icon-open text-black']"
         />
       </div>
@@ -59,6 +59,7 @@ export default {
       }
       if (item.children && item.children.length==1) {
         console.log("三级路径唯一")
+        isCloseTree = true
         this.$router.push({ path: this.item.children[0].path })
         this.$store.commit('aceState/setRightFooterTags', {
           type: 'active',
@@ -123,7 +124,7 @@ export default {
       font-size: 12px;
       margin-top: -8px;
       &-open {
-        transform: rotateZ(-90deg);
+        transform: rotateZ(-180deg);
       }
     }
   }
