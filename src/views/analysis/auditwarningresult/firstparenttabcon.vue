@@ -73,7 +73,6 @@
         v-if="warringResultType===1"
         label="模型名称"
         width="300px"
-        align="center"
         prop="model.modelName"
       >
         <template slot-scope="scope">
@@ -98,7 +97,6 @@
         v-if="warringResultType===2"
         label="指标名称"
         width="300px"
-        align="center"
         prop="model.modelName"
       >
         <template slot-scope="scope">
@@ -201,14 +199,12 @@
       <el-table-column
         label="运行参数"
         prop="settingInfo"
-        align="center"
         width="200px"
         :formatter="settingInfoParamsArrFormatter"
       />
       <el-table-column
         label="运行信息"
         prop="runMessage"
-        align="center"
         width="200px"
       />
       <el-table-column
