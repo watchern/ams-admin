@@ -240,10 +240,10 @@ export default {
         // 如果减少宽度仍旧不够 则放开限制 自动换行
         if (this.screenWidth >= 1400 && this.screenWidth< 1920) {
           let inPutWords = (30 * (1920 - this.screenWidth) / 520).toFixed(1)
-          this.textWidth = 163 - inPutWords
-          this.selectWidth = 163 - inPutWords
+          this.textWidth = 153 - inPutWords
+          this.selectWidth = 153 - inPutWords
           let inPutTimes = (85 * (1920 - this.screenWidth) / 520).toFixed(1)
-          this.timePeriodWidth = 220 - inPutTimes
+          this.timePeriodWidth = 200 - inPutTimes
           this.componentMisalignment = false
         } else {
           this.textWidth = 90
@@ -253,9 +253,9 @@ export default {
         }
       } else {
         // 宽度足够则恢复原设定
-        this.textWidth = 163
-        this.selectWidth = 163
-        this.timePeriodWidth = 220
+        this.textWidth = 153
+        this.selectWidth = 153
+        this.timePeriodWidth = 200
         this.componentMisalignment = false
       }
     }

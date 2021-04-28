@@ -183,13 +183,21 @@
         prop="runEndTime"
         :formatter="dateFormatter1"
       />
+      <!-- :formatter="settingInfoSqlFormatter" -->
       <el-table-column
         label="运行SQL"
         prop="settingInfo"
         align="center"
         width="200px"
-        :formatter="settingInfoSqlFormatter"
-      />
+      >
+            <template slot-scope="scope">
+              <el-popover trigger="hover" placement="top" width="500" :content="settingInfoSqlFormatter(scope.row)">
+                <div slot="reference" class="name-wrapper">
+                  <el-link :underline="false" type="primary">鼠标放置查看详情</el-link>
+                </div>
+              </el-popover>
+            </template>
+          </el-table-column>
       <el-table-column
         label="运行参数"
         prop="settingInfo"
@@ -1180,4 +1188,6 @@ export default {
   },
 };
 </script>
+<style>
+</style>
 
