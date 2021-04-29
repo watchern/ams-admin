@@ -67,19 +67,18 @@
         <el-table-column
           label="模型名称"
           width="100px"
-          align="center"
           prop="modelName"
         />
         <el-table-column
           label="平均运行时间"
           width="150px"
-          align="center"
           prop="runTime"
         />
         <el-table-column label="审计事项" prop="auditItemName" />
         <el-table-column
           label="风险等级"
           prop="riskLevelUuid"
+          align="center"
           :formatter="riskLevelFormatter"
         />
         <el-table-column
@@ -91,6 +90,7 @@
           label="创建时间"
           width="180px"
           prop="createTime"
+          align="center"
           :formatter="dateFormatter"
         />
       </el-table>
