@@ -689,6 +689,9 @@ export default {
     if (this.$route.path == "/analysis/auditmodel") {
       this.ifopen = 2;
     }
+    if(this.$route.path == "/analysis/boeauditmodel"){
+      this.ifopen = 2;
+    }
     this.getRenderTableData();
     this.chartReflexion();
     document.addEventListener(
