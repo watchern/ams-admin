@@ -20,6 +20,8 @@ import components from '@/components/public/index'
 
 import '../src/components/ams-indicator-admin/src/styles/element-variables.scss'
 import '../src/components/ams-indicator-admin/src/styles/index.scss' // global css
+// import '@ag-grid-community/all-modules/dist/styles/ag-grid.css';
+// import '@ag-grid-community/all-modules/dist/styles/ag-theme-alpine.css';// global css
 Vue.use(components)
 // Ace end
 
