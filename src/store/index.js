@@ -7,6 +7,8 @@ import datasource from './modules/datasource'
 import projects from './modules/projects'
 import monitor from './modules/monitor'
 import resource from './modules/resource'
+import applyInfo from 'ams-starflow-vue/src/store/modules/applyInfo'
+
 
 Vue.use(Vuex)
 
@@ -32,8 +34,9 @@ const modules = modulesFiles.keys().reduce((modules, modulePath) => {
 }, {})
 
 const store = new Vuex.Store({
-  modules,
-  getters
+  getters,
+  applyInfo,
+  modules
 })
 
 export default store

@@ -272,4 +272,5 @@ export default {
   overflow: scroll;
   max-height:580px;
 }
+
 </style>

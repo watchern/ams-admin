@@ -246,9 +246,9 @@ export default {
           this.timePeriodWidth = 220 - inPutTimes
           this.componentMisalignment = false
         } else {
-          this.textWidth = 130
-          this.selectWidth = 130
-          this.timePeriodWidth = 135
+          this.textWidth = 90
+          this.selectWidth = 100
+          this.timePeriodWidth = 115
           this.componentMisalignment = true
         }
       } else {

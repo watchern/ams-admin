@@ -10,6 +10,17 @@ import etlschedulerRouter from './modules/etlscheduler/etlscheduler'
 import analysisRouter from './modules/analysis/analysis'
 import graphRouter from './modules/graphtool/graphtool'
 const AmsRoutes = [
+  
+  {
+    path: '/todowork',
+    name: 'todowork',
+    component: () => import('ams-starflow-vue/src/components/todowork/todowork')
+  },
+  {
+    path: '/todoDetail',
+    name: 'todoDetail',
+    component: () => import('ams-starflow-vue/src/components/todowork/todoDetail')
+  },
   {
     path: '/',
     redirect: '/ams/first'

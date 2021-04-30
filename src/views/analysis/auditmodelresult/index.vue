@@ -120,7 +120,8 @@ export default {
   height:100%
 }
 .result-tabs-div{
-  height:100%
+  height:100%;
+  padding-bottom: 20px;
 }
 .result-tabs{
   height:100%

@@ -59,3 +59,19 @@ export function getUuid() {
   var uuid = s.join('')
   return uuid
 }
+
+  /**
+   * 自动生成8位Uuid
+   */
+  export function  randomString4Len() {
+    //var len = 64 * 1
+    var len = 8;
+    var $chars =
+      "ABCDEFGHILJKMNOPQRSTUVWXYZabcdefghijklmnoprstuvwxyz1234567890";
+    var maxLen = $chars.length;
+    var str = "";
+    for (var i = 0; i < len; i++) {
+      str += $chars.charAt(Math.floor(Math.random() * maxLen));
+    }
+    return str;
+  }

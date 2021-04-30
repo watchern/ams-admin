@@ -39,9 +39,6 @@
           </div>
           <div
             class="tree-out-box absolute"
-            :style="{
-              border: isShowTreeList ? '1px solid rgb(85,158,212)' : 'none',
-            }"
           >
             <transition
               name="slide-fade"
@@ -700,17 +697,18 @@ export default {
     }
   }
   .tree-out-box {
-    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(4px) brightness(110%);
     top: 65px;
     left: 0;
     z-index: 999;
     width: 100%;
     display: flex;
     border-top: none !important;
+    box-shadow: 0 4px 10px 0 rgb(3 136 238 / 38%);
     background-image: linear-gradient(
       to right,
-      rgba(255, 255, 255, 0.8) 97%,
-      rgba(219, 233, 252, 0.8)
+      rgba(255, 255, 255, 0.2) 97%,
+      rgba(219, 233, 252, 0.3)
     );
   }
   .tree-list {
