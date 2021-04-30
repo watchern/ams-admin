@@ -219,23 +219,19 @@ export default {
     },
   },
   created() {
-    if (process.env.VUE_APP_BASE_SKINCONTROL == "new-login") {
-      this.skincontrol = "new-login";
-    }
-    if (process.env.VUE_APP_BASE_SKINBACKGROUND!='') {
-      this.backgroundImg = process.env.VUE_APP_BASE_SKINBACKGROUND
-    }
+    this.skincontrol = process.env.hasOwnProperty("VUE_APP_BASE_SKINCONTROL")?process.env["VUE_APP_BASE_SKINCONTROL"]: this.skincontrol
+    this.backgroundImg = process.env.hasOwnProperty("VUE_APP_BASE_SKINBACKGROUND") ?process.env["VUE_APP_BASE_SKINBACKGROUND"]: this.backgroundImg
     // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
     if (this.loginForm.username === "") {
-      if (this.skincontrol == "new-login") {
+      if (this.skincontrol === "new-login") {
         this.$refs.usernamenew.focus();
       } else {
         this.$refs.username.focus();
       }
     } else if (this.loginForm.password === "") {
-      if (this.skincontrol == "new-login") {
+      if (this.skincontrol === "new-login") {
         this.$refs.passwordnew.focus();
       } else {
         this.$refs.password.focus();

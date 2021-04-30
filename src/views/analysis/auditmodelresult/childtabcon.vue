@@ -101,13 +101,13 @@
               class="oper-btn export-2"
             ></el-button>
             <!-- addDetailRel('qwer1', '项目11') -->
-            
             <el-button
             :disabled="false"
             type="primary"
             @click="toSubmit"
             style="margin-left: 10px"
           >提交审核</el-button>
+
           </div>
         </div>
         <ag-grid-vue
@@ -261,12 +261,13 @@
                   class="oper-btn export-2"
                 ></el-button>
                 <!-- addDetailRel('qwer1', '项目11') -->
-            <el-button
+                <el-button
             :disabled="false"
             type="primary"
             @click="toSubmit"
             style="margin-left: 10px"
           >提交审核</el-button>
+
               </div>
             </div>
 
@@ -435,8 +436,7 @@
         {{ item.modelDetailName }}
       </li>
     </div>
-    
-    
+
     <el-dialog
         title="提交审核"
         v-if="dialogVisibleSubmit"
@@ -569,7 +569,7 @@ export default {
   ],
   data() {
     return {
-      //工作流相关
+       //工作流相关
       // 判断是否走工作流
       flowParam: 0,
       multipleSelection:[],
@@ -687,6 +687,9 @@ export default {
       this.ifopen = 1;
     }
     if (this.$route.path == "/analysis/auditmodel") {
+      this.ifopen = 2;
+    }
+    if(this.$route.path == "/analysis/boeauditmodel"){
       this.ifopen = 2;
     }
     this.getRenderTableData();
@@ -2580,8 +2583,8 @@ export default {
         });
         this.loadUserList();
     },
-  }
-}
+  },
+};
 </script>
 <style scoped>
 .itxst {

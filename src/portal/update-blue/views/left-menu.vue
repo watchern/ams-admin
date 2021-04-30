@@ -10,7 +10,8 @@
           style="cursor: pointer"
         >
           <div class="logo-Words" @click="selectMenuIn()">
-              <img width="20px" src="../../../styles/image/taicanglogo.png"> {{ projectname }}
+            <img width="20px" src="../../../styles/image/taicanglogo.png">
+            {{ projectname }}
           </div>
           <img src="../style/images/color-n.png" class="logo-text" />
         </div>
@@ -697,7 +698,7 @@ export default {
     }
   }
   .tree-out-box {
-    backdrop-filter: blur(4px) brightness(110%);
+    backdrop-filter: blur(7px) brightness(100%);
     top: 65px;
     left: 0;
     z-index: 999;
@@ -707,8 +708,8 @@ export default {
     box-shadow: 0 4px 10px 0 rgb(3 136 238 / 38%);
     background-image: linear-gradient(
       to right,
-      rgba(255, 255, 255, 0.2) 97%,
-      rgba(219, 233, 252, 0.3)
+      rgba(255, 255, 255, 0.7) 97%,
+      rgba(219, 233, 252, 0.8)
     );
   }
   .tree-list {

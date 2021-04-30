@@ -96,8 +96,8 @@
                   >{{ scope.row.modelName }}</el-link>
                 </template> -->
               </el-table-column>
-              <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
-              <el-table-column label="审计事项" prop="auditItemName" align="center" />
+              <el-table-column label="平均运行时间" width="150px" prop="runTime" />
+              <el-table-column label="审计事项" prop="auditItemName" />
               <el-table-column
                 label="风险等级"
                 prop="riskLevelUuid"
@@ -148,16 +148,13 @@
                       :key="1"
                       :pre-value="item.executeSQLList"
                       :paramInfo="item.runModelConfig"
+                      :dataUserId="dataUserId"
+                      :sceneCode="sceneCode"
                       use-type="modelPreview" />
                     </el-col>
                   </div>
                   <el-col :span="2">
-                    <el-button
-                      v-if="item.isExistParam"
-                      type="primary"
-                      class="btn-show"
-                      @click="loadParamDraw(item.name)"
-                    >
+                    <el-button v-if="item.isExistParam" type="primary" class="btn-show" @click="loadParamDraw(item.name)">
                       <span class="iconfont iconoper-search" />查询
                     </el-button>
                   </el-col>
@@ -235,6 +232,7 @@
 </template>
 <script>
 import { findModel, saveModel, deleteModel, shareModel, selectModel, updateModel, updateModelBasicInfo, exportModel, setModelSession } from '@/api/analysis/auditmodel'
+import { cacheDict } from '@/api/base/sys-dict'
 import {deleteGraphInfoById} from '@/api/graphtool/apiJs/graphList'
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
@@ -252,9 +250,12 @@ import personTree from '@/components/publicpersontree/index'
 export default {
   name: 'ModelListTable',
   components: { paramDrawNew,Pagination, QueryField, EditModel, ModelFolderTree, childTabs, crossrangeParam, paramDraw, modelshoppingcart, personTree },
-  props: ['power','dataUserId','sceneCode','isAuditWarring'],
+  props: ['power','isAuditWarring'],
   data() {
     return {
+      //京东方专用
+      sceneCode:"boeProject",
+      dataUserId:this.$route.query.id,
       isShow: false,
       tableKey: 'errorUuid',
       // list列表
@@ -374,7 +375,7 @@ export default {
   },
   created() {
     // this.getList({ modelFolderUuid: 1 })
-    this.sceneCode ="boeProject";
+    // this.sceneCode ="boeProject";
     this.dataUserId = this.$route.query.id;
   },
   mounted() {
@@ -400,9 +401,19 @@ export default {
     },
     initData(){
       // 初始化审计事项
-      this.modelTypeData = getDictList('002003')
-      //京东方默认传ID
-      this.getList(this.query);
+      var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
+      if (sysDict == null) {
+        cacheDict().then(resp => {
+          sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
+          this.modelTypeData = getDictList('002003')
+            //京东方默认传ID
+          this.getList(this.query);
+        })
+      }else{
+        this.modelTypeData = getDictList('002003')
+        //京东方默认传ID
+        this.getList(this.query);
+      }
     },
     Toggle: function() {
       this.isShow = !this.isShow
@@ -1258,9 +1269,10 @@ export default {
 }
 .btn-show {
   position: absolute;
-  top: 3px;
-  right: 32px;
+  top: 39px;
+  right: 153px;
   z-index: 3;
+  padding: 3px 8px 4px 8px !important;
 }
 .btn-show1 {
   position: absolute;

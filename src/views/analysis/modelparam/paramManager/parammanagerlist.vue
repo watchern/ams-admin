@@ -84,12 +84,14 @@
           <el-table-column
             prop="dataType"
             label="数据类型"
-            width="200":formatter="dataTypeFormatter">
+            width="200"
+            :formatter="dataTypeFormatter">
           </el-table-column>
           <el-table-column
             prop="createTime"
             label="创建日期"
             width="200"
+            align="center"
             :formatter="dateFormatter">
           </el-table-column>
           <el-table-column
@@ -101,6 +103,7 @@
             prop="enabled"
             label="参数状态"
             width="200"
+            align="center"
             :formatter="enabledFormatter">
           </el-table-column>
         </el-table>

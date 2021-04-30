@@ -86,7 +86,6 @@
           <el-table-column
             label="模型名称"
             width="300px"
-            align="center"
             prop="model.modelName"
           >
             <template slot-scope="scope">
@@ -187,7 +186,6 @@
           <el-table-column
             label="运行参数"
             prop="settingInfo"
-            align="center"
             width="200px"
             :formatter="settingInfoParamsArrFormatter"
           />
@@ -206,7 +204,6 @@
           <el-table-column
             label="关联项目"
             prop="projectName"
-            align="center"
             width="200px"
           />
           <el-table-column

@@ -13,7 +13,7 @@
     <el-table :key="tableKey" ref="auditWarningList" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;"
               @select="listSelectChange" @select-all="listSelectChange">
       <el-table-column type="selection" width="55" />
-      <el-table-column label="预警名称" prop="warningName" width="300px" align="center"  >
+      <el-table-column label="预警名称" prop="warningName" width="300px"  >
         <template slot-scope="scope">
           <el-link
             @click.native.prevent="detail(scope.row.auditWarningUuid)"
@@ -22,11 +22,11 @@
           </el-link>
         </template>
       </el-table-column>
-      <el-table-column label="创建人" prop="createUserName" width="150px" align="center"  />
-      <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" />
-      <el-table-column label="关联类型" prop="warningType" :formatter="warningTypeFormat" />
+      <el-table-column label="创建人" prop="createUserName" width="150px"  />
+      <el-table-column label="创建时间" prop="createTime" :formatter="dateFormatter" align="center"/>
+      <el-table-column label="关联类型" prop="warningType" :formatter="warningTypeFormat" align="center"/>
       <el-table-column label="关联模型/指标数量" prop="sourceCount"  />
-      <el-table-column label="操作" prop="isStart"  >
+      <el-table-column label="操作" prop="isStart" align="center" >
         <template slot-scope="scope">
           <el-link
             type="primary"

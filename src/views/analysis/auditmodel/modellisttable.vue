@@ -55,8 +55,8 @@
               <el-link type="primary" @click="selectModelDetail(scope.row.modelUuid)">{{ scope.row.modelName }}</el-link>
             </template>
           </el-table-column>
-          <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
-          <el-table-column label="审计事项" prop="auditItemName" align="center" />
+          <el-table-column label="平均运行时间" width="150px" prop="runTime" />
+          <el-table-column label="审计事项" prop="auditItemName" />
           <el-table-column label="风险等级" prop="riskLevelUuid" align="center" :formatter="riskLevelFormatter" />
           <el-table-column label="模型类型" prop="modelType" align="center" :formatter="modelTypeFormatter" />
           <el-table-column label="创建时间" prop="createTime" align="center" :formatter="dateFormatter" />
