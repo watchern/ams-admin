@@ -25,7 +25,8 @@
           :helptables="item.helpTables"
           :model-uuid="item.modeluuid"
           useType="modelRunResult"
-          :resultSpiltObjects="item.resultSpiltObjects"
+          @addTab="addTab"
+           :resultSpiltObjects="item.resultSpiltObjects"
           :settingInfo="item.settingInfo"
         />
       </el-tab-pane>
