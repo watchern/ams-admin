@@ -169,6 +169,22 @@ module.exports = {
           '^/tcbaudit/': '/'
         }
       },
+      '/starflow/': {
+        timeout: 1800000,
+        target: process.env.AMSSTARFLOW_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/starflow/': '/'
+        }
+      },
+      '/ams-clue': {
+        timeout: 1800000,
+        target: process.env.AMSCLUE_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/ams-clue/': '/'
+        }
+      },
     }
   },
   configureWebpack: config => {
@@ -182,7 +198,8 @@ module.exports = {
       alias: {
         '@': resolve('src'),
         '@TCB': 'tcbaudit-vue/src',
-        '@ETL': 'ams-etlscheduler-ui/src'
+        '@ETL': 'ams-etlscheduler-ui/src',
+        '@MAX': 'ams-datamax/src'
       }
     },
     // gzip压缩

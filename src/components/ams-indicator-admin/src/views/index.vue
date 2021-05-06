@@ -489,8 +489,8 @@ export default {
      */
     getWebSocket() {
       this.currentPageWebSocketUuid = this.getuuid();
-      const webSocketPath = 'ws://' + window.location.host+ '/websocket?' + this.currentPageWebSocketUuid + this.currentPageWebSocketBusinessId
-        // process.env.VUE_APP_INDICATOR_WEB_SOCKET + this.currentPageWebSocketUuid + this.currentPageWebSocketBusinessId
+      const webSocketPath = process.env.this.AmsWebsocket.getWSBaseUrl(this.AmsModules.INDICATOR) + this.currentPageWebSocketUuid + this.currentPageWebSocketBusinessId
+        // process.env.this.AmsWebsocket.getWSBaseUrl(this.AmsModules.INDICATOR) + this.currentPageWebSocketUuid + this.currentPageWebSocketBusinessId
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
       // 当服务端打开连接
@@ -536,8 +536,7 @@ export default {
             id:val.analysisRegionId,
             name:val.measureName
           }
-          //处理aggrid的列信息ss
-          debugger
+          //处理aggrid的列信息
           let data = {id:val.analysisRegionId,data:result,measureName:val.measureName,chartConfig:val.chartConfig}
           //根据返回的结果id找到数组里面的数据进行修改
             dataList.data = result

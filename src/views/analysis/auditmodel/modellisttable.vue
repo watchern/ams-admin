@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-list-container all">
+  <div class="tree-list-container all zzz">
     <el-tabs @tab-click="handleClick" v-model="editableTabsValue" closable @tab-remove="removeTab">
       <el-tab-pane label="模型列表" name="modelList">
         <div class="filter-container">
@@ -55,8 +55,8 @@
               <el-link type="primary" @click="selectModelDetail(scope.row.modelUuid)">{{ scope.row.modelName }}</el-link>
             </template>
           </el-table-column>
-          <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
-          <el-table-column label="审计事项" prop="auditItemName" align="center" />
+          <el-table-column label="平均运行时间" width="150px" prop="runTime" />
+          <el-table-column label="审计事项" prop="auditItemName" />
           <el-table-column label="风险等级" prop="riskLevelUuid" align="center" :formatter="riskLevelFormatter" />
           <el-table-column label="模型类型" prop="modelType" align="center" :formatter="modelTypeFormatter" />
           <el-table-column label="创建时间" prop="createTime" align="center" :formatter="dateFormatter" />
@@ -76,7 +76,17 @@
             <el-row>
               <div @click="Toggle1()">
                 <el-col :span="24" class="row-all">
-                  <childTabs :isRelation="item.isRelation===true?true:false" @setNextValue="setNextValue" @addTab="addTab" :modelId="modelId" :is-model-preview="true" :ref="item.name" :key="1" :pre-value="item.executeSQLList" use-type="modelPreview" />
+                  <childTabs
+                      :isRelation="item.isRelation===true?true:false"
+                      @setNextValue="setNextValue"
+                      @addTab="addTab"
+                      :modelId="modelId"
+                      :is-model-preview="true"
+                      :ref="item.name"
+                      :key="1"
+                      :pre-value="item.executeSQLList"
+                      :paramInfo="item.runModelConfig"
+                      use-type="modelPreview" />
                 </el-col>
               </div>
               <el-col :span="2">
@@ -337,10 +347,7 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-      /* const webSocketPath = 'ws://localhost:8086/analysis/websocket?' + this.$store.getters.personuuid*/
-      // const webSocketPath = process.env.VUE_APP_ANALYSIS_WEB_SOCKET + this.$store.getters.personuuid + 'modellisttable'
-      // 修改为动态获取ip
-      const webSocketPath = 'ws://' + window.location.host+ '/websocket?' + this.$store.getters.personuuid + 'modellisttable'
+      const webSocketPath = this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) + this.$store.getters.personuuid + 'modellisttable'
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
       // 当服务端打开连接
@@ -969,6 +976,9 @@ export default {
         }else{
         this.$emit('loadingSet',false,"");
         this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
+        if(isExistParam){
+          selectObj[0].runModelConfig = obj.runModelConfig
+        }
         this.addTab(selectObj[0], isExistParam, result.data.executeSQLList)
         //界面渲染完成之后开始执行sql,将sql送入调度
         startExecuteSql(result.data).then((result) => {
@@ -987,16 +997,20 @@ export default {
      * @param executeSQLList 执行sql列表
      */
     addTab(modelObj, isExistParam, executeSQLList,isRelation) {
-      this.editableTabs.push({
+      let obj = {
         title: modelObj.modelName + '结果',
         name: modelObj.modelUuid,
         isExistParam: isExistParam,
         executeSQLList: executeSQLList,
         isRelation:isRelation
-      })
-        this.nowTabModelUuid = modelObj.modelUuid
-        this.editableTabsValue = modelObj.modelUuid
-        this.modelPreview.push(modelObj.modelUuid)
+      }
+      if(isExistParam){
+        obj.runModelConfig = modelObj.runModelConfig
+      }
+      this.editableTabs.push(obj)
+      this.nowTabModelUuid = modelObj.modelUuid
+      this.editableTabsValue = modelObj.modelUuid
+      this.modelPreview.push(modelObj.modelUuid)
     },
     handleClick(tab, event){
       if (tab.name!=='模型列表'){
@@ -1053,6 +1067,11 @@ export default {
             paramObj:obj.paramsArr
           }
           this.currentRunModelAllConfig[selectObj[0].modelUuid] = runModelConfig
+          let recplaceed = {
+            sql:obj.sqls,
+            paramsArr:obj.paramsArr
+          }
+          obj.runModelConfig = recplaceed
           this.executeSql(obj,selectObj,true)
       }
       else{
@@ -1076,6 +1095,11 @@ export default {
         obj.businessField = 'modellisttable'
         // 重置数据展现界面数据
         this.$refs.[modelUuid][0].reSetTable()
+        let paramInfo = {
+          sql:obj.sqls,
+          paramsArr:obj.paramsArr
+        }
+        this.$refs.[modelUuid][0].loadNewParamInfo(paramInfo)
         //设置新的参数信息
         let runModelConfig = {
           sqlValue:this.currentRunModelAllConfig[modelUuid].sqlValue,
@@ -1178,9 +1202,10 @@ export default {
 }
 .btn-show{
   position: absolute;
-  top: 3px;
-  right: 32px;
+  top: 39px;
+  right: 153px;
   z-index: 3;
+  padding: 3px 8px 4px 8px !important;
 }
 .btn-show1{
   position: absolute;
@@ -1206,5 +1231,7 @@ export default {
 .table{
   height: 450px !important;
 }
-
+>>>.el-tabs__content{
+  overflow: visible;
+}
 </style>

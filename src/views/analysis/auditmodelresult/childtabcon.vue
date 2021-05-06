@@ -14,130 +14,351 @@
         <el-button type="primary" @click="queryCondition">查 询</el-button>
       </span>
     </el-dialog>
-    <el-row style="margin-right: 35px;" v-if="useType !== 'graph'">
-      <div :class="chartClass" title="图表" @click="switchDivStyle('chart')"><span class="icon iconfont" >&#xecee;</span></div>
-      <div :class="tableClass" title="表格" @click="switchDivStyle('table')"><span class="icon iconfont" >&#xe6d8;</span></div>
-    </el-row>
-    <div v-if="chartSwitching" style="position:relative">
-      <div v-if="myFlag">
-        <div align="right" style="position: absolute;top: -29px;right: 0;">
-          <el-dropdown>
-            <el-button
-              type="primary"
-              class="oper-btn link-2"
-              :disabled="modelRunResultBtnIson.associatedBtn"
-              @click="openProjectDialog"
-            ></el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item @click.native="openProjectDialog">分配项目</el-dropdown-item>
-              <el-dropdown-item @click.native="removeRelated()">移除分配项目</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-<!--          <el-button-->
-<!--            type="primary"-->
-<!--            class="oper-btn link-2"-->
-<!--            :disabled="modelRunResultBtnIson.associatedBtn"-->
-<!--            @click="openProjectDialog"-->
-<!--            title="分配项目"-->
-<!--          ></el-button>-->
-<!--          <el-button-->
-<!--            :disabled="modelRunResultBtnIson.disassociateBtn"-->
-<!--            type="primary"-->
-<!--            class="oper-btn move"-->
-<!--            @click="removeRelated()"-->
-<!--            title="移除分配项目"-->
-<!--          ></el-button-->
-<!--          >-->
-<!--          <el-button-->
-<!--            :disabled="modelRunResultBtnIson.chartDisplayBtn"-->
-<!--            type="primary"-->
-<!--            class="oper-btn chart"-->
-<!--            @click="chartShowIsSee = true"-->
-<!--            title="图表展示"-->
-<!--          ></el-button>-->
-          <el-button
-            :disabled="false"
-            type="primary"
-            @click="queryConditionSetting"
-            class="oper-btn search"
-            style="margin-left: 10px"
-          ></el-button>
-          <el-button
-            :disabled="false"
-            type="primary"
-            @click="reSet"
-            class="oper-btn again-3"
-          ></el-button>
-<!--          <el-button-->
-<!--            class="oper-btn link"-->
-<!--            :disabled="modelRunResultBtnIson.modelDetailAssBtn"-->
-<!--            v-if="modelDetailButtonIsShow"-->
-<!--            type="primary"-->
-<!--            @click="openModelDetail"-->
-<!--            title="查询关联"-->
-<!--          ></el-button>-->
-          <el-button
-            :disabled="modelRunResultBtnIson.exportBtn"
-            type="primary"
-            @click="exportExcel"
-            class="oper-btn export-2"
-          ></el-button>
-          <!-- addDetailRel('qwer1', '项目11') -->
+    <el-row v-if="useType != 'graph' && ifopen != 0">
+      <!--   v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"   -->
+      <div
+        class="el-btn-no-colorz"
+        v-if="!chartSwitching && ifopen == 1"
+        @click="switchDivStyle('chart')"
+      >
+        <span><i class="el-icon-menu"></i> 仅表格</span>
+      </div>
+      <div
+        class="el-btn-no-colorz"
+        v-if="chartSwitching && ifopen == 1"
+        @click="switchDivStyle('table')"
+      >
+        <span><i class="el-icon-s-data"></i> 配置图表</span>
+      </div>
+      <div class="el-btn-no-colorz" v-if="isModelPreview" @click="saveResult()">
+        <span><i class="oper-btn save"></i></span>
+      </div>
+      <div
+        v-if="(useType == 'sqlEditor' || myFlag) && !chartSwitching"
+        v-for="(item, index) in chartsResource.menuData"
+        class="chartChange"
+        :key="index"
+      >
+        <div class="item_div" v-for="(menu, i) in item.sub">
+          <div
+            :key="i"
+            :style="{
+              backgroundPosition:
+                menu.bgPositionX + 'px ' + menu.bgPositionY + 'px',
+              cursor: 'pointer',
+            }"
+            class="item_img item-bgimg-size"
+            @drag="drag"
+            @dragend="dragend(menu)"
+            draggable="true"
+          ></div>
+          <!--    @drag="drag" @dragend="dragend(menu)"      -->
         </div>
       </div>
-
-      <ag-grid-vue
-        v-if="isSee"
-        v-loading="isLoading"
-        :style="this.useType==='sqlEditor' || this.useType==='graph'?'height:32vh':'height:59vh'"
-        class="table ag-theme-balham"
-        :column-defs="columnDefs"
-        :row-data="rowData"
-        rowMultiSelectWithClick="true"
-        :enable-col-resize="true"
-        :get-row-style="useType=='modelRunResult'&&this.modelUuid!==undefined?this.renderTable:undefined"
-        row-selection="multiple"
-        @cellClicked="onCellClicked"
-        @gridReady="onGridReady"
-        @rowSelected="rowChange"
-      />
-
-      <el-card v-if="!isSee" class="box-card" style="height: 100px">
-        <div>{{ errorMessage }}</div>
-      </el-card>
-      <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="pageQuery.pageNo"
-        :limit.sync="pageQuery.pageSize"
-        @pagination="initData(nowSql)"
-      />
-      <el-row>
-        <el-col :span="22">
-          <div v-if="modelResultPageIsSee">
-            共<span class="paging-z" title="只显示前10000条数据">{{ rowData.length }}</span
-            >条
-          </div>
-        </el-col>
-        <el-col :span="2">
-          <el-row v-if="modelResultButtonIsShow" style="display: flex">
-            <downloadExcel
-              :data="tableData"
-              :fields="json_fields"
-              :name="excelName"
-              class="thechard-z"
-              v-if="this.preLength==this.myIndex+1 && this.useType!=='sqlEditor'"
-            >
+    </el-row>
+    <div ref="DragOn" class="drag-on">
+      <div v-if="chartSwitching" class="drag-on-table textz">
+        <div v-if="myFlag">
+          <div
+            align="right"
+            :style="
+              ifopen != 0 ? 'position: absolute;top: -29px;right: 0;' : ''
+            "
+          >
+            <el-dropdown>
               <el-button
                 type="primary"
-                @click="modelResultExport"
-                class="oper-btn export-2"
-                title="导出"
+                class="oper-btn link-2"
+                :disabled="modelRunResultBtnIson.associatedBtn"
+                @click="openProjectDialog"
               ></el-button>
-            </downloadExcel>
-          </el-row>
-        </el-col>
-      </el-row>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="openProjectDialog"
+                  >分配项目</el-dropdown-item
+                >
+                <el-dropdown-item @click.native="removeRelated()"
+                  >移除分配项目</el-dropdown-item
+                >
+              </el-dropdown-menu>
+            </el-dropdown>
+            <el-button
+              :disabled="false"
+              type="primary"
+              @click="queryConditionSetting"
+              class="oper-btn search"
+              style="margin-left: 10px"
+            ></el-button>
+            <el-button
+              :disabled="false"
+              type="primary"
+              @click="reSet"
+              class="oper-btn again-3"
+            ></el-button>
+            <el-button
+              :disabled="modelRunResultBtnIson.exportBtn"
+              type="primary"
+              @click="exportExcel"
+              class="oper-btn export-2"
+            ></el-button>
+            <!-- addDetailRel('qwer1', '项目11') -->
+            <el-button
+            :disabled="false"
+            type="primary"
+            @click="toSubmit"
+            style="margin-left: 10px"
+          >提交审核</el-button>
+
+          </div>
+        </div>
+        <ag-grid-vue
+          v-if="isSee"
+          v-loading="isLoading"
+          style="height: calc(100% - 19px)"
+          class="table ag-theme-balham"
+          :column-defs="columnDefs"
+          :row-data="rowData"
+          rowMultiSelectWithClick="true"
+          :enable-col-resize="true"
+          :get-row-style="
+            useType == 'modelRunResult' && this.modelUuid !== undefined
+              ? this.renderTable
+              : undefined
+          "
+          row-selection="multiple"
+          @cellClicked="onCellClicked"
+          @gridReady="onGridReady"
+          @rowSelected="rowChange"
+        />
+
+        <el-card v-if="!isSee" class="box-card" style="height: 100px">
+          <div>{{ errorMessage }}</div>
+        </el-card>
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          :page.sync="pageQuery.pageNo"
+          :limit.sync="pageQuery.pageSize"
+          @pagination="initData(nowSql)"
+        />
+        <el-row>
+          <el-col :span="22">
+            <div v-if="modelResultPageIsSee">
+              共<span class="paging-z" title="只显示前10000条数据">{{
+                rowData.length
+              }}</span
+              >条
+            </div>
+          </el-col>
+          <el-col :span="2">
+            <el-row v-if="modelResultButtonIsShow" style="display: flex">
+              <downloadExcel
+                :data="tableData"
+                :fields="json_fields"
+                :name="excelName"
+                class="thechard-z"
+                v-if="
+                  this.preLength == this.myIndex + 1 &&
+                  this.useType !== 'sqlEditor'
+                "
+              >
+                <el-button
+                  type="primary"
+                  @click="modelResultExport"
+                  class="oper-btn export-2"
+                  title="导出"
+                ></el-button>
+              </downloadExcel>
+            </el-row>
+          </el-col>
+        </el-row>
+      </div>
+      <grid-layout
+        ref="gridlayout"
+        :layout.sync="chartConfigs.layout"
+        :col-num="12"
+        :row-height="30"
+        :is-draggable="true"
+        :is-resizable="true"
+        :responsive="true"
+        :vertical-compact="true"
+        :use-css-transforms="true"
+        v-if="!chartSwitching"
+      >
+        <grid-item
+          :key="chartConfigs.layout[0].i"
+          :x="chartConfigs.layout[0].x"
+          :y="chartConfigs.layout[0].y"
+          :w="chartConfigs.layout[0].w"
+          :h="chartConfigs.layout[0].h"
+          :i="chartConfigs.layout[0].i"
+        >
+          <!--  此下为表格  -->
+          <div class="drag-on-table textz">
+            <div
+              :span="2"
+              style="right: 50px; top: -44px; position: absolute; z-index: 1"
+            >
+              <el-row v-if="modelResultButtonIsShow" style="display: flex">
+                <downloadExcel
+                  :data="tableData"
+                  :fields="json_fields"
+                  :name="excelName"
+                  class="thechard-z"
+                  v-if="
+                    this.preLength == this.myIndex + 1 &&
+                    this.useType !== 'sqlEditor'
+                  "
+                >
+                  <el-button
+                    type="primary"
+                    @click="modelResultExport"
+                    class="oper-btn export-2"
+                    title="导出"
+                  ></el-button>
+                </downloadExcel>
+              </el-row>
+            </div>
+            <div v-if="myFlag">
+              <div
+                align="right"
+                :style="
+                  ifopen != 0 ? 'position: absolute;top: -29px;right: 0;' : ''
+                "
+              >
+                <el-dropdown>
+                  <el-button
+                    type="primary"
+                    class="oper-btn link-2"
+                    :disabled="modelRunResultBtnIson.associatedBtn"
+                    @click="openProjectDialog"
+                  ></el-button>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item @click.native="openProjectDialog"
+                      >分配项目</el-dropdown-item
+                    >
+                    <el-dropdown-item @click.native="removeRelated()"
+                      >移除分配项目</el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </el-dropdown>
+                <el-button
+                  :disabled="false"
+                  type="primary"
+                  @click="queryConditionSetting"
+                  class="oper-btn search"
+                  style="margin-left: 10px"
+                ></el-button>
+                <el-button
+                  :disabled="false"
+                  type="primary"
+                  @click="reSet"
+                  class="oper-btn again-3"
+                ></el-button>
+                <el-button
+                  :disabled="modelRunResultBtnIson.exportBtn"
+                  type="primary"
+                  @click="exportExcel"
+                  class="oper-btn export-2"
+                ></el-button>
+                <!-- addDetailRel('qwer1', '项目11') -->
+                <el-button
+            :disabled="false"
+            type="primary"
+            @click="toSubmit"
+            style="margin-left: 10px"
+          >提交审核</el-button>
+
+              </div>
+            </div>
+
+            <ag-grid-vue
+              v-if="isSee"
+              v-loading="isLoading"
+              style="height: calc(100% - 19px)"
+              class="table ag-theme-balham"
+              :column-defs="columnDefs"
+              :row-data="rowData"
+              rowMultiSelectWithClick="true"
+              :enable-col-resize="true"
+              :get-row-style="
+                useType == 'modelRunResult' && this.modelUuid !== undefined
+                  ? this.renderTable
+                  : undefined
+              "
+              row-selection="multiple"
+              @cellClicked="onCellClicked"
+              @gridReady="onGridReady"
+              @rowSelected="rowChange"
+            />
+
+            <el-card v-if="!isSee" class="box-card" style="height: 100px">
+              <div>{{ errorMessage }}</div>
+            </el-card>
+            <pagination
+              v-show="total > 0"
+              :total="total"
+              :page.sync="pageQuery.pageNo"
+              :limit.sync="pageQuery.pageSize"
+              @pagination="initData(nowSql)"
+            />
+            <el-row>
+              <el-col :span="24">
+                <div v-if="modelResultPageIsSee">
+                  共<span class="paging-z" title="只显示前10000条数据">{{
+                    rowData.length
+                  }}</span
+                  >条
+                </div>
+              </el-col>
+            </el-row>
+          </div>
+        </grid-item>
+        <grid-item
+          v-for="(item, index) in chartConfigs.chart"
+          :key="chartConfigs.layout[index + 1].i"
+          v-if="chartConfigs.chart.length > 0"
+          :x="chartConfigs.layout[index + 1].x"
+          :y="chartConfigs.layout[index + 1].y"
+          :w="chartConfigs.layout[index + 1].w"
+          :h="chartConfigs.layout[index + 1].h"
+          :i="chartConfigs.layout[index + 1].i"
+        >
+          <!--  此下为图表  -->
+          <div
+            :key="thechartdead"
+            style="height: 100%; width: 100%; overflow: auto"
+          >
+            <div v-if="afterResult" style="height: 350px">
+              <div>
+                <img
+                  src="./imgs/change.png"
+                  v-if="useType == 'sqlEditor' || myFlag"
+                  type="primary"
+                  @click="openEditChartDialog(index)"
+                  class="change-pos"
+                  title="修改图表"
+                />
+                <img
+                  src="./imgs/deletein.png"
+                  v-if="useType == 'sqlEditor' || myFlag"
+                  type="primary"
+                  @click="deleteChart(index)"
+                  class="delete-pos"
+                  title="删除图表"
+                />
+              </div>
+              <mtEditor
+                v-loading="chartLoading"
+                :key="index"
+                ref="chart1"
+                :data="result"
+                :chart-config="item"
+                :preview="true"
+              ></mtEditor>
+            </div>
+          </div>
+        </grid-item>
+      </grid-layout>
     </div>
     <el-dialog
       v-if="modelDetailModelResultDialogIsShow"
@@ -162,91 +383,87 @@
         >
       </span>
     </el-dialog>
-       <el-dialog
+    <el-dialog
       title="提示"
       :visible.sync="chartShowIsSee"
       width="90%"
       :fullscreen="true"
       :append-to-body="true"
-    ><div v-if="chartShowIsSee">
-      <mtEditor
-        ref="chart"
-        :data="result"
-        :chart-config="nowChartJson"
-        :key="chartPreview"
-      ></mtEditor>
-         </div>
+    >
+      <div v-if="chartShowIsSee">
+        <mtEditor
+          ref="chart"
+          :data="result"
+          :chart-config="nowChartJson"
+          :key="chartPreview"
+        ></mtEditor>
+      </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="chartShowIsSee = false">取 消</el-button>
         <el-button
-          v-if="useType == 'sqlEditor' ||  useType == 'modelRunResult'? true: false"
+          v-if="
+            useType == 'sqlEditor' || useType == 'modelRunResult' ? true : false
+          "
           type="primary"
-          @click="chartSaveOrUpdate=='save'?saveChart():updateChart()"
+          @click="updateChart"
           >保 存</el-button
         >
       </span>
     </el-dialog>
-            <el-dialog
-          title="请选择项目"
-          :visible.sync="projectDialogIsSee"
-          width="40%"
-        >
-          <userProject
-            v-if="projectDialogIsSee"
-            ref="userproject"
-          ></userProject>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="projectDialogIsSee = false">取 消</el-button>
-            <el-button type="primary" @click="determineProject"
-              >确 定</el-button
-            >
-          </span>
-        </el-dialog>
-    <el-row v-if="!chartSwitching">
-      <div align="right" v-if="this.preLength==this.myIndex+1||myFlag">
-        <div class="smallImgs">
-          <div align="right">
-            <a
-              v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"
-              @click="openChartDialog"
-              title="添加图表"
-              style="margin: 10px 6px 10px 0;float: right"
-            >添加</a>
-          </div>
-          <img v-for="(item,key) in chartConfigs" :src="item.dataUrl" class="chartSwitching" @click="changeChart(item.id)" :key="key"/>
-        </div>
-        <div v-if="!isHaveCharts && !afterAddChartsWithNoConfigure">
-        <img
-          src="./imgs/change.png"
-          v-if="useType=='sqlEditor'||myFlag"
-          type="primary"
-          @click="openEditChartDialog"
-          class="change-pos"
-          title="修改图表"
-        />
-        <img
-          src="./imgs/deletein.png"
-          v-if="useType=='sqlEditor'||myFlag"
-          type="primary"
-          @click="deleteChart"
-          class="delete-pos"
-          title="删除图表"
-        />
-        </div>
-      </div>
-    <div style="height: 450px;" v-if="this.preLength==this.myIndex+1||myFlag">
-      <div align='center' style='font-weight:lighter ;font-size:15px' v-if="afterAddChartsWithNoConfigure">请选择图表</div>
-      <div align='center' style='font-weight:lighter ;font-size:15px' v-if="isHaveCharts">暂无图表</div>
-      <div v-if="afterResult" style="height: 350px;">
-      <mtEditor v-loading="chartLoading" :key="chartPreview" ref='chart1' :data='result' :chart-config='nowChartJson' :preview="true"></mtEditor>
-      </div>
-    </div>
-  </el-row>
-    <div class="globalDropDownBox" @mouseover="StopTime" @mouseleave="openModelDetailOld" v-if="globalDropDownBox" :style="{top: globalDropTop,left: globalDropLeft}">
-      <li class="globalDDBli" v-for="item in modelDetailRelation" @click="modelDetailCetermine(item.relationObjectUuid)">
-        {{item.modelDetailName}}
+    <el-dialog
+      title="请选择项目"
+      :visible.sync="projectDialogIsSee"
+      width="40%"
+    >
+      <userProject v-if="projectDialogIsSee" ref="userproject"></userProject>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="projectDialogIsSee = false">取 消</el-button>
+        <el-button type="primary" @click="determineProject">确 定</el-button>
+      </span>
+    </el-dialog>
+    <div
+      class="globalDropDownBox"
+      @mouseover="StopTime"
+      @mouseleave="openModelDetailOld"
+      v-if="globalDropDownBox"
+      :style="{ top: globalDropTop, left: globalDropLeft }"
+    >
+      <li
+        class="globalDDBli"
+        v-for="item in modelDetailRelation"
+        @click="modelDetailCetermine(item.relationObjectUuid)"
+      >
+        {{ item.modelDetailName }}
       </li>
     </div>
+
+    <el-dialog
+        title="提交审核"
+        v-if="dialogVisibleSubmit"
+        :visible.sync="dialogVisibleSubmit"
+        :close-on-click-modal="false"
+        width="80%"
+      >
+        <div>
+          <flowItem
+            ref="flowItem"
+            :flowSet="flowSet"
+            :flowItem="flowItem"
+            :flow-param="flowParam"
+            @closeModal="closeFlowItem"
+            @delectData="delectData"
+          ></flowItem>
+        </div>
+        <span slot="footer">
+          <el-button size="mini" type="info" class="table_header_btn" @click="saveOpinion">提交</el-button>
+          <el-button
+            size="mini"
+            type="info"
+            class="table_header_btn"
+            @click="dialogVisibleSubmit = false"
+          >关闭</el-button>
+        </span>
+      </el-dialog>
   </div>
 </template>
 
@@ -260,7 +477,10 @@ import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";
 import childtabscopy from "@/views/analysis/auditmodelresult/childtabscopy";
 import userProject from "@/views/base/userproject/index";
-import {handleDataSingleValue,handleDataManyValue} from '@/api/analysis/thresholdvalue'
+import {
+  handleDataSingleValue,
+  handleDataManyValue,
+} from "@/api/analysis/thresholdvalue";
 import {
   selectTable,
   selectByRunResultTableUUid,
@@ -277,7 +497,7 @@ import {
   updateModelChartSetup,
   deleteModelChartSetup,
   sendToOA,
-  getResultRelProject
+  getResultRelProject,
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
@@ -291,8 +511,18 @@ import {
 import { getTransMap } from "@/api/data/transCode.js";
 import mtEditor from "ams-datamax";
 // import "iview/dist/styles/iview.css";
-import {uuid2} from "@/api/analysis/auditmodel";
-
+import { addRunTaskAndRunTaskRel, uuid2 } from "@/api/analysis/auditmodel";
+// 引入大屏图标
+import chartsResource from "@MAX/data/chartsResource";
+// 引入拖拽布局文件
+import { GridLayout, GridItem } from "vue-grid-layout";
+import { setDataSetToNode } from "ams-datamax/src/components/chartEdit/methods/commonMethods";
+// 引入跨组件调用中转js
+import chartAudit from "@/api/analysis/chartauditmodel";
+let mouseXY = { x: null, y: null };
+let DragPos = { x: null, y: null, w: 1, h: 1, i: null };
+import { randomString4Len } from '@/api/analysis/common';
+import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
 export default {
   name: "childTabCon",
   // 注册draggable组件
@@ -303,7 +533,10 @@ export default {
     childtabscopy,
     downloadExcel: JsonExcel,
     mtEditor,
-    userProject
+    userProject,
+    GridLayout,
+    GridItem,
+    flowItem,
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -313,9 +546,9 @@ export default {
         }
       });
     },
-    nowChartJson () {
-        this.chartPreview = !this.chartPreview
-      }
+    nowChartJson() {
+      this.chartPreview = !this.chartPreview;
+    },
   },
   /**
    * 模型运行结果使用变量：nowtable：表示模型结果表对象   modelUuid：根据modelUUid进行表格渲染，只有主表用渲染  useType=modelRunResult 表示是模型运行结果所用
@@ -332,10 +565,36 @@ export default {
     "myIndex",
     "chartModelUuid",
     "settingInfo",
-    "isModelPreview"
+    "isModelPreview",
   ],
   data() {
     return {
+       //工作流相关
+      // 判断是否走工作流
+      flowParam: 0,
+      multipleSelection:[],
+      applyInfo:{},
+      dialogVisibleSubmit:false,
+      flowSet: {
+        opinionList: false,
+        opinion: false,
+        nextStep: true,
+        isSecond: false
+      },
+      flowItem: {
+        //动态赋值
+        wftype: "cn_com_boe_as_preInvest",
+        applyUuid: "",
+        detailUuids: "",
+        applyTitle: "",
+        workEffortId: "",
+        appDataUuid: "",
+        versionUuid: "",
+        isSecond: false,
+        temp1: ""
+      },
+
+      //其他
       chartPreview: true,
       dialogVisible: false,
       // 定义ag-grid列
@@ -348,7 +607,7 @@ export default {
         pageSize: 20,
       },
       total: 0,
-      imgBaseCode:'',
+      imgBaseCode: "",
       myFlag: false, // 用来判断主表界面有按钮，辅表界面没有按钮，为true是主表，为false是辅表
       selectRows: [], //用于存放多选框选中的数据
       detailTable: [], //存放关联详细表
@@ -388,53 +647,86 @@ export default {
       },
       dynamicSelect: [], //实时存储多选框勾选中的数据
       chartShowIsSee: false,
-      result: {},   //给myeditor传的数据
-      chartSaveOrUpdate: "", //判断图标是保存还是更新操作
+      result: {}, //给myeditor传的数据
+      chartIndex: 0, //修改操作的下标
       nowChartJson: undefined, //存储当前正在显示的图表的json
-      modelChartSetups:[],  //用于存储添加的多个图标，用于图表返显功能
-      chartConfigs:[],   //用于存储当前模型的图表config   （myeditor组件的chart-config属性）chartConfigs
-      afterResult:false,  //等result数据赋值完以后再初始化返显的charts组件
-      chartLoading:true,  //图表加载的loading
-      afterAddChartsWithNoConfigure:false,
-      isHaveCharts:false, //判断该模型是否有图表
-      projectDialogIsSee:false,   //用来控制项目dialog显示
-      chartSwitching: true,  //控制表格与图表切换
-      modelObj:{},  //查询当前模型结果对应的的model对象
-      rowIndex:'',  //存储点击表格的行数
-      tableClass:'el-btn-no-color',
-      chartClass:'el-btn-color',
-      globalDropDownBox:false, //移入显示下拉框
+      allChartJson: [], //存储当前正在显示的图表的json
+      modelChartSetups: [], //用于存储添加的多个图标，用于图表返显功能
+      chartConfigs: {
+        chart: [],
+        layout: [{ x: 0, y: 0, w: 12, h: 6, i: "0" }],
+      }, //用于存储当前模型的图表config   （myeditor组件的chart-config属性）chartConfigs
+      afterResult: false, //等result数据赋值完以后再初始化返显的charts组件
+      chartLoading: true, //图表加载的loading
+      afterAddChartsWithNoConfigure: false,
+      isHaveCharts: false, //判断该模型是否有图表
+      projectDialogIsSee: false, //用来控制项目dialog显示
+      chartSwitching: false, //控制表格与图表切换
+      modelObj: {}, //查询当前模型结果对应的的model对象
+      rowIndex: "", //存储点击表格的行数
+      globalDropDownBox: false, //移入显示下拉框
       globalDropTop: 0,
       globalDropLeft: 0,
-      timeOut: setTimeout
+      timeOut: setTimeout,
+      chartsResource: chartsResource, // 图标
+      opNode: {},
+      // 拖拽组件
+      dragChart: false,
+      dragIndex: 1,
+      // 强制刷新
+      thechartdead: true,
+      // 高度显示
+      listContainer: 700,
+      // height123: document.getElementById("dataShow"),
+      ifopen: 0,
     };
   },
   mounted() {
+    console.log(this.$route.path);
+    if (this.$route.path == "/analysis/editormodelnew") {
+      this.ifopen = 1;
+    }
+    if (this.$route.path == "/analysis/auditmodel") {
+      this.ifopen = 2;
+    }
+    if(this.$route.path == "/analysis/boeauditmodel"){
+      this.ifopen = 2;
+    }
     this.getRenderTableData();
     this.chartReflexion();
+    document.addEventListener(
+      "dragover",
+      function (e) {
+        mouseXY.x = e.clientX;
+        mouseXY.y = e.clientY;
+      },
+      false
+    );
+    // let height = document.getElementById("dataShow");
+    // this.listContainer = height.offsetHeight;
+    chartAudit.$on("chartAuditOn", (e) => {
+      this.saveChartsAll();
+    });
   },
   created() {
-    let _this=this;
-    window.openModelDetailNew=_this.openModelDetailNew;
+    let _this = this;
+    window.openModelDetailNew = _this.openModelDetailNew;
   },
   methods: {
     clickBigTab() {
-      let _this=this;
-      window.openModelDetailNew=_this.openModelDetailNew;
+      let _this = this;
+      window.openModelDetailNew = _this.openModelDetailNew;
     },
-    switchDivStyle(type){
-      if (type === 'table'){
-        this.chartSwitching = false
-        this.tableClass = 'el-btn-color'
-        this.chartClass = 'el-btn-no-color'
-      }else if(type === 'chart'){
-        this.chartSwitching = true
-        this.tableClass = 'el-btn-no-color'
-        this.chartClass = 'el-btn-color'
+    switchDivStyle(type) {
+      if (type === "table") {
+        this.chartSwitching = false;
+      } else if (type === "chart") {
+        this.chartSwitching = true;
       }
     },
     rowChange() {
       var selectData = this.gridApi.getSelectedRows();
+      this.multipleSelection=selectData;
       if (selectData.length == 0) {
         this.modelRunResultBtnIson.exportBtn = false;
         this.modelRunResultBtnIson.chartDisplayBtn = false;
@@ -468,7 +760,7 @@ export default {
         const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "模型运行结果表.xlsx");
+        link.setAttribute("download", "模型运行结果表.xls");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -479,12 +771,12 @@ export default {
      * resultDetailProjectRelId:  resultDetailProjectRel表的主键
      */
     removeRelated() {
-      this.getValues()
-      var onlyuuids = []
-      for(var i = 0;i<this.selectRows.length;i++){
-        onlyuuids.push(this.selectRows[i].onlyuuid)
+      this.getValues();
+      var onlyuuids = [];
+      for (var i = 0; i < this.selectRows.length; i++) {
+        onlyuuids.push(this.selectRows[i].onlyuuid);
       }
-      var resultDetailProjectRelIds = onlyuuids.join(',')
+      var resultDetailProjectRelIds = onlyuuids.join(",");
       removeResultDetailProjectRel(resultDetailProjectRelIds).then((resp) => {
         if (resp.data == true) {
           this.$message({
@@ -499,37 +791,34 @@ export default {
         }
       });
     },
-    openProjectDialog(){
-            getResultRelProject(this.nowtable.runTaskRelUuid).then(resp=>{
-        if(resp.data.length==0){
+    openProjectDialog() {
+      getResultRelProject(this.nowtable.runTaskRelUuid).then((resp) => {
+        if (resp.data.length == 0) {
           this.projectDialogIsSee = true;
-       }else{
+        } else {
           this.$message({
             message: "模型结果已经关联项目，详细结果就不能再关联",
           });
         }
-      })
+      });
     },
-        /**
+    /**
      * 选择项目后点击dialog的确定按钮触发
      */
     determineProject() {
       var projects = this.$refs.userproject.getSelectValue();
-        if (projects.length === 0) {
-          this.$message({
-            message: "请选择要关联的项目",
-          });
-        } else if (projects.length === 1) {
-          this.addDetailRel(
-            projects[0].PRJ_PROJECT_UUID,
-            projects[0].PRJ_NAME
-          );
-          this.projectDialogIsSee = false;
-        } else {
-          this.$message({
-            message: "只能关联一个项目",
-          });
-        }
+      if (projects.length === 0) {
+        this.$message({
+          message: "请选择要关联的项目",
+        });
+      } else if (projects.length === 1) {
+        this.addDetailRel(projects[0].PRJ_PROJECT_UUID, projects[0].PRJ_NAME);
+        this.projectDialogIsSee = false;
+      } else {
+        this.$message({
+          message: "只能关联一个项目",
+        });
+      }
     },
     /**
      * 关联项目
@@ -681,58 +970,76 @@ export default {
       // 获取gridApi
       this.gridApi = params.api;
     },
-    initData(sql, nextValue,modelName) {
-      this.result = {}
+    initData(sql, nextValue, modelName) {
+      this.result = {};
       if (this.useType == "modelRunResult") {
         this.isLoading = true;
         // 当当前表是主表的时候myFlag赋值为true
         if (this.nowtable.tableType == 1) {
           this.myFlag = true;
-        }else{
-          this.chartLoading = false
+        } else {
+          this.chartLoading = false;
         }
         var colNames = [];
         var col = [];
         var da = [];
-        var renderColumns = [] //存储需要渲染的列名
-        var renderObject = {}  //存储key-value格式对象，key为列名  value为这一列对应的模型阈值关联对象
+        var renderColumns = []; //存储需要渲染的列名
+        var renderObject = {}; //存储key-value格式对象，key为列名  value为这一列对应的模型阈值关联对象
         //2021年2月4日 16:35:28   新增给带详细的模型结果列增加超链接样式
-        let modelResultDetailCol = []
-        if(this.modelObj.modelDetailRelation){
+        let modelResultDetailCol = [];
+        if (this.modelObj.modelDetailRelation) {
           //循环模型详细关联
-          for(let i = 0; i < this.modelObj.modelDetailRelation.length;i++){
+          for (let i = 0; i < this.modelObj.modelDetailRelation.length; i++) {
             //获取关联对象
-            let modelDetailRelation = this.modelObj.modelDetailRelation[i]
+            let modelDetailRelation = this.modelObj.modelDetailRelation[i];
             //循环模型关联详细配置
-            for(let j = 0;j < modelDetailRelation.modelDetailConfig.length;j++){
-              let modelDetailConfig = modelDetailRelation.modelDetailConfig[j]
+            for (
+              let j = 0;
+              j < modelDetailRelation.modelDetailConfig.length;
+              j++
+            ) {
+              let modelDetailConfig = modelDetailRelation.modelDetailConfig[j];
               //确保数据不是undefined或null
-              if(modelDetailConfig.resultColumn){
+              if (modelDetailConfig.resultColumn) {
                 //添加到数据 用于下边列处理的时候 作为判断条件
-                modelResultDetailCol.push(modelDetailConfig.resultColumn.toUpperCase())
+                modelResultDetailCol.push(
+                  modelDetailConfig.resultColumn.toUpperCase()
+                );
               }
             }
           }
         }
-        var modelThresholdValues = []
-        if (this.settingInfo!=undefined){
-          modelThresholdValues.push(JSON.parse(this.settingInfo).thresholdValueRel)
-        }else {
-          modelThresholdValues =  this.modelObj.modelThresholdValues
+        var modelThresholdValues = [];
+        if (this.settingInfo != undefined) {
+          modelThresholdValues.push(
+            JSON.parse(this.settingInfo).thresholdValueRel
+          );
+        } else {
+          modelThresholdValues = this.modelObj.modelThresholdValues;
         }
         //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
-        if(this.modelUuid !==undefined){
-          for (var i = 0; i < modelThresholdValues.length;i++){
-            if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2 && renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName)==-1){
-              renderColumns.push(modelThresholdValues[i].modelResultColumnName)
+        if (this.modelUuid !== undefined) {
+          for (var i = 0; i < modelThresholdValues.length; i++) {
+            if (
+              modelThresholdValues[i].thresholdValue.thresholdValueType == 2 &&
+              renderColumns.indexOf(
+                modelThresholdValues[i].modelResultColumnName
+              ) == -1
+            ) {
+              renderColumns.push(modelThresholdValues[i].modelResultColumnName);
             }
           }
-          for(var i = 0;i < modelThresholdValues.length;i++){
-            if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2){
-              if (typeof modelThresholdValues[i].colorInfo === 'string'){
-                modelThresholdValues[i].colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
+          for (var i = 0; i < modelThresholdValues.length; i++) {
+            if (
+              modelThresholdValues[i].thresholdValue.thresholdValueType == 2
+            ) {
+              if (typeof modelThresholdValues[i].colorInfo === "string") {
+                modelThresholdValues[i].colorInfo = JSON.parse(
+                  modelThresholdValues[i].colorInfo
+                );
               }
-              renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i]
+              renderObject[modelThresholdValues[i].modelResultColumnName] =
+                modelThresholdValues[i];
             }
           }
         }
@@ -744,13 +1051,13 @@ export default {
           (resp) => {
             // var modelThre
             var column = resp.data.records[0].columns;
-            var columnToUppercase = []
-            for(var i = 1;i<column.length;i++){
-              columnToUppercase.push(column[i].toUpperCase())
+            var columnToUppercase = [];
+            for (var i = 1; i < column.length; i++) {
+              columnToUppercase.push(column[i].toUpperCase());
             }
             this.result.column = columnToUppercase;
-            this.result.id = this.modelObj.modelUuid
-            this.result.name = this.modelObj.modelName
+            this.result.id = this.modelObj.modelUuid;
+            this.result.name = this.modelObj.modelName;
             var chartData = [];
             for (var i = 0; i < resp.data.records[0].result.length; i++) {
               var eachChartData = [];
@@ -789,88 +1096,133 @@ export default {
               columnType.push(type);
             }
             this.result.columnType = columnType;
-            this.afterResult = true
+            this.afterResult = true;
             if (resp.data.records[0].result.length == 0) {
               this.isLoading = false;
             }
             this.total = resp.data.total;
             this.dataArray = resp.data.records[0].result;
             this.queryData = resp.data.records[0].columnInfo;
-            colNames = resp.data.records[0].columns
+            colNames = resp.data.records[0].columns;
             // 生成ag-grid列信息
             if (this.modelUuid != undefined) {
-              var onlyFlag = false
-              if (this.settingInfo != undefined){
+              var onlyFlag = false;
+              if (this.settingInfo != undefined) {
                 for (var i = 0; i < colNames.length; i++) {
-                        var rowColom = {}
-                        if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1 || modelResultDetailCol.indexOf(colNames[i].toUpperCase()) != -1){
-                          var thresholdValueRel =  renderObject[colNames[i].toUpperCase()]
-                          if (onlyFlag==false){
-                            rowColom =  {
-                              headerName: colNames[i],
-                              field: colNames[i],
-                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)},
-                              checkboxSelection: true
-                            }
-                            onlyFlag = true
-
-                          }else {
-                            rowColom =  {
-                              headerName: colNames[i],
-                              field: colNames[i],
-                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)}}
-                          }
-                        }else {
-                          if (onlyFlag==false){
-                            rowColom = {
-                              headerName: colNames[i],
-                              field: colNames[i],
-                              checkboxSelection: true
-                            };
-                            onlyFlag = true
-                          }else {
-                            rowColom = {
-                              headerName: colNames[i],
-                              field: colNames[i],
-                            };
-                          }
-                        }
-                        col.push(rowColom);
+                  var rowColom = {};
+                  if (
+                    renderColumns.indexOf(colNames[i].toUpperCase()) != -1 ||
+                    modelResultDetailCol.indexOf(colNames[i].toUpperCase()) !=
+                      -1
+                  ) {
+                    var thresholdValueRel =
+                      renderObject[colNames[i].toUpperCase()];
+                    if (onlyFlag == false) {
+                      rowColom = {
+                        headerName: colNames[i],
+                        field: colNames[i],
+                        cellRenderer: (params) => {
+                          return this.changeCellColor(
+                            params,
+                            thresholdValueRel,
+                            modelResultDetailCol
+                          );
+                        },
+                        checkboxSelection: true,
+                      };
+                      onlyFlag = true;
+                    } else {
+                      rowColom = {
+                        headerName: colNames[i],
+                        field: colNames[i],
+                        cellRenderer: (params) => {
+                          return this.changeCellColor(
+                            params,
+                            thresholdValueRel,
+                            modelResultDetailCol
+                          );
+                        },
+                      };
+                    }
+                  } else {
+                    if (onlyFlag == false) {
+                      rowColom = {
+                        headerName: colNames[i],
+                        field: colNames[i],
+                        checkboxSelection: true,
+                      };
+                      onlyFlag = true;
+                    } else {
+                      rowColom = {
+                        headerName: colNames[i],
+                        field: colNames[i],
+                      };
+                    }
+                  }
+                  col.push(rowColom);
                 }
-              }else {
+              } else {
                 for (var i = 0; i < colNames.length; i++) {
-                  loop: for (var j = 0; j < this.modelOutputColumn.length; j++) {
-                    if (this.modelOutputColumn[j].outputColumnName.toLowerCase() == colNames[i]) {
+                  loop: for (
+                    var j = 0;
+                    j < this.modelOutputColumn.length;
+                    j++
+                  ) {
+                    if (
+                      this.modelOutputColumn[
+                        j
+                      ].outputColumnName.toLowerCase() == colNames[i]
+                    ) {
                       if (this.modelOutputColumn[j].isShow == 1) {
-                        var rowColom = {}
-                        if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1 || modelResultDetailCol.indexOf(colNames[i].toUpperCase()) != -1){
-                          var thresholdValueRel =  renderObject[colNames[i].toUpperCase()]
-                          if(onlyFlag==false){
-                            rowColom =  {
-                              headerName: this.modelOutputColumn[j].columnAlias,
-                              field: colNames[i],
-                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)},
-                              checkboxSelection: true
-                            }
-                            onlyFlag = true
-                          }else {
-                            rowColom =  {
-                              headerName: this.modelOutputColumn[j].columnAlias,
-                              field: colNames[i],
-                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)}}
-                          }
-                        }else {
-                          if(onlyFlag==false){
+                        var rowColom = {};
+                        if (
+                          renderColumns.indexOf(colNames[i].toUpperCase()) !=
+                            -1 ||
+                          modelResultDetailCol.indexOf(
+                            colNames[i].toUpperCase()
+                          ) != -1
+                        ) {
+                          var thresholdValueRel =
+                            renderObject[colNames[i].toUpperCase()];
+                          if (onlyFlag == false) {
                             rowColom = {
                               headerName: this.modelOutputColumn[j].columnAlias,
                               field: colNames[i],
-                              checkboxSelection: true
+                              cellRenderer: (params) => {
+                                return this.changeCellColor(
+                                  params,
+                                  thresholdValueRel,
+                                  modelResultDetailCol
+                                );
+                              },
+                              checkboxSelection: true,
                             };
-                            onlyFlag = true
-                          }else {
+                            onlyFlag = true;
+                          } else {
                             rowColom = {
                               headerName: this.modelOutputColumn[j].columnAlias,
-                              field: colNames[i]
+                              field: colNames[i],
+                              cellRenderer: (params) => {
+                                return this.changeCellColor(
+                                  params,
+                                  thresholdValueRel,
+                                  modelResultDetailCol
+                                );
+                              },
+                            };
+                          }
+                        } else {
+                          if (onlyFlag == false) {
+                            rowColom = {
+                              headerName: this.modelOutputColumn[j].columnAlias,
+                              field: colNames[i],
+                              checkboxSelection: true,
+                            };
+                            onlyFlag = true;
+                          } else {
+                            rowColom = {
+                              headerName: this.modelOutputColumn[j].columnAlias,
+                              field: colNames[i],
                             };
                           }
                         }
@@ -932,18 +1284,16 @@ export default {
         );
         this.columnDefs = col;
         this.rowData = da;
-      } else if (
-        this.useType == "sqlEditor"
-      ){
-        this.getIntoModelResultDetail(nextValue)
-       }else if( this.useType == "modelPreview"){
+      } else if (this.useType == "sqlEditor") {
+        this.getIntoModelResultDetail(nextValue);
+      } else if (this.useType == "modelPreview") {
         this.loading = true;
         this.nextValue = nextValue;
         var col = [];
         var rowData = [];
-        var renderColumns = [] //存储需要渲染的列名
-        var renderObject = {}  //存储key-value格式对象，key为列名  value为这一列对应的模型阈值关联对象
-        var modelThresholdValues = []
+        var renderColumns = []; //存储需要渲染的列名
+        var renderObject = {}; //存储key-value格式对象，key为列名  value为这一列对应的模型阈值关联对象
+        var modelThresholdValues = [];
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           if (this.nextValue.executeSQL.state == "2") {
             if (this.nextValue.executeSQL.type == "SELECT") {
@@ -976,8 +1326,8 @@ export default {
                   columnType.push(type);
                 }
                 var resultData = this.nextValue.result;
-                this.result.id = this.nextValue.modelUuid
-                this.result.name = modelName
+                this.result.id = this.nextValue.modelUuid;
+                this.result.name = modelName;
                 this.result.columnType = columnType;
                 var chartData = [];
                 for (var i = 0; i < resultData.length; i++) {
@@ -993,62 +1343,117 @@ export default {
                 // this.rowData = this.modelResultData;
                 this.modelResultColumnNames = this.nextValue.columnNames;
                 selectModel(this.modelId).then((resp) => {
-                  this.modelDetailRelation = resp.data.modelDetailRelation
+                  this.modelDetailRelation = resp.data.modelDetailRelation;
                   //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
-                  if(this.preLength==this.myIndex+1){
-                    for (var i = 0; i < resp.data.modelThresholdValues.length;i++){
-                      if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2 && renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName)==-1){
-                        renderColumns.push(modelThresholdValues[i].modelResultColumnName)
+                  if (this.preLength == this.myIndex + 1) {
+                    for (
+                      var i = 0;
+                      i < resp.data.modelThresholdValues.length;
+                      i++
+                    ) {
+                      if (
+                        modelThresholdValues[i].thresholdValue
+                          .thresholdValueType == 2 &&
+                        renderColumns.indexOf(
+                          modelThresholdValues[i].modelResultColumnName
+                        ) == -1
+                      ) {
+                        renderColumns.push(
+                          modelThresholdValues[i].modelResultColumnName
+                        );
                       }
                     }
-                    for(var i = 0;i < resp.data.modelThresholdValues.length;i++){
-                      if(modelThresholdValues[i].thresholdValue.thresholdValueType == 2){
-                        if (typeof modelThresholdValues[i].colorInfo === 'string'){
-                          modelThresholdValues[i].colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
+                    for (
+                      var i = 0;
+                      i < resp.data.modelThresholdValues.length;
+                      i++
+                    ) {
+                      if (
+                        modelThresholdValues[i].thresholdValue
+                          .thresholdValueType == 2
+                      ) {
+                        if (
+                          typeof modelThresholdValues[i].colorInfo === "string"
+                        ) {
+                          modelThresholdValues[i].colorInfo = JSON.parse(
+                            modelThresholdValues[i].colorInfo
+                          );
                         }
-                        renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i]
+                        renderObject[
+                          modelThresholdValues[i].modelResultColumnName
+                        ] = modelThresholdValues[i];
                       }
                     }
                   }
-                  var modelOutputColumn = resp.data.modelOutputColumn
-                  let modelResultDetailCol = []
-                  if(resp.data.modelDetailRelation){
+                  var modelOutputColumn = resp.data.modelOutputColumn;
+                  let modelResultDetailCol = [];
+                  if (resp.data.modelDetailRelation) {
                     //循环模型详细关联
-                    for(let i = 0; i < resp.data.modelDetailRelation.length;i++){
+                    for (
+                      let i = 0;
+                      i < resp.data.modelDetailRelation.length;
+                      i++
+                    ) {
                       //获取关联对象
-                      let modelDetailRelation = resp.data.modelDetailRelation[i]
+                      let modelDetailRelation =
+                        resp.data.modelDetailRelation[i];
                       //循环模型关联详细配置
-                      for(let j = 0;j < modelDetailRelation.modelDetailConfig.length;j++){
-                        let modelDetailConfig = modelDetailRelation.modelDetailConfig[j]
+                      for (
+                        let j = 0;
+                        j < modelDetailRelation.modelDetailConfig.length;
+                        j++
+                      ) {
+                        let modelDetailConfig =
+                          modelDetailRelation.modelDetailConfig[j];
                         //确保数据不是undefined或null
-                        if(modelDetailConfig.resultColumn){
+                        if (modelDetailConfig.resultColumn) {
                           //添加到数据 用于下边列处理的时候 作为判断条件
-                          modelResultDetailCol.push(modelDetailConfig.resultColumn.toUpperCase())
+                          modelResultDetailCol.push(
+                            modelDetailConfig.resultColumn.toUpperCase()
+                          );
                         }
                       }
                     }
                   }
                   var datacodes = [];
-                  for (var i = 0; i <modelOutputColumn.length; i++) {
+                  for (var i = 0; i < modelOutputColumn.length; i++) {
                     if (modelOutputColumn[i].dataCoding != undefined) {
                       datacodes.push(modelOutputColumn[i].dataCoding);
                     }
                   }
                   for (var j = 0; j < this.nextValue.columnNames.length; j++) {
-                    var rowColom = {}
-                    for (var n = 0;n<modelOutputColumn.length;n++){
-                      if (modelOutputColumn[n].outputColumnName ==
-                        this.nextValue.columnNames[j]){
+                    var rowColom = {};
+                    for (var n = 0; n < modelOutputColumn.length; n++) {
+                      if (
+                        modelOutputColumn[n].outputColumnName ==
+                        this.nextValue.columnNames[j]
+                      ) {
                         if (modelOutputColumn[n].isShow == 1) {
-                          if (renderColumns.indexOf(this.nextValue.columnNames[j].toUpperCase()) != -1 || modelResultDetailCol.indexOf(this.nextValue.columnNames[j].toUpperCase()) != -1){
-                            var thresholdValueRel =  renderObject[this.nextValue.columnNames[j].toUpperCase()]
+                          if (
+                            renderColumns.indexOf(
+                              this.nextValue.columnNames[j].toUpperCase()
+                            ) != -1 ||
+                            modelResultDetailCol.indexOf(
+                              this.nextValue.columnNames[j].toUpperCase()
+                            ) != -1
+                          ) {
+                            var thresholdValueRel =
+                              renderObject[
+                                this.nextValue.columnNames[j].toUpperCase()
+                              ];
                             rowColom = {
                               headerName: modelOutputColumn[n].columnAlias,
                               field: this.nextValue.columnNames[j],
                               width: "180",
-                              cellRenderer:(params) => {return this.changeCellColor(params,thresholdValueRel,modelResultDetailCol)},
+                              cellRenderer: (params) => {
+                                return this.changeCellColor(
+                                  params,
+                                  thresholdValueRel,
+                                  modelResultDetailCol
+                                );
+                              },
                             };
-                          }else {
+                          } else {
                             rowColom = {
                               headerName: modelOutputColumn[n].columnAlias,
                               field: this.nextValue.columnNames[j],
@@ -1058,7 +1463,7 @@ export default {
                         }
                       }
                     }
-                    if (rowColom.field!=undefined){
+                    if (rowColom.field != undefined) {
                       col.push(rowColom);
                     }
                   }
@@ -1069,30 +1474,41 @@ export default {
                     getTransMap(datacodes.join(",")).then((resp) => {
                       var dataCoding = resp.data;
                       for (var i = 0; i < resultData.length; i++) {
-                        for (var j = 0; j < this.nextValue.columnNames.length; j++) {
+                        for (
+                          var j = 0;
+                          j < this.nextValue.columnNames.length;
+                          j++
+                        ) {
                           for (var k = 0; k < modelOutputColumn.length; k++) {
-                              if(modelOutputColumn[k].outputColumnName == this.nextValue.columnNames[j]){
-                                if (modelOutputColumn[k].dataCoding != undefined) {
-                                  var a = rowData[i][this.nextValue.columnNames[j]];
-                                  rowData[i][this.nextValue.columnNames[j]] = dataCoding[
-                                    modelOutputColumn[k].dataCoding
-                                    ][a];
-                                }
+                            if (
+                              modelOutputColumn[k].outputColumnName ==
+                              this.nextValue.columnNames[j]
+                            ) {
+                              if (
+                                modelOutputColumn[k].dataCoding != undefined
+                              ) {
+                                var a =
+                                  rowData[i][this.nextValue.columnNames[j]];
+                                rowData[i][this.nextValue.columnNames[j]] =
+                                  dataCoding[modelOutputColumn[k].dataCoding][
+                                    a
+                                  ];
                               }
+                            }
                           }
                         }
                       }
-                      this.rowData = rowData
+                      this.rowData = rowData;
                     });
-                  }else {
+                  } else {
                     for (var k = 0; k < this.nextValue.result.length; k++) {
                       rowData.push(this.nextValue.result[k]);
                     }
-                    this.rowData = rowData
+                    this.rowData = rowData;
                   }
                   this.columnDefs = col;
-                  this.afterResult = true
-                })
+                  this.afterResult = true;
+                });
               }
             } else {
               this.isSee = false;
@@ -1109,17 +1525,17 @@ export default {
           this.isLoading = false;
         }
       } else if (this.useType == "previewTable") {
-        this.getIntoModelResultDetail(nextValue)
+        this.getIntoModelResultDetail(nextValue);
       } else if (this.useType == "graph") {
-        this.getIntoModelResultDetail(nextValue)
+        this.getIntoModelResultDetail(nextValue);
       }
     },
     /**
      * 显示模型结果详细提取公共代码
      * */
-    getIntoModelResultDetail(nextValue){
-      this.afterAddChartsWithNoConfigure = true
-      this.chartLoading = false
+    getIntoModelResultDetail(nextValue) {
+      this.afterAddChartsWithNoConfigure = true;
+      this.chartLoading = false;
       this.loading = true;
       this.nextValue = nextValue;
       var col = [];
@@ -1127,51 +1543,52 @@ export default {
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
           if (this.nextValue.executeSQL.type == "SELECT") {
-              this.modelResultButtonIsShow = true;
-              this.modelResultPageIsSee = true;
-              this.modelResultData = this.nextValue.result;
-              this.result.column = this.nextValue.columnNames;
-              var columnTypes1 = this.nextValue.columnTypes;
-              var columnType = [];
-              for (var i = 0; i < columnTypes1.length; i++) {
-                var type = "";
-                if (columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 || columnTypes1[i].toUpperCase().indexOf("CHAR") != -1) {
-                  type = "varchar";
-                } else if (
-                  columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 ||
-                  columnTypes1[i].toUpperCase().indexOf("INT") != -1
-                ) {
-                  type = "number";
-                } else if (
-                  columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ||
-                  columnTypes1[i].toUpperCase().indexOf("DATE") != -1
-                ) {
-                  type = "time";
-                } else if (
-                  columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1
-                ) {
-                  type = "float";
-                }
-                columnType.push(type);
+            this.modelResultButtonIsShow = true;
+            this.modelResultPageIsSee = true;
+            this.modelResultData = this.nextValue.result;
+            this.result.column = this.nextValue.columnNames;
+            var columnTypes1 = this.nextValue.columnTypes;
+            var columnType = [];
+            for (var i = 0; i < columnTypes1.length; i++) {
+              var type = "";
+              if (
+                columnTypes1[i].toUpperCase().indexOf("VARCHAR") != -1 ||
+                columnTypes1[i].toUpperCase().indexOf("CHAR") != -1
+              ) {
+                type = "varchar";
+              } else if (
+                columnTypes1[i].toUpperCase().indexOf("NUMBER") != -1 ||
+                columnTypes1[i].toUpperCase().indexOf("INT") != -1
+              ) {
+                type = "number";
+              } else if (
+                columnTypes1[i].toUpperCase().indexOf("TIMESTAMP") != -1 ||
+                columnTypes1[i].toUpperCase().indexOf("DATE") != -1
+              ) {
+                type = "time";
+              } else if (columnTypes1[i].toUpperCase().indexOf("FLOAT") != -1) {
+                type = "float";
               }
-              var resultData = this.nextValue.result;
-              this.result.id = uuid2()
-              this.result.name = '模型'
-              this.result.columnType = columnType;
-              var chartData = [];
-              for (var i = 0; i < resultData.length; i++) {
-                var eachChartData = [];
-                for (var j = 0; j < this.nextValue.columnNames.length; j++) {
-                  eachChartData.push(
-                    resultData[i][this.nextValue.columnNames[j]]
-                  );
-                }
-                chartData.push(eachChartData);
+              columnType.push(type);
+            }
+            var resultData = this.nextValue.result;
+            this.result.id = uuid2();
+            this.result.name = "模型";
+            this.result.columnType = columnType;
+            var chartData = [];
+            for (var i = 0; i < resultData.length; i++) {
+              var eachChartData = [];
+              for (var j = 0; j < this.nextValue.columnNames.length; j++) {
+                eachChartData.push(
+                  resultData[i][this.nextValue.columnNames[j]]
+                );
               }
-              this.result.data = chartData;
-              this.rowData = this.modelResultData;
-              this.modelResultColumnNames = this.nextValue.columnNames;
-              if (this.prePersonalVal['agridColumnDatas'] === undefined){
+              chartData.push(eachChartData);
+            }
+            this.result.data = chartData;
+            this.rowData = this.modelResultData;
+            this.modelResultColumnNames = this.nextValue.columnNames;
+            if (this.prePersonalVal["agridColumnDatas"] === undefined) {
               for (var j = 0; j < this.nextValue.columnNames.length; j++) {
                 var rowColom = {
                   headerName: this.nextValue.columnNames[j],
@@ -1182,14 +1599,14 @@ export default {
                 var value = this.nextValue.result[j];
                 col.push(rowColom);
               }
-              }else {
-                col = this.prePersonalVal['agridColumnDatas']
-              }
-              for (var k = 0; k < this.nextValue.result.length; k++) {
-                rowData.push(this.nextValue.result[k]);
-              }
-              this.columnDefs = col;
-            this.afterResult = true
+            } else {
+              col = this.prePersonalVal["agridColumnDatas"];
+            }
+            for (var k = 0; k < this.nextValue.result.length; k++) {
+              rowData.push(this.nextValue.result[k]);
+            }
+            this.columnDefs = col;
+            this.afterResult = true;
           } else {
             this.isSee = false;
             this.modelResultPageIsSee = false;
@@ -1237,51 +1654,69 @@ export default {
      * 渲染表格，将颜色渲染上去
      */
     renderTable(params) {
-      var modelThresholdValues = []
-      if (this.settingInfo!=undefined){
-        modelThresholdValues.push(JSON.parse(this.settingInfo).thresholdValueRel)
-      }else {
-        modelThresholdValues =  this.modelObj.modelThresholdValues
+      var modelThresholdValues = [];
+      if (this.settingInfo != undefined) {
+        modelThresholdValues.push(
+          JSON.parse(this.settingInfo).thresholdValueRel
+        );
+      } else {
+        modelThresholdValues = this.modelObj.modelThresholdValues;
       }
-      var thresholdValueRel = {}
+      var thresholdValueRel = {};
       this.isLoading = false;
-      for (var i = 0;i<modelThresholdValues.length;i++){
-        thresholdValueRel = modelThresholdValues[i]
-        if(thresholdValueRel && thresholdValueRel.thresholdValue.thresholdValueType == 1){
-          if(typeof (modelThresholdValues[i].colorInfo) === "string"){
-            let colorInfo = JSON.parse(modelThresholdValues[i].colorInfo)
-            modelThresholdValues[i].colorInfo = colorInfo
+      for (var i = 0; i < modelThresholdValues.length; i++) {
+        thresholdValueRel = modelThresholdValues[i];
+        if (
+          thresholdValueRel &&
+          thresholdValueRel.thresholdValue.thresholdValueType == 1
+        ) {
+          if (typeof modelThresholdValues[i].colorInfo === "string") {
+            let colorInfo = JSON.parse(modelThresholdValues[i].colorInfo);
+            modelThresholdValues[i].colorInfo = colorInfo;
           }
           //判断颜色等信息
-          return handleDataSingleValue(params.data,thresholdValueRel)
+          return handleDataSingleValue(params.data, thresholdValueRel);
         }
       }
     },
-    changeCellColor(params,thresholdValueRel,modelResultDetailCol){
-      if(thresholdValueRel){
-        let returnValue = handleDataManyValue(params,thresholdValueRel)
+    changeCellColor(params, thresholdValueRel, modelResultDetailCol) {
+      if (thresholdValueRel) {
+        let returnValue = handleDataManyValue(params, thresholdValueRel);
         //如果当该列是关联详细列又是阈值展现改变颜色列的时候做特殊处理
         //如果两种都存在则优先判断阈值，如果阈值成立则显示阈值颜色，阈值不成立则显示超链接颜色
-        if(returnValue.toString().indexOf("<span") != -1){
-          return returnValue
-        }
-        else{
-          let dom = params.value
-          var rowIndex = params.rowIndex
-          if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
+        if (returnValue.toString().indexOf("<span") != -1) {
+          return returnValue;
+        } else {
+          let dom = params.value;
+          var rowIndex = params.rowIndex;
+          if (
+            modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) !=
+            -1
+          ) {
             // dom = "<span onclick='openModelDetailNew()' style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
-            dom = "<span onmouseover=\"openModelDetailNew('"+rowIndex+"')\" style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
+            dom =
+              "<span onmouseover=\"openModelDetailNew('" +
+              rowIndex +
+              "')\" style='text-decoration:underline;color:blue;cursor:pointer'>" +
+              params.value +
+              "</span>";
           }
-          return dom
+          return dom;
         }
-      }
-      else{
-        var rowIndex1 = params.rowIndex
-        if(modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1){
-          let dom = "<span onmouseover=\"openModelDetailNew('"+rowIndex1+"')\" style='text-decoration:underline;color:blue;cursor:pointer'>" + params.value + "</span>"
-          return dom
+      } else {
+        var rowIndex1 = params.rowIndex;
+        if (
+          modelResultDetailCol.indexOf(params.column.colId.toUpperCase()) != -1
+        ) {
+          let dom =
+            "<span onmouseover=\"openModelDetailNew('" +
+            rowIndex1 +
+            "')\" style='text-decoration:underline;color:blue;cursor:pointer'>" +
+            params.value +
+            "</span>";
+          return dom;
         }
-        return params.value
+        return params.value;
       }
     },
     /**
@@ -1290,11 +1725,11 @@ export default {
     getRenderTableData() {
       if (this.useType == "modelRunResult") {
         if (this.modelUuid != undefined) {
-          if (this.settingInfo === undefined){
+          if (this.settingInfo === undefined) {
             selectPrimaryKeyByTableName().then((resp) => {
               this.primaryKey = resp.data;
               selectModel(this.modelUuid).then((resp) => {
-                this.modelObj = resp.data
+                this.modelObj = resp.data;
                 this.modelDetailRelation = resp.data.modelDetailRelation;
                 this.modelOutputColumn = resp.data.modelOutputColumn;
                 var datacodes = [];
@@ -1315,7 +1750,7 @@ export default {
                 }
               });
             });
-          }else {
+          } else {
             this.initData();
           }
         } else {
@@ -1346,7 +1781,7 @@ export default {
     // },
     //单元格点击事件
     onCellClicked(cell) {
-      this.rowIndex = cell.rowIndex
+      this.rowIndex = cell.rowIndex;
     },
     /**
      * 点击详细打开dialog效果
@@ -1366,21 +1801,21 @@ export default {
      * 移入打开下拉框
      */
     openModelDetailNew(param) {
-      this.rowIndex = parseInt(param)
-      let e = event || window.event
-      this.globalDropDownBox = true
-      this.globalDropLeft = e.clientX + 'px'
-      this.globalDropTop = e.clientY + 'px'
-      clearTimeout(this.timeOut)//清除计时器
+      this.rowIndex = parseInt(param);
+      let e = event || window.event;
+      this.globalDropDownBox = true;
+      this.globalDropLeft = e.clientX + "px";
+      this.globalDropTop = e.clientY + "px";
+      clearTimeout(this.timeOut); //清除计时器
       this.timeOut = setTimeout(() => {
-        this.globalDropDownBox = false
-      }, 1000)
+        this.globalDropDownBox = false;
+      }, 1000);
     },
-    openModelDetailOld(){
-      this.globalDropDownBox = false
+    openModelDetailOld() {
+      this.globalDropDownBox = false;
     },
-    StopTime(){
-      clearTimeout(this.timeOut)//清除计时器
+    StopTime() {
+      clearTimeout(this.timeOut); //清除计时器
     },
     /**
      * 点击详细dialog的确定按钮后触发
@@ -1390,7 +1825,7 @@ export default {
       var relationType = null;
       var objectName = "";
       var detailConfig = null;
-      var detailModel = {}
+      var detailModel = {};
       for (var i = 0; i < this.modelDetailRelation.length; i++) {
         if (value == this.modelDetailRelation[i].relationObjectUuid) {
           relationType = this.modelDetailRelation[i].relationType;
@@ -1414,9 +1849,9 @@ export default {
               obj.moduleParamId = this.modelDetailRelation[i].modelDetailConfig[
                 j
               ].ammParamUuid;
-              if (this.modelUuid !==undefined){
+              if (this.modelUuid !== undefined) {
                 obj.paramValue = this.rowData[this.rowIndex][key.toLowerCase()];
-              }else {
+              } else {
                 obj.paramValue = this.rowData[this.rowIndex][key.toUpperCase()];
               }
               detailValue.push(obj);
@@ -1431,16 +1866,31 @@ export default {
           selectModel(value).then((resp) => {
             var sql = replaceParam(detailValue, arr, resp.data.sqlValue);
             const obj = { sqls: sql, businessField: "modelresultdetail" };
-            detailModel = resp.data
+            detailModel = resp.data;
             getExecuteTask(obj)
               .then((resp) => {
+                console.log("getExecuteTask0");
                 this.currentExecuteSQL = resp.data.executeSQLList;
                 //界面渲染完成之后开始执行sql,将sql送入调度
                 startExecuteSql(resp.data).then((result) => {
-                  if (this.isModelPreview!==true){
-                    this.$emit('addBigTabs',undefined,undefined,detailModel.modelName,detailModel.modelUuid,undefined,'modelPreview',this.currentExecuteSQL)
-                  }else {
-                    this.$emit('addBigTabsModelPreview',detailModel.modelName,detailModel.modelUuid,this.currentExecuteSQL)
+                  if (this.isModelPreview !== true) {
+                    this.$emit(
+                      "addBigTabs",
+                      undefined,
+                      undefined,
+                      detailModel.modelName,
+                      detailModel.modelUuid,
+                      undefined,
+                      "modelPreview",
+                      this.currentExecuteSQL
+                    );
+                  } else {
+                    this.$emit(
+                      "addBigTabsModelPreview",
+                      detailModel.modelName,
+                      detailModel.modelUuid,
+                      this.currentExecuteSQL
+                    );
                   }
                 });
               })
@@ -1479,6 +1929,7 @@ export default {
         const obj = { sqls: sql, businessField: "modelresultdetail" };
         getExecuteTask(obj)
           .then((resp) => {
+            console.log("getExecuteTask1");
             this.currentExecuteSQL = resp.data.executeSQLList;
             //界面渲染完成之后开始执行sql,将sql送入调度
             startExecuteSql(resp.data).then((result) => {});
@@ -1487,7 +1938,7 @@ export default {
             this.$message({ type: "info", message: "执行失败" });
           });
       }
-      this.globalDropDownBox = false
+      this.globalDropDownBox = false;
       this.initWebSocket();
       // this.modelDetailModelResultDialogIsShow = true;
     },
@@ -1523,14 +1974,10 @@ export default {
       /*      const webSocketPath =
         "ws://localhost:8086/analysis/websocket?" +
         this.$store.getters.personuuid;*/
-      // const webSocketPath =
-      //   process.env.VUE_APP_ANALYSIS_WEB_SOCKET +
-      //   this.$store.getters.personuuid +
-      //   "modelresultdetail";
-      // 修改为动态获取ip，否则上线打包不通用
-      const webSocketPath ='ws://' + window.location.host + ':' +window.location.port + '/websocket?' +
-              this.$store.getters.personuuid +
-              "modelresultdetail";
+      const webSocketPath =
+        this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) +
+        this.$store.getters.personuuid +
+        "modelresultdetail";
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接
@@ -1541,7 +1988,7 @@ export default {
         func1(dataObj);
       };
       const func2 = function func3(val) {
-          this.$emit('setNextValue',val)
+        this.$emit("setNextValue", val);
         // this.$refs.childTabsRef.loadTableData(val);
       };
       const func1 = func2.bind(this);
@@ -1553,54 +2000,83 @@ export default {
     /**
      * sql编辑器保存图标
      */
-    saveChart(){
-      this.isHaveCharts = false
-      this.afterAddChartsWithNoConfigure = false
+    saveChart() {
+      this.isHaveCharts = false;
+      this.afterAddChartsWithNoConfigure = false;
       this.chartShowIsSee = false;
-        var chartJson = this.$refs.chart.getChartConfig();
-        this.chartConfigs.push(chartJson)
-        this.nowChartJson = chartJson
-        var modelUuid = this.nowtable.runResultTableUuid==undefined?this.chartModelUuid:this.nowtable.runTaskRelUuid
-        var modelChartSetup = {
-          chartJson: JSON.stringify(chartJson),
-          modelUuid: modelUuid,
-        };
-        this.modelChartSetups.push(modelChartSetup)
-        addModelChartSetup(modelChartSetup).then((resp) => {
-          if (resp.data) {
-            this.$notify({
-              title: this.$t("提示"),
-              message: this.$t("添加图表成功"),
-              type: "success",
-              duration: 2000,
-              position: "bottom-right",
-            });
-          }
-        });
+      var chartJson = this.$refs.chart.getChartConfig();
+      this.chartConfigs.chart.push(chartJson);
+      this.nowChartJson = chartJson;
+      var modelUuid =
+        this.nowtable.runResultTableUuid == undefined
+          ? this.chartModelUuid
+          : this.nowtable.runTaskRelUuid;
+      var modelChartSetup = {
+        chartJson: JSON.stringify(chartJson),
+        modelUuid: modelUuid,
+      };
+      this.modelChartSetups.push(modelChartSetup);
+      addModelChartSetup(modelChartSetup).then((resp) => {
+        if (resp.data) {
+          this.$notify({
+            title: this.$t("提示"),
+            message: this.$t("添加图表成功"),
+            type: "success",
+            duration: 2000,
+            position: "bottom-right",
+          });
+        }
+      });
     },
     /**
      * 修改图表方法
      */
-    updateChart(){
+    updateChart() {
       var chartJson = this.$refs.chart.getChartConfig();
-      for(var i = 0;i<this.chartConfigs.length;i++){
-        if(this.nowChartJson.id == this.chartConfigs[i].id){
-          this.chartConfigs.splice(i,1)
-          break
+      let indexzz = this.chartIndex;
+      this.thechartdead = !this.thechartdead;
+      if (this.modelChartSetups.length != 0) {
+        let layOut = {};
+        for (let i = 0; i < this.chartConfigs.layout.length; i++) {
+          if (
+            this.chartConfigs.layout[i].i ===
+            this.chartConfigs.chart[indexzz].id
+          ) {
+            layOut = {
+              x: this.chartConfigs.layout[i].x,
+              y: this.chartConfigs.layout[i].y,
+              w: this.chartConfigs.layout[i].w,
+              h: this.chartConfigs.layout[i].h,
+              i: chartJson.id,
+            };
+            this.chartConfigs.layout.splice(i, 1, layOut);
+            break;
+          }
         }
-      }
-      this.chartConfigs.push(chartJson)
-      if(this.modelChartSetups.length!=0){
-        var modelChartSetup = {}
-        for(var i =0;i<this.modelChartSetups.length;i++){
-           var charjson= JSON.parse(this.modelChartSetups[i].chartJson)
-           if(charjson.id==this.nowChartJson.id){
-             modelChartSetup = this.modelChartSetups[i]
-             modelChartSetup.chartJson = JSON.stringify(chartJson)
-             break
-           }
+        let modelChartSetup = {};
+        for (let i = 0; i < this.modelChartSetups.length; i++) {
+          let charjson = JSON.parse(this.modelChartSetups[i].chartJson);
+          if (charjson.chart.id === undefined || charjson.chart.id === null) {
+            if (charjson.id == this.chartConfigs.chart[indexzz].id) {
+              modelChartSetup = this.modelChartSetups[i];
+              modelChartSetup.chartJson = JSON.stringify({
+                chart: chartJson,
+                layout: layOut,
+              });
+              break;
+            }
+          } else {
+            if (charjson.chart.id == this.chartConfigs.chart[indexzz].id) {
+              modelChartSetup = this.modelChartSetups[i];
+              modelChartSetup.chartJson = JSON.stringify({
+                chart: chartJson,
+                layout: layOut,
+              });
+              break;
+            }
+          }
         }
-        if (modelChartSetup.chartSetupUuid === undefined){
+        if (modelChartSetup.modelUuid === undefined) {
           this.$notify({
             title: this.$t("提示"),
             message: this.$t("修改成功"),
@@ -1608,7 +2084,7 @@ export default {
             duration: 2000,
             position: "bottom-right",
           });
-        }else {
+        } else {
           updateModelChartSetup(modelChartSetup).then((resp) => {
             if (resp.data) {
               this.$notify({
@@ -1621,14 +2097,16 @@ export default {
             }
           });
         }
-      }else{
-              this.$notify({
-              title: this.$t("提示"),
-              message: this.$t("修改成功"),
-              type: "success",
-              duration: 2000,
-              position: "bottom-right",
-            });
+        this.chartConfigs.chart.splice(indexzz, 1, chartJson);
+      } else {
+        this.$notify({
+          title: this.$t("提示"),
+          message: this.$t("修改成功"),
+          type: "success",
+          duration: 2000,
+          position: "bottom-right",
+        });
+        this.chartConfigs.chart.splice(indexzz, 1, chartJson);
       }
       this.chartShowIsSee = false;
     },
@@ -1636,125 +2114,162 @@ export default {
      * 获取参数返显的数据
      */
     chartReflexion() {
-      this.chartConfigs = []
-      this.modelChartSetups = []
-      if(this.nowtable.runResultTableUuid!=undefined){
+      this.chartConfigs = {
+        chart: [],
+        layout: [{ x: 0, y: 0, w: 12, h: 6, i: "0" }],
+      };
+      this.modelChartSetups = [];
+      if (this.nowtable.runResultTableUuid != undefined) {
         getModelChartSetup(this.nowtable.runTaskRelUuid).then((resp) => {
-              if (resp.data.isError == true) {
-            //做保存操作
-            this.chartSaveOrUpdate = "save";
+          console.log("走这里了0");
+          //做修改操作
+          if (this.myIndex == 0) {
+            this.modelChartSetups = resp.data.modelChartSetups;
+            for (var i = 0; i < this.modelChartSetups.length; i++) {
+              let json = JSON.parse(this.modelChartSetups[i].chartJson);
+              if (json.layout === undefined || json.layout === null) {
+                this.chartConfigs.chart.push(
+                  JSON.parse(this.modelChartSetups[i].chartJson)
+                );
+                this.chartConfigs.layout.push({
+                  x: 0,
+                  y: (i + 1) * 6,
+                  w: 12,
+                  h: 6,
+                  i: i + 1 + "",
+                });
+              } else {
+                this.chartConfigs.chart.push(json.chart);
+                this.chartConfigs.layout.push(json.layout);
+              }
+            }
+            if (this.chartConfigs.chart.length == 0) {
+              this.isHaveCharts = true;
+            }
           } else {
+            this.chartConfigs = {
+              chart: [],
+              layout: [{ x: 0, y: 0, w: 12, h: 16, i: "0" }],
+            };
+          }
+          this.chartLoading = false;
+        });
+      } else {
+        if (this.modelUuid != undefined) {
+          getModelChartSetup(this.modelUuid).then((resp) => {
+            console.log("走这里了1");
+            if (this.myIndex == 0) {
+              this.modelChartSetups = resp.data.modelChartSetups;
+              for (var i = 0; i < this.modelChartSetups.length; i++) {
+                let json = JSON.parse(this.modelChartSetups[i].chartJson);
+                if (json.layout === undefined || json.layout === null) {
+                  this.chartConfigs.chart.push(
+                    JSON.parse(this.modelChartSetups[i].chartJson)
+                  );
+                  this.chartConfigs.layout.push({
+                    x: 0,
+                    y: (i + 1) * 6,
+                    w: 12,
+                    h: 6,
+                    i: i + 1 + "",
+                  });
+                } else {
+                  this.chartConfigs.chart.push(json.chart);
+                  this.chartConfigs.layout.push(json.layout);
+                }
+              }
+              if (this.chartConfigs.chart.length == 0) {
+                this.isHaveCharts = true;
+              }
+            }
+            this.chartLoading = false;
+          });
+        } else if (this.modelId != undefined) {
+          console.log(
+            this.nowtable,
+            this.modelUuid,
+            this.useType,
+            this.prePersonalVal,
+            this.resultSpiltObjects
+          );
+          console.log(
+            this.preLength,
+            this.myIndex,
+            this.chartModelUuid,
+            this.settingInfo,
+            this.isModelPreview
+          );
+          getModelChartSetup(this.modelId).then((resp) => {
             //做修改操作
-            this.modelChartSetups = resp.data.modelChartSetups;
-            for(var i = 0;i<this.modelChartSetups.length;i++){
-              this.chartConfigs.push(JSON.parse(this.modelChartSetups[i].chartJson))
+            console.log("走这里了2");
+            if (this.myIndex == 0) {
+              this.modelChartSetups = resp.data.modelChartSetups;
+              console.log(this.modelChartSetups);
+              for (var i = 0; i < this.modelChartSetups.length; i++) {
+                let json = JSON.parse(this.modelChartSetups[i].chartJson);
+                if (json.layout === undefined || json.layout === null) {
+                  this.chartConfigs.chart.push(
+                    JSON.parse(this.modelChartSetups[i].chartJson)
+                  );
+                  this.chartConfigs.layout.push({
+                    x: 0,
+                    y: (i + 1) * 6,
+                    w: 12,
+                    h: 6,
+                    i: i + 1 + "",
+                  });
+                } else {
+                  this.chartConfigs.chart.push(json.chart);
+                  this.chartConfigs.layout.push(json.layout);
+                }
+              }
+              if (this.chartConfigs.chart.length == 0) {
+                this.isHaveCharts = true;
+              }
             }
-            this.nowChartJson = this.chartConfigs[0]
-            this.chartSaveOrUpdate = "update";
-          }
-          if(this.chartConfigs.length==0){
-            this.isHaveCharts = true
-          }
-          this.chartLoading = false
-        });
-      }else{
-         if (this.modelUuid != undefined) {
-        getModelChartSetup(this.modelUuid).then((resp) => {
-          if (resp.data.isError == true) {
-            //做保存操作
-            this.chartSaveOrUpdate = "save";
-          } else {
-            //做修改操作
-            this.modelChartSetups = resp.data.modelChartSetups;
-            for(var i = 0;i<this.modelChartSetups.length;i++){
-              this.chartConfigs.push(JSON.parse(this.modelChartSetups[i].chartJson))
-            }
-            this.nowChartJson = this.chartConfigs[0]
-            this.chartSaveOrUpdate = "update";
-          }
-          if(this.chartConfigs.length==0){
-            this.isHaveCharts = true
-          }
-          this.chartLoading = false
-        });
-      } else if (this.modelId != undefined) {
-        getModelChartSetup(this.modelId).then((resp) => {
-          if (resp.data.isError == true) {
-            //做保存操作
-            this.chartSaveOrUpdate = "save";
-          } else {
-              //做修改操作
-            this.modelChartSetups = resp.data.modelChartSetups;
-            for(var i = 0;i<this.modelChartSetups.length;i++){
-              this.chartConfigs.push(JSON.parse(this.modelChartSetups[i].chartJson))
-            }
-            this.nowChartJson = this.chartConfigs[0]
-            this.chartSaveOrUpdate = "update";
-          }
-          if(this.chartConfigs.length==0){
-            this.isHaveCharts = true
-          }
-          this.chartLoading = false
-        });
+            this.chartLoading = false;
+          });
+        }
       }
-      }
-
     },
     /**
      * 打开添加图标的dialog
      */
-    openChartDialog(){
-      this.afterAddChartsWithNoConfigure = true
-      this.chartSaveOrUpdate = 'save'
-      this.nowChartJson = undefined
-      this.chartShowIsSee = true
-    },
-    /**
-     * 点击小图表的时候大图标切换方法
-     */
-    changeChart(chartId){
-      this.afterAddChartsWithNoConfigure = false
-      var chartConfigs = this.chartConfigs
-      for(var i = 0;i<chartConfigs.length;i++){
-        if(chartId==chartConfigs[i].id){
-          this.nowChartJson = chartConfigs[i]
-          break
-        }
-      }
+    openChartDialog() {
+      this.afterAddChartsWithNoConfigure = true;
+      this.chartIndex = 0;
+      this.chartShowIsSee = true;
     },
     /**
      * 打开修改图表的dialog
      */
-    openEditChartDialog(){
-      this.chartSaveOrUpdate = 'update'
-      this.chartShowIsSee = true
+    openEditChartDialog(index) {
+      this.nowChartJson = this.chartConfigs.chart[index];
+      this.chartIndex = index;
+      this.chartShowIsSee = true;
     },
     /**
      * 删除图标
      */
-    deleteChart(){
-      if (this.nowChartJson === undefined){
-        this.$message({
-          message: "请选择图表后在删除!",
-        });
-        return
-      }
-      for(var i = 0;i<this.chartConfigs.length;i++){
-        if(this.nowChartJson.id == this.chartConfigs[i].id){
-          this.chartConfigs.splice(i,1)
-          break
+    deleteChart(index) {
+      let indexzz = this.chartIndex;
+      if (this.modelChartSetups.length != 0) {
+        var modelChartSetupUuid = {};
+        for (var i = 0; i < this.modelChartSetups.length; i++) {
+          var charjson = JSON.parse(this.modelChartSetups[i].chartJson);
+          if (charjson.chart.id === undefined || charjson.chart.id === null) {
+            if (charjson.id == this.chartConfigs.chart[indexzz].id) {
+              modelChartSetupUuid = this.modelChartSetups[i].chartSetupUuid;
+              break;
+            }
+          } else {
+            if (charjson.chart.id == this.chartConfigs.chart[indexzz].id) {
+              modelChartSetupUuid = this.modelChartSetups[i].chartSetupUuid;
+              break;
+            }
+          }
         }
-      }
-      if(this.modelChartSetups.length!=0){
-        var modelChartSetupUuid = {}
-        for(var i =0;i<this.modelChartSetups.length;i++){
-           var charjson= JSON.parse(this.modelChartSetups[i].chartJson)
-           if(charjson.id==this.nowChartJson.id){
-             modelChartSetupUuid = this.modelChartSetups[i].chartSetupUuid
-             break
-           }
-        }
-        if (modelChartSetupUuid===undefined){
+        if (modelChartSetupUuid === undefined) {
           this.$notify({
             title: this.$t("提示"),
             message: this.$t("删除成功"),
@@ -1762,7 +2277,7 @@ export default {
             duration: 2000,
             position: "bottom-right",
           });
-        }else {
+        } else {
           deleteModelChartSetup(modelChartSetupUuid).then((resp) => {
             if (resp.data) {
               this.$notify({
@@ -1775,30 +2290,306 @@ export default {
             }
           });
         }
-      }else{
-              this.$notify({
+      } else {
+        this.$notify({
+          title: this.$t("提示"),
+          message: this.$t("删除成功"),
+          type: "success",
+          duration: 2000,
+          position: "bottom-right",
+        });
+      }
+      this.chartConfigs.chart.splice(index, 1);
+      const iin = this.chartConfigs.layout
+        .map((item) => item.i)
+        .indexOf(index + 1);
+      this.chartConfigs.layout.splice(iin, 1);
+      this.dragIndex = this.chartConfigs.layout.findIndex(
+        (item) => item.i === "drop"
+      );
+      this.thechartdead = !this.thechartdead;
+      if (this.chartConfigs.chart.length !== 0) {
+      } else {
+        this.isHaveCharts = true;
+      }
+    },
+
+    /*
+     * 拖拽操作
+     * */
+    drag: function (e) {
+      console.log("拖拽了");
+      let parentRect = this.$refs.DragOn.getBoundingClientRect();
+      let mouseInGrid = false;
+      if (
+        mouseXY.x > parentRect.left &&
+        mouseXY.x < parentRect.right &&
+        mouseXY.y > parentRect.top &&
+        mouseXY.y < parentRect.bottom
+      ) {
+        mouseInGrid = true;
+      }
+      console.log(mouseInGrid);
+      if (
+        mouseInGrid === true &&
+        this.chartConfigs.layout.findIndex((item) => item.i === "drop") === -1
+      ) {
+        this.chartConfigs.layout.push({
+          x: (this.chartConfigs.layout.length * 2) % (this.colNum || 12),
+          y: this.chartConfigs.layout.length + (this.colNum || 12), // puts it at the bottom
+          w: 12,
+          h: 6,
+          i: "drop",
+        });
+      }
+      this.dragIndex = this.chartConfigs.layout.findIndex(
+        (item) => item.i === "drop"
+      );
+      if (this.dragIndex !== -1) {
+        try {
+          this.$refs.gridlayout.$children[
+            this.chartConfigs.layout.length
+          ].$refs.item.style.display = "none";
+        } catch {}
+        let el = this.$refs.gridlayout.$children[this.dragIndex];
+        el.dragging = {
+          top: mouseXY.y - parentRect.top,
+          left: mouseXY.x - parentRect.left,
+        };
+        let new_pos = el.calcXY(
+          mouseXY.y - parentRect.top,
+          mouseXY.x - parentRect.left
+        );
+        if (mouseInGrid === true) {
+          this.$refs.gridlayout.dragEvent(
+            "dragstart",
+            "drop",
+            new_pos.x,
+            new_pos.y,
+            6,
+            12
+          );
+          DragPos.x = new_pos.x;
+          DragPos.y = new_pos.y;
+        }
+        if (mouseInGrid === false) {
+          this.$refs.gridlayout.dragEvent(
+            "dragend",
+            "drop",
+            new_pos.x,
+            new_pos.y,
+            6,
+            12
+          );
+          this.chartConfigs.layout = this.chartConfigs.layout.filter(
+            (obj) => obj.i !== "drop"
+          );
+        }
+      }
+    },
+    dragend: function (e) {
+      console.log("点击了");
+      let parentRect = this.$refs.DragOn.getBoundingClientRect();
+      let mouseInGrid = false;
+      if (
+        mouseXY.x > parentRect.left &&
+        mouseXY.x < parentRect.right &&
+        mouseXY.y > parentRect.top &&
+        mouseXY.y < parentRect.bottom
+      ) {
+        mouseInGrid = true;
+      }
+      if (mouseInGrid === true) {
+        let node = {
+          id: new Date().valueOf(),
+          loading: false,
+          dataId: this.result.id,
+          dataName: this.result.name,
+          name: e.title,
+          typeName: e.title,
+          type: e.type,
+          chart: e.chart,
+          img: e.icon,
+          background: "#409EFF",
+          active: true,
+          rename: false,
+          // echart datav等的显示配置信息
+          initOptions: JSON.parse(
+            JSON.stringify(
+              this.chartsResource.resources.initOptions[e.type][e.chart]
+            )
+          ),
+          // 右侧表单的配置信息
+          configOptions: JSON.parse(
+            JSON.stringify(
+              this.chartsResource.resources.configOptions[e.type][e.chart]
+            )
+          ),
+        };
+        this.chartConfigs.layout = this.chartConfigs.layout.filter(
+          (obj) => obj.i !== "drop"
+        );
+        this.chartConfigs.layout.push({
+          x: DragPos.x,
+          y: DragPos.y,
+          w: 12,
+          h: 6,
+          i: node.id,
+        });
+        this.chartConfigs.chart.push(node);
+        var modelUuid =
+          this.nowtable.runResultTableUuid == undefined
+            ? this.chartModelUuid
+            : this.nowtable.runTaskRelUuid;
+        var modelChartSetup = {
+          chartJson: JSON.stringify({
+            chart: node,
+            layout: {
+              x: DragPos.x,
+              y: DragPos.y,
+              w: 12,
+              h: 6,
+              i: node.id,
+            },
+          }),
+          modelUuid: modelUuid,
+        };
+        this.modelChartSetups.push(modelChartSetup);
+
+        addModelChartSetup(modelChartSetup).then((resp) => {
+          if (resp.data) {
+            this.$notify({
               title: this.$t("提示"),
-              message: this.$t("删除成功"),
+              message: this.$t("添加图表成功"),
               type: "success",
               duration: 2000,
               position: "bottom-right",
             });
+          }
+        });
       }
-      if(this.chartConfigs.length!=0){
-        this.nowChartJson = this.chartConfigs[0]
-      }else{
-        this.nowChartJson = undefined
-        this.isHaveCharts = true
+    },
+    /**
+     * 保存结果，将模型添加到后台立即执行 **注意带参数模型
+     */
+    saveResult() {
+      this.$confirm("是否保存模型结果?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        this.$emit("saveModelResult");
+      });
+    },
+    saveChartsAll() {
+      if (this.modelChartSetups.length != 0) {
+        for (let i = 0; i < this.modelChartSetups.length; i++) {
+          let modelChartSetupZ = {};
+          let json = JSON.parse(this.modelChartSetups[i].chartJson);
+          for (let j = 0; j < this.chartConfigs.layout.length; j++) {
+            if (this.chartConfigs.layout[j].i === json.layout.i) {
+              modelChartSetupZ = {
+                chartJson: JSON.stringify({
+                  chart: json.chart,
+                  layout: this.chartConfigs.layout[j],
+                }),
+                modelUuid: this.modelChartSetups[i].modelUuid,
+              };
+              updateModelChartSetup(modelChartSetupZ).then((resp) => {
+                if (resp.data) {
+                  this.$notify({
+                    title: this.$t("提示"),
+                    message: this.$t("保存图表布局成功"),
+                    type: "success",
+                    duration: 2000,
+                    position: "bottom-right",
+                  });
+                }
+              });
+              break;
+            }
+          }
+        }
       }
-    }
+    },
+    /**
+     * 工作流  点击提交审核按钮
+     */
+    toSubmit() {
+      
+      // alert(JSON.stringify(this.multipleSelection));
+      if (this.multipleSelection.length ==0) {
+        alert("请至少选中一条数据");
+        // this.common.alertMsg(2, "请选中一条数据");
+        return false;
+      }
+      this.flowItem.versionUuid = randomString4Len();
+      this.flowItem.applyTitle = 'zhan';
+      this.applyInfo.versionUuid = this.flowItem.versionUuid;
+      this.applyInfo.status = "";
+      this.applyInfo.mstate = "";
+      this.applyInfo.fstate = "";
+      this.applyInfo.isUpdate = false; //初始化
+      this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
+      this.dialogVisibleSubmit = true;
+    },
+    saveOpinion() {
+      var data={
+      versionUuid:this.flowItem.versionUuid,
+      busdatas:this.multipleSelection
+      }
+       this.$axios
+        .post("/ams-clue/busRelation/toSubmit", data)
+        .then(response => {
+          if (response.data.code == "0") {
+           this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+            //修改业务执行状态为0，调用监听，执行更新流程状态操作。
+            this.$store.dispatch("applyInfo/setMstate", "0");
+            this.flowParam = 1
+          }else{
+           this.dialogVisibleSubmit = false;
+          this.common.alertMsg(1, this.textShare.operateFail());
+
+          }
+        })
+        .catch(error => {
+           this.dialogVisibleSubmit = false;
+          this.common.alertMsg(1, this.textShare.operateFail());
+          console.log(error);
+        });
+    },
+    
+    closeFlowItem(val) {
+      this.dialogVisibleSubmit = val;
+      this.flowParam=0;
+      this.initData();
+    },
+    //流程发布失败
+    delectData(val) {
+      this.dialogVisibleSubmit=val;
+      var data={
+      busRelationUuid:this.flowItem.appDataUuid,
+      }
+       this.$axios
+        .post("/ams-clue/busRelation/delete/rollBackData", data)
+        .then(response => {
+          if (response.data.code == "0") {
+           this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+          }
+        })
+        .catch(error => {
+          this.common.alertMsg(1, this.textShare.operateFail());
+          console.log(error);
+        });
+        this.loadUserList();
+    },
   },
 };
 </script>
 <style scoped>
 .itxst {
-  margin: 10px;
   text-align: left;
-  /* overflow: auto; */
+  height: 100%;
 }
 .thechard-z {
   margin-right: 15px;
@@ -1810,21 +2601,21 @@ export default {
   font-size: 16px;
   line-height: 16px;
 }
-.delete-pos{
-  width:25px;
+.delete-pos {
+  width: 25px;
   position: absolute;
   right: 60px;
-  z-index:20;
+  z-index: 20;
 }
-.change-pos{
-  width:29px;
+.change-pos {
+  width: 29px;
   position: absolute;
   right: 35px;
-  z-index:20;
+  z-index: 20;
 }
-.chartSwitching{
-  width:24px;
-  height:24px;
+.chartSwitching {
+  width: 24px;
+  height: 24px;
   margin: 10px 6px 0px 0px;
   display: block;
   cursor: pointer;
@@ -1832,36 +2623,29 @@ export default {
   /*border-radius: 15%;*/
 }
 
->>>.el-btn-no-color{
-  width: 40px;
-  float: left;
-  border: solid 1px #E0E0E0;
-  height: 26px;
-  margin: -7px 3px 3px 0px;
+.el-btn-no-colorz {
+  float: right;
+  height: 30px;
+  margin: 5px;
+  font-size: 14px;
+  color: #46a6ff;
+  padding: 2px 5px;
   cursor: pointer;
   text-align: center;
+  user-select: none;
+  /* background-color: #559ED4; */
 }
 
->>>.el-btn-color{
-  background: aliceblue;
-  width: 40px;
-  float: left;
-  border: solid 1px #E0E0E0;
-  height: 26px;
-  margin: -7px 3px 3px 0px;
-  cursor: pointer;
-  text-align: center;
-}
-.smallImgs{
+.smallImgs {
   float: right;
   height: 723px;
   padding-left: 5px;
-  background: rgb(245,245,245);
+  background: rgb(245, 245, 245);
   position: relative;
   z-index: 10;
   margin: -50px -8px 0px 0px;
 }
-.globalDropDownBox{
+.globalDropDownBox {
   position: fixed;
   top: 0;
   left: 0;
@@ -1872,14 +2656,17 @@ export default {
   border: 1px solid #e6ebf5;
   border-radius: 4px;
   overflow: hidden;
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
-
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 @keyframes globalDropDownBox {
-  0%{height:0}
-  100%{height:30px}
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 30px;
+  }
 }
-.globalDDBli{
+.globalDDBli {
   list-style: none;
   line-height: 30px;
   padding: 0 17px;
@@ -1890,8 +2677,102 @@ export default {
   outline: none;
   animation: globalDropDownBox 0.3s linear forwards;
 }
-.globalDDBli:hover{
+.globalDDBli:hover {
   background-color: #e8f4ff;
   color: #46a6ff;
+}
+.chartChange {
+  float: left;
+}
+.item-bgimg-size {
+  background-image: url("imgs/chart-type-icons.png");
+}
+.item_img {
+  width: 36px;
+  height: 24px;
+  background-size: 420px 168px;
+}
+.item_div {
+  width: 38px;
+  height: 34px;
+  padding: 5px 0px;
+  margin: 3px 10px;
+  border-radius: 2px;
+  border: 1px solid #46a6ff;
+  float: left;
+}
+.drag-on {
+  height: calc(100% - 40px);
+}
+.drag-on-table {
+  position: relative;
+  height: 100%;
+}
+
+.vue-grid-layout {
+  background: transparent;
+}
+.vue-grid-item:not(.vue-grid-placeholder) {
+  background: transparent;
+  border: 1px dashed #46a6ff;
+}
+.vue-grid-item .resizing {
+  opacity: 0.9;
+}
+.vue-grid-item .static {
+  background: #cce;
+}
+.vue-grid-item .textz {
+  text-align: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  height: 100%;
+  width: 100%;
+}
+.vue-grid-item .no-drag {
+  height: 100%;
+  width: 100%;
+}
+.vue-grid-item .minMax {
+  font-size: 12px;
+}
+.vue-grid-item .add {
+  cursor: pointer;
+}
+.vue-draggable-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 0;
+  right: 0;
+  padding: 0 8px 8px 0;
+  background-origin: content-box;
+  background-color: black;
+  box-sizing: border-box;
+  border-radius: 10px;
+  cursor: pointer;
+  z-index: 100000;
+}
+.layoutJSON {
+  background: #ddd;
+  border: 1px solid black;
+  margin-top: 10px;
+  padding: 10px;
+}
+.eventsJSON {
+  background: #ddd;
+  border: 1px solid black;
+  margin-top: 10px;
+  padding: 10px;
+  height: 100px;
+  overflow-y: scroll;
+}
+>>> .vue-grid-item.vue-grid-placeholder {
+  background: #46a6ff !important;
+  opacity: 0.2 !important;
 }
 </style>

@@ -22,7 +22,7 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="操作用户" width="100px" align="center" prop="opUserName" />
+      <el-table-column label="操作用户" width="100px" prop="opUserName" />
       <el-table-column label="操作IP" width="160px" align="center" prop="opIp" />
       <el-table-column label="操作模块" width="200px" align="center" prop="moduleName" />
       <el-table-column label="操作子模块" width="200px" prop="subModuleName" />

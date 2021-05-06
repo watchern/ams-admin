@@ -1,5 +1,5 @@
 module.exports = {
-  title: '审计系统',
+  title: process.env.VUE_APP_BASE_NAME || "审计系统",
 
   /**
    * @type {boolean} true | false

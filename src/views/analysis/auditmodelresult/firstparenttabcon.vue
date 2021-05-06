@@ -86,7 +86,6 @@
           <el-table-column
             label="模型名称"
             width="300px"
-            align="center"
             prop="model.modelName"
           >
             <template slot-scope="scope">
@@ -187,7 +186,6 @@
           <el-table-column
             label="运行参数"
             prop="settingInfo"
-            align="center"
             width="200px"
             :formatter="settingInfoParamsArrFormatter"
           />
@@ -206,7 +204,6 @@
           <el-table-column
             label="关联项目"
             prop="projectName"
-            align="center"
             width="200px"
           />
           <el-table-column
@@ -221,6 +218,7 @@
             label="操作"
             width="150px"
             align="center"
+            class="unop"
           >
             <template slot-scope="scope">
               <div>
@@ -489,7 +487,7 @@ export default {
         const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "模型运行结果表.xlsx");
+        link.setAttribute("download", "模型运行结果表.xls");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -1416,4 +1414,9 @@ export default {
   },
 };
 </script>
+<style>
+.app-container .el-table__fixed-right{
+  background-image: linear-gradient(to bottom, #F6F6FE , #FEFEFF);
+}
+</style>
 

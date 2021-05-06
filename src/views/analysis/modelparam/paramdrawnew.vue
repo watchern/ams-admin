@@ -1,29 +1,30 @@
 <template>
-  <div style="min-height: 290px;overflow-y: auto;" ref="inputParamContent" class="paramadrawnew">
-    <el-collapse accordion v-model="activeName">
-      <el-collapse-item ref="nodeParam" name="collapse1" :title="collapseTitle">
-    <div v-if="hasParam" align='center' style='font-weight:lighter ;font-size:15px' >该模型没有参数</div>
-    <el-row v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
-      <el-col :span="7" style="line-height:36px;padding-right: 10px;text-align: right;">
-        <el-tooltip :content="paramInfo.description" placement="bottom">
-          <label>{{paramInfo.paramName}}</label>
-        </el-tooltip>
-      </el-col>
-      <el-col :span="15">
-        <div ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title"></div>
-        <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam"></el-input>
-        <el-date-picker ref="paramOption" :index="ind"  v-if="paramInfo.inputType === 'timeinp'" :title="paramInfo.title" type="date" placeholder="选择日期" v-model="paramInfo.dataDefaultVal" style="width: 98%;"></el-date-picker>
-        <div ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title"></div>
-      </el-col>
-      <el-col :span="2" v-show="paramInfo.allowedNull">
-        <div style="color: red;display: inline-block;font-weight: bold;font-size: 20px;">*</div>
-      </el-col>
-    </el-row>
-      </el-collapse-item>
-    </el-collapse>
+  <div style="overflow-y: visible;" ref="inputParamContent" class="paramadrawnew">
+    <div ref="nodeParam">
+      <el-row  v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
+        <el-col :span="7" style="line-height:36px;padding-right: 10px;">
+          <el-tooltip :content="paramInfo.description" placement="bottom">
+            <label>{{paramInfo.paramName}}</label>
+          </el-tooltip>
+        </el-col>
+        <el-col :span="15">
+          <div class="select-div" ref="selectParam" :index="ind" v-if="paramInfo.inputType === 'lineinp'" :id="paramInfo.id" :title="paramInfo.title"></div>
+          <el-input ref="paramOption" :index="ind" v-if="paramInfo.inputType === 'textinp'" :title="paramInfo.title" v-model="paramInfo.dataDefaultVal" class="textParam"></el-input>
+          <div class="select-div" ref="selectTreeParam" :index="ind" v-if="paramInfo.inputType === 'treeinp'" :id="paramInfo.id" :title="paramInfo.title"></div>
+          <span  v-if="paramInfo.inputType === 'timeinp'" >
+            <el-date-picker v-if="paramInfo.timeFormat!='other'" ref="paramOption" :index="ind"  :title="paramInfo.title" :type="paramInfo.timeFormat" placeholder="选择日期" :value-format="timeDealFormat(paramInfo.timeFormat)"  v-model="paramInfo.dataDefaultVal" style="width: 98%;"></el-date-picker> 
+            <el-date-picker v-else ref="paramOption" :index="ind"  :title="paramInfo.title" type="date" placeholder="选择日期" :value-format="paramInfo.customizeFormat" v-model="paramInfo.dataDefaultVal" style="width: 98%;"></el-date-picker> 
+          </span>
+        </el-col>
+        <el-col :span="2" v-show="paramInfo.allowedNull">
+          <div style="color: red;display: inline-block;font-weight: bold;font-size: 20px;">*</div>
+        </el-col>
+      </el-row>
+      <!-- 分隔线 -->
+      <el-divider v-if="paramInfoArr.length>0"></el-divider>
+    </div>  
   </div>
 </template>
-
 <script>
 import '@/components/ams-loading/css/loading.css'
 import { findParamsAndModelRelParams,executeParamSql,getSelectTreeData,replaceModelSqlByParams ,recplaceParams } from '@/api/graphtool/apiJs/graphList'
@@ -126,12 +127,13 @@ export default {
         }
         this.paramInfoArr.push(paramInfoObj)
       }
+      console.log(this.paramInfoArr);
       this.$nextTick(() => {
         this.initParamInputAndSelect()
         let nodeParamDom = this.$refs.nodeParam
-        if (nodeParamDom.$children.length===0){
-          this.hasParam = true
-        }
+        // if (nodeParamDom.$children.length===0){
+        //   this.hasParam = true
+        // }
       })
       }catch (e) {
         this.loading.destroy()
@@ -168,7 +170,7 @@ export default {
       switch (obj.setParamObj.inputType) {
         case 'lineinp':// 下拉列表
           if (!paramSql) {// 备选sql为空的情况下 取静态的option值
-            $.each(paramObj.paramChoice.paramOptionsList, function(i, v) {
+            $.each(paramObj.paramChoice.ammParamOptionsList, function(i, v) {
               if (v.optionsVal && v.optionsName) {
                 // 组织下拉选项数据
                 dataArr.push({
@@ -255,6 +257,9 @@ export default {
             if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
               obj.setParamObj.dataDefaultVal = paramObj.defaultVal
             }
+             //时间类型（年/月/日/其他）
+            obj.setParamObj.timeFormat = paramObj.paramTimes.timeFormat;
+            obj.setParamObj.customizeFormat = paramObj.paramTimes.customizeFormat; 
           }
           break
         case 'treeinp':// 下拉树
@@ -619,6 +624,16 @@ export default {
         selectXs.setValue([])// 清空选中值
       }
     },
+    //处理时间格式
+    timeDealFormat(val){
+      if(val=="year"){
+        return "yyyy";
+      }else if(val=="month"){
+        return "yyyy-MM";
+      }else{
+        return "yyyy-MM-dd";
+      }
+    },
     /**
      * 替换参数
      * @return {{verify: boolean, message: string}}
@@ -852,6 +867,9 @@ export default {
 
 <style lang="scss" scoped>
   .paramadrawnew>>>.el-collapse-item__wrap{
-    overflow: visible;
+    overflow: scroll;
+  }
+  .paramadrawnew>>>.select-div{
+    z-index: 40000;
   }
 </style>

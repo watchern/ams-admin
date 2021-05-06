@@ -1,14 +1,14 @@
 <template>
   <div id="fatherDiv">
     <el-container>
-      <el-aside width="20%">
-        <div v-for="(item, key) in this.detailModels" :key="key">
+      <el-aside width="30%" class="menu-aside">
+        <div v-for="(item, key) in this.detailModels"  class="aside-title" :key="key">
           <el-tooltip class="item" effect="light" placement="right">
             <div slot="content">
               审计事项 : {{ item.auditItemName }}<br />风险等级 :
               {{ afterTranscod[key] }}<br />审计思路 : {{ item.auditIdeas }}
             </div>
-            <el-button class="tipButton">{{ item.modelName }}</el-button>
+            <el-button  @click="jump(key)" :class="[key==activeMenu?'tipButton colorButton':'tipButton']">{{ item.modelName }}</el-button>
           </el-tooltip>
         </div>
       </el-aside>
@@ -31,15 +31,18 @@
             >-->
           </div>
         </el-header>
-        <el-main>
-          <div v-for="(item, key) in this.detailModels" :key="key">
-<!--            <paramDraw-->
-<!--              :myId="item.modelUuid + '2'"-->
-<!--              ref="paramassembly"-->
-<!--            ></paramDraw>-->
-            <paramDrawNew  :sql="drawsSql[key]" :arr="drawParamarr[key]" ref="paramassembly"></paramDrawNew>
-          </div>
-          <el-dialog
+        <div class="el-main-param" id="scrollBox">
+          <el-main>
+            <div v-for="(item, key) in this.detailModels" :key="key" class="do-jump">
+  <!--            <paramDraw-->
+  <!--              :myId="item.modelUuid + '2'"-->
+  <!--              ref="paramassembly"-->
+  <!--            ></paramDraw>-->
+              <paramDrawNew  :sql="drawsSql[key]" :arr="drawParamarr[key]" ref="paramassembly"></paramDrawNew>
+            </div>
+          </el-main>
+        </div>
+        <el-dialog
             title="选择模型结果保存路径"
             :visible.sync="modelResultSavePathDialog"
             width="30%"
@@ -61,7 +64,6 @@
               >
             </span>
           </el-dialog>
-        </el-main>
       </el-container>
     </el-container>
   </div>
@@ -94,6 +96,26 @@ export default {
     }
     this.path = "当前执行模型保存路径:根路径"
   },
+  beforeUpdate(){
+    this.$nextTick(()=>{
+      this.scrollBox = document.getElementById('scrollBox')
+      const jump = $('.do-jump');
+      const topArr = []
+      for (let i = 0; i < jump.length; i++) {
+        topArr.push(jump.eq(i).position().top)
+      };
+      // 监听dom元素的scroll事件
+      this.scrollBox.addEventListener('scroll', () => {
+        const current_offset_top = this.scrollBox.scrollTop
+        for (let i = 0; i < topArr.length; i++) {
+          if (current_offset_top <= topArr[i]) { // 根据滚动距离判断应该滚动到第几个导航的位置
+            this.activeMenu = i
+            break
+          }
+        }
+      }, true)
+    })
+  },  
   components: {
     paramDraw,
     dataTree,
@@ -124,11 +146,23 @@ export default {
       nodeType: "",
       tempId: "",
       drawsSql:[],
-      drawParamarr:[]
+      drawParamarr:[],
+      activeMenu:0
     };
   },
   props: ["models", "timing",'dataUserId','sceneCode'],
   methods: {
+    // 跳转
+    jump(index) {
+      this.activeMenu = index; // 当前导航
+      const jump = $('.do-jump').eq(index);
+      const scrollTop = jump.position().top + this.scrollBox.scrollTop // 获取需要滚动的距离
+      // Chrome
+      this.scrollBox.scrollTo({
+        top: scrollTop,
+        behavior: 'smooth' // 平滑滚动
+      })
+    },
     /**
      * 初始化dialog
      */
@@ -219,8 +253,24 @@ export default {
 };
 </script>
 <style>
+
 #fatherDiv .tipButton {
   border: 1px solid #000;
   margin-bottom: 5px;
 }
+#fatherDiv .colorButton {
+  background: -webkit-linear-gradient(to bottom, #fda0856b, #f6d36585);
+  background: linear-gradient(to bottom, #fda0856b, #f6d36585);
+}
+#fatherDiv{
+  max-height: 600px;
+}
+.menu-aside{
+  z-index: 9999;
+}
+.el-main-param{
+  overflow: scroll;
+  max-height:580px;
+}
+
 </style>

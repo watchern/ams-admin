@@ -1,0 +1,565 @@
+/*1920*1080分辨率*/
+
+@media screen and (max-height:1050px) {
+    .el-main {
+        height: 3422px;
+    }
+    .content {
+        background: url("../../assets/subpage_img/顶部阴影.png");
+        width: 1903px;
+        height: 1091px;
+    }
+    .information .list1 .list1_ul li .active {
+        margin-right: 0;
+    }
+    .information_yx .list2 .list2_ul li .active {
+        margin-right: 0;
+    }
+    .enterprise_name p {
+        width: 649px;
+        height: 58px;
+        font-size: 60px;
+        font-family: FZLanTingHei-H-GBK;
+        font-weight: 800;
+        color: #242424;
+        line-height: 8px;
+        position: absolute;
+        top: 142px;
+        left: 129px;
+    }
+    .enterprise_introduction {
+        width: 1655px;
+        height: 175px;
+        font-size: 24px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #242424;
+        line-height: 50px;
+        position: absolute;
+        top: 289px;
+        left: 131px;
+    }
+    .information p {
+        width: 241px;
+        height: 36px;
+        font-size: 37px;
+        font-family: FZLanTingHei-H-GBK;
+        font-weight: 800;
+        color: #242424;
+        line-height: 8px;
+        position: absolute;
+        top: 599px;
+        left: 134px;
+        z-index: 1;
+    }
+    .information img {
+        position: absolute;
+        top: 648px;
+        left: 137px;
+    }
+    .list1 .list1_ul {
+        position: absolute;
+        top: 696px;
+        left: 135px;
+    }
+    .list1 .list1_ul li {
+        width: 1658px;
+        height: 110px;
+    }
+    .list1 .list1_ul li div {
+        display: block;
+        width: 529px;
+        height: 21px;
+        font-size: 20px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1d1d1d;
+        line-height: 110px;
+        float: left;
+        margin: 0 425px 0 50px;
+    }
+    .list1 .list1_ul li div span {
+        float: left;
+        margin: 0 145px 0 0;
+    }
+    .list1 .list1_ul li:nth-child(over) {
+        background: #fff;
+    }
+    .list1 .list1_ul li:nth-child(odd) {
+        background: #f8f8fa;
+    }
+    .information_yx p {
+        width: 241px;
+        height: 36px;
+        font-size: 37px;
+        font-family: FZLanTingHei-H-GBK;
+        font-weight: bold;
+        color: #242424;
+        line-height: 8px;
+        position: absolute;
+        top: 1559px;
+        left: 134px;
+        z-index: 1;
+    }
+    .information_yx img {
+        position: absolute;
+        top: 1609px;
+        left: 137px;
+    }
+    .list2 .list2_ul {
+        position: absolute;
+        top: 1656px;
+        left: 135px;
+    }
+    .list2 .list2_ul li {
+        width: 1658px;
+        height: 110px;
+    }
+    .list2 .list2_ul li div {
+        display: block;
+        width: 529px;
+        height: 21px;
+        font-size: 20px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1d1d1d;
+        line-height: 110px;
+        float: left;
+        margin: 0 425px 0 50px;
+    }
+    .list2 .list2_ul li div span {
+        float: left;
+        margin: 0 145px 0 0;
+    }
+    .list2 .list2_ul li:nth-child(over) {
+        background: #fff;
+    }
+    .list2 .list2_ul li:nth-child(odd) {
+        background: #f8f8fa;
+    }
+    .supervise .title {
+        position: absolute;
+        top: 2301px;
+        left: 134px;
+        z-index: 1;
+        width: 241px;
+        height: 36px;
+        font-size: 37px;
+        font-family: FZLanTingHei-H-GBK;
+        font-weight: bold;
+        color: #242424;
+        line-height: 8px;
+    }
+    .supervise img {
+        position: absolute;
+        top: 2350px;
+        left: 137px;
+    }
+    .yearTitle {
+        position: absolute;
+        top: 2425px;
+        left: 139px;
+        width: 48px;
+        height: 21px;
+        font-size: 20px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1d1d1d;
+        line-height: 48px;
+    }
+    .select {
+        position: absolute;
+        top: 2433px;
+        left: 224px;
+        width: 234px;
+        height: 72px;
+        border-radius: 15px;
+        font-size: 20px;
+        padding: 0 0 0 30px;
+    }
+    .el-table {
+        position: absolute;
+        top: 2583px;
+        left: 135px;
+        width: 1658px;
+    }
+    .block {
+        position: absolute;
+        top: 3183px;
+        left: 925px;
+    }
+    .el-select {
+        display: inline-block;
+        position: relative;
+        top: 0 !important;
+        left: 70px !important;
+    }
+    .el-pagination .el-select .el-input {
+        float: left;
+        margin: 0 5px 0 85px !important;
+    }
+    .block>>>.el-pager li {
+        width: 47px;
+        height: 47px;
+        line-height: 47px;
+        background-color: #fff;
+    }
+    .block>>>.el-pagination.is-background .btn-next {
+        width: 104px;
+        height: 54px;
+        font-size: 20px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        line-height: 34px;
+        margin: 0 90px 0 20px;
+    }
+    .block>>>.el-pagination.is-background .btn-prev {
+        width: 104px;
+        height: 54px;
+        font-size: 20px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        line-height: 34px;
+        margin: 0 20px 0 0;
+    }
+    .block>>>.el-pagination {
+        margin-top: 10px;
+    }
+    .block>>>.el-pagination .el-select .el-input {
+        height: 55px;
+    }
+    .block>>>.el-pagination .el-select .el-input .el-input__inner {
+        height: 55px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        line-height: 34px;
+    }
+    .block>>>.el-pagination__jump {
+        width: 152px;
+        height: 15px;
+        font-size: 20px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        line-height: 34px;
+        margin: 0 0 0 10px;
+    }
+    .block>>>.el-input {
+        margin: 0 20px 0 15px;
+    }
+    .block>>>.el-pagination__editor.el-input .el-input__inner {
+        width: 53px;
+        height: 55px;
+    }
+    .my-btn1 {
+        position: absolute;
+        top: 12px;
+        left: -90px;
+        width: 74px;
+        height: 54px;
+        font-size: 20px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        padding: 0 0 0 0;
+        line-height: 12px;
+    }
+    .my-btn2 {
+        position: absolute;
+        top: 12px;
+        left: 505px;
+        width: 74px;
+        height: 54px;
+        font-size: 20px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        padding: 0 0 0 0;
+        line-height: 12px;
+    }
+}
+
+
+/*这个是适配1366*768分辨率*，只适配宽度为1366的宽度*/
+
+@media screen and (max-width: 1366px) {
+    .el-main {
+        height: 2435px;
+    }
+    .content {
+        background: url("../../assets/subpage_img/顶部阴影.png");
+        width: 1366px;
+        height: 776px;
+    }
+    .information .list1 .list1_ul li .active {
+        margin-right: 0;
+    }
+    .information_yx .list2 .list2_ul li .active {
+        margin-right: 0;
+    }
+    .enterprise_name p {
+        width: 462px;
+        height: 41px;
+        font-size: 43px;
+        font-family: FZLanTingHei-H-GBK;
+        font-weight: bold;
+        color: #242424;
+        line-height: 6px;
+        position: absolute;
+        top: 101.03px;
+        left: 91.78px;
+    }
+    .enterprise_introduction {
+        width: 1177px;
+        height: 125px;
+        font-size: 17px;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #242424;
+        line-height: 36px;
+        position: absolute;
+        top: 205.61px;
+        left: 93.2px;
+    }
+    .information p {
+        width: 171px;
+        height: 26px;
+        font-size: 26px;
+        font-family: FZLanTingHei-H-GBK;
+        font-weight: bold;
+        color: #242424;
+        line-height: 6px;
+        position: absolute;
+        top: 426px;
+        left: 95px;
+        z-index: 1;
+    }
+    .information img {
+        position: absolute;
+        top: 458px;
+        left: 95px;
+        width: 105px;
+        height: 14px;
+    }
+    .list1 .list1_ul {
+        position: absolute;
+        top: 495px;
+        left: 96px;
+    }
+    .list1 .list1_ul li {
+        width: 1180px;
+        height: 78px;
+    }
+    .list1 .list1_ul li div {
+        width: 419px;
+        height: 15px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        line-height: 78px;
+        float: left;
+        margin: 0 187px 0 50px;
+    }
+    .list1 .list1_ul li div span {
+        float: left;
+        margin: 0 145px 0 0;
+    }
+    .list1 .list1_ul li:nth-child(over) {
+        background: #fff;
+    }
+    .list1 .list1_ul li:nth-child(odd) {
+        background: #f8f8fa;
+    }
+    .information_yx p {
+        width: 171px;
+        height: 26px;
+        font-size: 26px;
+        font-family: FZLanTingHei-H-GBK;
+        font-weight: 400;
+        color: #242424;
+        line-height: 6px;
+        position: absolute;
+        top: 1109px;
+        left: 95px;
+        z-index: 1;
+    }
+    .information_yx img {
+        position: absolute;
+        top: 1145px;
+        left: 97px;
+        width: 105px;
+        height: 14px;
+    }
+    .list2 .list2_ul {
+        position: absolute;
+        top: 1178px;
+        left: 96px;
+    }
+    .list2 .list2_ul li {
+        width: 1180px;
+        height: 78px;
+    }
+    .list2 .list2_ul li div {
+        display: block;
+        width: 295px;
+        height: 21px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        line-height: 78px;
+        float: left;
+        margin: 0px 317px 0 50px;
+    }
+    .list2 .list2_ul li div span {
+        float: left;
+        margin: 0 107px 0 0;
+    }
+    .list2 .list2_ul li:nth-child(over) {
+        background: #fff;
+    }
+    .list2 .list2_ul li:nth-child(odd) {
+        background: #f8f8fa;
+    }
+    .supervise .title {
+        position: absolute;
+        top: 1637px;
+        left: 97px;
+        z-index: 1;
+        width: 171px;
+        height: 26px;
+        font-size: 26px;
+        font-family: FZLanTingHei-H-GBK;
+        font-weight: 400;
+        color: #242424;
+        line-height: 6px;
+    }
+    .supervise img {
+        position: absolute;
+        top: 1674px;
+        left: 97px;
+        width: 105px;
+        height: 14px;
+    }
+    .yearTitle {
+        position: absolute;
+        top: 1725px;
+        left: 99px;
+        width: 34px;
+        height: 15px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        line-height: 34px;
+    }
+    .select {
+        position: absolute;
+        top: 1731px;
+        left: 159px;
+        width: 166px;
+        height: 51px;
+        border-radius: 15px;
+        font-size: 16px;
+        padding: 0 0 0 15px;
+    }
+    .el-table {
+        position: absolute;
+        top: 1806px;
+        left: 96px;
+        width: 1180px;
+    }
+    .block {
+        position: absolute;
+        top: 2360px;
+        left: 525px;
+    }
+    .block>>>.el-pager li {
+        width: 33px;
+        height: 33px;
+        line-height: 33px;
+        background-color: #fff;
+    }
+    .block>>>.el-pagination.is-background .btn-next {
+        width: 74px;
+        height: 38px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        line-height: 34px;
+        margin: 0 90px 0 20px;
+    }
+    .block>>>.el-pagination.is-background .btn-prev {
+        width: 74px;
+        height: 38px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        line-height: 34px;
+        margin: 0 20px 0 0;
+    }
+    .block>>>.el-pagination {
+        margin-top: 10px;
+    }
+    .block>>>.el-pagination .el-select .el-input {
+        height: 38px;
+    }
+    .block>>>.el-pagination .el-select .el-input .el-input__inner {
+        height: 38px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        line-height: 34px;
+    }
+    .block>>>.el-pagination__jump {
+        width: 152px;
+        height: 15px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        line-height: 34px;
+        margin: 0 0 0 10px;
+    }
+    .block>>>.el-input {
+        margin: 0 20px 0 15px;
+    }
+    .block>>>.el-pagination__editor.el-input .el-input__inner {
+        width: 53px;
+        height: 38px;
+    }
+    .my-btn1 {
+        position: absolute;
+        top: 12px;
+        left: -70px;
+        width: 53px;
+        height: 38px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        padding: 0 0 0 0;
+        line-height: 12px;
+    }
+    .my-btn2 {
+        position: absolute;
+        top: 12px;
+        left: 395px;
+        width: 53px;
+        height: 38px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #1D1D1D;
+        padding: 0 0 0 0;
+        line-height: 12px;
+    }
+}

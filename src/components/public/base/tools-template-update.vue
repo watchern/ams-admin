@@ -29,38 +29,38 @@
           </div>
         </div>
         <div class="title-label" style="margin-top: 15px">自定义快捷菜单</div>
-        <div class="lately-use-box flex a-center j-start flex-row">
-          <div
-            v-for="(item,index) in latelyFastList"
-            :key="index"
-            class="use-box flex a-center j-center use-zy"
-            @click="theRoutingIn(item)"
-            :style='{background:item.bg}'
-          >
-            <img :src="item.image" />
+          <div class="lately-use-box flex a-center j-start flex-row">
+            <div
+              v-for="(item,index) in latelyFastList"
+              :key="index"
+              class="use-box flex a-center j-center use-zy"
+              @click="theRoutingIn(item)"
+              :style='{background:item.bg}'
+            >
+              <img :src="item.image" />
+            </div>
+            <div
+              class="use-box flex a-center j-center use-zy"
+              @click="dialogVisible = true"
+              :style='{background:"rgb(95, 190, 235)"}'
+            >
+              <img src="../../public/base/accessIcon/zidingyi.png" />
+            </div>
           </div>
-          <div
-            class="use-box flex a-center j-center use-zy"
-            @click="dialogVisible = true"
-            :style='{background:"rgb(95, 190, 235)"}'
-          >
-            <img src="../../public/base/accessIcon/zidingyi.png" />
+          <div class="lately-use-box flex a-center j-start flex-row">
+            <div v-for="(item,index) in latelyFastList"
+                :key="index"
+                class="use-box flex a-center j-center use-zyt"
+            >
+              <el-tooltip :content="item.name" placement="bottom" effect="light">
+                <span class="doubleWords"> {{ item.name }} </span>
+              </el-tooltip>
+            </div>
+            <div class="use-box flex a-center j-center use-zyt">
+              <span style="font-size:14px"> 维护 </span>
+            </div>
           </div>
         </div>
-        <div class="lately-use-box flex a-center j-start flex-row">
-          <div v-for="(item,index) in latelyFastList"
-               :key="index"
-               class="use-box flex a-center j-center use-zyt"
-          >
-            <el-tooltip :content="item.name" placement="bottom" effect="light">
-              <span class="doubleWords"> {{ item.name }} </span>
-            </el-tooltip>
-          </div>
-          <div class="use-box flex a-center j-center use-zyt">
-            <span style="font-size:14px"> 维护 </span>
-          </div>
-        </div>
-      </div>
 <!--      <div class="other-tools">-->
 <!--        <div class="title-label">其他工具</div>-->
 <!--        <div class="other-tools-box flex flex-row a-center j-start">-->
@@ -610,7 +610,7 @@ export default {
      */
     getWebSocket() {
       var userId = this.$store.getters.personuuid
-      const wsuri = process.env.VUE_APP_BASE_WEB_SOCKET + userId + 'systemTask'// 连接地址，可加参数// 连接地址，可加参数
+      const wsuri = this.AmsWebsocket.getWSBaseUrl(this.AmsModules.BASE) + userId + 'systemTask'// 连接地址，可加参数// 连接地址，可加参数
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(wsuri) // 建立与服务端的连接
       // 当服务端打开连接
