@@ -1,7 +1,7 @@
 <template>
   <div id="fatherDiv">
     <el-container>
-      <el-aside width="30%" class="menu-aside">
+      <el-aside class="menu-aside">
         <div v-for="(item, key) in this.detailModels"  class="aside-title" :key="key">
           <el-tooltip class="item" effect="light" placement="right">
             <div slot="content">
