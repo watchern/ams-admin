@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-container style="height: 450px;">
+    <el-container style="min-height: 450px;overflow: auto;">
       <div ref="basicInfo">
         <el-form ref="basicInfoForm" :model="form" :rules="rules" class="detail-form" :disabled="isBanEdit">
           <el-row>
