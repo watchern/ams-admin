@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-container>
-      <el-aside class="left-side" width="300px" height="748px">
+      <el-aside class="left-side" height="748px">
         <el-scrollbar>
           <el-tabs tab-position="left" style="height: 100%;">
             <el-tab-pane>
