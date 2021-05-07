@@ -11,7 +11,8 @@
           />
         </div>
       </el-header>
-      <el-main style="width: 91.8vw">
+      <!-- style="width: 91.8vw" -->
+      <el-main>
         <div align="right">
           <el-row>
             <el-dropdown>

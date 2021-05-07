@@ -11,7 +11,8 @@
           />
         </div>
       </el-header>
-      <el-main style="width: 92vw">
+      <!-- style="width: 92vw" -->
+      <el-main>
         <div align="right">
           <el-row>
             <el-button

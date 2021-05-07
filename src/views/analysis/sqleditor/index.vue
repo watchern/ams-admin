@@ -1072,7 +1072,7 @@
     }
     #rightPart {
       /*width: 69.6732%;*/
-        width: 84.82%;
+        /* width: 84.82%; */
         position: relative;
         padding: 0;
         overflow: hidden;
@@ -1226,7 +1226,7 @@
     .left-part{
         overflow-x: hidden;
         overflow-y: auto;
-        width: 14.66666667%;
+        /* width: 14.66666667%; */
         /*width: 29.6732%;*/
         float: left;
         height: 100%;
