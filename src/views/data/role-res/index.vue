@@ -22,9 +22,19 @@
           >
             <span slot-scope="{ node, data }" class="custom-tree-node">
               <i v-if="data.id==='root'" class="el-icon-s-home" style="color:#409EFF" />
-              <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
-              <i v-if="data.type==='table'" class="el-icon-tickets" style="color:#409EFF" />
-              <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
+              <!-- class="el-icon-folder" style="color:#409EFF" / -->
+              <i v-else-if="data.type==='folder'">
+                <img src="../../../assets/img/table_0.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+              </i>
+               <!-- class="el-icon-tickets" style="color:#409EFF" / -->
+              <i v-else-if="data.type==='table'">
+                <img src="../../../assets/img/table_1.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+              </i>
+              <!-- style="color:#409EFF" -->
+              <i v-else-if="data.type==='column'" class="el-icon-c-scale-to-original" />
+              <i v-else>
+                <img src="../../../assets/img/table_2.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+              </i>
               <span :title="node.name">{{ node.label }}</span>
             </span>
           </MyElTree>
@@ -62,10 +72,21 @@
             show-checkbox
           >
             <span slot-scope="{ node, data }" class="custom-tree-node" style="width:100%">
-              <i v-if="data.id==='ROOT'" class="el-icon-s-home" style="color:#409EFF" />
-              <i v-if="data.type==='folder'" class="el-icon-folder" style="color:#409EFF" />
-              <i v-if="data.type==='table'" class="el-icon-tickets" style="color:#409EFF" />
-              <i v-if="data.type==='column'" class="el-icon-c-scale-to-original" style="color:#409EFF" />
+              <!-- style="color:#409EFF"  -->
+              <i v-if="data.id==='ROOT'" class="el-icon-s-home" />
+               <!-- class="el-icon-folder" style="color:#409EFF" / -->
+              <i v-else-if="data.type==='folder'">
+                <img src="../../../assets/img/table_0.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+              </i>
+               <!-- class="el-icon-tickets" style="color:#409EFF" / -->
+              <i v-else-if="data.type==='table'">
+                <img src="../../../assets/img/table_1.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+              </i>
+               <!-- style="color:#409EFF" -->
+              <i v-else-if="data.type==='column'" class="el-icon-c-scale-to-original" />
+              <i v-else>
+                <img src="../../../assets/img/table_2.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+              </i>
               <span :title="node.name" @click="onclick2(node)">{{ node.label }}</span>
               <span v-if="data.id!=='ROOT'" style="padding-left: 10px;">
                 <el-button type="text" size="mini" icon="el-icon-remove" @click="() => remove(node, data)" />

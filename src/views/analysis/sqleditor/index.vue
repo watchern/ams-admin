@@ -71,12 +71,12 @@
                                     class="oper-btn maintain"
                                 />
                                 <el-dropdown-menu slot="dropdown">
-                                    <!-- <el-dropdown-item
+                                    <el-dropdown-item
                                         @click.native="findAndReplace(2)"
                                     >查找</el-dropdown-item>
                                     <el-dropdown-item
                                         @click.native="findAndReplace(1)"
-                                    >替换</el-dropdown-item> -->
+                                    >替换</el-dropdown-item>
                                     <el-dropdown-item
                                         @click.native="caseTransformation(1)"
                                     >转大写</el-dropdown-item>
@@ -488,6 +488,9 @@
              */
             getWebSocket() {
               this.pushUuid = uuid2()
+                /*      const webSocketPath =
+                  'ws://localhost:8086/analysis/websocket?' +
+                  this.$store.getters.personuuid*/
                 const webSocketPath =
                     this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) +
                     this.$store.getters.personuuid +
@@ -1069,7 +1072,7 @@
     }
     #rightPart {
       /*width: 69.6732%;*/
-        width: 84.82%;
+        /* width: 84.82%; */
         position: relative;
         padding: 0;
         overflow: hidden;
@@ -1223,7 +1226,7 @@
     .left-part{
         overflow-x: hidden;
         overflow-y: auto;
-        width: 14.66666667%;
+        /* width: 14.66666667%; */
         /*width: 29.6732%;*/
         float: left;
         height: 100%;
@@ -1271,4 +1274,3 @@
       margin: 5px 0 10px 0;
     }
 </style>
-

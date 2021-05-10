@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-list-container">
+  <div class="tree-list-container" style="display:flex;">
     <div class="tree">
       <!-- <el-row>
         <el-col>
@@ -83,13 +83,44 @@ export default {
 
 <style scoped>
 .tree {
-  width: 20%;
-  float: left;
+  min-width: 15%;
   margin-left: 1%;
   height: 95%;
 }
 .divContent {
-  width: 78%;
-  float: right;
+  width: auto;
+}
+.agreeicon0  {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  margin-right: 2px;
+  margin-top: 0;
+  background-size: 100%;
+  background-image: url("../../../assets/img/table_0.png");
+  vertical-align: top;
+  *vertical-align: middle;
+}
+.agreeicon1  {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  margin-right: 2px;
+  margin-top: 0;
+  background-size: 100%;
+  background-image: url("../../../assets/img/table_1.png");
+  vertical-align: top;
+  *vertical-align: middle;
+}
+.agreeicon2  {
+  display: inline-block;
+  height: 14px;
+  width: 14px;
+  margin-right: 2px;
+  margin-top: 0;
+  background-size: 100%;
+  background-image: url("../../../assets/img/table_2.png");
+  vertical-align: top;
+  *vertical-align: middle;
 }
 </style>

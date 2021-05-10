@@ -41,7 +41,7 @@
           :key="tableKey"
           ref="modelListTable"
           v-loading="listLoading"
-          style="height: 450px;overflow: auto"
+          style="min-height: 450px;overflow-y: scroll"
           :data="list"
           border
           fit

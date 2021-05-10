@@ -15,7 +15,8 @@
         @submit="getLikeList"
       />
     </el-header>
-    <el-main style="width:77.5vw;">
+    <!-- style="width:77.5vw;" -->
+    <el-main>
     <div align="right">
       <el-row>
         <el-button
