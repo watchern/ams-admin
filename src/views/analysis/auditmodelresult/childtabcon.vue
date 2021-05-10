@@ -2678,6 +2678,7 @@ export default {
   padding: 4px 0;
   background-color: #559ed4;
   border-radius: 4px;
+  color:white;
 }
 .smallImgs {
   float: right;
