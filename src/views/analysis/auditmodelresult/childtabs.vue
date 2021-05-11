@@ -59,6 +59,7 @@ export default {
   },
   created(){
     console.log(this.preValue)
+    console.log(this.useType)
   },
   mounted() {
     this.paramInfoCopy = this.paramInfo
