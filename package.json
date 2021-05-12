@@ -10,6 +10,7 @@
     "poc": "vue-cli-service build --mode poc",
     "trial": "vue-cli-service build --mode trial",
     "yancheng": "vue-cli-service build --mode yancheng",
+    "boe": "vue-cli-service build --mode boe",
     "build:prod": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
