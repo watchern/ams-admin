@@ -21,17 +21,19 @@
         v-if="!chartSwitching && ifopen == 1"
         @click="switchDivStyle('chart')"
       >
-        <span><i class="el-icon-menu"></i> 仅表格</span>
+        <span> <i class="el-icon-menu"></i> 仅表格 </span>
       </div>
       <div
         class="el-btn-no-colorz"
         v-if="chartSwitching && ifopen == 1"
         @click="switchDivStyle('table')"
       >
-        <span><i class="el-icon-s-data"></i> 配置图表</span>
+        <span> <i class="el-icon-s-data"></i> 配置图表 </span>
       </div>
       <div class="el-btn-no-colorz" v-if="isModelPreview" @click="saveResult()">
-        <span><i class="oper-btn save"></i></span>
+        <span>
+          <i class="oper-btn save"></i>
+        </span>
       </div>
       <div
         v-if="(useType == 'sqlEditor' || myFlag) && !chartSwitching"
@@ -102,12 +104,12 @@
             ></el-button>
             <!-- addDetailRel('qwer1', '项目11') -->
             <el-button
-            :disabled="false"
-            type="primary"
-            @click="toSubmit"
-            style="margin-left: 10px"
-          >提交审核</el-button>
-
+              :disabled="false"
+              type="primary"
+              @click="toSubmit"
+              style="margin-left: 10px"
+              >提交审核</el-button
+            >
           </div>
         </div>
         <ag-grid-vue
@@ -128,6 +130,9 @@
           @cellClicked="onCellClicked"
           @gridReady="onGridReady"
           @rowSelected="rowChange"
+          :defaultColDef="defaultColDef"
+          :sideBar="true"
+          :modules="modules"
         />
 
         <el-card v-if="!isSee" class="box-card" style="height: 100px">
@@ -143,9 +148,9 @@
         <el-row>
           <el-col :span="22">
             <div v-if="modelResultPageIsSee">
-              共<span class="paging-z" title="只显示前10000条数据">{{
-                rowData.length
-              }}</span
+              共
+              <span class="paging-z" title="只显示前10000条数据">
+                {{ rowData.length }} </span
               >条
             </div>
           </el-col>
@@ -262,12 +267,12 @@
                 ></el-button>
                 <!-- addDetailRel('qwer1', '项目11') -->
                 <el-button
-            :disabled="false"
-            type="primary"
-            @click="toSubmit"
-            style="margin-left: 10px"
-          >提交审核</el-button>
-
+                  :disabled="false"
+                  type="primary"
+                  @click="toSubmit"
+                  style="margin-left: 10px"
+                  >提交审核</el-button
+                >
               </div>
             </div>
 
@@ -289,8 +294,13 @@
               @cellClicked="onCellClicked"
               @gridReady="onGridReady"
               @rowSelected="rowChange"
+              :defaultColDef="defaultColDef"
+              :sideBar="true"
+              :modules="modules"
+              :localeText="localeText"
             />
-
+            <!-- :sideBar="true"
+            :modules="modules"-->
             <el-card v-if="!isSee" class="box-card" style="height: 100px">
               <div>{{ errorMessage }}</div>
             </el-card>
@@ -304,9 +314,9 @@
             <el-row>
               <el-col :span="24">
                 <div v-if="modelResultPageIsSee">
-                  共<span class="paging-z" title="只显示前10000条数据">{{
-                    rowData.length
-                  }}</span
+                  共
+                  <span class="paging-z" title="只显示前10000条数据">
+                    {{ rowData.length }} </span
                   >条
                 </div>
               </el-col>
@@ -438,41 +448,48 @@
     </div>
 
     <el-dialog
-        title="提交审核"
-        v-if="dialogVisibleSubmit"
-        :visible.sync="dialogVisibleSubmit"
-        :close-on-click-modal="false"
-        width="80%"
-      >
-        <div>
-          <flowItem
-            ref="flowItem"
-            :flowSet="flowSet"
-            :flowItem="flowItem"
-            :flow-param="flowParam"
-            @closeModal="closeFlowItem"
-            @delectData="delectData"
-          ></flowItem>
-        </div>
-        <span slot="footer">
-          <el-button size="mini" type="info" class="table_header_btn" @click="saveOpinion">提交</el-button>
-          <el-button
-            size="mini"
-            type="info"
-            class="table_header_btn"
-            @click="dialogVisibleSubmit = false"
-          >关闭</el-button>
-        </span>
-      </el-dialog>
+      title="提交审核"
+      v-if="dialogVisibleSubmit"
+      :visible.sync="dialogVisibleSubmit"
+      :close-on-click-modal="false"
+      width="80%"
+    >
+      <div>
+        <flowItem
+          ref="flowItem"
+          :flowSet="flowSet"
+          :flowItem="flowItem"
+          :flow-param="flowParam"
+          @closeModal="closeFlowItem"
+          @delectData="delectData"
+        ></flowItem>
+      </div>
+      <span slot="footer">
+        <el-button
+          size="mini"
+          type="info"
+          class="table_header_btn"
+          @click="saveOpinion"
+          >提交</el-button
+        >
+        <el-button
+          size="mini"
+          type="info"
+          class="table_header_btn"
+          @click="dialogVisibleSubmit = false"
+          >关闭</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
-
 <script>
 // 引入样式文件
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-balham.css";
+import { AllModules } from "@ag-grid-enterprise/all-modules";
 // 引入ag-grid-vue
-import { AgGridVue } from "ag-grid-vue";
+import { AgGridVue } from "@ag-grid-community/vue";
 import Pagination from "@/components/Pagination/index";
 import JsonExcel from "vue-json-excel";
 import childtabscopy from "@/views/analysis/auditmodelresult/childtabscopy";
@@ -521,7 +538,7 @@ import { setDataSetToNode } from "ams-datamax/src/components/chartEdit/methods/c
 import chartAudit from "@/api/analysis/chartauditmodel";
 let mouseXY = { x: null, y: null };
 let DragPos = { x: null, y: null, w: 1, h: 1, i: null };
-import { randomString4Len } from '@/api/analysis/common';
+import { randomString4Len } from "@/api/analysis/common";
 import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
 export default {
   name: "childTabCon",
@@ -569,17 +586,17 @@ export default {
   ],
   data() {
     return {
-       //工作流相关
+      //工作流相关
       // 判断是否走工作流
       flowParam: 0,
-      multipleSelection:[],
-      applyInfo:{},
-      dialogVisibleSubmit:false,
+      multipleSelection: [],
+      applyInfo: {},
+      dialogVisibleSubmit: false,
       flowSet: {
         opinionList: false,
         opinion: false,
         nextStep: true,
-        isSecond: false
+        isSecond: false,
       },
       flowItem: {
         //动态赋值
@@ -591,7 +608,7 @@ export default {
         appDataUuid: "",
         versionUuid: "",
         isSecond: false,
-        temp1: ""
+        temp1: "",
       },
 
       //其他
@@ -679,6 +696,31 @@ export default {
       listContainer: 700,
       // height123: document.getElementById("dataShow"),
       ifopen: 0,
+      defaultColDef: {
+        flex: 1,
+        minWidth: 150,
+        filter: true,
+      },
+      modules: AllModules,
+      localeText: {
+        columns: "列",
+        filters: "过滤器",
+        pivotMode: "数据透视",
+        pinColumn: "列位置调整",
+        pinLeft: "居左",
+        pinRight: "居右",
+        noPin: "默认",
+        autosizeThiscolumn: "自动调整此列大小",
+        autosizeAllColumns: "自动调整所有列的大小",
+        resetColumns: "重置列",
+        selectAll: "全部选择",
+        selectAllSearchResults: "(全部选择搜索结果)",
+        searchOoo: "搜索...",
+        blanks: "(空白页)",
+        noMatches: "无标记",
+        groups: "行分组",
+        rowGroupColumnsEmptyMessage: "拖动此处可设置行组",
+      },
     };
   },
   mounted() {
@@ -689,7 +731,7 @@ export default {
     if (this.$route.path == "/analysis/auditmodel") {
       this.ifopen = 2;
     }
-    if(this.$route.path == "/analysis/boeauditmodel"){
+    if (this.$route.path == "/analysis/boeauditmodel") {
       this.ifopen = 2;
     }
     this.getRenderTableData();
@@ -726,7 +768,7 @@ export default {
     },
     rowChange() {
       var selectData = this.gridApi.getSelectedRows();
-      this.multipleSelection=selectData;
+      this.multipleSelection = selectData;
       if (selectData.length == 0) {
         this.modelRunResultBtnIson.exportBtn = false;
         this.modelRunResultBtnIson.chartDisplayBtn = false;
@@ -2516,15 +2558,14 @@ export default {
      * 工作流  点击提交审核按钮
      */
     toSubmit() {
-      
       // alert(JSON.stringify(this.multipleSelection));
-      if (this.multipleSelection.length ==0) {
+      if (this.multipleSelection.length == 0) {
         alert("请至少选中一条数据");
         // this.common.alertMsg(2, "请选中一条数据");
         return false;
       }
       this.flowItem.versionUuid = randomString4Len();
-      this.flowItem.applyTitle = 'zhan';
+      this.flowItem.applyTitle = "zhan";
       this.applyInfo.versionUuid = this.flowItem.versionUuid;
       this.applyInfo.status = "";
       this.applyInfo.mstate = "";
@@ -2534,54 +2575,53 @@ export default {
       this.dialogVisibleSubmit = true;
     },
     saveOpinion() {
-      var data={
-      versionUuid:this.flowItem.versionUuid,
-      busdatas:this.multipleSelection
-      }
-       this.$axios
+      var data = {
+        versionUuid: this.flowItem.versionUuid,
+        busdatas: this.multipleSelection,
+      };
+      this.$axios
         .post("/ams-clue/busRelation/toSubmit", data)
-        .then(response => {
+        .then((response) => {
           if (response.data.code == "0") {
-           this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+            this.flowItem.appDataUuid = response.data.data.busRelationUuid;
             //修改业务执行状态为0，调用监听，执行更新流程状态操作。
             this.$store.dispatch("applyInfo/setMstate", "0");
-            this.flowParam = 1
-          }else{
-           this.dialogVisibleSubmit = false;
-          this.common.alertMsg(1, this.textShare.operateFail());
-
+            this.flowParam = 1;
+          } else {
+            this.dialogVisibleSubmit = false;
+            this.common.alertMsg(1, this.textShare.operateFail());
           }
         })
-        .catch(error => {
-           this.dialogVisibleSubmit = false;
+        .catch((error) => {
+          this.dialogVisibleSubmit = false;
           this.common.alertMsg(1, this.textShare.operateFail());
           console.log(error);
         });
     },
-    
+
     closeFlowItem(val) {
       this.dialogVisibleSubmit = val;
-      this.flowParam=0;
+      this.flowParam = 0;
       this.initData();
     },
     //流程发布失败
     delectData(val) {
-      this.dialogVisibleSubmit=val;
-      var data={
-      busRelationUuid:this.flowItem.appDataUuid,
-      }
-       this.$axios
+      this.dialogVisibleSubmit = val;
+      var data = {
+        busRelationUuid: this.flowItem.appDataUuid,
+      };
+      this.$axios
         .post("/ams-clue/busRelation/delete/rollBackData", data)
-        .then(response => {
+        .then((response) => {
           if (response.data.code == "0") {
-           this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+            this.flowItem.appDataUuid = response.data.data.busRelationUuid;
           }
         })
-        .catch(error => {
+        .catch((error) => {
           this.common.alertMsg(1, this.textShare.operateFail());
           console.log(error);
         });
-        this.loadUserList();
+      this.loadUserList();
     },
   },
 };
@@ -2592,7 +2632,7 @@ export default {
   height: 100%;
 }
 .thechard-z {
-  margin-right: 15px;
+  margin-right: 20px;
 }
 .paging-z {
   font-weight: bold;
@@ -2628,14 +2668,18 @@ export default {
   height: 30px;
   margin: 5px;
   font-size: 14px;
-  color: #46a6ff;
   padding: 2px 5px;
   cursor: pointer;
   text-align: center;
   user-select: none;
   /* background-color: #559ED4; */
 }
-
+.el-btn-no-colorz span {
+  padding: 4px 0;
+  background-color: #559ed4;
+  border-radius: 4px;
+  color:white;
+}
 .smallImgs {
   float: right;
   height: 723px;
@@ -2774,5 +2818,16 @@ export default {
 >>> .vue-grid-item.vue-grid-placeholder {
   background: #46a6ff !important;
   opacity: 0.2 !important;
+}
+</style>
+<style>
+.ag-theme-balham .ag-menu .ag-menu-option-icon span {
+  line-height: 16px;
+}
+.ag-theme-balham .ag-header-cell-menu-button .ag-icon-menu {
+  height: 16px;
+}
+.ag-theme-balham .ag-icon-small-right {
+  width: 10px;
 }
 </style>
