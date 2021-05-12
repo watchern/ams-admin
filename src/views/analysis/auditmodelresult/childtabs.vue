@@ -59,6 +59,7 @@ export default {
   },
   created(){
     console.log(this.preValue)
+    console.log(this.useType)
   },
   mounted() {
     this.paramInfoCopy = this.paramInfo
@@ -141,25 +142,39 @@ export default {
         //locationUuid: modelResultSavePathId,
         runTaskRels: runTaskRels
       };
-      addRunTaskAndRunTaskRel(runTask).then((resp) => {
-        if (resp.data == true) {
-          this.$notify({
-            title: "提示",
-            message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
-            type: "success",
-            duration: 2000,
-            position: "bottom-right",
-          });
-        } else {
-          this.$message({ type: "info", message: "执行运行任务失败" });
-        }
-      });
       if(process.env["VUE_APP_BASE_PROJECT_TYPE"]=="BOE"){
-        sendToOA(runTaskRelUuid).then((resp) => {
-          this.$message({
-            type: "success",
-            message: "发送成功!",
-          });
+        addRunTaskAndRunTaskRel(runTask,this.dataUserId,this.sceneCode).then((resp) => {
+          if (resp.data == true) {
+            this.$notify({
+              title: "提示",
+              message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+            sendToOA(runTaskRelUuid).then((resp) => {
+              this.$message({
+                type: "success",
+                message: "发送成功!",
+              });
+            });
+          } else {
+            this.$message({ type: "info", message: "执行运行任务失败" });
+          }
+        });
+      }else{
+          addRunTaskAndRunTaskRel(runTask).then((resp) => {
+          if (resp.data == true) {
+            this.$notify({
+              title: "提示",
+              message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          } else {
+            this.$message({ type: "info", message: "执行运行任务失败" });
+          }
         });
       }
     }
@@ -182,7 +197,9 @@ export default {
     "resultMark",
     "isModelPreview",
     "isRelation",
-    "paramInfo"
+    "paramInfo",
+    "dataUserId",
+    "sceneCode"
   ],
 };
 </script>

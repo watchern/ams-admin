@@ -155,7 +155,7 @@
                   </div>
                   <el-col :span="2">
                     <el-button v-if="item.isExistParam" type="primary" class="btn-show" @click="loadParamDraw(item.name)">
-                      <span class="iconfont iconoper-search" />查询
+                      <span class="iconfont iconoper-search" /><span style="font-weight:normal;">查询</span>
                     </el-button>
                   </el-col>
                 </el-row>

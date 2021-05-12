@@ -28,6 +28,8 @@
           @addTab="addTab"
            :resultSpiltObjects="item.resultSpiltObjects"
           :settingInfo="item.settingInfo"
+          :model-id="item.modelId"
+          :pre-value="item.currentExecuteSQL"
         />
       </el-tab-pane>
     </el-tabs>
@@ -52,7 +54,7 @@ export default {
   },
   methods: {
     // 添加页签方法  resultTable:辅表（运行结果表）数组    mainTable:主表（运行结果表对象）   modelname:模型的名称，用来给新页签赋值title属性用
-    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects,settingInfo) {
+    addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects,usetype,settingInfo,currentExecuteSQL) {
       const newTabName = ++this.tabIndex + ''
       this.mainTable = mainTable
       this.helpTables = resultTable
@@ -63,7 +65,10 @@ export default {
         helpTables: resultTable,
         modeluuid: modelUuid,
         resultSpiltObjects:resultSpiltObjects,
-        settingInfo:settingInfo
+        useType : usetype,
+        settingInfo:settingInfo,
+        modelId:modelUuid,
+        currentExecuteSQL:currentExecuteSQL
       })
       this.editableTabsValue = newTabName
     },

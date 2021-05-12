@@ -731,7 +731,7 @@ export default {
     if (this.$route.path == "/analysis/auditmodel") {
       this.ifopen = 2;
     }
-    if(this.$route.path == "/analysis/boeauditmodel"){
+    if (this.$route.path == "/analysis/boeauditmodel") {
       this.ifopen = 2;
     }
     this.getRenderTableData();
@@ -2632,7 +2632,7 @@ export default {
   height: 100%;
 }
 .thechard-z {
-  margin-right: 15px;
+  margin-right: 20px;
 }
 .paging-z {
   font-weight: bold;
@@ -2668,14 +2668,18 @@ export default {
   height: 30px;
   margin: 5px;
   font-size: 14px;
-  color: #46a6ff;
   padding: 2px 5px;
   cursor: pointer;
   text-align: center;
   user-select: none;
   /* background-color: #559ED4; */
 }
-
+.el-btn-no-colorz span {
+  padding: 4px 0;
+  background-color: #559ed4;
+  border-radius: 4px;
+  color:white;
+}
 .smallImgs {
   float: right;
   height: 723px;
