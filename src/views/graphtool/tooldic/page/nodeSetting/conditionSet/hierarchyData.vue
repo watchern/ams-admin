@@ -76,7 +76,7 @@
                 this.loginUserUuid = this.$store.state.user.id
                 let graph = this.$parent.$parent.$parent.graph
                 this.nodeData = graph.nodeData[graph.curCell.id]
-                let parentIds = this.nodeData.parentIds
+                let parentIds = this.nodeData.parentIds//当前分层节点的上级节点ID（源表或结果表节点ID）
                 let parent_node = graph.nodeData[parentIds[0]]
                 let typeArr = ['INTEGER', 'DECIMAL', 'NUMBER', 'FLOAT', 'REAL', 'DATE', 'TIMESTAMP']
                 this.curColumnsInfo = this.$parent.$parent.$parent.columnsInfoPre
@@ -95,21 +95,27 @@
                     this.$message({ type: 'warning', message: '上一节点的表或视图暂无可分层的字段' })
                     this.layeringLoading = false
                 } else {
-                    let isRoleTable = false //上级节点的表是否需要走权限
+                    let isRoleTable = false //上级节点的表是否需要走权限（一版只有CREATE TABLE的临时表走权限）
                     let optType = parent_node.nodeInfo.optType
                     if(optType === "datasource"){//原表
                         isRoleTable = true
                     }
                     if(optType === "newNullNode"){//结果表
-                        if(parent_node.nodeInfo.midTableStatus === 2 || parent_node.nodeInfo.resultTableStatus === 2){
-                            isRoleTable = true
-                        }
-                        var pre_parentIds = parent_node.parentIds;
+                        const midTableStatus = parent_node.nodeInfo.midTableStatus
+                        const resultTableStatus = parent_node.nodeInfo.resultTableStatus
+                        var pre_parentIds = parent_node.parentIds;//由当前结果表节点再向上找一层，找到它的操作节点
                         if(pre_parentIds && pre_parentIds.length > 0){
                             parent_node = graph.nodeData[pre_parentIds[0]];
+                            //如果结果表节点被标记成了中间或最终结果表，并且上级节点的是否删除表的标记为是（打了中间或最终结果表标记却未执行的情况下是否）
+                            if((midTableStatus === 2 || resultTableStatus === 2) && parent_node && parent_node.nodeInfo.isDeleteTable){
+                                isRoleTable = true
+                            }
                         }
                     }
-                    if (parent_node.nodeInfo.resultTableName === '') {
+                    if (typeof parent_node === "undefined"){
+                        this.$message.error('不可连接单独的结果表节点')
+                        this.layeringLoading = false
+                    }else if(parent_node.nodeInfo.resultTableName === '') {
                         this.$message({ type: 'warning', message: '请先执行上一节点' })
                         this.layeringLoading = false
                     } else {

@@ -92,7 +92,7 @@
             label-position="left"
           >
             <div class="left-container">
-              <div class="right-title">登录</div>
+              <div class="right-title">登 录</div>
               <!--        <span class="login-right">© 2020 中软国际</span>-->
             </div>
             <div class="right-container">
@@ -503,25 +503,21 @@ $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixe
   .login-box2-tit1 {
     margin-top: 40px;
     font-size: 40px;
-    font-weight: bold;
-    color: #44a0d2;
+    color: #57a0d7;
     margin-bottom: 10px;
   }
   .login-box2-tit2 {
     font-size: 30px;
-    font-weight: bold;
-    color: #44a0d2;
+    color: #57a0d7;
     margin-bottom: 40px;
   }
   .login-box2-txt1 {
     font-size: 30px;
-    font-weight: bold;
     color: #000;
     margin-bottom: 10px;
   }
   .login-box2-txt2 {
     font-size: 16px;
-    font-weight: bold;
     color: #000;
     line-height: 40px;
   }
@@ -529,11 +525,11 @@ $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixe
     width: 40%;
     margin: 10% 0;
     margin-left: 10%;
+    min-width: 500px;
     .right-title {
       color: #fff;
       font-size: 28px;
       text-align: center;
-      font-weight: bold;
       padding-top: 10px;
       padding-bottom: 50px;
     }
@@ -542,11 +538,13 @@ $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixe
 .login-item {
   margin-bottom: 30px !important;
   img {
-    margin-right: 5px;
+    margin:2px 10px 0 0;
+    height: 23px;
+    display: inline-block;
   }
 }
 .login-input {
-  background-color: white !important;
+  // background-color: white !important;
   border-radius: 5px;
   width: 90%;
   margin-bottom: 5px;
@@ -554,7 +552,7 @@ $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixe
 .loginbackcolor {
   background-image: linear-gradient(to right, #4db1dc, #57a0d7);
   border-radius: 20px;
-  padding: 20px;
+  padding: 20px 35px;
 }
 .login-box2button {
   margin-left: 5%;
@@ -566,5 +564,14 @@ $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixe
   border-radius: 50px;
   cursor: pointer;
   margin-bottom: 30px;
+}
+</style>
+<style>
+.login-input .el-input__inner{
+  border: 1px solid transparent !important;
+  color:white;
+}
+.el-form-item__content{
+  border-bottom: 1px solid white;
 }
 </style>

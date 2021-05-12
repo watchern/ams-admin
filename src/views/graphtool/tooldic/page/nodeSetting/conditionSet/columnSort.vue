@@ -1,16 +1,16 @@
 <template>
     <div style="width: 100%;height:auto;padding-left:35px;">
         <el-row style="height:30px;line-height: 30px;color: red;margin: 10px 0;">注：字段的排序顺序是由选择字段时的前后顺序决定</el-row>
-        <el-transfer filterable filter-placeholder="请输入搜索内容" v-model="columnDataValue" target-order="push" :data="columnData" :titles="['可选字段', '排序字段']" @change="changeSortData">
+        <el-transfer filterable filter-placeholder="请输入搜索内容" v-model="columnDataValue" target-order="push" :data="columnData" :titles="['可选字段', '排序字段']" @change="changeSortData" ref="transferSort">
             <span slot-scope="{ option }">
                 <el-row v-if="!option.showSort">{{option.label}}</el-row>
                 <el-row v-if="option.showSort">
-                    <el-col :span="14" ref="sortCol" v-if="option.isTip" :dataKey="option.key" style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
+                    <el-col :span="14" ref="sortCol" class="transfer_sortCol" :dataValue="option.label" v-if="option.isTip" :dataKey="option.key" style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
                         <el-tooltip class="item" effect="dark" :content="option.label" placement="top">
                             <span>{{option.label}}</span>
                         </el-tooltip>
                     </el-col>
-                    <el-col :span="14" ref="sortCol" v-if="!option.isTip">{{option.label}}</el-col>
+                    <el-col :span="14" ref="sortCol" class="transfer_sortCol" :dataValue="option.label" v-if="!option.isTip">{{option.label}}</el-col>
                     <el-col :span="10">
                         <el-radio v-if="option.showSort" v-model="option.sortType" label="ASC">升序</el-radio>
                         <el-radio v-if="option.showSort" v-model="option.sortType" label="DESC">降序</el-radio>
@@ -62,6 +62,9 @@
                 }else{
                     Array.from(this.curColumnsInfo, item => this.columnData.push({ 'pinyin': item.newColumnName, 'label': item.newColumnName, 'key': item.newColumnName, 'sortType': 'ASC', 'showSort': false}))
                 }
+                this.$nextTick( () => {
+                    $(this.$refs.transferSort.$refs.rightPanel.$children[2].$el).sortable().disableSelection()
+                })
             },
             changeSortData(value, direction, movedKeys){
                 Array.from(movedKeys, n => {
@@ -86,16 +89,20 @@
                 })
             },
             saveSetting() {
-                const rightData = []
-                Array.from(this.columnDataValue, item => {
+                let rightData = []
+                let columnDataValue = []
+                const sortColDom = $(this.$refs.transferSort.$el).find(".transfer_sortCol")
+                Array.from(sortColDom, item => {
                     for (let i = 0; i < this.columnData.length; i++) {
-                        if(this.columnData[i].key === item){
-                            rightData.push({ 'column': item, 'sortType': this.columnData[i].sortType })
+                        const sortColumnName = $(item).attr("dataValue")
+                        if(this.columnData[i].key === sortColumnName){
+                            columnDataValue.push(sortColumnName)
+                            rightData.push({ 'column': sortColumnName, 'sortType': this.columnData[i].sortType })
                             break
                         }
                     }
                 })
-                this.nodeData.setting.columnDataValue = this.columnDataValue
+                this.nodeData.setting.columnDataValue = columnDataValue
                 this.nodeData.setting.curColumnsInfo = this.curColumnsInfo
                 this.nodeData.setting.rightData = rightData
             },

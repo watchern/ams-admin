@@ -192,7 +192,7 @@
             <template slot-scope="scope">
               <el-popover trigger="hover" placement="top" width="500" :content="settingInfoSqlFormatter(scope.row)">
                 <div slot="reference" class="name-wrapper">
-                  <el-link :underline="false" type="primary">鼠标放置查看详情</el-link>
+                  <el-link :underline="false" type="primary">查看</el-link>
                 </div>
               </el-popover>
             </template>
