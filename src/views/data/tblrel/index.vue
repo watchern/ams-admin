@@ -37,12 +37,12 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <template>
         <el-form
-          class="detail-form"
           ref="dataForm"
           :rules="rules"
           :model="temp"
           label-position="right"
           width="80%"
+          class="detail-form"
         >
           <el-form-item prop="tableMetaUuid" label="表名称">
             <el-input v-model="temp.tbName" :disabled="true" />

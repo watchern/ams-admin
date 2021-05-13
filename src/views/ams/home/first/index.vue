@@ -18,9 +18,9 @@
           </div>
         </div>
       </div>
-     <!-- <div >
+      <div >
         <toolsTemplateIndex/>
-      </div>-->
+      </div>
     </div>
     <el-dialog
       :visible.sync="dialogFormVisible"
@@ -285,12 +285,11 @@ export default {
         background: #FFFFFF;
         box-shadow: 17px 17px 34px 0 rgba(0,0,0,0.10);
         border-radius: 25.2px;
-        padding: 50px;
-        padding-right:200px;
+        padding: 27px;
         width: 479px;
         position: relative;
-        margin:20px;
-        height: 300px;
+        margin:30px;
+        height: 218px;
         &-left{
           background: #FFFFFF;
           border: 1px solid #D8D8D8;

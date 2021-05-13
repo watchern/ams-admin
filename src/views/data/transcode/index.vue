@@ -41,7 +41,7 @@
         label-position="right"
         label-width="120px"
         class="detail-form"
-        
+        style="width: 700px;"
       >
         <el-form-item label="规则名称" prop="ruleName">
           <el-input v-model="temp.ruleName" />
@@ -105,7 +105,7 @@
         accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
       >
         <el-link size="mini" type="primary">导入</el-link>
-        <span style="font-size:12px;color:red">(请选择xls或者xlsx格式,导入第一列为真实值,第二列为转码值)</span>
+        <span style="font-size:2px;color:red">(请选择xls或者xlsx格式,导入第一列为真实值,第二列为转码值)</span>
       </el-upload>
       <el-table v-if="temp.ruleType === 2" :data="transColRelsData" height="200">
         <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>

@@ -34,7 +34,7 @@
             <el-table-column v-if="type === 'shareToGraphType'" label="接收人" prop="sharedPersonName" />
         </el-table>
         <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getGraphList" />
-        <el-dialog v-if="initPreviewGraph" :destroy-on-close="true" :append-to-body="true" :visible.sync="initPreviewGraph" title="查看图形">
+        <el-dialog v-if="initPreviewGraph" :destroy-on-close="true" :append-to-body="true" :visible.sync="initPreviewGraph" title="查看图形" width="600px">
             <PreviewGraph :graph-uuid="graphUuid" style="height: 65vh;overflow: auto" />
             <div slot="footer">
                 <el-button type="primary" @click="initPreviewGraph=false">关闭</el-button>

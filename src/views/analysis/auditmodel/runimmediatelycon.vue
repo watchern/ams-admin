@@ -54,6 +54,7 @@
               :scene-code="sceneCode"
               :tree-type="treeType"
               @node-click="handleClick"
+              style="height: 500px;overflow-y: scroll"
             />
             <span slot="footer" class="dialog-footer">
               <el-button @click="modelResultSavePathDialog = false"

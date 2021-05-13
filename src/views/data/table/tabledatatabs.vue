@@ -1,6 +1,6 @@
 <template class="divContent">
   <div>
-    <el-tabs ref="tabs" v-model="tabShowName">
+    <el-tabs ref="tabs" v-model="tabShowName" style="text-aling = center">
       <el-tab-pane v-if="openType === 'showTable' || openType === 'tableRegister'" label="基本信息" name="basicinfo"><basic-info :table-id="tableId" :open-type="openType" /></el-tab-pane>
       <el-tab-pane label="列" name="column"><column ref="column" :table-id="tableId" :forder-id="forderId" :open-type="openType" @append-node="appendnode" @table-show="tableshow" /></el-tab-pane>
       <!-- <el-tab-pane v-if="openType === 'showTable' || openType === 'tableRegister'" label="约束" name="constraint"><constraint :table-id="tableId" /></el-tab-pane> -->
