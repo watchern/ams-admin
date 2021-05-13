@@ -2515,7 +2515,11 @@ export default {
      * 保存结果，将模型添加到后台立即执行 **注意带参数模型
      */
     saveResult() {
-      this.$confirm("是否保存模型结果?", "提示", {
+      var msg = "是否保存模型结果?";
+      if(process.env["VUE_APP_BASE_PROJECT_TYPE"]=="BOE"){
+        msg = "是否将结果发送到作业平台?";
+      }
+      this.$confirm(msg, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
