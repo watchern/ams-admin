@@ -870,7 +870,6 @@ export async function saveModelGraph(){
         isError = true
         message = '未将结果表标记为最终结果表'
     }else {
-        debugger
         let newNodeData = { ...{}, ...graph.nodeData }
         if(newNodeData[resultTableNodeId].nodeInfo.optType === "datasource"){//只将原表标记成了最终结果表
             modelSql += "/*原表【" + newNodeData[resultTableNodeId].nodeInfo.nodeName + "】的查询SQL语句*/\n" + newNodeData[resultTableNodeId].nodeInfo.nodeSql + "\n";
