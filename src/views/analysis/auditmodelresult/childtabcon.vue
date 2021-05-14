@@ -2220,6 +2220,12 @@ export default {
                   this.chartConfigs.layout.push(json.layout);
                 }
               }
+              if (this.modelChartSetups.length == 0) {
+                this.chartConfigs = {
+                  chart: [],
+                  layout: [{ x: 0, y: 0, w: 12, h: 16, i: "0" }],
+                };
+              }
               if (this.chartConfigs.chart.length == 0) {
                 this.isHaveCharts = true;
               }
@@ -2264,6 +2270,12 @@ export default {
                   this.chartConfigs.chart.push(json.chart);
                   this.chartConfigs.layout.push(json.layout);
                 }
+              }
+              if (this.modelChartSetups.length == 0) {
+                this.chartConfigs = {
+                  chart: [],
+                  layout: [{ x: 0, y: 0, w: 12, h: 16, i: "0" }],
+                };
               }
               if (this.chartConfigs.chart.length == 0) {
                 this.isHaveCharts = true;
@@ -2516,7 +2528,7 @@ export default {
      */
     saveResult() {
       var msg = "是否保存模型结果?";
-      if(process.env["VUE_APP_BASE_PROJECT_TYPE"]=="BOE"){
+      if (process.env["VUE_APP_BASE_PROJECT_TYPE"] == "BOE") {
         msg = "是否将结果发送到作业平台?";
       }
       this.$confirm(msg, "提示", {
@@ -2682,7 +2694,7 @@ export default {
   padding: 4px 0;
   background-color: #559ed4;
   border-radius: 4px;
-  color:white;
+  color: white;
 }
 .smallImgs {
   float: right;
