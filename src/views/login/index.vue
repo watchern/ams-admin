@@ -27,16 +27,18 @@
               type="text"
               tabindex="1"
               autocomplete="on"
-          />
-        </el-form-item>
+            />
+          </el-form-item>
 
-        <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
-          <el-form-item prop="password">
-            <span class="input-container">
-              密码
-            </span>
-            <el-input
-
+          <el-tooltip
+            v-model="capsTooltip"
+            content="Caps lock is On"
+            placement="right"
+            manual
+          >
+            <el-form-item prop="password">
+              <span class="input-container"> 密码 </span>
+              <el-input
                 :key="passwordType"
                 ref="password"
                 v-model="loginForm.password"
@@ -47,18 +49,25 @@
                 @keyup.native="checkCapslock"
                 @blur="capsTooltip = false"
                 @keyup.enter.native="handleLogin"
-            />
-            <span class="show-pwd" @click="showPwd">
-              <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-            </span>
-          </el-form-item>
-        </el-tooltip>
+              />
+              <span class="show-pwd" @click="showPwd">
+                <svg-icon
+                  :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+                />
+              </span>
+            </el-form-item>
+          </el-tooltip>
 
-        <el-button :loading="loading" type="primary" class="login-btn" @click.native.prevent="handleLogin">
-          {{ $t('login.logIn') }}
-        </el-button>
-      </div>
-    </el-form>
+          <el-button
+            :loading="loading"
+            type="primary"
+            class="login-btn"
+            @click.native.prevent="handleLogin"
+          >
+            {{ $t("login.logIn") }}
+          </el-button>
+        </div>
+      </el-form>
     </div>
     <div
       v-else-if="skincontrol == 'new-login'"
@@ -160,38 +169,42 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+import { validUsername } from "@/utils/validate";
 // import LangSelect from '@/components/LangSelect'
 
 export default {
-  name: 'Login',
+  name: "Login",
 
   // components: { LangSelect },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (value.length < 1) {
-        callback(new Error('请输入用户名!'))
+        callback(new Error("请输入用户名!"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     const validatePassword = (rule, value, callback) => {
       if (value.length < 1) {
-        callback(new Error('请输入密码!'))
+        callback(new Error("请输入密码!"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     return {
       loginForm: {
-        username: '',
-        password: ''
+        username: "",
+        password: "",
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        username: [
+          { required: true, trigger: "blur", validator: validateUsername },
+        ],
+        password: [
+          { required: true, trigger: "blur", validator: validatePassword },
+        ],
       },
-      passwordType: 'password',
+      passwordType: "password",
       capsTooltip: false,
       loading: false,
       showDialog: false,
@@ -219,8 +232,14 @@ export default {
     },
   },
   created() {
-    this.skincontrol = process.env.hasOwnProperty("VUE_APP_BASE_SKINCONTROL")?process.env["VUE_APP_BASE_SKINCONTROL"]: this.skincontrol
-    this.backgroundImg = process.env.hasOwnProperty("VUE_APP_BASE_SKINBACKGROUND") ?process.env["VUE_APP_BASE_SKINBACKGROUND"]: this.backgroundImg
+    this.skincontrol = process.env.hasOwnProperty("VUE_APP_BASE_SKINCONTROL")
+      ? process.env["VUE_APP_BASE_SKINCONTROL"]
+      : this.skincontrol;
+    this.backgroundImg = process.env.hasOwnProperty(
+      "VUE_APP_BASE_SKINBACKGROUND"
+    )
+      ? process.env["VUE_APP_BASE_SKINBACKGROUND"]
+      : this.backgroundImg;
     // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
@@ -470,8 +489,8 @@ $cursor: #fff;
     background: #ff0114;
     border-color: #ff0114;
     color: #ffffff;
-    outline: none!important;
-    font-weight: bold!important;
+    outline: none !important;
+    font-weight: bold !important;
   }
 }
 </style>
@@ -488,44 +507,46 @@ $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixe
   -o-background-size: cover;
   background-size: cover;
   .login-box2center {
-    height: 90%;
-    width: 70%;
-    min-width: 1000px;
+    height: 85%;
+    width: 1300px;
     margin: 0 auto;
-    margin-top: 10%;
+    margin-top: 13%;
     display: flex;
   }
   .login-box2left {
-    width: 40%;
-    margin: 10% 0;
-    margin-left: 10%;
+    width: 600px;
+    margin: 50px 0;
+    margin-left: 100px;
   }
   .login-box2-tit1 {
     margin-top: 40px;
     font-size: 40px;
     color: #57a0d7;
     margin-bottom: 10px;
+    letter-spacing: 10px;
   }
   .login-box2-tit2 {
     font-size: 30px;
     color: #57a0d7;
     margin-bottom: 40px;
+    letter-spacing: 7px;
   }
   .login-box2-txt1 {
     font-size: 30px;
     color: #000;
     margin-bottom: 10px;
+    letter-spacing: 5px;
   }
   .login-box2-txt2 {
     font-size: 16px;
     color: #000;
     line-height: 40px;
+    letter-spacing: 1px;
   }
   .login-box2right {
-    width: 40%;
-    margin: 10% 0;
-    margin-left: 10%;
-    min-width: 500px;
+    margin: 50px 0;
+    // margin-left: 50px;
+    width: 700px;
     .right-title {
       color: #fff;
       font-size: 28px;
@@ -534,11 +555,51 @@ $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixe
       padding-bottom: 50px;
     }
   }
+  @media screen and (max-device-width: 1600px) {
+    .login-box2center {
+      height: 85%;
+      width: 1100px;
+      margin: 0 auto;
+      margin-top: 11%;
+      display: flex;
+    }
+    .loginbackcolor{
+      padding-top: 20px;
+    }
+    .right-title{
+      padding-bottom: 30px !important;
+    }
+    .login-box2button{
+      font-size: 20px;
+      height: 45px;
+      margin-top: 0 !important;
+    }
+  }
+  @media screen and (max-device-width: 1400px) {
+    .login-box2center {
+      height: 85%;
+      width: 1100px;
+      margin: 0 auto;
+      margin-top: 7%;
+      display: flex;
+    }
+    .loginbackcolor{
+      padding-top: 20px;
+    }
+    .right-title{
+      padding-bottom: 30px !important;
+    }
+    .login-box2button{
+      font-size: 20px;
+      height: 45px;
+      margin-top: 0 !important;
+    }
+  }
 }
 .login-item {
-  margin-bottom: 30px !important;
+  margin-bottom: 40px !important;
   img {
-    margin:2px 10px 0 0;
+    margin: 2px 10px 0 0;
     height: 23px;
     display: inline-block;
   }
@@ -550,9 +611,11 @@ $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixe
   margin-bottom: 5px;
 }
 .loginbackcolor {
-  background-image: linear-gradient(to right, #4db1dc, #57a0d7);
-  border-radius: 20px;
-  padding: 20px 35px;
+  background: url("./style/images/kuang.png") no-repeat;
+  background-size: 100% 100%;
+  // background-image: linear-gradient(to right, #4db1dc, #57a0d7);
+  // border-radius: 20px;
+  padding: 30px 100px 150px 100px;
 }
 .login-box2button {
   margin-left: 5%;
@@ -563,15 +626,17 @@ $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixe
   line-height: 6px;
   border-radius: 50px;
   cursor: pointer;
+  margin-top: 20px;
   margin-bottom: 30px;
+  background-image: linear-gradient(to right, #fafafa, #f5f5f5);
 }
 </style>
 <style>
-.login-input .el-input__inner{
+.login-input .el-input__inner {
   border: 1px solid transparent !important;
-  color:white;
+  color: white;
 }
-.el-form-item__content{
+.el-form-item__content {
   border-bottom: 1px solid white;
 }
 </style>
