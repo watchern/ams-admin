@@ -2274,7 +2274,7 @@ export default {
               if (this.modelChartSetups.length == 0) {
                 this.chartConfigs = {
                   chart: [],
-                  layout: [{ x: 0, y: 0, w: 12, h: 16, i: "0" }],
+                  layout: [{ x: 0, y: 0, w: 12, h: 10, i: "0" }],
                 };
               }
               if (this.chartConfigs.chart.length == 0) {
