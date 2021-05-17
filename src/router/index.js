@@ -73,6 +73,11 @@ const AmsRoutes = [
         redirect: '/ams/first'
       },
       {
+        path: '/nopermission',
+        component: () => import('@/views/error-page/nopermission'),
+        hidden: true
+      },
+      {
         path: 'first',
         name: 'amsFirst',
         component: () => import('@/views/ams/home/first/index')

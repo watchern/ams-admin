@@ -273,6 +273,7 @@ export default {
             img: require(`../style/images/icon${index + 1}.png`),
             name: app.name,
             id: app.id,
+            homepage:app.homepage
           });
         });
         // 设置引用栏弹出二级菜单数据
@@ -461,7 +462,7 @@ export default {
         type: "closeAll",
         val: "",
       });
-      this.$router.push({ path: "/ams/first" });
+      this.$router.push({ path: this.applications[0].homepage||'/nopermission' });
     },
     showHelp() {
       this.showHelpWidth = !this.showHelpWidth;

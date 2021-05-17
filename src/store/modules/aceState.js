@@ -1,4 +1,5 @@
 import router from '@/router'
+import { getUserRes } from "@/api/user";
 export default {
   namespaced: true,
   state: {
@@ -36,7 +37,18 @@ export default {
           if (state.rightFooterTags.length) {
             router.push(state.rightFooterTags[state.rightFooterTags.length - 1].path)
           } else {
-            router.push('/ams/first')
+            getUserRes().then((response) => {
+              response.data.application.forEach((app, index) => {
+                // 设置左侧应用栏数据
+                if (response.data.application[0].homepage) {
+                  console.log(response.data.application[0].homepage)
+                  router.push(response.data.application[0].homepage)
+                } else {
+                  router.push('/nopermission')
+                }
+              });
+            });
+            // router.push('/ams/first')
           }
           break
         case 'closeOther':
@@ -45,7 +57,18 @@ export default {
           break
         case 'closeAll':
           state.rightFooterTags = []
-          router.push('/ams/first')
+          getUserRes().then((response) => {
+            response.data.application.forEach((app, index) => {
+              // 设置左侧应用栏数据
+              if (response.data.application[0].homepage) {
+                console.log(response.data.application[0].homepage)
+                router.push(response.data.application[0].homepage)
+              } else {
+                router.push('/nopermission')
+              }
+            });
+          });
+          // router.push('/ams/first')
           break
         default:
           break
