@@ -2637,7 +2637,7 @@ export default {
           this.common.alertMsg(1, this.textShare.operateFail());
           console.log(error);
         });
-      this.loadUserList();
+      this.initData();
     },
   },
 };
