@@ -996,7 +996,7 @@ export default {
       var userId = this.$store.getters.personuuid
       const persons = this.$refs.personTree.getSelectValue()
       if(persons.length > 1){
-        this.$message({ type: 'info', message: '只有分配给一个人!' })
+        this.$message({ type: 'info', message: '只能分配给一个人!' })
         return
       }
 /*      if(persons[0].personuuid === userId){
