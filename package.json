@@ -20,7 +20,7 @@
     "@babel/polyfill": "^7.12.1",
     "ag-grid": "^18.1.2",
     "ag-grid-enterprise": "^25.1.0",
-    "ams-clue-vue": "^0.1.7",
+    "ams-clue-vue": "^0.1.8",
     "ams-datamax": "^1.0.9",
     "ams-etlscheduler-ui": "^1.4.1",
     "ams-starflow-vue": "^0.1.13",
