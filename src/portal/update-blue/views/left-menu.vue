@@ -37,9 +37,7 @@
               <div class="name">{{ item.name }}</div>
             </div>
           </div>
-          <div
-            class="tree-out-box absolute"
-          >
+          <div class="tree-out-box absolute">
             <transition
               name="slide-fade"
               v-for="(item, index) in applications"
@@ -109,8 +107,9 @@
             :key="index"
             class="setting-list-line flex flex-row a-center j-start"
           >
-            <i v-if="index==0" class="el-icon-info icon" />
-            <i v-else-if="index==1" class="el-icon-question icon" />
+            <i v-if="index == 0" class="el-icon-info icon" />
+            <i v-else-if="index == 1" class="el-icon-question icon" />
+            <i v-else-if="index == 2" class="el-icon-s-tools icon" />
             <i v-else class="el-icon-error icon" />
             <div class="name-box" @click="item.method">
               <span>{{ item.name }}</span>
@@ -212,6 +211,11 @@ export default {
         },
         {
           icon: "",
+          name: "修改密码",
+          method: this.goresetpassword,
+        },
+        {
+          icon: "",
           name: "退出",
           method: this.logout,
         },
@@ -275,7 +279,7 @@ export default {
             img: require(`../style/images/icon${index + 1}.png`),
             name: app.name,
             id: app.id,
-            homepage:app.homepage
+            homepage: app.homepage,
           });
         });
         // 设置引用栏弹出二级菜单数据
@@ -450,6 +454,9 @@ export default {
       await this.$store.dispatch("user/logout");
       this.$router.push(`/login?redirect=${this.$route.fullPath}`);
     },
+    goresetpassword() {
+      this.$router.push({ path: "/repassword" });
+    },
     logoutRemind() {
       this.$router.push({ path: "/base/remind" });
     },
@@ -464,7 +471,9 @@ export default {
         type: "closeAll",
         val: "",
       });
-      this.$router.push({ path: this.applications[0].homepage||'/nopermission' });
+      this.$router.push({
+        path: this.applications[0].homepage || "/nopermission",
+      });
     },
     showHelp() {
       this.showHelpWidth = !this.showHelpWidth;
