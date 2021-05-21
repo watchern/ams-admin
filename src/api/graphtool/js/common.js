@@ -405,6 +405,7 @@ export function cancelExecute() {
     for (var i = 0; i < executingNodeIdArr.length; i++) {
         if (graph.nodeData[executingNodeIdArr[i]]) {
             graph.nodeData[executingNodeIdArr[i]].nodeInfo.nodeExcuteStatus = 1
+            graph.nodeData[executingNodeIdArr[i]].nodeInfo.cancelExecute = true
             changeNodeIcon(1, null, executingNodeIdArr[i])
         }
     }
@@ -504,6 +505,9 @@ export function executeNode_callback(notExecuteNodeIdArr) {
     for (var j = 0; j < notExecuteNodeIdArr.length; j++) {
         graph.nodeData[notExecuteNodeIdArr[j]].nodeInfo.nodeExcuteStatus = 2
         changeNodeIcon(2, null, notExecuteNodeIdArr[j])
+        if(graph.nodeData[notExecuteNodeIdArr[j]].nodeInfo.cancelExecute){
+            delete graph.nodeData[notExecuteNodeIdArr[j]].nodeInfo.cancelExecute
+        }
     }
     // 判断所执行的节点集合中是否包含数据分层节点，有的话做特殊处理
     for (var i = 0; i < notExecuteNodeIdArr.length; i++) {
@@ -576,13 +580,13 @@ export function executeNode_callback(notExecuteNodeIdArr) {
                         } else {
                             resultTableName = graph.nodeData[executeCellId].nodeInfo.resultTableName
                         }
-                        let isRoleTable = false
-                        // let resultTableObj = { nodeId, nodeName, resultTableName, isRoleTable }
+                        let isRoleTable = false //节点的表是否需要走权限（一版只有CREATE TABLE的临时表走权限）
                         let optType = graph.nodeData[executeCellId].nodeInfo.optType
                         if (optType === 'newNullNode') { // 结果表
                             let midTableStatus = graph.nodeData[executeCellId].nodeInfo.midTableStatus
                             let resultTableStatus = graph.nodeData[executeCellId].nodeInfo.resultTableStatus
-                            if (midTableStatus === 2 || resultTableStatus === 2) {
+                            //如果结果表节点被标记成了中间或最终结果表，并且上级节点的是否删除表的标记为是（打了中间或最终结果表标记却未执行的情况下是否）
+                            if ((midTableStatus === 2 || resultTableStatus === 2) && graph.nodeData[parentIds[0]].nodeInfo.isDeleteTable) {
                                 isRoleTable = true
                             }
                             nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + nodeName
@@ -772,6 +776,9 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
         if (graph.nodeData[nodeIdArr[i]].nodeInfo.nodeExcuteStatus !== 2) {
             graph.nodeData[nodeIdArr[i]].nodeInfo.nodeExcuteStatus = 2
             changeNodeIcon(2, null, nodeIdArr[i])
+            if(graph.nodeData[nodeIdArr[i]].nodeInfo.cancelExecute){
+                delete graph.nodeData[nodeIdArr[i]].nodeInfo.cancelExecute
+            }
         }
     }
     var load = $('body').mLoading({ 'text': '正在执行全部节点，请稍后……', 'hasCancel': false, 'hasTime': true })
@@ -838,7 +845,8 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
                             resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName
                         }
                         let isRoleTable = false
-                        if (midTableStatus === 2 || resultTableStatus === 2) {
+                        //如果结果表节点被标记成了中间或最终结果表，并且上级节点的是否删除表的标记为是（打了中间或最终结果表标记却未执行的情况下是否）
+                        if ((midTableStatus === 2 || resultTableStatus === 2) && graph.nodeData[parentIds[0]].nodeInfo.isDeleteTable) {
                             isRoleTable = true
                         }
                         graphIndexVue.resultTableArr.push({ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable, optType: optType })
@@ -868,12 +876,12 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
         if (graph.nodeData[executeNodeArr[k]].nodeInfo.nodeExcuteStatus !== 2 && stopNodeId === executeNodeArr[k]) {			// 若当前节点是停止节点（只针对于结果表）
             continue
         }
-        if (graph.nodeData[executeNodeArr[k]].nodeInfo.nodeExcuteStatus === 1) {			// 若当前节点是因取消执行操作变为未执行，直接跳过
+        if (graph.nodeData[executeNodeArr[k]].nodeInfo.cancelExecute) {// 若当前节点是因取消执行操作变为未执行，直接跳过
             continue
         }
         if (typeof executeNodeData !== 'undefined' && executeNodeData != null) {
             // 循环赋值
-            graph.nodeData[executeNodeArr[k]] = $.extend(true, {}, executeNodeData[executeNodeArr[k]])
+            graph.nodeData[executeNodeArr[k]] = {...{},...executeNodeData[executeNodeArr[k]]}
         }
         var nodeExcuteStatus = graph.nodeData[executeNodeArr[k]].nodeInfo.nodeExcuteStatus
         var optType = graph.nodeData[executeNodeArr[k]].nodeInfo.optType
@@ -1093,11 +1101,8 @@ function lightHeightCallBack(curCellId,parentChildren){
  */
 export function curNodeSQL() {
     var nodeExcuteStatus = graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus
-    if (nodeExcuteStatus === 1) {			// 未执行
-        graphIndexVue.$message({"type":"warning","message":"该节点尚未执行，请执行后再查看"})
-        return
-    } else if (nodeExcuteStatus === 2) {			// 执行中
-        graphIndexVue.$message({"type":"warning","message":"该节点尚未执行完成，请等待执行完成后再查看"})
+    if (nodeExcuteStatus !== 3) {
+        graphIndexVue.$message({"type":"warning","message":"该节点尚未执行成功，请执行成功后再查看"})
         return
     } else {
         var optType = graph.nodeData[graph.curCell.id].nodeInfo.optType
@@ -1136,7 +1141,7 @@ export function previewNodeData() {
     let nodeId = ''
     let nodeName = ''
     let resultTableName = ''
-    let isRoleTable = false
+    let isRoleTable = false//节点的表是否需要走权限（一版只有CREATE TABLE的临时表走权限）
     let optType = ''
     switch (curNodeInfo.optType) {
         case 'datasource':				// 如果是原表，直接拿其临时表名称
@@ -1163,7 +1168,8 @@ export function previewNodeData() {
             }
             let midTableStatus = curNodeInfo.midTableStatus
             let resultTableStatus = curNodeInfo.resultTableStatus
-            if (midTableStatus === 2 || resultTableStatus === 2) {
+            //如果结果表节点被标记成了中间或最终结果表，并且上级节点的是否删除表的标记为是（打了中间或最终结果表标记却未执行的情况下是否）
+            if ((midTableStatus === 2 || resultTableStatus === 2) && graph.nodeData[parentIds[0]].nodeInfo.isDeleteTable) {
                 isRoleTable = true
             }
             break

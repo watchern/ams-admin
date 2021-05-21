@@ -45,6 +45,7 @@ import childTabCons from "@/views/analysis/auditmodelresult/childtabcon";
 import { now } from "moment";
 import {addRunTaskAndRunTaskRel, deleteModel, uuid2} from "@/api/analysis/auditmodel";
 import {deleteGraphInfoById} from "@/api/graphtool/apiJs/graphList";
+import {sendToOA} from "@/api/analysis/auditmodelresult";
 export default {
   components: {
     'childTabCons':childTabCons
@@ -55,6 +56,10 @@ export default {
       hasButton:false,
       paramInfoCopy:{}
     };
+  },
+  created(){
+    console.log(this.preValue)
+    console.log(this.useType)
   },
   mounted() {
     this.paramInfoCopy = this.paramInfo
@@ -78,13 +83,13 @@ export default {
       },
       tabsName(key){
         if(this.useType==='modelRunResult'){
-          return '辅表' + (key + 1)
+          return '辅表' + (key)
         }else if(this.useType==='sqlEditor'||this.useType==='modelPreview'){
-          if(this.preValue.length === key + 1){
+          if(key==0){
             return '主表'
           }
           else{
-            return '辅助' + (key + 1)
+            return '辅助' + (key)
           }
         }else if(this.useType==='previewTable'){
             return '数据详情'
@@ -137,19 +142,41 @@ export default {
         //locationUuid: modelResultSavePathId,
         runTaskRels: runTaskRels
       };
-      addRunTaskAndRunTaskRel(runTask).then((resp) => {
-        if (resp.data == true) {
-          this.$notify({
-            title: "提示",
-            message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
-            type: "success",
-            duration: 2000,
-            position: "bottom-right",
-          });
-        } else {
-          this.$message({ type: "info", message: "执行运行任务失败" });
-        }
-      });
+      if(process.env["VUE_APP_BASE_PROJECT_TYPE"]=="BOE"){
+        addRunTaskAndRunTaskRel(runTask,this.dataUserId,this.sceneCode).then((resp) => {
+          if (resp.data == true) {
+            // this.$notify({
+            //   title: "提示",
+            //   message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
+            //   type: "success",
+            //   duration: 2000,
+            //   position: "bottom-right",
+            // });
+            sendToOA(runTaskRelUuid).then((resp) => {
+              this.$message({
+                type: "success",
+                message: "发送成功!",
+              });
+            });
+          } else {
+            this.$message({ type: "info", message: "执行运行任务失败" });
+          }
+        });
+      }else{
+          addRunTaskAndRunTaskRel(runTask).then((resp) => {
+          if (resp.data == true) {
+            this.$notify({
+              title: "提示",
+              message: "已经将模型添加到后台自动执行，请去'模型结果'查看",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          } else {
+            this.$message({ type: "info", message: "执行运行任务失败" });
+          }
+        });
+      }
     }
   },
   /**
@@ -170,7 +197,9 @@ export default {
     "resultMark",
     "isModelPreview",
     "isRelation",
-    "paramInfo"
+    "paramInfo",
+    "dataUserId",
+    "sceneCode"
   ],
 };
 </script>

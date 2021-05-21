@@ -20,6 +20,8 @@ import components from '@/components/public/index'
 
 import '../src/components/ams-indicator-admin/src/styles/element-variables.scss'
 import '../src/components/ams-indicator-admin/src/styles/index.scss' // global css
+// import '@ag-grid-community/all-modules/dist/styles/ag-grid.css';
+// import '@ag-grid-community/all-modules/dist/styles/ag-theme-alpine.css';// global css
 Vue.use(components)
 // Ace end
 
@@ -80,10 +82,15 @@ import baseConfig from 'ams-datamax/src/config/config'
 import clipboard from 'clipboard'
 import axios from 'axios'
 import dataV from '@jiaminghi/data-view'
+import dict from "ams-starflow-vue/src/components/common/dict";
+import common from "ams-starflow-vue/src/components/common/common";
 //import VueAxios from 'vue-axios'
 //Vue.use(VueAxios, axios)
 Vue.prototype.$clipboard = clipboard
 Vue.prototype.$ajax = axios
+Vue.prototype.$axios = axios
+Vue.prototype.dict = dict;
+Vue.prototype.common = common;
 Vue.use(dataV)
 Vue.use(VueQriously)
 Vue.mixin({
@@ -147,7 +154,7 @@ Vue.prototype.AmsWebsocket = {
         case Vue.prototype.AmsModules.GRAPHTOOL:
           return process.env["VUE_APP_GRAPHTOOL_WEB_SOCKET"]
         case Vue.prototype.AmsModules.INDICATOR:
-          return process.env["this.AmsWebsocket.getWSBaseUrl(this.AmsModules.INDICATOR)"]
+          return process.env["VUE_APP_INDICATOR_WEB_SOCKET"]
         default:
           // 默认读浏览器访问host
           return 'ws://' + window.location.host+ '/websocket?'

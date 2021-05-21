@@ -11,7 +11,8 @@
           />
         </div>
       </el-header>
-      <el-main style="width: 91.8vw">
+      <!-- style="width: 91.8vw" -->
+      <el-main>
         <div align="right">
           <el-row>
             <el-dropdown>
@@ -86,7 +87,6 @@
           <el-table-column
             label="模型名称"
             width="300px"
-            align="center"
             prop="model.modelName"
           >
             <template slot-scope="scope">
@@ -187,7 +187,6 @@
           <el-table-column
             label="运行参数"
             prop="settingInfo"
-            align="center"
             width="200px"
             :formatter="settingInfoParamsArrFormatter"
           />
@@ -206,7 +205,6 @@
           <el-table-column
             label="关联项目"
             prop="projectName"
-            align="center"
             width="200px"
           />
           <el-table-column
@@ -221,6 +219,7 @@
             label="操作"
             width="150px"
             align="center"
+            class="unop"
           >
             <template slot-scope="scope">
               <div>
@@ -1416,4 +1415,9 @@ export default {
   },
 };
 </script>
+<style>
+.app-container .el-table__fixed-right{
+  background-image: linear-gradient(to bottom, #F6F6FE , #FEFEFF);
+}
+</style>
 

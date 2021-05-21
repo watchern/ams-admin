@@ -11,6 +11,25 @@ import analysisRouter from './modules/analysis/analysis'
 import graphRouter from './modules/graphtool/graphtool'
 const AmsRoutes = [
   {
+    path: '/dowork',
+    name: '工作流',
+    component: (resolve) => require(['@/portal/' + process.env.VUE_APP_BASE_SKIN + '/index'], resolve),
+    meta: {
+    },
+    children: [
+      {
+        path: '/todowork',
+        name: 'todowork',
+        component: () => import('ams-starflow-vue/src/components/todowork/todowork')
+      },
+      {
+        path: '/todoDetail',
+        name: 'todoDetail',
+        component: () => import('ams-starflow-vue/src/components/todowork/todoDetail')
+      },
+    ]
+  },
+  {
     path: '/',
     redirect: '/ams/first'
   },
@@ -47,11 +66,16 @@ const AmsRoutes = [
   {
     path: '/ams',
     name: 'ams',
-    component: (resolve) => require(['@/portal/'+ process.env.VUE_APP_BASE_SKIN + '/index'],resolve),
+    component: (resolve) => require(['@/portal/' + process.env.VUE_APP_BASE_SKIN + '/index'], resolve),
     children: [
       {
         path: '',
         redirect: '/ams/first'
+      },
+      {
+        path: '/nopermission',
+        component: () => import('@/views/error-page/nopermission'),
+        hidden: true
       },
       {
         path: 'first',
@@ -86,7 +110,7 @@ const AmsRoutes = [
   {
     path: '/datamining',
     name: '数据挖掘',
-    component: (resolve) => require(['@/portal/'+ process.env.VUE_APP_BASE_SKIN + '/index'],resolve),
+    component: (resolve) => require(['@/portal/' + process.env.VUE_APP_BASE_SKIN + '/index'], resolve),
     children: [{
       path: '/datamining/index',
       name: '数据挖掘',

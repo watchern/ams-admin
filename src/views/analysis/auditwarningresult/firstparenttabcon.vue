@@ -15,7 +15,8 @@
         @submit="getLikeList"
       />
     </el-header>
-    <el-main style="width:77.5vw;">
+    <!-- style="width:77.5vw;" -->
+    <el-main>
     <div align="right">
       <el-row>
         <el-button
@@ -73,7 +74,6 @@
         v-if="warringResultType===1"
         label="模型名称"
         width="300px"
-        align="center"
         prop="model.modelName"
       >
         <template slot-scope="scope">
@@ -98,7 +98,6 @@
         v-if="warringResultType===2"
         label="指标名称"
         width="300px"
-        align="center"
         prop="model.modelName"
       >
         <template slot-scope="scope">
@@ -183,24 +182,30 @@
         prop="runEndTime"
         :formatter="dateFormatter1"
       />
+      <!-- :formatter="settingInfoSqlFormatter" -->
       <el-table-column
         label="运行SQL"
         prop="settingInfo"
         align="center"
         width="200px"
-        :formatter="settingInfoSqlFormatter"
-      />
+      >
+            <template slot-scope="scope">
+              <el-popover trigger="hover" placement="top" width="500" :content="settingInfoSqlFormatter(scope.row)">
+                <div slot="reference" class="name-wrapper">
+                  <el-link :underline="false" type="primary">查看</el-link>
+                </div>
+              </el-popover>
+            </template>
+          </el-table-column>
       <el-table-column
         label="运行参数"
         prop="settingInfo"
-        align="center"
         width="200px"
         :formatter="settingInfoParamsArrFormatter"
       />
       <el-table-column
         label="运行信息"
         prop="runMessage"
-        align="center"
         width="200px"
       />
       <el-table-column
@@ -1180,4 +1185,6 @@ export default {
   },
 };
 </script>
+<style>
+</style>
 

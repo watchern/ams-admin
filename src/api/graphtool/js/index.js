@@ -847,7 +847,7 @@ export function getResultColumnInfo(){
 }
 
 export async function saveModelGraph(){
-    console.log("=====调用模型图形的保存方法=====")
+    graphIndexVue.loading = $(graphIndexVue.$refs.graphToolDiv).mLoading({ 'text': '正在运行校验图形节点，请稍后……', 'hasCancel': false })
     let isError = false
     let message = ''
     let modelSql = ''//生成的模型语句
@@ -881,23 +881,19 @@ export async function saveModelGraph(){
                 'nodeIdList': lineNodeIdArr.join(","),
                 'nodeData': JSON.stringify(graph.nodeData)
             }
-            console.log("=====模型图形开始执行=====")
             const response = await executeNodeSql(dataParam)
             if(response.data != null){
-                console.log("=====模型图形执行结果=====")
-                console.log(response.data)
+                //改变当前图形节点的信息
+                nodeCallBack(lineNodeIdArr, response.data.nodeData)
                 if(response.data.isError){
                     isError = true
                     message = '模型设计校验图形未通过：存在运行出错的节点'
                 }else{
-                    //改变当前图形节点的信息
-                    nodeCallBack(lineNodeIdArr, response.data.nodeData)
                     newNodeData = { ...{}, ...graph.nodeData }//二次赋值是因为此时的【graph.nodeData】部分值发生了改变
                     let dropViewSql = ''//删除视图的SQL语句
                     let dropTableSql = ''//删除表的SQL语句
                     let selectSql = ''
                     let tableName = ''
-                    console.log("开始组织节点结果表语句======")
                     for (let i = 0; i < lineNodeIdArr.length; i++) {
                         let curNodeInfo = newNodeData[lineNodeIdArr[i]].nodeInfo
                         if(curNodeInfo.optType === 'datasource'){
@@ -911,7 +907,7 @@ export async function saveModelGraph(){
                                         paramArr.push({ ...{}, ...arr[t] });//此处深层扩展赋值，是为了当改变paramArr中得值时不影响paramsSetting得值
                                     }
                                 }
-                                modelSql += "/*原表【" + curNodeInfo.nodeName + "】的查询SQL语句*/\n" + selectSql + ";\n";
+                                modelSql += "/*原表【" + curNodeInfo.nodeName + "】的查询SQL语句*/\n" + selectSql + "\n";
                             }
                         }
                         if(curNodeInfo.optType === 'newNullNode'){
@@ -942,9 +938,6 @@ export async function saveModelGraph(){
                                 }else if(preNodeInfo.optType === "sql"){
                                     selectSql = preNodeInfo.resultSql
                                     tableName = preNodeInfo.resultTableName
-                                }else if(preNodeInfo.optType === "sort"){//排序节点含有order by子句时需再扩一层（只有DB2数据库才需要），此处未做区分，优化的话可以根据当前业务数据库的类型判断一下
-                                    selectSql = `SELECT * FROM (${preNodeInfo.nodeSql})`
-                                    tableName = preNodeInfo.resultTableName
                                 }else{//其他类型的操作节点都一样，直接取前置节点的临时表名称
                                     selectSql = preNodeInfo.nodeSql
                                     tableName = preNodeInfo.resultTableName
@@ -952,9 +945,13 @@ export async function saveModelGraph(){
                                 //组织SQL语句
                                 if(curNodeInfo.midTableStatus === 2 || curNodeInfo.resultTableStatus === 2){//如果结果表是辅助结果表或最终结果表
                                     dropTableSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果表的SQL语句*/\n DROP TABLE " + tableName + "\n"
-                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS (" + selectSql + ") definition only;\n";//不能移动位置
-                                    //此句只适用于业务库是DB2数据库（目的是为了实现CREATE TABLE xx AS SELECT……的数据插入）
-                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的结果表插入数据的SQL语句*/\n INSERT INTO " + tableName + " " + selectSql + ";\n";
+                                    if(graphIndexVue.dbType === "db2"){//不能移动位置
+                                        modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS (" + selectSql + ") definition only\n";
+                                        //此句只适用于业务库是DB2数据库（目的是为了实现CREATE TABLE xx AS SELECT……的数据插入）
+                                        modelSql += "/*节点【" + preNodeInfo.nodeName + "】的结果表插入数据的SQL语句*/\n INSERT INTO " + tableName + " " + selectSql + ";\n";
+                                    }else{
+                                        modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果表的SQL语句*/\n CREATE TABLE " + tableName + " AS " + selectSql + "\n";
+                                    }
                                     selectSql = `SELECT ${selectColArr.join(",")} FROM ${tableName}`
                                     if(newNodeData[parentIds[0]].hasParam && newNodeData[parentIds[0]].paramsSetting){
                                         //此处处理不同操作节点SELECT语句附带的参数条件
@@ -980,7 +977,7 @@ export async function saveModelGraph(){
                                     modelSql += "/*节点【" + preNodeInfo.nodeName + "】的查询结果表的SQL语句*/\n " + selectSql + "\n"
                                 }else{
                                     dropViewSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果视图的SQL语句*/\n DROP VIEW " + tableName + "\n"
-                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS " + selectSql + ";\n";//不能移动位置
+                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS " + selectSql + "\n";//不能移动位置
                                 }
                             }
                         }
@@ -1021,7 +1018,6 @@ export async function saveModelGraph(){
                     //     //替换ID结束
                     // }
                     modelSql = dropTableSql + modelSql + dropViewSql
-                    console.log("=====组织节点结果表语句结束=====")
                 }
             }else{
                 isError = true
@@ -1029,7 +1025,6 @@ export async function saveModelGraph(){
             }
         }
         if(!isError){
-            console.log("=====模型图形开始保存=====")
             //保存当前模型图形信息
             //获取图形xml数据
             var encoder = new mxCodec();
@@ -1049,8 +1044,6 @@ export async function saveModelGraph(){
                 "modelSql" : modelSql
             };
             await saveGraphInterface(param).then(response => {
-                console.log("=====模型图形保存结果=====")
-                console.log(response.data)
                 if (!response.data) {
                     isError = true
                     message = '模型设计保存图形信息失败'
@@ -1061,6 +1054,7 @@ export async function saveModelGraph(){
             })
         }
     }
+    graphIndexVue.loading.destroy()
     return {isError,message,graphUuid,modelSql,modelParamIdArr,paramArr}
 }
 

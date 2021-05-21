@@ -41,7 +41,7 @@
           :key="tableKey"
           ref="modelListTable"
           v-loading="listLoading"
-          style="height: 450px;overflow-y: scroll"
+          style="min-height: 450px;overflow-y: scroll"
           :data="list"
           border
           fit
@@ -55,8 +55,8 @@
               <el-link type="primary" @click="selectModelDetail(scope.row.modelUuid)">{{ scope.row.modelName }}</el-link>
             </template>
           </el-table-column>
-          <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
-          <el-table-column label="审计事项" prop="auditItemName" align="center" />
+          <el-table-column label="平均运行时间" width="150px" prop="runTime" />
+          <el-table-column label="审计事项" prop="auditItemName" />
           <el-table-column label="风险等级" prop="riskLevelUuid" align="center" :formatter="riskLevelFormatter" />
           <el-table-column label="模型类型" prop="modelType" align="center" :formatter="modelTypeFormatter" />
           <el-table-column label="创建时间" prop="createTime" align="center" :formatter="dateFormatter" />
@@ -91,7 +91,7 @@
               </div>
               <el-col :span="2">
                 <el-button v-if="item.isExistParam" type="primary" class="btn-show" @click="loadParamDraw(item.name)">
-                  <span class="iconfont iconoper-search" />查询
+                  <span class="iconfont iconoper-search" /><span style="font-weight:normal;">查询</span>
                 </el-button>
               </el-col>
             </el-row>
@@ -1203,9 +1203,10 @@ export default {
 }
 .btn-show{
   position: absolute;
-  top: 3px;
-  right: 32px;
+  top: 39px;
+  right: 153px;
   z-index: 3;
+  padding: 3px 8px 4px 8px !important;
 }
 .btn-show1{
   position: absolute;

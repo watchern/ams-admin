@@ -323,7 +323,7 @@
             :before-close="closeNodeSetting"
             :append-to-body="true"
             :destroy-on-close="true"
-            width="1000px">
+            :width="settingType === 'relation' ? '1200px' : '1000px'">
             <NodeSetting v-if="settingType === 'commonSetting'" ref="nodeSetting" :graph="graph" :opt-type="sp_optType" />
             <RelationSetting v-if="settingType === 'relation'" ref="nodeSetting" :graph="graph" />
             <GroupCount v-if="settingType === 'groupCount'" ref="nodeSetting" :graph="graph"/>
@@ -420,7 +420,7 @@
     import AnalysisDetailData from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/analysisDetailData.vue'
     // 引入后端接口的相关方法
     import { removeJcCssfile, addCssFile, addJsFile } from "@/api/analysis/common"
-    import { getGraphInfoById, viewNodeData, saveGraphInterface, createScreenQuery, getColumnsByTable } from '@/api/graphtool/apiJs/graphList'
+    import { getGraphInfoById, viewNodeData, saveGraphInterface, createScreenQuery, getColumnsByTable, getDbType } from '@/api/graphtool/apiJs/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
     // 引入前段JS的相关方法
     import * as commonJs from '@/api/graphtool/js/common'
@@ -503,7 +503,8 @@
                 comparisonTableDetailDialogVisible:false,
                 comparison_dataTableName:'',
                 comparison_columnVal:'',
-                rightZtreeStyle:''
+                rightZtreeStyle:'',
+                dbType:'',//当前图形所属的数据库类型，oracle、spark、impala、db2、mysql等
             }
         },
         created() {
@@ -694,7 +695,7 @@
                 getGraphInfoById(graphUuid).then(response => {
                     if (response.data == null) {
                         this.loading.destroy()
-                        this.$message.error('加载图形失败')
+                        this.$message.error('图形加载失败')
                     } else {
                         try {
                             this.openType_graph = response.data.createType// 打开图形化的方式：1、开发环境（开发库）；2、权限环境（生产库）
@@ -704,13 +705,27 @@
                             this.initJsp()
                         } catch (e) {
                             this.loading.destroy()
-                            this.$message.error('加载图形失败')
+                            this.$message.error('图形加载失败')
                             console.info(e)
                         }
                     }
-                })
+                }).catch(() => {
+                    this.loading.destroy()
+                    this.$message.error('图形加载失败')
+                });
             },
             initJsp() {
+                getDbType().then(response => {
+                    if(response.data == null){
+                        this.loading.destroy()
+                        this.$message.error('获取当前数据库类型失败')
+                    }else{
+                        this.dbType = response.data
+                    }
+                }).catch(() => {
+                    this.loading.destroy()
+                    this.$message.error('获取当前数据库类型失败')
+                });
                 let $this = this
                 const initGraphInterval = setInterval(function() {
                     if ($this.graph != null) {
@@ -739,7 +754,7 @@
                         $this.historyRootNode = { 'name': '操作痕迹', 'displayName': '操作痕迹', 'level': 0, 'isParent': true, 'open': true, 'type': 'rootNode', 'id': 'historyRoot', 'pid': null, 'children': [] }
                         $this.historyZtree = $.fn.zTree.init($('#historyZtree'), indexJs.historySetting, $this.historyRootNode)
                         /* 右侧操作痕迹树,end*/
-                        $this.loading = $('body').mLoading({ 'text': '正在初始化数据，请稍后……', 'hasCancel': false })
+                        $this.loading = $($this.$refs.graphToolDiv).mLoading({ 'text': '正在初始化数据，请稍后……', 'hasCancel': false })
                         // 加载已有的图形化
                         if ($this.oldGraphData != null) {
                             indexJs.openCallBack($this.oldGraphData)
@@ -931,7 +946,6 @@
                                                 obj.headerName = item
                                                 obj.field = item
                                                 obj.cellRenderer = (params) => {
-                                                    console.log(params)
                                                     return `<span style="color:red;cursor:pointer;" title="点击查看详情数据" onclick="showComparisonTableDetail(\'${dataTableName}\',\'${params.data["对比内容"]}\')">${params.value}</span>`
                                                 }
                                             }else{

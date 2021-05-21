@@ -21,7 +21,7 @@
                   @click="previewModel"
                 />
                 <!--            <el-button type="primary" :disabled="btnState.addBtnState" class="oper-btn add" @click="addModel" />-->
-                <el-dropdown style="margin-right: 10px;">
+                <!-- <el-dropdown style="margin-right: 10px;">
                   <el-button
                     type="primary"
                     :disabled="btnState.addBtnState"
@@ -37,28 +37,28 @@
                       @click.native="selectModelTypeDetermine(state.codeValue)"
                     >{{state.codeName}}</el-dropdown-item>
                   </el-dropdown-menu>
-                </el-dropdown>
-                <el-button
+                </el-dropdown> -->
+                <!-- <el-button
                   type="primary"
                   :disabled="btnState.editBtnState"
                   class="oper-btn edit"
                   @click="updateModel"
-                />
+                /> -->
                 <!--            <el-button type="primary" :disabled="btnState.editBtnState" class="oper-btn edit" @click="updateModel1" />-->
-                <el-button
+                <!-- <el-button
                   type="primary"
                   :disabled="btnState.deleteBtnState"
                   class="oper-btn delete"
                   @click="deleteModel"
-                />
+                /> -->
                 <el-dropdown placement="bottom" trigger="click" class="el-dropdown">
                   <el-button type="primary" :disabled="btnState.otherBtn" class="oper-btn more" />
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item @click.native="exportModel">导出</el-dropdown-item>
                     <el-dropdown-item @click.native="modelFolderTreeDialog = true">导入</el-dropdown-item>
                     <el-dropdown-item @click.native="shareModelDialog">共享</el-dropdown-item>
-                    <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item>
-                    <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item>
+                    <!-- <el-dropdown-item @click.native="publicModel('publicModel')">发布</el-dropdown-item> -->
+                    <!-- <el-dropdown-item @click.native="cancelPublicModel()">撤销发布</el-dropdown-item> -->
                   </el-dropdown-menu>
                 </el-dropdown>
               </el-col>
@@ -79,7 +79,7 @@
               :key="tableKey"
               ref="modelListTable"
               v-loading="listLoading"
-              style="height: 450px;overflow-y: scroll"
+              style="min-height: 450px;overflow-y: scroll"
               :data="list"
               border
               fit
@@ -89,15 +89,15 @@
             >
               <el-table-column type="selection" width="55" />
               <el-table-column label="模型名称" width="300px" prop="modelName">
-                <template slot-scope="scope">
+                <!-- <template slot-scope="scope">
                   <el-link
                     type="primary"
                     @click="selectModelDetail(scope.row.modelUuid)"
                   >{{ scope.row.modelName }}</el-link>
-                </template>
+                </template> -->
               </el-table-column>
-              <el-table-column label="平均运行时间" width="150px" align="center" prop="runTime" />
-              <el-table-column label="审计事项" prop="auditItemName" align="center" />
+              <el-table-column label="平均运行时间" width="150px" prop="runTime" />
+              <el-table-column label="审计事项" prop="auditItemName" />
               <el-table-column
                 label="风险等级"
                 prop="riskLevelUuid"
@@ -139,26 +139,23 @@
                   <div @click="Toggle1()">
                     <el-col :span="24" class="row-all">
                       <childTabs
-                        :isRelation="item.isRelation===true?true:false"
-                        @setNextValue="setNextValue"
-                        @addTab="addTab"
-                        :modelId="modelId"
-                        :is-model-preview="true"
-                        :ref="item.name"
-                        :key="1"
-                        :pre-value="item.executeSQLList"
-                        use-type="modelPreview"
-                      />
+                      :isRelation="item.isRelation===true?true:false"
+                      @setNextValue="setNextValue"
+                      @addTab="addTab"
+                      :modelId="modelId"
+                      :is-model-preview="true"
+                      :ref="item.name"
+                      :key="1"
+                      :pre-value="item.executeSQLList"
+                      :paramInfo="item.runModelConfig"
+                      :dataUserId="dataUserId"
+                      :sceneCode="sceneCode"
+                      use-type="modelPreview" />
                     </el-col>
                   </div>
                   <el-col :span="2">
-                    <el-button
-                      v-if="item.isExistParam"
-                      type="primary"
-                      class="btn-show"
-                      @click="loadParamDraw(item.name)"
-                    >
-                      <span class="iconfont iconoper-search" />查询
+                    <el-button v-if="item.isExistParam" type="primary" class="btn-show" @click="loadParamDraw(item.name)">
+                      <span class="iconfont iconoper-search" /><span style="font-weight:normal;">查询</span>
                     </el-button>
                   </el-col>
                 </el-row>
@@ -235,6 +232,7 @@
 </template>
 <script>
 import { findModel, saveModel, deleteModel, shareModel, selectModel, updateModel, updateModelBasicInfo, exportModel, setModelSession } from '@/api/analysis/auditmodel'
+import { cacheDict } from '@/api/base/sys-dict'
 import {deleteGraphInfoById} from '@/api/graphtool/apiJs/graphList'
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
@@ -252,9 +250,12 @@ import personTree from '@/components/publicpersontree/index'
 export default {
   name: 'ModelListTable',
   components: { paramDrawNew,Pagination, QueryField, EditModel, ModelFolderTree, childTabs, crossrangeParam, paramDraw, modelshoppingcart, personTree },
-  props: ['power','dataUserId','sceneCode','isAuditWarring'],
+  props: ['power','isAuditWarring'],
   data() {
     return {
+      //京东方专用
+      sceneCode:"boeProject",
+      dataUserId:this.$route.query.id,
       isShow: false,
       tableKey: 'errorUuid',
       // list列表
@@ -374,6 +375,8 @@ export default {
   },
   created() {
     // this.getList({ modelFolderUuid: 1 })
+    // this.sceneCode ="boeProject";
+    this.dataUserId = this.$route.query.id;
   },
   mounted() {
     this.initWebSocket()
@@ -398,9 +401,19 @@ export default {
     },
     initData(){
       // 初始化审计事项
-      this.modelTypeData = getDictList('002003')
-      //京东方默认传ID
-      this.getList(this.query);
+      var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
+      if (sysDict == null) {
+        cacheDict().then(resp => {
+          sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
+          this.modelTypeData = getDictList('002003')
+            //京东方默认传ID
+          this.getList(this.query);
+        })
+      }else{
+        this.modelTypeData = getDictList('002003')
+        //京东方默认传ID
+        this.getList(this.query);
+      }
     },
     Toggle: function() {
       this.isShow = !this.isShow
@@ -1036,6 +1049,9 @@ export default {
         }else{
         this.$emit('loadingSet',false,"");
         this.modelRunTaskList[obj.modelUuid] = result.data.executeSQLList
+        if(isExistParam){
+          selectObj[0].runModelConfig = obj.runModelConfig
+        }
         this.addTab(selectObj[0], isExistParam, result.data.executeSQLList)
         //界面渲染完成之后开始执行sql,将sql送入调度
         startExecuteSql(result.data).then((result) => {
@@ -1054,16 +1070,20 @@ export default {
      * @param executeSQLList 执行sql列表
      */
     addTab(modelObj, isExistParam, executeSQLList,isRelation) {
-      this.editableTabs.push({
+      let obj = {
         title: modelObj.modelName + '结果',
         name: modelObj.modelUuid,
         isExistParam: isExistParam,
         executeSQLList: executeSQLList,
         isRelation:isRelation
-      })
-        this.nowTabModelUuid = modelObj.modelUuid
-        this.editableTabsValue = modelObj.modelUuid
-        this.modelPreview.push(modelObj.modelUuid)
+      }
+      if(isExistParam){
+        obj.runModelConfig = modelObj.runModelConfig
+      }
+      this.editableTabs.push(obj)
+      this.nowTabModelUuid = modelObj.modelUuid
+      this.editableTabsValue = modelObj.modelUuid
+      this.modelPreview.push(modelObj.modelUuid)
     },
     handleClick(tab, event){
       if (tab.name!=='模型列表'){
@@ -1119,7 +1139,12 @@ export default {
             sqlValue:this.currentPreviewModelParamAndSql.sqlValue,
             paramObj:obj.paramsArr
           }
-          this.currentRunModelAllConfig[selectObj[0].modelUuid] = runModelConfig
+          this.currentRunModelAllConfig[selectObj[0].modelUuid] = runModelConfig;
+          let recplaceed = {
+            sql:obj.sqls,
+            paramsArr:obj.paramsArr
+          }
+          obj.runModelConfig = recplaceed
           this.executeSql(obj,selectObj,true)
       }
       else{
@@ -1244,9 +1269,10 @@ export default {
 }
 .btn-show {
   position: absolute;
-  top: 3px;
-  right: 32px;
+  top: 39px;
+  right: 153px;
   z-index: 3;
+  padding: 3px 8px 4px 8px !important;
 }
 .btn-show1 {
   position: absolute;

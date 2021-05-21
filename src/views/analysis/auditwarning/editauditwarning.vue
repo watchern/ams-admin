@@ -60,7 +60,9 @@
               <el-table-column
                 v-if="!allReadOnly"
                 label="操作"
-                prop="auditItemName">
+                prop="auditItemName"
+                align="center"
+                >
                 <template slot-scope="scope">
                   <el-link
                     type="primary"
@@ -90,11 +92,13 @@
               </el-table-column>
               <el-table-column
                 prop="createTime"
+                align="center"
                 label="创建时间" :formatter="dateFormatter">
               </el-table-column>
               <el-table-column
                 v-if="!allReadOnly"
                 label="操作"
+                align="center"
                 prop="auditItemName">
                 <template slot-scope="scope">
                   <el-link type="primary" @click.native.prevent="deleteCommonlyAnalysis(scope.$index, temp.indexList)">删除
@@ -992,7 +996,7 @@ export default {
       var userId = this.$store.getters.personuuid
       const persons = this.$refs.personTree.getSelectValue()
       if(persons.length > 1){
-        this.$message({ type: 'info', message: '只有分配给一个人!' })
+        this.$message({ type: 'info', message: '只能分配给一个人!' })
         return
       }
 /*      if(persons[0].personuuid === userId){

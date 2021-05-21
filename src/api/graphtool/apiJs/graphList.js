@@ -479,3 +479,14 @@ export function getColumnsByTable(data) {
         params: data
     })
 }
+
+/**
+ * 获取数据表树节点下的字段列表数据
+ */
+export function getDbType(){
+    return request({
+        baseURL: baseURL,
+        url: '/graphCt/getDbType',
+        method: 'post'
+    })
+}

@@ -113,7 +113,7 @@ export default {
   width: 100vw;
 }
 .home-right-content{
-  overflow: hidden;
+  overflow: auto;
   width: calc(100% - 24px);
   height: calc(100% - 32px);
   border-radius: 30px;
