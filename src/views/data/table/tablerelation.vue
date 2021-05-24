@@ -61,7 +61,7 @@
               <el-input v-model="scope.row.relationTableName" :disabled="true" />
             </el-col>
             <el-col :span="6">
-              <el-button @click="showDataTree(scope.row.index)">选择</el-button>
+              <el-button size="mini" style="padding:10px;" @click="showDataTree(scope.row.index)">选择</el-button>
             </el-col>
           </el-row>
         </template>

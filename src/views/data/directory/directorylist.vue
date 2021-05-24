@@ -67,7 +67,7 @@
       </span>
     </el-dialog>
     <!-- 弹窗3 -->
-    <el-dialog :close-on-click-modal="false" v-if="uploadVisible" :visible.sync="uploadVisible" width="800px">
+    <el-dialog :close-on-click-modal="false" v-if="uploadVisible" :visible.sync="uploadVisible" style="min-width:1000px;" width="80%">
       <el-row>
         <el-col >
           <directory-file-upload   v-if="uploadStep === 1" @fileuploadname="fileuploadname" />
@@ -83,7 +83,7 @@
             label-position="right"
             style="width: 750px;"
           >
-            <el-form-item label="导入表名称：(若导入数据为TXT数据需用','分割,列信息用换行即可)" prop="tbName">
+            <el-form-item label="导入表名称：(当导入数据为txt格式时，列名和数据均以','分割即可)" prop="tbName">
               <el-input v-model="uploadtemp.tbName" label="请输入表名称" />
             </el-form-item>
             <el-form-item label="数据表描述" prop="tbComment">
@@ -142,7 +142,7 @@
       </span>
     </el-dialog>
     <!-- 弹窗4 -->
-    <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="800px" :close-on-click-modal="false">
+    <el-dialog v-if="tableShowVisible" :visible.sync="tableShowVisible" width="80%"  style="min-width:1000px;" :close-on-click-modal="false">
       <el-row>
         <el-col>
           <tabledatatabs ref="tabledatatabs" :table-id="tableId" :forder-id="clickData.id" :open-type="openType" :tab-show.sync="tabShow" @table-show="tableshow" />
@@ -153,7 +153,7 @@
       </span>
     </el-dialog>
     <!-- 弹窗5 -->
-    <el-dialog v-if="tableColumnVisible" :visible.sync="tableColumnVisible" lock-scroll width="800px" :close-on-click-modal="false">
+    <el-dialog v-if="tableColumnVisible" :visible.sync="tableColumnVisible" lock-scroll width="80%" style="min-width:1000px;" :close-on-click-modal="false">
        <template>
          <div style="height:62vh; overflow:auto;">
            <el-button></el-button>
@@ -170,7 +170,7 @@
        </template>
     </el-dialog>
     <!-- 弹窗6 -->
-    <el-dialog v-if="tableRelationVisible" :visible.sync="tableRelationVisible" width="800px" :close-on-click-modal="false">
+    <el-dialog v-if="tableRelationVisible" :visible.sync="tableRelationVisible" width="80%" style="min-width:1000px;" :close-on-click-modal="false">
       <template>
         <div style="height:62vh; overflow:auto;">
           <el-row>
@@ -186,7 +186,7 @@
       </template>
     </el-dialog>
     <!-- 弹窗7 -->
-    <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px" :close-on-click-modal="false">
+    <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="80%" style="min-width:1000px;" :close-on-click-modal="false">
       <el-row>
         <el-col>
           <childTabs ref="childTabs" :pre-value="executeSQLList" use-type="previewTable" />
@@ -197,7 +197,7 @@
       </span>
     </el-dialog>
     <!-- 弹窗7 -->
-    <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px" :close-on-click-modal="false">
+    <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="80%" style="min-width:1000px;" :close-on-click-modal="false">
       <el-row>
         <el-col>
           <childTabs ref="childTabs" :pre-value="executeSQLList" use-type="previewTable" />
@@ -208,7 +208,7 @@
       </span>
     </el-dialog>
     <!-- 弹窗8 分享 -->
-    <el-dialog :close-on-click-modal="false" v-if="shareVisible" :visible.sync="shareVisible" width="800px">
+    <el-dialog :close-on-click-modal="false" v-if="shareVisible" :visible.sync="shareVisible" width="80%" style="min-width:1000px;">
       <el-row>
         <el-col>
           <PersonTree ref="personTree" />
