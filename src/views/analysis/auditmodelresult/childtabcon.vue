@@ -1584,7 +1584,7 @@ export default {
       var rowData = [];
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
-          if (this.nextValue.executeSQL.type == "SELECT") {
+          if (this.nextValue.executeSQL.type == "Select") {
             this.modelResultButtonIsShow = true;
             this.modelResultPageIsSee = true;
             this.modelResultData = this.nextValue.result;

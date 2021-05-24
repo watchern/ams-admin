@@ -43,6 +43,7 @@
               icon="el-icon-arrow-right"
               circle
               @click="addGrp"
+              title="选中（或勾选）左侧组织树节点并点击此按钮可以向角色添加用户/用户组"
             />
           </p>
         </div>
@@ -174,7 +175,10 @@ export default {
     },
     addGrp() {
       console.log(this.grpUuid)
-      var nodes = this.$refs['A' + this.grpUuid][0].getCheckedNodes()
+      var nodes = this.$refs['A' + this.grpUuid][0].getCheckedNodes();
+      if(nodes.length === 0){
+          nodes.push(this.$refs['A' + this.grpUuid][0].getCurrentNode());
+      }
       nodes.forEach(node => {
         console.log(node)
         if (this.tableData.filter(data => {
@@ -195,6 +199,9 @@ export default {
       })
       console.log(this.tableData)
     },
+
+
+
 
     saveRoleGrp() {
       this.listLoading = true

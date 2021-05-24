@@ -86,6 +86,9 @@
             <el-form-item label="导入表名称：(若导入数据为TXT数据需用','分割,列信息用换行即可)" prop="tbName">
               <el-input v-model="uploadtemp.tbName" label="请输入表名称" />
             </el-form-item>
+            <el-form-item label="数据表描述" prop="tbComment">
+              <el-input v-model="uploadtemp.tbComment" label="请输入表描述" />
+            </el-form-item>
           </el-form>
         </el-col>
       </el-row>
@@ -97,12 +100,24 @@
           <el-table v-if="uploadStep === 2" :data="uploadtempInfo.colMetas" height="600px">
             <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
               <template slot-scope="scope" show-overflow-tooltip>
-                <el-input v-model="scope.row.colName" style="width:90%;" />
+                <el-form style="width:90%; height: 55px" label-position="right" :model="{colName: scope.row.colName}">
+                  <el-form-item prop="colName" :rules="[
+                    { required: true, message: '请输入字段名称'},
+                    { type: 'string', pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/, message: '请输入合法字段名称'}
+                  ]">
+                    <el-input v-model="scope.row.colName"/>
+                  </el-form-item>
+                </el-form>
+              </template>
+            </el-table-column>
+            <el-table-column prop="colComment" label="中文描述" show-overflow-tooltip>
+              <template slot-scope="scope" show-overflow-tooltip>
+                <el-input v-model="scope.row.colComment" style="width:90%; height: 55px" />
               </template>
             </el-table-column>
             <el-table-column prop="dataType" label="数据类型">
               <template slot-scope="scope">
-                <el-select ref="dataType" v-model="scope.row.dataType" filterable style="width:90%" placeholder="请选择数据类型">
+                <el-select ref="dataType" v-model="scope.row.dataType" filterable style="width:90%; height: 55px" placeholder="请选择数据类型">
                   <el-option
                     v-for="item in options"
                     :key="item"
@@ -114,7 +129,7 @@
             </el-table-column>
            <!-- <el-table-column prop="dataLength" label="数据长度" show-overflow-tooltip>
               <template slot-scope="scope" show-overflow-tooltip>
-                <el-input v-model="scope.row.dataLength" style="width:90%;" />
+                <el-input v-model="scope.row.dataLength" style="width:90%; height: 55px" />
               </template>
             </el-table-column>-->
           </el-table>
@@ -317,7 +332,8 @@ export default {
         folderUuid: ''
       },
       uploadRules: {
-        tbName: [{ required: true, message: '请填写导入表名称', trigger: 'change' }]
+        tbName: [{ required: true, message: '请填写导入表名称', trigger: 'change' },
+          { type: 'string', pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/, message: '请填写合法导入表名称'}]
       },
       // 导入步骤
       uploadStep: 1,

@@ -38,10 +38,7 @@ function getStrBytes(str){
  */
 function verifyReg(columnName) {
     var flag = true;
-    if (columnName) {
-        columnName = columnName.replace(/[\s`]+/g, "");
-    }
-    var regExpressions = /(^_([a-zA-Z0-9\u4e00-\u9fa5]_?)*$)|(^[a-zA-Z\u4e00-\u9fa5#$_](_?[a-zA-Z0-9\u4e00-\u9fa5#$_])*_?$)/;
+    var regExpressions = /(^_([a-zA-Z0-9\u4e00-\u9fa5]_?)*$)|(^[`"a-zA-Z\u4e00-\u9fa5#$_](_?[a-zA-Z0-9\u4e00-\u9fa5#$_])*[`"_]?$)/;
     if (!regExpressions.test(columnName)) {
         flag = false;
     }
