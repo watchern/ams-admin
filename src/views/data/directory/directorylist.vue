@@ -232,7 +232,7 @@
           <el-table
               v-if="uploadStep === 2"
               :data="uploadtempInfo.colMetas"
-              height="600px"
+              height="500px"
           >
             <el-table-column
                 prop="colName"
