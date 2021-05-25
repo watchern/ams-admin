@@ -54,7 +54,7 @@ export function judgeName(tableName) {
   return request({
     baseURL: baseURL,
     url: `/validateTableName`,
-    method: 'post',
+    method: 'get',
     params: { tableName: tableName}
   })
 }
