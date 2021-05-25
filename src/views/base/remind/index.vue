@@ -9,7 +9,7 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" size="mini" class="oper-btn processing-1" :disabled="selections.length === 0" @click="updateCode()" />
+        <el-button type="primary" size="mini" class="oper-btn processing-1" :disabled="readButStatus" @click="updateCode()" />
       </el-col>
     </el-row>
     <el-table
@@ -120,12 +120,27 @@ export default {
         remindedUserName: '',
         remindedType: ''
       },
+      readButStatus: true,
       selections: [],
       dialogFormVisible: false,
       pageQuery: {
         condition: {},
         pageNo: 1,
         pageSize: 20
+      }
+    }
+  },watch: {
+    // 监听selections集合
+    selections() {
+      if (this.selections.length > 0) {
+        // 系统提醒已阅按钮 只有选择了未阅读的的消息时才可用
+        this.selections.forEach((r) => {
+          if (r.readStatus === 0) {
+            this.readButStatus = false;
+          }
+        })
+      } else {
+        this.readButStatus = true
       }
     }
   },
@@ -145,7 +160,7 @@ export default {
     readStatusFormatter(row, column) {
       var status = row.readStatus
       if (status === 0) {
-        return <span class='red'>未阅</span>
+        return '未阅'
       } else {
         return '已阅'
       }
