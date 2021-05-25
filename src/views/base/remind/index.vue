@@ -132,16 +132,8 @@ export default {
   },watch: {
     // 监听selections集合
     selections() {
-      if (this.selections.length > 0) {
-        // 系统提醒已阅按钮 只有选择了未阅读的的消息时才可用
-        this.selections.forEach((r) => {
-          if (r.readStatus === 0) {
-            this.readButStatus = false;
-          }
-        })
-      } else {
-        this.readButStatus = true
-      }
+      // 系统提醒已阅按钮 只有选择了未阅读的的消息时才可用
+      this.readButStatus = this.selections.filter((r) => r.readStatus === 0).length === 0;
     }
   },
   computed: {
