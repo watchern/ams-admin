@@ -50,6 +50,14 @@ export function updateTable(data) {
     data
   })
 }
+export function judgeName(tableName) {
+  return request({
+    baseURL: baseURL,
+    url: `/validateTableName`,
+    method: 'get',
+    params: { tableName: tableName}
+  })
+}
 export function delTable(ids) {
   var param = ids.split('>')
   return request({
