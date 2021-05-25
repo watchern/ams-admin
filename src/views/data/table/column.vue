@@ -137,7 +137,7 @@ export default {
     addCol() {
       var newObj = {} // copy obj
       newObj.colName = ''
-      newObj.dataType = 'VARCHAR2'
+      newObj.dataType = ''
       newObj.dataLength = ''
       newObj.isNullable = 0
       this.tempIndex++
