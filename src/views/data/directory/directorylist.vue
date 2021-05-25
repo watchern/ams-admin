@@ -2,180 +2,182 @@
   <div v-loading="loading" class="page-container">
     <div class="filter-container">
       <QueryField
-        ref="queryfield"
-        :form-data="queryFields"
-        @submit="getListSelect"
+          ref="queryfield"
+          :form-data="queryFields"
+          @submit="getListSelect"
       />
     </div>
     <el-row>
       <el-col align="right">
         <el-button
-          type="primary"
-          :disabled="selections.length === 0"
-          class="oper-btn delete"
-          @click="delData"
+            type="primary"
+            :disabled="selections.length === 0"
+            class="oper-btn delete"
+            @click="delData"
         />
         <el-button
-          type="primary"
-          class="oper-btn copy"
-          :disabled="selections.length !== 1"
-          @click="copyResource"
+            type="primary"
+            class="oper-btn copy"
+            :disabled="selections.length !== 1"
+            @click="copyResource"
         />
         <el-button
-          type="primary"
-          class="oper-btn move-1"
-          :disabled="selections.length === 0"
-          @click="movePath"
+            type="primary"
+            class="oper-btn move-1"
+            :disabled="selections.length === 0"
+            @click="movePath"
         />
         <el-button
-          type="primary"
-          class="oper-btn rename"
-          :disabled="selections.length !== 1"
-          @click="renameResource"
+            type="primary"
+            class="oper-btn rename"
+            :disabled="selections.length !== 1"
+            @click="renameResource"
         />
         <el-button
-          type="primary"
-          class="oper-btn add-2"
-          :disabled="
+            type="primary"
+            class="oper-btn add-2"
+            :disabled="
             clickData.type == 'table' ||
             typeof clickData.extMap.sceneInstUuid !== 'undefined'
           "
-          @click="add"
+            @click="add"
         />
         <el-button
-          type="primary"
-          class="oper-btn export"
-          :disabled="
+            type="primary"
+            class="oper-btn export"
+            :disabled="
             clickData.type == 'table' ||
             typeof clickData.extMap.sceneInstUuid !== 'undefined'
           "
-          @click="uploadTable"
+            @click="uploadTable"
         />
         <el-button
-          type="primary"
-          class="oper-btn add-folder-1"
-          :disabled="clickData.type == 'table'"
-          @click="createFolder"
+            type="primary"
+            class="oper-btn add-folder-1"
+            :disabled="clickData.type == 'table'"
+            @click="createFolder"
         />
         <el-button
-          type="primary"
-          class="oper-btn edit"
-          :disabled="selections.length !== 1"
-          @click="update"
+            type="primary"
+            class="oper-btn edit"
+            :disabled="selections.length !== 1"
+            @click="update"
         />
         <el-button
-          type="primary"
-          class="oper-btn link-3"
-          :disabled="selections.length !== 1"
-          @click="relationTable"
+            type="primary"
+            class="oper-btn link-3"
+            :disabled="selections.length !== 1"
+            @click="relationTable"
         />
         <el-button
-          type="primary"
-          class="oper-btn detail-1"
-          :disabled="selections.length !== 1"
-          @click="showTable"
+            type="primary"
+            class="oper-btn detail-1"
+            :disabled="selections.length !== 1"
+            @click="showTable"
         />
         <el-button
-          type="primary"
-          class="oper-btn search-1"
-          :disabled="infoFlag"
-          @click="preview"
+            type="primary"
+            class="oper-btn search-1"
+            :disabled="infoFlag"
+            @click="preview"
         />
         <el-button
-          type="primary"
-          class="oper-btn share-1"
-          :disabled="selections.length === 0"
-          @click="shareTable"
+            type="primary"
+            class="oper-btn share-1"
+            :disabled="selections.length === 0"
+            @click="shareTable"
         />
       </el-col>
     </el-row>
     <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="temp"
-      border
-      fit
-      style="width: 100%; height: 500px; overflow: auto"
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
+        :key="tableKey"
+        v-loading="listLoading"
+        :data="temp"
+        border
+        fit
+        style="width: 100%; height: 500px; overflow: auto"
+        @sort-change="sortChange"
+        @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" />
-      <el-table-column label="名称" prop="label" />
+      <el-table-column type="selection" width="55"/>
+      <el-table-column label="名称" prop="label"/>
       <el-table-column
-        label="资源类型"
-        :formatter="formatTableType"
-        prop="type"
+          label="资源类型"
+          :formatter="formatTableType"
+          prop="type"
       />
       <el-table-column prop="createTime" label="创建时间" align="center">
         <template slot-scope="scope">{{
-          formatCreateTime(scope.row.extMap.createTime)
-        }}</template>
+            formatCreateTime(scope.row.extMap.createTime)
+          }}
+        </template>
       </el-table-column>
       <el-table-column prop="tbSizeByte" label="大小" align="center">
         <template slot-scope="scope">{{
-          formatTableSize(scope.row.extMap.tbSizeByte)
-        }}</template>
+            formatTableSize(scope.row.extMap.tbSizeByte)
+          }}
+        </template>
       </el-table-column>
     </el-table>
     <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="pageQuery.pageNo"
-      :limit.sync="pageQuery.pageSize"
-      @pagination="getListSelect"
+        v-show="total > 0"
+        :total="total"
+        :page.sync="pageQuery.pageNo"
+        :limit.sync="pageQuery.pageSize"
+        @pagination="getListSelect"
     />
     <!-- 弹窗 -->
     <el-dialog
-      :close-on-click-modal="false"
-      :title="textMap[dialogStatus]"
-      :visible.sync="folderFormVisible"
-      width="600px"
+        :close-on-click-modal="false"
+        :title="textMap[dialogStatus]"
+        :visible.sync="folderFormVisible"
+        width="600px"
     >
       <el-form ref="folderForm" :model="resourceForm" label-width="80px">
         <el-form-item :label="typeLabel" label-width="120px">
-          <el-input v-model="resourceForm.resourceName" style="width: 300px" />
+          <el-input v-model="resourceForm.resourceName" style="width: 300px"/>
         </el-form-item>
       </el-form>
       <span slot="footer">
         <el-button size="mini" @click="folderFormVisible = false"
-          >取消</el-button
+        >取消</el-button
         >
         <el-button
-          v-if="dialogStatus === 'copyTable'"
-          type="primary"
-          @click="copyResourceSave()"
-          >保存</el-button
+            v-if="dialogStatus === 'copyTable'"
+            type="primary"
+            @click="copyResourceSave()"
+        >保存</el-button
         >
         <el-button
-          v-if="dialogStatus === 'createFolder'"
-          type="primary"
-          @click="createFolderSave()"
-          >保存</el-button
+            v-if="dialogStatus === 'createFolder'"
+            type="primary"
+            @click="createFolderSave()"
+        >保存</el-button
         >
         <el-button
-          v-if="
+            v-if="
             dialogStatus === 'updateFolder' || dialogStatus === 'updateTable'
           "
-          type="primary"
-          @click="renameResourceSave()"
-          >保存</el-button
+            type="primary"
+            @click="renameResourceSave()"
+        >保存</el-button
         >
       </span>
     </el-dialog>
     <!-- 弹窗2 -->
     <el-dialog
-      :visible.sync="moveTreeVisible"
-      width="600px"
-      :close-on-click-modal="false"
+        :visible.sync="moveTreeVisible"
+        width="600px"
+        :close-on-click-modal="false"
     >
       <dataTree
-        style="overflow: auto; height: 62vh"
-        v-if="personcode !== ''"
-        ref="dataTree"
-        :data-user-id="personcode"
-        :scene-code="currentSceneUuid"
-        :tree-type="treeType"
-        @node-click="nodeclick"
+          style="overflow: auto; height: 62vh"
+          v-if="personcode !== ''"
+          ref="dataTree"
+          :data-user-id="personcode"
+          :scene-code="currentSceneUuid"
+          :tree-type="treeType"
+          @node-click="nodeclick"
       />
       <span slot="footer">
         <el-button @click="moveTreeVisible = false">取消</el-button>
@@ -184,68 +186,68 @@
     </el-dialog>
     <!-- 弹窗3 -->
     <el-dialog
-      :close-on-click-modal="false"
-      v-if="uploadVisible"
-      :visible.sync="uploadVisible"
-      style="min-width: 1000px"
-      width="80%"
+        :close-on-click-modal="false"
+        v-if="uploadVisible"
+        :visible.sync="uploadVisible"
+        style="min-width: 1000px"
+        width="80%"
     >
       <el-row>
         <el-col>
           <directory-file-upload
-            v-if="uploadStep === 1"
-            @fileuploadname="fileuploadname"
+              v-if="uploadStep === 1"
+              @fileuploadname="fileuploadname"
           />
         </el-col>
       </el-row>
       <el-row>
         <el-col>
           <el-form
-            v-if="uploadStep === 1"
-            ref="dataForm"
-            :rules="uploadRules"
-            :model="uploadtemp"
-            label-position="right"
-            style="width: 750px"
+              v-if="uploadStep === 1"
+              ref="dataForm"
+              :rules="uploadRules"
+              :model="uploadtemp"
+              label-position="right"
+              style="width: 750px"
           >
             <el-form-item
-              label="导入表名称：(当导入数据为txt格式时，列名和数据均以','分割即可)"
-              prop="tbName"
+                label="导入表名称：(当导入数据为txt格式时，列名和数据均以','分割即可)"
+                prop="tbName"
             >
-              <el-input v-model="uploadtemp.tbName" label="请输入表名称" />
+              <el-input v-model="uploadtemp.tbName" label="请输入表名称"/>
             </el-form-item>
             <el-form-item label="数据表描述" prop="tbComment">
-              <el-input v-model="uploadtemp.tbComment" label="请输入表描述" />
+              <el-input v-model="uploadtemp.tbComment" label="请输入表描述"/>
             </el-form-item>
           </el-form>
         </el-col>
       </el-row>
       <el-row
-        v-loading="dialoading"
-        element-loading-text="拼命导入中"
-        element-loading-spinner="el-icon-loading"
-        element-loading-background="rgba(0, 0, 0, 0.8)"
+          v-loading="dialoading"
+          element-loading-text="拼命导入中"
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(0, 0, 0, 0.8)"
       >
         <el-col>
           <el-table
-            v-if="uploadStep === 2"
-            :data="uploadtempInfo.colMetas"
-            height="600px"
+              v-if="uploadStep === 2"
+              :data="uploadtempInfo.colMetas"
+              height="600px"
           >
             <el-table-column
-              prop="colName"
-              label="字段名称"
-              show-overflow-tooltip
+                prop="colName"
+                label="字段名称"
+                show-overflow-tooltip
             >
               <template slot-scope="scope" show-overflow-tooltip>
                 <el-form
-                  style="width: 90%; height: 55px"
-                  label-position="right"
-                  :model="{ colName: scope.row.colName }"
+                    style="width: 90%; height: 55px"
+                    label-position="right"
+                    :model="{ colName: scope.row.colName }"
                 >
                   <el-form-item
-                    prop="colName"
-                    :rules="[
+                      prop="colName"
+                      :rules="[
                       { required: true, message: '请输入字段名称' },
                       {
                         type: 'string',
@@ -254,37 +256,37 @@
                       },
                     ]"
                   >
-                    <el-input v-model="scope.row.colName" />
+                    <el-input v-model="scope.row.colName"/>
                   </el-form-item>
                 </el-form>
               </template>
             </el-table-column>
             <el-table-column
-              prop="colComment"
-              label="中文描述"
-              show-overflow-tooltip
+                prop="colComment"
+                label="中文描述"
+                show-overflow-tooltip
             >
               <template slot-scope="scope" show-overflow-tooltip>
                 <el-input
-                  v-model="scope.row.colComment"
-                  style="width: 90%; height: 55px"
+                    v-model="scope.row.colComment"
+                    style="width: 90%; height: 55px"
                 />
               </template>
             </el-table-column>
             <el-table-column prop="dataType" label="数据类型">
               <template slot-scope="scope">
                 <el-select
-                  ref="dataType"
-                  v-model="scope.row.dataType"
-                  filterable
-                  style="width: 90%; height: 55px"
-                  placeholder="请选择数据类型"
+                    ref="dataType"
+                    v-model="scope.row.dataType"
+                    filterable
+                    style="width: 90%; height: 55px"
+                    placeholder="请选择数据类型"
                 >
                   <el-option
-                    v-for="item in options"
-                    :key="item"
-                    :label="item"
-                    :value="item"
+                      v-for="item in options"
+                      :key="item"
+                      :label="item"
+                      :value="item"
                   />
                 </el-select>
               </template>
@@ -299,50 +301,50 @@
       </el-row>
       <span slot="footer">
         <el-button v-if="uploadStep === 1" type="primary" @click="nextImport"
-          >下一步</el-button
+        >下一步</el-button
         >
         <el-button v-if="uploadStep === 2" type="primary" @click="importTable"
-          >导入</el-button
+        >导入</el-button
         >
         <el-button type="primary" @click="uploadVisible = false"
-          >关闭</el-button
+        >关闭</el-button
         >
       </span>
     </el-dialog>
     <!-- 弹窗4 -->
     <el-dialog
-      v-if="tableShowVisible"
-      :visible.sync="tableShowVisible"
-      width="80%"
-      style="min-width: 1000px"
-      :close-on-click-modal="false"
+        v-if="tableShowVisible"
+        :visible.sync="tableShowVisible"
+        width="80%"
+        style="min-width: 1000px"
+        :close-on-click-modal="false"
     >
       <el-row>
         <el-col>
           <tabledatatabs
-            ref="tabledatatabs"
-            :table-id="tableId"
-            :forder-id="clickData.id"
-            :open-type="openType"
-            :tab-show.sync="tabShow"
-            @table-show="tableshow"
+              ref="tabledatatabs"
+              :table-id="tableId"
+              :forder-id="clickData.id"
+              :open-type="openType"
+              :tab-show.sync="tabShow"
+              @table-show="tableshow"
           />
         </el-col>
       </el-row>
       <span slot="footer">
         <el-button type="primary" @click="tableShowVisible = false"
-          >关闭</el-button
+        >关闭</el-button
         >
       </span>
     </el-dialog>
     <!-- 弹窗5 -->
     <el-dialog
-      v-if="tableColumnVisible"
-      :visible.sync="tableColumnVisible"
-      lock-scroll
-      width="80%"
-      style="min-width: 1000px"
-      :close-on-click-modal="false"
+        v-if="tableColumnVisible"
+        :visible.sync="tableColumnVisible"
+        lock-scroll
+        width="80%"
+        style="min-width: 1000px"
+        :close-on-click-modal="false"
     >
       <template>
         <div style="height: 62vh; overflow: auto">
@@ -350,13 +352,13 @@
           <el-row>
             <el-col>
               <column
-                ref="column"
-                :table-id="tableId"
-                :forder-id="clickData.id"
-                :open-type="openType"
-                :tab-show.sync="tabShow"
-                @append-node="appendnode"
-                @table-show="tableshow"
+                  ref="column"
+                  :table-id="tableId"
+                  :forder-id="clickData.id"
+                  :open-type="openType"
+                  :tab-show.sync="tabShow"
+                  @append-node="appendnode"
+                  @table-show="tableshow"
               />
             </el-col>
           </el-row>
@@ -369,21 +371,21 @@
     </el-dialog>
     <!-- 弹窗6 -->
     <el-dialog
-      v-if="tableRelationVisible"
-      :visible.sync="tableRelationVisible"
-      width="80%"
-      style="min-width: 1000px"
-      :close-on-click-modal="false"
+        v-if="tableRelationVisible"
+        :visible.sync="tableRelationVisible"
+        width="80%"
+        style="min-width: 1000px"
+        :close-on-click-modal="false"
     >
       <template>
         <div style="height: 62vh">
           <el-row>
             <el-col>
               <tablerelation
-                ref="tablerelation"
-                :table-id="tableId"
-                :forder-id="clickData.id"
-                :open-type="openType"
+                  ref="tablerelation"
+                  :table-id="tableId"
+                  :forder-id="clickData.id"
+                  :open-type="openType"
               />
             </el-col>
           </el-row>
@@ -396,61 +398,61 @@
     </el-dialog>
     <!-- 弹窗7 -->
     <el-dialog
-      v-if="previewVisible"
-      :visible.sync="previewVisible"
-      width="80%"
-      style="min-width: 1000px"
-      :close-on-click-modal="false"
+        v-if="previewVisible"
+        :visible.sync="previewVisible"
+        width="80%"
+        style="min-width: 1000px"
+        :close-on-click-modal="false"
     >
       <el-row>
         <el-col>
           <childTabs
-            ref="childTabs"
-            :pre-value="executeSQLList"
-            use-type="previewTable"
+              ref="childTabs"
+              :pre-value="executeSQLList"
+              use-type="previewTable"
           />
         </el-col>
       </el-row>
       <span slot="footer">
         <el-button type="primary" @click="previewVisible = false"
-          >关闭</el-button
+        >关闭</el-button
         >
       </span>
     </el-dialog>
     <!-- 弹窗7 -->
     <el-dialog
-      v-if="previewVisible"
-      :visible.sync="previewVisible"
-      width="80%"
-      style="min-width: 1000px"
-      :close-on-click-modal="false"
+        v-if="previewVisible"
+        :visible.sync="previewVisible"
+        width="80%"
+        style="min-width: 1000px"
+        :close-on-click-modal="false"
     >
       <el-row>
         <el-col>
           <childTabs
-            ref="childTabs"
-            :pre-value="executeSQLList"
-            use-type="previewTable"
+              ref="childTabs"
+              :pre-value="executeSQLList"
+              use-type="previewTable"
           />
         </el-col>
       </el-row>
       <span slot="footer">
         <el-button type="primary" @click="previewVisible = false"
-          >关闭</el-button
+        >关闭</el-button
         >
       </span>
     </el-dialog>
     <!-- 弹窗8 分享 -->
     <el-dialog
-      :close-on-click-modal="false"
-      v-if="shareVisible"
-      :visible.sync="shareVisible"
-      width="80%"
-      style="min-width: 1000px"
+        :close-on-click-modal="false"
+        v-if="shareVisible"
+        :visible.sync="shareVisible"
+        width="80%"
+        style="min-width: 1000px"
     >
       <el-row>
         <el-col>
-          <PersonTree ref="personTree" />
+          <PersonTree ref="personTree"/>
         </el-col>
       </el-row>
       <span slot="footer">
@@ -464,13 +466,13 @@
 import PersonTree from "@/components/publicpersontree/index";
 import column from "@/views/data/table/column";
 import directoryFileUpload from "@/views/data/tableupload";
-import { getSqlType, judgeName } from "@/api/data/table-info";
+import {getSqlType} from "@/api/data/table-info";
 import tabledatatabs from "@/views/data/table/tabledatatabs";
 import tablerelation from "@/views/data/table/tablerelation";
 import childTabs from "@/views/analysis/auditmodelresult/childtabs";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
 import QueryField from "@/components/public/query-field/index";
-import { getArrLength } from "@/utils";
+import {getArrLength} from "@/utils";
 import {
   deleteDirectory,
   copyTable,
@@ -479,11 +481,12 @@ import {
   preview,
   nextUpload,
   importTable,
-  shareTableSave,
+  shareTableSave, judgeName,
 } from "@/api/data/directory";
-import { saveFolder } from "@/api/data/folder";
+import {saveFolder} from "@/api/data/folder";
 import dataTree from "@/views/data/role-res/data-tree";
-import { mapState } from "vuex";
+import {mapState} from "vuex";
+
 export default {
   computed: {
     // 因为时序问题，store中没有personcode时组件可能被加载 导致dataUserId==''  所以要加personcode!=='' 控制
@@ -529,7 +532,7 @@ export default {
       listLoading: false,
       loading: false,
       // text 精确查询   fuzzyText 模糊查询  select下拉框  timePeriod时间区间
-      queryFields: [{ label: "名称", name: "label", type: "text", value: "" }],
+      queryFields: [{label: "名称", name: "label", type: "text", value: ""}],
       pageQuery: {
         condition: null,
         pageNo: 1,
@@ -555,7 +558,7 @@ export default {
         orderNum: 0,
         fullPath: null,
       },
-      clickData: { id: "", type: "" },
+      clickData: {id: "", type: ""},
       clickNode: {},
       clickFullPath: [],
       allList: [],
@@ -591,7 +594,7 @@ export default {
       },
       uploadRules: {
         tbName: [
-          { required: true, message: "请填写导入表名称", trigger: "change" },
+          {required: true, message: "请填写导入表名称", trigger: "change"},
           {
             type: "string",
             pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/,
@@ -655,7 +658,7 @@ export default {
             this.$message({
               type: "info",
               message:
-                "删除失败！文件夹：" + foldObj[0].label + "不为空无法删除",
+                  "删除失败！文件夹：" + foldObj[0].label + "不为空无法删除",
             });
             flag = false;
           }
@@ -685,7 +688,7 @@ export default {
     // 复制资源(只允许复制数据表，不允许复制文件夹)
     copyResource() {
       if (this.selections[0].type === "folder") {
-        this.$message({ type: "info", message: "所选资源为文件夹而非数据表!" });
+        this.$message({type: "info", message: "所选资源为文件夹而非数据表!"});
         return;
       } else {
         this.dialogStatus = "copyTable";
@@ -721,7 +724,7 @@ export default {
     // 执行下一步 读取文件列信息
     nextImport() {
       judgeName(this.uploadtemp.tbName).then((resf) => {
-        if (resf.data.code == 0) {
+        if (resf.code == 0) {
           this.uploadtemp.folderUuid = this.clickData.id;
           this.$refs["dataForm"].validate((valid) => {
             if (valid) {
@@ -737,7 +740,7 @@ export default {
         } else {
           this.$message({
             type: "error",
-            message: resf.data.msg,
+            message: resf.msg,
           });
           return;
         }
@@ -987,7 +990,7 @@ export default {
     // 预览表结构
     showTable() {
       if (this.selections[0].type === "folder") {
-        this.$message({ type: "info", message: "请选择数据表进行查看!" });
+        this.$message({type: "info", message: "请选择数据表进行查看!"});
       } else {
         this.openType = "showTable";
         this.tableShowVisible = true;
@@ -1009,7 +1012,7 @@ export default {
           });
         } else {
           this.loading = false;
-          this.$message({ type: "info", message: res.data.msg });
+          this.$message({type: "info", message: res.data.msg});
         }
       });
     },
@@ -1018,7 +1021,7 @@ export default {
       var flag = true;
       this.selections.forEach((r, i) => {
         if (r.type === "folder") {
-          this.$message({ type: "info", message: "无法分享文件夹!" });
+          this.$message({type: "info", message: "无法分享文件夹!"});
           flag = false;
           return;
         }
@@ -1051,7 +1054,7 @@ export default {
         }
       }
       if (!verResult) {
-        this.$message({ type: "info", message: "不能共享给自己!" });
+        this.$message({type: "info", message: "不能共享给自己!"});
         return;
       }
       shareTableSave(tableShareRelList).then((result) => {
@@ -1065,12 +1068,12 @@ export default {
           });
           this.shareVisible = false;
         } else {
-          this.$message({ type: "error", message: "共享模型失败!" });
+          this.$message({type: "error", message: "共享模型失败!"});
         }
       });
     },
     sortChange(data) {
-      const { prop, order } = data;
+      const {prop, order} = data;
       this.pageQuery.sortBy = order;
       this.pageQuery.sortName = prop;
       this.handleFilter();
@@ -1088,14 +1091,14 @@ export default {
       var objTotal = getArrLength(this.selections);
       if (objTotal === 1) {
         if (
-          this.selections[0].extMap.accessType.indexOf("SAVE_TO_FOLDER") > -1
+            this.selections[0].extMap.accessType.indexOf("SAVE_TO_FOLDER") > -1
         ) {
           this.saveFlag = false;
         } else {
           this.saveFlag = true;
         }
         if (
-          this.selections[0].extMap.accessType.indexOf("FETCH_TABLE_DATA") > -1
+            this.selections[0].extMap.accessType.indexOf("FETCH_TABLE_DATA") > -1
         ) {
           this.infoFlag = false;
         } else {
