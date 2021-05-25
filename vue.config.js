@@ -1,7 +1,7 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
-
+const Timestamp = new Date().getTime();
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
@@ -193,6 +193,10 @@ module.exports = {
     // Object.assign(config, {
     config.entry.app = ["@babel/polyfill", "./src/main.js"]
     return{
+      output: { // 输出重构  打包编译后的 文件名称  【模块名称.版本号.时间戳】
+        filename: `static/js/[name].${Timestamp}.js`,
+        chunkFilename: `static/js/[name].${Timestamp}.js`
+      },
     name: name,
     resolve: {
       alias: {
