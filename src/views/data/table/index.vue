@@ -111,21 +111,18 @@
           show-checkbox
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
-            <i
-              v-if="data.type === 'USER'"
-              class="el-icon-menu"
-              style="color: #409eff"
-            />
-            <i
-              v-if="data.type === 'TABLE'"
-              class="el-icon-tickets"
-              style="color: #409eff"
-            />
-            <i
-              v-if="data.type === 'COLUMN'"
-              class="el-icon-s-ticket"
-              style="color: #409eff"
-            />
+            <!-- class="el-icon-menu"  style="color: #409eff" -->
+            <i  v-if="data.type === 'USER'">
+            <img src="../../../assets/img/table_0.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            </i>
+            <!-- class="el-icon-tickets"  style="color: #409eff" -->
+            <i  v-if="data.type === 'TABLE'">
+            <img src="../../../assets/img/table_1.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            </i>
+            <!-- class="el-icon-s-ticket"  style="color: #409eff" -->
+            <i  v-if="data.type === 'COLUMN'">
+            <img src="../../../assets/img/table_2.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            </i>
             <span>{{ node.label }}</span>
           </span>
         </MyElTree>
