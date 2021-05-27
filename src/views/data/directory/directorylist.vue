@@ -397,7 +397,7 @@
       </template>
     </el-dialog>
     <!-- 弹窗7 -->
-    <el-dialog
+    <!-- <el-dialog
         v-if="previewVisible"
         :visible.sync="previewVisible"
         width="80%"
@@ -418,7 +418,7 @@
         >关闭</el-button
         >
       </span>
-    </el-dialog>
+    </el-dialog> -->
     <!-- 弹窗7 -->
     <el-dialog
         v-if="previewVisible"

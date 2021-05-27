@@ -10,7 +10,7 @@
 
       <el-form-item v-for="fd in formData" v-if="searchBar == '0'" :label="fd.label">
         <el-input v-if="fd.type==='text'" v-model="query[fd.name]" :style="textStyle"/>
-        <el-input v-if="fd.type==='fuzzyText'" v-model="query[fd.name]" placeholder="模糊查询" :style="textStyle"/>
+        <el-input v-if="fd.type==='fuzzyText'" v-model="query[fd.name]" placeholder="" :style="textStyle"/>
         <el-select v-if="fd.type==='select'" v-model="query[fd.name]" :style="selectStyle">
           <el-option label="全部" value="" />
           <el-option v-for="opt in fd.data" :label="opt.name" :value="opt.value" />
