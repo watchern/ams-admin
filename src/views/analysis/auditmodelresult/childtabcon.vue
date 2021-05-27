@@ -275,7 +275,6 @@
                 >
               </div>
             </div>
-
             <ag-grid-vue
               v-if="isSee"
               v-loading="isLoading"
@@ -435,7 +434,7 @@
       class="globalDropDownBox"
       @mouseover="StopTime"
       @mouseleave="openModelDetailOld"
-      v-if="globalDropDownBox"
+      v-show="globalDropDownBox"
       :style="{ top: globalDropTop, left: globalDropLeft }"
     >
       <li
@@ -1577,6 +1576,7 @@ export default {
      * 显示模型结果详细提取公共代码
      * */
     getIntoModelResultDetail(nextValue) {
+      console.log(nextValue)
       this.afterAddChartsWithNoConfigure = true;
       this.chartLoading = false;
       this.loading = true;
@@ -1585,7 +1585,7 @@ export default {
       var rowData = [];
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
-          if (this.nextValue.executeSQL.type == "SELECT") {
+          // if (this.nextValue.executeSQL.type == "SELECT") {
             console.log("SELECT")
             this.modelResultButtonIsShow = true;
             this.modelResultPageIsSee = true;
@@ -1651,12 +1651,12 @@ export default {
             }
             this.columnDefs = col;
             this.afterResult = true;
-          } else {
-            this.isSee = false;
-            this.modelResultPageIsSee = false;
-            this.modelResultButtonIsShow = false;
-            this.errorMessage = this.nextValue.executeSQL.msg;
-          }
+          // } else {
+          //   this.isSee = false;
+          //   this.modelResultPageIsSee = false;
+          //   this.modelResultButtonIsShow = false;
+          //   this.errorMessage = this.nextValue.executeSQL.msg;
+          // }
         } else if (this.nextValue.executeSQL.state == "3") {
           this.isSee = false;
           this.modelResultPageIsSee = false;
@@ -1918,6 +1918,7 @@ export default {
                 //界面渲染完成之后开始执行sql,将sql送入调度
                 startExecuteSql(resp.data).then((result) => {
                   if (this.isModelPreview !== true) {
+                    console.log(0)
                     this.$emit(
                       "addBigTabs",
                       undefined,
@@ -1929,6 +1930,7 @@ export default {
                       this.currentExecuteSQL
                     );
                   } else {
+                    console.log(1)
                     this.$emit(
                       "addBigTabsModelPreview",
                       detailModel.modelName,
