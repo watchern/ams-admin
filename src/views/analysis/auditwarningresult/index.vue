@@ -21,7 +21,7 @@
         <!-- 新页签中页签组件 -->
         <!-- <div v-html="item.content"></div> -->
         <childTabs
-          ref="childtabsrew"
+          ref="childtabsref"
           :maintable="item.mainTable"
           :helptables="item.helpTables"
           :model-uuid="item.modeluuid"
@@ -74,7 +74,7 @@ export default {
       this.editableTabsValue = newTabName
     },
     setNextValue(val){
-      this.$refs.childtabsrew[this.editableTabs.length-1].loadTableData(val,'apple')
+      this.$refs.childtabsref[this.editableTabs.length-1].loadTableData(val,'apple')
     },
     // 删除页签方法
     removeTab(targetName) {
