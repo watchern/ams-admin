@@ -18,12 +18,12 @@
             <el-dropdown>
               <el-button
                 type="primary"
-                @click="openProjectDialog"
+                @click="modelResultOpenDialog"
                 :disabled="buttonIson.AssociatedBtn"
                 class="oper-btn link-2"
               ></el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="modelResultOpenDialog">分配项目</el-dropdown-item>
+<!--                <el-dropdown-item @click.native="openProjectDialog">分配项目</el-dropdown-item>-->
                 <el-dropdown-item @click.native="modelResultOpenDialog">结果分配</el-dropdown-item>
                 <el-dropdown-item @click.native="RemoverelationProject">移除分配项目</el-dropdown-item>
               </el-dropdown-menu>
