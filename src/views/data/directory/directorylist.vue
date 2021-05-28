@@ -191,6 +191,7 @@
         :visible.sync="uploadVisible"
         style="min-width: 1000px"
         width="80%"
+        title="导入"
     >
       <el-row>
         <el-col>
