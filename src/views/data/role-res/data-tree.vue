@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-input v-model="filterText1" placeholder="输入关键字进行过滤" />
-    <div style="overflow: auto; height: 80vh">
+    <div style="overflow: auto; height: 60vh">
       <MyElTree
         ref="tree1"
         v-loading="treeLoading"
