@@ -32,7 +32,7 @@
       <el-table-column type="selection" width="55" />
       <el-table-column label="阈值名称" width="300px" prop="thresholdValueFolderName">
         <template slot-scope="scope">
-          <el-link type="primary" @click="selectModelDetail(scope.row.thresholdValueUuid)">{{ scope.row.thresholdValueName }}</el-link>
+          <el-link type="primary" @click="selectDetail(scope.row.thresholdValueUuid)">{{ scope.row.thresholdValueName }}</el-link>
         </template>
       </el-table-column>
       <el-table-column label="阈值类型" width="150px" align="center" prop="thresholdValueType" :formatter="threshTypeFormatter" />
@@ -44,7 +44,7 @@
       <EditThresholdValue ref="EditThresholdValue" :operationObj="operationObj" />
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisibleEdit = false">关闭</el-button>
-        <el-button type="primary" @click="getSaveObj">确定</el-button>
+        <el-button v-if="operationObj.operationType !== 3" type="primary" @click="getSaveObj">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -278,6 +278,29 @@ export default {
           this.dialogFormVisibleEdit = true
         } else {
           this.$message({ type: 'error', message: '修改失败' })
+        }
+      }).catch(reason => {
+        this.$emit('loadingSet',false,"");
+      })
+    },
+    /**
+     * 查看模型
+     * @param modelUuid 模型编号
+     */
+    selectDetail( thresholdValueUuid ) {
+      this.$emit('loadingSet',true,"正在获取阈值信息...");
+      findThresholdValueById(thresholdValueUuid).then(result => {
+        this.$emit('loadingSet',false,"");
+        if (result.code == 0) {
+          this.operationObj = {
+            operationType: 3,
+            thresholdValue: result.data,
+            folderId: '',
+            folderName: ''
+          }
+          this.dialogFormVisibleEdit = true
+        } else {
+          this.$message({ type: 'error', message: '查找失败' })
         }
       }).catch(reason => {
         this.$emit('loadingSet',false,"");
