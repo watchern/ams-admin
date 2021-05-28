@@ -215,7 +215,7 @@
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="执行信息" name="1">
-                        <div id="sysInfoArea"></div>
+                        <div id="sysInfoArea" ref="sysInfoArea"></div>
                     </el-tab-pane>
                     <el-tab-pane label="缩略图" name="2">
                         <div id="outLineArea" ref="outLineArea"></div>
@@ -419,14 +419,13 @@
     import SqlEditor from '@/views/analysis/sqleditor/index.vue'
     import AnalysisDetailData from '@/views/graphtool/tooldic/page/nodeSetting/conditionSet/analysisDetailData.vue'
     // 引入后端接口的相关方法
-    import { removeJcCssfile, addCssFile, addJsFile } from "@/api/analysis/common"
-    import { getGraphInfoById, viewNodeData, saveGraphInterface, createScreenQuery, getColumnsByTable, getDbType } from '@/api/graphtool/apiJs/graphList'
+    import { removeJcCssfile, addCssFile } from "@/api/analysis/common"
+    import { getGraphInfoById, viewNodeData, saveGraphInterface, createScreenQuery, getColumnsByTable, getDbType, deleteExecuteNodes } from '@/api/graphtool/apiJs/graphList'
     import { initTableTip } from '@/api/analysis/sqleditor/sqleditor'
     // 引入前段JS的相关方法
     import * as commonJs from '@/api/graphtool/js/common'
     import * as indexJs from '@/api/graphtool/js/index'
     import * as validateJs from '@/api/graphtool/js/validate'
-    import request from "@/utils/request";
     export default {
         name: 'ToolIndex',
         components: { Help, GraphListExport, ChildTabs, SettingParams, NodeSetting, RelationSetting, InputParams, GroupCount, SqlEditor, AnalysisDetailData },
@@ -459,7 +458,7 @@
                 graphUuid: '', // 打开图形的ID
                 openGraphType: '', // 当前所打开的图形类型：1、普通图形，2、个人场景查询，3、公共场景查询，4、模型图形
                 openType: '', // 打开方式（当前所有使用数据源环境：1、开发测试环境，2、业务权限环境）
-                loading: null, // 遮罩层对象
+                loading: null, //自定义遮罩层对象
                 searchZtreeContent: '',
                 webSocket: null,
                 resultTableArr: [], // 节点结果集集合
@@ -494,7 +493,7 @@
                 sqlEditorStyle:'',
                 curModelSql: '',// 用来临时存储打开模型图形时的模型SQL语句
                 isSearchExpand:false,// 左侧资源树搜索功能的变量
-                curCell:null,//当前执行节点的对象
+                curExecuteCell:null,//当前执行节点的对象
                 nodeRemarkHtml:'点击操作节点，可查看节点说明信息',
                 imageDialogVisible:false,
                 imageSrc:'',
@@ -504,7 +503,8 @@
                 comparison_dataTableName:'',
                 comparison_columnVal:'',
                 rightZtreeStyle:'',
-                dbType:'',//当前图形所属的数据库类型，oracle、spark、impala、db2、mysql等
+                dbType:'',//当前业务库所属的数据库类型，oracle、spark、impala、db2、mysql等
+                executeTaskObj: {"init":true,"executeTask":[],"isError":false}//执行时的任务对象，executeTask：{curNodeId:,taskUUid}
             }
         },
         created() {
@@ -912,68 +912,203 @@
                 // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
                 this.webSocket = new WebSocket(webSocketPath) // 建立与服务端的连接
                 // 当服务端打开连接
-                this.webSocket.onopen = function(event) {
-
-                }
+                this.webSocket.onopen = function(event) {}
                 // 发送消息
                 this.webSocket.onmessage = function(event) {
                     const dataObj = JSON.parse(event.data)// 接收到返回结果
-                    var executeSQLObj = dataObj.executeSQL
-                    if (executeSQLObj.customParam[0] === $this.websocketBatchId) {//匹配结果集
-                        $this.loadResultNum++
-                        if(executeSQLObj.state === "2"){//执行成功，展示当前操作的结果集
-                            $this.resultTabActiveName = '0'
-                            if(!$this.showTableResult){
-                                $this.showTableResult = true
-                            }
-                            let index = $this.resultTableArr.findIndex( item => item.id === executeSQLObj.id)
-                            if(index > -1) {
-                                //如果是数据频次分析节点，则需要特殊处理
-                                let nodeId = $this.resultTableArr[index].id//节点的ID或者树节点的ID
-                                if( typeof $this.graph.nodeData[nodeId] !== 'undefined'){
-                                    let optType = $this.graph.nodeData[nodeId].nodeInfo.optType
-                                    if(optType === "newNullNode"){
-                                        nodeId = $this.graph.nodeData[nodeId].parentIds[0]
-                                        optType = $this.graph.nodeData[nodeId].nodeInfo.optType
+                    const executeSQLObj = dataObj.executeSQL
+                    switch (executeSQLObj.type) {
+                        case "SELECT"://匹配结果集，预览数据
+                            if (executeSQLObj.customParam[0] === $this.websocketBatchId) {
+                                $this.loadResultNum++
+                                if(executeSQLObj.state === "2"){//执行成功，展示当前操作的结果集
+                                    $this.resultTabActiveName = '0'
+                                    if(!$this.showTableResult){
+                                        $this.showTableResult = true
                                     }
-                                    if(optType === "comparison"){//频次分析节点
-                                        //获取当前频次分析节点的详情表名称
-                                        const dataTableName = $this.graph.nodeData[nodeId].nodeInfo.dataTableName
-                                        let columnDefs = []
-                                        Array.from(dataObj.columnNames, item => {
-                                            let obj = {}
-                                            if(item === '涉及表数量'){//此处列名称是固定的
-                                                obj.headerName = item
-                                                obj.field = item
-                                                obj.cellRenderer = (params) => {
-                                                    return `<span style="color:red;cursor:pointer;" title="点击查看详情数据" onclick="showComparisonTableDetail(\'${dataTableName}\',\'${params.data["对比内容"]}\')">${params.value}</span>`
-                                                }
-                                            }else{
-                                                obj.headerName = item
-                                                obj.field = item
+                                    let index = $this.resultTableArr.findIndex( item => item.id === executeSQLObj.id)
+                                    if(index > -1) {
+                                        //如果是数据频次分析节点，则需要特殊处理
+                                        let nodeId = $this.resultTableArr[index].id//节点的ID或者树节点的ID
+                                        if( typeof $this.graph.nodeData[nodeId] !== 'undefined'){
+                                            let optType = $this.graph.nodeData[nodeId].nodeInfo.optType
+                                            if(optType === "newNullNode"){
+                                                nodeId = $this.graph.nodeData[nodeId].parentIds[0]
+                                                optType = $this.graph.nodeData[nodeId].nodeInfo.optType
                                             }
-                                            columnDefs.push(obj)
+                                            if(optType === "comparison"){//频次分析节点
+                                                //获取当前频次分析节点的详情表名称
+                                                const dataTableName = $this.graph.nodeData[nodeId].nodeInfo.dataTableName
+                                                let columnDefs = []
+                                                Array.from(dataObj.columnNames, item => {
+                                                    let obj = {}
+                                                    if(item === '涉及表数量'){//此处列名称是固定的
+                                                        obj.headerName = item
+                                                        obj.field = item
+                                                        obj.cellRenderer = (params) => {
+                                                            return `<span style="color:red;cursor:pointer;" title="点击查看详情数据" onclick="showComparisonTableDetail(\'${dataTableName}\',\'${params.data["对比内容"]}\')">${params.value}</span>`
+                                                        }
+                                                    }else{
+                                                        obj.headerName = item
+                                                        obj.field = item
+                                                    }
+                                                    columnDefs.push(obj)
+                                                })
+                                                $this.resultTableArr[index].agridColumnDatas = columnDefs
+                                            }
+                                        }
+                                        $this.$nextTick(() => {
+                                            $this.$refs.childTabsRef.loadTableData(dataObj)
                                         })
-                                        $this.resultTableArr[index].agridColumnDatas = columnDefs
                                     }
+                                }else{
+                                    $($this.$refs.sysInfoArea).html("<p style='color: red;'>预览结果集失败：" + executeSQLObj.msg + "</p>")
+                                    $this.resultTabActiveName = '1'
                                 }
-                                $this.$nextTick(() => {
-                                    $this.$refs.childTabsRef.loadTableData(dataObj)
-                                })
+                                if($this.loadResultNum === $this.resultTableArr.length){
+                                    $this.loading.destroy()
+                                }
                             }
-                        }else{
-                            $('#sysInfoArea').html("<p style='color: red;'>预览结果集失败：" + executeSQLObj.msg + "</p>")
-                            $this.resultTabActiveName = '1'
-                        }
-                        if($this.loadResultNum === $this.resultTableArr.length){
-                            $this.loading.destroy()
-                        }
+                            break;
+                        default ://执行方法的响应结果
+                            const curNodeData = dataObj.nodeData
+                            const curNodeId = executeSQLObj.customParam[0]//当前操作节点ID
+                            const curOptType = executeSQLObj.customParam[1]//当前操作节点的类型
+                            const isLastSql = executeSQLObj.customParam[2]//当前返回的结果所属的SQL语句是否是当前节点的最后一条语句
+                            const isLastGroup = executeSQLObj.customParam[3]//当前返回的结果是否属于最后一组执行节点队列
+                            const sysInfoAreaHtml = $($this.$refs.sysInfoArea).html()
+                            const nodeExcuteStatus = graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus
+                            if(nodeExcuteStatus === 1 || nodeExcuteStatus === 2) {//只处理未执行或执行中的状态
+                                switch (executeSQLObj.state) {
+                                    case "2"://执行成功
+                                        if(isLastSql){
+                                            $($this.$refs.sysInfoArea).html(sysInfoAreaHtml + executeSQLObj.msg)
+                                            commonJs.resetNodeData(curNodeId,$this.executeNodeIdArr, curNodeData)
+                                            const lastOptNode = executeSQLObj.customParam[7]//是否是当前执行队列中最后一个操作节点
+                                            if($this.executeType === 'all'){//全部执行方法
+                                                if(isLastGroup && lastOptNode){//如果属于最后一组队列，即全部执行的最后一个节点执行完毕
+                                                    $this.loading.destroy()
+                                                    //找出需预览结果集的节点（包含每条任务线的最后一个结果表节点、被标记为辅助结果表或最终结果表的节点），需去重
+                                                    let resultNodeIdArr = []
+                                                    let nodeIdArr = $this.executeNodeIdArr
+                                                    for(let i=0; i<nodeIdArr.length; i++){
+                                                        let optType = graph.nodeData[nodeIdArr[i]].nodeInfo.optType//节点类型
+                                                        let midTableStatus = graph.nodeData[nodeIdArr[i]].nodeInfo.midTableStatus//是否是辅助结果表
+                                                        let resultTableStatus = graph.nodeData[nodeIdArr[i]].nodeInfo.resultTableStatus//是否是最终结果表
+                                                        let parentIds = graph.nodeData[nodeIdArr[i]].parentIds
+                                                        let childrenIds = graph.nodeData[nodeIdArr[i]].childrenIds
+                                                        //如果是执行成功的结果表，且未存在于数组中
+                                                        if(optType === "newNullNode" && $.inArray(nodeIdArr[i],resultNodeIdArr) < 0){
+                                                            //第一种，是否是当前任务线的最后一个结果表（即存在父节点但不存在子节点）
+                                                            if(parentIds.length > 0 && childrenIds.length === 0){
+                                                                resultNodeIdArr.push(nodeIdArr[i])
+                                                            }
+                                                            //第二种，是否被标记为辅助结果表或最终结果表
+                                                            if(midTableStatus === 2 || resultTableStatus === 2){
+                                                                resultNodeIdArr.push(nodeIdArr[i])
+                                                            }
+                                                        }
+                                                    }
+                                                    if(resultNodeIdArr.length > 0){
+                                                        $this.resultTabActiveName = '0'
+                                                        $this.showTableResult = false
+                                                        for(let j=0; j<resultNodeIdArr.length; j++){
+                                                            let nodeId = resultNodeIdArr[j]
+                                                            let parentIds = graph.nodeData[resultNodeIdArr[j]].parentIds//当前结果表的父节点集合（只有一个）
+                                                            let nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + graph.nodeData[resultNodeIdArr[j]].nodeInfo.nodeName
+                                                            let midTableStatus = graph.nodeData[resultNodeIdArr[j]].nodeInfo.midTableStatus
+                                                            let resultTableStatus = graph.nodeData[resultNodeIdArr[j]].nodeInfo.resultTableStatus
+                                                            let optType = graph.nodeData[parentIds[0]].nodeInfo.optType
+                                                            let resultTableName = ''
+                                                            let isDeleteTable = false
+                                                            if (optType === "layering") {//如果当前结果表的父节点是数据分层节点
+                                                                let index = graph.nodeData[resultNodeIdArr[j]].nodeInfo.setting.index
+                                                                resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableNameArr[index]
+                                                                isDeleteTable = graph.nodeData[parentIds[0]].nodeInfo.isDeleteTableArr[index]
+                                                            } else {
+                                                                resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName
+                                                                isDeleteTable = graph.nodeData[parentIds[0]].nodeInfo.isDeleteTable
+                                                            }
+                                                            let isRoleTable = false
+                                                            //如果结果表节点被标记成了中间或最终结果表，并且上级节点的是否删除表的标记为是（打了中间或最终结果表标记却未执行的情况下是否）
+                                                            if ((midTableStatus === 2 || resultTableStatus === 2) && isDeleteTable) {
+                                                                isRoleTable = true
+                                                            }
+                                                            $this.resultTableArr.push({ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable, optType: optType })
+                                                        }
+                                                        // 预览数据
+                                                        $this.viewData()
+                                                    }
+                                                }
+                                            }else{//执行本节点/执行到本节点
+                                                const nodeId = $this.curExecuteCell.id//右键执行的结果表节点的ID
+                                                const parentIds = $this.graph.nodeData[nodeId].parentIds//有且仅有一个
+                                                const sqlType = executeSQLObj.customParam[4]
+                                                let flag = false//是否真为最后一句（区别DB2）
+                                                if($this.dbType === "db2"){
+                                                    if(sqlType.toUpperCase() === "INSERT" || sqlType.toUpperCase() === "CREATEVIEW") {
+                                                        flag = true
+                                                    }
+                                                }else{
+                                                    if(sqlType.toUpperCase() === "CREATE" || sqlType.toUpperCase() === "CREATEVIEW"){
+                                                        flag = true
+                                                    }
+                                                }
+                                                if(lastOptNode && curNodeId === parentIds[0] && flag){//本次执行批次的最后一个操作节点
+                                                    $this.resultTabActiveName = '0'
+                                                    $this.showTableResult = false
+                                                    let nodeName = $this.graph.nodeData[nodeId].nodeInfo.nodeName
+                                                    let resultTableName = ''
+                                                    let historyNodeName = ''
+                                                    if (!$this.graph.nodeData[nodeId].isSet) {// 校验结果表是否有自己的配置信息（当前版本下结果表是不配置的）
+                                                        resultTableName = $this.graph.nodeData[parentIds[0]].nodeInfo.resultTableName
+                                                        historyNodeName = $this.graph.nodeData[parentIds[0]].nodeInfo.nodeName
+                                                    } else {
+                                                        resultTableName = $this.graph.nodeData[nodeId].nodeInfo.resultTableName
+                                                        historyNodeName = $this.curExecuteCell.value
+                                                    }
+                                                    let isRoleTable = false //节点的表是否需要走权限（一版只有CREATE TABLE的临时表走权限）
+                                                    const midTableStatus = $this.graph.nodeData[nodeId].nodeInfo.midTableStatus//中间结果表的状态
+                                                    const resultTableStatus = $this.graph.nodeData[nodeId].nodeInfo.resultTableStatus//最终结果表的状态
+                                                    //如果结果表节点被标记成了中间或最终结果表，并且上级节点的是否删除表的标记为是（打了中间或最终结果表标记却未执行的情况下是否）
+                                                    if ((midTableStatus === 2 || resultTableStatus === 2) && graph.nodeData[parentIds[0]].nodeInfo.isDeleteTable) {
+                                                        isRoleTable = true
+                                                    }
+                                                    nodeName = $this.graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + nodeName
+                                                    $this.resultTableArr.push({ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable,optType: curOptType })
+                                                    // 预览数据
+                                                    $this.viewData()
+                                                    // 记录执行操作
+                                                    refrashHistoryZtree('【' + historyNodeName + '】节点执行完毕')
+                                                    $this.executeTaskObj = {
+                                                        "init":true,
+                                                        "executeTask":[],
+                                                        "isError":false
+                                                    }
+                                                }
+                                            }
+                                            // 自动保存图形化
+                                            autoSaveGraph()
+                                        }
+                                        break;
+                                    case "3"://执行出错
+                                        $this.loading.destroy()
+                                        console.log(executeSQLObj.sql)
+                                        $this.executeTaskObj.isError = true
+                                        $($this.$refs.sysInfoArea).html(sysInfoAreaHtml + executeSQLObj.msg)
+                                        $this.resultTabActiveName = '1'
+                                        commonJs.resetNodeData(curNodeId,$this.executeNodeIdArr, curNodeData)
+                                        cancelExecute(true,curNodeId)//取消后续节点的执行任务
+                                        // 自动保存图形化
+                                        autoSaveGraph()
+                                        break;
+                                }
+                            }
+                            break;
                     }
                 }
 
-                this.webSocket.onclose = function(event) {
-
-                }
+                this.webSocket.onclose = function(event) {}
 
                 // 通信失败
                 this.webSocket.onerror = function(event) {
