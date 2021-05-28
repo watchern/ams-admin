@@ -1576,7 +1576,6 @@ export default {
      * 显示模型结果详细提取公共代码
      * */
     getIntoModelResultDetail(nextValue) {
-      console.log(nextValue)
       this.afterAddChartsWithNoConfigure = true;
       this.chartLoading = false;
       this.loading = true;
@@ -1918,7 +1917,6 @@ export default {
                 //界面渲染完成之后开始执行sql,将sql送入调度
                 startExecuteSql(resp.data).then((result) => {
                   if (this.isModelPreview !== true) {
-                    console.log(0)
                     this.$emit(
                       "addBigTabs",
                       undefined,
@@ -1930,7 +1928,6 @@ export default {
                       this.currentExecuteSQL
                     );
                   } else {
-                    console.log(1)
                     this.$emit(
                       "addBigTabsModelPreview",
                       detailModel.modelName,
@@ -2237,26 +2234,11 @@ export default {
             this.chartLoading = false;
           });
         } else if (this.modelId != undefined) {
-          console.log(
-            this.nowtable,
-            this.modelUuid,
-            this.useType,
-            this.prePersonalVal,
-            this.resultSpiltObjects
-          );
-          console.log(
-            this.preLength,
-            this.myIndex,
-            this.chartModelUuid,
-            this.settingInfo,
-            this.isModelPreview
-          );
           getModelChartSetup(this.modelId).then((resp) => {
             //做修改操作
             console.log("走这里了2");
             if (this.myIndex == 0) {
               this.modelChartSetups = resp.data.modelChartSetups;
-              console.log(this.modelChartSetups);
               for (var i = 0; i < this.modelChartSetups.length; i++) {
                 let json = JSON.parse(this.modelChartSetups[i].chartJson);
                 if (json.layout === undefined || json.layout === null) {
@@ -2376,7 +2358,6 @@ export default {
      * 拖拽操作
      * */
     drag: function (e) {
-      console.log("拖拽了");
       let parentRect = this.$refs.DragOn.getBoundingClientRect();
       let mouseInGrid = false;
       if (
@@ -2446,7 +2427,6 @@ export default {
       }
     },
     dragend: function (e) {
-      console.log("点击了");
       let parentRect = this.$refs.DragOn.getBoundingClientRect();
       let mouseInGrid = false;
       if (
