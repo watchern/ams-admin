@@ -62,7 +62,12 @@ export default {
         tab.$children[0].clickBigTab()
       }
     },
-    // 添加页签方法  resultTable:辅表（运行结果表）数组    mainTable:主表（运行结果表对象）   modelname:模型的名称，用来给新页签赋值title属性用
+    /**
+     * 添加页签方法  
+     * resultTable:辅表（运行结果表）数组    
+     * mainTable:主表（运行结果表对象）   
+     * modelname:模型的名称，用来给新页签赋值title属性用
+     */     
     addTab(resultTable, mainTable, modelname, modelUuid,resultSpiltObjects,usetype,currentExecuteSQL) {
       const newTabName = ++this.tabIndex + ''
       this.mainTable = mainTable
@@ -73,10 +78,10 @@ export default {
         mainTable: mainTable,
         helpTables: resultTable,
         modeluuid: modelUuid,
-        resultSpiltObjects:resultSpiltObjects,
-        useType : usetype,
-        currentExecuteSQL : currentExecuteSQL,
-        modelId:modelUuid
+        resultSpiltObjects: resultSpiltObjects,
+        useType: usetype,
+        currentExecuteSQL: currentExecuteSQL,
+        modelId: modelUuid
       })
       this.editableTabsValue = newTabName
     },

@@ -2,7 +2,7 @@
   <div class="app-container" v-loading="loading" :element-loading-text="loadText">
     <el-container class="el-container">
       <div class="detail-form">
-        <el-form :model="thresholdValue"  ref="basicInfoForm" :rules="basicInfoRules">
+        <el-form :model="thresholdValue"  ref="basicInfoForm" :rules="basicInfoRules" :disabled="isFormEdit">
           <el-row>
             <el-col :span="23">
               <el-form-item label="阈值名称" prop="thresholdValueName">
@@ -26,7 +26,7 @@
                 <el-input v-model="thresholdValue.thresholdValueFolderUuid" style="display: none" :disabled="true"/>
                 <el-input v-model="thresholdValue.thresholdValueFolderName" :disabled="true"/>
               </el-col>
-              <el-col :span="2">
+              <el-col :span="2" v-if="!isFormEdit">
                 <el-button @click.prevent="openFolderTreeDialog">设置</el-button>
               </el-col>
             </el-form-item>
@@ -102,6 +102,7 @@ export default {
       },
       //是否禁止编辑
       isBanEdit:false,
+      isFormEdit:false,
       //文件夹dialog
       folderTreeDialog:false,
       //遮罩层
@@ -138,6 +139,12 @@ export default {
     }
     else{
       //修改
+    }
+    /*详情*/
+    if(this.operationObj.operationType === 3) {
+      this.thresholdValue = this.operationObj.thresholdValue
+      this.isBanEdit = true;
+      this.isFormEdit = true;
     }
   },
   methods: {

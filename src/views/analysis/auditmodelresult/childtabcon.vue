@@ -275,7 +275,6 @@
                 >
               </div>
             </div>
-
             <ag-grid-vue
               v-if="isSee"
               v-loading="isLoading"
@@ -435,7 +434,7 @@
       class="globalDropDownBox"
       @mouseover="StopTime"
       @mouseleave="openModelDetailOld"
-      v-if="globalDropDownBox"
+      v-show="globalDropDownBox"
       :style="{ top: globalDropTop, left: globalDropLeft }"
     >
       <li
@@ -1329,7 +1328,7 @@ export default {
       } else if (this.useType == "sqlEditor") {
         this.getIntoModelResultDetail(nextValue);
       } else if (this.useType == "modelPreview") {
-        this.loading = true;
+        // this.loading = true;
         this.nextValue = nextValue;
         var col = [];
         var rowData = [];
@@ -1337,8 +1336,9 @@ export default {
         var renderObject = {}; //存储key-value格式对象，key为列名  value为这一列对应的模型阈值关联对象
         var modelThresholdValues = [];
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
-          if (this.nextValue.executeSQL.state == "2") {
-            if (this.nextValue.executeSQL.type == "SELECT") {
+          //executeSQL.state 0,待执行；1,执行中；2,已完成；3,失败；4,取消；
+          // if (this.nextValue.executeSQL.state == "2") {
+            // if (this.nextValue.executeSQL.type == "SELECT") {
               if (true) {
                 this.modelResultButtonIsShow = true;
                 this.modelResultPageIsSee = true;
@@ -1552,18 +1552,18 @@ export default {
                   this.afterResult = true;
                 });
               }
-            } else {
-              this.isSee = false;
-              this.modelResultPageIsSee = false;
-              this.modelResultButtonIsShow = false;
-              this.errorMessage = this.nextValue.executeSQL.msg;
-            }
-          } else if (this.nextValue.executeSQL.state == "3") {
-            this.isSee = false;
-            this.modelResultPageIsSee = false;
-            this.modelResultButtonIsShow = false;
-            this.errorMessage = this.nextValue.executeSQL.msg;
-          }
+            // } else {
+            //   this.isSee = false;
+            //   this.modelResultPageIsSee = false;
+            //   this.modelResultButtonIsShow = false;
+            //   this.errorMessage = this.nextValue.executeSQL.msg;
+            // }
+          // } else if (this.nextValue.executeSQL.state == "3") {
+          //   this.isSee = false;
+          //   this.modelResultPageIsSee = false;
+          //   this.modelResultButtonIsShow = false;
+          //   this.errorMessage = this.nextValue.executeSQL.msg;
+          // }
           this.isLoading = false;
         }
       } else if (this.useType == "previewTable") {
@@ -1584,7 +1584,8 @@ export default {
       var rowData = [];
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
-          if (this.nextValue.executeSQL.type == "SELECT") {
+          // if (this.nextValue.executeSQL.type == "SELECT") {
+            console.log("SELECT")
             this.modelResultButtonIsShow = true;
             this.modelResultPageIsSee = true;
             this.modelResultData = this.nextValue.result;
@@ -1649,12 +1650,12 @@ export default {
             }
             this.columnDefs = col;
             this.afterResult = true;
-          } else {
-            this.isSee = false;
-            this.modelResultPageIsSee = false;
-            this.modelResultButtonIsShow = false;
-            this.errorMessage = this.nextValue.executeSQL.msg;
-          }
+          // } else {
+          //   this.isSee = false;
+          //   this.modelResultPageIsSee = false;
+          //   this.modelResultButtonIsShow = false;
+          //   this.errorMessage = this.nextValue.executeSQL.msg;
+          // }
         } else if (this.nextValue.executeSQL.state == "3") {
           this.isSee = false;
           this.modelResultPageIsSee = false;
@@ -2233,26 +2234,11 @@ export default {
             this.chartLoading = false;
           });
         } else if (this.modelId != undefined) {
-          console.log(
-            this.nowtable,
-            this.modelUuid,
-            this.useType,
-            this.prePersonalVal,
-            this.resultSpiltObjects
-          );
-          console.log(
-            this.preLength,
-            this.myIndex,
-            this.chartModelUuid,
-            this.settingInfo,
-            this.isModelPreview
-          );
           getModelChartSetup(this.modelId).then((resp) => {
             //做修改操作
             console.log("走这里了2");
             if (this.myIndex == 0) {
               this.modelChartSetups = resp.data.modelChartSetups;
-              console.log(this.modelChartSetups);
               for (var i = 0; i < this.modelChartSetups.length; i++) {
                 let json = JSON.parse(this.modelChartSetups[i].chartJson);
                 if (json.layout === undefined || json.layout === null) {
@@ -2372,7 +2358,6 @@ export default {
      * 拖拽操作
      * */
     drag: function (e) {
-      console.log("拖拽了");
       let parentRect = this.$refs.DragOn.getBoundingClientRect();
       let mouseInGrid = false;
       if (
@@ -2442,7 +2427,6 @@ export default {
       }
     },
     dragend: function (e) {
-      console.log("点击了");
       let parentRect = this.$refs.DragOn.getBoundingClientRect();
       let mouseInGrid = false;
       if (

@@ -34,6 +34,15 @@ export function saveTable(data) {
     data
   })
 }
+/* 批量缓存数据操作*/
+export function batchSaveTable(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/batchSave`,
+    method: 'post',
+    data
+  })
+}
 export function saveTableInfo(data) {
   return request({
     baseURL: baseURL,
@@ -48,6 +57,14 @@ export function updateTable(data) {
     url: `/${controller2}/update`,
     method: 'put',
     data
+  })
+}
+export function judgeName(tableName) {
+  return request({
+    baseURL: baseURL,
+    url: `/validateTableName`,
+    method: 'get',
+    params: { tableName: tableName}
   })
 }
 export function delTable(ids) {

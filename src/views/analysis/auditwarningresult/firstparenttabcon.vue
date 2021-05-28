@@ -19,24 +19,24 @@
     <el-main>
     <div align="right">
       <el-row>
-        <el-button
+        <!--<el-button
           type="primary"
           @click="openProjectDialog"
           :disabled="buttonIson.AssociatedBtn"
           class="oper-btn link-2"
-        ></el-button>
+        ></el-button>-->
         <el-button
           type="primary"
           @click="modelResultOpenDialog()"
           :disabled="buttonIson.resultShareBtn"
           class="oper-btn share"
         ></el-button>
-        <el-button
+        <!--<el-button
           type="primary"
           @click="RemoverelationProject()"
           :disabled="buttonIson.DisassociateBtn"
           class="oper-btn move"
-          ></el-button>
+          ></el-button>-->
         <el-button
           type="primary"
           :disabled="buttonIson.resultSplitBtn"

@@ -39,7 +39,7 @@
         :model="temp"
         label-position="right"
         label-width="120px"
-        style="width: 700px;"
+        style=""
       >
         <el-form-item label="规则名称" prop="ruleName">
           <el-input v-model="temp.ruleName" />

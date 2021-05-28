@@ -9,7 +9,14 @@ export function login(data) {
     data
   })
 }
-
+export function repass(data) {
+  return request({
+    baseURL: baseURL,
+    url: '/updatePassword',
+    method: 'post',
+    data
+  })
+}
 export function getInfo() {
   return request({
     baseURL: baseURL,

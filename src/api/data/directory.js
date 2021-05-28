@@ -93,3 +93,12 @@ export function shareTableSave(data) {
   })
 }
 
+export function judgeName(tableName) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controllerName}/validateTableName`,
+    method: 'get',
+    params: { tableName: tableName}
+  })
+}
+
