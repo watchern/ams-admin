@@ -1338,7 +1338,7 @@ export default {
         var modelThresholdValues = [];
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           if (this.nextValue.executeSQL.state == "2") {
-            if (this.nextValue.executeSQL.type == "SELECT") {
+            if (this.nextValue.executeSQL.type == "Select") {
               if (true) {
                 this.modelResultButtonIsShow = true;
                 this.modelResultPageIsSee = true;

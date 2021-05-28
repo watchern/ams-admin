@@ -576,7 +576,7 @@ export default {
         var rowData = [];
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           if (this.nextValue.executeSQL.state == "2") {
-            if(this.nextValue.executeSQL.type=='SELECT'){
+            if(this.nextValue.executeSQL.type=='Select'){
               //todo 增加sql类型判断
               if (true) {
                 this.modelResultButtonIsShow = true;
