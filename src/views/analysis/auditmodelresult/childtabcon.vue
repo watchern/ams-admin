@@ -1337,8 +1337,8 @@ export default {
         var modelThresholdValues = [];
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           //executeSQL.state 0,待执行；1,执行中；2,已完成；3,失败；4,取消；
-          // if (this.nextValue.executeSQL.state == "2") {
-            // if (this.nextValue.executeSQL.type == "SELECT") {
+          if (this.nextValue.executeSQL.state == "2") {
+            if (this.nextValue.executeSQL.type == "Select") {
               if (true) {
                 this.modelResultButtonIsShow = true;
                 this.modelResultPageIsSee = true;
@@ -1552,18 +1552,18 @@ export default {
                   this.afterResult = true;
                 });
               }
-            // } else {
-            //   this.isSee = false;
-            //   this.modelResultPageIsSee = false;
-            //   this.modelResultButtonIsShow = false;
-            //   this.errorMessage = this.nextValue.executeSQL.msg;
-            // }
-          // } else if (this.nextValue.executeSQL.state == "3") {
-          //   this.isSee = false;
-          //   this.modelResultPageIsSee = false;
-          //   this.modelResultButtonIsShow = false;
-          //   this.errorMessage = this.nextValue.executeSQL.msg;
-          // }
+            } else {
+              this.isSee = false;
+              this.modelResultPageIsSee = false;
+              this.modelResultButtonIsShow = false;
+              this.errorMessage = this.nextValue.executeSQL.msg;
+            }
+          } else if (this.nextValue.executeSQL.state == "3") {
+            this.isSee = false;
+            this.modelResultPageIsSee = false;
+            this.modelResultButtonIsShow = false;
+            this.errorMessage = this.nextValue.executeSQL.msg;
+          }
           this.isLoading = false;
         }
       } else if (this.useType == "previewTable") {
@@ -1584,8 +1584,7 @@ export default {
       var rowData = [];
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
-          // if (this.nextValue.executeSQL.type == "SELECT") {
-            console.log("SELECT")
+          if (this.nextValue.executeSQL.type == "Select") {
             this.modelResultButtonIsShow = true;
             this.modelResultPageIsSee = true;
             this.modelResultData = this.nextValue.result;
@@ -1650,12 +1649,12 @@ export default {
             }
             this.columnDefs = col;
             this.afterResult = true;
-          // } else {
-          //   this.isSee = false;
-          //   this.modelResultPageIsSee = false;
-          //   this.modelResultButtonIsShow = false;
-          //   this.errorMessage = this.nextValue.executeSQL.msg;
-          // }
+          } else {
+            this.isSee = false;
+            this.modelResultPageIsSee = false;
+            this.modelResultButtonIsShow = false;
+            this.errorMessage = this.nextValue.executeSQL.msg;
+          }
         } else if (this.nextValue.executeSQL.state == "3") {
           this.isSee = false;
           this.modelResultPageIsSee = false;
