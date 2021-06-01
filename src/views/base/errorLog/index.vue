@@ -30,7 +30,10 @@
       >
         <template slot-scope="scope">
           <a type="text" size="small" class="handreada" @click="handReadError(scope.row)">
-            查看异常信息
+            查看
+          </a>
+          <a type="text" size="small" class="handreada" @click="toExport(scope.row)">
+            导出
           </a>
         </template>
       </el-table-column>
@@ -50,12 +53,11 @@
   </div>
 </template>
 <script>
-import {
-  listByPageErrorLog,
-  getReadErrorLog
-} from '@/api/base/base'
+import {listByPageErrorLog} from '@/api/base/base'
 import QueryField from '@/components/public/query-field/index'
 import Pagination from '@/components/Pagination/index'
+import axios from "axios";
+
 export default {
   components: { Pagination, QueryField },
   data() {
@@ -195,6 +197,34 @@ export default {
         this.total = resp.data.total
         this.list = resp.data.records
         this.listLoading = false
+      })
+    },
+    /**
+     * 导出日志
+     * @param rowData
+     */
+    toExport(rowData){
+      const errorUuid = rowData.errorUuid;
+      // window.location.href = "/base/logSysErrorController/export?errorUuid=" + errorUuid;
+
+      axios.post("/base/logSysErrorController/export?errorUuid=" + errorUuid,
+          { responseType: 'blob', headers: {
+              'Content-Type': 'application/x-www-form-urlencoded' // 请求的数据类型为form data格式
+            }}
+      ).then((res) => {
+        const filename = decodeURI(
+            res.headers['content-disposition'].split(';')[1].split('=')[1]
+        )
+        const blob = new Blob([res.data], {
+          type: 'text/plain'
+        })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = url
+        link.setAttribute('download', filename)
+        document.body.appendChild(link)
+        link.click()
       })
     },
     /**

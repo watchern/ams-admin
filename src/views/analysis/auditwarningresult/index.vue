@@ -74,7 +74,10 @@ export default {
       this.editableTabsValue = newTabName
     },
     setNextValue(val){
-      this.$refs.childtabsref[this.editableTabs.length-1].loadTableData(val,'apple')
+      let _this =this
+      setTimeout(function(){
+        _this.$refs.childtabsref[_this.editableTabs.length-1].loadTableData(val,'apple')
+      },1000)
     },
     // 删除页签方法
     removeTab(targetName) {

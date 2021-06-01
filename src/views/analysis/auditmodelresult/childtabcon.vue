@@ -1337,8 +1337,8 @@ export default {
         var modelThresholdValues = [];
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           //executeSQL.state 0,待执行；1,执行中；2,已完成；3,失败；4,取消；
-          // if (this.nextValue.executeSQL.state == "2") {
-            // if (this.nextValue.executeSQL.type == "SELECT") {
+          if (this.nextValue.executeSQL.state == "2") {
+            if (this.nextValue.executeSQL.type == "Select") {
               if (true) {
                 this.modelResultButtonIsShow = true;
                 this.modelResultPageIsSee = true;
@@ -1552,18 +1552,18 @@ export default {
                   this.afterResult = true;
                 });
               }
-            // } else {
-            //   this.isSee = false;
-            //   this.modelResultPageIsSee = false;
-            //   this.modelResultButtonIsShow = false;
-            //   this.errorMessage = this.nextValue.executeSQL.msg;
-            // }
-          // } else if (this.nextValue.executeSQL.state == "3") {
-          //   this.isSee = false;
-          //   this.modelResultPageIsSee = false;
-          //   this.modelResultButtonIsShow = false;
-          //   this.errorMessage = this.nextValue.executeSQL.msg;
-          // }
+            } else {
+              this.isSee = false;
+              this.modelResultPageIsSee = false;
+              this.modelResultButtonIsShow = false;
+              this.errorMessage = this.nextValue.executeSQL.msg;
+            }
+          } else if (this.nextValue.executeSQL.state == "3") {
+            this.isSee = false;
+            this.modelResultPageIsSee = false;
+            this.modelResultButtonIsShow = false;
+            this.errorMessage = this.nextValue.executeSQL.msg;
+          }
           this.isLoading = false;
         }
       } else if (this.useType == "previewTable") {
@@ -1576,7 +1576,6 @@ export default {
      * 显示模型结果详细提取公共代码
      * */
     getIntoModelResultDetail(nextValue) {
-      console.log(nextValue)
       this.afterAddChartsWithNoConfigure = true;
       this.chartLoading = false;
       this.loading = true;
@@ -1585,8 +1584,7 @@ export default {
       var rowData = [];
       if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
         if (this.nextValue.executeSQL.state == "2") {
-          // if (this.nextValue.executeSQL.type == "SELECT") {
-            console.log("SELECT")
+          if (this.nextValue.executeSQL.type == "Select") {
             this.modelResultButtonIsShow = true;
             this.modelResultPageIsSee = true;
             this.modelResultData = this.nextValue.result;
@@ -1651,12 +1649,12 @@ export default {
             }
             this.columnDefs = col;
             this.afterResult = true;
-          // } else {
-          //   this.isSee = false;
-          //   this.modelResultPageIsSee = false;
-          //   this.modelResultButtonIsShow = false;
-          //   this.errorMessage = this.nextValue.executeSQL.msg;
-          // }
+          } else {
+            this.isSee = false;
+            this.modelResultPageIsSee = false;
+            this.modelResultButtonIsShow = false;
+            this.errorMessage = this.nextValue.executeSQL.msg;
+          }
         } else if (this.nextValue.executeSQL.state == "3") {
           this.isSee = false;
           this.modelResultPageIsSee = false;
@@ -1918,7 +1916,6 @@ export default {
                 //界面渲染完成之后开始执行sql,将sql送入调度
                 startExecuteSql(resp.data).then((result) => {
                   if (this.isModelPreview !== true) {
-                    console.log(0)
                     this.$emit(
                       "addBigTabs",
                       undefined,
@@ -1930,7 +1927,6 @@ export default {
                       this.currentExecuteSQL
                     );
                   } else {
-                    console.log(1)
                     this.$emit(
                       "addBigTabsModelPreview",
                       detailModel.modelName,
@@ -2237,26 +2233,11 @@ export default {
             this.chartLoading = false;
           });
         } else if (this.modelId != undefined) {
-          console.log(
-            this.nowtable,
-            this.modelUuid,
-            this.useType,
-            this.prePersonalVal,
-            this.resultSpiltObjects
-          );
-          console.log(
-            this.preLength,
-            this.myIndex,
-            this.chartModelUuid,
-            this.settingInfo,
-            this.isModelPreview
-          );
           getModelChartSetup(this.modelId).then((resp) => {
             //做修改操作
             console.log("走这里了2");
             if (this.myIndex == 0) {
               this.modelChartSetups = resp.data.modelChartSetups;
-              console.log(this.modelChartSetups);
               for (var i = 0; i < this.modelChartSetups.length; i++) {
                 let json = JSON.parse(this.modelChartSetups[i].chartJson);
                 if (json.layout === undefined || json.layout === null) {
@@ -2376,7 +2357,6 @@ export default {
      * 拖拽操作
      * */
     drag: function (e) {
-      console.log("拖拽了");
       let parentRect = this.$refs.DragOn.getBoundingClientRect();
       let mouseInGrid = false;
       if (
@@ -2446,7 +2426,6 @@ export default {
       }
     },
     dragend: function (e) {
-      console.log("点击了");
       let parentRect = this.$refs.DragOn.getBoundingClientRect();
       let mouseInGrid = false;
       if (
