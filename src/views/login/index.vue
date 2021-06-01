@@ -526,9 +526,10 @@ $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixe
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+  // filter: blur(2px);
   .login-box2center {
     height: 85%;
-    width: 1300px;
+    width: 1500px;
     margin: 0 auto;
     margin-top: 13%;
     display: flex;
@@ -536,6 +537,8 @@ $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixe
   .login-box2left {
     width: 600px;
     margin: 50px 0;
+    margin-left: 5%;
+    margin-right: 10%;
     margin-left: 100px;
   }
   .login-box2-tit1 {
@@ -576,6 +579,10 @@ $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixe
     }
   }
   @media screen and (max-device-width: 1600px) {
+    .login-box2left {
+      margin-left: 5%;
+      margin-right: 5%;
+    }
     .login-box2center {
       height: 85%;
       width: 1100px;
@@ -596,6 +603,10 @@ $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixe
     }
   }
   @media screen and (max-device-width: 1400px) {
+    .login-box2left {
+      margin-left: 5%;
+      margin-right: 5%;
+    }
     .login-box2center {
       height: 85%;
       width: 1100px;
