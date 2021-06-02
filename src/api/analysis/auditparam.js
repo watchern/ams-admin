@@ -1843,6 +1843,7 @@ export function initSetting() {
               if (moduleParamId === paramArr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
                 setParamObj.inputType = paramObj.inputType//参数类型
                 //设置默认值
+                setParamObj.value = ''
                 if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
                   paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
                   setParamObj.value = paramArr[j].defaultVal

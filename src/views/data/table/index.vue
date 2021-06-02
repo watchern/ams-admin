@@ -224,9 +224,9 @@ export default {
       this.$refs.tree1.filter(val);
       // eslint-disable-next-line indent
     },
-    /*filterText2(val) {
+    filterText2(val) {
       this.$refs.tree2.filter(val)
-    }*/
+    }
   },
   created() {},
   methods: {
