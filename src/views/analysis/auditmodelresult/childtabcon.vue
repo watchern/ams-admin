@@ -1311,6 +1311,7 @@ export default {
         );
         this.columnDefs = col;
         this.rowData = da;
+        this.gridApi.closeToolPanel()
       } else if (this.useType == "sqlEditor") {
         this.getIntoModelResultDetail(nextValue);
       } else if (this.useType == "modelPreview") {
@@ -1531,6 +1532,7 @@ export default {
                   }
                   this.columnDefs = col;
                   this.afterResult = true;
+                  this.gridApi.closeToolPanel()
                 });
               }
             } else {
@@ -1630,6 +1632,7 @@ export default {
             }
             this.columnDefs = col;
             this.afterResult = true;
+            this.gridApi.closeToolPanel()
           } else {
             this.isSee = false;
             this.modelResultPageIsSee = false;
