@@ -289,14 +289,16 @@
                   ? this.renderTable
                   : undefined
               "
-              row-selection="multiple"
-              @cellClicked="onCellClicked"
-              @gridReady="onGridReady"
-              @rowSelected="rowChange"
-              :defaultColDef="defaultColDef"
-              :sideBar="true"
-              :modules="modules"
-              :localeText="localeText"
+                    row-selection="multiple"
+                    @cellClicked="onCellClicked"
+                    @gridReady="onGridReady"
+                    @rowSelected="rowChange"
+                    :defaultColDef="defaultColDef"
+                    :sideBar="true"
+                    :modules="modules"
+                    :localeText="localeText"
+                    :frameworkComponents="frc"
+                    :context = "componentParent"
             />
             <!-- :sideBar="true"
             :modules="modules"-->
@@ -483,6 +485,7 @@
   </div>
 </template>
 <script>
+import {AgCell} from '../../../components/public/new-ag-grid/ag-cell';
 // 引入样式文件
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-balham.css";
@@ -720,6 +723,8 @@ export default {
         groups: "行分组",
         rowGroupColumnsEmptyMessage: "拖动此处可设置行组",
       },
+      frc: {'ag-cell': AgCell},
+      componentParent: null
     };
   },
   mounted() {
@@ -748,6 +753,7 @@ export default {
     chartAudit.$on("chartAuditOn", (e) => {
       this.saveChartsAll();
     });
+    this.componentParent = this;
   },
   created() {
     let _this = this;
@@ -1162,13 +1168,8 @@ export default {
                       rowColom = {
                         headerName: colNames[i],
                         field: colNames[i],
-                        cellRenderer: (params) => {
-                          return this.changeCellColor(
-                            params,
-                            thresholdValueRel,
-                            modelResultDetailCol
-                          );
-                        },
+                        params: {thresholdValueRel, modelResultDetailCol},
+                        cellRenderer: 'ag-cell',
                         checkboxSelection: true,
                       };
                       onlyFlag = true;
@@ -1176,13 +1177,8 @@ export default {
                       rowColom = {
                         headerName: colNames[i],
                         field: colNames[i],
-                        cellRenderer: (params) => {
-                          return this.changeCellColor(
-                            params,
-                            thresholdValueRel,
-                            modelResultDetailCol
-                          );
-                        },
+                        params: {thresholdValueRel, modelResultDetailCol},
+                        cellRenderer: 'ag-cell',
                       };
                     }
                   } else {
@@ -1229,13 +1225,8 @@ export default {
                             rowColom = {
                               headerName: this.modelOutputColumn[j].columnAlias,
                               field: colNames[i],
-                              cellRenderer: (params) => {
-                                return this.changeCellColor(
-                                  params,
-                                  thresholdValueRel,
-                                  modelResultDetailCol
-                                );
-                              },
+                              params: {thresholdValueRel, modelResultDetailCol},
+                        cellRenderer: 'ag-cell',
                               checkboxSelection: true,
                             };
                             onlyFlag = true;
@@ -1243,13 +1234,8 @@ export default {
                             rowColom = {
                               headerName: this.modelOutputColumn[j].columnAlias,
                               field: colNames[i],
-                              cellRenderer: (params) => {
-                                return this.changeCellColor(
-                                  params,
-                                  thresholdValueRel,
-                                  modelResultDetailCol
-                                );
-                              },
+                              params: {thresholdValueRel, modelResultDetailCol},
+                        cellRenderer: 'ag-cell',
                             };
                           }
                         } else {
@@ -1325,6 +1311,7 @@ export default {
         );
         this.columnDefs = col;
         this.rowData = da;
+        this.gridApi.closeToolPanel()
       } else if (this.useType == "sqlEditor") {
         this.getIntoModelResultDetail(nextValue);
       } else if (this.useType == "modelPreview") {
@@ -1487,13 +1474,8 @@ export default {
                               headerName: modelOutputColumn[n].columnAlias,
                               field: this.nextValue.columnNames[j],
                               width: "180",
-                              cellRenderer: (params) => {
-                                return this.changeCellColor(
-                                  params,
-                                  thresholdValueRel,
-                                  modelResultDetailCol
-                                );
-                              },
+                              params: {thresholdValueRel, modelResultDetailCol},
+                              cellRenderer: 'ag-cell',
                             };
                           } else {
                             rowColom = {
@@ -1550,6 +1532,7 @@ export default {
                   }
                   this.columnDefs = col;
                   this.afterResult = true;
+                  this.gridApi.closeToolPanel()
                 });
               }
             } else {
@@ -1649,6 +1632,7 @@ export default {
             }
             this.columnDefs = col;
             this.afterResult = true;
+            this.gridApi.closeToolPanel()
           } else {
             this.isSee = false;
             this.modelResultPageIsSee = false;
@@ -1721,7 +1705,7 @@ export default {
         }
       }
     },
-    changeCellColor(params, thresholdValueRel, modelResultDetailCol) {
+    /*changeCellColor(params, thresholdValueRel, modelResultDetailCol) {
       if (thresholdValueRel) {
         let returnValue = handleDataManyValue(params, thresholdValueRel);
         //如果当该列是关联详细列又是阈值展现改变颜色列的时候做特殊处理
@@ -1760,7 +1744,7 @@ export default {
         }
         return params.value;
       }
-    },
+    },*/
     /**
      * 在渲染表格之前拿到渲染表格时需要的数据
      */

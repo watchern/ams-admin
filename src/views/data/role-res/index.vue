@@ -2,7 +2,7 @@
   <div class="page-container" style="overflow:auto;">
     <div slot="footer" style="height: 50px">
       <div style="float: right">
-        <el-button @click="goBack">取消</el-button>
+        <el-button @click="goBack">返回</el-button>
         <el-button type="primary" @click="save">保存</el-button>
       </div>
     </div>

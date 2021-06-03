@@ -88,7 +88,8 @@ export default {
   height: 95%;
 }
 .divContent {
-  width: auto;
+  width: 70%;
+  min-width:870px;
 }
 .agreeicon0  {
   display: inline-block;
