@@ -23,7 +23,7 @@
     "ag-grid-enterprise": "^25.1.0",
     "ams-clue-vue": "^0.1.13",
     "ams-datamax": "^1.0.9",
-    "ams-etlscheduler-ui": "^1.4.2",
+    "ams-etlscheduler-ui": "^1.4.3",
     "ams-starflow-vue": "^0.1.18",
     "axios": "^0.21.1",
     "codemirror": "^5.58.3",
