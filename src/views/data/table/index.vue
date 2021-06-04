@@ -365,8 +365,9 @@ export default {
       this.folderForm.parentFolderUuid = data.id;
       var nodePath = this.$refs.tree2.getNodePath(data);
       var fullPath = [];
+      // 将各级目录名拼接到全路径中
       nodePath.forEach((path) => {
-        fullPath.push(path.id);
+        fullPath.push(path.label);
       });
       this.folderForm.fullPath = fullPath.join("/");
       this.folderFormVisible = true;
@@ -380,7 +381,7 @@ export default {
       let fullPath = [];
       // 拼接全路径（从ROOT节点开始一直到自己）
       this.$refs.tree2.getNodePath(data).forEach((path) => {
-        fullPath.push(path.id);
+        fullPath.push(path.label);
       });
       this.folderForm.fullPath = fullPath.join("/");
       this.folderFormVisible = true;
@@ -434,6 +435,8 @@ export default {
           this.tempData
         );
         this.folderFormVisible = false;
+        // 更新树
+        this.refreshNodeBy("ROOT");
       });
     },
     handleSelectChange(val) {},
