@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" style="height:80vh;overflow:auto">
+  <div class="app-container">
     <el-row>
       <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'" align="right">
         <!-- <el-button type="primary" size="mini" class="oper-btn iconoper-export" title="上移" @click="upTheCol()" />
