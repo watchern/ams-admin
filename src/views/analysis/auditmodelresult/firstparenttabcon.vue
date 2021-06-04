@@ -74,6 +74,7 @@
         </div>
         <el-table
           id="table"
+          ref="itemDataTable"
           :key="tableKey"
           v-loading="listLoading"
           :data="list"
@@ -480,8 +481,20 @@ export default {
      * 导出方法
      */
     exportExcel() {
+      const items  = [];
+      // 获取选中的行
+      const _selectData = this.$refs.itemDataTable.selection;
+      if (_selectData.length === 0){
+        this.$message({
+          message: "请勾选要导出的结果！",
+        });
+        return
+      }
+      // 获取选中行的id
+      _selectData.forEach(e =>(items.push(e.runTaskRelUuid)));
       axios({
-        method: "get",
+        method: "post",
+        data: items,
         url: "/analysis/RunTaskRelController/exportRunTaskRelTable",
         responseType: "blob",
       }).then((res) => {
