@@ -1229,87 +1229,89 @@ export default {
      */
     modelRunSetting() {
       var runType = this.nowRunTaskRel.runTask.runType;
-      var results = this.$refs.modelsetting.replaceParams();
-      this.replacedInfo = results.replaceInfo;
-      var modelResultSavePathId = results.modelResultSavePathId;
-      var dateTime = results.dateTime;
-      var settingInfo = {
-        sql: this.replacedInfo[0].sql,
-        paramsArr: this.replacedInfo[0].paramsArr,
-      };
-      this.nowRunTaskRel.model = results.models[0];
-      this.nowRunTaskRel.settingInfo = settingInfo;
-      this.nowRunTaskRel.locationUuid = modelResultSavePathId;
-      if (this.timingExecutionIsSee) {
-        if (dateTime == "") {
-          this.$message({
-            message: "请输入定时时间",
-            type: "warning",
-          });
-        } else if (this.replacedInfo[0].sql == "") {
-          this.$message({
-            message: "请输入参数",
-            type: "warning",
-          });
-        } else if (modelResultSavePathId == "") {
-          this.$message({
-            message: "请选择模型结果保存路径",
-            type: "warning",
-          });
-        } else {
-          if (runType == 3) {
-            reRunRunTask(this.nowRunTaskRel).then((resp) => {
-              if (resp.data == true) {
-                this.getLikeList();
-              } else {
-                this.$message({ type: "info", message: "重新执行失败!" });
-              }
+      this.$refs.modelsetting.replaceParams().then((results) => {
+        if(!results) return
+        this.replacedInfo = results.replaceInfo;
+        var modelResultSavePathId = results.modelResultSavePathId;
+        var dateTime = results.dateTime;
+        var settingInfo = {
+          sql: this.replacedInfo[0].sql,
+          paramsArr: this.replacedInfo[0].paramsArr,
+        };
+        this.nowRunTaskRel.model = results.models[0];
+        this.nowRunTaskRel.settingInfo = settingInfo;
+        this.nowRunTaskRel.locationUuid = modelResultSavePathId;
+        if (this.timingExecutionIsSee) {
+          if (dateTime == "") {
+            this.$message({
+              message: "请输入定时时间",
+              type: "warning",
             });
-          } else if (runType == 2) {
-            reRunRunTask(this.nowRunTaskRel, dateTime).then((resp) => {
-              if (resp.data == true) {
-                this.getLikeList();
-              } else {
-                this.$message({ type: "info", message: "重新执行失败!" });
-              }
+          } else if (this.replacedInfo[0].sql == "") {
+            this.$message({
+              message: "请输入参数",
+              type: "warning",
             });
+          } else if (modelResultSavePathId == "") {
+            this.$message({
+              message: "请选择模型结果保存路径",
+              type: "warning",
+            });
+          } else {
+            if (runType == 3) {
+              reRunRunTask(this.nowRunTaskRel).then((resp) => {
+                if (resp.data == true) {
+                  this.getLikeList();
+                } else {
+                  this.$message({ type: "info", message: "重新执行失败!" });
+                }
+              });
+            } else if (runType == 2) {
+              reRunRunTask(this.nowRunTaskRel, dateTime).then((resp) => {
+                if (resp.data == true) {
+                  this.getLikeList();
+                } else {
+                  this.$message({ type: "info", message: "重新执行失败!" });
+                }
+              });
+            }
+            this.runimmediatelyIsSee = false;
+            this.timingExecutionIsSee = false;
           }
-          this.runimmediatelyIsSee = false;
-          this.timingExecutionIsSee = false;
-        }
-      } else if (this.runimmediatelyIsSee) {
-        if (this.replacedInfo[0].sql == "") {
-          this.$message({
-            message: "请输入参数",
-            type: "warning",
-          });
-        } else if (modelResultSavePathId == "") {
-          this.$message({
-            message: "请选择模型结果保存路径",
-            type: "warning",
-          });
-        } else {
-          if (runType == 3) {
-            reRunRunTask(this.nowRunTaskRel).then((resp) => {
-              if (resp.data == true) {
-                this.getLikeList();
-              } else {
-                this.$message({ type: "info", message: "重新执行失败!" });
-              }
+        } else if (this.runimmediatelyIsSee) {
+          if (this.replacedInfo[0].sql == "") {
+            this.$message({
+              message: "请输入参数",
+              type: "warning",
             });
-          } else if (runType == 2) {
-            reRunRunTask(this.nowRunTaskRel, dateTime).then((resp) => {
-              if (resp.data == true) {
-                this.getLikeList();
-              } else {
-                this.$message({ type: "info", message: "重新执行失败!" });
-              }
+          } else if (modelResultSavePathId == "") {
+            this.$message({
+              message: "请选择模型结果保存路径",
+              type: "warning",
             });
+          } else {
+            if (runType == 3) {
+              reRunRunTask(this.nowRunTaskRel).then((resp) => {
+                if (resp.data == true) {
+                  this.getLikeList();
+                } else {
+                  this.$message({ type: "info", message: "重新执行失败!" });
+                }
+              });
+            } else if (runType == 2) {
+              reRunRunTask(this.nowRunTaskRel, dateTime).then((resp) => {
+                if (resp.data == true) {
+                  this.getLikeList();
+                } else {
+                  this.$message({ type: "info", message: "重新执行失败!" });
+                }
+              });
+            }
+            this.runimmediatelyIsSee = false;
+            this.timingExecutionIsSee = false;
           }
-          this.runimmediatelyIsSee = false;
-          this.timingExecutionIsSee = false;
         }
-      }
+      });
     },
     /**
      * 点击结果拆分后打开dialog方法
