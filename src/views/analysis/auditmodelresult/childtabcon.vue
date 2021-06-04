@@ -633,6 +633,7 @@ export default {
   props: [
     "nowtable",
     "modelUuid",
+    "modelTitle",
     "useType",
     "prePersonalVal",
     "resultSpiltObjects",
@@ -2637,7 +2638,7 @@ export default {
       this.submitData.busTableName = this.nowtable.resultTableName  // 表名称
       this.submitData.busDatabaseType = 'mysql'  //数据库类型
       this.flowItem.versionUuid = this.common.randomString4Len(8);
-      this.flowItem.applyTitle = this.submitData.busTableName + this.common.getNowFormatDay();
+      this.flowItem.applyTitle = this.modelTitle + this.common.getNowFormatDay();
       this.applyInfo.versionUuid = this.flowItem.versionUuid;
       this.applyInfo.status = "";
       this.applyInfo.mstate = "";
@@ -2730,7 +2731,7 @@ export default {
       // this.submitData.status = this.initStatus;  //数据状态（0）
       this.submitData.busDatabaseType = 'mysql'  //数据库类型
       this.flowItem.versionUuid = this.common.randomString4Len(8);
-      this.flowItem.applyTitle = this.submitData.busTableName + this.common.getNowFormatDay();
+      this.flowItem.applyTitle = this.modelTitle + this.common.getNowFormatDay();
       this.applyInfo.versionUuid = this.flowItem.versionUuid;
       this.applyInfo.status = "";
       this.applyInfo.mstate = "";
