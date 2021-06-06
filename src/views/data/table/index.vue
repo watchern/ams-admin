@@ -111,21 +111,18 @@
           show-checkbox
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
-            <i
-              v-if="data.type === 'USER'"
-              class="el-icon-menu"
-              style="color: #409eff"
-            />
-            <i
-              v-if="data.type === 'TABLE'"
-              class="el-icon-tickets"
-              style="color: #409eff"
-            />
-            <i
-              v-if="data.type === 'COLUMN'"
-              class="el-icon-s-ticket"
-              style="color: #409eff"
-            />
+            <!-- class="el-icon-menu"  style="color: #409eff" -->
+            <i  v-if="data.type === 'USER'">
+            <img src="../../../assets/img/table_0.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            </i>
+            <!-- class="el-icon-tickets"  style="color: #409eff" -->
+            <i  v-if="data.type === 'TABLE'">
+            <img src="../../../assets/img/table_1.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            </i>
+            <!-- class="el-icon-s-ticket"  style="color: #409eff" -->
+            <i  v-if="data.type === 'COLUMN'">
+            <img src="../../../assets/img/table_2.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            </i>
             <span>{{ node.label }}</span>
           </span>
         </MyElTree>
@@ -164,8 +161,7 @@ import MyElTree from "@/components/public/tree/src/tree.vue";
 import {
   listUnCached,
   getDataTreeNode,
-  saveTable,
-  delTable,
+  delTable, batchSaveTable,
 } from "@/api/data/table-info";
 import { saveFolder, updateFolder, delFolder } from "@/api/data/folder";
 import { commonNotify } from "@/utils";
@@ -204,6 +200,7 @@ export default {
       selectValue: 1,
       treeLoading: false,
       tableData: [],
+      chooseTables:[],
     };
   },
   computed: {
@@ -313,7 +310,6 @@ export default {
             return tb.label.indexOf(this.filterText1) !== -1;
           });
         }
-        // console.log(ckTbs);
         ckTbs
           .filter((tb) => {
             return tb.type === "TABLE";
@@ -326,28 +322,28 @@ export default {
               tbName: node.label,
               folderUuid: ckFolder.id,
             };
-            saveTable(tableForm).then((resp) => {
-              var childData = {
-                disable: false,
-                id: tableForm.tableMetaUuid,
-                label: tableForm.tbName,
-                leaf: true,
-                pid: ckFolder.id,
-                showCheckbox: true,
-                type: "TABLE",
-              };
-              this.$refs.tree2.remove(childData);
-              this.$refs.tree2.append(childData, ckFolder);
-              this.$notify(
-                commonNotify({
-                  type: "success",
-                  message: `表<${node.label}>成功同步成功！`,
-                })
-              );
-            });
+            // 将选中的表信息封装入节点对象集合
+            this.chooseTables.push(tableForm);
           });
+        // 批量保存
+        batchSaveTable(this.chooseTables).then(() => {
+          // 刷新ROOT节点
+          this.refreshNodeBy("ROOT");
+          this.$notify(
+              commonNotify({
+                type: "success",
+                message: `同步成功！`,
+              })
+          );
+        });
         this.registTableFlag = false;
       }
+    },
+    // 刷根据节点ID刷新节点
+    refreshNodeBy(id){
+      let node = this.$refs.tree2.getNode(id); // 通过节点id找到对应树节点对象
+      node.loaded = false;
+      node.expand(); // 主动调用展开节点方法，重新查询该节点下的所有子节点
     },
     nodeClick(data, node, tree) {
       this.divInfo = false;

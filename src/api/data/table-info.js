@@ -34,6 +34,15 @@ export function saveTable(data) {
     data
   })
 }
+/* 批量缓存数据操作*/
+export function batchSaveTable(data) {
+  return request({
+    baseURL: baseURL,
+    url: `/${controller2}/batchSave`,
+    method: 'post',
+    data
+  })
+}
 export function saveTableInfo(data) {
   return request({
     baseURL: baseURL,
