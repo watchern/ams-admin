@@ -433,6 +433,7 @@ export default {
      */
     modelRunSetting() {
       this.$refs.modelsetting.replaceParams().then(results=>{
+        if(!results) return
         this.models = results.models;
         this.replacedInfo = results.replaceInfo;
         var modelResultSavePathId = results.modelResultSavePathId;

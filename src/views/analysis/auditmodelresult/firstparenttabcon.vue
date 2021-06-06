@@ -15,19 +15,20 @@
       <el-main>
         <div align="right">
           <el-row>
-            <el-dropdown>
               <el-button
-                type="primary"
-                @click="openProjectDialog"
-                :disabled="buttonIson.AssociatedBtn"
-                class="oper-btn link-2"
+                      type="primary"
+                      @click="modelResultOpenDialog"
+                      :disabled="buttonIson.AssociatedBtn"
+                      class="oper-btn link-2"
               ></el-button>
+            <!--<el-dropdown>
+
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="openProjectDialog">分配项目</el-dropdown-item>
                 <el-dropdown-item @click.native="modelResultOpenDialog">结果分配</el-dropdown-item>
                 <el-dropdown-item @click.native="RemoverelationProject">移除分配项目</el-dropdown-item>
               </el-dropdown-menu>
-            </el-dropdown>
+            </el-dropdown>-->
 <!--            <el-button-->
 <!--              type="primary"-->
 <!--              @click="openProjectDialog"-->
@@ -73,6 +74,7 @@
         </div>
         <el-table
           id="table"
+          ref="itemDataTable"
           :key="tableKey"
           v-loading="listLoading"
           :data="list"
@@ -479,8 +481,20 @@ export default {
      * 导出方法
      */
     exportExcel() {
+      const items  = [];
+      // 获取选中的行
+      const _selectData = this.$refs.itemDataTable.selection;
+      if (_selectData.length === 0){
+        this.$message({
+          message: "请勾选要导出的结果！",
+        });
+        return
+      }
+      // 获取选中行的id
+      _selectData.forEach(e =>(items.push(e.runTaskRelUuid)));
       axios({
-        method: "get",
+        method: "post",
+        data: items,
         url: "/analysis/RunTaskRelController/exportRunTaskRelTable",
         responseType: "blob",
       }).then((res) => {
@@ -1228,87 +1242,89 @@ export default {
      */
     modelRunSetting() {
       var runType = this.nowRunTaskRel.runTask.runType;
-      var results = this.$refs.modelsetting.replaceParams();
-      this.replacedInfo = results.replaceInfo;
-      var modelResultSavePathId = results.modelResultSavePathId;
-      var dateTime = results.dateTime;
-      var settingInfo = {
-        sql: this.replacedInfo[0].sql,
-        paramsArr: this.replacedInfo[0].paramsArr,
-      };
-      this.nowRunTaskRel.model = results.models[0];
-      this.nowRunTaskRel.settingInfo = settingInfo;
-      this.nowRunTaskRel.locationUuid = modelResultSavePathId;
-      if (this.timingExecutionIsSee) {
-        if (dateTime == "") {
-          this.$message({
-            message: "请输入定时时间",
-            type: "warning",
-          });
-        } else if (this.replacedInfo[0].sql == "") {
-          this.$message({
-            message: "请输入参数",
-            type: "warning",
-          });
-        } else if (modelResultSavePathId == "") {
-          this.$message({
-            message: "请选择模型结果保存路径",
-            type: "warning",
-          });
-        } else {
-          if (runType == 3) {
-            reRunRunTask(this.nowRunTaskRel).then((resp) => {
-              if (resp.data == true) {
-                this.getLikeList();
-              } else {
-                this.$message({ type: "info", message: "重新执行失败!" });
-              }
+      this.$refs.modelsetting.replaceParams().then((results) => {
+        if(!results) return
+        this.replacedInfo = results.replaceInfo;
+        var modelResultSavePathId = results.modelResultSavePathId;
+        var dateTime = results.dateTime;
+        var settingInfo = {
+          sql: this.replacedInfo[0].sql,
+          paramsArr: this.replacedInfo[0].paramsArr,
+        };
+        this.nowRunTaskRel.model = results.models[0];
+        this.nowRunTaskRel.settingInfo = settingInfo;
+        this.nowRunTaskRel.locationUuid = modelResultSavePathId;
+        if (this.timingExecutionIsSee) {
+          if (dateTime == "") {
+            this.$message({
+              message: "请输入定时时间",
+              type: "warning",
             });
-          } else if (runType == 2) {
-            reRunRunTask(this.nowRunTaskRel, dateTime).then((resp) => {
-              if (resp.data == true) {
-                this.getLikeList();
-              } else {
-                this.$message({ type: "info", message: "重新执行失败!" });
-              }
+          } else if (this.replacedInfo[0].sql == "") {
+            this.$message({
+              message: "请输入参数",
+              type: "warning",
             });
+          } else if (modelResultSavePathId == "") {
+            this.$message({
+              message: "请选择模型结果保存路径",
+              type: "warning",
+            });
+          } else {
+            if (runType == 3) {
+              reRunRunTask(this.nowRunTaskRel).then((resp) => {
+                if (resp.data == true) {
+                  this.getLikeList();
+                } else {
+                  this.$message({ type: "info", message: "重新执行失败!" });
+                }
+              });
+            } else if (runType == 2) {
+              reRunRunTask(this.nowRunTaskRel, dateTime).then((resp) => {
+                if (resp.data == true) {
+                  this.getLikeList();
+                } else {
+                  this.$message({ type: "info", message: "重新执行失败!" });
+                }
+              });
+            }
+            this.runimmediatelyIsSee = false;
+            this.timingExecutionIsSee = false;
           }
-          this.runimmediatelyIsSee = false;
-          this.timingExecutionIsSee = false;
-        }
-      } else if (this.runimmediatelyIsSee) {
-        if (this.replacedInfo[0].sql == "") {
-          this.$message({
-            message: "请输入参数",
-            type: "warning",
-          });
-        } else if (modelResultSavePathId == "") {
-          this.$message({
-            message: "请选择模型结果保存路径",
-            type: "warning",
-          });
-        } else {
-          if (runType == 3) {
-            reRunRunTask(this.nowRunTaskRel).then((resp) => {
-              if (resp.data == true) {
-                this.getLikeList();
-              } else {
-                this.$message({ type: "info", message: "重新执行失败!" });
-              }
+        } else if (this.runimmediatelyIsSee) {
+          if (this.replacedInfo[0].sql == "") {
+            this.$message({
+              message: "请输入参数",
+              type: "warning",
             });
-          } else if (runType == 2) {
-            reRunRunTask(this.nowRunTaskRel, dateTime).then((resp) => {
-              if (resp.data == true) {
-                this.getLikeList();
-              } else {
-                this.$message({ type: "info", message: "重新执行失败!" });
-              }
+          } else if (modelResultSavePathId == "") {
+            this.$message({
+              message: "请选择模型结果保存路径",
+              type: "warning",
             });
+          } else {
+            if (runType == 3) {
+              reRunRunTask(this.nowRunTaskRel).then((resp) => {
+                if (resp.data == true) {
+                  this.getLikeList();
+                } else {
+                  this.$message({ type: "info", message: "重新执行失败!" });
+                }
+              });
+            } else if (runType == 2) {
+              reRunRunTask(this.nowRunTaskRel, dateTime).then((resp) => {
+                if (resp.data == true) {
+                  this.getLikeList();
+                } else {
+                  this.$message({ type: "info", message: "重新执行失败!" });
+                }
+              });
+            }
+            this.runimmediatelyIsSee = false;
+            this.timingExecutionIsSee = false;
           }
-          this.runimmediatelyIsSee = false;
-          this.timingExecutionIsSee = false;
         }
-      }
+      });
     },
     /**
      * 点击结果拆分后打开dialog方法

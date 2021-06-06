@@ -88,6 +88,10 @@ export default {
       })
     },
     activeTags(item) {
+      //2021.6.4 太仓需求sql编辑页保留编辑内容
+      // if(item.val.path=='/analysis/sqleditor' && item.type == 'active'){
+      //   item.type = 'reset'
+      // }
       this.$store.commit('aceState/setRightFooterTags', {
         type: item.type,
         val: item.val

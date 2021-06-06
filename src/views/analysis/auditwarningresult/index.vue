@@ -21,10 +21,11 @@
         <!-- 新页签中页签组件 -->
         <!-- <div v-html="item.content"></div> -->
         <childTabs
-          ref="childtabsrew"
+          ref="childtabsref"
           :maintable="item.mainTable"
           :helptables="item.helpTables"
           :model-uuid="item.modeluuid"
+          :modelTitle="item.title"
           :resultSpiltObjects="item.resultSpiltObjects"
           :useType="item.useType===undefined?'modelRunResult':item.useType"
           :pre-value="item.currentExecuteSQL"
@@ -74,7 +75,10 @@ export default {
       this.editableTabsValue = newTabName
     },
     setNextValue(val){
-      this.$refs.childtabsrew[this.editableTabs.length-1].loadTableData(val,'apple')
+      let _this =this
+      setTimeout(function(){
+        _this.$refs.childtabsref[_this.editableTabs.length-1].loadTableData(val,'apple')
+      },1000)
     },
     // 删除页签方法
     removeTab(targetName) {

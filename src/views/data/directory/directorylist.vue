@@ -191,6 +191,7 @@
         :visible.sync="uploadVisible"
         style="min-width: 1000px"
         width="80%"
+        title="导入"
     >
       <el-row>
         <el-col>
@@ -860,6 +861,7 @@ export default {
             duration: 2000,
             position: "bottom-right",
           });
+          // todo 怎么刷新树节点？
         } else {
           this.$message({
             type: "info",

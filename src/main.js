@@ -89,6 +89,7 @@ import common from "ams-starflow-vue/src/components/common/common";
 Vue.prototype.$clipboard = clipboard
 Vue.prototype.$ajax = axios
 Vue.prototype.$axios = axios
+Vue.prototype.axios=axios;
 Vue.prototype.dict = dict;
 Vue.prototype.common = common;
 Vue.use(dataV)

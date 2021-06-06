@@ -232,8 +232,19 @@ export default {
       oldTableObj.tbName = this.oldName
       oldTableObj.tbComment = this.tempTable.tbComment
       var obj = {}
+      console.log(newTableObj.colMetas)
+      for(let i =0;i<newTableObj.colMetas.length;i++){
+        if(newTableObj.colMetas[i].colName!=''&&newTableObj.colMetas[i].dataType!=''&&newTableObj.colMetas[i].dataLength!=''){
+
+        }else{
+          this.$message.error('请完善数据信息!');
+          return
+        }
+      }
       obj.newTableObj = newTableObj
       obj.oldTableObj = oldTableObj
+      
+      
       updateTable(obj).then((res) => {
         if (res.data.status === '500') {
           this.$message({ type: 'info', message: '修改失败！' + res.data.msg })

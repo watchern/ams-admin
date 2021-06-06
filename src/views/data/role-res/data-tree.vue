@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-input v-model="filterText1" placeholder="输入关键字进行过滤" />
-    <div style="overflow: auto; height: 80vh">
+    <div style="overflow: auto; height: 60vh">
       <MyElTree
         ref="tree1"
         v-loading="treeLoading"
@@ -153,6 +153,10 @@ export default {
     },
     refresh() {
       this.treeLoading = true;
+      //为防止数据更新的延迟导致的bug在此添加缓冲
+      setTimeout(this.rep(),500)
+    },
+    rep(){
       getResELTree({
         dataUserId: this.dataUserId,
         sceneCode: this.sceneCode,
@@ -160,8 +164,9 @@ export default {
       }).then((resp) => {
         this.treeLoading = false;
         this.treeData1 = resp.data;
+        console.log(this.treeData1)
       });
-    },
+    }
   }, // 注册
 };
 </script>

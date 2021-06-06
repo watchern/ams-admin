@@ -96,7 +96,7 @@
       </el-col>
     </el-row>
     <div class="bottom-btn">
-      <el-button @click="goBack">取消</el-button>
+      <el-button @click="goBack">返回</el-button>
       <el-button type="primary" @click="saveRoleGrp">保存</el-button>
     </div>
   </div>

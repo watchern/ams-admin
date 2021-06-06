@@ -137,7 +137,7 @@ export default {
       // const isLt100M = file.size / 1024 / 1024 < 10
       const isLt100M = true;
       console.log(file);
-      var AllImgExt = ".txt|.xls|.xlsx|.csv";
+      var AllImgExt = ".txt|.xls|.xlsx|.csv|";
       var extName = file.name.substring(file.name.lastIndexOf(".")).toLowerCase(); //（把路径中的所有字母全部转换为小写）
       if (AllImgExt.indexOf(extName + "|") == -1) {
         let ErrMsg =

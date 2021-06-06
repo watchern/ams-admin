@@ -71,12 +71,12 @@
                                     class="oper-btn maintain"
                                 />
                                 <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item
+                                    <!-- <el-dropdown-item
                                         @click.native="findAndReplace(2)"
                                     >查找</el-dropdown-item>
                                     <el-dropdown-item
                                         @click.native="findAndReplace(1)"
-                                    >替换</el-dropdown-item>
+                                    >替换</el-dropdown-item> -->
                                     <el-dropdown-item
                                         @click.native="caseTransformation(1)"
                                     >转大写</el-dropdown-item>
