@@ -850,7 +850,9 @@ export default {
     },
     // 重命名资源名称
     renameResourceSave() {
+      debugger
       var tempData = Object.assign({}, this.selections[0]);
+      console.log(tempData)
       tempData.label = this.resourceForm.resourceName;
       renameResource(tempData).then((res) => {
         if (res.data) {
@@ -863,6 +865,9 @@ export default {
           });
           // 刷新数节点
           this.$emit("refresh");
+          if (this.dialogStatus === 'updateTable'){
+            this.selections[0].label = tempData.label;
+          }
         } else {
           this.$message({
             type: "info",
