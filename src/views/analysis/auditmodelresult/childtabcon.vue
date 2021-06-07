@@ -288,7 +288,7 @@
                   v-if="!yancheng"
                   :disabled="false"
                   type="primary"
-                  @click="toSubmitYc"
+                  @click="toSubmit"
                   class="oper-btn tjsh"
                   >提交审核</el-button
                 >
