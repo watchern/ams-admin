@@ -30,6 +30,11 @@ const AmsRoutes = [
     ]
   },
   {
+    path: '/todoDetailOut',
+    name: 'todoDetailOut',
+    component: () => import('ams-starflow-vue/src/components/todowork/todoDetailOut')
+  },
+  {
     path: '/',
     redirect: '/ams/first'
   },

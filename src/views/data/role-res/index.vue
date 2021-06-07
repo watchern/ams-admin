@@ -2,7 +2,7 @@
   <div class="page-container" style="overflow:auto;">
     <div slot="footer" style="height: 50px">
       <div style="float: right">
-        <el-button @click="goBack">取消</el-button>
+        <el-button @click="goBack">返回</el-button>
         <el-button type="primary" @click="save">保存</el-button>
       </div>
     </div>
@@ -11,7 +11,7 @@
        <!-- :span="6" -->
       <el-col style="min-width:350px;width:auto;">
         <el-input v-model="filterText1" placeholder="输入关键字进行过滤" />
-        <div class="tree-container">
+        <div class="tree-container databg">
           <MyElTree
             ref="tree1"
             v-loading="tree1Loading"
@@ -95,7 +95,7 @@
        <!-- :span="6" -->
       <el-col style="min-width:350px;width:auto;">
         <el-input v-model="filterText2" placeholder="输入关键字进行过滤" />
-        <div class="tree-container">
+        <div class="tree-container databg">
           <MyElTree
             ref="tree2"
             :props="props"
@@ -525,5 +525,8 @@ export default {
 .xieru {
   position: absolute;
   right: 10px;
+}
+.databg{
+  background-color: #6a6a6a16;
 }
 </style>

@@ -116,7 +116,7 @@ export default {
         }
       }, true)
     })
-  },  
+  },
   components: {
     paramDraw,
     dataTree,
@@ -217,13 +217,19 @@ export default {
          var obj = this.$refs.paramassembly[i].replaceNodeParam(this.detailModels[i].modelUuid)
           replaceInfo.push(obj)
       }
-      var obj = {
+      if(this.timing && this.dateTime <= new Date()) {
+        this.$message({
+          type: 'error',
+          message: '该执行时间小于当前时间' + this.dateTime
+        })
+        return false
+      }
+      return {
         dateTime: this.dateTime,
         models: this.detailModels,
         replaceInfo: replaceInfo,
         modelResultSavePathId: this.modelResultSavePathId
       };
-      return obj;
     },
     /**
      * 存储转码后的风险等级
