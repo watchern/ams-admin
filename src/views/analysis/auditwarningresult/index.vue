@@ -25,6 +25,7 @@
           :maintable="item.mainTable"
           :helptables="item.helpTables"
           :model-uuid="item.modeluuid"
+          :modelTitle="item.title"
           :resultSpiltObjects="item.resultSpiltObjects"
           :useType="item.useType===undefined?'modelRunResult':item.useType"
           :pre-value="item.currentExecuteSQL"

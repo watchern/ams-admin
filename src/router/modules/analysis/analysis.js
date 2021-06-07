@@ -2,9 +2,8 @@
 const analysisRouter = {
   path: '/analysis',
   name: '审计分析',
-  component: (resolve) => require(['@/portal/'+ process.env.VUE_APP_BASE_SKIN + '/index'],resolve),
-  meta: {
-  },
+  component: (resolve) => require(['@/portal/' + process.env.VUE_APP_BASE_SKIN + '/index'], resolve),
+  meta: {},
   children: [
     {
       path: 'auditmodel',
@@ -46,7 +45,11 @@ const analysisRouter = {
     {
       path: 'sqleditor',
       name: 'SQL编辑器',
-      component: () => import('@/views/analysis/sqleditor/index')
+      component: () => import('@/views/analysis/sqleditor/index'),
+      //2021.6.4 太仓需求sql编辑页保留编辑内容
+      // meta: {
+      //   keepAlive: true
+      // },
     },
     {
       path: 'editormodelnew',
