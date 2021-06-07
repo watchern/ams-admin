@@ -917,7 +917,7 @@
                 this.webSocket.onmessage = function(event) {
                     const dataObj = JSON.parse(event.data)// 接收到返回结果
                     const executeSQLObj = dataObj.executeSQL
-                    switch (executeSQLObj.type) {
+                    switch (executeSQLObj.type.toUpperCase()) {
                         case "SELECT"://匹配结果集，预览数据
                             if (executeSQLObj.customParam[0] === $this.websocketBatchId) {
                                 $this.loadResultNum++
