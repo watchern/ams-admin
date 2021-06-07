@@ -6,6 +6,7 @@
         :settingInfo="settingInfo"
         :nowtable="maintable"
         :model-uuid="modelUuid"
+        :modelTitle="modelTitle"
         :useType="useType"
         :resultSpiltObjects="resultSpiltObjects"
         :modelId="modelId"
@@ -33,6 +34,7 @@
         :resultSpiltObjects="resultSpiltObjects"
         :modelId="modelId"
         :nowtable="item"
+        :modelTitle="modelTitle"
         :prePersonalVal="item"
         :useType="useType"
         :preLength="useType=='sqlEditor'||useType=='modelPreview'?preValue.length:1"
@@ -187,6 +189,7 @@ export default {
     "maintable",
     "helptables",
     "modelUuid",
+    "modelTitle",
     "useType",
     "preValue",
     "resultSpiltObjects",

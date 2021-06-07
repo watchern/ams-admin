@@ -232,6 +232,19 @@ export function deleteExecuteNodes(ids) {
 }
 
 /**
+ * 取消正在执行的节点SQL任务
+ * @param ids 任务UUID串
+ */
+export function cancelExecuteTask(ids){
+    return request({
+        baseURL: baseURL,
+        url: `/graphCt/cancelExecuteTask`,
+        method: 'post',
+        params:{"ids":ids}
+    })
+}
+
+/**
  * 执行节点
  */
 export function executeNodeSql(data) {

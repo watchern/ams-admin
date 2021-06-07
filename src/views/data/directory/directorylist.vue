@@ -850,7 +850,9 @@ export default {
     },
     // 重命名资源名称
     renameResourceSave() {
+      debugger
       var tempData = Object.assign({}, this.selections[0]);
+      console.log(tempData)
       tempData.label = this.resourceForm.resourceName;
       renameResource(tempData).then((res) => {
         if (res.data) {
@@ -861,7 +863,11 @@ export default {
             duration: 2000,
             position: "bottom-right",
           });
-          // todo 怎么刷新树节点？
+          // 刷新数节点
+          this.$emit("refresh");
+          if (this.dialogStatus === 'updateTable'){
+            this.selections[0].label = tempData.label;
+          }
         } else {
           this.$message({
             type: "info",
@@ -871,7 +877,6 @@ export default {
       });
       this.resourceForm.resourceName = "";
       this.folderFormVisible = false;
-      this.$emit("refresh");
     },
     // 新增表
     add() {

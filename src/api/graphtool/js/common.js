@@ -1,4 +1,4 @@
-import { deleteExecuteNodes, executeNodeSql, executeAllNodeSql } from '@/api/graphtool/apiJs/graphList'
+import { cancelExecuteTask, executeNodeSql, executeAllNodeSql } from '@/api/graphtool/apiJs/graphList'
 import * as validateJs from '@/api/graphtool/js/validate'
 import { updateResourceZtreeNodeName } from '@/api/graphtool/js/index'
 let graphIndexVue = null
@@ -101,7 +101,9 @@ export function saveNodeSetting() {
                     let newSqlArr = []
                     let newSelectSqlArr = []
                     let areaArr = []
+                    let newIsDeleteTableArr = []
                     let resultTableNameArr = graph.nodeData[curNodeId].nodeInfo.resultTableNameArr
+                    let isDeleteTableArr = graph.nodeData[curNodeId].nodeInfo.isDeleteTableArr
                     let nodeSqlArr = graph.nodeData[curNodeId].nodeInfo.nodeSqlArr
                     let selectSqlNotViewTableArr = graph.nodeData[curNodeId].nodeInfo.selectSqlNotViewTableArr
                     let colName = graph.nodeData[curNodeId].setting.hierarchy_column
@@ -114,19 +116,23 @@ export function saveNodeSetting() {
                             newTableArr.push('')
                             newSqlArr.push('')
                             newSelectSqlArr.push('')
+                            newIsDeleteTableArr.push(false)
                             continue
                         }
                         if (j <= resultTableNameArr.length - 1) {
                             newTableArr[j] = resultTableNameArr[j]
                             newSqlArr[j] = nodeSqlArr[j]
                             newSelectSqlArr[j] = selectSqlNotViewTableArr[j]
+                            newIsDeleteTableArr[j] = isDeleteTableArr[j]
                         } else {
                             newTableArr.push('')
                             newSqlArr.push('')
                             newSelectSqlArr.push('')
+                            newIsDeleteTableArr.push(false)
                         }
                     }
                     graph.nodeData[curNodeId].nodeInfo.resultTableNameArr = newTableArr.slice()
+                    graph.nodeData[curNodeId].nodeInfo.isDeleteTableArr = newIsDeleteTableArr.slice()
                     graph.nodeData[curNodeId].nodeInfo.nodeSqlArr = newSqlArr.slice()
                     graph.nodeData[curNodeId].nodeInfo.selectSqlNotViewTableArr = newSelectSqlArr.slice()
                     graph.nodeData[curNodeId].nodeInfo.areaArr = areaArr
@@ -222,8 +228,22 @@ function autoCreateNode(y, index, name) {
  * @param curNodeId	开始变更的节点ID
  * */
 function getAllChildrenIds(curNodeId) {
-    var idArr = []		// 存放需要变更的节点的ID
-    idArr = getIdArr(idArr, curNodeId)
+    return getIdArr([], curNodeId)
+}
+
+/**
+ * 获取当前节点的后续所有分支的子孙节点ID集合
+ * @param idArr		节点ID集合
+ * @param nodeId  当前节点ID
+ * */
+function getIdArr(idArr, nodeId) {
+    if (graph.nodeData[nodeId]) {
+        var childrenIds = graph.nodeData[nodeId].childrenIds
+        for (var i = 0; i < childrenIds.length; i++) {
+            idArr.push(childrenIds[i])
+            idArr = getIdArr(idArr, childrenIds[i])
+        }
+    }
     return idArr
 }
 
@@ -246,22 +266,6 @@ function changeNodeInfo(curNodeId, isChangeSource) {
         }
         changeNodeIcon(1, graph.nodeData[idArr[i]].isSet, idArr[i])
     }
-}
-
-/**
- * 获取当前节点的后续所有分支的子孙节点ID集合
- * @param idArr		节点ID集合
- * @param nodeId  当前节点ID
- * */
-function getIdArr(idArr, nodeId) {
-    if (graph.nodeData[nodeId]) {
-        var childrenIds = graph.nodeData[nodeId].childrenIds
-        for (var i = 0; i < childrenIds.length; i++) {
-            idArr.push(childrenIds[i])
-            idArr = getIdArr(idArr, childrenIds[i])
-        }
-    }
-    return idArr
 }
 
 /**
@@ -372,48 +376,76 @@ function verifyExsist(nodeData, arr, curNodeId, filterNodeOptType, filterNodeExe
 }
 
 /**
- * 获取当前节点及其前置节点中正在执行的节点的ID集合
- * @param curCellId	当前执行的节点ID
- * @return executingNodeIdArr	正在执行的节点的ID集合
- * */
-function getExecutingNodeIdArr(curCellId, executingNodeIdArr) {
-    var nodeExcuteStatus = graph.nodeData[curCellId].nodeInfo.nodeExcuteStatus
-    if (nodeExcuteStatus === 2) {
-        executingNodeIdArr.push(curCellId)
-        var parentIds = graph.nodeData[curCellId].parentIds
-        for (var i = 0; i < parentIds.length; i++) {
-            var pre_nodeExcuteStatus = graph.nodeData[parentIds[i]].nodeInfo.nodeExcuteStatus
-            if (pre_nodeExcuteStatus === 2) {
-                executingNodeIdArr = getExecutingNodeIdArr(parentIds[i], executingNodeIdArr)
-            }
-        }
-    }
-    return executingNodeIdArr
-}
-
-/**
  * 节点取消执行方法
+ * @param flag 是否自动终止执行任务（当前节点执行出错时需终止后续节点的执行任务）
+ * @param curCellId 节点ID
  * */
-export function cancelExecute() {
-    if (graph.nodeData[graph.curCell.id].nodeInfo.nodeExcuteStatus !== 2) {
-        alertMsg('错误', '该节点不是正在执行的节点', 'error')
+export function cancelExecute(flag,curCellId) {
+    //执行任务的主键
+    const taskUuidArr = graphIndexVue.executeTaskObj.executeTask//被取消执行节点的任务UUID
+    if(taskUuidArr.length === 0 && !graphIndexVue.executeTaskObj.init && !graphIndexVue.executeTaskObj.isError){
+        alertMsg('提示', '未创建完执行任务，请稍后', 'warning')
         return
     }
-    var executingNodeIdArr = []
-    executingNodeIdArr = getExecutingNodeIdArr(graph.curCell.id, executingNodeIdArr)
-    // 改变所有执行中节点的状态为未执行
-    for (var i = 0; i < executingNodeIdArr.length; i++) {
-        if (graph.nodeData[executingNodeIdArr[i]]) {
-            graph.nodeData[executingNodeIdArr[i]].nodeInfo.nodeExcuteStatus = 1
-            graph.nodeData[executingNodeIdArr[i]].nodeInfo.cancelExecute = true
-            changeNodeIcon(1, null, executingNodeIdArr[i])
+    curCellId = curCellId ? curCellId : graph.curCell.id
+    //获取当前节点的所有子孙节点集合
+    var cIdArr = getAllChildrenIds(curCellId)
+    if(flag){//curCellId为操作节点的ID
+        // 获取当前节点的所有子集合
+        const childrenIds = graph.nodeData[curCellId].childrenIds
+        cIdArr.forEach(e => {// 遍历当前节点的所有子孙节点集合
+            if ($.inArray(e, graphIndexVue.executeNodeIdArr) > -1 && $.inArray(e, childrenIds) < 0) { // 如果子孙节点ID包含在执行节点队列中且不包含在子节点ID集合中（即当前节点的所有孙子节点）
+                graph.nodeData[e].nodeInfo.nodeExcuteStatus = 1
+                changeNodeIcon(1, null, e)
+            }
+        })
+    }else{//curCellId为结果表节点的ID
+        if (graph.nodeData[curCellId].nodeInfo.nodeExcuteStatus !== 2) {
+            alertMsg('错误', '该节点不是正在执行的节点', 'error')
+            return
         }
-    }
-    if (executingNodeIdArr.length > 0) {
+        if(graphIndexVue.executeNodeIdArr.length > 0){
+            //取消所有正在执行的节点
+            graphIndexVue.executeNodeIdArr.forEach(nodeId => {
+                if(graph.nodeData[nodeId].nodeInfo.nodeExcuteStatus === 2){
+                    graph.nodeData[nodeId].nodeInfo.nodeExcuteStatus = 1
+                    changeNodeIcon(1, null, nodeId)
+                }
+            })
+        }else{
+            const parentIds = graph.nodeData[curCellId].parentIds//找出当前结果表节点的父节点，有且只有一个
+            const executingNodeIdArr = [parentIds[0],curCellId]
+            // 改变节点的状态为未执行
+            executingNodeIdArr.forEach(nodeId => {
+                if (graph.nodeData[nodeId]) {
+                    graph.nodeData[nodeId].nodeInfo.nodeExcuteStatus = 1
+                    changeNodeIcon(1, null, nodeId)
+                }
+            })
+            cIdArr.forEach(cNodeId => {
+                if ($.inArray(cNodeId, graphIndexVue.executeNodeIdArr) > -1) { // 如果子孙节点ID包含在执行节点队列中
+                    graph.nodeData[cNodeId].nodeInfo.nodeExcuteStatus = 1
+                    changeNodeIcon(1, null, cNodeId)
+                }
+            })
+        }
         // 记录取消执行操作
         refrashHistoryZtree('取消节点执行')
-        // 自动保存图形化
-        autoSaveGraph()
+    }
+    cancelExecute_callBack(taskUuidArr)
+    // 自动保存图形化
+    autoSaveGraph()
+}
+
+function cancelExecute_callBack(taskUuidArr) {
+    if(taskUuidArr.length > 0) {
+        cancelExecuteTask(taskUuidArr.join(",")).then(() => {
+            graphIndexVue.executeTaskObj = {
+                "init": true,
+                "executeTask": [],
+                "isError":false
+            }
+        })
     }
 }
 
@@ -444,23 +476,21 @@ function autoExcute(curNodeId) {
 
 /**
  * 执行本节点方法的内部调用方法
- * @param notExecuteNodeIdArr 所有未执行节点的ID数组
+ * @param isExecuteToNode 是否是执行到本节点方法
  * */
-export function executeNode(notExecuteNodeIdArr) {
-    graphIndexVue.curCell = {...{},...graph.curCell}
-    var executeCellId = graphIndexVue.curCell.id
-    var obj = {
-        'verify': true,
-        'message': ''
+export function executeNode(isExecuteToNode) {
+    if (!validateJs.executeVerify()) {
+        return
     }
-    if (typeof notExecuteNodeIdArr === 'undefined' || notExecuteNodeIdArr == null || notExecuteNodeIdArr.length === 0) {
-        if (!validateJs.executeVerify()) {
-            return
-        }
-        // 从当前执行节点（选中节点）递归查找所有未执行成功且已经配置过的前置节点集合,start
-        notExecuteNodeIdArr = [executeCellId]
-        notExecuteNodeIdArr = getNotExecuteNode(executeCellId, notExecuteNodeIdArr)
-        // 从当前执行节点（选中节点）递归查找所有未执行成功且已经配置过的前置节点集合,end
+    var notExecuteNodeIdArr = []//所有未执行节点的ID数组
+    graphIndexVue.curExecuteCell = {...{},...graph.curCell}
+    var executeCellId = graphIndexVue.curExecuteCell.id
+    if(isExecuteToNode){
+        // 从当前执行节点（选中节点）递归查找所有非原表的前置节点集合
+        notExecuteNodeIdArr = getPreNodesNotDatasource(graph.nodeData, graphIndexVue.curExecuteCell.id, [graphIndexVue.curExecuteCell.id])
+    }else{
+        // 从当前执行节点（选中节点）递归查找所有未执行成功且已经配置过的前置节点集合
+        notExecuteNodeIdArr = getNotExecuteNode(executeCellId, [executeCellId])
     }
     // 判断当前队列中是否存在未配置成功的操作节点
     if (hasNotSetNode(notExecuteNodeIdArr)) {
@@ -505,10 +535,9 @@ export function executeNode_callback(notExecuteNodeIdArr) {
     for (var j = 0; j < notExecuteNodeIdArr.length; j++) {
         graph.nodeData[notExecuteNodeIdArr[j]].nodeInfo.nodeExcuteStatus = 2
         changeNodeIcon(2, null, notExecuteNodeIdArr[j])
-        if(graph.nodeData[notExecuteNodeIdArr[j]].nodeInfo.cancelExecute){
-            delete graph.nodeData[notExecuteNodeIdArr[j]].nodeInfo.cancelExecute
-        }
     }
+    graphIndexVue.executeTaskObj = {"init":false,"executeTask":[],"isError":false}
+    $(graphIndexVue.$refs.sysInfoArea).html("")
     // 判断所执行的节点集合中是否包含数据分层节点，有的话做特殊处理
     for (var i = 0; i < notExecuteNodeIdArr.length; i++) {
         // 如果是数据分层节点，并且结果表的数组长度不为0
@@ -535,87 +564,26 @@ export function executeNode_callback(notExecuteNodeIdArr) {
             }
         }
     }
-    var executeCellId = graphIndexVue.curCell.id
-    // 校验结果表是否有自己的配置信息
-    var isSet = graph.nodeData[executeCellId].isSet
-    var parentIds = graph.nodeData[executeCellId].parentIds
-    // 记录执行操作
-    refrashHistoryZtree('开始执行【' + graphIndexVue.curCell.value + '】节点')
-    // 自动保存图形化
-    autoSaveGraph()
-    var executeId = new UUIDGenerator().id
+    const executeId = new UUIDGenerator().id
     var dataParam = {
         'openType': graph.openType,
         'executeId': executeId,
-        'graphUuid': graphIndexVue.graphUuid,
-        'graphName': graphIndexVue.graphName,
         'nodeIdList': notExecuteNodeIdArr.join(','),
-        'nodeData': JSON.stringify(graph.nodeData)
+        'nodeData': JSON.stringify(graph.nodeData),
+        'noData':false
     }
     graphIndexVue.initData()
     graphIndexVue.websocketBatchId = executeId
     graphIndexVue.$nextTick(() => {
         executeNodeSql(dataParam).then(response => {
-            if (response.data != null) {
-                $('#sysInfoArea').html(response.data.message)
-                graphIndexVue.resultTabActiveName = '1'
-                if(response.data.isError){
-                    Array.from(notExecuteNodeIdArr, item => {
-                        graph.nodeData[item].nodeInfo.nodeExcuteStatus = 4
-                        changeNodeIcon(4, null, item)
-                    })
-                    deleteExecuteNodes(executeId).then()
-                }else{
-                    // 循环所有节点变更执行状态有变化的节点执行状态信息
-                    nodeCallBack(notExecuteNodeIdArr, response.data.nodeData, executeId)
-                    // 如果当前节点执行成功，则直接显示结果集
-                    if (graph.nodeData[executeCellId] && graph.nodeData[executeCellId].nodeInfo && graph.nodeData[executeCellId].nodeInfo.nodeExcuteStatus === 3) {
-                        graphIndexVue.resultTabActiveName = '0'
-                        graphIndexVue.showTableResult = false
-                        let nodeId = executeCellId
-                        let nodeName = graph.nodeData[executeCellId].nodeInfo.nodeName
-                        let resultTableName = ''
-                        if (!isSet) {
-                            resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName
-                        } else {
-                            resultTableName = graph.nodeData[executeCellId].nodeInfo.resultTableName
-                        }
-                        let isRoleTable = false //节点的表是否需要走权限（一版只有CREATE TABLE的临时表走权限）
-                        let optType = graph.nodeData[executeCellId].nodeInfo.optType
-                        if (optType === 'newNullNode') { // 结果表
-                            let midTableStatus = graph.nodeData[executeCellId].nodeInfo.midTableStatus
-                            let resultTableStatus = graph.nodeData[executeCellId].nodeInfo.resultTableStatus
-                            //如果结果表节点被标记成了中间或最终结果表，并且上级节点的是否删除表的标记为是（打了中间或最终结果表标记却未执行的情况下是否）
-                            if ((midTableStatus === 2 || resultTableStatus === 2) && graph.nodeData[parentIds[0]].nodeInfo.isDeleteTable) {
-                                isRoleTable = true
-                            }
-                            nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + nodeName
-                            optType = graph.nodeData[parentIds[0]].nodeInfo.optType
-                        }
-                        graphIndexVue.resultTableArr.push({ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable,optType: optType })
-                        // 预览数据
-                        graphIndexVue.viewData()
-                    }
-                }
-                var historyNodeName = ''
-                // 如果执行的是未配置的结果表
-                if (!isSet) {
-                    historyNodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName
-                } else {
-                    historyNodeName = graphIndexVue.curCell.value
-                }
-                // 记录执行操作
-                refrashHistoryZtree('【' + historyNodeName + '】节点执行完毕')
-                // 自动保存图形化
-                autoSaveGraph()
+            if (response.data.isError) {
+                graphIndexVue.$message.error(`请求失败：${response.data.message}`)
             } else {
-                $('#sysInfoArea').html('执行节点的请求失败！')
-                // 更改执行状态图标为未执行
-                for (let i=0; i<notExecuteNodeIdArr.length; i++) {
-                    graph.nodeData[notExecuteNodeIdArr[i]].nodeInfo.nodeExcuteStatus = 1
-                    changeNodeIcon(1, null, notExecuteNodeIdArr[i])
-                }
+                alertMsg('提示', '执行任务创建完成', 'info')
+                graphIndexVue.executeTaskObj.executeTask = response.data.taskUuidList
             }
+        }).catch(() => {
+            graphIndexVue.$message.error('执行操作请求失败')
         })
     })
 }
@@ -624,15 +592,7 @@ export function executeNode_callback(notExecuteNodeIdArr) {
  * 执行到本节点（执行当前节点这条线上所有节点，包括已执行过的）
  * */
 export function executeToNode() {
-    if (!validateJs.executeVerify()) {
-        return
-    }
-    // 从当前执行节点（选中节点）递归查找所有非原表的前置节点集合,start
-    graphIndexVue.curCell = {...{},...graph.curCell}
-    var notExecuteNodeIdArr = [graphIndexVue.curCell.id]
-    notExecuteNodeIdArr = getPreNodesNotDatasource(graph.nodeData, graphIndexVue.curCell.id, notExecuteNodeIdArr)
-    // 从当前执行节点（选中节点）递归查找所有非原表的前置节点集合,end
-    executeNode(notExecuteNodeIdArr)
+    executeNode(true)
 }
 
 /**
@@ -739,9 +699,6 @@ export function executeAllNode() {
             graphIndexVue.$message({ type: 'warning', message: returnObj.message })
             return
         }
-        graphIndexVue.executeNodeIdArr = allNodeIdArr
-        graphIndexVue.executeNodeObject = notExecuteNodeObject
-        graphIndexVue.executeType = 'all'
         let checkParam = false// 默认没有参数节点
         for (let i = 0; i < allNodeIdArr.length; i++) {
             let hasParam = graph.nodeData[allNodeIdArr[i]].hasParam// 是否有参数
@@ -776,26 +733,48 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
         if (graph.nodeData[nodeIdArr[i]].nodeInfo.nodeExcuteStatus !== 2) {
             graph.nodeData[nodeIdArr[i]].nodeInfo.nodeExcuteStatus = 2
             changeNodeIcon(2, null, nodeIdArr[i])
-            if(graph.nodeData[nodeIdArr[i]].nodeInfo.cancelExecute){
-                delete graph.nodeData[nodeIdArr[i]].nodeInfo.cancelExecute
-            }
         }
     }
-    var load = $('body').mLoading({ 'text': '正在执行全部节点，请稍后……', 'hasCancel': false, 'hasTime': true })
+    graphIndexVue.executeNodeIdArr = nodeIdArr
+    graphIndexVue.executeNodeObject = notExecuteNodeObject
+    graphIndexVue.executeType = 'all'
+    graphIndexVue.executeTaskObj = {"init":false,"executeTask":[],"isError":false}
+    $(graphIndexVue.$refs.sysInfoArea).html("")
+    graphIndexVue.loading = $(graphIndexVue.$refs.graphToolDiv).mLoading({ 'text': '正在执行全部节点，请稍后……', 'hasCancel': true, 'hasTime': true, "callback" : function () {
+            //执行任务的主键
+            const taskUuidArr = graphIndexVue.executeTaskObj.executeTask//被取消执行节点的任务UUID
+            if(taskUuidArr.length === 0 && !graphIndexVue.executeTaskObj.init && !graphIndexVue.executeTaskObj.isError){
+                alertMsg('提示', '未创建完执行任务，请稍后', 'warning')
+            }else{
+                //取消所有正在执行的节点
+                graphIndexVue.executeNodeIdArr.forEach(t => {
+                    if(graph.nodeData[t].nodeInfo.nodeExcuteStatus === 2){
+                        graph.nodeData[t].nodeInfo.nodeExcuteStatus = 1
+                        changeNodeIcon(1, null, t)
+                    }
+                })
+                cancelExecute_callBack(taskUuidArr)
+                // 记录取消执行操作
+                refrashHistoryZtree('取消节点执行')
+                // 自动保存图形化
+                autoSaveGraph()
+                graphIndexVue.loading.destroy()
+            }
+        }})
     var dataParam = {
         'openType': graph.openType,
         'graphUuid': graphIndexVue.graphUuid,
-        'graphName': graphIndexVue.graphName,
         'nodeIdList': nodeIdArr.join(","),
         'nodeData': JSON.stringify(graph.nodeData),
-        'nodeObject': JSON.stringify(notExecuteNodeObject)
+        'nodeObject': JSON.stringify(notExecuteNodeObject),
+        'noData':false
     }
     graphIndexVue.websocketBatchId = new UUIDGenerator().id
     graphIndexVue.initData()
     graphIndexVue.$nextTick(() => {
         executeAllNodeSql(dataParam).then( response => {
-            load.hide()
             if (response.data == null) {
+                loadingInstance.close();
                 graphIndexVue.$message.error('全部执行节点的请求失败')
                 // 更改执行状态图标为未执行
                 for (let i=0; i<nodeIdArr.length; i++) {
@@ -803,62 +782,113 @@ export function executeAllNode_callback(nodeIdArr, notExecuteNodeObject) {
                     changeNodeIcon(1, null, nodeIdArr[i])
                 }
             } else {
-                $('#sysInfoArea').html(response.data.message)
-                // 循环所有节点变更执行状态有变化的节点执行状态信息
-                nodeCallBack(nodeIdArr, JSON.parse(response.data.nodeData), null)
-                //找出需预览结果集的节点（包含每条任务线的最后一个结果表节点、被标记为辅助结果表或最终结果表的节点），需去重
-                let resultNodeIdArr = []
-                for(let i=0; i<nodeIdArr.length; i++){
-                    let optType = graph.nodeData[nodeIdArr[i]].nodeInfo.optType//节点类型
-                    let nodeExcuteStatus = graph.nodeData[nodeIdArr[i]].nodeInfo.nodeExcuteStatus//执行结果状态
-                    let midTableStatus = graph.nodeData[nodeIdArr[i]].nodeInfo.midTableStatus//是否是辅助结果表
-                    let resultTableStatus = graph.nodeData[nodeIdArr[i]].nodeInfo.resultTableStatus//是否是最终结果表
-                    let parentIds = graph.nodeData[nodeIdArr[i]].parentIds
-                    let childrenIds = graph.nodeData[nodeIdArr[i]].childrenIds
-                    //如果是执行成功的结果表，且未存在于数组中
-                    if(optType === "newNullNode" && nodeExcuteStatus === 3 && $.inArray(nodeIdArr[i],resultNodeIdArr) < 0){
-                        //第一种，是否是当前任务线的最后一个结果表（即存在父节点但不存在子节点）
-                        if(parentIds.length > 0 && childrenIds.length === 0){
-                            resultNodeIdArr.push(nodeIdArr[i])
-                        }
-                        //第一种，是否被标记为辅助结果表或最终结果表
-                        if(midTableStatus === 2 || resultTableStatus === 2){
-                            resultNodeIdArr.push(nodeIdArr[i])
-                        }
-                    }
+                alertMsg('提示', '执行任务创建完成', 'info')
+                const message = response.data.message
+                if(message !== ""){
+                    const sysInfoAreaHtml = $(graphIndexVue.$refs.sysInfoArea).html()
+                    $(graphIndexVue.$refs.sysInfoArea).html(sysInfoAreaHtml + message)
                 }
-                if(resultNodeIdArr.length > 0){
-                    graphIndexVue.resultTabActiveName = '0'
-                    graphIndexVue.showTableResult = false
-                    for(let j=0; j<resultNodeIdArr.length; j++){
-                        let nodeId = resultNodeIdArr[j]
-                        let parentIds = graph.nodeData[resultNodeIdArr[j]].parentIds//当前结果表的父节点集合（只有一个）
-                        let nodeName = graph.nodeData[parentIds[0]].nodeInfo.nodeName + '_' + graph.nodeData[resultNodeIdArr[j]].nodeInfo.nodeName
-                        let midTableStatus = graph.nodeData[resultNodeIdArr[j]].nodeInfo.midTableStatus
-                        let resultTableStatus = graph.nodeData[resultNodeIdArr[j]].nodeInfo.resultTableStatus
-                        let optType = graph.nodeData[parentIds[0]].nodeInfo.optType
-                        let resultTableName = ''
-                        if (optType === "layering") {//如果当前结果表的父节点是数据分层节点
-                            let index = graph.nodeData[resultNodeIdArr[j]].nodeInfo.setting.index
-                            resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableNameArr[index]
-                        } else {
-                            resultTableName = graph.nodeData[parentIds[0]].nodeInfo.resultTableName
-                        }
-                        let isRoleTable = false
-                        //如果结果表节点被标记成了中间或最终结果表，并且上级节点的是否删除表的标记为是（打了中间或最终结果表标记却未执行的情况下是否）
-                        if ((midTableStatus === 2 || resultTableStatus === 2) && graph.nodeData[parentIds[0]].nodeInfo.isDeleteTable) {
-                            isRoleTable = true
-                        }
-                        graphIndexVue.resultTableArr.push({ id: nodeId, name: nodeName, resultTableName: resultTableName, isRoleTable: isRoleTable, optType: optType })
-                    }
-                    // 预览数据
-                    graphIndexVue.viewData()
-                }
+                graphIndexVue.executeTaskObj.executeTask = response.data.taskUuidList
             }
-            // 自动保存图形化
-            autoSaveGraph()
         })
     })
+}
+
+export function resetNodeData(curNodeId,executeNodeArr, executeNodeData) {
+    if (typeof executeNodeData !== 'undefined' && executeNodeData != null) {
+        // 循环赋值
+        graph.nodeData[curNodeId] = {...{},...executeNodeData[curNodeId]}
+    }
+    var nodeExcuteStatus = graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus
+    var optType = graph.nodeData[curNodeId].nodeInfo.optType
+    // 获取当前节点的所有子集合
+    let childrenIds = graph.nodeData[curNodeId].childrenIds
+    if (nodeExcuteStatus === 3) {
+        if (optType === 'layering') {// 如果节点是数据分层，则需特殊处理
+            // 获取当前节点的所有下一级节点
+            if (childrenIds.length > 0) {
+                var childCount = 0
+                childrenIds.forEach(o =>{
+                    const child_nodeExcuteStatus = graph.nodeData[o].nodeInfo.nodeExcuteStatus
+                    if (child_nodeExcuteStatus === 3) {
+                        childCount++
+                    }
+                })
+                if (childCount === childrenIds.length) {
+                    changeNodeIcon(3, null, curNodeId)
+                } else {
+                    changeNodeIcon(1, null, curNodeId)
+                    graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 1
+                }
+                //变更当前结果表的状态为执行成功
+                const curIndex = graph.nodeData[curNodeId].setting.index//数据分层节点当前执行语句的下标（对应结果表的下标）
+                let curChildrenIds = "";
+                for(let i=0; i<childrenIds.length; i++){//循环子结果表
+                    const childIdex = graph.nodeData[childrenIds[i]].nodeInfo.index//获取当前结果表的下标
+                    //找到当前返回的是哪一个结果表的执行结果
+                    if(childIdex === curIndex && $.inArray(childrenIds[i], executeNodeArr) > -1){
+                        curChildrenIds = childrenIds[i]
+                        break;
+                    }
+                }
+                if(curChildrenIds !== ""){//变更结果表的状态为执行成功
+                    graph.nodeData[curChildrenIds].nodeInfo.nodeExcuteStatus = 3
+                    changeNodeIcon(3, null, curChildrenIds)
+                    if (graph.nodeData[curChildrenIds].nodeInfo.midTableStatus === 2 || graph.nodeData[curChildrenIds].nodeInfo.resultTableStatus === 2) { // 辅助结果表或最终结果表
+                        let isDeleteTableArr = graph.nodeData[curNodeId].nodeInfo.isDeleteTableArr
+                        if (curIndex <= isDeleteTableArr.length) {
+                            graph.nodeData[curNodeId].nodeInfo.isDeleteTableArr[curIndex] = true
+                        }
+                    }
+                }
+            }
+        } else {//其他操作节点，只有一个子结果表节点
+            changeNodeIcon(3, null, curNodeId)
+            // 如果子节点ID包含在执行节点队列中，节点状态与当前节点状态保持一致，为执行成功状态
+            if ($.inArray(childrenIds[0], executeNodeArr) > -1) {
+                if (!graph.nodeData[childrenIds[0]].isSet) {
+                    graph.nodeData[childrenIds[0]].nodeInfo.nodeExcuteStatus = 3
+                    changeNodeIcon(3, null, childrenIds[0])
+                }
+                if (graph.nodeData[childrenIds[0]].nodeInfo.midTableStatus === 2 || graph.nodeData[childrenIds[0]].nodeInfo.resultTableStatus === 2) { // 辅助结果表或最终结果表
+                    if (graph.nodeData[curNodeId]) {
+                        graph.nodeData[curNodeId].nodeInfo.isDeleteTable = true
+                    }
+                } else {
+                    if (graph.nodeData[curNodeId]) {
+                        graph.nodeData[curNodeId].nodeInfo.isDeleteTable = false
+                    }
+                }
+            }
+        }
+    }
+    if (nodeExcuteStatus === 4) {// 如果当前节点执行出错，则后置子孙节点状态置为未执行
+        changeNodeIcon(4, null, curNodeId)
+        graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 4
+        //变更当前结果表的状态为执行失败
+        if (optType === 'layering') {// 如果节点是数据分层，则需特殊处理
+            const curIndex = graph.nodeData[curNodeId].setting.index
+            let curChildrenIds = "";
+            for(let i=0; i<childrenIds.length; i++){
+                const childIdex = graph.nodeData[childrenIds[i]].nodeInfo.index
+                if(childIdex === curIndex && $.inArray(childrenIds[i], executeNodeArr) > -1){
+                    curChildrenIds = childrenIds[i]
+                    break;
+                }
+            }
+            if(curChildrenIds !== ""){
+                graph.nodeData[curChildrenIds].nodeInfo.nodeExcuteStatus = 4
+                changeNodeIcon(4, null, curChildrenIds)
+            }
+        }else{//其他操作节点，只有一个子结果表节点
+            if ($.inArray(childrenIds[0], executeNodeArr) > -1) {// 如果子节点ID包含在执行节点队列中，节点状态与当前节点状态保持一致，为执行出错状态
+                if (!graph.nodeData[childrenIds[0]].isSet) {
+                    graph.nodeData[childrenIds[0]].nodeInfo.nodeExcuteStatus = 4
+                    changeNodeIcon(4, null, childrenIds[0])
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -874,9 +904,6 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
             continue
         }
         if (graph.nodeData[executeNodeArr[k]].nodeInfo.nodeExcuteStatus !== 2 && stopNodeId === executeNodeArr[k]) {			// 若当前节点是停止节点（只针对于结果表）
-            continue
-        }
-        if (graph.nodeData[executeNodeArr[k]].nodeInfo.cancelExecute) {// 若当前节点是因取消执行操作变为未执行，直接跳过
             continue
         }
         if (typeof executeNodeData !== 'undefined' && executeNodeData != null) {
@@ -909,6 +936,27 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
                             changeNodeIcon(1, null, executeNodeArr[k])
                             graph.nodeData[executeNodeArr[k]].nodeInfo.nodeExcuteStatus = 1
                         }
+                        //变更当前结果表的状态为执行成功
+                        const curIndex = graph.nodeData[executeNodeArr[k]].setting.index//数据分层节点当前执行语句的下标（对应结果表的下标）
+                        let curChildrenIds = "";
+                        for(let i=0; i<childrenIds.length; i++){//循环子结果表
+                            const childIdex = graph.nodeData[childrenIds[i]].nodeInfo.index//获取当前结果表的下标
+                            //找到当前返回的是哪一个结果表的执行结果
+                            if(childIdex === curIndex && $.inArray(childrenIds[i], executeNodeArr) > -1){
+                                curChildrenIds = childrenIds[i]
+                                break;
+                            }
+                        }
+                        if(curChildrenIds !== ""){//变更结果表的状态为执行成功
+                            graph.nodeData[curChildrenIds].nodeInfo.nodeExcuteStatus = 3
+                            changeNodeIcon(3, null, curChildrenIds)
+                            if (graph.nodeData[curChildrenIds].nodeInfo.midTableStatus === 2 || graph.nodeData[curChildrenIds].nodeInfo.resultTableStatus === 2) { // 辅助结果表或最终结果表
+                                let isDeleteTableArr = graph.nodeData[executeNodeArr[k]].nodeInfo.isDeleteTableArr
+                                if (curIndex <= isDeleteTableArr.length) {
+                                    graph.nodeData[executeNodeArr[k]].nodeInfo.isDeleteTableArr[curIndex] = true
+                                }
+                            }
+                        }
                     }
                 } else {
                     changeNodeIcon(3, null, executeNodeArr[k])
@@ -917,11 +965,16 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
                 if (stopNodeId !== executeNodeArr[k]) {				// 如果当前结果表不是停止节点
                     changeNodeIcon(3, null, executeNodeArr[k])
                 }
-                if (graph.nodeData[executeNodeArr[k]].nodeInfo.midTableStatus === 2 || graph.nodeData[executeNodeArr[k]].nodeInfo.resultTableStatus === 2) { // 辅助结果表或最终结果表
-                    if (graph.nodeData[parentIds[0]]) {
-                        graph.nodeData[parentIds[0]].nodeInfo.isDeleteTable = true
+                const pOptType = graph.nodeData[parentIds[0]].nodeInfo.optType
+                if(pOptType === "layering") {//如果当前结果表的上级节点是数据分层节点
+                    if (graph.nodeData[executeNodeArr[k]].nodeInfo.midTableStatus === 2 || graph.nodeData[executeNodeArr[k]].nodeInfo.resultTableStatus === 2) { // 辅助结果表或最终结果表
+                        let isDeleteTableArr = graph.nodeData[parentIds[0]].nodeInfo.isDeleteTableArr
+                        const childIdex = graph.nodeData[executeNodeArr[k]].nodeInfo.index//获取当前结果表的下标
+                        if(childIdex <= isDeleteTableArr.length){
+                            isDeleteTableArr[childIdex] = true
+                        }
                     }
-                } else {
+                }else{
                     if (graph.nodeData[parentIds[0]]) {
                         graph.nodeData[parentIds[0]].nodeInfo.isDeleteTable = false
                     }
@@ -955,10 +1008,6 @@ export function nodeCallBack(executeNodeArr, executeNodeData, executeId) {
                 }
             }
         }
-    }
-    if (executeId && executeId !== '') {
-        // 删除缓冲表中的执行节点信息
-        deleteExecuteNodes(executeId).then()
     }
 }
 

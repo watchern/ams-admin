@@ -10,9 +10,10 @@
         <el-form-item label="表名称" prop="tbName">
           <el-input v-model="temp.tbName" readonly />
         </el-form-item>
-        <el-form-item label="表路径" prop="tablePath">
-          <el-input v-model="temp.tablePath" readonly />
-        </el-form-item>
+<!-- 2021/06/07 @黄鑫 因暂无业务需求，隐藏表物理路径 -->
+<!--        <el-form-item label="表物理路径" prop="tablePath">-->
+<!--          <el-input v-model="temp.tablePath" readonly />-->
+<!--        </el-form-item>-->
         <el-form-item label="字段数" prop="fieldsNum">
           <el-input v-model="temp.fieldsNum" readonly />
         </el-form-item>

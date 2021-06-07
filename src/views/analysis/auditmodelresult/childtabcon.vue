@@ -104,9 +104,19 @@
             ></el-button>
             <!-- addDetailRel('qwer1', '项目11') -->
             <el-button
+              v-if="yancheng"
+              :disabled="false"
+              type="primary"
+              @click="toSubmitYc"
+              class="oper-btn tjsh"
+              >提交审核</el-button
+            >
+            <el-button
+              v-if="!yancheng"
               :disabled="false"
               type="primary"
               @click="toSubmit"
+              class="oper-btn tjsh"
               style="margin-left: 10px"
               >提交审核</el-button
             >
@@ -267,10 +277,19 @@
                 ></el-button>
                 <!-- addDetailRel('qwer1', '项目11') -->
                 <el-button
+                  v-if="yancheng"
+                  :disabled="false"
+                  type="primary"
+                  @click="toSubmitYc"
+                  class="oper-btn tjsh"
+                  >提交审核</el-button
+                >
+                <el-button
+                  v-if="!yancheng"
                   :disabled="false"
                   type="primary"
                   @click="toSubmit"
-                  style="margin-left: 10px"
+                  class="oper-btn tjsh"
                   >提交审核</el-button
                 >
               </div>
@@ -482,6 +501,42 @@
         >
       </span>
     </el-dialog>
+    <el-dialog
+            title="提交审核"
+            v-if="dialogVisibleSubmitYc"
+            :visible.sync="dialogVisibleSubmitYc"
+            :close-on-click-modal="false"
+            width="80%"
+        >
+            <div>
+                <flowItem2
+                        ref="flowItem2"
+                        :flowSet="flowSet"
+                        :flowItem="flowItem"
+                        :flow-param="flowParam"
+                        :columnDefs="columnDefs"
+                        :submitData="submitData"
+                        @closeModal="closeFlowItem"
+                        @delectData="delectDataYc"
+                ></flowItem2>
+            </div>
+            <span class="sess-flowitem" slot="footer">
+        <el-button
+                size="mini"
+                type="primary"
+                class="table_header_btn"
+                @click="saveOpinionYc"
+        >提交</el-button
+        >
+        <el-button
+                size="mini"
+                type="primary"
+                class="table_header_btn"
+                @click="dialogVisibleSubmitYc = false"
+        >关闭</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -542,6 +597,7 @@ let mouseXY = { x: null, y: null };
 let DragPos = { x: null, y: null, w: 1, h: 1, i: null };
 import { randomString4Len } from "@/api/analysis/common";
 import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
+import flowItem2 from "ams-clue-vue/src/components/yctodowork/flowItem2";
 export default {
   name: "childTabCon",
   // 注册draggable组件
@@ -556,6 +612,7 @@ export default {
     GridLayout,
     GridItem,
     flowItem,
+    flowItem2,
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -576,6 +633,7 @@ export default {
   props: [
     "nowtable",
     "modelUuid",
+    "modelTitle",
     "useType",
     "prePersonalVal",
     "resultSpiltObjects",
@@ -589,11 +647,21 @@ export default {
   data() {
     return {
       //工作流相关
+      submitData: {
+          versionUuid: 'tlLuwUhC',
+          busTableName: '',  //表名
+          busDatabaseName: 'warehouse',  //数据库名
+          busDatabaseType: '',  //
+          status: '1',  //预警数据状态
+          busdatas: []
+      },
       // 判断是否走工作流
+      yancheng:false,
       flowParam: 0,
       multipleSelection: [],
       applyInfo: {},
       dialogVisibleSubmit: false,
+      dialogVisibleSubmitYc: false,
       flowSet: {
         opinionList: false,
         opinion: false,
@@ -754,6 +822,11 @@ export default {
       this.saveChartsAll();
     });
     this.componentParent = this;
+
+    let projectStatus = this.$route.query.projectStatus;
+    if( "1"==projectStatus){
+      this.yancheng=true;
+    }
   },
   created() {
     let _this = this;
@@ -1311,7 +1384,9 @@ export default {
         );
         this.columnDefs = col;
         this.rowData = da;
-        this.gridApi.closeToolPanel()
+        if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
+          this.gridApi.closeToolPanel()
+        }
       } else if (this.useType == "sqlEditor") {
         this.getIntoModelResultDetail(nextValue);
       } else if (this.useType == "modelPreview") {
@@ -1532,7 +1607,9 @@ export default {
                   }
                   this.columnDefs = col;
                   this.afterResult = true;
-                  this.gridApi.closeToolPanel()
+                  if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
+                    this.gridApi.closeToolPanel()
+                  }
                 });
               }
             } else {
@@ -1632,7 +1709,9 @@ export default {
             }
             this.columnDefs = col;
             this.afterResult = true;
-            this.gridApi.closeToolPanel()
+            if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
+              this.gridApi.closeToolPanel()
+            }
           } else {
             this.isSee = false;
             this.modelResultPageIsSee = false;
@@ -2541,26 +2620,49 @@ export default {
      * 工作流  点击提交审核按钮
      */
     toSubmit() {
-      // alert(JSON.stringify(this.multipleSelection));
       if (this.multipleSelection.length == 0) {
         alert("请至少选中一条数据");
-        // this.common.alertMsg(2, "请选中一条数据");
         return false;
       }
-      this.flowItem.versionUuid = randomString4Len();
-      this.flowItem.applyTitle = "zhan";
+      //流程接口调用
+      this.submitData.busdatas=this.multipleSelection;
+      for (var i = 0; i < this.submitData.busdatas.length; i++) {
+          if (this.submitData.busdatas[i].状态 === 1 ) {
+              this.$message.info({
+                  duration: 2000,
+                  message: "预警发起的数据不能重复提交！"
+              })
+              return false;
+          }else if(this.submitData.busdatas[i].状态 === 3 ){
+              this.$message.info({
+                  duration: 2000,
+                  message: "已销号的数据不能重复提交！"
+              })
+              return false;
+          }
+      }
+      this.submitData.busTableName = this.nowtable.resultTableName  // 表名称
+      this.submitData.busDatabaseType = 'mysql'  //数据库类型
+      this.flowItem.versionUuid = this.common.randomString4Len(8);
+      this.flowItem.applyTitle = this.modelTitle + this.common.getNowFormatDay();
       this.applyInfo.versionUuid = this.flowItem.versionUuid;
       this.applyInfo.status = "";
       this.applyInfo.mstate = "";
       this.applyInfo.fstate = "";
       this.applyInfo.isUpdate = false; //初始化
       this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
+      
+      console.info(JSON.stringify(this.submitData))
+      console.info(JSON.stringify(this.columnDefs))
       this.dialogVisibleSubmit = true;
     },
     saveOpinion() {
       var data = {
         versionUuid: this.flowItem.versionUuid,
         busdatas: this.multipleSelection,
+        busTableName:this.submitData.busTableName,
+        busDatabaseName:this.submitData.busDatabaseName,
+        busDatabaseType:this.submitData.busDatabaseType,
       };
       this.$axios
         .post("/ams-clue/busRelation/toSubmit", data)
@@ -2584,6 +2686,7 @@ export default {
 
     closeFlowItem(val) {
       this.dialogVisibleSubmit = val;
+      this.dialogVisibleSubmitYc = val;
       this.flowParam = 0;
       this.initData();
     },
@@ -2606,6 +2709,71 @@ export default {
         });
       this.initData();
     },
+    toSubmitYc() {
+      // alert(JSON.stringify(this.multipleSelection));
+      if (this.multipleSelection.length == 0) {
+        alert("请至少选中一条数据");
+        // this.common.alertMsg(2, "请选中一条数据");
+        return false;
+      }
+      //流程接口调用
+      this.submitData.busdatas=this.multipleSelection;
+      for (var i = 0; i < this.submitData.busdatas.length; i++) {
+          if (this.submitData.busdatas[i].状态 === 1 ) {
+              this.$message.info({
+                  duration: 2000,
+                  message: "预警发起的数据不能重复提交！"
+              })
+              return false;
+          }else if(this.submitData.busdatas[i].状态 === 3 ){
+              this.$message.info({
+                  duration: 2000,
+                  message: "已销号的数据不能重复提交！"
+              })
+              return false;
+          }
+      }
+      this.submitData.busTableName = this.nowtable.resultTableName  // 表名称
+      // this.submitData.status = this.initStatus;  //数据状态（0）
+      this.submitData.busDatabaseType = 'mysql'  //数据库类型
+      this.flowItem.versionUuid = this.common.randomString4Len(8);
+      this.flowItem.applyTitle = this.modelTitle + this.common.getNowFormatDay();
+      this.applyInfo.versionUuid = this.flowItem.versionUuid;
+      this.applyInfo.status = "";
+      this.applyInfo.mstate = "";
+      this.applyInfo.fstate = "";
+      this.applyInfo.isUpdate = false; //初始化
+      this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
+      
+      console.info(JSON.stringify(this.submitData))
+      console.info(JSON.stringify(this.columnDefs))
+      this.dialogVisibleSubmitYc = true;
+    },
+    saveOpinionYc() {
+        setTimeout(() => {
+            this.$refs["flowItem2"].saveOpinion();
+        }, 20);
+    },  
+    //流程发布失败
+    delectDataYc(val) {
+      this.dialogVisibleSubmitYc = val;
+      var data = {
+        busRelationUuid: this.$store.state.applyInfo.applyInfo.appDataUuid,
+      };
+      this.$axios
+        .post("/ams-clue/busRelation/delete/rollBackData", data)
+        .then((response) => {
+          if (response.data.code == "0") {
+            this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+          }
+        })
+        .catch((error) => {
+          this.common.alertMsg(1, this.textShare.operateFail());
+          console.log(error);
+        });
+      this.initData();
+    },    
+
   },
 };
 </script>
@@ -2801,6 +2969,9 @@ export default {
 >>> .vue-grid-item.vue-grid-placeholder {
   background: #46a6ff !important;
   opacity: 0.2 !important;
+}
+.tjsh{
+    width: 100px !important;
 }
 </style>
 <style>
