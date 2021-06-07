@@ -861,7 +861,8 @@ export default {
             duration: 2000,
             position: "bottom-right",
           });
-          // todo 怎么刷新树节点？
+          // 刷新数节点
+          this.$emit("refresh");
         } else {
           this.$message({
             type: "info",
@@ -871,7 +872,6 @@ export default {
       });
       this.resourceForm.resourceName = "";
       this.folderFormVisible = false;
-      this.$emit("refresh");
     },
     // 新增表
     add() {
