@@ -917,7 +917,7 @@
                 this.webSocket.onmessage = function(event) {
                     const dataObj = JSON.parse(event.data)// 接收到返回结果
                     const executeSQLObj = dataObj.executeSQL
-                    switch (executeSQLObj.type) {
+                    switch (executeSQLObj.type.toUpperCase()) {
                         case "SELECT"://匹配结果集，预览数据
                             if (executeSQLObj.customParam[0] === $this.websocketBatchId) {
                                 $this.loadResultNum++
@@ -970,7 +970,7 @@
                                 }
                             }
                             break;
-                        default ://执行方法的响应结果
+                        case "EXECUTE_NODE"://执行方法的响应结果
                             const curNodeData = dataObj.nodeData
                             const curNodeId = executeSQLObj.customParam[0]//当前操作节点ID
                             const curOptType = executeSQLObj.customParam[1]//当前操作节点的类型
