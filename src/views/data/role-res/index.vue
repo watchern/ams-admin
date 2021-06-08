@@ -172,7 +172,7 @@
                   style="display: inline; float: right"
                 >
                   <!--label="WRITE" 写入 -->
-                  <el-checkbox></el-checkbox>
+                  <el-checkbox label="WRITE"></el-checkbox>
                 </el-checkbox-group>
               </span>
               <span v-if="data.id === 'ROOT'" class="xieru">写入</span>

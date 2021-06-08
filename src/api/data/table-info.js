@@ -76,6 +76,7 @@ export function delTable(ids) {
   })
 }
 export function getResELTree(data) {
+
   if (!data) data = { dataUserId: '', sceneCode: '' }
   if (!data.type) data.type = 'common'
   return request({
