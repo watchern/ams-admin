@@ -9,12 +9,12 @@
                     </div>
                 </div>
                 <div class="menuLi">
-                    <div class="graphIcon">
+                    <!-- <div class="graphIcon">
                         <div class="graphIconElRow" @click="newGraph">
                             <el-image :src="require('@/api/graphtool/images/icons/new.png')" class="graphToolImg"/>
                         </div>
                         <div class="iconText">新建</div>
-                    </div>
+                    </div> -->
                     <div class="graphIcon">
                         <div class="graphIconElRow" @click="openGraph">
                             <el-image :src="require('@/api/graphtool/images/icons/open.png')" class="graphToolImg"/>

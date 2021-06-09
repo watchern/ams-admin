@@ -17,12 +17,13 @@
         <el-form-item label="字段数" prop="fieldsNum">
           <el-input v-model="temp.fieldsNum" readonly />
         </el-form-item>
-        <!--  <el-form-item label="行数" prop="rowNum">
-           <el-input v-model="temp.rowNum" readonly />
-         </el-form-item>
-         <el-form-item label="表容量" prop="tableSize">
-           <el-input v-model="temp.tableSize" readonly />
-         </el-form-item>-->
+        <el-form-item label="行数" prop="rowNum">
+          <el-input v-model="temp.rowNum" readonly />
+        </el-form-item>
+<!--  2021/06/08 @黄鑫 db2环境由于缓冲区的影响，表大小存在不显示的情况，暂时隐藏后期优化-->
+<!--        <el-form-item label="表容量" prop="tableSize">-->
+<!--          <el-input v-model="temp.tableSize" readonly />-->
+<!--        </el-form-item>-->
       </el-form>
     </div>
     <!-- <div slot="footer">
