@@ -98,7 +98,8 @@
         methods:{
             dateFormatter(datetime) {
                 let timeStr = ''
-                if (datetime && datetime.trim().length > 0) {
+                //  && datetime.trim().length > 0
+                if (datetime) {
                     let dateMat = new Date(datetime)
                     let year = dateMat.getFullYear()
                     let month = this.convertData(dateMat.getMonth() + 1)
