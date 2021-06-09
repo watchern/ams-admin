@@ -1926,6 +1926,9 @@ export default {
      * 点击详细dialog的确定按钮后触发
      */
     modelDetailCetermine(value) {
+      if(!value) {
+        value = this.modelDetailRelation[0].relationObjectUuid
+      }
       var selectRowData = this.gridApi.getSelectedRows();
       var relationType = null;
       var objectName = "";
@@ -2651,7 +2654,7 @@ export default {
       this.applyInfo.fstate = "";
       this.applyInfo.isUpdate = false; //初始化
       this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
-      
+
       console.info(JSON.stringify(this.submitData))
       console.info(JSON.stringify(this.columnDefs))
       this.dialogVisibleSubmit = true;
@@ -2744,7 +2747,7 @@ export default {
       this.applyInfo.fstate = "";
       this.applyInfo.isUpdate = false; //初始化
       this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
-      
+
       console.info(JSON.stringify(this.submitData))
       console.info(JSON.stringify(this.columnDefs))
       this.dialogVisibleSubmitYc = true;
@@ -2753,7 +2756,7 @@ export default {
         setTimeout(() => {
             this.$refs["flowItem2"].saveOpinion();
         }, 20);
-    },  
+    },
     //流程发布失败
     delectDataYc(val) {
       this.dialogVisibleSubmitYc = val;
@@ -2772,7 +2775,7 @@ export default {
           console.log(error);
         });
       this.initData();
-    },    
+    },
 
   },
 };
