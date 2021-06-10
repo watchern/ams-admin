@@ -23,6 +23,7 @@
             node-key="id"
             :expand-on-click-node="false"
             :filter-node-method="filterNode"
+            :default-checked-keys = checkedNode
             show-checkbox
           >
             <span slot-scope="{ node, data }" class="custom-tree-node">
@@ -317,6 +318,7 @@ export default {
       currentSelection: [],
       accessTypeArray: [],
       selectList: [],
+      checkedNode: [],
     };
   },
   computed: {},
@@ -338,12 +340,25 @@ export default {
       resp.data.forEach((item) => {
         this.treeData2[0].children.push(item);
       });
+      // 设置主树的checkBox
+      this.tree1Checked(resp.data);
     });
     getAccessType().then((resp) => {
       this.accessTypeArray = resp.data;
     });
   },
   methods: {
+    // 将已经被授权的节点在主树中勾上checkBox
+    tree1Checked(datas){
+      for(var i in datas){
+        if (datas[i].type==="table"){
+          this.checkedNode.push(datas[i].id)
+        }
+        if(datas[i].children){
+          this.tree1Checked(datas[i].children);
+        }
+      }
+    },
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
