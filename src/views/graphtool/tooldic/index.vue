@@ -1721,16 +1721,8 @@ export default {
               },
             });
           }, 100);
-          this.$message({
-            type: "success",
-            message: "新建成功!",
-          });
         })
         .catch(() => {
-          this.$message({
-            type: "info",
-            message: "取消新建",
-          });
         });
     },
     openGraph() {
