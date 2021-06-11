@@ -3,7 +3,9 @@ const analysisRouter = {
   path: '/analysis',
   name: '审计分析',
   component: (resolve) => require(['@/portal/' + process.env.VUE_APP_BASE_SKIN + '/index'], resolve),
-  meta: {},
+  meta: {
+    // keepAlive: true
+  },
   children: [
     {
       path: 'auditmodel',
