@@ -287,7 +287,6 @@ export default {
     },
     // 保存基本信息
     saveTable() {
-      
       for (let index = 0; index < this.temp.length; index++) {
         //先判空
         if(this.temp[index].colName==''||this.temp[index].colName==undefined){
@@ -403,7 +402,7 @@ export default {
             // 添加节点
             this.$emit("table-show", this.show);
             this.$emit("append-node", childData, this.clickNode);
-            return 1
+            this.$emit("saveTableInfoHelp"); 
           }
         })
         .catch((result) => {});
@@ -464,7 +463,7 @@ export default {
             });
           }
           this.$emit("table-show", this.show);
-          return 1
+          this.$emit("saveTableInfoHelp"); 
         })
         .catch((result) => {});
       // var newColumn = this.arrRemoveMix(this.temp, this.tempColumn)

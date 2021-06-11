@@ -360,6 +360,7 @@
                   :tab-show.sync="tabShow"
                   @append-node="appendnode"
                   @table-show="tableshow"
+                  @saveTableInfoHelp="saveTableInfoHelp"
               />
             </el-col>
           </el-row>
@@ -1127,9 +1128,10 @@ export default {
       return sort === `+${key}` ? "asc" : "desc";
     },
     saveTableInfo() {
-      if(this.$refs.column.saveTableInfo()==1){
-        this.tableColumnVisible = false;
-      };
+      this.$refs.column.saveTableInfo()
+    },
+    saveTableInfoHelp(){
+      this.tableColumnVisible = false;
     },
     saveRelationInfo() {
       this.$refs.tablerelation.saveRelationInfo();
