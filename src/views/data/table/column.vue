@@ -289,47 +289,45 @@ export default {
     saveTable() {
       for (let index = 0; index < this.temp.length; index++) {
         //先判空
-        if(this.temp[index].colName==''||this.temp[index].colName==undefined){
+        let obj = this.temp[index]
+        if(obj.colName==''||obj.colName==undefined){
           this.$message.error("请完善建表信息，字段名称不能为空");
           return
-        }else if(this.temp[index].dataType==''||this.temp[index].dataType==undefined){
+        }else if(obj.dataType==''||obj.dataType==undefined){
           this.$message.error("请完善建表信息，数据类型不能为空");
           return
-        }else if(this.temp[index].dataLength==''||this.temp[index].dataLength==undefined){
-          this.$message.error("请完善建表信息，数据长度不能为空");
-          return
         }else{
-          const r = this.temp[index];
-            if (r.dataLength !== "") {
-              r.dataLength = parseInt(r.dataLength);
-            }
+          // const r = this.temp[index];
+          //   if (r.dataLength !== "") {
+          //     r.dataLength = parseInt(r.dataLength);
+          //   }
         }
         //再判合法
-        let xx = this.temp[index].dataType.toUpperCase();
+        let xx = obj.dataType.toUpperCase();
         switch (xx) {
         case "CHAR":
-         if (1 <= this.temp[index].dataLength && this.temp[index].dataLength <= 8000) {
+         if (1 <= obj.dataLength && obj.dataLength <= 8000 && obj.dataLength!='') {
           } else {
             this.$message.error('char类型长度范围:1-8000之间数字');
             return
           }
           break;
         case "VARCHAR2":
-          if (1 <= this.temp[index].dataLength && this.temp[index].dataLength <= 8000) {
+          if (1 <= obj.dataLength && obj.dataLength <= 8000 && obj.dataLength!='') {
           } else {
             this.$message.error("varchar2类型长度范围:1-8000之间数字");
             return
           }
           break;
         case "VARCHAR":
-          if (1 <= this.temp[index].dataLength && this.temp[index].dataLength <= 8000) {
+          if (1 <= obj.dataLength && obj.dataLength <= 8000 && obj.dataLength!='') {
           } else {
             this.$message.error("varchar类型长度范围:1-8000之间数字");
             return
           }
           break;
         case "NVARCHAR":
-          if (1 <= this.temp[index].dataLength && this.temp[index].dataLength <= 4000) {
+          if (1 <= obj.dataLength && obj.dataLength <= 4000 && obj.dataLength!='') {
           } else {
             this.$message.error("nvarchar类型长度范围:1-4000之间数字");
             return
@@ -338,7 +336,7 @@ export default {
         case "NUMBER":
           var flag1 = new RegExp("^[0-9]$");
           var flag2 = new RegExp("^[0-9]+[,]+[0-9]$");
-          if (flag1.test(this.temp[index].dataLength)|| flag2.test(this.temp[index].dataLength)) {
+          if ((flag1.test(obj.dataLength)|| flag2.test(obj.dataLength)) && obj.dataLength!='') {
           } else {
             this.$message.error(
               "number类型长度范围:单个数字，也可以是 数字,数字(英文逗号)"
@@ -348,7 +346,7 @@ export default {
           break;
         case "DECIMAL":
           var flag = new RegExp("^[0-9]+[,]+[0-9]$");
-          if (flag.test(this.temp[index].dataLength)) {
+          if (flag.test(obj.dataLength) && obj.dataLength!='') {
           } else {
             this.$message.error("decimal类型长度范围:数字,数字(英文逗号)");
             return
@@ -356,7 +354,7 @@ export default {
           break;
         case "INT":
           var flag = new RegExp("^[0-9]{1,11}$");
-          if (flag.test(this.temp[index].dataLength)) {
+          if (flag.test(obj.dataLength) && obj.dataLength!='') {
           } else {
             this.$message.error("int类型长度范围:最长11位长度数字");
             return
