@@ -1,19 +1,39 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-col v-if="openType !== 'showTable' && openType !== 'tableRegister'" align="right">
+      <el-col
+        v-if="openType !== 'showTable' && openType !== 'tableRegister'"
+        align="right"
+      >
         <!-- <el-button type="primary" size="mini" class="oper-btn iconoper-export" title="上移" @click="upTheCol()" />
         <el-button type="primary" size="mini" class="oper-btn iconoper-import" title="下移" @click="downTheCol()" /> -->
-        <el-button type="primary" size="mini" class="oper-btn add" @click="addCol()" />
-        <el-button type="primary" size="mini" class="oper-btn copy" :disabled="selections.length !== 1" @click="copyCol()" />
-        <el-button type="primary" size="mini" class="oper-btn delete" :disabled="selections.length === 0" @click="delCol()" />
+        <el-button
+          type="primary"
+          size="mini"
+          class="oper-btn add"
+          @click="addCol()"
+        />
+        <el-button
+          type="primary"
+          size="mini"
+          class="oper-btn copy"
+          :disabled="selections.length !== 1"
+          @click="copyCol()"
+        />
+        <el-button
+          type="primary"
+          size="mini"
+          class="oper-btn delete"
+          :disabled="selections.length === 0"
+          @click="delCol()"
+        />
       </el-col>
     </el-row>
-    <template v-if="openType !== 'showTable' && openType !== 'tableRegister'" class="detail-form">
-      <el-form
-        ref="dataForm"
-        :model="tempTable"
-      >
+    <template
+      v-if="openType !== 'showTable' && openType !== 'tableRegister'"
+      class="detail-form"
+    >
+      <el-form ref="dataForm" :model="tempTable">
         <el-form-item label="表名称" prop="tableName">
           <el-input v-model="tempTable.tableName" />
         </el-form-item>
@@ -26,14 +46,32 @@
       <el-table-column type="selection" width="55" />
       <el-table-column prop="colName" label="字段名称" show-overflow-tooltip>
         <template slot-scope="scope" show-overflow-tooltip>
-          <el-tooltip :disabled="scope.row.colName.length < 12" effect="dark" :content="scope.row.colName" placement="top">
-            <el-input v-model="scope.row.colName" style="width:90%;" :disabled="openType === 'showTable' || openType === 'tableRegister'" />
+          <el-tooltip
+            :disabled="scope.row.colName.length < 12"
+            effect="dark"
+            :content="scope.row.colName"
+            placement="top"
+          >
+            <el-input
+              v-model="scope.row.colName"
+              style="width: 90%"
+              :disabled="
+                openType === 'showTable' || openType === 'tableRegister'
+              "
+            />
           </el-tooltip>
         </template>
       </el-table-column>
       <el-table-column prop="dataType" label="数据类型">
         <template slot-scope="scope">
-          <el-select ref="dataType" v-model="scope.row.dataType" :disabled="openType === 'showTable' || openType === 'tableRegister'" filterable style="width:90%" placeholder="请选择数据类型">
+          <el-select
+            ref="dataType"
+            v-model="scope.row.dataType"
+            :disabled="openType === 'showTable' || openType === 'tableRegister'"
+            filterable
+            style="width: 90%"
+            placeholder="请选择数据类型"
+          >
             <el-option
               v-for="item in sqlType"
               :key="item"
@@ -43,14 +81,29 @@
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column prop="dataLength" label="数据长度" show-overflow-tooltip>
+      <el-table-column
+        prop="dataLength"
+        label="数据长度（精度）"
+        show-overflow-tooltip
+      >
         <template slot-scope="scope" show-overflow-tooltip>
-          <el-input v-model="scope.row.dataLength" style="width:90%;" :disabled="openType === 'showTable' || openType === 'tableRegister'" />
+          <el-input
+            @change="judelength(scope.row)"
+            v-model="scope.row.dataLength"
+            style="width: 90%"
+            :disabled="openType === 'showTable' || openType === 'tableRegister'"
+          />
         </template>
       </el-table-column>
       <el-table-column prop="isNullable" label="是否为空" width="80px">
         <template slot-scope="scope">
-          <el-radio v-model="scope.row.isNullable" :disabled="openType === 'showTable' || openType === 'tableRegister'" :label="1" @click.native.prevent="clickitem(scope.$index,1)"><span /></el-radio>
+          <el-radio
+            v-model="scope.row.isNullable"
+            :disabled="openType === 'showTable' || openType === 'tableRegister'"
+            :label="1"
+            @click.native.prevent="clickitem(scope.$index, 1)"
+            ><span
+          /></el-radio>
         </template>
       </el-table-column>
       <!-- <el-table-column v-if="openType !== 'addTable'" prop="colComment" label="注释" show-overflow-tooltip>
@@ -63,11 +116,11 @@
 </template>
 
 <script>
-import { getSqlType, getColsInfo } from '@/api/data/table-info'
-import { addTable, updateTable } from '@/api/data/directory'
+import { getSqlType, getColsInfo } from "@/api/data/table-info";
+import { addTable, updateTable } from "@/api/data/directory";
 export default {
   // eslint-disable-next-line vue/require-prop-types
-  props: ['tableId', 'openType', 'forderId'],
+  props: ["tableId", "openType", "forderId"],
   data() {
     return {
       copyColObj: {},
@@ -76,42 +129,99 @@ export default {
       temp: [],
       tempIndex: 0,
       tempColumn: [],
-      oldName: '',
+      oldName: "",
       show: false,
-      tempTable: { tableName: '' }
-    }
+      tempTable: { tableName: "" },
+    };
   },
   created() {
-    this.initTable(this.tableId)
+    this.initTable(this.tableId);
   },
   methods: {
+    judelength(rowdata) {
+      console.log(rowdata);
+      let xx = rowdata.dataType.toUpperCase();
+      switch (xx) {
+        case "CHAR":
+         if (1 <= rowdata.dataLength && rowdata.dataLength <= 8000) {
+          } else {
+            this.$message.error('char类型长度范围:1-8000之间数字');
+          }
+          break;
+        case "VARCHAR2":
+          if (1 <= rowdata.dataLength && rowdata.dataLength <= 8000) {
+          } else {
+            this.$message.error("varchar2类型长度范围:1-8000之间数字");
+          }
+          break;
+        case "VARCHAR":
+          if (1 <= rowdata.dataLength && rowdata.dataLength <= 8000) {
+          } else {
+            this.$message.error("varchar类型长度范围:1-8000之间数字");
+          }
+          break;
+        case "NVARCHAR":
+          if (1 <= rowdata.dataLength && rowdata.dataLength <= 4000) {
+          } else {
+            this.$message.error("nvarchar类型长度范围:1-4000之间数字");
+          }
+          break;
+        case "NUMBER":
+          var flag1 = new RegExp("^[0-9]$");
+          var flag2 = new RegExp("^[0-9]+[,]+[0-9]$");
+          if (flag1.test(rowdata.dataLength)) {
+          } else if (flag2.test(rowdata.dataLength)) {
+          } else {
+            this.$message.error(
+              "number类型长度范围:单个数字，也可以是 数字,数字(英文逗号)"
+            );
+          }
+          break;
+        case "DECIMAL":
+          var flag = new RegExp("^[0-9]+[,]+[0-9]$");
+          if (flag.test(rowdata.dataLength)) {
+          } else {
+            this.$message.error("decimal类型长度范围:数字,数字(英文逗号)");
+          }
+          break;
+        case "INT":
+          var flag = new RegExp("^[0-9]{1,11}$");
+          if (flag.test(rowdata.dataLength)) {
+          } else {
+            this.$message.error("int类型长度范围:最长11位长度数字");
+          }
+          break;
+      }
+    },
     initTable(tableId) {
-      getSqlType().then(resp => {
-        this.sqlType = resp.data
-      })
-      if (this.openType !== 'addTable') {
-        getColsInfo(tableId).then(resp => {
+      getSqlType().then((resp) => {
+        this.sqlType = resp.data;
+      });
+      if (this.openType !== "addTable") {
+        getColsInfo(tableId).then((resp) => {
           // 返回两个新的数组
-          this.oldName = resp.data.displayTbName
-          this.tempTable.tableName = resp.data.displayTbName
-          resp.data.colMetas.forEach(e => {
-            this.tempIndex++
-            e.tempIndex = this.tempIndex
-          })
-          this.tempColumn = resp.data.colMetas.slice()
-          this.temp = JSON.parse(JSON.stringify(resp.data.colMetas))
-        })
+          this.oldName = resp.data.displayTbName;
+          this.tempTable.tableName = resp.data.displayTbName;
+          resp.data.colMetas.forEach((e) => {
+            this.tempIndex++;
+            e.tempIndex = this.tempIndex;
+          });
+          this.tempColumn = resp.data.colMetas.slice();
+          this.temp = JSON.parse(JSON.stringify(resp.data.colMetas));
+        });
       }
     },
     handleSelectionChange(val) {
-      this.selections = val
+      this.selections = val;
     },
     upTheCol() {
-      var rulObj = Object.assign({}, this.selections[0]) // copy obj
-      var index = this.temp.findIndex(v => JSON.stringify(v) === JSON.stringify(rulObj))
-      this.temp.splice(index - 1, 0, rulObj)
-      this.temp.splice(index + 1, 1)
-      this.selections = rulObj
+      var rulObj = Object.assign({}, this.selections[0]); // copy obj
+      var index = this.temp.findIndex(
+        (v) => JSON.stringify(v) === JSON.stringify(rulObj)
+      );
+      this.temp.splice(index - 1, 0, rulObj);
+      this.temp.splice(index + 1, 1);
+      this.selections = rulObj;
       // var rulObj = Object.assign({}, this.selections[0]) // copy obj
       // var index = this.temp.findIndex(v => JSON.stringify(v) === JSON.stringify(rulObj))
       // if (this.temp.length > 1 && index !== 0) {
@@ -121,11 +231,13 @@ export default {
       // }
     },
     downTheCol() {
-      var rulObj = Object.assign({}, this.selections[0]) // copy obj
-      var index = this.temp.findIndex(v => JSON.stringify(v) === JSON.stringify(rulObj))
-      this.temp.splice(index - 1, 0, rulObj)
-      this.temp.splice(index + 1, 1)
-      this.selections = rulObj
+      var rulObj = Object.assign({}, this.selections[0]); // copy obj
+      var index = this.temp.findIndex(
+        (v) => JSON.stringify(v) === JSON.stringify(rulObj)
+      );
+      this.temp.splice(index - 1, 0, rulObj);
+      this.temp.splice(index + 1, 1);
+      this.selections = rulObj;
       // var rulObj = Object.assign({}, this.selections[0]) // copy obj
       // var index = this.temp.findIndex(v => JSON.stringify(v) === JSON.stringify(rulObj))
       // if (this.temp.length > 1 && index !== this.temp.length - 1) {
@@ -135,141 +247,227 @@ export default {
       // }
     },
     addCol() {
-      var newObj = {} // copy obj
-      newObj.colName = ''
-      newObj.dataType = ''
-      newObj.dataLength = ''
-      newObj.isNullable = 0
-      this.tempIndex++
-      newObj.tempIndex = this.tempIndex
-      newObj.colComment = ''
-      this.temp.splice(this.temp.length, 0, newObj)
+      var newObj = {}; // copy obj
+      newObj.colName = "";
+      newObj.dataType = "";
+      newObj.dataLength = "";
+      newObj.isNullable = 0;
+      this.tempIndex++;
+      newObj.tempIndex = this.tempIndex;
+      newObj.colComment = "";
+      this.temp.splice(this.temp.length, 0, newObj);
     },
     delCol() {
       this.selections.forEach((r, i) => {
-        var index = this.temp.findIndex(v => JSON.stringify(v) === JSON.stringify(r))
-        this.temp.splice(index, 1)
-      })
+        var index = this.temp.findIndex(
+          (v) => JSON.stringify(v) === JSON.stringify(r)
+        );
+        this.temp.splice(index, 1);
+      });
     },
     copyCol() {
-      this.copyColObj = Object.assign({}, this.selections[0])
-      this.temp.splice(this.temp.length, 0, this.copyColObj)
+      this.copyColObj = Object.assign({}, this.selections[0]);
+      this.temp.splice(this.temp.length, 0, this.copyColObj);
     },
     clickitem(row, e) {
       // 当点击已经选中的把 isNullable 置0，就是取消选中，并返回
       if (this.temp[row].isNullable === e) {
-        this.temp[row].isNullable = 0
-        return
+        this.temp[row].isNullable = 0;
+        return;
       }
       // 不是选中，选中当前点击 Radio
-      this.temp[row].isNullable = e
+      this.temp[row].isNullable = e;
     },
     saveTableInfo() {
-      if (this.openType === 'addTable') {
-        this.saveTable()
+      if (this.openType === "addTable") {
+        this.saveTable();
       } else {
-        this.updateTable()
+        this.updateTable();
       }
     },
     // 保存基本信息
     saveTable() {
+      
       for (let index = 0; index < this.temp.length; index++) {
-        const r = this.temp[index]
-        if (r.dataLength !== '') {
-          r.dataLength = parseInt(r.dataLength)
-        }
-      }
-      const addObj = {}
-      addObj.colMetas = this.temp
-      addObj.folderUuid = this.forderId
-      addObj.tbName = this.tempTable.tableName
-      addTable(addObj).then((res) => {
-        if (res.data.status === '500') {
-          this.$notify({
-            title: '失败',
-            message: res.data.msg,
-            type: 'error',
-            duration: 2000,
-            position: 'bottom-right'
-          })
-        } else {
-          this.$notify({
-            title: '成功',
-            message: '新建表成功！',
-            type: 'success',
-            duration: 2000,
-            position: 'bottom-right'
-          })
-          var childData = {
-            id: res.data.successTable.tableMetaUuid,
-            label: res.data.successTable.displayTbName,
-            pid: res.data.successTable.folderUuid,
-            type: 'table',
-            extMap: {
-              accessType: ['FETCH_TABLE_DATA', 'BASIC_PRIV'],
-              createTime: res.data.successTable.createTime,
-              tableName: res.data.successTable.tbName,
-              tbSizeByte: 0,
-              tblType: 'T'
+        //先判空
+        if(this.temp[index].colName==''||this.temp[index].colName==undefined){
+          this.$message.error("请完善建表信息，字段名称不能为空");
+          return
+        }else if(this.temp[index].dataType==''||this.temp[index].dataType==undefined){
+          this.$message.error("请完善建表信息，数据类型不能为空");
+          return
+        }else if(this.temp[index].dataLength==''||this.temp[index].dataLength==undefined){
+          this.$message.error("请完善建表信息，数据长度不能为空");
+          return
+        }else{
+          const r = this.temp[index];
+            if (r.dataLength !== "") {
+              r.dataLength = parseInt(r.dataLength);
             }
-          }
-          // 添加节点
-          this.$emit('table-show', this.show)
-          this.$emit('append-node', childData, this.clickNode)
         }
-      }).catch((result) => {
-      })
+        //再判合法
+        let xx = this.temp[index].dataType.toUpperCase();
+        switch (xx) {
+        case "CHAR":
+         if (1 <= rowdata.dataLength && rowdata.dataLength <= 8000) {
+          } else {
+            this.$message.error('char类型长度范围:1-8000之间数字');
+            return
+          }
+          break;
+        case "VARCHAR2":
+          if (1 <= rowdata.dataLength && rowdata.dataLength <= 8000) {
+          } else {
+            this.$message.error("varchar2类型长度范围:1-8000之间数字");
+            return
+          }
+          break;
+        case "VARCHAR":
+          if (1 <= rowdata.dataLength && rowdata.dataLength <= 8000) {
+          } else {
+            this.$message.error("varchar类型长度范围:1-8000之间数字");
+            return
+          }
+          break;
+        case "NVARCHAR":
+          if (1 <= rowdata.dataLength && rowdata.dataLength <= 4000) {
+          } else {
+            this.$message.error("nvarchar类型长度范围:1-4000之间数字");
+            return
+          }
+          break;
+        case "NUMBER":
+          var flag1 = new RegExp("^[0-9]$");
+          var flag2 = new RegExp("^[0-9]+[,]+[0-9]$");
+          if (flag1.test(rowdata.dataLength)) {
+          } else if (flag2.test(rowdata.dataLength)) {
+          } else {
+            this.$message.error(
+              "number类型长度范围:单个数字，也可以是 数字,数字(英文逗号)"
+            );
+            return
+          }
+          break;
+        case "DECIMAL":
+          var flag = new RegExp("^[0-9]+[,]+[0-9]$");
+          if (flag.test(rowdata.dataLength)) {
+          } else {
+            this.$message.error("decimal类型长度范围:数字,数字(英文逗号)");
+            return
+          }
+          break;
+        case "INT":
+          var flag = new RegExp("^[0-9]{1,11}$");
+          if (flag.test(rowdata.dataLength)) {
+          } else {
+            this.$message.error("int类型长度范围:最长11位长度数字");
+            return
+          }
+          break;
+      }
+      }
+      const addObj = {};
+      addObj.colMetas = this.temp;
+      addObj.folderUuid = this.forderId;
+      addObj.tbName = this.tempTable.tableName;
+      addTable(addObj)
+        .then((res) => {
+          if (res.data.status === "500") {
+            this.$notify({
+              title: "失败",
+              message: res.data.msg,
+              type: "error",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          } else {
+            this.$notify({
+              title: "成功",
+              message: "新建表成功！",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+            var childData = {
+              id: res.data.successTable.tableMetaUuid,
+              label: res.data.successTable.displayTbName,
+              pid: res.data.successTable.folderUuid,
+              type: "table",
+              extMap: {
+                accessType: ["FETCH_TABLE_DATA", "BASIC_PRIV"],
+                createTime: res.data.successTable.createTime,
+                tableName: res.data.successTable.tbName,
+                tbSizeByte: 0,
+                tblType: "T",
+              },
+            };
+            // 添加节点
+            this.$emit("table-show", this.show);
+            this.$emit("append-node", childData, this.clickNode);
+            return 1
+          }
+        })
+        .catch((result) => {});
     },
     updateTable() {
-      const newTableObj = {}
-      newTableObj.tableMetaUuid = this.tableId
-      newTableObj.colMetas = this.temp
-      newTableObj.tbName = this.tempTable.tableName
-      newTableObj.tbComment = this.tempTable.tbComment
-      const oldTableObj = {}
-      oldTableObj.tableMetaUuid = this.tableId
-      oldTableObj.colMetas = this.tempColumn
-      oldTableObj.tbName = this.oldName
-      oldTableObj.tbComment = this.tempTable.tbComment
-      var obj = {}
-      console.log(newTableObj.colMetas)
-      for(let i =0;i<newTableObj.colMetas.length;i++){
-        if(newTableObj.colMetas[i].colName!=''&&newTableObj.colMetas[i].dataType!=''&&newTableObj.colMetas[i].dataLength!=''){
-
-        }else{
-          this.$message.error('请完善数据信息!');
-          return
+      const newTableObj = {};
+      newTableObj.tableMetaUuid = this.tableId;
+      newTableObj.colMetas = this.temp;
+      newTableObj.tbName = this.tempTable.tableName;
+      newTableObj.tbComment = this.tempTable.tbComment;
+      const oldTableObj = {};
+      oldTableObj.tableMetaUuid = this.tableId;
+      oldTableObj.colMetas = this.tempColumn;
+      oldTableObj.tbName = this.oldName;
+      oldTableObj.tbComment = this.tempTable.tbComment;
+      var obj = {};
+      console.log(newTableObj.colMetas);
+      for (let i = 0; i < newTableObj.colMetas.length; i++) {
+        if (
+          newTableObj.colMetas[i].colName != "" &&
+          newTableObj.colMetas[i].dataType != "" &&
+          newTableObj.colMetas[i].dataLength != ""
+        ) {
+        } else {
+          this.$message.error("请完善数据信息!");
+          return;
         }
       }
-      obj.newTableObj = newTableObj
-      obj.oldTableObj = oldTableObj
-      
-      
-      updateTable(obj).then((res) => {
-        if (res.data.status === '500') {
-          this.$message({ type: 'info', message: '修改失败！' + res.data.msg })
-        } else {
-          // 修改成功后重新给页面复制
-          this.oldName = res.data.sussessTable.tbName
-          this.tempTable.tableName = res.data.sussessTable.tbName
-          res.data.sussessTable.colMetas.forEach(e => {
-            this.tempIndex = 0
-            this.tempIndex++
-            e.tempIndex = this.tempIndex
-          })
-          this.tempColumn = res.data.sussessTable.colMetas.slice()
-          this.temp = JSON.parse(JSON.stringify(res.data.sussessTable.colMetas))
-          this.$notify({
-            title: '成功',
-            message: '修改表结构成功',
-            type: 'success',
-            duration: 2000,
-            position: 'bottom-right'
-          })
-        }
-        this.$emit('table-show', this.show)
-      }).catch((result) => {
-      })
+      obj.newTableObj = newTableObj;
+      obj.oldTableObj = oldTableObj;
+
+      updateTable(obj)
+        .then((res) => {
+          if (res.data.status === "500") {
+            this.$message({
+              type: "info",
+              message: "修改失败！" + res.data.msg,
+            });
+          } else {
+            // 修改成功后重新给页面复制
+            this.oldName = res.data.sussessTable.tbName;
+            this.tempTable.tableName = res.data.sussessTable.tbName;
+            res.data.sussessTable.colMetas.forEach((e) => {
+              this.tempIndex = 0;
+              this.tempIndex++;
+              e.tempIndex = this.tempIndex;
+            });
+            this.tempColumn = res.data.sussessTable.colMetas.slice();
+            this.temp = JSON.parse(
+              JSON.stringify(res.data.sussessTable.colMetas)
+            );
+            this.$notify({
+              title: "成功",
+              message: "修改表结构成功",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+          }
+          this.$emit("table-show", this.show);
+          return 1
+        })
+        .catch((result) => {});
       // var newColumn = this.arrRemoveMix(this.temp, this.tempColumn)
       // var oldColumn = this.arrRemoveMix(this.tempColumn, this.temp)
       // console.log(newColumn)
@@ -345,7 +543,7 @@ export default {
       //   })
       // }).catch((result) => {
       // })
-    }
+    },
     // arrRemoveMix(arr1, arr2) {
     //   return this.filterData(this.arrayDifference(arr1, arr2))
     // },
@@ -385,5 +583,6 @@ export default {
     //   }
     //   return true
     // }
-  }}
+  },
+};
 </script>

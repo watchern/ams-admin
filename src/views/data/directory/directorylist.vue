@@ -1127,8 +1127,9 @@ export default {
       return sort === `+${key}` ? "asc" : "desc";
     },
     saveTableInfo() {
-      this.$refs.column.saveTableInfo();
-      this.tableColumnVisible = false;
+      if(this.$refs.column.saveTableInfo()==1){
+        this.tableColumnVisible = false;
+      };
     },
     saveRelationInfo() {
       this.$refs.tablerelation.saveRelationInfo();
