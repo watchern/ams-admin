@@ -414,6 +414,8 @@ export default {
       const children = parent.data.children || parent.data;
       const index = children.findIndex((d) => d.id === data.id);
       children.splice(index, 1);
+      // 取消主树的checkBox
+      this.$refs.tree1.setChecked(data,false,true)
     },
     //所有子集禁用
     witerData(node, data) {
