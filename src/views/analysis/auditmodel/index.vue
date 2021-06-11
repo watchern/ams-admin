@@ -54,6 +54,12 @@ export default {
       this.$refs.modelFolderTree.getModelFolder()
     },
     /**
+     * 刷新模型分类树
+     */
+    getRootFolderUuid(id) {
+      return this.$refs.modelFolderTree.getRootFolderUuid(id)
+    },
+    /**
      * 获取模型列表选中的数据
      */
     getModelListCheckData(){
