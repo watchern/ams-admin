@@ -228,4 +228,22 @@ export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher
 }
+
+//解决编程式路由往同一地址跳转时会报错的情况
+const originalPush1 = Router.prototype.push;
+const originalReplace = Router.prototype.replace;
+//push
+Router.prototype.push = function push(location, onResolve, onReject) {
+  if (onResolve || onReject)
+    return originalPush1.call(this, location, onResolve, onReject);
+  return originalPush1.call(this, location).catch(err => err);
+};
+//replace
+Router.prototype.replace = function push(location, onResolve, onReject) {
+  if (onResolve || onReject)
+    return originalReplace.call(this, location, onResolve, onReject);
+  return originalReplace.call(this, location).catch(err => err);
+};
+
 export default router
+
