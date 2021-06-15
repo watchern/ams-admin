@@ -111,15 +111,6 @@
               class="oper-btn tjsh"
               >提交审核</el-button
             >
-            <el-button
-              v-if="!yancheng"
-              :disabled="false"
-              type="primary"
-              @click="toSubmit"
-              class="oper-btn tjsh"
-              style="margin-left: 10px"
-              >提交审核</el-button
-            >
           </div>
         </div>
         <ag-grid-vue
@@ -281,14 +272,6 @@
                   :disabled="false"
                   type="primary"
                   @click="toSubmitYc"
-                  class="oper-btn tjsh"
-                  >提交审核</el-button
-                >
-                <el-button
-                  v-if="!yancheng"
-                  :disabled="false"
-                  type="primary"
-                  @click="toSubmit"
                   class="oper-btn tjsh"
                   >提交审核</el-button
                 >

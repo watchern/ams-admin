@@ -37,6 +37,11 @@ const AmsRoutes = [
     component: () => import('ams-starflow-vue/src/components/todowork/todoDetailOut')
   },
   {
+    path: '/earlyWaringPenetrateList',
+    name: 'earlyWaringPenetrateList',
+    component: () => import('ams-clue-vue/src/components/todowork/earlyWaringPenetrateList')
+  },
+  {
     path: '/',
     redirect: '/ams/first'
   },

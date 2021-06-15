@@ -83,7 +83,7 @@ import {
 export default {
   name: "ModelFolderTree",
   components: { MyElTree },
-  props: ["publicModel", "power", "spaceFolderName", "spaceFolderId"],
+  props: ["publicModel", "power", "spaceFolderName", "spaceFolderId", "filterId"],
   data() {
     return {
       filterText: null,
@@ -170,6 +170,9 @@ export default {
               }
             }
             this.isBussinessType = true
+            if(this.filterId) {
+              newData = newData.filter(data => data.id === this.filterId)
+            }
             this.data = newData;
           } else if (this.publicModel === "relationModel") {
              findModelFolderTree(true, spaceFolderName, spaceFolderId).then((result) => {
@@ -376,6 +379,32 @@ export default {
     getSelectNode() {
       return this.$refs.tree.getCheckedNodes()[0];
     },
+    getRootFolderUuid(id, data, inner) {
+      if(!inner) {
+        for (const d of this.data) {
+          if(this.getRootFolderUuid(id, d, true)) {
+            return d.id;
+          }
+        }
+      }
+      if(id && data) {
+        if(data.id === id) {
+          return true;
+        } else if(data.children && data.children.length){
+          const d = data.children.find(d => d.id === id);
+          if(d) {
+            return true;
+          } else {
+            for (const child of data.children) {
+              if(this.getRootFolderUuid(id, child, true)) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+      return false;
+    }
   },
 };
 </script>
