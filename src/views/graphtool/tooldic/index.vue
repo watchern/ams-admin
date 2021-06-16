@@ -1350,9 +1350,6 @@ export default {
               obj.loading.destroy();
               this.$message.error("资源树列表加载出错");
             } else {
-              if(!response.data[0].name || response.data[0].name==null){
-                        response.data = response.data.shift()
-                    }
               // 统一表和试图的类型为datasource，不需要替换的就执行空方法
               // for(let i=0;i<response.data.length;i++){
               //   if(response.data[i].nameCn&&(response.data[i].type=='view'|| response.data[i].type=='table')){
