@@ -589,6 +589,9 @@
                     var relTableMap = {}
                     var expTableMap = {}
                     if (result.data != null) {
+                        if(!result.data[0].name || result.data[0].name==null){
+                            result.data = result.data.shift()
+                        }
                         for (let i = 0; i < result.data.length; i++) {
                             if (result.data[i].type === 'table') {
                                 relTableMap[result.data[i].enName] = []

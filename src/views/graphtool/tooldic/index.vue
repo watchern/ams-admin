@@ -1350,7 +1350,15 @@ export default {
               obj.loading.destroy();
               this.$message.error("资源树列表加载出错");
             } else {
+              if(!response.data[0].name || response.data[0].name==null){
+                        response.data = response.data.shift()
+                    }
               // 统一表和试图的类型为datasource，不需要替换的就执行空方法
+              // for(let i=0;i<response.data.length;i++){
+              //   if(response.data[i].nameCn&&(response.data[i].type=='view'|| response.data[i].type=='table')){
+              //     response.data[i].name = response.data[i].name+'('+response.data[i].nameCn+')'
+              //   }
+              // }
               indexJs.replaceNodeType(response.data);
               obj.zTreeObj = $.fn.zTree.init(
                 $(obj.$refs.ztree_datasource_ref),
@@ -1828,6 +1836,9 @@ export default {
         if (nodes.length > 0) {
           let $this = this;
           const nodeId = nodes[0].id;
+          // let i = nodes[0].name.indexOf('(')
+          // const nodeName = i==-1?nodes[0].name:nodes[0].name.slice(0,i);
+          // const resultTableName = nodeName;
           const nodeName = nodes[0].name;
           const resultTableName = nodes[0].name;
           const isRoleTable = true;

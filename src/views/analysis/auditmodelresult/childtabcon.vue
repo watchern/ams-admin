@@ -753,6 +753,7 @@ export default {
         flex: 1,
         minWidth: 150,
         filter: true,
+        resizable: true,
       },
       modules: AllModules,
       localeText: {
