@@ -2617,6 +2617,7 @@ export default {
         for (let i = 0; i < this.modelChartSetups.length; i++) {
           let modelChartSetupZ = {};
           let json = JSON.parse(this.modelChartSetups[i].chartJson);
+          console.log(this.modelChartSetups[i])
           for (let j = 0; j < this.chartConfigs.layout.length; j++) {
             if (this.chartConfigs.layout[j].i === json.layout.i) {
               modelChartSetupZ = {
@@ -2625,6 +2626,7 @@ export default {
                   layout: this.chartConfigs.layout[j],
                 }),
                 modelUuid: this.modelChartSetups[i].modelUuid,
+                chartSetupUuid:this.modelChartSetups[i].chartSetupUuid
               };
               updateModelChartSetup(modelChartSetupZ).then((resp) => {
                 if (resp.data) {
