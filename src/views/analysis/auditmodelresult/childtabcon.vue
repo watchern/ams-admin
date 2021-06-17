@@ -197,6 +197,8 @@
           :w="chartConfigs.layout[0].w"
           :h="chartConfigs.layout[0].h"
           :i="chartConfigs.layout[0].i"
+          drag-allow-from=".drag-on-table"
+          drag-ignore-from=".ag-theme-balham"
         >
           <!--  此下为表格  -->
           <div class="drag-on-table textz">
@@ -1386,6 +1388,11 @@ export default {
             }
           }
         );
+        // this.columnDefs = col;
+        // this.rowData = da;
+        // if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
+        //   this.gridApi.closeToolPanel()
+        // }
         let _this = this
         setTimeout(function(){
           for(let i = 0;i< col.length;i++){
