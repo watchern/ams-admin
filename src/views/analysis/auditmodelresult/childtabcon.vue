@@ -295,10 +295,10 @@
                     @cellClicked="onCellClicked"
                     @gridReady="onGridReady"
                     @rowSelected="rowChange"
-                    :defaultColDef="defaultColDef"
+                    :default-col-def="defaultColDef"
                     :sideBar="true"
                     :modules="modules"
-                    :localeText="localeText"
+                    :locale-text="localeText"
                     :frameworkComponents="frc"
                     :context = "componentParent"
             />
@@ -752,8 +752,28 @@ export default {
       defaultColDef: {
         flex: 1,
         minWidth: 150,
-        filter: true,
         resizable: true,
+        filter: true,
+      },
+      sideBar :{
+        toolPanels: [
+          {
+            id: 'columns',
+            labelDefault: 'Columns',
+            labelKey: 'columns',
+            iconKey: 'columns',
+            toolPanel: 'agColumnsToolPanel',
+          },
+          {
+            id: 'filters',
+            labelDefault: 'Filters',
+            labelKey: 'filters',
+            iconKey: 'filter',
+            toolPanel: 'agFiltersToolPanel'
+          },
+        ],
+        position: 'right',
+        defaultToolPanel: 'columns'
       },
       modules: AllModules,
       localeText: {
@@ -776,7 +796,7 @@ export default {
         rowGroupColumnsEmptyMessage: "拖动此处可设置行组",
       },
       frc: {'ag-cell': AgCell},
-      componentParent: null
+      componentParent: null,
     };
   },
   mounted() {
@@ -1366,11 +1386,18 @@ export default {
             }
           }
         );
-        this.columnDefs = col;
-        this.rowData = da;
-        if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
-          this.gridApi.closeToolPanel()
-        }
+        let _this = this
+        setTimeout(function(){
+          for(let i = 0;i< col.length;i++){
+            col[i].filter = 'agTextColumnFilter'
+          }
+          _this.columnDefs = col;
+          _this.rowData = da;
+          if (typeof _this.gridApi !== "undefined" && _this.gridApi !== null) {
+            _this.gridApi.closeToolPanel()
+          }
+        },500)
+        
       } else if (this.useType == "sqlEditor") {
         this.getIntoModelResultDetail(nextValue);
       } else if (this.useType == "modelPreview") {
@@ -1589,6 +1616,9 @@ export default {
                     }
                     this.rowData = rowData;
                   }
+                  for(let i = 0;i<col.length;i++){
+                    col[i].filter = 'agTextColumnFilter'
+                  }
                   this.columnDefs = col;
                   this.afterResult = true;
                   if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
@@ -1690,6 +1720,9 @@ export default {
             }
             for (var k = 0; k < this.nextValue.result.length; k++) {
               rowData.push(this.nextValue.result[k]);
+            }
+            for(let i = 0;i<col.length;i++){
+              col[i].filter = 'agTextColumnFilter'
             }
             this.columnDefs = col;
             this.afterResult = true;
