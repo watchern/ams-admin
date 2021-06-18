@@ -111,15 +111,6 @@
               class="oper-btn tjsh"
               >提交审核</el-button
             >
-            <el-button
-              v-if="!yancheng"
-              :disabled="false"
-              type="primary"
-              @click="toSubmit"
-              class="oper-btn tjsh"
-              style="margin-left: 10px"
-              >提交审核</el-button
-            >
           </div>
         </div>
         <ag-grid-vue
@@ -206,6 +197,8 @@
           :w="chartConfigs.layout[0].w"
           :h="chartConfigs.layout[0].h"
           :i="chartConfigs.layout[0].i"
+          drag-allow-from=".drag-on-table"
+          drag-ignore-from=".ag-theme-balham"
         >
           <!--  此下为表格  -->
           <div class="drag-on-table textz">
@@ -284,14 +277,6 @@
                   class="oper-btn tjsh"
                   >提交审核</el-button
                 >
-                <el-button
-                  v-if="!yancheng"
-                  :disabled="false"
-                  type="primary"
-                  @click="toSubmit"
-                  class="oper-btn tjsh"
-                  >提交审核</el-button
-                >
               </div>
             </div>
             <ag-grid-vue
@@ -312,10 +297,10 @@
                     @cellClicked="onCellClicked"
                     @gridReady="onGridReady"
                     @rowSelected="rowChange"
-                    :defaultColDef="defaultColDef"
+                    :default-col-def="defaultColDef"
                     :sideBar="true"
                     :modules="modules"
-                    :localeText="localeText"
+                    :locale-text="localeText"
                     :frameworkComponents="frc"
                     :context = "componentParent"
             />
@@ -780,7 +765,28 @@ export default {
       defaultColDef: {
         flex: 1,
         minWidth: 150,
+        resizable: true,
         filter: true,
+      },
+      sideBar :{
+        toolPanels: [
+          {
+            id: 'columns',
+            labelDefault: 'Columns',
+            labelKey: 'columns',
+            iconKey: 'columns',
+            toolPanel: 'agColumnsToolPanel',
+          },
+          {
+            id: 'filters',
+            labelDefault: 'Filters',
+            labelKey: 'filters',
+            iconKey: 'filter',
+            toolPanel: 'agFiltersToolPanel'
+          },
+        ],
+        position: 'right',
+        defaultToolPanel: 'columns'
       },
       modules: AllModules,
       localeText: {
@@ -1121,7 +1127,6 @@ export default {
       this.gridApi = params.api;
     },
     initData(sql, nextValue, modelName) {
-        debugger;
       this.result = {};
       if (this.useType == "modelRunResult") {
         this.isLoading = true;
@@ -1415,13 +1420,23 @@ export default {
             }
           }
         );
-        this.columnDefs = col;
-        this.rowData = da;
-      /*  var assDa = Object.assign([], da);
-        this.doRotating(assDa);*/
-        if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
-          this.gridApi.closeToolPanel()
-        }
+        // this.columnDefs = col;
+        // this.rowData = da;
+        // if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
+        //   this.gridApi.closeToolPanel()
+        // }
+        let _this = this
+        setTimeout(function(){
+          for(let i = 0;i< col.length;i++){
+            col[i].filter = 'agTextColumnFilter'
+          }
+          _this.columnDefs = col;
+          _this.rowData = da;
+          if (typeof _this.gridApi !== "undefined" && _this.gridApi !== null) {
+            _this.gridApi.closeToolPanel()
+          }
+        },500)
+
       } else if (this.useType == "sqlEditor") {
         this.getIntoModelResultDetail(nextValue);
       } else if (this.useType == "modelPreview") {
@@ -1640,8 +1655,10 @@ export default {
                     for (var k = 0; k < this.nextValue.result.length; k++) {
                       rowData.push(this.nextValue.result[k]);
                     }
-                      console.log(this.rowData)
                     this.rowData = rowData;
+                  }
+                  for(let i = 0;i<col.length;i++){
+                    col[i].filter = 'agTextColumnFilter'
                   }
                   this.columnDefs = col;
                   this.afterResult = true;
@@ -1783,6 +1800,9 @@ export default {
             }
             for (var k = 0; k < this.nextValue.result.length; k++) {
               rowData.push(this.nextValue.result[k]);
+            }
+            for(let i = 0;i<col.length;i++){
+              col[i].filter = 'agTextColumnFilter'
             }
             this.columnDefs = col;
             this.afterResult = true;
@@ -2003,6 +2023,9 @@ export default {
      * 点击详细dialog的确定按钮后触发
      */
     modelDetailCetermine(value) {
+      if(!value) {
+        value = this.modelDetailRelation[0].relationObjectUuid
+      }
       var selectRowData = this.gridApi.getSelectedRows();
       var relationType = null;
       var objectName = "";
@@ -2667,6 +2690,7 @@ export default {
         for (let i = 0; i < this.modelChartSetups.length; i++) {
           let modelChartSetupZ = {};
           let json = JSON.parse(this.modelChartSetups[i].chartJson);
+          console.log(this.modelChartSetups[i])
           for (let j = 0; j < this.chartConfigs.layout.length; j++) {
             if (this.chartConfigs.layout[j].i === json.layout.i) {
               modelChartSetupZ = {
@@ -2675,6 +2699,7 @@ export default {
                   layout: this.chartConfigs.layout[j],
                 }),
                 modelUuid: this.modelChartSetups[i].modelUuid,
+                chartSetupUuid:this.modelChartSetups[i].chartSetupUuid
               };
               updateModelChartSetup(modelChartSetupZ).then((resp) => {
                 if (resp.data) {

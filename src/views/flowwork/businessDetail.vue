@@ -7,6 +7,7 @@
                     :appDataUuid="appDataUuid"
                     :applyType="applyType"
                     :flowSetup="flowSetup"
+                    :actionIdList="actionIdList"
             ></busDatas>
         </div>
     </div>
@@ -26,7 +27,7 @@
                 // applyType: "",
             };
         },
-        props: ["versionUuid", "appDataUuid","applyType","flowSetup"],
+        props: ["versionUuid", "appDataUuid","applyType","flowSetup","actionIdList"],
         // mounted: function () {
         //   alert("ss")
         //   alert(this.appDataUuid)

@@ -515,13 +515,14 @@ $cursor: #fff;
 }
 </style>
 <style lang="scss" scoped>
-//new-login本地背景图在这里修改
-$bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixed;
+//linux貌似不支持
+// $bg: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixed;
 .login-box2 {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: $bg;
+  //new-login本地背景图在这里修改
+  background: #fdfdfd url("../../assets/login_img/背景.png") no-repeat left center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

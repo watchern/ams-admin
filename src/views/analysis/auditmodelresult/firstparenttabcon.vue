@@ -158,21 +158,27 @@
             width="200px"
             align="center"
             prop="runTask.timingExecute"
-            :formatter="dateFormatter2"
+            :formatter="(row) =>dateFormatter(row.runTask.timingExecute)"
           />
           <el-table-column
             label="运行开始时间"
             width="200px"
             align="center"
             prop="runStartTime"
-            :formatter="dateFormatter"
+            :formatter="(row) => dateFormatter(row.runStartTime)"
           />
           <el-table-column
             label="运行结束时间"
             width="200px"
             align="center"
             prop="runEndTime"
-            :formatter="dateFormatter1"
+            :formatter="(row) => dateFormatter(row.runEndTime)"
+          />
+          <el-table-column
+            label="运行耗时"
+            width="200px"
+            align="center"
+            prop="runTime"
           />
           <el-table-column
             label="运行SQL"
@@ -517,70 +523,8 @@ export default {
         return "#67c23a";
       }
     },
-    /**
-     * 格式化时间字符串
-     * @param row 行数据
-     * @param column 列数据
-     * @returns {string} 返回格式化后的字符串
-     */
-    dateFormatter(row, column) {
-      const datetime = row.runStartTime;
-      if (datetime) {
-        var dateMat = new Date(datetime);
-        var year = dateMat.getFullYear();
-        var month = dateMat.getMonth() + 1;
-        var day = dateMat.getDate();
-        var hh = dateMat.getHours();
-        var mm = dateMat.getMinutes();
-        var ss = dateMat.getSeconds();
-        if (hh < 10) {
-          hh = "0" + hh;
-        }
-        if (mm < 10) {
-          mm = "0" + mm;
-        }
-        if (ss < 10) {
-          ss = "0" + ss;
-        }
-        var timeFormat =
-          year + "-" + month + "-" + day + " " + hh + ":" + mm + ":" + ss;
-        return timeFormat;
-      }
-      return "";
-    },
-    /**
-     格式化时间字符串
-     * @param row 行数据
-     * @param column 列数据
-     * @returns {string} 返回格式化后的字符串
-     */
-    dateFormatter1(row, column) {
-      const datetime = row.runEndTime;
-      if (datetime) {
-        var dateMat = new Date(datetime);
-        var year = dateMat.getFullYear();
-        var month = dateMat.getMonth() + 1;
-        var day = dateMat.getDate();
-        var hh = dateMat.getHours();
-        var mm = dateMat.getMinutes();
-        var ss = dateMat.getSeconds();
-        if (hh < 10) {
-          hh = "0" + hh;
-        }
-        if (mm < 10) {
-          mm = "0" + mm;
-        }
-        if (ss < 10) {
-          ss = "0" + ss;
-        }
-        var timeFormat =
-          year + "-" + month + "-" + day + " " + hh + ":" + mm + ":" + ss;
-        return timeFormat;
-      }
-      return "";
-    },
-    dateFormatter2(row) {
-      const datetime = row.runTask.timingExecute;
+
+    dateFormatter(datetime) {
       if (datetime) {
         var dateMat = new Date(datetime);
         var year = dateMat.getFullYear();
