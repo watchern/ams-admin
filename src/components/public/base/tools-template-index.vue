@@ -207,6 +207,30 @@
           >
           </el-tree>
         </el-collapse-item>
+        <el-collapse-item v-if="menugroupId[4]" :title="menugroupId[4].name">
+          <el-tree
+            :data="menugroup[4]"
+            show-checkbox
+            node-key="id"
+            ref="tree4"
+            highlight-current
+            :check-strictly="defaultProps.checkStrictly"
+            :props="defaultProps"
+          >
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item v-if="menugroupId[5]" :title="menugroupId[5].name">
+          <el-tree
+            :data="menugroup[5]"
+            show-checkbox
+            node-key="id"
+            ref="tree5"
+            highlight-current
+            :check-strictly="defaultProps.checkStrictly"
+            :props="defaultProps"
+          >
+          </el-tree>
+        </el-collapse-item>
       </el-collapse>
       <el-button @click="getCheckedNodes" type="primary" class="btn-tree"
         >保 存</el-button
