@@ -158,7 +158,7 @@
     <div class="tools-right" @click="callback"></div>
     <div class="tools-center" v-show="dialogVisible">
       <el-collapse class="tools-menu-small" v-if="showmenuGroup">
-        <el-collapse-item  v-if="menugroupId[0]" :title="menugroupId[0].name">
+        <el-collapse-item v-if="menugroupId[0]" :title="menugroupId[0].name">
           <el-tree
             :data="menugroup[0]"
             show-checkbox
@@ -183,7 +183,7 @@
           >
           </el-tree>
         </el-collapse-item>
-        <el-collapse-item  v-if="menugroupId[2]" :title="menugroupId[2].name">
+        <el-collapse-item v-if="menugroupId[2]" :title="menugroupId[2].name">
           <el-tree
             :data="menugroup[2]"
             show-checkbox
@@ -232,7 +232,7 @@
           </el-tree>
         </el-collapse-item>
       </el-collapse>
-      <el-button @click="getCheckedNodes" type="primary" class="btn-tree"
+      <el-button @click="getCheckedNodes()" type="primary" class="btn-tree"
         >保 存</el-button
       >
       <el-button @click="dialogVisible = false">取 消</el-button>
@@ -622,7 +622,7 @@ export default {
     for (let i = 0; i < this.latelyInImgList.length; i++) {
       this.latelyBdInList.push({
         image: this.latelyInImgList[i].image,
-        bg: this.latelyBackList[i]?this.latelyBackList[i].bg:'',
+        bg: this.latelyBackList[i] ? this.latelyBackList[i].bg : "",
       });
     }
     getQuickMenuList().then((res) => {
@@ -630,14 +630,14 @@ export default {
       for (let i = 0; i < res.data.length; i++) {
         for (let n = 0; n < this.latelyImgList.length; n++) {
           if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
-            if(this.latelyFastList.length<5){
-            this.latelyFastList.push({
-              id: res.data[i].quickMenuId,
-              name: res.data[i].quickMenuName,
-              path: res.data[i].quickMenuPath,
-              image: this.latelyImgList[n].image,
-              bg: this.latelyBackList[i]?this.latelyBackList[i].bg:'',
-            });
+            if (this.latelyFastList.length < 5) {
+              this.latelyFastList.push({
+                id: res.data[i].quickMenuId,
+                name: res.data[i].quickMenuName,
+                path: res.data[i].quickMenuPath,
+                image: this.latelyImgList[n].image,
+                bg: this.latelyBackList[i] ? this.latelyBackList[i].bg : "",
+              });
             }
           }
         }
@@ -791,33 +791,50 @@ export default {
     },
     getCheckedNodes() {
       let allThing = [];
-      for (let i = 0; i < this.$refs.tree0.getCheckedNodes().length; i++) {
-        allThing.push({
-          quickMenuId: this.$refs.tree0.getCheckedNodes()[i].id,
-          quickMenuName: this.$refs.tree0.getCheckedNodes()[i].name,
-          quickMenuPath: this.$refs.tree0.getCheckedNodes()[i].path,
-        });
+      if (this.$refs.tree0) {
+        for (let i = 0; i < this.$refs.tree0.getCheckedNodes().length; i++) {
+          allThing.push({
+            quickMenuId: this.$refs.tree0.getCheckedNodes()[i].id,
+            quickMenuName: this.$refs.tree0.getCheckedNodes()[i].name,
+            quickMenuPath: this.$refs.tree0.getCheckedNodes()[i].path,
+          });
+        }
       }
-      for (let i = 0; i < this.$refs.tree1.getCheckedNodes().length; i++) {
-        allThing.push({
-          quickMenuId: this.$refs.tree1.getCheckedNodes()[i].id,
-          quickMenuName: this.$refs.tree1.getCheckedNodes()[i].name,
-          quickMenuPath: this.$refs.tree1.getCheckedNodes()[i].path,
-        });
+      if (this.$refs.tree1) {
+        for (let i = 0; i < this.$refs.tree1.getCheckedNodes().length; i++) {
+          allThing.push({
+            quickMenuId: this.$refs.tree1.getCheckedNodes()[i].id,
+            quickMenuName: this.$refs.tree1.getCheckedNodes()[i].name,
+            quickMenuPath: this.$refs.tree1.getCheckedNodes()[i].path,
+          });
+        }
       }
-      for (let i = 0; i < this.$refs.tree2.getCheckedNodes().length; i++) {
-        allThing.push({
-          quickMenuId: this.$refs.tree2.getCheckedNodes()[i].id,
-          quickMenuName: this.$refs.tree2.getCheckedNodes()[i].name,
-          quickMenuPath: this.$refs.tree2.getCheckedNodes()[i].path,
-        });
+      if (this.$refs.tree2) {
+        for (let i = 0; i < this.$refs.tree2.getCheckedNodes().length; i++) {
+          allThing.push({
+            quickMenuId: this.$refs.tree2.getCheckedNodes()[i].id,
+            quickMenuName: this.$refs.tree2.getCheckedNodes()[i].name,
+            quickMenuPath: this.$refs.tree2.getCheckedNodes()[i].path,
+          });
+        }
       }
-      for (let i = 0; i < this.$refs.tree3.getCheckedNodes().length; i++) {
-        allThing.push({
-          quickMenuId: this.$refs.tree3.getCheckedNodes()[i].id,
-          quickMenuName: this.$refs.tree3.getCheckedNodes()[i].name,
-          quickMenuPath: this.$refs.tree3.getCheckedNodes()[i].path,
-        });
+      if (this.$refs.tree3) {
+        for (let i = 0; i < this.$refs.tree3.getCheckedNodes().length; i++) {
+          allThing.push({
+            quickMenuId: this.$refs.tree3.getCheckedNodes()[i].id,
+            quickMenuName: this.$refs.tree3.getCheckedNodes()[i].name,
+            quickMenuPath: this.$refs.tree3.getCheckedNodes()[i].path,
+          });
+        }
+      }
+      if (this.$refs.tree4) {
+        for (let i = 0; i < this.$refs.tree4.getCheckedNodes().length; i++) {
+          allThing.push({
+            quickMenuId: this.$refs.tree4.getCheckedNodes()[i].id,
+            quickMenuName: this.$refs.tree4.getCheckedNodes()[i].name,
+            quickMenuPath: this.$refs.tree4.getCheckedNodes()[i].path,
+          });
+        }
       }
       if (allThing.length > 5) {
         this.$message.error("自定义快捷菜单不能超过5个！");
@@ -835,16 +852,17 @@ export default {
             for (let i = 0; i < res.data.length; i++) {
               for (let n = 0; n < this.latelyImgList.length; n++) {
                 if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
-                  if(this.latelyFastList.length<5){
+                  if (this.latelyFastList.length < 5) {
                     this.latelyFastList.push({
-                    id: res.data[i].quickMenuId,
-                    name: res.data[i].quickMenuName,
-                    path: res.data[i].quickMenuPath,
-                    image: this.latelyImgList[n].image,
-                    bg: this.latelyBackList[i]?this.latelyBackList[i].bg:'',
-                  });
+                      id: res.data[i].quickMenuId,
+                      name: res.data[i].quickMenuName,
+                      path: res.data[i].quickMenuPath,
+                      image: this.latelyImgList[n].image,
+                      bg: this.latelyBackList[i]
+                        ? this.latelyBackList[i].bg
+                        : "",
+                    });
                   }
-                  
                 }
               }
             }
