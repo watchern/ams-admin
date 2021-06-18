@@ -606,6 +606,7 @@ export default {
       for (let i = 0; i < res.data.length; i++) {
         for (let n = 0; n < this.latelyImgList.length; n++) {
           if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
+            if(this.latelyFastList.length<5){
             this.latelyFastList.push({
               id: res.data[i].quickMenuId,
               name: res.data[i].quickMenuName,
@@ -613,6 +614,7 @@ export default {
               image: this.latelyImgList[n].image,
               bg: this.latelyBackList[i]?this.latelyBackList[i].bg:'',
             });
+            }
           }
         }
       }
@@ -809,13 +811,16 @@ export default {
             for (let i = 0; i < res.data.length; i++) {
               for (let n = 0; n < this.latelyImgList.length; n++) {
                 if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
-                  this.latelyFastList.push({
+                  if(this.latelyFastList.length<5){
+                    this.latelyFastList.push({
                     id: res.data[i].quickMenuId,
                     name: res.data[i].quickMenuName,
                     path: res.data[i].quickMenuPath,
                     image: this.latelyImgList[n].image,
                     bg: this.latelyBackList[i]?this.latelyBackList[i].bg:'',
                   });
+                  }
+                  
                 }
               }
             }
