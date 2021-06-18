@@ -595,11 +595,10 @@ export default {
         break;
       }
     }
-
     for (let i = 0; i < this.latelyInImgList.length; i++) {
       this.latelyBdInList.push({
         image: this.latelyInImgList[i].image,
-        bg: this.latelyBackList[i].bg,
+        bg: this.latelyBackList[i]?this.latelyBackList[i].bg:'',
       });
     }
     getQuickMenuList().then((res) => {
@@ -611,8 +610,8 @@ export default {
               id: res.data[i].quickMenuId,
               name: res.data[i].quickMenuName,
               path: res.data[i].quickMenuPath,
-              image: this.latelyImgList[i].image,
-              bg: this.latelyBackList[i].bg,
+              image: this.latelyImgList[n].image,
+              bg: this.latelyBackList[i]?this.latelyBackList[i].bg:'',
             });
           }
         }
@@ -814,8 +813,8 @@ export default {
                     id: res.data[i].quickMenuId,
                     name: res.data[i].quickMenuName,
                     path: res.data[i].quickMenuPath,
-                    image: this.latelyImgList[i].image,
-                    bg: this.latelyBackList[i].bg,
+                    image: this.latelyImgList[n].image,
+                    bg: this.latelyBackList[i]?this.latelyBackList[i].bg:'',
                   });
                 }
               }
