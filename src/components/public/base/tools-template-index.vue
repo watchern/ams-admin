@@ -158,7 +158,7 @@
     <div class="tools-right" @click="callback"></div>
     <div class="tools-center" v-show="dialogVisible">
       <el-collapse class="tools-menu-small" v-if="showmenuGroup">
-        <el-collapse-item :title="menugroupId[0].name">
+        <el-collapse-item  v-if="menugroupId[0]" :title="menugroupId[0].name">
           <el-tree
             :data="menugroup[0]"
             show-checkbox
@@ -170,7 +170,7 @@
           >
           </el-tree>
         </el-collapse-item>
-        <el-collapse-item :title="menugroupId[1].name">
+        <el-collapse-item v-if="menugroupId[1]" :title="menugroupId[1].name">
           <el-tree
             :data="menugroup[1]"
             show-checkbox
@@ -183,7 +183,7 @@
           >
           </el-tree>
         </el-collapse-item>
-        <el-collapse-item :title="menugroupId[2].name">
+        <el-collapse-item  v-if="menugroupId[2]" :title="menugroupId[2].name">
           <el-tree
             :data="menugroup[2]"
             show-checkbox
@@ -195,12 +195,36 @@
           >
           </el-tree>
         </el-collapse-item>
-        <el-collapse-item :title="menugroupId[3].name">
+        <el-collapse-item v-if="menugroupId[3]" :title="menugroupId[3].name">
           <el-tree
             :data="menugroup[3]"
             show-checkbox
             node-key="id"
             ref="tree3"
+            highlight-current
+            :check-strictly="defaultProps.checkStrictly"
+            :props="defaultProps"
+          >
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item v-if="menugroupId[4]" :title="menugroupId[4].name">
+          <el-tree
+            :data="menugroup[4]"
+            show-checkbox
+            node-key="id"
+            ref="tree4"
+            highlight-current
+            :check-strictly="defaultProps.checkStrictly"
+            :props="defaultProps"
+          >
+          </el-tree>
+        </el-collapse-item>
+        <el-collapse-item v-if="menugroupId[5]" :title="menugroupId[5].name">
+          <el-tree
+            :data="menugroup[5]"
+            show-checkbox
+            node-key="id"
+            ref="tree5"
             highlight-current
             :check-strictly="defaultProps.checkStrictly"
             :props="defaultProps"
