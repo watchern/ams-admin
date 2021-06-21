@@ -158,73 +158,16 @@
     <div class="tools-right" @click="callback"></div>
     <div class="tools-center" v-show="dialogVisible">
       <el-collapse class="tools-menu-small" v-if="showmenuGroup">
-        <el-collapse-item v-if="menugroupId[0]" :title="menugroupId[0].name">
+        <el-collapse-item
+          :title="menugroupId[index].name"
+          v-for="(item, index) in menugroupId"
+          :key="index"
+        >
           <el-tree
-            :data="menugroup[0]"
+            :data="menugroup[index]"
             show-checkbox
             node-key="id"
             ref="tree0"
-            highlight-current
-            :check-strictly="defaultProps.checkStrictly"
-            :props="defaultProps"
-          >
-          </el-tree>
-        </el-collapse-item>
-        <el-collapse-item v-if="menugroupId[1]" :title="menugroupId[1].name">
-          <el-tree
-            :data="menugroup[1]"
-            show-checkbox
-            node-key="id"
-            ref="tree1"
-            highlight-current
-            @check=""
-            :check-strictly="defaultProps.checkStrictly"
-            :props="defaultProps"
-          >
-          </el-tree>
-        </el-collapse-item>
-        <el-collapse-item v-if="menugroupId[2]" :title="menugroupId[2].name">
-          <el-tree
-            :data="menugroup[2]"
-            show-checkbox
-            node-key="id"
-            ref="tree2"
-            highlight-current
-            :check-strictly="defaultProps.checkStrictly"
-            :props="defaultProps"
-          >
-          </el-tree>
-        </el-collapse-item>
-        <el-collapse-item v-if="menugroupId[3]" :title="menugroupId[3].name">
-          <el-tree
-            :data="menugroup[3]"
-            show-checkbox
-            node-key="id"
-            ref="tree3"
-            highlight-current
-            :check-strictly="defaultProps.checkStrictly"
-            :props="defaultProps"
-          >
-          </el-tree>
-        </el-collapse-item>
-        <el-collapse-item v-if="menugroupId[4]" :title="menugroupId[4].name">
-          <el-tree
-            :data="menugroup[4]"
-            show-checkbox
-            node-key="id"
-            ref="tree4"
-            highlight-current
-            :check-strictly="defaultProps.checkStrictly"
-            :props="defaultProps"
-          >
-          </el-tree>
-        </el-collapse-item>
-        <el-collapse-item v-if="menugroupId[5]" :title="menugroupId[5].name">
-          <el-tree
-            :data="menugroup[5]"
-            show-checkbox
-            node-key="id"
-            ref="tree5"
             highlight-current
             :check-strictly="defaultProps.checkStrictly"
             :props="defaultProps"
@@ -791,48 +734,12 @@ export default {
     },
     getCheckedNodes() {
       let allThing = [];
-      if (this.$refs.tree0) {
-        for (let i = 0; i < this.$refs.tree0.getCheckedNodes().length; i++) {
+      for (let o = 0; o < this.$refs.tree0.length; o++) {
+        for (let i = 0; i < this.$refs.tree0[o].getCheckedNodes().length; i++) {
           allThing.push({
-            quickMenuId: this.$refs.tree0.getCheckedNodes()[i].id,
-            quickMenuName: this.$refs.tree0.getCheckedNodes()[i].name,
-            quickMenuPath: this.$refs.tree0.getCheckedNodes()[i].path,
-          });
-        }
-      }
-      if (this.$refs.tree1) {
-        for (let i = 0; i < this.$refs.tree1.getCheckedNodes().length; i++) {
-          allThing.push({
-            quickMenuId: this.$refs.tree1.getCheckedNodes()[i].id,
-            quickMenuName: this.$refs.tree1.getCheckedNodes()[i].name,
-            quickMenuPath: this.$refs.tree1.getCheckedNodes()[i].path,
-          });
-        }
-      }
-      if (this.$refs.tree2) {
-        for (let i = 0; i < this.$refs.tree2.getCheckedNodes().length; i++) {
-          allThing.push({
-            quickMenuId: this.$refs.tree2.getCheckedNodes()[i].id,
-            quickMenuName: this.$refs.tree2.getCheckedNodes()[i].name,
-            quickMenuPath: this.$refs.tree2.getCheckedNodes()[i].path,
-          });
-        }
-      }
-      if (this.$refs.tree3) {
-        for (let i = 0; i < this.$refs.tree3.getCheckedNodes().length; i++) {
-          allThing.push({
-            quickMenuId: this.$refs.tree3.getCheckedNodes()[i].id,
-            quickMenuName: this.$refs.tree3.getCheckedNodes()[i].name,
-            quickMenuPath: this.$refs.tree3.getCheckedNodes()[i].path,
-          });
-        }
-      }
-      if (this.$refs.tree4) {
-        for (let i = 0; i < this.$refs.tree4.getCheckedNodes().length; i++) {
-          allThing.push({
-            quickMenuId: this.$refs.tree4.getCheckedNodes()[i].id,
-            quickMenuName: this.$refs.tree4.getCheckedNodes()[i].name,
-            quickMenuPath: this.$refs.tree4.getCheckedNodes()[i].path,
+            quickMenuId: this.$refs.tree0[o].getCheckedNodes()[i].id,
+            quickMenuName: this.$refs.tree0[o].getCheckedNodes()[i].name,
+            quickMenuPath: this.$refs.tree0[o].getCheckedNodes()[i].path,
           });
         }
       }

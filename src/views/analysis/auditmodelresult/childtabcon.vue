@@ -119,7 +119,7 @@
           style="height: calc(100% - 19px)"
           class="table ag-theme-balham"
           :column-defs="columnDefs"
-          :row-data="rowData"
+          :row-data="computedRowData"
           rowMultiSelectWithClick="true"
           :enable-col-resize="true"
           :get-row-style="
@@ -151,7 +151,7 @@
             <div v-if="modelResultPageIsSee">
               共
               <span class="paging-z" title="只显示前10000条数据">
-                {{ rowData.length }} </span
+                {{ computedRowData.length }} </span
               >条
             </div>
           </el-col>
@@ -284,8 +284,8 @@
               v-loading="isLoading"
               style="height: calc(100% - 19px)"
               class="table ag-theme-balham"
-              :column-defs="columnDefs"
-              :row-data="rowData"
+              :column-defs="computedColumnDefs"
+              :row-data="computedRowData"
               rowMultiSelectWithClick="true"
               :enable-col-resize="true"
               :get-row-style="
@@ -321,7 +321,7 @@
                 <div v-if="modelResultPageIsSee">
                   共
                   <span class="paging-z" title="只显示前10000条数据">
-                    {{ rowData.length }} </span
+                    {{ computedRowData.length }} </span
                   >条
                 </div>
               </el-col>
@@ -599,6 +599,15 @@ export default {
     flowItem,
     flowItem2,
   },
+
+  computed:{
+      computedRowData(){
+          return this.rotateConfig!=null ? this.rotateRowData : this.rowData;
+      },
+      computedColumnDefs(){
+          return this.rotateConfig!=null ? this.rotateColumnDefs : this.columnDefs;
+      }
+  },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
       this.$nextTick(function () {
@@ -673,6 +682,8 @@ export default {
       columnDefs: [],
       // aggrid需要显示的数据
       rowData: [],
+      rotateRowData:[],  //行转列的数据
+      rotateColumnDefs:[],  //行转列的列头
       pageQuery: {
         condition: null,
         pageNo: 1,
@@ -799,6 +810,25 @@ export default {
       },
       frc: {'ag-cell': AgCell},
       componentParent: null,
+      rotateConfig: null,
+      rotateConfigs:[
+          {
+              /* 可以设置模型的行列转置规则  */
+              modelIds: ["0bfd97e2b396bb4eb2b8d78bc1980c64"],  /*  通过UUID匹配的的模型进行行列转置 */
+              mainField:"科目名称",               /*  转置的主列 */
+              colNamesField: "期间值",     /*  以此列值为转置后列头的列 */
+              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
+                  colNamesFieldValue = colNamesFieldValue.replace("00:00:00", "")
+                  colNamesFieldValue = colNamesFieldValue.replace("T16:00:00.000+00:00", "")
+
+                  if(thisTitle=='同比'||thisTitle=='环比') return colNamesFieldValue+thisTitle;
+                  else if(thisTitle=='期末额') return colNamesFieldValue;
+                  else return thisTitle;
+
+              }
+          }
+
+      ]
     };
   },
   mounted() {
@@ -1228,6 +1258,8 @@ export default {
             }
             this.total = resp.data.total;
             this.dataArray = resp.data.records[0].result;
+              var assArr = Object.assign([], resp.data.records[0].result);
+              this.doRotating(assArr);
             this.queryData = resp.data.records[0].columnInfo;
             colNames = resp.data.records[0].columns;
             // 生成ag-grid列信息
@@ -1404,7 +1436,7 @@ export default {
             _this.gridApi.closeToolPanel()
           }
         },500)
-        
+
       } else if (this.useType == "sqlEditor") {
         this.getIntoModelResultDetail(nextValue);
       } else if (this.useType == "modelPreview") {
@@ -1448,6 +1480,8 @@ export default {
                   columnType.push(type);
                 }
                 var resultData = this.nextValue.result;
+                var assResultData = Object.assign([], resultData);
+                this.doRotating(assResultData);
                 this.result.id = this.nextValue.modelUuid;
                 this.result.name = modelName;
                 this.result.columnType = columnType;
@@ -1653,10 +1687,49 @@ export default {
         this.getIntoModelResultDetail(nextValue);
       }
     },
-    /**
-     * 显示模型结果详细提取公共代码
-     * */
-    getIntoModelResultDetail(nextValue) {
+
+    doRotating(rowData){  //旋转
+        if(rowData.length == 0) return;
+        this.rotateConfigs.forEach(conf=>{
+            conf.modelIds.forEach(mId=>{
+                if(this.modelId === mId) this.rotateConfig = conf;
+            })
+        });
+        if(this.rotateConfig != null){   //  do rotation
+            var mainField = this.rotateConfig.mainField;
+            var colNamesField = this.rotateConfig.colNamesField;
+            console.log(this.rotateConfig)
+            var tempMap = {};
+            for(let i=0; i<rowData.length; i++){
+                var rd = rowData[i];
+                var key1 = rd[mainField];
+                var key2 = rd[colNamesField];
+                if(!tempMap[key1]) tempMap[key1] = {};
+                delete rd[mainField];
+                delete rd[colNamesField];
+                tempMap[key1][key2] = rd;
+            }
+            Object.keys(tempMap).forEach(key1 =>{
+                var rtObj = {};
+                rtObj[mainField] = key1;
+                Object.keys(tempMap[key1]).forEach((key2)=>{
+                    var assObj = tempMap[key1][key2];
+                    Object.keys(assObj).forEach(ao=>{
+                        rtObj[this.rotateConfig.titleDisplayRules(ao, key2)] = assObj[ao];
+                    })
+                });
+                this.rotateRowData.push(rtObj);
+            });
+            Object.keys(this.rotateRowData[0]).forEach(k=>{
+                this.rotateColumnDefs.push({field:k, headerName:k, width:280});
+            })
+        }
+    },
+
+      /**
+       * 显示模型结果详细提取公共代码
+       * */
+      getIntoModelResultDetail(nextValue) {
       this.afterAddChartsWithNoConfigure = true;
       this.chartLoading = false;
       this.loading = true;
