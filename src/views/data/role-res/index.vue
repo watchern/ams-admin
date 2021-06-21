@@ -318,7 +318,7 @@ export default {
       currentSelection: [],
       accessTypeArray: [],
       selectList: [],
-      checkedNode: [],
+      checkedNode: []
     };
   },
   computed: {},
@@ -363,11 +363,24 @@ export default {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
+    changeTreeNodeStatus(val, flag) {
+        const node = val
+        node.expanded = flag;
+        for (let i = 0; i < node.childNodes.length; i++) {
+          node.childNodes[i].expanded = flag;
+          if (node.childNodes[i].childNodes.length > 0) {
+            this.changeTreeNodeStatus(node.childNodes[i], flag);
+          }
+        }
+      },
     addRoleTable() {
-      /* 先对选中节点以pid为key做hashmap */
-      var ckTbs = this.$refs.tree1.getCheckedNodes(false, true);
+      this.changeTreeNodeStatus(this.$refs.tree2.getAllNodes()[0],true)
+      let _this = this
+      setTimeout(function(){
+        /* 先对选中节点以pid为key做hashmap */
+      var ckTbs = _this.$refs.tree1.getCheckedNodes(false, true);
       if (ckTbs.length == 0) {
-        ckTbs.push(this.$refs.tree1.getCurrentNode());
+        ckTbs.push(_this.$refs.tree1.getCurrentNode());
       }
       var ckTbsMap = {};
       ckTbs.forEach((item) => {
@@ -378,13 +391,12 @@ export default {
         if (!ckTbsMap[item.pid]) ckTbsMap[item.pid] = [];
         ckTbsMap[item.pid].push(assItem);
       });
-
       /* 遍历selected data 然后将节点插入*/
-      this.goThroughTree(this.treeData2[0], (treeNode) => {
+      _this.goThroughTree(_this.treeData2[0], (treeNode) => {
         var children = ckTbsMap[treeNode.id];
         var myChildren = treeNode.children;
         if (children) {
-          if (!myChildren) this.$set(treeNode, "children", []);
+          if (!myChildren) _this.$set(treeNode, "children", []);
           // 找孩子 并且现在没有这个孩子
           children.forEach((c) => {
             if (
@@ -397,8 +409,8 @@ export default {
           });
         }
       });
+      },100)
     },
-
     goThroughTree(treeNode, callback) {
       callback(treeNode);
       var children = treeNode.children;
