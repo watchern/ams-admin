@@ -51,6 +51,13 @@ export default {
   created() {
     this.initDirectory()
   },
+  mounted(){
+    //手动触发一次点击事件展示默认结构
+    setTimeout(function(){
+      $('.el-tree-node:eq(0)').click()
+    },1000)
+   
+  },
   methods: {
     initDirectory() {
       if (typeof (this.dataUserId) !== 'undefined') {

@@ -728,6 +728,8 @@ export default {
       });
       this.resourceForm.resourceName = "";
       this.folderFormVisible = false;
+      //手动清空temp，让用户重新选择
+      this.temp = []
     },
     // 执行下一步 读取文件列信息
     nextImport() {
