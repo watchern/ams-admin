@@ -907,10 +907,17 @@ export default {
      * 导出方法
      */
     exportExcel() {
+      // 选中行的ID集合
+      const onlyUuids  = [];
+      // 获取选中的行
+      const selectedRows = this.gridApi.getSelectedRows();
+      // 获取选中行的id
+      selectedRows.forEach(e =>(onlyUuids.push(e.onlyuuid)));
       axios({
         method: "post",
         url: "/analysis/RunResultTableController/exportRunResultMainTable",
         responseType: "blob",
+        data: onlyUuids,
       }).then((res) => {
         const link = document.createElement("a");
         const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
