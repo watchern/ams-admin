@@ -961,7 +961,7 @@ export default {
     },
     openProjectDialog() {
       getResultRelProject(this.nowtable.runTaskRelUuid).then((resp) => {
-        if (resp.data.length == 0) {
+        if (resp.data.length === 0) {
           this.projectDialogIsSee = true;
         } else {
           this.$message({

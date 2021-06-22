@@ -97,7 +97,7 @@ export function rmResultRelProjectlr(data) {
 export function getResultRelProject(data) {
   return request({
     baseURL: analysisUrl,
-    url: '/ResultRelProjectController/getResultRelProject',
+    url: '/ResultDetailProjectRelController/getResultRelProject',
     method: 'get',
     params:{RunTaskRelUuid:data}
   })
