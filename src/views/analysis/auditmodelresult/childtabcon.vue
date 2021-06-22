@@ -813,18 +813,23 @@ export default {
       rotateConfig: null,
       rotateConfigs:[
           {
-              /* 可以设置模型的行列转置规则  */
-              modelIds: ["0bfd97e2b396bb4eb2b8d78bc1980c64"],  /*  通过UUID匹配的的模型进行行列转置 */
+              /*  ,财报结构（趋势）分析 示例  */
+              modelIds: ["fa2f16c00e335049a0088580362e15db","3acc159b6110564da7698b460eab774f"],  /*  通过UUID匹配的的模型进行行列转置 */
               mainField:"科目名称",               /*  转置的主列 */
               colNamesField: "期间值",     /*  以此列值为转置后列头的列 */
               titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
-                  colNamesFieldValue = colNamesFieldValue.replace("00:00:00", "")
-                  colNamesFieldValue = colNamesFieldValue.replace("T16:00:00.000+00:00", "")
-
-                  if(thisTitle=='同比'||thisTitle=='环比') return colNamesFieldValue+thisTitle;
+                  if(thisTitle=='占比'||thisTitle=='环比'||thisTitle=='同比') return colNamesFieldValue+thisTitle;
                   else if(thisTitle=='期末额') return colNamesFieldValue;
                   else return thisTitle;
-
+              }
+          },{
+              /*  ,财报结构（趋势）分析 示例  */
+              modelIds: ["6f0d96ff5b633543eb59736592c92418"],  /*  通过UUID匹配的的模型进行行列转置 */
+              mainField:"指标名称,指标模块,计算公式",               /*  转置的主列 */
+              colNamesField: "月份",     /*  以此列值为转置后列头的列 */
+              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
+                  if(thisTitle=='计算值') return colNamesFieldValue;
+                  else return thisTitle;
               }
           }
 
@@ -1702,7 +1707,11 @@ export default {
             var tempMap = {};
             for(let i=0; i<rowData.length; i++){
                 var rd = rowData[i];
-                var key1 = rd[mainField];
+                var key1Arr = [];
+                mainField.split(",").forEach(mf=>{
+                    key1Arr.push(rd[mf]);
+                });
+                var key1 = key1Arr.join("```");
                 var key2 = rd[colNamesField];
                 if(!tempMap[key1]) tempMap[key1] = {};
                 delete rd[mainField];
@@ -1711,7 +1720,9 @@ export default {
             }
             Object.keys(tempMap).forEach(key1 =>{
                 var rtObj = {};
-                rtObj[mainField] = key1;
+                mainField.split(",").forEach((mf,idx)=>{
+                    rtObj[mf] = key1.split("```")[idx];
+                });
                 Object.keys(tempMap[key1]).forEach((key2)=>{
                     var assObj = tempMap[key1][key2];
                     Object.keys(assObj).forEach(ao=>{
