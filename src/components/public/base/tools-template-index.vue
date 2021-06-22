@@ -564,24 +564,33 @@ export default {
     }
     for (let i = 0; i < this.latelyInImgList.length; i++) {
       this.latelyBdInList.push({
-        image: this.latelyInImgList[i].image,
-        bg: this.latelyBackList[i] ? this.latelyBackList[i].bg : "",
+        image: this.latelyInImgList[i].image
+          ? this.latelyInImgList[i].image
+          : require("../../public/base/accessIcon/moxing.png"),
+        bg: this.latelyBackList[i]
+          ? this.latelyBackList[i].bg
+          : "rgb(95,190,235)",
       });
     }
     getQuickMenuList().then((res) => {
       // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
       for (let i = 0; i < res.data.length; i++) {
+        if (this.latelyFastList.length < 5) {
+          this.latelyFastList.push({
+            id: res.data[i].quickMenuId,
+            name: res.data[i].quickMenuName,
+            path: res.data[i].quickMenuPath,
+            image: require("../../public/base/accessIcon/moxing.png"),
+            bg: this.latelyBackList[i]
+              ? this.latelyBackList[i].bg
+              : "rgb(95,190,235)",
+          });
+        }
+      }
+      for (let i = 0; i < this.latelyFastList.length; i++) {
         for (let n = 0; n < this.latelyImgList.length; n++) {
           if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
-            if (this.latelyFastList.length < 5) {
-              this.latelyFastList.push({
-                id: res.data[i].quickMenuId,
-                name: res.data[i].quickMenuName,
-                path: res.data[i].quickMenuPath,
-                image: this.latelyImgList[n].image,
-                bg: this.latelyBackList[i] ? this.latelyBackList[i].bg : "",
-              });
-            }
+            this.latelyFastList[i].image = this.latelyImgList[n].image;
           }
         }
       }
@@ -757,19 +766,22 @@ export default {
           this.latelyFastList = [];
           getQuickMenuList().then((res) => {
             for (let i = 0; i < res.data.length; i++) {
+              if (this.latelyFastList.length < 5) {
+                this.latelyFastList.push({
+                  id: res.data[i].quickMenuId,
+                  name: res.data[i].quickMenuName,
+                  path: res.data[i].quickMenuPath,
+                  image: require("../../public/base/accessIcon/moxing.png"),
+                  bg: this.latelyBackList[i]
+                    ? this.latelyBackList[i].bg
+                    : "rgb(95,190,235)",
+                });
+              }
+            }
+            for (let i = 0; i < this.latelyFastList.length; i++) {
               for (let n = 0; n < this.latelyImgList.length; n++) {
                 if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
-                  if (this.latelyFastList.length < 5) {
-                    this.latelyFastList.push({
-                      id: res.data[i].quickMenuId,
-                      name: res.data[i].quickMenuName,
-                      path: res.data[i].quickMenuPath,
-                      image: this.latelyImgList[n].image,
-                      bg: this.latelyBackList[i]
-                        ? this.latelyBackList[i].bg
-                        : "",
-                    });
-                  }
+                  this.latelyFastList[i].image = this.latelyImgList[n].image;
                 }
               }
             }

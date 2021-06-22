@@ -125,7 +125,7 @@
     >
       <runimmediatelycon
         :data-user-id='dataUserId'
-        :scene-code1='sceneCode'
+        :scene-code='sceneCode'
         v-if="timingExecutionIsSee"
         ref="modelsetting"
         :timing="true"
