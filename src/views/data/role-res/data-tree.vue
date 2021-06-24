@@ -28,16 +28,16 @@
           </i>
           <!-- class="el-icon-tickets" style="color: #409eff" / -->
           <i v-else-if="data.type === 'table' && data.extMap.tblType === 'T'">
-            <img src="../../../assets/img/table_1.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            <img src="../../../styles/icons/table_1.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
           </i>
           <!-- class="el-icon-search"  style="color: #409eff" / -->
           <i v-else-if="data.type === 'table' && data.extMap.tblType === 'V'">
-            <img src="../../../assets/img/table_1.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            <img src="../../../styles/icons/view.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
           </i>
           <!-- style="color: #409eff" / -->
           <i v-else-if="data.type === 'column'" class="el-icon-c-scale-to-original" />
           <i v-else>
-            <img src="../../../assets/img/table_2.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            <img src="../../../styles/icons/column.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
           </i>
           <span :title="data.title">{{ node.label }}</span>
         </span>
