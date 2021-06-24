@@ -40,7 +40,7 @@
           <!-- class="el-icon-tickets" style="color: #409eff" / -->
           <i v-else-if="data.type === 'table' && data.extMap.tblType === 'T'">
             <img
-              src="../../../assets/img/table_1.png"
+              src="../../../styles/icons/table_1.png"
               style="
                 height: 16px;
                 width: 16px;
@@ -53,7 +53,7 @@
           <!-- class="el-icon-search"  style="color: #409eff" / -->
           <i v-else-if="data.type === 'table' && data.extMap.tblType === 'V'">
             <img
-              src="../../../assets/img/table_1.png"
+              src="../../../styles/icons/view.png"
               style="
                 height: 16px;
                 width: 16px;
@@ -70,7 +70,7 @@
           />
           <i v-else>
             <img
-              src="../../../assets/img/table_2.png"
+              src="../../../styles/icons/column.png"
               style="
                 height: 16px;
                 width: 16px;
