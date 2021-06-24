@@ -322,8 +322,9 @@
       v-if="tableShowVisible"
       :visible.sync="tableShowVisible"
       width="80%"
-      style="min-width: 1000px"
+      style="min-width: 1000px;"
       :close-on-click-modal="false"
+      title="详情"
     >
       <el-row>
         <el-col>
@@ -728,6 +729,8 @@ export default {
       });
       this.resourceForm.resourceName = "";
       this.folderFormVisible = false;
+      //手动清空temp，让用户重新选择
+      this.temp = []
     },
     // 执行下一步 读取文件列信息
     nextImport() {
@@ -756,7 +759,7 @@ export default {
     },
     // 执行create后导入功能
     importTable() {
-      console.log(this.uploadtempInfo.colMetas);
+      // console.log(this.uploadtempInfo.colMetas);
       for (let i = 0; i < this.uploadtempInfo.colMetas.length; i++) {
         let obj = this.uploadtempInfo.colMetas[i];
         let xx = obj.dataType.toUpperCase();
