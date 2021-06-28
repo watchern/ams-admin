@@ -556,7 +556,7 @@ import {
   updateModelChartSetup,
   deleteModelChartSetup,
   sendToOA,
-  getResultRelProject,
+  getProjects,
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
@@ -960,7 +960,7 @@ export default {
       });
     },
     openProjectDialog() {
-      getResultRelProject(this.nowtable.runTaskRelUuid).then((resp) => {
+      getProjects(this.nowtable.runTaskRelUuid).then((resp) => {
         if (resp.data.length === 0) {
           this.projectDialogIsSee = true;
         } else {

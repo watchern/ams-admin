@@ -91,13 +91,13 @@ export function rmResultRelProjectlr(data) {
 }
 
 /**
- * 根据RunTaskRelUuid查询该结果有无关联项目
+ * 查询项目
  * @param {*} data
  */
-export function getResultRelProject(data) {
+export function getProjects(data) {
   return request({
     baseURL: analysisUrl,
-    url: '/ResultDetailProjectRelController/getResultRelProject',
+    url: '/prjProjectController/getProjects',
     method: 'get',
     params:{RunTaskRelUuid:data}
   })

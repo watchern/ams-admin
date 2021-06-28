@@ -47,7 +47,7 @@ module.exports = {
     },
     disableHostCheck: true,
     port: port, // 端口号
-    host: 'localhost',
+    host: '192.168.80.148',
     // host: '192.168.80.142',
     https: false, // https:{type:Boolean}
     open: true, // 配置自动启动浏览器
