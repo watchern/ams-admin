@@ -87,9 +87,10 @@
         show-overflow-tooltip
       >
         <template slot-scope="scope" show-overflow-tooltip>
+        <!--   v-model 需要根据是否是decimal展示长度+精度 用到了双三目，有点难看 -->
           <el-input
             @change="judelength(scope.row)"
-            v-model="scope.row.dataLength"
+            v-model="scope.row.dataType.trim()==='DECIMAL' ? scope.row.dataLength+(scope.row.colPrecision?','+scope.row.colPrecision:'' ):scope.row.dataLength"
             style="width: 90%"
             :disabled="openType === 'showTable' || openType === 'tableRegister'"
           />
