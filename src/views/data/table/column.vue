@@ -347,6 +347,10 @@ export default {
         case "DECIMAL":
           var flag = new RegExp("^[0-9]+[,]+[0-9]$");
           if (flag.test(obj.dataLength) && obj.dataLength!='') {
+            // decimal类型分两个字段传到后台，原因是dataLength是long类型 不能接受字符串
+            var strings = obj.dataLength.toString().split(",");
+            obj.dataLength = strings[0];
+            obj.colPrecision = strings[1];
           } else {
             this.$message.error("decimal类型长度范围:数字,数字(英文逗号)");
             return
