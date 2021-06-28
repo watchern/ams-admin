@@ -72,7 +72,6 @@
                 type="primary"
                 class="oper-btn link-2"
                 :disabled="modelRunResultBtnIson.associatedBtn"
-                @click="openProjectDialog"
               ></el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="openProjectDialog"
@@ -238,7 +237,6 @@
                     type="primary"
                     class="oper-btn link-2"
                     :disabled="modelRunResultBtnIson.associatedBtn"
-                    @click="openProjectDialog"
                   ></el-button>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item @click.native="openProjectDialog"
@@ -556,7 +554,7 @@ import {
   updateModelChartSetup,
   deleteModelChartSetup,
   sendToOA,
-  getProjects,
+  getByResultDetailIds,
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
@@ -960,8 +958,18 @@ export default {
       });
     },
     openProjectDialog() {
-      getProjects(this.nowtable.runTaskRelUuid).then((resp) => {
+      // 验证是否已经关联项目
+      var selectData = this.gridApi.getSelectedRows();
+      console.log(selectData)
+      let paramslist =[]
+      for (let i = 0; i < selectData.length; i++) {
+        paramslist.push(selectData[i].onlyuuid)
+      }
+      console.log(paramslist)
+      // 查询该明细是否已经分配项目，如果未分配则打开分配窗口
+      getByResultDetailIds(paramslist).then((resp) => {
         if (resp.data.length === 0) {
+          // 打开分配窗口
           this.projectDialogIsSee = true;
         } else {
           this.$message({
@@ -980,7 +988,7 @@ export default {
           message: "请选择要关联的项目",
         });
       } else if (projects.length === 1) {
-        this.addDetailRel(projects[0].PRJ_PROJECT_UUID, projects[0].PRJ_NAME);
+        this.addDetailRel(projects[0].prjProjectUuid, projects[0].prjName);
         this.projectDialogIsSee = false;
       } else {
         this.$message({
