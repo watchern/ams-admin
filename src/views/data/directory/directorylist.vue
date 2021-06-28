@@ -322,8 +322,9 @@
       v-if="tableShowVisible"
       :visible.sync="tableShowVisible"
       width="80%"
-      style="min-width: 1000px"
+      style="min-width: 1000px;"
       :close-on-click-modal="false"
+      title="详情"
     >
       <el-row>
         <el-col>
