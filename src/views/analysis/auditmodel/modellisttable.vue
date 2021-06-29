@@ -30,7 +30,6 @@
                 @mouseover="mouseOver"
                 @mouseleave="mouseLeave"
                 class="oper-btn add"
-                @click="selectModelTypeDetermine('002003001')"
               />
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
