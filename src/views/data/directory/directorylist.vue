@@ -825,6 +825,9 @@ export default {
           case "DECIMAL":
             var flag = new RegExp("^[0-9]+[,]+[0-9]$");
             if (flag.test(obj.dataLength) && obj.dataLength != "") {
+              var strings = obj.dataLength.toString().split(",");
+              obj.dataLength = strings[0];
+              obj.colPrecision = strings[1];
             } else {
               this.$message.error("decimal类型长度范围:数字,数字(英文逗号)");
               return;
