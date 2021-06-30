@@ -710,6 +710,13 @@ export default {
     copyResourceSave() {
       var tempData = Object.assign({}, this.selections[0]);
       tempData.label = this.resourceForm.resourceName;
+      this.$notify({
+        title: "请稍后",
+        message: "正在复制中..",
+        type: "info",
+        duration: 1500,
+        position: "bottom-right",
+      });
       copyTable(tempData).then((res) => {
         if (res.data) {
           this.$notify({
