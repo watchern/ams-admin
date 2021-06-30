@@ -133,12 +133,12 @@
                     <!-- <el-tag><i class="el-icon-tickets" /></el-tag> -->
                     <el-link :underline="false" type="primary">查看IN值SQL</el-link>
                   </div>
-                </el-popover>
+                </el-popover>c
               </template>
             </el-table-column>
             <el-table-column label="操作" align="center" min-width="100">
               <template slot-scope="scope">
-                <el-button type="primary" lass="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.inValueSql)" />
+                <el-button type="primary" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.inValueSql)" />
                 <el-button type="primary" class="oper-btn edit" size="mini" @click="updateFilter(scope.row.sceneFilterUuid)" />
                 <el-button type="primary" class="oper-btn delete" size="mini" @click="deleteFilter(scope.row.sceneFilterUuid)" />
               </template>
@@ -197,7 +197,7 @@
                 <!-- style="color:#409EFF" -->
                 <i v-if="data.id==='root'" class="el-icon-s-home"  />
                 <!-- class="el-icon-folder" style="color:#409EFF" / -->
-                <i v-if="data.type==='folder'" > 
+                <i v-if="data.type==='folder'" >
                   <img src="../../../assets/img/table_0.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
                 </i>
                 <!-- class="el-icon-tickets" style="color:#409EFF" / -->
