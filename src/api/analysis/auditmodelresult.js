@@ -91,17 +91,29 @@ export function rmResultRelProjectlr(data) {
 }
 
 /**
- * 根据RunTaskRelUuid查询该结果有无关联项目
- * @param {*} data
+ * 获取所有状态开启的项目
  */
-export function getResultRelProject(data) {
+export function getProjects() {
   return request({
     baseURL: analysisUrl,
-    url: '/ResultRelProjectController/getResultRelProject',
+    url: '/prjProjectController/getAllPrj',
     method: 'get',
-    params:{RunTaskRelUuid:data}
   })
 }
+
+/**
+ * 根据结果明细的onlyUuid查询项目关联表
+ */
+export function getByResultDetailIds(data) {
+  return request({
+    baseURL: analysisUrl,
+    url: '/ResultDetailProjectRelController/getResultRelProject',
+    method: 'post',
+    data
+  })
+}
+
+
 
 /**
  * 添加结果共享

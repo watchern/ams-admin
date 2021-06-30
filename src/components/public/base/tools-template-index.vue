@@ -158,9 +158,13 @@
     <div class="tools-right" @click="callback"></div>
     <div class="tools-center" v-show="dialogVisible">
       <el-collapse class="tools-menu-small" v-if="showmenuGroup">
-        <el-collapse-item :title="menugroupId[0].name">
+        <el-collapse-item
+          :title="menugroupId[index].name"
+          v-for="(item, index) in menugroupId"
+          :key="index"
+        >
           <el-tree
-            :data="menugroup[0]"
+            :data="menugroup[index]"
             show-checkbox
             node-key="id"
             ref="tree0"
@@ -170,45 +174,8 @@
           >
           </el-tree>
         </el-collapse-item>
-        <el-collapse-item :title="menugroupId[1].name">
-          <el-tree
-            :data="menugroup[1]"
-            show-checkbox
-            node-key="id"
-            ref="tree1"
-            highlight-current
-            @check=""
-            :check-strictly="defaultProps.checkStrictly"
-            :props="defaultProps"
-          >
-          </el-tree>
-        </el-collapse-item>
-        <el-collapse-item :title="menugroupId[2].name">
-          <el-tree
-            :data="menugroup[2]"
-            show-checkbox
-            node-key="id"
-            ref="tree2"
-            highlight-current
-            :check-strictly="defaultProps.checkStrictly"
-            :props="defaultProps"
-          >
-          </el-tree>
-        </el-collapse-item>
-        <el-collapse-item :title="menugroupId[3].name">
-          <el-tree
-            :data="menugroup[3]"
-            show-checkbox
-            node-key="id"
-            ref="tree3"
-            highlight-current
-            :check-strictly="defaultProps.checkStrictly"
-            :props="defaultProps"
-          >
-          </el-tree>
-        </el-collapse-item>
       </el-collapse>
-      <el-button @click="getCheckedNodes" type="primary" class="btn-tree"
+      <el-button @click="getCheckedNodes()" type="primary" class="btn-tree"
         >保 存</el-button
       >
       <el-button @click="dialogVisible = false">取 消</el-button>
@@ -595,25 +562,35 @@ export default {
         break;
       }
     }
-
     for (let i = 0; i < this.latelyInImgList.length; i++) {
       this.latelyBdInList.push({
-        image: this.latelyInImgList[i].image,
-        bg: this.latelyBackList[i].bg,
+        image: this.latelyInImgList[i].image
+          ? this.latelyInImgList[i].image
+          : require("../../public/base/accessIcon/moxing.png"),
+        bg: this.latelyBackList[i]
+          ? this.latelyBackList[i].bg
+          : "rgb(95,190,235)",
       });
     }
     getQuickMenuList().then((res) => {
       // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
       for (let i = 0; i < res.data.length; i++) {
+        if (this.latelyFastList.length < 5) {
+          this.latelyFastList.push({
+            id: res.data[i].quickMenuId,
+            name: res.data[i].quickMenuName,
+            path: res.data[i].quickMenuPath,
+            image: require("../../public/base/accessIcon/moxing.png"),
+            bg: this.latelyBackList[i]
+              ? this.latelyBackList[i].bg
+              : "rgb(95,190,235)",
+          });
+        }
+      }
+      for (let i = 0; i < this.latelyFastList.length; i++) {
         for (let n = 0; n < this.latelyImgList.length; n++) {
           if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
-            this.latelyFastList.push({
-              id: res.data[i].quickMenuId,
-              name: res.data[i].quickMenuName,
-              path: res.data[i].quickMenuPath,
-              image: this.latelyImgList[i].image,
-              bg: this.latelyBackList[i].bg,
-            });
+            this.latelyFastList[i].image = this.latelyImgList[n].image;
           }
         }
       }
@@ -766,33 +743,14 @@ export default {
     },
     getCheckedNodes() {
       let allThing = [];
-      for (let i = 0; i < this.$refs.tree0.getCheckedNodes().length; i++) {
-        allThing.push({
-          quickMenuId: this.$refs.tree0.getCheckedNodes()[i].id,
-          quickMenuName: this.$refs.tree0.getCheckedNodes()[i].name,
-          quickMenuPath: this.$refs.tree0.getCheckedNodes()[i].path,
-        });
-      }
-      for (let i = 0; i < this.$refs.tree1.getCheckedNodes().length; i++) {
-        allThing.push({
-          quickMenuId: this.$refs.tree1.getCheckedNodes()[i].id,
-          quickMenuName: this.$refs.tree1.getCheckedNodes()[i].name,
-          quickMenuPath: this.$refs.tree1.getCheckedNodes()[i].path,
-        });
-      }
-      for (let i = 0; i < this.$refs.tree2.getCheckedNodes().length; i++) {
-        allThing.push({
-          quickMenuId: this.$refs.tree2.getCheckedNodes()[i].id,
-          quickMenuName: this.$refs.tree2.getCheckedNodes()[i].name,
-          quickMenuPath: this.$refs.tree2.getCheckedNodes()[i].path,
-        });
-      }
-      for (let i = 0; i < this.$refs.tree3.getCheckedNodes().length; i++) {
-        allThing.push({
-          quickMenuId: this.$refs.tree3.getCheckedNodes()[i].id,
-          quickMenuName: this.$refs.tree3.getCheckedNodes()[i].name,
-          quickMenuPath: this.$refs.tree3.getCheckedNodes()[i].path,
-        });
+      for (let o = 0; o < this.$refs.tree0.length; o++) {
+        for (let i = 0; i < this.$refs.tree0[o].getCheckedNodes().length; i++) {
+          allThing.push({
+            quickMenuId: this.$refs.tree0[o].getCheckedNodes()[i].id,
+            quickMenuName: this.$refs.tree0[o].getCheckedNodes()[i].name,
+            quickMenuPath: this.$refs.tree0[o].getCheckedNodes()[i].path,
+          });
+        }
       }
       if (allThing.length > 5) {
         this.$message.error("自定义快捷菜单不能超过5个！");
@@ -808,15 +766,22 @@ export default {
           this.latelyFastList = [];
           getQuickMenuList().then((res) => {
             for (let i = 0; i < res.data.length; i++) {
+              if (this.latelyFastList.length < 5) {
+                this.latelyFastList.push({
+                  id: res.data[i].quickMenuId,
+                  name: res.data[i].quickMenuName,
+                  path: res.data[i].quickMenuPath,
+                  image: require("../../public/base/accessIcon/moxing.png"),
+                  bg: this.latelyBackList[i]
+                    ? this.latelyBackList[i].bg
+                    : "rgb(95,190,235)",
+                });
+              }
+            }
+            for (let i = 0; i < this.latelyFastList.length; i++) {
               for (let n = 0; n < this.latelyImgList.length; n++) {
                 if (this.latelyImgList[n].name === res.data[i].quickMenuName) {
-                  this.latelyFastList.push({
-                    id: res.data[i].quickMenuId,
-                    name: res.data[i].quickMenuName,
-                    path: res.data[i].quickMenuPath,
-                    image: this.latelyImgList[i].image,
-                    bg: this.latelyBackList[i].bg,
-                  });
+                  this.latelyFastList[i].image = this.latelyImgList[n].image;
                 }
               }
             }

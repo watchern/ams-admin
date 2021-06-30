@@ -72,7 +72,6 @@
                 type="primary"
                 class="oper-btn link-2"
                 :disabled="modelRunResultBtnIson.associatedBtn"
-                @click="openProjectDialog"
               ></el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="openProjectDialog"
@@ -119,7 +118,7 @@
           style="height: calc(100% - 19px)"
           class="table ag-theme-balham"
           :column-defs="columnDefs"
-          :row-data="rowData"
+          :row-data="computedRowData"
           rowMultiSelectWithClick="true"
           :enable-col-resize="true"
           :get-row-style="
@@ -151,7 +150,7 @@
             <div v-if="modelResultPageIsSee">
               共
               <span class="paging-z" title="只显示前10000条数据">
-                {{ rowData.length }} </span
+                {{ computedRowData.length }} </span
               >条
             </div>
           </el-col>
@@ -238,7 +237,6 @@
                     type="primary"
                     class="oper-btn link-2"
                     :disabled="modelRunResultBtnIson.associatedBtn"
-                    @click="openProjectDialog"
                   ></el-button>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item @click.native="openProjectDialog"
@@ -284,8 +282,8 @@
               v-loading="isLoading"
               style="height: calc(100% - 19px)"
               class="table ag-theme-balham"
-              :column-defs="columnDefs"
-              :row-data="rowData"
+              :column-defs="computedColumnDefs"
+              :row-data="computedRowData"
               rowMultiSelectWithClick="true"
               :enable-col-resize="true"
               :get-row-style="
@@ -321,7 +319,7 @@
                 <div v-if="modelResultPageIsSee">
                   共
                   <span class="paging-z" title="只显示前10000条数据">
-                    {{ rowData.length }} </span
+                    {{ computedRowData.length }} </span
                   >条
                 </div>
               </el-col>
@@ -556,7 +554,7 @@ import {
   updateModelChartSetup,
   deleteModelChartSetup,
   sendToOA,
-  getResultRelProject,
+  getByResultDetailIds,
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
@@ -598,6 +596,15 @@ export default {
     GridItem,
     flowItem,
     flowItem2,
+  },
+
+  computed:{
+      computedRowData(){
+          return this.rotateConfig!=null ? this.rotateRowData : this.rowData;
+      },
+      computedColumnDefs(){
+          return this.rotateConfig!=null ? this.rotateColumnDefs : this.columnDefs;
+      }
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -673,6 +680,8 @@ export default {
       columnDefs: [],
       // aggrid需要显示的数据
       rowData: [],
+      rotateRowData:[],  //行转列的数据
+      rotateColumnDefs:[],  //行转列的列头
       pageQuery: {
         condition: null,
         pageNo: 1,
@@ -799,6 +808,30 @@ export default {
       },
       frc: {'ag-cell': AgCell},
       componentParent: null,
+      rotateConfig: null,
+      rotateConfigs:[
+          {
+              /*  ,财报结构（趋势）分析 示例  */
+              modelIds: ["fa2f16c00e335049a0088580362e15db","3acc159b6110564da7698b460eab774f"],  /*  通过UUID匹配的的模型进行行列转置 */
+              mainField:"科目名称",               /*  转置的主列 */
+              colNamesField: "期间值",     /*  以此列值为转置后列头的列 */
+              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
+                  if(thisTitle=='占比'||thisTitle=='环比'||thisTitle=='同比') return colNamesFieldValue+thisTitle;
+                  else if(thisTitle=='期末额') return colNamesFieldValue;
+                  else return thisTitle;
+              }
+          },{
+              /*  ,财报结构（趋势）分析 示例  */
+              modelIds: ["6f0d96ff5b633543eb59736592c92418"],  /*  通过UUID匹配的的模型进行行列转置 */
+              mainField:"指标名称,指标模块,计算公式",               /*  转置的主列 */
+              colNamesField: "月份",     /*  以此列值为转置后列头的列 */
+              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
+                  if(thisTitle=='计算值') return colNamesFieldValue;
+                  else return thisTitle;
+              }
+          }
+
+      ]
     };
   },
   mounted() {
@@ -877,10 +910,17 @@ export default {
      * 导出方法
      */
     exportExcel() {
+      // 选中行的ID集合
+      const onlyUuids  = [];
+      // 获取选中的行
+      const selectedRows = this.gridApi.getSelectedRows();
+      // 获取选中行的id
+      selectedRows.forEach(e =>(onlyUuids.push(e.onlyuuid)));
       axios({
         method: "post",
         url: "/analysis/RunResultTableController/exportRunResultMainTable",
         responseType: "blob",
+        data: onlyUuids,
       }).then((res) => {
         const link = document.createElement("a");
         const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
@@ -918,8 +958,18 @@ export default {
       });
     },
     openProjectDialog() {
-      getResultRelProject(this.nowtable.runTaskRelUuid).then((resp) => {
-        if (resp.data.length == 0) {
+      // 验证是否已经关联项目
+      var selectData = this.gridApi.getSelectedRows();
+      console.log(selectData)
+      let paramslist =[]
+      for (let i = 0; i < selectData.length; i++) {
+        paramslist.push(selectData[i].onlyuuid)
+      }
+      console.log(paramslist)
+      // 查询该明细是否已经分配项目，如果未分配则打开分配窗口
+      getByResultDetailIds(paramslist).then((resp) => {
+        if (resp.data.length === 0) {
+          // 打开分配窗口
           this.projectDialogIsSee = true;
         } else {
           this.$message({
@@ -938,7 +988,7 @@ export default {
           message: "请选择要关联的项目",
         });
       } else if (projects.length === 1) {
-        this.addDetailRel(projects[0].PRJ_PROJECT_UUID, projects[0].PRJ_NAME);
+        this.addDetailRel(projects[0].prjProjectUuid, projects[0].prjName);
         this.projectDialogIsSee = false;
       } else {
         this.$message({
@@ -1228,6 +1278,8 @@ export default {
             }
             this.total = resp.data.total;
             this.dataArray = resp.data.records[0].result;
+              var assArr = Object.assign([], resp.data.records[0].result);
+              this.doRotating(assArr);
             this.queryData = resp.data.records[0].columnInfo;
             colNames = resp.data.records[0].columns;
             // 生成ag-grid列信息
@@ -1404,7 +1456,7 @@ export default {
             _this.gridApi.closeToolPanel()
           }
         },500)
-        
+
       } else if (this.useType == "sqlEditor") {
         this.getIntoModelResultDetail(nextValue);
       } else if (this.useType == "modelPreview") {
@@ -1448,6 +1500,8 @@ export default {
                   columnType.push(type);
                 }
                 var resultData = this.nextValue.result;
+                var assResultData = Object.assign([], resultData);
+                this.doRotating(assResultData);
                 this.result.id = this.nextValue.modelUuid;
                 this.result.name = modelName;
                 this.result.columnType = columnType;
@@ -1653,10 +1707,55 @@ export default {
         this.getIntoModelResultDetail(nextValue);
       }
     },
-    /**
-     * 显示模型结果详细提取公共代码
-     * */
-    getIntoModelResultDetail(nextValue) {
+
+    doRotating(rowData){  //旋转
+        if(rowData.length == 0) return;
+        this.rotateConfigs.forEach(conf=>{
+            conf.modelIds.forEach(mId=>{
+                if(this.modelId === mId) this.rotateConfig = conf;
+            })
+        });
+        if(this.rotateConfig != null){   //  do rotation
+            var mainField = this.rotateConfig.mainField;
+            var colNamesField = this.rotateConfig.colNamesField;
+            console.log(this.rotateConfig)
+            var tempMap = {};
+            for(let i=0; i<rowData.length; i++){
+                var rd = rowData[i];
+                var key1Arr = [];
+                mainField.split(",").forEach(mf=>{
+                    key1Arr.push(rd[mf]);
+                });
+                var key1 = key1Arr.join("```");
+                var key2 = rd[colNamesField];
+                if(!tempMap[key1]) tempMap[key1] = {};
+                delete rd[mainField];
+                delete rd[colNamesField];
+                tempMap[key1][key2] = rd;
+            }
+            Object.keys(tempMap).forEach(key1 =>{
+                var rtObj = {};
+                mainField.split(",").forEach((mf,idx)=>{
+                    rtObj[mf] = key1.split("```")[idx];
+                });
+                Object.keys(tempMap[key1]).forEach((key2)=>{
+                    var assObj = tempMap[key1][key2];
+                    Object.keys(assObj).forEach(ao=>{
+                        rtObj[this.rotateConfig.titleDisplayRules(ao, key2)] = assObj[ao];
+                    })
+                });
+                this.rotateRowData.push(rtObj);
+            });
+            Object.keys(this.rotateRowData[0]).forEach(k=>{
+                this.rotateColumnDefs.push({field:k, headerName:k, width:280});
+            })
+        }
+    },
+
+      /**
+       * 显示模型结果详细提取公共代码
+       * */
+      getIntoModelResultDetail(nextValue) {
       this.afterAddChartsWithNoConfigure = true;
       this.chartLoading = false;
       this.loading = true;

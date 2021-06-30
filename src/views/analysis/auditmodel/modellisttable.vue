@@ -30,7 +30,6 @@
                 @mouseover="mouseOver"
                 @mouseleave="mouseLeave"
                 class="oper-btn add"
-                @click="selectModelTypeDetermine('002003001')"
               />
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
@@ -911,7 +910,7 @@ export default {
             if (result.data != null) {
               for (let i = 0; i < result.data.length; i++) {
                 //如果包含图形化模型则同时删除图形化模型
-                if (result.data[i].graphUuid != null) {
+                if (result.data[i].graphUuid !== null && result.data[i].graphUuid !== "") {
                   deleteGraphInfoById(result.data[i].graphUuid);
                 }
               }

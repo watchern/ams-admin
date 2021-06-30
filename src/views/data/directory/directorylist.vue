@@ -322,8 +322,9 @@
       v-if="tableShowVisible"
       :visible.sync="tableShowVisible"
       width="80%"
-      style="min-width: 1000px"
+      style="min-width: 1000px;"
       :close-on-click-modal="false"
+      title="详情"
     >
       <el-row>
         <el-col>
@@ -709,6 +710,13 @@ export default {
     copyResourceSave() {
       var tempData = Object.assign({}, this.selections[0]);
       tempData.label = this.resourceForm.resourceName;
+      this.$notify({
+        title: "请稍后",
+        message: "正在复制中..",
+        type: "info",
+        duration: 1500,
+        position: "bottom-right",
+      });
       copyTable(tempData).then((res) => {
         if (res.data) {
           this.$notify({
@@ -728,6 +736,8 @@ export default {
       });
       this.resourceForm.resourceName = "";
       this.folderFormVisible = false;
+      //手动清空temp，让用户重新选择
+      this.temp = []
     },
     // 执行下一步 读取文件列信息
     nextImport() {
@@ -756,7 +766,7 @@ export default {
     },
     // 执行create后导入功能
     importTable() {
-      console.log(this.uploadtempInfo.colMetas);
+      // console.log(this.uploadtempInfo.colMetas);
       for (let i = 0; i < this.uploadtempInfo.colMetas.length; i++) {
         let obj = this.uploadtempInfo.colMetas[i];
         let xx = obj.dataType.toUpperCase();
@@ -822,6 +832,9 @@ export default {
           case "DECIMAL":
             var flag = new RegExp("^[0-9]+[,]+[0-9]$");
             if (flag.test(obj.dataLength) && obj.dataLength != "") {
+              var strings = obj.dataLength.toString().split(",");
+              obj.dataLength = strings[0];
+              obj.colPrecision = strings[1];
             } else {
               this.$message.error("decimal类型长度范围:数字,数字(英文逗号)");
               return;
