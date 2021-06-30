@@ -333,12 +333,18 @@
         />
       </div>
       <div id="geResultContainer" class="geResultContainer">
-        <!--<button id="viewAllData" class="btn btn-primary" onclick="viewAllData()" style="position: absolute;right: 200px;top: 10px;display:none;">预览全部数据</button>-->
-        <!--<button id="exportAllData" class="btn btn-primary" onclick="exportAllData()" style="position: absolute;right: 100px;top: 10px;display:none;">全部导出</button>-->
-        <!--<div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;display:none;" onclick="maxOpen()">-->
-        <!--<img class="iconImgGraph" src="../../../api/graphtool/images/icon/maximize.png" alt="最大化">-->
-        <!--<span class="iconText">最大化</span>-->
-        <!--</div>-->
+        <!-- <button id="viewAllData" class="btn btn-primary" onclick="viewAllData()" style="position: absolute;right: 200px;top: 10px;display:none;">预览全部数据</button> -->
+        <!-- <button id="exportAllData" class="btn btn-primary" onclick="exportAllData()" style="position: absolute;right: 100px;top: 10px;display:none;">全部导出</button> -->
+        <!-- <div id="maxOpen" style="width:80px;position: absolute;right: 0;top: 15px;display:none;" onclick="maxOpen()">
+        <img class="iconImgGraph" src="../../../api/graphtool/images/icon/maximize.png" alt="最大化">
+        <span class="iconText">最大化</span>
+        </div> -->
+        <div>
+          <div id="maxOpen" class="max-size" v-show="resultTabActiveName == 0">
+            <div id="iconImg" class="iconImg" alt="最大化" @click="maxOpen" />
+            <div id="iconImg-huifu" class="iconImg" @click="maxOpen" />
+          </div>
+        </div>
         <el-tabs v-model="resultTabActiveName" type="border-card">
           <el-tab-pane label="数据结果集" name="0">
             <div id="tableArea">
@@ -794,6 +800,7 @@ export default {
   props: ["graphUuidParam", "openGraphTypeParam", "openTypeParam"],
   data() {
     return {
+      maxormin: true,
       graph: null,
       ownerEditor: null,
       zTreeObj: null,
@@ -927,6 +934,42 @@ export default {
     }px`;
   },
   methods: {
+    maxOpen() {
+      console.log("最大化");
+      if (this.maxormin == true) {
+        $("#geResultContainer").css({
+          position: "fixed",
+          width: 100 + "%",
+          top: 0,
+          left: 0,
+          height: 100 + "%",
+          "z-index": 10000,
+        });
+        $("#tableArea").css({
+          height: "100%",
+        });
+        $("#iconImg").css("display", "none");
+        $("#iconImg-huifu").css("display", "block");
+        this.maxormin = false;
+      } else {
+        $("#geResultContainer").css({
+          position: "",
+          width: "100%",
+          "z-index": 1,
+          bottom: 0,
+          top: "",
+          background: "#FFF",
+          overflow: "hidden",
+          height: "290px",
+        });
+        $("#tableArea").css({
+          height: "225px",
+        });
+        $("#iconImg").css("display", "block");
+        $("#iconImg-huifu").css("display", "none");
+        this.maxormin = true;
+      }
+    },
     init() {
       if (typeof getParams().graphUuid === "undefined") {
         this.graphUuid = this.graphUuidParam;
@@ -1727,8 +1770,7 @@ export default {
             });
           }, 100);
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     },
     openGraph() {
       indexJs.openGraph();
