@@ -138,7 +138,7 @@
             </el-table-column>
             <el-table-column label="操作" align="center" min-width="100">
               <template slot-scope="scope">
-                <el-button type="primary" lass="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.inValueSql)" />
+                <el-button type="primary" class="oper-btn detail" size="mini" @click="selectFilterOne(scope.row.inValueSql)" />
                 <el-button type="primary" class="oper-btn edit" size="mini" @click="updateFilter(scope.row.sceneFilterUuid)" />
                 <el-button type="primary" class="oper-btn delete" size="mini" @click="deleteFilter(scope.row.sceneFilterUuid)" />
               </template>
