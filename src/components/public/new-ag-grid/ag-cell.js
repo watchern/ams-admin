@@ -3,7 +3,7 @@ import { handleDataManyValue } from "@/api/analysis/thresholdvalue";
 export const AgCell =  Vue.extend({
     template: `
         <span v-if="flag === 1" :style="{color:fontColor, 'background-color': backgroundColor}" :title='title'>{{params.value}}</span>
-        <span v-else-if="flag === 2" @mouseover="openModelDetailNew(params.rowIndex)" style='text-decoration:underline;color:blue;cursor:pointer'>{{params.value}}</span>
+        <span v-else-if="flag === 2" @click="cellClick" @mouseover="openModelDetailNew(params.rowIndex)" style='text-decoration:underline;color:blue;cursor:pointer'>{{params.value}}</span>
         <span v-else >{{params.value}}</span>
     `,
     data: function () {
@@ -31,6 +31,9 @@ export const AgCell =  Vue.extend({
             this.parent.timeOut = setTimeout(() => {
                 this.parent.globalDropDownBox = false;
             }, 1000);
+        },
+        cellClick() {
+            this.parent.modelDetailCetermine();
         },
         changeCellColor(params, thresholdValueRel, modelResultDetailCol) {
             if (thresholdValueRel) {

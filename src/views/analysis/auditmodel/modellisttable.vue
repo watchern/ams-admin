@@ -30,7 +30,6 @@
                 @mouseover="mouseOver"
                 @mouseleave="mouseLeave"
                 class="oper-btn add"
-                @click="selectModelTypeDetermine('002003001')"
               />
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
@@ -76,6 +75,9 @@
                 <el-dropdown-item @click.native="cancelPublicModel()"
                   >撤销发布</el-dropdown-item
                 >
+                <el-dropdown-item @click.native="moveModel()"
+                  >移动</el-dropdown-item
+                >
               </el-dropdown-menu>
             </el-dropdown>
           </el-col>
@@ -91,6 +93,19 @@
           <div slot="footer">
             <el-button type="primary" @click="setImportFolder">确定</el-button>
             <el-button @click="modelFolderTreeDialog = false">取消</el-button>
+          </div>
+        </el-dialog>
+        <el-dialog
+          v-if="modelFolderTreeDialogMove"
+          :close-on-click-modal="false"
+          :visible.sync="modelFolderTreeDialogMove"
+          title="选择业务分类"
+          width="50%"
+        >
+          <ModelFolderTree ref="modelFolderTree" public-model="editorModel" :filter-id="moveFolderId"/>
+          <div slot="footer">
+            <el-button type="primary" @click="moveModelConfirm">确定</el-button>
+            <el-button @click="modelFolderTreeDialogMove = false">取消</el-button>
           </div>
         </el-dialog>
         <el-table
@@ -426,6 +441,8 @@ export default {
       selectModelType: "", //选择的模型类型
       modelTypeData: [], //模型类型
       modelFolderTreeDialog: false,
+      modelFolderTreeDialogMove: false,
+      moveFolderId: "",
       modelFolderUuid: "",
       modelFolderName: "",
       relationNextValue: {},
@@ -889,7 +906,7 @@ export default {
             if (result.data != null) {
               for (let i = 0; i < result.data.length; i++) {
                 //如果包含图形化模型则同时删除图形化模型
-                if (result.data[i].graphUuid != null) {
+                if (result.data[i].graphUuid !== null && result.data[i].graphUuid !== "") {
                   deleteGraphInfoById(result.data[i].graphUuid);
                 }
               }
@@ -927,6 +944,65 @@ export default {
         return;
       }
       this.treeSelectShow = true;
+    },
+    /*
+    * 移动模型
+    * */
+    moveModel() {
+      var selectObj = this.$refs.modelListTable.selection;
+      if (selectObj == undefined || selectObj.length === 0) {
+        this.$message({ type: "info", message: "请先选择要移动的模型!" });
+        return;
+      }
+      let rootId = this.$parent.$parent.getRootFolderUuid(selectObj[0].modelFolderUuid)
+      if(!rootId) {
+        this.$message({ type: "warn", message: `找不到${selectObj[0].modelName}的分类` });
+        return;
+      }
+      let error;
+      selectObj.forEach(obj => {
+        if(this.$parent.$parent.getRootFolderUuid(obj.modelFolderUuid) !== rootId) {
+          this.$message({ type: "warn", message: "请选择同一分类下的模型!" });
+          error = true;
+        }
+      })
+      if(error) return;
+      this.moveFolderId = rootId;
+      this.modelFolderTreeDialogMove = true;
+    },
+    /*
+    * 移动模型
+    * */
+    moveModelConfirm() {
+      this.$confirm("是否确定将选中的模型移动?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        const selectNode = this.$refs.modelFolderTree.getSelectNode();
+        var selectObj = this.$refs.modelListTable.selection;
+        for (let i = 0; i < selectObj.length; i++) {
+          selectObj[i].modelFolderUuid = selectNode.id;
+        }
+        updateModelBasicInfo(selectObj).then((result) => {
+          if (result.code == 0) {
+            this.treeSelectShow = false;
+            this.$notify({
+              title: "提示",
+              message: "移动成功",
+              type: "success",
+              duration: 2000,
+              position: "bottom-right",
+            });
+            this.getList(this.query); // 刷新列表
+            this.$emit("refreshTree");
+            // 刷新树和列表
+            this.modelFolderTreeDialogMove = false
+          } else {
+            this.$message({ type: "error", message: "移动失败" });
+          }
+        });
+      });
     },
     /**
      *撤销发布

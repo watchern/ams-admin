@@ -184,7 +184,16 @@ module.exports = {
         pathRewrite: {
           '^/ams-clue/': '/'
         }
-      },
+      }
+      // ,
+      // '/sess': {
+      //   timeout: 1800000,
+      //   target: process.env.AMSSESS_API,
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     '^/sess/': '/'
+      //   }
+      // },
     }
   },
   configureWebpack: config => {

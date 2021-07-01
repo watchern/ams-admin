@@ -324,10 +324,10 @@ export function openCallBack(obj) {
     // 记录打开操作的操作痕迹
     refrashHistoryZtree('打开图形化')
     // 判断非公共场景查询的图形化的节点中是否有正在执行状态的节点
-    if (graph.openGraphType !== 3 && executeIdArr.length !== 0) { // 如果有，则每隔一分钟请求一次数据
-        // 从缓冲表中查询与当前图形化有关的执行中节点的执行结果信息
-        getExecuteNodeInfo(obj.graphUuid, null, executeIdArr, true)
-    }
+    // if (graph.openGraphType !== 3 && executeIdArr.length !== 0) { // 如果有，则每隔一分钟请求一次数据
+    //     // 从缓冲表中查询与当前图形化有关的执行中节点的执行结果信息
+    //     getExecuteNodeInfo(obj.graphUuid, null, executeIdArr, true)
+    // }
     // 获取图形上的所有节点和线
     var cellObj = graph.getModel().cells
     var keys = Object.keys(cellObj)
@@ -345,7 +345,7 @@ export function openCallBack(obj) {
     ownerEditor.editor.undoManager.indexOfNextAdd = 0
 }
 
-export function getExecuteNodeInfo(graphUuid, executeId, executeIdArr, refreshHistory) {
+function getExecuteNodeInfo(graphUuid, executeId, executeIdArr, refreshHistory) {
     let obj = {graphUuid:'',executeId:''}
     let len = executeIdArr.length
     if (graphUuid && graphUuid !== '') {
@@ -507,17 +507,19 @@ export const historySetting = {
                 resourceRootNode.open = true
                 graphIndexVue.resourceZtree = $.fn.zTree.init($('#resourceZtree'), resourceSetting, resourceRootNode)
                 ownerEditor.resetHistory()
+                graphIndexVue.executeTaskObj = {}
+                graphIndexVue.curCell = null
                 // 查找当前快照下的graph中节点状态为执行中的节点
-                var executingNodeIdArr = []
-                var arr = Object.keys(graph.nodeData)
-                var graphUuid = $('#graphUuid').val()
-                for (var k = 0; k < arr.length; k++) {
-                    var nodeExcuteStatus = graph.nodeData[arr[k]].nodeInfo.nodeExcuteStatus
-                    if (nodeExcuteStatus === 2) {
-                        executingNodeIdArr.push(arr[k])
-                    }
-                }
-                getExecuteNodeInfo(graphUuid, null, executingNodeIdArr, false)
+                // var executingNodeIdArr = []
+                // var arr = Object.keys(graph.nodeData)
+                // var graphUuid = $('#graphUuid').val()
+                // for (var k = 0; k < arr.length; k++) {
+                //     var nodeExcuteStatus = graph.nodeData[arr[k]].nodeInfo.nodeExcuteStatus
+                //     if (nodeExcuteStatus === 2) {
+                //         executingNodeIdArr.push(arr[k])
+                //     }
+                // }
+                // getExecuteNodeInfo(graphUuid, null, executingNodeIdArr, false)
             }, function() {})
         }
     }
@@ -879,7 +881,8 @@ export async function saveModelGraph(){
             var dataParam = {
                 'openType': graph.openType,
                 'nodeIdList': lineNodeIdArr.join(","),
-                'nodeData': JSON.stringify(graph.nodeData)
+                'nodeData': JSON.stringify(graph.nodeData),
+                "noData":true
             }
             const response = await executeNodeSql(dataParam)
             if(response.data != null){

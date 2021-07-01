@@ -72,7 +72,6 @@
                 type="primary"
                 class="oper-btn link-2"
                 :disabled="modelRunResultBtnIson.associatedBtn"
-                @click="openProjectDialog"
               ></el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="openProjectDialog"
@@ -111,15 +110,6 @@
               class="oper-btn tjsh"
               >提交审核</el-button
             >
-            <el-button
-              v-if="!yancheng"
-              :disabled="false"
-              type="primary"
-              @click="toSubmit"
-              class="oper-btn tjsh"
-              style="margin-left: 10px"
-              >提交审核</el-button
-            >
           </div>
         </div>
         <ag-grid-vue
@@ -128,7 +118,7 @@
           style="height: calc(100% - 19px)"
           class="table ag-theme-balham"
           :column-defs="columnDefs"
-          :row-data="rowData"
+          :row-data="computedRowData"
           rowMultiSelectWithClick="true"
           :enable-col-resize="true"
           :get-row-style="
@@ -160,7 +150,7 @@
             <div v-if="modelResultPageIsSee">
               共
               <span class="paging-z" title="只显示前10000条数据">
-                {{ rowData.length }} </span
+                {{ computedRowData.length }} </span
               >条
             </div>
           </el-col>
@@ -206,6 +196,8 @@
           :w="chartConfigs.layout[0].w"
           :h="chartConfigs.layout[0].h"
           :i="chartConfigs.layout[0].i"
+          drag-allow-from=".drag-on-table"
+          drag-ignore-from=".ag-theme-balham"
         >
           <!--  此下为表格  -->
           <div class="drag-on-table textz">
@@ -245,7 +237,6 @@
                     type="primary"
                     class="oper-btn link-2"
                     :disabled="modelRunResultBtnIson.associatedBtn"
-                    @click="openProjectDialog"
                   ></el-button>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item @click.native="openProjectDialog"
@@ -284,14 +275,6 @@
                   class="oper-btn tjsh"
                   >提交审核</el-button
                 >
-                <el-button
-                  v-if="!yancheng"
-                  :disabled="false"
-                  type="primary"
-                  @click="toSubmitYc"
-                  class="oper-btn tjsh"
-                  >提交审核</el-button
-                >
               </div>
             </div>
             <ag-grid-vue
@@ -299,8 +282,8 @@
               v-loading="isLoading"
               style="height: calc(100% - 19px)"
               class="table ag-theme-balham"
-              :column-defs="columnDefs"
-              :row-data="rowData"
+              :column-defs="computedColumnDefs"
+              :row-data="computedRowData"
               rowMultiSelectWithClick="true"
               :enable-col-resize="true"
               :get-row-style="
@@ -312,10 +295,10 @@
                     @cellClicked="onCellClicked"
                     @gridReady="onGridReady"
                     @rowSelected="rowChange"
-                    :defaultColDef="defaultColDef"
+                    :default-col-def="defaultColDef"
                     :sideBar="true"
                     :modules="modules"
-                    :localeText="localeText"
+                    :locale-text="localeText"
                     :frameworkComponents="frc"
                     :context = "componentParent"
             />
@@ -336,7 +319,7 @@
                 <div v-if="modelResultPageIsSee">
                   共
                   <span class="paging-z" title="只显示前10000条数据">
-                    {{ rowData.length }} </span
+                    {{ computedRowData.length }} </span
                   >条
                 </div>
               </el-col>
@@ -571,7 +554,7 @@ import {
   updateModelChartSetup,
   deleteModelChartSetup,
   sendToOA,
-  getResultRelProject,
+  getByResultDetailIds,
 } from "@/api/analysis/auditmodelresult";
 import axios from "axios";
 import VueAxios from "vue-axios";
@@ -613,6 +596,15 @@ export default {
     GridItem,
     flowItem,
     flowItem2,
+  },
+
+  computed:{
+      computedRowData(){
+          return this.rotateConfig!=null ? this.rotateRowData : this.rowData;
+      },
+      computedColumnDefs(){
+          return this.rotateConfig!=null ? this.rotateColumnDefs : this.columnDefs;
+      }
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -688,6 +680,8 @@ export default {
       columnDefs: [],
       // aggrid需要显示的数据
       rowData: [],
+      rotateRowData:[],  //行转列的数据
+      rotateColumnDefs:[],  //行转列的列头
       pageQuery: {
         condition: null,
         pageNo: 1,
@@ -769,7 +763,28 @@ export default {
       defaultColDef: {
         flex: 1,
         minWidth: 150,
+        resizable: true,
         filter: true,
+      },
+      sideBar :{
+        toolPanels: [
+          {
+            id: 'columns',
+            labelDefault: 'Columns',
+            labelKey: 'columns',
+            iconKey: 'columns',
+            toolPanel: 'agColumnsToolPanel',
+          },
+          {
+            id: 'filters',
+            labelDefault: 'Filters',
+            labelKey: 'filters',
+            iconKey: 'filter',
+            toolPanel: 'agFiltersToolPanel'
+          },
+        ],
+        position: 'right',
+        defaultToolPanel: 'columns'
       },
       modules: AllModules,
       localeText: {
@@ -792,7 +807,31 @@ export default {
         rowGroupColumnsEmptyMessage: "拖动此处可设置行组",
       },
       frc: {'ag-cell': AgCell},
-      componentParent: null
+      componentParent: null,
+      rotateConfig: null,
+      rotateConfigs:[
+          {
+              /*  ,财报结构（趋势）分析 示例  */
+              modelIds: ["fa2f16c00e335049a0088580362e15db","3acc159b6110564da7698b460eab774f"],  /*  通过UUID匹配的的模型进行行列转置 */
+              mainField:"科目名称",               /*  转置的主列 */
+              colNamesField: "期间值",     /*  以此列值为转置后列头的列 */
+              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
+                  if(thisTitle=='占比'||thisTitle=='环比'||thisTitle=='同比') return colNamesFieldValue+thisTitle;
+                  else if(thisTitle=='期末额') return colNamesFieldValue;
+                  else return thisTitle;
+              }
+          },{
+              /*  ,财报结构（趋势）分析 示例  */
+              modelIds: ["6f0d96ff5b633543eb59736592c92418"],  /*  通过UUID匹配的的模型进行行列转置 */
+              mainField:"指标名称,指标模块,计算公式",               /*  转置的主列 */
+              colNamesField: "月份",     /*  以此列值为转置后列头的列 */
+              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
+                  if(thisTitle=='计算值') return colNamesFieldValue;
+                  else return thisTitle;
+              }
+          }
+
+      ]
     };
   },
   mounted() {
@@ -871,10 +910,17 @@ export default {
      * 导出方法
      */
     exportExcel() {
+      // 选中行的ID集合
+      const onlyUuids  = [];
+      // 获取选中的行
+      const selectedRows = this.gridApi.getSelectedRows();
+      // 获取选中行的id
+      selectedRows.forEach(e =>(onlyUuids.push(e.onlyuuid)));
       axios({
         method: "post",
         url: "/analysis/RunResultTableController/exportRunResultMainTable",
         responseType: "blob",
+        data: onlyUuids,
       }).then((res) => {
         const link = document.createElement("a");
         const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
@@ -912,8 +958,18 @@ export default {
       });
     },
     openProjectDialog() {
-      getResultRelProject(this.nowtable.runTaskRelUuid).then((resp) => {
-        if (resp.data.length == 0) {
+      // 验证是否已经关联项目
+      var selectData = this.gridApi.getSelectedRows();
+      console.log(selectData)
+      let paramslist =[]
+      for (let i = 0; i < selectData.length; i++) {
+        paramslist.push(selectData[i].onlyuuid)
+      }
+      console.log(paramslist)
+      // 查询该明细是否已经分配项目，如果未分配则打开分配窗口
+      getByResultDetailIds(paramslist).then((resp) => {
+        if (resp.data.length === 0) {
+          // 打开分配窗口
           this.projectDialogIsSee = true;
         } else {
           this.$message({
@@ -932,7 +988,7 @@ export default {
           message: "请选择要关联的项目",
         });
       } else if (projects.length === 1) {
-        this.addDetailRel(projects[0].PRJ_PROJECT_UUID, projects[0].PRJ_NAME);
+        this.addDetailRel(projects[0].prjProjectUuid, projects[0].prjName);
         this.projectDialogIsSee = false;
       } else {
         this.$message({
@@ -1222,6 +1278,8 @@ export default {
             }
             this.total = resp.data.total;
             this.dataArray = resp.data.records[0].result;
+              var assArr = Object.assign([], resp.data.records[0].result);
+              this.doRotating(assArr);
             this.queryData = resp.data.records[0].columnInfo;
             colNames = resp.data.records[0].columns;
             // 生成ag-grid列信息
@@ -1382,9 +1440,23 @@ export default {
             }
           }
         );
-        this.columnDefs = col;
-        this.rowData = da;
-        this.gridApi.closeToolPanel()
+        // this.columnDefs = col;
+        // this.rowData = da;
+        // if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
+        //   this.gridApi.closeToolPanel()
+        // }
+        let _this = this
+        setTimeout(function(){
+          for(let i = 0;i< col.length;i++){
+            col[i].filter = 'agTextColumnFilter'
+          }
+          _this.columnDefs = col;
+          _this.rowData = da;
+          if (typeof _this.gridApi !== "undefined" && _this.gridApi !== null) {
+            _this.gridApi.closeToolPanel()
+          }
+        },500)
+
       } else if (this.useType == "sqlEditor") {
         this.getIntoModelResultDetail(nextValue);
       } else if (this.useType == "modelPreview") {
@@ -1428,6 +1500,8 @@ export default {
                   columnType.push(type);
                 }
                 var resultData = this.nextValue.result;
+                var assResultData = Object.assign([], resultData);
+                this.doRotating(assResultData);
                 this.result.id = this.nextValue.modelUuid;
                 this.result.name = modelName;
                 this.result.columnType = columnType;
@@ -1603,9 +1677,14 @@ export default {
                     }
                     this.rowData = rowData;
                   }
+                  for(let i = 0;i<col.length;i++){
+                    col[i].filter = 'agTextColumnFilter'
+                  }
                   this.columnDefs = col;
                   this.afterResult = true;
-                  this.gridApi.closeToolPanel()
+                  if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
+                    this.gridApi.closeToolPanel()
+                  }
                 });
               }
             } else {
@@ -1628,10 +1707,55 @@ export default {
         this.getIntoModelResultDetail(nextValue);
       }
     },
-    /**
-     * 显示模型结果详细提取公共代码
-     * */
-    getIntoModelResultDetail(nextValue) {
+
+    doRotating(rowData){  //旋转
+        if(rowData.length == 0) return;
+        this.rotateConfigs.forEach(conf=>{
+            conf.modelIds.forEach(mId=>{
+                if(this.modelId === mId) this.rotateConfig = conf;
+            })
+        });
+        if(this.rotateConfig != null){   //  do rotation
+            var mainField = this.rotateConfig.mainField;
+            var colNamesField = this.rotateConfig.colNamesField;
+            console.log(this.rotateConfig)
+            var tempMap = {};
+            for(let i=0; i<rowData.length; i++){
+                var rd = rowData[i];
+                var key1Arr = [];
+                mainField.split(",").forEach(mf=>{
+                    key1Arr.push(rd[mf]);
+                });
+                var key1 = key1Arr.join("```");
+                var key2 = rd[colNamesField];
+                if(!tempMap[key1]) tempMap[key1] = {};
+                delete rd[mainField];
+                delete rd[colNamesField];
+                tempMap[key1][key2] = rd;
+            }
+            Object.keys(tempMap).forEach(key1 =>{
+                var rtObj = {};
+                mainField.split(",").forEach((mf,idx)=>{
+                    rtObj[mf] = key1.split("```")[idx];
+                });
+                Object.keys(tempMap[key1]).forEach((key2)=>{
+                    var assObj = tempMap[key1][key2];
+                    Object.keys(assObj).forEach(ao=>{
+                        rtObj[this.rotateConfig.titleDisplayRules(ao, key2)] = assObj[ao];
+                    })
+                });
+                this.rotateRowData.push(rtObj);
+            });
+            Object.keys(this.rotateRowData[0]).forEach(k=>{
+                this.rotateColumnDefs.push({field:k, headerName:k, width:280});
+            })
+        }
+    },
+
+      /**
+       * 显示模型结果详细提取公共代码
+       * */
+      getIntoModelResultDetail(nextValue) {
       this.afterAddChartsWithNoConfigure = true;
       this.chartLoading = false;
       this.loading = true;
@@ -1703,9 +1827,14 @@ export default {
             for (var k = 0; k < this.nextValue.result.length; k++) {
               rowData.push(this.nextValue.result[k]);
             }
+            for(let i = 0;i<col.length;i++){
+              col[i].filter = 'agTextColumnFilter'
+            }
             this.columnDefs = col;
             this.afterResult = true;
-            this.gridApi.closeToolPanel()
+            if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
+              this.gridApi.closeToolPanel()
+            }
           } else {
             this.isSee = false;
             this.modelResultPageIsSee = false;
@@ -1920,6 +2049,9 @@ export default {
      * 点击详细dialog的确定按钮后触发
      */
     modelDetailCetermine(value) {
+      if(!value) {
+        value = this.modelDetailRelation[0].relationObjectUuid
+      }
       var selectRowData = this.gridApi.getSelectedRows();
       var relationType = null;
       var objectName = "";
@@ -2584,6 +2716,7 @@ export default {
         for (let i = 0; i < this.modelChartSetups.length; i++) {
           let modelChartSetupZ = {};
           let json = JSON.parse(this.modelChartSetups[i].chartJson);
+          console.log(this.modelChartSetups[i])
           for (let j = 0; j < this.chartConfigs.layout.length; j++) {
             if (this.chartConfigs.layout[j].i === json.layout.i) {
               modelChartSetupZ = {
@@ -2592,6 +2725,7 @@ export default {
                   layout: this.chartConfigs.layout[j],
                 }),
                 modelUuid: this.modelChartSetups[i].modelUuid,
+                chartSetupUuid:this.modelChartSetups[i].chartSetupUuid
               };
               updateModelChartSetup(modelChartSetupZ).then((resp) => {
                 if (resp.data) {
@@ -2645,7 +2779,7 @@ export default {
       this.applyInfo.fstate = "";
       this.applyInfo.isUpdate = false; //初始化
       this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
-      
+
       console.info(JSON.stringify(this.submitData))
       console.info(JSON.stringify(this.columnDefs))
       this.dialogVisibleSubmit = true;
@@ -2738,7 +2872,7 @@ export default {
       this.applyInfo.fstate = "";
       this.applyInfo.isUpdate = false; //初始化
       this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
-      
+
       console.info(JSON.stringify(this.submitData))
       console.info(JSON.stringify(this.columnDefs))
       this.dialogVisibleSubmitYc = true;
@@ -2747,7 +2881,7 @@ export default {
         setTimeout(() => {
             this.$refs["flowItem2"].saveOpinion();
         }, 20);
-    },  
+    },
     //流程发布失败
     delectDataYc(val) {
       this.dialogVisibleSubmitYc = val;
@@ -2766,7 +2900,7 @@ export default {
           console.log(error);
         });
       this.initData();
-    },    
+    },
 
   },
 };

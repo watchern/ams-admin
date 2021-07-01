@@ -17,7 +17,6 @@
             class="filter-tree"
             highlight-current="true"
             node-key="id"
-            show-checkbox
             @node-click="nodeClick"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node">
@@ -30,6 +29,12 @@
                 <!-- &#xecee; -->
                 <span class="icon iconfont agreeicon1"></span>
               </i>
+               <i v-if="data.type === 'VIEW'">
+                <!-- style="padding-right: 3px; vertical-align: bottom" -->
+                    <!-- &#xecee; -->
+                <span class="icon iconfont agreeicon4"></span>
+              </i>
+
               <i
                 v-if="data.type === 'COLUMN'"
                 class="el-icon-c-scale-to-original"
@@ -346,6 +351,7 @@ export default {
       node.expand(); // 主动调用展开节点方法，重新查询该节点下的所有子节点
     },
     nodeClick(data, node, tree) {
+      console.log('走这里')
       this.divInfo = false;
       if (node.data.type === "TABLE") {
         this.$nextTick(() => {
@@ -527,5 +533,16 @@ export default {
   background-image: url("../../../assets/img/table_2.png");
   vertical-align: top;
   *vertical-align: middle;
+}
+.agreeicon4 {
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    margin-right: 2px;
+    margin-top: 0;
+    background-size: 100%;
+    background-image: url("../../../styles/icons/view.png");
+    vertical-align: top;
+    *vertical-align: middle;
 }
 </style>

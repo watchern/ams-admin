@@ -61,8 +61,8 @@ String.prototype.endWith = function(endStr){
  * Date：2016-7-4
  * @remark 调用对象既可以是某个容器，也可以是body或者是html(例：$("xxx").mLoading()或者$("body").mLoading()或者$("html").mLoading())
  */
-var plsInc;
-;(function (root, factory) {
+var plsInc,callbackFun;
+(function (root, factory) {
     'use strict';
 
     if (typeof module === 'object' && typeof module.exports === 'object') {
@@ -91,7 +91,7 @@ var plsInc;
     }
 
     var arraySlice = Array.prototype.slice,
-        comparison=function (obj1,obj2) {
+        comparison = function (obj1,obj2) {
             var result=true;
             for(var pro in obj1){
                 if(obj1[pro] !== obj2[obj1]){
@@ -100,13 +100,14 @@ var plsInc;
                 }
             }
             return result;
-        }
+        };
 
     function MLoading(dom,options) {
         options = options||{};
         this.dom = dom;
         this.options = $.extend(true,{},MLoading.defaultOptions,options);
         this.curtain = null;
+        callbackFun = this.options.callback;
         this.render().show();
     }
     MLoading.prototype = {
@@ -119,32 +120,32 @@ var plsInc;
                 barElement = bodyElement.children('.mloading-bar'),
                 iconElement = barElement.children('.mloading-icon'),
                 textElement = barElement.find(".mloading-text");
-            if (curtainElement.length == 0) {
+            if (curtainElement.length === 0) {
                 curtainElement = $('<div class="mloading"></div>');
                 dom.append(curtainElement);
             }
-            if (bodyElement.length == 0) {
+            if (bodyElement.length === 0) {
                 bodyElement = $('<div class="mloading-body"></div>');
                 curtainElement.append(bodyElement);
             }
-            if (barElement.length == 0) {
+            if (barElement.length === 0) {
                 barElement = $('<div class="mloading-bar"></div>');
                 bodyElement.append(barElement);
             }
-            if (iconElement.length == 0) {
+            if (iconElement.length === 0) {
                 var _iconElement=document.createElement(ops.iconTag);
                 iconElement = $(_iconElement);
                 iconElement.addClass("mloading-icon");
                 barElement.append(iconElement);
             }
-            if (textElement.length == 0) {
+            if (textElement.length === 0) {
                 textElement = $('<span class="mloading-text"></span>');
                 barElement.append(textElement);
             }
-            if($(".mloading-bar").find("a").length==0 && ops.hasCancel){
+            if($(".mloading-bar").find("a").length===0 && ops.hasCancel){
                 barElement.append("<a href='javascript:void(0)' onclick='cLoading()' style='text-decoration:none'>取消</a>");
             }
-            if(typeof(Worker)!="undefined" && ops.hasTime){//计时
+            if(typeof(Worker)!=="undefined" && ops.hasTime){//计时
                 ops.s = ops.m = ops.h = 0;
                 var interval = setInterval(function() {
                     if (ops.hasTime) {
@@ -197,7 +198,7 @@ var plsInc;
             }else{
                 this.curtainElement.removeClass("mloading-mask");
             }
-            if(ops.content!="" && typeof ops.content!="undefined"){
+            if(ops.content!=="" && typeof ops.content!=="undefined"){
                 if(ops.html){
                     this.bodyElement.html(ops.content);
                 }else{
@@ -249,6 +250,10 @@ var plsInc;
             if(ops.hasTime){//关闭计时
                 ops.hasTime = false;
             }
+            if(ops.callback != null && typeof ops.callback === "function"){
+                ops.callback = null;
+                callbackFun = null;
+            }
             this.curtainElement.remove();
             if(!dom.is("html") && !dom.is("body")){
                 dom.removeClass("mloading-container");
@@ -265,6 +270,7 @@ var plsInc;
         html:false,
         hasCancel:true,//是否有取消事件
         hasTime:false,//是否计时
+        callback:null,//取消事件的回调函数
         content:"",//设置content后，text和icon设置将无效
         mask:true//是否显示遮罩（半透明背景）
     };
@@ -299,13 +305,14 @@ var plsInc;
         return plsInc;
     }
 }));
-
 function cLoading(){
     if(plsInc){
         plsInc.hide();
     }
+    if(callbackFun != null && typeof callbackFun === "function"){
+        callbackFun();
+    }
 }
-
 
 /**
  *

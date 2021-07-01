@@ -2,6 +2,7 @@
   <div class="app-container">
     <el-input v-model="filterText1" placeholder="输入关键字进行过滤" />
     <div style="overflow: auto; height: 60vh">
+      <!-- :default-expand-all="true" 展开全部节点 -->
       <MyElTree
         ref="tree1"
         v-loading="treeLoading"
@@ -15,6 +16,7 @@
         @node-expand="nodeExpand"
         lazy
         :load="loadNode"
+        :default-expanded-keys="openlist"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
           <i
@@ -24,20 +26,59 @@
           />
           <!-- class="el-icon-folder" style="color:#409EFF" / -->
           <i v-if="data.type === 'folder'">
-            <img src="../../../assets/img/table_0.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            <img
+              src="../../../assets/img/table_0.png"
+              style="
+                height: 16px;
+                width: 16px;
+                margin-right: 2px;
+                vertical-align: top;
+                *vertical-align: middle;
+              "
+            />
           </i>
           <!-- class="el-icon-tickets" style="color: #409eff" / -->
           <i v-else-if="data.type === 'table' && data.extMap.tblType === 'T'">
-            <img src="../../../assets/img/table_1.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            <img
+              src="../../../styles/icons/table_1.png"
+              style="
+                height: 16px;
+                width: 16px;
+                margin-right: 2px;
+                vertical-align: top;
+                *vertical-align: middle;
+              "
+            />
           </i>
           <!-- class="el-icon-search"  style="color: #409eff" / -->
           <i v-else-if="data.type === 'table' && data.extMap.tblType === 'V'">
-            <img src="../../../assets/img/table_1.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            <img
+              src="../../../styles/icons/view.png"
+              style="
+                height: 16px;
+                width: 16px;
+                margin-right: 2px;
+                vertical-align: top;
+                *vertical-align: middle;
+              "
+            />
           </i>
           <!-- style="color: #409eff" / -->
-          <i v-else-if="data.type === 'column'" class="el-icon-c-scale-to-original" />
+          <i
+            v-else-if="data.type === 'column'"
+            class="el-icon-c-scale-to-original"
+          />
           <i v-else>
-            <img src="../../../assets/img/table_2.png" style="height: 16px;width: 16px;margin-right: 2px;vertical-align: top;*vertical-align: middle;">
+            <img
+              src="../../../styles/icons/column.png"
+              style="
+                height: 16px;
+                width: 16px;
+                margin-right: 2px;
+                vertical-align: top;
+                *vertical-align: middle;
+              "
+            />
           </i>
           <span :title="data.title">{{ node.label }}</span>
         </span>
@@ -88,6 +129,8 @@ export default {
       },
       treeData1: [],
       treeLoading: false,
+      //需要打开的节点
+      openlist: ["ROOT"],
     };
   },
   computed: {},
@@ -154,9 +197,9 @@ export default {
     refresh() {
       this.treeLoading = true;
       //为防止数据更新的延迟导致的bug在此添加缓冲
-      setTimeout(this.rep(),500)
+      setTimeout(this.rep(), 500);
     },
-    rep(){
+    rep() {
       getResELTree({
         dataUserId: this.dataUserId,
         sceneCode: this.sceneCode,
@@ -164,9 +207,21 @@ export default {
       }).then((resp) => {
         this.treeLoading = false;
         this.treeData1 = resp.data;
-        console.log(this.treeData1)
+        //默认展开所有文件夹
+        this.openlist = ["ROOT"];
+        this.inputopenlist(this.treeData1);
       });
-    }
+    },
+    inputopenlist(dat) {
+      for (let i = 0; i < dat.length; i++) {
+        if (dat[i] && dat[i].type == "folder") {
+          this.openlist.push(dat[i].id);
+          if (dat[i].children) {
+            this.inputopenlist(dat[i].children);
+          }
+        }
+      }
+    },
   }, // 注册
 };
 </script>

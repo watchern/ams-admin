@@ -23,6 +23,7 @@
             node-key="id"
             :expand-on-click-node="false"
             :filter-node-method="filterNode"
+            :default-checked-keys = checkedNode
             show-checkbox
           >
             <span slot-scope="{ node, data }" class="custom-tree-node">
@@ -172,7 +173,7 @@
                   style="display: inline; float: right"
                 >
                   <!--label="WRITE" 写入 -->
-                  <el-checkbox></el-checkbox>
+                  <el-checkbox label="WRITE">{{''}}</el-checkbox>
                 </el-checkbox-group>
               </span>
               <span v-if="data.id === 'ROOT'" class="xieru">写入</span>
@@ -317,6 +318,7 @@ export default {
       currentSelection: [],
       accessTypeArray: [],
       selectList: [],
+      checkedNode: []
     };
   },
   computed: {},
@@ -338,21 +340,47 @@ export default {
       resp.data.forEach((item) => {
         this.treeData2[0].children.push(item);
       });
+      // 设置主树的checkBox
+      this.tree1Checked(resp.data);
     });
     getAccessType().then((resp) => {
       this.accessTypeArray = resp.data;
     });
   },
   methods: {
+    // 将已经被授权的节点在主树中勾上checkBox
+    tree1Checked(datas){
+      for(var i in datas){
+        if (datas[i].type==="table"){
+          this.checkedNode.push(datas[i].id)
+        }
+        if(datas[i].children){
+          this.tree1Checked(datas[i].children);
+        }
+      }
+    },
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
+    changeTreeNodeStatus(val, flag) {
+        const node = val
+        node.expanded = flag;
+        for (let i = 0; i < node.childNodes.length; i++) {
+          node.childNodes[i].expanded = flag;
+          if (node.childNodes[i].childNodes.length > 0) {
+            this.changeTreeNodeStatus(node.childNodes[i], flag);
+          }
+        }
+      },
     addRoleTable() {
-      /* 先对选中节点以pid为key做hashmap */
-      var ckTbs = this.$refs.tree1.getCheckedNodes(false, true);
+      this.changeTreeNodeStatus(this.$refs.tree2.getAllNodes()[0],true)
+      let _this = this
+      setTimeout(function(){
+        /* 先对选中节点以pid为key做hashmap */
+      var ckTbs = _this.$refs.tree1.getCheckedNodes(false, true);
       if (ckTbs.length == 0) {
-        ckTbs.push(this.$refs.tree1.getCurrentNode());
+        ckTbs.push(_this.$refs.tree1.getCurrentNode());
       }
       var ckTbsMap = {};
       ckTbs.forEach((item) => {
@@ -363,13 +391,12 @@ export default {
         if (!ckTbsMap[item.pid]) ckTbsMap[item.pid] = [];
         ckTbsMap[item.pid].push(assItem);
       });
-
       /* 遍历selected data 然后将节点插入*/
-      this.goThroughTree(this.treeData2[0], (treeNode) => {
+      _this.goThroughTree(_this.treeData2[0], (treeNode) => {
         var children = ckTbsMap[treeNode.id];
         var myChildren = treeNode.children;
         if (children) {
-          if (!myChildren) this.$set(treeNode, "children", []);
+          if (!myChildren) _this.$set(treeNode, "children", []);
           // 找孩子 并且现在没有这个孩子
           children.forEach((c) => {
             if (
@@ -382,8 +409,8 @@ export default {
           });
         }
       });
+      },100)
     },
-
     goThroughTree(treeNode, callback) {
       callback(treeNode);
       var children = treeNode.children;
@@ -399,6 +426,8 @@ export default {
       const children = parent.data.children || parent.data;
       const index = children.findIndex((d) => d.id === data.id);
       children.splice(index, 1);
+      // 取消主树的checkBox
+      this.$refs.tree1.setChecked(data,false,true)
     },
     //所有子集禁用
     witerData(node, data) {
