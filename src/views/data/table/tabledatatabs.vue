@@ -1,6 +1,6 @@
 <template class="divContent">
   <div class="zdytabledata">
-    <el-tabs ref="tabs" v-model="tabShowName" style="text-aling = center">
+    <el-tabs ref="tabs" v-model="tabShowName" style="text-align: center">
       <el-tab-pane
         v-if="openType === 'showTable' || openType === 'tableRegister'"
         label="基本信息"

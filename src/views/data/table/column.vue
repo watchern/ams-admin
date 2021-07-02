@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" style="height:80vh;overflow:auto">
+  <div class="app-container">
     <el-row>
       <el-col
         v-if="openType !== 'showTable' && openType !== 'tableRegister'"
