@@ -3,7 +3,7 @@
 const graphRouter = {
     path: '/graphtool',
     name: '图形化工具',
-    component: (resolve) => require(['@/portal/'+ process.env.VUE_APP_BASE_SKIN + '/index'],resolve),
+    component: (resolve) => require(['@/portal/' + (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'], resolve),
     meta: {
     },
     children: [

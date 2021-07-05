@@ -72,17 +72,19 @@
   font-weight: normal!important;
 }
 .oper-btn:hover::before {
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 13px;
+  line-height: 1.2;
+  min-width: 10px;
+  word-wrap: break-word;
   position: absolute;
-  padding: 4px 4px;
   width:68px;
-  border: 1px solid #333;
-  border-radius: 3px;
-  font-size: 14px;
   color: #000;
-  background-color: #fff;
   z-index: 999999999;
   white-space:normal;
-  line-height: 18px;
+  background: #fff;
+  border: 1px solid #303133;
   left: -22px;
   top: 26px;
   //margin-top: 26px;
