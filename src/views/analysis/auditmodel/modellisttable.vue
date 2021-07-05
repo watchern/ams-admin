@@ -526,11 +526,7 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-      /* const webSocketPath = 'ws://localhost:8086/analysis/websocket?' + this.$store.getters.personuuid*/
-      const webSocketPath =
-        this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) +
-        this.$store.getters.personuuid +
-        "modellisttable";
+      const webSocketPath = this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) + this.$store.getters.personuuid + 'modellisttable'
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接

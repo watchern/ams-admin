@@ -1,7 +1,7 @@
 <template>
   <div class="home flex a-start flex-column j-start w100">
-    <div class="home-top flex-shrink w100">
-      <LeftMenu v-show="flase" />
+    <div class="home-top flex-shrink w100" v-show="showMenu" >
+      <LeftMenu />
     </div>
     <div class="home-right flex1 flex a-start j-start flex-column">
       <div class="home-right-content flex1 w100 skin-home-rc">
@@ -34,7 +34,8 @@ export default {
   data () {
     return {
       showHelpHeight: false,
-      loading: false
+      loading: false,
+      showMenu: false
     }
   },
   computed: {
