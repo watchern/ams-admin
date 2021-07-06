@@ -185,10 +185,10 @@ export default {
     resetQuery() {
       this.query = {
         condition: {
-          remindTitle: '',
-          remindContent: '',
-          remindTime: '',
-          readStatus: ''
+          remindTitle: null,
+          remindContent: null,
+          remindTime: null,
+          readStatus: null
         }
       }
     },
@@ -214,7 +214,7 @@ export default {
     },
     handdetails(data) {
       var id = data.remindUuid
-      if (data.modeUrl != null) {
+      if (data.modeUrl != null || data.modeUrl != '') {
         this.selectDetail(data)
       } else {
         console.log(id)
