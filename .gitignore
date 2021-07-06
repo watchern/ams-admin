@@ -19,3 +19,5 @@ yarn-error.log*
 *.xml
 .env.development
 package-lock.json
+**/package-lock.json
+
