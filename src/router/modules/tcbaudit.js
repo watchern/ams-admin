@@ -4,7 +4,7 @@
 
 const tcbauditRouter = {
   path: '/audit',
-  component: (resolve) => require(['@/portal/'+ process.env.VUE_APP_BASE_SKIN + '/index'],resolve),
+  component: (resolve) => require(['@/portal/'+ (process.env.VUE_APP_BASE_MENU === 'withmenu'?'withmenu/' + process.env.VUE_APP_BASE_SKIN:'withoutmenu') + '/index'],resolve),
   // redirect: '/audit/project',
   name: '太仓农商行',
   meta: {
