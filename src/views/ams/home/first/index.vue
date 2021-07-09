@@ -449,6 +449,8 @@ export default {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  width: calc(100% - 40px);
+  display: inline-block;
 }
 .title-bottom{
   font-size:18px;
@@ -482,7 +484,7 @@ export default {
 }
 .top-card-right{
   table-layout: fixed;
-  width: 81px;
+  width: 80%;
 }
 .bottom-after{
   content: '';
