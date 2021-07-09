@@ -21,7 +21,7 @@
         </el-col>
       </el-row>
       <!-- 分隔线 -->
-      <el-divider v-if="paramInfoArr.length>0"></el-divider>
+      <!-- <el-divider v-if="paramInfoArr.length>0"></el-divider> -->
     </div>  
   </div>
 </template>
@@ -872,4 +872,9 @@ export default {
   .paramadrawnew>>>.select-div{
     z-index: 40000;
   }
+</style>
+<style>
+ .paramadrawnew .xm-body .scroll-body{
+   max-width:500px;
+}
 </style>

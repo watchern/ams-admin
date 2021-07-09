@@ -474,6 +474,7 @@ export default {
     editableTabs() {},
   },
   created() {
+    this.getList()
     // this.getList({ modelFolderUuid: 1 })
   },
   mounted() {
@@ -1447,13 +1448,14 @@ export default {
             formName: result.data.modelName + "详细",
           };
           sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
-          this.$store.commit("aceState/setRightFooterTags", {
-            type: "active",
-            val: {
-              name: result.data.modelName + "详细",
-              path: "/analysis/editormodelnew",
-            },
-          });
+          this.$router.push(`/analysis/editormodelnew`)
+          // this.$store.commit("aceState/setRightFooterTags", {
+          //   type: "active",
+          //   val: {
+          //     name: result.data.modelName + "详细",
+          //     path: "/analysis/editormodelnew",
+          //   },
+          // });
         } else {
           this.$message({ type: "error", message: "查看模型详细失败" });
         }
