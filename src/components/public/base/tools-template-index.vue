@@ -547,13 +547,6 @@ export default {
           if (this.latelyUseList.indexOf(arry[i].id) === -1) {
             this.latelyPathList.push(arry[i].p);
             this.latelyUseList.push(arry[i].id);
-            for (let c = 0; c < this.latelyImgList.length; c++) {
-              if (arry[i].id === this.latelyImgList[c].name) {
-                this.latelyInImgList.push({
-                  image: this.latelyImgList[c].image|| require("../../public/base/accessIcon/moxing.png"),
-                });
-              }
-            }
             break;
           }
         }
@@ -561,6 +554,17 @@ export default {
       if (this.latelyUseList.length >= 5) {
         break;
       }
+    }
+    for (let i = 0; i < this.latelyUseList.length; i++) {
+      this.latelyInImgList[i] = { image: require("../../public/base/accessIcon/moxing.png")}
+      let that = this
+      this.latelyImgList.forEach(function(item){
+        if(that.latelyUseList[i]==item.name){
+          that.latelyInImgList[i] = {
+            image: item.image,
+          };
+        }
+      })
     }
     for (let i = 0; i < this.latelyInImgList.length; i++) {
       this.latelyBdInList.push({
