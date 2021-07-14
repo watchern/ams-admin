@@ -91,7 +91,7 @@
                                     >取消注释</el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
-                            <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;cursor: pointer;" @click="modelResultSavePathDialog = true">{{ path }}</label>
+                            <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;cursor: pointer;" @click="modelResultSavePathDialog = true">{{ path }} <i class="el-icon-edit" style="font-size:16px;"></i></label>
                         </el-col>
                     </el-row>
                     <div
@@ -834,6 +834,7 @@
             executeSQL() {
                 if (this.tempId === '') {
                     this.$message({ type: 'info', message: '请选择SQL执行保存路径!' })
+                    this.modelResultSavePathDialog = true
                     return
                 }
                 const result = getSql()
@@ -1274,3 +1275,4 @@
       margin: 5px 0 10px 0;
     }
 </style>
+

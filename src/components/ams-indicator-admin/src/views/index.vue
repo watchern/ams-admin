@@ -29,7 +29,7 @@
           </div>
         </el-scrollbar>
       </el-aside>
-      <el-main>
+      <el-main v-loading="theRightLoding">
         <div class="top-collapse-container">
           <div class="top-collapse-con">
             <div class="toggle-btn J_slideup_btn" @click="packUpClick"><i class="icon-toggle"></i><span>收起</span></div>
@@ -421,7 +421,9 @@ export default {
         height: '200px',
         width: '100%'
       },
-      tableHeight:"height:60%"
+      tableHeight:"height:60%",
+      // 右半部分loding
+      theRightLoding: false
     }
   },
   watch: {
@@ -1704,6 +1706,7 @@ export default {
       $("#" + treeNode.tId + "_span").attr("title", spantxt);
       var aObj = $("#" + treeNode.tId + "_a");
       if (treeNode.type == "folder" && treeNode.title != undefined) {
+        console.log(treeNode)
         //xudaiqng  20191119  start
         aObj.append("<span class='node_num'>" + treeNode.childCount + "</span>");
         //xudaiqng  20191119  end
@@ -4920,7 +4923,8 @@ export default {
     supQuery(objInList, objDimList, analysisRegionId,chartConfig) {
       var that = this;
       var url = this.contextUrl + "/indicatrixAnalysis/supAnalysis";
-      let loadingInstance = Loading.service({fullscreen: true});
+      // let loadingInstance = Loading.service({fullscreen: true});
+      this.theRightLoding = true
       var newInList = [];
       let filterShow = [];
       //取出每个分析区的第一个指标并删除，用该指标与其他指标进行组织sql
@@ -4951,7 +4955,8 @@ export default {
             name = value.measureName;
             logName += value.measureName + ",";
           });
-          loadingInstance.close()
+          // loadingInstance.close()
+          that.theRightLoding = false
           if (res.isError == true) {
             let dataView = {
               id:analysisRegionId,
@@ -4970,7 +4975,8 @@ export default {
           that.executeSql(res.executeSQLList,logName,newAnalysisRegionId,chartConfig)
         },
         error: function (res) {
-            loadingInstance.close();
+            // loadingInstance.close();
+            that.theRightLoding = false
             that.$message("分析出错，" + res.message, {time: 30000, btn: ['知道了']});
             return;
         }
@@ -4986,7 +4992,8 @@ export default {
     bingLieQuery(objInList, objDimList, analysisRegionId,chartConfig) {
       var that = this;
       var url = this.contextUrl + "/indicatrixAnalysis/getInData";
-      let loadingInstance = Loading.service({fullscreen: true});
+      // let loadingInstance = Loading.service({fullscreen: true});
+      this.theRightLoding = true
       var indicatrixObj = null;
       let filterShow = [];
       $.each(objInList, function (num, value) {
@@ -5003,7 +5010,8 @@ export default {
         data: {inMeasure: JSON.stringify(indicatrixObj), listDim: JSON.stringify(objDimList)},
         async: true,
         success: function (res) {
-          loadingInstance.close();
+          // loadingInstance.close();
+          that.theRightLoding = false
           if (res.isError == true) {
             let dataView = {
               id:analysisRegionId,
@@ -5022,11 +5030,13 @@ export default {
         },
         error: function (res) {
           if (res.state == false) {
-            loadingInstance.close();
+            // loadingInstance.close();
+            that.theRightLoding = false
             that.$message("分析出错，" + res.message, {time: 30000, btn: ['知道了']});
             return;
           }
-          loadingInstance.close();
+          // loadingInstance.close();
+          that.theRightLoding = false
         }
       });
     },

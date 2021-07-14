@@ -123,12 +123,12 @@ Vue.prototype.log_see = "查看";
  * {{ETLSCHEDULER: string, DATA: string, GRAPHTOOL: string, INDICATOR: string, ANALYSIS: string, DATAMAX: string, BASE: string}}
  */
 Vue.prototype.AmsModules = {
-  ANALYSIS:'analysis', 
-  BASE:'base', 
-  DATA: 'data', 
-  ETLSCHEDULER:'etlscheduler', 
+  ANALYSIS:'analysis',
+  BASE:'base',
+  DATA: 'data',
+  ETLSCHEDULER:'etlscheduler',
   DATAMAX:'datamax',
-  INDICATOR:'indicator', 
+  INDICATOR:'indicator',
   GRAPHTOOL:'graphtool'
 }
 
