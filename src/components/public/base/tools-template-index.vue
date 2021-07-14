@@ -550,7 +550,7 @@ export default {
             for (let c = 0; c < this.latelyImgList.length; c++) {
               if (arry[i].id === this.latelyImgList[c].name) {
                 this.latelyInImgList.push({
-                  image: this.latelyImgList[c].image,
+                  image: this.latelyImgList[c].image|| require("../../public/base/accessIcon/moxing.png"),
                 });
               }
             }
@@ -564,14 +564,11 @@ export default {
     }
     for (let i = 0; i < this.latelyInImgList.length; i++) {
       this.latelyBdInList.push({
-        image: this.latelyInImgList[i].image
-          ? this.latelyInImgList[i].image
-          : require("../../public/base/accessIcon/moxing.png"),
-        bg: this.latelyBackList[i]
-          ? this.latelyBackList[i].bg
-          : "rgb(95,190,235)",
+        image: this.latelyInImgList[i].image,
+        bg: this.latelyBackList[i].bg,
       });
     }
+
     getQuickMenuList().then((res) => {
       // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
       for (let i = 0; i < res.data.length; i++) {
