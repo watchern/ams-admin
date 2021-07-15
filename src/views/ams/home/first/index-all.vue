@@ -476,10 +476,11 @@ export default {
         box-shadow: 17px 17px 34px 0 rgba(0,0,0,0.10);
         border-radius: 25.2px;
         padding: 27px;
+        padding-bottom: 37px;
         width: 479px;
         position: relative;
         margin:5px;
-        height: 218px;
+        height: 230px;
         &-left{
           background: #FFFFFF;
           border: 1px solid #D8D8D8;
