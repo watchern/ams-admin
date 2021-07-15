@@ -653,7 +653,7 @@ EditorUi = function(editor, container, lightbox) {
               if(e.data == null){
                   isCreateTableNodeError = true;
                   alert("获取数据表【" + cell.value + "】信息失败,无法创建数据表节点");
-                  nodeExcuteStatus = 4;//
+                  nodeExcuteStatus = 4;//执行失败
               }else{
                   var columnsInfo = [];
                   var nodeSql = "SELECT";
