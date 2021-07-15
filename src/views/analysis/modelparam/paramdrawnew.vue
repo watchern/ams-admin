@@ -1,6 +1,6 @@
 <template>
   <div style="overflow-y: visible;" ref="inputParamContent" class="paramadrawnew">
-    <div ref="nodeParam">
+    <div ref="nodeParam" style="padding-bottom:255px;overflow:auto;max-height:62vh">
       <el-row  v-for="(paramInfo,ind) in paramInfoArr" :key="ind" style="margin: 15px;" >
         <el-col :span="7" style="line-height:36px;padding-right: 10px;">
           <el-tooltip :content="paramInfo.description" placement="bottom">
@@ -21,7 +21,7 @@
         </el-col>
       </el-row>
       <!-- 分隔线 -->
-      <el-divider v-if="paramInfoArr.length>0"></el-divider>
+      <!-- <el-divider v-if="paramInfoArr.length>0"></el-divider> -->
     </div>  
   </div>
 </template>
@@ -46,6 +46,7 @@ export default {
     }
   },created(){
     addJsFile('/lib/layui/xm-select.js','xm-select')
+    console.log(arr)
   },
   beforeDestroy() {
     removeJcCssfile("xm-select.js","js")
@@ -872,4 +873,9 @@ export default {
   .paramadrawnew>>>.select-div{
     z-index: 40000;
   }
+</style>
+<style>
+ .paramadrawnew .xm-body .scroll-body{
+   max-width:500px;
+}
 </style>
