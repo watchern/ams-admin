@@ -1230,7 +1230,10 @@ export default {
             }
           } else {
             const paramObj = [];
+            console.log(result.data.parammModelRel)
             for (let i = 0; i < result.data.parammModelRel.length; i++) {
+              console.log("---------------"+i)
+              console.log(result.data.parammModelRel[i].paramValue)
               if (result.data.parammModelRel[i].paramValue === "") {
                 continue;
               }
@@ -1238,6 +1241,7 @@ export default {
                 JSON.parse(result.data.parammModelRel[i].paramValue)
               );
             }
+            console.log(paramObj)
             this.currentPreviewModelParamAndSql.sqlValue = result.data.sqlValue;
             this.currentPreviewModelParamAndSql.paramObj = paramObj;
             this.currentPreviewModelParamAndSql.modelUuid =

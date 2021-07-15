@@ -2138,7 +2138,7 @@ export default {
                 });
               })
               .catch((result) => {
-                this.$message({ type: "info", message: "执行失败" });
+                this.$message({ type: "info", message: "" });
               });
           });
         });

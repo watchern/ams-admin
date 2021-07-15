@@ -865,7 +865,7 @@ export function resetNodeData(curNodeId,executeNodeArr, executeNodeData) {
     if (nodeExcuteStatus === 4) {// 如果当前节点执行出错，则后置子孙节点状态置为未执行
         changeNodeIcon(4, null, curNodeId)
         graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 4
-        //变更当前结果表的状态为执行失败
+        //变更当前结果表的状态为
         if (optType === 'layering') {// 如果节点是数据分层，则需特殊处理
             const curIndex = graph.nodeData[curNodeId].setting.index
             let curChildrenIds = "";
@@ -1074,7 +1074,7 @@ export function changeNodeIcon(nodeExcuteStatus, isSet, id) {
                     case 3:	// 执行成功
                         $(this).css('background', '#189D5C')
                         break
-                    case 4:	// 执行失败
+                    case 4:	// 
                         $(this).css('background', '#D81E07')
                         break
                 }

@@ -18088,7 +18088,7 @@ mxSvgCanvas2D.prototype.exeState = function(x, y, w, h, cell, aspect, flipH, fli
 	// 		case 3:	//执行成功
 	// 			src = "../../lib/graphtool/images/icons/point_green.png";
 	// 			break;
-	// 		case 4:	//执行失败
+	// 		case 4:	//
 	// 			src = "../../lib/graphtool/images/icons/point_red.png";
 	// 			break;
 	// 	}
