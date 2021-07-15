@@ -214,12 +214,12 @@ export default {
     },
     handdetails(data) {
       var id = data.remindUuid
-      if (data.modeUrl == null || data.modeUrl == '') {
-        this.temp = data
-        this.dialogFormVisible = true
-      } else {
-        this.selectDetail(data)
-      }
+      if (data.modeUrl == null || data.modeUrl == '') {
+        this.temp = data
+        this.dialogFormVisible = true
+      } else {
+        this.selectDetail(data)
+      }
       if (data.readStatus === 0) {
         updateRemind(id).then(result => {
           if (result.code === 0) {
