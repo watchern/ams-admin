@@ -474,6 +474,7 @@ export default {
     editableTabs() {},
   },
   created() {
+    this.getList()
     // this.getList({ modelFolderUuid: 1 })
   },
   mounted() {
@@ -1229,7 +1230,10 @@ export default {
             }
           } else {
             const paramObj = [];
+            console.log(result.data.parammModelRel)
             for (let i = 0; i < result.data.parammModelRel.length; i++) {
+              console.log("---------------"+i)
+              console.log(result.data.parammModelRel[i].paramValue)
               if (result.data.parammModelRel[i].paramValue === "") {
                 continue;
               }
@@ -1237,6 +1241,7 @@ export default {
                 JSON.parse(result.data.parammModelRel[i].paramValue)
               );
             }
+            console.log(paramObj)
             this.currentPreviewModelParamAndSql.sqlValue = result.data.sqlValue;
             this.currentPreviewModelParamAndSql.paramObj = paramObj;
             this.currentPreviewModelParamAndSql.modelUuid =
@@ -1447,13 +1452,14 @@ export default {
             formName: result.data.modelName + "详细",
           };
           sessionStorage.setItem("operationObj", JSON.stringify(operationObj));
-          this.$store.commit("aceState/setRightFooterTags", {
-            type: "active",
-            val: {
-              name: result.data.modelName + "详细",
-              path: "/analysis/editormodelnew",
-            },
-          });
+          this.$router.push(`/analysis/editormodelnew`)
+          // this.$store.commit("aceState/setRightFooterTags", {
+          //   type: "active",
+          //   val: {
+          //     name: result.data.modelName + "详细",
+          //     path: "/analysis/editormodelnew",
+          //   },
+          // });
         } else {
           this.$message({ type: "error", message: "查看模型详细失败" });
         }
