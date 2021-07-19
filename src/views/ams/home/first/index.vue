@@ -289,7 +289,7 @@ export default {
         width: 479px;
         position: relative;
         margin:30px;
-        height: 218px;
+        height: 230px;
         &-left{
           background: #FFFFFF;
           border: 1px solid #D8D8D8;
@@ -449,6 +449,8 @@ export default {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  width: calc(100% - 40px);
+  display: inline-block;
 }
 .title-bottom{
   font-size:18px;
@@ -482,7 +484,7 @@ export default {
 }
 .top-card-right{
   table-layout: fixed;
-  width: 81px;
+  width: 80%;
 }
 .bottom-after{
   content: '';

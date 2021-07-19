@@ -91,7 +91,7 @@
                                     >取消注释</el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
-                            <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;cursor: pointer;" @click="modelResultSavePathDialog = true">{{ path }}</label>
+                            <label style="margin-right: -43px;color:#9B4C4C;margin-left: 10px;margin-left: 15px;cursor: pointer;" @click="modelResultSavePathDialog = true">{{ path }} <i class="el-icon-edit" style="font-size:16px;"></i></label>
                         </el-col>
                     </el-row>
                     <div
@@ -613,7 +613,9 @@
                             if (result.data == null) {
                                 // 证明当前登录人没有任何执行路径记录 直接给一个默认的  从数据模块那面取  暂时没有 因为数据那面让写死  数据组长-张闯
                                 this.tempPath = '根路径'
+                                // this.tempPath = ''
                                 this.tempId = this.$store.getters.datauserid;
+                                // this.tempId = ''
                                 this.path = '当前执行SQL保存路径:' + this.tempPath
                                 this.modelResultSavePathId = this.tempId
                             } else {
@@ -834,6 +836,7 @@
             executeSQL() {
                 if (this.tempId === '') {
                     this.$message({ type: 'info', message: '请选择SQL执行保存路径!' })
+                    this.modelResultSavePathDialog = true
                     return
                 }
                 const result = getSql()
@@ -1274,3 +1277,4 @@
       margin: 5px 0 10px 0;
     }
 </style>
+

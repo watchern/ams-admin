@@ -547,13 +547,6 @@ export default {
           if (this.latelyUseList.indexOf(arry[i].id) === -1) {
             this.latelyPathList.push(arry[i].p);
             this.latelyUseList.push(arry[i].id);
-            for (let c = 0; c < this.latelyImgList.length; c++) {
-              if (arry[i].id === this.latelyImgList[c].name) {
-                this.latelyInImgList.push({
-                  image: this.latelyImgList[c].image,
-                });
-              }
-            }
             break;
           }
         }
@@ -562,16 +555,24 @@ export default {
         break;
       }
     }
+    for (let i = 0; i < this.latelyUseList.length; i++) {
+      this.latelyInImgList[i] = { image: require("../../public/base/accessIcon/moxing.png")}
+      let that = this
+      this.latelyImgList.forEach(function(item){
+        if(that.latelyUseList[i]==item.name){
+          that.latelyInImgList[i] = {
+            image: item.image,
+          };
+        }
+      })
+    }
     for (let i = 0; i < this.latelyInImgList.length; i++) {
       this.latelyBdInList.push({
-        image: this.latelyInImgList[i].image
-          ? this.latelyInImgList[i].image
-          : require("../../public/base/accessIcon/moxing.png"),
-        bg: this.latelyBackList[i]
-          ? this.latelyBackList[i].bg
-          : "rgb(95,190,235)",
+        image: this.latelyInImgList[i].image,
+        bg: this.latelyBackList[i].bg,
       });
     }
+
     getQuickMenuList().then((res) => {
       // latelyImgList中的name与数据库中的name不同  比如latelyImgList中的服务监控
       for (let i = 0; i < res.data.length; i++) {

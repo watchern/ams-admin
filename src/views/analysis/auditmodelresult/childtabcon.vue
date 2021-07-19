@@ -2049,6 +2049,18 @@ export default {
      * 点击详细dialog的确定按钮后触发
      */
     modelDetailCetermine(value) {
+      let replist =  []
+      $(".el-tabs__item").each(function(e){
+        let repstr  = $(this).attr('id').slice(4,$(this).attr('id').length)
+        replist.push(repstr)
+      })
+      for(let i =0;i<replist.length;i++){
+        if(value == replist[i]){
+          console.log('切断')
+          this.$message('该模型已打开');
+          return
+        }
+      }
       if(!value) {
         value = this.modelDetailRelation[0].relationObjectUuid
       }
