@@ -66,7 +66,7 @@
       <el-divider />
       <el-row>
         <el-col :span="12"><div class="visible-p2">
-         发送时间: {{ this.temp.remindTime }}
+          提醒时间: {{ this.temp.remindTime }}
         </div></el-col>
         <el-col :span="12" v-if="temp.remindUserName" ><div class="visible-p4">
           发送人：{{ this.temp.remindUserName }}

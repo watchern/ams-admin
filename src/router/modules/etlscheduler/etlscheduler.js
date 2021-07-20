@@ -85,6 +85,14 @@ const etlschedulerRouter = {
       }
     },
     {
+      path: 'taskmonitor/:processname',
+      name: 'taskmonitor',
+      component: resolve => require(['@ETL/views/etlscheduler/taskmonitor/index'], resolve),
+      meta: {
+        title: '调度监控'
+      }
+    },
+    {
       path: 'servermonitor',
       name: 'servermonitor',
       component: () => import('@ETL/views/etlscheduler/servermonitor/index'),
