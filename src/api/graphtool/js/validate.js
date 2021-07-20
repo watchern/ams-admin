@@ -3,6 +3,8 @@
  * @param curSelCell 当前生成的连接线
  */
 export function edgeVerify(curSelCell) {
+    // console.log(curSelCell)
+    // console.log(graph.edgeArr)
     if (curSelCell.source == null && curSelCell.target != null || curSelCell.source != null && curSelCell.target == null) { // 不允许连接线没有来源或没有目标
         alertMsg('警告', '不允许的操作', 'warning')
         removeCellsHistory(curSelCell)
@@ -81,11 +83,19 @@ export function edgeVerify(curSelCell) {
 }
 
 function removeCellsHistory(curSelCell) {
+
     if (!graph.edgeArr[curSelCell.id]) { // 如果当前线不在集合中（即为新增的线），则删除
-        graph.removeCells(graph.getDeletableCells(graph.getSelectionCells()), false)
+        let obj = graph.getDeletableCells(graph.getSelectionCells())
+        console.log(obj)
+        if (obj == null || obj == '' || obj == []) {
+            graph.removeCells([curSelCell], false)
+        } else {
+            graph.removeCells(graph.getDeletableCells(graph.getSelectionCells()), false)
+        }
         ownerEditor.editor.undoManager.indexOfNextAdd -= 2
         ownerEditor.editor.undoManager.history.splice(ownerEditor.editor.undoManager.history.length - 2, 2)
     } else { // 撤销本次操作，同时删除历史记录
+        console.log('删除历史')
         ownerEditor.editor.undoManager.undo()
         ownerEditor.editor.undoManager.history.pop()
     }
@@ -128,9 +138,9 @@ export function verifyPreNodes(type, curNodeId) {
  */
 export function settingVerify(type) {
     var isExecute = true
-    var isSet =  graph.nodeData[graph.curCell.id].isSet;
+    var isSet = graph.nodeData[graph.curCell.id].isSet;
     if (type === 'barChart' || type === 'relation' || type === 'layering') { // 对于自定义图形、数据关联、数据分层节点，需在配置之前校验前置节点必须执行成功
-        if(!isSet) {
+        if (!isSet) {
             var preNodeIds = graph.nodeData[graph.curCell.id].parentIds
             var nodeExcuteStatus
             if (type === 'barChart') {
@@ -177,7 +187,7 @@ function verifyPreNode(curNodeId) {
     for (var i = 0; i < parentIds.length; i++) {
         var parentNodeData = graph.nodeData[parentIds[i]]
         if (parentNodeData.nodeInfo.optType === 'sql') {					// 如果前置节点是SQL查询器节点
-                                                                            // 判断SQL查询器节点是否已执行
+            // 判断SQL查询器节点是否已执行
             if (parentNodeData.nodeInfo.nodeExcuteStatus !== 3) {				// 未执行
                 alertMsg('错误', '前置节点【SQL查询器】生成的SQL语句未执行', 'warning')
                 verify = false

@@ -196,6 +196,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .homezz {
+  height: calc(100vh - 100px) !important;
   background: #fff url('../../../../styles/image/bg.png') left center no-repeat!important;
   background-size: 100% 100% !important;
 }
