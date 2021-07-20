@@ -881,7 +881,7 @@ export default {
       }
     }
     .newest-item {
-      width: 426px;
+      width: 500px;
       &-box {
         height: 140px;
         margin-top: 20px;
