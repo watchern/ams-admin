@@ -86,8 +86,7 @@
           </div>
           <div class="title-label">执行任务</div>
           <div class="task-list">
-            <ul>
-              <li v-for="(item, index) in list" :key="index">
+              <div v-for="(item, index) in list" :key="index" @click="toUrl(item.taskUrl)">
                 <span
                   v-if="item.taskStatus == 2"
                   style="color: #ffffff"
@@ -103,12 +102,12 @@
                   style="color: #ffffff"
                   class="el-icon-error"
                 />
-                <span
+                <!-- <span
                   style="color: #ffffff; font-size: 14px; padding: 5px"
                   class="tools-box-name"
                   v-text="item.taskEstimatedTime"
-                />
-                <span
+                /> -->
+                <!-- <span
                   style="
                     color: #ffffff;
                     font-size: 14px;
@@ -118,15 +117,17 @@
                   class="tools-box-name"
                   @click="toUrl(item.taskUrl)"
                   v-text="item.taskName"
-                />
-              </li>
-            </ul>
+                /> -->
+                {{item.taskEstimatedTime ||''}}
+                {{item.taskName||''}}
+                
+              </div>
             <span
               type="primary"
               style="
                 color: #ffffff;
                 float: right;
-                bottom: -22px;
+                bottom: -12px;
                 font-size: 13px;
                 font-weight: bold;
                 cursor: pointer;
@@ -971,12 +972,12 @@ export default {
       }
     }
     .newest-item {
-      width: 426px;
+      width: 500px;
       &-box {
         background: #559ed4;
         box-shadow: 10px 10px 20px 0 rgb(95 190 235 / 30%) !important;
         border-radius: 25.2px;
-        padding: 27px;
+        padding: 24px 20px 24px 24px;
         width: 479px;
         position: relative;
         margin: 30px 0px;
@@ -1072,5 +1073,13 @@ export default {
 }
 .task-list {
   margin: 50px 0px 0px 100px;
+  color: #ffffff;
+  font-size: 14px;
+  div{
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+  }
 }
 </style>

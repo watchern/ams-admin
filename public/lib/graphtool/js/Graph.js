@@ -2764,6 +2764,7 @@ HoverIcons.prototype.init = function() {
 			//------------------连接线的被指向节点start------------------
 			//当前操作节点或连线对象
 			if(this.graph.getSelectionCell() && this.graph.getSelectionCell().edge){
+				console.log(this.graph.getSelectionCell())
 				if(!toolCellInitSql(this.graph.getSelectionCell())){
 					return;
 				}
