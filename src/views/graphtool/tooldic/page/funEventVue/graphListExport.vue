@@ -87,7 +87,7 @@
                     return {isError,message}
                 } else {
                     let graphObj = this.getUuidsANdNames(selectObj)
-                    return {isError,message,graphObj}
+                    return {isError,message,...graphObj}
                 }
             },
             getChooseGraph(){
