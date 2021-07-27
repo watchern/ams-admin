@@ -13,8 +13,8 @@
           <el-option v-for="opt in fd.data" :label="opt.name" :value="opt.value" />
         </el-select>
         <template v-if="fd.type==='timePeriod'">
-          <el-date-picker v-model="query[fd.name+'Start']" type="date" placeholder="开始时间" :style="timeStyle"/>
-          <el-date-picker v-model="query[fd.name+'End']" type="date" placeholder="结束时间" :style="timeStyle"/>
+          <el-date-picker v-model="query[fd.name+'Start']" :type="dateType" placeholder="开始时间" :style="timeStyle"/>
+          <el-date-picker v-model="query[fd.name+'End']" :type="dateType" placeholder="结束时间" :style="timeStyle"/>
         </template>
       </el-form-item>
 
@@ -42,6 +42,10 @@ export default {
     formData: {
       type: Array,
       default: []
+    },
+    dateType:{
+      type: String,
+      default: 'date'
     }
   },
   data() {

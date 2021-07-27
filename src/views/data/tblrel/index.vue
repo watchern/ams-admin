@@ -423,7 +423,6 @@ export default {
         this.temp.relationCol = currentNode.label;
         this.temp.relColMetaUuid = currentNode.id;
         const str = currentNode.id;
-        this.temp.colMetaUuid = str;
         const arr = str.split(">");
         this.temp.relationTableName = arr[1];
         this.temp.relTableMetaUuid = arr[0] + ">" + arr[1];
