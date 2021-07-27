@@ -291,16 +291,16 @@
                   ? this.renderTable
                   : undefined
               "
-                    row-selection="multiple"
-                    @cellClicked="onCellClicked"
-                    @gridReady="onGridReady"
-                    @rowSelected="rowChange"
-                    :default-col-def="defaultColDef"
-                    :sideBar="true"
-                    :modules="modules"
-                    :locale-text="localeText"
-                    :frameworkComponents="frc"
-                    :context = "componentParent"
+              row-selection="multiple"
+              @cellClicked="onCellClicked"
+              @gridReady="onGridReady"
+              @rowSelected="rowChange"
+              :default-col-def="defaultColDef"
+              :sideBar="true"
+              :modules="modules"
+              :locale-text="localeText"
+              :frameworkComponents="frc"
+              :context = "componentParent"
             />
             <!-- :sideBar="true"
             :modules="modules"-->
@@ -485,45 +485,45 @@
       </span>
     </el-dialog>
     <el-dialog
-            title="提交审核"
-            v-if="dialogVisibleSubmitYc"
-            :visible.sync="dialogVisibleSubmitYc"
-            :close-on-click-modal="false"
-            width="80%"
-        >
-            <div>
-                <flowItem2
-                        ref="flowItem2"
-                        :flowSet="flowSet"
-                        :flowItem="flowItem"
-                        :flow-param="flowParam"
-                        :columnDefs="columnDefs"
-                        :submitData="submitData"
-                        @closeModal="closeFlowItem"
-                        @delectData="delectDataYc"
-                ></flowItem2>
-            </div>
-            <span class="sess-flowitem" slot="footer">
+      title="提交审核"
+      v-if="dialogVisibleSubmitYc"
+      :visible.sync="dialogVisibleSubmitYc"
+      :close-on-click-modal="false"
+      width="80%"
+    >
+      <div>
+        <flowItem2
+          ref="flowItem2"
+          :flowSet="flowSet"
+          :flowItem="flowItem"
+          :flow-param="flowParam"
+          :columnDefs="columnDefs"
+          :submitData="submitData"
+          @closeModal="closeFlowItem"
+          @delectData="delectDataYc"
+        ></flowItem2>
+      </div>
+      <span class="sess-flowitem" slot="footer">
         <el-button
-                size="mini"
-                type="primary"
-                class="table_header_btn"
-                @click="saveOpinionYc"
-        >提交</el-button
+          size="mini"
+          type="primary"
+          class="table_header_btn"
+          @click="saveOpinionYc"
+          >提交</el-button
         >
         <el-button
-                size="mini"
-                type="primary"
-                class="table_header_btn"
-                @click="dialogVisibleSubmitYc = false"
-        >关闭</el-button
+          size="mini"
+          type="primary"
+          class="table_header_btn"
+          @click="dialogVisibleSubmitYc = false"
+          >关闭</el-button
         >
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
-import {AgCell} from '../../../components/public/new-ag-grid/ag-cell';
+import { AgCell } from "../../../components/public/new-ag-grid/ag-cell";
 // 引入样式文件
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-balham.css";
@@ -598,13 +598,15 @@ export default {
     flowItem2,
   },
 
-  computed:{
-      computedRowData(){
-          return this.rotateConfig!=null ? this.rotateRowData : this.rowData;
-      },
-      computedColumnDefs(){
-          return this.rotateConfig!=null ? this.rotateColumnDefs : this.columnDefs;
-      }
+  computed: {
+    computedRowData() {
+      return this.rotateConfig != null ? this.rotateRowData : this.rowData;
+    },
+    computedColumnDefs() {
+      return this.rotateConfig != null
+        ? this.rotateColumnDefs
+        : this.columnDefs;
+    },
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -640,15 +642,15 @@ export default {
     return {
       //工作流相关
       submitData: {
-          versionUuid: 'tlLuwUhC',
-          busTableName: '',  //表名
-          busDatabaseName: 'warehouse',  //数据库名
-          busDatabaseType: '',  //
-          status: '1',  //预警数据状态
-          busdatas: []
+        versionUuid: "tlLuwUhC",
+        busTableName: "", //表名
+        busDatabaseName: "warehouse", //数据库名
+        busDatabaseType: "", //
+        status: "1", //预警数据状态
+        busdatas: [],
       },
       // 判断是否走工作流
-      yancheng:false,
+      yancheng: false,
       flowParam: 0,
       multipleSelection: [],
       applyInfo: {},
@@ -680,8 +682,8 @@ export default {
       columnDefs: [],
       // aggrid需要显示的数据
       rowData: [],
-      rotateRowData:[],  //行转列的数据
-      rotateColumnDefs:[],  //行转列的列头
+      rotateRowData: [], //行转列的数据
+      rotateColumnDefs: [], //行转列的列头
       pageQuery: {
         condition: null,
         pageNo: 1,
@@ -766,143 +768,155 @@ export default {
         resizable: true,
         filter: true,
       },
-      sideBar :{
+      sideBar: {
         toolPanels: [
           {
-            id: 'columns',
-            labelDefault: 'Columns',
-            labelKey: 'columns',
-            iconKey: 'columns',
-            toolPanel: 'agColumnsToolPanel',
+            id: "columns",
+            labelDefault: "Columns",
+            labelKey: "columns",
+            iconKey: "columns",
+            toolPanel: "agColumnsToolPanel",
           },
           {
-            id: 'filters',
-            labelDefault: 'Filters',
-            labelKey: 'filters',
-            iconKey: 'filter',
-            toolPanel: 'agFiltersToolPanel'
+            id: "filters",
+            labelDefault: "Filters",
+            labelKey: "filters",
+            iconKey: "filter",
+            toolPanel: "agFiltersToolPanel",
           },
         ],
-        position: 'right',
-        defaultToolPanel: 'columns'
+        position: "right",
+        defaultToolPanel: "columns",
       },
       modules: AllModules,
-      localeText:{
-  // for filter panel
-  page: '页',
-  more: '更多',
-  to: '到',
-  /* of: 'daOf', */
-  next: '下一页',
-  last: '最后',
-  first: '第一',
-  previous: '以前的',
-  loadingOoo: '加载中...',
-  // Row:"行",
-  // 'Row Groups':"行分组",
-  // for set filter
-  selectAll: '全部选择',
-  searchOoo: '搜索...',
-  blanks: '空',
-  Column:"列",
-  labels:"标签",
-  // for number filter and text filter
-  filterOoo: '过滤',
-  applyFilter: '过滤中...',
-  equals: '等于',
-  notEqual: '不等于',
-  // for number filter
-  lessThan: '少于',
-  greaterThan: '多于',
-  lessThanOrEqual: '小于等于',
-  greaterThanOrEqual: '大于等于',
-  inRange: '在范围内',
-  // for text filter
-  contains: '包含',
-  notContains: '不包含',
-  startsWith: '开始',
-  endsWith: '结束',
-  // filter conditions
-  andCondition: '并且',
-  orCondition: '或者',
-  // the header of the default group column
-  // group: '分组',
-  // tool panel
-  columns: '列',
-  filters: '过滤器',
-  rowGroupColumns: '行列组',
-  // rowGroupColumnsEmptyMessage: '行列组为空',
-  valueColumns: '列值',
-  pivotMode: '透视模式',
-  // groups: '分组',
-  values: '值',
-  // pivots: '中心点',
-  valueColumnsEmptyMessage: '列值为空',
-  // pivotColumnsEmptyMessage: '中心点为空',
-  toolPanelButton: '工具按钮',
-  // other
-  noRowsToShow: '暂时没有要展示的数据',
-  // enterprise menu
-  pinColumn: '列位置调整',
-  valueAggregation: '聚合值',
-  autosizeThiscolumn: '自动调整此列大小',
-  autosizeAllColumns: '自动调整所有列的大小',
-  groupBy: '分组',
-  ungroupBy: '取消分组',
-  resetColumns: '重置列',
-  expandAll: '展开所有',
-  collapseAll: '关闭所有',
-  toolPanel: '工具',
-  export: '导出',
-  csvExport: 'CSV 导出',
-  excelExport: 'Excel 导出(.xlsx)',
-  excelXmlExport: 'Excel 导出(.xml)',
-  // enterprise menu pinning
-  PinColumn:"固定",
-  pinLeft: '居左',
-  pinRight: '居右',
-  noPin: '默认',
-  // enterprise menu aggregation and status bar
-  sum: '合计',
-  min: '最小值',
-  max: '最大值',
-  /* none: 'laNone', */
-  count: '计数',
-  average: '平均值',
-  avg : '平均值',
-  // standard menu
-  copy: '复制',
-  copyWithHeaders: '携表头复制',
-  ctrlC: 'ctrl-C',
-  paste: '粘贴',
-  ctrlV: 'ctrl-V'
-},
-      frc: {'ag-cell': AgCell},
+      localeText: {
+        // for filter panel
+        page: "页",
+        more: "更多",
+        to: "到",
+        /* of: 'daOf', */
+        next: "下一页",
+        last: "最后",
+        first: "第一",
+        previous: "以前的",
+        loadingOoo: "加载中...",
+        // Row:"行",
+        // 'Row Groups':"行分组",
+        // for set filter
+        selectAll: "全部选择",
+        searchOoo: "搜索...",
+        blanks: "空",
+        Column: "列",
+        labels: "标签",
+        // for number filter and text filter
+        filterOoo: "过滤",
+        applyFilter: "过滤中...",
+        equals: "等于",
+        notEqual: "不等于",
+        // for number filter
+        lessThan: "少于",
+        greaterThan: "多于",
+        lessThanOrEqual: "小于等于",
+        greaterThanOrEqual: "大于等于",
+        inRange: "在范围内",
+        // for text filter
+        contains: "包含",
+        notContains: "不包含",
+        startsWith: "开始",
+        endsWith: "结束",
+        // filter conditions
+        andCondition: "并且",
+        orCondition: "或者",
+        // the header of the default group column
+        // group: '分组',
+        // tool panel
+        columns: "列",
+        filters: "过滤器",
+        rowGroupColumns: "行列组",
+        // rowGroupColumnsEmptyMessage: '行列组为空',
+        valueColumns: "列值",
+        pivotMode: "透视模式",
+        // groups: '分组',
+        values: "值",
+        // pivots: '中心点',
+        valueColumnsEmptyMessage: "列值为空",
+        // pivotColumnsEmptyMessage: '中心点为空',
+        toolPanelButton: "工具按钮",
+        // other
+        noRowsToShow: "暂时没有要展示的数据",
+        // enterprise menu
+        pinColumn: "列位置调整",
+        valueAggregation: "聚合值",
+        autosizeThiscolumn: "自动调整此列大小",
+        autosizeAllColumns: "自动调整所有列的大小",
+        groupBy: "分组",
+        ungroupBy: "取消分组",
+        resetColumns: "重置列",
+        expandAll: "展开所有",
+        collapseAll: "关闭所有",
+        toolPanel: "工具",
+        export: "导出",
+        csvExport: "CSV 导出",
+        excelExport: "Excel 导出(.xlsx)",
+        excelXmlExport: "Excel 导出(.xml)",
+        // enterprise menu pinning
+        PinColumn: "固定",
+        pinLeft: "居左",
+        pinRight: "居右",
+        noPin: "默认",
+        // enterprise menu aggregation and status bar
+        sum: "合计",
+        min: "最小值",
+        max: "最大值",
+        /* none: 'laNone', */
+        count: "计数",
+        average: "平均值",
+        avg: "平均值",
+        // standard menu
+        copy: "复制",
+        copyWithHeaders: "携表头复制",
+        ctrlC: "ctrl-C",
+        paste: "粘贴",
+        ctrlV: "ctrl-V",
+      },
+      frc: { "ag-cell": AgCell },
       componentParent: null,
       rotateConfig: null,
-      rotateConfigs:[
-          {
-              /*  ,财报结构（趋势）分析 示例  */
-              modelIds: ["fa2f16c00e335049a0088580362e15db","3acc159b6110564da7698b460eab774f"],  /*  通过UUID匹配的的模型进行行列转置 */
-              mainField:"科目名称",               /*  转置的主列 */
-              colNamesField: "期间值",     /*  以此列值为转置后列头的列 */
-              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
-                  if(thisTitle=='占比'||thisTitle=='环比'||thisTitle=='同比') return colNamesFieldValue+thisTitle;
-                  else if(thisTitle=='期末额') return colNamesFieldValue;
-                  else return thisTitle;
-              }
-          },{
-              /*  ,财报结构（趋势）分析 示例  */
-              modelIds: ["6f0d96ff5b633543eb59736592c92418"],  /*  通过UUID匹配的的模型进行行列转置 */
-              mainField:"指标名称,指标模块,计算公式",               /*  转置的主列 */
-              colNamesField: "月份",     /*  以此列值为转置后列头的列 */
-              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
-                  if(thisTitle=='计算值') return colNamesFieldValue;
-                  else return thisTitle;
-              }
-          }
-
-      ]
+      rotateConfigs: [
+        {
+          /*  ,财报结构（趋势）分析 示例  */
+          modelIds: [
+            "fa2f16c00e335049a0088580362e15db",
+            "3acc159b6110564da7698b460eab774f",
+          ] /*  通过UUID匹配的的模型进行行列转置 */,
+          mainField: "科目名称" /*  转置的主列 */,
+          colNamesField: "期间值" /*  以此列值为转置后列头的列 */,
+          titleDisplayRules: (thisTitle, colNamesFieldValue) => {
+            /*  转置后的显示规则 */
+            if (
+              thisTitle == "占比" ||
+              thisTitle == "环比" ||
+              thisTitle == "同比"
+            )
+              return colNamesFieldValue + thisTitle;
+            else if (thisTitle == "期末额") return colNamesFieldValue;
+            else return thisTitle;
+          },
+        },
+        {
+          /*  ,财报结构（趋势）分析 示例  */
+          modelIds: [
+            "6f0d96ff5b633543eb59736592c92418",
+          ] /*  通过UUID匹配的的模型进行行列转置 */,
+          mainField: "指标名称,指标模块,计算公式" /*  转置的主列 */,
+          colNamesField: "月份" /*  以此列值为转置后列头的列 */,
+          titleDisplayRules: (thisTitle, colNamesFieldValue) => {
+            /*  转置后的显示规则 */
+            if (thisTitle == "计算值") return colNamesFieldValue;
+            else return thisTitle;
+          },
+        },
+      ],
     };
   },
   mounted() {
@@ -934,8 +948,8 @@ export default {
     this.componentParent = this;
 
     let projectStatus = this.$route.query.projectStatus;
-    if( "1"==projectStatus){
-      this.yancheng=true;
+    if ("1" == projectStatus) {
+      this.yancheng = true;
     }
   },
   created() {
@@ -982,11 +996,11 @@ export default {
      */
     exportExcel() {
       // 选中行的ID集合
-      const onlyUuids  = [];
+      const onlyUuids = [];
       // 获取选中的行
       const selectedRows = this.gridApi.getSelectedRows();
       // 获取选中行的id
-      selectedRows.forEach(e =>(onlyUuids.push(e.onlyuuid)));
+      selectedRows.forEach((e) => onlyUuids.push(e.onlyuuid));
       axios({
         method: "post",
         url: "/analysis/RunResultTableController/exportRunResultMainTable",
@@ -1031,12 +1045,12 @@ export default {
     openProjectDialog() {
       // 验证是否已经关联项目
       var selectData = this.gridApi.getSelectedRows();
-      console.log(selectData)
-      let paramslist =[]
+      console.log(selectData);
+      let paramslist = [];
       for (let i = 0; i < selectData.length; i++) {
-        paramslist.push(selectData[i].onlyuuid)
+        paramslist.push(selectData[i].onlyuuid);
       }
-      console.log(paramslist)
+      console.log(paramslist);
       // 查询该明细是否已经分配项目，如果未分配则打开分配窗口
       getByResultDetailIds(paramslist).then((resp) => {
         if (resp.data.length === 0) {
@@ -1086,9 +1100,8 @@ export default {
                   runResultTableUuid: this.nowtable.runResultTableUuid,
                   runTaskRelUuid: this.nowtable.runTaskRelUuid,
                   projectId: projectId,
-                  resultDetailId: this.selectRows[i][
-                    this.primaryKey.toLowerCase()
-                  ],
+                  resultDetailId:
+                    this.selectRows[i][this.primaryKey.toLowerCase()],
                   projectName: projctName,
                 };
                 resultDetailProjectRels.push(resultDetailProjectRel);
@@ -1134,9 +1147,8 @@ export default {
                     runResultTableUuid: this.nowtable.runResultTableUuid,
                     runTaskRelUuid: this.nowtable.runTaskRelUuid,
                     projectId: projectId,
-                    resultDetailId: this.selectRows[i][
-                      this.primaryKey.toLowerCase()
-                    ],
+                    resultDetailId:
+                      this.selectRows[i][this.primaryKey.toLowerCase()],
                     projectName: projctName,
                   };
                   resultDetailProjectRels.push(resultDetailProjectRel);
@@ -1164,9 +1176,8 @@ export default {
                     runResultTableUuid: this.nowtable.runResultTableUuid,
                     runTaskRelUuid: this.nowtable.runTaskRelUuid,
                     projectId: projectId,
-                    resultDetailId: this.selectRows[i][
-                      this.primaryKey.toLowerCase()
-                    ],
+                    resultDetailId:
+                      this.selectRows[i][this.primaryKey.toLowerCase()],
                     projectName: projctName,
                   };
                   resultDetailProjectRels1.push(resultDetailProjectRel);
@@ -1349,8 +1360,8 @@ export default {
             }
             this.total = resp.data.total;
             this.dataArray = resp.data.records[0].result;
-              var assArr = Object.assign([], resp.data.records[0].result);
-              this.doRotating(assArr);
+            var assArr = Object.assign([], resp.data.records[0].result);
+            this.doRotating(assArr);
             this.queryData = resp.data.records[0].columnInfo;
             colNames = resp.data.records[0].columns;
             // 生成ag-grid列信息
@@ -1370,8 +1381,8 @@ export default {
                       rowColom = {
                         headerName: colNames[i],
                         field: colNames[i],
-                        params: {thresholdValueRel, modelResultDetailCol},
-                        cellRenderer: 'ag-cell',
+                        params: { thresholdValueRel, modelResultDetailCol },
+                        cellRenderer: "ag-cell",
                         checkboxSelection: true,
                       };
                       onlyFlag = true;
@@ -1379,8 +1390,8 @@ export default {
                       rowColom = {
                         headerName: colNames[i],
                         field: colNames[i],
-                        params: {thresholdValueRel, modelResultDetailCol},
-                        cellRenderer: 'ag-cell',
+                        params: { thresholdValueRel, modelResultDetailCol },
+                        cellRenderer: "ag-cell",
                       };
                     }
                   } else {
@@ -1427,8 +1438,11 @@ export default {
                             rowColom = {
                               headerName: this.modelOutputColumn[j].columnAlias,
                               field: colNames[i],
-                              params: {thresholdValueRel, modelResultDetailCol},
-                        cellRenderer: 'ag-cell',
+                              params: {
+                                thresholdValueRel,
+                                modelResultDetailCol,
+                              },
+                              cellRenderer: "ag-cell",
                               checkboxSelection: true,
                             };
                             onlyFlag = true;
@@ -1436,8 +1450,11 @@ export default {
                             rowColom = {
                               headerName: this.modelOutputColumn[j].columnAlias,
                               field: colNames[i],
-                              params: {thresholdValueRel, modelResultDetailCol},
-                        cellRenderer: 'ag-cell',
+                              params: {
+                                thresholdValueRel,
+                                modelResultDetailCol,
+                              },
+                              cellRenderer: "ag-cell",
                             };
                           }
                         } else {
@@ -1495,9 +1512,10 @@ export default {
                     ) {
                       if (this.modelOutputColumn[k].dataCoding != undefined) {
                         var a = da[i][colNames[j]];
-                        da[i][colNames[j]] = this.dataCoding[
-                          this.modelOutputColumn[k].dataCoding
-                        ][a];
+                        da[i][colNames[j]] =
+                          this.dataCoding[this.modelOutputColumn[k].dataCoding][
+                            a
+                          ];
                       }
                     }
                   }
@@ -1516,18 +1534,33 @@ export default {
         // if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
         //   this.gridApi.closeToolPanel()
         // }
-        let _this = this
-        setTimeout(function(){
-          for(let i = 0;i< col.length;i++){
-            col[i].filter = 'agTextColumnFilter'
+        let _this = this;
+        setTimeout(function () {
+          for (let i = 0; i < col.length; i++) {
+            let str = _this.queryData.columnList[i].columnType;
+            if (
+              str.toUpperCase().indexOf("VARCHAR") != -1 ||
+              str.toUpperCase().indexOf("CHAR") != -1
+            ) {
+              col[i].filter = "agTextColumnFilter";
+            } else if (
+              str.toUpperCase().indexOf("NUMBER") != -1 ||
+              str.toUpperCase().indexOf("INT") != -1 ||
+              str.toUpperCase().indexOf("DATE") != -1 ||
+              str.toUpperCase().indexOf("FLOAT") != -1 ||
+              str.toUpperCase().indexOf("DOUBLE") != -1
+            ) {
+              col[i].filter = "agNumberColumnFilter";
+            } else {
+              col[i].filter = "agTextColumnFilter";
+            }
           }
           _this.columnDefs = col;
           _this.rowData = da;
           if (typeof _this.gridApi !== "undefined" && _this.gridApi !== null) {
-            _this.gridApi.closeToolPanel()
+            _this.gridApi.closeToolPanel();
           }
-        },500)
-
+        }, 500);
       } else if (this.useType == "sqlEditor") {
         this.getIntoModelResultDetail(nextValue);
       } else if (this.useType == "modelPreview") {
@@ -1692,8 +1725,11 @@ export default {
                               headerName: modelOutputColumn[n].columnAlias,
                               field: this.nextValue.columnNames[j],
                               width: "180",
-                              params: {thresholdValueRel, modelResultDetailCol},
-                              cellRenderer: 'ag-cell',
+                              params: {
+                                thresholdValueRel,
+                                modelResultDetailCol,
+                              },
+                              cellRenderer: "ag-cell",
                             };
                           } else {
                             rowColom = {
@@ -1748,13 +1784,32 @@ export default {
                     }
                     this.rowData = rowData;
                   }
-                  for(let i = 0;i<col.length;i++){
-                    col[i].filter = 'agTextColumnFilter'
+                  for (let i = 0; i < col.length; i++) {
+                    let str = _this.queryData.columnList[i].columnType;
+                    if (
+                      str.toUpperCase().indexOf("VARCHAR") != -1 ||
+                      str.toUpperCase().indexOf("CHAR") != -1
+                    ) {
+                      col[i].filter = "agTextColumnFilter";
+                    } else if (
+                      str.toUpperCase().indexOf("NUMBER") != -1 ||
+                      str.toUpperCase().indexOf("INT") != -1 ||
+                      str.toUpperCase().indexOf("DATE") != -1 ||
+                      str.toUpperCase().indexOf("FLOAT") != -1 ||
+                      str.toUpperCase().indexOf("DOUBLE") != -1
+                    ) {
+                      col[i].filter = "agNumberColumnFilter";
+                    } else {
+                      col[i].filter = "agTextColumnFilter";
+                    }
                   }
                   this.columnDefs = col;
                   this.afterResult = true;
-                  if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
-                    this.gridApi.closeToolPanel()
+                  if (
+                    typeof this.gridApi !== "undefined" &&
+                    this.gridApi !== null
+                  ) {
+                    this.gridApi.closeToolPanel();
                   }
                 });
               }
@@ -1779,54 +1834,56 @@ export default {
       }
     },
 
-    doRotating(rowData){  //旋转
-        if(rowData.length == 0) return;
-        this.rotateConfigs.forEach(conf=>{
-            conf.modelIds.forEach(mId=>{
-                if(this.modelId === mId) this.rotateConfig = conf;
-            })
+    doRotating(rowData) {
+      //旋转
+      if (rowData.length == 0) return;
+      this.rotateConfigs.forEach((conf) => {
+        conf.modelIds.forEach((mId) => {
+          if (this.modelId === mId) this.rotateConfig = conf;
         });
-        if(this.rotateConfig != null){   //  do rotation
-            var mainField = this.rotateConfig.mainField;
-            var colNamesField = this.rotateConfig.colNamesField;
-            console.log(this.rotateConfig)
-            var tempMap = {};
-            for(let i=0; i<rowData.length; i++){
-                var rd = rowData[i];
-                var key1Arr = [];
-                mainField.split(",").forEach(mf=>{
-                    key1Arr.push(rd[mf]);
-                });
-                var key1 = key1Arr.join("```");
-                var key2 = rd[colNamesField];
-                if(!tempMap[key1]) tempMap[key1] = {};
-                delete rd[mainField];
-                delete rd[colNamesField];
-                tempMap[key1][key2] = rd;
-            }
-            Object.keys(tempMap).forEach(key1 =>{
-                var rtObj = {};
-                mainField.split(",").forEach((mf,idx)=>{
-                    rtObj[mf] = key1.split("```")[idx];
-                });
-                Object.keys(tempMap[key1]).forEach((key2)=>{
-                    var assObj = tempMap[key1][key2];
-                    Object.keys(assObj).forEach(ao=>{
-                        rtObj[this.rotateConfig.titleDisplayRules(ao, key2)] = assObj[ao];
-                    })
-                });
-                this.rotateRowData.push(rtObj);
-            });
-            Object.keys(this.rotateRowData[0]).forEach(k=>{
-                this.rotateColumnDefs.push({field:k, headerName:k, width:280});
-            })
+      });
+      if (this.rotateConfig != null) {
+        //  do rotation
+        var mainField = this.rotateConfig.mainField;
+        var colNamesField = this.rotateConfig.colNamesField;
+        console.log(this.rotateConfig);
+        var tempMap = {};
+        for (let i = 0; i < rowData.length; i++) {
+          var rd = rowData[i];
+          var key1Arr = [];
+          mainField.split(",").forEach((mf) => {
+            key1Arr.push(rd[mf]);
+          });
+          var key1 = key1Arr.join("```");
+          var key2 = rd[colNamesField];
+          if (!tempMap[key1]) tempMap[key1] = {};
+          delete rd[mainField];
+          delete rd[colNamesField];
+          tempMap[key1][key2] = rd;
         }
+        Object.keys(tempMap).forEach((key1) => {
+          var rtObj = {};
+          mainField.split(",").forEach((mf, idx) => {
+            rtObj[mf] = key1.split("```")[idx];
+          });
+          Object.keys(tempMap[key1]).forEach((key2) => {
+            var assObj = tempMap[key1][key2];
+            Object.keys(assObj).forEach((ao) => {
+              rtObj[this.rotateConfig.titleDisplayRules(ao, key2)] = assObj[ao];
+            });
+          });
+          this.rotateRowData.push(rtObj);
+        });
+        Object.keys(this.rotateRowData[0]).forEach((k) => {
+          this.rotateColumnDefs.push({ field: k, headerName: k, width: 280 });
+        });
+      }
     },
 
-      /**
-       * 显示模型结果详细提取公共代码
-       * */
-      getIntoModelResultDetail(nextValue) {
+    /**
+     * 显示模型结果详细提取公共代码
+     * */
+    getIntoModelResultDetail(nextValue) {
       this.afterAddChartsWithNoConfigure = true;
       this.chartLoading = false;
       this.loading = true;
@@ -1898,13 +1955,29 @@ export default {
             for (var k = 0; k < this.nextValue.result.length; k++) {
               rowData.push(this.nextValue.result[k]);
             }
-            for(let i = 0;i<col.length;i++){
-              col[i].filter = 'agTextColumnFilter'
+            for (let i = 0; i < col.length; i++) {
+              let str = _this.queryData.columnList[i].columnType;
+              if (
+                str.toUpperCase().indexOf("VARCHAR") != -1 ||
+                str.toUpperCase().indexOf("CHAR") != -1
+              ) {
+                col[i].filter = "agTextColumnFilter";
+              } else if (
+                str.toUpperCase().indexOf("NUMBER") != -1 ||
+                str.toUpperCase().indexOf("INT") != -1 ||
+                str.toUpperCase().indexOf("DATE") != -1 ||
+                str.toUpperCase().indexOf("FLOAT") != -1 ||
+                str.toUpperCase().indexOf("DOUBLE") != -1
+              ) {
+                col[i].filter = "agNumberColumnFilter";
+              } else {
+                col[i].filter = "agTextColumnFilter";
+              }
             }
             this.columnDefs = col;
             this.afterResult = true;
             if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
-              this.gridApi.closeToolPanel()
+              this.gridApi.closeToolPanel();
             }
           } else {
             this.isSee = false;
@@ -2120,20 +2193,20 @@ export default {
      * 点击详细dialog的确定按钮后触发
      */
     modelDetailCetermine(value) {
-      let replist =  []
-      $(".el-tabs__item").each(function(e){
-        let repstr  = $(this).attr('id').slice(4,$(this).attr('id').length)
-        replist.push(repstr)
-      })
-      for(let i =0;i<replist.length;i++){
-        if(value == replist[i]){
-          console.log('切断')
-          this.$message('该模型已打开');
-          return
+      let replist = [];
+      $(".el-tabs__item").each(function (e) {
+        let repstr = $(this).attr("id").slice(4, $(this).attr("id").length);
+        replist.push(repstr);
+      });
+      for (let i = 0; i < replist.length; i++) {
+        if (value == replist[i]) {
+          console.log("切断");
+          this.$message("该模型已打开");
+          return;
         }
       }
-      if(!value) {
-        value = this.modelDetailRelation[0].relationObjectUuid
+      if (!value) {
+        value = this.modelDetailRelation[0].relationObjectUuid;
       }
       var selectRowData = this.gridApi.getSelectedRows();
       var relationType = null;
@@ -2157,12 +2230,11 @@ export default {
               j < this.modelDetailRelation[i].modelDetailConfig.length;
               j++
             ) {
-              var key = this.modelDetailRelation[i].modelDetailConfig[j]
-                .resultColumn;
+              var key =
+                this.modelDetailRelation[i].modelDetailConfig[j].resultColumn;
               var obj = { moduleParamId: "", paramValue: "" };
-              obj.moduleParamId = this.modelDetailRelation[i].modelDetailConfig[
-                j
-              ].ammParamUuid;
+              obj.moduleParamId =
+                this.modelDetailRelation[i].modelDetailConfig[j].ammParamUuid;
               if (this.modelUuid !== undefined) {
                 obj.paramValue = this.rowData[this.rowIndex][key.toLowerCase()];
               } else {
@@ -2263,9 +2335,8 @@ export default {
       this.tableData = this.nextValue.result;
       this.json_fields = {};
       for (var i = 0; i < this.nextValue.columnNames.length; i++) {
-        this.json_fields[
-          this.nextValue.columnNames[i]
-        ] = this.nextValue.columnNames[i];
+        this.json_fields[this.nextValue.columnNames[i]] =
+          this.nextValue.columnNames[i];
       }
       this.excelName = "模型结果导出表";
     },
@@ -2799,7 +2870,7 @@ export default {
         for (let i = 0; i < this.modelChartSetups.length; i++) {
           let modelChartSetupZ = {};
           let json = JSON.parse(this.modelChartSetups[i].chartJson);
-          console.log(this.modelChartSetups[i])
+          console.log(this.modelChartSetups[i]);
           for (let j = 0; j < this.chartConfigs.layout.length; j++) {
             if (this.chartConfigs.layout[j].i === json.layout.i) {
               modelChartSetupZ = {
@@ -2808,7 +2879,7 @@ export default {
                   layout: this.chartConfigs.layout[j],
                 }),
                 modelUuid: this.modelChartSetups[i].modelUuid,
-                chartSetupUuid:this.modelChartSetups[i].chartSetupUuid
+                chartSetupUuid: this.modelChartSetups[i].chartSetupUuid,
               };
               updateModelChartSetup(modelChartSetupZ).then((resp) => {
                 if (resp.data) {
@@ -2836,26 +2907,27 @@ export default {
         return false;
       }
       //流程接口调用
-      this.submitData.busdatas=this.multipleSelection;
+      this.submitData.busdatas = this.multipleSelection;
       for (var i = 0; i < this.submitData.busdatas.length; i++) {
-          if (this.submitData.busdatas[i].状态 === 1 ) {
-              this.$message.info({
-                  duration: 2000,
-                  message: "预警发起的数据不能重复提交！"
-              })
-              return false;
-          }else if(this.submitData.busdatas[i].状态 === 3 ){
-              this.$message.info({
-                  duration: 2000,
-                  message: "已销号的数据不能重复提交！"
-              })
-              return false;
-          }
+        if (this.submitData.busdatas[i].状态 === 1) {
+          this.$message.info({
+            duration: 2000,
+            message: "预警发起的数据不能重复提交！",
+          });
+          return false;
+        } else if (this.submitData.busdatas[i].状态 === 3) {
+          this.$message.info({
+            duration: 2000,
+            message: "已销号的数据不能重复提交！",
+          });
+          return false;
+        }
       }
-      this.submitData.busTableName = this.nowtable.resultTableName  // 表名称
-      this.submitData.busDatabaseType = 'mysql'  //数据库类型
+      this.submitData.busTableName = this.nowtable.resultTableName; // 表名称
+      this.submitData.busDatabaseType = "mysql"; //数据库类型
       this.flowItem.versionUuid = this.common.randomString4Len(8);
-      this.flowItem.applyTitle = this.modelTitle + this.common.getNowFormatDay();
+      this.flowItem.applyTitle =
+        this.modelTitle + this.common.getNowFormatDay();
       this.applyInfo.versionUuid = this.flowItem.versionUuid;
       this.applyInfo.status = "";
       this.applyInfo.mstate = "";
@@ -2863,17 +2935,17 @@ export default {
       this.applyInfo.isUpdate = false; //初始化
       this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
 
-      console.info(JSON.stringify(this.submitData))
-      console.info(JSON.stringify(this.columnDefs))
+      console.info(JSON.stringify(this.submitData));
+      console.info(JSON.stringify(this.columnDefs));
       this.dialogVisibleSubmit = true;
     },
     saveOpinion() {
       var data = {
         versionUuid: this.flowItem.versionUuid,
         busdatas: this.multipleSelection,
-        busTableName:this.submitData.busTableName,
-        busDatabaseName:this.submitData.busDatabaseName,
-        busDatabaseType:this.submitData.busDatabaseType,
+        busTableName: this.submitData.busTableName,
+        busDatabaseName: this.submitData.busDatabaseName,
+        busDatabaseType: this.submitData.busDatabaseType,
       };
       this.$axios
         .post("/ams-clue/busRelation/toSubmit", data)
@@ -2928,27 +3000,28 @@ export default {
         return false;
       }
       //流程接口调用
-      this.submitData.busdatas=this.multipleSelection;
+      this.submitData.busdatas = this.multipleSelection;
       for (var i = 0; i < this.submitData.busdatas.length; i++) {
-          if (this.submitData.busdatas[i].状态 === 1 ) {
-              this.$message.info({
-                  duration: 2000,
-                  message: "预警发起的数据不能重复提交！"
-              })
-              return false;
-          }else if(this.submitData.busdatas[i].状态 === 3 ){
-              this.$message.info({
-                  duration: 2000,
-                  message: "已销号的数据不能重复提交！"
-              })
-              return false;
-          }
+        if (this.submitData.busdatas[i].状态 === 1) {
+          this.$message.info({
+            duration: 2000,
+            message: "预警发起的数据不能重复提交！",
+          });
+          return false;
+        } else if (this.submitData.busdatas[i].状态 === 3) {
+          this.$message.info({
+            duration: 2000,
+            message: "已销号的数据不能重复提交！",
+          });
+          return false;
+        }
       }
-      this.submitData.busTableName = this.nowtable.resultTableName  // 表名称
+      this.submitData.busTableName = this.nowtable.resultTableName; // 表名称
       // this.submitData.status = this.initStatus;  //数据状态（0）
-      this.submitData.busDatabaseType = 'mysql'  //数据库类型
+      this.submitData.busDatabaseType = "mysql"; //数据库类型
       this.flowItem.versionUuid = this.common.randomString4Len(8);
-      this.flowItem.applyTitle = this.modelTitle + this.common.getNowFormatDay();
+      this.flowItem.applyTitle =
+        this.modelTitle + this.common.getNowFormatDay();
       this.applyInfo.versionUuid = this.flowItem.versionUuid;
       this.applyInfo.status = "";
       this.applyInfo.mstate = "";
@@ -2956,14 +3029,14 @@ export default {
       this.applyInfo.isUpdate = false; //初始化
       this.$store.dispatch("applyInfo/setApplyInfo", this.applyInfo);
 
-      console.info(JSON.stringify(this.submitData))
-      console.info(JSON.stringify(this.columnDefs))
+      console.info(JSON.stringify(this.submitData));
+      console.info(JSON.stringify(this.columnDefs));
       this.dialogVisibleSubmitYc = true;
     },
     saveOpinionYc() {
-        setTimeout(() => {
-            this.$refs["flowItem2"].saveOpinion();
-        }, 20);
+      setTimeout(() => {
+        this.$refs["flowItem2"].saveOpinion();
+      }, 20);
     },
     //流程发布失败
     delectDataYc(val) {
@@ -2984,7 +3057,6 @@ export default {
         });
       this.initData();
     },
-
   },
 };
 </script>
@@ -3181,8 +3253,8 @@ export default {
   background: #46a6ff !important;
   opacity: 0.2 !important;
 }
-.tjsh{
-    width: 100px !important;
+.tjsh {
+  width: 100px !important;
 }
 </style>
 <style>

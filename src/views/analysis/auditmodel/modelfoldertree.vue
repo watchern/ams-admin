@@ -204,8 +204,10 @@ export default {
      * @param data 树的对象数据 包括子节点
      */
     handleNodeClick(data) {
+      console.log(data)
       this.selectTreeNode = data;
       if (data.type === "model") {
+        this.$emit("refreshModels", data);
       } else {
         this.$emit("refreshModelList", data);
       }

@@ -123,11 +123,12 @@
           <el-table-column type="selection" width="55" />
           <el-table-column label="模型名称" width="300px" prop="modelName">
             <template slot-scope="scope">
-              <el-link
+              <!-- <el-link
                 type="primary"
                 @click="selectModelDetail(scope.row.modelUuid)"
                 >{{ scope.row.modelName }}</el-link
-              >
+              > -->
+              {{ scope.row.modelName }}
             </template>
           </el-table-column>
           <el-table-column label="平均运行时间" width="150px" prop="runTime" />
@@ -650,6 +651,13 @@ export default {
       });
     },
     /**
+     * 选中的节点
+     * @param data 树节点
+     */
+    SelectNode(data) {
+      console.log(data)
+    },
+    /**
      * 设置选中的树节点
      * @param data 树节点
      */
@@ -810,6 +818,8 @@ export default {
       });
     },
     updateModel() {
+      console.log(this.$refs.modelListTable.selection)
+      return
       this.isUpdate = true;
       var selectObj = this.$refs.modelListTable.selection;
       if (selectObj.length == 0) {
