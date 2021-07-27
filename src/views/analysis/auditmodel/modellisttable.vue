@@ -102,10 +102,16 @@
           title="选择业务分类"
           width="50%"
         >
-          <ModelFolderTree ref="modelFolderTree" public-model="editorModel" :filter-id="moveFolderId"/>
+          <ModelFolderTree
+            ref="modelFolderTree"
+            public-model="editorModel"
+            :filter-id="moveFolderId"
+          />
           <div slot="footer">
             <el-button type="primary" @click="moveModelConfirm">确定</el-button>
-            <el-button @click="modelFolderTreeDialogMove = false">取消</el-button>
+            <el-button @click="modelFolderTreeDialogMove = false"
+              >取消</el-button
+            >
           </div>
         </el-dialog>
         <el-table
@@ -655,7 +661,22 @@ export default {
      * @param data 树节点
      */
     SelectNode(data) {
-      console.log(data)
+      for(let i =0;i<this.list.length;i++){
+        if(data.id==this.list[i].modelUuid){
+          var ifpush = 1
+          for(let j =0;j<this.$refs.modelListTable.selection.length;j++){
+            if(this.$refs.modelListTable.selection[j].modelUuid == this.list[i].modelUuid){
+              ifpush = 0
+            }
+          }
+          }
+          if(ifpush==1){
+            this.$refs.modelListTable.selection.push(this.list[i])
+            this.modelTableSelectEvent()
+            return
+          }
+        }
+      console.log(this.$refs.modelListTable.selection)
     },
     /**
      * 设置选中的树节点
