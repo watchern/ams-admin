@@ -686,6 +686,20 @@ export default {
       sqlInfo: "",
       sqlInfoDialog: false, //点击模型结果关联按钮控制人员dialog显示
       projectUuid: "", //关联项目的Uuid
+      // 格式化参数列表
+      formatMap: {
+        rectifyStatus: {
+          1: '未整改',
+          2: '整改中',
+          3: '已整改',
+          4: '无法整改',
+          null: ''
+        },
+        isImportant: {
+          1: '是',
+          0: '否'
+        }
+      },
       // 问题属性绑定
       temp: {
         problemUuid: null, // 问题UUID
@@ -890,7 +904,6 @@ export default {
           if (typeof (this.temp.projectUuid) !== 'undefined' && this.temp.projectUuid !== null) { this.temp.projectName = _.find(this.projectQueryList, ['projectUuid', this.temp.projectUuid]).projectName }
           if (typeof (this.temp.auditPersonUuid) !== 'undefined' && this.temp.auditPersonUuid !== null) { this.temp.auditPersonName = _.find(this.personQueryList, ['auditPersonUuid', this.temp.auditPersonUuid]).auditPersonName }
           save(this.temp).then(() => {
-            this.getList()
             this.dialogFormVisible = false
             this.$notify({
               title: this.$t('message.title'),
