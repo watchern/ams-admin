@@ -3,7 +3,7 @@
     <!--模型分类树-->
     <el-container>
       <el-aside class="tree-side">
-        <ModelFolderTree ref="modelFolderTree" :power="power" @refreshModelList="refreshModelList" :spaceFolderName="thisFolderName" :spaceFolderId="thisDataUserId"/>
+        <ModelFolderTree ref="modelFolderTree" :power="power" @refreshModelList="refreshModelList" @refreshModels="refreshModels" :spaceFolderName="thisFolderName" :spaceFolderId="thisDataUserId"/>
       </el-aside>
       <ModelListTable :isAuditWarring="isAuditWarring" :data-user-id='thisDataUserId' :scene-code='thisSceneCode' ref="modelListTable" :power="power" @loadingSet="loadingSet" @refreshTree="refreshTree" />
     </el-container>
@@ -38,6 +38,13 @@ export default {
     }
   },
   methods: {
+    /**
+     * 选择模型
+     * @param data 树节点数据
+     */
+    refreshModels(data) {
+      this.$refs.modelListTable.SelectNode(data)
+    },
     /**
      * 刷新模型列表
      * @param data 树节点数据

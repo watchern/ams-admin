@@ -102,10 +102,16 @@
           title="选择业务分类"
           width="50%"
         >
-          <ModelFolderTree ref="modelFolderTree" public-model="editorModel" :filter-id="moveFolderId"/>
+          <ModelFolderTree
+            ref="modelFolderTree"
+            public-model="editorModel"
+            :filter-id="moveFolderId"
+          />
           <div slot="footer">
             <el-button type="primary" @click="moveModelConfirm">确定</el-button>
-            <el-button @click="modelFolderTreeDialogMove = false">取消</el-button>
+            <el-button @click="modelFolderTreeDialogMove = false"
+              >取消</el-button
+            >
           </div>
         </el-dialog>
         <el-table
@@ -123,11 +129,12 @@
           <el-table-column type="selection" width="55" />
           <el-table-column label="模型名称" width="300px" prop="modelName">
             <template slot-scope="scope">
-              <el-link
+              <!-- <el-link
                 type="primary"
                 @click="selectModelDetail(scope.row.modelUuid)"
                 >{{ scope.row.modelName }}</el-link
-              >
+              > -->
+              {{ scope.row.modelName }}
             </template>
           </el-table-column>
           <el-table-column label="平均运行时间" width="150px" prop="runTime" />
@@ -650,6 +657,28 @@ export default {
       });
     },
     /**
+     * 选中的节点
+     * @param data 树节点
+     */
+    SelectNode(data) {
+      for(let i =0;i<this.list.length;i++){
+        if(data.id==this.list[i].modelUuid){
+          var ifpush = 1
+          for(let j =0;j<this.$refs.modelListTable.selection.length;j++){
+            if(this.$refs.modelListTable.selection[j].modelUuid == this.list[i].modelUuid){
+              ifpush = 0
+            }
+          }
+          }
+          if(ifpush==1){
+            this.$refs.modelListTable.selection.push(this.list[i])
+            this.modelTableSelectEvent()
+            return
+          }
+        }
+      console.log(this.$refs.modelListTable.selection)
+    },
+    /**
      * 设置选中的树节点
      * @param data 树节点
      */
@@ -810,6 +839,8 @@ export default {
       });
     },
     updateModel() {
+      console.log(this.$refs.modelListTable.selection)
+      return
       this.isUpdate = true;
       var selectObj = this.$refs.modelListTable.selection;
       if (selectObj.length == 0) {
