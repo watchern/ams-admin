@@ -15,12 +15,20 @@
       <el-main>
         <div align="right">
           <el-row>
-              <el-button
+            <!-- 分配到人 -->
+              <!-- <el-button
                       type="primary"
                       @click="modelResultOpenDialog"
                       :disabled="buttonIson.AssociatedBtn"
                       class="oper-btn link-2"
-              ></el-button>
+              ></el-button> -->
+            <!-- 分配到项目 -->
+            <el-button
+              type="primary"
+              @click="openProjectDialog"
+              :disabled="buttonIson.AssociatedBtn"
+              class="oper-btn link-2"
+            ></el-button>
             <!--<el-dropdown>
 
               <el-dropdown-menu slot="dropdown">
