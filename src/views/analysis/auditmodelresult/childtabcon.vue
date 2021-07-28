@@ -1784,25 +1784,26 @@ export default {
                     }
                     this.rowData = rowData;
                   }
-                  for (let i = 0; i < col.length; i++) {
-                    let str = _this.queryData.columnList[i].columnType;
-                    if (
-                      str.toUpperCase().indexOf("VARCHAR") != -1 ||
-                      str.toUpperCase().indexOf("CHAR") != -1
-                    ) {
-                      col[i].filter = "agTextColumnFilter";
-                    } else if (
-                      str.toUpperCase().indexOf("NUMBER") != -1 ||
-                      str.toUpperCase().indexOf("INT") != -1 ||
-                      str.toUpperCase().indexOf("DATE") != -1 ||
-                      str.toUpperCase().indexOf("FLOAT") != -1 ||
-                      str.toUpperCase().indexOf("DOUBLE") != -1
-                    ) {
-                      col[i].filter = "agNumberColumnFilter";
-                    } else {
-                      col[i].filter = "agTextColumnFilter";
-                    }
-                  }
+                  // let _this = this
+                  // for (let i = 0; i < col.length; i++) {
+                  //   let str = _this.queryData.columnList[i].columnType;
+                  //   if (
+                  //     str.toUpperCase().indexOf("VARCHAR") != -1 ||
+                  //     str.toUpperCase().indexOf("CHAR") != -1
+                  //   ) {
+                  //     col[i].filter = "agTextColumnFilter";
+                  //   } else if (
+                  //     str.toUpperCase().indexOf("NUMBER") != -1 ||
+                  //     str.toUpperCase().indexOf("INT") != -1 ||
+                  //     str.toUpperCase().indexOf("DATE") != -1 ||
+                  //     str.toUpperCase().indexOf("FLOAT") != -1 ||
+                  //     str.toUpperCase().indexOf("DOUBLE") != -1
+                  //   ) {
+                  //     col[i].filter = "agNumberColumnFilter";
+                  //   } else {
+                  //     col[i].filter = "agTextColumnFilter";
+                  //   }
+                  // }
                   this.columnDefs = col;
                   this.afterResult = true;
                   if (
@@ -1955,25 +1956,26 @@ export default {
             for (var k = 0; k < this.nextValue.result.length; k++) {
               rowData.push(this.nextValue.result[k]);
             }
-            for (let i = 0; i < col.length; i++) {
-              let str = _this.queryData.columnList[i].columnType;
-              if (
-                str.toUpperCase().indexOf("VARCHAR") != -1 ||
-                str.toUpperCase().indexOf("CHAR") != -1
-              ) {
-                col[i].filter = "agTextColumnFilter";
-              } else if (
-                str.toUpperCase().indexOf("NUMBER") != -1 ||
-                str.toUpperCase().indexOf("INT") != -1 ||
-                str.toUpperCase().indexOf("DATE") != -1 ||
-                str.toUpperCase().indexOf("FLOAT") != -1 ||
-                str.toUpperCase().indexOf("DOUBLE") != -1
-              ) {
-                col[i].filter = "agNumberColumnFilter";
-              } else {
-                col[i].filter = "agTextColumnFilter";
-              }
-            }
+            // let _this = this
+            // for (let i = 0; i < col.length; i++) {
+            //   let str = _this.queryData.columnList[i].columnType;
+            //   if (
+            //     str.toUpperCase().indexOf("VARCHAR") != -1 ||
+            //     str.toUpperCase().indexOf("CHAR") != -1
+            //   ) {
+            //     col[i].filter = "agTextColumnFilter";
+            //   } else if (
+            //     str.toUpperCase().indexOf("NUMBER") != -1 ||
+            //     str.toUpperCase().indexOf("INT") != -1 ||
+            //     str.toUpperCase().indexOf("DATE") != -1 ||
+            //     str.toUpperCase().indexOf("FLOAT") != -1 ||
+            //     str.toUpperCase().indexOf("DOUBLE") != -1
+            //   ) {
+            //     col[i].filter = "agNumberColumnFilter";
+            //   } else {
+            //     col[i].filter = "agTextColumnFilter";
+            //   }
+            // }
             this.columnDefs = col;
             this.afterResult = true;
             if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
