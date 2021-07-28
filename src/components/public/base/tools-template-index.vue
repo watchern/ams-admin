@@ -123,18 +123,16 @@
                 
               </div>
             <span
-              type="primary"
-              style="
+                type="primary"
+                style="
                 color: #ffffff;
-                float: right;
-                bottom: -12px;
+                position: absolute;
+                bottom: 10px;
+                right: 15px;
                 font-size: 13px;
                 font-weight: bold;
-                cursor: pointer;
-              "
-              @click="moreTask"
-              >更多</span
-            >
+                cursor: pointer;"
+                @click="moreTask">更多</span>
           </div>
         </div>
       </div>

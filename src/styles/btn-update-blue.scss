@@ -72,6 +72,17 @@
   font-weight: normal!important;
 }
 
+
+//按钮4个字
+.btn-width-md{
+  width:96px!important;
+}
+
+//按钮6个字
+.btn-width-max{
+  width:132px!important;
+}
+
 // add
 .oper-btn.add:after{
   content:'\e60a  新增'!important;

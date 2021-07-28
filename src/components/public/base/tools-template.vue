@@ -88,7 +88,7 @@
                 <span style="color:#eaeaea;font-size:11px;padding:2px;cursor:pointer;" class="tools-box-name" @click="toUrl(item.taskUrl)" v-text="item.taskName" />
               </li>
             </ul>
-            <span type="primary" style="color:#4e6ef2;float:right;bottom:-22px;font-size:10px;cursor:pointer;" @click="moreTask">更多</span>
+            <span type="primary" style="color:#4e6ef2;position: absolute;:w bottom: 10px; right: 15px;font-size:10px;cursor:pointer;" @click="moreTask">更多</span>
           </div>
         </div>
       </div>
