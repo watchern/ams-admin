@@ -61,6 +61,12 @@
   font-family: "iconfont" !important;
   font-weight: normal!important;
 }
+.oper-btn.logout:hover::before{
+  content:'注销'!important;
+}
+.oper-btn.unlogout:hover::before{
+  content:'解除锁定'!important;
+}
 .oper-btn.add:after{
   content:'\e60a'!important;
 }

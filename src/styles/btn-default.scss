@@ -71,6 +71,12 @@
   font-family: "iconfont" !important;
   font-weight: normal!important;
 }
+.oper-btn.logout:hover::before{
+  content:'注销'!important;
+}
+.oper-btn.unlogout:hover::before{
+  content:'解除锁定'!important;
+}
 .oper-btn:hover::before {
   border-radius: 4px;
   padding: 8px 10px;

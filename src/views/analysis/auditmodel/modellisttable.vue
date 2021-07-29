@@ -840,7 +840,6 @@ export default {
     },
     updateModel() {
       console.log(this.$refs.modelListTable.selection)
-      return
       this.isUpdate = true;
       var selectObj = this.$refs.modelListTable.selection;
       if (selectObj.length == 0) {
