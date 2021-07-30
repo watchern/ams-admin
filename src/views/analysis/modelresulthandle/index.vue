@@ -10,7 +10,7 @@
       <el-tab-pane
         name="模型分配结果"
         label="模型分配结果"
-      ><firstParentTabCon @addtab="addTab" />
+      ><firstParentTabCon :projectId="projectId" @addtab="addTab" />
       </el-tab-pane>
       <el-tab-pane
         v-for="item in editableTabs"
@@ -38,6 +38,12 @@ export default {
   components: {
     firstParentTabCon,
     childTabs
+  },
+   props: {
+    projectId: {
+      type: String,
+      default: ''
+    }
   },
   data() {
     return {

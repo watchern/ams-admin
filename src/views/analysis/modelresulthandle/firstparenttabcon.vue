@@ -532,7 +532,6 @@
             label="运行SQL"
             prop="settingInfo"
             align="center"
-            width="200px"
           >
             <template slot-scope="scope">
               <el-link type="primary" @click="selectSql(scope.row)">{{
@@ -549,7 +548,6 @@
           <el-table-column
             label="关联项目"
             prop="projectName"
-            width="200px"
           />
           <el-table-column
             v-if="false"
@@ -654,11 +652,17 @@ import VueAxios from "vue-axios";
 import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 import personTree from "@/components/publicpersontree/index";
-import { listByPage, save, update, del, personList, projectList, toTreeData, getDictList } from
-  './problem'
+import { getDictList } from '@/utils'
+import { save, update, del, personList, projectList, toTreeData, getProjectById } from '@TCB/api/tcbaudit/problem'
 import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
 export default {
   components: { Pagination, QueryField, runimmediatelycon, personTree, flowItem },
+  props: {
+    projectId: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     // 数字校验
     const isNum = (rule, value, callback) => {
@@ -710,8 +714,8 @@ export default {
         //最上面模模糊查询所用数据
         { label: "模型名称", name: "modelName", type: "fuzzyText" },
         { label: "运行人", name: "runUserName", type: "fuzzyText" },
-        { label: "运行sql", name: "sql", type: "fuzzyText" },
-        { label: "运行参数", name: "param", type: "fuzzyText" },
+        // { label: "运行sql", name: "sql", type: "fuzzyText" },
+        // { label: "运行参数", name: "param", type: "fuzzyText" },
         { label: "执行时间范围", name: "runStartTime", type: "timePeriod" },
       ],
       formStyle: {
@@ -886,6 +890,11 @@ export default {
         this.getProjectPerson(this.temp.projectUuid)
       }
     },
+    // 监听父组件传值projectId
+    projectId() {
+      this.getLikeList()
+      this.getProjectPerson(this.projectId)
+    },
     // 监听问题明细违规积分
     'detailTemp.violationPoints': {
       handler: function() {
@@ -985,14 +994,22 @@ export default {
       this.disableUpdate = false
       this.resetTemp()
       this.dialogStatus = 'create'
+      // 根据ID获取项目信息
+      getProjectById(this.projectId).then(resp => {
+        if(resp.data !== null) {
+          this.temp.projectUuid = resp.data.projectUuid
+          this.temp.projectName = resp.data.projectName
+          this.getProjectPerson(resp.data.projectUuid)
+        }
+      })
       // 打开新增对话框前获取项目结果集
       projectList(this.pageQueryProjectList).then(resp => {
         this.projectQueryList = resp.data.records
-        if (resp.data.records !== null && resp.data.records.length) {
-          this.temp.projectUuid = resp.data.records[0].projectUuid
-          this.temp.projectName = resp.data.records[0].projectName
-          this.getProjectPerson(resp.data.records[0].projectUuid)
-        }
+        // if (resp.data.records !== null && resp.data.records.length) {
+        //   this.temp.projectUuid = resp.data.records[0].projectUuid
+        //   this.temp.projectName = resp.data.records[0].projectName
+        //   this.getProjectPerson(resp.data.records[0].projectUuid)
+        // }
       })
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -1262,7 +1279,6 @@ export default {
      * modelName是选中的模型的名字
      */
     getResultTables(val, modelName, modelUuid, runStatus, resultSpiltObjects) {
-      debugger
       if (runStatus == 3) {
         var assistTables = [];
         var mainTable = null;
@@ -1389,6 +1405,7 @@ export default {
      * 查询列表方法
      */
     getLikeList(query) {
+      this.projectUuid = this.projectId
       this.listLoading = true;
       var model = {};
       var runTask = {};

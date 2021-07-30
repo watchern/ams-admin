@@ -27,7 +27,7 @@
               type="primary"
               @click="openProjectDialog"
               :disabled="buttonIson.AssociatedBtn"
-              class="oper-btn link-2"
+              class="btn-width-md oper-btn link-2"
             ></el-button>
             <!--<el-dropdown>
 
@@ -916,8 +916,10 @@ export default {
           });
         } else if (projects.length === 1) {
           this.relationProject(
-            projects[0].PRJ_PROJECT_UUID,
-            projects[0].PRJ_NAME
+            // projects[0].PRJ_PROJECT_UUID,
+            // projects[0].PRJ_NAME
+            projects[0].prjProjectUuid,
+            projects[0].prjName
           );
           this.projectDialogIsSee = false;
         } else {

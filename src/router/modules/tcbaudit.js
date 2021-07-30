@@ -38,7 +38,7 @@ const tcbauditRouter = {
     {
       path: 'audittasknode',
       name: 'audittasknode',
-      component: () => import('@TCB/views/audit/audittasknode'),
+      component: () => import('@/views/tcbaudit/audittasknode'),
       meta: {
         title: '项目资料树'
       }
