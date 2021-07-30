@@ -11,15 +11,6 @@ const tcbauditRouter = {
   },
   children: [
     {
-      path: 'demo',
-      name: 'paramfield',
-      component: () => import('@TCB/views/audit/paramfield'),
-      meta: {
-        title: 'paramfield'
-      },
-      hidden: true
-    },
-    {
       path: 'project',
       name: 'project',
       component: () => import('@TCB/views/audit/project'),
