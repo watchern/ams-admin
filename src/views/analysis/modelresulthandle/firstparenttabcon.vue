@@ -208,7 +208,7 @@
         <el-button
           v-if="!closeStatus"
           type="primary"
-          @click="dialogStatus==='create'?createData():updateData()"
+          @click="iftodowork = true"
         >提交审核
         </el-button>
         <el-button
@@ -218,6 +218,37 @@
         >保存
         </el-button>
       </div>
+    </el-dialog>
+    <el-dialog
+      title="提交审核"
+      :visible.sync="iftodowork"
+    >
+    <div>
+        <flowItem
+          ref="flowItem"
+          :flowSet="flowSet"
+          :flowItem="flowItem"
+          :flow-param="flowParam"
+          @closeModal="closeFlowItem"
+          @delectData="delectData"
+        ></flowItem>
+      </div>
+      <span slot="footer">
+        <el-button
+          size="mini"
+          type="info"
+          class="table_header_btn"
+          @click="saveOpinion"
+          >提交</el-button
+        >
+        <el-button
+          size="mini"
+          type="info"
+          class="table_header_btn"
+          @click="iftodowork = false"
+          >关闭</el-button
+        >
+      </span>
     </el-dialog>
     <!--问题明细新增+编辑框-->
     <el-dialog
@@ -625,8 +656,9 @@ import { getParamSettingArr } from "@/api/analysis/auditparam";
 import personTree from "@/components/publicpersontree/index";
 import { listByPage, save, update, del, personList, projectList, toTreeData, getDictList } from
   './problem'
+import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
 export default {
-  components: { Pagination, QueryField, runimmediatelycon, personTree },
+  components: { Pagination, QueryField, runimmediatelycon, personTree, flowItem },
   data() {
     // 数字校验
     const isNum = (rule, value, callback) => {
@@ -641,6 +673,35 @@ export default {
       }
     }
     return {
+      //工作流相关
+      submitData: {
+        versionUuid: "tlLuwUhC",
+        busTableName: "", //表名
+        busDatabaseName: "warehouse", //数据库名
+        busDatabaseType: "", //
+        status: "1", //预警数据状态
+        busdatas: [],
+      },
+      iftodowork:false,
+      flowSet: {
+        opinionList: false,
+        opinion: false,
+        nextStep: true,
+        isSecond: false,
+      },
+      flowItem: {
+        //动态赋值
+        wftype: "cn_com_boe_as_preInvest",
+        applyUuid: "",
+        detailUuids: "",
+        applyTitle: "",
+        workEffortId: "",
+        appDataUuid: "",
+        versionUuid: "",
+        isSecond: false,
+        temp1: "",
+      },
+      flowParam: 0,
       tableKey: "errorUuid",
       list: null, // 绑定elementTable的数据
       total: 0,
@@ -836,6 +897,59 @@ export default {
     }
   },
   methods: {
+    //工作流相关    
+    closeFlowItem(val) {
+      this.iftodowork = val;
+      this.flowParam = 0;
+      this.getLikeList();
+    },
+    //流程发布失败
+    delectData(val) {
+      this.iftodowork = val;
+      var data = {
+        busRelationUuid: this.flowItem.appDataUuid,
+      };
+      this.$axios
+        .post("/ams-clue/busRelation/delete/rollBackData", data)
+        .then((response) => {
+          if (response.data.code == "0") {
+            this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+          }
+        })
+        .catch((error) => {
+          this.common.alertMsg(1, this.textShare.operateFail());
+          console.log(error);
+        });
+      this.getLikeList();
+    },
+    saveOpinion() {
+      this.flowItem.versionUuid = this.common.randomString4Len(8);
+      var data = {
+        versionUuid: this.flowItem.versionUuid,
+        busdatas: this.multipleSelection||'',
+        busTableName: this.submitData.busTableName,
+        busDatabaseName: this.submitData.busDatabaseName,
+        busDatabaseType: this.submitData.busDatabaseType,
+      };
+      this.$axios
+        .post("/ams-clue/busRelation/toSubmit", data)
+        .then((response) => {
+          if (response.data.code == "0") {
+            this.flowItem.appDataUuid = response.data.data.busRelationUuid;
+            //修改业务执行状态为0，调用监听，执行更新流程状态操作。
+            this.$store.dispatch("applyInfo/setMstate", "0");
+            this.flowParam = 1;
+          } else {
+            this.iftodowork = false;
+            this.common.alertMsg(1, this.textShare.operateFail());
+          }
+        })
+        .catch((error) => {
+          this.iftodowork = false;
+          this.common.alertMsg(1, this.textShare.operateFail());
+          console.log(error);
+        });
+    },
     // 问题表单初始化
     resetTemp() {
       this.temp = {
