@@ -328,6 +328,7 @@ import crossrangeParam from "@/views/analysis/modelparam/crossrangeparam";
 import paramDraw from "@/views/analysis/modelparam/paramdraw";
 import paramDrawNew from "@/views/analysis/modelparam/paramdrawnew";
 import { replaceNodeParam } from "@/api/analysis/auditparam";
+import { getInfo } from '@/api/user'
 import modelshoppingcart from "@/views/analysis/auditmodel/modelshoppingcart";
 import personTree from "@/components/publicpersontree/index";
 export default {
@@ -392,6 +393,7 @@ export default {
         previewBtn: true,
         otherBtn: false,
       },
+      ifmanger:0,//是否是管理员
       // 当前预览模型参数和sql
       currentPreviewModelParamAndSql: {},
       queryFields: [
@@ -453,6 +455,7 @@ export default {
       modelFolderUuid: "",
       modelFolderName: "",
       relationNextValue: {},
+      jinyong:0//禁用编辑等按钮
     };
   },
   computed: {},
@@ -482,6 +485,22 @@ export default {
   },
   created() {
     this.getList()
+    getInfo().then((resp) => {
+        if(resp.data.orgname=="总行审计部"){
+          this.ifmanger = 1
+          this.jinyong = 0
+        }else{
+          this.ifmanger = 0
+          this.jinyong = 1
+          this.btnState = {
+            addBtnState: false,
+            editBtnState: true,
+            deleteBtnState: true,
+            previewBtn: false,
+            otherBtn: true,
+          }
+        }
+      });
     // this.getList({ modelFolderUuid: 1 })
   },
   mounted() {
@@ -684,6 +703,15 @@ export default {
      */
     setSelectTreeNode(data) {
       this.selectTreeNode = data;
+      console.log(data)
+      if(data.path.indexOf('gonggong') != -1 && this.ifmanger==0){
+        //禁用
+        this.jinyong = 1
+      }else{
+        //解禁
+        this.jinyong = 0
+      }
+      getInfo()
     },
     /**
      * 保存模型
@@ -750,6 +778,15 @@ export default {
         this.btnState.addBtnState = false;
         this.btnState.editBtnState = false;
         this.btnState.previewBtn = false;
+        if(this.jinyong==1){
+          this.btnState = {
+            addBtnState: false,
+            editBtnState: true,
+            deleteBtnState: true,
+            previewBtn: false,
+            otherBtn: true,
+          }
+        }
         if (this.isAuditWarring != true) {
           this.isShowShoppingCart = true;
           this.$refs.modelShoppingCartRef.setMemo(selectObj);
