@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <div style="display:flex;">
+    <div style="display:flex;width:100%;">
       <div>
         <el-input v-model="filterText2" placeholder="输入关键字进行过滤" />
         <el-link class="select-link" type="primary" @click="registTable"
@@ -78,7 +78,7 @@
           </MyElTree>
         </div>
       </div>
-      <div style="margin-left: 50px; max-width:80%; min-width:50%; width:auto;">
+      <div style="margin-left: 50px; width: 2000px; min-width: 50%; ">
         <tabledatatabs
           v-if="divInfo"
           ref="tabledatatabs"
