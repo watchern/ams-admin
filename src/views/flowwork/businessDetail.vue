@@ -42,7 +42,7 @@
                             nextStep:true,     // 下一步
                             done:false    // 是否已办
                           },
-       * actionIdList: 业务操作ID
+       * actionIdList: 业务操作ID,与工作流无关的其他操作
        */
       props: ["versionUuid", "appDataUuid","applyType","flowSetup","actionIdList"],
         // mounted: function () {
