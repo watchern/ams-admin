@@ -32,8 +32,8 @@
         },
       /**
        * versionUuid: 流程图版本号，审批单版本号
-       * appDataUuid: 业务数据主键
-       * applyType:   审批单类型，工作流流程id
+       * appDataUuid: 业务数据主键(如：问题ID、线索ID、模型id)
+       * applyType:   审批单类型，工作流流程id(如：problemflow(问题复核)、clueflow(线索核实)、modelpublishflow(模型上线))
        * flowSetup:   工作流设置参数
        *               //控制审批页面元素显示隐藏参数
                          flowSet:{
