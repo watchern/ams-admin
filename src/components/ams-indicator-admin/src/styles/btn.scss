@@ -67,6 +67,9 @@
 .oper-btn.unlogout:hover::before{
   content:'解除锁定'!important;
 }
+.oper-btn.impower:hover::before{
+  content:'权限分配'!important;
+}
 .oper-btn.add:after{
   content:'\e60a'!important;
 }

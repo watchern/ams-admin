@@ -49,6 +49,9 @@
         //   alert("ss")
         //   alert(this.appDataUuid)
         // },
+        created(){
+            console.log(this.applyType)
+        },
         methods: {
 
             updateSave(){
