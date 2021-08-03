@@ -111,11 +111,11 @@
           >{{ formatCreateTime(scope.row.extMap.createTime) }}
         </template>
       </el-table-column>
-      <el-table-column prop="tbSizeByte" label="大小" align="center">
+      <!--<el-table-column prop="tbSizeByte" label="大小" align="center">
         <template slot-scope="scope"
           >{{ formatTableSize(scope.row.extMap.tbSizeByte) }}
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
     <pagination
       v-show="total > 0"
