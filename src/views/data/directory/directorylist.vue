@@ -1014,6 +1014,10 @@ export default {
           return obj.label.indexOf(query.label) !== -1;
         });
         this.total = getArrLength(list);
+        console.log("===========================")
+        console.log(list)
+        console.log("===========================")
+
         this.temp = list;
       } else {
         this.temp = this.allList;
