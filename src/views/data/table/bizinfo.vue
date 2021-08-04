@@ -6,7 +6,6 @@
           ref="dataForm"
           :model="temp"
           label-position="right"
-          style="width: 750px;"
         >
           <span class="midText">业务表信息：</span>
           <el-form-item label="汉化名称：" prop="chnName">
