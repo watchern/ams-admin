@@ -664,7 +664,7 @@ EditorUi = function (editor, container, lightbox) {
 							"columnType": e.data[i].dataType,
 							"columnLength": e.data[i].dataLength,
 							"isOutputColumn": 1,
-							"newColumnName": columnName
+							"newColumnName": e.data[i].chnName?e.data[i].chnName:columnName,
 						});
 						if (i === e.data.length - 1) {
 							nodeSql += columnName;
@@ -2589,7 +2589,8 @@ var iconDrag = function (treeNode) {
 		var options = {
 			"id": cell.id,
 			"name": treeNode.name,
-			"type": treeNode.type
+			"type": treeNode.type,
+			"english":treeNode.english||''
 		};
 		initNodeData(options, true);
 		//初始化节点配置信息,end
@@ -2696,7 +2697,11 @@ var initNodeData = function (options, changeIcon) {
 	switch (options.type) {
 		case "datasource":
 			isSet = true;
-			nodeInfo.resultTableName = options.name;
+			if(options.english){
+				nodeInfo.resultTableName = options.english;
+			}else{
+				nodeInfo.resultTableName = options.name;
+			}
 			nodeInfo.nodeExcuteStatus = 3;
 			delete setting.settingId;
 			break;
