@@ -46,7 +46,6 @@ export default {
     }
   },created(){
     addJsFile('/lib/layui/xm-select.js','xm-select')
-    console.log(arr)
   },
   beforeDestroy() {
     removeJcCssfile("xm-select.js","js")

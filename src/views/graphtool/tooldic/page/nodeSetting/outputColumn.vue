@@ -185,7 +185,6 @@
                         this_columnInfos.push(this_column)
                     })
                 }
-                console.log(this_columnInfos)
                 this.nodeData.columnsInfo = this_columnInfos
             },
             handleCheckAllChange(checked) {

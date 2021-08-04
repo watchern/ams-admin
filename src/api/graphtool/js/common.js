@@ -1183,6 +1183,7 @@ export function curNodeSQL() {
  * 双击预览数据 / 右键查看数据
  * */
 export function previewNodeData() {
+    console.log(graph.nodeData[graph.curCell.id])
     let curNodeInfo = graph.nodeData[graph.curCell.id].nodeInfo
     let nodeExcuteStatus = curNodeInfo.nodeExcuteStatus
     if (nodeExcuteStatus !== 3) {
