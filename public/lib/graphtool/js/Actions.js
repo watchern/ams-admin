@@ -273,7 +273,8 @@ Actions.prototype.init = function() {
 						var options = {
 								"id" : cells[i].id,
 								"name" : nodeData.nodeInfo.nodeName,
-								"type" : nodeData.nodeInfo.optType
+								"type" : nodeData.nodeInfo.optType,
+								"english":nodeData.nodeInfo.english||'',
 						};
 						initNodeData(options,true);
 					}
