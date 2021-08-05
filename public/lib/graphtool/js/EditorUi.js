@@ -659,20 +659,23 @@ EditorUi = function (editor, container, lightbox) {
 					var nodeSql = "SELECT";
 					for (var i = 0; i < e.data.length; i++) {
 						var columnName = e.data[i].colName;
+						var newColumnName = e.data[i].chnName?e.data[i].chnName:columnName;
 						columnsInfo.push({
 							"columnName": columnName,
 							"columnType": e.data[i].dataType,
 							"columnLength": e.data[i].dataLength,
 							"isOutputColumn": 1,
-							"newColumnName": e.data[i].chnName?e.data[i].chnName:columnName,
+							"newColumnName": newColumnName,
 						});
 						if (i === e.data.length - 1) {
-							nodeSql += columnName;
+							nodeSql += e.data[i].chnName? " " + columnName + " AS " + e.data[i].chnName:" " + columnName;
 						} else {
-							nodeSql += " " + columnName + ",";
+							nodeSql += e.data[i].chnName? " " + columnName + " AS " + e.data[i].chnName + ",":" " + columnName + ",";
 						}
 					}
-					nodeSql += " FROM " + treeNode.name;
+					console.log(treeNode)
+					nodeSql += treeNode.english ? " FROM " + treeNode.english+" AS " + treeNode.name : " FROM " + treeNode.name;
+					console.log(nodeSql)
 					graph.nodeData[cell.id].nodeInfo.nodeSql = nodeSql;
 					graph.nodeData[cell.id].columnsInfo = columnsInfo;
 				}
