@@ -1,6 +1,6 @@
 <template>
   <!-- index.vue是最外层的父页签组件，把firstParentTabCon.vue挂载进来作为第一个页签中的内容 -->
-  <div>
+  <div class="warningresult">
     <el-tabs
       v-model="editableTabsValue"
       type="card"
@@ -109,3 +109,8 @@ export default {
   }
 }
 </script>
+<style>
+.warningresult .is-vertical{
+  overflow: hidden;
+}
+</style>
