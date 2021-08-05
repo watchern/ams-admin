@@ -673,7 +673,6 @@ EditorUi = function (editor, container, lightbox) {
 							nodeSql += e.data[i].chnName? " " + columnName + " AS " + e.data[i].chnName + ",":" " + columnName + ",";
 						}
 					}
-					console.log(treeNode)
 					nodeSql += treeNode.english ? " FROM " + treeNode.english+" AS " + treeNode.name : " FROM " + treeNode.name;
 					console.log(nodeSql)
 					graph.nodeData[cell.id].nodeInfo.nodeSql = nodeSql;
