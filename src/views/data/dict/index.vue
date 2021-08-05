@@ -190,7 +190,7 @@ export default {
     // 导出表信息作为模板
     exportFile() {
       if (this.selections.length === 0) {
-        this.$message({ type: 'info', message: '无选择表,下载模板失败!' })
+        this.$message({ type: 'info', message: '无选择表,失败!' })
       } else {
         axios.post(`/data/tableMeta/exportFile`, qs.stringify({ tableMetasJson: JSON.stringify(this.selections) }),
           { responseType: 'blob', headers: {

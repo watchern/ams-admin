@@ -101,6 +101,9 @@ export default {
       height: 30px;
     }
   }
+  .homezz{
+    height: 100% !important;
+  }
 }
 .home-top{
   //z-index:20201111;
