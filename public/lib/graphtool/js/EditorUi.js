@@ -668,13 +668,12 @@ EditorUi = function (editor, container, lightbox) {
 							"newColumnName": newColumnName,
 						});
 						if (i === e.data.length - 1) {
-							nodeSql += e.data[i].chnName? " " + columnName + " AS " + e.data[i].chnName:" " + columnName;
+							nodeSql += newColumnName;
 						} else {
-							nodeSql += e.data[i].chnName? " " + columnName + " AS " + e.data[i].chnName + ",":" " + columnName + ",";
+							nodeSql += " " + newColumnName + ",";
 						}
 					}
-					nodeSql += treeNode.english ? " FROM " + treeNode.english+" AS " + treeNode.name : " FROM " + treeNode.name;
-					console.log(nodeSql)
+					nodeSql += " FROM " + treeNode.name;
 					graph.nodeData[cell.id].nodeInfo.nodeSql = nodeSql;
 					graph.nodeData[cell.id].columnsInfo = columnsInfo;
 				}
