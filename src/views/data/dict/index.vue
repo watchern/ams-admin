@@ -20,7 +20,7 @@
       border
       fit
       highlight-current-row
-      style="width: 100%;height:500px;overflow: auto;"
+      style="width: 100%;height:calc(100% - 140px);overflow: auto;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >

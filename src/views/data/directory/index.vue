@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-list-container" style="display:flex;">
+  <div class="tree-list-container" style="display:flex; justify-content:space-around">
     <div class="tree">
       <!-- <el-row>
         <el-col>
@@ -13,8 +13,8 @@
           </el-select>
         </el-col>
       </el-row> -->
-      <el-row style="margin-top:20px">
-        <el-col>
+      <el-row style="margin-top:20px;height: 100%;">
+        <el-col style="height:100%">
           <dataTree v-if="isTreeShow" ref="dataTree" :data-user-id="directyDataUserId" :scene-code="directySceneCode" @node-click="nodeclick" />
         </el-col>
       </el-row>
@@ -56,7 +56,7 @@ export default {
     setTimeout(function(){
       $('.el-tree-node:eq(0)').click()
     },1000)
-   
+
   },
   methods: {
     initDirectory() {
@@ -90,15 +90,14 @@ export default {
 
 <style scoped>
 .tree {
-  min-width: 15%;
+  min-width: 16%;
   margin-left: 1%;
-  height: 95%;
+  height: 100%;
 }
 .divContent {
-  width: 70%;
-  min-width:870px;
+  min-width: 75%;
 }
-.agreeicon0  {
+.agreeicon0 {
   display: inline-block;
   height: 16px;
   width: 16px;
@@ -109,7 +108,7 @@ export default {
   vertical-align: top;
   *vertical-align: middle;
 }
-.agreeicon1  {
+.agreeicon1 {
   display: inline-block;
   height: 16px;
   width: 16px;
@@ -120,7 +119,7 @@ export default {
   vertical-align: top;
   *vertical-align: middle;
 }
-.agreeicon2  {
+.agreeicon2 {
   display: inline-block;
   height: 14px;
   width: 14px;
