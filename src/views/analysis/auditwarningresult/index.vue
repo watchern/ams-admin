@@ -11,7 +11,7 @@
       <el-tab-pane
         name="预警结果"
         label="预警结果"
-      ><firstParentTabCon @addtab="addTab" /></el-tab-pane>
+      ><firstParentTabCon :runTaskUuid="runTaskUuid" @addtab="addTab" /></el-tab-pane>
       <el-tab-pane
         v-for="item in editableTabs"
         :key="item.name"
@@ -53,6 +53,12 @@ export default {
       tabIndex: 0, //语句记录页签个数
       mainTable: {}, //运行结果表主表对象
       helpTables: [], //运行结果表附表数组
+      runTaskUuid: null // 模型预警结果id
+    }
+  },
+  created(){
+    if (this.$route.params.runTaskUuid) {
+      this.runTaskUuid = this.$route.params.runTaskUuid
     }
   },
   methods: {

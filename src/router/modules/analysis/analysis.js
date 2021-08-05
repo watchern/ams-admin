@@ -50,6 +50,14 @@ const analysisRouter = {
       component: () => import('@/views/analysis/auditwarningresult/index')
     },
     {
+      path: 'warningresult/:runTaskUuid',
+      name: '审计预警结果',
+      component: resolve => require(['@/views/analysis/auditwarningresult/index'], resolve),
+      meta: {
+        title: '审计预警结果'
+      }
+    },
+    {
       path: 'sqleditor',
       name: 'SQL编辑器',
       component: () => import('@/views/analysis/sqleditor/index'),
