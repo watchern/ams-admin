@@ -87,11 +87,14 @@
 .btn-width-max {
   width: 132px !important;
 }
-.oper-btn.logout:hover::before{
+.oper-btn.logout:after{
   content:'注销'!important;
 }
-.oper-btn.unlogout:hover::before{
+.oper-btn.unlogout:after{
   content:'解除锁定'!important;
+}
+.oper-btn.impower:after{
+  content:'权限分配'!important;
 }
 // add
 .oper-btn.add:after {

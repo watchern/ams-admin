@@ -206,68 +206,88 @@ export default {
       this.webSocket = this.getWebSocket(this.getPersonUuid)
     }
   },
+  watch: {
+    $route: {
+      handler(val, oldval) {
+        console.log(oldval.path); //老路由信息
+        if (oldval.path == "/login") {
+          this.initmounted()
+        }
+      },
+      // 深度观察监听
+      deep: true,
+    },
+  },
   mounted() {
-    getUserRes()
-      .then(response => {
-        response.data.application.forEach((app, index) => {
-          // 设置左侧应用栏数据
-          this.applications.push({
-            img: require(`../style/images/icon${index + 1}.png`),
-            name: app.name,
-            id: app.id
-          })
-        })
-        // 设置引用栏弹出二级菜单数据
-        response.data.menugroup.forEach(grp => {
-          const menuList = []
-          grp.menuList.forEach(menu => {
-            menuList.push({
-              id: menu.id,
-              name: menu.name,
-              path: this.getCleanSrc(menu.src)
-            })
-          })
-          if (!this.menugroup[grp.appuuid]) {
-            this.menugroup[grp.appuuid] = []
-          }
-          this.menugroup[grp.appuuid].push({
-            id: grp.id,
-            name: grp.name,
-            path: grp.navurl,
-            children: menuList
-          })
-        })
-        let sSTree = []
-        for(let i=0;i<this.applications.length;i++) {
-          sSTree.push(this.menugroup[this.applications[i].id])
-        }
-        let sSLTree = {first: this.applications, second: sSTree}
-        sessionStorage.setItem('shenjiMenuTree', JSON.stringify(sSLTree))
-        let listTree = JSON.parse(sessionStorage.getItem('shenjiMenuTree'))
-        this.moremenugroup = listTree.second
-        this.moremenugroupId = listTree.first
-        var sysDict = JSON.parse(sessionStorage.getItem('sysDict'))
-        if (sysDict == null) {
-          cacheDict().then(resp => {
-            sessionStorage.setItem('sysDict', JSON.stringify(resp.data))
-          })
-        }
-      })
-      .catch(error => {
-        console.error(error)
-      })
-    getUnReadRemind().then(resp => {
-      if(resp.data <= 99 ) {
-        this.settingList[0].count = resp.data
-      }else{
-        this.settingList[0].count = '···'
-      }
-      if (resp.data !== 0) {
-        this.isThereReminder = true
-      }
-    })
+    console.log('..mounted')
+    this.initmounted()
   },
   methods: {
+    initmounted() {
+      getUserRes()
+        .then((response) => {
+          console.log(response.data.application);
+          this.applications = [];
+          response.data.application.forEach((app, index) => {
+            // 设置左侧应用栏数据
+            this.applications.push({
+              img: require(`../style/images/icon0.png`),
+              name: app.name,
+              id: app.id,
+              homepage: app.homepage,
+            });
+          });
+          this.menugroup = [];
+          // 设置引用栏弹出二级菜单数据
+          response.data.menugroup.forEach((grp) => {
+            const menuList = [];
+            grp.menuList.forEach((menu) => {
+              menuList.push({
+                id: menu.id,
+                name: menu.name,
+                path: this.getCleanSrc(menu.src),
+              });
+            });
+            if (!this.menugroup[grp.appuuid]) {
+              this.menugroup[grp.appuuid] = [];
+            }
+            this.menugroup[grp.appuuid].push({
+              id: grp.id,
+              name: grp.name,
+              path: grp.navurl,
+              children: menuList,
+            });
+          });
+          let sSTree = [];
+          for (let i = 0; i < this.applications.length; i++) {
+            sSTree.push(this.menugroup[this.applications[i].id]);
+          }
+          let sSLTree = { first: this.applications, second: sSTree };
+          sessionStorage.setItem("shenjiMenuTree", JSON.stringify(sSLTree));
+          let listTree = JSON.parse(sessionStorage.getItem("shenjiMenuTree"));
+          this.moremenugroup = listTree.second;
+          this.moremenugroupId = listTree.first;
+          var sysDict = JSON.parse(sessionStorage.getItem("sysDict"));
+          if (sysDict == null) {
+            cacheDict().then((resp) => {
+              sessionStorage.setItem("sysDict", JSON.stringify(resp.data));
+            });
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      getUnReadRemind().then((resp) => {
+        if (resp.data <= 99) {
+          this.settingList[0].count = resp.data;
+        } else {
+          this.settingList[0].count = "···";
+        }
+        if (resp.data !== 0) {
+          this.isThereReminder = true;
+        }
+      });
+    },
     init() {
       querySystemTask().then(resp => {
       })

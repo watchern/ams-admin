@@ -71,6 +71,7 @@ export function saveNodeSetting() {
             }
         }
         graphIndexVue.nodeSettingDialogVisible = false
+        console.log('情况1')
         graphIndexVue.$nextTick( () => {
             // 变更当前节点的配置状态信息
             graph.nodeData[curNodeId].nodeInfo.nodeExcuteStatus = 1
@@ -572,6 +573,7 @@ export function executeNode_callback(notExecuteNodeIdArr) {
         'nodeData': JSON.stringify(graph.nodeData),
         'noData':false
     }
+    // console.log(graph.nodeData)
     graphIndexVue.initData()
     graphIndexVue.websocketBatchId = executeId
     graphIndexVue.$nextTick(() => {
@@ -1181,6 +1183,7 @@ export function curNodeSQL() {
  * 双击预览数据 / 右键查看数据
  * */
 export function previewNodeData() {
+    console.log(graph.nodeData[graph.curCell.id])
     let curNodeInfo = graph.nodeData[graph.curCell.id].nodeInfo
     let nodeExcuteStatus = curNodeInfo.nodeExcuteStatus
     if (nodeExcuteStatus !== 3) {

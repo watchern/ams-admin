@@ -31,6 +31,14 @@ const tcbauditRouter = {
       name: 'audittasknode',
       component: () => import('@/views/tcbaudit/audittasknode'),
       meta: {
+        title: '人员管理'
+      }
+    }, 
+    {
+      path: 'personalManage',
+      name: 'personalManage',
+      component: () => import('@TCB/views/audit/personalManage'),
+      meta: {
         title: '项目资料树'
       }
     },

@@ -888,6 +888,7 @@ export async function saveModelGraph(){
                 'nodeData': JSON.stringify(graph.nodeData),
                 "noData":true
             }
+            console.log('情况2')
             const response = await executeNodeSql(dataParam)
             if(response.data != null){
                 //改变当前图形节点的信息
