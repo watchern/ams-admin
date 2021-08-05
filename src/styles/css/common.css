@@ -290,3 +290,6 @@ div::-webkit-scrollbar-button,
   bottom: -4px;
   left: 1px;
 }
+.ag-dnd-ghost{
+  z-index: 150!important;
+}
