@@ -152,7 +152,12 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
+      if (query == null) {
+        query = new Object()
+      }
+      query.tblType='T'
       if (query) this.pageQuery.condition = query
+
       listByPage(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records
