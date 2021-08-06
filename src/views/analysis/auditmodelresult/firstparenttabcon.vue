@@ -1,7 +1,7 @@
 <template>
   <!-- firstParentTabCon.vue界面是父页签第一个页签中的内容 -->
   <div class="app-container">
-    <el-container>
+    <el-container style="height: 100%">
       <el-header>
         <div class="filter-container">
           <QueryField
@@ -12,7 +12,7 @@
         </div>
       </el-header>
       <!-- style="width: 91.8vw" -->
-      <el-main>
+      <el-main style="height:100%">
         <div align="right">
           <el-row>
               <el-button
@@ -83,7 +83,7 @@
           highlight-current-row
           @sort-change="sortChange"
           @selection-change="handleSelectionChange"
-          height="450px"
+          height="calc(100% - 90px)"
         >
           <el-table-column type="selection" width="55" />
           <el-table-column

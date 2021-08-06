@@ -764,6 +764,10 @@ export default {
         flex: 1,
         minWidth: 150,
         resizable: true,
+        enableValue: true,
+        enableRowGroup: true,
+        enablePivot: true,
+        sortable: true,
         filter: true,
       },
       sideBar :{
@@ -784,7 +788,7 @@ export default {
           },
         ],
         position: 'right',
-        defaultToolPanel: 'columns'
+        defaultToolPanel: 'filters'
       },
       modules: AllModules,
       localeText:{
@@ -830,15 +834,15 @@ export default {
   // tool panel
   columns: '列',
   filters: '过滤器',
-  rowGroupColumns: '行列组',
-  rowGroupColumnsEmptyMessage: '拖到这里来设置行列组',
+  rowGroupColumns: '行分组',
+  rowGroupColumnsEmptyMessage: '拖拽设置行分组',
   valueColumns: '列值',
   pivotMode: '透视模式',
   groups: '行列组',
   values: '值',
   pivots: '列标签',
-  valueColumnsEmptyMessage: '拖到这里来进行聚合',
-  pivotColumnsEmptyMessage: '拖到这里来设置列标签',
+  valueColumnsEmptyMessage: '拖拽进行聚合',
+  pivotColumnsEmptyMessage: '拖拽设置列标签',
   toolPanelButton: '工具按钮',
   // other
   noRowsToShow: '暂时没有要展示的数据',
