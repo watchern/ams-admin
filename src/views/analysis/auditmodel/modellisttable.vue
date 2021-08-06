@@ -436,7 +436,7 @@ export default {
       pageQuery: {
         condition: null,
         pageNo: 1,
-        pageSize: 20,
+        pageSize: 50,
       },
       // 人员选择
       dialogFormVisiblePersonTree: false,
@@ -690,6 +690,7 @@ export default {
           }
           }
           if(ifpush==1){
+            this.$refs.modelListTable.selection.length = 0;
             this.$refs.modelListTable.selection.push(this.list[i])
             this.modelTableSelectEvent()
             return
