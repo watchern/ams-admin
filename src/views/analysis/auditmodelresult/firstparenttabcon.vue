@@ -25,6 +25,12 @@
             <!-- 分配到项目 -->
             <el-button
               type="primary"
+              :disabled="buttonIson.AssociatedBtn"
+              class="oper-btn pause-2 btn-width-md"
+              @click="openProjectDialog"
+            />
+            <el-button
+              type="primary"
               @click="openProjectDialog"
               :disabled="buttonIson.AssociatedBtn"
               class="btn-width-md oper-btn link-2"

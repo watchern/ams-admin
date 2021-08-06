@@ -428,6 +428,13 @@
 .oper-btn.pause-1:hover::before{
   content:'暂停'!important;
 }
+
+.oper-btn.pause-2:after{
+  content:'\e607'!important;
+}
+.oper-btn.pause-2:hover::before{
+  content:'停止执行'!important;
+}
 // start
 .oper-btn.start:after{
   content:'\e608'!important;
