@@ -201,6 +201,9 @@ export default {
           } else if (resp.data.records[i].runStatus == 3) {
             this.cardList[1].des[i].iconStatus = "el-icon-success"
             this.cardList[1].des[i].iconColor = "green"
+          } else if (resp.data.records[i].runStatus == 5) {
+            this.cardList[1].des[i].iconStatus = "el-icon-circle-close"
+            this.cardList[1].des[i].iconColor = "#ff0000"
           } else {
             this.cardList[1].des[i].iconStatus = "el-icon-error"
             this.cardList[1].des[i].iconColor = "red"
