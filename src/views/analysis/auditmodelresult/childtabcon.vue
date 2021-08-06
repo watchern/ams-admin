@@ -735,7 +735,7 @@ export default {
       modelChartSetups: [], //用于存储添加的多个图标，用于图表返显功能
       chartConfigs: {
         chart: [],
-        layout: [{ x: 0, y: 0, w: 12, h: 6, i: "0" }],
+        layout: [{ x: 0, y: 0, w: 12, h: 12, i: "0" }],
       }, //用于存储当前模型的图表config   （myeditor组件的chart-config属性）chartConfigs
       afterResult: false, //等result数据赋值完以后再初始化返显的charts组件
       chartLoading: true, //图表加载的loading
@@ -2448,12 +2448,11 @@ export default {
     chartReflexion() {
       this.chartConfigs = {
         chart: [],
-        layout: [{ x: 0, y: 0, w: 12, h: 6, i: "0" }],
+        layout: [{ x: 0, y: 0, w: 12, h: 11, i: "0" }],
       };
       this.modelChartSetups = [];
       if (this.nowtable.runResultTableUuid != undefined) {
         getModelChartSetup(this.nowtable.runTaskRelUuid).then((resp) => {
-          console.log("走这里了0");
           //做修改操作
           if (this.myIndex == 0) {
             this.modelChartSetups = resp.data.modelChartSetups;
