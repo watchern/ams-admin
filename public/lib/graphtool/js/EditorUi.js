@@ -659,7 +659,8 @@ EditorUi = function (editor, container, lightbox) {
 					var nodeSql = "SELECT";
 					for (var i = 0; i < e.data.length; i++) {
 						var columnName = e.data[i].colName;
-						var newColumnName = e.data[i].chnName?e.data[i].chnName:columnName;
+						// var newColumnName = e.data[i].chnName?e.data[i].chnName:columnName;
+						var newColumnName = columnName
 						columnsInfo.push({
 							"columnName": columnName,
 							"columnType": e.data[i].dataType,
