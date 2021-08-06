@@ -140,7 +140,7 @@
                   </div>
                 </div>
             </div>
-            <div id="vertical"> <div /> </div>
+            <div id="vertical"> <i class="el-icon-d-caret skin-textColor"/> </div>
             <input
                 id="personId"
                 type="hidden"
@@ -1074,8 +1074,8 @@
         cursor: pointer;
     }
     #rightPart {
-      /*width: 69.6732%;*/
-        /* width: 84.82%; */
+        /*width: 69.6732%;*/
+        width: 84.82%;
         position: relative;
         padding: 0;
         overflow: hidden;
@@ -1161,7 +1161,13 @@
         z-index: 200;
         top:0;
     }
-
+    #vertical i{
+      position: relative;
+      top: 50%;
+      left: -8px;
+      font-size: 20px;
+      transform:rotate(90deg);
+    }
     .el-aside{
         /* margin-bottom: 10px; */
     }
@@ -1229,7 +1235,7 @@
     .left-part{
         overflow-x: hidden;
         overflow-y: auto;
-        /* width: 14.66666667%; */
+         width: 14.66666667%;
         /*width: 29.6732%;*/
         float: left;
         height: 100%;

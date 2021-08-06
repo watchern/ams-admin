@@ -81,8 +81,4 @@ export default {
 };
 </script>
 <style lang="scss">
-.zdytabledata .el-tabs__content {
-  max-height: 550px;
-  overflow: scroll;
-}
 </style>

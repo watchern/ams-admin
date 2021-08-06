@@ -799,13 +799,13 @@ export default {
   previous: '以前的',
   loadingOoo: '加载中...',
   // Row:"行",
-  // 'Row Groups':"行分组",
+  rowGroups: '行分组',
   // for set filter
   selectAll: '全部选择',
   searchOoo: '搜索...',
   blanks: '空',
-  Column:"列",
-  labels:"标签",
+  Column: '列',
+  labels: '标签',
   // for number filter and text filter
   filterOoo: '过滤',
   applyFilter: '过滤中...',
@@ -831,14 +831,14 @@ export default {
   columns: '列',
   filters: '过滤器',
   rowGroupColumns: '行列组',
-  // rowGroupColumnsEmptyMessage: '行列组为空',
+  rowGroupColumnsEmptyMessage: '拖到这里来设置行列组',
   valueColumns: '列值',
   pivotMode: '透视模式',
-  // groups: '分组',
+  groups: '行列组',
   values: '值',
-  // pivots: '中心点',
-  valueColumnsEmptyMessage: '列值为空',
-  // pivotColumnsEmptyMessage: '中心点为空',
+  pivots: '列标签',
+  valueColumnsEmptyMessage: '拖到这里来进行聚合',
+  pivotColumnsEmptyMessage: '拖到这里来设置列标签',
   toolPanelButton: '工具按钮',
   // other
   noRowsToShow: '暂时没有要展示的数据',
@@ -1518,8 +1518,14 @@ export default {
         // }
         let _this = this
         setTimeout(function(){
-          for(let i = 0;i< col.length;i++){
-            col[i].filter = 'agTextColumnFilter'
+          for(let i = 0;i<col.length;i++){
+            if (_this.result.columnType[i] == 'varchar'){
+              col[i].filter = 'agTextColumnFilter'
+            } else if (_this.result.columnType[i] == 'number' || _this.result.columnType[i] == 'time' || _this.result.columnType[i] == 'float') {
+              col[i].filter = 'agNumberColumnFilter'
+            } else {
+              col[i].filter = 'agTextColumnFilter'
+            }
           }
           _this.columnDefs = col;
           _this.rowData = da;
@@ -1749,7 +1755,13 @@ export default {
                     this.rowData = rowData;
                   }
                   for(let i = 0;i<col.length;i++){
-                    col[i].filter = 'agTextColumnFilter'
+                    if (this.result.columnType[i] == 'varchar'){
+                      col[i].filter = 'agTextColumnFilter'
+                    } else if (this.result.columnType[i] == 'number' || this.result.columnType[i] == 'time' || this.result.columnType[i] == 'float') {
+                      col[i].filter = 'agNumberColumnFilter'
+                    } else {
+                      col[i].filter = 'agTextColumnFilter'
+                    }
                   }
                   this.columnDefs = col;
                   this.afterResult = true;
@@ -1899,7 +1911,13 @@ export default {
               rowData.push(this.nextValue.result[k]);
             }
             for(let i = 0;i<col.length;i++){
-              col[i].filter = 'agTextColumnFilter'
+              if (this.result.columnType[i] == 'varchar'){
+                col[i].filter = 'agTextColumnFilter'
+              } else if (this.result.columnType[i] == 'number' || this.result.columnType[i] == 'time' || this.result.columnType[i] == 'float') {
+                col[i].filter = 'agNumberColumnFilter'
+              } else {
+                col[i].filter = 'agTextColumnFilter'
+              }
             }
             this.columnDefs = col;
             this.afterResult = true;
