@@ -3,13 +3,7 @@
     :data="tableData"
     height="400px"
     style="width: 100%">
-    <div v-for="(value,i) in columnData">
-      <el-table-column
-        :prop="value.columnName"
-        :label="value.columnName"
-        width="200">
-      </el-table-column>
-    </div>
+      <el-table-column v-for="(value, index) in columnData" :key="index" :label="value.columnName" :prop="value.columnName" />
   </el-table>
 </template>
 <script>
