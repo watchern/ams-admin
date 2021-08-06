@@ -13,11 +13,7 @@
           </el-select>
         </el-col>
       </el-row> -->
-      <el-row style="margin-top:20px;height: 100%;">
-        <el-col style="height:100%">
-          <dataTree v-if="isTreeShow" ref="dataTree" :data-user-id="directyDataUserId" :scene-code="directySceneCode" @node-click="nodeclick" />
-        </el-col>
-      </el-row>
+      <dataTree v-if="isTreeShow" ref="dataTree" :data-user-id="directyDataUserId" :scene-code="directySceneCode" @node-click="nodeclick" />
     </div>
     <div class="divContent">
       <BaseDirectoryList ref="listData" :data-user-id="directyDataUserId" :scene-code="directySceneCode" @append-node="appendnode" @remove="remove" @refresh="refresh" />
@@ -90,12 +86,12 @@ export default {
 
 <style scoped>
 .tree {
-  min-width: 16%;
+  width: 16%;
   margin-left: 1%;
   height: 100%;
 }
 .divContent {
-  min-width: 75%;
+  width: 83%;
 }
 .agreeicon0 {
   display: inline-block;

@@ -735,7 +735,7 @@ export default {
       modelChartSetups: [], //用于存储添加的多个图标，用于图表返显功能
       chartConfigs: {
         chart: [],
-        layout: [{ x: 0, y: 0, w: 12, h: 6, i: "0" }],
+        layout: [{ x: 0, y: 0, w: 12, h: 12, i: "0" }],
       }, //用于存储当前模型的图表config   （myeditor组件的chart-config属性）chartConfigs
       afterResult: false, //等result数据赋值完以后再初始化返显的charts组件
       chartLoading: true, //图表加载的loading
@@ -764,6 +764,10 @@ export default {
         flex: 1,
         minWidth: 150,
         resizable: true,
+        enableValue: true,
+        enableRowGroup: true,
+        enablePivot: true,
+        sortable: true,
         filter: true,
       },
       sideBar :{
@@ -784,7 +788,7 @@ export default {
           },
         ],
         position: 'right',
-        defaultToolPanel: 'columns'
+        defaultToolPanel: 'filters'
       },
       modules: AllModules,
       localeText:{
@@ -830,15 +834,15 @@ export default {
   // tool panel
   columns: '列',
   filters: '过滤器',
-  rowGroupColumns: '行列组',
-  rowGroupColumnsEmptyMessage: '拖到这里来设置行列组',
+  rowGroupColumns: '行分组',
+  rowGroupColumnsEmptyMessage: '拖拽设置行分组',
   valueColumns: '列值',
   pivotMode: '透视模式',
   groups: '行列组',
   values: '值',
   pivots: '列标签',
-  valueColumnsEmptyMessage: '拖到这里来进行聚合',
-  pivotColumnsEmptyMessage: '拖到这里来设置列标签',
+  valueColumnsEmptyMessage: '拖拽进行聚合',
+  pivotColumnsEmptyMessage: '拖拽设置列标签',
   toolPanelButton: '工具按钮',
   // other
   noRowsToShow: '暂时没有要展示的数据',
@@ -2448,12 +2452,11 @@ export default {
     chartReflexion() {
       this.chartConfigs = {
         chart: [],
-        layout: [{ x: 0, y: 0, w: 12, h: 6, i: "0" }],
+        layout: [{ x: 0, y: 0, w: 12, h: 11, i: "0" }],
       };
       this.modelChartSetups = [];
       if (this.nowtable.runResultTableUuid != undefined) {
         getModelChartSetup(this.nowtable.runTaskRelUuid).then((resp) => {
-          console.log("走这里了0");
           //做修改操作
           if (this.myIndex == 0) {
             this.modelChartSetups = resp.data.modelChartSetups;
