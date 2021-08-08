@@ -1568,12 +1568,15 @@ export default {
               case "INTEGER":
               case "FLOAT":
               case "DOUBLE":
-                col[i].filter = 'agNumberColumnFilter'
+                col[i].filter = 'agNumberColumnFilter';
+                break;
               case "DATE":
               case "TIMESTAMP":
-                col[i].filter = 'agDateColumnFilter'
+                col[i].filter = 'agDateColumnFilter';
+                break;
               default:
-                col[i].filter = 'agTextColumnFilter'
+                col[i].filter = 'agTextColumnFilter';
+                break;
             }
           }
           _this.columnDefs = col;
@@ -1809,8 +1812,8 @@ export default {
                   // for (let i = 0; i < col.length; i++) {
                   //   // console.log(_this.queryData.columnList[i]||0)
                   //     col[i].filter = "agTextColumnFilter";
-                  for(let i = 0;i<col.length;i++){
-                    var colType0 = this.result.columnType[i];
+                  for (let i = 0; i < col.length; i++) {
+                    let colType0 = this.result.columnType[i];
                     colType0 = colType0 ? "": colType0.toUpperCase();
                     switch (colType0) {
                       case "NUMBER":
@@ -1819,11 +1822,15 @@ export default {
                       case "FLOAT":
                       case "DOUBLE":
                         col[i].filter = 'agNumberColumnFilter'
+                        break;
                       case "DATE":
                       case "TIMESTAMP":
                         col[i].filter = 'agDateColumnFilter'
+                        break;
                       default:
                         col[i].filter = 'agTextColumnFilter'
+                        break;
+
                     }
                     // if (this.result.columnType[i] == 'varchar'){
                     //   col[i].filter = 'agTextColumnFilter'
@@ -1999,12 +2006,15 @@ export default {
                 case "INTEGER":
                 case "FLOAT":
                 case "DOUBLE":
-                  col[i].filter = 'agNumberColumnFilter'
+                  col[i].filter = 'agNumberColumnFilter';
+                  break;
                 case "DATE":
                 case "TIMESTAMP":
-                  col[i].filter = 'agDateColumnFilter'
+                  col[i].filter = 'agDateColumnFilter';
+                  break;
                 default:
-                  col[i].filter = 'agTextColumnFilter'
+                  col[i].filter = 'agTextColumnFilter';
+                  break;
               }
               // if (this.result.columnType[i] == 'varchar'){
               //   col[i].filter = 'agTextColumnFilter'
