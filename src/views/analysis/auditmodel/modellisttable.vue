@@ -5,8 +5,9 @@
       v-model="editableTabsValue"
       closable
       @tab-remove="removeTab"
+      style="height: 100%"
     >
-      <el-tab-pane label="模型列表" name="modelList">
+      <el-tab-pane label="模型列表" name="modelList" style="height: 100%">
         <div class="filter-container">
           <QueryField
             ref="queryfield"
@@ -118,7 +119,7 @@
           :key="tableKey"
           ref="modelListTable"
           v-loading="listLoading"
-          style="min-height: 450px; overflow-y: scroll"
+          style="height: calc(100% - 200px); overflow-y: scroll"
           :data="list"
           border
           fit
@@ -1604,5 +1605,6 @@ export default {
 }
 >>> .el-tabs__content {
   overflow: visible;
+  height: 100%;
 }
 </style>

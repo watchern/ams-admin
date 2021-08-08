@@ -20,7 +20,7 @@
       border
       fit
       highlight-current-row
-      style="width: 100%;height:500px;overflow: auto;"
+      style="width: 100%;height:calc(100% - 140px);overflow: auto;"
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
@@ -152,7 +152,12 @@ export default {
   methods: {
     getList(query) {
       this.listLoading = true
+      if (query == null) {
+        query = new Object()
+      }
+      query.tblType='T'
       if (query) this.pageQuery.condition = query
+
       listByPage(this.pageQuery).then(resp => {
         this.total = resp.data.total
         this.list = resp.data.records

@@ -737,7 +737,7 @@ export default {
       modelChartSetups: [], //用于存储添加的多个图标，用于图表返显功能
       chartConfigs: {
         chart: [],
-        layout: [{ x: 0, y: 0, w: 12, h: 6, i: "0" }],
+        layout: [{ x: 0, y: 0, w: 12, h: 12, i: "0" }],
       }, //用于存储当前模型的图表config   （myeditor组件的chart-config属性）chartConfigs
       afterResult: false, //等result数据赋值完以后再初始化返显的charts组件
       chartLoading: true, //图表加载的loading
@@ -766,6 +766,10 @@ export default {
         flex: 1,
         minWidth: 150,
         resizable: true,
+        enableValue: true,
+        enableRowGroup: true,
+        enablePivot: true,
+        sortable: true,
         filter: true,
       },
       sideBar: {
@@ -785,101 +789,101 @@ export default {
             toolPanel: "agFiltersToolPanel",
           },
         ],
-        position: "right",
-        defaultToolPanel: "columns",
+        position: 'right',
+        defaultToolPanel: 'filters'
       },
       modules: AllModules,
-      localeText: {
-        // for filter panel
-        page: "页",
-        more: "更多",
-        to: "到",
-        /* of: 'daOf', */
-        next: "下一页",
-        last: "最后",
-        first: "第一",
-        previous: "以前的",
-        loadingOoo: "加载中...",
-        // Row:"行",
-        // 'Row Groups':"行分组",
-        // for set filter
-        selectAll: "全部选择",
-        searchOoo: "搜索...",
-        blanks: "空",
-        Column: "列",
-        labels: "标签",
-        // for number filter and text filter
-        filterOoo: "过滤",
-        applyFilter: "过滤中...",
-        equals: "等于",
-        notEqual: "不等于",
-        // for number filter
-        lessThan: "少于",
-        greaterThan: "多于",
-        lessThanOrEqual: "小于等于",
-        greaterThanOrEqual: "大于等于",
-        inRange: "在范围内",
-        // for text filter
-        contains: "包含",
-        notContains: "不包含",
-        startsWith: "开始",
-        endsWith: "结束",
-        // filter conditions
-        andCondition: "并且",
-        orCondition: "或者",
-        // the header of the default group column
-        // group: '分组',
-        // tool panel
-        columns: "列",
-        filters: "过滤器",
-        rowGroupColumns: "行列组",
-        // rowGroupColumnsEmptyMessage: '行列组为空',
-        valueColumns: "列值",
-        pivotMode: "透视模式",
-        // groups: '分组',
-        values: "值",
-        // pivots: '中心点',
-        valueColumnsEmptyMessage: "列值为空",
-        // pivotColumnsEmptyMessage: '中心点为空',
-        toolPanelButton: "工具按钮",
-        // other
-        noRowsToShow: "暂时没有要展示的数据",
-        // enterprise menu
-        pinColumn: "列位置调整",
-        valueAggregation: "聚合值",
-        autosizeThiscolumn: "自动调整此列大小",
-        autosizeAllColumns: "自动调整所有列的大小",
-        groupBy: "分组",
-        ungroupBy: "取消分组",
-        resetColumns: "重置列",
-        expandAll: "展开所有",
-        collapseAll: "关闭所有",
-        toolPanel: "工具",
-        export: "导出",
-        csvExport: "CSV 导出",
-        excelExport: "Excel 导出(.xlsx)",
-        excelXmlExport: "Excel 导出(.xml)",
-        // enterprise menu pinning
-        PinColumn: "固定",
-        pinLeft: "居左",
-        pinRight: "居右",
-        noPin: "默认",
-        // enterprise menu aggregation and status bar
-        sum: "合计",
-        min: "最小值",
-        max: "最大值",
-        /* none: 'laNone', */
-        count: "计数",
-        average: "平均值",
-        avg: "平均值",
-        // standard menu
-        copy: "复制",
-        copyWithHeaders: "携表头复制",
-        ctrlC: "ctrl-C",
-        paste: "粘贴",
-        ctrlV: "ctrl-V",
-      },
-      frc: { "ag-cell": AgCell },
+      localeText:{
+  // for filter panel
+  page: '页',
+  more: '更多',
+  to: '到',
+  /* of: 'daOf', */
+  next: '下一页',
+  last: '最后',
+  first: '第一',
+  previous: '以前的',
+  loadingOoo: '加载中...',
+  // Row:"行",
+  rowGroups: '行分组',
+  // for set filter
+  selectAll: '全部选择',
+  searchOoo: '搜索...',
+  blanks: '空',
+  Column: '列',
+  labels: '标签',
+  // for number filter and text filter
+  filterOoo: '过滤',
+  applyFilter: '过滤中...',
+  equals: '等于',
+  notEqual: '不等于',
+  // for number filter
+  lessThan: '少于',
+  greaterThan: '多于',
+  lessThanOrEqual: '小于等于',
+  greaterThanOrEqual: '大于等于',
+  inRange: '在范围内',
+  // for text filter
+  contains: '包含',
+  notContains: '不包含',
+  startsWith: '开始',
+  endsWith: '结束',
+  // filter conditions
+  andCondition: '并且',
+  orCondition: '或者',
+  // the header of the default group column
+  // group: '分组',
+  // tool panel
+  columns: '列',
+  filters: '过滤器',
+  rowGroupColumns: '行分组',
+  rowGroupColumnsEmptyMessage: '拖拽设置行分组',
+  valueColumns: '列值',
+  pivotMode: '透视模式',
+  groups: '行列组',
+  values: '值',
+  pivots: '列标签',
+  valueColumnsEmptyMessage: '拖拽进行聚合',
+  pivotColumnsEmptyMessage: '拖拽设置列标签',
+  toolPanelButton: '工具按钮',
+  // other
+  noRowsToShow: '暂时没有要展示的数据',
+  // enterprise menu
+  pinColumn: '列位置调整',
+  valueAggregation: '聚合值',
+  autosizeThiscolumn: '自动调整此列大小',
+  autosizeAllColumns: '自动调整所有列的大小',
+  groupBy: '分组',
+  ungroupBy: '取消分组',
+  resetColumns: '重置列',
+  expandAll: '展开所有',
+  collapseAll: '关闭所有',
+  toolPanel: '工具',
+  export: '导出',
+  csvExport: 'CSV 导出',
+  excelExport: 'Excel 导出(.xlsx)',
+  excelXmlExport: 'Excel 导出(.xml)',
+  // enterprise menu pinning
+  PinColumn:"固定",
+  pinLeft: '居左',
+  pinRight: '居右',
+  noPin: '默认',
+  // enterprise menu aggregation and status bar
+  sum: '合计',
+  min: '最小值',
+  max: '最大值',
+  /* none: 'laNone', */
+  count: '计数',
+  average: '平均值',
+  avg : '平均值',
+  // standard menu
+  copy: '复制',
+  copyWithHeaders: '携表头复制',
+  ctrlC: 'ctrl-C',
+  paste: '粘贴',
+  ctrlV: 'ctrl-V'
+},
+      frc: {'ag-cell': AgCell},
       componentParent: null,
       rotateConfig: null,
       rotateConfigs: [
@@ -1534,25 +1538,42 @@ export default {
         // if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
         //   this.gridApi.closeToolPanel()
         // }
-        let _this = this;
-        setTimeout(function () {
-          for (let i = 0; i < col.length; i++) {
-            let str = _this.queryData.columnList[i].columnType;
-            if (
-              str.toUpperCase().indexOf("VARCHAR") != -1 ||
-              str.toUpperCase().indexOf("CHAR") != -1
-            ) {
-              col[i].filter = "agTextColumnFilter";
-            } else if (
-              str.toUpperCase().indexOf("NUMBER") != -1 ||
-              str.toUpperCase().indexOf("INT") != -1 ||
-              str.toUpperCase().indexOf("DATE") != -1 ||
-              str.toUpperCase().indexOf("FLOAT") != -1 ||
-              str.toUpperCase().indexOf("DOUBLE") != -1
-            ) {
-              col[i].filter = "agNumberColumnFilter";
-            } else {
-              col[i].filter = "agTextColumnFilter";
+        // let _this = this;
+        // setTimeout(function () {
+        //   for (let i = 0; i < col.length; i++) {
+        //     let str = _this.queryData.columnList[i].columnType;
+        //     if (
+        //       str.toUpperCase().indexOf("VARCHAR") != -1 ||
+        //       str.toUpperCase().indexOf("CHAR") != -1
+        //     ) {
+        //       col[i].filter = "agTextColumnFilter";
+        //     } else if (
+        //       str.toUpperCase().indexOf("NUMBER") != -1 ||
+        //       str.toUpperCase().indexOf("INT") != -1 ||
+        //       str.toUpperCase().indexOf("DATE") != -1 ||
+        //       str.toUpperCase().indexOf("FLOAT") != -1 ||
+        //       str.toUpperCase().indexOf("DOUBLE") != -1
+        //     ) {
+        //       col[i].filter = "agNumberColumnFilter";
+        //     } else {
+        //       col[i].filter = "agTextColumnFilter";
+        let _this = this
+        setTimeout(function(){
+          for(let i = 0;i<col.length;i++){
+            var colType0 = _this.result.columnType[i];
+            colType0 = colType0 ? "": colType0.toUpperCase();
+            switch (colType0) {
+              case "NUMBER":
+              case "INT":
+              case "INTEGER":
+              case "FLOAT":
+              case "DOUBLE":
+                col[i].filter = 'agNumberColumnFilter'
+              case "DATE":
+              case "TIMESTAMP":
+                col[i].filter = 'agDateColumnFilter'
+              default:
+                col[i].filter = 'agTextColumnFilter'
             }
           }
           _this.columnDefs = col;
@@ -1784,10 +1805,33 @@ export default {
                     }
                     this.rowData = rowData;
                   }
-                  let _this = this
-                  for (let i = 0; i < col.length; i++) {
-                    // console.log(_this.queryData.columnList[i]||0) 
-                      col[i].filter = "agTextColumnFilter";
+                  // let _this = this
+                  // for (let i = 0; i < col.length; i++) {
+                  //   // console.log(_this.queryData.columnList[i]||0)
+                  //     col[i].filter = "agTextColumnFilter";
+                  for(let i = 0;i<col.length;i++){
+                    var colType0 = this.result.columnType[i];
+                    colType0 = colType0 ? "": colType0.toUpperCase();
+                    switch (colType0) {
+                      case "NUMBER":
+                      case "INT":
+                      case "INTEGER":
+                      case "FLOAT":
+                      case "DOUBLE":
+                        col[i].filter = 'agNumberColumnFilter'
+                      case "DATE":
+                      case "TIMESTAMP":
+                        col[i].filter = 'agDateColumnFilter'
+                      default:
+                        col[i].filter = 'agTextColumnFilter'
+                    }
+                    // if (this.result.columnType[i] == 'varchar'){
+                    //   col[i].filter = 'agTextColumnFilter'
+                    // } else if (this.result.columnType[i] == 'number' || this.result.columnType[i] == 'time' || this.result.columnType[i] == 'float') {
+                    //   col[i].filter = 'agNumberColumnFilter'
+                    // } else {
+                    //   col[i].filter = 'agTextColumnFilter'
+                    // }
                   }
                   this.columnDefs = col;
                   this.afterResult = true;
@@ -1941,10 +1985,34 @@ export default {
             for (var k = 0; k < this.nextValue.result.length; k++) {
               rowData.push(this.nextValue.result[k]);
             }
-            let _this = this
-            for (let i = 0; i < col.length; i++) {
-                // console.log(_this.queryData.columnList[i]||1)
-                col[i].filter = "agTextColumnFilter";
+            // let _this = this
+            // for (let i = 0; i < col.length; i++) {
+            //     // console.log(_this.queryData.columnList[i]||1)
+            //     col[i].filter = "agTextColumnFilter";
+            for(let i = 0;i<col.length;i++){
+
+              var colType0 = this.result.columnType[i];
+              colType0 = colType0 ? "": colType0.toUpperCase();
+              switch (colType0) {
+                case "NUMBER":
+                case "INT":
+                case "INTEGER":
+                case "FLOAT":
+                case "DOUBLE":
+                  col[i].filter = 'agNumberColumnFilter'
+                case "DATE":
+                case "TIMESTAMP":
+                  col[i].filter = 'agDateColumnFilter'
+                default:
+                  col[i].filter = 'agTextColumnFilter'
+              }
+              // if (this.result.columnType[i] == 'varchar'){
+              //   col[i].filter = 'agTextColumnFilter'
+              // } else if (this.result.columnType[i] == 'number' || this.result.columnType[i] == 'time' || this.result.columnType[i] == 'float') {
+              //   col[i].filter = 'agNumberColumnFilter'
+              // } else {
+              //   col[i].filter = 'agTextColumnFilter'
+              // }
             }
             console.log(col)
             this.columnDefs = col;
@@ -2474,12 +2542,11 @@ export default {
     chartReflexion() {
       this.chartConfigs = {
         chart: [],
-        layout: [{ x: 0, y: 0, w: 12, h: 6, i: "0" }],
+        layout: [{ x: 0, y: 0, w: 12, h: 11, i: "0" }],
       };
       this.modelChartSetups = [];
       if (this.nowtable.runResultTableUuid != undefined) {
         getModelChartSetup(this.nowtable.runTaskRelUuid).then((resp) => {
-          console.log("走这里了0");
           //做修改操作
           if (this.myIndex == 0) {
             this.modelChartSetups = resp.data.modelChartSetups;

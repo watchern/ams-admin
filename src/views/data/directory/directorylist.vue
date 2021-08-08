@@ -65,7 +65,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn link-3"
+          class="oper-btn link-4"
           :disabled="selections.length !== 1"
           @click="relationTable"
         />
