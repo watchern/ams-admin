@@ -1558,7 +1558,7 @@ export default {
         //     } else {
         //       col[i].filter = "agTextColumnFilter";
         let _this = this
-        setTimeout(function(){
+        setTimeout(function () {
           for(let i = 0;i<col.length;i++){
             var colType0 = _this.result.columnType[i];
             colType0 = colType0 ? "": colType0.toUpperCase();
