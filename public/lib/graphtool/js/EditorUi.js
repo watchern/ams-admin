@@ -659,7 +659,8 @@ EditorUi = function (editor, container, lightbox) {
 					var nodeSql = "SELECT";
 					for (var i = 0; i < e.data.length; i++) {
 						var columnName = e.data[i].colName;
-						var newColumnName = e.data[i].chnName?e.data[i].chnName:columnName;
+						// var newColumnName = e.data[i].chnName?e.data[i].chnName:columnName;
+						var newColumnName = columnName
 						columnsInfo.push({
 							"columnName": columnName,
 							"columnType": e.data[i].dataType,
@@ -668,14 +669,12 @@ EditorUi = function (editor, container, lightbox) {
 							"newColumnName": newColumnName,
 						});
 						if (i === e.data.length - 1) {
-							nodeSql += e.data[i].chnName? " " + columnName + " AS " + e.data[i].chnName:" " + columnName;
+							nodeSql += newColumnName;
 						} else {
-							nodeSql += e.data[i].chnName? " " + columnName + " AS " + e.data[i].chnName + ",":" " + columnName + ",";
+							nodeSql += " " + newColumnName + ",";
 						}
 					}
-					console.log(treeNode)
-					nodeSql += treeNode.english ? " FROM " + treeNode.english+" AS " + treeNode.name : " FROM " + treeNode.name;
-					console.log(nodeSql)
+					nodeSql += " FROM " + treeNode.name;
 					graph.nodeData[cell.id].nodeInfo.nodeSql = nodeSql;
 					graph.nodeData[cell.id].columnsInfo = columnsInfo;
 				}

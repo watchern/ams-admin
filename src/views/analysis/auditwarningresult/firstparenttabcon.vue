@@ -337,6 +337,9 @@ import warningresulttree from "@/views/analysis/auditwarningresult/warningresult
 import personTree from "@/components/publicpersontree/index";
 export default {
   components: { Pagination, QueryField, warningresulttree,personTree },
+  props: {
+    runTaskUuid: String
+  },
   data() {
     return {
       tableKey: "errorUuid",
@@ -386,7 +389,11 @@ export default {
     };
   },
   created() {
-
+    var query = {}
+    if(this.runTaskUuid != null){
+      query = {runTaskUuid: this.runTaskUuid}
+    }
+    this.getLikeList(query)
   },
   methods: {
     determineProject(){

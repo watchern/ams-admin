@@ -25,6 +25,12 @@
             <!-- 分配到项目 -->
             <el-button
               type="primary"
+              :disabled="buttonIson.puseBtn"
+              class="oper-btn pause-2 btn-width-md"
+              @click="runRelTaskPause"
+            />
+            <el-button
+              type="primary"
               @click="openProjectDialog"
               :disabled="buttonIson.AssociatedBtn"
               class="btn-width-md oper-btn link-2"
@@ -124,8 +130,10 @@
             :formatter="readStatusFormatter"
             ><template slot-scope="scope">
               <i
+                :title="readStatusFormatter(scope.row.runStatus)"
                 :class="runStatusIconFormatter(scope.row.runStatus)"
                 :style="runStatusStyleFormatter(scope.row.runStatus)"
+                style="cursor: pointer;"
               ></i> </template
           ></el-table-column>
           <el-table-column
@@ -388,7 +396,8 @@ import {
   getDataAfterResultSpiltToRelateProject,
   addCoverResultRelProject,
   sendToOA,
-  deleteRunResultShareByRunTaskRelUuid
+  deleteRunResultShareByRunTaskRelUuid,
+  pauseRunRelTask
 } from "@/api/analysis/auditmodelresult";
 import { uuid2, addRunTaskAndRunTaskRel } from "@/api/analysis/auditmodel";
 import QueryField from "@/components/public/query-field/index";
@@ -439,6 +448,8 @@ export default {
       selected1: [], // 存储表格中选中的数据
       buttonIson: {
         AssociatedBtn: true,
+        // 取消执行按钮
+        puseBtn: true,
         DisassociateBtn: true,
         deleteBtn: true,
         resultSplitBtn: true,
@@ -606,19 +617,19 @@ export default {
       }
     },
     /**
-     * 格式化已阅状态
-     * @param row 行数据
-     * @param column 列数据
+     * 格式化模型结果状态
+     * @param status
      * @returns {string} 返回格式化后的数据
      */
-    readStatusFormatter(row, column) {
-      var status = row.runStatus;
-      if (status == 1) {
+    readStatusFormatter(status) {
+      if (status == 1 || status == '1') {
         return "待运行";
-      } else if (status == 2) {
+      } else if (status == 2 || status == '2') {
         return "运行中";
-      } else if (status == 3) {
+      } else if (status == 3 || status == '3') {
         return "运行成功";
+      } else if (status == 5 || status == '5') {
+        return "已取消";
       } else {
         return "运行失败";
       }
@@ -633,6 +644,8 @@ export default {
         return "el-icon-loading";
       } else if (status == 3) {
         return "el-icon-success";
+      } else if(status == 5){
+        return "el-icon-circle-close";
       } else {
         return "el-icon-error";
       }
@@ -647,6 +660,8 @@ export default {
         return "el-icon-loading";
       } else if (status == 3) {
         return "color:green";
+      } else if(status == 5){
+        return "color:#ff0000";
       } else {
         return "color:red";
       }
@@ -687,6 +702,7 @@ export default {
     handleSelectionChange(val) {
       if (val.length <= 0) {
         this.buttonIson.AssociatedBtn = true;
+        this.buttonIson.puseBtn = true;
         this.buttonIson.DisassociateBtn = true;
         this.buttonIson.deleteBtn = true;
         this.buttonIson.resultSplitBtn = true;
@@ -699,6 +715,13 @@ export default {
         this.buttonIson.resultSplitBtn = true;
         this.buttonIson.resultShareBtn = false;
         this.buttonIson.exportBtn = false;
+        // 选中的模型执行状态都为执行中按钮可用
+        this.buttonIson.puseBtn = false;
+        val.forEach((r) => {
+          if (r.runStatus !== 2) {
+            this.buttonIson.puseBtn = true
+          }
+        })
       } else if (val.length > 1) {
         this.buttonIson.AssociatedBtn = false;
         this.buttonIson.DisassociateBtn = false;
@@ -706,6 +729,13 @@ export default {
         this.buttonIson.resultSplitBtn = false;
         this.buttonIson.resultShareBtn = false;
         this.buttonIson.exportBtn = false;
+        // 选中的模型执行状态都为执行中按钮可用
+        this.buttonIson.puseBtn = false;
+        val.forEach((r) => {
+          if (r.runStatus !== 2) {
+            this.buttonIson.puseBtn = true
+          }
+        })
       }
       this.share.splice(0, this.share.length);
       this.notShare.splice(0, this.notShare.length);
@@ -783,7 +813,7 @@ export default {
      * 打开确认删除弹出层,当勾选中共享结果为0是打开，非共享不为0时调用
      */
     open() {
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+      this.$confirm("此操作将删除选中的模型结果, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -1071,6 +1101,30 @@ export default {
         })
       });
     },
+    /**
+     * 取消执行
+     */
+    runRelTaskPause(){
+      var ids = []
+      this.selected1.forEach((r) => { ids.push(r.runTaskRelUuid) })
+      this.$confirm('确定要取消执行选中的模型吗？', this.$t('confirm.title'), {
+        confirmButtonText: this.$t('confirm.okBtn'),
+        cancelButtonText: this.$t('confirm.cancelBtn'),
+        type: 'warning'
+      }).then(() => {
+        pauseRunRelTask(ids).then(() => {
+          this.getLikeList();
+          this.$notify({
+            title: this.$t('message.title'),
+            message: "取消执行成功",
+            type: 'success',
+            duration: 2000,
+            position: 'bottom-right'
+          })
+        })
+      })
+    },
+    
     /**
      * 结果共享
      */

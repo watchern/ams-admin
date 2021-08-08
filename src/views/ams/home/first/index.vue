@@ -52,11 +52,11 @@
               <div class="top-card-right">
                 <div class="title">{{ item.title }}</div>
                 <div
-                  v-for="(text, index) in item.des"
-                  :key="index"
+                  v-for="(text, i) in item.des"
+                  :key="i"
                   class="line"
                 >
-                  <span @click="toDoJump(text.index)" class="notes-text">{{
+                  <span @click="toDoJump(text.index,index)" class="notes-text">{{
                     text.text
                   }}</span>
                   <span
@@ -65,6 +65,7 @@
                     class="icon"
                     >{{ text.icon }}</span
                   >
+                  <i v-if="text.iconStatus" :class="text.iconStatus" :style="{ color: text.iconColor }"></i>
                 </div>
                 <span class="card-more" @click="moreJump(item)">更多</span>
               </div>
@@ -96,6 +97,7 @@
 import { getRemindByDescTime, updateRemind } from "@/api/base/base";
 import { getRunTaskRelByPage } from "@/api/analysis/auditmodelresult";
 import toolsTemplateIndex from "@/components/public/base/tools-template-index.vue";
+import dayjs from 'dayjs'
 export default {
   components: {
     toolsTemplateIndex,
@@ -180,7 +182,33 @@ export default {
     this.pageQuery.condition = query1;
     getRunTaskRelByPage(this.pageQuery, this.resultSpiltObjects).then(
       (resp) => {
-        this.warningMatters = resp.data.records;
+        // this.warningMatters = resp.data.records;
+        this.cardList[1].des = [];
+        for (let i = 0; i < 5; i++) {
+          this.cardList[1].des.push({
+            text: resp.data.records[i].model.modelName + '—' + dayjs(resp.data.records[i].runStartTime).format('YYYY-MM-DD HH:mm:ss'),
+            url: `/analysis/warningresult/${resp.data.records[i].runTaskUuid}`,
+            content: resp.data.records[i].remindContent,
+            index: i,
+            Uuid: resp.data.records[i].runTaskUuid,
+          });
+          if (resp.data.records[i].runStatus == 1) {
+            this.cardList[1].des[i].iconStatus = "el-icon-video-play"
+            this.cardList[1].des[i].iconColor = "blue"
+          } else if (resp.data.records[i].runStatus == 2) {
+            this.cardList[1].des[i].iconStatus = "el-icon-loading"
+            this.cardList[1].des[i].iconColor = "#666666"
+          } else if (resp.data.records[i].runStatus == 3) {
+            this.cardList[1].des[i].iconStatus = "el-icon-success"
+            this.cardList[1].des[i].iconColor = "green"
+          } else if (resp.data.records[i].runStatus == 5) {
+            this.cardList[1].des[i].iconStatus = "el-icon-circle-close"
+            this.cardList[1].des[i].iconColor = "#ff0000"
+          } else {
+            this.cardList[1].des[i].iconStatus = "el-icon-error"
+            this.cardList[1].des[i].iconColor = "red"
+          }
+        }
       }
     );
     this.gettodowork()
@@ -198,19 +226,25 @@ export default {
         val: item.val,
       });
     },
-    toDoJump(data) {
-      if (this.cardList[0].des[data].url == null) {
-        this.dialogFormVisible = true;
-        this.PopUpContent = [];
-        this.PopUpContent.push({
-          text: this.cardList[0].des[data].text,
-          content: this.cardList[0].des[data].content,
-        });
-        location.reload();
+    toDoJump(data,index) {
+      if (index == 0){
+        if (this.cardList[0].des[data].url == null) {
+          this.dialogFormVisible = true;
+          this.PopUpContent = [];
+          this.PopUpContent.push({
+            text: this.cardList[0].des[data].text,
+            content: this.cardList[0].des[data].content,
+          });
+          location.reload();
+        } else {
+          this.$router.push({ path: this.cardList[0].des[data].url });
+        }
+        updateRemind(this.cardList[0].des[data].Uuid);
       } else {
-        this.$router.push({ path: this.cardList[0].des[data].url });
+        console.log(this.cardList[1].des[data].url)
+        this.$router.push({ path: this.cardList[1].des[data].url });
       }
-      updateRemind(this.cardList[0].des[data].Uuid);
+      
     },
     gettodowork() {
       this.$axios
@@ -252,7 +286,7 @@ export default {
           type: "active",
           val: {
             name: "审计预警",
-            path: "/analysis/auditwarning",
+            path: "/analysis/warningresult",
           },
         });
       }

@@ -1,0 +1,9 @@
+[
+    {
+        "id": "C9782EBC47000001245E140E6CC0E390",
+        "name": "去重_结果表",
+        "resultTableName": "G_T_TEMP_202108061449034",
+        "isRoleTable": false,
+        "optType": "delRepeat"
+    }
+]
