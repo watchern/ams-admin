@@ -5,7 +5,6 @@
         ref="dataForm"
         :model="temp"
         label-position="right"
-        style="width: 600px; margin-left:50px;"
       >
         <el-form-item label="表名称" prop="tbName">
           <el-input v-model="temp.tbName" readonly />

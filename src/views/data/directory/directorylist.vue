@@ -65,7 +65,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn link-3"
+          class="oper-btn link-4"
           :disabled="selections.length !== 1"
           @click="relationTable"
         />
@@ -100,13 +100,15 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="名称" prop="label" />
+      <el-table-column label="名称" prop="label"/>
+      <el-table-column label="中文名称" prop="title" />
+
       <el-table-column
         label="资源类型"
         :formatter="formatTableType"
         prop="type"
       />
-      <el-table-column prop="createTime" label="创建时间" align="center">
+      <el-table-column prop="createTime" label="创建时间" align="center" width="200">
         <template slot-scope="scope"
           >{{ formatCreateTime(scope.row.extMap.createTime) }}
         </template>

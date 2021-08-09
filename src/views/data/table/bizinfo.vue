@@ -6,7 +6,6 @@
           ref="dataForm"
           :model="temp"
           label-position="right"
-          style="width: 750px;"
         >
           <span class="midText">业务表信息：</span>
           <el-form-item label="汉化名称：" prop="chnName">
@@ -55,7 +54,7 @@
 
 <script>
 import { getTableInfo, saveTableInfo } from '@/api/data/table-info'
-import { listByPage } from '@/api/data/biz-attr'
+import {  } from '@/api/data/biz-attr'
 import SelectTransCode from '@/views/data/table/transcodeselect'
 import { selectById } from '@/api/data/transCode'
 export default {

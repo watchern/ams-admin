@@ -1,7 +1,7 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" style="width:100%;height:100%;">
     <el-input v-model="filterText1" placeholder="输入关键字进行过滤" />
-    <div style="overflow: auto; height: 60vh">
+    <div style="height: calc(100% - 46px);margin-top: 10px;">
       <!-- :default-expand-all="true" 展开全部节点 -->
       <MyElTree
         ref="tree1"
