@@ -95,7 +95,7 @@ export default {
           {
             headerName: '操作时间',
             field: 'opTime',
-            filter: 'agNumberColumnFilter'
+            filter: 'agDateColumnFilter'
           },
           {
             headerName: '操作信息',
