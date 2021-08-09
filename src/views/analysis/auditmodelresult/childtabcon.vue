@@ -1334,25 +1334,14 @@ export default {
             for (var i = 1; i < columnInfo.length; i++) {
               //number,varchar,time,float
               var type = "";
-              if (
-                columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1
-              ) {
+              if (columnInfo[i].columnType.toUpperCase().indexOf("VARCHAR") != -1) {
                 type = "varchar";
-              } else if (
-                columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") !=
-                  -1 ||
-                columnInfo[i].columnType.toUpperCase().indexOf("INT") != -1
-              ) {
+              } else if (columnInfo[i].columnType.toUpperCase().indexOf("NUMBER") !=-1 || columnInfo[i].columnType.toUpperCase().indexOf("INT") != -1) {
                 type = "number";
-              } else if (
-                columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") !=
-                  -1 ||
-                columnInfo[i].columnType.toUpperCase().indexOf("DATE") != -1
-              ) {
+              } else if (columnInfo[i].columnType.toUpperCase().indexOf("TIMESTAMP") != -1 ||
+                columnInfo[i].columnType.toUpperCase().indexOf("DATE") != -1) {
                 type = "time";
-              } else if (
-                columnInfo[i].columnType.toUpperCase().indexOf("FLOAT") != -1
-              ) {
+              } else if (columnInfo[i].columnType.toUpperCase().indexOf("FLOAT") != -1) {
                 type = "float";
               }
               columnType.push(type);
@@ -1374,11 +1363,7 @@ export default {
               if (this.settingInfo != undefined) {
                 for (var i = 0; i < colNames.length; i++) {
                   var rowColom = {};
-                  if (
-                    renderColumns.indexOf(colNames[i].toUpperCase()) != -1 ||
-                    modelResultDetailCol.indexOf(colNames[i].toUpperCase()) !=
-                      -1
-                  ) {
+                  if (renderColumns.indexOf(colNames[i].toUpperCase()) != -1 || modelResultDetailCol.indexOf(colNames[i].toUpperCase()) !=-1) {
                     var thresholdValueRel =
                       renderObject[colNames[i].toUpperCase()];
                     if (onlyFlag == false) {
@@ -1417,16 +1402,8 @@ export default {
                 }
               } else {
                 for (var i = 0; i < colNames.length; i++) {
-                  loop: for (
-                    var j = 0;
-                    j < this.modelOutputColumn.length;
-                    j++
-                  ) {
-                    if (
-                      this.modelOutputColumn[
-                        j
-                      ].outputColumnName.toLowerCase() == colNames[i]
-                    ) {
+                  loop: for (var j = 0;j < this.modelOutputColumn.length;j++) {
+                    if (this.modelOutputColumn[j].outputColumnName.toLowerCase() == colNames[i]) {
                       if (this.modelOutputColumn[j].isShow == 1) {
                         var rowColom = {};
                         if (
@@ -1510,9 +1487,7 @@ export default {
                 for (var j = 0; j < colNames.length; j++) {
                   for (var k = 0; k < this.modelOutputColumn.length; k++) {
                     if (
-                      this.modelOutputColumn[
-                        k
-                      ].outputColumnName.toLowerCase() == colNames[j]
+                      this.modelOutputColumn[k].outputColumnName.toLowerCase() == colNames[j]
                     ) {
                       if (this.modelOutputColumn[k].dataCoding != undefined) {
                         var a = da[i][colNames[j]];
@@ -1650,20 +1625,11 @@ export default {
                   this.modelDetailRelation = resp.data.modelDetailRelation;
                   //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
                   if (this.preLength == this.myIndex + 1) {
-                    for (
-                      var i = 0;
-                      i < resp.data.modelThresholdValues.length;
-                      i++
-                    ) {
+                    for (var i = 0;i < resp.data.modelThresholdValues.length;i++) {
                       if (
-                        modelThresholdValues[i].thresholdValue
-                          .thresholdValueType == 2 &&
-                        renderColumns.indexOf(
-                          modelThresholdValues[i].modelResultColumnName
-                        ) == -1
-                      ) {
-                        renderColumns.push(
-                          modelThresholdValues[i].modelResultColumnName
+                        modelThresholdValues[i].thresholdValue.thresholdValueType == 2 &&
+                        renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName) == -1) {
+                        renderColumns.push(modelThresholdValues[i].modelResultColumnName
                         );
                       }
                     }
@@ -1672,10 +1638,7 @@ export default {
                       i < resp.data.modelThresholdValues.length;
                       i++
                     ) {
-                      if (
-                        modelThresholdValues[i].thresholdValue
-                          .thresholdValueType == 2
-                      ) {
+                      if (modelThresholdValues[i].thresholdValue.thresholdValueType == 2) {
                         if (
                           typeof modelThresholdValues[i].colorInfo === "string"
                         ) {
@@ -1728,19 +1691,10 @@ export default {
                   for (var j = 0; j < this.nextValue.columnNames.length; j++) {
                     var rowColom = {};
                     for (var n = 0; n < modelOutputColumn.length; n++) {
-                      if (
-                        modelOutputColumn[n].outputColumnName ==
-                        this.nextValue.columnNames[j]
-                      ) {
+                      if (modelOutputColumn[n].outputColumnName ==this.nextValue.columnNames[j]) {
                         if (modelOutputColumn[n].isShow == 1) {
                           if (
-                            renderColumns.indexOf(
-                              this.nextValue.columnNames[j].toUpperCase()
-                            ) != -1 ||
-                            modelResultDetailCol.indexOf(
-                              this.nextValue.columnNames[j].toUpperCase()
-                            ) != -1
-                          ) {
+                            renderColumns.indexOf(this.nextValue.columnNames[j].toUpperCase()) != -1 || modelResultDetailCol.indexOf(this.nextValue.columnNames[j].toUpperCase()) != -1) {
                             var thresholdValueRel =
                               renderObject[
                                 this.nextValue.columnNames[j].toUpperCase()
@@ -1782,10 +1736,7 @@ export default {
                           j++
                         ) {
                           for (var k = 0; k < modelOutputColumn.length; k++) {
-                            if (
-                              modelOutputColumn[k].outputColumnName ==
-                              this.nextValue.columnNames[j]
-                            ) {
+                            if (modelOutputColumn[k].outputColumnName ==this.nextValue.columnNames[j]) {
                               if (
                                 modelOutputColumn[k].dataCoding != undefined
                               ) {
