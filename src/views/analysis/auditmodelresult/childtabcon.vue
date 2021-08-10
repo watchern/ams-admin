@@ -1911,7 +1911,6 @@ export default {
                 // console.log(_this.queryData.columnList[i]||1)
                 col[i].filter = "agTextColumnFilter";
             }
-            console.log(col)
             this.columnDefs = col;
             this.afterResult = true;
             if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
