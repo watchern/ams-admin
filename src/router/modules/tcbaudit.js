@@ -67,6 +67,14 @@ const tcbauditRouter = {
         title: '管理建议'
       },
       hidden: true
+    },
+    {
+      path: 'statisticsReport',
+      name: 'statisticsReport',
+      component: () => import('@TCB/views/audit/statisticsReport'),
+      meta: {
+        title: '报表统计'
+      }
     }
     // ,
     // {
