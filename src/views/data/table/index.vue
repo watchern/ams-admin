@@ -78,7 +78,7 @@
           </MyElTree>
         </div>
       </div>
-      <div style="margin-left: 50px; width: 2000px; min-width: 50%; ">
+      <div style="margin-left: 50px;width:100%;">
         <tabledatatabs
           v-if="divInfo"
           ref="tabledatatabs"

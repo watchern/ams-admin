@@ -919,14 +919,14 @@ export function maxOpenOne() {
     $('#iconImg').css('display', 'none')
     $('#iconImg-huifu').css('display', 'block')
     $('#bottomPart').css({ 'position': 'fixed', 'width': max_width + '%', 'left': max_left, 'top': 0, 'height': 100 + '%', 'z-index': 10000 })
-    $('.ag-theme-balham').css('height', 650)
+    // $('.ag-theme-balham').css('height', 650)
     maxormin = false
   } else if (maxormin == false) {
     $('#drag').show(100)
     $('#iconImg').css('display', 'block')
     $('#iconImg-huifu').css('display', 'none')
     $('#bottomPart').css({ 'position': 'static', 'left': 0, 'width': 100 + '%', 'height': '480px', 'z-index': 100 })
-    $('.ag-theme-balham').css('height', 300)
+    // $('.ag-theme-balham').css('height', 300)
     maxormin = true
   }
 }
@@ -1165,7 +1165,7 @@ export function initParamTreeNew() {
   }
   getParamsTree().then(result => {
     if (result.data.isError) {
-      
+
     } else {
       for(let i = 0; i < result.data.paramNode.length;i++) {
         setIcon(result.data.paramNode[i])
@@ -1192,7 +1192,7 @@ function setIcon(treeNode){
         treeNode.isParent = false
       }
       else if(treeNode.type == 'folder'){
-        treeNode.icon = paramPackageIconPath;  
+        treeNode.icon = paramPackageIconPath;
       }
     }
 }
