@@ -1295,10 +1295,7 @@ export default {
             }
           } else {
             const paramObj = [];
-            // console.log(result.data.parammModelRel)
             for (let i = 0; i < result.data.parammModelRel.length; i++) {
-              // console.log("---------------"+i)
-              // console.log(result.data.parammModelRel[i].paramValue)
               if (result.data.parammModelRel[i].paramValue === "") {
                 continue;
               }
@@ -1346,7 +1343,7 @@ export default {
           if (isExistParam) {
             selectObj[0].runModelConfig = obj.runModelConfig;
           }
-          this.addTab(selectObj[0], isExistParam, result.data.executeSQLList);
+          this.addTab(selectObj[0], isExistParam, result.data.executeSQLList,false);
           //界面渲染完成之后开始执行sql,将sql送入调度
           startExecuteSql(result.data)
             .then((result) => {
