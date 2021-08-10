@@ -70,7 +70,7 @@
             <el-dropdown>
               <el-button
                 type="primary"
-                class="oper-btn link-2"
+                class="oper-btn link-2 btn-width-md"
                 :disabled="modelRunResultBtnIson.associatedBtn"
               ></el-button>
               <el-dropdown-menu slot="dropdown">
@@ -235,7 +235,7 @@
                 <el-dropdown>
                   <el-button
                     type="primary"
-                    class="oper-btn link-2"
+                    class="oper-btn link-2 btn-width-md"
                     :disabled="modelRunResultBtnIson.associatedBtn"
                   ></el-button>
                   <el-dropdown-menu slot="dropdown">
@@ -277,6 +277,9 @@
                 >
               </div>
             </div>
+            <!-- useType == 'modelRunResult' && this.modelUuid !== undefined
+                  ? this.renderTable
+                  : undefined -->
             <ag-grid-vue
               v-if="isSee"
               v-loading="isLoading"
@@ -286,11 +289,7 @@
               :row-data="computedRowData"
               rowMultiSelectWithClick="true"
               :enable-col-resize="true"
-              :get-row-style="
-                useType == 'modelRunResult' && this.modelUuid !== undefined
-                  ? this.renderTable
-                  : undefined
-              "
+              :get-row-style="this.renderTableView"
               row-selection="multiple"
               @cellClicked="onCellClicked"
               @gridReady="onGridReady"
@@ -728,6 +727,7 @@ export default {
         disassociateBtn: false,
         modelDetailAssBtn: true,
       },
+      modelThresholdValuesTabView: [], // 模型点击运行表格渲染规则
       dynamicSelect: [], //实时存储多选框勾选中的数据
       chartShowIsSee: false,
       result: {}, //给myeditor传的数据
@@ -1251,11 +1251,7 @@ export default {
             //获取关联对象
             let modelDetailRelation = this.modelObj.modelDetailRelation[i];
             //循环模型关联详细配置
-            for (
-              let j = 0;
-              j < modelDetailRelation.modelDetailConfig.length;
-              j++
-            ) {
+            for (let j = 0; j < modelDetailRelation.modelDetailConfig.length; j++) {
               let modelDetailConfig = modelDetailRelation.modelDetailConfig[j];
               //确保数据不是undefined或null
               if (modelDetailConfig.resultColumn) {
@@ -1275,29 +1271,19 @@ export default {
         } else {
           modelThresholdValues = this.modelObj.modelThresholdValues;
         }
-        //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
+        //循环阈值对象  取出阈值对象里面的列名  用于下遍历处理的时候 作为判断条件
         if (this.modelUuid !== undefined) {
           for (var i = 0; i < modelThresholdValues.length; i++) {
-            if (
-              modelThresholdValues[i].thresholdValue.thresholdValueType == 2 &&
-              renderColumns.indexOf(
-                modelThresholdValues[i].modelResultColumnName
-              ) == -1
-            ) {
-              renderColumns.push(modelThresholdValues[i].modelResultColumnName);
-            }
-          }
-          for (var i = 0; i < modelThresholdValues.length; i++) {
-            if (
-              modelThresholdValues[i].thresholdValue.thresholdValueType == 2
-            ) {
+            if (modelThresholdValues[i].thresholdValue.thresholdValueType == 2) {
+              if ( renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName) == -1) {
+                renderColumns.push(modelThresholdValues[i].modelResultColumnName);
+                }
               if (typeof modelThresholdValues[i].colorInfo === "string") {
                 modelThresholdValues[i].colorInfo = JSON.parse(
                   modelThresholdValues[i].colorInfo
                 );
               }
-              renderObject[modelThresholdValues[i].modelResultColumnName] =
-                modelThresholdValues[i];
+              renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i];
             }
           }
         }
@@ -1571,6 +1557,7 @@ export default {
         var renderColumns = []; //存储需要渲染的列名
         var renderObject = {}; //存储key-value格式对象，key为列名  value为这一列对应的模型阈值关联对象
         var modelThresholdValues = [];
+        var modelThresholdValuesTab = []; //阈值信息
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           //executeSQL.state 0,待执行；1,执行中；2,已完成；3,失败；4,取消；
           if (this.nextValue.executeSQL.state == "2") {
@@ -1624,44 +1611,22 @@ export default {
                 this.modelResultColumnNames = this.nextValue.columnNames;
                 selectModel(this.modelId).then((resp) => {
                   this.modelDetailRelation = resp.data.modelDetailRelation;
-                  //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
+                  modelThresholdValuesTab = resp.data.modelThresholdValues
+                  // 表格渲染规则赋值
+                  this.modelThresholdValuesTabView = resp.data.modelThresholdValues
+                  //循环阈值对象  取出阈值对象里面的列名  用于下边便利处理的时候 作为判断条件
                   if (this.preLength == this.myIndex + 1) {
-                    for (
-                      var i = 0;
-                      i < resp.data.modelThresholdValues.length;
-                      i++
-                    ) {
-                      if (
-                        modelThresholdValues[i].thresholdValue
-                          .thresholdValueType == 2 &&
-                        renderColumns.indexOf(
-                          modelThresholdValues[i].modelResultColumnName
-                        ) == -1
-                      ) {
-                        renderColumns.push(
-                          modelThresholdValues[i].modelResultColumnName
-                        );
-                      }
-                    }
-                    for (
-                      var i = 0;
-                      i < resp.data.modelThresholdValues.length;
-                      i++
-                    ) {
-                      if (
-                        modelThresholdValues[i].thresholdValue
-                          .thresholdValueType == 2
-                      ) {
-                        if (
-                          typeof modelThresholdValues[i].colorInfo === "string"
-                        ) {
-                          modelThresholdValues[i].colorInfo = JSON.parse(
-                            modelThresholdValues[i].colorInfo
+                    for (var i = 0; i < modelThresholdValuesTab.length; i++) {
+                      if (modelThresholdValuesTab[i].thresholdValue.thresholdValueType == 2) {
+                        if (renderColumns.indexOf(modelThresholdValuesTab[i].modelResultColumnName) == -1) {
+                          renderColumns.push(modelThresholdValuesTab[i].modelResultColumnName);
+                        }
+                        if (typeof modelThresholdValuesTab[i].colorInfo === "string") {
+                          modelThresholdValuesTab[i].colorInfo = JSON.parse(
+                            modelThresholdValuesTab[i].colorInfo
                           );
                         }
-                        renderObject[
-                          modelThresholdValues[i].modelResultColumnName
-                        ] = modelThresholdValues[i];
+                        renderObject[modelThresholdValuesTab[i].modelResultColumnName] = modelThresholdValuesTab[i];
                       }
                     }
                   }
@@ -1994,6 +1959,27 @@ export default {
     reSet() {
       this.nowSql = "undefined";
       this.initData("undefined");
+    },
+    // 模型直接点击运行的表格渲染
+    renderTableView(params){
+      // 规则赋值
+      var modelThresholdValues = this.modelThresholdValuesTabView;
+      var thresholdValueRel = {};
+      this.isLoading = false;
+      for (var i = 0; i < modelThresholdValues.length; i++) {
+        thresholdValueRel = modelThresholdValues[i];
+        if (
+          thresholdValueRel &&
+          thresholdValueRel.thresholdValue.thresholdValueType == 1
+        ) {
+          if (typeof modelThresholdValues[i].colorInfo === "string") {
+            let colorInfo = JSON.parse(modelThresholdValues[i].colorInfo);
+            modelThresholdValues[i].colorInfo = colorInfo;
+          }
+          //判断颜色等信息
+          return handleDataSingleValue(params.data, thresholdValueRel);
+        }
+      }
     },
     /**
      * 渲染表格，将颜色渲染上去
