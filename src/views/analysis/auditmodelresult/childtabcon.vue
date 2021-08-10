@@ -1963,10 +1963,23 @@ export default {
       this.nowSql = "undefined";
       this.initData("undefined");
     },
-    // 模型直接点击运行的表格渲染
+    /**
+     * 渲染表格，将颜色渲染上去
+     */
     renderTableView(params){
       // 规则赋值
-      var modelThresholdValues = this.modelThresholdValuesTabView;
+      var modelThresholdValues = [];
+      if (typeof this.settingInfo != 'undefined') {
+        modelThresholdValues.push(
+          JSON.parse(this.settingInfo).thresholdValueRel
+        );
+      } else {
+        // 模型结果查看
+        modelThresholdValues = this.modelObj.modelThresholdValues;
+        // 模型直接点击运行
+        if (typeof this.modelObj.modelThresholdValues === 'undefined')
+        modelThresholdValues = this.modelThresholdValuesTabView
+      }
       var thresholdValueRel = {};
       this.isLoading = false;
       for (var i = 0; i < modelThresholdValues.length; i++) {
