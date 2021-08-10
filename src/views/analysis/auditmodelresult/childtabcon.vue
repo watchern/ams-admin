@@ -1537,6 +1537,10 @@ export default {
               str.toUpperCase().indexOf("DOUBLE") != -1
             ) {
               col[i].filter = "agNumberColumnFilter";
+            } else if (
+              str.toUpperCase().indexOf("DATE") != -1
+            ) {
+              col[i].filter = "agDateColumnFilter";
             } else {
               col[i].filter = "agTextColumnFilter";
             }
