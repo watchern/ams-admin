@@ -1613,7 +1613,7 @@ export default {
                   modelThresholdValuesTab = resp.data.modelThresholdValues
                   // 表格渲染规则赋值
                   this.modelThresholdValuesTabView = resp.data.modelThresholdValues
-                  //循环阈值对象  取出阈值对象里面的列名  用于下边便利处理的时候 作为判断条件
+                  //循环阈值对象  取出阈值对象里面的列名  用于下边遍历处理的时候 作为判断条件
                   if (this.preLength == this.myIndex + 1) {
                     for (var i = 0; i < modelThresholdValuesTab.length; i++) {
                       if (modelThresholdValuesTab[i].thresholdValue.thresholdValueType == 2) {
