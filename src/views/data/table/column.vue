@@ -55,9 +55,7 @@
             <el-input
               v-model="scope.row.colName"
               style="width: 90%"
-              :disabled="
-                openType === 'showTable' || openType === 'tableRegister'
-              "
+              :disabled="openType === 'showTable' || openType === 'tableRegister'"
             />
           </el-tooltip>
         </template>
@@ -70,6 +68,7 @@
             :disabled="openType === 'showTable' || openType === 'tableRegister'"
             filterable
             style="width: 90%"
+            @change="changeDataType(scope.row)"
             placeholder="请选择数据类型"
           >
             <el-option
@@ -90,9 +89,9 @@
         <!--   v-model 需要根据是否是decimal展示长度+精度 用到了双三目，有点难看 -->
           <el-input
             @change="judelength(scope.row)"
-            v-model="scope.row.dataType.trim()==='DECIMAL' ? scope.row.dataLength+(scope.row.colPrecision?','+scope.row.colPrecision:'' ):scope.row.dataLength"
+            v-model="scope.row.dataType.trim()==='DECIMAL' ? scope.row.dataLength+(scope.row.colPrecision?','+scope.row.colPrecision:'' ):scope.row.dataLength "
             style="width: 90%"
-            :disabled="openType === 'showTable' || openType === 'tableRegister'"
+            :disabled="openType === 'showTable' || openType === 'tableRegister' || !scope.row.enableDataLength"
           />
         </template>
       </el-table-column>
@@ -133,12 +132,25 @@ export default {
       oldName: "",
       show: false,
       tempTable: { tableName: "" },
+      currColType: '',
     };
   },
   created() {
     this.initTable(this.tableId);
   },
   methods: {
+    changeDataType(row){
+      switch (row.dataType) {
+        case "CHAR":
+        case "VARCHAR":
+        case "DECIMAL":
+          row.enableDataLength=true;
+          break;
+        default:
+          row.enableDataLength=false;
+          break;
+      }
+    },
     judelength(rowdata) {
       console.log(rowdata);
       let xx = rowdata.dataType.toUpperCase();
@@ -362,6 +374,15 @@ export default {
           if (flag.test(obj.dataLength) && obj.dataLength!='') {
           } else {
             this.$message.error("int类型长度范围:最长11位长度数字");
+            return
+          }
+          break;
+        case "DOUBLE":
+          var flag3 = new RegExp("^[0-9]{1,11}$");
+          if (flag3.test(obj.dataLength) && obj.dataLength!='') {
+          } else {
+            this.$message.error("double类型长度范围:"
+            );
             return
           }
           break;
