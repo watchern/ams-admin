@@ -8,7 +8,7 @@
           </div>
           <div class="top-card-right">
             <div class="title skin-wordColor">待办事项</div>
-            <div class="des" v-for="(item,index) in TopTodo">
+            <div class="des" v-for="(item,index) in TopTodo" v-if="item<5">
               <span class="skin-wordColor">{{item.name}}</span>
               <span v-if="item.icon" :style="{color:item.iconColor}" class="icon">{{ item.icon }}</span>
             </div>
