@@ -116,8 +116,10 @@
             :formatter="readStatusFormatter"
             ><template slot-scope="scope">
               <i
+                :title="readStatusFormatter(scope.row.runStatus)"
                 :class="runStatusIconFormatter(scope.row.runStatus)"
                 :style="runStatusStyleFormatter(scope.row.runStatus)"
+                style="cursor: pointer;"
               ></i> </template
           ></el-table-column>
           <el-table-column
@@ -598,19 +600,19 @@ export default {
       }
     },
     /**
-     * 格式化已阅状态
-     * @param row 行数据
-     * @param column 列数据
+     * 格式化模型结果状态
+     * @param status
      * @returns {string} 返回格式化后的数据
      */
-    readStatusFormatter(row, column) {
-      var status = row.runStatus;
-      if (status == 1) {
+    readStatusFormatter(status) {
+      if (status == 1 || status == '1') {
         return "待运行";
-      } else if (status == 2) {
+      } else if (status == 2 || status == '2') {
         return "运行中";
-      } else if (status == 3) {
+      } else if (status == 3 || status == '3') {
         return "运行成功";
+      } else if (status == 5 || status == '5') {
+        return "已取消";
       } else {
         return "运行失败";
       }
@@ -625,6 +627,8 @@ export default {
         return "el-icon-loading";
       } else if (status == 3) {
         return "el-icon-success";
+      } else if(status == 5){
+        return "el-icon-circle-close";
       } else {
         return "el-icon-error";
       }
@@ -639,6 +643,8 @@ export default {
         return "el-icon-loading";
       } else if (status == 3) {
         return "color:green";
+      } else if(status == 5){
+        return "color:#ff0000";
       } else {
         return "color:red";
       }
@@ -775,7 +781,7 @@ export default {
      * 打开确认删除弹出层,当勾选中共享结果为0是打开，非共享不为0时调用
      */
     open() {
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+      this.$confirm("此操作将删除选中的模型结果, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
