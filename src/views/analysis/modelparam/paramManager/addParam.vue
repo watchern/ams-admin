@@ -50,7 +50,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="输入方式" prop="dataType">
+            <el-form-item label="输入方式" prop="inputType">
               <el-select
                 v-model="form.inputType"
                 @change="changeInputType"
@@ -341,6 +341,9 @@ export default {
         ],
         dataType: [
           { required: true, message: "请输入数据类型", trigger: "blur" },
+        ],
+        inputType: [
+          { required: true, message: "请输入输入方式", trigger: "blur" },
         ],
         example: [
           { required: true, message: "请输入示例", trigger: "blur" },
