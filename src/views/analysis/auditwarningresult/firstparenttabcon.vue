@@ -37,12 +37,12 @@
           :disabled="buttonIson.disassociateBtn"
           class="oper-btn move"
           ></el-button>
-        <el-button
+<!--        <el-button
           type="primary"
           :disabled="buttonIson.resultSplitBtn"
           class="oper-btn split-2"
           @click="openResultSplitDialog"
-        ></el-button>
+        ></el-button>-->
         <el-button
           type="primary"
           @click="exportExcel"
