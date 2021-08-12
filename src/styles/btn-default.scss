@@ -315,7 +315,7 @@
 .oper-btn.search-1:hover::before{
   content:'预览数据'!important;
 }
-// move
+// move 移除项目分配
 .oper-btn.move:after{
   content:'\e672'!important;
 }
@@ -435,6 +435,7 @@
 .oper-btn.pause-2:hover::before{
   content:'取消执行'!important;
 }
+
 // start
 .oper-btn.start:after{
   content:'\e608'!important;

@@ -22,24 +22,25 @@
                       :disabled="buttonIson.associatedBtn"
                       class="oper-btn link-2"
               ></el-button> -->
-            <!-- 分配到项目 -->
             <el-button
               type="primary"
               :disabled="buttonIson.puseBtn"
               class="oper-btn pause-2 btn-width-md"
               @click="runRelTaskPause"
             />
+            <!-- 分配到项目 -->
             <el-button
               type="primary"
               @click="openProjectDialog"
               :disabled="buttonIson.associatedBtn"
               class="btn-width-md oper-btn link-2"
             ></el-button>
+            <!-- 移除项目分配 -->
             <el-button
               type="primary"
               @click="removeRelationProject"
               :disabled="buttonIson.disassociateBtn"
-              class="btn-width-md oper-btn link-2"
+              class="btn-width-max oper-btn move"
             ></el-button>
             <!--<el-dropdown>
 
@@ -71,6 +72,8 @@
 <!--              class="oper-btn move"-->
 <!--              title="移除分配项目"-->
 <!--            ></el-button>-->
+
+        <!-- 拆分-->
 <!--            <el-button
               type="primary"
               :disabled="buttonIson.resultSplitBtn"
