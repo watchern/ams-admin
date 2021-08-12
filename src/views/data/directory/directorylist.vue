@@ -65,7 +65,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn link-3"
+          class="oper-btn link-4"
           :disabled="selections.length !== 1"
           @click="relationTable"
         />
@@ -281,6 +281,7 @@
                   v-model="scope.row.dataType"
                   filterable
                   style="width: 90%; height: 55px"
+                  @change="changeDataType(scope.row)"
                   placeholder="请选择数据类型"
                 >
                   <el-option
@@ -301,6 +302,7 @@
                 <el-input
                   v-model="scope.row.dataLength"
                   style="width: 90%; height: 55px"
+                  :disabled="!scope.row.enableDataLength"
                 />
               </template>
             </el-table-column>
@@ -631,6 +633,18 @@ export default {
     this.initDirectory();
   },
   methods: {
+    changeDataType(row){
+      switch (row.dataType) {
+        case "CHAR":
+        case "VARCHAR":
+        case "DECIMAL":
+          row.enableDataLength=true;
+          break;
+        default:
+          row.enableDataLength=false;
+          break;
+      }
+    },
     initDirectory() {
       if (typeof this.dataUserId !== "undefined") {
         this.directyDataUserId = this.dataUserId;

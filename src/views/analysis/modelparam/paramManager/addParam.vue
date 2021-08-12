@@ -132,8 +132,8 @@
                 </el-tab-pane>
                 <el-tab-pane label="SQL动态" name="SQL">
                   <div name="SQLd" id="SQLd">
-                    <el-input type="textarea" v-model="form.paramChoice.optionsSqlLine" name="optionsSqlline"  id="optionsSqlline"  autocomplete="off" placeholder="输入SQL"/>
-                    <el-button type="primary" @click="viewSqlRule(1)" class="btn btn-primary">查看SQL规则</el-button>
+                    <el-input type="textarea" v-model="form.paramChoice.optionsSqlLine" name="optionsSqlline"  id="optionsSqlline"  autocomplete="off" :placeholder="getSqlRule(1)"/>
+<!--                    <el-button type="primary" @click="viewSqlRule(1)" class="btn btn-primary">查看SQL规则</el-button>-->
                     <el-button type="primary" @click="sqlPreview(1)" class="btn btn-primary ">预览</el-button>
                   </div>
                 </el-tab-pane>
@@ -142,9 +142,9 @@
           </el-row>
         </div>
         <div name="SQLdtree" id="SQLdtree" v-show="this.isShowElement.SQLdtreeShow">
-          <el-input type="textarea" v-model="form.paramChoice.optionsSql" name="optionsSql" id="optionsSql" autocomplete="off" placeholder="输入SQL"/>
-          <el-button type="primary" @click="viewSqlRule(2);" class="btn btn-primary">查看SQL规则</el-button>
-          <el-button type="primary" @click="sqlPreview(2);" class="btn btn-primary">预览</el-button>
+          <el-input type="textarea" v-model="form.paramChoice.optionsSql" name="optionsSql" id="optionsSql" autocomp  lete="off" :placeholder="getSqlRule(2)"/>
+<!--          <el-button type="primary" @click="viewSqlRule(2);" c  lass="btn btn-primary">查看SQL规则</el-button>-->
+          <el-button type="primary" @click="sqlPreview(2)" class="btn btn-primary">预览</el-button>
         </div>
         <el-row>
           <el-form-item label="说明">
@@ -267,7 +267,11 @@ export default{
       //查看数据dialog
       seeSqlDataDialog:false,
       SQLRuleText:'',
-      updateParamObj:{}
+      updateParamObj:{},
+      sqlRulesDesc: {
+        list:"格式：SELECT A,B FROM 模式.C\nA:真实值，B:显示值，若字段过多,则默认只使用前两列进行真实值与显示值的匹配",
+        tree:"格式：SELECT A,B,C FROM 模式.D\nA:子项真实值，B:子项显示值，C：父项真实值，将使用【A】字段与【C】字段进行父子节点关系匹配，若字段过多（或者存在【*】），则默认只使用前三列进行匹配"
+      }
     }
   },
   created() {
@@ -372,6 +376,14 @@ export default{
       });
       return result
     },
+    // optionsSqllineplaceholders_1(){
+    //   return "格式：SELECT A,B FROM 模式.C\n" +
+    //           "A:真实值，B:显示值，若字段过多,则默认只使用前两列进行真实值与显示值的匹配";
+    // },
+    // optionsSqllineplaceholders_2(){
+    //   return "格式：SELECT A,B,C FROM 模式.D\n" +
+    //           "A:子项真实值，B:子项显示值，C：父项真实值，将使用【A】字段与【C】字段进行父子节点关系匹配，若字段过多（或者存在【*】），则默认只使用前三列进行匹配"
+    // },
     changeInputType(inputTypeValue){
       if(inputTypeValue != ""){
         if(inputTypeValue == "timeinp"){//日期选择器
@@ -661,15 +673,26 @@ export default{
      * @param type 1列表 2树
      */
     viewSqlRule(type){
-      if(type == 1){
-        this.SQLRuleText = "1、SQL语句的格式为：SELECT A,B FROM C\n" +
-          "2、其中【A】字段为真实值，【B】字段为显示值，若字段过多（或者存在【*】），则默认只使用前两列进行真实值与显示值的匹配";
-      }
-      else if(type == 2){
-        this.SQLRuleText = "1、SQL语句的格式为：SELECT A,B,C FROM D\n" +
-          "2、其中【A】字段为子项真实值，【B】字段为子项显示值，【C】字段为父项真实值，将使用【A】字段与【C】字段进行父子节点关系匹配，若字段过多（或者存在【*】），则默认只使用前三列进行匹配"
-      }
       this.SQLRuleDialog = true
+      this.SQLRuleText = this.getSqlRule(type);
+    },
+    /**
+     * 获取sql规则
+     * @param type 1列表 2树
+     */
+    getSqlRule(type){
+      let sqlRule = ""
+      switch (type) {
+        case 1:
+          sqlRule = this.sqlRulesDesc.list;
+          break;
+        case 2:
+          sqlRule = this.sqlRulesDesc.tree;
+          break
+        default:
+          break;
+      }
+      return sqlRule;
     }
   }
 }

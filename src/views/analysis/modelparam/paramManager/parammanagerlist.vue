@@ -48,7 +48,7 @@
       </span>
         </MyElTree>
       </el-aside>
-      <div style="margin-top: 10px;margin-left:10px;">
+      <div style="margin-top: 10px;margin-left:10px;width: calc(100% - 320px)">
         <div class="filter-container">
           <QueryField ref="queryfield" :form-data="queryFields" @submit="getParamList" />
         </div>

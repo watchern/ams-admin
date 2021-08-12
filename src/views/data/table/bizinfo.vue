@@ -54,7 +54,7 @@
 
 <script>
 import { getTableInfo, saveTableInfo } from '@/api/data/table-info'
-import { listByPage } from '@/api/data/biz-attr'
+import {  } from '@/api/data/biz-attr'
 import SelectTransCode from '@/views/data/table/transcodeselect'
 import { selectById } from '@/api/data/transCode'
 export default {

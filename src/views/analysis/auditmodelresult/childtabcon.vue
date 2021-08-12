@@ -70,7 +70,7 @@
             <el-dropdown>
               <el-button
                 type="primary"
-                class="oper-btn link-2"
+                class="oper-btn link-2 btn-width-md"
                 :disabled="modelRunResultBtnIson.associatedBtn"
               ></el-button>
               <el-dropdown-menu slot="dropdown">
@@ -235,7 +235,7 @@
                 <el-dropdown>
                   <el-button
                     type="primary"
-                    class="oper-btn link-2"
+                    class="oper-btn link-2 btn-width-md"
                     :disabled="modelRunResultBtnIson.associatedBtn"
                   ></el-button>
                   <el-dropdown-menu slot="dropdown">
@@ -277,6 +277,9 @@
                 >
               </div>
             </div>
+            <!-- useType == 'modelRunResult' && this.modelUuid !== undefined
+                  ? this.renderTable
+                  : undefined -->
             <ag-grid-vue
               v-if="isSee"
               v-loading="isLoading"
@@ -286,21 +289,17 @@
               :row-data="computedRowData"
               rowMultiSelectWithClick="true"
               :enable-col-resize="true"
-              :get-row-style="
-                useType == 'modelRunResult' && this.modelUuid !== undefined
-                  ? this.renderTable
-                  : undefined
-              "
-                    row-selection="multiple"
-                    @cellClicked="onCellClicked"
-                    @gridReady="onGridReady"
-                    @rowSelected="rowChange"
-                    :default-col-def="defaultColDef"
-                    :sideBar="true"
-                    :modules="modules"
-                    :locale-text="localeText"
-                    :frameworkComponents="frc"
-                    :context = "componentParent"
+              :get-row-style="this.renderTableView"
+              row-selection="multiple"
+              @cellClicked="onCellClicked"
+              @gridReady="onGridReady"
+              @rowSelected="rowChange"
+              :default-col-def="defaultColDef"
+              :sideBar="true"
+              :modules="modules"
+              :locale-text="localeText"
+              :frameworkComponents="frc"
+              :context = "componentParent"
             />
             <!-- :sideBar="true"
             :modules="modules"-->
@@ -726,6 +725,7 @@ export default {
         disassociateBtn: false,
         modelDetailAssBtn: true,
       },
+      modelThresholdValuesTabView: [], // 模型点击运行表格渲染规则
       dynamicSelect: [], //实时存储多选框勾选中的数据
       chartShowIsSee: false,
       result: {}, //给myeditor传的数据
@@ -735,7 +735,7 @@ export default {
       modelChartSetups: [], //用于存储添加的多个图标，用于图表返显功能
       chartConfigs: {
         chart: [],
-        layout: [{ x: 0, y: 0, w: 12, h: 6, i: "0" }],
+        layout: [{ x: 0, y: 0, w: 12, h: 12, i: "0" }],
       }, //用于存储当前模型的图表config   （myeditor组件的chart-config属性）chartConfigs
       afterResult: false, //等result数据赋值完以后再初始化返显的charts组件
       chartLoading: true, //图表加载的loading
@@ -764,6 +764,10 @@ export default {
         flex: 1,
         minWidth: 150,
         resizable: true,
+        enableValue: true,
+        enableRowGroup: true,
+        enablePivot: true,
+        sortable: true,
         filter: true,
       },
       sideBar :{
@@ -784,7 +788,7 @@ export default {
           },
         ],
         position: 'right',
-        defaultToolPanel: 'columns'
+        defaultToolPanel: 'filters'
       },
       modules: AllModules,
       localeText:{
@@ -830,15 +834,15 @@ export default {
   // tool panel
   columns: '列',
   filters: '过滤器',
-  rowGroupColumns: '行列组',
-  rowGroupColumnsEmptyMessage: '拖到这里来设置行列组',
+  rowGroupColumns: '行分组',
+  rowGroupColumnsEmptyMessage: '拖拽设置行分组',
   valueColumns: '列值',
   pivotMode: '透视模式',
   groups: '行列组',
   values: '值',
   pivots: '列标签',
-  valueColumnsEmptyMessage: '拖到这里来进行聚合',
-  pivotColumnsEmptyMessage: '拖到这里来设置列标签',
+  valueColumnsEmptyMessage: '拖拽进行聚合',
+  pivotColumnsEmptyMessage: '拖拽设置列标签',
   toolPanelButton: '工具按钮',
   // other
   noRowsToShow: '暂时没有要展示的数据',
@@ -1264,29 +1268,19 @@ export default {
         } else {
           modelThresholdValues = this.modelObj.modelThresholdValues;
         }
-        //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
+        //循环阈值对象  取出阈值对象里面的列名  用于下遍历处理的时候 作为判断条件
         if (this.modelUuid !== undefined) {
           for (var i = 0; i < modelThresholdValues.length; i++) {
-            if (
-              modelThresholdValues[i].thresholdValue.thresholdValueType == 2 &&
-              renderColumns.indexOf(
-                modelThresholdValues[i].modelResultColumnName
-              ) == -1
-            ) {
-              renderColumns.push(modelThresholdValues[i].modelResultColumnName);
-            }
-          }
-          for (var i = 0; i < modelThresholdValues.length; i++) {
-            if (
-              modelThresholdValues[i].thresholdValue.thresholdValueType == 2
-            ) {
+            if (modelThresholdValues[i].thresholdValue.thresholdValueType == 2) {
+              if ( renderColumns.indexOf(modelThresholdValues[i].modelResultColumnName) == -1) {
+                renderColumns.push(modelThresholdValues[i].modelResultColumnName);
+                }
               if (typeof modelThresholdValues[i].colorInfo === "string") {
                 modelThresholdValues[i].colorInfo = JSON.parse(
                   modelThresholdValues[i].colorInfo
                 );
               }
-              renderObject[modelThresholdValues[i].modelResultColumnName] =
-                modelThresholdValues[i];
+              renderObject[modelThresholdValues[i].modelResultColumnName] = modelThresholdValues[i];
             }
           }
         }
@@ -1544,6 +1538,7 @@ export default {
         var renderColumns = []; //存储需要渲染的列名
         var renderObject = {}; //存储key-value格式对象，key为列名  value为这一列对应的模型阈值关联对象
         var modelThresholdValues = [];
+        var modelThresholdValuesTab = []; //阈值信息
         if (this.prePersonalVal.id == this.nextValue.executeSQL.id) {
           //executeSQL.state 0,待执行；1,执行中；2,已完成；3,失败；4,取消；
           if (this.nextValue.executeSQL.state == "2") {
@@ -1597,44 +1592,22 @@ export default {
                 this.modelResultColumnNames = this.nextValue.columnNames;
                 selectModel(this.modelId).then((resp) => {
                   this.modelDetailRelation = resp.data.modelDetailRelation;
-                  //循环阈值对象  取出阈值对象里面的列名  用于下边裂处理的时候 作为判断条件
+                  modelThresholdValuesTab = resp.data.modelThresholdValues
+                  // 表格渲染规则赋值
+                  this.modelThresholdValuesTabView = resp.data.modelThresholdValues
+                  //循环阈值对象  取出阈值对象里面的列名  用于下边遍历处理的时候 作为判断条件
                   if (this.preLength == this.myIndex + 1) {
-                    for (
-                      var i = 0;
-                      i < resp.data.modelThresholdValues.length;
-                      i++
-                    ) {
-                      if (
-                        modelThresholdValues[i].thresholdValue
-                          .thresholdValueType == 2 &&
-                        renderColumns.indexOf(
-                          modelThresholdValues[i].modelResultColumnName
-                        ) == -1
-                      ) {
-                        renderColumns.push(
-                          modelThresholdValues[i].modelResultColumnName
-                        );
-                      }
-                    }
-                    for (
-                      var i = 0;
-                      i < resp.data.modelThresholdValues.length;
-                      i++
-                    ) {
-                      if (
-                        modelThresholdValues[i].thresholdValue
-                          .thresholdValueType == 2
-                      ) {
-                        if (
-                          typeof modelThresholdValues[i].colorInfo === "string"
-                        ) {
-                          modelThresholdValues[i].colorInfo = JSON.parse(
-                            modelThresholdValues[i].colorInfo
+                    for (var i = 0; i < modelThresholdValuesTab.length; i++) {
+                      if (modelThresholdValuesTab[i].thresholdValue.thresholdValueType == 2) {
+                        if (renderColumns.indexOf(modelThresholdValuesTab[i].modelResultColumnName) == -1) {
+                          renderColumns.push(modelThresholdValuesTab[i].modelResultColumnName);
+                        }
+                        if (typeof modelThresholdValuesTab[i].colorInfo === "string") {
+                          modelThresholdValuesTab[i].colorInfo = JSON.parse(
+                            modelThresholdValuesTab[i].colorInfo
                           );
                         }
-                        renderObject[
-                          modelThresholdValues[i].modelResultColumnName
-                        ] = modelThresholdValues[i];
+                        renderObject[modelThresholdValuesTab[i].modelResultColumnName] = modelThresholdValuesTab[i];
                       }
                     }
                   }
@@ -1966,6 +1939,40 @@ export default {
     reSet() {
       this.nowSql = "undefined";
       this.initData("undefined");
+    },
+    /**
+     * 渲染表格，将颜色渲染上去
+     */
+    renderTableView(params){
+      // 规则赋值
+      var modelThresholdValues = [];
+      if (typeof this.settingInfo != 'undefined') {
+        modelThresholdValues.push(
+          JSON.parse(this.settingInfo).thresholdValueRel
+        );
+      } else {
+        // 模型结果查看
+        modelThresholdValues = this.modelObj.modelThresholdValues;
+        // 模型直接点击运行
+        if (typeof this.modelObj.modelThresholdValues === 'undefined')
+        modelThresholdValues = this.modelThresholdValuesTabView
+      }
+      var thresholdValueRel = {};
+      this.isLoading = false;
+      for (var i = 0; i < modelThresholdValues.length; i++) {
+        thresholdValueRel = modelThresholdValues[i];
+        if (
+          thresholdValueRel &&
+          thresholdValueRel.thresholdValue.thresholdValueType == 1
+        ) {
+          if (typeof modelThresholdValues[i].colorInfo === "string") {
+            let colorInfo = JSON.parse(modelThresholdValues[i].colorInfo);
+            modelThresholdValues[i].colorInfo = colorInfo;
+          }
+          //判断颜色等信息
+          return handleDataSingleValue(params.data, thresholdValueRel);
+        }
+      }
     },
     /**
      * 渲染表格，将颜色渲染上去
@@ -2448,12 +2455,11 @@ export default {
     chartReflexion() {
       this.chartConfigs = {
         chart: [],
-        layout: [{ x: 0, y: 0, w: 12, h: 6, i: "0" }],
+        layout: [{ x: 0, y: 0, w: 12, h: 11, i: "0" }],
       };
       this.modelChartSetups = [];
       if (this.nowtable.runResultTableUuid != undefined) {
         getModelChartSetup(this.nowtable.runTaskRelUuid).then((resp) => {
-          console.log("走这里了0");
           //做修改操作
           if (this.myIndex == 0) {
             this.modelChartSetups = resp.data.modelChartSetups;
