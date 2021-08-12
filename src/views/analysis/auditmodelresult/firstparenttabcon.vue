@@ -51,13 +51,13 @@
 <!--              class="oper-btn move"-->
 <!--              title="移除分配项目"-->
 <!--            ></el-button>-->
-            <el-button
+<!--            <el-button
               type="primary"
               :disabled="buttonIson.resultSplitBtn"
               class="oper-btn split-2"
               @click="openResultSplitDialog"
               style="margin-left: 10px"
-            ></el-button>
+            ></el-button>-->
             <el-button
               type="primary"
               @click="exportExcel"
