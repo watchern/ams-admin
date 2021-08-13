@@ -61,6 +61,7 @@
           type="primary"
           class="oper-btn edit"
           :disabled="selections.length !== 1"
+
           @click="update"
         />
         <el-button
@@ -113,11 +114,11 @@
           >{{ formatCreateTime(scope.row.extMap.createTime) }}
         </template>
       </el-table-column>
-      <el-table-column prop="tbSizeByte" label="大小" align="center">
+      <!--<el-table-column prop="tbSizeByte" label="大小" align="center">
         <template slot-scope="scope"
           >{{ formatTableSize(scope.row.extMap.tbSizeByte) }}
         </template>
-      </el-table-column>
+      </el-table-column>-->
     </el-table>
     <pagination
       v-show="total > 0"
@@ -352,6 +353,7 @@
     <el-dialog
       v-if="tableColumnVisible"
       :visible.sync="tableColumnVisible"
+
       lock-scroll
       width="80%"
       style="min-width: 1000px"
@@ -557,6 +559,7 @@ export default {
         {
           id: "",
           label: "",
+          title: "",
           type: "",
           extMap: {
             createTime: "",
@@ -767,6 +770,20 @@ export default {
                 nextUpload(this.uploadtemp).then((res) => {
                   this.uploadStep = 2;
                   this.uploadtempInfo = res.data;
+                  if (this.uploadtempInfo.colMetas.length >0 ){
+                    for(let i=0;i<this.uploadtempInfo.colMetas.length;i++) {
+                      switch (this.uploadtempInfo.colMetas[i].dataType.trim()) {
+                        case "CHAR":
+                        case "VARCHAR":
+                        case "DECIMAL":
+                          this.uploadtempInfo.colMetas[i].enableDataLength = true;
+                          break;
+                        default :
+                          this.uploadtempInfo.colMetas[i].enableDataLength = false;
+                      }
+
+                    }
+                  }
                 });
               });
             }
@@ -1015,6 +1032,10 @@ export default {
       this.tableColumnVisible = true;
       this.tabShow = "column";
       this.tableId = this.selections[0].id;
+
+
+
+
     },
     // 表结构维护
     relationTable() {
@@ -1022,6 +1043,7 @@ export default {
       this.tableRelationVisible = true;
       this.tabShow = "column";
       this.tableId = this.selections[0].id;
+
     },
     // 得到分页列表
     getListSelect(query) {
