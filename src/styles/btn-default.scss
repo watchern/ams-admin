@@ -71,6 +71,15 @@
   font-family: "iconfont" !important;
   font-weight: normal!important;
 }
+.oper-btn.logout:hover::before{
+  content:'注销'!important;
+}
+.oper-btn.unlogout:hover::before{
+  content:'解除锁定'!important;
+}
+.oper-btn.impower:hover::before{
+  content:'权限分配'!important;
+}
 .oper-btn:hover::before {
   border-radius: 4px;
   padding: 8px 10px;
@@ -306,7 +315,7 @@
 .oper-btn.search-1:hover::before{
   content:'预览数据'!important;
 }
-// move
+// move 移除项目分配
 .oper-btn.move:after{
   content:'\e672'!important;
 }
@@ -403,6 +412,9 @@
 .oper-btn.import-1:hover::before{
   content:'下载流程模板'!important;
 }
+.oper-btn.import-2:hover::before{
+  content:'下载项目模板'!important;
+}
 // pause
 .oper-btn.pause:after{
   content:'\e607'!important;
@@ -416,6 +428,14 @@
 .oper-btn.pause-1:hover::before{
   content:'暂停'!important;
 }
+
+.oper-btn.pause-2:after{
+  content:'\e607'!important;
+}
+.oper-btn.pause-2:hover::before{
+  content:'取消执行'!important;
+}
+
 // start
 .oper-btn.start:after{
   content:'\e608'!important;
