@@ -37,12 +37,12 @@
           :disabled="buttonIson.DisassociateBtn"
           class="oper-btn move"
           ></el-button>-->
-        <el-button
+<!--        <el-button
           type="primary"
           :disabled="buttonIson.resultSplitBtn"
           class="oper-btn split-2"
           @click="openResultSplitDialog"
-        ></el-button>
+        ></el-button>-->
         <el-button
           type="primary"
           @click="exportExcel"
@@ -335,6 +335,9 @@ import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 import warningresulttree from "@/views/analysis/auditwarningresult/warningresulttree";
 import personTree from "@/components/publicpersontree/index";
+
+//引入时间格式化方法
+import dayjs from 'dayjs';
 export default {
   components: { Pagination, QueryField, warningresulttree,personTree },
   data() {
@@ -437,8 +440,9 @@ export default {
         const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "模型运行结果表.xlsx");
-        document.body.appendChild(link);
+          //模型运行结果表日期使用当前日期
+          link.setAttribute("download", "模型运行结果表"+"("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
+          document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       });
