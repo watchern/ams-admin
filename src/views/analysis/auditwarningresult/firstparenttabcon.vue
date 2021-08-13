@@ -22,7 +22,7 @@
         <!--<el-button
           type="primary"
           @click="openProjectDialog"
-          :disabled="buttonIson.AssociatedBtn"
+          :disabled="buttonIson.associatedBtn"
           class="oper-btn link-2"
         ></el-button>-->
         <el-button
@@ -31,18 +31,18 @@
           :disabled="buttonIson.resultShareBtn"
           class="oper-btn share"
         ></el-button>
-        <!--<el-button
-          type="primary"
-          @click="RemoverelationProject()"
-          :disabled="buttonIson.DisassociateBtn"
-          class="oper-btn move"
-          ></el-button>-->
         <el-button
+          type="primary"
+          @click="removeRelationProject()"
+          :disabled="buttonIson.disassociateBtn"
+          class="oper-btn move"
+          ></el-button>
+<!--        <el-button
           type="primary"
           :disabled="buttonIson.resultSplitBtn"
           class="oper-btn split-2"
           @click="openResultSplitDialog"
-        ></el-button>
+        ></el-button>-->
         <el-button
           type="primary"
           @click="exportExcel"
@@ -335,6 +335,9 @@ import AV from "leancloud-storage";
 import { getParamSettingArr } from "@/api/analysis/auditparam";
 import warningresulttree from "@/views/analysis/auditwarningresult/warningresulttree";
 import personTree from "@/components/publicpersontree/index";
+
+//引入时间格式化方法
+import dayjs from 'dayjs';
 export default {
   components: { Pagination, QueryField, warningresulttree,personTree },
   props: {
@@ -369,8 +372,8 @@ export default {
       success1: false, // 用来测试open2方法里的deleteRunResultShare方法返回值是否为true，如果为true则success为true
       selected1: [], // 存储表格中选中的数据
       buttonIson: {
-        AssociatedBtn: true,
-        DisassociateBtn: true,
+        associatedBtn: true,
+        disassociateBtn: true,
         deleteBtn: true,
         resultSplitBtn: true,
         resultShareBtn: true,
@@ -444,8 +447,9 @@ export default {
         const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "模型运行结果表.xlsx");
-        document.body.appendChild(link);
+          //模型运行结果表日期使用当前日期
+          link.setAttribute("download", "模型运行结果表"+"("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
+          document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       });
@@ -656,25 +660,25 @@ export default {
     /**
      * 当多选框改变时触发
      */
-    //      buttonIson:{AssociatedBtn:true,DisassociateBtn:true,deleteBtn:true,resultSplitBtn:true,resultShareBtn:true,exportBtn:false}
+    //      buttonIson:{associatedBtn:true,disassociateBtn:true,deleteBtn:true,resultSplitBtn:true,resultShareBtn:true,exportBtn:false}
     handleSelectionChange(val) {
       if (val.length <= 0) {
-        this.buttonIson.AssociatedBtn = true;
-        this.buttonIson.DisassociateBtn = true;
+        this.buttonIson.associatedBtn = true;
+        this.buttonIson.disassociateBtn = true;
         this.buttonIson.deleteBtn = true;
         this.buttonIson.resultSplitBtn = true;
         this.buttonIson.resultShareBtn = true;
         this.buttonIson.exportBtn = false;
       } else if (val.length == 1) {
-        this.buttonIson.AssociatedBtn = false;
-        this.buttonIson.DisassociateBtn = false;
+        this.buttonIson.associatedBtn = false;
+        this.buttonIson.disassociateBtn = false;
         this.buttonIson.deleteBtn = false;
         this.buttonIson.resultSplitBtn = true;
         this.buttonIson.resultShareBtn = false;
         this.buttonIson.exportBtn = false;
       } else if (val.length > 1) {
-        this.buttonIson.AssociatedBtn = false;
-        this.buttonIson.DisassociateBtn = false;
+        this.buttonIson.associatedBtn = false;
+        this.buttonIson.disassociateBtn = false;
         this.buttonIson.deleteBtn = false;
         this.buttonIson.resultSplitBtn = false;
         this.buttonIson.resultShareBtn = false;
@@ -993,7 +997,7 @@ export default {
     /**
      * 移除项目关联
      */
-    RemoverelationProject() {
+    removeRelationProject() {
       var ids = [];
       for (var i = 0; i < this.selected1.length; i++) {
         ids.push(this.selected1[i].runTaskRelUuid);
