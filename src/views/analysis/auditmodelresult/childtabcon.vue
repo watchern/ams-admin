@@ -580,6 +580,9 @@ let DragPos = { x: null, y: null, w: 1, h: 1, i: null };
 import { randomString4Len } from "@/api/analysis/common";
 import flowItem from "ams-starflow-vue/src/components/todowork/flowItem";
 import flowItem2 from "ams-clue-vue/src/components/yctodowork/flowItem2";
+
+//引入时间格式化方法
+import dayjs from 'dayjs';
 export default {
   name: "childTabCon",
   // 注册draggable组件
@@ -1001,7 +1004,8 @@ export default {
         const blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
         link.style.display = "none";
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "模型运行结果表.xls");
+        //模型运行结果表日期使用当前日期
+        link.setAttribute("download", "模型运行结果表"+"("+dayjs(new Date()).format('YYYY年MM月DD日hhmmss')+")"+".xls");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

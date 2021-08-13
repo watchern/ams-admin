@@ -105,7 +105,7 @@
         <el-link size="mini" type="primary">导入</el-link>
         <span style="font-size:2px;color:red">(请选择xls或者xlsx格式,导入第一列为真实值,第二列为转码值)</span>
       </el-upload>
-      <el-table v-if="temp.ruleType === 2" :data="transColRelsData" height="220">
+      <el-table v-if="temp.ruleType === 2" :data="transColRelsData" height="calc(100% - 260px)">
         <el-table-column prop="codeValue" label="真实值" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-input v-if="scope.row.start !='0' || scope.row.start == undefined" v-model="scope.row.codeValue" style="width:90%;" />
@@ -523,3 +523,11 @@ export default {
   }
 }
 </script>
+<style scoped>
+>>>.el-dialog{
+  height: 70vh!important;
+}
+>>>.el-dialog__body{
+  height: calc(100% - 100px);
+}
+</style>
