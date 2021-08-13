@@ -31,6 +31,7 @@
         v-if="openType === 'showTable' || openType === 'tableRegister'"
         label="业务信息"
         name="bizInfo"
+        @click="change"
         ><biz-info :table-id="tableId" :open-type="openType"
       /></el-tab-pane>
     </el-tabs>
@@ -65,6 +66,10 @@ export default {
     this.tabShowName = this.tabShow;
   },
   methods: {
+    change(val){
+      console.log(val="==============")
+    },
+
     initTabs() {
       if (this.openType === "addType") {
         this.$refs.tabs.$children[0].$refs.tabs[3].style.display = "none";
@@ -76,6 +81,8 @@ export default {
     },
     tableshow(show) {
       this.$emit("table-show", show);
+      console.log("=============")
+
     },
   },
 };
