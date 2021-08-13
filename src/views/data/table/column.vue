@@ -220,10 +220,6 @@ export default {
             e.tempIndex = this.tempIndex;
           });
           this.tempColumn = resp.data.colMetas.slice();
-
-          console.log("=====================")
-          console.log(this.tempColumn)
-          console.log(this.tempColumn[0])
           if (this.tempColumn.length >0 ){
             for (let i=0;i < this.tempColumn.length;i++){
               switch (this.tempColumn[i].dataType.trim()) {
