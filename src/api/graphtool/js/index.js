@@ -985,7 +985,11 @@ export async function saveModelGraph(){
                                     modelSql += "/*节点【" + preNodeInfo.nodeName + "】的查询结果表的SQL语句*/\n " + selectSql + "\n"
                                 }else{
                                     dropViewSql += "/*节点【" + preNodeInfo.nodeName + "】的删除结果视图的SQL语句*/\n DROP VIEW " + tableName + "\n"
-                                    modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS " + selectSql + "\n";//不能移动位置
+                                    if(graphIndexVue.dbType === "db2") {
+                                        modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS SELECT * FROM (" + selectSql + ") SORT_TEMP\n";//不能移动位置
+                                    } else {
+                                        modelSql += "/*节点【" + preNodeInfo.nodeName + "】的创建结果视图的SQL语句*/\n CREATE VIEW " + tableName + " AS " + selectSql + "\n";//不能移动位置
+                                    }
                                 }
                             }
                         }
@@ -1025,8 +1029,9 @@ export async function saveModelGraph(){
                     //     }
                     //     //替换ID结束
                     // }
-                    modelSql = dropTableSql + modelSql + dropViewSql
+                    modelSql = dropViewSql + dropTableSql + modelSql
                 }
+
             }else{
                 isError = true
                 message = '模型设计校验图形的请求失败'
