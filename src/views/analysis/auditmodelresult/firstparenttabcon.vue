@@ -25,7 +25,7 @@
             <el-button
               type="primary"
               :disabled="buttonIson.puseBtn"
-              class="oper-btn pause-2 btn-width-md"
+              class="oper-btn cancel-exec btn-width-md"
               @click="runRelTaskPause"
             />
             <!-- 分配到项目 -->
@@ -85,7 +85,7 @@
               type="primary"
               @click="exportExcel"
               :disabled="buttonIson.exportBtn"
-              class="oper-btn export-4"
+              class="oper-btn export"
             ></el-button>
             <el-button
               :disabled="buttonIson.deleteBtn"

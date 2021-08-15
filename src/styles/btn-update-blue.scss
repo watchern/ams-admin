@@ -266,7 +266,7 @@
 }
 
 .oper-btn.add-folder-1:after {
-  content: '\e67c  新增' !important;
+  content: '\e67c  新增文件夹' !important;
 }
 
 // refresh
@@ -287,30 +287,30 @@
   content: '\e67d  SQL' !important;
 }
 
-// export
+// export 导出
 .oper-btn.export:after {
-  content: '\e602  导入' !important;
-}
-
-.oper-btn.export-1:after {
-  content: '\e602  上传' !important;
-}
-
-.oper-btn.export-3:after {
   content: '\e602  导出' !important;
+}
+
+// 下载、下载模板等
+.oper-btn.download:after{
+  content:'\e7a3  下载'!important;
+}
+
+.oper-btn.download-template:after{
+  content:'\e7a3  下载模板'!important;
 }
 
 // import
 .oper-btn.import:after {
-  content: '\e603  下载' !important;
+  content: '\e775  导入' !important;
+}
+.oper-btn.import-table:after {
+  content: '\e775  导入表' !important;
 }
 
-.oper-btn.import-1:after {
-  content: '\e603  下载' !important;
-}
-
-.oper-btn.import-2:after {
-  content: '\e603  下载项目模板' !important;
+.oper-btn.upload:after {
+  content: '\e602  上传' !important;
 }
 
 // pause
@@ -320,9 +320,6 @@
 
 .oper-btn.pause-1:after {
   content: '\e607  暂停' !important;
-}
-.oper-btn.pause-2:after {
-  content: '\e607  取消执行' !important;
 }
 
 // start
@@ -384,22 +381,8 @@
 }
 
 // 单义图标  15个
-
-
 .oper-btn.more:after {
   content: '\e605  更多' !important;
-}
-
-.oper-btn.export-2:after {
-  content: '\e775  导出' !important;
-}
-
-.oper-btn.export-4:after {
-  content: '\e775  导出' !important;
-}
-
-.oper-btn.export-5:after{
-  content:'\e7a3  下载模板'!important;
 }
 
 .oper-btn.split-2:after {
@@ -434,9 +417,7 @@
   content: '\e6d8  图表' !important;
 }
 
-.oper-btn.cancelshare:after {
-  content: '\e63d  取消' !important;
-}
+
 
 .oper-btn.sqlcheck:after {
   content: '\e613  校验' !important;
@@ -462,8 +443,11 @@
   content: '\e657' !important;
 }
 
-.oper-btn.import-2:after{
-  content:'\e775  导入'!important;
+.oper-btn.cancel-exec:after {
+  content: '\e607  取消执行' !important;
+}
+.oper-btn.cancelshare:after {
+  content: '\e63d  取消' !important;
 }
 
 // 未使用 16个

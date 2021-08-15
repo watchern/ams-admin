@@ -44,7 +44,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn export"
+          class="oper-btn import-table"
           :disabled="
             clickData.type == 'table' ||
             typeof clickData.extMap.sceneInstUuid !== 'undefined'
@@ -53,7 +53,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn add-folder-1"
+          class="oper-btn add-folder-1 btn-width-max"
           :disabled="clickData.type == 'table'"
           @click="createFolder"
         />
@@ -61,6 +61,7 @@
           type="primary"
           class="oper-btn edit"
           :disabled="selections.length !== 1"
+
           @click="update"
         />
         <el-button
@@ -352,6 +353,7 @@
     <el-dialog
       v-if="tableColumnVisible"
       :visible.sync="tableColumnVisible"
+
       lock-scroll
       width="80%"
       style="min-width: 1000px"
@@ -768,6 +770,20 @@ export default {
                 nextUpload(this.uploadtemp).then((res) => {
                   this.uploadStep = 2;
                   this.uploadtempInfo = res.data;
+                  if (this.uploadtempInfo.colMetas.length >0 ){
+                    for(let i=0;i<this.uploadtempInfo.colMetas.length;i++) {
+                      switch (this.uploadtempInfo.colMetas[i].dataType.trim()) {
+                        case "CHAR":
+                        case "VARCHAR":
+                        case "DECIMAL":
+                          this.uploadtempInfo.colMetas[i].enableDataLength = true;
+                          break;
+                        default :
+                          this.uploadtempInfo.colMetas[i].enableDataLength = false;
+                      }
+
+                    }
+                  }
                 });
               });
             }
@@ -1016,6 +1032,10 @@ export default {
       this.tableColumnVisible = true;
       this.tabShow = "column";
       this.tableId = this.selections[0].id;
+
+
+
+
     },
     // 表结构维护
     relationTable() {
@@ -1023,6 +1043,7 @@ export default {
       this.tableRelationVisible = true;
       this.tabShow = "column";
       this.tableId = this.selections[0].id;
+
     },
     // 得到分页列表
     getListSelect(query) {
@@ -1036,10 +1057,6 @@ export default {
         this.temp = this.allList;
         this.total = getArrLength(this.temp);
       }
-
-      // console.log("===========================")
-      // console.log(JSON.stringify(this.temp))
-      // console.log("===========================")
     },
     // 初始化列表页面
     getList(data, node, tree) {

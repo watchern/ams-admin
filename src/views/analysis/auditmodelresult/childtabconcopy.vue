@@ -20,7 +20,7 @@
         :disabled="modelRunResultBtnIson.exportBtn"
         type="primary"
         @click="exportExcel"
-        class="oper-btn export-2"
+        class="oper-btn export"
       ></el-button>
       <el-button
         style="display: none"
@@ -67,7 +67,7 @@
         <el-button
           type="primary"
           @click="modelResultExport"
-          class="oper-btn export-3"
+          class="oper-btn export"
         ></el-button>
       </downloadExcel>
       <el-button type="primary" class="oper-btn chart"></el-button>
