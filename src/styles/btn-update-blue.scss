@@ -363,9 +363,12 @@
   content: '\e83e  命名' !important;
 }
 
+<<<<<<< HEAD
 .oper-btn.copy:after {
   content: '\e66c  复制' !important;
 }
+=======
+>>>>>>> dev
 
 .oper-btn.maintain:after {
   content: '\e69f  工具' !important;
@@ -394,6 +397,16 @@
 .oper-btn.customfield:after {
   content: '\e665  字段' !important;
 }
+<<<<<<< HEAD
+=======
+
+.oper-btn.help:after{
+  content:'\e629  说明'!important;
+}
+.oper-btn.customfield:after{
+  content:'\e665  字段'!important;
+}
+>>>>>>> dev
 .oper-btn.sqlcheck:after{
   content:'\e613  校验'!important;
 }
@@ -406,8 +419,13 @@
 .oper-btn.cancel:after{
   content:'\e657  取消'!important;
 }
+<<<<<<< HEAD
 .oper-btn.cancel-none:after {
   content: '\e657  取消' !important;
+=======
+.oper-btn.cancel-none:after{
+  content: '\e657 ' !important;
+>>>>>>> dev
 }
 .oper-btn.cancel-exec:after {
   content: '\e607  取消执行' !important;
@@ -449,8 +467,8 @@
   content: '\e66d' !important;
 }
 
-.oper-btn.split:after {
-  content: '\e617  拆分' !important;
+.oper-btn.split:after{
+  content: '\e617  结果拆分' !important;
 }
 
 .oper-btn.show-detail:after {
@@ -479,7 +497,16 @@
 
 // 新增
 .oper-btn.skip:after {
+<<<<<<< HEAD
   content: '\e612  跳过' !important;
+=======
+  content:'\e612  跳过'!important;
+}
+
+// etl依赖添加、删除
+.oper-btn.scheduleadd:after{
+  content:'\e60a'!important;
+>>>>>>> dev
 }
 
 // etl依赖添加、删除
