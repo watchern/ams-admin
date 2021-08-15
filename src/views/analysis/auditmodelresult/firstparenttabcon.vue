@@ -68,7 +68,7 @@
               :disabled="buttonIson.deleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
-              class="oper-btn delete-2"
+              class="oper-btn delete-result"
             ></el-button>
           </el-row>
         </div>
