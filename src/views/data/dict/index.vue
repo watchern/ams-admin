@@ -31,7 +31,7 @@
       <el-table-column label="创建时间" width="300px" align="center" :formatter="formatCreateTime" prop="createTime" />
       <el-table-column label="操作" align="center" min-width="100">
         <template slot-scope="scope">
-          <el-button type="primary" class="oper-btn detail" title="预览" size="mini" @click="selectFilterOne(scope.row.tableMetaUuid)" />
+          <el-button type="primary" class="oper-btn preview" title="预览" size="mini" @click="selectFilterOne(scope.row.tableMetaUuid)" />
         </template>
       </el-table-column>
     </el-table>

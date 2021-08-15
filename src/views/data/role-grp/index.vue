@@ -51,7 +51,7 @@
 
       <el-col :span="15">
         <el-col align="right" style=" padding-top: 4px;padding-right:50px">
-          <el-button type="primary" class="oper-btn edit-3" :disabled="selections.length !== 1" @click="setExpireDate" />
+          <el-button type="primary" class="oper-btn edit-period btn-width-max" :disabled="selections.length !== 1" @click="setExpireDate" />
           <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="removeGrp" />
         </el-col>
         <el-table

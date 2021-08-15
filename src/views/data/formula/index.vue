@@ -9,8 +9,8 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" class="oper-btn excel-2" @click="buildModelSQL" />
-        <el-button type="primary" class="oper-btn excel-3" @click="exportSQL" />
+        <el-button type="primary" class="oper-btn buildsql btn-width-max" @click="buildModelSQL" />
+        <el-button type="primary" class="oper-btn exportsql btn-width-max" @click="exportSQL" />
         <el-button type="primary" class="oper-btn add" @click="add" />
         <el-button type="primary" class="oper-btn edit" :disabled="selections.length !== 1" @click="update" />
         <el-button type="primary" class="oper-btn delete" :disabled="selections.length === 0" @click="deleteBiz" />

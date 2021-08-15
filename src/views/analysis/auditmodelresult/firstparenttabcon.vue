@@ -15,49 +15,36 @@
       <el-main style="height:100%">
         <div align="right">
           <el-row>
-              <el-button
-                      type="primary"
-                      @click="modelResultOpenDialog"
-                      :disabled="buttonIson.AssociatedBtn"
-                      class="oper-btn link-2"
-              ></el-button>
+            <!-- @分配模型结果@ -->
+            <el-button
+                type="primary"
+                @click="modelResultOpenDialog"
+                :disabled="buttonIson.associatedBtn"
+                class="oper-btn allocation btn-width-md" />
+            <!--  @移除分配项目@ -->
+            <el-button
+                type="primary"
+                @click="removeRelationProject()"
+                :disabled="buttonIson.disassociateBtn"
+                class="oper-btn remove-allocation btn-width-max"
+                title="移除分配项目" />
+
             <!--<el-dropdown>
 
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="openProjectDialog">分配项目</el-dropdown-item>
                 <el-dropdown-item @click.native="modelResultOpenDialog">结果分配</el-dropdown-item>
-                <el-dropdown-item @click.native="RemoverelationProject">移除分配项目</el-dropdown-item>
+                <el-dropdown-item @click.native="removeRelationProject">移除分配项目</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>-->
-<!--            <el-button-->
-<!--              type="primary"-->
-<!--              @click="openProjectDialog"-->
-<!--              :disabled="buttonIson.AssociatedBtn"-->
-<!--              class="oper-btn link-2"-->
-<!--              title="分配项目"-->
-<!--            ></el-button>-->
-<!--            <el-button-->
-<!--              type="primary"-->
-<!--              @click="modelResultOpenDialog()"-->
-<!--              :disabled="buttonIson.resultShareBtn"-->
-<!--              class="oper-btn share"-->
-<!--              title="结果分配"-->
-<!--            ></el-button>-->
-<!--            &lt;!&ndash; relationProject('4534532', '项目5') &ndash;&gt;-->
-<!--            <el-button-->
-<!--              type="primary"-->
-<!--              @click="RemoverelationProject()"-->
-<!--              :disabled="buttonIson.DisassociateBtn"-->
-<!--              class="oper-btn move"-->
-<!--              title="移除分配项目"-->
-<!--            ></el-button>-->
+
+        <!-- 暂时注掉拆分结果-->
 <!--            <el-button
               type="primary"
               :disabled="buttonIson.resultSplitBtn"
               class="oper-btn split"
               @click="openResultSplitDialog"
-              style="margin-left: 10px"
-            ></el-button>-->
+              style="margin-left: 10px"/>-->
             <el-button
               type="primary"
               @click="exportExcel"
@@ -435,8 +422,8 @@ export default {
       success1: false, // 用来测试open2方法里的deleteRunResultShare方法返回值是否为true，如果为true则success为true
       selected1: [], // 存储表格中选中的数据
       buttonIson: {
-        AssociatedBtn: true,
-        DisassociateBtn: true,
+        associatedBtn: true,
+        disassociateBtn: true,
         deleteBtn: true,
         resultSplitBtn: true,
         resultShareBtn: true,
@@ -687,27 +674,20 @@ export default {
      * 当多选框改变时触发
      */
     handleSelectionChange(val) {
+      this.buttonIson.associatedBtn = false;
+      this.buttonIson.disassociateBtn = false;
+      this.buttonIson.deleteBtn = false;
+      this.buttonIson.resultSplitBtn = false;
+      this.buttonIson.resultShareBtn = false;
+      this.buttonIson.exportBtn = false;
       if (val.length <= 0) {
-        this.buttonIson.AssociatedBtn = true;
-        this.buttonIson.DisassociateBtn = true;
+        this.buttonIson.associatedBtn = true;
+        this.buttonIson.disassociateBtn = true;
         this.buttonIson.deleteBtn = true;
         this.buttonIson.resultSplitBtn = true;
         this.buttonIson.resultShareBtn = true;
-        this.buttonIson.exportBtn = false;
       } else if (val.length == 1) {
-        this.buttonIson.AssociatedBtn = false;
-        this.buttonIson.DisassociateBtn = false;
-        this.buttonIson.deleteBtn = false;
         this.buttonIson.resultSplitBtn = true;
-        this.buttonIson.resultShareBtn = false;
-        this.buttonIson.exportBtn = false;
-      } else if (val.length > 1) {
-        this.buttonIson.AssociatedBtn = false;
-        this.buttonIson.DisassociateBtn = false;
-        this.buttonIson.deleteBtn = false;
-        this.buttonIson.resultSplitBtn = false;
-        this.buttonIson.resultShareBtn = false;
-        this.buttonIson.exportBtn = false;
       }
       this.share.splice(0, this.share.length);
       this.notShare.splice(0, this.notShare.length);
@@ -1048,7 +1028,7 @@ export default {
     /**
      * 移除项目分配
      */
-    RemoverelationProject() {
+    removeRelationProject() {
       var ids = [];
       for (var i = 0; i < this.selected1.length; i++) {
         ids.push(this.selected1[i].runTaskRelUuid);

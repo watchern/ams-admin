@@ -23,20 +23,22 @@
           type="primary"
           @click="openProjectDialog"
           :disabled="buttonIson.AssociatedBtn"
-          class="oper-btn link-2"
+          class="oper-btn allocation btn-width-md"
         ></el-button>-->
+        <!-- @分配结果@-->
         <el-button
           type="primary"
           @click="modelResultOpenDialog()"
           :disabled="buttonIson.resultShareBtn"
-          class="oper-btn share"
-        ></el-button>
+          class="oper-btn allocation"
+        />
+        <!-- 移除关联项目 -->
         <el-button
           type="primary"
           @click="removeRelationProject()"
           :disabled="buttonIson.disassociateBtn"
-          class="btn-width-max oper-btn move"
-          ></el-button>
+          class="btn-width-max oper-btn remove-allocation"
+          />
 <!--        <el-button
           type="primary"
           :disabled="buttonIson.resultSplitBtn"
@@ -48,13 +50,13 @@
           @click="exportExcel"
           :disabled="buttonIson.exportBtn"
           class="oper-btn export"
-        ></el-button>
+        />
         <el-button
           :disabled="buttonIson.deleteBtn"
           type="primary"
           @click="deleteRunTaskRel"
           class="oper-btn delete-2"
-        ></el-button>
+        />
       </el-row>
     </div>
     <el-table
