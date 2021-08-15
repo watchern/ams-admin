@@ -207,10 +207,6 @@
   content:'\e695  发布'!important;
 }
 
-.oper-btn.cancel-publish:after{
-  content:'\e695  取消'!important;
-}
-
 // setting
 .oper-btn.setting:after{
   content:'\e606  设置'!important;
@@ -261,11 +257,8 @@
 }
 
 // add-folder
-.oper-btn.upload-folder:after{
-  content:'\e67c  上传文件'!important;
-}
 
-.oper-btn.add-folder-1:after{
+.oper-btn.add-directory:after{
   content:'\e67c  新增文件夹'!important;
 }
 
@@ -278,110 +271,92 @@
   content:'\e66e  分配'!important;
 }
 
-// folder
-.oper-btn.folder:after{
-  content:'\e67d  分配'!important;
+.oper-btn.opensql:after{
+  content:'\e67d  打开SQL'!important;
 }
 
-.oper-btn.folder-1:after{
-  content:'\e67d  SQL'!important;
-}
-
-// export 导出
-.oper-btn.export:after {
-  content: '\e7a3  导出' !important;
-}
-
-// 下载、下载模板等
-.oper-btn.download:after{
-  content:'\e7a3  下载'!important;
-}
-
-.oper-btn.download-template:after{
-  content:'\e7a3  下载模板'!important;
-}
-
-// import
+//region @所有导入、上传按钮 start@
 .oper-btn.import:after {
   content: '\e775  导入' !important;
 }
 .oper-btn.import-table:after {
   content: '\e775  导入表' !important;
 }
-
 .oper-btn.upload:after {
   content: '\e602  上传' !important;
 }
+.oper-btn.upload-file:after{
+  content:'\e67c  上传文件'!important;
+}
+//endregion @所有导入、上传按钮 end@
+
+//region @所有导出/下载按钮 start@
+.oper-btn.export:after {
+  content: '\e7a3  导出' !important;
+}
+.oper-btn.download:after{
+  content:'\e7a3  下载'!important;
+}
+.oper-btn.download-template:after{
+  content:'\e7a3  下载模板'!important;
+}
+//endregion @所有导出、下载按钮 end@
+
 
 // pause
-.oper-btn.pause:after{
+//region @启用、停用、暂停、停止、运行等按钮 start@
+.oper-btn.offline:after{
   content:'\e607  停用'!important;
 }
-
-.oper-btn.pause-1:after{
+.oper-btn.pause:after{
   content:'\e607  暂停'!important;
 }
-.oper-btn.pause-2:after {
-  content: '\e607  取消执行' !important;
+.oper-btn.stop:after{
+  content:'\e60c 停止'!important;
 }
-
-// start
+.oper-btn.online:after{
+  content:'\e608  启用'!important;
+}
 .oper-btn.start:after{
   content:'\e608  运行'!important;
 }
-
-.oper-btn.start-1:after{
-  content:'\e608  启动'!important;
+.oper-btn.start-failed:after{
+  content:'\e608  运行失败任务'!important;
 }
-
-.oper-btn.start-2:after{
-  content:'\e608  恢复'!important;
+.oper-btn.recover-paused:after{
+  content:'\e608  运行暂停任务'!important;
 }
-
-.oper-btn.start-3:after{
-  content:'\e608  启用'!important;
+.oper-btn.start-now:after{
+  content:'\e608  立即运行'!important;
 }
+//endregion @启用、停用、暂停、停止、运行等按钮 end@
 
-.oper-btn.start-4:after{
-  content:'\e608  运行'!important;
-}
-
-// delete
+//region @删除、清空等按钮 start@
 .oper-btn.delete:after{
   content:'\e601  删除'!important;
 }
-
-.oper-btn.delete-1:after{
-  content:'\e601  删除'!important;
+.oper-btn.delete-partial:after{
+  content:'\e601  删除区间'!important;
 }
-
 .oper-btn.delete-result:after{
   content:'\e601  删除结果'!important;
 }
-
 .oper-btn.delete-projectrel:after{
   content:'\e601  删除关联项目'!important;
 }
+.oper-btn.delete-param:after{
+  content:'\e601  清除参数'!important;
+}
+//endregion @删除、清空等按钮 end@
 
-.oper-btn.delete-4:after{
+.oper-btn.delete-row:after{
   content:'\e601  删除'!important;
 }
 
-.oper-btn.delete-5:after{
-  content:'\e601  删除'!important;
+.oper-btn.delete-rule:after{
+  content:'\e601  删除规则'!important;
 }
-
-.oper-btn.delete-6:after{
-  content:'\e601  删除'!important;
-}
-
-.oper-btn.delete-7:after{
-  content:'\e601  删除'!important;
-}
-
-.oper-btn.delete-8:after{
-  content:'\e601  删除'!important;
-}
+//endregion
 
 // 单义图标  15个
 
@@ -422,15 +397,11 @@
   content:'\e6d8  图表'!important;
 }
 
-.oper-btn.cancelshare:after{
-  content:'\e63d  取消'!important;
-}
-
 .oper-btn.sqlcheck:after{
   content:'\e613  校验'!important;
 }
 
-.oper-btn.clean:after{
+.oper-btn.format:after{
   content:'\e600  格式化'!important;
 }
 
@@ -440,12 +411,27 @@
 .oper-btn.customfield:after{
   content:'\e665  字段'!important;
 }
+
+//region @所有取消按钮 start@
 .oper-btn.cancel:after{
   content:'\e657  取消'!important;
 }
 .oper-btn.cancel-none:after{
   content:'\e657'!important;
 }
+
+.oper-btn.cancelshare:after{
+  content:'\e63d  取消'!important;
+}
+
+.oper-btn.cancel-publish:after{
+  content:'\e657  取消发布'!important;
+}
+
+.oper-btn.cancel-exec:after {
+  content: '\e607  取消执行' !important;
+}
+//endregion @所有取消按钮 end@
 
 // 未使用 16个
 .oper-btn.pdf:after{
@@ -474,9 +460,6 @@
 }
 .oper-btn.show-detail:after{
   content:'\e609'!important;
-}
-.oper-btn.stop:after{
-  content:'\e60c'!important;
 }
 .oper-btn.timing:after{
   content:'\e60d'!important;

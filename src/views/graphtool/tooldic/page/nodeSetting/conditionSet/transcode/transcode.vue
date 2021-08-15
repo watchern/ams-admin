@@ -27,7 +27,7 @@
             <el-table-column label="操作" width="100" align="center" :resizable="false">
                 <template slot-scope="scope">
                     <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add-4" @click="addTranscode" style="line-height: normal;"/>
-                    <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete-8" @click="deleteRule(scope.$index)" style="line-height: normal;"/>
+                    <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete-rule btn-width-md" @click="deleteRule(scope.$index)" style="line-height: normal;"/>
                 </template>
             </el-table-column>
         </el-table>

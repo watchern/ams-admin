@@ -546,7 +546,7 @@
             <el-button
               type="primary"
               v-if="scope.row.hasParamSet"
-              class="oper-btn delete-4"
+              class="oper-btn delete-param btn-width-md"
               @click="clearSettingParam(scope.row.nodeId, scope.$index)"
               style="line-height: normal"
             />
