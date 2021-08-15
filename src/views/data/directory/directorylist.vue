@@ -53,7 +53,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn add-folder-1 btn-width-max"
+          class="oper-btn add-folder btn-width-max"
           :disabled="clickData.type == 'table'"
           @click="createFolder"
         />
