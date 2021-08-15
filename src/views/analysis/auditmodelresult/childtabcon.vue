@@ -7,8 +7,7 @@
         ref="myquerybuilder"
         :columns="queryData"
         :data="queryJson"
-        @queryconditionchangetable="queryConditionChangeTable"
-      />
+        @queryconditionchangetable="queryConditionChangeTable" />
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="queryCondition">查 询</el-button>
@@ -16,18 +15,13 @@
     </el-dialog>
     <el-row v-if="useType != 'graph' && ifopen != 0">
       <!--   v-if="(useType=='sqlEditor'||myFlag) && !chartSwitching"   -->
-      <div
-        class="el-btn-no-colorz"
-        v-if="!chartSwitching && ifopen == 1"
-        @click="switchDivStyle('chart')"
-      >
+      <div class="el-btn-no-colorz" v-if="!chartSwitching && ifopen == 1" @click="switchDivStyle('chart')" >
         <span> <i class="el-icon-menu"></i> 仅表格 </span>
       </div>
       <div
         class="el-btn-no-colorz"
         v-if="chartSwitching && ifopen == 1"
-        @click="switchDivStyle('table')"
-      >
+        @click="switchDivStyle('table')">
         <span> <i class="el-icon-s-data"></i> 配置图表 </span>
       </div>
       <div class="el-btn-no-colorz" v-if="isModelPreview" @click="saveResult()">
@@ -35,12 +29,10 @@
           <i class="oper-btn save"></i>
         </span>
       </div>
-      <div
-        v-if="(useType == 'sqlEditor' || myFlag) && !chartSwitching"
+      <div v-if="(useType == 'sqlEditor' || myFlag) && !chartSwitching"
         v-for="(item, index) in chartsResource.menuData"
         class="chartChange"
-        :key="index"
-      >
+        :key="index">
         <div class="item_div" v-for="(menu, i) in item.sub">
           <div
             :key="i"
@@ -53,7 +45,7 @@
             @drag="drag"
             @dragend="dragend(menu)"
             draggable="true"
-          ></div>
+          />
           <!--    @drag="drag" @dragend="dragend(menu)"      -->
         </div>
       </div>
@@ -61,16 +53,11 @@
     <div ref="DragOn" class="drag-on">
       <div v-if="chartSwitching" class="drag-on-table textz">
         <div v-if="myFlag">
-          <div
-            align="right"
-            :style="
-              ifopen != 0 ? 'position: absolute;top: -29px;right: 0;' : ''
-            "
-          >
+          <div align="right" :style="ifopen != 0 ? 'position: absolute;top: -29px;right: 0;' : ''">
             <el-dropdown>
               <el-button
                 type="primary"
-                class="oper-btn link-2 btn-width-md"
+                class="oper-btn allocation btn-width-md"
                 :disabled="modelRunResultBtnIson.associatedBtn"
               ></el-button>
               <el-dropdown-menu slot="dropdown">
@@ -86,21 +73,21 @@
               :disabled="false"
               type="primary"
               @click="queryConditionSetting"
-              class="oper-btn search"
+              class="oper-btn setting-detail"
               style="margin-left: 10px"
-            ></el-button>
+            />
             <el-button
               :disabled="false"
               type="primary"
               @click="reSet"
-              class="oper-btn again-3"
-            ></el-button>
+              class="oper-btn reset"
+            />
             <el-button
               :disabled="modelRunResultBtnIson.exportBtn"
               type="primary"
               @click="exportExcel"
               class="oper-btn export"
-            ></el-button>
+            />
             <!-- addDetailRel('qwer1', '项目11') -->
             <el-button
               v-if="yancheng"
@@ -235,30 +222,26 @@
                 <el-dropdown>
                   <el-button
                     type="primary"
-                    class="oper-btn link-2 btn-width-md"
+                    class="oper-btn allocation btn-width-md"
                     :disabled="modelRunResultBtnIson.associatedBtn"
-                  ></el-button>
+                  />
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="openProjectDialog"
-                      >分配项目</el-dropdown-item
-                    >
-                    <el-dropdown-item @click.native="removeRelated()"
-                      >移除分配项目</el-dropdown-item
-                    >
+                    <el-dropdown-item @click.native="openProjectDialog">分配项目</el-dropdown-item>
+                    <el-dropdown-item @click.native="removeRelated()">移除分配项目</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
                 <el-button
                   :disabled="false"
                   type="primary"
                   @click="queryConditionSetting"
-                  class="oper-btn search"
+                  class="oper-btn setting-detail"
                   style="margin-left: 10px"
                 ></el-button>
                 <el-button
                   :disabled="false"
                   type="primary"
                   @click="reSet"
-                  class="oper-btn again-3"
+                  class="oper-btn reset"
                 ></el-button>
                 <el-button
                   :disabled="modelRunResultBtnIson.exportBtn"

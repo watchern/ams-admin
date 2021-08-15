@@ -18,7 +18,7 @@
                                 </el-tooltip>
                             </el-col>
                             <el-col :span="4">
-                                <el-button type="primary" class="oper-btn detail-1" @click="previewTransCode(ruleObj.transRuleUuid)" style="float:right;line-height: normal;"/>
+                                <el-button type="primary" class="oper-btn detail-rule btn-width-max" @click="previewTransCode(ruleObj.transRuleUuid)" style="float:right;line-height: normal;"/>
                             </el-col>
                         </el-option>
                     </el-select>
@@ -26,7 +26,7 @@
             </el-table-column>
             <el-table-column label="操作" width="100" align="center" :resizable="false">
                 <template slot-scope="scope">
-                    <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add-4" @click="addTranscode" style="line-height: normal;"/>
+                    <el-button v-if="scope.$index === 0" type="primary" class="oper-btn add-rule btn-width-md" @click="addTranscode" style="line-height: normal;"/>
                     <el-button v-if="scope.$index !== 0" type="primary" class="oper-btn delete-rule btn-width-md" @click="deleteRule(scope.$index)" style="line-height: normal;"/>
                 </template>
             </el-table-column>

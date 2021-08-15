@@ -96,115 +96,80 @@
 .oper-btn.authority:after{
   content:' 权限分配'!important;
 }
-// add
+
+//region @新增相关操作 start@
 .oper-btn.add:after {
   content: '\e60a  新增' !important;
 }
-
-// etl依赖添加
 .oper-btn.scheduleadd:after {
   content: '\e60a' !important;
 }
-
-.oper-btn.add-1:after {
-  content: '\e60a  新增' !important;
+.oper-btn.add-table:after {
+  content: '\e60a  新增表' !important;
 }
-
-.oper-btn.add-2:after {
-  content: '\e60a  新增' !important;
+.oper-btn.add-row:after {
+  content: '\e60a  新增行' !important;
 }
-
-.oper-btn.add-3:after {
-  content: '\e60a  新增' !important;
+.oper-btn.add-rule:after {
+  content: '\e60a  新增规则' !important;
 }
-
-.oper-btn.add-4:after {
-  content: '\e60a  新增' !important;
+.oper-btn.add-partial:after{
+  content:'\e60a  新增区间'!important;
 }
-
-.oper-btn.add-5:after {
-  content: '\e60a  新增' !important;
+.oper-btn.add-directory:after{
+  content:'\e67c  新增文件夹'!important;
 }
+//endregion @新增相关操作 end@
 
-// edit
+//region @编辑相关操作 start@
 .oper-btn.edit:after {
   content: '\e604  编辑' !important;
 }
-
-.oper-btn.edit-1:after {
-  content: '\e604  编辑' !important;
+.oper-btn.edit-period:after {
+  content: '\e604  编辑使用期限' !important;
 }
+//endregion @编辑相关操作 end@
 
-.oper-btn.edit-2:after {
-  content: '\e604  编辑' !important;
-}
-
-.oper-btn.edit-3:after {
-  content: '\e604  编辑' !important;
-}
-
-.oper-btn.edit-4:after {
-  content: '\e604  维护' !important;
-}
-
-.oper-btn.edit-5:after {
-  content: '\e604  维护' !important;
-}
-
-// detail
-.oper-btn.detail:after {
+//region @查看详情、预览等相关操作 start@
+.oper-btn.preview:after {
   content: '\e609  预览' !important;
 }
-
-.oper-btn.detail-1:after {
+.oper-btn.detail:after {
   content: '\e609  详情' !important;
 }
-
-.oper-btn.detail-2:after {
-  content: '\e609  展示' !important;
+.oper-btn.detail-rule:after {
+  content: '\e609  查看规则详情' !important;
 }
+//endregion @查看详情、预览等相关操作 end@
 
-// excel
-.oper-btn.excel:after {
-  content: '\e637  导出' !important;
-}
-
-.oper-btn.excel-2:after {
-  content: '\e637  编译' !important;
-}
-
-.oper-btn.excel-3:after {
-  content: '\e637  获取' !important;
+.oper-btn.buildsql:after {
+  content: '\e637  编译模型SQL' !important;
 }
 
 // again
-.oper-btn.again-2:after {
-  content: '\e69c  刷新' !important;
-}
-
-.oper-btn.again-3:after {
-  content: '\e69c  重置' !important;
+.oper-btn.reset:after{
+  content:'\e69c  重置'!important;
 }
 
 // link
-.oper-btn.link:after {
-  content: '\e77c  查询' !important;
+.oper-btn.linkdetail:after{
+  content:'\e77c  查询关联'!important;
 }
 
-.oper-btn.link-3:after {
-  content: '\e77c  测试' !important;
+.oper-btn.testconn:after{
+  content:'\e77c  测试连接'!important;
 }
 
-.oper-btn.link-2:after {
-  content: '\e6af  分配项目' !important;
+.oper-btn.allocation:after {
+  content: '\e6af  结果分配' !important;
 }
 
-.oper-btn.link-1:after {
-  content: '\e6af  绑定' !important;
+.oper-btn.link-bindres:after{
+  content:'\e6af  绑定资源'!important;
 }
 
-.oper-btn.link-4:after{
-  content:'\e6af  关联'!important;
+.oper-btn.link-table:after{
+  content:'\e6af  关联表'!important;
 }
 
 // publish
@@ -217,21 +182,17 @@
   content: '\e606  设置' !important;
 }
 
-.oper-btn.setting-1:after {
-  content: '\e606  设置' !important;
+.oper-btn.setting-param:after{
+  content:'\e606  设置参数'!important;
 }
 
-.oper-btn.setting-2:after {
-  content: '\e606  修改' !important;
+.oper-btn.edit-setting-param:after{
+  content:'\e606  修改参数'!important;
 }
 
 // share
-.oper-btn.share-1:after {
-  content: '\e60b  分享' !important;
-}
-
-.oper-btn.share:after {
-  content: '\e60b  分配' !important;
+.oper-btn.share:after{
+  content:'\e60b  分享'!important;
 }
 
 // search
@@ -239,17 +200,17 @@
   content: '\e60f  查询' !important;
 }
 
-.oper-btn.search-1:after {
-  content: '\e60f  预览' !important;
+.oper-btn.setting-detail:after{
+  content:'\e60f  查询设置'!important;
 }
 
 // move
-.oper-btn.move:after {
+.oper-btn.disassociate:after{
   content: '\e672  移除项目分配' !important;
 }
 
-.oper-btn.move-1:after {
-  content: '\e672  移动' !important;
+.oper-btn.move:after{
+  content:'\e672  移动'!important;
 }
 
 // processing
@@ -257,22 +218,8 @@
   content: '\e671  处理' !important;
 }
 
-.oper-btn.processing-1:after {
-  content: '\e671  已阅' !important;
-}
-
-// add-folder
-.oper-btn.add-directory:after{
-  content:'\e67c  新增文件夹'!important;
-}
-
-// refresh
-.oper-btn.refresh:after {
-  content: '\e66e  重启' !important;
-}
-
-.oper-btn.refresh-1:after {
-  content: '\e66e  分配' !important;
+.oper-btn.mark-read:after{
+  content:'\e671  标记已阅'!important;
 }
 
 .oper-btn.opensql:after{
@@ -304,6 +251,9 @@
 .oper-btn.download-template:after{
   content:'\e7a3  下载模板'!important;
 }
+.oper-btn.exportsql:after{
+  content:'\e637  导出宽表SQL'!important;
+}
 //endregion @所有导出、下载按钮 end@
 
 //region @启用、停用、暂停、停止、运行等按钮 start@
@@ -330,6 +280,9 @@
 }
 .oper-btn.start-now:after{
   content:'\e608  立即运行'!important;
+}
+.oper-btn.restart:after{
+  content:'\e66e  重新运行'!important;
 }
 //endregion @启用、停用、暂停、停止、运行等按钮 end@
 
@@ -399,7 +352,7 @@
   content:'\e629  说明'!important;
 }
 .oper-btn.customfield:after{
-  content:'\e665  字段'!important;
+  content:'\e665  自定义字段'!important;
 }
 .oper-btn.sqlcheck:after{
   content:'\e613  校验'!important;
@@ -477,15 +430,10 @@
   content: '\e680' !important;
 }
 
-.oper-btn.search-2:after {
-  content: '\e63f' !important;
+.oper-btn.interactive:after{
+  content:'\e60e'!important;
 }
 
-.oper-btn.interactive:after {
-  content: '\e60e' !important;
-}
-
-// 新增
 .oper-btn.skip:after {
   content:'\e612  跳过'!important;
 }

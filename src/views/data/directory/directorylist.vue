@@ -23,7 +23,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn move-1"
+          class="oper-btn move"
           :disabled="selections.length === 0"
           @click="movePath"
         />
@@ -35,7 +35,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn add-2"
+          class="oper-btn add-table btn-width-md"
           :disabled="
             clickData.type == 'table' ||
             typeof clickData.extMap.sceneInstUuid !== 'undefined'
@@ -66,25 +66,27 @@
         />
         <el-button
           type="primary"
-          class="oper-btn link-4"
+          class="oper-btn link-table"
           :disabled="selections.length !== 1"
           @click="relationTable"
         />
         <el-button
           type="primary"
-          class="oper-btn detail-1"
+          class="oper-btn detail"
           :disabled="selections.length !== 1"
           @click="showTable"
         />
+        <!-- 预览数据 -->
         <el-button
           type="primary"
-          class="oper-btn search-1"
+          class="oper-btn preview"
           :disabled="infoFlag"
           @click="preview"
         />
+      <!--  分享 -->
         <el-button
           type="primary"
-          class="oper-btn share-1"
+          class="oper-btn share"
           :disabled="selections.length === 0"
           @click="shareTable"
         />
