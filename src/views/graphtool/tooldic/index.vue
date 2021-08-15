@@ -546,7 +546,7 @@
             <el-button
               type="primary"
               v-if="scope.row.hasParamSet"
-              class="oper-btn delete-4"
+              class="oper-btn delete-param btn-width-md"
               @click="clearSettingParam(scope.row.nodeId, scope.$index)"
               style="line-height: normal"
             />
@@ -575,12 +575,8 @@
         :params-setting="sp_paramsSetting"
       />
       <div slot="footer" v-if="initNodeSettingVue">
-        <el-button @click="nodeParamSettingDialogVisible = false"
-          >取消</el-button
-        >
-        <el-button type="primary" @click="settingParamsCallBack()"
-          >保存</el-button
-        >
+        <el-button @click="nodeParamSettingDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="settingParamsCallBack()">保存</el-button>
       </div>
     </el-dialog>
     <el-dialog

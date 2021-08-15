@@ -77,7 +77,7 @@
 <!--            <el-button
               type="primary"
               :disabled="buttonIson.resultSplitBtn"
-              class="oper-btn split-2"
+              class="oper-btn split"
               @click="openResultSplitDialog"
               style="margin-left: 10px"
             ></el-button>-->
@@ -91,7 +91,7 @@
               :disabled="buttonIson.deleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
-              class="oper-btn delete-2"
+              class="oper-btn delete-result"
             ></el-button>
           </el-row>
         </div>

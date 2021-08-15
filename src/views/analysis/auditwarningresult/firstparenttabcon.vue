@@ -40,7 +40,7 @@
 <!--        <el-button
           type="primary"
           :disabled="buttonIson.resultSplitBtn"
-          class="oper-btn split-2"
+          class="oper-btn split"
           @click="openResultSplitDialog"
         ></el-button>-->
         <el-button
