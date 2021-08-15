@@ -261,13 +261,13 @@
 .oper-btn.publish:after{
   content:'\e695'!important;
 }
-.oper-btn.publish-1:after{
-  content:'\e695'!important;
-}
 .oper-btn.publish:hover::before{
   content:'发布'!important;
 }
-.oper-btn.publish-1:hover::before{
+.oper-btn.cancel-publish:after{
+  content:'\e695'!important;
+}
+.oper-btn.cancel-publish:hover::before{
   content:'取消发布'!important;
 }
 // setting

@@ -207,7 +207,7 @@
   content:'\e695  发布'!important;
 }
 
-.oper-btn.publish-1:after{
+.oper-btn.cancel-publish:after{
   content:'\e695  取消'!important;
 }
 
@@ -289,7 +289,7 @@
 
 // export 导出
 .oper-btn.export:after {
-  content: '\e602  导出' !important;
+  content: '\e7a3  导出' !important;
 }
 
 // 下载、下载模板等

@@ -11,7 +11,7 @@
                 <el-button v-if="type === 'privateGraphType'" type="primary" class="oper-btn share-1" @click="personTreeDialogVisible = true" :disabled="shareGraphBtn"/>
                 <el-button v-if="type === 'shareToGraphType'" type="primary" class="oper-btn cancelshare"@click="cancelShare" :disabled="cancelShareGraphBtn"/>
                 <el-button v-if="type === 'personScreenGraphType'" type="primary" class="oper-btn publish" @click="publicGraph" :disabled="publicGraphBtn"/>
-                <el-button v-if="type === 'screenGraphType'" type="primary" class="oper-btn publish-1" @click="cancelPublic" :disabled="cancelPublicGraphBtn"/>
+                <el-button v-if="type === 'screenGraphType'" type="primary" class="oper-btn cancel-publish" @click="cancelPublic" :disabled="cancelPublicGraphBtn"/>
                 <el-button v-if="type.toLowerCase().indexOf('screengraphtype') > -1" type="primary" class="oper-btn start" @click="run" :disabled="runGraphBtn"/>
             </el-col>
         </el-row>
