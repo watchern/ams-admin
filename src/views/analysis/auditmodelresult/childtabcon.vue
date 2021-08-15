@@ -99,7 +99,7 @@
               :disabled="modelRunResultBtnIson.exportBtn"
               type="primary"
               @click="exportExcel"
-              class="oper-btn export-2"
+              class="oper-btn export"
             ></el-button>
             <!-- addDetailRel('qwer1', '项目11') -->
             <el-button
@@ -169,7 +169,7 @@
                 <el-button
                   type="primary"
                   @click="modelResultExport"
-                  class="oper-btn export-2"
+                  class="oper-btn export"
                   title="导出"
                 ></el-button>
               </downloadExcel>
@@ -219,7 +219,7 @@
                   <el-button
                     type="primary"
                     @click="modelResultExport"
-                    class="oper-btn export-2"
+                    class="oper-btn export"
                     title="导出"
                   ></el-button>
                 </downloadExcel>
@@ -264,7 +264,7 @@
                   :disabled="modelRunResultBtnIson.exportBtn"
                   type="primary"
                   @click="exportExcel"
-                  class="oper-btn export-2"
+                  class="oper-btn export"
                 ></el-button>
                 <!-- addDetailRel('qwer1', '项目11') -->
                 <el-button

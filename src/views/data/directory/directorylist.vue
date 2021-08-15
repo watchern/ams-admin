@@ -44,7 +44,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn export"
+          class="oper-btn import-table"
           :disabled="
             clickData.type == 'table' ||
             typeof clickData.extMap.sceneInstUuid !== 'undefined'
@@ -53,7 +53,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn add-folder-1"
+          class="oper-btn add-folder-1 btn-width-max"
           :disabled="clickData.type == 'table'"
           @click="createFolder"
         />

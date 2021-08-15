@@ -172,7 +172,7 @@
   content:'维护'!important;
 }
 .oper-btn.edit-5:hover::before{
-   content:'表结构维护'!important;
+  content:'表结构维护'!important;
 }
 // detail
 .oper-btn.detail:after{
@@ -190,9 +190,9 @@
 .oper-btn.detail-1:hover::before{
   content:'查看规则详情'!important;
 }
- .oper-btn.detail-2:hover::before{
-   content:'表结构展示'!important;
- }
+.oper-btn.detail-2:hover::before{
+  content:'表结构展示'!important;
+}
 // excel
 .oper-btn.excel:after{
   content:'\e637'!important;
@@ -380,42 +380,45 @@
 .oper-btn.folder-1:hover::before{
   content:'打开SQL'!important;
 }
-// export
+
+// import 导入
+.oper-btn.import:after{
+  content:'\e7a3'!important;
+}
+.oper-btn.import:hover::before{
+  content:'导入'!important;
+}
+.oper-btn.import-table:after{
+  content:'\e7a3'!important;
+}
+.oper-btn.import-table:hover::before{
+  content:'导入表'!important;
+}
+
+
+// export 导出
 .oper-btn.export:after{
   content:'\e602'!important;
 }
 .oper-btn.export:hover::before{
-  content:'导入表'!important;
-}
-.oper-btn.export-1:after{
-  content:'\e602'!important;
-}
-.oper-btn.export-1:hover::before{
-  content:'上传'!important;
-}
-.oper-btn.export-3:after{
-  content:'\e602'!important;
-}
-.oper-btn.export-3:hover::before{
   content:'导出'!important;
 }
-// import
-.oper-btn.import:after{
+
+// 下载、下载模板等
+.oper-btn.download:after{
   content:'\e603'!important;
 }
-.oper-btn.import:hover::before{
+.oper-btn.download:hover::before{
   content:'下载'!important;
 }
-.oper-btn.import-1:after{
+
+.oper-btn.download-template:after{
   content:'\e603'!important;
 }
-.oper-btn.import-1:hover::before{
-  content:'下载流程模板'!important;
+.oper-btn.download-template:hover::before{
+  content:'下载模板'!important;
 }
-.oper-btn.import-2:hover::before{
-  content:'下载项目模板'!important;
-}
-// pause
+// pause 暂停
 .oper-btn.pause:after{
   content:'\e607'!important;
 }
@@ -533,25 +536,6 @@
   content:'更多'!important;
 }
 
-.oper-btn.export-2:after{
-  content:'\e775'!important;
-}
-.oper-btn.export-2:hover::before{
-  content:'导出'!important;
-}
-.oper-btn.export-4:after{
-  content:'\e775'!important;
-}
-.oper-btn.export-4:hover::before{
-  content:'结果导出'!important;
-}
-.oper-btn.export-5:after{
-  content:'\e775'!important;
-}
-.oper-btn.export-5:hover::before{
-  content:'模板导出'!important;
-}
-
 .oper-btn.split-2:after{
   content:'\e617'!important;
 }
@@ -657,13 +641,6 @@
 }
 
 
-.oper-btn.import-2:after{
-  content:'\e7a3'!important;
-}
-.oper-btn.import-2:hover::before{
-  content:'模板导入'!important;
-}
-
 // 未使用 16个
 .oper-btn.pdf:after{
   content:'\e639'!important;
@@ -677,9 +654,8 @@
 .oper-btn.word:after{
   content:'\e63c'!important;
 }
-.oper-btn.import-2:after{
-  content:'\e7a3'!important;
-}
+
+
 .oper-btn.menu:after{
   content:'\e669'!important;
 }

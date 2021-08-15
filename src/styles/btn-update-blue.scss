@@ -261,12 +261,12 @@
 }
 
 // add-folder
-.oper-btn.add-folder:after{
-  content:'\e67c  上传'!important;
+.oper-btn.upload-folder:after{
+  content:'\e67c  上传文件'!important;
 }
 
 .oper-btn.add-folder-1:after{
-  content:'\e67c  新增'!important;
+  content:'\e67c  新增文件夹'!important;
 }
 
 // refresh
@@ -287,30 +287,30 @@
   content:'\e67d  SQL'!important;
 }
 
-// export
-.oper-btn.export:after{
-  content:'\e602  导入'!important;
+// export 导出
+.oper-btn.export:after {
+  content: '\e602  导出' !important;
 }
 
-.oper-btn.export-1:after{
-  content:'\e602  上传'!important;
+// 下载、下载模板等
+.oper-btn.download:after{
+  content:'\e7a3  下载'!important;
 }
 
-.oper-btn.export-3:after{
-  content:'\e602  导出'!important;
+.oper-btn.download-template:after{
+  content:'\e7a3  下载模板'!important;
 }
 
 // import
-.oper-btn.import:after{
-  content:'\e603  下载'!important;
+.oper-btn.import:after {
+  content: '\e775  导入' !important;
+}
+.oper-btn.import-table:after {
+  content: '\e775  导入表' !important;
 }
 
-.oper-btn.import-1:after{
-  content:'\e603  下载'!important;
-}
-
-.oper-btn.import-2:after {
-  content: '\e603  下载项目模板' !important;
+.oper-btn.upload:after {
+  content: '\e602  上传' !important;
 }
 
 // pause
@@ -390,6 +390,7 @@
   content:'\e605  更多'!important;
 }
 
+<<<<<<< Updated upstream
 .oper-btn.export-2:after{
   content:'\e775  导出'!important;
 }
@@ -401,6 +402,8 @@
 .oper-btn.export-5:after{
   content:'\e7a3  下载模板'!important;
 }
+=======
+>>>>>>> Stashed changes
 
 .oper-btn.split-2:after{
   content:'\e617  拆分'!important;
@@ -458,9 +461,12 @@
 .oper-btn.cancel-none:after{
   content:'\e657'!important;
 }
+<<<<<<< Updated upstream
 .oper-btn.import-2:after{
   content:'\e775  导入'!important;
 }
+=======
+>>>>>>> Stashed changes
 
 // 未使用 16个
 .oper-btn.pdf:after{

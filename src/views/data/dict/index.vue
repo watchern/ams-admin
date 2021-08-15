@@ -9,8 +9,8 @@
     </div>
     <el-row>
       <el-col align="right">
-        <el-button type="primary" class="oper-btn export-5 btn-width-md" @click="exportFile" />
-        <el-button type="primary" class="oper-btn import-2" @click="importFile" />
+        <el-button type="primary" class="oper-btn download-template btn-width-md" @click="exportFile" />
+        <el-button type="primary" class="oper-btn import" @click="importFile" />
       </el-col>
     </el-row>
     <el-table

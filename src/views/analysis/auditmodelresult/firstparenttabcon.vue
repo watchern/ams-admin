@@ -62,7 +62,7 @@
               type="primary"
               @click="exportExcel"
               :disabled="buttonIson.exportBtn"
-              class="oper-btn export-4"
+              class="oper-btn export"
             ></el-button>
             <el-button
               :disabled="buttonIson.deleteBtn"

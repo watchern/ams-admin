@@ -31,12 +31,12 @@
           :disabled="buttonIson.resultShareBtn"
           class="oper-btn share"
         ></el-button>
-        <!--<el-button
+        <el-button
           type="primary"
-          @click="RemoverelationProject()"
-          :disabled="buttonIson.DisassociateBtn"
-          class="oper-btn move"
-          ></el-button>-->
+          @click="removeRelationProject()"
+          :disabled="buttonIson.disassociateBtn"
+          class="btn-width-max oper-btn move"
+          ></el-button>
 <!--        <el-button
           type="primary"
           :disabled="buttonIson.resultSplitBtn"
@@ -47,7 +47,7 @@
           type="primary"
           @click="exportExcel"
           :disabled="buttonIson.exportBtn"
-          class="oper-btn export-2"
+          class="oper-btn export"
         ></el-button>
         <el-button
           :disabled="buttonIson.deleteBtn"
@@ -990,7 +990,7 @@ export default {
     /**
      * 移除项目关联
      */
-    RemoverelationProject() {
+    removerelationProject() {
       var ids = [];
       for (var i = 0; i < this.selected1.length; i++) {
         ids.push(this.selected1[i].runTaskRelUuid);
