@@ -101,6 +101,11 @@
   content: '\e60a  新增' !important;
 }
 
+// etl依赖添加
+.oper-btn.scheduleadd:after {
+  content: '\e60a' !important;
+}
+
 .oper-btn.add-1:after {
   content: '\e60a  新增' !important;
 }
@@ -351,6 +356,9 @@
 .oper-btn.delete-rule:after{
   content:'\e601  删除规则'!important;
 }
+.oper-btn.scheduledelete:after {
+  content: '\e601' !important;
+}
 //endregion @删除、清空等按钮 end@
 
 // 单义图标  15个
@@ -363,12 +371,9 @@
   content: '\e83e  命名' !important;
 }
 
-<<<<<<< HEAD
 .oper-btn.copy:after {
   content: '\e66c  复制' !important;
 }
-=======
->>>>>>> dev
 
 .oper-btn.maintain:after {
   content: '\e69f  工具' !important;
@@ -390,23 +395,12 @@
   content: '\e6d8  图表' !important;
 }
 
-.oper-btn.help:after {
-  content: '\e629  说明' !important;
-}
-
-.oper-btn.customfield:after {
-  content: '\e665  字段' !important;
-}
-<<<<<<< HEAD
-=======
-
 .oper-btn.help:after{
   content:'\e629  说明'!important;
 }
 .oper-btn.customfield:after{
   content:'\e665  字段'!important;
 }
->>>>>>> dev
 .oper-btn.sqlcheck:after{
   content:'\e613  校验'!important;
 }
@@ -419,13 +413,9 @@
 .oper-btn.cancel:after{
   content:'\e657  取消'!important;
 }
-<<<<<<< HEAD
-.oper-btn.cancel-none:after {
-  content: '\e657  取消' !important;
-=======
+
 .oper-btn.cancel-none:after{
   content: '\e657 ' !important;
->>>>>>> dev
 }
 .oper-btn.cancel-exec:after {
   content: '\e607  取消执行' !important;
@@ -497,23 +487,5 @@
 
 // 新增
 .oper-btn.skip:after {
-<<<<<<< HEAD
-  content: '\e612  跳过' !important;
-=======
   content:'\e612  跳过'!important;
-}
-
-// etl依赖添加、删除
-.oper-btn.scheduleadd:after{
-  content:'\e60a'!important;
->>>>>>> dev
-}
-
-// etl依赖添加、删除
-.oper-btn.scheduleadd:after {
-  content: '\e60a' !important;
-}
-
-.oper-btn.scheduledelete:after {
-  content: '\e601' !important;
 }
