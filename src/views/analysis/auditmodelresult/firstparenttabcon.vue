@@ -54,7 +54,7 @@
 <!--            <el-button
               type="primary"
               :disabled="buttonIson.resultSplitBtn"
-              class="oper-btn split-2"
+              class="oper-btn split"
               @click="openResultSplitDialog"
               style="margin-left: 10px"
             ></el-button>-->

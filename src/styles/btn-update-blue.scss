@@ -302,8 +302,6 @@
 }
 //endregion @所有导出、下载按钮 end@
 
-
-// pause
 //region @启用、停用、暂停、停止、运行等按钮 start@
 .oper-btn.offline:after{
   content:'\e607  停用'!important;
@@ -347,8 +345,6 @@
 .oper-btn.delete-param:after{
   content:'\e601  清除参数'!important;
 }
-//endregion @删除、清空等按钮 end@
-
 .oper-btn.delete-row:after{
   content:'\e601  删除'!important;
 }
@@ -356,7 +352,7 @@
 .oper-btn.delete-rule:after{
   content:'\e601  删除规则'!important;
 }
-//endregion
+//endregion @删除、清空等按钮 end@
 
 // 单义图标  15个
 
@@ -365,9 +361,6 @@
   content:'\e605  更多'!important;
 }
 
-.oper-btn.split-2:after{
-  content:'\e617  拆分'!important;
-}
 
 .oper-btn.rename:after{
   content:'\e83e  命名'!important;
@@ -397,6 +390,12 @@
   content:'\e6d8  图表'!important;
 }
 
+.oper-btn.help:after{
+  content:'\e629  说明'!important;
+}
+.oper-btn.customfield:after{
+  content:'\e665  字段'!important;
+}
 .oper-btn.sqlcheck:after{
   content:'\e613  校验'!important;
 }
@@ -405,31 +404,22 @@
   content:'\e600  格式化'!important;
 }
 
-.oper-btn.help:after{
-  content:'\e629  说明'!important;
-}
-.oper-btn.customfield:after{
-  content:'\e665  字段'!important;
-}
-
 //region @所有取消按钮 start@
 .oper-btn.cancel:after{
   content:'\e657  取消'!important;
 }
 .oper-btn.cancel-none:after{
-  content:'\e657'!important;
+  content: '\e657 ' !important;
 }
-
+.oper-btn.cancel-exec:after {
+  content: '\e607  取消执行' !important;
+}
 .oper-btn.cancelshare:after{
-  content:'\e63d  取消'!important;
+  content:'\e63d  取消分享'!important;
 }
 
 .oper-btn.cancel-publish:after{
   content:'\e657  取消发布'!important;
-}
-
-.oper-btn.cancel-exec:after {
-  content: '\e607  取消执行' !important;
 }
 //endregion @所有取消按钮 end@
 
@@ -456,7 +446,7 @@
   content:'\e66d'!important;
 }
 .oper-btn.split:after{
-  content:'\e66f'!important;
+  content: '\e617  拆分' !important;
 }
 .oper-btn.show-detail:after{
   content:'\e609'!important;
@@ -477,10 +467,11 @@
   content:'\e60e'!important;
 }
 // 新增
-.oper-btn.minussign:after{
+.oper-btn.skip:after {
   content:'\e612  跳过'!important;
 }
-// etl依赖添加删除
+
+// etl依赖添加、删除
 .oper-btn.scheduleadd:after{
   content:'\e60a'!important;
 }

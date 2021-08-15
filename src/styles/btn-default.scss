@@ -523,10 +523,10 @@
   content:'更多'!important;
 }
 
-.oper-btn.split-2:after{
+.oper-btn.split:after{
   content:'\e617'!important;
 }
-.oper-btn.split-2:hover::before{
+.oper-btn.split:hover::before{
   content:'结果拆分'!important;
 }
 
@@ -668,9 +668,7 @@
 .oper-btn.collect:after{
   content:'\e66d'!important;
 }
-.oper-btn.split:after{
-  content:'\e66f'!important;
-}
+
 .oper-btn.show-detail:after{
   content:'\e609'!important;
 }
@@ -692,10 +690,10 @@
 }
 
 // 新增
-.oper-btn.minussign:after{
+.oper-btn.skip:after{
   content:'\e612'!important;
 }
-.oper-btn.minussign:hover::before{
+.oper-btn.skip:hover::before{
   content:'跳过指定环节'!important;
 }
 
