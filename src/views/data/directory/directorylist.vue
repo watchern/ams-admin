@@ -44,7 +44,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn import-table"
+          class="oper-btn import-table btn-width-md"
           :disabled="
             clickData.type == 'table' ||
             typeof clickData.extMap.sceneInstUuid !== 'undefined'
@@ -53,7 +53,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn add-directory btn-width-max"
+          class="oper-btn add-directory btn-width-md"
           :disabled="clickData.type == 'table'"
           @click="createFolder"
         />
@@ -66,7 +66,7 @@
         />
         <el-button
           type="primary"
-          class="oper-btn link-table"
+          class="oper-btn link-table  btn-width-md"
           :disabled="selections.length !== 1"
           @click="relationTable"
         />
