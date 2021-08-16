@@ -51,12 +51,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="输入方式" prop="inputType">
-              <el-select
-                v-model="form.inputType"
-                @change="changeInputType"
-                id="inputType"
-                name="inputType"
-              >
+              <el-select v-model="form.inputType" @change="changeInputType" id="inputType" name="inputType">
                 <el-option value="" key="" label="请选择"></el-option>
                 <el-option
                   v-for="inputType in this.inputTypes"
@@ -171,7 +166,6 @@
                       v-model="defaultExistsCustomStaticValues.uuid"
                       v-show="false"
                       autocomplete="off"
-                      placeholder="名称"
                     />
                     <el-col :span="9">
                       <el-input
@@ -195,18 +189,14 @@
                         type="primary"
                         class="oper-btn add"
                         @click="addStaticData()"
-                      ></el-button>
+                      />
                     </el-col>
-                    <div
-                      v-for="(customStaticValue, index) in this
-                        .customStaticValues"
-                    >
+                    <div v-for="(customStaticValue, index) in this.customStaticValues">
                       <el-input
                         name="name"
                         v-model="customStaticValue.uuid"
                         v-show="false"
                         autocomplete="off"
-                        placeholder="名称"
                       />
                       <el-col :span="9">
                         <el-input
@@ -214,7 +204,7 @@
                           v-model="customStaticValue.names"
                           autocomplete="off"
                           placeholder="名称"
-                        ></el-input>
+                        />
                       </el-col>
                       <el-col :span="9" style="margin-left: 20px">
                         <el-input
@@ -222,15 +212,14 @@
                           v-model="customStaticValue.values"
                           autocomplete="off"
                           placeholder="值"
-                        ></el-input>
+                        />
                       </el-col>
                       <el-col :span="2">
                         <el-button
-                          id="addStaticData"
                           type="primary"
                           class="oper-btn delete"
                           @click="deleteStaticData(index)"
-                        ></el-button>
+                        />
                       </el-col>
                     </div>
                   </div>
@@ -250,8 +239,7 @@
                       type="primary"
                       @click="sqlPreview(1)"
                       class="btn btn-primary"
-                      >预览</el-button
-                    >
+                      >预览</el-button>
                   </div>
                 </el-tab-pane>
               </el-tabs>
@@ -330,11 +318,11 @@
 import $ from "jquery";
 import seeSqlData from "@/views/analysis/modelparam/paramManager/seesqldata";
 import { getUuid } from "@/api/analysis/common";
-export default {
+export default{
   props: ["selectTreeNode", "operationObj"],
-  components: { seeSqlData },
+  components: {seeSqlData},
   data() {
-    return {
+    return{
       rules: {
         paramName: [
           { required: true, message: "请输入参数名称", trigger: "blur" },
@@ -365,7 +353,7 @@ export default {
         paramChoice: {
           optionsSql: "",
           optionsSqlLine: "",
-        },
+        }
       },
       //页签属性
       activeName: "custom",
