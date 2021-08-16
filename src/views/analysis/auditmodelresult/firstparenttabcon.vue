@@ -40,7 +40,7 @@
                 type="primary"
                 @click="removeRelationProject()"
                 :disabled="buttonIson.disassociateBtn"
-                class="oper-btn remove-allocation btn-width-max"
+                class="oper-btn disassociate btn-width-max"
                 title="移除分配项目" />
 
             <!--<el-dropdown>
@@ -64,13 +64,13 @@
               @click="exportExcel"
               :disabled="buttonIson.exportBtn"
               class="oper-btn export"
-            ></el-button>
+            />
             <el-button
               :disabled="buttonIson.deleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
               class="oper-btn delete-result"
-            ></el-button>
+            />
           </el-row>
         </div>
         <el-table
