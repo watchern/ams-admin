@@ -37,11 +37,12 @@
             />
             <!--  @移除分配项目@ -->
             <el-button
-              type="primary"
-              @click="removeRelationProject"
-              :disabled="buttonIson.disableDisassociateBtn"
-              class="btn-width-max oper-btn move"
-            />
+                type="primary"
+                @click="removeRelationProject()"
+                :disabled="buttonIson.disassociateBtn"
+                class="oper-btn disassociate btn-width-max"
+                title="移除分配项目" />
+
             <!--<el-dropdown>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="openProjectDialog">分配项目</el-dropdown-item>
