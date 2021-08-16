@@ -49,15 +49,15 @@
         <el-form-item label="规则描述" prop="ruleDesc">
           <el-input v-model="temp.ruleDesc" type="textarea" />
         </el-form-item>
-        <el-form-item label="转码方式" prop="ruleType" v-if="false">
+        <el-form-item label="转码方式" prop="ruleType">
           <el-radio v-model="temp.ruleType" :label="1">SQL语句</el-radio>
           <el-radio v-model="temp.ruleType" :label="2">手动输入</el-radio>
         </el-form-item>
-        <!-- <el-form-item v-if="temp.ruleType === 1" label="转码规则" prop="sqlContent" placeholder="请输入SQL">
+         <el-form-item v-if="temp.ruleType === 1" label="转码规则" prop="sqlContent" placeholder="请输入SQL">
           <el-link v-if="temp.ruleType === 1" size="mini" type="primary" @click="exSql()">执行SQL</el-link>
           <el-input v-model="temp.sqlContent" type="textarea" />
-        </el-form-item> -->
-        <!-- <el-table v-if="temp.ruleType === 1" :data="sqlRule">
+        </el-form-item>
+         <el-table v-if="temp.ruleType === 1" :data="sqlRule">
           <el-table-column prop="codeValue" label="真实值">
             <template slot-scope="scope">
               <el-select ref="codeValue" v-model="scope.row.codeValue" placeholder="请选择真实值">
@@ -82,7 +82,7 @@
               </el-select>
             </template>
           </el-table-column>
-        </el-table> -->
+        </el-table>
         <!-- 执行预览弹窗 -->
         <el-dialog v-if="previewVisible" :visible.sync="previewVisible" width="800px">
           <el-row>
@@ -302,8 +302,7 @@ export default {
       this.temp = {
         transRuleUuid: undefined,
         ruleName: '',
-        // ruleType: 1,
-        ruleType: 2,
+        ruleType: 1,
         ruleDesc: '',
         codeValue: '',
         transValue: '',
