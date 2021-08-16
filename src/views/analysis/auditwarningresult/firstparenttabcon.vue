@@ -19,40 +19,40 @@
     <el-main>
     <div align="right">
       <el-row>
-        <!--<el-button
-          type="primary"
-          @click="openProjectDialog"
-          :disabled="buttonIson.AssociatedBtn"
-          class="oper-btn allocation btn-width-md"
-        ></el-button>-->
         <!-- @分配结果@-->
         <el-button
           type="primary"
-          @click="modelResultOpenDialog()"
-          :disabled="buttonIson.resultShareBtn"
-          class="oper-btn allocation"
+          @click="openProjectDialog"
+          :disabled="buttonIson.disableAssociatedBtn"
+          class="oper-btn allocation btn-width-md"
         />
+<!--        <el-button
+          type="primary"
+          @click="modelResultOpenDialog()"
+          :disabled="buttonIson.disableShareBtn"
+          class="oper-btn allocation btn-width-md"
+        />-->
         <!-- 移除关联项目 -->
         <el-button
           type="primary"
           @click="removeRelationProject()"
-          :disabled="buttonIson.disassociateBtn"
-          class="btn-width-max oper-btn remove-allocation"
+          :disabled="buttonIson.disableDisassociateBtn"
+          class="btn-width-max oper-btn disallocation"
           />
 <!--        <el-button
           type="primary"
-          :disabled="buttonIson.resultSplitBtn"
+          :disabled="buttonIson.disableSplitBtn"
           class="oper-btn split"
           @click="openResultSplitDialog"
         ></el-button>-->
         <el-button
           type="primary"
           @click="exportExcel"
-          :disabled="buttonIson.exportBtn"
+          :disabled="buttonIson.disableExportBtn"
           class="oper-btn export"
         />
         <el-button
-          :disabled="buttonIson.deleteBtn"
+          :disabled="buttonIson.disableDeleteBtn"
           type="primary"
           @click="deleteRunTaskRel"
           class="oper-btn delete-2"
@@ -342,6 +342,9 @@ import personTree from "@/components/publicpersontree/index";
 import dayjs from 'dayjs';
 export default {
   components: { Pagination, QueryField, warningresulttree,personTree },
+  props: {
+    runTaskUuid: String
+  },
   data() {
     return {
       tableKey: "errorUuid",
@@ -371,12 +374,14 @@ export default {
       success1: false, // 用来测试open2方法里的deleteRunResultShare方法返回值是否为true，如果为true则success为true
       selected1: [], // 存储表格中选中的数据
       buttonIson: {
-        AssociatedBtn: true,
-        DisassociateBtn: true,
-        deleteBtn: true,
-        resultSplitBtn: true,
-        resultShareBtn: true,
-        exportBtn: false,
+        disableAssociatedBtn: true,
+        // 取消执行按钮
+        disableCancelExecBtn: true,
+        disableDisassociateBtn: true,
+        disableDeleteBtn: true,
+        disableSplitBtn: true,
+        disableShareBtn: true,
+        disableExportBtn: false,
       },
       settingTimingIsSee: false,
       setDateTime: "",
@@ -391,7 +396,11 @@ export default {
     };
   },
   created() {
-
+    var query = {}
+    if(this.runTaskUuid != null){
+      query = {runTaskUuid: this.runTaskUuid}
+    }
+    this.getLikeList(query)
   },
   methods: {
     determineProject(){
@@ -655,29 +664,28 @@ export default {
     /**
      * 当多选框改变时触发
      */
-    //      buttonIson:{AssociatedBtn:true,DisassociateBtn:true,deleteBtn:true,resultSplitBtn:true,resultShareBtn:true,exportBtn:false}
     handleSelectionChange(val) {
       if (val.length <= 0) {
-        this.buttonIson.AssociatedBtn = true;
-        this.buttonIson.DisassociateBtn = true;
-        this.buttonIson.deleteBtn = true;
-        this.buttonIson.resultSplitBtn = true;
-        this.buttonIson.resultShareBtn = true;
-        this.buttonIson.exportBtn = false;
+        this.buttonIson.disableAssociatedBtn = true;
+        this.buttonIson.disableDisassociateBtn = true;
+        this.buttonIson.disableDeleteBtn = true;
+        this.buttonIson.disableSplitBtn = true;
+        this.buttonIson.disableShareBtn = true;
+        this.buttonIson.disableExportBtn = false;
       } else if (val.length == 1) {
-        this.buttonIson.AssociatedBtn = false;
-        this.buttonIson.DisassociateBtn = false;
-        this.buttonIson.deleteBtn = false;
-        this.buttonIson.resultSplitBtn = true;
-        this.buttonIson.resultShareBtn = false;
-        this.buttonIson.exportBtn = false;
+        this.buttonIson.disableAssociatedBtn = false;
+        this.buttonIson.disableDisassociateBtn = false;
+        this.buttonIson.disableDeleteBtn = false;
+        this.buttonIson.disableSplitBtn = true;
+        this.buttonIson.disableShareBtn = false;
+        this.buttonIson.disableExportBtn = false;
       } else if (val.length > 1) {
-        this.buttonIson.AssociatedBtn = false;
-        this.buttonIson.DisassociateBtn = false;
-        this.buttonIson.deleteBtn = false;
-        this.buttonIson.resultSplitBtn = false;
-        this.buttonIson.resultShareBtn = false;
-        this.buttonIson.exportBtn = false;
+        this.buttonIson.disableAssociatedBtn = false;
+        this.buttonIson.disableDisassociateBtn = false;
+        this.buttonIson.disableDeleteBtn = false;
+        this.buttonIson.disableSplitBtn = false;
+        this.buttonIson.disableShareBtn = false;
+        this.buttonIson.disableExportBtn = false;
       }
       this.share.splice(0, this.share.length);
       this.notShare.splice(0, this.notShare.length);
