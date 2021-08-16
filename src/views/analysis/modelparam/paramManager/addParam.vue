@@ -113,7 +113,7 @@
               <el-tabs v-model="activeName" type="card" @tab-click="tabsigntree">
                 <el-tab-pane label="自定义静态"name="custom">
                   <div id="customStatic">
-                    <el-input name="name" v-model="defaultExistsCustomStaticValues.uuid" v-show="false"  autocomplete="off" placeholder="名称"/>
+                    <el-input name="uuid" v-model="defaultExistsCustomStaticValues.uuid" v-show="false"  autocomplete="off"/>
                     <el-col :span="9">
                       <el-input name="name"  v-model="defaultExistsCustomStaticValues.names"  autocomplete="off" placeholder="名称"/>
                     </el-col>
@@ -124,7 +124,7 @@
                       <el-button id="addStaticData" type="primary" class="oper-btn add" @click="addStaticData()"></el-button>
                     </el-col>
                     <div v-for="(customStaticValue,index) in this.customStaticValues">
-                      <el-input name="name" v-model="customStaticValue.uuid" v-show="false"  autocomplete="off" placeholder="名称"/>
+                      <el-input name="uuid" v-model="customStaticValue.uuid" v-show="false"  autocomplete="off" />
                         <el-col :span="9">
                           <el-input name="name" v-model="customStaticValue.names" autocomplete="off" placeholder="名称"></el-input>
                         </el-col>
