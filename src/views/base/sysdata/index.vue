@@ -293,7 +293,7 @@ export default {
     },
     numberIndex() {
       var data = this.tempSecond.codeIndex
-      const codeIndex = new RegExp('^[0-9]$').test(data)
+      const codeIndex = new RegExp('^[0-9]+$').test(data)
       if (!codeIndex) {
         this.$notify.error({
           title: '错误',
