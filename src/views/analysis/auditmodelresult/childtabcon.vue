@@ -588,10 +588,8 @@ export default {
       return this.rotateConfig != null ? this.rotateRowData : this.rowData;
     },
     computedColumnDefs() {
-      return this.rotateConfig != null
-        ? this.rotateColumnDefs
-        : this.columnDefs;
-    },
+          return this.rotateConfig!=null ? this.rotateColumnDefs : this.columnDefs;
+      }
   },
   watch: {
     modelDetailModelResultDialogIsShow(value) {
@@ -627,12 +625,12 @@ export default {
     return {
       //工作流相关
       submitData: {
-        versionUuid: "tlLuwUhC",
-        busTableName: "", //表名
-        busDatabaseName: "warehouse", //数据库名
-        busDatabaseType: "", //
-        status: "1", //预警数据状态
-        busdatas: [],
+          versionUuid: 'tlLuwUhC',
+          busTableName: '',  //表名
+          busDatabaseName: 'warehouse',  //数据库名
+          busDatabaseType: '',  //
+          status: '1',  //预警数据状态
+          busdatas: []
       },
       // 判断是否走工作流
       yancheng: false,
@@ -761,18 +759,18 @@ export default {
       sideBar: {
         toolPanels: [
           {
-            id: "columns",
-            labelDefault: "Columns",
-            labelKey: "columns",
-            iconKey: "columns",
-            toolPanel: "agColumnsToolPanel",
+            id: 'columns',
+            labelDefault: 'Columns',
+            labelKey: 'columns',
+            iconKey: 'columns',
+            toolPanel: 'agColumnsToolPanel',
           },
           {
-            id: "filters",
-            labelDefault: "Filters",
-            labelKey: "filters",
-            iconKey: "filter",
-            toolPanel: "agFiltersToolPanel",
+            id: 'filters',
+            labelDefault: 'Filters',
+            labelKey: 'filters',
+            iconKey: 'filter',
+            toolPanel: 'agFiltersToolPanel'
           },
         ],
         position: 'right',
@@ -875,38 +873,26 @@ export default {
       rotateConfigs: [
         {
           /*  ,财报结构（趋势）分析 示例  */
-          modelIds: [
-            "fa2f16c00e335049a0088580362e15db",
-            "3acc159b6110564da7698b460eab774f",
-          ] /*  通过UUID匹配的的模型进行行列转置 */,
-          mainField: "科目名称" /*  转置的主列 */,
-          colNamesField: "期间值" /*  以此列值为转置后列头的列 */,
-          titleDisplayRules: (thisTitle, colNamesFieldValue) => {
-            /*  转置后的显示规则 */
-            if (
-              thisTitle == "占比" ||
-              thisTitle == "环比" ||
-              thisTitle == "同比"
-            )
-              return colNamesFieldValue + thisTitle;
-            else if (thisTitle == "期末额") return colNamesFieldValue;
+              modelIds: ["fa2f16c00e335049a0088580362e15db","3acc159b6110564da7698b460eab774f"],  /*  通过UUID匹配的的模型进行行列转置 */
+              mainField:"科目名称",               /*  转置的主列 */
+              colNamesField: "期间值",     /*  以此列值为转置后列头的列 */
+              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
+                  if(thisTitle=='占比'||thisTitle=='环比'||thisTitle=='同比') return colNamesFieldValue+thisTitle;
+                  else if(thisTitle=='期末额') return colNamesFieldValue;
             else return thisTitle;
-          },
-        },
-        {
+              }
+          },{
           /*  ,财报结构（趋势）分析 示例  */
-          modelIds: [
-            "6f0d96ff5b633543eb59736592c92418",
-          ] /*  通过UUID匹配的的模型进行行列转置 */,
-          mainField: "指标名称,指标模块,计算公式" /*  转置的主列 */,
-          colNamesField: "月份" /*  以此列值为转置后列头的列 */,
-          titleDisplayRules: (thisTitle, colNamesFieldValue) => {
-            /*  转置后的显示规则 */
-            if (thisTitle == "计算值") return colNamesFieldValue;
+              modelIds: ["6f0d96ff5b633543eb59736592c92418"],  /*  通过UUID匹配的的模型进行行列转置 */
+              mainField:"指标名称,指标模块,计算公式",               /*  转置的主列 */
+              colNamesField: "月份",     /*  以此列值为转置后列头的列 */
+              titleDisplayRules: (thisTitle, colNamesFieldValue)=>{       /*  转置后的显示规则 */
+                  if(thisTitle=='计算值') return colNamesFieldValue;
             else return thisTitle;
-          },
-        },
-      ],
+              }
+          }
+
+      ]
     };
   },
   mounted() {
@@ -1344,7 +1330,7 @@ export default {
                         headerName: colNames[i],
                         field: colNames[i],
                         params: { thresholdValueRel, modelResultDetailCol },
-                        cellRenderer: "ag-cell",
+                        cellRenderer: 'ag-cell',
                         checkboxSelection: true,
                       };
                       onlyFlag = true;
@@ -1353,7 +1339,7 @@ export default {
                         headerName: colNames[i],
                         field: colNames[i],
                         params: { thresholdValueRel, modelResultDetailCol },
-                        cellRenderer: "ag-cell",
+                        cellRenderer: 'ag-cell',
                       };
                     }
                   } else {
@@ -1392,11 +1378,8 @@ export default {
                             rowColom = {
                               headerName: this.modelOutputColumn[j].columnAlias,
                               field: colNames[i],
-                              params: {
-                                thresholdValueRel,
-                                modelResultDetailCol,
-                              },
-                              cellRenderer: "ag-cell",
+                              params: {thresholdValueRel, modelResultDetailCol},
+                        cellRenderer: 'ag-cell',
                               checkboxSelection: true,
                             };
                             onlyFlag = true;
@@ -1404,11 +1387,8 @@ export default {
                             rowColom = {
                               headerName: this.modelOutputColumn[j].columnAlias,
                               field: colNames[i],
-                              params: {
-                                thresholdValueRel,
-                                modelResultDetailCol,
-                              },
-                              cellRenderer: "ag-cell",
+                              params: {thresholdValueRel, modelResultDetailCol},
+                        cellRenderer: 'ag-cell',
                             };
                           }
                         } else {
@@ -1464,10 +1444,9 @@ export default {
                     ) {
                       if (this.modelOutputColumn[k].dataCoding != undefined) {
                         var a = da[i][colNames[j]];
-                        da[i][colNames[j]] =
-                          this.dataCoding[this.modelOutputColumn[k].dataCoding][
-                            a
-                          ];
+                        da[i][colNames[j]] = this.dataCoding[
+                          this.modelOutputColumn[k].dataCoding
+                        ][a];
                       }
                     }
                   }
@@ -1486,25 +1465,6 @@ export default {
         // if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
         //   this.gridApi.closeToolPanel()
         // }
-        // let _this = this;
-        // setTimeout(function () {
-        //   for (let i = 0; i < col.length; i++) {
-        //     let str = _this.queryData.columnList[i].columnType;
-        //     if (
-        //       str.toUpperCase().indexOf("VARCHAR") != -1 ||
-        //       str.toUpperCase().indexOf("CHAR") != -1
-        //     ) {
-        //       col[i].filter = "agTextColumnFilter";
-        //     } else if (
-        //       str.toUpperCase().indexOf("NUMBER") != -1 ||
-        //       str.toUpperCase().indexOf("INT") != -1 ||
-        //       str.toUpperCase().indexOf("DATE") != -1 ||
-        //       str.toUpperCase().indexOf("FLOAT") != -1 ||
-        //       str.toUpperCase().indexOf("DOUBLE") != -1
-        //     ) {
-        //       col[i].filter = "agNumberColumnFilter";
-        //     } else {
-        //       col[i].filter = "agTextColumnFilter";
         let _this = this
         setTimeout(function () {
           for(let i = 0;i<col.length;i++){
@@ -1667,11 +1627,8 @@ export default {
                               headerName: modelOutputColumn[n].columnAlias,
                               field: this.nextValue.columnNames[j],
                               width: "180",
-                              params: {
-                                thresholdValueRel,
-                                modelResultDetailCol,
-                              },
-                              cellRenderer: "ag-cell",
+                              params: {thresholdValueRel, modelResultDetailCol},
+                              cellRenderer: 'ag-cell',
                             };
                           } else {
                             rowColom = {
@@ -1723,10 +1680,6 @@ export default {
                     }
                     this.rowData = rowData;
                   }
-                  // let _this = this
-                  // for (let i = 0; i < col.length; i++) {
-                  //   // console.log(_this.queryData.columnList[i]||0)
-                  //     col[i].filter = "agTextColumnFilter";
                   for (let i = 0; i < col.length; i++) {
                     let colType0 = this.result.columnType[i];
                     colType0 = colType0 ? "": colType0.toUpperCase();
@@ -1907,10 +1860,6 @@ export default {
             for (var k = 0; k < this.nextValue.result.length; k++) {
               rowData.push(this.nextValue.result[k]);
             }
-            // let _this = this
-            // for (let i = 0; i < col.length; i++) {
-            //     // console.log(_this.queryData.columnList[i]||1)
-            //     col[i].filter = "agTextColumnFilter";
             for(let i = 0;i<col.length;i++){
 
               var colType0 = this.result.columnType[i];
