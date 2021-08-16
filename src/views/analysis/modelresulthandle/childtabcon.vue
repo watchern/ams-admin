@@ -20,7 +20,7 @@
           :disabled="modelRunResultBtnIson.exportBtn"
           type="primary"
           @click="exportExcel"
-          class="oper-btn export-2"
+          class="oper-btn export"
         ></el-button>
         <el-button
           :disabled="modelRunResultBtnIson.chartDisplayBtn"
@@ -35,12 +35,13 @@
           @click="handleResult"
           class="oper-btn processing"
         ></el-button>
+      <!-- @查询关联@ -->
         <el-button
-          class="oper-btn link"
+          class="oper-btn linkdetail"
           :disabled="modelRunResultBtnIson.modelDetailAssBtn"
           type="primary"
           @click="openModelDetail"
-        ></el-button>
+        />
       </div>
     </el-row>
     <ag-grid-vue
@@ -82,7 +83,7 @@
             <el-button
               type="primary"
               @click="modelResultExport"
-              class="oper-btn export-2"
+              class="oper-btn export"
             ></el-button>
           </downloadExcel>
           <el-button

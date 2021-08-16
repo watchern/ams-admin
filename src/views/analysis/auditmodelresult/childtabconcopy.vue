@@ -20,45 +20,40 @@
         :disabled="modelRunResultBtnIson.exportBtn"
         type="primary"
         @click="exportExcel"
-        class="oper-btn export-2"
-      ></el-button>
+        class="oper-btn export"
+      />
       <el-button
         style="display: none"
         :disabled="modelRunResultBtnIson.chartDisplayBtn"
         type="primary"
         class="oper-btn chart"
-        ></el-button
-      >
+        />
       <el-button
         style="display: none"
         :disabled="modelRunResultBtnIson.associatedBtn"
         type="primary"
         @click="getValues"
-        class="oper-btn refresh"
-      ></el-button>
+        class="oper-btn restart btn-width-md"
+      />
       <el-button
         style="display: none"
         :disabled="modelRunResultBtnIson.disassociateBtn"
         type="primary"
         @click="removeRelated('dc99c210a2d643cbb57022622b5c1752')"
-        >移除关联</el-button
-      >
-      <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn search"
-        ></el-button
-      >
-      >
+        >移除关联</el-button>
+      <!-- @查看设置@-->
+      <el-button :disabled="false" type="primary" @click="queryConditionSetting" class="oper-btn setting-detail" />
       <!-- <el-button type="primary" @click="addDetailRel('qwer', '项目10')"
         >重置</el-button -->
-      <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn again-2"
-        ></el-button>
+      <el-button :disabled="false" type="primary" @click="reSet" class="oper-btn reset"></el-button>
+      <!-- @查询关联@  -->
       <el-button
-        class="oper-btn link"
+        class="oper-btn linkdetail"
         :disabled="modelRunResultBtnIson.modelDetailAssBtn"
         v-if="modelDetailButtonIsShow"
         type="primary"
         @click="openModelDetail"
-        ></el-button
-      >
+        />
        </div>
     </el-row>
     <el-row v-if="modelResultButtonIsShow" style="display: flex">
@@ -67,7 +62,7 @@
         <el-button
           type="primary"
           @click="modelResultExport"
-          class="oper-btn export-3"
+          class="oper-btn export"
         ></el-button>
       </downloadExcel>
       <el-button type="primary" class="oper-btn chart"></el-button>

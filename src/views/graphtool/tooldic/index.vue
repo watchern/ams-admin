@@ -529,24 +529,26 @@
           :resizable="false"
         >
           <template slot-scope="scope">
+            <!-- @设置参数@ -->
             <el-button
               type="primary"
               v-if="!scope.row.hasParamSet"
-              class="oper-btn setting-1"
+              class="oper-btn setting-param"
+              @click="settingParam(scope.row.nodeId, scope.$index)"
+              style="line-height: normal"
+            />
+          <!-- @修改设置参数@ -->
+            <el-button
+              type="primary"
+              v-if="scope.row.hasParamSet"
+              class="oper-btn edit-setting-param"
               @click="settingParam(scope.row.nodeId, scope.$index)"
               style="line-height: normal"
             />
             <el-button
               type="primary"
               v-if="scope.row.hasParamSet"
-              class="oper-btn setting-2"
-              @click="settingParam(scope.row.nodeId, scope.$index)"
-              style="line-height: normal"
-            />
-            <el-button
-              type="primary"
-              v-if="scope.row.hasParamSet"
-              class="oper-btn delete-4"
+              class="oper-btn delete-param btn-width-md"
               @click="clearSettingParam(scope.row.nodeId, scope.$index)"
               style="line-height: normal"
             />
@@ -575,12 +577,8 @@
         :params-setting="sp_paramsSetting"
       />
       <div slot="footer" v-if="initNodeSettingVue">
-        <el-button @click="nodeParamSettingDialogVisible = false"
-          >取消</el-button
-        >
-        <el-button type="primary" @click="settingParamsCallBack()"
-          >保存</el-button
-        >
+        <el-button @click="nodeParamSettingDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="settingParamsCallBack()">保存</el-button>
       </div>
     </el-dialog>
     <el-dialog

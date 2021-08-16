@@ -91,7 +91,7 @@
             @change="judelength(scope.row)"
             v-model="scope.row.dataType.trim()==='DECIMAL' ? scope.row.dataLength+(scope.row.colPrecision?','+scope.row.colPrecision:'' ):scope.row.dataLength "
             style="width: 90%"
-            :disabled="openType === 'showTable' || openType === 'tableRegister' || !scope.row.enableDataLength"
+            :disabled=" openType === 'showTable' || openType === 'tableRegister' ||!scope.row.enableDataLength"
           />
         </template>
       </el-table-column>
@@ -220,6 +220,23 @@ export default {
             e.tempIndex = this.tempIndex;
           });
           this.tempColumn = resp.data.colMetas.slice();
+          if (this.tempColumn.length >0 ){
+            for (let i=0;i < this.tempColumn.length;i++){
+              switch (this.tempColumn[i].dataType.trim()) {
+                case "CHAR":
+                case "VARCHAR":
+                case "DECIMAL":
+                  this.tempColumn[i].enableDataLength = true;
+                  break;
+                default :
+                  this.tempColumn[i].enableDataLength = false;
+
+              }
+
+            }
+          }
+
+
           this.temp = JSON.parse(JSON.stringify(resp.data.colMetas));
         });
       }

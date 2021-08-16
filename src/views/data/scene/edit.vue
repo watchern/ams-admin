@@ -75,7 +75,7 @@
             <template slot-scope="scope">
               <el-button
                 type="primary"
-                class="oper-btn detail"
+                class="oper-btn preview"
                 size="mini"
                 @click="selectFilterOne(scope.row.sceneGrpUuid)"
               />
@@ -221,7 +221,7 @@
               <template slot-scope="scope">
                 <el-button
                   type="primary"
-                  class="oper-btn detail"
+                  class="oper-btn preview"
                   size="mini"
                   @click="selectFilterOne(scope.row.inValueSql)"
                 />

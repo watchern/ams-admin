@@ -27,7 +27,7 @@
                             <el-button
                                 type="primary"
                                 size="small"
-                                class="oper-btn clean"
+                                class="oper-btn format"
                                 @click="sqlFormat"
                                 style="margin-left:18px"
                             />
@@ -40,7 +40,7 @@
                             <el-button
                                 type="primary"
                                 size="small"
-                                class="oper-btn folder-1"
+                                class="oper-btn opensql btn-width-md"
                                 @click="openSqlDraftList"
                             />
                             <el-button
