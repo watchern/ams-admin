@@ -113,7 +113,12 @@
               <el-tabs v-model="activeName" type="card" @tab-click="tabsigntree">
                 <el-tab-pane label="自定义静态"name="custom">
                   <div id="customStatic">
-                    <el-input name="uuid" v-model="defaultExistsCustomStaticValues.uuid" v-show="false"  autocomplete="off"/>
+                    <el-input
+                      name="name"
+                      v-model="defaultExistsCustomStaticValues.uuid"
+                      v-show="false"
+                      autocomplete="off"
+                    />
                     <el-col :span="9">
                       <el-input name="name"  v-model="defaultExistsCustomStaticValues.names"  autocomplete="off" placeholder="名称"/>
                     </el-col>
@@ -121,18 +126,33 @@
                       <el-input name="value" v-model="defaultExistsCustomStaticValues.values" autocomplete="off" placeholder="值"/>
                     </el-col>
                     <el-col :span="2">
-                      <el-button id="addStaticData" type="primary" class="oper-btn add" @click="addStaticData()"></el-button>
+                      <el-button
+                        id="addStaticData"
+                        type="primary"
+                        class="oper-btn add"
+                        @click="addStaticData()"
+                      />
                     </el-col>
                     <div v-for="(customStaticValue,index) in this.customStaticValues">
-                      <el-input name="uuid" v-model="customStaticValue.uuid" v-show="false"  autocomplete="off" />
+                      <el-input
+                        name="name"
+                        v-model="customStaticValue.uuid"
+                        v-show="false"
+                        autocomplete="off"
+                      />
                         <el-col :span="9">
-                          <el-input name="name" v-model="customStaticValue.names" autocomplete="off" placeholder="名称"></el-input>
+                        <el-input
+                          name="name"
+                          v-model="customStaticValue.names"
+                          autocomplete="off"
+                          placeholder="名称"
+                        />
                         </el-col>
                         <el-col :span="9" style="margin-left: 20px">
-                          <el-input name="value" v-model="customStaticValue.values" autocomplete="off" placeholder="值"></el-input>
+                          <el-input name="value" v-model="customStaticValue.values" autocomplete="off" placeholder="值"/>
                         </el-col>
                         <el-col :span="2">
-                          <el-button id="addStaticData" type="primary" class="oper-btn delete" @click="deleteStaticData(index)"></el-button>
+                          <el-button type="primary" class="oper-btn delete" @click="deleteStaticData(index)" />
                         </el-col>
                     </div>
                   </div>
@@ -273,10 +293,14 @@ export default{
       tabsigns:0,
       //自定义静态值绑定
       customStaticValues:[],
-      defaultExistsCustomStaticValues:{names:'',values:'',uuid:'123456'},
+      defaultExistsCustomStaticValues: {
+        names: "",
+        values: "",
+        uuid: "123456",
+      },
       //查看数据dialog
       seeSqlDataDialog:false,
-      SQLRuleText:'',
+      SQLRuleText: "",
       updateParamObj:{},
       sqlRulesDesc: {
         list:"格式：SELECT A,B FROM 模式.C\nA:真实值，B:显示值，若字段过多,则默认只使用前两列进行真实值与显示值的匹配",
@@ -294,29 +318,31 @@ export default{
   mounted() {
     if(this.operationObj.operationType == 2){
       //反显参数数据
-      this.displayParamData()
+      this.displayParamData();
     }
   },
   methods:{
     displayParamData(){
-      let that = this
-      $.post(this.analysisUrl + "/paramController/findByUuid",{"ammParamUuid": this.operationObj.paramUuid},
+      let that = this;
+      $.post(
+        this.analysisUrl + "/paramController/findByUuid",
+        { ammParamUuid: this.operationObj.paramUuid },
         function (e) {
-          that.updateParamObj = e.data
+          that.updateParamObj = e.data;
           var data = e.data;//参数基本信息
-          if (data != null && data != '') {
-            that.form.paramName = data.paramName
-            that.form.dataType = data.dataType
-            that.changeValue(data.dataType)
-            that.form.inputType = data.inputType
-            that.changeInputType(data.inputType)
+          if (data != null && data != "") {
+            that.form.paramName = data.paramName;
+            that.form.dataType = data.dataType;
+            that.changeValue(data.dataType);
+            that.form.inputType = data.inputType;
+            that.changeInputType(data.inputType);
             if(data.inputType == "textinp"){
-              that.form.dataLength = data.dataLength
+              that.form.dataLength = data.dataLength;
             }
-            that.form.example = data.example
+            that.form.example = data.example;
             if (data.paramChoice) {
-              that.form.formalType = data.paramChoice.choiceType
-              that.form.allowedNull = data.paramChoice.allowedNull
+              that.form.formalType = data.paramChoice.choiceType;
+              that.form.allowedNull = data.paramChoice.allowedNull;
               $("#choiceUuid").val(data.paramChoice.ammParamChoiceUuid);
               if (data.paramChoice.ammParamChoiceUuid) {
                 if (data.paramChoice.ammParamOptionsList && data.paramChoice.ammParamOptionsList.length > 0) {
@@ -349,7 +375,7 @@ export default{
               }
             }
 
-            that.form.description = data.description
+            that.form.description = data.description;
             if (data.paramTimes) {
               $("#timesUuid").val(data.paramTimes.ammParamTimesUuid);
               that.form.timeFormat = data.paramTimes.timeFormat;
@@ -367,8 +393,8 @@ export default{
       },"json");
     },
     setJsonSelectValue(selectId, url) {
-      let result
-      let that = this
+      let result;
+      let that = this;
       var data;
       $.ajax({
         url: this.analysisUrl + url,
@@ -377,14 +403,14 @@ export default{
         async: false,
         dataType: "json",
         success: function (redata, textStatus, jqXHR) {
-          result = JSON.parse(redata.data)
+          result = JSON.parse(redata.data);
         },
         error: function (data, textStatus, jqXHR) {
           alertMsg("提示", "加载数据字典" + textStatus + ",selectId:" + selectId
             + ",url:" + url, "error");
         }
       });
-      return result
+      return result;
     },
     // optionsSqllineplaceholders_1(){
     //   return "格式：SELECT A,B FROM 模式.C\n" +
@@ -397,47 +423,47 @@ export default{
     changeInputType(inputTypeValue){
       if(inputTypeValue != ""){
         if(inputTypeValue == "timeinp"){//日期选择器
-          this.isShowElement.timeIntervalShow = true
-          this.isShowElement.formalTypeShow = false
-          this.isShowElement.alternateValueShow = false
-          this.isShowElement.dataLengthInterValShow = false
-          this.isShowElement.SQLdtreeShow = false
+          this.isShowElement.timeIntervalShow = true;
+          this.isShowElement.formalTypeShow = false;
+          this.isShowElement.alternateValueShow = false;
+          this.isShowElement.dataLengthInterValShow = false;
+          this.isShowElement.SQLdtreeShow = false;
           this.isShowElement.dateFormatTag = true;
         }else if(inputTypeValue == "lineinp"){//下拉列表
-          this.isShowElement.timeIntervalShow = false
-          this.isShowElement.formalTypeShow = true
-          this.isShowElement.alternateValueShow = true
-          this.isShowElement.dataLengthInterValShow = false
-          this.isShowElement.SQLdtreeShow = false
+          this.isShowElement.timeIntervalShow = false;
+          this.isShowElement.formalTypeShow = true;
+          this.isShowElement.alternateValueShow = true;
+          this.isShowElement.dataLengthInterValShow = false;
+          this.isShowElement.SQLdtreeShow = false;
           this.isShowElement.dateFormatTag = false;
         }else if(inputTypeValue=="treeinp"){//下拉树
-          this.isShowElement.timeIntervalShow = false
-          this.isShowElement.formalTypeShow = true
-          this.isShowElement.alternateValueShow = false
-          this.isShowElement.dataLengthInterValShow = false
-          this.isShowElement.SQLdtreeShow = true
+          this.isShowElement.timeIntervalShow = false;
+          this.isShowElement.formalTypeShow = true;
+          this.isShowElement.alternateValueShow = false;
+          this.isShowElement.dataLengthInterValShow = false;
+          this.isShowElement.SQLdtreeShow = true;
           this.tabsigns = 1;
           this.isShowElement.dateFormatTag = false;
         }else{//文本
-          this.isShowElement.timeIntervalShow = false
-          this.isShowElement.formalTypeShow = false
-          this.isShowElement.alternateValueShow = false
-          this.isShowElement.dataLengthInterValShow = true
-          this.isShowElement.SQLdtreeShow = false
+          this.isShowElement.timeIntervalShow = false;
+          this.isShowElement.formalTypeShow = false;
+          this.isShowElement.alternateValueShow = false;
+          this.isShowElement.dataLengthInterValShow = true;
+          this.isShowElement.SQLdtreeShow = false;
           this.isShowElement.dateFormatTag = false;
         }
       }
     },
     changeValue(dataTypeValue){
-      this.inputTypes = []
-      this.form.inputType = ""
+      this.inputTypes = [];
+      this.form.inputType = "";
       for(var i=0;i < this.inputTypeValueStr.length;i++){
-        if(dataTypeValue==''||dataTypeValue==null){
-          this.inputTypes = []
+        if (dataTypeValue == "" || dataTypeValue == null) {
+          this.inputTypes = [];
         }else{
           var typesz = this.map_data_input[dataTypeValue].type;
           if(typesz.indexOf(this.inputTypeValueStr[i].codeValue) > -1){
-            this.inputTypes.push(this.inputTypeValueStr[i])
+            this.inputTypes.push(this.inputTypeValueStr[i]);
           }
         }
       }
@@ -460,24 +486,30 @@ export default{
 
     },
     addStaticData(){
-      this.customStaticValues.push({names:"",values:'',uuid:getUuid()})
+      this.customStaticValues.push({ names: "", values: "", uuid: getUuid() });
     },
     deleteStaticData(index){
-      this.customStaticValues.splice(index, 1)
+      this.customStaticValues.splice(index, 1);
     },
     okBtn(){
+      this.$refs['ruleForm'].validate((valid) => {
+        if (valid) {
       if(this.operationObj.operationType == 1){
-        this.saveParam()
+            this.saveParam();
+          } else {
+            this.updateParam();
       }
-      else{
-        this.updateParam()
+        } else {
+          console.log("error submit!!");
+          return false;
       }
+      });
     },
     /**
      * 保存参数
      */
     saveParam(){
-      let that = this
+      let that = this;
       var paramName = this.form.paramName;
       var dataType = this.form.dataType;
       var inputType = this.form.inputType;
@@ -528,19 +560,19 @@ export default{
         dataParam["paramChoice.choiceType"] = this.form.formalType;
       }
       if(this.isShowElement.SQLdtreeShow){
-        dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSql
+        dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSql;
       }
       if(this.isShowElement.alternateValueShow){
         if(this.activeName === "SQL"){
-          dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSqlLine
+          dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSqlLine;
         }
         if(this.activeName === "custom"){
           var names = [];
           var value = [];
-          this.customStaticValues.push(this.defaultExistsCustomStaticValues)
+          this.customStaticValues.push(this.defaultExistsCustomStaticValues);
           for(let i = 0; i < this.customStaticValues.length;i++){
-            names.push(this.customStaticValues[i].names)
-            value.push(this.customStaticValues[i].values)
+            names.push(this.customStaticValues[i].names);
+            value.push(this.customStaticValues[i].values);
           }
           dataParam["paramOptions.optionsNames"] = names.join("-");
           dataParam["paramOptions.optionsVals"] = value.join("-");
@@ -555,9 +587,9 @@ export default{
         async:false,
         success: function(data, textStatus, jqXHR){
           if(data.code == 0){
-            that.$emit("refshParamList")
+            that.$emit("refshParamList");
           }else{
-            that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' })
+            that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' });
           }
         },
         error : function() {
@@ -569,7 +601,7 @@ export default{
      *修改参数
      */
     updateParam(){
-      let that = this
+      let that = this;
       var paramName = this.form.paramName;
       var dataType = this.form.dataType;
       var inputType = this.form.inputType;
@@ -579,7 +611,7 @@ export default{
       var description = this.form.description;
       var folderId = this.form.folderId;
       var allowedNull = this.form.allowedNull;
-      var paramUuid = this.updateParamObj.ammParamUuid
+      var paramUuid = this.updateParamObj.ammParamUuid;
       var dataParam = {
         "param.ammParamUuid":paramUuid,
         "param.paramName":paramName,
@@ -623,21 +655,21 @@ export default{
         dataParam["paramChoice.choiceType"] = this.form.formalType;
       }
       if(this.isShowElement.SQLdtreeShow){
-        dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSql
+        dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSql;
       }
       if(this.isShowElement.alternateValueShow){
         if(this.activeName === "SQL"){
-          dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSqlLine
+          dataParam["paramChoice.optionsSql"] = this.form.paramChoice.optionsSqlLine;
         }
         if(this.activeName === "custom"){
           var names = [];
           var value = [];
           var uuids = [];
-          this.customStaticValues.push(this.defaultExistsCustomStaticValues)
+          this.customStaticValues.push(this.defaultExistsCustomStaticValues);
           for(let i = 0; i < this.customStaticValues.length;i++){
-            names.push(this.customStaticValues[i].names)
-            value.push(this.customStaticValues[i].values)
-            uuids.push(this.customStaticValues[i].uuid)
+            names.push(this.customStaticValues[i].names);
+            value.push(this.customStaticValues[i].values);
+            uuids.push(this.customStaticValues[i].uuid);
           }
           dataParam["paramOptions.optionsNames"] = names.join("-");
           dataParam["paramOptions.optionsVals"] = value.join("-");
@@ -654,13 +686,13 @@ export default{
         async:false,
         success: function(data, textStatus, jqXHR){
           if(data.code == 0){
-            that.$emit("refshParamList")
+            that.$emit("refshParamList");
           }else{
-            that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' })
+            that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' });
           }
         },
         error : function() {
-          that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' })
+          that.$message({ type: 'error', message: '程序发生异常，请联系管理员!' });
         }
       });
     },
@@ -675,15 +707,15 @@ export default{
       }else{//type==2
         sql = $("#optionsSql").val();
       }
-      this.seeDataSql = sql
-      this.seeSqlDataDialog = true
+      this.seeDataSql = sql;
+      this.seeSqlDataDialog = true;
     },
     /**
      * 查看sql规则
      * @param type 1列表 2树
      */
     viewSqlRule(type){
-      this.SQLRuleDialog = true
+      this.SQLRuleDialog = true;
       this.SQLRuleText = this.getSqlRule(type);
     },
     /**
@@ -691,14 +723,14 @@ export default{
      * @param type 1列表 2树
      */
     getSqlRule(type){
-      let sqlRule = ""
+      let sqlRule = "";
       switch (type) {
         case 1:
           sqlRule = this.sqlRulesDesc.list;
           break;
         case 2:
           sqlRule = this.sqlRulesDesc.tree;
-          break
+          break;
         default:
           break;
       }

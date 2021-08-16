@@ -21,7 +21,7 @@
                       @click="modelResultOpenDialog"
                       :disabled="buttonIson.disableAssociatedBtn"
                       class="oper-btn allocation"
-              ></el-button> -->
+              /> -->
             <el-button
               type="primary"
               :disabled="buttonIson.disableCancelExecBtn"
@@ -34,7 +34,7 @@
               @click="openProjectDialog"
               :disabled="buttonIson.disableAssociatedBtn"
               class="btn-width-md oper-btn allocation"
-            ></el-button>
+            />
             <!--  @移除分配项目@ -->
             <el-button
                 type="primary"
@@ -55,18 +55,25 @@
         <!-- 暂时注掉拆分结果-->
 <!--            <el-button
               type="primary"
-              :disabled="buttonIson.resultSplitBtn"
+              :disabled="buttonIson.disableSplitBtn"
               class="oper-btn split"
               @click="openResultSplitDialog"
               style="margin-left: 10px"/>-->
+        <!-- 结果分享  -->
+            <!--        <el-button
+          type="primary"
+          @click="modelResultOpenDialog()"
+          :disabled="buttonIson.disableShareBtn"
+          class="oper-btn allocation btn-width-md"
+        />-->
             <el-button
               type="primary"
               @click="exportExcel"
-              :disabled="buttonIson.exportBtn"
+              :disabled="buttonIson.disableExportBtn"
               class="oper-btn export"
             />
             <el-button
-              :disabled="buttonIson.deleteBtn"
+              :disabled="buttonIson.disableDeleteBtn"
               type="primary"
               @click="deleteRunTaskRel"
               class="oper-btn delete-result"
@@ -114,15 +121,16 @@
             width="100px"
             align="center"
             prop="runStatus"
-            :formatter="readStatusFormatter"
-            ><template slot-scope="scope">
+            :formatter="readStatusFormatter">
+            <template slot-scope="scope">
               <i
                 :title="readStatusFormatter(scope.row.runStatus)"
                 :class="runStatusIconFormatter(scope.row.runStatus)"
                 :style="runStatusStyleFormatter(scope.row.runStatus)"
                 style="cursor: pointer;"
-              ></i> </template
-          ></el-table-column>
+              />
+          </template>
+          </el-table-column>
           <el-table-column
             label="运行人"
             width="100px"

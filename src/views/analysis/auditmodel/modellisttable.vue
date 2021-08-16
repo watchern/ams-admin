@@ -322,6 +322,7 @@ import crossrangeParam from "@/views/analysis/modelparam/crossrangeparam";
 import paramDraw from "@/views/analysis/modelparam/paramdraw";
 import paramDrawNew from "@/views/analysis/modelparam/paramdrawnew";
 import { replaceNodeParam } from "@/api/analysis/auditparam";
+import { getInfo } from '@/api/user'
 import modelshoppingcart from "@/views/analysis/auditmodel/modelshoppingcart";
 import personTree from "@/components/publicpersontree/index";
 export default {
@@ -386,6 +387,7 @@ export default {
         previewBtn: true,
         otherBtn: false,
       },
+      ifmanger:0,//是否是管理员
       // 当前预览模型参数和sql
       currentPreviewModelParamAndSql: {},
       queryFields: [
@@ -447,6 +449,7 @@ export default {
       modelFolderUuid: "",
       modelFolderName: "",
       relationNextValue: {},
+      jinyong:0//禁用编辑等按钮
     };
   },
   computed: {},
@@ -476,6 +479,22 @@ export default {
   },
   created() {
     this.getList()
+    getInfo().then((resp) => {
+        if(resp.data.orgname=="总行审计部"){
+          this.ifmanger = 1
+          this.jinyong = 0
+        }else{
+          this.ifmanger = 0
+          this.jinyong = 1
+          this.btnState = {
+            addBtnState: false,
+            editBtnState: true,
+            deleteBtnState: true,
+            previewBtn: false,
+            otherBtn: true,
+          }
+        }
+      });
     // this.getList({ modelFolderUuid: 1 })
   },
   mounted() {
@@ -528,11 +547,7 @@ export default {
      * 2、WebSocket客户端通过send方法来发送消息给服务端。例如：webSocket.send();
      */
     getWebSocket() {
-      /* const webSocketPath = 'ws://localhost:8086/analysis/websocket?' + this.$store.getters.personuuid*/
-      const webSocketPath =
-        this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) +
-        this.$store.getters.personuuid +
-        "modellisttable";
+      const webSocketPath = this.AmsWebsocket.getWSBaseUrl(this.AmsModules.ANALYSIS) + this.$store.getters.personuuid + 'modellisttable'
       // WebSocket客户端 PS：URL开头表示WebSocket协议 中间是域名端口 结尾是服务端映射地址
       this.webSocket = new WebSocket(webSocketPath); // 建立与服务端的连接
       // 当服务端打开连接
@@ -655,11 +670,43 @@ export default {
       });
     },
     /**
+     * 选中的节点
+     * @param data 树节点
+     */
+    SelectNode(data) {
+      for(let i =0;i<this.list.length;i++){
+        if(data.id==this.list[i].modelUuid){
+          var ifpush = 1
+          for(let j =0;j<this.$refs.modelListTable.selection.length;j++){
+            if(this.$refs.modelListTable.selection[j].modelUuid == this.list[i].modelUuid){
+              ifpush = 0
+            }
+          }
+          }
+          if(ifpush==1){
+            this.$refs.modelListTable.selection.length = 0;
+            this.$refs.modelListTable.selection.push(this.list[i])
+            this.modelTableSelectEvent()
+            return
+          }
+        }
+      console.log(this.$refs.modelListTable.selection)
+    },
+    /**
      * 设置选中的树节点
      * @param data 树节点
      */
     setSelectTreeNode(data) {
       this.selectTreeNode = data;
+      console.log(data)
+      if(data.path.indexOf('gonggong') != -1 && this.ifmanger==0){
+        //禁用
+        this.jinyong = 1
+      }else{
+        //解禁
+        this.jinyong = 0
+      }
+      getInfo()
     },
     /**
      * 保存模型
@@ -726,6 +773,15 @@ export default {
         this.btnState.addBtnState = false;
         this.btnState.editBtnState = false;
         this.btnState.previewBtn = false;
+        if(this.jinyong==1){
+          this.btnState = {
+            addBtnState: false,
+            editBtnState: true,
+            deleteBtnState: true,
+            previewBtn: false,
+            otherBtn: true
+          }
+        }
         if (this.isAuditWarring != true) {
           this.isShowShoppingCart = true;
           this.$refs.modelShoppingCartRef.setMemo(selectObj);
@@ -815,6 +871,7 @@ export default {
       });
     },
     updateModel() {
+      console.log(this.$refs.modelListTable.selection)
       this.isUpdate = true;
       var selectObj = this.$refs.modelListTable.selection;
       if (selectObj.length == 0) {
@@ -1231,10 +1288,7 @@ export default {
             }
           } else {
             const paramObj = [];
-            console.log(result.data.parammModelRel)
             for (let i = 0; i < result.data.parammModelRel.length; i++) {
-              console.log("---------------"+i)
-              console.log(result.data.parammModelRel[i].paramValue)
               if (result.data.parammModelRel[i].paramValue === "") {
                 continue;
               }
@@ -1242,7 +1296,7 @@ export default {
                 JSON.parse(result.data.parammModelRel[i].paramValue)
               );
             }
-            console.log(paramObj)
+            // console.log(paramObj)
             this.currentPreviewModelParamAndSql.sqlValue = result.data.sqlValue;
             this.currentPreviewModelParamAndSql.paramObj = paramObj;
             this.currentPreviewModelParamAndSql.modelUuid =
@@ -1282,7 +1336,7 @@ export default {
           if (isExistParam) {
             selectObj[0].runModelConfig = obj.runModelConfig;
           }
-          this.addTab(selectObj[0], isExistParam, result.data.executeSQLList);
+          this.addTab(selectObj[0], isExistParam, result.data.executeSQLList,false);
           //界面渲染完成之后开始执行sql,将sql送入调度
           startExecuteSql(result.data)
             .then((result) => {

@@ -659,7 +659,7 @@ export default {
       }
     },
     fileuploadname(data) {
-      this.uploadtemp.tableFileName = data;
+      this.uploadtemp.tableFileName = data
     },
     formatTableType(row) {
       if (row.type === "") {

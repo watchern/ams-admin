@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <div style="display:flex;">
+    <div style="display:flex;width:100%;">
       <div>
         <el-input v-model="filterText2" placeholder="输入关键字进行过滤" />
         <el-link class="select-link" type="primary" @click="registTable"
@@ -297,7 +297,8 @@ export default {
         );
         return false;
       }
-      this.registTableFlag = true;
+      this.registTableFlag = true
+      this.getTables()
     },
     flagSelectTable() {
       var ckFolder = this.$refs.tree2.getCurrentNode();
