@@ -15,12 +15,26 @@
       <el-main style="height:100%">
         <div align="right">
           <el-row>
-            <!-- @分配模型结果@ -->
+            <!-- 分配到人 -->
+              <!-- <el-button
+                      type="primary"
+                      @click="modelResultOpenDialog"
+                      :disabled="buttonIson.disableAssociatedBtn"
+                      class="oper-btn allocation"
+              ></el-button> -->
             <el-button
-                type="primary"
-                @click="modelResultOpenDialog"
-                :disabled="buttonIson.associatedBtn"
-                class="oper-btn allocation btn-width-md" />
+              type="primary"
+              :disabled="buttonIson.disableCancelExecBtn"
+              class="oper-btn cancel-exec btn-width-md"
+              @click="runRelTaskPause"
+            />
+            <!-- 分配到项目 -->
+            <el-button
+              type="primary"
+              @click="openProjectDialog"
+              :disabled="buttonIson.disableAssociatedBtn"
+              class="btn-width-md oper-btn allocation"
+            ></el-button>
             <!--  @移除分配项目@ -->
             <el-button
                 type="primary"
