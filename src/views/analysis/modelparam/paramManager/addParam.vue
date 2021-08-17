@@ -191,7 +191,7 @@
                         @click="addStaticData()"
                       />
                     </el-col>
-                    <div v-for="(customStaticValue,index) in this.customStaticValues">
+                    <div v-for="(customStaticValue, index) in this.customStaticValues">
                       <el-input
                         name="name"
                         v-model="customStaticValue.uuid"
@@ -205,13 +205,22 @@
                           autocomplete="off"
                           placeholder="名称"
                         />
-                        </el-col>
-                        <el-col :span="9" style="margin-left: 20px">
-                          <el-input name="value" v-model="customStaticValue.values" autocomplete="off" placeholder="值"/>
-                        </el-col>
-                        <el-col :span="2">
-                          <el-button type="primary" class="oper-btn delete" @click="deleteStaticData(index)" />
-                        </el-col>
+                      </el-col>
+                      <el-col :span="9" style="margin-left: 20px">
+                        <el-input
+                          name="value"
+                          v-model="customStaticValue.values"
+                          autocomplete="off"
+                          placeholder="值"
+                        />
+                      </el-col>
+                      <el-col :span="2">
+                        <el-button
+                          type="primary"
+                          class="oper-btn delete"
+                          @click="deleteStaticData(index)"
+                        />
+                      </el-col>
                     </div>
                   </div>
                 </el-tab-pane>
