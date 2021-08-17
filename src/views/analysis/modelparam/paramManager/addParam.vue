@@ -161,12 +161,7 @@
               >
                 <el-tab-pane label="自定义静态" name="custom">
                   <div id="customStatic">
-                    <el-input
-                      name="name"
-                      v-model="defaultExistsCustomStaticValues.uuid"
-                      v-show="false"
-                      autocomplete="off"
-                    />
+                    <el-input name="uuid" v-model="defaultExistsCustomStaticValues.uuid" v-show="false"  autocomplete="off"/>
                     <el-col :span="9">
                       <el-input
                         name="name"
