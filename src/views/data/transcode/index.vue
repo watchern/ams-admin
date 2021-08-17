@@ -33,13 +33,15 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="pageQuery.pageNo" :limit.sync="pageQuery.pageSize" @pagination="getList" />
     <el-dialog v-if="dialogFormVisible" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
+      <div style="height:65vh;overflow:auto;">
       <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="120px"
-        style=""
+        class="detail-form"
+        style="width: 700px;"
       >
         <el-form-item label="规则名称" prop="ruleName">
           <el-input v-model="temp.ruleName" />
@@ -139,6 +141,7 @@
           </template>
         </el-table-column>
       </el-table>
+      </div>
       <div slot="footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">保存</el-button>

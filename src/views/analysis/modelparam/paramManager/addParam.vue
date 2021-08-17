@@ -1,11 +1,18 @@
 <template>
   <div class="tab-content">
     <div  id="basicInfo">
-      <el-form id="ammParamAdd" :model="form"  class="detail-form" style="height:62vh; overflow:auto;">
+      <el-form
+        id="ammParamAdd"
+        :model="form"
+        class="detail-form"
+        style="height: 62vh; overflow: auto"
+        :rules="rules"
+        ref="ruleForm"
+      >
         <input type="hidden" id="paramUuid"/>
         <input id="inputTypeStr" type="hidden"/>
         <input id="dataTypeStr" type="hidden"/>
-        <input id="typeUuid" type="hidden">
+        <input id="typeUuid" type="hidden" />
         <input type="hidden" id="treeId" name="treeId"/>
         <input id="scopeType" type="hidden" name="scopeType"/>
         <input id="scopeUuid" type="hidden" name="scopeUuid"/>
@@ -29,7 +36,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="输入方式" prop="dataType">
+            <el-form-item label="输入方式" prop="inputType">
               <el-select v-model="form.inputType" @change="changeInputType" id="inputType" name="inputType">
                 <el-option value="" key="" label="请选择"></el-option>
                 <el-option v-for="inputType in this.inputTypes" :value="inputType.codeValue"  :key="inputType.codeValue" :label="inputType.codeName"></el-option>
@@ -106,7 +113,7 @@
               <el-tabs v-model="activeName" type="card" @tab-click="tabsigntree">
                 <el-tab-pane label="自定义静态"name="custom">
                   <div id="customStatic">
-                    <el-input name="name" v-model="defaultExistsCustomStaticValues.uuid" v-show="false"  autocomplete="off" placeholder="名称"/>
+                    <el-input name="uuid" v-model="defaultExistsCustomStaticValues.uuid" v-show="false"  autocomplete="off"/>
                     <el-col :span="9">
                       <el-input name="name"  v-model="defaultExistsCustomStaticValues.names"  autocomplete="off" placeholder="名称"/>
                     </el-col>
@@ -117,7 +124,7 @@
                       <el-button id="addStaticData" type="primary" class="oper-btn add" @click="addStaticData()"></el-button>
                     </el-col>
                     <div v-for="(customStaticValue,index) in this.customStaticValues">
-                      <el-input name="name" v-model="customStaticValue.uuid" v-show="false"  autocomplete="off" placeholder="名称"/>
+                      <el-input name="uuid" v-model="customStaticValue.uuid" v-show="false"  autocomplete="off" />
                         <el-col :span="9">
                           <el-input name="name" v-model="customStaticValue.names" autocomplete="off" placeholder="名称"></el-input>
                         </el-col>
@@ -183,69 +190,72 @@
   </div>
 </template>
 <script>
-import $ from 'jquery'
-import seeSqlData from '@/views/analysis/modelparam/paramManager/seesqldata'
-import { getUuid } from '@/api/analysis/common'
+import $ from "jquery";
+import seeSqlData from "@/views/analysis/modelparam/paramManager/seesqldata";
+import { getUuid } from "@/api/analysis/common";
 export default{
-  props:['selectTreeNode','operationObj'],
+  props: ["selectTreeNode", "operationObj"],
   components: {seeSqlData},
   data() {
     return{
+      rules: {
+        paramName: [
+          { required: true, message: "请输入参数名称", trigger: "blur" },
+        ],
+        dataType: [
+          { required: true, message: "请输入数据类型", trigger: "blur" },
+        ],
+        inputType: [
+          { required: true, message: "请输入输入方式", trigger: "blur" },
+        ],
+        example: [
+          { required: true, message: "请输入示例", trigger: "blur" },
+        ],
+      },
       //表单属性
       form:{
-        paramName:'',
-        dataType:'',
-        inputType:'',
-        allowedNull:'',
-        dataLength:'',
-        maxIntervalVal:'',
-        maxIntervalUnit:'',
-        formalType:'',
-        description:'',
-        example:'',
-        folderId:'',
+        paramName: "",
+        dataType: "",
+        inputType: "",
+        allowedNull: "",
+        dataLength: "",
+        maxIntervalVal: "",
+        maxIntervalUnit: "",
+        formalType: "",
+        description: "",
+        example: "",
+        folderId: "",
         paramChoice:{
-          optionsSql:'',
-          optionsSqlLine:''
+          optionsSql: "",
+          optionsSqlLine: ""
         }
       },
       //页签属性
       activeName:"custom",
-      analysisUrl: '/analysis',
+      analysisUrl: "/analysis",
       setJsonSelectValueData:{},
       dataTypes:[],
       maxIntervalUnits:[],
       inputTypes:[],
       SQLRuleDialog:false,
       //查看数据时候的sql
-      seeDataSql:'',
+      seeDataSql: "",
       //数据类型
       map_data_input:{
-        "num":{
-          type:[
-            "textinp",
-            "lineinp",
-            "treeinp"
-          ]
-
+        num: {
+          type: ["textinp", "lineinp", "treeinp"],
         },
-        "str":{
-          type:[
-            "textinp",
-            "lineinp",
-            "treeinp"
-          ]
+        str: {
+          type: ["textinp", "lineinp", "treeinp"],
         },
-        "date":{
-          type:[
-            "timeinp",
-          ]
+        date: {
+          type: ["timeinp"],
         },
       },
       //输入类型
-      initivalInputtype:'',
+      initivalInputtype: "",
       //数据类型
-      initivalDatatype:'',
+      initivalDatatype: "",
       inputTypeValueStr:null,
       //是否显示div
       isShowElement:{
