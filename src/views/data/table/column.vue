@@ -80,16 +80,16 @@
           </el-select>
         </template>
       </el-table-column>
+      <!--        prop="dataLengthText"-->
       <el-table-column
-        prop="dataLength"
         label="数据长度（精度）"
         show-overflow-tooltip
       >
         <template slot-scope="scope" show-overflow-tooltip>
         <!--   v-model 需要根据是否是decimal展示长度+精度 用到了双三目，有点难看 -->
           <el-input
-            @change="judelength(scope.row)"
-            v-model="scope.row.dataType.trim()==='DECIMAL' ? scope.row.dataLength+(scope.row.colPrecision?','+scope.row.colPrecision:'' ):scope.row.dataLength "
+            @change="isValidColumn(scope.row)"
+            v-model="scope.row.dataLengthText"
             style="width: 90%"
             :disabled=" openType === 'showTable' || openType === 'tableRegister' ||!scope.row.enableDataLength"
           />
@@ -133,78 +133,55 @@ export default {
       show: false,
       tempTable: { tableName: "" },
       currColType: '',
+      dataTypeRules: {}
     };
   },
   created() {
+    this.dataTypeRules = this.CommonUtil.DataTypeRules;
     this.initTable(this.tableId);
+  },
+  watch: {
+    // temp: {
+    //   handler(newTemp, oldemp) {
+    //     // console.log("==================newTemp");
+    //     newTemp.forEach((item) => {
+    //       if (!item.dataLengthText) {
+    //         item.dataLengthText = item.dataLength + (item.colPrecision || item.colPrecision===0? ',' + item.colPrecision : '');
+    //       } else if (item.dataLengthText && item.dataLengthText.length > 0) {
+    //         var arr = item.dataLengthText.split(",");
+    //         item.dataLength = arr.length > 0 ? arr[0].trim() : "";
+    //         item.colPrecision = arr.length > 1 ? arr[1].trim() : "";
+    //       }
+    //       this.changeDataType(item);
+    //     })
+    //   },
+    //   deep: true
+    // }
   },
   methods: {
     changeDataType(row){
-      switch (row.dataType) {
-        case "CHAR":
-        case "VARCHAR":
-        case "DECIMAL":
-          row.enableDataLength=true;
-          break;
-        default:
-          row.enableDataLength=false;
-          break;
-      }
+      debugger
+      this.$emit("changeDataType", row);
+      console.log("===================child row.enableDataLength")
+      console.log(row.enableDataLength)
+      // var currDataType = this.dataTypeRules[row.dataType.toUpperCase()];
+      // row.enableDataLength = currDataType ? currDataType.enableDataLength : true;
+      // if (!row.enableDataLength) {
+      //   row.dataLength = "";
+      //   row.colPrecision = "";
+      //   row.dataLengthText = "";
+      // }
     },
-    judelength(rowdata) {
-      console.log(rowdata);
-      let xx = rowdata.dataType.toUpperCase();
-      switch (xx) {
-        case "CHAR":
-         if (1 <= rowdata.dataLength && rowdata.dataLength <= 8000) {
-          } else {
-            this.$message.error('char类型长度范围:1-8000之间数字');
-          }
-          break;
-        case "VARCHAR2":
-          if (1 <= rowdata.dataLength && rowdata.dataLength <= 8000) {
-          } else {
-            this.$message.error("varchar2类型长度范围:1-8000之间数字");
-          }
-          break;
-        case "VARCHAR":
-          if (1 <= rowdata.dataLength && rowdata.dataLength <= 8000) {
-          } else {
-            this.$message.error("varchar类型长度范围:1-8000之间数字");
-          }
-          break;
-        case "NVARCHAR":
-          if (1 <= rowdata.dataLength && rowdata.dataLength <= 4000) {
-          } else {
-            this.$message.error("nvarchar类型长度范围:1-4000之间数字");
-          }
-          break;
-        case "NUMBER":
-          var flag1 = new RegExp("^[0-9]$");
-          var flag2 = new RegExp("^[0-9]+[,]+[0-9]$");
-          if (flag1.test(rowdata.dataLength)) {
-          } else if (flag2.test(rowdata.dataLength)) {
-          } else {
-            this.$message.error(
-              "number类型长度范围:单个数字，也可以是 数字,数字(英文逗号)"
-            );
-          }
-          break;
-        case "DECIMAL":
-          var flag = new RegExp("^[0-9]+[,]+[0-9]$");
-          if (flag.test(rowdata.dataLength)) {
-          } else {
-            this.$message.error("decimal类型长度范围:数字,数字(英文逗号)");
-          }
-          break;
-        case "INT":
-          var flag = new RegExp("^[0-9]{1,11}$");
-          if (flag.test(rowdata.dataLength)) {
-          } else {
-            this.$message.error("int类型长度范围:最长11位长度数字");
-          }
-          break;
-      }
+    isValidColumn(row) {
+      return this.$emit("isValidColumn", row);
+      // var currDataType = this.dataTypeRules[row.dataType.toUpperCase().trim()];
+      // if (currDataType && currDataType["lengthRule"]) {
+      //   if (!new RegExp(this.dataTypeRules[currDataType.lengthRule]).test(row.dataLength)) {
+      //     this.$message.error(row.dataType.toUpperCase() + currDataType["ruleMsg"]);
+      //     return false;
+      //   }
+      // }
+      // return true;
     },
     initTable(tableId) {
       getSqlType().then((resp) => {
@@ -215,29 +192,46 @@ export default {
           // 返回两个新的数组
           this.oldName = resp.data.displayTbName;
           this.tempTable.tableName = resp.data.displayTbName;
-          resp.data.colMetas.forEach((e) => {
-            this.tempIndex++;
-            e.tempIndex = this.tempIndex;
-          });
-          this.tempColumn = resp.data.colMetas.slice();
-          if (this.tempColumn.length >0 ){
-            for (let i=0;i < this.tempColumn.length;i++){
-              switch (this.tempColumn[i].dataType.trim()) {
-                case "CHAR":
-                case "VARCHAR":
-                case "DECIMAL":
-                  this.tempColumn[i].enableDataLength = true;
-                  break;
-                default :
-                  this.tempColumn[i].enableDataLength = false;
+          debugger
 
-              }
+          this.temp = resp.data.colMetas;
+          if (typeof this.temp != "undefined" && this.temp !== null) {
+            debugger
+            this.temp.forEach((e) => {
+              e.tempIndex = ++this.tempIndex;
+              this.$emit("changeDataType", e);
+              debugger
 
-            }
+              // if (typeof e.dataLengthText == "undefined") {
+              //   debugger
+              //   const dataTypeRule =  this.dataTypeRules[e.dataType.toUpperCase().trim()]
+              //   console.log("=================dataTypeRule")
+              //   console.log(dataTypeRule)
+              //   if (typeof dataTypeRule != "undefined" && typeof dataTypeRule.hasPrecision !="undefined") {
+              //     if (dataTypeRule.hasPrecision) {
+              //       e.dataLengthText = e.dataLength + (e.colPrecision || e.colPrecision === 0 ? ',' + e.colPrecision : '')
+              //     } else {
+              //       e.dataLengthText = e.dataLength
+              //     }
+              //   }
+              // }
+            });
           }
+          // this.tempColumn = resp.data.colMetas.slice();
+          // if (this.tempColumn.length >0 ){
+          //   for (let i=0;i < this.tempColumn.length;i++){
+          //     switch (this.tempColumn[i].dataType.trim()) {
+          //       case "CHAR":
+          //       case "VARCHAR":
+          //       case "DECIMAL":
+          //         this.tempColumn[i].enableDataLength = true;
+          //         break;
+          //       default :
+          //         this.tempColumn[i].enableDataLength = false;
+          //     }
+          //   }
+          // }
 
-
-          this.temp = JSON.parse(JSON.stringify(resp.data.colMetas));
         });
       }
     },
@@ -333,77 +327,9 @@ export default {
           //   }
         }
         //再判合法
-        let xx = obj.dataType.toUpperCase();
-        switch (xx) {
-        case "CHAR":
-         if (1 <= obj.dataLength && obj.dataLength <= 8000 && obj.dataLength!='') {
-          } else {
-            this.$message.error('char类型长度范围:1-8000之间数字');
-            return
-          }
-          break;
-        case "VARCHAR2":
-          if (1 <= obj.dataLength && obj.dataLength <= 8000 && obj.dataLength!='') {
-          } else {
-            this.$message.error("varchar2类型长度范围:1-8000之间数字");
-            return
-          }
-          break;
-        case "VARCHAR":
-          if (1 <= obj.dataLength && obj.dataLength <= 8000 && obj.dataLength!='') {
-          } else {
-            this.$message.error("varchar类型长度范围:1-8000之间数字");
-            return
-          }
-          break;
-        case "NVARCHAR":
-          if (1 <= obj.dataLength && obj.dataLength <= 4000 && obj.dataLength!='') {
-          } else {
-            this.$message.error("nvarchar类型长度范围:1-4000之间数字");
-            return
-          }
-          break;
-        case "NUMBER":
-          var flag1 = new RegExp("^[0-9]$");
-          var flag2 = new RegExp("^[0-9]+[,]+[0-9]$");
-          if ((flag1.test(obj.dataLength)|| flag2.test(obj.dataLength)) && obj.dataLength!='') {
-          } else {
-            this.$message.error(
-              "number类型长度范围:单个数字，也可以是 数字,数字(英文逗号)"
-            );
-            return
-          }
-          break;
-        case "DECIMAL":
-          var flag = new RegExp("^[0-9]+[,]+[0-9]$");
-          if (flag.test(obj.dataLength) && obj.dataLength!='') {
-            // decimal类型分两个字段传到后台，原因是dataLength是long类型 不能接受字符串
-            var strings = obj.dataLength.toString().split(",");
-            obj.dataLength = strings[0];
-            obj.colPrecision = strings[1];
-          } else {
-            this.$message.error("decimal类型长度范围:数字,数字(英文逗号)");
-            return
-          }
-          break;
-        case "INT":
-          var flag = new RegExp("^[0-9]{1,11}$");
-          if (flag.test(obj.dataLength) && obj.dataLength!='') {
-          } else {
-            this.$message.error("int类型长度范围:最长11位长度数字");
-            return
-          }
-          break;
-        case "DOUBLE":
-          var flag3 = new RegExp("^[0-9]{1,11}$");
-          if (flag3.test(obj.dataLength) && obj.dataLength!='') {
-          } else {
-            this.$message.error("double类型长度范围:"
-            );
-            return
-          }
-          break;
-      }
+        if (!this.isValidColumn(obj)) {
+          return;
+        }
       }
       const addObj = {};
       addObj.colMetas = this.temp;
