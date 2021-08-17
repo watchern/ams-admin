@@ -1791,8 +1791,25 @@ export default {
                     }
                     this.rowData = rowData;
                   }
-                  for (let i = 0; i < col.length; i++) {
+                  for(let i = 0;i<col.length;i++){
                     let colType0 = this.result.columnType[i];
+                    // colType0 = colType0 ? "": colType0.toUpperCase();
+                    // switch (colType0) {
+                    //   case "NUMBER":
+                    //   case "INT":
+                    //   case "INTEGER":
+                    //   case "FLOAT":
+                    //   case "DOUBLE":
+                    //   col[i].filter = 'agNumberColumnFilter'
+                    //     break;
+                    //   case "DATE":
+                    //   case "TIMESTAMP":
+                    //     col[i].filter = 'agDateColumnFilter'
+                    //     break;
+                    //   default:
+                    //     col[i].filter = 'agTextColumnFilter'
+                    //     break;
+                    // }
                     colType0 = colType0 ? "" : colType0.toUpperCase();
                     col[i].filter = "agMultiColumnFilter";
                     col[i].filterParams = {
@@ -1814,10 +1831,7 @@ export default {
                   }
                   this.columnDefs = col;
                   this.afterResult = true;
-                  if (
-                    typeof this.gridApi !== "undefined" &&
-                    this.gridApi !== null
-                  ) {
+                  if (typeof this.gridApi !== "undefined" && this.gridApi !== null) {
                     this.gridApi.closeToolPanel();
                   }
                 });
@@ -1842,7 +1856,6 @@ export default {
         this.getIntoModelResultDetail(nextValue);
       }
     },
-
     doRotating(rowData) {
       //旋转
       if (rowData.length == 0) return;

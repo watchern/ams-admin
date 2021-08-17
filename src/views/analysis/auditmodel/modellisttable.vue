@@ -781,13 +781,13 @@ export default {
         this.btnState.editBtnState = false;
         this.btnState.previewBtn = false;
         if(this.jinyong==1){
-          this.btnState = {
-            addBtnState: false,
-            editBtnState: true,
-            deleteBtnState: true,
-            previewBtn: false,
-            otherBtn: true,
-          }
+          this.btnState = {
+            addBtnState: false,
+            editBtnState: true,
+            deleteBtnState: true,
+            previewBtn: false,
+            otherBtn: true
+          }
         }
         if (this.isAuditWarring != true) {
           this.isShowShoppingCart = true;
