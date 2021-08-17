@@ -271,7 +271,7 @@
                 align="center"
               >
                <template slot-scope="scope">
-                 <el-select v-model="scope.row.encryptType" placeholder="选择脱敏方式" value="NONE">
+                 <el-select  v-model="scope.row.roleCol.encryptType" placeholder="选择脱敏方式" value="NONE">
                    <el-option
                            v-for="item in options"
                            :key="item.value"
@@ -467,12 +467,19 @@ export default {
         } else {
           this.listLoading = true;
           getRoleCols(this.roleUuid, node.data.id).then((resp) => {
+            console.log(resp)
             this.listLoading = false;
             node.data.cols = resp.data;
             this.currentData = node.data;
             // if(!this.currentData.extMap) this.$set(this.currentData, 'extMap', null);
             this.currentData.cols.forEach((d) => {
-              this.$set(d, "selected", d.roleCol !== null);
+              console.log(d)
+              if (d.roleCol === null ) {
+                d.roleCol={encryptType:'NONE'}
+              }
+                else {
+                  this.$set(d, "selected", d.roleCol !== null);
+              }
             });
             if (!this.currentData.accessType)
               this.$set(this.currentData, "accessType", []);
@@ -519,16 +526,13 @@ export default {
               accessType: accType1,
               whereStr: data.whereStr,
             });
-            console.log("==================")
-            console.log(data.cols)
-            console.log("==================")
             if (data.cols) {
               data.cols.forEach((col) => {
                 if (col.selected) {
                   cols.push({
                     colMetaUuid: col.colMetaUuid,
                     dataRoleUuid: this.roleUuid,
-                    encryptType: col.encryptType
+                    encryptType: col.roleCol.encryptType
                   });
                 }
               });
