@@ -22,6 +22,29 @@ export function organizeSelectTreeData(result) {
 }
 
 /**
+ * 组织下拉树数据（只用于参数）根据参数类型加''号
+ * @param result 待组织的数据（有效列：C_CODE,C_NAME,P_CODE）
+ * @return dataArr 可用于xmSelect插件的格式数据数组
+ * @author JL
+ */
+export function organizeSelectTreeDataByType(result, dataType) {
+    var dataArr = []
+    for (var i = 0; i < result.length; i++) { // 先把每一条数据转换成xmSelect的数据格式{"name":xx,"value":xx,"children":[]}
+        var obj = {
+            'name': result[i].C_NAME,
+            'value': dataType == 'str' ? `'` + result[i].C_CODE + `'` : result[i].C_CODE,
+            'pValue': dataType == 'str' ? `'` + result[i].P_CODE +`'` : result[i].P_CODE,
+            'children': [],
+            'sort': i
+        }
+        dataArr.push(obj)
+    }
+    dataArr = matchingPcRelation(dataArr)// 匹配父子关系
+    return dataArr
+}
+
+
+/**
  * 递归匹配父子关系（只用于参数）
  * @param dataArr 可用于xmSelect插件的格式数据数组
  * @return dataArr
@@ -49,7 +72,7 @@ function matchingPcRelation(dataArr) {
                     'name': C_NAME,
                     'value': C_CODE,
                     'pValue': P_CODE, // 临时有用
-                    'children': children,
+                    'children': children.length > 0 ? children : null,
                     'sort': sort
                 }
                 var ifExsit = false

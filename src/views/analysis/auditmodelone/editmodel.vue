@@ -12,7 +12,7 @@
             <graph ref="graph" :graphUuidParam="form.graphUuid" openGraphTypeParam="4" openTypeParam="2"
                    v-if="state.id==graphEditorStr"></graph>
           </div>
-          <div class="modelInfoClass" v-show="modelInfoDraw" :style="{position:'absolute',height: this.someHeight + 'px'}">
+          <div class="modelInfoClass" v-show="modelInfoDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
             <div ref="basicInfo" class="detail-form">
               <el-form ref="basicInfoForm" :model="form" :rules="basicInfoRules" :disabled="isBanEdit">
                 <el-row>
@@ -86,7 +86,7 @@
               </el-form>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="useParamDraw" :style="{position:'absolute',height: this.someHeight + 'px'}">
+          <div class="modelInfoClass" v-show="useParamDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
             <div ref="paramDefaultValue" class="default-value">
               <div style="font-size: 20px">
                 模型参数
@@ -98,7 +98,7 @@
               </div>
             </div>
           </div>
-          <div class="modelInfoClass" v-show="resultConfigDraw" :style="{position:'absolute',height: this.someHeight + 'px'}">
+          <div class="modelInfoClass " v-show="resultConfigDraw" style="position:absolute; height: calc(100% - 125px); overflow:auto">
             <el-tabs v-model="activeName" :stretch="true" style="width: 92%">
               <el-tab-pane label="模型结果" name="first"><div v-show="!isExecuteSql" align='center' class="notExecuteSqlClass" >执行SQL后才能设置</div><div v-show="isExecuteSql" ref="modelResultOutputCol" class="default-value">
                 <div style="font-size: 20px">
@@ -106,7 +106,7 @@
                   <el-tooltip class="item" effect="dark" content="只显示最后的结果列" placement="top-start">
                     <i class="el-icon-info"/></el-tooltip>
                 </div>
-                <div class="model-result-output-col">
+                <div class="model-result-output-col detail-form">
                   <el-table ref="columnData" :data="columnData" class="div-width">
                     <el-table-column prop="outputColumnName" label="输出列名" width="180"/>
                     <el-table-column prop="dataCoding" label="数据转码" width="180">
@@ -602,6 +602,7 @@ export default {
       }
     },
     clickUseParam(){
+      this.$refs.apple.refreshTable()
       if (this.modifying == true && this.useParamDraw == true){
         this.modifying = false
         this.useParamDraw = false
@@ -1307,8 +1308,8 @@ export default {
 }
 
 .model-result-output-col {
-  height: 650px;
-  overflow-y: scroll;
+  /* height: 650px;
+  overflow-y: scroll; */
 }
 
 .default-value {

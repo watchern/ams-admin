@@ -1010,6 +1010,8 @@ function organizeSelectTreeData(result) {
   return dataArr
 }
 
+
+
 /**
  * 递归获取当前选中的节点数据和其子孙节点数据
  * @param checkData 当前节点数据
@@ -1136,7 +1138,7 @@ function matchingPcRelation(dataArr) {
           'name': C_NAME,
           'value': C_CODE,
           'pValue': P_CODE, // 临时有用
-          'children': children,
+          'children': children.length > 0 ? children : null,
           'sort': sort
         }
         var ifExsit = false
@@ -1563,10 +1565,26 @@ function executeParamSql(sql) {
  * @param {*} sqlValue sql语句
  */
 async function getSelectTreeData(sqlValue) {
-  let data = {
+  const data = {
     sqlValue: sqlValue
   }
   return await request({
+    baseURL: analysisUrl,
+    url: '/paramController/getSelectTreeData',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 查询下拉树参数SQL的结果集
+ * @param {*} sqlValue sql语句
+ */
+export function getSelectTreeData1(sqlValue) {
+  const data = {
+    sqlValue: sqlValue
+  }
+  return request({
     baseURL: analysisUrl,
     url: '/paramController/getSelectTreeData',
     method: 'post',
@@ -1881,6 +1899,131 @@ export function initSetting() {
 }
 
 /**
+ * 初始化参数配置模型编辑新增 模型参数初始化
+ */
+export function initSettingParam() {
+  let load = $(settingVue.$refs.settingParamDiv).mLoading({
+    'text': '正在加载配置，请稍后……',
+    'hasCancel': false
+  })
+  try {
+    let hasSetParamIdArr = [] // 存放有效参数集合中已配置过得参数集合
+    if (settingVue.paramsSetting && settingVue.paramsSetting.length > 0) {
+      for (let i = 0; i < settingVue.paramsSetting.length; i++) {
+        if ($.inArray(settingVue.paramsSetting[i].moduleParamId, hasSetParamIdArr) < 0) {
+          hasSetParamIdArr.push(settingVue.paramsSetting[i].moduleParamId)
+        }
+      }
+    }
+    // 第二步：先获取有效的参数集合
+    let paramArr = settingVue.paramsSetting
+    if (paramArr === undefined || paramArr == null) {
+      load.hide()
+      settingVue.setParamArr = []
+      return
+    }
+    // 第三步：遍历已配置过得参数行（若有多余行则删除）,同时找到已配置的参数
+    for (let i = settingVue.setParamArr.length - 1; i >= 0; i--) { // 倒序遍历已渲染的参数配置数组
+      let moduleParamId = settingVue.setParamArr[i].dataModuleParamId // 取得当前行绑定的母参ID
+      let num = 0 // 记录参数比较值不相等的次数
+      for (let j = 0; j < paramArr.length; j++) { // 遍历有效的参数集合
+        if (moduleParamId !== paramArr[j].moduleParamId) {
+          num++
+        }
+        if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) < 0 && moduleParamId === paramArr[j].moduleParamId) {
+          hasSetParamIdArr.push(paramArr[j].moduleParamId)
+        }
+        if (num === paramArr.length) { // 如果参数配置行的参数与有效参数集合匹配不上
+          let index = settingVue.setParamArr.findIndex(item => item.dataModuleParamId === moduleParamId)
+          settingVue.setParamArr.splice(index, 1) // 则删除当前元素
+          // $('.setParamTr:eq(' + i + ')').remove()// 则删除当前行
+        }
+      }
+    }
+    // 第四步：获取数据库所有母参数信息
+    findParamsAndModelRelParams().then(response => {
+      if (response.data == null) {
+        load.hide()
+        settingVue.$message.error('获取参数信息失败')
+      } else {
+        if (response.data.isError) {
+          load.hide()
+          settingVue.$message.error({
+            message: response.data.message
+          })
+        } else {
+          let paramList = response.data.paramList // 定义所有母参信息数组
+          // 第五步：找出有效参数集合中未配置的参数,并追加TR行
+          let moduleParamArr = [] // 存储已匹配的母版参数集合
+          for (let j = 0; j < paramArr.length; j++) { // 遍历有效的参数集合
+            let hasExist = false
+            for (let i = 0; i < settingVue.setParamArr.length; i++) {
+              if (settingVue.setParamArr[i].dataModuleParamId === paramArr[j].moduleParamId) {
+                hasExist = true
+                break
+              }
+            }
+            if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && hasExist) { // 过滤掉有效参数集合中已经配置过的参数
+              continue
+            }
+            if ($.inArray(paramArr[j].moduleParamId, moduleParamArr) > -1) { // 过滤掉有效参数集合中母参重复的复制参数
+              continue
+            }
+            let setParamObj = {
+              dataModuleParamId: paramArr[j].moduleParamId,
+              name: paramArr[j].name,
+            }
+            for (let k = 0; k < paramList.length; k++) { // 循环所有母版参数
+              let moduleParamId = paramList[k].ammParamUuid
+              let paramObj = {
+                ...{},
+                ...paramList[k]
+              }
+              if (moduleParamId === paramArr[j].moduleParamId && $.inArray(moduleParamId, moduleParamArr) < 0) { // 匹配复制参数的母版参数ID
+                setParamObj.inputType = paramObj.inputType //参数类型
+                //设置默认值
+                setParamObj.value = ''
+                if ($.inArray(paramArr[j].moduleParamId, hasSetParamIdArr) > -1 && moduleParamId === paramArr[j].moduleParamId &&
+                  paramArr[j].defaultVal && paramArr[j].defaultVal !== '') {
+                  setParamObj.value = paramArr[j].defaultVal
+                  paramObj.defaultVal = paramArr[j].defaultVal
+                }
+                let returnObj = getSettingParamArr(paramObj, setParamObj)
+                if (!returnObj.isError) {
+                  setParamObj = returnObj.setParamObj
+                } else {
+                  settingVue.$message.error({
+                    message: returnObj.message
+                  })
+                }
+                moduleParamArr.push(moduleParamId)
+                if (typeof paramObj.description !== 'undefined' && paramObj.description != null) {
+                  setParamObj.description = paramObj.description
+                }
+                settingVue.setParamArr.push(setParamObj)
+                break
+              }
+            }
+          }
+          $(settingVue.$refs.setParamTbody).sortable().disableSelection()
+          settingVue.$nextTick(() => {
+            // 第六步：统一初始化参数的html（文本框、下拉列表、下拉树），并反显已配置参数的信息（包括默认值和排序值）
+            // initParam(paramArr, hasSetParamIdArr)
+            // 第七步：刷新SQL值，将已编写的SQL赋值给sql
+            load.hide()
+              // load.destroy()
+          })
+        }
+      }
+    })
+  } catch (e) {
+    load.hide()
+    console.info(e)
+  }
+}
+
+
+/**
  * 初始化及反显已配置的下拉树和下拉列表的参数（默认值和排序）
  * @param paramArr 待配置的复制参数集合
  * @param hasSetParamIdArr 已配置的复制参数ID集合
@@ -2081,6 +2224,8 @@ export function getParamsSetting() {
   if ($selectParam && $selectParam.length > 0) {
     for (let i = 0; i < $selectParam.length; i++) {
       // $('.selectParam').each(function(i, v) {
+        console.log('--$selectParam---');
+        console.log($selectParam[i].parentNode);
       let index = Number($selectParam[i].parentNode.getAttribute("index"))
       let moduleParamId = settingVue.setParamArr[index].dataId// 母参ID
       let selectParamXs = xmSelect.get('#selectParam' + moduleParamId, true)
@@ -2143,6 +2288,114 @@ export function getParamsSetting() {
 }
 
 /**
+ * 获取参数配置，组织配置对象
+ */
+export function getParamsSettingBySave() {
+  // 组装对象 paramSettingArr
+  let returnObj = {
+    'verify': true,
+    'message': '',
+    // 'paramsSetting':[]
+    'paramSettingArr': []
+  }
+  // 验证文本框输入的默认值
+  for (let i = 0; i < settingVue.$refs.setParamTr.length; i++) {
+    let index = Number(settingVue.$refs.setParamTr[i].parentNode.getAttribute("index"))
+    if (settingVue.setParamArr[index].value !== '' && settingVue.setParamArr[index].inputType === 'textinp') { // 如果当前值不为空且如果是文本框参数（非日期）
+      //验证文本框参数值的长度是否满足
+      let paramName = settingVue.setParamArr[index].dataName // 获取参数名称
+      let dataLength = settingVue.setParamArr[index].dataDataLength // 获取参数值长度
+      // 如果该参数有长度限制且默认值不等于设置的长度值
+      if (settingVue.setParamArr[index].value == undefined) {
+        returnObj.verify = false
+        returnObj.message = '请先设置参数默认值'
+        return returnObj
+      }
+      if (typeof dataLength !== 'undefined' && settingVue.setParamArr[index].value.length !== parseInt(dataLength)) {
+        returnObj.verify = false
+        returnObj.message = '参数【' + paramName + '】输入值的长度与设置的长度值【' + parseInt(dataLength) + '】不相等'
+        return returnObj
+      }
+    }
+  }
+  if (!returnObj.verify) {
+    return returnObj
+  }
+  // 绑定下拉列表选中的默认值
+  // let $selectParam = settingVue.$refs.selectParam
+  // if ($selectParam && $selectParam.length > 0) {
+  //   for (let i = 0; i < $selectParam.length; i++) {
+  //     // $('.selectParam').each(function(i, v) {
+  //     // console.log('--$selectParam---');
+  //     // console.log($selectParam[i].parentNode);
+  //     // let index = Number($selectParam[i].parentNode.getAttribute("index"))
+  //     // console.log('--settingVue.setParamArr[index]--');
+  //     // console.log(settingVue.setParamArr[index]);
+  //     // let moduleParamId = settingVue.setParamArr[index].dataId // 母参ID
+  //     // let selectParamXs = xmSelect.get('#selectParam' + moduleParamId, true)
+  //     // let paramSelectedObj = selectParamXs.getValue() // 获取选中的参数值名称
+  //     // let defaultValueArr = []
+  //     // for (let j = 0; j < paramSelectedObj.length; j++) {
+  //     //   defaultValueArr.push(paramSelectedObj[j].value)
+  //     // }
+  //     // if (defaultValueArr.length > 0) {
+  //       // settingVue.setParamArr[index].value = defaultValueArr
+  //     // }
+  //     // console.log('--settingVue.setParamArr[index].value---')
+  //     // console.log(settingVue.setParamArr[index].value);
+  //   }
+  // }
+  // 绑定下拉树选中的默认值
+  // let $selectTreeParam = settingVue.$refs.selectTreeParam
+  // if ($selectTreeParam && $selectTreeParam.length > 0) {
+  //   for (let i = 0; i < $selectTreeParam.length; i++) {
+  //     // $('.selectTreeParam').each(function(i, v) {
+  //     let index = Number($selectTreeParam[i].parentNode.getAttribute("index"))
+  //     let moduleParamId = settingVue.setParamArr[index].dataId // 母参ID
+  //     let selectTreeParamXs = xmSelect.get('#selectTreeParam' + moduleParamId, true)
+  //     let paramSelectedObj = selectTreeParamXs.getValue() // 获取选中的参数值名称
+  //     let defaultValueArr = []
+  //     for (let j = 0; j < paramSelectedObj.length; j++) {
+  //       defaultValueArr.push(paramSelectedObj[j].value)
+  //     }
+  //     if (defaultValueArr.length > 0) {
+  //       // $(this).attr('data-value', JSON.stringify(defaultValueArr))
+  //       settingVue.setParamArr[index].value = defaultValueArr
+  //     }
+  //   }
+  // }
+  for (let j = 0; j < settingVue.paramsSetting.length; j++) {
+    let obj = settingVue.paramsSetting[j]
+    obj.sortVal = 1 // 先给每个参数赋值默认排序值为1
+    // 设置该参数的默认值和排序值
+    let defaultVal = ''
+    let sortVal = ''
+    for (let k = 0; k < settingVue.$refs.setParamTr.length; k++) {
+      let index = Number(settingVue.$refs.setParamTr[k].getAttribute("index"))
+      let moduleParamId = settingVue.setParamArr[index].dataId // 取得当前行绑定的参数ID
+      // let moduleParamId = $(this).attr('data-id')// 取得当前行绑定的参数ID
+      if (obj.moduleParamId === moduleParamId) {
+        if (typeof settingVue.setParamArr[index].value !== 'undefined') {
+          defaultVal = settingVue.setParamArr[index].value
+        }
+        sortVal = parseInt(k + 1)
+        break
+      }
+    }
+    obj.defaultVal = defaultVal
+    if (sortVal !== '') {
+      obj.sortVal = sortVal
+    }
+    returnObj.paramSettingArr.push(obj)
+  }
+  // 对参数数组的值按照排序值由小到大得顺序进行排序
+  paramCommonJs.sortParamArr(returnObj.paramSettingArr)
+  return returnObj
+}
+
+
+
+/**
  * 根据参数类型组织参数的HTML元素
  * createParamNodeHtml()方法内部调用的方法
  * @param paramObj 参数对象
@@ -2163,24 +2416,28 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
   let associatedParamIdArr = []// 受当前参数影响的被关联参数ID集合
   let paramSql = paramObj.paramChoice.optionsSql//拉列表或下拉树的SQL语句
   obj.setParamObj.title = paramObj.paramChoice.allowedNull === 0 ? '不可为空' : '可为空'
+  obj.setParamObj.dataType = paramObj.dataType // dataType
   let hasSql = false// 下拉列表或下拉树是非SQL方式或者是SQL方式但值为空
   switch (obj.setParamObj.inputType) {
     case 'lineinp':// 下拉列表
-      if (!paramSql) {// 备选sql为空的情况下 取静态的option值
-        $.each(paramObj.paramChoice.ammParamOptionsList, function(i, v) {
-          if (v.optionsVal && v.optionsName) {
-            // 组织下拉选项数据
-            var optionObj = {
-              'name': v.optionsName,
-              'value': v.optionsVal
-            }
-            dataArr.push(optionObj)
-          }
-        })
+      if (!paramSql) { // 备选sql为空的情况下 取静态的option值
+         // 下拉静态列表赋值
+         paramObj.paramChoice.ammParamOptionsList.forEach(r => {
+           if (r.optionsVal && r.optionsName) {
+             // 组织下拉选项数据
+             dataArr.push({
+               'name': r.optionsName,
+               'value': r.optionsVal
+             })
+           }
+           if (dataArr.length > 0) {
+             obj.setParamObj.data = dataArr
+           }
+         })
       } else { // 执行备选sql
         if (paramSql !== '') {
           hasSql = true// 下拉列表是SQL方式
-          if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
+          // if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
              executeParamSql(paramSql).then(response=>{
                if(response.data == null){
                  obj.isError = true
@@ -2193,17 +2450,19 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
                    let e = response.data
                    if (e.paramList && e.paramList.length > 0) {
                      for (let k = 0; k < e.paramList.length; k++) {
-                       var paramObj1 = {
-                         'name': e.paramList[k].paramName,
-                         'value': e.paramList[k].paramValue
-                       }
-                       dataArr.push(paramObj1)
+                        dataArr.push({
+                          'name': e.paramList[k].paramName,
+                          'value': e.paramList[k].paramValue
+                        })
                      }
                    }
+                  if (dataArr.length > 0) {
+                    obj.setParamObj.data = dataArr
+                  }
                  }
                }
              })
-          }
+          // }
         }
       }
       if(typeof obj.selectNum !== 'undefined' && obj.selectNum != null){
@@ -2222,10 +2481,12 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
       }
       if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
         obj.setParamObj.dataDefaultVal = paramObj.defaultVal
+         // 下拉列表默认值
+         obj.setParamObj.dataDefaultVal = paramObj.defaultVal
+         // 默认值
+         obj.setParamObj.value = obj.setParamObj.dataDefaultVal
       }
-      if(dataArr.length > 0){
-        obj.setParamObj.data = dataArr
-      }
+      
       if(typeof paramObj.paramChoice.allowedNull !== 'undefined' && paramObj.paramChoice.allowedNull != null){
         obj.setParamObj.dataAllowedNull = paramObj.paramChoice.allowedNull
       }
@@ -2261,24 +2522,28 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
     case 'treeinp':// 下拉树
       if (paramSql !== '') { // 执行备选SQL
         hasSql = true
-        if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
-          const response = getSelectTreeData(paramSql)
-          if(response.data == null){
-            obj.isError = true
-            obj.message = `获取参数【${paramObj.paramName}】的值的失败`
-          }else {
-            if (response.data.isError) {
+        // if (typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null) { // 如果有该参数默认值，则直接执行备选SQL加载初始化数据
+        getSelectTreeData(paramSql).then(resp => {
+            if (resp.data == null) {
               obj.isError = true
-              obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${response.data.message}`
+              obj.message = `获取参数【${paramObj.paramName}】的值的失败`
             } else {
-              if(response.data.result && response.data.result.length > 0){
-                dataArr = organizeSelectTreeData(response.data.result)
-              }else{
-                dataArr = []
+              if (resp.data.isError) {
+                obj.isError = true
+                obj.message = `获取参数【${paramObj.paramName}】的值的失败，原因：${resp.data.message}`
+              } else {
+                if (resp.data.result && resp.data.result.length > 0) {
+                  // dataArr = organizeSelectTreeData(response.data.result)
+                  dataArr = organizeSelectTreeData(resp.data.result)
+                } else {
+                  dataArr = []
+                }
+                if (dataArr.length > 0) {
+                  obj.setParamObj.data = dataArr
+                }
               }
             }
-          }
-        }
+        })
       }
       if(typeof obj.selectTreeNum !== 'undefined' && obj.selectTreeNum != null){
         obj.setParamObj.id = `selectTreeParam${obj.selectTreeNum}`
@@ -2296,9 +2561,9 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
       }
       if(typeof paramObj.defaultVal !== 'undefined' && paramObj.defaultVal != null){
         obj.setParamObj.dataDefaultVal = paramObj.defaultVal
-      }
-      if(dataArr.length > 0){
-        obj.setParamObj.data = dataArr
+        // 下拉树默认值
+        obj.setParamObj.dataDefaultVal = paramObj.defaultVal
+        obj.setParamObj.value = obj.setParamObj.dataDefaultVal
       }
       if(typeof paramObj.paramChoice.allowedNull !== 'undefined' && paramObj.paramChoice.allowedNull != null){
         obj.setParamObj.dataAllowedNull = paramObj.paramChoice.allowedNull
@@ -2307,4 +2572,5 @@ export function getSettingParamArr(paramObj, setParamObj, selectNum, selectTreeN
   }
   return obj
 }
+
 
