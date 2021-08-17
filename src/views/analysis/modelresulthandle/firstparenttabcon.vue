@@ -396,7 +396,7 @@ export default {
       this.resetTemp()
       this.temp.projectUuid = this.projectId
       this.dialogFormVisible = true
-      // this.$refs.problempopover.getPreLoadProjectList()
+      this.$refs.problempopover.getPreLoadProjectList()
     },
     //工作流相关    
     closeFlowItem(val) {
